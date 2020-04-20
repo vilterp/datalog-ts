@@ -1,26 +1,15 @@
-import { unify } from "./unify";
 import { planQuery } from "./plan";
-import {
-  Bindings,
-  DB,
-  PlanSpec,
-  rec,
-  Rec,
-  Res,
-  str,
-  Term,
-  varr,
-} from "./types";
+import { Bindings, DB, rec, Res, str, varr } from "./types";
 import { instantiate, PlanNode } from "./planNodes";
 
-function allResults(node: PlanNode): Bindings[] {
-  const out: Bindings[] = [];
+function allResults(node: PlanNode): Res[] {
+  const out: Res[] = [];
   while (true) {
     const res = node.Next();
     if (res === null) {
       break;
     }
-    out.push(res.bindings);
+    out.push(res);
   }
   return out;
 }
@@ -57,7 +46,8 @@ function testBasic() {
   console.log("plan spec:", spec);
   const node = instantiate(testDB, spec);
   const results = allResults(node);
-  console.log("results:", results);
+  console.log("results:");
+  results.forEach((r) => console.log(r));
 }
 
 type Test = { name: string; test: () => void };
