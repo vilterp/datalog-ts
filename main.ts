@@ -59,6 +59,36 @@ const testDB: DB = {
       ],
     },
   },
+  grandmother: {
+    head: rec("grandmother", { grandchild: varr("A"), grandmother: varr("C") }),
+    defn: {
+      type: "Or",
+      opts: [
+        {
+          type: "And",
+          clauses: [
+            rec("mother", { child: varr("A"), mother: varr("B") }),
+            rec("mother", { child: varr("B"), mother: varr("C") }),
+          ],
+        },
+      ],
+    },
+  },
+  grandparent: {
+    head: rec("grandmother", { grandchild: varr("A"), grandparent: varr("C") }),
+    defn: {
+      type: "Or",
+      opts: [
+        {
+          type: "And",
+          clauses: [
+            rec("parent", { child: varr("A"), parent: varr("B") }),
+            rec("parent", { child: varr("B"), parent: varr("C") }),
+          ],
+        },
+      ],
+    },
+  },
 };
 
 type Test = { name: string; test: () => void };
