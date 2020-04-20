@@ -33,26 +33,3 @@ function scanAndFilterForRec(db: DB, rec: Rec): PlanSpec {
     record: rec,
   };
 }
-
-function collapseAnds(spec: PlanSpec): PlanSpec {
-  switch (spec.type) {
-    case "And":
-      if (spec.left.type === "EmptyOnce") {
-        return spec.right;
-      }
-      if (spec.right.type === "EmptyOnce") {
-        return spec.left;
-      }
-      return spec;
-    case "Or":
-      return { type: "Or", opts: spec.opts.map(collapseAnds) };
-    case "Filter":
-      return { ...spec, inner: collapseAnds(spec.inner) };
-    default:
-      return spec;
-  }
-}
-
-export function optimize(spec: PlanSpec): PlanSpec {
-  return collapseAnds(spec);
-}

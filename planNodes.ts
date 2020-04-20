@@ -1,5 +1,6 @@
-import { Bindings, DB, PlanSpec, Rec, Res, str, Term } from "./types";
+import { Bindings, DB, PlanSpec, rec, Rec, Res, str, Term } from "./types";
 import { unify } from "./unify";
+import * as util from "util";
 
 export function instantiate(db: DB, spec: PlanSpec): PlanNode {
   switch (spec.type) {
@@ -31,44 +32,68 @@ class AndNode implements PlanNode {
   left: PlanNode;
   right: PlanNode;
 
-  curLeft: Res | null;
-  done: boolean;
+  curLeft: Res;
+  leftDone: boolean;
+  rightDone: boolean;
 
   constructor(left: PlanNode, right: PlanNode) {
     this.left = left;
     this.right = right;
     this.curLeft = null;
-    this.done = false;
+    this.leftDone = false;
+    this.rightDone = false;
+
+    this.advanceLeft();
+  }
+
+  advanceLeft() {
+    const res = this.left.Next();
+    if (res === null) {
+      // console.log("advanceLeft: done");
+      this.leftDone = true;
+      return;
+    }
+    this.curLeft = res;
+    this.right.Reset();
+    // console.log("advanceLeft:", this.curLeft);
   }
 
   Next(): Res | null {
-    if (this.done) {
-      return null;
-    }
-    console.log("And.next");
-    let bindings: Bindings = {};
     while (true) {
-      if (this.curLeft === null && !this.done) {
-        this.right.Reset();
-        const leftRes = this.left.Next();
-        console.log("And.next: left next:", leftRes);
-        if (leftRes === null) {
-          this.done = true;
-          return { term: str(""), bindings };
-        }
-        this.curLeft = leftRes;
+      if (this.leftDone) {
+        return null;
+      }
+      if (this.rightDone) {
+        this.advanceLeft();
+        continue;
       }
       const rightRes = this.right.Next();
       if (rightRes === null) {
-        // TODO: advance left
+        // console.log("advanceRight: done");
+        this.rightDone = true;
         continue;
       }
-      // TODO: do something with these bindings...?
-      const unifyRes = unify(bindings, this.curLeft.term, rightRes.term);
+      // console.log("advanceRight:", rightRes);
+
+      const unifyRes = unify(
+        this.curLeft.bindings,
+        this.curLeft.term,
+        rightRes.term
+      );
+      console.log("And.unify", {
+        left: this.curLeft.term,
+        right: rightRes.term,
+        prior: this.curLeft.bindings,
+        res: unifyRes,
+      });
       if (unifyRes === null) {
-        return null;
+        continue;
       }
-      bindings = { ...bindings, ...unifyRes };
+
+      return {
+        term: rec(`and`, { left: this.curLeft.term, right: rightRes.term }), // TODO: this is weird
+        bindings: unifyRes,
+      };
     }
   }
 

@@ -1,7 +1,9 @@
-import { optimize, planQuery } from "./plan";
+import { planQuery } from "./plan";
 import { DB, rec, Res, str, varr } from "./types";
 import { instantiate, PlanNode } from "./planNodes";
 import * as util from "util";
+import { optimize } from "./optimize";
+import * as https from "https";
 
 function allResults(node: PlanNode): Res[] {
   const out: Res[] = [];
@@ -102,11 +104,11 @@ const tests: Test[] = [
         rec("father", { child: str("Pete"), father: varr("A") })
       );
       console.log("plan spec:");
-      console.log(util.inspect(spec, { depth: null }));
+      console.log(spec);
       const node = instantiate(testDB, spec);
       const results = allResults(node);
       console.log("results:");
-      results.forEach((r) => console.log(util.inspect(r, { depth: null })));
+      results.forEach((r) => console.log(r));
     },
   },
   {
@@ -117,38 +119,55 @@ const tests: Test[] = [
         rec("parent", { child: str("Pete"), father: varr("A") })
       );
       console.log("plan spec:");
-      console.log(util.inspect(spec, { depth: null }));
+      console.log(spec);
       const optimized = optimize(spec);
       console.log("optimized:");
-      console.log(util.inspect(optimized, { depth: null }));
+      console.log(optimized);
       const node = instantiate(testDB, optimized);
       const results = allResults(node);
       console.log("results:");
-      results.forEach((r) => console.log(util.inspect(r, { depth: null })));
+      results.forEach((r) => console.log(r));
     },
   },
-  // {
-  //   name: "grandfather",
-  //   test: () => {
-  //     const spec = planQuery(
-  //       testDB,
-  //       rec("grandfather", { child: str("Pete"), father: varr("A") })
-  //     );
-  //     console.log("plan spec:");
-  //     console.log(util.inspect(spec, { depth: null }));
-  //     const optimized = optimize(spec);
-  //     console.log("optimized:");
-  //     console.log(util.inspect(optimized, { depth: null }));
-  //     const node = instantiate(testDB, optimized);
-  //     const results = allResults(node);
-  //     console.log("results:");
-  //     results.forEach((r) => console.log(util.inspect(r, { depth: null })));
-  //   },
-  // },
+  {
+    name: "grandfather",
+    test: () => {
+      const spec = planQuery(
+        testDB,
+        rec("grandfather", { child: str("Pete"), father: varr("A") })
+      );
+      console.log("plan spec:");
+      console.log(spec);
+      const optimized = optimize(spec);
+      console.log("optimized:");
+      console.log(optimized);
+      const node = instantiate(testDB, optimized);
+      const results = allResults(node);
+      console.log("results:");
+      results.forEach((r) => console.log(r));
+    },
+  },
 ];
 
 tests.forEach((t) => {
   console.log(t.name);
   console.log("=========");
   t.test();
+});
+
+// @ts-ignore
+process.tests = tests;
+
+// just to keep it running so we can use the inspector
+const hostname = "127.0.0.1";
+const port = 3000;
+
+const server = https.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/plain");
+  res.end("Hello World");
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
