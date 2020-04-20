@@ -1,3 +1,5 @@
+import { unify } from "./unify";
+
 type DB = {
   [relation: string]: Rec[] | Rule; // TODO: indexes
 };
@@ -8,15 +10,19 @@ type Bindings = { [key: string]: Term };
 
 type Rule = {
   head: Rec;
-  clauses: Query[];
+  defn: OrExpr;
 };
+
+type OrExpr = { type: "Or"; opts: AndExpr[] };
+
+type AndExpr = { type: "And"; clauses: Rec[] };
 
 type Term =
   | { type: "StringLit"; val: string }
   | { type: "Var"; name: string }
   | Rec;
 
-type Rec = { type: "Record"; attrs: { [key: string]: Term } };
+type Rec = { type: "Record"; relation: string; attrs: { [key: string]: Term } };
 
 // helpers
 
@@ -24,16 +30,12 @@ function str(s: string): Term {
   return { type: "StringLit", val: s };
 }
 
-function rec(attrs: { [key: string]: Term }): Rec {
-  return { type: "Record", attrs: attrs };
+function rec(relation: string, attrs: { [key: string]: Term }): Rec {
+  return { type: "Record", relation, attrs };
 }
 
 function varr(name: string): Term {
   return { type: "Var", name: name };
-}
-
-function query(relation: string, rec: Rec): Query {
-  return { relation, attrs: rec };
 }
 
 // Nodes
@@ -57,76 +59,6 @@ class AndNode implements PlanNode {
     if (this.curLeft === null) {
     }
     return undefined;
-  }
-}
-
-function unify(prior: Bindings, left: Term, right: Term): Bindings | null {
-  switch (left.type) {
-    case "StringLit":
-      switch (right.type) {
-        case "StringLit":
-          return left.val === right.val ? {} : null;
-        default:
-          // TODO: add var case?
-          return null;
-      }
-    case "Var":
-      // TODO: what about prior bindings?
-      return { [left.name]: right };
-    case "Record": {
-      switch (right.type) {
-        case "Record":
-          let accum = {};
-          for (const key in Object.keys(left.attrs)) {
-            // TODO: do bindings fold across keys... how would that be ordered...
-            const leftVal = left.attrs[key];
-            const rightVal = right.attrs[key];
-            if (!rightVal) {
-              return null;
-            }
-            const res = unify(prior, leftVal, rightVal);
-            accum = { ...accum, ...res };
-          }
-          return accum;
-        default:
-          // TODO: add var case?
-          return null;
-      }
-    }
-  }
-}
-
-// could use some kind of existing JS deepEq
-function termEq(left: Term, right: Term): boolean {
-  switch (left.type) {
-    case "StringLit":
-      switch (right.type) {
-        case "StringLit":
-          return left.val === right.val;
-        default:
-          return false;
-      }
-    case "Var":
-      switch (right.type) {
-        case "Var":
-          return left.name === right.name;
-        default:
-          return false;
-      }
-    case "Record":
-      switch (right.type) {
-        case "Record":
-          for (const key in Object.keys(left.attrs)) {
-            const rightVal = right.attrs[key];
-            const leftVal = left.attrs[key];
-            if (!termEq(leftVal, rightVal)) {
-              return false;
-            }
-          }
-          return Object.keys(left).length === Object.keys(right).length;
-        default:
-          return null;
-      }
   }
 }
 
@@ -180,14 +112,14 @@ class ScanNode implements PlanNode {
 
 // query
 
-// normal prolog considers this part of a term...
-// I'm taking a bit of a different tack...
-type Query = {
-  relation: string;
-  attrs: Rec;
-};
-
-function runQuery(db: DB, relation: XXX, rec: Rec): PlanNode {}
+function planQuery(db: DB, rec: Rec): PlanNode {
+  const relation = db[rec.relation];
+  if (Array.isArray(relation)) {
+    return new ScanNode(rec.relation, relation);
+  }
+  const initialBindings = unify({}, rec, relation.head);
+  const filters = mapXXX;
+}
 
 function allResults(node: PlanNode): Bindings[] {
   const out: Bindings[] = [];
@@ -205,16 +137,24 @@ function allResults(node: PlanNode): Bindings[] {
 
 const testDB: DB = {
   father: [
-    rec({ child: str("Pete"), father: str("Paul") }),
-    rec({ child: str("Paul"), father: str("Peter") }),
+    rec("father", { child: str("Pete"), father: str("Paul") }),
+    rec("father", { child: str("Paul"), father: str("Peter") }),
   ],
   grandfather: {
-    head: rec({ grandchild: varr("A"), grandfather: varr("C") }),
-    clauses: [
-      query("father", rec({ child: varr("A"), father: varr("B") })),
-      query("father", rec({ child: varr("B"), father: varr("C") })),
-    ],
+    head: rec("grandfather", { grandchild: varr("A"), grandfather: varr("C") }),
+    defn: {
+      type: "Or",
+      opts: [
+        {
+          type: "And",
+          clauses: [
+            rec("father", { child: varr("A"), father: varr("B") }),
+            rec("father", { child: varr("B"), father: varr("C") }),
+          ],
+        },
+      ],
+    },
   },
 };
 
-runQuery();
+planQuery();
