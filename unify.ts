@@ -1,3 +1,5 @@
+import { Bindings, Term } from "./types";
+
 export function unify(
   prior: Bindings,
   left: Term,

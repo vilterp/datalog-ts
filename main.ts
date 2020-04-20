@@ -1,42 +1,5 @@
 import { unify } from "./unify";
-
-type DB = {
-  [relation: string]: Rec[] | Rule; // TODO: indexes
-};
-
-type Res = { term: Term; bindings: Bindings };
-
-type Bindings = { [key: string]: Term };
-
-type Rule = {
-  head: Rec;
-  defn: OrExpr;
-};
-
-type OrExpr = { type: "Or"; opts: AndExpr[] };
-
-type AndExpr = { type: "And"; clauses: Rec[] };
-
-type Term =
-  | { type: "StringLit"; val: string }
-  | { type: "Var"; name: string }
-  | Rec;
-
-type Rec = { type: "Record"; relation: string; attrs: { [key: string]: Term } };
-
-// helpers
-
-function str(s: string): Term {
-  return { type: "StringLit", val: s };
-}
-
-function rec(relation: string, attrs: { [key: string]: Term }): Rec {
-  return { type: "Record", relation, attrs };
-}
-
-function varr(name: string): Term {
-  return { type: "Var", name: name };
-}
+import { AndExpr, Bindings, DB, rec, Rec, Res, str, Term, varr } from "./types";
 
 // Nodes
 
@@ -44,6 +7,7 @@ interface PlanNode {
   Next(): Res | null;
 }
 
+// basically a join
 class AndNode implements PlanNode {
   left: PlanNode;
   right: PlanNode;
@@ -59,6 +23,31 @@ class AndNode implements PlanNode {
     if (this.curLeft === null) {
     }
     return undefined;
+  }
+}
+
+class OrNode implements PlanNode {
+  opts: PlanNode[];
+  curOptIdx: number;
+
+  constructor(opts: PlanNode[]) {
+    this.opts = opts;
+    this.curOptIdx = 0;
+  }
+
+  Next(): Res | null {
+    while (true) {
+      if (this.curOptIdx === this.opts.length) {
+        return null;
+      }
+      const curOpt = this.opts[this.curOptIdx];
+      const res = curOpt.Next();
+      if (res === null) {
+        this.curOptIdx++;
+        continue;
+      }
+      return res;
+    }
   }
 }
 
@@ -110,7 +99,18 @@ class ScanNode implements PlanNode {
   }
 }
 
-// query
+const SuccessNode: PlanNode = {
+  Next(): Res | null {
+    return {
+      bindings: {},
+      term: str(""),
+    };
+  },
+};
+
+// TODO: subquerynode?
+
+// plan
 
 function planQuery(db: DB, rec: Rec): PlanNode {
   const relation = db[rec.relation];
@@ -118,7 +118,23 @@ function planQuery(db: DB, rec: Rec): PlanNode {
     return new ScanNode(rec.relation, relation);
   }
   const initialBindings = unify({}, rec, relation.head);
-  const filters = mapXXX;
+  const andNodes = relation.defn.opts.map((andExpr) => foldAnds(db, andExpr));
+  return new OrNode(andNodes);
+}
+
+function foldAnds(db: DB, ae: AndExpr): PlanNode {
+  return ae.clauses.reduce(
+    (accum, next) => new AndNode(accum, scanAndFilterForRec(db, next)),
+    SuccessNode
+  );
+}
+
+function scanAndFilterForRec(db: DB, rec: Rec): PlanNode {
+  const relation = db[rec.relation];
+  if (!Array.isArray(relation)) {
+    throw new Error(`don't support planning with rules yet: ${rec.relation}`);
+  }
+  return new FilterNode(new ScanNode(rec.relation, relation), rec);
 }
 
 function allResults(node: PlanNode): Bindings[] {
@@ -157,4 +173,17 @@ const testDB: DB = {
   },
 };
 
-planQuery();
+function testBasic() {
+  const node = planQuery(
+    testDB,
+    rec("father", { child: str("Pete"), father: varr("A") })
+  );
+  const results = allResults(node);
+  console.log(results);
+}
+
+type Test = { name: string; test: () => void };
+
+const tests: (() => void)[] = [testBasic];
+
+tests.forEach((t) => t());
