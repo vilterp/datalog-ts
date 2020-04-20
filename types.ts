@@ -26,7 +26,7 @@ export type Rec = {
   attrs: { [key: string]: Term };
 };
 
-// helpers
+// term helpers
 
 export function str(s: string): Term {
   return { type: "StringLit", val: s };
@@ -39,3 +39,12 @@ export function rec(relation: string, attrs: { [key: string]: Term }): Rec {
 export function varr(name: string): Term {
   return { type: "Var", name: name };
 }
+
+// plan spec
+
+export type PlanSpec =
+  | { type: "And"; left: PlanSpec; right: PlanSpec }
+  | { type: "Or"; opts: PlanSpec[] }
+  | { type: "Scan"; relation: string }
+  | { type: "Filter"; inner: PlanSpec; record: Rec }
+  | { type: "Success" };

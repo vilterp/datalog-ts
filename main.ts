@@ -1,141 +1,17 @@
 import { unify } from "./unify";
-import { AndExpr, Bindings, DB, rec, Rec, Res, str, Term, varr } from "./types";
-
-// Nodes
-
-interface PlanNode {
-  Next(): Res | null;
-}
-
-// basically a join
-class AndNode implements PlanNode {
-  left: PlanNode;
-  right: PlanNode;
-
-  curLeft: Term | null;
-
-  constructor(left: PlanNode, right: PlanNode) {
-    this.left = left;
-    this.right = right;
-  }
-
-  Next(): Res | null {
-    if (this.curLeft === null) {
-    }
-    return undefined;
-  }
-}
-
-class OrNode implements PlanNode {
-  opts: PlanNode[];
-  curOptIdx: number;
-
-  constructor(opts: PlanNode[]) {
-    this.opts = opts;
-    this.curOptIdx = 0;
-  }
-
-  Next(): Res | null {
-    while (true) {
-      if (this.curOptIdx === this.opts.length) {
-        return null;
-      }
-      const curOpt = this.opts[this.curOptIdx];
-      const res = curOpt.Next();
-      if (res === null) {
-        this.curOptIdx++;
-        continue;
-      }
-      return res;
-    }
-  }
-}
-
-class FilterNode implements PlanNode {
-  inner: PlanNode;
-  record: Rec;
-
-  constructor(inner: PlanNode, record: Rec) {
-    this.inner = inner;
-    this.record = record;
-  }
-
-  Next(): Res | null {
-    while (true) {
-      const next = this.inner.Next();
-      if (next === null) {
-        return null;
-      }
-      const bindings = unify(next.bindings, this.record, next.term);
-      if (bindings !== null) {
-        // hm... are we supposed to use its bindings here?
-        return { term: next.term, bindings: bindings };
-      }
-    }
-  }
-}
-
-class ScanNode implements PlanNode {
-  relationName: string;
-  relation: Rec[];
-  cursor: number;
-
-  constructor(relationName: string, relation: Rec[]) {
-    this.relationName = relationName;
-    this.relation = relation;
-    this.cursor = 0;
-  }
-
-  Next(): Res | null {
-    if (this.cursor === this.relation.length) {
-      return null;
-    }
-    const res: Res = {
-      term: this.relation[this.cursor],
-      bindings: {},
-    };
-    this.cursor++;
-    return res;
-  }
-}
-
-const SuccessNode: PlanNode = {
-  Next(): Res | null {
-    return {
-      bindings: {},
-      term: str(""),
-    };
-  },
-};
-
-// TODO: subquerynode?
-
-// plan
-
-function planQuery(db: DB, rec: Rec): PlanNode {
-  const relation = db[rec.relation];
-  if (Array.isArray(relation)) {
-    return new ScanNode(rec.relation, relation);
-  }
-  const initialBindings = unify({}, rec, relation.head);
-  const andNodes = relation.defn.opts.map((andExpr) => foldAnds(db, andExpr));
-  return new OrNode(andNodes);
-}
-
-function foldAnds(db: DB, ae: AndExpr): PlanNode {
-  return ae.clauses.reduce(
-    (accum, next) => new AndNode(accum, scanAndFilterForRec(db, next)),
-    SuccessNode
-  );
-}
-
-function scanAndFilterForRec(db: DB, rec: Rec): PlanNode {
-  const relation = db[rec.relation];
-  if (!Array.isArray(relation)) {
-    throw new Error(`don't support planning with rules yet: ${rec.relation}`);
-  }
-  return new FilterNode(new ScanNode(rec.relation, relation), rec);
-}
+import { planQuery } from "./plan";
+import {
+  Bindings,
+  DB,
+  PlanSpec,
+  rec,
+  Rec,
+  Res,
+  str,
+  Term,
+  varr,
+} from "./types";
+import { instantiate, PlanNode } from "./planNodes";
 
 function allResults(node: PlanNode): Bindings[] {
   const out: Bindings[] = [];
@@ -174,16 +50,22 @@ const testDB: DB = {
 };
 
 function testBasic() {
-  const node = planQuery(
+  const spec = planQuery(
     testDB,
     rec("father", { child: str("Pete"), father: varr("A") })
   );
+  console.log("plan spec:", spec);
+  const node = instantiate(testDB, spec);
   const results = allResults(node);
-  console.log(results);
+  console.log("results:", results);
 }
 
 type Test = { name: string; test: () => void };
 
-const tests: (() => void)[] = [testBasic];
+const tests: Test[] = [{ name: "basic", test: testBasic }];
 
-tests.forEach((t) => t());
+tests.forEach((t) => {
+  console.log(t.name);
+  console.log("=========");
+  t.test();
+});
