@@ -14,15 +14,16 @@ export function instantiate(db: DB, spec: PlanSpec): PlanNode {
       return new OrNode(spec.opts.map((opt) => instantiate(db, opt)));
     case "Scan":
       return new ScanNode(spec.relation, db[spec.relation] as Rec[]);
-    case "Success":
-      return SuccessNode;
+    case "EmptyOnce":
+      return new EmptyOnceNode();
   }
 }
 
 // Nodes
 
 export interface PlanNode {
-  Next(): Res | null;
+  Next(): Res | null; // TODO: add bindings as an argument
+  Reset();
 }
 
 // basically a join
@@ -30,17 +31,51 @@ class AndNode implements PlanNode {
   left: PlanNode;
   right: PlanNode;
 
-  curLeft: Term | null;
+  curLeft: Res | null;
+  done: boolean;
 
   constructor(left: PlanNode, right: PlanNode) {
     this.left = left;
     this.right = right;
+    this.curLeft = null;
+    this.done = false;
   }
 
   Next(): Res | null {
-    if (this.curLeft === null) {
+    if (this.done) {
+      return null;
     }
-    return undefined;
+    console.log("And.next");
+    let bindings: Bindings = {};
+    while (true) {
+      if (this.curLeft === null && !this.done) {
+        this.right.Reset();
+        const leftRes = this.left.Next();
+        console.log("And.next: left next:", leftRes);
+        if (leftRes === null) {
+          this.done = true;
+          return { term: str(""), bindings };
+        }
+        this.curLeft = leftRes;
+      }
+      const rightRes = this.right.Next();
+      if (rightRes === null) {
+        // TODO: advance left
+        continue;
+      }
+      // TODO: do something with these bindings...?
+      const unifyRes = unify(bindings, this.curLeft.term, rightRes.term);
+      if (unifyRes === null) {
+        return null;
+      }
+      bindings = { ...bindings, ...unifyRes };
+    }
+  }
+
+  Reset() {
+    this.left.Reset();
+    this.right.Reset();
+    this.curLeft = null;
   }
 }
 
@@ -67,6 +102,11 @@ class OrNode implements PlanNode {
       return res;
     }
   }
+
+  Reset() {
+    this.curOptIdx = 0;
+    this.opts.forEach((o) => o.Reset());
+  }
 }
 
 class FilterNode implements PlanNode {
@@ -90,6 +130,10 @@ class FilterNode implements PlanNode {
         return { term: next.term, bindings: bindings };
       }
     }
+  }
+
+  Reset() {
+    this.inner.Reset();
   }
 }
 
@@ -115,13 +159,30 @@ class ScanNode implements PlanNode {
     this.cursor++;
     return res;
   }
+
+  Reset() {
+    this.cursor = 0;
+  }
 }
 
-const SuccessNode: PlanNode = {
+class EmptyOnceNode implements PlanNode {
+  done: boolean;
+
+  constructor() {
+    this.done = false;
+  }
+
   Next(): Res | null {
+    if (this.done) {
+      return null;
+    }
     return {
-      bindings: {},
       term: str(""),
+      bindings: {},
     };
-  },
-};
+  }
+
+  Reset() {
+    this.done = false;
+  }
+}

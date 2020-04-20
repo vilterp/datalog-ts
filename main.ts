@@ -1,6 +1,7 @@
-import { planQuery } from "./plan";
-import { Bindings, DB, rec, Res, str, varr } from "./types";
+import { optimize, planQuery } from "./plan";
+import { DB, rec, Res, str, varr } from "./types";
 import { instantiate, PlanNode } from "./planNodes";
+import * as util from "util";
 
 function allResults(node: PlanNode): Res[] {
   const out: Res[] = [];
@@ -21,6 +22,28 @@ const testDB: DB = {
     rec("father", { child: str("Pete"), father: str("Paul") }),
     rec("father", { child: str("Paul"), father: str("Peter") }),
   ],
+  mother: [
+    rec("mother", { child: str("Pete"), mother: str("Mary") }),
+    rec("mother", { child: str("Paul"), mother: str("Judith") }),
+    // TODO
+  ],
+  parent: {
+    head: rec("parent", { child: varr("C"), parent: varr("P") }),
+    defn: {
+      type: "Or",
+      opts: [
+        // TODO: allow collapsing single-clause ANDs
+        {
+          type: "And",
+          clauses: [rec("mother", { child: varr("C"), mother: varr("P") })],
+        },
+        {
+          type: "And",
+          clauses: [rec("father", { child: varr("C"), father: varr("P") })],
+        },
+      ],
+    },
+  },
   grandfather: {
     head: rec("grandfather", { grandchild: varr("A"), grandfather: varr("C") }),
     defn: {
@@ -38,21 +61,61 @@ const testDB: DB = {
   },
 };
 
-function testBasic() {
-  const spec = planQuery(
-    testDB,
-    rec("father", { child: str("Pete"), father: varr("A") })
-  );
-  console.log("plan spec:", spec);
-  const node = instantiate(testDB, spec);
-  const results = allResults(node);
-  console.log("results:");
-  results.forEach((r) => console.log(r));
-}
-
 type Test = { name: string; test: () => void };
 
-const tests: Test[] = [{ name: "basic", test: testBasic }];
+const tests: Test[] = [
+  {
+    name: "father",
+    test: () => {
+      const spec = planQuery(
+        testDB,
+        rec("father", { child: str("Pete"), father: varr("A") })
+      );
+      console.log("plan spec:");
+      console.log(util.inspect(spec, { depth: null }));
+      const node = instantiate(testDB, spec);
+      const results = allResults(node);
+      console.log("results:");
+      results.forEach((r) => console.log(util.inspect(r, { depth: null })));
+    },
+  },
+  {
+    name: "parent",
+    test: () => {
+      const spec = planQuery(
+        testDB,
+        rec("parent", { child: str("Pete"), father: varr("A") })
+      );
+      console.log("plan spec:");
+      console.log(util.inspect(spec, { depth: null }));
+      const optimized = optimize(spec);
+      console.log("optimized:");
+      console.log(util.inspect(optimized, { depth: null }));
+      const node = instantiate(testDB, optimized);
+      const results = allResults(node);
+      console.log("results:");
+      results.forEach((r) => console.log(util.inspect(r, { depth: null })));
+    },
+  },
+  // {
+  //   name: "grandfather",
+  //   test: () => {
+  //     const spec = planQuery(
+  //       testDB,
+  //       rec("grandfather", { child: str("Pete"), father: varr("A") })
+  //     );
+  //     console.log("plan spec:");
+  //     console.log(util.inspect(spec, { depth: null }));
+  //     const optimized = optimize(spec);
+  //     console.log("optimized:");
+  //     console.log(util.inspect(optimized, { depth: null }));
+  //     const node = instantiate(testDB, optimized);
+  //     const results = allResults(node);
+  //     console.log("results:");
+  //     results.forEach((r) => console.log(util.inspect(r, { depth: null })));
+  //   },
+  // },
+];
 
 tests.forEach((t) => {
   console.log(t.name);

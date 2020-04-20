@@ -5,6 +5,11 @@ export function unify(
   left: Term,
   right: Term
 ): Bindings | null {
+  const res = doUnify(prior, left, right);
+  return res;
+}
+
+function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
   switch (left.type) {
     case "StringLit":
       switch (right.type) {
@@ -21,7 +26,7 @@ export function unify(
       switch (right.type) {
         case "Record":
           let accum = {};
-          for (const key in Object.keys(left.attrs)) {
+          for (const key of Object.keys(left.attrs)) {
             // TODO: do bindings fold across keys... how would that be ordered...
             const leftVal = left.attrs[key];
             const rightVal = right.attrs[key];
@@ -29,6 +34,9 @@ export function unify(
               return null;
             }
             const res = unify(prior, leftVal, rightVal);
+            if (res === null) {
+              return null; // TODO: error message here would be nice saying what we can't unify
+            }
             accum = { ...accum, ...res };
           }
           return accum;
@@ -60,7 +68,7 @@ function termEq(left: Term, right: Term): boolean {
     case "Record":
       switch (right.type) {
         case "Record":
-          for (const key in Object.keys(left.attrs)) {
+          for (const key of Object.keys(left.attrs)) {
             const rightVal = right.attrs[key];
             const leftVal = left.attrs[key];
             if (!termEq(leftVal, rightVal)) {

@@ -7,6 +7,7 @@ export type Res = { term: Term; bindings: Bindings };
 export type Bindings = { [key: string]: Term };
 
 export type Rule = {
+  // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
   defn: OrExpr;
 };
@@ -47,4 +48,4 @@ export type PlanSpec =
   | { type: "Or"; opts: PlanSpec[] }
   | { type: "Scan"; relation: string }
   | { type: "Filter"; inner: PlanSpec; record: Rec }
-  | { type: "Success" };
+  | { type: "EmptyOnce" };
