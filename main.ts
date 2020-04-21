@@ -144,9 +144,27 @@ const tests: Test[] = [
       const node = instantiate(testDB, optimized);
       const results = allResults(node);
       console.log("results:");
-      results.forEach((r) => console.log(r));
+      results.forEach((r) => console.log(util.inspect(r, { depth: null })));
     },
   },
+  // {
+  //   name: "grandparent",
+  //   test: () => {
+  //     const spec = planQuery(
+  //       testDB,
+  //       rec("grandparent", { child: str("Pete"), father: varr("A") })
+  //     );
+  //     console.log("plan spec:");
+  //     console.log(spec);
+  //     const optimized = optimize(spec);
+  //     console.log("optimized:");
+  //     console.log(optimized);
+  //     const node = instantiate(testDB, optimized);
+  //     const results = allResults(node);
+  //     console.log("results:");
+  //     results.forEach((r) => console.log(util.inspect(r, { depth: null })));
+  //   },
+  // },
 ];
 
 tests.forEach((t) => {

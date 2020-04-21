@@ -1,5 +1,5 @@
 import { Bindings, DB, PlanSpec, rec, Rec, Res, str, Term } from "./types";
-import { termEq, unify, unifyVars } from "./unify";
+import { substitute, termEq, unify, unifyVars } from "./unify";
 import * as util from "util";
 
 export function instantiate(db: DB, spec: PlanSpec): PlanNode {
@@ -7,7 +7,8 @@ export function instantiate(db: DB, spec: PlanSpec): PlanNode {
     case "And":
       return new AndNode(
         instantiate(db, spec.left),
-        instantiate(db, spec.right)
+        instantiate(db, spec.right),
+        spec.template
       );
     case "Filter":
       return new FilterNode(instantiate(db, spec.inner), spec.record);
@@ -31,17 +32,19 @@ export interface PlanNode {
 class AndNode implements PlanNode {
   left: PlanNode;
   right: PlanNode;
+  template: Rec;
 
   curLeft: Res;
   leftDone: boolean;
   rightDone: boolean;
 
-  constructor(left: PlanNode, right: PlanNode) {
+  constructor(left: PlanNode, right: PlanNode, template: Rec) {
     this.left = left;
     this.right = right;
     this.curLeft = null;
     this.leftDone = false;
     this.rightDone = false;
+    this.template = template;
 
     this.advanceLeft();
   }
@@ -86,9 +89,22 @@ class AndNode implements PlanNode {
         continue;
       }
 
+      const resTerm = substitute(this.template, unifyRes);
+      console.log(
+        "sub",
+        util.inspect(
+          {
+            tpl: this.template,
+            bindings: unifyRes,
+            res: resTerm,
+          },
+          { depth: null }
+        )
+      );
       return {
-        term: rec(`and`, { left: this.curLeft.term, right: rightRes.term }), // TODO: this is weird
-        bindings: unifyRes,
+        term: resTerm,
+        bindings: unifyRes, // why not
+        // TODO: trace as well??
       };
     }
   }

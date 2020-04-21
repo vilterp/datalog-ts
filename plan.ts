@@ -6,17 +6,19 @@ export function planQuery(db: DB, rec: Rec): PlanSpec {
   if (Array.isArray(relation)) {
     return scanAndFilterForRec(db, rec);
   }
-  const initialBindings = unify({}, rec, relation.head);
-  const andNodes = relation.defn.opts.map((andExpr) => foldAnds(db, andExpr));
+  const andNodes = relation.defn.opts.map((andExpr) =>
+    foldAnds(db, andExpr, relation.head)
+  );
   return { type: "Or", opts: andNodes };
 }
 
-function foldAnds(db: DB, ae: AndExpr): PlanSpec {
+function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanSpec {
   return ae.clauses.reduce<PlanSpec>(
     (accum, next) => ({
       type: "And",
       left: scanAndFilterForRec(db, next),
       right: accum,
+      template,
     }),
     { type: "EmptyOnce" }
   );

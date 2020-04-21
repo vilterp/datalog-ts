@@ -44,7 +44,7 @@ export function varr(name: string): Term {
 // plan spec
 
 export type PlanSpec =
-  | { type: "And"; left: PlanSpec; right: PlanSpec }
+  | { type: "And"; left: PlanSpec; right: PlanSpec; template: Rec }
   | { type: "Or"; opts: PlanSpec[] }
   | { type: "Scan"; relation: string }
   | { type: "Filter"; inner: PlanSpec; record: Rec }

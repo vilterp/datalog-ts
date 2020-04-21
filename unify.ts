@@ -1,4 +1,5 @@
-import { Bindings, str, Term } from "./types";
+import { Bindings, rec, Rec, str, Term } from "./types";
+import { mapObj } from "./util";
 
 export function unify(
   prior: Bindings,
@@ -100,6 +101,20 @@ export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
   }
   // TODO: put in right vals
   return res;
+}
+
+export function substitute(term: Term, bindings: Bindings): Term {
+  switch (term.type) {
+    case "Record":
+      return rec(
+        term.relation,
+        mapObj(term.attrs, (k, t) => substitute(t, bindings))
+      );
+    case "Var":
+      return bindings[term.name]; // TODO: handling missing. lol
+    default:
+      return term;
+  }
 }
 
 const tests = [
