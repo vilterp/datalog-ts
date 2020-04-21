@@ -1,4 +1,4 @@
-import { Bindings, Term } from "./types";
+import { Bindings, str, Term } from "./types";
 
 export function unify(
   prior: Bindings,
@@ -49,7 +49,7 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
 }
 
 // could use some kind of existing JS deepEq
-function termEq(left: Term, right: Term): boolean {
+export function termEq(left: Term, right: Term): boolean {
   switch (left.type) {
     case "StringLit":
       switch (right.type) {
@@ -81,3 +81,42 @@ function termEq(left: Term, right: Term): boolean {
       }
   }
 }
+
+export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
+  const res: Bindings = {};
+  for (const key of Object.keys(left)) {
+    const leftVal = left[key];
+    const rightVal = right[key];
+    if (rightVal) {
+      if (!termEq(rightVal, leftVal)) {
+        return null; // TODO: nice error message showing mismatch
+      }
+    }
+    res[key] = leftVal;
+  }
+  const onlyInRight = Object.keys(right).filter((key) => !left[key]);
+  for (const key of onlyInRight) {
+    res[key] = right[key];
+  }
+  // TODO: put in right vals
+  return res;
+}
+
+const tests = [
+  {
+    name: "unifyVars",
+    test: () => {
+      const res = unifyVars(
+        { A: str("Pete"), B: str("Paul") },
+        { B: str("Paul"), C: str("Peter") }
+      );
+      console.log(res);
+    },
+  },
+];
+
+tests.forEach((t) => {
+  console.log("============");
+  console.log(t.name);
+  t.test();
+});

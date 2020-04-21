@@ -1,5 +1,5 @@
 import { Bindings, DB, PlanSpec, rec, Rec, Res, str, Term } from "./types";
-import { unify } from "./unify";
+import { termEq, unify, unifyVars } from "./unify";
 import * as util from "util";
 
 export function instantiate(db: DB, spec: PlanSpec): PlanNode {
@@ -49,13 +49,14 @@ class AndNode implements PlanNode {
   advanceLeft() {
     const res = this.left.Next();
     if (res === null) {
-      // console.log("advanceLeft: done");
+      console.log("advanceLeft: done");
       this.leftDone = true;
       return;
     }
     this.curLeft = res;
     this.right.Reset();
-    // console.log("advanceLeft:", this.curLeft);
+    this.rightDone = false;
+    console.log("advanceLeft:", this.curLeft.bindings);
   }
 
   Next(): Res | null {
@@ -69,23 +70,18 @@ class AndNode implements PlanNode {
       }
       const rightRes = this.right.Next();
       if (rightRes === null) {
-        // console.log("advanceRight: done");
+        console.log("advanceRight: done");
         this.rightDone = true;
         continue;
       }
-      // console.log("advanceRight:", rightRes);
-
-      const unifyRes = unify(
-        this.curLeft.bindings,
-        this.curLeft.term,
-        rightRes.term
-      );
-      console.log("And.unify", {
-        left: this.curLeft.term,
-        right: rightRes.term,
-        prior: this.curLeft.bindings,
+      console.log("advanceRight:", rightRes.bindings);
+      const unifyRes = unifyVars(this.curLeft.bindings, rightRes.bindings);
+      console.log("And.unifyVars", {
+        left: this.curLeft.bindings,
+        right: rightRes.bindings,
         res: unifyRes,
       });
+
       if (unifyRes === null) {
         continue;
       }
