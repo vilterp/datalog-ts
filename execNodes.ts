@@ -191,7 +191,11 @@ class ProjectNode implements ExecNode {
   private applyMappings(bindings: Bindings): Bindings {
     const out: Bindings = {};
     for (const key of Object.keys(bindings)) {
-      out[this.headToCaller[key]] = bindings[key];
+      const callerKey = this.headToCaller[key];
+      if (!callerKey) {
+        continue;
+      }
+      out[callerKey] = bindings[key];
     }
     return out;
   }

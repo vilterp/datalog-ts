@@ -106,12 +106,11 @@ const testDB: DB = {
 };
 
 function testQuery(query: Rec, expectedResults: Term[]) {
+  console.log("query", query);
   const spec = planQuery(testDB, query);
-  console.log("plan spec:");
-  console.log(spec);
+  console.log("plan spec:", spec);
   const optimized = optimize(spec);
-  console.log("optimized:");
-  console.log(optimized);
+  console.log("optimized:", optimized);
   const node = instantiate(testDB, optimized);
   const actualResults = allResults(node);
   console.log("results:", actualResults);
@@ -125,7 +124,7 @@ export const queryTests: Test[] = [
   {
     name: "father_all",
     test: () => {
-      testQuery(rec("father", { child: varr("A"), father: varr("B") }), [
+      testQuery(rec("father", { child: varr("X"), father: varr("Y") }), [
         rec("father", { child: str("Pete"), father: str("Paul") }),
         rec("father", { child: str("Paul"), father: str("Peter") }),
       ]);
@@ -153,27 +152,33 @@ export const queryTests: Test[] = [
   {
     name: "grandfather",
     test: () => {
-      testQuery(rec("grandfather", { child: str("Pete"), father: varr("A") }), [
-        rec("grandfather", {
-          grandchild: str("Pete"),
-          grandfather: str("Peter"),
-        }),
-      ]);
+      testQuery(
+        rec("grandfather", { grandchild: str("Pete"), grandparent: varr("A") }),
+        [
+          rec("grandfather", {
+            grandchild: str("Pete"),
+            grandfather: str("Peter"),
+          }),
+        ]
+      );
     },
   },
   {
     name: "grandparent",
     test: () => {
-      testQuery(rec("grandparent", { child: str("Pete"), father: varr("A") }), [
-        rec("grandparent", {
-          grandchild: str("Pete"),
-          grandparent: str("Judith"),
-        }),
-        rec("grandparent", {
-          grandchild: str("Pete"),
-          grandparent: str("Peter"),
-        }),
-      ]);
+      testQuery(
+        rec("grandparent", { grandchild: str("Pete"), grandparent: varr("X") }),
+        [
+          rec("grandparent", {
+            grandchild: str("Pete"),
+            grandparent: str("Judith"),
+          }),
+          rec("grandparent", {
+            grandchild: str("Pete"),
+            grandparent: str("Peter"),
+          }),
+        ]
+      );
     },
   },
 ];

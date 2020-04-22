@@ -29,16 +29,22 @@ function getMappings(
   return out;
 }
 
-function planRuleCall(db: DB, rule: Rule, template: Rec): PlanNode {
+function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   const optionNodes = rule.defn.opts.map((andExpr) =>
     foldAnds(db, andExpr, rule.head)
   );
   const inner: PlanNode = { type: "Or", opts: optionNodes };
+  const mappings = getMappings(rule.head.attrs, call.attrs);
+  console.log("mappings", {
+    head: rule.head.attrs,
+    call: call.attrs,
+    res: mappings,
+  });
   return {
     type: "Project",
-    mappings: getMappings(rule.head.attrs, template.attrs),
-    inner, // inlining the inner rule here. could reference it instead.
+    mappings,
     ruleHead: rule.head,
+    inner, // inlining the inner rule here. could reference it instead.
   };
 }
 
