@@ -1,11 +1,11 @@
 import { planQuery } from "./plan";
 import { DB, rec, Res, str, varr } from "./types";
-import { instantiate, PlanNode } from "./planNodes";
+import { instantiate, ExecNode } from "./execNodes";
 import * as util from "util";
 import { optimize } from "./optimize";
 import * as https from "https";
 
-function allResults(node: PlanNode): Res[] {
+function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
   while (true) {
     const res = node.Next();

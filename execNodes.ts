@@ -1,7 +1,7 @@
-import { DB, PlanSpec, Rec, Res, str } from "./types";
+import { DB, PlanNode, Rec, Res, str } from "./types";
 import { substitute, unify, unifyVars } from "./unify";
 
-export function instantiate(db: DB, spec: PlanSpec): PlanNode {
+export function instantiate(db: DB, spec: PlanNode): ExecNode {
   switch (spec.type) {
     case "And":
       return new AndNode(
@@ -22,22 +22,22 @@ export function instantiate(db: DB, spec: PlanSpec): PlanNode {
 
 // Nodes
 
-export interface PlanNode {
+export interface ExecNode {
   Next(): Res | null; // TODO: add bindings as an argument
   Reset();
 }
 
 // basically a join
-class AndNode implements PlanNode {
-  left: PlanNode;
-  right: PlanNode;
+class AndNode implements ExecNode {
+  left: ExecNode;
+  right: ExecNode;
   template: Rec;
 
   curLeft: Res;
   leftDone: boolean;
   rightDone: boolean;
 
-  constructor(left: PlanNode, right: PlanNode, template: Rec) {
+  constructor(left: ExecNode, right: ExecNode, template: Rec) {
     this.left = left;
     this.right = right;
     this.curLeft = null;
@@ -95,11 +95,11 @@ class AndNode implements PlanNode {
   }
 }
 
-class OrNode implements PlanNode {
-  opts: PlanNode[];
+class OrNode implements ExecNode {
+  opts: ExecNode[];
   curOptIdx: number;
 
-  constructor(opts: PlanNode[]) {
+  constructor(opts: ExecNode[]) {
     this.opts = opts;
     this.curOptIdx = 0;
   }
@@ -125,11 +125,11 @@ class OrNode implements PlanNode {
   }
 }
 
-class FilterNode implements PlanNode {
-  inner: PlanNode;
+class FilterNode implements ExecNode {
+  inner: ExecNode;
   record: Rec;
 
-  constructor(inner: PlanNode, record: Rec) {
+  constructor(inner: ExecNode, record: Rec) {
     this.inner = inner;
     this.record = record;
   }
@@ -153,7 +153,7 @@ class FilterNode implements PlanNode {
   }
 }
 
-class ScanNode implements PlanNode {
+class ScanNode implements ExecNode {
   relationName: string;
   relation: Rec[];
   cursor: number;
@@ -181,7 +181,7 @@ class ScanNode implements PlanNode {
   }
 }
 
-class EmptyOnceNode implements PlanNode {
+class EmptyOnceNode implements ExecNode {
   done: boolean;
 
   constructor() {

@@ -1,6 +1,6 @@
-import { AndExpr, DB, PlanSpec, Rec } from "./types";
+import { AndExpr, DB, PlanNode, Rec } from "./types";
 
-export function planQuery(db: DB, rec: Rec): PlanSpec {
+export function planQuery(db: DB, rec: Rec): PlanNode {
   const table = db.tables[rec.relation];
   if (table) {
     return scanAndFilterForRec(db, rec);
@@ -15,8 +15,8 @@ export function planQuery(db: DB, rec: Rec): PlanSpec {
   return { type: "Or", opts: andNodes };
 }
 
-function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanSpec {
-  return ae.clauses.reduce<PlanSpec>(
+function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
+  return ae.clauses.reduce<PlanNode>(
     (accum, next) => ({
       type: "And",
       left: planQuery(db, next),
@@ -27,7 +27,7 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanSpec {
   );
 }
 
-function scanAndFilterForRec(db: DB, rec: Rec): PlanSpec {
+function scanAndFilterForRec(db: DB, rec: Rec): PlanNode {
   return {
     type: "Filter",
     inner: { type: "Scan", relation: rec.relation },

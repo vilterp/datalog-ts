@@ -1,8 +1,8 @@
 // TODO: some kind of visitor pattern? lol
 
-import { PlanSpec } from "./types";
+import { PlanNode } from "./types";
 
-function collapseOrs(spec: PlanSpec): PlanSpec {
+function collapseOrs(spec: PlanNode): PlanNode {
   switch (spec.type) {
     case "Or":
       return spec.opts.length === 1 ? spec.opts[0] : spec;
@@ -22,7 +22,7 @@ function collapseOrs(spec: PlanSpec): PlanSpec {
   }
 }
 
-function collapseAnds(spec: PlanSpec): PlanSpec {
+function collapseAnds(spec: PlanNode): PlanNode {
   switch (spec.type) {
     case "And":
       if (spec.left.type === "EmptyOnce") {
@@ -45,6 +45,6 @@ function collapseAnds(spec: PlanSpec): PlanSpec {
   }
 }
 
-export function optimize(spec: PlanSpec): PlanSpec {
+export function optimize(spec: PlanNode): PlanNode {
   return collapseOrs(collapseAnds(spec));
 }

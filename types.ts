@@ -10,7 +10,7 @@ export interface Res {
 
 export type Bindings = { [key: string]: Term };
 
-interface Rule {
+export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
   defn: OrExpr;
@@ -45,12 +45,12 @@ export function varr(name: string): Term {
   return { type: "Var", name: name };
 }
 
-// plan spec
+// plan
 
-export type PlanSpec =
-  | { type: "And"; left: PlanSpec; right: PlanSpec; template: Rec }
-  | { type: "Or"; opts: PlanSpec[] }
+export type PlanNode =
+  | { type: "And"; left: PlanNode; right: PlanNode; template: Rec }
+  | { type: "Or"; opts: PlanNode[] }
   | { type: "Scan"; relation: string }
-  | { type: "Filter"; inner: PlanSpec; record: Rec }
+  | { type: "Filter"; inner: PlanNode; record: Rec }
   | { type: "SubqueryNode"; rule: Rule }
   | { type: "EmptyOnce" };
