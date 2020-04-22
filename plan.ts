@@ -1,13 +1,16 @@
 import { AndExpr, DB, PlanSpec, Rec } from "./types";
-import { unify } from "./unify";
 
 export function planQuery(db: DB, rec: Rec): PlanSpec {
-  const relation = db[rec.relation];
-  if (Array.isArray(relation)) {
+  const table = db.tables[rec.relation];
+  if (table) {
     return scanAndFilterForRec(db, rec);
   }
-  const andNodes = relation.defn.opts.map((andExpr) =>
-    foldAnds(db, andExpr, relation.head)
+  const rule = db.rules[rec.relation];
+  if (!rule) {
+    throw new Error(`not found: ${rec.relation}`); // TODO: start using result type
+  }
+  const andNodes = rule.defn.opts.map((andExpr) =>
+    foldAnds(db, andExpr, rule.head)
   );
   return { type: "Or", opts: andNodes };
 }
@@ -16,7 +19,7 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanSpec {
   return ae.clauses.reduce<PlanSpec>(
     (accum, next) => ({
       type: "And",
-      left: scanAndFilterForRec(db, next),
+      left: planQuery(db, next),
       right: accum,
       template,
     }),
@@ -25,10 +28,6 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanSpec {
 }
 
 function scanAndFilterForRec(db: DB, rec: Rec): PlanSpec {
-  const relation = db[rec.relation];
-  if (!Array.isArray(relation)) {
-    throw new Error(`don't support planning with rules yet: ${rec.relation}`);
-  }
   return {
     type: "Filter",
     inner: { type: "Scan", relation: rec.relation },

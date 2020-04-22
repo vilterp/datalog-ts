@@ -1,16 +1,20 @@
-export type DB = {
-  [relation: string]: Rec[] | Rule; // TODO: indexes
-};
+export interface DB {
+  tables: { [name: string]: Rec[] };
+  rules: { [name: string]: Rule };
+}
 
-export type Res = { term: Term; bindings: Bindings };
+export interface Res {
+  term: Term;
+  bindings: Bindings;
+}
 
 export type Bindings = { [key: string]: Term };
 
-export type Rule = {
+interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
   defn: OrExpr;
-};
+}
 
 export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
@@ -48,4 +52,5 @@ export type PlanSpec =
   | { type: "Or"; opts: PlanSpec[] }
   | { type: "Scan"; relation: string }
   | { type: "Filter"; inner: PlanSpec; record: Rec }
+  | { type: "SubqueryNode"; rule: Rule }
   | { type: "EmptyOnce" };

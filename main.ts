@@ -20,75 +20,88 @@ function allResults(node: PlanNode): Res[] {
 // test
 
 const testDB: DB = {
-  father: [
-    rec("father", { child: str("Pete"), father: str("Paul") }),
-    rec("father", { child: str("Paul"), father: str("Peter") }),
-  ],
-  mother: [
-    rec("mother", { child: str("Pete"), mother: str("Mary") }),
-    rec("mother", { child: str("Paul"), mother: str("Judith") }),
-    // TODO
-  ],
-  parent: {
-    head: rec("parent", { child: varr("C"), parent: varr("P") }),
-    defn: {
-      type: "Or",
-      opts: [
-        // TODO: allow collapsing single-clause ANDs
-        {
-          type: "And",
-          clauses: [rec("mother", { child: varr("C"), mother: varr("P") })],
-        },
-        {
-          type: "And",
-          clauses: [rec("father", { child: varr("C"), father: varr("P") })],
-        },
-      ],
-    },
+  tables: {
+    father: [
+      rec("father", { child: str("Pete"), father: str("Paul") }),
+      rec("father", { child: str("Paul"), father: str("Peter") }),
+    ],
+    mother: [
+      rec("mother", { child: str("Pete"), mother: str("Mary") }),
+      rec("mother", { child: str("Paul"), mother: str("Judith") }),
+      // TODO
+    ],
   },
-  grandfather: {
-    head: rec("grandfather", { grandchild: varr("A"), grandfather: varr("C") }),
-    defn: {
-      type: "Or",
-      opts: [
-        {
-          type: "And",
-          clauses: [
-            rec("father", { child: varr("A"), father: varr("B") }),
-            rec("father", { child: varr("B"), father: varr("C") }),
-          ],
-        },
-      ],
+  rules: {
+    parent: {
+      head: rec("parent", { child: varr("C"), parent: varr("P") }),
+      defn: {
+        type: "Or",
+        opts: [
+          // TODO: allow collapsing single-clause ANDs
+          {
+            type: "And",
+            clauses: [rec("mother", { child: varr("C"), mother: varr("P") })],
+          },
+          {
+            type: "And",
+            clauses: [rec("father", { child: varr("C"), father: varr("P") })],
+          },
+        ],
+      },
     },
-  },
-  grandmother: {
-    head: rec("grandmother", { grandchild: varr("A"), grandmother: varr("C") }),
-    defn: {
-      type: "Or",
-      opts: [
-        {
-          type: "And",
-          clauses: [
-            rec("mother", { child: varr("A"), mother: varr("B") }),
-            rec("mother", { child: varr("B"), mother: varr("C") }),
-          ],
-        },
-      ],
+    grandfather: {
+      head: rec("grandfather", {
+        grandchild: varr("A"),
+        grandfather: varr("C"),
+      }),
+      defn: {
+        type: "Or",
+        opts: [
+          {
+            type: "And",
+            clauses: [
+              rec("father", { child: varr("A"), father: varr("B") }),
+              rec("father", { child: varr("B"), father: varr("C") }),
+            ],
+          },
+        ],
+      },
     },
-  },
-  grandparent: {
-    head: rec("grandmother", { grandchild: varr("A"), grandparent: varr("C") }),
-    defn: {
-      type: "Or",
-      opts: [
-        {
-          type: "And",
-          clauses: [
-            rec("parent", { child: varr("A"), parent: varr("B") }),
-            rec("parent", { child: varr("B"), parent: varr("C") }),
-          ],
-        },
-      ],
+    grandmother: {
+      head: rec("grandmother", {
+        grandchild: varr("A"),
+        grandmother: varr("C"),
+      }),
+      defn: {
+        type: "Or",
+        opts: [
+          {
+            type: "And",
+            clauses: [
+              rec("mother", { child: varr("A"), mother: varr("B") }),
+              rec("mother", { child: varr("B"), mother: varr("C") }),
+            ],
+          },
+        ],
+      },
+    },
+    grandparent: {
+      head: rec("grandmother", {
+        grandchild: varr("A"),
+        grandparent: varr("C"),
+      }),
+      defn: {
+        type: "Or",
+        opts: [
+          {
+            type: "And",
+            clauses: [
+              rec("parent", { child: varr("A"), parent: varr("B") }),
+              rec("parent", { child: varr("B"), parent: varr("C") }),
+            ],
+          },
+        ],
+      },
     },
   },
 };

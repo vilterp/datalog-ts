@@ -1,6 +1,5 @@
-import { Bindings, DB, PlanSpec, rec, Rec, Res, str, Term } from "./types";
-import { substitute, termEq, unify, unifyVars } from "./unify";
-import * as util from "util";
+import { DB, PlanSpec, Rec, Res, str } from "./types";
+import { substitute, unify, unifyVars } from "./unify";
 
 export function instantiate(db: DB, spec: PlanSpec): PlanNode {
   switch (spec.type) {
@@ -15,7 +14,7 @@ export function instantiate(db: DB, spec: PlanSpec): PlanNode {
     case "Or":
       return new OrNode(spec.opts.map((opt) => instantiate(db, opt)));
     case "Scan":
-      return new ScanNode(spec.relation, db[spec.relation] as Rec[]);
+      return new ScanNode(spec.relation, db.tables[spec.relation]);
     case "EmptyOnce":
       return new EmptyOnceNode();
   }
