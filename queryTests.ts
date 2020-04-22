@@ -177,5 +177,3 @@ export const queryTests: Test[] = [
     },
   },
 ];
-
-setInterval(() => {}, 100);

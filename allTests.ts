@@ -8,3 +8,9 @@ const suites = {
 };
 
 runSuites(suites);
+
+const stayAlive = process.argv[2] === "--stay-alive";
+if (stayAlive) {
+  console.log("keeping VM alive for inspector...");
+  setInterval(() => {}, 100);
+}
