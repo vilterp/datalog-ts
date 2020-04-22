@@ -116,22 +116,3 @@ export function substitute(term: Term, bindings: Bindings): Term {
       return term;
   }
 }
-
-const tests = [
-  {
-    name: "unifyVars",
-    test: () => {
-      const res = unifyVars(
-        { A: str("Pete"), B: str("Paul") },
-        { B: str("Paul"), C: str("Peter") }
-      );
-      console.log(res);
-    },
-  },
-];
-
-tests.forEach((t) => {
-  console.log("============");
-  console.log(t.name);
-  t.test();
-});

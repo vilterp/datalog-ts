@@ -121,7 +121,7 @@ function testQuery(query: Rec, expectedResults: Term[]) {
   );
 }
 
-const tests: Test[] = [
+export const queryTests: Test[] = [
   {
     name: "father_all",
     test: () => {
@@ -143,10 +143,10 @@ const tests: Test[] = [
     name: "parent",
     test: () => {
       testQuery(rec("parent", { child: str("Pete"), father: varr("A") }), [
-        rec("parent", { child: str("Pete"), parent: str("Paul") }),
-        rec("parent", { child: str("Paul"), parent: str("Peter") }),
         rec("parent", { child: str("Pete"), parent: str("Mary") }),
         rec("parent", { child: str("Paul"), parent: str("Judith") }),
+        rec("parent", { child: str("Pete"), parent: str("Paul") }),
+        rec("parent", { child: str("Paul"), parent: str("Peter") }),
       ]);
     },
   },
@@ -154,8 +154,8 @@ const tests: Test[] = [
     name: "grandfather",
     test: () => {
       testQuery(rec("grandfather", { child: str("Pete"), father: varr("A") }), [
-        rec("grandparent", {
-          child: str("Pete"),
+        rec("grandfather", {
+          grandchild: str("Pete"),
           grandfather: str("Peter"),
         }),
       ]);
@@ -166,18 +166,16 @@ const tests: Test[] = [
     test: () => {
       testQuery(rec("grandparent", { child: str("Pete"), father: varr("A") }), [
         rec("grandparent", {
-          child: str("Pete"),
-          grandparent: str("Peter"),
+          grandchild: str("Pete"),
+          grandparent: str("Judith"),
         }),
         rec("grandparent", {
-          child: str("Pete"),
+          grandchild: str("Pete"),
           grandparent: str("Peter"),
         }),
       ]);
     },
   },
 ];
-
-runTests(tests);
 
 setInterval(() => {}, 100);

@@ -28,18 +28,29 @@ export type Test = { name: string; test: () => void };
 export function runTests(ts: Test[]) {
   const failures = new Set();
   ts.forEach((t) => {
-    console.log("=========");
-    console.log(t.name);
+    console.groupCollapsed(t.name);
     try {
       t.test();
+      console.groupEnd();
     } catch (e) {
+      console.groupEnd();
       console.error("FAIL:", e);
       failures.add(t.name);
     }
   });
-  console.log("failures:", failures);
   console.log(
+    "failures:",
+    failures,
     "successes:",
     ts.map((t) => t.name).filter((n) => !failures.has(n))
   );
+}
+
+type Suite = Test[];
+
+export function runSuites(suites: { [name: string]: Suite }) {
+  for (const suiteName of Object.keys(suites)) {
+    console.log("SUITE", suiteName);
+    runTests(suites[suiteName]);
+  }
 }
