@@ -231,7 +231,10 @@ class ProjectNode implements ExecNode {
       return null;
     }
     return {
-      term: res.term,
+      term:
+        res.term.type === "Record"
+          ? { ...res.term, relation: this.ruleName }
+          : res.term,
       bindings: this.applyMappings(res.bindings),
     };
   }

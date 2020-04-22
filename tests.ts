@@ -2,7 +2,7 @@ import { DB, Rec, rec, Res, str, Term, varr } from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
 import { planQuery } from "./plan";
-import * as assert from "assert";
+import { assertDeepEqual, runTests, Test } from "./testing";
 
 function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
@@ -105,9 +105,7 @@ const testDB: DB = {
   },
 };
 
-type Test = { name: string; test: () => void };
-
-function testQuery(query: Rec, results: Term[]) {
+function testQuery(query: Rec, expectedResults: Term[]) {
   const spec = planQuery(testDB, query);
   console.log("plan spec:");
   console.log(spec);
@@ -117,16 +115,27 @@ function testQuery(query: Rec, results: Term[]) {
   const node = instantiate(testDB, optimized);
   const actualResults = allResults(node);
   console.log("results:", actualResults);
-  assert.deepEqual(actualResults, results);
+  assertDeepEqual(
+    expectedResults,
+    actualResults.map((res) => res.term) // TODO: test bindings as well
+  );
 }
 
 const tests: Test[] = [
   {
-    name: "father",
+    name: "father_all",
+    test: () => {
+      testQuery(rec("father", { child: varr("A"), father: varr("B") }), [
+        rec("father", { child: str("Pete"), father: str("Paul") }),
+        rec("father", { child: str("Paul"), father: str("Peter") }),
+      ]);
+    },
+  },
+  {
+    name: "father_Pete",
     test: () => {
       testQuery(rec("father", { child: str("Pete"), father: varr("A") }), [
         rec("father", { child: str("Pete"), father: str("Paul") }),
-        rec("father", { child: str("Paul"), father: str("Peter") }),
       ]);
     },
   },
@@ -136,6 +145,8 @@ const tests: Test[] = [
       testQuery(rec("parent", { child: str("Pete"), father: varr("A") }), [
         rec("parent", { child: str("Pete"), parent: str("Paul") }),
         rec("parent", { child: str("Paul"), parent: str("Peter") }),
+        rec("parent", { child: str("Pete"), parent: str("Mary") }),
+        rec("parent", { child: str("Paul"), parent: str("Judith") }),
       ]);
     },
   },
@@ -143,7 +154,10 @@ const tests: Test[] = [
     name: "grandfather",
     test: () => {
       testQuery(rec("grandfather", { child: str("Pete"), father: varr("A") }), [
-        rec("grandparent", { child: str("Pete"), grandfather: str("Peter") }),
+        rec("grandparent", {
+          child: str("Pete"),
+          grandfather: str("Peter"),
+        }),
       ]);
     },
   },
@@ -151,35 +165,19 @@ const tests: Test[] = [
     name: "grandparent",
     test: () => {
       testQuery(rec("grandparent", { child: str("Pete"), father: varr("A") }), [
-        rec("grandparent", { child: str("Pete"), grandparent: str("Peter") }),
-        rec("grandparent", { child: str("Pete"), grandparent: str("Peter") }),
+        rec("grandparent", {
+          child: str("Pete"),
+          grandparent: str("Peter"),
+        }),
+        rec("grandparent", {
+          child: str("Pete"),
+          grandparent: str("Peter"),
+        }),
       ]);
     },
   },
 ];
 
-function runTests(ts: Test[]) {
-  const failures = new Set();
-  tests.forEach((t) => {
-    console.log("=========");
-    console.log(t.name);
-    try {
-      t.test();
-    } catch (e) {
-      console.error("FAIL:", e);
-      failures.add(t.name);
-    }
-  });
-  console.log("failures:", failures);
-  console.log(
-    "successes:",
-    ts.map((t) => t.name).filter((n) => !failures.has(n))
-  );
-}
-
 runTests(tests);
-
-// @ts-ignore
-process.tests = tests;
 
 setInterval(() => {}, 100);

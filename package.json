@@ -2,5 +2,9 @@
   "devDependencies": {
     "@types/node": "^13.13.0",
     "prettier": "^2.0.4"
+  },
+  "dependencies": {
+    "@types/deep-diff": "^1.0.0",
+    "deep-diff": "^1.0.2"
   }
 }

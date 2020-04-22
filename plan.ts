@@ -22,7 +22,6 @@ function getMappings(
   for (const callKey of Object.keys(call)) {
     const callTerm = call[callKey];
     const headTerm = head[callKey];
-    console.log({ headTerm, callTerm });
     if (headTerm?.type === "Var" && callTerm?.type === "Var") {
       out[headTerm.name] = callTerm.name;
     }

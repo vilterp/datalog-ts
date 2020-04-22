@@ -2,31 +2,6 @@ import { PlanNode } from "./types";
 
 // TODO: dry this up with some kind of visitor pattern? lol
 
-function collapseProject(spec: PlanNode): PlanNode {
-  switch (spec.type) {
-    case "Or":
-      return { ...spec, opts: spec.opts.map(collapseProject) };
-    case "And":
-      return {
-        ...spec,
-        left: collapseProject(spec.left),
-        right: collapseProject(spec.right),
-      };
-    case "Filter":
-      return {
-        ...spec,
-        inner: collapseProject(spec.inner),
-      };
-    case "Project":
-      if (Object.keys(spec.mappings).length === 0) {
-        return spec.inner;
-      }
-      return spec;
-    default:
-      return spec;
-  }
-}
-
 function collapseOrs(spec: PlanNode): PlanNode {
   switch (spec.type) {
     case "Or":
@@ -78,5 +53,5 @@ function collapseAnds(spec: PlanNode): PlanNode {
 }
 
 export function optimize(spec: PlanNode): PlanNode {
-  return collapseProject(collapseOrs(collapseAnds(spec)));
+  return collapseOrs(collapseAnds(spec));
 }
