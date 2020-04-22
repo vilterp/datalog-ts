@@ -1,7 +1,8 @@
-import { DB, rec, Res, str, varr } from "./types";
+import { DB, Rec, rec, Res, str, Term, varr } from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
 import { planRule } from "./plan";
+import * as assert from "assert";
 
 function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
@@ -106,83 +107,77 @@ const testDB: DB = {
 
 type Test = { name: string; test: () => void };
 
+function testQuery(query: Rec, results: Term[]) {
+  const spec = planRule(testDB, query);
+  console.log("plan spec:");
+  console.log(spec);
+  const optimized = optimize(spec);
+  console.log("optimized:");
+  console.log(optimized);
+  const node = instantiate(testDB, optimized);
+  const actualResults = allResults(node);
+  console.log("results:", actualResults);
+  assert.deepEqual(actualResults, results);
+}
+
 const tests: Test[] = [
   {
     name: "father",
     test: () => {
-      const spec = planRule(
-        testDB,
-        rec("father", { child: str("Pete"), father: varr("A") })
-      );
-      console.log("plan spec:");
-      console.log(spec);
-      const node = instantiate(testDB, spec);
-      const results = allResults(node);
-      console.log("results:");
-      results.forEach((r) => console.log(r));
+      testQuery(rec("father", { child: str("Pete"), father: varr("A") }), [
+        rec("father", { child: str("Pete"), father: str("Paul") }),
+        rec("father", { child: str("Paul"), father: str("Peter") }),
+      ]);
     },
   },
   {
     name: "parent",
     test: () => {
-      const spec = planRule(
-        testDB,
-        rec("parent", { child: str("Pete"), father: varr("A") })
-      );
-      console.log("plan spec:");
-      console.log(spec);
-      const optimized = optimize(spec);
-      console.log("optimized:");
-      console.log(optimized);
-      const node = instantiate(testDB, optimized);
-      const results = allResults(node);
-      console.log("results:");
-      results.forEach((r) => console.log(r));
+      testQuery(rec("parent", { child: str("Pete"), father: varr("A") }), [
+        rec("parent", { child: str("Pete"), parent: str("Paul") }),
+        rec("parent", { child: str("Paul"), parent: str("Peter") }),
+      ]);
     },
   },
   {
     name: "grandfather",
     test: () => {
-      const spec = planRule(
-        testDB,
-        rec("grandfather", { child: str("Pete"), father: varr("A") })
-      );
-      console.log("plan spec:");
-      console.log(spec);
-      const optimized = optimize(spec);
-      console.log("optimized:");
-      console.log(optimized);
-      const node = instantiate(testDB, optimized);
-      const results = allResults(node);
-      console.log("results:");
-      results.forEach((r) => console.log(r));
+      testQuery(rec("grandfather", { child: str("Pete"), father: varr("A") }), [
+        rec("grandparent", { child: str("Pete"), grandfather: str("Peter") }),
+      ]);
     },
   },
   {
     name: "grandparent",
     test: () => {
-      const spec = planRule(
-        testDB,
-        rec("grandparent", { child: str("Pete"), father: varr("A") })
-      );
-      console.log("plan spec:");
-      console.log(spec);
-      const optimized = optimize(spec);
-      console.log("optimized:");
-      console.log(optimized);
-      const node = instantiate(testDB, optimized);
-      const results = allResults(node);
-      console.log("results:");
-      results.forEach((r) => console.log(r));
+      testQuery(rec("grandparent", { child: str("Pete"), father: varr("A") }), [
+        rec("grandparent", { child: str("Pete"), grandparent: str("Peter") }),
+        rec("grandparent", { child: str("Pete"), grandparent: str("Peter") }),
+      ]);
     },
   },
 ];
 
-tests.forEach((t) => {
-  console.log("=========");
-  console.log(t.name);
-  t.test();
-});
+function runTests(ts: Test[]) {
+  const failures = new Set();
+  tests.forEach((t) => {
+    console.log("=========");
+    console.log(t.name);
+    try {
+      t.test();
+    } catch (e) {
+      console.error("FAIL:", e.toString());
+      failures.add(t.name);
+    }
+  });
+  console.log("failures:", failures);
+  console.log(
+    "successes:",
+    ts.map((t) => t.name).filter((n) => !failures.has(n))
+  );
+}
+
+runTests(tests);
 
 // @ts-ignore
 process.tests = tests;
