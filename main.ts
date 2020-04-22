@@ -1,9 +1,7 @@
-import { planQuery } from "./plan";
 import { DB, rec, Res, str, varr } from "./types";
 import { instantiate, ExecNode } from "./execNodes";
-import * as util from "util";
 import { optimize } from "./optimize";
-import * as https from "https";
+import { planRule } from "./plan";
 
 function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
@@ -86,7 +84,7 @@ const testDB: DB = {
       },
     },
     grandparent: {
-      head: rec("grandmother", {
+      head: rec("grandparent", {
         grandchild: varr("A"),
         grandparent: varr("C"),
       }),
@@ -112,7 +110,7 @@ const tests: Test[] = [
   {
     name: "father",
     test: () => {
-      const spec = planQuery(
+      const spec = planRule(
         testDB,
         rec("father", { child: str("Pete"), father: varr("A") })
       );
@@ -127,7 +125,7 @@ const tests: Test[] = [
   {
     name: "parent",
     test: () => {
-      const spec = planQuery(
+      const spec = planRule(
         testDB,
         rec("parent", { child: str("Pete"), father: varr("A") })
       );
@@ -145,7 +143,7 @@ const tests: Test[] = [
   {
     name: "grandfather",
     test: () => {
-      const spec = planQuery(
+      const spec = planRule(
         testDB,
         rec("grandfather", { child: str("Pete"), father: varr("A") })
       );
@@ -160,29 +158,29 @@ const tests: Test[] = [
       results.forEach((r) => console.log(r));
     },
   },
-  // {
-  //   name: "grandparent",
-  //   test: () => {
-  //     const spec = planQuery(
-  //       testDB,
-  //       rec("grandparent", { child: str("Pete"), father: varr("A") })
-  //     );
-  //     console.log("plan spec:");
-  //     console.log(spec);
-  //     const optimized = optimize(spec);
-  //     console.log("optimized:");
-  //     console.log(optimized);
-  //     const node = instantiate(testDB, optimized);
-  //     const results = allResults(node);
-  //     console.log("results:");
-  //     results.forEach((r) => console.log(util.inspect(r, { depth: null })));
-  //   },
-  // },
+  {
+    name: "grandparent",
+    test: () => {
+      const spec = planRule(
+        testDB,
+        rec("grandparent", { child: str("Pete"), father: varr("A") })
+      );
+      console.log("plan spec:");
+      console.log(spec);
+      const optimized = optimize(spec);
+      console.log("optimized:");
+      console.log(optimized);
+      const node = instantiate(testDB, optimized);
+      const results = allResults(node);
+      console.log("results:");
+      results.forEach((r) => console.log(r));
+    },
+  },
 ];
 
 tests.forEach((t) => {
-  console.log(t.name);
   console.log("=========");
+  console.log(t.name);
   t.test();
 });
 

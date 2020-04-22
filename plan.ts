@@ -1,6 +1,6 @@
 import { AndExpr, DB, PlanNode, Rec } from "./types";
 
-export function planQuery(db: DB, rec: Rec): PlanNode {
+export function planRule(db: DB, rec: Rec): PlanNode {
   const table = db.tables[rec.relation];
   if (table) {
     return scanAndFilterForRec(db, rec);
@@ -19,7 +19,7 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
   return ae.clauses.reduce<PlanNode>(
     (accum, next) => ({
       type: "And",
-      left: planQuery(db, next),
+      left: planRule(db, next),
       right: accum,
       template,
     }),
