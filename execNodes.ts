@@ -93,8 +93,12 @@ class AndNode implements ExecNode {
       const resTerm = substitute(this.template, unifyRes);
       return {
         term: resTerm,
-        bindings: unifyRes, // why not
-        // TODO: trace as well??
+        bindings: unifyRes,
+        trace: {
+          type: "AndTrace",
+          right: this.curLeft,
+          left: rightRes,
+        },
       };
     }
   }
@@ -136,6 +140,50 @@ class OrNode implements ExecNode {
   }
 }
 
+class ProjectNode implements ExecNode {
+  inner: ExecNode;
+  mappings: VarMappings;
+  ruleName: string; // TODO: use this in some kind of trace
+
+  constructor(inner: ExecNode, mappings: VarMappings, ruleName: string) {
+    this.inner = inner;
+    this.mappings = mappings;
+    this.ruleName = ruleName;
+  }
+
+  Next(): Res | null {
+    const res = this.inner.Next();
+    if (res === null) {
+      return null;
+    }
+    return {
+      term:
+        res.term.type === "Record"
+          ? { ...res.term, relation: this.ruleName }
+          : res.term,
+      bindings: this.applyMappings(res.bindings),
+      trace: {
+        type: "ProjectTrace",
+        ruleName: this.ruleName,
+        inner: res,
+        mappings: this.mappings,
+      },
+    };
+  }
+
+  private applyMappings(bindings: Bindings): Bindings {
+    const out: Bindings = {};
+    for (const key of Object.keys(bindings)) {
+      out[this.mappings[key]] = bindings[key];
+    }
+    return out;
+  }
+
+  Reset() {
+    this.inner.Reset();
+  }
+}
+
 class FilterNode implements ExecNode {
   inner: ExecNode;
   record: Rec;
@@ -154,7 +202,15 @@ class FilterNode implements ExecNode {
       const bindings = unify(next.bindings, this.record, next.term);
       if (bindings !== null) {
         // hm... are we supposed to use its bindings here?
-        return { term: next.term, bindings: bindings };
+        return {
+          term: next.term,
+          bindings: bindings,
+          trace: {
+            type: "FilterTrace",
+            record: this.record,
+            inner: next,
+          },
+        };
       }
     }
   }
@@ -211,43 +267,5 @@ class EmptyOnceNode implements ExecNode {
 
   Reset() {
     this.done = false;
-  }
-}
-
-class ProjectNode implements ExecNode {
-  inner: ExecNode;
-  mappings: VarMappings;
-  ruleName: string; // TODO: use this in some kind of trace
-
-  constructor(inner: ExecNode, mappings: VarMappings, ruleName: string) {
-    this.inner = inner;
-    this.mappings = mappings;
-    this.ruleName = ruleName;
-  }
-
-  Next(): Res | null {
-    const res = this.inner.Next();
-    if (res === null) {
-      return null;
-    }
-    return {
-      term:
-        res.term.type === "Record"
-          ? { ...res.term, relation: this.ruleName }
-          : res.term,
-      bindings: this.applyMappings(res.bindings),
-    };
-  }
-
-  private applyMappings(bindings: Bindings): Bindings {
-    const out: Bindings = {};
-    for (const key of Object.keys(bindings)) {
-      out[this.mappings[key]] = bindings[key];
-    }
-    return out;
-  }
-
-  Reset() {
-    this.inner.Reset();
   }
 }

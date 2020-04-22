@@ -6,7 +6,18 @@ export interface DB {
 export interface Res {
   term: Term;
   bindings: Bindings;
+  trace?: Trace;
 }
+
+type Trace =
+  | { type: "AndTrace"; left: Res; right: Res }
+  | {
+      type: "ProjectTrace";
+      ruleName: string;
+      mappings: VarMappings;
+      inner: Res;
+    }
+  | { type: "FilterTrace"; record: Rec; inner: Res };
 
 export type Bindings = { [key: string]: Term };
 
