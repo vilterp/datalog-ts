@@ -1,4 +1,4 @@
-import { DB, PlanNode, Rec, Res, str } from "./types";
+import { Bindings, DB, PlanNode, Rec, Res, str, VarMappings } from "./types";
 import { substitute, unify, unifyVars } from "./unify";
 
 export function instantiate(db: DB, spec: PlanNode): ExecNode {
@@ -8,6 +8,12 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
         instantiate(db, spec.left),
         instantiate(db, spec.right),
         spec.template
+      );
+    case "Project":
+      return new ProjectNode(
+        instantiate(db, spec.inner),
+        spec.mappings,
+        spec.ruleName
       );
     case "Filter":
       return new FilterNode(instantiate(db, spec.inner), spec.record);
@@ -74,7 +80,7 @@ class AndNode implements ExecNode {
         continue;
       }
       const unifyRes = unifyVars(this.curLeft.bindings, rightRes.bindings);
-      // console.log("And:", {
+      // console.log("And.unify:", {
       //   left: this.curLeft.bindings,
       //   right: rightRes.bindings,
       //   res: unifyRes,
@@ -205,5 +211,40 @@ class EmptyOnceNode implements ExecNode {
 
   Reset() {
     this.done = false;
+  }
+}
+
+class ProjectNode implements ExecNode {
+  inner: ExecNode;
+  mappings: VarMappings;
+  ruleName: string; // TODO: use this in some kind of trace
+
+  constructor(inner: ExecNode, mappings: VarMappings, ruleName: string) {
+    this.inner = inner;
+    this.mappings = mappings;
+    this.ruleName = ruleName;
+  }
+
+  Next(): Res | null {
+    const res = this.inner.Next();
+    if (res === null) {
+      return null;
+    }
+    return {
+      term: res.term,
+      bindings: this.applyMappings(res.bindings),
+    };
+  }
+
+  private applyMappings(bindings: Bindings): Bindings {
+    const out: Bindings = {};
+    for (const key of Object.keys(bindings)) {
+      out[this.mappings[key]] = bindings[key];
+    }
+    return out;
+  }
+
+  Reset() {
+    this.inner.Reset();
   }
 }

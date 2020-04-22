@@ -1,7 +1,7 @@
 import { DB, Rec, rec, Res, str, Term, varr } from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
-import { planRule } from "./plan";
+import { planQuery } from "./plan";
 import * as assert from "assert";
 
 function allResults(node: ExecNode): Res[] {
@@ -108,7 +108,7 @@ const testDB: DB = {
 type Test = { name: string; test: () => void };
 
 function testQuery(query: Rec, results: Term[]) {
-  const spec = planRule(testDB, query);
+  const spec = planQuery(testDB, query);
   console.log("plan spec:");
   console.log(spec);
   const optimized = optimize(spec);
@@ -166,7 +166,7 @@ function runTests(ts: Test[]) {
     try {
       t.test();
     } catch (e) {
-      console.error("FAIL:", e.toString());
+      console.error("FAIL:", e);
       failures.add(t.name);
     }
   });

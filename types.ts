@@ -50,7 +50,14 @@ export function varr(name: string): Term {
 export type PlanNode =
   | { type: "And"; left: PlanNode; right: PlanNode; template: Rec }
   | { type: "Or"; opts: PlanNode[] }
+  | {
+      type: "Project";
+      mappings: VarMappings;
+      inner: PlanNode;
+      ruleName: string;
+    }
   | { type: "Scan"; relation: string }
   | { type: "Filter"; inner: PlanNode; record: Rec }
-  | { type: "SubqueryNode"; rule: Rule }
   | { type: "EmptyOnce" };
+
+export type VarMappings = { [from: string]: string };
