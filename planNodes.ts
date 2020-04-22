@@ -52,14 +52,12 @@ class AndNode implements PlanNode {
   advanceLeft() {
     const res = this.left.Next();
     if (res === null) {
-      console.log("advanceLeft: done");
       this.leftDone = true;
       return;
     }
     this.curLeft = res;
     this.right.Reset();
     this.rightDone = false;
-    console.log("advanceLeft:", this.curLeft.bindings);
   }
 
   Next(): Res | null {
@@ -73,34 +71,16 @@ class AndNode implements PlanNode {
       }
       const rightRes = this.right.Next();
       if (rightRes === null) {
-        console.log("advanceRight: done");
         this.rightDone = true;
         continue;
       }
-      console.log("advanceRight:", rightRes.bindings);
       const unifyRes = unifyVars(this.curLeft.bindings, rightRes.bindings);
-      console.log("And.unifyVars", {
-        left: this.curLeft.bindings,
-        right: rightRes.bindings,
-        res: unifyRes,
-      });
 
       if (unifyRes === null) {
         continue;
       }
 
       const resTerm = substitute(this.template, unifyRes);
-      console.log(
-        "sub",
-        util.inspect(
-          {
-            tpl: this.template,
-            bindings: unifyRes,
-            res: resTerm,
-          },
-          { depth: null }
-        )
-      );
       return {
         term: resTerm,
         bindings: unifyRes, // why not
