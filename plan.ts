@@ -18,7 +18,7 @@ function getMappings(
   call: { [p: string]: Term }
 ): VarMappings {
   const out: VarMappings = {};
-  // TODO: detect parameter mismatch
+  // TODO: detect parameter mismatch!
   for (const callKey of Object.keys(call)) {
     const callTerm = call[callKey];
     const headTerm = head[callKey];
@@ -35,11 +35,11 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   );
   const inner: PlanNode = { type: "Or", opts: optionNodes };
   const mappings = getMappings(rule.head.attrs, call.attrs);
-  console.log("mappings", {
-    head: rule.head.attrs,
-    call: call.attrs,
-    res: mappings,
-  });
+  // console.log("mappings", {
+  //   head: rule.head.attrs,
+  //   call: call.attrs,
+  //   res: mappings,
+  // });
   return {
     type: "Project",
     mappings,

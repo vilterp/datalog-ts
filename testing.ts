@@ -4,29 +4,17 @@ export function assertDeepEqual<T extends object>(expected: T, actual: T) {
   const expJSON = JSON.stringify(expected, null, 2);
   const actJSON = JSON.stringify(actual, null, 2);
   if (actJSON != expJSON) {
-    const patch = diff.createPatch(
-      "test",
-      expJSON,
-      actJSON,
-      "expected",
-      "actual"
-    );
-    throw new DiffError(expected, actual, patch);
+    throw new DiffError(expected, actual);
   }
 }
 
 class DiffError<T> {
-  diff: string;
   expected: T;
   actual: T;
 
-  constructor(expected: T, actual: T, diff: string) {
-    this.diff = diff;
+  constructor(expected: T, actual: T) {
     this.expected = expected;
     this.actual = actual;
-  }
-  toString(): string {
-    return `not the same: ${this.diff}`;
   }
 }
 
@@ -42,7 +30,14 @@ export function runTests(ts: Test[]) {
     } catch (e) {
       console.groupEnd();
       if (e instanceof DiffError) {
-        console.error(e.diff);
+        const patch = diff.createPatch(
+          t.name,
+          JSON.stringify(e.expected, null, 2),
+          JSON.stringify(e.actual, null, 2),
+          "expected",
+          "actual"
+        );
+        console.error(patch);
       } else {
         console.error("FAIL:", e);
       }
