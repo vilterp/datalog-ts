@@ -33,11 +33,12 @@ function planRuleCall(db: DB, rule: Rule, template: Rec): PlanNode {
   const optionNodes = rule.defn.opts.map((andExpr) =>
     foldAnds(db, andExpr, rule.head)
   );
+  const inner: PlanNode = { type: "Or", opts: optionNodes };
   return {
     type: "Project",
     mappings: getMappings(rule.head.attrs, template.attrs),
-    inner: { type: "Or", opts: optionNodes },
-    ruleName: template.relation,
+    inner, // inlining the inner rule here. could reference it instead.
+    ruleHead: rule.head,
   };
 }
 

@@ -1,19 +1,26 @@
-import * as deepDiff from "deep-diff";
-import { Diff } from "deep-diff";
+import * as diff from "diff";
 
-export function assertDeepEqual<T>(expected: T, actual: T) {
-  const diff = deepDiff.diff(expected, actual);
-  if (diff) {
-    throw new DiffError(expected, actual, diff);
+export function assertDeepEqual<T extends object>(expected: T, actual: T) {
+  const expJSON = JSON.stringify(expected, null, 2);
+  const actJSON = JSON.stringify(actual, null, 2);
+  if (actJSON != expJSON) {
+    const patch = diff.createPatch(
+      "test",
+      expJSON,
+      actJSON,
+      "expected",
+      "actual"
+    );
+    throw new DiffError(expected, actual, patch);
   }
 }
 
 class DiffError<T> {
-  diff: Array<Diff<T, T>>;
+  diff: string;
   expected: T;
   actual: T;
 
-  constructor(expected: T, actual: T, diff: Array<Diff<T, T>>) {
+  constructor(expected: T, actual: T, diff: string) {
     this.diff = diff;
     this.expected = expected;
     this.actual = actual;
@@ -34,7 +41,11 @@ export function runTests(ts: Test[]) {
       console.groupEnd();
     } catch (e) {
       console.groupEnd();
-      console.error("FAIL:", e);
+      if (e instanceof DiffError) {
+        console.error(e.diff);
+      } else {
+        console.error("FAIL:", e);
+      }
       failures.add(t.name);
     }
   });

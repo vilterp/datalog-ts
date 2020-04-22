@@ -63,9 +63,9 @@ export type PlanNode =
   | { type: "Or"; opts: PlanNode[] }
   | {
       type: "Project";
-      mappings: VarMappings;
+      mappings: VarMappings; // call to rule head
       inner: PlanNode;
-      ruleName: string;
+      ruleHead: Rec;
     }
   | { type: "Scan"; relation: string }
   | { type: "Filter"; inner: PlanNode; record: Rec }

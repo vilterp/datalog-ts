@@ -1,4 +1,13 @@
-import { Bindings, DB, PlanNode, Rec, Res, str, VarMappings } from "./types";
+import {
+  Bindings,
+  DB,
+  PlanNode,
+  rec,
+  Rec,
+  Res,
+  str,
+  VarMappings,
+} from "./types";
 import { substitute, unify, unifyVars } from "./unify";
 
 export function instantiate(db: DB, spec: PlanNode): ExecNode {
@@ -13,7 +22,7 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
       return new ProjectNode(
         instantiate(db, spec.inner),
         spec.mappings,
-        spec.ruleName
+        spec.ruleHead
       );
     case "Filter":
       return new FilterNode(instantiate(db, spec.inner), spec.record);
@@ -142,13 +151,13 @@ class OrNode implements ExecNode {
 
 class ProjectNode implements ExecNode {
   inner: ExecNode;
-  mappings: VarMappings;
-  ruleName: string; // TODO: use this in some kind of trace
+  headToCaller: VarMappings;
+  ruleHead: Rec; // TODO: use this in some kind of trace
 
-  constructor(inner: ExecNode, mappings: VarMappings, ruleName: string) {
+  constructor(inner: ExecNode, mappings: VarMappings, ruleHead: Rec) {
     this.inner = inner;
-    this.mappings = mappings;
-    this.ruleName = ruleName;
+    this.headToCaller = mappings;
+    this.ruleHead = ruleHead;
   }
 
   Next(): Res | null {
@@ -156,17 +165,25 @@ class ProjectNode implements ExecNode {
     if (res === null) {
       return null;
     }
+    const mappedBindings = this.applyMappings(res.bindings);
+    const substitutedTerm =
+      res.term.type === "Record"
+        ? substitute(this.ruleHead, res.bindings)
+        : res.term;
+    // console.log("sub", {
+    //   head: this.ruleHead,
+    //   bindings: mappedBindings,
+    //   res: substitutedTerm,
+    //   obj: this,
+    // });
     return {
-      term:
-        res.term.type === "Record"
-          ? { ...res.term, relation: this.ruleName }
-          : res.term,
-      bindings: this.applyMappings(res.bindings),
+      term: substitutedTerm,
+      bindings: mappedBindings,
       trace: {
         type: "ProjectTrace",
-        ruleName: this.ruleName,
+        ruleName: this.ruleHead.relation,
         inner: res,
-        mappings: this.mappings,
+        mappings: this.headToCaller,
       },
     };
   }
@@ -174,7 +191,7 @@ class ProjectNode implements ExecNode {
   private applyMappings(bindings: Bindings): Bindings {
     const out: Bindings = {};
     for (const key of Object.keys(bindings)) {
-      out[this.mappings[key]] = bindings[key];
+      out[this.headToCaller[key]] = bindings[key];
     }
     return out;
   }
