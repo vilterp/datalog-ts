@@ -38,19 +38,32 @@ export function runTests(ts: Test[]) {
       failures.add(t.name);
     }
   });
-  console.log(
-    "failures:",
-    failures,
-    "successes:",
-    ts.map((t) => t.name).filter((n) => !failures.has(n))
-  );
+  if (failures.size > 0) {
+    console.error(
+      "failed tests:",
+      failures,
+      "successful tests:",
+      ts.map((t) => t.name).filter((n) => !failures.has(n))
+    );
+    throw new Error("test suite failed");
+  }
+  console.log("PASS");
 }
 
 type Suite = Test[];
 
 export function runSuites(suites: { [name: string]: Suite }) {
+  const failures = new Set();
   for (const suiteName of Object.keys(suites)) {
     console.log("SUITE", suiteName);
-    runTests(suites[suiteName]);
+    try {
+      runTests(suites[suiteName]);
+    } catch {
+      failures.add(suiteName);
+    }
+  }
+  if (failures.size > 0) {
+    console.error("failed suites:", failures);
+    throw new Error("test suites failed");
   }
 }
