@@ -360,6 +360,7 @@ export const queryTests: Test[] = [
   },
   {
     name: "sibling_all",
+    ignored: true,
     test: () => {
       testQuery(rec("sibling", { left: varr("L"), right: varr("R") }), [
         {
@@ -371,6 +372,7 @@ export const queryTests: Test[] = [
   },
   {
     name: "cousin_all",
+    ignored: true,
     test: () => {
       testQuery(rec("cousin", { left: varr("L"), right: varr("R") }), [
         {
