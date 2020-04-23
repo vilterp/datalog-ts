@@ -4,7 +4,7 @@ import { optimize } from "./optimize";
 import { planQuery } from "./plan";
 import { assertDeepEqual, Test } from "./testing";
 import * as pp from "prettier-printer";
-import { prettyPrintPlan, prettyPrintTerm } from "./pretty";
+import { prettyPrintDB, prettyPrintPlan, prettyPrintTerm } from "./pretty";
 import * as util from "util";
 
 function allResults(node: ExecNode): Res[] {
@@ -169,6 +169,12 @@ function testQuery(
 }
 
 export const queryTests: Test[] = [
+  {
+    name: "DB", // just pretty print the DB
+    test: () => {
+      console.log(pp.render(100, prettyPrintDB(testDB)));
+    },
+  },
   {
     name: "father_all",
     test: () => {

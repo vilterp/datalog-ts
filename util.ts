@@ -8,3 +8,25 @@ export function mapObj<T, V>(
   }
   return out;
 }
+
+export function mapObjToList<T, V>(
+  obj: { [key: string]: T },
+  f: (key: string, val: T) => V
+): V[] {
+  return Object.keys(obj)
+    .sort()
+    .map((k) => f(k, obj[k]));
+}
+
+export function flatMapObjToList<T, V>(
+  obj: { [key: string]: T },
+  f: (key: string, val: T) => V[]
+): V[] {
+  const out: V[] = [];
+  for (const key of Object.keys(obj).sort()) {
+    for (const val of f(key, obj[key])) {
+      out.push(val);
+    }
+  }
+  return out;
+}

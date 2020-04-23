@@ -1,5 +1,6 @@
-import { PlanNode, Term, VarMappings } from "./types";
+import { DB, PlanNode, Rule, Term, VarMappings } from "./types";
 import * as pp from "prettier-printer";
+import { flatMapObjToList, mapObjToList } from "./util";
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
@@ -10,11 +11,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
         term.relation,
         "{",
         pp.intersperse(", ")(
-          Object.keys(term.attrs).map((k) => [
-            k,
-            ": ",
-            prettyPrintTerm(term.attrs[k]),
-          ])
+          mapObjToList(term.attrs, (k, v) => [k, ": ", prettyPrintTerm(v)])
         ),
         "}",
       ];
@@ -26,11 +23,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
 function prettyPrintMappings(mappings: VarMappings): pp.IDoc {
   return [
     "{",
-    pp.intersperse(", ")(
-      Object.keys(mappings)
-        .sort()
-        .map((k) => [k, ": ", mappings[k]])
-    ),
+    pp.intersperse(", ")(mapObjToList(mappings, (k, v) => [k, ": ", v])),
     "}",
   ];
 }
@@ -73,4 +66,23 @@ function treeNode(node: pp.IDoc, children: PlanNode[]): pp.IDoc {
     pp.lineBreak,
     pp.indent(2, pp.intersperse(pp.lineBreak)(children.map(prettyPrintPlan))),
   ];
+}
+
+function prettyPrintRule(rule: Rule): pp.IDoc {
+  return [
+    prettyPrintTerm(rule.head),
+    " :- ",
+    pp.intersperse(" | ")(
+      rule.defn.opts.map((ae) =>
+        pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
+      )
+    ),
+  ];
+}
+
+export function prettyPrintDB(db: DB): pp.IDoc {
+  return pp.intersperse(pp.lineBreak)([
+    ...flatMapObjToList(db.tables, (name, tbl) => tbl.map(prettyPrintTerm)),
+    ...mapObjToList(db.rules, (name, rule) => prettyPrintRule(rule)),
+  ]);
 }
