@@ -1,21 +1,27 @@
 import * as diff from "diff";
 import * as util from "util";
 
-export function assertDeepEqual<T extends object>(expected: T, actual: T) {
+export function assertDeepEqual<T extends object>(
+  expected: T,
+  actual: T,
+  msg?: string
+) {
   const expJSON = util.inspect(expected, { depth: null });
   const actJSON = util.inspect(actual, { depth: null });
   if (actJSON != expJSON) {
-    throw new DiffError(expected, actual);
+    throw new DiffError(expected, actual, msg);
   }
 }
 
 class DiffError<T> {
   expected: T;
   actual: T;
+  message: string;
 
-  constructor(expected: T, actual: T) {
+  constructor(expected: T, actual: T, msg?: string) {
     this.expected = expected;
     this.actual = actual;
+    this.message = msg;
   }
 }
 
@@ -32,7 +38,7 @@ export function runTests(ts: Test[]) {
       console.groupEnd();
       if (e instanceof DiffError) {
         const patch = diff.createPatch(
-          t.name,
+          `${t.name} ${e.message}`,
           util.inspect(e.expected, { depth: null }) + "\n",
           util.inspect(e.actual, { depth: null }) + "\n",
           "expected",

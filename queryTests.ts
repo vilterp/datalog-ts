@@ -1,4 +1,14 @@
-import { Bindings, DB, Rec, rec, Res, str, Term, varr } from "./types";
+import {
+  Bindings,
+  DB,
+  PlanNode,
+  Rec,
+  rec,
+  Res,
+  str,
+  Term,
+  varr,
+} from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
 import { planQuery } from "./plan";
@@ -107,20 +117,23 @@ const testDB: DB = {
 
 function testQuery(
   query: Rec,
+  expectedOptimizedPlan: PlanNode,
   expectedResults: { term: Term; bindings: Bindings }[]
 ) {
   console.log("query", query);
   const spec = planQuery(testDB, query);
-  console.log("plan spec:", spec);
   const optimized = optimize(spec);
-  console.log("optimized:", optimized);
   const node = instantiate(testDB, optimized);
   const actualResults = allResults(node);
-  console.log("results:", actualResults);
   // TODO: make this disregard order of results
+  assertDeepEqual(expectedOptimizedPlan, optimized, "plan");
   assertDeepEqual(
     expectedResults,
-    actualResults.map((r) => ({ term: r.term, bindings: r.bindings })) // TODO: test trace as well
+    actualResults.map((r) => ({
+      term: r.term,
+      bindings: r.bindings,
+    })), // TODO: test trace as well?
+    "results"
   );
 }
 
@@ -128,67 +141,83 @@ export const queryTests: Test[] = [
   {
     name: "father_all",
     test: () => {
-      testQuery(rec("father", { child: varr("X"), father: varr("Y") }), [
-        {
-          term: rec("father", { child: str("Pete"), father: str("Paul") }),
-          bindings: { X: str("Pete"), Y: str("Paul") },
-        },
-        {
-          term: rec("father", { child: str("Paul"), father: str("Peter") }),
-          bindings: { X: str("Paul"), Y: str("Peter") },
-        },
-      ]);
+      testQuery(
+        rec("father", { child: varr("X"), father: varr("Y") }),
+        { type: "EmptyOnce" },
+        [
+          {
+            term: rec("father", { child: str("Pete"), father: str("Paul") }),
+            bindings: { X: str("Pete"), Y: str("Paul") },
+          },
+          {
+            term: rec("father", { child: str("Paul"), father: str("Peter") }),
+            bindings: { X: str("Paul"), Y: str("Peter") },
+          },
+        ]
+      );
     },
   },
   {
     name: "father_Pete",
     test: () => {
-      testQuery(rec("father", { child: str("Pete"), father: varr("A") }), [
-        {
-          term: rec("father", { child: str("Pete"), father: str("Paul") }),
-          bindings: { A: str("Paul") },
-        },
-      ]);
+      testQuery(
+        rec("father", { child: str("Pete"), father: varr("A") }),
+        { type: "EmptyOnce" },
+        [
+          {
+            term: rec("father", { child: str("Pete"), father: str("Paul") }),
+            bindings: { A: str("Paul") },
+          },
+        ]
+      );
     },
   },
   {
     name: "parent_all",
     test: () => {
-      testQuery(rec("parent", { child: varr("X"), parent: varr("Y") }), [
-        // TODO: these results are't right! supposed to be filtering to just Pete's parents!
-        {
-          term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
-          bindings: { X: str("Pete"), Y: str("Mary") },
-        },
-        {
-          term: rec("parent", { child: str("Paul"), parent: str("Judith") }),
-          bindings: { X: str("Paul"), Y: str("Judith") },
-        },
-        {
-          term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
-          bindings: { X: str("Pete"), Y: str("Paul") },
-        },
-        {
-          term: rec("parent", { child: str("Paul"), parent: str("Peter") }),
-          bindings: { X: str("Paul"), Y: str("Peter") },
-        },
-      ]);
+      testQuery(
+        rec("parent", { child: varr("X"), parent: varr("Y") }),
+        { type: "EmptyOnce" },
+        [
+          // TODO: these results are't right! supposed to be filtering to just Pete's parents!
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
+            bindings: { X: str("Pete"), Y: str("Mary") },
+          },
+          {
+            term: rec("parent", { child: str("Paul"), parent: str("Judith") }),
+            bindings: { X: str("Paul"), Y: str("Judith") },
+          },
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
+            bindings: { X: str("Pete"), Y: str("Paul") },
+          },
+          {
+            term: rec("parent", { child: str("Paul"), parent: str("Peter") }),
+            bindings: { X: str("Paul"), Y: str("Peter") },
+          },
+        ]
+      );
     },
   },
   {
     name: "parent_Pete",
     test: () => {
-      testQuery(rec("parent", { child: str("Pete"), parent: varr("A") }), [
-        // TODO: these results are't right! supposed to be filtering to just Pete's parents!
-        {
-          term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
-          bindings: { A: str("Mary") },
-        },
-        {
-          term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
-          bindings: { A: str("Paul") },
-        },
-      ]);
+      testQuery(
+        rec("parent", { child: str("Pete"), parent: varr("A") }),
+        { type: "EmptyOnce" },
+        [
+          // TODO: these results are't right! supposed to be filtering to just Pete's parents!
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
+            bindings: { A: str("Mary") },
+          },
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
+            bindings: { A: str("Paul") },
+          },
+        ]
+      );
     },
   },
   {
@@ -196,6 +225,7 @@ export const queryTests: Test[] = [
     test: () => {
       testQuery(
         rec("grandfather", { grandchild: str("Pete"), grandfather: varr("A") }),
+        { type: "EmptyOnce" },
         [
           {
             term: rec("grandfather", {
@@ -215,6 +245,7 @@ export const queryTests: Test[] = [
     test: () => {
       testQuery(
         rec("grandparent", { grandchild: str("Pete"), grandparent: varr("X") }),
+        { type: "EmptyOnce" },
         [
           {
             term: rec("grandparent", {
