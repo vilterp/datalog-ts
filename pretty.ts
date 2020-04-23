@@ -1,4 +1,4 @@
-import { DB, PlanNode, Rule, Term, VarMappings } from "./types";
+import { Bindings, DB, PlanNode, Res, Rule, Term, VarMappings } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
 
@@ -9,11 +9,10 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
     case "Record":
       return [
         term.relation,
-        "{",
-        pp.intersperse(", ")(
+        block(
+          pp.braces,
           mapObjToList(term.attrs, (k, v) => [k, ": ", prettyPrintTerm(v)])
         ),
-        "}",
       ];
     case "StringLit":
       return `"${term.val.split(`"`).join(`\\"`)}"`;
@@ -21,11 +20,10 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
 }
 
 function prettyPrintMappings(mappings: VarMappings): pp.IDoc {
-  return [
-    "{",
-    pp.intersperse(", ")(mapObjToList(mappings, (k, v) => [k, ": ", v])),
-    "}",
-  ];
+  return block(
+    pp.braces,
+    mapObjToList(mappings, (k, v) => [k, ": ", v])
+  );
 }
 
 export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
@@ -93,4 +91,31 @@ export function prettyPrintDB(db: DB): pp.IDoc {
     ...flatMapObjToList(db.tables, (name, tbl) => tbl.map(prettyPrintTerm)),
     ...mapObjToList(db.rules, (name, rule) => prettyPrintRule(rule)),
   ]);
+}
+
+function prettyPrintBindings(bindings: Bindings): pp.IDoc {
+  return block(
+    pp.braces,
+    mapObjToList(bindings, (key, val) => [key, ": ", prettyPrintTerm(val)])
+  );
+}
+
+export function prettyPrintRes(res: Res): pp.IDoc {
+  return [
+    "(",
+    prettyPrintTerm(res.term),
+    ", ",
+    prettyPrintBindings(res.bindings),
+    ")",
+  ];
+}
+
+export function prettyPrintResults(results: Res[]): pp.IDoc {
+  return pp.intersperse(pp.line)(results.map(prettyPrintRes));
+}
+
+// util
+
+function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
+  return [pair[0], pp.intersperse(", ")(docs), pair[1]];
 }

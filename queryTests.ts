@@ -2,9 +2,14 @@ import { Bindings, DB, Rec, rec, Res, str, Term, varr } from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
 import { planQuery } from "./plan";
-import { assertDeepEqual, Test } from "./testing";
+import { assertStringEqual, Test } from "./testing";
 import * as pp from "prettier-printer";
-import { prettyPrintDB, prettyPrintPlan, prettyPrintTerm } from "./pretty";
+import {
+  prettyPrintDB,
+  prettyPrintPlan,
+  prettyPrintResults,
+  prettyPrintTerm,
+} from "./pretty";
 import * as util from "util";
 
 function allResults(node: ExecNode): Res[] {
@@ -153,21 +158,22 @@ function testQuery(
   console.log("query:", pp.render(100, prettyPrintTerm(query)));
   const plan = planQuery(testDB, query);
   const optimizedPlan = optimize(plan);
-  console.group("optimized plan:");
+  console.groupCollapsed("optimized plan:");
   console.log(pp.render(100, prettyPrintPlan(optimizedPlan)));
   console.groupEnd();
   const node = instantiate(testDB, optimizedPlan);
   const actualResults = allResults(node);
+
+  // TODO: optionally print trace...
   // TODO: make this disregard order of results
-  // assertDeepEqual(expectedOptimizedPlan, optimized, "plan");
-  assertDeepEqual(
-    expectedResults,
-    actualResults.map((r) => ({
-      term: r.term,
-      bindings: r.bindings,
-    })), // TODO: test trace as well?
-    "results"
-  );
+  const expectedPrinted = pp.render(100, prettyPrintResults(expectedResults));
+  const actualPrinted = pp.render(100, prettyPrintResults(actualResults));
+
+  console.groupCollapsed("results");
+  console.log(actualPrinted);
+  console.groupEnd();
+
+  assertStringEqual(expectedPrinted, actualPrinted, "results");
 }
 
 export const queryTests: Test[] = [
@@ -355,6 +361,16 @@ export const queryTests: Test[] = [
             bindings: { X: str("Mark") },
           },
         ]
+      );
+    },
+  },
+  {
+    name: "grandparent_all",
+    test: () => {
+      testQuery(
+        rec("grandparent", { grandchild: varr("X"), grandparent: varr("Y") }),
+
+        []
       );
     },
   },
