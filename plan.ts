@@ -40,11 +40,17 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   //   call: call.attrs,
   //   res: mappings,
   // });
-  return {
+  const project: PlanNode = {
     type: "Project",
     mappings,
     ruleHead: rule.head,
     inner, // inlining the inner rule here. could reference it instead.
+  };
+  // TODO: push down filters in optimizer instead of leaving up here
+  return {
+    type: "Filter",
+    inner: project,
+    record: call,
   };
 }
 
