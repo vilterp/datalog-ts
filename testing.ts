@@ -1,40 +1,40 @@
 import * as diff from "diff";
+import * as util from "util";
 
-export function assertDeepEqual<T extends object>(expected: T, actual: T) {
-  const expJSON = JSON.stringify(expected, null, 2);
-  const actJSON = JSON.stringify(actual, null, 2);
+export function assertDeepEqual<T extends object>(
+  expected: T,
+  actual: T,
+  msg?: string
+) {
+  const expJSON = util.inspect(expected, { depth: null });
+  const actJSON = util.inspect(actual, { depth: null });
   if (actJSON != expJSON) {
-    const patch = diff.createPatch(
-      "test",
-      expJSON,
-      actJSON,
-      "expected",
-      "actual"
-    );
-    throw new DiffError(expected, actual, patch);
+    throw new DiffError(expected, actual, msg);
   }
 }
 
 class DiffError<T> {
-  diff: string;
   expected: T;
   actual: T;
+  message: string;
 
-  constructor(expected: T, actual: T, diff: string) {
-    this.diff = diff;
+  constructor(expected: T, actual: T, msg?: string) {
     this.expected = expected;
     this.actual = actual;
-  }
-  toString(): string {
-    return `not the same: ${this.diff}`;
+    this.message = msg;
   }
 }
 
-export type Test = { name: string; test: () => void };
+export type Test = { name: string; ignored?: boolean; test: () => void };
 
 export function runTests(ts: Test[]) {
-  const failures = new Set();
+  const failures = new Set<string>();
+  const ignored = new Set<string>();
   ts.forEach((t) => {
+    if (t.ignored) {
+      ignored.add(t.name);
+      return;
+    }
     console.groupCollapsed(t.name);
     try {
       t.test();
@@ -42,7 +42,14 @@ export function runTests(ts: Test[]) {
     } catch (e) {
       console.groupEnd();
       if (e instanceof DiffError) {
-        console.error(e.diff);
+        const patch = diff.createPatch(
+          `${t.name} ${e.message}`,
+          util.inspect(e.expected, { depth: null }) + "\n",
+          util.inspect(e.actual, { depth: null }) + "\n",
+          "expected",
+          "actual"
+        );
+        console.error(patch);
       } else {
         console.error("FAIL:", e);
       }

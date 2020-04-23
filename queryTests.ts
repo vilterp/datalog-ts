@@ -1,4 +1,14 @@
-import { DB, Rec, rec, Res, str, Term, varr } from "./types";
+import {
+  Bindings,
+  DB,
+  PlanNode,
+  Rec,
+  rec,
+  Res,
+  str,
+  Term,
+  varr,
+} from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
 import { planQuery } from "./plan";
@@ -23,10 +33,13 @@ const testDB: DB = {
     father: [
       rec("father", { child: str("Pete"), father: str("Paul") }),
       rec("father", { child: str("Paul"), father: str("Peter") }),
+      rec("father", { child: str("Ann"), father: str("Peter") }),
     ],
     mother: [
       rec("mother", { child: str("Pete"), mother: str("Mary") }),
       rec("mother", { child: str("Paul"), mother: str("Judith") }),
+      rec("mother", { child: str("Ann"), mother: str("Judith") }),
+      rec("mother", { child: str("Bob"), mother: str("Ann") }),
       // TODO
     ],
   },
@@ -102,22 +115,61 @@ const testDB: DB = {
         ],
       },
     },
+    sibling: {
+      head: rec("sibling", { left: varr("L"), right: varr("R") }),
+      defn: {
+        type: "Or",
+        opts: [
+          {
+            type: "And",
+            clauses: [
+              rec("mother", { child: varr("L"), mother: varr("M") }),
+              rec("father", { child: varr("L"), father: varr("F") }),
+              rec("mother", { child: varr("R"), mother: varr("M") }),
+              rec("father", { child: varr("R"), father: varr("F") }),
+            ],
+          },
+        ],
+      },
+    },
+    cousin: {
+      head: rec("cousin", { left: varr("L"), right: varr("R") }),
+      defn: {
+        type: "Or",
+        opts: [
+          {
+            type: "And",
+            clauses: [
+              rec("parent", { child: varr("L"), mother: varr("P1") }),
+              rec("sibling", { left: varr("P1"), right: varr("P2") }),
+              rec("parent", { child: varr("R"), parent: varr("P2") }),
+            ],
+          },
+        ],
+      },
+    },
   },
 };
 
-function testQuery(query: Rec, expectedResults: Term[]) {
+function testQuery(
+  query: Rec,
+  expectedResults: { term: Term; bindings: Bindings }[]
+) {
+  console.log("query", query);
   const spec = planQuery(testDB, query);
-  console.log("plan spec:");
-  console.log(spec);
   const optimized = optimize(spec);
-  console.log("optimized:");
-  console.log(optimized);
+  console.log("optimized plan:", optimized);
   const node = instantiate(testDB, optimized);
   const actualResults = allResults(node);
-  console.log("results:", actualResults);
+  // TODO: make this disregard order of results
+  // assertDeepEqual(expectedOptimizedPlan, optimized, "plan");
   assertDeepEqual(
     expectedResults,
-    actualResults.map((res) => res.term) // TODO: test bindings as well
+    actualResults.map((r) => ({
+      term: r.term,
+      bindings: r.bindings,
+    })), // TODO: test trace as well?
+    "results"
   );
 }
 
@@ -125,54 +177,165 @@ export const queryTests: Test[] = [
   {
     name: "father_all",
     test: () => {
-      testQuery(rec("father", { child: varr("A"), father: varr("B") }), [
-        rec("father", { child: str("Pete"), father: str("Paul") }),
-        rec("father", { child: str("Paul"), father: str("Peter") }),
-      ]);
+      testQuery(
+        rec("father", { child: varr("X"), father: varr("Y") }),
+
+        [
+          {
+            term: rec("father", { child: str("Pete"), father: str("Paul") }),
+            bindings: { X: str("Pete"), Y: str("Paul") },
+          },
+          {
+            term: rec("father", { child: str("Paul"), father: str("Peter") }),
+            bindings: { X: str("Paul"), Y: str("Peter") },
+          },
+          {
+            term: rec("father", { child: str("Ann"), father: str("Peter") }),
+            bindings: { X: str("Ann"), Y: str("Peter") },
+          },
+        ]
+      );
     },
   },
   {
     name: "father_Pete",
     test: () => {
       testQuery(rec("father", { child: str("Pete"), father: varr("A") }), [
-        rec("father", { child: str("Pete"), father: str("Paul") }),
+        {
+          term: rec("father", { child: str("Pete"), father: str("Paul") }),
+          bindings: { A: str("Paul") },
+        },
       ]);
     },
   },
   {
-    name: "parent",
+    name: "parent_all",
     test: () => {
-      testQuery(rec("parent", { child: str("Pete"), father: varr("A") }), [
-        rec("parent", { child: str("Pete"), parent: str("Mary") }),
-        rec("parent", { child: str("Paul"), parent: str("Judith") }),
-        rec("parent", { child: str("Pete"), parent: str("Paul") }),
-        rec("parent", { child: str("Paul"), parent: str("Peter") }),
-      ]);
+      testQuery(
+        rec("parent", { child: varr("X"), parent: varr("Y") }),
+
+        [
+          // TODO: these results are't right! supposed to be filtering to just Pete's parents!
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
+            bindings: { X: str("Pete"), Y: str("Mary") },
+          },
+          {
+            term: rec("parent", { child: str("Paul"), parent: str("Judith") }),
+            bindings: { X: str("Paul"), Y: str("Judith") },
+          },
+          {
+            term: rec("parent", { child: str("Ann"), parent: str("Judith") }),
+            bindings: { X: str("Ann"), Y: str("Judith") },
+          },
+          {
+            term: rec("parent", { child: str("Bob"), parent: str("Ann") }),
+            bindings: { X: str("Bob"), Y: str("Ann") },
+          },
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
+            bindings: { X: str("Pete"), Y: str("Paul") },
+          },
+          {
+            term: rec("parent", { child: str("Paul"), parent: str("Peter") }),
+            bindings: { X: str("Paul"), Y: str("Peter") },
+          },
+          {
+            term: rec("parent", { child: str("Ann"), parent: str("Peter") }),
+            bindings: { X: str("Ann"), Y: str("Peter") },
+          },
+        ]
+      );
+    },
+  },
+  {
+    name: "parent_Pete",
+    test: () => {
+      testQuery(
+        rec("parent", { child: str("Pete"), parent: varr("A") }),
+
+        [
+          // TODO: these results are't right! supposed to be filtering to just Pete's parents!
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
+            bindings: { A: str("Mary") },
+          },
+          {
+            term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
+            bindings: { A: str("Paul") },
+          },
+        ]
+      );
     },
   },
   {
     name: "grandfather",
     test: () => {
-      testQuery(rec("grandfather", { child: str("Pete"), father: varr("A") }), [
-        rec("grandfather", {
-          grandchild: str("Pete"),
-          grandfather: str("Peter"),
-        }),
-      ]);
+      testQuery(
+        rec("grandfather", { grandchild: str("Pete"), grandfather: varr("A") }),
+
+        [
+          {
+            term: rec("grandfather", {
+              grandchild: str("Pete"),
+              grandfather: str("Peter"),
+            }),
+            bindings: {
+              A: str("Peter"),
+            },
+          },
+        ]
+      );
     },
   },
   {
     name: "grandparent",
     test: () => {
-      testQuery(rec("grandparent", { child: str("Pete"), father: varr("A") }), [
-        rec("grandparent", {
-          grandchild: str("Pete"),
-          grandparent: str("Judith"),
-        }),
-        rec("grandparent", {
-          grandchild: str("Pete"),
-          grandparent: str("Peter"),
-        }),
+      testQuery(
+        rec("grandparent", { grandchild: str("Pete"), grandparent: varr("X") }),
+
+        [
+          {
+            term: rec("grandparent", {
+              grandchild: str("Pete"),
+              grandparent: str("Judith"),
+            }),
+            bindings: {
+              X: str("Judith"),
+            },
+          },
+          {
+            term: rec("grandparent", {
+              grandchild: str("Pete"),
+              grandparent: str("Peter"),
+            }),
+            bindings: { X: str("Peter") },
+          },
+        ]
+      );
+    },
+  },
+  {
+    name: "sibling",
+    ignored: true,
+    test: () => {
+      testQuery(rec("sibling", { left: varr("L"), right: varr("R") }), [
+        {
+          term: rec("sibling", { left: str("Pete"), right: str("Bob") }),
+          bindings: { L: str("Paul"), R: str("Ann") },
+        },
+      ]);
+    },
+  },
+  {
+    name: "cousin",
+    ignored: true,
+    test: () => {
+      testQuery(rec("cousin", { left: varr("L"), right: varr("R") }), [
+        {
+          term: rec("cousin", { left: str("Pete"), right: str("Bob") }),
+          bindings: { L: str("Pete"), R: str("Bob") },
+        },
       ]);
     },
   },

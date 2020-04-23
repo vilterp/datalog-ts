@@ -18,7 +18,7 @@ function getMappings(
   call: { [p: string]: Term }
 ): VarMappings {
   const out: VarMappings = {};
-  // TODO: detect parameter mismatch
+  // TODO: detect parameter mismatch!
   for (const callKey of Object.keys(call)) {
     const callTerm = call[callKey];
     const headTerm = head[callKey];
@@ -29,16 +29,28 @@ function getMappings(
   return out;
 }
 
-function planRuleCall(db: DB, rule: Rule, template: Rec): PlanNode {
+function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   const optionNodes = rule.defn.opts.map((andExpr) =>
     foldAnds(db, andExpr, rule.head)
   );
   const inner: PlanNode = { type: "Or", opts: optionNodes };
-  return {
+  const mappings = getMappings(rule.head.attrs, call.attrs);
+  // console.log("mappings", {
+  //   head: rule.head.attrs,
+  //   call: call.attrs,
+  //   res: mappings,
+  // });
+  const project: PlanNode = {
     type: "Project",
-    mappings: getMappings(rule.head.attrs, template.attrs),
-    inner, // inlining the inner rule here. could reference it instead.
+    mappings,
     ruleHead: rule.head,
+    inner, // inlining the inner rule here. could reference it instead.
+  };
+  // TODO: push down filters in optimizer instead of leaving up here
+  return {
+    type: "Filter",
+    inner: project,
+    record: call,
   };
 }
 
