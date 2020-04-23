@@ -10,5 +10,8 @@
     "prettier": "^2.0.4",
     "ts-node": "^8.9.0",
     "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "prettier-printer": "^1.1.4"
   }
 }

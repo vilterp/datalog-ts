@@ -1,18 +1,11 @@
-import {
-  Bindings,
-  DB,
-  PlanNode,
-  Rec,
-  rec,
-  Res,
-  str,
-  Term,
-  varr,
-} from "./types";
+import { Bindings, DB, Rec, rec, Res, str, Term, varr } from "./types";
 import { instantiate, ExecNode } from "./execNodes";
 import { optimize } from "./optimize";
 import { planQuery } from "./plan";
-import { assertDeepEqual, runTests, Test } from "./testing";
+import { assertDeepEqual, Test } from "./testing";
+import * as pp from "prettier-printer";
+import { prettyPrintPlan, prettyPrintTerm } from "./pretty";
+import * as util from "util";
 
 function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
@@ -155,11 +148,13 @@ function testQuery(
   query: Rec,
   expectedResults: { term: Term; bindings: Bindings }[]
 ) {
-  console.log("query", query);
-  const spec = planQuery(testDB, query);
-  const optimized = optimize(spec);
-  console.log("optimized plan:", optimized);
-  const node = instantiate(testDB, optimized);
+  console.log("query:", pp.render(100, prettyPrintTerm(query)));
+  const plan = planQuery(testDB, query);
+  const optimizedPlan = optimize(plan);
+  console.group("optimized plan:");
+  console.log(pp.render(100, prettyPrintPlan(optimizedPlan)));
+  console.groupEnd();
+  const node = instantiate(testDB, optimizedPlan);
   const actualResults = allResults(node);
   // TODO: make this disregard order of results
   // assertDeepEqual(expectedOptimizedPlan, optimized, "plan");
@@ -316,20 +311,18 @@ export const queryTests: Test[] = [
     },
   },
   {
-    name: "sibling",
-    ignored: true,
+    name: "sibling_all",
     test: () => {
       testQuery(rec("sibling", { left: varr("L"), right: varr("R") }), [
         {
-          term: rec("sibling", { left: str("Pete"), right: str("Bob") }),
+          term: rec("sibling", { left: str("Paul"), right: str("Ann") }),
           bindings: { L: str("Paul"), R: str("Ann") },
         },
       ]);
     },
   },
   {
-    name: "cousin",
-    ignored: true,
+    name: "cousin_all",
     test: () => {
       testQuery(rec("cousin", { left: varr("L"), right: varr("R") }), [
         {
