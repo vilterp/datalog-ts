@@ -366,6 +366,7 @@ export const queryTests: Test[] = [
   },
   {
     name: "grandparent_all",
+    ignored: true, // TODO: fill this out once we have plain text test harness
     test: () => {
       testQuery(
         rec("grandparent", { grandchild: varr("X"), grandparent: varr("Y") }),
@@ -376,7 +377,7 @@ export const queryTests: Test[] = [
   },
   {
     name: "sibling_all",
-    ignored: true,
+    ignored: true, // TODO: get this to work (negation?)
     test: () => {
       testQuery(rec("sibling", { left: varr("L"), right: varr("R") }), [
         {
@@ -388,7 +389,7 @@ export const queryTests: Test[] = [
   },
   {
     name: "cousin_all",
-    ignored: true,
+    ignored: true, // TODO: get this to work (probably broken cuz sibling is)
     test: () => {
       testQuery(rec("cousin", { left: varr("L"), right: varr("R") }), [
         {
