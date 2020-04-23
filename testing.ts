@@ -25,11 +25,16 @@ class DiffError<T> {
   }
 }
 
-export type Test = { name: string; test: () => void };
+export type Test = { name: string; ignored?: boolean; test: () => void };
 
 export function runTests(ts: Test[]) {
-  const failures = new Set();
+  const failures = new Set<string>();
+  const ignored = new Set<string>();
   ts.forEach((t) => {
+    if (t.ignored) {
+      ignored.add(t.name);
+      return;
+    }
     console.groupCollapsed(t.name);
     try {
       t.test();

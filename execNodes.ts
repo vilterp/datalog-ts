@@ -60,17 +60,21 @@ class AndNode implements ExecNode {
     this.rightDone = false;
     this.template = template;
 
-    this.advanceLeft();
+    this.advanceLeft(true);
   }
 
-  advanceLeft() {
+  advanceLeft(constructor?: boolean) {
     const res = this.left.Next();
     if (res === null) {
       this.leftDone = true;
       return;
     }
     this.curLeft = res;
-    this.right.Reset();
+    if (!constructor) {
+      // don't clear right off the bat
+      // TODO: this is clumsy
+      this.right.Reset();
+    }
     this.rightDone = false;
   }
 
