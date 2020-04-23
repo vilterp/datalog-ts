@@ -1,8 +1,9 @@
 import * as diff from "diff";
+import * as util from "util";
 
 export function assertDeepEqual<T extends object>(expected: T, actual: T) {
-  const expJSON = JSON.stringify(expected, null, 2);
-  const actJSON = JSON.stringify(actual, null, 2);
+  const expJSON = util.inspect(expected, { depth: null });
+  const actJSON = util.inspect(actual, { depth: null });
   if (actJSON != expJSON) {
     throw new DiffError(expected, actual);
   }
@@ -32,8 +33,8 @@ export function runTests(ts: Test[]) {
       if (e instanceof DiffError) {
         const patch = diff.createPatch(
           t.name,
-          JSON.stringify(e.expected, null, 2),
-          JSON.stringify(e.actual, null, 2),
+          util.inspect(e.expected, { depth: null }) + "\n",
+          util.inspect(e.actual, { depth: null }) + "\n",
           "expected",
           "actual"
         );

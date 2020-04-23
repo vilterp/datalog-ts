@@ -154,7 +154,7 @@ export const queryTests: Test[] = [
   {
     name: "parent_all",
     test: () => {
-      testQuery(rec("parent", { child: str("X"), parent: varr("Y") }), [
+      testQuery(rec("parent", { child: varr("X"), parent: varr("Y") }), [
         // TODO: these results are't right! supposed to be filtering to just Pete's parents!
         {
           term: rec("parent", { child: str("Pete"), parent: str("Mary") }),
