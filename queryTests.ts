@@ -27,12 +27,14 @@ const testDB: DB = {
       rec("father", { child: str("Pete"), father: str("Paul") }),
       rec("father", { child: str("Paul"), father: str("Peter") }),
       rec("father", { child: str("Ann"), father: str("Peter") }),
+      rec("father", { child: str("Mary"), father: str("Mark") }),
     ],
     mother: [
       rec("mother", { child: str("Pete"), mother: str("Mary") }),
       rec("mother", { child: str("Paul"), mother: str("Judith") }),
       rec("mother", { child: str("Ann"), mother: str("Judith") }),
       rec("mother", { child: str("Bob"), mother: str("Ann") }),
+      rec("mother", { child: str("Mary"), mother: str("Carolyn K") }),
       // TODO
     ],
   },
@@ -65,7 +67,7 @@ const testDB: DB = {
           {
             type: "And",
             clauses: [
-              rec("father", { child: varr("A"), father: varr("B") }),
+              rec("parent", { child: varr("A"), parent: varr("B") }),
               rec("father", { child: varr("B"), father: varr("C") }),
             ],
           },
@@ -83,7 +85,7 @@ const testDB: DB = {
           {
             type: "And",
             clauses: [
-              rec("mother", { child: varr("A"), mother: varr("B") }),
+              rec("child", { child: varr("A"), parent: varr("B") }),
               rec("mother", { child: varr("B"), mother: varr("C") }),
             ],
           },
@@ -194,6 +196,10 @@ export const queryTests: Test[] = [
             term: rec("father", { child: str("Ann"), father: str("Peter") }),
             bindings: { X: str("Ann"), Y: str("Peter") },
           },
+          {
+            term: rec("father", { child: str("Mary"), father: str("Mark") }),
+            bindings: { X: str("Mary"), Y: str("Mark") },
+          },
         ]
       );
     },
@@ -234,6 +240,13 @@ export const queryTests: Test[] = [
             bindings: { X: str("Bob"), Y: str("Ann") },
           },
           {
+            term: rec("parent", {
+              child: str("Mary"),
+              parent: str("Carolyn K"),
+            }),
+            bindings: { X: str("Mary"), Y: str("Carolyn K") },
+          },
+          {
             term: rec("parent", { child: str("Pete"), parent: str("Paul") }),
             bindings: { X: str("Pete"), Y: str("Paul") },
           },
@@ -244,6 +257,10 @@ export const queryTests: Test[] = [
           {
             term: rec("parent", { child: str("Ann"), parent: str("Peter") }),
             bindings: { X: str("Ann"), Y: str("Peter") },
+          },
+          {
+            term: rec("parent", { child: str("Mary"), parent: str("Mark") }),
+            bindings: { X: str("Mary"), Y: str("Mark") },
           },
         ]
       );
@@ -270,7 +287,7 @@ export const queryTests: Test[] = [
     },
   },
   {
-    name: "grandfather",
+    name: "grandfather_Pete",
     test: () => {
       testQuery(
         rec("grandfather", { grandchild: str("Pete"), grandfather: varr("A") }),
@@ -285,12 +302,21 @@ export const queryTests: Test[] = [
               A: str("Peter"),
             },
           },
+          {
+            term: rec("grandfather", {
+              grandchild: str("Pete"),
+              grandfather: str("Mark"),
+            }),
+            bindings: {
+              A: str("Mark"),
+            },
+          },
         ]
       );
     },
   },
   {
-    name: "grandparent",
+    name: "grandparent_Pete",
     test: () => {
       testQuery(
         rec("grandparent", { grandchild: str("Pete"), grandparent: varr("X") }),
@@ -308,9 +334,25 @@ export const queryTests: Test[] = [
           {
             term: rec("grandparent", {
               grandchild: str("Pete"),
+              grandparent: str("Carolyn K"),
+            }),
+            bindings: {
+              X: str("Carolyn K"),
+            },
+          },
+          {
+            term: rec("grandparent", {
+              grandchild: str("Pete"),
               grandparent: str("Peter"),
             }),
             bindings: { X: str("Peter") },
+          },
+          {
+            term: rec("grandparent", {
+              grandchild: str("Pete"),
+              grandparent: str("Mark"),
+            }),
+            bindings: { X: str("Mark") },
           },
         ]
       );
