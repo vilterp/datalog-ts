@@ -69,15 +69,23 @@ function treeNode(node: pp.IDoc, children: PlanNode[]): pp.IDoc {
 }
 
 function prettyPrintRule(rule: Rule): pp.IDoc {
-  return [
-    prettyPrintTerm(rule.head),
-    " :- ",
-    pp.intersperse(" | ")(
-      rule.defn.opts.map((ae) =>
-        pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
+  const oneLine = pp.intersperse(" | ")(
+    rule.defn.opts.map((ae) =>
+      pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
+    )
+  );
+  const splitUp = [
+    pp.line,
+    pp.indent(
+      2,
+      pp.intersperse([" |", pp.line])(
+        rule.defn.opts.map((ae) =>
+          pp.intersperse([" &", pp.line])(ae.clauses.map(prettyPrintTerm))
+        )
       )
     ),
   ];
+  return [prettyPrintTerm(rule.head), " :- ", pp.choice(oneLine, splitUp)];
 }
 
 export function prettyPrintDB(db: DB): pp.IDoc {
