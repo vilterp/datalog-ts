@@ -4,9 +4,8 @@ import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
 import { planQuery } from "./plan";
 import { allResults, instantiate } from "./execNodes";
-import { prettyPrintDB, prettyPrintPlan, prettyPrintResults } from "./pretty";
+import { prettyPrintDB, prettyPrintResults } from "./pretty";
 import * as pp from "prettier-printer";
-import { ReadLine } from "readline";
 
 export class Repl {
   db: DB;
@@ -14,7 +13,7 @@ export class Repl {
   out: NodeJS.WritableStream;
   buffer: string;
   stdinTTY: boolean;
-  query: string;
+  query: string | null;
   rl: readline.Interface;
 
   constructor(
@@ -28,7 +27,11 @@ export class Repl {
     this.out = out;
     this.buffer = "";
     this.stdinTTY = stdinTTY;
-    this.query = query.endsWith(".") ? query : `${query}.`;
+    if (query) {
+      this.query = query.endsWith(".") ? query : `${query}.`;
+    } else {
+      this.query = null;
+    }
   }
 
   run() {
@@ -46,7 +49,9 @@ export class Repl {
     rl.prompt();
 
     rl.on("close", () => {
-      this.handleLine(this.query);
+      if (this.query) {
+        this.handleLine(this.query);
+      }
     });
     this.rl = rl;
   }
