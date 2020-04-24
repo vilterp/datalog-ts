@@ -11,11 +11,13 @@ export class Repl {
   db: DB;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
+  buffer: string;
 
   constructor(input: NodeJS.ReadableStream, out: NodeJS.WritableStream) {
     this.db = newDB();
     this.in = input;
     this.out = out;
+    this.buffer = "";
   }
 
   run() {
@@ -30,16 +32,24 @@ export class Repl {
         rl.prompt();
         return;
       }
+      // special commands
+      // TODO: parse these with parser
       if (line === ".dump") {
         console.log(pp.render(100, prettyPrintDB(this.db)));
         rl.prompt();
         return;
       }
+      this.buffer = this.buffer + line;
+      if (!line.endsWith(".")) {
+        return;
+      }
       try {
-        const stmt: Statement = language.statement.tryParse(line);
+        const stmt: Statement = language.statement.tryParse(this.buffer);
         this.handleStmt(stmt);
       } catch (e) {
         console.error("parse error", e.toString());
+      } finally {
+        this.buffer = "";
       }
       rl.prompt();
     });
