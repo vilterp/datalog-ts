@@ -3,6 +3,13 @@ export interface DB {
   rules: { [name: string]: Rule };
 }
 
+export function newDB(): DB {
+  return {
+    rules: {},
+    tables: {},
+  };
+}
+
 export interface Res {
   term: Term;
   bindings: Bindings;
@@ -20,6 +27,10 @@ type Trace =
   | { type: "FilterTrace"; record: Rec; inner: Res };
 
 export type Bindings = { [key: string]: Term };
+
+export type Statement =
+  | { type: "Rule"; rule: Rule }
+  | { type: "Insert"; record: Rec };
 
 export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
