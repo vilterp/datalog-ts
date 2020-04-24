@@ -6,7 +6,7 @@ mother{child: "Pete", mother: "Mary"}.
 mother{child: "Paul", mother: "Judith"}.
 mother{child: "Ann", mother: "Judith"}.
 mother{child: "Bob", mother: "Ann"}.
-mother{child: "Mary", mother: "Carolyn K"}.
+mother{child: "Mary", mother: "Carolyn_K"}.
 
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
@@ -35,3 +35,29 @@ cousin{left: L, right: R} :-
   parent{child: L, parent: P1} &
   sibling{left: P1, right: P2} &
   parent{child: R, parent: P2}.
+
+
+edge_m{from: C, to: M, label: "mother"} :-
+    mother{child: C, mother: M}.
+edge_f{from: C, to: F, label: "mother"} :-
+    father{child: C, father: F}.
+edge_gp{from: A, to: B, label: "grapndparent"} :-
+    grandparent{grandchild: A, grandparent: B}.
+edge{from: F, to: T, label: L} :-
+    edge_m{from: F, to: T, label: L} |
+    edge_f{from: F, to: T, label: L} |
+    edge_gp{from: F, to: T, label: L}.
+
+node_mc{id: C, label: C} :-
+    mother{child: C}.
+node_mm{id: C, label: C} :-
+    mother{mother: C}.
+node_fc{id: C, label: C} :-
+    father{child: C}.
+node_ff{id: C, label: C} :-
+    father{father: C}.
+node{id: I, name: N} :-
+    node_mc{id: I, name: N} |
+    node_mm{id: I, name: N} |
+    node_fc{id: I, name: N} |
+    node_ff{id: I, name: N}.

@@ -84,7 +84,10 @@ export class Repl {
       this.handleStmt(stmt);
     } catch (e) {
       // TODO: distinguish between parse errors and others
-      console.error("parse error", e.toString());
+      console.error("error", e.toString());
+      if (!this.stdinTTY) {
+        process.exit(-1);
+      }
     } finally {
       this.buffer = "";
     }
