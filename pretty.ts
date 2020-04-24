@@ -103,13 +103,7 @@ function prettyPrintBindings(bindings: Bindings): pp.IDoc {
 }
 
 export function prettyPrintRes(res: Res): pp.IDoc {
-  return [
-    "(",
-    prettyPrintTerm(res.term),
-    ", ",
-    prettyPrintBindings(res.bindings),
-    ")",
-  ];
+  return [prettyPrintTerm(res.term), "; ", prettyPrintBindings(res.bindings)];
 }
 
 export function prettyPrintResults(results: Res[]): pp.IDoc {

@@ -237,6 +237,12 @@ class FilterNode implements ExecNode {
         return null;
       }
       const bindings = unify(next.bindings, this.record, next.term);
+      // console.log("filter.next:", {
+      //   b: next.bindings,
+      //   r: this.record,
+      //   t: next.term,
+      //   res: bindings,
+      // });
       if (bindings !== null) {
         // hm... are we supposed to use its bindings here?
         return {
