@@ -2,14 +2,6 @@ import * as P from "parsimmon";
 
 // adapted from https://github.com/jneen/parsimmon/blob/master/examples/json.js
 
-function pairsToObj<T>(pairs: [string, T][]): { [key: string]: T } {
-  const out = {};
-  pairs.forEach(([k, v]) => {
-    out[k] = v;
-  });
-  return out;
-}
-
 export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
   statement: (r) => P.alt(r.insert, r.rule),
@@ -58,10 +50,6 @@ function word(str) {
   return P.string(str).skip(P.optWhitespace);
 }
 
-function token(parser) {
-  return parser.skip(P.whitespace);
-}
-
 // Turn escaped characters into real ones (e.g. "\\n" becomes "\n").
 function interpretEscapes(str) {
   let escapes = {
@@ -82,4 +70,12 @@ function interpretEscapes(str) {
     }
     return type;
   });
+}
+
+function pairsToObj<T>(pairs: [string, T][]): { [key: string]: T } {
+  const out = {};
+  pairs.forEach(([k, v]) => {
+    out[k] = v;
+  });
+  return out;
 }
