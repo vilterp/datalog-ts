@@ -16,15 +16,12 @@ export const language = P.createLanguage({
   insert: (r) =>
     r.record.skip(r.period).map((rec) => ({ type: "Insert", record: rec })),
   rule: (r) =>
-    P.seq(
-      r.record,
-      word(":-"),
-      r.ruleOptions,
-      r.period
-    ).map(([head, _, options, __]) => ({
-      type: "Rule",
-      rule: { head, defn: options },
-    })),
+    P.seq(r.record, word(":-"), r.ruleOptions, r.period).map(
+      ([head, _, options, __]) => ({
+        type: "Rule",
+        rule: { head, defn: options },
+      })
+    ),
   ruleOptions: (r) =>
     P.sepBy(r.andClauses, r.or).map((xs) => ({ type: "Or", opts: xs })),
   andClauses: (r) =>
