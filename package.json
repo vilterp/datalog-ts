@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "ts-node allTests.ts",
-    "test-stay-alive": "ts-node allTests.ts --stay-alive"
+    "test-stay-alive": "ts-node allTests.ts --stay-alive",
+    "repl": "ts-node main.ts"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",

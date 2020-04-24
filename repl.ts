@@ -1,8 +1,13 @@
-import { DB, newDB, rec, Rec, Rule, Statement } from "./types";
-import * as readline from "readline";
+import { DB, newDB, Rec, Statement } from "./types";
 import { language } from "./parser";
+import { hasVars, optimize } from "./optimize";
+import * as readline from "readline";
+import { planQuery } from "./plan";
+import { allResults, instantiate } from "./execNodes";
+import { prettyPrintDB, prettyPrintResults } from "./pretty";
+import * as pp from "prettier-printer";
 
-class Repl {
+export class Repl {
   db: DB;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
@@ -20,20 +25,37 @@ class Repl {
       prompt: "> ",
     };
     const rl = readline.createInterface(opts);
-    rl.on("line", (input) => {
+    rl.on("line", (line) => {
+      if (line.length === 0) {
+        rl.prompt();
+        return;
+      }
+      console.log(line);
+      if (line === ".dump") {
+        console.log(pp.render(100, prettyPrintDB(this.db)));
+        rl.prompt();
+        return;
+      }
       try {
-        const stmt: Statement = language.statement.tryParse(input);
+        const stmt: Statement = language.statement.tryParse(line);
+        console.log("parsed:", stmt);
         this.handleStmt(stmt);
       } catch (e) {
-        console.error("parse error", e);
+        console.error("parse error", e.toString());
       }
+      rl.prompt();
     });
+    rl.prompt();
   }
 
   private handleStmt(stmt: Statement) {
     switch (stmt.type) {
       case "Insert": {
         const record = stmt.record;
+        if (hasVars(record)) {
+          this.runQuery(record);
+          break;
+        }
         let tbl = this.db.tables[record.relation];
         if (!tbl) {
           tbl = [];
@@ -42,10 +64,22 @@ class Repl {
         tbl.push(record);
         break;
       }
-      case "Rule":
-        // TODO: run query if has vars
-        this.db.rules[stmt.rule.head.relation] = stmt.rule;
+      case "Rule": {
+        const rule = stmt.rule;
+        this.db.rules[rule.head.relation] = rule;
         break;
+      }
     }
+  }
+
+  private runQuery(record: Rec) {
+    console.log("runQuery", record);
+    // TODO: allow stepping through one at-a-time like SWI-prolog, for infinite result sets...
+    const plan = planQuery(this.db, record);
+    const optPlan = optimize(plan);
+    const execNode = instantiate(this.db, optPlan);
+    const results = allResults(execNode);
+    const printed = prettyPrintResults(results);
+    console.log(printed);
   }
 }

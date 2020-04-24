@@ -1,4 +1,4 @@
-import { PlanNode } from "./types";
+import { PlanNode, Term } from "./types";
 
 // TODO: dry this up with some kind of visitor pattern? lol
 
@@ -52,6 +52,17 @@ function collapseAnds(spec: PlanNode): PlanNode {
   }
 }
 
-export function optimize(spec: PlanNode): PlanNode {
-  return collapseOrs(collapseAnds(spec));
+export function optimize(plan: PlanNode): PlanNode {
+  return collapseOrs(collapseAnds(plan));
+}
+
+export function hasVars(t: Term): boolean {
+  switch (t.type) {
+    case "StringLit":
+      return false;
+    case "Var":
+      return true;
+    case "Record":
+      return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
+  }
 }

@@ -10,6 +10,18 @@ import {
 } from "./types";
 import { substitute, unify, unifyVars } from "./unify";
 
+export function allResults(node: ExecNode): Res[] {
+  const out: Res[] = [];
+  while (true) {
+    const res = node.Next();
+    if (res === null) {
+      break;
+    }
+    out.push(res);
+  }
+  return out;
+}
+
 export function instantiate(db: DB, spec: PlanNode): ExecNode {
   switch (spec.type) {
     case "And":

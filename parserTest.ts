@@ -29,32 +29,34 @@ export const parserTests: Suite = [
   {
     name: "statement",
     test() {
-      testParser(
-        language.statement,
-        `father{child: "Pete", father: "Paul"}.`,
-        rec("father", { child: str("Pete"), father: str("Paul") })
-      );
+      testParser(language.statement, `father{child: "Pete", father: "Paul"}.`, {
+        type: "Insert",
+        record: rec("father", { child: str("Pete"), father: str("Paul") }),
+      });
       testParser(
         language.statement,
         `parent{child: C, parent: P} :- mother{child: C, mother: P} | father{child: C, father: P}.`,
         {
-          head: rec("parent", { child: varr("C"), parent: varr("P") }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec("mother", { child: varr("C"), mother: varr("P") }),
-                ],
-              },
-              {
-                type: "And",
-                clauses: [
-                  rec("father", { child: varr("C"), father: varr("P") }),
-                ],
-              },
-            ],
+          type: "Rule",
+          rule: {
+            head: rec("parent", { child: varr("C"), parent: varr("P") }),
+            defn: {
+              type: "Or",
+              opts: [
+                {
+                  type: "And",
+                  clauses: [
+                    rec("mother", { child: varr("C"), mother: varr("P") }),
+                  ],
+                },
+                {
+                  type: "And",
+                  clauses: [
+                    rec("father", { child: varr("C"), father: varr("P") }),
+                  ],
+                },
+              ],
+            },
           },
         }
       );
@@ -64,21 +66,24 @@ export const parserTests: Suite = [
                   parent{child: A, parent: B} &
                   father{child: B, father: C}.`,
         {
-          head: rec("grandfather", {
-            grandchild: varr("A"),
-            grandfather: varr("C"),
-          }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec("parent", { child: varr("A"), parent: varr("B") }),
-                  rec("father", { child: varr("B"), father: varr("C") }),
-                ],
-              },
-            ],
+          type: "Rule",
+          rule: {
+            head: rec("grandfather", {
+              grandchild: varr("A"),
+              grandfather: varr("C"),
+            }),
+            defn: {
+              type: "Or",
+              opts: [
+                {
+                  type: "And",
+                  clauses: [
+                    rec("parent", { child: varr("A"), parent: varr("B") }),
+                    rec("father", { child: varr("B"), father: varr("C") }),
+                  ],
+                },
+              ],
+            },
           },
         }
       );

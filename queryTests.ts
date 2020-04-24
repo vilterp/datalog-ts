@@ -1,5 +1,5 @@
-import { Bindings, DB, Rec, rec, Res, str, Term, varr } from "./types";
-import { instantiate, ExecNode } from "./execNodes";
+import { Bindings, DB, Rec, rec, str, Term, varr } from "./types";
+import { instantiate, allResults } from "./execNodes";
 import { optimize } from "./optimize";
 import { planQuery } from "./plan";
 import { assertStringEqual, Test } from "./testing";
@@ -10,18 +10,6 @@ import {
   prettyPrintResults,
   prettyPrintTerm,
 } from "./pretty";
-
-function allResults(node: ExecNode): Res[] {
-  const out: Res[] = [];
-  while (true) {
-    const res = node.Next();
-    if (res === null) {
-      break;
-    }
-    out.push(res);
-  }
-  return out;
-}
 
 // test
 

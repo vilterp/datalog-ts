@@ -1,0 +1,3 @@
+father{child: "Pete", father: "Paul"}.
+father{child: "Paul", father: F}.
+.dump
