@@ -112,6 +112,6 @@ export function prettyPrintResults(results: Res[]): pp.IDoc {
 
 // util
 
-function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
+export function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
   return [pair[0], pp.intersperse(", ")(docs), pair[1]];
 }

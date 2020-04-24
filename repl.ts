@@ -1,11 +1,12 @@
-import { DB, newDB, Rec, Statement } from "./types";
+import { DB, newDB, rec, Rec, Res, Statement, StringLit, varr } from "./types";
 import { language } from "./parser";
 import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
 import { planQuery } from "./plan";
 import { allResults, instantiate } from "./execNodes";
-import { prettyPrintDB, prettyPrintResults } from "./pretty";
+import { prettyPrintDB, prettyPrintResults, prettyPrintTerm } from "./pretty";
 import * as pp from "prettier-printer";
+import { Graph, prettyPrintGraph } from "./graphviz";
 
 export class Repl {
   db: DB;
@@ -64,8 +65,13 @@ export class Repl {
     }
     // special commands
     // TODO: parse these with parser
-    if (line === ".dump") {
+    if (line === ".dump.") {
       console.log(pp.render(100, prettyPrintDB(this.db)));
+      rl.prompt();
+      return;
+    } else if (line === ".graphviz.") {
+      // TODO: remove dot...
+      this.doGraphviz();
       rl.prompt();
       return;
     }
@@ -77,6 +83,7 @@ export class Repl {
       const stmt: Statement = language.statement.tryParse(this.buffer);
       this.handleStmt(stmt);
     } catch (e) {
+      // TODO: distinguish between parse errors and others
       console.error("parse error", e.toString());
     } finally {
       this.buffer = "";
@@ -89,7 +96,7 @@ export class Repl {
       case "Insert": {
         const record = stmt.record;
         if (hasVars(record)) {
-          this.runQuery(record);
+          this.printQuery(record);
           break;
         }
         let tbl = this.db.tables[record.relation];
@@ -108,13 +115,47 @@ export class Repl {
     }
   }
 
-  private runQuery(record: Rec) {
+  private runQuery(record: Rec): Res[] {
     // TODO: allow stepping through one at-a-time like SWI-prolog, for infinite result sets...
     const plan = planQuery(this.db, record);
     const optPlan = optimize(plan);
     const execNode = instantiate(this.db, optPlan);
-    const results = allResults(execNode);
-    const printed = prettyPrintResults(results);
+    return allResults(execNode);
+  }
+
+  private printQuery(record: Rec) {
+    const results = this.runQuery(record);
+    const printed = pp.intersperse(pp.lineBreak)(
+      results.map((r) => [prettyPrintTerm(r.term), "."])
+    );
     console.log(pp.render(100, printed));
+  }
+
+  private doGraphviz() {
+    const edges = this.runQuery(
+      rec("edge", { from: varr("F"), to: varr("T"), label: varr("L") })
+    );
+    const nodes = this.runQuery(
+      rec("node", { id: varr("I"), name: varr("N") })
+    );
+    // TODO: oof, all this typecasting
+    const g: Graph = {
+      edges: edges.map((e) => {
+        const rec = e.term as Rec;
+        return {
+          from: (rec.attrs.from as StringLit).val,
+          to: (rec.attrs.to as StringLit).val,
+          attrs: { label: (rec.attrs.label as StringLit).val },
+        };
+      }),
+      nodes: nodes.map((n) => {
+        const rec = n.term as Rec;
+        return {
+          id: (rec.attrs.id as StringLit).val,
+          attrs: { name: (rec.attrs.name as StringLit).val },
+        };
+      }),
+    };
+    console.log(prettyPrintGraph(g));
   }
 }

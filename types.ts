@@ -42,10 +42,11 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: Rec[] };
 
-export type Term =
-  | { type: "StringLit"; val: string }
-  | { type: "Var"; name: string }
-  | Rec;
+export type Term = StringLit | Var | Rec;
+
+export type StringLit = { type: "StringLit"; val: string };
+
+export type Var = { type: "Var"; name: string };
 
 export type Rec = {
   type: "Record";
