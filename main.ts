@@ -1,3 +1,4 @@
+#!/usr/bin/env ts-node
 import { Repl } from "./repl";
 
 const repl = new Repl(
