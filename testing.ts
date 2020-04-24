@@ -37,7 +37,7 @@ class DiffError {
 
 export type Test = { name: string; ignored?: boolean; test: () => void };
 
-export function runTests(ts: Test[]) {
+export function runSuite(ts: Suite) {
   const failures = new Set<string>();
   const ignored = new Set<string>();
   ts.forEach((t) => {
@@ -45,7 +45,7 @@ export function runTests(ts: Test[]) {
       ignored.add(t.name);
       return;
     }
-    console.groupCollapsed(t.name);
+    console.groupCollapsed(`Test ${t.name}`);
     try {
       t.test();
       console.groupEnd();
@@ -61,7 +61,7 @@ export function runTests(ts: Test[]) {
         );
         console.error(patch);
       } else {
-        console.error("FAIL:", e);
+        console.error("FAIL", t.name, e);
       }
       failures.add(t.name);
     }
@@ -71,24 +71,25 @@ export function runTests(ts: Test[]) {
       "failed tests:",
       failures,
       "successful tests:",
-      ts.map((t) => t.name).filter((n) => !failures.has(n))
+      ts.map((t) => t.name).filter((n) => !failures.has(n) && !ignored.has(n))
     );
     throw new Error("test suite failed");
   }
-  console.log("PASS");
 }
 
-type Suite = Test[];
+export type Suite = Test[];
 
 export function runSuites(suites: { [name: string]: Suite }) {
   const failures = new Set();
   for (const suiteName of Object.keys(suites)) {
-    console.log("SUITE", suiteName);
+    console.group("Suite", suiteName);
     try {
-      runTests(suites[suiteName]);
+      runSuite(suites[suiteName]);
     } catch {
       failures.add(suiteName);
     }
+    console.log(`PASS ${suiteName}`);
+    console.groupEnd();
   }
   if (failures.size > 0) {
     console.error("failed suites:", failures);

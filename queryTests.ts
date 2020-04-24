@@ -10,7 +10,6 @@ import {
   prettyPrintResults,
   prettyPrintTerm,
 } from "./pretty";
-import * as util from "util";
 
 function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
