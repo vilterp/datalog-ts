@@ -28,7 +28,7 @@ export function removeOrphanNodes(g: Graph): Graph {
   };
 }
 
-export function prettyPrintGraph(g: Graph): pp.IDoc {
+export function prettyPrintGraph(g: Graph): string {
   return pp.render(100, [
     "digraph G ",
     block(

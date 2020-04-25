@@ -1,12 +1,23 @@
-import { DB, newDB, rec, Rec, Res, Statement, StringLit, varr } from "./types";
+import {
+  DB,
+  newDB,
+  Program,
+  rec,
+  Rec,
+  Res,
+  Statement,
+  StringLit,
+  varr,
+} from "./types";
 import { language } from "./parser";
 import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
 import { planQuery } from "./plan";
 import { allResults, instantiate } from "./execNodes";
-import { prettyPrintDB, prettyPrintResults, prettyPrintTerm } from "./pretty";
+import { prettyPrintDB, prettyPrintPlan, prettyPrintTerm } from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
+import * as fs from "fs";
 
 export class Repl {
   db: DB;
@@ -29,7 +40,7 @@ export class Repl {
     this.buffer = "";
     this.stdinTTY = stdinTTY;
     if (query) {
-      this.query = query.endsWith(".") ? query : `${query}.`;
+      this.query = query;
     } else {
       this.query = null;
     }
@@ -65,14 +76,20 @@ export class Repl {
     }
     // special commands
     // TODO: parse these with parser
-    if (line === ".dump.") {
-      console.log(pp.render(100, prettyPrintDB(this.db)));
+    if (line === ".dump") {
+      this.println(pp.render(100, prettyPrintDB(this.db)));
       rl.prompt();
       return;
-    } else if (line === ".graphviz.") {
+    } else if (line === ".graphviz") {
       // TODO: remove dot...
       this.doGraphviz();
       rl.prompt();
+      return;
+    } else if (line.startsWith(".explain ")) {
+      this.doExplain(line.slice(".explain ".length));
+      return;
+    } else if (line.startsWith(".load ")) {
+      this.doLoad(line.slice(".load ".length));
       return;
     }
     this.buffer = this.buffer + line;
@@ -84,7 +101,7 @@ export class Repl {
       this.handleStmt(stmt);
     } catch (e) {
       // TODO: distinguish between parse errors and others
-      console.error("error", e.toString());
+      this.println("error", e.toString());
       if (!this.stdinTTY) {
         process.exit(-1);
       }
@@ -131,7 +148,7 @@ export class Repl {
     const printed = pp.intersperse(pp.lineBreak)(
       results.map((r) => [prettyPrintTerm(r.term), "."])
     );
-    console.log(pp.render(100, printed));
+    this.println(pp.render(100, printed));
   }
 
   private doGraphviz() {
@@ -159,6 +176,35 @@ export class Repl {
         };
       }),
     };
-    console.log(prettyPrintGraph(g));
+    this.println(prettyPrintGraph(g));
+  }
+
+  private doExplain(s: string) {
+    try {
+      const rec = language.record.tryParse(s);
+      const plan = planQuery(this.db, rec);
+      const optPlan = optimize(plan);
+      this.println(pp.render(100, prettyPrintPlan(optPlan)));
+    } catch (e) {
+      this.println("error: ", e.toString());
+    }
+    this.rl.prompt();
+  }
+
+  private println(...strings: string[]) {
+    this.out.write(strings.join(" ") + "\n");
+  }
+
+  private doLoad(path: string) {
+    const buf = fs.readFileSync(path);
+    try {
+      const program: Program = language.program.tryParse(buf.toString());
+      for (const stmt of program) {
+        this.handleStmt(stmt);
+      }
+    } catch (e) {
+      this.println("error: ", e);
+    }
+    this.rl.prompt();
   }
 }

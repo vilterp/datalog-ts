@@ -28,6 +28,8 @@ type Trace =
 
 export type Bindings = { [key: string]: Term };
 
+export type Program = Statement[];
+
 export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Insert"; record: Rec };
