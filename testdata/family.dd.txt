@@ -7,36 +7,27 @@ mother{child: "Paul", mother: "Judith"}.
 mother{child: "Ann", mother: "Judith"}.
 mother{child: "Bob", mother: "Ann"}.
 mother{child: "Mary", mother: "Carolyn_K"}.
-
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
-
 grandmother{grandchild: A, grandmother: C} :-
   child{child: A, parent: B} &
   mother{child: B, mother: C}.
-
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
-
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
-
 parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
-
 sibling{left: L, right: R} :-
   parents{child: L, mother: M, father: F} &
   parents{child: R, mother: M, father: F}.
-
 cousin{left: L, right: R} :-
   parent{child: L, parent: P1} &
   sibling{left: P1, right: P2} &
   parent{child: R, parent: P2}.
-
-
 edge_m{from: C, to: M, label: "mother"} :-
     mother{child: C, mother: M}.
 edge_f{from: C, to: F, label: "mother"} :-
@@ -47,7 +38,6 @@ edge{from: F, to: T, label: L} :-
     edge_m{from: F, to: T, label: L} |
     edge_f{from: F, to: T, label: L} |
     edge_gp{from: F, to: T, label: L}.
-
 node_mc{id: C, label: C} :-
     mother{child: C}.
 node_mm{id: C, label: C} :-
@@ -118,7 +108,6 @@ sibling{left: "Pete", right: "Pete"}.
 
 cousin{left: X, right: Y}.
 ----
-
 
 
 .explain sibling{left: X, right: Y}

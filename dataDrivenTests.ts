@@ -82,9 +82,12 @@ function getResults(test: DDTest): Result[] {
   }
   input.end();
 
+  console.log(results);
+
   return results;
 }
 
+// ah, nothing like a hand written parser
 function parseDDTest(str: string): DDTest {
   const out: DDTest = [];
   let lineNo = 1;
@@ -98,7 +101,9 @@ function parseDDTest(str: string): DDTest {
         inputLineNo = lineNo - 1;
         state = "output";
       } else {
-        curInput.push(line);
+        if (line !== "" && !line.startsWith("#")) {
+          curInput.push(line);
+        }
       }
     } else if (state === "output") {
       if (line === "") {
