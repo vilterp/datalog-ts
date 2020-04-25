@@ -3,87 +3,123 @@ import { Repl } from "./repl";
 import * as stream from "stream";
 import * as fs from "fs";
 
-export const dataDrivenTests: Suite = [
-  {
-    name: "simple",
-    test() {
-      runDDTestAtPath("testdata/simple.dd.txt");
+export function dataDrivenTests(writeResults: boolean): Suite {
+  return [
+    {
+      name: "simple",
+      test() {
+        runDDTestAtPath("testdata/simple.dd.txt", writeResults);
+      },
     },
-  },
-  {
-    name: "family",
-    test() {
-      runDDTestAtPath("testdata/family.dd.txt");
+    {
+      name: "family",
+      test() {
+        runDDTestAtPath("testdata/family.dd.txt", writeResults);
+      },
     },
-  },
-];
+  ];
+}
 
 type DDTest = IOPair[];
 
 interface IOPair {
+  lineNo: number; // 1-indexed
   input: string;
   output: string;
 }
 
-function runDDTestAtPath(path: string) {
-  const contents = fs.readFileSync(path);
-  const test = parseDDTest(contents.toString());
-  runDDTest(test);
+function checkResults(results: Result[]) {
+  // TODO: print 'em all out, not just first that failed
+  for (const result of results) {
+    assertStringEqual(
+      result.pair.output,
+      result.actual,
+      `L${result.pair.lineNo}: ${result.pair.input}`
+    );
+  }
 }
 
-function runDDTest(test: DDTest) {
-  const input = identityStream();
-  const output = identityStream();
+function resultsToStr(results: Result[]): string {
+  return results
+    .map((r) => [r.pair.input, "----", r.actual].join("\n"))
+    .join("\n");
+}
+
+function doWriteResults(path: string, results: Result[]) {
+  fs.writeFileSync(path, resultsToStr(results));
+}
+
+function runDDTestAtPath(path: string, writeResults: boolean) {
+  const contents = fs.readFileSync(path);
+  const test = parseDDTest(contents.toString());
+  const results = getResults(test);
+  if (writeResults) {
+    doWriteResults(path, results);
+  } else {
+    checkResults(results);
+  }
+}
+
+type Result = { pair: IOPair; actual: string };
+
+function getResults(test: DDTest): Result[] {
+  const input = identityTransform();
+  const output = identityTransform();
   const repl = new Repl(input, output, false, "");
   repl.run();
 
-  // const initialPrompt = output.read();
-  // assertStringEqual("> ", initialPrompt.toString());
+  const results: Result[] = [];
+
   for (const pair of test) {
-    console.log("=> ", pair.input);
     input.write(pair.input + "\n");
 
     const chunk = output.read();
-    if (chunk === null) {
-      continue;
-    }
-    console.log("<= ", chunk.toString());
 
-    assertStringEqual(pair.output, chunk.toString());
+    results.push({
+      pair,
+      actual: chunk ? chunk.toString() : "",
+    });
   }
   input.end();
+
+  return results;
 }
 
 function parseDDTest(str: string): DDTest {
   const out: DDTest = [];
+  let lineNo = 1;
+  let inputLineNo = 1;
   let state: "input" | "output" = "input";
   let curInput = [];
   let curOutput = [];
   for (const line of str.split("\n")) {
     if (state === "input") {
       if (line === "----") {
+        inputLineNo = lineNo - 1;
         state = "output";
-        continue;
+      } else {
+        curInput.push(line);
       }
-      curInput.push(line);
     } else if (state === "output") {
       if (line === "") {
         out.push({
+          lineNo: inputLineNo,
           input: curInput.join("\n"),
           output: curOutput.length === 0 ? "" : curOutput.join("\n") + "\n",
         });
         curOutput = [];
         curInput = [];
         state = "input";
-        continue;
+      } else {
+        curOutput.push(line);
       }
-      curOutput.push(line);
     }
+    lineNo++;
   }
   return out;
 }
 
-function identityStream(): stream.Transform {
+function identityTransform(): stream.Transform {
   return new stream.Transform({
     transform(
       chunk: any,

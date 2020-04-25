@@ -72,24 +72,50 @@ father{child: "Mary", father: "Mark"}.
 
 father{child: "Pete", father: F}.
 ----
+father{child: "Pete", father: "Paul"}.
 
 parent{child: X, parent: Y}.
 ----
+parent{child: "Pete", parent: "Mary"}.
+parent{child: "Paul", parent: "Judith"}.
+parent{child: "Ann", parent: "Judith"}.
+parent{child: "Bob", parent: "Ann"}.
+parent{child: "Mary", parent: "Carolyn_K"}.
+parent{child: "Pete", parent: "Paul"}.
+parent{child: "Paul", parent: "Peter"}.
+parent{child: "Ann", parent: "Peter"}.
+parent{child: "Mary", parent: "Mark"}.
 
 parent{child: "Pete", parent: Y}.
 ----
+parent{child: "Pete", parent: "Mary"}.
+parent{child: "Pete", parent: "Paul"}.
 
 grandfather{grandchild: "Pete", grandfather: A}.
 ----
+grandfather{grandchild: "Pete", grandfather: "Peter"}.
+grandfather{grandchild: "Pete", grandfather: "Mark"}.
 
 grandparent{grandchild: "Pete", grandparent: X}.
 ----
+grandparent{grandchild: "Pete", grandparent: "Judith"}.
+grandparent{grandchild: "Pete", grandparent: "Carolyn_K"}.
+grandparent{grandchild: "Pete", grandparent: "Peter"}.
+grandparent{grandchild: "Pete", grandparent: "Mark"}.
 
 grandparent{grandchild: X, grandparent: Y}.
 ----
+grandparent{grandchild: "Pete", grandparent: "Judith"}.
+grandparent{grandchild: "Bob", grandparent: "Judith"}.
+grandparent{grandchild: "Pete", grandparent: "Carolyn_K"}.
+grandparent{grandchild: "Pete", grandparent: "Peter"}.
+grandparent{grandchild: "Bob", grandparent: "Peter"}.
+grandparent{grandchild: "Pete", grandparent: "Mark"}.
 
 sibling{left: X, right: Y}.
 ----
+sibling{left: "Pete", right: "Pete"}.
 
 cousin{left: X, right: Y}.
 ----
+

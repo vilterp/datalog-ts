@@ -4,18 +4,17 @@ import { queryTests } from "./queryTests";
 import { parserTests } from "./parserTest";
 import { dataDrivenTests } from "./dataDrivenTests";
 
+// TODO: use a real arg parser
+const flags = new Set(process.argv.slice(2));
+const writeResults = flags.has("--write-results");
+const stayAlive = flags.has("--stay-alive");
+
 const suites = {
   unifyTests,
   queryTests,
   parserTests,
-  dataDrivenTests,
+  dataDrivenTests: dataDrivenTests(writeResults),
 };
-
-const stayAlive = process.argv[2] === "--stay-alive";
-if (stayAlive) {
-  console.log("keeping VM alive for inspector...");
-  setInterval(() => {}, 100);
-}
 
 try {
   runSuites(suites);
@@ -23,4 +22,9 @@ try {
   if (stayAlive) {
     console.error(e);
   }
+}
+
+if (stayAlive) {
+  console.log("keeping VM alive for inspector...");
+  setInterval(() => {}, 100);
 }
