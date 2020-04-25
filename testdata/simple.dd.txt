@@ -1,3 +1,8 @@
 father{child: "Pete", father: "Paul"}.
+----
+> 
+
 father{child: "Pete", father: F}.
-.dump
+----
+father{child: "Pete", father: "Paul"}.
+> 

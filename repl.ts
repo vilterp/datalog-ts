@@ -191,10 +191,6 @@ export class Repl {
     this.rl.prompt();
   }
 
-  private println(...strings: string[]) {
-    this.out.write(strings.join(" ") + "\n");
-  }
-
   private doLoad(path: string) {
     const buf = fs.readFileSync(path);
     try {
@@ -206,5 +202,9 @@ export class Repl {
       this.println("error: ", e);
     }
     this.rl.prompt();
+  }
+
+  private println(...strings: string[]) {
+    this.out.write(strings.join(" ") + "\n");
   }
 }
