@@ -82,8 +82,6 @@ function getResults(test: DDTest): Result[] {
   }
   input.end();
 
-  console.log(results);
-
   return results;
 }
 

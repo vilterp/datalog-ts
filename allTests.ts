@@ -1,6 +1,5 @@
 import { runSuites } from "./testing";
 import { unifyTests } from "./unifyTests";
-import { queryTests } from "./queryTests";
 import { parserTests } from "./parserTest";
 import { dataDrivenTests } from "./dataDrivenTests";
 
@@ -11,7 +10,6 @@ const stayAlive = flags.has("--stay-alive");
 
 const suites = {
   unifyTests,
-  queryTests,
   parserTests,
   dataDrivenTests: dataDrivenTests(writeResults),
 };
