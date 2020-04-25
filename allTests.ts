@@ -1,12 +1,14 @@
+import { runSuites } from "./testing";
 import { unifyTests } from "./unifyTests";
 import { queryTests } from "./queryTests";
-import { runSuites } from "./testing";
 import { parserTests } from "./parserTest";
+import { dataDrivenTests } from "./dataDrivenTests";
 
 const suites = {
   unifyTests,
   queryTests,
   parserTests,
+  dataDrivenTests,
 };
 
 const stayAlive = process.argv[2] === "--stay-alive";
