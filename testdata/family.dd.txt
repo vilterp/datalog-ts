@@ -32,7 +32,7 @@ edge_m{from: C, to: M, label: "mother"} :-
     mother{child: C, mother: M}.
 edge_f{from: C, to: F, label: "mother"} :-
     father{child: C, father: F}.
-edge_gp{from: A, to: B, label: "grapndparent"} :-
+edge_gp{from: A, to: B, label: "grandparent"} :-
     grandparent{grandchild: A, grandparent: B}.
 edge{from: F, to: T, label: L} :-
     edge_m{from: F, to: T, label: L} |

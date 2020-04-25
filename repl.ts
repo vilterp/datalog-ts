@@ -181,8 +181,8 @@ export class Repl {
 
   private doExplain(s: string) {
     try {
-      const rec = language.record.tryParse(s);
-      const plan = planQuery(this.db, rec);
+      const insert = language.insert.tryParse(s);
+      const plan = planQuery(this.db, insert.record);
       const optPlan = optimize(plan);
       this.println(pp.render(100, prettyPrintPlan(optPlan)));
     } catch (e) {
