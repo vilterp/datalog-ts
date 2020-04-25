@@ -18,26 +18,23 @@ export const dataDrivenTests: Suite = [
         },
         {
           input: `father{child: "Pete", father: F}.`,
-          output: `father{child: "Pete", father: "Paul"}
+          output: `father{child: "Pete", father: "Paul"}.
 > `,
         },
       ];
 
-      let idx = 0;
-      output.on("data", (chunk) => {
-        const pair = pairs[idx];
-        console.log("assert equal", pair.output, chunk.toString());
-        assertStringEqual(pair.output, chunk.toString());
-      });
-      output.on("end", () => {
-        console.log("over");
-      });
+      const initialPrompt = output.read();
+      assertStringEqual("> ", initialPrompt.toString());
+      for (const pair of pairs) {
+        console.log("=> ", pair.input);
+        input.write(pair.input + "\n");
 
-      // for (const pair of pairs) {
-      //   console.log("writing", pair.input);
-      //   input.write(pair.input + "\n");
-      // }
-      // input.end();
+        const chunk = output.read();
+        console.log("<= ", chunk.toString());
+
+        assertStringEqual(pair.output, chunk.toString());
+      }
+      input.end();
     },
   },
 ];
