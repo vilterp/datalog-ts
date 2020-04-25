@@ -61,3 +61,11 @@ node{id: I, name: N} :-
     node_mm{id: I, name: N} |
     node_fc{id: I, name: N} |
     node_ff{id: I, name: N}.
+----
+
+father{child: X, father: Y}.
+----
+father{child: "Pete", father: "Paul"}.
+father{child: "Paul", father: "Peter"}.
+father{child: "Ann", father: "Peter"}.
+father{child: "Mary", father: "Mark"}.

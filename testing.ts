@@ -85,10 +85,11 @@ export function runSuites(suites: { [name: string]: Suite }) {
     console.group("Suite", suiteName);
     try {
       runSuite(suites[suiteName]);
+      console.log(`PASS ${suiteName}`);
     } catch {
       failures.add(suiteName);
+      console.log(`FAIL ${suiteName}`);
     }
-    console.log(`PASS ${suiteName}`);
     console.groupEnd();
   }
   if (failures.size > 0) {

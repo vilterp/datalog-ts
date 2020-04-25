@@ -10,6 +10,12 @@ export const dataDrivenTests: Suite = [
       runDDTestAtPath("testdata/simple.dd.txt");
     },
   },
+  {
+    name: "family",
+    test() {
+      runDDTestAtPath("testdata/family.dd.txt");
+    },
+  },
 ];
 
 type DDTest = IOPair[];
@@ -28,16 +34,19 @@ function runDDTestAtPath(path: string) {
 function runDDTest(test: DDTest) {
   const input = identityStream();
   const output = identityStream();
-  const repl = new Repl(input, output, true, "");
+  const repl = new Repl(input, output, false, "");
   repl.run();
 
-  const initialPrompt = output.read();
-  assertStringEqual("> ", initialPrompt.toString());
+  // const initialPrompt = output.read();
+  // assertStringEqual("> ", initialPrompt.toString());
   for (const pair of test) {
     console.log("=> ", pair.input);
     input.write(pair.input + "\n");
 
     const chunk = output.read();
+    if (chunk === null) {
+      continue;
+    }
     console.log("<= ", chunk.toString());
 
     assertStringEqual(pair.output, chunk.toString());
@@ -61,7 +70,7 @@ function parseDDTest(str: string): DDTest {
       if (line === "") {
         out.push({
           input: curInput.join("\n"),
-          output: curOutput.join("\n"),
+          output: curOutput.length === 0 ? "" : curOutput.join("\n") + "\n",
         });
         curOutput = [];
         curInput = [];
