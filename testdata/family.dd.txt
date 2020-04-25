@@ -69,3 +69,27 @@ father{child: "Pete", father: "Paul"}.
 father{child: "Paul", father: "Peter"}.
 father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
+
+father{child: "Pete", father: F}.
+----
+
+parent{child: X, parent: Y}.
+----
+
+parent{child: "Pete", parent: Y}.
+----
+
+grandfather{grandchild: "Pete", grandfather: A}.
+----
+
+grandparent{grandchild: "Pete", grandparent: X}.
+----
+
+grandparent{grandchild: X, grandparent: Y}.
+----
+
+sibling{left: X, right: Y}.
+----
+
+cousin{left: X, right: Y}.
+----
