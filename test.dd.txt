@@ -1,6 +1,0 @@
-father{child: "Pete", father: "Paul"}.
-----
-
-father{child: "Pete", father: F}.
-----
-father{child: "Pete", father: "Paul"}
