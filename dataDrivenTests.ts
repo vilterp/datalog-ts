@@ -32,8 +32,8 @@ function checkResults(results: Result[]) {
   // TODO: print 'em all out, not just first that failed
   for (const result of results) {
     assertStringEqual(
-      result.pair.output,
-      result.actual,
+      result.pair.output.trim(),
+      result.actual.trim(),
       `L${result.pair.lineNo}: ${result.pair.input}`
     );
   }
