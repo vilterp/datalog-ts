@@ -110,7 +110,7 @@ cousin{left: X, right: Y}.
 ----
 
 
-.explain sibling{left: X, right: Y}
+.explain sibling{left: X, right: Y}.
 ----
 Filter(sibling{left: X, right: Y})
   Project(sibling{left: L, right: R}, {L: X, R: Y})
@@ -132,7 +132,7 @@ Filter(sibling{left: X, right: Y})
               Filter(mother{child: C, mother: M})
                 Scan(mother)
 
-.explain cousin{left: X, right: Y}
+.explain cousin{left: X, right: Y}.
 ----
 Filter(cousin{left: X, right: Y})
   Project(cousin{left: L, right: R}, {L: X, R: Y})

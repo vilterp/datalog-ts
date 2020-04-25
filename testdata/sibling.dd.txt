@@ -1,0 +1,17 @@
+father{child: "Paul", father: "Peter"}.
+father{child: "Ann", father: "Peter"}.
+mother{child: "Paul", mother: "Judith"}.
+mother{child: "Ann", mother: "Judith"}.
+parents{child: C, mother: M, father: F} :-
+  mother{child: C, mother: M} &
+  father{child: C, father: F}.
+sibling{left: L, right: R} :-
+  parents{child: L, mother: M, father: F} &
+  parents{child: R, mother: M, father: F}.
+----
+
+sibling{left: X, right: Y}.
+----
+sibling{left: "Paul", right: "Paul"}.
+sibling{left: "Ann", right: "Paul"}.
+
