@@ -5,18 +5,18 @@ import * as fs from "fs";
 
 export function dataDrivenTests(writeResults: boolean): Suite {
   return [
-    {
-      name: "simple",
-      test() {
-        runDDTestAtPath("testdata/simple.dd.txt", writeResults);
-      },
-    },
-    {
-      name: "family",
-      test() {
-        runDDTestAtPath("testdata/family.dd.txt", writeResults);
-      },
-    },
+    // {
+    //   name: "simple",
+    //   test() {
+    //     runDDTestAtPath("testdata/simple.dd.txt", writeResults);
+    //   },
+    // },
+    // {
+    //   name: "family",
+    //   test() {
+    //     runDDTestAtPath("testdata/family.dd.txt", writeResults);
+    //   },
+    // },
     {
       name: "sibling",
       test() {
@@ -77,6 +77,7 @@ function getResults(test: DDTest): Result[] {
   const results: Result[] = [];
 
   for (const pair of test) {
+    console.log("==============", pair.input);
     input.write(pair.input + "\n");
 
     const chunk = output.read();

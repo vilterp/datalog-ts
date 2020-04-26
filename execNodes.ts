@@ -105,11 +105,13 @@ class AndNode implements ExecNode {
         continue;
       }
       const unifyRes = unifyVars(this.curLeft.bindings, rightRes.bindings);
-      // console.log("And.unify:", {
-      //   left: this.curLeft.bindings,
-      //   right: rightRes.bindings,
-      //   res: unifyRes,
-      // });
+      if (this.template.relation === "cousin") {
+        console.log("And.unify:", {
+          left: this.curLeft.bindings,
+          right: rightRes.bindings,
+          res: unifyRes,
+        });
+      }
 
       if (unifyRes === null) {
         continue;
