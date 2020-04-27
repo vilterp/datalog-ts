@@ -1,7 +1,10 @@
+person{name: "Paul", gender: "Male"}.
+person{name: "Ann", gender: "Female"}.
 father{child: "Pete", father: "Paul"}.
 father{child: "Paul", father: "Peter"}.
 father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
+father{child: "Bob", father: "John"}.
 mother{child: "Pete", mother: "Mary"}.
 mother{child: "Paul", mother: "Judith"}.
 mother{child: "Ann", mother: "Judith"}.
@@ -28,6 +31,18 @@ cousin{left: L, right: R} :-
   parent{child: L, parent: P1} &
   sibling{left: P1, right: P2} &
   parent{child: R, parent: P2}.
+uncle{child: C, uncle: U} :-
+  parent{child: C, parent: P} &
+  brother{person: P, brother: U}.
+aunt{child: C, aunt: U} :-
+  parent{child: C, parent: P} &
+  sister{person: P, sister: U}.
+brother{person: L, brother: R} :-
+  person{name: R, gender: "Male"} &
+  sibling{left: L, right: R}.
+sister{person: L, sister: R} :-
+  person{name: R, gender: "Female"} &
+  sibling{left: L, right: R}.
 edge_m{from: C, to: M, label: "mother"} :-
     mother{child: C, mother: M}.
 edge_f{from: C, to: F, label: "mother"} :-
@@ -51,4 +66,3 @@ node{id: I, name: N} :-
     node_mm{id: I, name: N} |
     node_fc{id: I, name: N} |
     node_ff{id: I, name: N}.
-
