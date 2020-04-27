@@ -17,12 +17,6 @@ export function dataDrivenTests(writeResults: boolean): Suite {
         runDDTestAtPath("testdata/family.dd.txt", writeResults);
       },
     },
-    {
-      name: "sibling",
-      test() {
-        runDDTestAtPath("testdata/sibling.dd.txt", writeResults);
-      },
-    },
   ];
 }
 
