@@ -95,7 +95,7 @@ export function prettyPrintDB(db: DB): pp.IDoc {
   );
 }
 
-function prettyPrintBindings(bindings: Bindings): pp.IDoc {
+export function prettyPrintBindings(bindings: Bindings): pp.IDoc {
   return block(
     pp.braces,
     mapObjToList(bindings, (key, val) => [key, ": ", prettyPrintTerm(val)])

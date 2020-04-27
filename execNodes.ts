@@ -1,14 +1,7 @@
-import {
-  Bindings,
-  DB,
-  PlanNode,
-  rec,
-  Rec,
-  Res,
-  str,
-  VarMappings,
-} from "./types";
+import { Bindings, DB, PlanNode, Rec, Res, str, VarMappings } from "./types";
 import { substitute, unify, unifyVars } from "./unify";
+import { prettyPrintBindings } from "./pretty";
+import * as pp from "prettier-printer";
 
 export function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
@@ -71,8 +64,6 @@ class AndNode implements ExecNode {
     this.leftDone = false;
     this.rightDone = false;
     this.template = template;
-
-    this.advanceLeft(true);
   }
 
   advanceLeft(constructor?: boolean) {
@@ -82,16 +73,16 @@ class AndNode implements ExecNode {
       return;
     }
     this.curLeft = res;
-    if (!constructor) {
-      // don't clear right off the bat
-      // TODO: this is clumsy
-      this.right.Reset();
-    }
+    this.right.Reset();
     this.rightDone = false;
   }
 
   Next(): Res | null {
     while (true) {
+      if (this.curLeft === null) {
+        this.advanceLeft();
+        continue;
+      }
       if (this.leftDone) {
         return null;
       }
@@ -105,13 +96,11 @@ class AndNode implements ExecNode {
         continue;
       }
       const unifyRes = unifyVars(this.curLeft.bindings, rightRes.bindings);
-      if (this.template.relation === "cousin") {
-        console.log("And.unify:", {
-          left: this.curLeft.bindings,
-          right: rightRes.bindings,
-          res: unifyRes,
-        });
-      }
+      // console.log("And.unify", this.template.relation, ":", {
+      //   left: pp.render(100, prettyPrintBindings(this.curLeft?.bindings)),
+      //   right: pp.render(100, prettyPrintBindings(rightRes?.bindings)),
+      //   res: pp.render(100, unifyRes ? prettyPrintBindings(unifyRes) : "null"),
+      // });
 
       if (unifyRes === null) {
         continue;
@@ -134,6 +123,8 @@ class AndNode implements ExecNode {
     this.left.Reset();
     this.right.Reset();
     this.curLeft = null;
+    this.leftDone = false;
+    this.rightDone = false;
   }
 }
 
