@@ -14,7 +14,7 @@ import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
 import { planQuery } from "./plan";
 import { allResults, instantiate } from "./execNodes";
-import { prettyPrintDB, prettyPrintPlan, prettyPrintTerm } from "./pretty";
+import { prettyPrintDB, prettyPrintTerm, prettyPrintPlan } from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
 import * as fs from "fs";
@@ -101,7 +101,7 @@ export class Repl {
       this.handleStmt(stmt);
     } catch (e) {
       // TODO: distinguish between parse errors and others
-      this.println("error", e.toString());
+      this.println("error", e.toString(), e.stack);
       if (!this.stdinTTY) {
         process.exit(-1);
       }
@@ -139,7 +139,7 @@ export class Repl {
     // TODO: allow stepping through one at-a-time like SWI-prolog, for infinite result sets...
     const plan = planQuery(this.db, record);
     const optPlan = optimize(plan);
-    const execNode = instantiate(this.db, optPlan);
+    const execNode = instantiate(this.db, optPlan, optPlan.rules[optPlan.main]);
     return allResults(execNode);
   }
 
@@ -186,7 +186,7 @@ export class Repl {
       const optPlan = optimize(plan);
       this.println(pp.render(100, prettyPrintPlan(optPlan)));
     } catch (e) {
-      this.println("error: ", e.toString());
+      this.println("error: ", e.toString(), e.stack);
     }
     this.rl.prompt();
   }

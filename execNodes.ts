@@ -2,14 +2,11 @@ import {
   Bindings,
   BinExpr,
   DB,
-  falseTerm,
-  Operator,
+  Plan,
   PlanNode,
   Rec,
   Res,
   str,
-  Term,
-  trueTerm,
   VarMappings,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
@@ -26,24 +23,24 @@ export function allResults(node: ExecNode): Res[] {
   return out;
 }
 
-export function instantiate(db: DB, spec: PlanNode): ExecNode {
+export function instantiate(db: DB, plan: Plan, spec: PlanNode): ExecNode {
   switch (spec.type) {
     case "Join":
       return new JoinNode(
-        instantiate(db, spec.left),
-        instantiate(db, spec.right),
+        instantiate(db, plan, spec.left),
+        instantiate(db, plan, spec.right),
         spec.template
       );
     case "Call":
-      return new CallNode(spec.mappings, spec.ruleHead);
+      return new CallNode(db, plan, spec.mappings, spec.ruleHead);
     case "Match":
-      return new MatchNode(instantiate(db, spec.inner), spec.record);
+      return new MatchNode(instantiate(db, plan, spec.inner), spec.record);
     case "Or":
-      return new OrNode(spec.opts.map((opt) => instantiate(db, opt)));
+      return new OrNode(spec.opts.map((opt) => instantiate(db, plan, opt)));
     case "Scan":
       return new ScanNode(spec.relation, db.tables[spec.relation]);
     case "Filter":
-      return new FilterNode(spec.expr, instantiate(db, spec.inner));
+      return new FilterNode(spec.expr, instantiate(db, plan, spec.inner));
     case "EmptyOnce":
       return new EmptyOnceNode();
   }
@@ -169,13 +166,25 @@ class OrNode implements ExecNode {
 class CallNode implements ExecNode {
   headToCaller: VarMappings;
   ruleHead: Rec; // TODO: use this in some kind of trace
+  db: DB;
+  plan: Plan;
+  inner: ExecNode | null;
 
-  constructor(mappings: VarMappings, ruleHead: Rec) {
+  constructor(db: DB, plan: Plan, mappings: VarMappings, ruleHead: Rec) {
+    this.db = db;
+    this.plan = plan;
     this.headToCaller = mappings;
     this.ruleHead = ruleHead;
+    this.inner = null;
   }
 
   Next(): Res | null {
+    if (this.inner === null) {
+      // planning it with rulehead is probably wrong.
+      // probably need the call head.
+      const planNode = this.plan.rules[this.ruleHead.relation];
+      this.inner = instantiate(this.db, this.plan, planNode);
+    }
     const res = this.inner.Next();
     if (res === null) {
       return null;
@@ -216,7 +225,7 @@ class CallNode implements ExecNode {
   }
 
   Reset() {
-    this.inner.Reset();
+    this.inner = null;
   }
 }
 

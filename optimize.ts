@@ -1,4 +1,5 @@
-import { PlanNode, Term } from "./types";
+import { Plan, PlanNode, Term } from "./types";
+import { mapObj } from "./util";
 
 // TODO: dry this up with some kind of visitor pattern? lol
 
@@ -13,11 +14,6 @@ function collapseOrs(spec: PlanNode): PlanNode {
         right: collapseOrs(spec.right),
       };
     case "Match":
-      return {
-        ...spec,
-        inner: collapseOrs(spec.inner),
-      };
-    case "Call":
       return {
         ...spec,
         inner: collapseOrs(spec.inner),
@@ -55,15 +51,16 @@ function collapseAnds(spec: PlanNode): PlanNode {
         ...spec,
         inner: collapseAnds(spec.inner),
       };
-    case "Call":
-      return { ...spec, inner: collapseAnds(spec.inner) };
     default:
       return spec;
   }
 }
 
-export function optimize(plan: PlanNode): PlanNode {
-  return collapseOrs(collapseAnds(plan));
+export function optimize(plan: Plan): Plan {
+  return {
+    ...plan,
+    rules: mapObj(plan.rules, (_, node) => collapseOrs(collapseAnds(node))),
+  };
 }
 
 export function hasVars(t: Term): boolean {

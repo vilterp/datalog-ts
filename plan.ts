@@ -10,7 +10,7 @@ import {
   VarMappings,
 } from "./types";
 
-export function planQuery(db: DB, rec: Rec): PlanNode {
+function planRec(db: DB, rec: Rec): PlanNode {
   const table = db.tables[rec.relation];
   if (table) {
     return scanAndFilterForRec(db, rec);
@@ -39,11 +39,31 @@ function getMappings(
   return out;
 }
 
-function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
+// array of rule names
+export function planQuery(db: DB, rec: Rec): Plan {
+  return { rules: recurse(db, rec, {}), main: rec.relation };
+}
+
+function recurse(
+  db: DB,
+  rec: Rec,
+  seen: { [name: string]: PlanNode }
+): { [name: string]: PlanNode } {
+  if (seen[rec.relation]) {
+    return seen;
+  }
+  if (db.tables[rec.relation]) {
+    return seen;
+  }
+  const rule = db.rules[rec.relation];
   const optionNodes = rule.defn.opts.map((andExpr) =>
     foldAnds(db, andExpr, rule.head)
   );
   const inner: PlanNode = { type: "Or", opts: optionNodes };
+  return { ...seen, [rec.relation]: inner };
+}
+
+function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   const mappings = getMappings(rule.head.attrs, call.attrs);
   // console.log("mappings", {
   //   head: rule.head.attrs,
@@ -87,7 +107,7 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
   const joinNode = recs.reduce<PlanNode>(
     (accum, next) => ({
       type: "Join",
-      left: planQuery(db, next),
+      left: planRec(db, next),
       right: accum,
       template,
     }),

@@ -2,6 +2,7 @@ import {
   Bindings,
   BinExpr,
   DB,
+  Plan,
   PlanNode,
   Res,
   Rule,
@@ -51,37 +52,48 @@ function prettyPrintBinExpr(expr: BinExpr): pp.IDoc {
   ];
 }
 
-export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
-  switch (plan.type) {
+export function prettyPrintPlan(plan: Plan): pp.IDoc {
+  return [
+    `MAIN: ${plan.main}`,
+    pp.lineBreak,
+    pp.intersperse(pp.lineBreak)(
+      mapObjToList(plan.rules, (key, val) => [
+        `${key}:`,
+        pp.lineBreak,
+        prettyPrintPlanNode(val),
+      ])
+    ),
+  ];
+}
+
+export function prettyPrintPlanNode(node: PlanNode): pp.IDoc {
+  switch (node.type) {
     case "Join":
       return treeNode(
-        ["And(", prettyPrintTerm(plan.template), ")"],
-        [plan.left, plan.right]
+        ["And(", prettyPrintTerm(node.template), ")"],
+        [node.left, node.right]
       );
     case "Or":
-      return treeNode("Or", plan.opts);
+      return treeNode("Or", node.opts);
     case "Match":
       return treeNode(
-        ["Match(", prettyPrintTerm(plan.record), ")"],
-        [plan.inner]
+        ["Match(", prettyPrintTerm(node.record), ")"],
+        [node.inner]
       );
     case "Call":
-      return treeNode(
-        [
-          "Call(",
-          prettyPrintTerm(plan.ruleHead),
-          ", ",
-          prettyPrintMappings(plan.mappings),
-          ")",
-        ], // TODO: other attributes
-        [plan.inner]
-      );
+      return [
+        "Call(",
+        prettyPrintTerm(node.ruleHead),
+        ", ",
+        prettyPrintMappings(node.mappings),
+        ")",
+      ];
     case "Scan":
-      return ["Scan(", plan.relation, ")"];
+      return ["Scan(", node.relation, ")"];
     case "Filter":
       return treeNode(
-        ["BinExpr(", prettyPrintBinExpr(plan.expr), ")"],
-        [plan.inner]
+        ["BinExpr(", prettyPrintBinExpr(node.expr), ")"],
+        [node.inner]
       );
     case "EmptyOnce":
       return "Empty";
@@ -92,7 +104,10 @@ function treeNode(node: pp.IDoc, children: PlanNode[]): pp.IDoc {
   return [
     node,
     pp.lineBreak,
-    pp.indent(2, pp.intersperse(pp.lineBreak)(children.map(prettyPrintPlan))),
+    pp.indent(
+      2,
+      pp.intersperse(pp.lineBreak)(children.map(prettyPrintPlanNode))
+    ),
   ];
 }
 
