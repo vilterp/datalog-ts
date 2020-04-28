@@ -19,7 +19,7 @@ export interface Res {
 type Trace =
   | { type: "AndTrace"; left: Res; right: Res }
   | {
-      type: "ProjectTrace";
+      type: "CallTrace";
       ruleName: string;
       mappings: VarMappings;
       inner: Res;
@@ -94,11 +94,16 @@ export const falseTerm: Term = { type: "Bool", val: false };
 
 // plan
 
+export interface Plan {
+  rules: { [name: string]: PlanNode };
+  main: string;
+}
+
 export type PlanNode =
   | { type: "Join"; left: PlanNode; right: PlanNode; template: Rec }
   | { type: "Or"; opts: PlanNode[] }
   | {
-      type: "Project";
+      type: "Call";
       mappings: VarMappings; // call to rule head
       inner: PlanNode;
       ruleHead: Rec;

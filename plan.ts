@@ -50,7 +50,7 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   //   res: mappings,
   // });
   const project: PlanNode = {
-    type: "Project",
+    type: "Call",
     mappings,
     ruleHead: rule.head,
     inner, // inlining the inner rule here. could reference it instead.

@@ -34,8 +34,8 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
         instantiate(db, spec.right),
         spec.template
       );
-    case "Project":
-      return new ProjectNode(
+    case "Call":
+      return new CallNode(
         instantiate(db, spec.inner),
         spec.mappings,
         spec.ruleHead
@@ -170,7 +170,7 @@ class OrNode implements ExecNode {
   }
 }
 
-class ProjectNode implements ExecNode {
+class CallNode implements ExecNode {
   inner: ExecNode;
   headToCaller: VarMappings;
   ruleHead: Rec; // TODO: use this in some kind of trace
@@ -201,7 +201,7 @@ class ProjectNode implements ExecNode {
       term: substitutedTerm,
       bindings: mappedBindings,
       trace: {
-        type: "ProjectTrace",
+        type: "CallTrace",
         ruleName: this.ruleHead.relation,
         inner: res,
         mappings: this.headToCaller,

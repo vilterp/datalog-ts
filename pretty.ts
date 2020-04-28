@@ -65,10 +65,10 @@ export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
         ["Match(", prettyPrintTerm(plan.record), ")"],
         [plan.inner]
       );
-    case "Project":
+    case "Call":
       return treeNode(
         [
-          "Project(",
+          "Call(",
           prettyPrintTerm(plan.ruleHead),
           ", ",
           prettyPrintMappings(plan.mappings),

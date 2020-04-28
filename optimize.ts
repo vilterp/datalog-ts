@@ -17,7 +17,7 @@ function collapseOrs(spec: PlanNode): PlanNode {
         ...spec,
         inner: collapseOrs(spec.inner),
       };
-    case "Project":
+    case "Call":
       return {
         ...spec,
         inner: collapseOrs(spec.inner),
@@ -55,7 +55,7 @@ function collapseAnds(spec: PlanNode): PlanNode {
         ...spec,
         inner: collapseAnds(spec.inner),
       };
-    case "Project":
+    case "Call":
       return { ...spec, inner: collapseAnds(spec.inner) };
     default:
       return spec;
