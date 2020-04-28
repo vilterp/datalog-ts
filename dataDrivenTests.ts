@@ -73,7 +73,7 @@ function getResults(test: DDTest): Result[] {
   for (const pair of test) {
     input.write(pair.input + "\n");
 
-    const chunk = output.read();
+    const chunk = output.read(); // TODO: this seems to not always get everything. sigh.
 
     results.push({
       pair,

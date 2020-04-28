@@ -17,8 +17,9 @@ export const language = P.createLanguage({
   ruleOptions: (r) =>
     P.sepBy(r.andClauses, r.or).map((xs) => ({ type: "Or", opts: xs })),
   andClauses: (r) =>
-    P.sepBy(r.record, r.and).map((xs) => ({ type: "And", clauses: xs })),
-  term: (r) => P.alt(r.record, r.stringLit, r.var),
+    P.sepBy(r.clause, r.and).map((xs) => ({ type: "And", clauses: xs })),
+  clause: (r) => P.alt(r.record, r.binExpr),
+  term: (r) => P.alt(r.record, r.stringLit, r.var), // TODO: binExpr should be in here...
   record: (r) =>
     P.seq(r.identifier, r.lbrace, r.pair.sepBy(r.comma), r.rbrace).map(
       ([ident, _, pairs, __]) => ({
@@ -27,6 +28,17 @@ export const language = P.createLanguage({
         attrs: pairsToObj(pairs),
       })
     ),
+  binExpr: (r) =>
+    P.seq(
+      r.var.skip(P.optWhitespace),
+      r.binOp,
+      r.var.skip(P.optWhitespace)
+    ).map(([left, op, right]) => ({
+      type: "BinExpr",
+      left,
+      right,
+      op,
+    })),
   stringLit: (r) =>
     P.regexp(/"((?:\\.|.)*?)"/, 1)
       .map(interpretEscapes)
@@ -37,6 +49,7 @@ export const language = P.createLanguage({
 
   identifier: () => P.regex(/([a-zA-Z_][a-zA-Z0-9_]*)/, 1).desc("identifier"),
 
+  binOp: () => P.alt(word("="), word("!=")),
   lbrace: () => word("{"),
   rbrace: () => word("}"),
   colon: () => word(":"),

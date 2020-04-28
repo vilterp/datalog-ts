@@ -1,7 +1,7 @@
 import { assertDeepEqual, Suite } from "./testing";
 import { language } from "./parser";
 import { Parser } from "parsimmon";
-import { rec, str, varr } from "./types";
+import { binExpr, rec, str, varr } from "./types";
 
 export const parserTests: Suite = [
   {
@@ -23,6 +23,16 @@ export const parserTests: Suite = [
         language.record,
         `foo{bar: B, baz: "bloop"}`,
         rec("foo", { bar: varr("B"), baz: str("bloop") })
+      );
+    },
+  },
+  {
+    name: "binExpr",
+    test() {
+      testParser(
+        language.binExpr,
+        `A != B`,
+        binExpr(varr("A"), "!=", varr("B"))
       );
     },
   },

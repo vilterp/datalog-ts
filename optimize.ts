@@ -6,13 +6,13 @@ function collapseOrs(spec: PlanNode): PlanNode {
   switch (spec.type) {
     case "Or":
       return spec.opts.length === 1 ? spec.opts[0] : spec;
-    case "And":
+    case "Join":
       return {
         ...spec,
         left: collapseOrs(spec.left),
         right: collapseOrs(spec.right),
       };
-    case "Filter":
+    case "Match":
       return {
         ...spec,
         inner: collapseOrs(spec.inner),
@@ -29,7 +29,7 @@ function collapseOrs(spec: PlanNode): PlanNode {
 
 function collapseAnds(spec: PlanNode): PlanNode {
   switch (spec.type) {
-    case "And":
+    case "Join":
       if (spec.left.type === "EmptyOnce") {
         return collapseAnds(spec.right);
       }
@@ -43,7 +43,7 @@ function collapseAnds(spec: PlanNode): PlanNode {
       };
     case "Or":
       return { type: "Or", opts: spec.opts.map(collapseAnds) };
-    case "Filter":
+    case "Match":
       return { ...spec, inner: collapseAnds(spec.inner) };
     case "Project":
       return { ...spec, inner: collapseAnds(spec.inner) };
@@ -64,5 +64,9 @@ export function hasVars(t: Term): boolean {
       return true;
     case "Record":
       return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
+    case "BinExpr":
+      return hasVars(t.left) || hasVars(t.right);
+    case "Bool":
+      return false;
   }
 }

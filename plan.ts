@@ -1,15 +1,26 @@
 import { AndExpr, DB, PlanNode, Rec, Rule, Term, VarMappings } from "./types";
 
-export function planQuery(db: DB, rec: Rec): PlanNode {
-  const table = db.tables[rec.relation];
-  if (table) {
-    return scanAndFilterForRec(db, rec);
+export function planQuery(db: DB, term: Term): PlanNode {
+  switch (term.type) {
+    case "Record": {
+      const table = db.tables[term.relation];
+      if (table) {
+        return scanAndFilterForRec(db, term);
+      }
+      const rule = db.rules[term.relation];
+      if (!rule) {
+        throw new Error(`not found: ${term.relation}`); // TODO: start using result type
+      }
+      return planRuleCall(db, rule, term);
+    }
+    case "BinExpr":
+      return {
+        type: "BinExpr",
+        left: term.left,
+        right: term.right,
+        op: term.op,
+      };
   }
-  const rule = db.rules[rec.relation];
-  if (!rule) {
-    throw new Error(`not found: ${rec.relation}`); // TODO: start using result type
-  }
-  return planRuleCall(db, rule, rec);
 }
 
 // return mapping from head var to call var
@@ -48,7 +59,7 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   };
   // TODO: push down filters in optimizer instead of leaving up here
   return {
-    type: "Filter",
+    type: "Match",
     inner: project,
     record: call,
   };
@@ -57,7 +68,7 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
 function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
   return ae.clauses.reduce<PlanNode>(
     (accum, next) => ({
-      type: "And",
+      type: "Join",
       left: planQuery(db, next),
       right: accum,
       template,
@@ -68,7 +79,7 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
 
 function scanAndFilterForRec(db: DB, rec: Rec): PlanNode {
   return {
-    type: "Filter",
+    type: "Match",
     inner: { type: "Scan", relation: rec.relation },
     record: rec,
   };

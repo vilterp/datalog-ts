@@ -54,13 +54,8 @@ grandparent{grandchild: "Pete", grandparent: "Mark"}.
 
 sibling{left: X, right: Y}.
 ----
-sibling{left: "Pete", right: "Pete"}.
-sibling{left: "Paul", right: "Paul"}.
 sibling{left: "Ann", right: "Paul"}.
 sibling{left: "Paul", right: "Ann"}.
-sibling{left: "Ann", right: "Ann"}.
-sibling{left: "Mary", right: "Mary"}.
-sibling{left: "Bob", right: "Bob"}.
 
 cousin{left: X, right: Y}.
 ----

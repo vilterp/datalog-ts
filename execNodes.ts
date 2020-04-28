@@ -1,12 +1,22 @@
-import { Bindings, DB, PlanNode, Rec, Res, str, VarMappings } from "./types";
-import { substitute, unify, unifyVars } from "./unify";
-import { prettyPrintBindings } from "./pretty";
-import * as pp from "prettier-printer";
+import {
+  Bindings,
+  DB,
+  falseTerm,
+  Operator,
+  PlanNode,
+  Rec,
+  Res,
+  str,
+  Term,
+  trueTerm,
+  VarMappings,
+} from "./types";
+import { substitute, termEq, unify, unifyVars } from "./unify";
 
 export function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
   while (true) {
-    const res = node.Next();
+    const res = node.Next({});
     if (res === null) {
       break;
     }
@@ -17,7 +27,7 @@ export function allResults(node: ExecNode): Res[] {
 
 export function instantiate(db: DB, spec: PlanNode): ExecNode {
   switch (spec.type) {
-    case "And":
+    case "Join":
       return new AndNode(
         instantiate(db, spec.left),
         instantiate(db, spec.right),
@@ -29,12 +39,14 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
         spec.mappings,
         spec.ruleHead
       );
-    case "Filter":
+    case "Match":
       return new FilterNode(instantiate(db, spec.inner), spec.record);
     case "Or":
       return new OrNode(spec.opts.map((opt) => instantiate(db, opt)));
     case "Scan":
       return new ScanNode(spec.relation, db.tables[spec.relation]);
+    case "BinExpr":
+      return new BinExprNode(spec.op, spec.left, spec.right);
     case "EmptyOnce":
       return new EmptyOnceNode();
   }
@@ -43,7 +55,7 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
 // Nodes
 
 export interface ExecNode {
-  Next(): Res | null; // TODO: add bindings as an argument
+  Next(bindings: Bindings): Res | null; // TODO: add bindings as an argument
   Reset();
 }
 
@@ -66,8 +78,8 @@ class AndNode implements ExecNode {
     this.template = template;
   }
 
-  advanceLeft(constructor?: boolean) {
-    const res = this.left.Next();
+  advanceLeft() {
+    const res = this.left.Next({});
     if (res === null) {
       this.leftDone = true;
       return;
@@ -90,7 +102,7 @@ class AndNode implements ExecNode {
         this.advanceLeft();
         continue;
       }
-      const rightRes = this.right.Next();
+      const rightRes = this.right.Next(this.curLeft.bindings);
       if (rightRes === null) {
         this.rightDone = true;
         continue;
@@ -143,7 +155,7 @@ class OrNode implements ExecNode {
         return null;
       }
       const curOpt = this.opts[this.curOptIdx];
-      const res = curOpt.Next();
+      const res = curOpt.Next({});
       if (res === null) {
         this.curOptIdx++;
         continue;
@@ -170,7 +182,7 @@ class ProjectNode implements ExecNode {
   }
 
   Next(): Res | null {
-    const res = this.inner.Next();
+    const res = this.inner.Next({});
     if (res === null) {
       return null;
     }
@@ -225,7 +237,7 @@ class FilterNode implements ExecNode {
 
   Next(): Res | null {
     while (true) {
-      const next = this.inner.Next();
+      const next = this.inner.Next({});
       if (next === null) {
         return null;
       }
@@ -282,6 +294,45 @@ class ScanNode implements ExecNode {
   Reset() {
     this.cursor = 0;
   }
+}
+
+class BinExprNode implements ExecNode {
+  left: Term;
+  right: Term;
+  op: Operator;
+
+  constructor(op: Operator, left: Term, right: Term) {
+    this.op = op;
+    this.left = left;
+    this.right = right;
+  }
+
+  Next(bindings: Bindings): Res | null {
+    const subLeft = substitute(this.left, bindings);
+    const subRight = substitute(this.right, bindings);
+    if (!subLeft || !subRight) {
+      console.error({ subLeft, subRight, bindings });
+      throw Error(
+        `subLeft: ${subLeft}, subRight: ${subRight}, bindings; ${bindings}`
+      );
+    }
+    const trueRes = {
+      term: trueTerm,
+      bindings,
+    };
+    const falseRes = { term: falseTerm, bindings };
+    const result = (() => {
+      switch (this.op) {
+        case "!=":
+          return !termEq(subLeft, subRight);
+        case "=":
+          return termEq(subLeft, subRight);
+      }
+    })();
+    return result ? trueRes : falseRes;
+  }
+
+  Reset() {}
 }
 
 class EmptyOnceNode implements ExecNode {

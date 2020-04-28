@@ -16,6 +16,14 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
       ];
     case "StringLit":
       return `"${term.val.split(`"`).join(`\\"`)}"`;
+    case "BinExpr":
+      return [
+        prettyPrintTerm(term.left),
+        ` ${term.op} `,
+        prettyPrintTerm(term.right),
+      ];
+    case "Bool":
+      return `${term.val}`;
   }
 }
 
@@ -28,14 +36,14 @@ function prettyPrintMappings(mappings: VarMappings): pp.IDoc {
 
 export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
   switch (plan.type) {
-    case "And":
+    case "Join":
       return treeNode(
         ["And(", prettyPrintTerm(plan.template), ")"],
         [plan.left, plan.right]
       );
     case "Or":
       return treeNode("Or", plan.opts);
-    case "Filter":
+    case "Match":
       return treeNode(
         ["Filter(", prettyPrintTerm(plan.record), ")"],
         [plan.inner]
@@ -53,6 +61,14 @@ export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
       );
     case "Scan":
       return ["Scan(", plan.relation, ")"];
+    case "BinExpr":
+      return [
+        "BinExpr(",
+        prettyPrintTerm(plan.left),
+        ` ${plan.op} `,
+        prettyPrintTerm(plan.right),
+        ")",
+      ];
     case "EmptyOnce":
       return "Empty";
   }

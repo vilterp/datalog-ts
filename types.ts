@@ -44,7 +44,7 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: Rec[] };
 
-export type Term = StringLit | Var | Rec;
+export type Term = StringLit | Var | Rec | BinExpr | Bool;
 
 export type StringLit = { type: "StringLit"; val: string };
 
@@ -55,6 +55,18 @@ export type Rec = {
   relation: string;
   attrs: { [key: string]: Term };
 };
+
+export type BinExpr = {
+  type: "BinExpr";
+  left: Term;
+  right: Term;
+  op: Operator;
+};
+
+type Bool = { type: "Bool"; val: boolean };
+
+// TODO: moar, argument types, etc.
+export type Operator = "=" | "!=";
 
 // term helpers
 
@@ -70,10 +82,18 @@ export function varr(name: string): Term {
   return { type: "Var", name: name };
 }
 
+export function binExpr(left: Term, op: Operator, right: Term): Term {
+  return { type: "BinExpr", left, right, op };
+}
+
+export const trueTerm: Term = { type: "Bool", val: true };
+
+export const falseTerm: Term = { type: "Bool", val: false };
+
 // plan
 
 export type PlanNode =
-  | { type: "And"; left: PlanNode; right: PlanNode; template: Rec }
+  | { type: "Join"; left: PlanNode; right: PlanNode; template: Rec }
   | { type: "Or"; opts: PlanNode[] }
   | {
       type: "Project";
@@ -82,7 +102,8 @@ export type PlanNode =
       ruleHead: Rec;
     }
   | { type: "Scan"; relation: string }
-  | { type: "Filter"; inner: PlanNode; record: Rec }
+  | { type: "Match"; inner: PlanNode; record: Rec }
+  | { type: "BinExpr"; left: Term; right: Term; op: Operator }
   | { type: "EmptyOnce" };
 
 export type VarMappings = { [from: string]: string };

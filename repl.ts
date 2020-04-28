@@ -101,7 +101,7 @@ export class Repl {
       this.handleStmt(stmt);
     } catch (e) {
       // TODO: distinguish between parse errors and others
-      this.println("error", e.toString(), e.stack);
+      this.println("error", e.toString());
       if (!this.stdinTTY) {
         process.exit(-1);
       }
