@@ -2,8 +2,8 @@ edge{from: "A", to: "B"}.
 edge{from: "B", to: "C"}.
 edge{from: "C", to: "D"}.
 trans_edge{from: X, to: Z} :-
-  edge{from: X, to: Y} &
-  trans_edge{from: Y, to: Z}.
+  edge{from: X, to: Z} |
+  edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
 
 trans_edge{from: A, to: B}.

@@ -13,7 +13,7 @@ import { language } from "./parser";
 import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
 import { planQuery } from "./plan";
-import { allResults, instantiate } from "./execNodes";
+import { allResults, ExecNode, instantiate } from "./execNodes";
 import { prettyPrintDB, prettyPrintTerm, prettyPrintPlan } from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
@@ -135,20 +135,26 @@ export class Repl {
     }
   }
 
-  private runQuery(record: Rec): Res[] {
-    // TODO: allow stepping through one at-a-time like SWI-prolog, for infinite result sets...
+  private getExecNode(record: Rec): ExecNode {
     const plan = planQuery(this.db, record);
     const optPlan = optimize(plan);
-    const execNode = instantiate(this.db, optPlan, optPlan.rules[optPlan.main]);
+    return instantiate(this.db, optPlan, optPlan.rules[optPlan.main]);
+  }
+
+  private runQuery(record: Rec): Res[] {
+    const execNode = this.getExecNode(record);
     return allResults(execNode);
   }
 
   private printQuery(record: Rec) {
-    const results = this.runQuery(record);
-    const printed = pp.intersperse(pp.lineBreak)(
-      results.map((r) => [prettyPrintTerm(r.term), "."])
-    );
-    this.println(pp.render(100, printed));
+    const execNode = this.getExecNode(record);
+    while (true) {
+      const res = execNode.Next();
+      if (res === null) {
+        break;
+      }
+      this.println(pp.render(100, [prettyPrintTerm(res.term), "."]));
+    }
   }
 
   private doGraphviz() {
