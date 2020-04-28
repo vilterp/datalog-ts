@@ -14,10 +14,16 @@ import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
 import { planQuery } from "./plan";
 import { allResults, ExecNode, instantiate } from "./execNodes";
-import { prettyPrintDB, prettyPrintTerm, prettyPrintPlan } from "./pretty";
+import {
+  prettyPrintDB,
+  prettyPrintTerm,
+  prettyPrintPlan,
+  prettyPrintBindings,
+} from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
 import * as fs from "fs";
+import { evaluate } from "./simpleEvaluate";
 
 export class Repl {
   db: DB;
@@ -147,13 +153,16 @@ export class Repl {
   }
 
   private printQuery(record: Rec) {
-    const execNode = this.getExecNode(record);
-    while (true) {
-      const res = execNode.Next();
-      if (res === null) {
-        break;
-      }
-      this.println(pp.render(100, [prettyPrintTerm(res.term), "."]));
+    const results = evaluate(this.db, record);
+    for (const res of results) {
+      this.println(
+        pp.render(100, [
+          prettyPrintTerm(res.term),
+          "; ",
+          prettyPrintBindings(res.bindings),
+          ".",
+        ])
+      );
     }
   }
 
@@ -198,8 +207,8 @@ export class Repl {
   }
 
   private doLoad(path: string) {
-    const buf = fs.readFileSync(path);
     try {
+      const buf = fs.readFileSync(path);
       const program: Program = language.program.tryParse(buf.toString());
       for (const stmt of program) {
         this.handleStmt(stmt);

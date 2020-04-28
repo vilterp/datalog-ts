@@ -23,7 +23,6 @@ interface IOPair {
 }
 
 function checkResults(results: Result[]) {
-  console.log(results);
   // TODO: print 'em all out, not just first that failed
   for (const result of results) {
     assertStringEqual(
