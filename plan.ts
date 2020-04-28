@@ -2,6 +2,7 @@ import {
   AndExpr,
   BinExpr,
   DB,
+  Plan,
   PlanNode,
   Rec,
   Rule,
@@ -9,7 +10,7 @@ import {
   VarMappings,
 } from "./types";
 
-export function planQuery(db: DB, rec: Rec): PlanNode {
+export function planQuery(db: DB, rec: Rec): Plan {
   const table = db.tables[rec.relation];
   if (table) {
     return scanAndFilterForRec(db, rec);
@@ -53,7 +54,6 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
     type: "Call",
     mappings,
     ruleHead: rule.head,
-    inner, // inlining the inner rule here. could reference it instead.
   };
   // TODO: push down filters in optimizer instead of leaving up here
   return {

@@ -105,7 +105,6 @@ export type PlanNode =
   | {
       type: "Call";
       mappings: VarMappings; // call to rule head
-      inner: PlanNode;
       ruleHead: Rec;
     }
   | { type: "Scan"; relation: string }

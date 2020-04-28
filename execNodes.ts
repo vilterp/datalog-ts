@@ -35,11 +35,7 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
         spec.template
       );
     case "Call":
-      return new CallNode(
-        instantiate(db, spec.inner),
-        spec.mappings,
-        spec.ruleHead
-      );
+      return new CallNode(spec.mappings, spec.ruleHead);
     case "Match":
       return new MatchNode(instantiate(db, spec.inner), spec.record);
     case "Or":
@@ -171,12 +167,10 @@ class OrNode implements ExecNode {
 }
 
 class CallNode implements ExecNode {
-  inner: ExecNode;
   headToCaller: VarMappings;
   ruleHead: Rec; // TODO: use this in some kind of trace
 
-  constructor(inner: ExecNode, mappings: VarMappings, ruleHead: Rec) {
-    this.inner = inner;
+  constructor(mappings: VarMappings, ruleHead: Rec) {
     this.headToCaller = mappings;
     this.ruleHead = ruleHead;
   }
