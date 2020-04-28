@@ -28,7 +28,7 @@ export function allResults(node: ExecNode): Res[] {
 export function instantiate(db: DB, spec: PlanNode): ExecNode {
   switch (spec.type) {
     case "Join":
-      return new AndNode(
+      return new JoinNode(
         instantiate(db, spec.left),
         instantiate(db, spec.right),
         spec.template
@@ -40,7 +40,7 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
         spec.ruleHead
       );
     case "Match":
-      return new FilterNode(instantiate(db, spec.inner), spec.record);
+      return new MatchNode(instantiate(db, spec.inner), spec.record);
     case "Or":
       return new OrNode(spec.opts.map((opt) => instantiate(db, opt)));
     case "Scan":
@@ -59,8 +59,7 @@ export interface ExecNode {
   Reset();
 }
 
-// basically a join
-class AndNode implements ExecNode {
+class JoinNode implements ExecNode {
   left: ExecNode;
   right: ExecNode;
   template: Rec;
@@ -226,7 +225,7 @@ class ProjectNode implements ExecNode {
   }
 }
 
-class FilterNode implements ExecNode {
+class MatchNode implements ExecNode {
   inner: ExecNode;
   record: Rec;
 
