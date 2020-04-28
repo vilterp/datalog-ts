@@ -9,10 +9,11 @@ import {
   trueTerm,
   VarMappings,
 } from "./types";
-import { substitute, termEq, unify } from "./unify";
+import { substitute, termEq, unify, unifyVars } from "./unify";
 import { flatMap, mapObj } from "./util";
 import * as pp from "prettier-printer";
-import { prettyPrintTerm } from "./pretty";
+import { prettyPrintBindings, prettyPrintTerm } from "./pretty";
+import * as util from "util";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(db, {}, term);
@@ -22,12 +23,17 @@ function doJoin(db: DB, scope: Bindings, clauses: AndClause[]): Res[] {
   if (clauses.length === 1) {
     return doEvaluate(db, scope, clauses[0]);
   }
-  return singleJoin(
-    db,
-    scope,
-    doEvaluate(db, scope, clauses[0]),
-    doJoin(db, scope, clauses.slice(1))
-  );
+  const leftResults = doEvaluate(db, scope, clauses[0]);
+  const rightResults = doJoin(db, scope, clauses.slice(1));
+  return singleJoin(db, scope, leftResults, rightResults);
+}
+
+function ppt(t: Term): pp.IDoc {
+  return pp.render(100, prettyPrintTerm(t));
+}
+
+function ppb(b: Bindings): pp.IDoc {
+  return pp.render(100, prettyPrintBindings(b));
 }
 
 function singleJoin(
@@ -39,11 +45,16 @@ function singleJoin(
   const out: Res[] = [];
   for (const left of leftResults) {
     for (const right of rightResults) {
-      const unifyRes = unify(scope, left.term, right.term);
-      if (unifyRes !== null) {
+      const newBindings = unifyVars(left.bindings, right.bindings);
+      // console.log("unify", {
+      //   left: ppt(left.term),
+      //   right: ppt(right.term),
+      //   bindings: newBindings ? ppb(newBindings) : "null",
+      // });
+      if (newBindings !== null) {
         out.push({
           term: left.term, // ???
-          bindings: unifyRes,
+          bindings: newBindings,
         });
       }
     }
@@ -59,6 +70,7 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
         const out: Res[] = [];
         for (const rec of table) {
           const unifyRes = unify(scope, term, rec);
+          // TODO: filter based on scope, right here
           out.push({
             term: rec,
             bindings: unifyRes,
@@ -68,14 +80,14 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
       }
       const rule = db.rules[term.relation];
       if (rule) {
-        console.log(
-          "calling",
-          pp.render(100, [
-            prettyPrintTerm(term),
-            "=>",
-            prettyPrintTerm(rule.head),
-          ])
-        );
+        // console.log(
+        //   "calling",
+        //   pp.render(100, [
+        //     prettyPrintTerm(term),
+        //     "=>",
+        //     prettyPrintTerm(rule.head),
+        //   ])
+        // );
         const mappings = getMappings(rule.head.attrs, term.attrs);
         const newScope = mapObj(rule.head, (k) => scope[k]);
         const rawResults = flatMap(rule.defn.opts, (t) =>

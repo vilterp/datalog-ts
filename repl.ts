@@ -155,11 +155,12 @@ export class Repl {
   private printQuery(record: Rec) {
     const results = evaluate(this.db, record);
     for (const res of results) {
+      // console.log(res);
       this.println(
         pp.render(100, [
           prettyPrintTerm(res.term),
-          "; ",
-          prettyPrintBindings(res.bindings),
+          // "; ",
+          // prettyPrintBindings(res.bindings),
           ".",
         ])
       );
@@ -220,6 +221,7 @@ export class Repl {
   }
 
   private println(...strings: string[]) {
+    // console.log("printing", strings[0], strings[1], strings[2]);
     this.out.write(strings.join(" ") + "\n");
   }
 }
