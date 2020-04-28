@@ -1,5 +1,6 @@
 import {
   Bindings,
+  BinExpr,
   DB,
   falseTerm,
   Operator,
@@ -16,7 +17,7 @@ import { substitute, termEq, unify, unifyVars } from "./unify";
 export function allResults(node: ExecNode): Res[] {
   const out: Res[] = [];
   while (true) {
-    const res = node.Next({});
+    const res = node.Next();
     if (res === null) {
       break;
     }
@@ -45,8 +46,8 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
       return new OrNode(spec.opts.map((opt) => instantiate(db, opt)));
     case "Scan":
       return new ScanNode(spec.relation, db.tables[spec.relation]);
-    case "BinExpr":
-      return new BinExprNode(spec.op, spec.left, spec.right);
+    case "Filter":
+      return new FilterNode(spec.expr, instantiate(db, spec.inner));
     case "EmptyOnce":
       return new EmptyOnceNode();
   }
@@ -55,7 +56,7 @@ export function instantiate(db: DB, spec: PlanNode): ExecNode {
 // Nodes
 
 export interface ExecNode {
-  Next(bindings: Bindings): Res | null; // TODO: add bindings as an argument
+  Next(): Res | null; // TODO: add bindings as an argument
   Reset();
 }
 
@@ -78,7 +79,7 @@ class JoinNode implements ExecNode {
   }
 
   advanceLeft() {
-    const res = this.left.Next({});
+    const res = this.left.Next();
     if (res === null) {
       this.leftDone = true;
       return;
@@ -90,18 +91,18 @@ class JoinNode implements ExecNode {
 
   Next(): Res | null {
     while (true) {
+      if (this.leftDone) {
+        return null;
+      }
       if (this.curLeft === null) {
         this.advanceLeft();
         continue;
-      }
-      if (this.leftDone) {
-        return null;
       }
       if (this.rightDone) {
         this.advanceLeft();
         continue;
       }
-      const rightRes = this.right.Next(this.curLeft.bindings);
+      const rightRes = this.right.Next();
       if (rightRes === null) {
         this.rightDone = true;
         continue;
@@ -154,7 +155,7 @@ class OrNode implements ExecNode {
         return null;
       }
       const curOpt = this.opts[this.curOptIdx];
-      const res = curOpt.Next({});
+      const res = curOpt.Next();
       if (res === null) {
         this.curOptIdx++;
         continue;
@@ -181,7 +182,7 @@ class ProjectNode implements ExecNode {
   }
 
   Next(): Res | null {
-    const res = this.inner.Next({});
+    const res = this.inner.Next();
     if (res === null) {
       return null;
     }
@@ -236,7 +237,7 @@ class MatchNode implements ExecNode {
 
   Next(): Res | null {
     while (true) {
-      const next = this.inner.Next({});
+      const next = this.inner.Next();
       if (next === null) {
         return null;
       }
@@ -253,7 +254,7 @@ class MatchNode implements ExecNode {
           term: next.term,
           bindings: bindings,
           trace: {
-            type: "FilterTrace",
+            type: "MatchTrace",
             record: this.record,
             inner: next,
           },
@@ -295,43 +296,41 @@ class ScanNode implements ExecNode {
   }
 }
 
-class BinExprNode implements ExecNode {
-  left: Term;
-  right: Term;
-  op: Operator;
+class FilterNode implements ExecNode {
+  expr: BinExpr;
+  inner: ExecNode;
 
-  constructor(op: Operator, left: Term, right: Term) {
-    this.op = op;
-    this.left = left;
-    this.right = right;
+  constructor(binExpr: BinExpr, inner: ExecNode) {
+    this.expr = binExpr;
+    this.inner = inner;
   }
 
-  Next(bindings: Bindings): Res | null {
-    const subLeft = substitute(this.left, bindings);
-    const subRight = substitute(this.right, bindings);
-    if (!subLeft || !subRight) {
-      console.error({ subLeft, subRight, bindings });
-      throw Error(
-        `subLeft: ${subLeft}, subRight: ${subRight}, bindings; ${bindings}`
-      );
-    }
-    const trueRes = {
-      term: trueTerm,
-      bindings,
-    };
-    const falseRes = { term: falseTerm, bindings };
-    const result = (() => {
-      switch (this.op) {
-        case "!=":
-          return !termEq(subLeft, subRight);
-        case "=":
-          return termEq(subLeft, subRight);
+  Next(): Res | null {
+    while (true) {
+      const res = this.inner.Next();
+      if (res === null) {
+        return null;
       }
-    })();
-    return result ? trueRes : falseRes;
+
+      const subLeft = substitute(this.expr.left, res.bindings);
+      const subRight = substitute(this.expr.right, res.bindings);
+      const result = (() => {
+        switch (this.expr.op) {
+          case "!=":
+            return !termEq(subLeft, subRight);
+          case "=":
+            return termEq(subLeft, subRight);
+        }
+      })();
+      if (result) {
+        return res;
+      }
+    }
   }
 
-  Reset() {}
+  Reset() {
+    this.inner.Reset();
+  }
 }
 
 class EmptyOnceNode implements ExecNode {

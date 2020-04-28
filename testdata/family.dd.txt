@@ -59,33 +59,31 @@ sibling{left: "Paul", right: "Ann"}.
 
 cousin{left: X, right: Y}.
 ----
-cousin{left: "Pete", right: "Pete"}.
 cousin{left: "Pete", right: "Bob"}.
-cousin{left: "Bob", right: "Bob"}.
-cousin{left: "Pete", right: "Pete"}.
 cousin{left: "Bob", right: "Pete"}.
 
 .explain sibling{left: X, right: Y}.
 ----
 Filter(sibling{left: X, right: Y})
   Project(sibling{left: L, right: R}, {L: X, R: Y})
-    And(sibling{left: L, right: R})
-      Filter(parents{child: R, father: F, mother: M})
-        Project(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
-          Or
-            And(parents{child: C, father: F, mother: M})
-              Filter(father{child: C, father: F})
-                Scan(father)
-              Filter(mother{child: C, mother: M})
-                Scan(mother)
-      Filter(parents{child: L, father: F, mother: M})
-        Project(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
-          Or
-            And(parents{child: C, father: F, mother: M})
-              Filter(father{child: C, father: F})
-                Scan(father)
-              Filter(mother{child: C, mother: M})
-                Scan(mother)
+    BinExpr(L != R)
+      And(sibling{left: L, right: R})
+        Filter(parents{child: R, father: F, mother: M})
+          Project(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
+            Or
+              And(parents{child: C, father: F, mother: M})
+                Filter(father{child: C, father: F})
+                  Scan(father)
+                Filter(mother{child: C, mother: M})
+                  Scan(mother)
+        Filter(parents{child: L, father: F, mother: M})
+          Project(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
+            Or
+              And(parents{child: C, father: F, mother: M})
+                Filter(father{child: C, father: F})
+                  Scan(father)
+                Filter(mother{child: C, mother: M})
+                  Scan(mother)
 
 .explain cousin{left: X, right: Y}.
 ----
@@ -103,23 +101,24 @@ Filter(cousin{left: X, right: Y})
         Filter(sibling{left: P1, right: P2})
           Project(sibling{left: L, right: R}, {L: P1, R: P2})
             Or
-              And(sibling{left: L, right: R})
-                Filter(parents{child: R, father: F, mother: M})
-                  Project(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
-                    Or
-                      And(parents{child: C, father: F, mother: M})
-                        Filter(father{child: C, father: F})
-                          Scan(father)
-                        Filter(mother{child: C, mother: M})
-                          Scan(mother)
-                Filter(parents{child: L, father: F, mother: M})
-                  Project(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
-                    Or
-                      And(parents{child: C, father: F, mother: M})
-                        Filter(father{child: C, father: F})
-                          Scan(father)
-                        Filter(mother{child: C, mother: M})
-                          Scan(mother)
+              BinExpr(L != R)
+                And(sibling{left: L, right: R})
+                  Filter(parents{child: R, father: F, mother: M})
+                    Project(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
+                      Or
+                        And(parents{child: C, father: F, mother: M})
+                          Filter(father{child: C, father: F})
+                            Scan(father)
+                          Filter(mother{child: C, mother: M})
+                            Scan(mother)
+                  Filter(parents{child: L, father: F, mother: M})
+                    Project(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
+                      Or
+                        And(parents{child: C, father: F, mother: M})
+                          Filter(father{child: C, father: F})
+                            Scan(father)
+                          Filter(mother{child: C, mother: M})
+                            Scan(mother)
         Filter(parent{child: L, parent: P1})
           Project(parent{child: C, parent: P}, {C: L, P: P1})
             Or

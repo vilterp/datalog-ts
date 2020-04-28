@@ -1,26 +1,24 @@
-import { AndExpr, DB, PlanNode, Rec, Rule, Term, VarMappings } from "./types";
+import {
+  AndExpr,
+  BinExpr,
+  DB,
+  PlanNode,
+  Rec,
+  Rule,
+  Term,
+  VarMappings,
+} from "./types";
 
-export function planQuery(db: DB, term: Term): PlanNode {
-  switch (term.type) {
-    case "Record": {
-      const table = db.tables[term.relation];
-      if (table) {
-        return scanAndFilterForRec(db, term);
-      }
-      const rule = db.rules[term.relation];
-      if (!rule) {
-        throw new Error(`not found: ${term.relation}`); // TODO: start using result type
-      }
-      return planRuleCall(db, rule, term);
-    }
-    case "BinExpr":
-      return {
-        type: "BinExpr",
-        left: term.left,
-        right: term.right,
-        op: term.op,
-      };
+export function planQuery(db: DB, rec: Rec): PlanNode {
+  const table = db.tables[rec.relation];
+  if (table) {
+    return scanAndFilterForRec(db, rec);
   }
+  const rule = db.rules[rec.relation];
+  if (!rule) {
+    throw new Error(`not found: ${rec.relation}`); // TODO: start using result type
+  }
+  return planRuleCall(db, rule, rec);
 }
 
 // return mapping from head var to call var
@@ -65,8 +63,28 @@ function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
   };
 }
 
+function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
+  const recs: Rec[] = [];
+  const exprs: BinExpr[] = [];
+  term.clauses.forEach((clause) => {
+    switch (clause.type) {
+      case "BinExpr":
+        exprs.push(clause);
+        break;
+      case "Record":
+        recs.push(clause);
+        break;
+    }
+  });
+  return {
+    recs,
+    exprs,
+  };
+}
+
 function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
-  return ae.clauses.reduce<PlanNode>(
+  const { recs, exprs } = extractBinExprs(ae);
+  const joinNode = recs.reduce<PlanNode>(
     (accum, next) => ({
       type: "Join",
       left: planQuery(db, next),
@@ -74,6 +92,14 @@ function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
       template,
     }),
     { type: "EmptyOnce" }
+  );
+  return exprs.reduce(
+    (accum, next) => ({
+      type: "Filter",
+      inner: accum,
+      expr: next,
+    }),
+    joinNode
   );
 }
 

@@ -24,7 +24,7 @@ type Trace =
       mappings: VarMappings;
       inner: Res;
     }
-  | { type: "FilterTrace"; record: Rec; inner: Res };
+  | { type: "MatchTrace"; record: Rec; inner: Res };
 
 export type Bindings = { [key: string]: Term };
 
@@ -42,9 +42,11 @@ export interface Rule {
 
 export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
-export type AndExpr = { type: "And"; clauses: Rec[] };
+export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type Term = StringLit | Var | Rec | BinExpr | Bool;
+export type Term = StringLit | Var | AndClause | Bool;
+
+export type AndClause = Rec | BinExpr;
 
 export type StringLit = { type: "StringLit"; val: string };
 
@@ -103,7 +105,7 @@ export type PlanNode =
     }
   | { type: "Scan"; relation: string }
   | { type: "Match"; inner: PlanNode; record: Rec }
-  | { type: "BinExpr"; left: Term; right: Term; op: Operator }
+  | { type: "Filter"; expr: BinExpr; inner: PlanNode }
   | { type: "EmptyOnce" };
 
 export type VarMappings = { [from: string]: string };

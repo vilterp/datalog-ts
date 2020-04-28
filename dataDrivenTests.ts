@@ -71,6 +71,7 @@ function getResults(test: DDTest): Result[] {
   const results: Result[] = [];
 
   for (const pair of test) {
+    console.log("writing", pair.input);
     input.write(pair.input + "\n");
 
     const chunk = output.read(); // TODO: this seems to not always get everything. sigh.

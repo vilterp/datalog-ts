@@ -22,6 +22,11 @@ function collapseOrs(spec: PlanNode): PlanNode {
         ...spec,
         inner: collapseOrs(spec.inner),
       };
+    case "Filter":
+      return {
+        ...spec,
+        inner: collapseOrs(spec.inner),
+      };
     default:
       return spec;
   }
@@ -45,6 +50,11 @@ function collapseAnds(spec: PlanNode): PlanNode {
       return { type: "Or", opts: spec.opts.map(collapseAnds) };
     case "Match":
       return { ...spec, inner: collapseAnds(spec.inner) };
+    case "Filter":
+      return {
+        ...spec,
+        inner: collapseAnds(spec.inner),
+      };
     case "Project":
       return { ...spec, inner: collapseAnds(spec.inner) };
     default:

@@ -1,4 +1,13 @@
-import { Bindings, DB, PlanNode, Res, Rule, Term, VarMappings } from "./types";
+import {
+  Bindings,
+  BinExpr,
+  DB,
+  PlanNode,
+  Res,
+  Rule,
+  Term,
+  VarMappings,
+} from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
 
@@ -34,6 +43,14 @@ function prettyPrintMappings(mappings: VarMappings): pp.IDoc {
   );
 }
 
+function prettyPrintBinExpr(expr: BinExpr): pp.IDoc {
+  return [
+    prettyPrintTerm(expr.left),
+    ` ${expr.op} `,
+    prettyPrintTerm(expr.right),
+  ];
+}
+
 export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
   switch (plan.type) {
     case "Join":
@@ -61,14 +78,11 @@ export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
       );
     case "Scan":
       return ["Scan(", plan.relation, ")"];
-    case "BinExpr":
-      return [
-        "BinExpr(",
-        prettyPrintTerm(plan.left),
-        ` ${plan.op} `,
-        prettyPrintTerm(plan.right),
-        ")",
-      ];
+    case "Filter":
+      return treeNode(
+        ["BinExpr(", prettyPrintBinExpr(plan.expr), ")"],
+        [plan.inner]
+      );
     case "EmptyOnce":
       return "Empty";
   }
