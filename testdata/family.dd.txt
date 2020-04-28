@@ -73,6 +73,15 @@ cousin{left: "Carolyn", right: "Bob"}.
 cousin{left: "Bob", right: "Pete"}.
 cousin{left: "Bob", right: "Carolyn"}.
 
+aunt{child: C, aunt: X}.
+----
+aunt{aunt: "Ann", child: "Pete"}.
+aunt{aunt: "Ann", child: "Carolyn"}.
+
+uncle{child: C, uncle: X}.
+----
+uncle{child: "Bob", uncle: "Paul"}.
+
 .explain sibling{left: X, right: Y}.
 ----
 Match(sibling{left: X, right: Y})

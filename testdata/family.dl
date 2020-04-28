@@ -46,6 +46,7 @@ brother{person: L, brother: R} :-
 sister{person: L, sister: R} :-
   person{name: R, gender: "Female"} &
   sibling{left: L, right: R}.
+
 edge_m{from: C, to: M, label: "mother"} :-
   mother{child: C, mother: M}.
 edge_f{from: C, to: F, label: "father"} :-
