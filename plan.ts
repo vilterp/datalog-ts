@@ -49,7 +49,6 @@ export function planQuery(db: DB, rec: Rec): Plan {
 type PlanNodes = { [name: string]: PlanNode };
 
 function recurse(db: DB, rec: Rec, seen: PlanNodes): void {
-  console.log("planning", rec.relation, "seen", Object.keys(seen));
   if (seen[rec.relation]) {
     return;
   }
