@@ -62,7 +62,7 @@ export function prettyPrintPlan(plan: PlanNode): pp.IDoc {
       return treeNode("Or", plan.opts);
     case "Match":
       return treeNode(
-        ["Filter(", prettyPrintTerm(plan.record), ")"],
+        ["Match(", prettyPrintTerm(plan.record), ")"],
         [plan.inner]
       );
     case "Project":

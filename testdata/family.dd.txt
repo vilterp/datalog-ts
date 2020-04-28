@@ -8,6 +8,7 @@ father{child: "Paul", father: "Peter"}.
 father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
 father{child: "Bob", father: "John"}.
+father{child: "Carolyn", father: "Paul"}.
 
 father{child: "Pete", father: F}.
 ----
@@ -20,11 +21,13 @@ parent{child: "Paul", parent: "Judith"}.
 parent{child: "Ann", parent: "Judith"}.
 parent{child: "Bob", parent: "Ann"}.
 parent{child: "Mary", parent: "Carolyn_K"}.
+parent{child: "Carolyn", parent: "Mary"}.
 parent{child: "Pete", parent: "Paul"}.
 parent{child: "Paul", parent: "Peter"}.
 parent{child: "Ann", parent: "Peter"}.
 parent{child: "Mary", parent: "Mark"}.
 parent{child: "Bob", parent: "John"}.
+parent{child: "Carolyn", parent: "Paul"}.
 
 parent{child: "Pete", parent: Y}.
 ----
@@ -46,83 +49,126 @@ grandparent{grandchild: "Pete", grandparent: "Mark"}.
 grandparent{grandchild: X, grandparent: Y}.
 ----
 grandparent{grandchild: "Pete", grandparent: "Judith"}.
+grandparent{grandchild: "Carolyn", grandparent: "Judith"}.
 grandparent{grandchild: "Bob", grandparent: "Judith"}.
 grandparent{grandchild: "Pete", grandparent: "Carolyn_K"}.
+grandparent{grandchild: "Carolyn", grandparent: "Carolyn_K"}.
 grandparent{grandchild: "Pete", grandparent: "Peter"}.
+grandparent{grandchild: "Carolyn", grandparent: "Peter"}.
 grandparent{grandchild: "Bob", grandparent: "Peter"}.
 grandparent{grandchild: "Pete", grandparent: "Mark"}.
+grandparent{grandchild: "Carolyn", grandparent: "Mark"}.
 
 sibling{left: X, right: Y}.
 ----
+sibling{left: "Carolyn", right: "Pete"}.
 sibling{left: "Ann", right: "Paul"}.
 sibling{left: "Paul", right: "Ann"}.
+sibling{left: "Pete", right: "Carolyn"}.
 
 cousin{left: X, right: Y}.
 ----
 cousin{left: "Pete", right: "Bob"}.
+cousin{left: "Carolyn", right: "Bob"}.
 cousin{left: "Bob", right: "Pete"}.
+cousin{left: "Bob", right: "Carolyn"}.
 
 .explain sibling{left: X, right: Y}.
 ----
-Filter(sibling{left: X, right: Y})
+Match(sibling{left: X, right: Y})
   Project(sibling{left: L, right: R}, {L: X, R: Y})
     BinExpr(L != R)
       And(sibling{left: L, right: R})
-        Filter(parents{child: R, father: F, mother: M})
+        Match(parents{child: R, father: F, mother: M})
           Project(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
             Or
               And(parents{child: C, father: F, mother: M})
-                Filter(father{child: C, father: F})
+                Match(father{child: C, father: F})
                   Scan(father)
-                Filter(mother{child: C, mother: M})
+                Match(mother{child: C, mother: M})
                   Scan(mother)
-        Filter(parents{child: L, father: F, mother: M})
+        Match(parents{child: L, father: F, mother: M})
           Project(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
             Or
               And(parents{child: C, father: F, mother: M})
-                Filter(father{child: C, father: F})
+                Match(father{child: C, father: F})
                   Scan(father)
-                Filter(mother{child: C, mother: M})
+                Match(mother{child: C, mother: M})
                   Scan(mother)
 
 .explain cousin{left: X, right: Y}.
 ----
-Filter(cousin{left: X, right: Y})
+Match(cousin{left: X, right: Y})
   Project(cousin{left: L, right: R}, {L: X, R: Y})
     And(cousin{left: L, right: R})
-      Filter(parent{child: R, parent: P2})
+      Match(parent{child: R, parent: P2})
         Project(parent{child: C, parent: P}, {C: R, P: P2})
           Or
-            Filter(mother{child: C, mother: P})
+            Match(mother{child: C, mother: P})
               Scan(mother)
-            Filter(father{child: C, father: P})
+            Match(father{child: C, father: P})
               Scan(father)
       And(cousin{left: L, right: R})
-        Filter(sibling{left: P1, right: P2})
+        Match(sibling{left: P1, right: P2})
           Project(sibling{left: L, right: R}, {L: P1, R: P2})
             Or
               BinExpr(L != R)
                 And(sibling{left: L, right: R})
-                  Filter(parents{child: R, father: F, mother: M})
+                  Match(parents{child: R, father: F, mother: M})
                     Project(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
                       Or
                         And(parents{child: C, father: F, mother: M})
-                          Filter(father{child: C, father: F})
+                          Match(father{child: C, father: F})
                             Scan(father)
-                          Filter(mother{child: C, mother: M})
+                          Match(mother{child: C, mother: M})
                             Scan(mother)
-                  Filter(parents{child: L, father: F, mother: M})
+                  Match(parents{child: L, father: F, mother: M})
                     Project(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
                       Or
                         And(parents{child: C, father: F, mother: M})
-                          Filter(father{child: C, father: F})
+                          Match(father{child: C, father: F})
                             Scan(father)
-                          Filter(mother{child: C, mother: M})
+                          Match(mother{child: C, mother: M})
                             Scan(mother)
-        Filter(parent{child: L, parent: P1})
+        Match(parent{child: L, parent: P1})
           Project(parent{child: C, parent: P}, {C: L, P: P1})
             Or
-              Filter(mother{child: C, mother: P})
+              Match(mother{child: C, mother: P})
                 Scan(mother)
-              Filter(father{child: C, father: P})
+              Match(father{child: C, father: P})
                 Scan(father)
+
+.graphviz
+----
+digraph G {
+  Pete -> Mary [label="mother"];
+  Paul -> Judith [label="mother"];
+  Ann -> Judith [label="mother"];
+  Bob -> Ann [label="mother"];
+  Mary -> Carolyn_K [label="mother"];
+  Carolyn -> Mary [label="mother"];
+  Pete -> Paul [label="father"];
+  Paul -> Peter [label="father"];
+  Ann -> Peter [label="father"];
+  Mary -> Mark [label="father"];
+  Bob -> John [label="father"];
+  Carolyn -> Paul [label="father"];
+  Pete -> Judith [label="grandparent"];
+  Carolyn -> Judith [label="grandparent"];
+  Bob -> Judith [label="grandparent"];
+  Pete -> Carolyn_K [label="grandparent"];
+  Carolyn -> Carolyn_K [label="grandparent"];
+  Pete -> Peter [label="grandparent"];
+  Carolyn -> Peter [label="grandparent"];
+  Bob -> Peter [label="grandparent"];
+  Pete -> Mark [label="grandparent"];
+  Carolyn -> Mark [label="grandparent"];
+  Carolyn -> Pete [label="sibling"];
+  Ann -> Paul [label="sibling"];
+  Paul -> Ann [label="sibling"];
+  Pete -> Carolyn [label="sibling"];
+  Pete -> Bob [label="cousin"];
+  Carolyn -> Bob [label="cousin"];
+  Bob -> Pete [label="cousin"];
+  Bob -> Carolyn [label="cousin"]
+}

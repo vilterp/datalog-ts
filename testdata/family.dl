@@ -5,11 +5,13 @@ father{child: "Paul", father: "Peter"}.
 father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
 father{child: "Bob", father: "John"}.
+father{child: "Carolyn", father: "Paul"}.
 mother{child: "Pete", mother: "Mary"}.
 mother{child: "Paul", mother: "Judith"}.
 mother{child: "Ann", mother: "Judith"}.
 mother{child: "Bob", mother: "Ann"}.
 mother{child: "Mary", mother: "Carolyn_K"}.
+mother{child: "Carolyn", mother: "Mary"}.
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
@@ -45,15 +47,21 @@ sister{person: L, sister: R} :-
   person{name: R, gender: "Female"} &
   sibling{left: L, right: R}.
 edge_m{from: C, to: M, label: "mother"} :-
-    mother{child: C, mother: M}.
-edge_f{from: C, to: F, label: "mother"} :-
-    father{child: C, father: F}.
+  mother{child: C, mother: M}.
+edge_f{from: C, to: F, label: "father"} :-
+  father{child: C, father: F}.
 edge_gp{from: A, to: B, label: "grandparent"} :-
-    grandparent{grandchild: A, grandparent: B}.
+  grandparent{grandchild: A, grandparent: B}.
+edge_sibling{from: A, to: B, label: "sibling"} :-
+  sibling{left: A, right: B}.
+edge_cousin{from: A, to: B, label: "cousin"} :-
+  cousin{left: A, right: B}.
 edge{from: F, to: T, label: L} :-
     edge_m{from: F, to: T, label: L} |
     edge_f{from: F, to: T, label: L} |
-    edge_gp{from: F, to: T, label: L}.
+    edge_gp{from: F, to: T, label: L} |
+    edge_sibling{from: F, to: T, label: L} |
+    edge_cousin{from: F, to: T, label: L}.
 node_mc{id: C, label: C} :-
     mother{child: C}.
 node_mm{id: C, label: C} :-
