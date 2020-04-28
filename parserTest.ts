@@ -2,6 +2,7 @@ import { assertDeepEqual, Suite } from "./testing";
 import { language } from "./parser";
 import { Parser } from "parsimmon";
 import { binExpr, rec, str, varr } from "./types";
+import * as assert from "assert";
 
 export const parserTests: Suite = [
   {
@@ -133,7 +134,7 @@ sibling{left: L, right: R} :-
   father{child: R, father: F}.
 `;
       const output = language.program.tryParse(input);
-      console.log(output);
+      assert.equal(output.length, 15);
     },
   },
 ];

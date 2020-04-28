@@ -53,6 +53,7 @@ function recurse(db: DB, rec: Rec, seen: PlanNodes): void {
     return;
   }
   if (db.tables[rec.relation]) {
+    seen[rec.relation] = scanAndFilterForRec(db, rec);
     return;
   }
   seen[rec.relation] = { type: "EmptyOnce" }; // placeholder

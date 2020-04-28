@@ -1,5 +1,7 @@
 import { str } from "./types";
 import { unifyVars } from "./unify";
+import * as assert from "assert";
+import { assertDeepEqual } from "./testing";
 
 export const unifyTests = [
   {
@@ -9,7 +11,7 @@ export const unifyTests = [
         { A: str("Pete"), B: str("Paul") },
         { B: str("Paul"), C: str("Peter") }
       );
-      console.log(res);
+      assertDeepEqual({ A: str("Pete"), B: str("Paul"), C: str("Peter") }, res);
     },
   },
 ];

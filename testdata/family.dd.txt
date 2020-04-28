@@ -16,35 +16,54 @@ father{child: "Pete", father: "Paul"}.
 
 parent{child: X, parent: Y}.
 ----
-parent{child: "Pete", parent: "Mary"}.
-parent{child: "Paul", parent: "Judith"}.
-parent{child: "Ann", parent: "Judith"}.
-parent{child: "Bob", parent: "Ann"}.
-parent{child: "Mary", parent: "Carolyn_K"}.
-parent{child: "Carolyn", parent: "Mary"}.
-parent{child: "Pete", parent: "Paul"}.
-parent{child: "Paul", parent: "Peter"}.
-parent{child: "Ann", parent: "Peter"}.
-parent{child: "Mary", parent: "Mark"}.
-parent{child: "Bob", parent: "John"}.
-parent{child: "Carolyn", parent: "Paul"}.
+mother{child: "Pete", mother: "Mary"}.
+mother{child: "Paul", mother: "Judith"}.
+mother{child: "Ann", mother: "Judith"}.
+mother{child: "Bob", mother: "Ann"}.
+mother{child: "Mary", mother: "Carolyn_K"}.
+mother{child: "Carolyn", mother: "Mary"}.
+father{child: "Pete", father: "Paul"}.
+father{child: "Paul", father: "Peter"}.
+father{child: "Ann", father: "Peter"}.
+father{child: "Mary", father: "Mark"}.
+father{child: "Bob", father: "John"}.
+father{child: "Carolyn", father: "Paul"}.
 
 parent{child: "Pete", parent: Y}.
 ----
-parent{child: "Pete", parent: "Mary"}.
-parent{child: "Pete", parent: "Paul"}.
+mother{child: "Pete", mother: "Mary"}.
+mother{child: "Paul", mother: "Judith"}.
+mother{child: "Ann", mother: "Judith"}.
+mother{child: "Bob", mother: "Ann"}.
+mother{child: "Mary", mother: "Carolyn_K"}.
+mother{child: "Carolyn", mother: "Mary"}.
+father{child: "Pete", father: "Paul"}.
+father{child: "Paul", father: "Peter"}.
+father{child: "Ann", father: "Peter"}.
+father{child: "Mary", father: "Mark"}.
+father{child: "Bob", father: "John"}.
+father{child: "Carolyn", father: "Paul"}.
 
 grandfather{grandchild: "Pete", grandfather: A}.
 ----
 grandfather{grandchild: "Pete", grandfather: "Peter"}.
+grandfather{grandchild: "Carolyn", grandfather: "Peter"}.
+grandfather{grandchild: "Bob", grandfather: "Peter"}.
 grandfather{grandchild: "Pete", grandfather: "Mark"}.
+grandfather{grandchild: "Carolyn", grandfather: "Mark"}.
 
 grandparent{grandchild: "Pete", grandparent: X}.
 ----
 grandparent{grandchild: "Pete", grandparent: "Judith"}.
+grandparent{grandchild: "Carolyn", grandparent: "Judith"}.
+grandparent{grandchild: "Bob", grandparent: "Judith"}.
 grandparent{grandchild: "Pete", grandparent: "Carolyn_K"}.
+grandparent{grandchild: "Carolyn", grandparent: "Carolyn_K"}.
 grandparent{grandchild: "Pete", grandparent: "Peter"}.
+grandparent{grandchild: "Carolyn", grandparent: "Peter"}.
+grandparent{grandchild: "Bob", grandparent: "Peter"}.
 grandparent{grandchild: "Pete", grandparent: "Mark"}.
+grandparent{grandchild: "Carolyn", grandparent: "Mark"}.
 
 grandparent{grandchild: X, grandparent: Y}.
 ----
@@ -84,68 +103,64 @@ uncle{child: "Bob", uncle: "Paul"}.
 
 .explain sibling{left: X, right: Y}.
 ----
-Match(sibling{left: X, right: Y})
-  Call(sibling{left: L, right: R}, {L: X, R: Y})
-    BinExpr(L != R)
-      And(sibling{left: L, right: R})
-        Match(parents{child: R, father: F, mother: M})
-          Call(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
-            Or
-              And(parents{child: C, father: F, mother: M})
-                Match(father{child: C, father: F})
-                  Scan(father)
-                Match(mother{child: C, mother: M})
-                  Scan(mother)
-        Match(parents{child: L, father: F, mother: M})
-          Call(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
-            Or
-              And(parents{child: C, father: F, mother: M})
-                Match(father{child: C, father: F})
-                  Scan(father)
-                Match(mother{child: C, mother: M})
-                  Scan(mother)
+MAIN: sibling
+father:
+  Match(father{child: C, father: F})
+    Scan(father)
+mother:
+  Match(mother{child: C, mother: M})
+    Scan(mother)
+parents:
+  Join(parents{child: C, father: F, mother: M})
+    Match(father{child: C, father: F})
+      Scan(father)
+    Match(mother{child: C, mother: M})
+      Scan(mother)
+sibling:
+  BinExpr(L != R)
+    Join(sibling{left: L, right: R})
+      Match(parents{child: R, father: F, mother: M})
+        Call(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
+      Match(parents{child: L, father: F, mother: M})
+        Call(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
 
 .explain cousin{left: X, right: Y}.
 ----
-Match(cousin{left: X, right: Y})
-  Call(cousin{left: L, right: R}, {L: X, R: Y})
-    And(cousin{left: L, right: R})
-      Match(parent{child: R, parent: P2})
-        Call(parent{child: C, parent: P}, {C: R, P: P2})
-          Or
-            Match(mother{child: C, mother: P})
-              Scan(mother)
-            Match(father{child: C, father: P})
-              Scan(father)
-      And(cousin{left: L, right: R})
-        Match(sibling{left: P1, right: P2})
-          Call(sibling{left: L, right: R}, {L: P1, R: P2})
-            Or
-              BinExpr(L != R)
-                And(sibling{left: L, right: R})
-                  Match(parents{child: R, father: F, mother: M})
-                    Call(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
-                      Or
-                        And(parents{child: C, father: F, mother: M})
-                          Match(father{child: C, father: F})
-                            Scan(father)
-                          Match(mother{child: C, mother: M})
-                            Scan(mother)
-                  Match(parents{child: L, father: F, mother: M})
-                    Call(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
-                      Or
-                        And(parents{child: C, father: F, mother: M})
-                          Match(father{child: C, father: F})
-                            Scan(father)
-                          Match(mother{child: C, mother: M})
-                            Scan(mother)
-        Match(parent{child: L, parent: P1})
-          Call(parent{child: C, parent: P}, {C: L, P: P1})
-            Or
-              Match(mother{child: C, mother: P})
-                Scan(mother)
-              Match(father{child: C, father: P})
-                Scan(father)
+MAIN: cousin
+cousin:
+  Join(cousin{left: L, right: R})
+    Match(parent{child: R, parent: P2})
+      Call(parent{child: C, parent: P}, {C: R, P: P2})
+    Join(cousin{left: L, right: R})
+      Match(sibling{left: P1, right: P2})
+        Call(sibling{left: L, right: R}, {L: P1, R: P2})
+      Match(parent{child: L, parent: P1})
+        Call(parent{child: C, parent: P}, {C: L, P: P1})
+father:
+  Match(father{child: C, father: P})
+    Scan(father)
+mother:
+  Match(mother{child: C, mother: P})
+    Scan(mother)
+parent:
+  Or
+    Match(mother{child: C, mother: P})
+      Scan(mother)
+    Match(father{child: C, father: P})
+      Scan(father)
+parents:
+  Join(parents{child: C, father: F, mother: M})
+    Match(father{child: C, father: F})
+      Scan(father)
+    Match(mother{child: C, mother: M})
+      Scan(mother)
+sibling:
+  BinExpr(L != R)
+    Join(sibling{left: L, right: R})
+      Match(parents{child: R, father: F, mother: M})
+        Call(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
+      Match(parents{child: L, father: F, mother: M})
+        Call(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
 
 .graphviz
 ----
