@@ -162,6 +162,109 @@ sibling:
       Match(parents{child: L, father: F, mother: M})
         Call(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
 
+.explain edge{from: F, to: T, label: L}.
+----
+MAIN: edge
+cousin:
+  Join(cousin{left: L, right: R})
+    Match(parent{child: R, parent: P2})
+      Call(parent{child: C, parent: P}, {C: R, P: P2})
+    Join(cousin{left: L, right: R})
+      Match(sibling{left: P1, right: P2})
+        Call(sibling{left: L, right: R}, {L: P1, R: P2})
+      Match(parent{child: L, parent: P1})
+        Call(parent{child: C, parent: P}, {C: L, P: P1})
+edge:
+  Or
+    Match(edge_m{from: F, label: L, to: T})
+      Call(edge_m{from: C, label: "mother", to: M}, {C: F, M: T})
+    Match(edge_f{from: F, label: L, to: T})
+      Call(edge_f{from: C, label: "father", to: F}, {C: F, F: T})
+    Match(edge_gp{from: F, label: L, to: T})
+      Call(edge_gp{from: A, label: "grandparent", to: B}, {A: F, B: T})
+    Match(edge_sibling{from: F, label: L, to: T})
+      Call(edge_sibling{from: A, label: "sibling", to: B}, {A: F, B: T})
+    Match(edge_cousin{from: F, label: L, to: T})
+      Call(edge_cousin{from: A, label: "cousin", to: B}, {A: F, B: T})
+edge_cousin:
+  Match(cousin{left: A, right: B})
+    Call(cousin{left: L, right: R}, {L: A, R: B})
+edge_f:
+  Match(father{child: C, father: F})
+    Scan(father)
+edge_gp:
+  Match(grandparent{grandchild: A, grandparent: B})
+    Call(grandparent{grandchild: A, grandparent: C}, {A: A, C: B})
+edge_m:
+  Match(mother{child: C, mother: M})
+    Scan(mother)
+edge_sibling:
+  Match(sibling{left: A, right: B})
+    Call(sibling{left: L, right: R}, {L: A, R: B})
+father:
+  Match(father{child: C, father: F})
+    Scan(father)
+grandparent:
+  Join(grandparent{grandchild: A, grandparent: C})
+    Match(parent{child: B, parent: C})
+      Call(parent{child: C, parent: P}, {C: B, P: C})
+    Match(parent{child: A, parent: B})
+      Call(parent{child: C, parent: P}, {C: A, P: B})
+mother:
+  Match(mother{child: C, mother: M})
+    Scan(mother)
+parent:
+  Or
+    Match(mother{child: C, mother: P})
+      Scan(mother)
+    Match(father{child: C, father: P})
+      Scan(father)
+parents:
+  Join(parents{child: C, father: F, mother: M})
+    Match(father{child: C, father: F})
+      Scan(father)
+    Match(mother{child: C, mother: M})
+      Scan(mother)
+sibling:
+  BinExpr(L != R)
+    Join(sibling{left: L, right: R})
+      Match(parents{child: R, father: F, mother: M})
+        Call(parents{child: C, father: F, mother: M}, {C: R, F: F, M: M})
+      Match(parents{child: L, father: F, mother: M})
+        Call(parents{child: C, father: F, mother: M}, {C: L, F: F, M: M})
+
+.explain node{id: I, label: L}.
+----
+MAIN: node
+father:
+  Match(father{child: C})
+    Scan(father)
+mother:
+  Match(mother{child: C})
+    Scan(mother)
+node:
+  Or
+    Match(node_mc{id: I, name: N})
+      Call(node_mc{id: C, label: C}, {C: I})
+    Match(node_mm{id: I, name: N})
+      Call(node_mm{id: C, label: C}, {C: I})
+    Match(node_fc{id: I, name: N})
+      Call(node_fc{id: C, label: C}, {C: I})
+    Match(node_ff{id: I, name: N})
+      Call(node_ff{id: C, label: C}, {C: I})
+node_fc:
+  Match(father{child: C})
+    Scan(father)
+node_ff:
+  Match(father{father: C})
+    Scan(father)
+node_mc:
+  Match(mother{child: C})
+    Scan(mother)
+node_mm:
+  Match(mother{mother: C})
+    Scan(mother)
+
 .graphviz
 ----
 digraph G {
