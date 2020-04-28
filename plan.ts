@@ -10,7 +10,7 @@ import {
   VarMappings,
 } from "./types";
 
-export function planQuery(db: DB, rec: Rec): Plan {
+export function planQuery(db: DB, rec: Rec): PlanNode {
   const table = db.tables[rec.relation];
   if (table) {
     return scanAndFilterForRec(db, rec);
