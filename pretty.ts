@@ -60,7 +60,7 @@ export function prettyPrintPlan(plan: Plan): pp.IDoc {
       mapObjToList(plan.rules, (key, val) => [
         `${key}:`,
         pp.lineBreak,
-        prettyPrintPlanNode(val),
+        pp.indent(2, prettyPrintPlanNode(val)),
       ])
     ),
   ];
@@ -70,7 +70,7 @@ export function prettyPrintPlanNode(node: PlanNode): pp.IDoc {
   switch (node.type) {
     case "Join":
       return treeNode(
-        ["And(", prettyPrintTerm(node.template), ")"],
+        ["Join(", prettyPrintTerm(node.template), ")"],
         [node.left, node.right]
       );
     case "Or":

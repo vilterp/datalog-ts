@@ -41,26 +41,27 @@ function getMappings(
 
 // array of rule names
 export function planQuery(db: DB, rec: Rec): Plan {
-  return { rules: recurse(db, rec, {}), main: rec.relation };
+  const rules: PlanNodes = {};
+  recurse(db, rec, rules);
+  return { rules, main: rec.relation };
 }
 
-function recurse(
-  db: DB,
-  rec: Rec,
-  seen: { [name: string]: PlanNode }
-): { [name: string]: PlanNode } {
+type PlanNodes = { [name: string]: PlanNode };
+
+function recurse(db: DB, rec: Rec, seen: PlanNodes): void {
+  console.log("planning", rec.relation, "seen", Object.keys(seen));
   if (seen[rec.relation]) {
-    return seen;
+    return;
   }
   if (db.tables[rec.relation]) {
-    return seen;
+    return;
   }
+  seen[rec.relation] = { type: "EmptyOnce" }; // placeholder
   const rule = db.rules[rec.relation];
   const optionNodes = rule.defn.opts.map((andExpr) =>
-    foldAnds(db, andExpr, rule.head)
+    foldAnds(seen, db, andExpr, rule.head)
   );
-  const inner: PlanNode = { type: "Or", opts: optionNodes };
-  return { ...seen, [rec.relation]: inner };
+  seen[rec.relation] = { type: "Or", opts: optionNodes };
 }
 
 function planRuleCall(db: DB, rule: Rule, call: Rec): PlanNode {
@@ -102,15 +103,23 @@ function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
   };
 }
 
-function foldAnds(db: DB, ae: AndExpr, template: Rec): PlanNode {
+function foldAnds(
+  seen: PlanNodes,
+  db: DB,
+  ae: AndExpr,
+  template: Rec
+): PlanNode {
   const { recs, exprs } = extractBinExprs(ae);
   const joinNode = recs.reduce<PlanNode>(
-    (accum, next) => ({
-      type: "Join",
-      left: planRec(db, next),
-      right: accum,
-      template,
-    }),
+    (accum, next) => {
+      recurse(db, next, seen);
+      return {
+        type: "Join",
+        left: planRec(db, next),
+        right: accum,
+        template,
+      };
+    },
     { type: "EmptyOnce" }
   );
   return exprs.reduce(
