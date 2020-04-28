@@ -6,5 +6,18 @@ trans_edge{from: X, to: Z} :-
   edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
 
-trans_edge{from: A, to: B}.
+.explain trans_edge{from: A, to: B}.
 ----
+MAIN: trans_edge
+edge:
+  Match(edge{from: X, to: Z})
+    Scan(edge)
+trans_edge:
+  Or
+    Match(edge{from: X, to: Z})
+      Scan(edge)
+    Join(trans_edge{from: X, to: Z})
+      Match(trans_edge{from: Y, to: Z})
+        Call(trans_edge{from: X, to: Z}, {X: Y, Z: Z})
+      Match(edge{from: X, to: Y})
+        Scan(edge)

@@ -3,21 +3,15 @@ import { Repl } from "./repl";
 import * as stream from "stream";
 import * as fs from "fs";
 
+const ddTestSuites = ["simple", "family", "recurse"];
+
 export function dataDrivenTests(writeResults: boolean): Suite {
-  return [
-    {
-      name: "simple",
-      test() {
-        runDDTestAtPath("testdata/simple.dd.txt", writeResults);
-      },
+  return ddTestSuites.map((name) => ({
+    name,
+    test() {
+      runDDTestAtPath(`testdata/${name}.dd.txt`, writeResults);
     },
-    {
-      name: "family",
-      test() {
-        runDDTestAtPath("testdata/family.dd.txt", writeResults);
-      },
-    },
-  ];
+  }));
 }
 
 type DDTest = IOPair[];
@@ -29,6 +23,7 @@ interface IOPair {
 }
 
 function checkResults(results: Result[]) {
+  console.log(results);
   // TODO: print 'em all out, not just first that failed
   for (const result of results) {
     assertStringEqual(
