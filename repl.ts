@@ -24,6 +24,7 @@ import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
 import * as fs from "fs";
 import { evaluate } from "./simpleEvaluate";
+import * as util from "util";
 
 export class Repl {
   db: DB;
@@ -155,7 +156,7 @@ export class Repl {
   private printQuery(record: Rec) {
     const results = evaluate(this.db, record);
     for (const res of results) {
-      // console.log(res);
+      console.log(util.inspect(res, { depth: null }));
       this.println(
         pp.render(100, [
           prettyPrintTerm(res.term),
@@ -221,7 +222,7 @@ export class Repl {
   }
 
   private println(...strings: string[]) {
-    // console.log("printing", strings[0], strings[1], strings[2]);
+    console.log("printing", strings[0], strings[1], strings[2]);
     this.out.write(strings.join(" ") + "\n");
   }
 }

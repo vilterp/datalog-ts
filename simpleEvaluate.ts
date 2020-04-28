@@ -1,8 +1,11 @@
 import {
   AndClause,
+  AndExpr,
   Bindings,
+  BinExpr,
   DB,
   falseTerm,
+  Rec,
   rec,
   Res,
   Term,
@@ -12,7 +15,7 @@ import {
 import { substitute, termEq, unify, unifyVars } from "./unify";
 import { flatMap, mapObj } from "./util";
 import * as pp from "prettier-printer";
-import { prettyPrintBindings, prettyPrintTerm } from "./pretty";
+import { prettyPrintBindings, prettyPrintRes, prettyPrintTerm } from "./pretty";
 import * as util from "util";
 
 export function evaluate(db: DB, term: Term): Res[] {
@@ -36,15 +39,27 @@ function ppb(b: Bindings): pp.IDoc {
   return pp.render(100, prettyPrintBindings(b));
 }
 
+function ppr(r: Res): pp.IDoc {
+  return pp.render(100, prettyPrintRes(r));
+}
+
 function singleJoin(
   db: DB,
   scope: Bindings,
   leftResults: Res[],
   rightResults: Res[]
 ): Res[] {
+  console.log(
+    "singleJoin",
+    util.inspect({ leftResults, rightResults }, { depth: null })
+  );
   const out: Res[] = [];
   for (const left of leftResults) {
     for (const right of rightResults) {
+      console.log("unifying", {
+        leftBindings: left.bindings,
+        rightBindings: right.bindings,
+      });
       const newBindings = unifyVars(left.bindings, right.bindings);
       // console.log("unify", {
       //   left: ppt(left.term),
@@ -62,6 +77,17 @@ function singleJoin(
   return out;
 }
 
+function applyFilter(binExpr: BinExpr, res: Res[]): Res[] {
+  return res.filter((res) => evalBinExpr(binExpr, res.bindings));
+}
+
+function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
+  if (exprs.length === 0) {
+    return recResults;
+  }
+  return applyFilter(exprs[0], applyFilters(exprs.slice(1), recResults));
+}
+
 function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
   switch (term.type) {
     case "Record": {
@@ -70,6 +96,9 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
         const out: Res[] = [];
         for (const rec of table) {
           const unifyRes = unify(scope, term, rec);
+          if (unifyRes === null) {
+            continue;
+          }
           // TODO: filter based on scope, right here
           out.push({
             term: rec,
@@ -90,9 +119,15 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
         // );
         const mappings = getMappings(rule.head.attrs, term.attrs);
         const newScope = mapObj(rule.head, (k) => scope[k]);
-        const rawResults = flatMap(rule.defn.opts, (t) =>
-          doJoin(db, newScope, t.clauses)
-        );
+        const rawResults = flatMap(rule.defn.opts, (ae) => {
+          const { recs, exprs } = extractBinExprs(ae);
+          const recResults = doJoin(db, newScope, recs);
+          console.log("raw results", {
+            recResults: recResults.map(ppr),
+            filters: exprs.map(ppt),
+          });
+          return applyFilters(exprs, recResults);
+        });
         return rawResults.map((res) => {
           const mappedBindings = applyMappings(mappings, res.bindings);
           return {
@@ -105,29 +140,27 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
     }
     case "Var":
       return [{ term: scope[term.name], bindings: scope }];
-    case "BinExpr": {
-      const lefts = doEvaluate(db, scope, term.left);
-      const rights = doEvaluate(db, scope, term.right);
-      const out: Res[] = [];
-      for (const left of lefts) {
-        for (const right of rights) {
-          let res: boolean;
-          switch (term.op) {
-            case "=":
-              res = termEq(left.term, right.term);
-              break;
-            case "!=":
-              res = !termEq(left.term, right.term);
-              break;
-          }
-          out.push({ term: res ? trueTerm : falseTerm, bindings: scope });
-        }
-      }
-      return out;
-    }
+    case "BinExpr":
+      return [
+        {
+          term: evalBinExpr(term, scope) ? trueTerm : falseTerm,
+          bindings: scope,
+        },
+      ];
     case "Bool":
     case "StringLit":
       return [{ term: term, bindings: scope }];
+  }
+}
+
+function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
+  const left = substitute(expr.left, scope);
+  const right = substitute(expr.right, scope);
+  switch (expr.op) {
+    case "=":
+      return termEq(left, right);
+    case "!=":
+      return !termEq(left, right);
   }
 }
 
@@ -160,4 +193,23 @@ function applyMappings(
     out[callerKey] = bindings[key];
   }
   return out;
+}
+
+function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
+  const recs: Rec[] = [];
+  const exprs: BinExpr[] = [];
+  term.clauses.forEach((clause) => {
+    switch (clause.type) {
+      case "BinExpr":
+        exprs.push(clause);
+        break;
+      case "Record":
+        recs.push(clause);
+        break;
+    }
+  });
+  return {
+    recs,
+    exprs,
+  };
 }
