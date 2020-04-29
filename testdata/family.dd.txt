@@ -9,6 +9,7 @@ father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
 father{child: "Bob", father: "John"}.
 father{child: "Carolyn", father: "Paul"}.
+father{child: "Henry", father: "Bob"}.
 
 father{child: "Pete", father: F}.
 ----
@@ -28,6 +29,7 @@ parent{child: "Ann", parent: "Peter"}.
 parent{child: "Mary", parent: "Mark"}.
 parent{child: "Bob", parent: "John"}.
 parent{child: "Carolyn", parent: "Paul"}.
+parent{child: "Henry", parent: "Bob"}.
 
 parent{child: "Pete", parent: Y}.
 ----
@@ -41,6 +43,7 @@ grandfather{grandchild: "Bob", grandfather: "Peter"}.
 grandfather{grandchild: "Carolyn", grandfather: "Mark"}.
 grandfather{grandchild: "Pete", grandfather: "Peter"}.
 grandfather{grandchild: "Carolyn", grandfather: "Peter"}.
+grandfather{grandchild: "Henry", grandfather: "John"}.
 
 grandparent{grandchild: "Pete", grandparent: X}.
 ----
@@ -61,6 +64,8 @@ grandparent{grandchild: "Pete", grandparent: "Judith"}.
 grandparent{grandchild: "Pete", grandparent: "Peter"}.
 grandparent{grandchild: "Carolyn", grandparent: "Judith"}.
 grandparent{grandchild: "Carolyn", grandparent: "Peter"}.
+grandparent{grandchild: "Henry", grandparent: "Ann"}.
+grandparent{grandchild: "Henry", grandparent: "John"}.
 
 sibling{left: X, right: Y}.
 ----
@@ -101,6 +106,7 @@ ancestor{an: "Peter", desc: "Ann"}.
 ancestor{an: "Peter", desc: "Bob"}.
 ancestor{an: "Peter", desc: "Pete"}.
 ancestor{an: "Peter", desc: "Carolyn"}.
+ancestor{an: "Peter", desc: "Henry"}.
 
 ancestor{desc: X, an: Y}.
 ----
@@ -116,6 +122,7 @@ ancestor{an: "Peter", desc: "Ann"}.
 ancestor{an: "Mark", desc: "Mary"}.
 ancestor{an: "John", desc: "Bob"}.
 ancestor{an: "Paul", desc: "Carolyn"}.
+ancestor{an: "Bob", desc: "Henry"}.
 ancestor{an: "Carolyn_K", desc: "Pete"}.
 ancestor{an: "Mark", desc: "Pete"}.
 ancestor{an: "Judith", desc: "Bob"}.
@@ -126,6 +133,10 @@ ancestor{an: "Judith", desc: "Pete"}.
 ancestor{an: "Peter", desc: "Pete"}.
 ancestor{an: "Judith", desc: "Carolyn"}.
 ancestor{an: "Peter", desc: "Carolyn"}.
+ancestor{an: "Ann", desc: "Henry"}.
+ancestor{an: "John", desc: "Henry"}.
+ancestor{an: "Judith", desc: "Henry"}.
+ancestor{an: "Peter", desc: "Henry"}.
 
 .graphviz
 ----
@@ -142,9 +153,11 @@ digraph G {
   Mary -> Mark [label="father"];
   Bob -> John [label="father"];
   Carolyn -> Paul [label="father"];
+  Henry -> Bob [label="father"];
   Pete -> Judith [label="grandparent"];
   Carolyn -> Judith [label="grandparent"];
   Bob -> Judith [label="grandparent"];
+  Henry -> Ann [label="grandparent"];
   Pete -> Carolyn_K [label="grandparent"];
   Carolyn -> Carolyn_K [label="grandparent"];
   Pete -> Peter [label="grandparent"];
@@ -152,6 +165,7 @@ digraph G {
   Bob -> Peter [label="grandparent"];
   Pete -> Mark [label="grandparent"];
   Carolyn -> Mark [label="grandparent"];
+  Henry -> John [label="grandparent"];
   Carolyn -> Pete [label="sibling"];
   Ann -> Paul [label="sibling"];
   Paul -> Ann [label="sibling"];

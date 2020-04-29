@@ -124,9 +124,9 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
 
 function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
   // console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
-  if (depth > 5) {
-    throw new Error("too deep");
-  }
+  // if (depth > 5) {
+  //   throw new Error("too deep");
+  // }
   const bigRes = (() => {
     switch (term.type) {
       case "Record": {

@@ -6,6 +6,7 @@ father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
 father{child: "Bob", father: "John"}.
 father{child: "Carolyn", father: "Paul"}.
+father{child: "Henry", father: "Bob"}.
 
 mother{child: "Pete", mother: "Mary"}.
 mother{child: "Paul", mother: "Judith"}.
