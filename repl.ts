@@ -224,7 +224,7 @@ export class Repl {
   }
 
   private println(...strings: string[]) {
-    console.log("printing", strings[0], strings[1], strings[2]);
+    // console.log("printing", strings[0], strings[1], strings[2]);
     this.out.write(strings.join(" ") + "\n");
   }
 }
