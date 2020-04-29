@@ -175,7 +175,7 @@ export class Repl {
     );
     const nodes = evaluate(
       this.db,
-      rec("node", { id: varr("I"), name: varr("N") })
+      rec("node", { id: varr("I"), label: varr("L") })
     );
     // TODO: oof, all this typecasting
     const g: Graph = {
@@ -191,7 +191,7 @@ export class Repl {
         const rec = n.term as Rec;
         return {
           id: (rec.attrs.id as StringLit).val,
-          attrs: { name: (rec.attrs.name as StringLit).val },
+          attrs: { label: (rec.attrs.label as StringLit).val },
         };
       }),
     };
