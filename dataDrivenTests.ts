@@ -4,6 +4,7 @@ import * as stream from "stream";
 import * as fs from "fs";
 
 const ddTestSuites = ["simple", "family", "recurse"];
+// const ddTestSuites = ["family"];
 
 export function dataDrivenTests(writeResults: boolean): Suite {
   return ddTestSuites.map((name) => ({

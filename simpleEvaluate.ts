@@ -13,7 +13,7 @@ import {
   VarMappings,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
-import { flatMap, mapObj, mapObjMaybe, repeat } from "./util";
+import { filterMap, flatMap, mapObj, mapObjMaybe, repeat } from "./util";
 import * as pp from "prettier-printer";
 import { prettyPrintBindings, prettyPrintRes, prettyPrintTerm } from "./pretty";
 import * as util from "util";
@@ -184,11 +184,32 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
             const recResults = doJoin(depth, db, newScope, recs);
             return applyFilters(exprs, recResults);
           });
-          return rawResults.map((res) => {
+          return filterMap(rawResults, (res) => {
             const mappedBindings = applyMappings(mappings, res.bindings);
+            const nextTerm = substitute(rule.head, res.bindings);
+            const unif = unify(mappedBindings, term, nextTerm);
+            // console.log("unify", {
+            //   prior: ppb(mappedBindings),
+            //   left: ppt(term),
+            //   right: ppt(nextTerm),
+            //   res: unif ? ppb(unif) : null,
+            // });
+            if (unif === null) {
+              return null;
+            }
+            // console.log({
+            //   mappings: mappings,
+            //   resTerm: ppt(res.term),
+            //   resBindings: ppb(res.bindings),
+            //   mappedBindings: ppb(mappedBindings),
+            //   nextTerm: ppt(nextTerm),
+            //   term: ppt(term), // call
+            //   unifRaw: unif,
+            //   unif: unif ? ppb(unif) : null,
+            // });
             return {
-              bindings: mappedBindings,
-              term: substitute(rule.head, res.bindings),
+              bindings: unif,
+              term: nextTerm,
             };
           });
         }
