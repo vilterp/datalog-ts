@@ -8,12 +8,12 @@ export function unify(
   right: Term
 ): Bindings | null {
   const res = doUnify(prior, left, right);
-  console.log("unify", {
-    prior: ppb(prior),
-    left: ppt(left),
-    right: ppt(right),
-    res: res ? ppb(res) : null,
-  });
+  // console.log("unify", {
+  //   prior: ppb(prior),
+  //   left: ppt(left),
+  //   right: ppt(right),
+  //   res: res ? ppb(res) : null,
+  // });
   return res;
 }
 
@@ -26,7 +26,6 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
         case "Var":
           return { [right.name]: left };
         default:
-          // TODO: add var case?
           return null;
       }
     case "Var":

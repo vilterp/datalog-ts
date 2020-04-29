@@ -32,17 +32,7 @@ parent{child: "Carolyn", parent: "Paul"}.
 parent{child: "Pete", parent: Y}.
 ----
 parent{child: "Pete", parent: "Mary"}.
-parent{child: "Paul", parent: "Judith"}.
-parent{child: "Ann", parent: "Judith"}.
-parent{child: "Bob", parent: "Ann"}.
-parent{child: "Mary", parent: "Carolyn_K"}.
-parent{child: "Carolyn", parent: "Mary"}.
 parent{child: "Pete", parent: "Paul"}.
-parent{child: "Paul", parent: "Peter"}.
-parent{child: "Ann", parent: "Peter"}.
-parent{child: "Mary", parent: "Mark"}.
-parent{child: "Bob", parent: "John"}.
-parent{child: "Carolyn", parent: "Paul"}.
 
 grandfather{grandchild: "Pete", grandfather: A}.
 ----
@@ -56,14 +46,8 @@ grandparent{grandchild: "Pete", grandparent: X}.
 ----
 grandparent{grandchild: "Pete", grandparent: "Carolyn_K"}.
 grandparent{grandchild: "Pete", grandparent: "Mark"}.
-grandparent{grandchild: "Bob", grandparent: "Judith"}.
-grandparent{grandchild: "Bob", grandparent: "Peter"}.
-grandparent{grandchild: "Carolyn", grandparent: "Carolyn_K"}.
-grandparent{grandchild: "Carolyn", grandparent: "Mark"}.
 grandparent{grandchild: "Pete", grandparent: "Judith"}.
 grandparent{grandchild: "Pete", grandparent: "Peter"}.
-grandparent{grandchild: "Carolyn", grandparent: "Judith"}.
-grandparent{grandchild: "Carolyn", grandparent: "Peter"}.
 
 grandparent{grandchild: X, grandparent: Y}.
 ----

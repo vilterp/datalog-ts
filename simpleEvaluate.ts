@@ -28,15 +28,15 @@ function doJoin(
   scope: Bindings,
   clauses: AndClause[]
 ): Res[] {
-  console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
+  // console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
   if (clauses.length === 1) {
-    console.log("doJoin: evaluating only clause", ppt(clauses[0]));
+    // console.log("doJoin: evaluating only clause", ppt(clauses[0]));
     return doEvaluate(depth + 1, db, scope, clauses[0]);
   }
-  console.group("doJoin: about to get left results");
+  // console.group("doJoin: about to get left results");
   const leftResults = doEvaluate(depth + 1, db, scope, clauses[0]);
-  console.groupEnd();
-  console.log("doJoin: left results", leftResults.map(ppr));
+  // console.groupEnd();
+  // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
     // if (combinedScope === null) {
@@ -47,10 +47,10 @@ function doJoin(
     //   leftRes: ppr(leftRes),
     //   combinedScope: ppb(combinedScope),
     // });
-    console.group("doJoin: about to get right results");
+    // console.group("doJoin: about to get right results");
     const rightResults = doJoin(depth, db, leftRes.bindings, clauses.slice(1));
-    console.groupEnd();
-    console.log("right results", rightResults);
+    // console.groupEnd();
+    // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
       const unifyRes = unifyVars(leftRes.bindings, rightRes.bindings);
       if (unifyRes === null) {
@@ -83,17 +83,17 @@ function singleJoin(
   leftResults: Res[],
   rightResults: Res[]
 ): Res[] {
-  console.log(
-    "singleJoin",
-    util.inspect({ leftResults, rightResults }, { depth: null })
-  );
+  // console.log(
+  //   "singleJoin",
+  //   util.inspect({ leftResults, rightResults }, { depth: null })
+  // );
   const out: Res[] = [];
   for (const left of leftResults) {
     for (const right of rightResults) {
-      console.log("unifying", {
-        leftBindings: left.bindings,
-        rightBindings: right.bindings,
-      });
+      // console.log("unifying", {
+      //   leftBindings: left.bindings,
+      //   rightBindings: right.bindings,
+      // });
       const newBindings = unifyVars(left.bindings, right.bindings);
       // console.log("unify", {
       //   left: ppt(left.term),
@@ -123,7 +123,7 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
 }
 
 function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
-  console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
+  // console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
   if (depth > 5) {
     throw new Error("too deep");
   }
@@ -135,12 +135,12 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           const out: Res[] = [];
           for (const rec of table) {
             const unifyRes = unify(scope, term, rec);
-            console.log("scan", {
-              scope: ppb(scope),
-              term: ppt(term),
-              rec: ppt(rec),
-              unifyRes: unifyRes ? ppb(unifyRes) : null,
-            });
+            // console.log("scan", {
+            //   scope: ppb(scope),
+            //   term: ppt(term),
+            //   rec: ppt(rec),
+            //   unifyRes: unifyRes ? ppb(unifyRes) : null,
+            // });
             if (unifyRes === null) {
               continue;
             }
@@ -164,20 +164,20 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           // );
           const substTerm = substitute(term, scope);
           const newScope = unify({}, substTerm, rule.head);
-          console.log("call: unifying", {
-            scope: {},
-            ruleHead: ppt(rule.head),
-            call: ppt(substTerm),
-            res: newScope,
-          });
+          // console.log("call: unifying", {
+          //   scope: {},
+          //   ruleHead: ppt(rule.head),
+          //   call: ppt(substTerm),
+          //   res: newScope,
+          // });
           if (newScope === null) {
             return []; // ?
           }
-          console.log("call", {
-            call: ppt(term),
-            head: ppt(rule.head),
-            newScope: ppb(newScope),
-          });
+          // console.log("call", {
+          //   call: ppt(term),
+          //   head: ppt(rule.head),
+          //   newScope: ppb(newScope),
+          // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
           const rawResults = flatMap(rule.defn.opts, (ae) => {
             const { recs, exprs } = extractBinExprs(ae);
@@ -208,8 +208,8 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
         return [{ term: term, bindings: scope }];
     }
   })();
-  console.groupEnd();
-  console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
+  // console.groupEnd();
+  // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
 }
 
