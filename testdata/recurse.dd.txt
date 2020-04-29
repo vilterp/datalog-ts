@@ -10,6 +10,11 @@ edge_filter{a: X, b: Y} :-
   edge{from: X, to: Y}.
 ----
 
-edge_filter{a: "A", b: B}.
+trans_edge{from: A, to: B}.
 ----
-edge_filter{a: "A", b: "B"}.
+trans_edge{from: "A", to: "B"}.
+trans_edge{from: "B", to: "C"}.
+trans_edge{from: "C", to: "D"}.
+trans_edge{from: "A", to: "C"}.
+trans_edge{from: "A", to: "D"}.
+trans_edge{from: "B", to: "D"}.

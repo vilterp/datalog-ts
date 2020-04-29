@@ -53,4 +53,21 @@ export const unifyTests = [
       assertDeepEqual({ X: str("A"), Y: str("B") }, unifyRes3);
     },
   },
+  {
+    name: "scope",
+    test() {
+      const unifyRes = unify(
+        {},
+        rec("trans_edge", {
+          from: varr("X"),
+          to: varr("Z"),
+        }),
+        rec("trans_edge", {
+          from: str("D"),
+          to: varr("Z"),
+        })
+      );
+      assertDeepEqual({ X: str("D"), Z: varr("Z") }, unifyRes);
+    },
+  },
 ];

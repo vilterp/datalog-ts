@@ -54,3 +54,11 @@ export function flatMap<T, U>(arr: T[], f: (t: T) => U[]): U[] {
   }
   return out;
 }
+
+export function repeat(n: number, str: string): string {
+  let out = "";
+  for (let i = 0; i < n; i++) {
+    out += str;
+  }
+  return out;
+}

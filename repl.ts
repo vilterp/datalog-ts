@@ -156,7 +156,7 @@ export class Repl {
   private printQuery(record: Rec) {
     const results = evaluate(this.db, record);
     for (const res of results) {
-      console.log(util.inspect(res, { depth: null }));
+      // console.log(util.inspect(res, { depth: null }));
       this.println(
         pp.render(100, [
           prettyPrintTerm(res.term),

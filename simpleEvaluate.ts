@@ -13,37 +13,67 @@ import {
   VarMappings,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
-import { flatMap, mapObj, mapObjMaybe } from "./util";
+import { flatMap, mapObj, mapObjMaybe, repeat } from "./util";
 import * as pp from "prettier-printer";
 import { prettyPrintBindings, prettyPrintRes, prettyPrintTerm } from "./pretty";
 import * as util from "util";
 
 export function evaluate(db: DB, term: Term): Res[] {
-  return doEvaluate(db, {}, term);
+  return doEvaluate(0, db, {}, term);
 }
 
-function doJoin(db: DB, scope: Bindings, clauses: AndClause[]): Res[] {
+function doJoin(
+  depth: number,
+  db: DB,
+  scope: Bindings,
+  clauses: AndClause[]
+): Res[] {
+  console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
   if (clauses.length === 1) {
-    return doEvaluate(db, scope, clauses[0]);
+    console.log("doJoin: evaluating only clause", ppt(clauses[0]));
+    return doEvaluate(depth + 1, db, scope, clauses[0]);
   }
-  const leftResults = doEvaluate(db, scope, clauses[0]);
-  if (leftResults.length === 0) {
-    // short circuit
-    return [];
+  console.group("doJoin: about to get left results");
+  const leftResults = doEvaluate(depth + 1, db, scope, clauses[0]);
+  console.groupEnd();
+  console.log("doJoin: left results", leftResults.map(ppr));
+  const out: Res[] = [];
+  for (const leftRes of leftResults) {
+    // if (combinedScope === null) {
+    //   console.log("combined scope didn't work");
+    //   continue;
+    // }
+    // console.log("aboutToJoin", {
+    //   leftRes: ppr(leftRes),
+    //   combinedScope: ppb(combinedScope),
+    // });
+    console.group("doJoin: about to get right results");
+    const rightResults = doJoin(depth, db, leftRes.bindings, clauses.slice(1));
+    console.groupEnd();
+    console.log("right results", rightResults);
+    for (const rightRes of rightResults) {
+      const unifyRes = unifyVars(leftRes.bindings, rightRes.bindings);
+      if (unifyRes === null) {
+        continue;
+      }
+      out.push({
+        term: leftRes.term, // ???
+        bindings: unifyRes,
+      });
+    }
   }
-  const rightResults = doJoin(db, scope, clauses.slice(1));
-  return singleJoin(db, scope, leftResults, rightResults);
+  return out;
 }
 
-function ppt(t: Term): pp.IDoc {
+export function ppt(t: Term): pp.IDoc {
   return pp.render(100, prettyPrintTerm(t));
 }
 
-function ppb(b: Bindings): pp.IDoc {
+export function ppb(b: Bindings): pp.IDoc {
   return pp.render(100, prettyPrintBindings(b));
 }
 
-function ppr(r: Res): pp.IDoc {
+export function ppr(r: Res): pp.IDoc {
   return pp.render(100, prettyPrintRes(r));
 }
 
@@ -92,79 +122,95 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
   return applyFilter(exprs[0], applyFilters(exprs.slice(1), recResults));
 }
 
-function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
-  switch (term.type) {
-    case "Record": {
-      const table = db.tables[term.relation];
-      if (table) {
-        const out: Res[] = [];
-        for (const rec of table) {
-          const unifyRes = unify(scope, term, rec);
-          console.log("scan", {
-            scope: ppb(scope),
-            term: ppt(term),
-            rec: ppt(rec),
-            unifyRes: unifyRes ? ppb(unifyRes) : null,
-          });
-          if (unifyRes === null) {
-            continue;
-          }
-          // TODO: filter based on scope, right here
-          out.push({
-            term: rec,
-            bindings: unifyRes,
-          });
-        }
-        return out;
-      }
-      const rule = db.rules[term.relation];
-      if (rule) {
-        // console.log(
-        //   "calling",
-        //   pp.render(100, [
-        //     prettyPrintTerm(term),
-        //     "=>",
-        //     prettyPrintTerm(rule.head),
-        //   ])
-        // );
-        const newScope = unify(scope, rule.head, term);
-        if (newScope === null) {
-          return []; // ?
-        }
-        console.log({
-          call: ppt(term),
-          head: ppt(rule.head),
-          newScope: ppb(newScope),
-        });
-        const mappings = getMappings(rule.head.attrs, term.attrs);
-        const rawResults = flatMap(rule.defn.opts, (ae) => {
-          const { recs, exprs } = extractBinExprs(ae);
-          const recResults = doJoin(db, newScope, recs);
-          return applyFilters(exprs, recResults);
-        });
-        return rawResults.map((res) => {
-          const mappedBindings = applyMappings(mappings, res.bindings);
-          return {
-            bindings: mappedBindings,
-            term: substitute(rule.head, res.bindings),
-          };
-        });
-      }
-      throw new Error(`not found: ${term.relation}`);
-    }
-    case "Var":
-      return [{ term: scope[term.name], bindings: scope }];
-    case "BinExpr":
-      return [
-        {
-          term: evalBinExpr(term, scope) ? trueTerm : falseTerm,
-          bindings: scope,
-        },
-      ];
-    case "Bool":
-    case "StringLit":
-      return [{ term: term, bindings: scope }];
+function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
+  console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
+  if (depth > 5) {
+    throw new Error("too deep");
   }
+  const bigRes = (() => {
+    switch (term.type) {
+      case "Record": {
+        const table = db.tables[term.relation];
+        if (table) {
+          const out: Res[] = [];
+          for (const rec of table) {
+            const unifyRes = unify(scope, term, rec);
+            console.log("scan", {
+              scope: ppb(scope),
+              term: ppt(term),
+              rec: ppt(rec),
+              unifyRes: unifyRes ? ppb(unifyRes) : null,
+            });
+            if (unifyRes === null) {
+              continue;
+            }
+            // TODO: filter based on scope, right here
+            out.push({
+              term: rec,
+              bindings: unifyRes,
+            });
+          }
+          return out;
+        }
+        const rule = db.rules[term.relation];
+        if (rule) {
+          // console.log(
+          //   "calling",
+          //   pp.render(100, [
+          //     prettyPrintTerm(term),
+          //     "=>",
+          //     prettyPrintTerm(rule.head),
+          //   ])
+          // );
+          const substTerm = substitute(term, scope);
+          const newScope = unify({}, substTerm, rule.head);
+          console.log("call: unifying", {
+            scope: {},
+            ruleHead: ppt(rule.head),
+            call: ppt(substTerm),
+            res: newScope,
+          });
+          if (newScope === null) {
+            return []; // ?
+          }
+          console.log("call", {
+            call: ppt(term),
+            head: ppt(rule.head),
+            newScope: ppb(newScope),
+          });
+          const mappings = getMappings(rule.head.attrs, term.attrs);
+          const rawResults = flatMap(rule.defn.opts, (ae) => {
+            const { recs, exprs } = extractBinExprs(ae);
+            const recResults = doJoin(depth, db, newScope, recs);
+            return applyFilters(exprs, recResults);
+          });
+          return rawResults.map((res) => {
+            const mappedBindings = applyMappings(mappings, res.bindings);
+            return {
+              bindings: mappedBindings,
+              term: substitute(rule.head, res.bindings),
+            };
+          });
+        }
+        throw new Error(`not found: ${term.relation}`);
+      }
+      case "Var":
+        return [{ term: scope[term.name], bindings: scope }];
+      case "BinExpr":
+        return [
+          {
+            term: evalBinExpr(term, scope) ? trueTerm : falseTerm,
+            bindings: scope,
+          },
+        ];
+      case "Bool":
+      case "StringLit":
+        return [{ term: term, bindings: scope }];
+    }
+  })();
+  console.groupEnd();
+  console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
+  return bigRes;
 }
 
 function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {

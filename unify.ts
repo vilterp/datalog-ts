@@ -1,5 +1,6 @@
 import { Bindings, rec, Rec, str, Term } from "./types";
 import { mapObj } from "./util";
+import { ppb, ppt } from "./simpleEvaluate";
 
 export function unify(
   prior: Bindings,
@@ -7,6 +8,12 @@ export function unify(
   right: Term
 ): Bindings | null {
   const res = doUnify(prior, left, right);
+  console.log("unify", {
+    prior: ppb(prior),
+    left: ppt(left),
+    right: ppt(right),
+    res: res ? ppb(res) : null,
+  });
   return res;
 }
 
@@ -16,6 +23,8 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
       switch (right.type) {
         case "StringLit":
           return left.val === right.val ? {} : null;
+        case "Var":
+          return { [right.name]: left };
         default:
           // TODO: add var case?
           return null;
@@ -120,7 +129,7 @@ export function substitute(term: Term, bindings: Bindings): Term {
         mapObj(term.attrs, (k, t) => substitute(t, bindings))
       );
     case "Var":
-      return bindings[term.name]; // TODO: handling missing. lol
+      return bindings[term.name] ? bindings[term.name] : term; // TODO: handling missing. lol
     default:
       return term;
   }
