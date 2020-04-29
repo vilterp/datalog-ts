@@ -13,7 +13,7 @@ import {
   VarMappings,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
-import { flatMap, mapObj, mapObjMaybe, repeat } from "./util";
+import { filterMap, flatMap, mapObj, mapObjMaybe, repeat } from "./util";
 import * as pp from "prettier-printer";
 import { prettyPrintBindings, prettyPrintRes, prettyPrintTerm } from "./pretty";
 import * as util from "util";
@@ -123,7 +123,7 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
 }
 
 function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
-  console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
+  // console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
   //   throw new Error("too deep");
   // }
@@ -184,24 +184,31 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
             const recResults = doJoin(depth, db, newScope, recs);
             return applyFilters(exprs, recResults);
           });
-          return rawResults.map((res) => {
+          return filterMap(rawResults, (res) => {
             const mappedBindings = applyMappings(mappings, res.bindings);
             const nextTerm = substitute(rule.head, res.bindings);
             const unif = unify(mappedBindings, term, nextTerm);
-            const unif2 = unify(mappedBindings, res.term, term);
-            console.log({
-              mappings: mappings,
-              rawResTerm: ppt(res.term),
-              rawResBindings: ppb(res.bindings),
-              resBindings: ppb(mappedBindings),
-              resTerm: ppt(nextTerm),
-              call: ppt(term),
-              unifRaw: unif,
-              unif: unif ? ppb(unif) : null,
-              unif2: unif2 ? ppb(unif2) : null,
-            });
+            // console.log("unify", {
+            //   prior: ppb(mappedBindings),
+            //   left: ppt(term),
+            //   right: ppt(nextTerm),
+            //   res: unif ? ppb(unif) : null,
+            // });
+            if (unif === null) {
+              return null;
+            }
+            // console.log({
+            //   mappings: mappings,
+            //   resTerm: ppt(res.term),
+            //   resBindings: ppb(res.bindings),
+            //   mappedBindings: ppb(mappedBindings),
+            //   nextTerm: ppt(nextTerm),
+            //   term: ppt(term), // call
+            //   unifRaw: unif,
+            //   unif: unif ? ppb(unif) : null,
+            // });
             return {
-              bindings: mappedBindings,
+              bindings: unif,
               term: nextTerm,
             };
           });
@@ -222,8 +229,8 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
         return [{ term: term, bindings: scope }];
     }
   })();
-  console.groupEnd();
-  console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
+  // console.groupEnd();
+  // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
 }
 

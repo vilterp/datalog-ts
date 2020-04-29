@@ -9,6 +9,18 @@ export function mapObj<T, V>(
   return out;
 }
 
+export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
+  const out: U[] = [];
+  for (const item of arr) {
+    const res = f(item);
+    if (!res) {
+      continue;
+    }
+    out.push(res);
+  }
+  return out;
+}
+
 export function mapObjMaybe<T, V>(
   obj: { [k: string]: T },
   f: (k: string, t: T) => V | undefined | null
