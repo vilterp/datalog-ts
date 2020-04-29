@@ -21,7 +21,16 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
           return null;
       }
     case "Var":
-      // TODO: what about prior bindings?
+      const priorBinding = prior[left.name];
+      if (priorBinding) {
+        if (priorBinding.type === "Var") {
+          return { [left.name]: right };
+        }
+        if (termEq(priorBinding, right)) {
+          return { [left.name]: right };
+        }
+        return null;
+      }
       return { [left.name]: right };
     case "Record": {
       switch (right.type) {

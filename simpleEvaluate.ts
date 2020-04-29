@@ -13,7 +13,7 @@ import {
   VarMappings,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
-import { flatMap, mapObj } from "./util";
+import { flatMap, mapObj, mapObjMaybe } from "./util";
 import * as pp from "prettier-printer";
 import { prettyPrintBindings, prettyPrintRes, prettyPrintTerm } from "./pretty";
 import * as util from "util";
@@ -27,6 +27,10 @@ function doJoin(db: DB, scope: Bindings, clauses: AndClause[]): Res[] {
     return doEvaluate(db, scope, clauses[0]);
   }
   const leftResults = doEvaluate(db, scope, clauses[0]);
+  if (leftResults.length === 0) {
+    // short circuit
+    return [];
+  }
   const rightResults = doJoin(db, scope, clauses.slice(1));
   return singleJoin(db, scope, leftResults, rightResults);
 }
@@ -96,6 +100,12 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
         const out: Res[] = [];
         for (const rec of table) {
           const unifyRes = unify(scope, term, rec);
+          console.log("scan", {
+            scope: ppb(scope),
+            term: ppt(term),
+            rec: ppt(rec),
+            unifyRes: unifyRes ? ppb(unifyRes) : null,
+          });
           if (unifyRes === null) {
             continue;
           }
@@ -117,15 +127,19 @@ function doEvaluate(db: DB, scope: Bindings, term: Term): Res[] {
         //     prettyPrintTerm(rule.head),
         //   ])
         // );
+        const newScope = unify(scope, rule.head, term);
+        if (newScope === null) {
+          return []; // ?
+        }
+        console.log({
+          call: ppt(term),
+          head: ppt(rule.head),
+          newScope: ppb(newScope),
+        });
         const mappings = getMappings(rule.head.attrs, term.attrs);
-        const newScope = mapObj(rule.head, (k) => scope[k]);
         const rawResults = flatMap(rule.defn.opts, (ae) => {
           const { recs, exprs } = extractBinExprs(ae);
           const recResults = doJoin(db, newScope, recs);
-          console.log("raw results", {
-            recResults: recResults.map(ppr),
-            filters: exprs.map(ppt),
-          });
           return applyFilters(exprs, recResults);
         });
         return rawResults.map((res) => {

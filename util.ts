@@ -9,6 +9,20 @@ export function mapObj<T, V>(
   return out;
 }
 
+export function mapObjMaybe<T, V>(
+  obj: { [k: string]: T },
+  f: (k: string, t: T) => V | undefined | null
+): { [k: string]: V } {
+  const out: { [k: string]: V } = {};
+  for (const key of Object.keys(obj)) {
+    const res = f(key, obj[key]);
+    if (res) {
+      out[key] = res;
+    }
+  }
+  return out;
+}
+
 export function mapObjToList<T, V>(
   obj: { [key: string]: T },
   f: (key: string, val: T) => V

@@ -3,7 +3,11 @@ import { Repl } from "./repl";
 import * as stream from "stream";
 import * as fs from "fs";
 
-const ddTestSuites = ["simple", "family", "recurse"];
+const ddTestSuites = [
+  // "simple",
+  // "family",
+  "recurse",
+];
 
 export function dataDrivenTests(writeResults: boolean): Suite {
   return ddTestSuites.map((name) => ({

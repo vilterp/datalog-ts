@@ -5,3 +5,11 @@ trans_edge{from: X, to: Z} :-
   edge{from: X, to: Z} |
   edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
+
+edge_filter{a: X, b: Y} :-
+  edge{from: X, to: Y}.
+----
+
+edge_filter{a: "A", b: B}.
+----
+edge_filter{a: "A", b: "B"}.
