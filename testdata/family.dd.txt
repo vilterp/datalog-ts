@@ -85,6 +85,23 @@ uncle{child: C, uncle: X}.
 ----
 uncle{child: "Bob", uncle: "Paul"}.
 
+ancestor{desc: "Pete", an: Z}.
+----
+ancestor{an: "Mary", desc: "Pete"}.
+ancestor{an: "Paul", desc: "Pete"}.
+ancestor{an: "Carolyn_K", desc: "Pete"}.
+ancestor{an: "Mark", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Pete"}.
+
+ancestor{desc: X, an: "Peter"}.
+----
+ancestor{an: "Peter", desc: "Paul"}.
+ancestor{an: "Peter", desc: "Ann"}.
+ancestor{an: "Peter", desc: "Bob"}.
+ancestor{an: "Peter", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Carolyn"}.
+
 .graphviz
 ----
 digraph G {

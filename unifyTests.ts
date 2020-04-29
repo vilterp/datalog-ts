@@ -12,6 +12,15 @@ export const unifyTests = [
         { B: str("Paul"), C: str("Peter") }
       );
       assertDeepEqual({ A: str("Pete"), B: str("Paul"), C: str("Peter") }, res);
+
+      const res2 = unifyVars(
+        { X: str("Paul"), Y: str("Peter") },
+        { X: varr("X"), Z: str("Peter") }
+      );
+      assertDeepEqual(
+        { X: str("Paul"), Y: str("Peter"), Z: str("Peter") },
+        res2
+      );
     },
   },
   {
