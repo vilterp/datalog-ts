@@ -39,22 +39,16 @@ function doJoin(
   // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
-    const nextScope = leftRes.bindings; // TODO
-    const maybeNextScope = unifyVars(scope, leftRes.bindings);
-    console.log("about to join with");
-    console.log({
-      leftResBindings: ppb(leftRes.bindings),
-      scope: ppb(scope),
-      clauses: clauses.slice(1).map(ppt),
-      nextScope: ppb(nextScope),
-      maybeNextScope: maybeNextScope ? ppb(maybeNextScope) : null,
-    });
-    // if (combinedScope === null) {
-    //   console.log("combined scope didn't work");
-    //   continue;
-    // }
-    // console.group("doJoin: about to get right results");
-    const rightResults = doJoin(depth, db, leftRes.bindings, clauses.slice(1));
+    const nextScope = unifyVars(scope, leftRes.bindings);
+    // console.log("about to join with");
+    // console.log({
+    //   leftResBindings: ppb(leftRes.bindings),
+    //   scope: ppb(scope),
+    //   clauses: clauses.slice(1).map(ppt),
+    //   nextScope: ppb(nextScope),
+    //   nextScope: nextScope ? ppb(nextScope) : null,
+    // });
+    const rightResults = doJoin(depth, db, nextScope, clauses.slice(1));
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {

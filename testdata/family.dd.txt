@@ -102,6 +102,31 @@ ancestor{an: "Peter", desc: "Bob"}.
 ancestor{an: "Peter", desc: "Pete"}.
 ancestor{an: "Peter", desc: "Carolyn"}.
 
+ancestor{desc: X, an: Y}.
+----
+ancestor{an: "Mary", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Paul"}.
+ancestor{an: "Judith", desc: "Ann"}.
+ancestor{an: "Ann", desc: "Bob"}.
+ancestor{an: "Carolyn_K", desc: "Mary"}.
+ancestor{an: "Mary", desc: "Carolyn"}.
+ancestor{an: "Paul", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Paul"}.
+ancestor{an: "Peter", desc: "Ann"}.
+ancestor{an: "Mark", desc: "Mary"}.
+ancestor{an: "John", desc: "Bob"}.
+ancestor{an: "Paul", desc: "Carolyn"}.
+ancestor{an: "Carolyn_K", desc: "Pete"}.
+ancestor{an: "Mark", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Bob"}.
+ancestor{an: "Peter", desc: "Bob"}.
+ancestor{an: "Carolyn_K", desc: "Carolyn"}.
+ancestor{an: "Mark", desc: "Carolyn"}.
+ancestor{an: "Judith", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Carolyn"}.
+ancestor{an: "Peter", desc: "Carolyn"}.
+
 .graphviz
 ----
 digraph G {
