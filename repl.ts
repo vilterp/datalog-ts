@@ -169,10 +169,12 @@ export class Repl {
   }
 
   private doGraphviz() {
-    const edges = this.runQuery(
+    const edges = evaluate(
+      this.db,
       rec("edge", { from: varr("F"), to: varr("T"), label: varr("L") })
     );
-    const nodes = this.runQuery(
+    const nodes = evaluate(
+      this.db,
       rec("node", { id: varr("I"), name: varr("N") })
     );
     // TODO: oof, all this typecasting
