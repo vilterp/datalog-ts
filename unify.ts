@@ -1,5 +1,6 @@
 import { Bindings, rec, Rec, str, Term } from "./types";
 import { mapObj } from "./util";
+import { ppb, ppt } from "./simpleEvaluate";
 
 export function unify(
   prior: Bindings,
@@ -7,6 +8,12 @@ export function unify(
   right: Term
 ): Bindings | null {
   const res = doUnify(prior, left, right);
+  // console.log("unify", {
+  //   prior: ppb(prior),
+  //   left: ppt(left),
+  //   right: ppt(right),
+  //   res: res ? ppb(res) : null,
+  // });
   return res;
 }
 
@@ -16,12 +23,22 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
       switch (right.type) {
         case "StringLit":
           return left.val === right.val ? {} : null;
+        case "Var":
+          return { [right.name]: left };
         default:
-          // TODO: add var case?
           return null;
       }
     case "Var":
-      // TODO: what about prior bindings?
+      const priorBinding = prior[left.name];
+      if (priorBinding) {
+        if (priorBinding.type === "Var") {
+          return { [left.name]: right };
+        }
+        if (termEq(priorBinding, right)) {
+          return { [left.name]: right };
+        }
+        return null;
+      }
       return { [left.name]: right };
     case "Record": {
       switch (right.type) {
@@ -85,21 +102,21 @@ export function termEq(left: Term, right: Term): boolean {
 
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
   const res: Bindings = {};
-  for (const key of Object.keys(left)) {
-    const leftVal = left[key];
-    const rightVal = right[key];
+  for (const leftKey of Object.keys(left)) {
+    const leftVal = left[leftKey];
+    const rightVal = right[leftKey];
+    // console.log("unifyvars", leftKey, leftVal, rightVal);
     if (rightVal) {
-      if (!termEq(rightVal, leftVal)) {
+      if (!unify({}, rightVal, leftVal)) {
         return null; // TODO: nice error message showing mismatch
       }
     }
-    res[key] = leftVal;
+    res[leftKey] = leftVal;
   }
   const onlyInRight = Object.keys(right).filter((key) => !left[key]);
   for (const key of onlyInRight) {
     res[key] = right[key];
   }
-  // TODO: put in right vals
   return res;
 }
 
@@ -111,7 +128,7 @@ export function substitute(term: Term, bindings: Bindings): Term {
         mapObj(term.attrs, (k, t) => substitute(t, bindings))
       );
     case "Var":
-      return bindings[term.name]; // TODO: handling missing. lol
+      return bindings[term.name] ? bindings[term.name] : term; // TODO: handling missing. lol
     default:
       return term;
   }

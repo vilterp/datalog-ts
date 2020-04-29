@@ -6,18 +6,15 @@ trans_edge{from: X, to: Z} :-
   edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
 
-.explain trans_edge{from: A, to: B}.
+edge_filter{a: X, b: Y} :-
+  edge{from: X, to: Y}.
 ----
-MAIN: trans_edge
-edge:
-  Match(edge{from: X, to: Z})
-    Scan(edge)
-trans_edge:
-  Or
-    Match(edge{from: X, to: Z})
-      Scan(edge)
-    Join(trans_edge{from: X, to: Z})
-      Match(trans_edge{from: Y, to: Z})
-        Call(trans_edge{from: X, to: Z}, {X: Y, Z: Z})
-      Match(edge{from: X, to: Y})
-        Scan(edge)
+
+trans_edge{from: A, to: B}.
+----
+trans_edge{from: "A", to: "B"}.
+trans_edge{from: "B", to: "C"}.
+trans_edge{from: "C", to: "D"}.
+trans_edge{from: "A", to: "C"}.
+trans_edge{from: "A", to: "D"}.
+trans_edge{from: "B", to: "D"}.

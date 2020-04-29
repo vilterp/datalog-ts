@@ -6,12 +6,14 @@ father{child: "Ann", father: "Peter"}.
 father{child: "Mary", father: "Mark"}.
 father{child: "Bob", father: "John"}.
 father{child: "Carolyn", father: "Paul"}.
+
 mother{child: "Pete", mother: "Mary"}.
 mother{child: "Paul", mother: "Judith"}.
 mother{child: "Ann", mother: "Judith"}.
 mother{child: "Bob", mother: "Ann"}.
 mother{child: "Mary", mother: "Carolyn_K"}.
 mother{child: "Carolyn", mother: "Mary"}.
+
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
@@ -46,6 +48,9 @@ brother{person: L, brother: R} :-
 sister{person: L, sister: R} :-
   person{name: R, gender: "Female"} &
   sibling{left: L, right: R}.
+ancestor{desc: X, an: Z} :-
+  parent{child: X, parent: Z} |
+  parent{child: X, parent: Y} & ancestor{desc: Y, an: Z}.
 
 edge_m{from: C, to: M, label: "mother"} :-
   mother{child: C, mother: M}.
