@@ -123,7 +123,7 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
 }
 
 function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
-  // console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
+  console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
   //   throw new Error("too deep");
   // }
@@ -186,9 +186,23 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           });
           return rawResults.map((res) => {
             const mappedBindings = applyMappings(mappings, res.bindings);
+            const nextTerm = substitute(rule.head, res.bindings);
+            const unif = unify(mappedBindings, term, nextTerm);
+            const unif2 = unify(mappedBindings, res.term, term);
+            console.log({
+              mappings: mappings,
+              rawResTerm: ppt(res.term),
+              rawResBindings: ppb(res.bindings),
+              resBindings: ppb(mappedBindings),
+              resTerm: ppt(nextTerm),
+              call: ppt(term),
+              unifRaw: unif,
+              unif: unif ? ppb(unif) : null,
+              unif2: unif2 ? ppb(unif2) : null,
+            });
             return {
               bindings: mappedBindings,
-              term: substitute(rule.head, res.bindings),
+              term: nextTerm,
             };
           });
         }
@@ -208,8 +222,8 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
         return [{ term: term, bindings: scope }];
     }
   })();
-  // console.groupEnd();
-  // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
+  console.groupEnd();
+  console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
 }
 

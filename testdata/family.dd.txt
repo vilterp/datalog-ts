@@ -138,40 +138,10 @@ ancestor{an: "John", desc: "Henry"}.
 ancestor{an: "Judith", desc: "Henry"}.
 ancestor{an: "Peter", desc: "Henry"}.
 
-.graphviz
+eee{to: T, from: F, label: L} :-
+  edge_m{to: T, from: F, label: L}.
 ----
-digraph G {
-  Pete -> Mary [label="mother"];
-  Paul -> Judith [label="mother"];
-  Ann -> Judith [label="mother"];
-  Bob -> Ann [label="mother"];
-  Mary -> Carolyn_K [label="mother"];
-  Carolyn -> Mary [label="mother"];
-  Pete -> Paul [label="father"];
-  Paul -> Peter [label="father"];
-  Ann -> Peter [label="father"];
-  Mary -> Mark [label="father"];
-  Bob -> John [label="father"];
-  Carolyn -> Paul [label="father"];
-  Henry -> Bob [label="father"];
-  Pete -> Judith [label="grandparent"];
-  Carolyn -> Judith [label="grandparent"];
-  Bob -> Judith [label="grandparent"];
-  Henry -> Ann [label="grandparent"];
-  Pete -> Carolyn_K [label="grandparent"];
-  Carolyn -> Carolyn_K [label="grandparent"];
-  Pete -> Peter [label="grandparent"];
-  Carolyn -> Peter [label="grandparent"];
-  Bob -> Peter [label="grandparent"];
-  Pete -> Mark [label="grandparent"];
-  Carolyn -> Mark [label="grandparent"];
-  Henry -> John [label="grandparent"];
-  Carolyn -> Pete [label="sibling"];
-  Ann -> Paul [label="sibling"];
-  Paul -> Ann [label="sibling"];
-  Pete -> Carolyn [label="sibling"];
-  Pete -> Bob [label="cousin"];
-  Carolyn -> Bob [label="cousin"];
-  Bob -> Pete [label="cousin"];
-  Bob -> Carolyn [label="cousin"]
-}
+
+eee{to: X, from: Y, label: Z}.
+----
+
