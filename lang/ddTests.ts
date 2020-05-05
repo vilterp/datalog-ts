@@ -39,7 +39,7 @@ function flattenTest(test: DDTest): Result[] {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
-    const rendered = printed.map(pp.render(100));
+    const rendered = printed.map((t) => pp.render(100, t) + ".");
     return {
       pair: tc,
       actual: rendered.join("\n") + "\n",
