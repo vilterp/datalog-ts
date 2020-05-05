@@ -1,0 +1,21 @@
+map((x:int) => plus(x, 2), ???)
+----
+var{id: "3", name: "x"}
+intLit{id: "4", val: "2"}
+funcCall{argIDs: "3, 4", id: "2", name: "plus"}
+lambda{body: "2", id: "1", params: "x: int"}
+placeholder{id: "5"}
+funcCall{argIDs: "1, 5", id: "0", name: "map"}
+
+let x = map((x:int) => plus(x, 2), ???) in filter(isEven, x)
+----
+var{id: "4", name: "x"}
+intLit{id: "5", val: "2"}
+funcCall{argIDs: "4, 5", id: "3", name: "plus"}
+lambda{body: "3", id: "2", params: "x: int"}
+placeholder{id: "6"}
+funcCall{argIDs: "2, 6", id: "1", name: "map"}
+var{id: "8", name: "isEven"}
+var{id: "9", name: "x"}
+funcCall{argIDs: "8, 9", id: "7", name: "filter"}
+letExpr{binding: "1", body: "7", id: "0", varName: "x"}

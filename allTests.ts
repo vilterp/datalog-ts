@@ -2,7 +2,7 @@ import { runSuites } from "./testing";
 import { unifyTests } from "./unifyTests";
 import { parserTests } from "./parserTest";
 import { replTests } from "./replTests";
-import { langParserTests } from "./lang/parserTest";
+import { langTests } from "./lang/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -13,7 +13,7 @@ const suites = {
   unifyTests,
   parserTests,
   replTests: replTests(writeResults),
-  langParserTests: langParserTests(writeResults),
+  langParserTests: langTests(writeResults),
 };
 
 try {

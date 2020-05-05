@@ -2,7 +2,7 @@ import * as P from "parsimmon";
 
 // adapted from https://github.com/jneen/parsimmon/blob/master/examples/json.js
 
-type Expr =
+export type Expr =
   | { type: "FuncCall"; name: Token; args: Expr[] }
   | { type: "Let"; name: Token; binding: Expr; body: Expr }
   | { type: "Var"; name: Token }
@@ -54,7 +54,20 @@ export const language = P.createLanguage({
     })),
   param: (r) =>
     P.seq(r.identifier, r.colon, r.type).map(([name, _, ty]) => ({ ty, name })),
-  letExpr: (r) => P.seq(r.letWord, r.identifier, r.inWord, r.expr),
+  letExpr: (r) =>
+    P.seq(
+      r.letWord,
+      r.identifier,
+      P.seq(P.optWhitespace, r.eq),
+      r.expr,
+      P.seq(P.optWhitespace, r.inWord),
+      r.expr
+    ).map(([_, name, __, binding, ___, body]) => ({
+      type: "Let",
+      name,
+      binding,
+      body,
+    })),
   varExpr: (r) => r.identifier.map((id) => ({ type: "Var", name: id })),
   intLit: (r) =>
     P.seq(P.index, P.regexp(/[0-9]+/)).map(([pos, v]) => ({
@@ -85,6 +98,7 @@ export const language = P.createLanguage({
       val: { ident, pos },
     })),
 
+  eq: () => word("="),
   lparen: () => word("("),
   rparen: () => word(")"),
   colon: () => word(":"),
