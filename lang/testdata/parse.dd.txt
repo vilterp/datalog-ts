@@ -1,0 +1,82 @@
+foo
+----
+{
+  "type": "Var",
+  "name": {
+    "ident": "foo",
+    "pos": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    }
+  }
+}
+
+2
+----
+{
+  "type": "IntLit",
+  "val": 2,
+  "pos": {
+    "offset": 0,
+    "line": 1,
+    "column": 1
+  }
+}
+
+"hello"
+----
+{
+  "type": "StringLit",
+  "val": "hello",
+  "pos": {
+    "offset": 0,
+    "line": 1,
+    "column": 1
+  }
+}
+
+myFunc(2, a, "foo")
+----
+{
+  "type": "FuncCall",
+  "name": {
+    "ident": "myFunc",
+    "pos": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    }
+  },
+  "args": [
+    {
+      "type": "IntLit",
+      "val": 2,
+      "pos": {
+        "offset": 7,
+        "line": 1,
+        "column": 8
+      }
+    },
+    {
+      "type": "Var",
+      "name": {
+        "ident": "a",
+        "pos": {
+          "offset": 10,
+          "line": 1,
+          "column": 11
+        }
+      }
+    },
+    {
+      "type": "StringLit",
+      "val": "foo",
+      "pos": {
+        "offset": 13,
+        "line": 1,
+        "column": 14
+      }
+    }
+  ]
+}

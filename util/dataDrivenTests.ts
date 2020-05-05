@@ -1,21 +1,7 @@
-import { assertStringEqual, Suite } from "./testing";
-import { Repl } from "./repl";
-import * as stream from "stream";
+import { assertStringEqual } from "../testing";
 import * as fs from "fs";
 
-const ddTestSuites = ["simple", "family", "recurse"];
-// const ddTestSuites = ["family"];
-
-export function dataDrivenTests(writeResults: boolean): Suite {
-  return ddTestSuites.map((name) => ({
-    name,
-    test() {
-      runDDTestAtPath(`testdata/${name}.dd.txt`, writeResults);
-    },
-  }));
-}
-
-type DDTest = IOPair[];
+export type DDTest = IOPair[];
 
 interface IOPair {
   lineNo: number; // 1-indexed
@@ -44,7 +30,13 @@ function doWriteResults(path: string, results: Result[]) {
   fs.writeFileSync(path, resultsToStr(results));
 }
 
-function runDDTestAtPath(path: string, writeResults: boolean) {
+export type ProcessFn = (test: DDTest) => Result[];
+
+export function runDDTestAtPath(
+  path: string,
+  getResults: ProcessFn,
+  writeResults: boolean
+) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
   const results = getResults(test);
@@ -55,30 +47,7 @@ function runDDTestAtPath(path: string, writeResults: boolean) {
   }
 }
 
-type Result = { pair: IOPair; actual: string };
-
-function getResults(test: DDTest): Result[] {
-  const input = identityTransform();
-  const output = identityTransform();
-  const repl = new Repl(input, output, false, "");
-  repl.run();
-
-  const results: Result[] = [];
-
-  for (const pair of test) {
-    input.write(pair.input + "\n");
-
-    const chunk = output.read(); // TODO: this seems to not always get everything. sigh.
-
-    results.push({
-      pair,
-      actual: chunk ? chunk.toString() : "",
-    });
-  }
-  input.end();
-
-  return results;
-}
+export type Result = { pair: IOPair; actual: string };
 
 // ah, nothing like a hand written parser
 function parseDDTest(str: string): DDTest {
@@ -115,16 +84,4 @@ function parseDDTest(str: string): DDTest {
     lineNo++;
   }
   return out;
-}
-
-function identityTransform(): stream.Transform {
-  return new stream.Transform({
-    transform(
-      chunk: any,
-      encoding: string,
-      callback: (error?: Error | null, data?: any) => void
-    ): void {
-      callback(null, chunk);
-    },
-  });
 }
