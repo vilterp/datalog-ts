@@ -80,3 +80,100 @@ myFunc(2, a, "foo")
     }
   ]
 }
+
+???
+----
+{
+  "type": "Placeholder",
+  "val": {
+    "ident": "???",
+    "pos": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    }
+  }
+}
+
+map((x:int) => plus(x, 2), ???)
+----
+{
+  "type": "FuncCall",
+  "name": {
+    "ident": "map",
+    "pos": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    }
+  },
+  "args": [
+    {
+      "type": "Lambda",
+      "params": [
+        {
+          "ty": {
+            "ident": "int",
+            "pos": {
+              "offset": 7,
+              "line": 1,
+              "column": 8
+            }
+          },
+          "name": {
+            "ident": "x",
+            "pos": {
+              "offset": 5,
+              "line": 1,
+              "column": 6
+            }
+          }
+        }
+      ],
+      "body": {
+        "type": "FuncCall",
+        "name": {
+          "ident": "plus",
+          "pos": {
+            "offset": 15,
+            "line": 1,
+            "column": 16
+          }
+        },
+        "args": [
+          {
+            "type": "Var",
+            "name": {
+              "ident": "x",
+              "pos": {
+                "offset": 20,
+                "line": 1,
+                "column": 21
+              }
+            }
+          },
+          {
+            "type": "IntLit",
+            "val": 2,
+            "pos": {
+              "offset": 23,
+              "line": 1,
+              "column": 24
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Placeholder",
+      "val": {
+        "ident": "???",
+        "pos": {
+          "offset": 27,
+          "line": 1,
+          "column": 28
+        }
+      }
+    }
+  ]
+}

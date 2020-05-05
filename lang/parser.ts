@@ -8,9 +8,12 @@ type Expr =
   | { type: "Var"; name: Token }
   | { type: "StringLit"; val: string; pos: Pos }
   | { type: "IntLit"; val: number; pos: Pos }
-  | { type: "Lambda"; params: Param[] };
+  | { type: "Lambda"; params: Param[]; body: Expr }
+  | { type: "Placeholder"; val: Token };
 
-type Param = { expr: Expr; name: string };
+type Param = { ty: Type; name: Token };
+
+type Type = Token; // TODO: generics, etc
 
 type Pos = { offset: number; line: number; column: number };
 
@@ -20,24 +23,37 @@ export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
 
   expr: (r) =>
-    P.alt(r.funcCall, r.lambda, r.letExpr, r.varExpr, r.stringLit, r.intLit),
+    P.alt(
+      r.funcCall,
+      r.lambda,
+      r.letExpr,
+      r.varExpr,
+      r.stringLit,
+      r.intLit,
+      r.placeholder
+    ),
 
   funcCall: (r) =>
     P.seq(
       r.identifier,
-      P.string("("),
+      r.lparen,
       P.sepBy(r.expr, r.comma),
-      P.string(")")
+      r.rparen
     ).map(([name, _, args, __]) => ({ type: "FuncCall", name, args })),
   lambda: (r) =>
     P.seq(
-      P.string("("),
+      r.lparen,
       P.sepBy(r.param, r.comma),
-      P.string(")"),
+      r.rparen,
       r.rightArrow,
       r.expr
-    ),
-  param: (r) => P.seq(r.identifier, r.colon, r.type),
+    ).map(([_, params, __, ___, body]) => ({
+      type: "Lambda",
+      params,
+      body,
+    })),
+  param: (r) =>
+    P.seq(r.identifier, r.colon, r.type).map(([name, _, ty]) => ({ ty, name })),
   letExpr: (r) => P.seq(r.letWord, r.identifier, r.inWord, r.expr),
   varExpr: (r) => r.identifier.map((id) => ({ type: "Var", name: id })),
   intLit: (r) =>
@@ -61,8 +77,16 @@ export const language = P.createLanguage({
       P.regex(/([a-zA-Z_][a-zA-Z0-9_]*)/, 1).desc("identifier")
     ).map(([pos, ident]) => ({ ident, pos })),
 
-  type: (r) => r.identifier,
+  type: (r) => r.identifier, // TODO: generics, etc
 
+  placeholder: () =>
+    P.seq(P.index, word("???")).map(([pos, ident]) => ({
+      type: "Placeholder",
+      val: { ident, pos },
+    })),
+
+  lparen: () => word("("),
+  rparen: () => word(")"),
   colon: () => word(":"),
   comma: () => word(","),
   letWord: () => word("let"),
