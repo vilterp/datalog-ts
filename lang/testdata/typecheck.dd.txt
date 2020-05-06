@@ -12,3 +12,12 @@ type{id: 0, type: "string"}.
 type{id: 1, type: T}.
 ----
 type{id: 1, type: "int"}.
+
+letExpr{id: 2, bindingID: 3, bodyID: 4, varName: "x"}.
+intLit{id: 3, val: 2}.
+placeholder{id: 4}.
+----
+
+scopeItem{id: 4, name: N, type: T}.
+----
+scopeItem{id: 4, name: "x", type: "int"}.

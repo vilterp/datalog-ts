@@ -42,3 +42,6 @@ intLit{id: 0, val: 2}.
 
 let x = 2 in ???
 ----
+letExpr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
+intLit{id: 1, val: 2}.
+placeholder{id: 2}.

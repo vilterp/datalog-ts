@@ -7,3 +7,7 @@ type_i{id: I, type: "int"} :-
 type{id: I, type: T} :-
   type_s{id: I, type: T} |
   type_i{id: I, type: T}.
+
+scopeItem{id: I, name: N, type: T} :-
+  letExpr{bodyID: I, varName: N, bindingID: B} &
+  type{id: B, type: T}.
