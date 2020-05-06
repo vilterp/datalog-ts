@@ -6,37 +6,27 @@ export function flatten(e: Expr): Term[] {
 }
 
 // TODO: positions
-// TODO: DRY up
 function recurse(
   nextID: number,
   e: Expr
 ): { terms: Term[]; id: number; nextID: number } {
   const nextIDTerm = str(`${nextID}`);
+  const simple = (term: Term) => ({
+    terms: [term],
+    id: nextID,
+    nextID: nextID + 1,
+  });
   switch (e.type) {
     case "Var":
-      return {
-        terms: [rec("var", { id: nextIDTerm, name: str(e.name.ident) })],
-        id: nextID,
-        nextID: nextID + 1,
-      };
+      return simple(rec("var", { id: nextIDTerm, name: str(e.name.ident) }));
     case "StringLit":
-      return {
-        terms: [rec("stringLit", { id: nextIDTerm, val: str(e.val) })],
-        id: nextID,
-        nextID: nextID + 1,
-      };
+      return simple(rec("stringLit", { id: nextIDTerm, val: str(e.val) }));
     case "IntLit":
-      return {
-        terms: [rec("intLit", { id: nextIDTerm, val: str(e.val.toString()) })],
-        id: nextID,
-        nextID: nextID + 1,
-      };
+      return simple(
+        rec("intLit", { id: nextIDTerm, val: str(e.val.toString()) })
+      );
     case "Placeholder":
-      return {
-        terms: [rec("placeholder", { id: nextIDTerm })],
-        id: nextID,
-        nextID: nextID + 1,
-      };
+      return simple(rec("placeholder", { id: nextIDTerm }));
     case "FuncCall": {
       // TODO: args (maybe just do curried?
       const { nid, terms: argTerms, argIDs } = e.args.reduce(
