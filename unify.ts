@@ -20,13 +20,14 @@ export function unify(
 function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
   switch (left.type) {
     case "StringLit":
-      switch (right.type) {
-        case "StringLit":
-          return left.val === right.val ? {} : null;
-        case "Var":
-          return { [right.name]: left };
-        default:
-          return null;
+    case "IntLit":
+    case "Bool":
+      if (right.type === left.type) {
+        return left.val === right.val ? {} : null;
+      } else if (right.type === "Var") {
+        return { [right.name]: left };
+      } else {
+        return null;
       }
     case "Var":
       const priorBinding = prior[left.name];
@@ -63,6 +64,8 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
           return null;
       }
     }
+    default:
+      return null;
   }
 }
 

@@ -1,0 +1,9 @@
+type_s{id: I, type: "string"} :-
+  stringLit{id: I}.
+
+type_i{id: I, type: "int"} :-
+  intLit{id: I}.
+
+type{id: I, type: T} :-
+  type_s{id: I, type: T} |
+  type_i{id: I, type: T}.

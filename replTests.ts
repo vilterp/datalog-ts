@@ -15,7 +15,7 @@ export function replTests(writeResults: boolean): Suite {
   }));
 }
 
-function putThroughRepl(test: DDTest): Result[] {
+export function putThroughRepl(test: DDTest): Result[] {
   const input = identityTransform();
   const output = identityTransform();
   const repl = new Repl(input, output, false, "");

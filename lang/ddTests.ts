@@ -5,6 +5,7 @@ import { language } from "./parser";
 import { prettyPrintTerm } from "../pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
+import { putThroughRepl } from "../replTests";
 
 export function langTests(writeResults: boolean): Suite {
   return [
@@ -20,6 +21,16 @@ export function langTests(writeResults: boolean): Suite {
         runDDTestAtPath(
           "lang/testdata/flatten.dd.txt",
           flattenTest,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "typecheck",
+      test() {
+        runDDTestAtPath(
+          "lang/testdata/typecheck.dd.txt",
+          putThroughRepl,
           writeResults
         );
       },

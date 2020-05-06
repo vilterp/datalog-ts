@@ -1,4 +1,4 @@
-import { rec, str, varr } from "./types";
+import { int, rec, str, varr } from "./types";
 import { unify, unifyVars } from "./unify";
 import * as assert from "assert";
 import { assertDeepEqual } from "./testing";
@@ -28,6 +28,16 @@ export const unifyTests = [
     test() {
       const unifyRes = unify({}, varr("X"), str("B"));
       assertDeepEqual({ X: str("B") }, unifyRes);
+    },
+  },
+  {
+    name: "unify_literals",
+    test() {
+      const unifyRes = unify({}, int(1), int(2));
+      assertDeepEqual(null, unifyRes);
+
+      const unifyRes2 = unify({}, int(1), int(1));
+      assertDeepEqual({}, unifyRes2);
     },
   },
   {

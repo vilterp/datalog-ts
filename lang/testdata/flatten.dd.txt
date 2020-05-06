@@ -31,3 +31,14 @@ var{id: 13, name: "isEven"}.
 var{id: 14, name: "x"}.
 funcArg{exprID: 13, id: 15, idx: 0}.
 funcArg{exprID: 14, id: 16, idx: 1}.
+
+"foo"
+----
+stringLit{id: 0, val: "foo"}.
+
+2
+----
+intLit{id: 0, val: 2}.
+
+let x = 2 in ???
+----

@@ -1,0 +1,14 @@
+.load lang/typecheck.dl
+----
+
+stringLit{id: 0, val: "foo"}.
+intLit{id: 1, val: 2}.
+----
+
+type{id: 0, type: T}.
+----
+type{id: 0, type: "string"}.
+
+type{id: 1, type: T}.
+----
+type{id: 1, type: "int"}.
