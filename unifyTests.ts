@@ -72,6 +72,21 @@ export const unifyTests = [
       assertDeepEqual({ X: str("A"), Y: str("B") }, unifyRes3);
     },
   },
+  // {
+  //   name: "recordsAndVars",
+  //   test() {
+  //     // type_lambda{id: I, type: tapp{to: T}} :-
+  //     //   lambda{id: I, retType: T}.
+  //     const unifyRes = unify(
+  //       { I: int(5), T: str("int") },
+  //       rec("type_lambda", {
+  //         id: varr("I"),
+  //         type: rec("tapp", { to: varr("T") }),
+  //       }),
+  //       rec("lambda", {})
+  //     );
+  //   },
+  // },
   {
     name: "scope",
     test() {

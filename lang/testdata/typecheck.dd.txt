@@ -1,6 +1,9 @@
 .load lang/typecheck.dl
 ----
 
+lambda{id: 5, body: 3, numParams: 1, retType: "int"}.
+----
+
 stringLit{id: 0, val: "foo"}.
 intLit{id: 1, val: 2}.
 ----
@@ -21,3 +24,15 @@ placeholder{id: 4}.
 scopeItem{id: 4, name: N, type: T}.
 ----
 scopeItem{id: 4, name: "x", type: "int"}.
+
+lambda{id: 5, retType: T}.
+----
+lambda{body: 3, id: 5, numParams: 1, retType: "int"}.
+
+type_lambda{id: 5, type: T}.
+----
+type_lambda{id: 5, type: tapp{to: "int"}}.
+
+type{id: 5, type: T}.
+----
+type{id: 5, type: tapp{to: "int"}}.

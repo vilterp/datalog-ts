@@ -87,6 +87,10 @@ export class Repl {
       this.println(pp.render(100, prettyPrintDB(this.db)));
       rl.prompt();
       return;
+    } else if (line === ".resetFacts") {
+      this.db.tables = {};
+      rl.prompt();
+      return;
     } else if (line === ".graphviz") {
       // TODO: remove dot...
       this.doGraphviz();
@@ -140,17 +144,6 @@ export class Repl {
         break;
       }
     }
-  }
-
-  private getExecNode(record: Rec): ExecNode {
-    const plan = planQuery(this.db, record);
-    const optPlan = optimize(plan);
-    return instantiate(this.db, optPlan, optPlan.rules[optPlan.main]);
-  }
-
-  private runQuery(record: Rec): Res[] {
-    const execNode = this.getExecNode(record);
-    return allResults(execNode);
   }
 
   private printQuery(record: Rec) {

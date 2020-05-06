@@ -1,12 +1,17 @@
-type_s{id: I, type: "string"} :-
-  stringLit{id: I}.
-
-type_i{id: I, type: "int"} :-
-  intLit{id: I}.
-
 type{id: I, type: T} :-
   type_s{id: I, type: T} |
-  type_i{id: I, type: T}.
+  type_i{id: I, type: T} |
+  type_lambda{id: I, type: T}.
+
+type_s{id: I, type: "string"} :-
+  stringLit{id: I}.
+type_i{id: I, type: "int"} :-
+  intLit{id: I}.
+type_fc{id: I, type: T} :-
+  scopeItem{id: I, name: N, type: tapp{to: T}} &
+  funcCall{id: I, name: N}.
+type_lambda{id: I, type: tapp{to: R}} :-
+  lambda{id: I, retType: R}.
 
 scopeItem{id: I, name: N, type: T} :-
   letExpr{bodyID: I, varName: N, bindingID: B} &
