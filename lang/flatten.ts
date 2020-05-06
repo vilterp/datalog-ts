@@ -29,7 +29,7 @@ function recurse(
       return simple(rec("placeholder", { id: nextIDTerm }));
     case "FuncCall": {
       // TODO: args (maybe just do curried?
-      const { nid, terms: argTerms, argIDs } = e.args.reduce(
+      const { nid, terms: argExprTerms, argIDs } = e.args.reduce(
         (accum, arg) => {
           const { id: argID, nextID: newNID, terms: newArgTerms } = recurse(
             accum.nid,
@@ -43,18 +43,25 @@ function recurse(
         },
         { nid: nextID + 1, terms: [], argIDs: [] }
       );
+      const argTerms = argIDs.map((argID, idx) =>
+        rec("funcArg", {
+          id: str(`${idx + nid}`),
+          idx: str(idx.toString()),
+          exprID: str(argID.toString()),
+        })
+      );
       return {
         terms: [
-          ...argTerms,
-          // TODO: work in arg ids
           rec("funcCall", {
             id: nextIDTerm,
             name: str(e.name.ident),
-            argIDs: str(argIDs.join(", ")),
+            numArgs: str(e.args.length.toString()),
           }),
+          ...argExprTerms,
+          ...argTerms,
         ],
         id: nextID,
-        nextID: nid,
+        nextID: nid + argTerms.length,
       };
     }
     case "Let": {
@@ -66,16 +73,14 @@ function recurse(
         nid1,
         e.body
       );
-      const overallTerm = [
-        rec("letExpr", {
-          id: nextIDTerm,
-          varName: str(e.name.ident),
-          binding: str(`${bindingID}`),
-          body: str(`${bodyID}`),
-        }),
-      ];
+      const overallTerm = rec("letExpr", {
+        id: nextIDTerm,
+        varName: str(e.name.ident),
+        binding: str(`${bindingID}`),
+        body: str(`${bodyID}`),
+      });
       return {
-        terms: [...bindingsTerms, ...bodyTerms, ...overallTerm],
+        terms: [overallTerm, ...bindingsTerms, ...bodyTerms],
         id: nextID,
         nextID: nid2,
       };
@@ -85,11 +90,18 @@ function recurse(
         nextID + 1,
         e.body
       );
+      const paramTerms = e.params.map((param, idx) =>
+        rec("lambdaParam", {
+          id: str(`${nid + idx}`),
+          idx: str(idx.toString()),
+          name: str(param.name.ident),
+          ty: str(param.ty.ident),
+        })
+      );
       return {
         id: nextID,
-        nextID: nid,
+        nextID: nid + paramTerms.length,
         terms: [
-          ...bodyTerms,
           rec("lambda", {
             id: nextIDTerm,
             body: str(`${bodyID}`),
@@ -97,6 +109,8 @@ function recurse(
               e.params.map((p) => `${p.name.ident}: ${p.ty.ident}`).join(", ")
             ),
           }),
+          ...bodyTerms,
+          ...paramTerms,
         ],
       };
     }
