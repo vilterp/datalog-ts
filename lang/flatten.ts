@@ -1,4 +1,4 @@
-import { rec, str, Term } from "../types";
+import { int, rec, str, Term } from "../types";
 import { Expr } from "./parser";
 
 export function flatten(e: Expr): Term[] {
@@ -10,7 +10,7 @@ function recurse(
   nextID: number,
   e: Expr
 ): { terms: Term[]; id: number; nextID: number } {
-  const nextIDTerm = str(`${nextID}`);
+  const nextIDTerm = int(nextID);
   const simple = (term: Term) => ({
     terms: [term],
     id: nextID,
@@ -22,9 +22,7 @@ function recurse(
     case "StringLit":
       return simple(rec("stringLit", { id: nextIDTerm, val: str(e.val) }));
     case "IntLit":
-      return simple(
-        rec("intLit", { id: nextIDTerm, val: str(e.val.toString()) })
-      );
+      return simple(rec("intLit", { id: nextIDTerm, val: int(e.val) }));
     case "Placeholder":
       return simple(rec("placeholder", { id: nextIDTerm }));
     case "FuncCall": {
@@ -45,9 +43,9 @@ function recurse(
       );
       const argTerms = argIDs.map((argID, idx) =>
         rec("funcArg", {
-          id: str(`${idx + nid}`),
-          idx: str(idx.toString()),
-          exprID: str(argID.toString()),
+          id: int(idx + nid),
+          idx: int(idx),
+          exprID: int(argID),
         })
       );
       return {
@@ -55,7 +53,7 @@ function recurse(
           rec("funcCall", {
             id: nextIDTerm,
             name: str(e.name.ident),
-            numArgs: str(e.args.length.toString()),
+            numArgs: int(e.args.length),
           }),
           ...argExprTerms,
           ...argTerms,
@@ -76,8 +74,8 @@ function recurse(
       const overallTerm = rec("letExpr", {
         id: nextIDTerm,
         varName: str(e.name.ident),
-        binding: str(`${bindingID}`),
-        body: str(`${bodyID}`),
+        bindingID: int(bindingID),
+        bodyID: int(bodyID),
       });
       return {
         terms: [overallTerm, ...bindingsTerms, ...bodyTerms],
@@ -92,8 +90,8 @@ function recurse(
       );
       const paramTerms = e.params.map((param, idx) =>
         rec("lambdaParam", {
-          id: str(`${nid + idx}`),
-          idx: str(idx.toString()),
+          id: int(nid + idx),
+          idx: int(idx),
           name: str(param.name.ident),
           ty: str(param.ty.ident),
         })
@@ -104,9 +102,9 @@ function recurse(
         terms: [
           rec("lambda", {
             id: nextIDTerm,
-            body: str(`${bodyID}`),
+            body: int(bodyID),
             retType: str(e.retType.ident),
-            numParams: str(e.params.length.toString()),
+            numParams: int(e.params.length),
           }),
           ...bodyTerms,
           ...paramTerms,

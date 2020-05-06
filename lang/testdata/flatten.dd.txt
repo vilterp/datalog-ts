@@ -1,33 +1,33 @@
 map((x: int): int => plus(x, 2), ???)
 ----
-funcCall{id: "0", name: "map", numArgs: "2"}.
-lambda{body: "2", id: "1", numParams: "1", retType: "int"}.
-funcCall{id: "2", name: "plus", numArgs: "2"}.
-var{id: "3", name: "x"}.
-intLit{id: "4", val: "2"}.
-funcArg{exprID: "3", id: "5", idx: "0"}.
-funcArg{exprID: "4", id: "6", idx: "1"}.
-lambdaParam{id: "7", idx: "0", name: "x", ty: "int"}.
-placeholder{id: "8"}.
-funcArg{exprID: "1", id: "9", idx: "0"}.
-funcArg{exprID: "8", id: "10", idx: "1"}.
+funcCall{id: 0, name: "map", numArgs: 2}.
+lambda{body: 2, id: 1, numParams: 1, retType: "int"}.
+funcCall{id: 2, name: "plus", numArgs: 2}.
+var{id: 3, name: "x"}.
+intLit{id: 4, val: 2}.
+funcArg{exprID: 3, id: 5, idx: 0}.
+funcArg{exprID: 4, id: 6, idx: 1}.
+lambdaParam{id: 7, idx: 0, name: "x", ty: "int"}.
+placeholder{id: 8}.
+funcArg{exprID: 1, id: 9, idx: 0}.
+funcArg{exprID: 8, id: 10, idx: 1}.
 
 let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
-letExpr{binding: "1", body: "12", id: "0", varName: "x"}.
-funcCall{id: "1", name: "map", numArgs: "2"}.
-lambda{body: "3", id: "2", numParams: "1", retType: "int"}.
-funcCall{id: "3", name: "plus", numArgs: "2"}.
-var{id: "4", name: "x"}.
-intLit{id: "5", val: "2"}.
-funcArg{exprID: "4", id: "6", idx: "0"}.
-funcArg{exprID: "5", id: "7", idx: "1"}.
-lambdaParam{id: "8", idx: "0", name: "x", ty: "int"}.
-placeholder{id: "9"}.
-funcArg{exprID: "2", id: "10", idx: "0"}.
-funcArg{exprID: "9", id: "11", idx: "1"}.
-funcCall{id: "12", name: "filter", numArgs: "2"}.
-var{id: "13", name: "isEven"}.
-var{id: "14", name: "x"}.
-funcArg{exprID: "13", id: "15", idx: "0"}.
-funcArg{exprID: "14", id: "16", idx: "1"}.
+letExpr{bindingID: 1, bodyID: 12, id: 0, varName: "x"}.
+funcCall{id: 1, name: "map", numArgs: 2}.
+lambda{body: 3, id: 2, numParams: 1, retType: "int"}.
+funcCall{id: 3, name: "plus", numArgs: 2}.
+var{id: 4, name: "x"}.
+intLit{id: 5, val: 2}.
+funcArg{exprID: 4, id: 6, idx: 0}.
+funcArg{exprID: 5, id: 7, idx: 1}.
+lambdaParam{id: 8, idx: 0, name: "x", ty: "int"}.
+placeholder{id: 9}.
+funcArg{exprID: 2, id: 10, idx: 0}.
+funcArg{exprID: 9, id: 11, idx: 1}.
+funcCall{id: 12, name: "filter", numArgs: 2}.
+var{id: 13, name: "isEven"}.
+var{id: 14, name: "x"}.
+funcArg{exprID: 13, id: 15, idx: 0}.
+funcArg{exprID: 14, id: 16, idx: 1}.
