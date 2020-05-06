@@ -8,7 +8,7 @@ export type Expr =
   | { type: "Var"; name: Token }
   | { type: "StringLit"; val: string; pos: Pos }
   | { type: "IntLit"; val: number; pos: Pos }
-  | { type: "Lambda"; params: Param[]; body: Expr }
+  | { type: "Lambda"; params: Param[]; retType: Type; body: Expr }
   | { type: "Placeholder"; val: Token };
 
 type Param = { ty: Type; name: Token };
@@ -45,12 +45,15 @@ export const language = P.createLanguage({
       r.lparen,
       P.sepBy(r.param, r.comma),
       r.rparen,
+      r.colon,
+      r.type.skip(P.optWhitespace),
       r.rightArrow,
       r.expr
-    ).map(([_, params, __, ___, body]) => ({
+    ).map(([_1, params, _2, _3, retType, _4, body]) => ({
       type: "Lambda",
       params,
       body,
+      retType,
     })),
   param: (r) =>
     P.seq(r.identifier, r.colon, r.type).map(([name, _, ty]) => ({ ty, name })),

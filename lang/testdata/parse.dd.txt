@@ -95,7 +95,7 @@ myFunc(2, a, "foo")
   }
 }
 
-map((x:int) => plus(x, 2), ???)
+map((x: int): int => plus(x, 2), ???)
 ----
 {
   "type": "FuncCall",
@@ -115,9 +115,9 @@ map((x:int) => plus(x, 2), ???)
           "ty": {
             "ident": "int",
             "pos": {
-              "offset": 7,
+              "offset": 8,
               "line": 1,
-              "column": 8
+              "column": 9
             }
           },
           "name": {
@@ -135,9 +135,9 @@ map((x:int) => plus(x, 2), ???)
         "name": {
           "ident": "plus",
           "pos": {
-            "offset": 15,
+            "offset": 21,
             "line": 1,
-            "column": 16
+            "column": 22
           }
         },
         "args": [
@@ -146,9 +146,9 @@ map((x:int) => plus(x, 2), ???)
             "name": {
               "ident": "x",
               "pos": {
-                "offset": 20,
+                "offset": 26,
                 "line": 1,
-                "column": 21
+                "column": 27
               }
             }
           },
@@ -156,12 +156,20 @@ map((x:int) => plus(x, 2), ???)
             "type": "IntLit",
             "val": 2,
             "pos": {
-              "offset": 23,
+              "offset": 29,
               "line": 1,
-              "column": 24
+              "column": 30
             }
           }
         ]
+      },
+      "retType": {
+        "ident": "int",
+        "pos": {
+          "offset": 14,
+          "line": 1,
+          "column": 15
+        }
       }
     },
     {
@@ -169,9 +177,9 @@ map((x:int) => plus(x, 2), ???)
       "val": {
         "ident": "???",
         "pos": {
-          "offset": 27,
+          "offset": 33,
           "line": 1,
-          "column": 28
+          "column": 34
         }
       }
     }

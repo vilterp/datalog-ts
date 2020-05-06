@@ -1,4 +1,4 @@
-map((x:int) => plus(x, 2), ???)
+map((x: int): int => plus(x, 2), ???)
 ----
 funcCall{id: "0", name: "map", numArgs: "2"}.
 lambda{body: "2", id: "1", params: "x: int"}.
@@ -12,7 +12,7 @@ placeholder{id: "8"}.
 funcArg{exprID: "1", id: "9", idx: "0"}.
 funcArg{exprID: "8", id: "10", idx: "1"}.
 
-let x = map((x:int) => plus(x, 2), ???) in filter(isEven, x)
+let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
 letExpr{binding: "1", body: "12", id: "0", varName: "x"}.
 funcCall{id: "1", name: "map", numArgs: "2"}.
