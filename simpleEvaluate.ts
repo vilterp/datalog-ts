@@ -173,11 +173,11 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           if (newScope === null) {
             return []; // ?
           }
-          console.log("call", {
-            call: ppt(term),
-            head: ppt(rule.head),
-            newScope: ppb(newScope),
-          });
+          // console.log("call", {
+          //   call: ppt(term),
+          //   head: ppt(rule.head),
+          //   newScope: ppb(newScope),
+          // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
           const rawResults = flatMap(rule.defn.opts, (ae) => {
             const { recs, exprs } = extractBinExprs(ae);

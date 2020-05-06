@@ -36,3 +36,15 @@ type_lambda{id: 5, type: tapp{to: "int"}}.
 type{id: 5, type: T}.
 ----
 type{id: 5, type: tapp{to: "int"}}.
+
+scopeItem{id: 6, name: "plus", type: tapp{to: "int"}}.
+funcCall{id: 6, name: "plus"}.
+----
+
+type_fc{id: 6, type: T}.
+----
+type_fc{id: 6, type: "int"}.
+
+type{id: 6, type: T}.
+----
+type{id: 6, type: "int"}.
