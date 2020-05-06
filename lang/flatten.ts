@@ -105,9 +105,8 @@ function recurse(
           rec("lambda", {
             id: nextIDTerm,
             body: str(`${bodyID}`),
-            params: str(
-              e.params.map((p) => `${p.name.ident}: ${p.ty.ident}`).join(", ")
-            ),
+            retType: str(e.retType.ident),
+            numParams: str(e.params.length.toString()),
           }),
           ...bodyTerms,
           ...paramTerms,

@@ -1,7 +1,7 @@
 map((x: int): int => plus(x, 2), ???)
 ----
 funcCall{id: "0", name: "map", numArgs: "2"}.
-lambda{body: "2", id: "1", params: "x: int"}.
+lambda{body: "2", id: "1", numParams: "1", retType: "int"}.
 funcCall{id: "2", name: "plus", numArgs: "2"}.
 var{id: "3", name: "x"}.
 intLit{id: "4", val: "2"}.
@@ -16,7 +16,7 @@ let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
 letExpr{binding: "1", body: "12", id: "0", varName: "x"}.
 funcCall{id: "1", name: "map", numArgs: "2"}.
-lambda{body: "3", id: "2", params: "x: int"}.
+lambda{body: "3", id: "2", numParams: "1", retType: "int"}.
 funcCall{id: "3", name: "plus", numArgs: "2"}.
 var{id: "4", name: "x"}.
 intLit{id: "5", val: "2"}.
