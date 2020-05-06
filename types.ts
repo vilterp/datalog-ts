@@ -44,11 +44,9 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type Term = StringLit | Var | AndClause | Bool;
+export type Term = StringLit | Var | AndClause | Bool | Int;
 
 export type AndClause = Rec | BinExpr;
-
-export type StringLit = { type: "StringLit"; val: string };
 
 export type Var = { type: "Var"; name: string };
 
@@ -67,6 +65,10 @@ export type BinExpr = {
 
 type Bool = { type: "Bool"; val: boolean };
 
+type Int = { type: "IntLit"; val: number };
+
+export type StringLit = { type: "StringLit"; val: string };
+
 // TODO: moar, argument types, etc.
 export type Operator = "=" | "!=";
 
@@ -74,6 +76,10 @@ export type Operator = "=" | "!=";
 
 export function str(s: string): Term {
   return { type: "StringLit", val: s };
+}
+
+export function int(i: number): Term {
+  return { type: "IntLit", val: i };
 }
 
 export function rec(relation: string, attrs: { [key: string]: Term }): Rec {

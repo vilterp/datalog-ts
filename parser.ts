@@ -1,4 +1,5 @@
 import * as P from "parsimmon";
+import { falseTerm, trueTerm } from "./types";
 
 // adapted from https://github.com/jneen/parsimmon/blob/master/examples/json.js
 
@@ -19,9 +20,9 @@ export const language = P.createLanguage({
   andClauses: (r) =>
     P.sepBy(r.clause, r.and).map((xs) => ({ type: "And", clauses: xs })),
   clause: (r) => P.alt(r.record, r.binExpr),
-  term: (r) => P.alt(r.record, r.stringLit, r.var), // TODO: binExpr should be in here...
+  term: (r) => P.alt(r.var, r.boolLit, r.record, r.stringLit, r.intLit), // TODO: binExpr should be in here...
   record: (r) =>
-    P.seq(r.identifier, r.lbrace, r.pair.sepBy(r.comma), r.rbrace).map(
+    P.seq(r.recordIdentifier, r.lbrace, r.pair.sepBy(r.comma), r.rbrace).map(
       ([ident, _, pairs, __]) => ({
         type: "Record",
         relation: ident,
@@ -39,15 +40,27 @@ export const language = P.createLanguage({
       right,
       op,
     })),
-  stringLit: (r) =>
+  stringLit: () =>
     P.regexp(/"((?:\\.|.)*?)"/, 1)
       .map(interpretEscapes)
       .desc("string")
       .map((s) => ({ type: "StringLit", val: s })),
-  var: (r) => r.identifier.map((id) => ({ type: "Var", name: id })),
-  pair: (r) => P.seq(r.identifier.skip(r.colon), r.term),
+  intLit: () =>
+    P.digits.map((digits) => ({
+      type: "IntLit",
+      val: Number.parseInt(digits),
+    })),
+  boolLit: () =>
+    P.alt(
+      P.string("true").map(() => trueTerm),
+      P.string("false").map(() => falseTerm)
+    ),
+  var: () =>
+    P.regex(/([A-Z][a-zA-Z0-9_]*)/, 1).map((id) => ({ type: "Var", name: id })),
+  pair: (r) => P.seq(r.recordIdentifier.skip(r.colon), r.term),
 
-  identifier: () => P.regex(/([a-zA-Z_][a-zA-Z0-9_]*)/, 1).desc("identifier"),
+  recordIdentifier: () =>
+    P.regex(/([a-z][a-zA-Z0-9_]*)/, 1).desc("recordIdentifier"),
 
   binOp: () => P.alt(word("="), word("!=")),
   lbrace: () => word("{"),

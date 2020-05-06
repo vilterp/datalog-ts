@@ -12,6 +12,12 @@ export const parserTests: Suite = [
     },
   },
   {
+    name: "varTerm",
+    test() {
+      testParser(language.term, `A`, varr("A"));
+    },
+  },
+  {
     name: "stringLit",
     test() {
       testParser(language.stringLit, `"hello world"`, str("hello world"));

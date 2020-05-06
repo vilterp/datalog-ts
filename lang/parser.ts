@@ -65,14 +65,14 @@ export const language = P.createLanguage({
       r.expr,
       P.seq(P.optWhitespace, r.inWord),
       r.expr
-    ).map(([_, name, __, binding, ___, body]) => ({
+    ).map(([_1, name, _2, binding, _3, body]) => ({
       type: "Let",
       name,
       binding,
       body,
     })),
   varExpr: (r) => r.identifier.map((id) => ({ type: "Var", name: id })),
-  intLit: (r) =>
+  intLit: () =>
     P.seq(P.index, P.regexp(/[0-9]+/)).map(([pos, v]) => ({
       type: "IntLit",
       val: Number.parseInt(v),

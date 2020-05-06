@@ -34,6 +34,8 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
       ];
     case "Bool":
       return `${term.val}`;
+    case "IntLit":
+      return `${term.val}`;
   }
 }
 

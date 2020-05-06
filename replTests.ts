@@ -3,7 +3,7 @@ import { Repl } from "./repl";
 import * as stream from "stream";
 import { DDTest, Result, runDDTestAtPath } from "./util/dataDrivenTests";
 
-const ddTestSuites = ["simple", "family", "recurse"];
+const ddTestSuites = ["simple", "family", "recurse", "literals"];
 // const ddTestSuites = ["family"];
 
 export function replTests(writeResults: boolean): Suite {

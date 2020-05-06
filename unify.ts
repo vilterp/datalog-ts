@@ -70,12 +70,9 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
 export function termEq(left: Term, right: Term): boolean {
   switch (left.type) {
     case "StringLit":
-      switch (right.type) {
-        case "StringLit":
-          return left.val === right.val;
-        default:
-          return false;
-      }
+    case "IntLit":
+    case "Bool":
+      return left.type === right.type && left.val === right.val;
     case "Var":
       switch (right.type) {
         case "Var":
