@@ -294,3 +294,18 @@ function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
     exprs,
   };
 }
+
+export function hasVars(t: Term): boolean {
+  switch (t.type) {
+    case "StringLit":
+      return false;
+    case "Var":
+      return true;
+    case "Record":
+      return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
+    case "BinExpr":
+      return hasVars(t.left) || hasVars(t.right);
+    case "Bool":
+      return false;
+  }
+}

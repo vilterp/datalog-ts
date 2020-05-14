@@ -104,24 +104,4 @@ export const trueTerm: Term = { type: "Bool", val: true };
 
 export const falseTerm: Term = { type: "Bool", val: false };
 
-// plan
-
-export interface Plan {
-  rules: { [name: string]: PlanNode };
-  main: string;
-}
-
-export type PlanNode =
-  | { type: "Join"; left: PlanNode; right: PlanNode; template: Rec }
-  | { type: "Or"; opts: PlanNode[] }
-  | {
-      type: "Call";
-      mappings: VarMappings; // call to rule head
-      ruleHead: Rec;
-    }
-  | { type: "Scan"; relation: string }
-  | { type: "Match"; inner: PlanNode; record: Rec }
-  | { type: "Filter"; expr: BinExpr; inner: PlanNode }
-  | { type: "EmptyOnce" };
-
 export type VarMappings = { [from: string]: string };

@@ -10,20 +10,12 @@ import {
   varr,
 } from "./types";
 import { language } from "./parser";
-import { hasVars, optimize } from "./optimize";
 import * as readline from "readline";
-import { planQuery } from "./plan";
-import { allResults, ExecNode, instantiate } from "./execNodes";
-import {
-  prettyPrintDB,
-  prettyPrintTerm,
-  prettyPrintPlan,
-  prettyPrintBindings,
-} from "./pretty";
+import { prettyPrintDB, prettyPrintTerm, prettyPrintBindings } from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
 import * as fs from "fs";
-import { evaluate } from "./simpleEvaluate";
+import { hasVars, evaluate } from "./simpleEvaluate";
 import * as util from "util";
 
 export class Repl {
@@ -95,9 +87,6 @@ export class Repl {
       // TODO: remove dot...
       this.doGraphviz();
       rl.prompt();
-      return;
-    } else if (line.startsWith(".explain ")) {
-      this.doExplain(line.slice(".explain ".length));
       return;
     } else if (line.startsWith(".load ")) {
       this.doLoad(line.slice(".load ".length));
@@ -189,18 +178,6 @@ export class Repl {
       }),
     };
     this.println(prettyPrintGraph(g));
-  }
-
-  private doExplain(s: string) {
-    try {
-      const insert = language.insert.tryParse(s);
-      const plan = planQuery(this.db, insert.record);
-      const optPlan = optimize(plan);
-      this.println(pp.render(100, prettyPrintPlan(optPlan)));
-    } catch (e) {
-      this.println("error: ", e.toString(), e.stack);
-    }
-    this.rl.prompt();
   }
 
   private doLoad(path: string) {

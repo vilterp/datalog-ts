@@ -4,10 +4,3 @@ father{child: "Pete", father: "Paul"}.
 father{child: "Pete", father: F}.
 ----
 father{child: "Pete", father: "Paul"}.
-
-.explain father{child: "Pete", father: F}.
-----
-MAIN: father
-father:
-  Match(father{child: "Pete", father: F})
-    Scan(father)

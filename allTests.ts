@@ -23,7 +23,9 @@ const suites = {
 try {
   runSuites(suites);
 } catch (e) {
+  console.error(e);
   if (!stayAlive) {
+    console.log("exiting");
     process.exit(-1);
   }
 }
