@@ -67,7 +67,7 @@ export class Repl {
     this.rl = rl;
   }
 
-  private handleLine(line: string) {
+  handleLine(line: string) {
     const rl = this.rl;
     if (line.length === 0) {
       rl.prompt();

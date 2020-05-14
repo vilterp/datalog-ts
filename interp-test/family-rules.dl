@@ -1,4 +1,4 @@
-#!../cmd/repl.ts .graphviz
+#!/Users/vilterp/code/datalog-ts/cmd/repl.ts .graphviz
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
