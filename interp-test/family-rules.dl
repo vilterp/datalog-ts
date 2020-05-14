@@ -1,4 +1,4 @@
-#!/Users/vilterp/code/datalog-ts/cmd/repl.ts .graphviz
+#!../cmd/repl.ts .graphviz
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
@@ -62,8 +62,8 @@ node_fc{id: C, label: C} :-
     father{child: C}.
 node_ff{id: C, label: C} :-
     father{father: C}.
-node{id: I, name: N} :-
-    node_mc{id: I, name: N} |
-    node_mm{id: I, name: N} |
-    node_fc{id: I, name: N} |
-    node_ff{id: I, name: N}.
+node{id: I, label: N} :-
+    node_mc{id: I, label: N} |
+    node_mm{id: I, label: N} |
+    node_fc{id: I, label: N} |
+    node_ff{id: I, label: N}.
