@@ -1,36 +1,22 @@
-import {
-  array,
-  falseTerm,
-  int,
-  rec,
-  Rec,
-  str,
-  StringLit,
-  Term,
-  trueTerm,
-} from "../types";
-import { prettyPrintTerm } from "../pretty";
-import * as pp from "prettier-printer";
+import { array, falseTerm, int, rec, Rec, str, Term, trueTerm } from "../types";
+import { Json } from "./json";
 
-const fs = require("fs");
-const data = fs.readFileSync(0, "utf-8");
-const json = JSON.parse(data);
-
-type Json = number | string | boolean | { [key: string]: Json } | Json[];
-
-function jsonToDL(json: Json, emit: (rec: Rec) => void) {
+export function jsonToDL(json: Json, emit: (rec: Rec) => void) {
   recurse([], json, emit);
 }
 
-function recurse(pathSoFar: StringLit[], json: Json, emit: (rec: Rec) => void) {
+function recurse(pathSoFar: Term[], json: Json, emit: (rec: Rec) => void) {
   switch (typeof json) {
     case "object":
-      // I guess this covers arrays as well?
-      Object.keys(json).forEach((key) => {
-        pathSoFar.push(str(key));
-        recurse(pathSoFar, json[key], emit);
-        pathSoFar.pop();
-      });
+      if (Array.isArray(json)) {
+        json.map((item, idx) => {
+          recurse([...pathSoFar, int(idx)], item, emit);
+        });
+      } else {
+        Object.keys(json).forEach((key) => {
+          recurse([...pathSoFar, str(key)], json[key], emit);
+        });
+      }
       break;
     case "boolean":
     case "string":
@@ -59,7 +45,3 @@ function primitiveToTerm(v: boolean | number | string): Term {
       throw new Error("wut");
   }
 }
-
-jsonToDL(json, (rec) => {
-  console.log(pp.render(1000, prettyPrintTerm(rec)) + ".");
-});

@@ -3,7 +3,7 @@
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
     "test-write-results": "ts-node allTests.ts --write-results",
-    "repl": "ts-node main.ts"
+    "repl": "ts-node cmd/repl.ts"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",
