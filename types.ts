@@ -44,7 +44,7 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type Term = StringLit | Var | AndClause | Bool | Int;
+export type Term = StringLit | Var | AndClause | Bool | Int | Array;
 
 export type AndClause = Rec | BinExpr;
 
@@ -69,16 +69,18 @@ type Int = { type: "IntLit"; val: number };
 
 export type StringLit = { type: "StringLit"; val: string };
 
+export type Array = { type: "Array"; items: Term[] };
+
 // TODO: moar, argument types, etc.
 export type Operator = "=" | "!=";
 
 // term helpers
 
-export function str(s: string): Term {
+export function str(s: string): StringLit {
   return { type: "StringLit", val: s };
 }
 
-export function int(i: number): Term {
+export function int(i: number): Int {
   return { type: "IntLit", val: i };
 }
 
@@ -86,12 +88,16 @@ export function rec(relation: string, attrs: { [key: string]: Term }): Rec {
   return { type: "Record", relation, attrs };
 }
 
-export function varr(name: string): Term {
+export function varr(name: string): Var {
   return { type: "Var", name: name };
 }
 
-export function binExpr(left: Term, op: Operator, right: Term): Term {
+export function binExpr(left: Term, op: Operator, right: Term): BinExpr {
   return { type: "BinExpr", left, right, op };
+}
+
+export function array(items: Term[]): Array {
+  return { type: "Array", items: items };
 }
 
 export const trueTerm: Term = { type: "Bool", val: true };

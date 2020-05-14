@@ -24,8 +24,10 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
           mapObjToList(term.attrs, (k, v) => [k, ": ", prettyPrintTerm(v)])
         ),
       ];
+    case "Array":
+      return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
     case "StringLit":
-      return `"${term.val.split(`"`).join(`\\"`)}"`;
+      return `"${term.val.split(`"`).join(`\\"`).split("\n").join("\\n")}"`;
     case "BinExpr":
       return [
         prettyPrintTerm(term.left),
