@@ -38,7 +38,7 @@ export function putThroughRepl(test: DDTest): Result[] {
   return results;
 }
 
-function identityTransform(): stream.Transform {
+export function identityTransform(): stream.Transform {
   return new stream.Transform({
     transform(
       chunk: any,

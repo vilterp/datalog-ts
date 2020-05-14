@@ -67,7 +67,7 @@ export class Repl {
     this.rl = rl;
   }
 
-  private handleLine(line: string) {
+  handleLine(line: string) {
     const rl = this.rl;
     if (line.length === 0) {
       rl.prompt();
@@ -75,7 +75,10 @@ export class Repl {
     }
     // special commands
     // TODO: parse these with parser
-    if (line === ".dump") {
+    if (line.startsWith("#")) {
+      rl.prompt();
+      return;
+    } else if (line === ".dump") {
       this.println(pp.render(100, prettyPrintDB(this.db)));
       rl.prompt();
       return;
