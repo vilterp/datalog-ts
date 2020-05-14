@@ -1,7 +1,7 @@
 import { assertDeepEqual, Suite } from "./testing";
 import { language } from "./parser";
 import { Parser } from "parsimmon";
-import { binExpr, rec, str, varr } from "./types";
+import { array, binExpr, int, rec, str, trueTerm, varr } from "./types";
 import * as assert from "assert";
 
 export const parserTests: Suite = [
@@ -21,6 +21,23 @@ export const parserTests: Suite = [
     name: "stringLit",
     test() {
       testParser(language.stringLit, `"hello world"`, str("hello world"));
+    },
+  },
+  {
+    name: "intLit",
+    test() {
+      testParser(language.intLit, `2`, int(2));
+      testParser(language.intLit, `-2`, int(-2));
+    },
+  },
+  {
+    name: "array",
+    test() {
+      testParser(
+        language.term,
+        `["foo", Bar, 2, true]`,
+        array([str("foo"), varr("Bar"), int(2), trueTerm])
+      );
     },
   },
   {

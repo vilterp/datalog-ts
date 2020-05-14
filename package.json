@@ -17,5 +17,9 @@
     "@types/parsimmon": "^1.10.1",
     "parsimmon": "^1.13.0",
     "prettier-printer": "^1.1.4"
+  },
+  "bin": {
+    "datalog-ts": "cmd/repl.ts",
+    "json2dl": "cmd/json2dl.ts"
   }
 }

@@ -59,10 +59,32 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
             accum = { ...accum, ...res };
           }
           return accum;
+        // TODO: add Var case?
         default:
           return null;
       }
     }
+    case "Array":
+      switch (right.type) {
+        case "Array":
+          if (left.items.length != right.items.length) {
+            return null;
+          }
+          let accum = {};
+          for (let i = 0; i < left.items.length; i++) {
+            const leftItem = left.items[i];
+            const rightItem = right.items[i];
+            const res = unify(prior, leftItem, rightItem);
+            if (res === null) {
+              return null; // TODO: error message?
+            }
+            accum = { ...accum, ...res };
+          }
+          return accum;
+        // TODO: add Var case?
+        default:
+          return null;
+      }
     default:
       return null;
   }

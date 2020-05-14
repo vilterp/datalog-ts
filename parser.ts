@@ -20,7 +20,8 @@ export const language = P.createLanguage({
   andClauses: (r) =>
     P.sepBy(r.clause, r.and).map((xs) => ({ type: "And", clauses: xs })),
   clause: (r) => P.alt(r.record, r.binExpr),
-  term: (r) => P.alt(r.var, r.boolLit, r.record, r.stringLit, r.intLit), // TODO: binExpr should be in here...
+  term: (r) =>
+    P.alt(r.arrayLit, r.var, r.boolLit, r.record, r.stringLit, r.intLit), // TODO: binExpr should be in here...
   record: (r) =>
     P.seq(r.recordIdentifier, r.lbrace, r.pair.sepBy(r.comma), r.rbrace).map(
       ([ident, _, pairs, __]) => ({
@@ -29,6 +30,12 @@ export const language = P.createLanguage({
         attrs: pairsToObj(pairs),
       })
     ),
+  arrayLit: (r) =>
+    P.seq(
+      r.lsquare,
+      P.sepBy(r.term, r.comma),
+      r.rsquare
+    ).map(([_1, items, _2]) => ({ type: "Array", items })),
   binExpr: (r) =>
     P.seq(
       r.var.skip(P.optWhitespace),
@@ -46,7 +53,8 @@ export const language = P.createLanguage({
       .desc("string")
       .map((s) => ({ type: "StringLit", val: s })),
   intLit: () =>
-    P.digits.map((digits) => ({
+    // secretly also parse floats
+    P.regex(/-?[0-9]+(\.[0-9]+)?/).map((digits) => ({
       type: "IntLit",
       val: Number.parseInt(digits),
     })),
@@ -65,6 +73,8 @@ export const language = P.createLanguage({
   binOp: () => P.alt(word("="), word("!=")),
   lbrace: () => word("{"),
   rbrace: () => word("}"),
+  lsquare: () => word("["),
+  rsquare: () => word("]"),
   colon: () => word(":"),
   comma: () => word(","),
   period: () => word("."),

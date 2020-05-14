@@ -1,4 +1,4 @@
-import { int, rec, str, varr } from "./types";
+import { array, int, rec, str, varr } from "./types";
 import { unify, unifyVars } from "./unify";
 import * as assert from "assert";
 import { assertDeepEqual } from "./testing";
@@ -102,6 +102,31 @@ export const unifyTests = [
         })
       );
       assertDeepEqual({ X: str("D"), Z: varr("Z") }, unifyRes);
+    },
+  },
+  {
+    name: "array",
+    test() {
+      const unifyRes = unify(
+        {},
+        array([str("foo"), varr("X"), int(2)]),
+        array([str("foo"), str("bar"), int(2)])
+      );
+      assertDeepEqual({ X: str("bar") }, unifyRes);
+
+      const unifyRes2 = unify(
+        {},
+        array([str("foo"), str("notbar"), int(2)]),
+        array([str("foo"), str("bar"), int(2)])
+      );
+      assertDeepEqual(null, unifyRes2);
+
+      const unifyRes3 = unify(
+        {},
+        array([str("foo"), varr("X"), int(2)]),
+        array([str("foo"), str("bar")])
+      );
+      assertDeepEqual(null, unifyRes3);
     },
   },
 ];
