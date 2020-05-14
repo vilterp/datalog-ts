@@ -5,7 +5,8 @@ import { falseTerm, trueTerm } from "./types";
 
 export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
-  statement: (r) => P.alt(r.insert, r.rule),
+  statement: (r) => P.alt(r.insert, r.rule, r.comment),
+  comment: () => P.regex(/#[^\n]*/),
   insert: (r) =>
     r.record.skip(r.period).map((rec) => ({ type: "Insert", record: rec })),
   rule: (r) =>

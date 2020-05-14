@@ -1,0 +1,69 @@
+#!../cmd/repl.ts .graphviz
+grandfather{grandchild: A, grandfather: C} :-
+  parent{child: A, parent: B} &
+  father{child: B, father: C}.
+grandmother{grandchild: A, grandmother: C} :-
+  child{child: A, parent: B} &
+  mother{child: B, mother: C}.
+grandparent{grandchild: A, grandparent: C} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C}.
+parent{child: C, parent: P} :-
+  mother{child: C, mother: P} | father{child: C, father: P}.
+parents{child: C, mother: M, father: F} :-
+  mother{child: C, mother: M} &
+  father{child: C, father: F}.
+sibling{left: L, right: R} :-
+  L != R &
+  parents{child: L, mother: M, father: F} &
+  parents{child: R, mother: M, father: F}.
+cousin{left: L, right: R} :-
+  parent{child: L, parent: P1} &
+  sibling{left: P1, right: P2} &
+  parent{child: R, parent: P2}.
+uncle{child: C, uncle: U} :-
+  parent{child: C, parent: P} &
+  brother{person: P, brother: U}.
+aunt{child: C, aunt: U} :-
+  parent{child: C, parent: P} &
+  sister{person: P, sister: U}.
+brother{person: L, brother: R} :-
+  person{name: R, gender: "Male"} &
+  sibling{left: L, right: R}.
+sister{person: L, sister: R} :-
+  person{name: R, gender: "Female"} &
+  sibling{left: L, right: R}.
+ancestor{desc: X, an: Z} :-
+  parent{child: X, parent: Z} |
+  parent{child: X, parent: Y} & ancestor{desc: Y, an: Z}.
+
+edge_m{from: C, to: M, label: "mother"} :-
+  mother{child: C, mother: M}.
+edge_f{from: C, to: F, label: "father"} :-
+  father{child: C, father: F}.
+edge_gp{from: A, to: B, label: "grandparent"} :-
+  grandparent{grandchild: A, grandparent: B}.
+edge_sibling{from: A, to: B, label: "sibling"} :-
+  sibling{left: A, right: B}.
+edge_cousin{from: A, to: B, label: "cousin"} :-
+  cousin{left: A, right: B}.
+edge{from: F, to: T, label: L} :-
+    edge_m{from: F, to: T, label: L} |
+    edge_f{from: F, to: T, label: L} |
+    edge_gp{from: F, to: T, label: L} |
+    edge_sibling{from: F, to: T, label: L} |
+    edge_cousin{from: F, to: T, label: L}.
+
+node_mc{id: C, label: C} :-
+    mother{child: C}.
+node_mm{id: C, label: C} :-
+    mother{mother: C}.
+node_fc{id: C, label: C} :-
+    father{child: C}.
+node_ff{id: C, label: C} :-
+    father{father: C}.
+node{id: I, name: N} :-
+    node_mc{id: I, name: N} |
+    node_mm{id: I, name: N} |
+    node_fc{id: I, name: N} |
+    node_ff{id: I, name: N}.
