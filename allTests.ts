@@ -21,8 +21,8 @@ const suites = {
 try {
   runSuites(suites);
 } catch (e) {
-  if (stayAlive) {
-    console.error(e);
+  if (!stayAlive) {
+    process.exit(-1);
   }
 }
 
