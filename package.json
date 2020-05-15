@@ -1,12 +1,12 @@
 {
   "name": "datalog-ts",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "scripts": {
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
     "test-write-results": "ts-node allTests.ts --write-results",
     "repl": "ts-node cmd/repl.ts",
-    "build": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts && chmod +x dist/cmd/json2dl.js && chmod +x dist/cmd/repl.js"
+    "build": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",
