@@ -4,7 +4,10 @@ family.png: family.dot
 family.dot: family-rules.dl family-facts.dl
 	cat family-facts.dl | ./family-rules.dl > family.dot
 
-test: family.png family-ref.png
+test-dot: family.dot family-ref.dot
+	cmp family.dot family-ref.dot
+
+test-png: family.png family-ref.png
 	cmp family.png family-ref.png
 
 clean:

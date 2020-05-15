@@ -1,4 +1,4 @@
-#!/usr/bin/env datalog-ts .graphviz
+#!/usr/bin/env datalog-ts '.graphviz'
 grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
