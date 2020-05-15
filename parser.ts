@@ -39,9 +39,9 @@ export const language = P.createLanguage({
     ).map(([_1, items, _2]) => ({ type: "Array", items })),
   binExpr: (r) =>
     P.seq(
-      r.var.skip(P.optWhitespace),
+      r.term.skip(P.optWhitespace),
       r.binOp,
-      r.var.skip(P.optWhitespace)
+      r.term.skip(P.optWhitespace)
     ).map(([left, op, right]) => ({
       type: "BinExpr",
       left,
