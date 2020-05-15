@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 import * as pp from "prettier-printer";
 import { prettyPrintTerm } from "../pretty";
 import { jsonToDL } from "../util/json2dl";

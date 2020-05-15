@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 import { Repl } from "../repl";
 import * as fs from "fs";
 
