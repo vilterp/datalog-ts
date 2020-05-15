@@ -17,7 +17,13 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
     case "Array":
       return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
     case "StringLit":
-      return `"${term.val.split(`"`).join(`\\"`).split("\n").join("\\n")}"`;
+      return `"${term.val
+        .split("\\")
+        .join("\\\\")
+        .split(`"`)
+        .join(`\\"`)
+        .split("\n")
+        .join("\\n")}"`;
     case "BinExpr":
       return [
         prettyPrintTerm(term.left),

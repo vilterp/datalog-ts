@@ -6,6 +6,9 @@ export function jsonToDL(json: Json, emit: (rec: Rec) => void) {
 }
 
 function recurse(pathSoFar: Term[], json: Json, emit: (rec: Rec) => void) {
+  if (json === null) {
+    return;
+  }
   switch (typeof json) {
     case "object":
       if (Array.isArray(json)) {
