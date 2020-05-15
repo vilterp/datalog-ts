@@ -35,15 +35,15 @@ export function prettyPrintGraph(g: Graph): string {
       pp.braces,
       [
         ...g.nodes.map((node) => [
-          node.id,
+          `"${node.id}"`,
           " [",
           mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`]),
           "]",
         ]),
         ...g.edges.map((edge) => [
-          edge.from,
+          `"${edge.from}"`,
           " -> ",
-          edge.to,
+          `"${edge.to}"`,
           " [",
           mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`]),
           "]",

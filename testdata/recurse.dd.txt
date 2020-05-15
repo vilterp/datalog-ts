@@ -26,14 +26,14 @@ edge{to: T, from: F, label: ""} :-
 .graphviz
 ----
 digraph G {
-  A [label="A"];
-  B [label="B"];
-  C [label="C"];
-  D [label="D"];
-  A -> B [label=""];
-  B -> C [label=""];
-  C -> D [label=""];
-  A -> C [label=""];
-  A -> D [label=""];
-  B -> D [label=""]
+  "A" [label="A"];
+  "B" [label="B"];
+  "C" [label="C"];
+  "D" [label="D"];
+  "A" -> "B" [label=""];
+  "B" -> "C" [label=""];
+  "C" -> "D" [label=""];
+  "A" -> "C" [label=""];
+  "A" -> "D" [label=""];
+  "B" -> "D" [label=""]
 }

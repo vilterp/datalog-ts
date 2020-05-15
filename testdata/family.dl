@@ -12,7 +12,7 @@ mother{child: "Pete", mother: "Mary"}.
 mother{child: "Paul", mother: "Judith"}.
 mother{child: "Ann", mother: "Judith"}.
 mother{child: "Bob", mother: "Ann"}.
-mother{child: "Mary", mother: "Carolyn_K"}.
+mother{child: "Mary", mother: "Carolyn K"}.
 mother{child: "Carolyn", mother: "Mary"}.
 
 grandfather{grandchild: A, grandfather: C} :-
