@@ -1,4 +1,4 @@
-.load lang/typecheck.dl
+.load fp/typecheck.dl
 ----
 
 lambda{id: 5, body: 3, numParams: 1, retType: "int"}.

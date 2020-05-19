@@ -2,7 +2,7 @@ import { runSuites } from "./testing";
 import { unifyTests } from "./unifyTests";
 import { parserTests } from "./parserTest";
 import { replTests } from "./replTests";
-import { langTests } from "./lang/ddTests";
+import { fpTests } from "./fp/ddTests";
 import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./prettyTest";
 
@@ -15,7 +15,7 @@ const suites = {
   unifyTests,
   parserTests,
   replTests: replTests(writeResults),
-  langParserTests: langTests(writeResults),
+  fpTests: fpTests(writeResults),
   json2DLTests,
   prettyPrintTests,
 };

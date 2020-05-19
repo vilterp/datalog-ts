@@ -6,7 +6,7 @@
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
     "test-write-results": "ts-node allTests.ts --write-results",
     "repl": "ts-node cmd/repl.ts",
-    "build": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts"
+    "build": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts && tsc --outDir dist cmd/flatten-fp.ts"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",
@@ -23,6 +23,7 @@
   },
   "bin": {
     "datalog-ts": "dist/cmd/repl.js",
-    "json2dl": "dist/cmd/json2dl.js"
+    "json2dl": "dist/cmd/json2dl.js",
+    "flatten-fp": "dist/cmd/flatten-fp.js"
   }
 }
