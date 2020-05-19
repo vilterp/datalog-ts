@@ -7,19 +7,19 @@ import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
 import { putThroughRepl } from "../replTests";
 
-export function langTests(writeResults: boolean): Suite {
+export function fpTests(writeResults: boolean): Suite {
   return [
     {
       name: "parse",
       test() {
-        runDDTestAtPath("lang/testdata/parse.dd.txt", parseTest, writeResults);
+        runDDTestAtPath("fp/testdata/parse.dd.txt", parseTest, writeResults);
       },
     },
     {
       name: "flatten",
       test() {
         runDDTestAtPath(
-          "lang/testdata/flatten.dd.txt",
+          "fp/testdata/flatten.dd.txt",
           flattenTest,
           writeResults
         );
@@ -29,7 +29,7 @@ export function langTests(writeResults: boolean): Suite {
       name: "typecheck",
       test() {
         runDDTestAtPath(
-          "lang/testdata/typecheck.dd.txt",
+          "fp/testdata/typecheck.dd.txt",
           putThroughRepl,
           writeResults
         );
