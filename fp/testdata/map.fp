@@ -1,1 +1,1 @@
-map((x: int): int => plus(x, 2), ???)
+map((x: int): int => let x = "hello" in plus(x, 2), ???)
