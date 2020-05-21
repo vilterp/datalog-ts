@@ -20,8 +20,6 @@ type Pos = { offset: number; line: number; column: number };
 type Token = { ident: string; pos: Pos };
 
 export const language = P.createLanguage({
-  program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
-
   expr: (r) =>
     P.alt(
       r.funcCall,
@@ -31,7 +29,7 @@ export const language = P.createLanguage({
       r.stringLit,
       r.intLit,
       r.placeholder
-    ),
+    ).skip(P.optWhitespace),
 
   funcCall: (r) =>
     P.seq(

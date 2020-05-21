@@ -2,7 +2,9 @@ type{id: I, type: T} :-
   type_s{id: I, type: T} |
   type_i{id: I, type: T} |
   type_lambda{id: I, type: T} |
-  type_fc{id: I, type: T}.
+  type_fc{id: I, type: T} |
+  type_let{id: I, type: T} |
+  type_var{id: I, type: T}.
 
 type_s{id: I, type: "string"} :-
   stringLit{id: I}.
@@ -13,6 +15,12 @@ type_fc{id: I, type: T} :-
   scope_item{id: I, name: N, type: tapp{from: F, to: T}} &
   funcArg{callExprID: I, argExprID: AI} &
   type{id: AI, type: F}.
+type_let{id: I, type: T} :-
+  letExpr{id: I, bodyID: BID} &
+  type{id: BID, type: T}.
+type_var{id: I, type: T} :-
+  var{id: I, name: N} &
+  scope_item{id: I, name: N, type: T}.
 # TODO: get this to work for multiple parameters...
 type_lambda{id: I, type: tapp{from: F, to: R}} :-
   lambda{id: I, retType: R, body: B} &
@@ -23,7 +31,11 @@ scope_item{id: I, name: N, type: T} :-
   scope_let{id: I, name: N, type: T} |
   scope_lambda{id: I, name: N, type: T}.
 
+# this recursion is not working for some reason
 scope_let{id: I, name: N, type: T} :-
+  scope_let_direct{id: I, name: N, type: T} |
+  letExpr{bodyID: I, id: P} & scope_item{id: P, name: N, type: T}.
+scope_let_direct{id: I, name: N, type: T} :-
   letExpr{bodyID: I, varName: N, bindingID: B} &
   type{id: B, type: T}.
 scope_lambda{id: I, name: N, type: T} :-

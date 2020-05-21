@@ -39,12 +39,12 @@ function recurse(nextID, e) {
                     terms: __spreadArrays(accum.terms, newArgTerms),
                     argIDs: __spreadArrays(accum.argIDs, [argID])
                 };
-            }, { nid: nextID + 1, terms: [], argIDs: [] }), nid_1 = _a.nid, argExprTerms = _a.terms, argIDs = _a.argIDs;
+            }, { nid: nextID + 1, terms: [], argIDs: [] }), nid = _a.nid, argExprTerms = _a.terms, argIDs = _a.argIDs;
             var argTerms = argIDs.map(function (argID, idx) {
                 return types_1.rec("funcArg", {
-                    id: types_1.int(idx + nid_1),
+                    callExprID: types_1.int(nextID),
                     idx: types_1.int(idx),
-                    exprID: types_1.int(argID)
+                    argExprID: types_1.int(argID)
                 });
             });
             return {
@@ -56,7 +56,7 @@ function recurse(nextID, e) {
                     })
                 ], argExprTerms, argTerms),
                 id: nextID,
-                nextID: nid_1 + argTerms.length
+                nextID: nid + argTerms.length
             };
         }
         case "Let": {
