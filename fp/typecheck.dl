@@ -9,12 +9,15 @@ type_s{id: I, type: "string"} :-
 type_i{id: I, type: "int"} :-
   intLit{id: I}.
 type_fc{id: I, type: T} :-
-  scope_item{id: I, name: N, type: tapp{to: T}} &
-  funcCall{id: I, name: N}.
+  funcCall{id: I, name: N} &
+  scope_item{id: I, name: N, type: tapp{from: F, to: T}} &
+  funcArg{callExprID: I, argExprID: AI} &
+  type{id: AI, type: F}.
 # TODO: get this to work for multiple parameters...
 type_lambda{id: I, type: tapp{from: F, to: R}} :-
-  lambda{id: I, retType: R} &
-  lambdaParam{lambdaID: I, ty: F}.
+  lambda{id: I, retType: R, body: B} &
+  lambdaParam{lambdaID: I, ty: F} &
+  type{id: B, type: R}.
 
 scope_item{id: I, name: N, type: T} :-
   scope_let{id: I, name: N, type: T} |

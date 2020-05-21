@@ -43,9 +43,9 @@ function recurse(
       );
       const argTerms = argIDs.map((argID, idx) =>
         rec("funcArg", {
-          id: int(idx + nid),
+          callExprID: int(nextID),
           idx: int(idx),
-          exprID: int(argID),
+          argExprID: int(argID),
         })
       );
       return {
