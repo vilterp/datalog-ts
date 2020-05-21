@@ -75,10 +75,10 @@ function recurse(nextID, e) {
             };
         }
         case "Lambda": {
-            var _d = recurse(nextID + 1, e.body), bodyID = _d.id, nid_2 = _d.nextID, bodyTerms = _d.terms;
+            var _d = recurse(nextID + 1, e.body), bodyID = _d.id, nid = _d.nextID, bodyTerms = _d.terms;
             var paramTerms = e.params.map(function (param, idx) {
                 return types_1.rec("lambdaParam", {
-                    id: types_1.int(nid_2 + idx),
+                    lambdaID: types_1.int(nextID),
                     idx: types_1.int(idx),
                     name: types_1.str(param.name.ident),
                     ty: types_1.str(param.ty.ident)
@@ -86,7 +86,7 @@ function recurse(nextID, e) {
             });
             return {
                 id: nextID,
-                nextID: nid_2 + paramTerms.length,
+                nextID: nid + paramTerms.length,
                 terms: __spreadArrays([
                     types_1.rec("lambda", {
                         id: nextIDTerm,

@@ -90,7 +90,7 @@ function recurse(
       );
       const paramTerms = e.params.map((param, idx) =>
         rec("lambdaParam", {
-          id: int(nid + idx),
+          lambdaID: int(nextID),
           idx: int(idx),
           name: str(param.name.ident),
           ty: str(param.ty.ident),
