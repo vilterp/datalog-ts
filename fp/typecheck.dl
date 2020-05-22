@@ -29,8 +29,8 @@ type_s{id: I, type: "string"} :-
 type_i{id: I, type: "int"} :-
   intLit{id: I}.
 type_fc{id: I, type: T} :-
-  funcCall{id: I, name: N} &
-  scope_item{id: I, name: N, type: tapp{from: F, to: T}} &
+  funcCall{id: I, name: M} &
+  scope_item{id: I, name: M, type: tapp{from: F, to: T}} &
   funcArg{callExprID: I, argExprID: AI} &
   type{id: AI, type: F}.
 type_let{id: I, type: T} :-

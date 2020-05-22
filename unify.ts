@@ -7,13 +7,14 @@ export function unify(
   left: Term,
   right: Term
 ): Bindings | null {
+  console.group("unify", {
+    prior: ppb(prior),
+    left: ppt(left),
+    right: ppt(right),
+  });
   const res = doUnify(prior, left, right);
-  // console.log("unify", {
-  //   prior: ppb(prior),
-  //   left: ppt(left),
-  //   right: ppt(right),
-  //   res: res ? ppb(res) : null,
-  // });
+  console.groupEnd();
+  console.log("res", res ? ppb(res) : null);
   return res;
 }
 
@@ -35,7 +36,7 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
         if (priorBinding.type === "Var") {
           return { [left.name]: right };
         }
-        if (termEq(priorBinding, right)) {
+        if (unify({}, priorBinding, right)) {
           return { [left.name]: right };
         }
         return null;
@@ -44,20 +45,27 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
     case "Record": {
       switch (right.type) {
         case "Record":
+          if (left.relation === "builtin" && right.relation === "builtin") {
+            console.log("=======================================");
+          }
           let accum = {};
           for (const key of Object.keys(left.attrs)) {
             // TODO: do bindings fold across keys... how would that be ordered...
             const leftVal = left.attrs[key];
             const rightVal = right.attrs[key];
             if (!rightVal) {
+              console.log("A");
               return null;
             }
             const res = unify(prior, leftVal, rightVal);
             if (res === null) {
+              console.log("B");
               return null; // TODO: error message here would be nice saying what we can't unify
             }
+            console.log("C");
             accum = { ...accum, ...res };
           }
+          console.log("D");
           return accum;
         case "Var":
           return { [right.name]: left };
