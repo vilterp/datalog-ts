@@ -77,40 +77,6 @@ export function ppr(r: Res): pp.IDoc {
   return pp.render(100, prettyPrintRes(r));
 }
 
-function singleJoin(
-  db: DB,
-  scope: Bindings,
-  leftResults: Res[],
-  rightResults: Res[]
-): Res[] {
-  // console.log(
-  //   "singleJoin",
-  //   util.inspect({ leftResults, rightResults }, { depth: null })
-  // );
-  const out: Res[] = [];
-  for (const left of leftResults) {
-    for (const right of rightResults) {
-      // console.log("unifying", {
-      //   leftBindings: left.bindings,
-      //   rightBindings: right.bindings,
-      // });
-      const newBindings = unifyVars(left.bindings, right.bindings);
-      // console.log("unify", {
-      //   left: ppt(left.term),
-      //   right: ppt(right.term),
-      //   bindings: newBindings ? ppb(newBindings) : "null",
-      // });
-      if (newBindings !== null) {
-        out.push({
-          term: left.term, // ???
-          bindings: newBindings,
-        });
-      }
-    }
-  }
-  return out;
-}
-
 function applyFilter(binExpr: BinExpr, res: Res[]): Res[] {
   return res.filter((res) => evalBinExpr(binExpr, res.bindings));
 }

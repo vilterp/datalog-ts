@@ -1,11 +1,3 @@
 letExpr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
 intLit{id: 1, val: 2}.
 var{id: 2, name: "x"}.
-
-# typechecker explodes if these aren't here...
-# is that a bug in the interpreter?
-# maybe the language should have type definitions
-# so relations can exist even if they're empty
-stringLit{id: 100}.
-lambda{id: 101}.
-funcCall{id: 102}.

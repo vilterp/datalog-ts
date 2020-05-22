@@ -75,10 +75,7 @@ export class Repl {
     }
     // special commands
     // TODO: parse these with parser
-    if (line.startsWith("#")) {
-      rl.prompt();
-      return;
-    } else if (line === ".dump") {
+    if (line === ".dump") {
       this.println(pp.render(100, prettyPrintDB(this.db)));
       rl.prompt();
       return;
@@ -96,7 +93,7 @@ export class Repl {
       return;
     }
     this.buffer = this.buffer + line;
-    if (!line.endsWith(".")) {
+    if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
       return;
     }
     try {
@@ -135,6 +132,12 @@ export class Repl {
         this.db.rules[rule.head.relation] = rule;
         break;
       }
+      case "TableDecl":
+        if (this.db.tables[stmt.name]) {
+          return;
+        }
+        this.db.tables[stmt.name] = [];
+        break;
     }
   }
 

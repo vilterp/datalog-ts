@@ -1,3 +1,12 @@
+.table stringLit
+.table intLit
+.table letExpr
+.table lambda
+.table lambdaParam
+.table funcCall
+.table funcArg
+.table var
+
 type{id: I, type: T} :-
   type_s{id: I, type: T} |
   type_i{id: I, type: T} |

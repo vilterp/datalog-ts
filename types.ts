@@ -32,7 +32,8 @@ export type Program = Statement[];
 
 export type Statement =
   | { type: "Rule"; rule: Rule }
-  | { type: "Insert"; record: Rec };
+  | { type: "Insert"; record: Rec }
+  | { type: "TableDecl"; name: string };
 
 export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs

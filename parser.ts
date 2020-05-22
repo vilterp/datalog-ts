@@ -5,7 +5,13 @@ import { falseTerm, trueTerm } from "./types";
 
 export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
-  statement: (r) => P.alt(r.insert, r.rule, r.comment),
+  // TODO: add .load <path> statement
+  statement: (r) => P.alt(r.insert, r.rule, r.comment, r.tableDecl),
+  tableDecl: (r) =>
+    P.seq(word(".table"), r.recordIdentifier).map(([_, name]) => ({
+      type: "TableDecl",
+      name,
+    })),
   comment: () => P.regex(/#[^\n]*/),
   insert: (r) =>
     r.record.skip(r.period).map((rec) => ({ type: "Insert", record: rec })),
