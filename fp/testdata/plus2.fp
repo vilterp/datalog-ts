@@ -1,1 +1,1 @@
-let x = 2 in toString(x)
+let x = 2 in toString(plus2(x))

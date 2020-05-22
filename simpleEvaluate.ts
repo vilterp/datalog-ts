@@ -101,12 +101,12 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           const out: Res[] = [];
           for (const rec of table) {
             const unifyRes = unify(scope, term, rec);
-            console.log("scan", {
-              scope: ppb(scope),
-              term: ppt(term),
-              rec: ppt(rec),
-              unifyRes: unifyRes ? ppb(unifyRes) : null,
-            });
+            // console.log("scan", {
+            //   scope: ppb(scope),
+            //   term: ppt(term),
+            //   rec: ppt(rec),
+            //   unifyRes: unifyRes ? ppb(unifyRes) : null,
+            // });
             if (unifyRes === null) {
               continue;
             }
@@ -130,11 +130,11 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           // );
           const substTerm = substitute(term, scope);
           const newScope = unify({}, substTerm, rule.head);
-          console.group(
-            "rule",
-            ppt(rule.head),
-            newScope ? ppb(newScope) : "null"
-          );
+          // console.group(
+          //   "rule",
+          //   ppt(rule.head),
+          //   newScope ? ppb(newScope) : "null"
+          // );
           // console.log("call: unifying", {
           //   scope: {},
           //   ruleHead: ppt(rule.head),
@@ -142,7 +142,7 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           //   res: newScope,
           // });
           if (newScope === null) {
-            console.groupEnd();
+            // console.groupEnd();
             return []; // ?
           }
           // console.log("call", {
@@ -156,8 +156,8 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
             const recResults = doJoin(depth, db, newScope, recs);
             return applyFilters(exprs, recResults);
           });
-          console.groupEnd();
-          console.log("rawResults", rawResults.map(ppr));
+          // console.groupEnd();
+          // console.log("rawResults", rawResults.map(ppr));
           return filterMap(rawResults, (res) => {
             const mappedBindings = applyMappings(mappings, res.bindings);
             const nextTerm = substitute(rule.head, res.bindings);
