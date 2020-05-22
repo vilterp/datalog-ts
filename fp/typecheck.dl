@@ -6,6 +6,15 @@
 .table funcCall
 .table funcArg
 .table var
+.table builtin
+
+expr{id: I} :-
+  stringLit{id: I} |
+  intLit{id: I} |
+  var{id: I} |
+  letExpr{id: I} |
+  funcCall{id: I} |
+  lambda{id: I}.
 
 type{id: I, type: T} :-
   type_s{id: I, type: T} |
@@ -37,6 +46,7 @@ type_lambda{id: I, type: tapp{from: F, to: R}} :-
   type{id: B, type: R}.
 
 scope_item{id: I, name: N, type: T} :-
+  expr{id: I} & builtin{name: N, type: T} |
   scope_let{id: I, name: N, type: T} |
   scope_lambda{id: I, name: N, type: T} |
   parent_expr{id: I, parentID: P} & scope_item{id: P, name: N, type: T}.

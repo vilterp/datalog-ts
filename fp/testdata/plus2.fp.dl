@@ -5,4 +5,4 @@ var{id: 3, name: "x"}.
 funcArg{callExprID: 2, argExprID: 3, idx: 0}.
 
 # have to plant these in the scope since there's no stdlib yet
-scope_item{id: 0, name: "plus2", type: tapp{from: "int", to: "int"}}.
+builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
