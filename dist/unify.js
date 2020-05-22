@@ -26,7 +26,7 @@ function unify(prior, left, right) {
 }
 exports.unify = unify;
 function doUnify(prior, left, right) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     switch (left.type) {
         case "StringLit":
         case "IntLit":
@@ -56,8 +56,8 @@ function doUnify(prior, left, right) {
             switch (right.type) {
                 case "Record":
                     var accum = {};
-                    for (var _i = 0, _e = Object.keys(left.attrs); _i < _e.length; _i++) {
-                        var key = _e[_i];
+                    for (var _i = 0, _f = Object.keys(left.attrs); _i < _f.length; _i++) {
+                        var key = _f[_i];
                         // TODO: do bindings fold across keys... how would that be ordered...
                         var leftVal = left.attrs[key];
                         var rightVal = right.attrs[key];
@@ -71,7 +71,8 @@ function doUnify(prior, left, right) {
                         accum = __assign(__assign({}, accum), res);
                     }
                     return accum;
-                // TODO: add Var case?
+                case "Var":
+                    return _e = {}, _e[right.name] = left, _e;
                 default:
                     return null;
             }

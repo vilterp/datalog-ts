@@ -3,9 +3,8 @@ exports.__esModule = true;
 exports.language = void 0;
 var P = require("parsimmon");
 exports.language = P.createLanguage({
-    program: function (r) { return P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace); },
     expr: function (r) {
-        return P.alt(r.funcCall, r.lambda, r.letExpr, r.varExpr, r.stringLit, r.intLit, r.placeholder);
+        return P.alt(r.funcCall, r.lambda, r.letExpr, r.varExpr, r.stringLit, r.intLit, r.placeholder).skip(P.optWhitespace);
     },
     funcCall: function (r) {
         return P.seq(r.identifier, r.lparen, P.sepBy(r.expr, r.comma), r.rparen).map(function (_a) {

@@ -61,36 +61,6 @@ function ppr(r) {
     return pp.render(100, pretty_1.prettyPrintRes(r));
 }
 exports.ppr = ppr;
-function singleJoin(db, scope, leftResults, rightResults) {
-    // console.log(
-    //   "singleJoin",
-    //   util.inspect({ leftResults, rightResults }, { depth: null })
-    // );
-    var out = [];
-    for (var _i = 0, leftResults_2 = leftResults; _i < leftResults_2.length; _i++) {
-        var left = leftResults_2[_i];
-        for (var _a = 0, rightResults_2 = rightResults; _a < rightResults_2.length; _a++) {
-            var right = rightResults_2[_a];
-            // console.log("unifying", {
-            //   leftBindings: left.bindings,
-            //   rightBindings: right.bindings,
-            // });
-            var newBindings = unify_1.unifyVars(left.bindings, right.bindings);
-            // console.log("unify", {
-            //   left: ppt(left.term),
-            //   right: ppt(right.term),
-            //   bindings: newBindings ? ppb(newBindings) : "null",
-            // });
-            if (newBindings !== null) {
-                out.push({
-                    term: left.term,
-                    bindings: newBindings
-                });
-            }
-        }
-    }
-    return out;
-}
 function applyFilter(binExpr, res) {
     return res.filter(function (res) { return evalBinExpr(binExpr, res.bindings); });
 }

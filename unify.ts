@@ -59,7 +59,8 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
             accum = { ...accum, ...res };
           }
           return accum;
-        // TODO: add Var case?
+        case "Var":
+          return { [right.name]: left };
         default:
           return null;
       }

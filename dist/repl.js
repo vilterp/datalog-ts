@@ -52,11 +52,7 @@ var Repl = /** @class */ (function () {
         }
         // special commands
         // TODO: parse these with parser
-        if (line.startsWith("#")) {
-            rl.prompt();
-            return;
-        }
-        else if (line === ".dump") {
+        if (line === ".dump") {
             this.println(pp.render(100, pretty_1.prettyPrintDB(this.db)));
             rl.prompt();
             return;
@@ -77,7 +73,7 @@ var Repl = /** @class */ (function () {
             return;
         }
         this.buffer = this.buffer + line;
-        if (!line.endsWith(".")) {
+        if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
             return;
         }
         try {
@@ -117,6 +113,12 @@ var Repl = /** @class */ (function () {
                 this.db.rules[rule.head.relation] = rule;
                 break;
             }
+            case "TableDecl":
+                if (this.db.tables[stmt.name]) {
+                    return;
+                }
+                this.db.tables[stmt.name] = [];
+                break;
         }
     };
     Repl.prototype.printQuery = function (record) {

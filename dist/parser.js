@@ -6,7 +6,17 @@ var types_1 = require("./types");
 // adapted from https://github.com/jneen/parsimmon/blob/master/examples/json.js
 exports.language = P.createLanguage({
     program: function (r) { return P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace); },
-    statement: function (r) { return P.alt(r.insert, r.rule, r.comment); },
+    // TODO: add .load <path> statement
+    statement: function (r) { return P.alt(r.insert, r.rule, r.comment, r.tableDecl); },
+    tableDecl: function (r) {
+        return P.seq(word(".table"), r.recordIdentifier).map(function (_a) {
+            var _ = _a[0], name = _a[1];
+            return ({
+                type: "TableDecl",
+                name: name
+            });
+        });
+    },
     comment: function () { return P.regex(/#[^\n]*/); },
     insert: function (r) {
         return r.record.skip(r.period).map(function (rec) { return ({ type: "Insert", record: rec }); });
