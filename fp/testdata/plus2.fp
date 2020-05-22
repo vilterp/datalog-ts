@@ -1,1 +1,1 @@
-let x = 2 in plus2(2)
+let x = 2 in plus2(x)
