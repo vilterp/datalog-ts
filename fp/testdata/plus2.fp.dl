@@ -1,8 +1,9 @@
 letExpr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
 intLit{id: 1, val: 2}.
-funcCall{id: 2, name: "plus2", numArgs: 1}.
+funcCall{id: 2, name: "toString", numArgs: 1}.
 var{id: 3, name: "x"}.
 funcArg{callExprID: 2, argExprID: 3, idx: 0}.
 
 # have to plant these in the scope since there's no stdlib yet
 builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
+builtin{name: "toString", type: tapp{from: "int", to: "string"}}.
