@@ -65,6 +65,9 @@ function typecheckTest(test: DDTest): Result[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
+    const printed = flattened.map(prettyPrintTerm);
+    const rendered = printed.map((t) => pp.render(100, t) + ".");
+
     const outStream = identityTransform();
     const inStream = identityTransform();
     const repl = new Repl(inStream, outStream, "test", "", fsLoader); // hmmm
@@ -77,7 +80,7 @@ function typecheckTest(test: DDTest): Result[] {
     repl.handleLine("scope_item{id: I, name: N, type: T}.");
     return {
       pair: tc,
-      actual: readAll(outStream),
+      actual: [...rendered, readAll(outStream)].join("\n"),
     };
   });
 }

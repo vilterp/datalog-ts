@@ -1,13 +1,18 @@
 "foo"
 ----
+string_lit{id: 0, val: "foo"}.
 type{id: 0, type: "string"}.
 
 2
 ----
+int_lit{id: 0, val: 2}.
 type{id: 0, type: "int"}.
 
 let x = 2 in x
 ----
+let_expr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
+int_lit{id: 1, val: 2}.
+var{id: 2, name: "x"}.
 type{id: 1, type: "int"}.
 type{id: 0, type: "int"}.
 type{id: 2, type: "int"}.
@@ -15,6 +20,13 @@ scope_item{id: 2, name: "x", type: "int"}.
 
 let x = 2 in toString(plus2(x))
 ----
+let_expr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
+int_lit{id: 1, val: 2}.
+func_call{id: 2, name: "toString", numArgs: 1}.
+func_call{id: 3, name: "plus2", numArgs: 1}.
+var{id: 4, name: "x"}.
+func_arg{argExprID: 4, callExprID: 3, idx: 0}.
+func_arg{argExprID: 3, callExprID: 2, idx: 0}.
 type{id: 1, type: "int"}.
 type{id: 4, type: "int"}.
 scope_item{id: 2, name: "x", type: "int"}.
