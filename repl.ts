@@ -111,7 +111,7 @@ export class Repl {
     rl.prompt();
   }
 
-  private handleStmt(stmt: Statement) {
+  handleStmt(stmt: Statement) {
     switch (stmt.type) {
       case "Insert": {
         const record = stmt.record;
@@ -188,7 +188,7 @@ export class Repl {
     this.println(prettyPrintGraph(g));
   }
 
-  private doLoad(path: string) {
+  doLoad(path: string) {
     try {
       const contents = this.loader(path);
       const program: Program = language.program.tryParse(contents);
