@@ -10,11 +10,9 @@ intLit{id: 1, val: 2}.
 
 type{id: 0, type: T}.
 ----
-type{id: 0, type: "string"}.
 
 type{id: 1, type: T}.
 ----
-type{id: 1, type: "int"}.
 
 letExpr{id: 2, bindingID: 3, bodyID: 4, varName: "x"}.
 intLit{id: 3, val: 2}.
@@ -23,7 +21,6 @@ placeholder{id: 4}.
 
 scope_item{id: 4, name: N, type: T}.
 ----
-scope_item{id: 4, name: "x", type: "int"}.
 
 lambda{id: 5, retType: T}.
 ----
