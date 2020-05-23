@@ -5,8 +5,13 @@ import { falseTerm, trueTerm } from "./types";
 
 export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
-  // TODO: add .load <path> statement
-  statement: (r) => P.alt(r.insert, r.rule, r.comment, r.tableDecl),
+  // TODO: add .graphviz?
+  statement: (r) => P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt),
+  loadStmt: (r) =>
+    P.seq(word(".load"), r.filePath).map(([_, path]) => ({
+      type: "LoadStmt",
+      path,
+    })),
   tableDecl: (r) =>
     P.seq(word(".table"), r.recordIdentifier).map(([_, name]) => ({
       type: "TableDecl",
@@ -75,8 +80,9 @@ export const language = P.createLanguage({
   pair: (r) => P.seq(r.recordIdentifier.skip(r.colon), r.term),
 
   recordIdentifier: () =>
-    P.regex(/([a-z][a-zA-Z0-9_]*)/, 1).desc("recordIdentifier"),
+    P.regex(/([a-z][a-zA-Z0-9_]*)/, 1).desc("record identifier"),
 
+  filePath: () => P.regex(/[^\n]+/).desc("file path"),
   binOp: () => P.alt(word("="), word("!=")),
   lbrace: () => word("{"),
   rbrace: () => word("}"),

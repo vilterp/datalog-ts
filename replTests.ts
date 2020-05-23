@@ -1,5 +1,5 @@
 import { Suite } from "./testing";
-import { Repl } from "./repl";
+import { fsLoader, Repl } from "./repl";
 import * as stream from "stream";
 import { DDTest, Result, runDDTestAtPath } from "./util/dataDrivenTests";
 
@@ -18,7 +18,7 @@ export function replTests(writeResults: boolean): Suite {
 export function putThroughRepl(test: DDTest): Result[] {
   const input = identityTransform();
   const output = identityTransform();
-  const repl = new Repl(input, output, false, "");
+  const repl = new Repl(input, output, false, "", fsLoader);
   repl.run();
 
   const results: Result[] = [];

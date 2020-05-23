@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-import { Repl } from "../repl";
+import { fsLoader, Repl } from "../repl";
 import * as fs from "fs";
 
 const repl = new Repl(
   process.stdin,
   process.stdout,
   process.stdin.isTTY,
-  process.argv[2] || ""
+  process.argv[2] || "",
+  fsLoader
 );
 repl.run();
 

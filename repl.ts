@@ -26,18 +26,21 @@ export class Repl {
   stdinTTY: boolean;
   query: string | null;
   rl: readline.Interface;
+  loader: Loader;
 
   constructor(
     input: NodeJS.ReadableStream,
     out: NodeJS.WritableStream,
     stdinTTY: boolean,
-    query: string
+    query: string,
+    loader: Loader
   ) {
     this.db = newDB();
     this.in = input;
     this.out = out;
     this.buffer = "";
     this.stdinTTY = stdinTTY;
+    this.loader = loader;
     if (query) {
       this.query = query;
     } else {
@@ -88,9 +91,6 @@ export class Repl {
       this.doGraphviz();
       rl.prompt();
       return;
-    } else if (line.startsWith(".load ")) {
-      this.doLoad(line.slice(".load ".length));
-      return;
     }
     this.buffer = this.buffer + line;
     if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
@@ -138,6 +138,8 @@ export class Repl {
         }
         this.db.tables[stmt.name] = [];
         break;
+      case "LoadStmt":
+        this.doLoad(stmt.path);
     }
   }
 
@@ -188,8 +190,8 @@ export class Repl {
 
   private doLoad(path: string) {
     try {
-      const buf = fs.readFileSync(path);
-      const program: Program = language.program.tryParse(buf.toString());
+      const contents = this.loader(path);
+      const program: Program = language.program.tryParse(contents);
       for (const stmt of program) {
         this.handleStmt(stmt);
       }
@@ -204,3 +206,10 @@ export class Repl {
     this.out.write(strings.join(" ") + "\n");
   }
 }
+
+// throws an exception if it's not there I guess
+// TODO: wish there was a stdlib Result<E, T> type, lol
+// keeping synchronous for now
+type Loader = (path: string) => string;
+
+export const fsLoader: Loader = (path) => fs.readFileSync(path).toString();
