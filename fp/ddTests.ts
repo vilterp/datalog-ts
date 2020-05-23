@@ -8,7 +8,6 @@ import { flatten } from "./flatten";
 import { fsLoader, Repl } from "../repl";
 import { Rec } from "../types";
 import { readAll, identityTransform } from "../streamUtil";
-import { uniq } from "../util";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -86,9 +85,8 @@ function typecheckTest(test: DDTest): Result[] {
       pair: tc,
       // TODO: this uniq is sweeping dupes under the rug... find out why they're there
       actual:
-        uniq([...rendered, ...scopeOut.slice(1), ...typeOut.slice(1)]).join(
-          "\n"
-        ) + "\n",
+        [...rendered, ...scopeOut.slice(1), ...typeOut.slice(1)].join("\n") +
+        "\n",
     };
   });
 }

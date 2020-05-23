@@ -2,7 +2,7 @@ import { int, rec, str, Term } from "../types";
 import { Expr } from "./parser";
 
 export function flatten(e: Expr): Term[] {
-  return recurse(0, e).terms;
+  return [rec("root_expr", { id: int(0) }), ...recurse(0, e).terms];
 }
 
 // TODO: positions
