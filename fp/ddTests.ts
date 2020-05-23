@@ -76,8 +76,9 @@ function typecheckTest(test: DDTest): Result[] {
       repl.handleStmt({ type: "Insert", record: t as Rec });
     });
     repl.doLoad("fp/typecheck.dl");
-    repl.handleLine("type{id: I, type: T}.");
+    repl.doLoad("fp/stdlib.dl");
     repl.handleLine("scope_item{id: I, name: N, type: T}.");
+    repl.handleLine("type{id: I, type: T}.");
     return {
       pair: tc,
       actual: [...rendered, readAll(outStream)].join("\n"),
