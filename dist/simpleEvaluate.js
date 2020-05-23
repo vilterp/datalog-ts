@@ -113,6 +113,11 @@ function doEvaluate(depth, db, scope, term) {
                     // );
                     var substTerm = unify_1.substitute(term, scope);
                     var newScope_1 = unify_1.unify({}, substTerm, rule_1.head);
+                    // console.group(
+                    //   "rule",
+                    //   ppt(rule.head),
+                    //   newScope ? ppb(newScope) : "null"
+                    // );
                     // console.log("call: unifying", {
                     //   scope: {},
                     //   ruleHead: ppt(rule.head),
@@ -120,6 +125,7 @@ function doEvaluate(depth, db, scope, term) {
                     //   res: newScope,
                     // });
                     if (newScope_1 === null) {
+                        // console.groupEnd();
                         return []; // ?
                     }
                     // console.log("call", {
@@ -133,6 +139,8 @@ function doEvaluate(depth, db, scope, term) {
                         var recResults = doJoin(depth, db, newScope_1, recs);
                         return applyFilters(exprs, recResults);
                     });
+                    // console.groupEnd();
+                    // console.log("rawResults", rawResults.map(ppr));
                     return util_1.filterMap(rawResults, function (res) {
                         var mappedBindings = applyMappings(mappings_1, res.bindings);
                         var nextTerm = unify_1.substitute(rule_1.head, res.bindings);

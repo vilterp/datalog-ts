@@ -5,7 +5,7 @@ import * as fs from "fs";
 const repl = new Repl(
   process.stdin,
   process.stdout,
-  process.stdin.isTTY,
+  process.stdin.isTTY ? "repl" : "pipe",
   process.argv[2] || "",
   fsLoader
 );

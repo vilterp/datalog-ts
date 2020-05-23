@@ -10,7 +10,7 @@ exports.__esModule = true;
 exports.flatten = void 0;
 var types_1 = require("../types");
 function flatten(e) {
-    return recurse(0, e).terms;
+    return __spreadArrays([types_1.rec("root_expr", { id: types_1.int(0) })], recurse(0, e).terms);
 }
 exports.flatten = flatten;
 // TODO: positions
@@ -25,9 +25,9 @@ function recurse(nextID, e) {
         case "Var":
             return simple(types_1.rec("var", { id: nextIDTerm, name: types_1.str(e.name.ident) }));
         case "StringLit":
-            return simple(types_1.rec("stringLit", { id: nextIDTerm, val: types_1.str(e.val) }));
+            return simple(types_1.rec("string_lit", { id: nextIDTerm, val: types_1.str(e.val) }));
         case "IntLit":
-            return simple(types_1.rec("intLit", { id: nextIDTerm, val: types_1.int(e.val) }));
+            return simple(types_1.rec("int_lit", { id: nextIDTerm, val: types_1.int(e.val) }));
         case "Placeholder":
             return simple(types_1.rec("placeholder", { id: nextIDTerm }));
         case "FuncCall": {
@@ -41,7 +41,7 @@ function recurse(nextID, e) {
                 };
             }, { nid: nextID + 1, terms: [], argIDs: [] }), nid = _a.nid, argExprTerms = _a.terms, argIDs = _a.argIDs;
             var argTerms = argIDs.map(function (argID, idx) {
-                return types_1.rec("funcArg", {
+                return types_1.rec("func_arg", {
                     callExprID: types_1.int(nextID),
                     idx: types_1.int(idx),
                     argExprID: types_1.int(argID)
@@ -49,7 +49,7 @@ function recurse(nextID, e) {
             });
             return {
                 terms: __spreadArrays([
-                    types_1.rec("funcCall", {
+                    types_1.rec("func_call", {
                         id: nextIDTerm,
                         name: types_1.str(e.name.ident),
                         numArgs: types_1.int(e.args.length)
@@ -62,7 +62,7 @@ function recurse(nextID, e) {
         case "Let": {
             var _b = recurse(nextID + 1, e.binding), bindingID = _b.id, bindingsTerms = _b.terms, nid1 = _b.nextID;
             var _c = recurse(nid1, e.body), bodyID = _c.id, bodyTerms = _c.terms, nid2 = _c.nextID;
-            var overallTerm = types_1.rec("letExpr", {
+            var overallTerm = types_1.rec("let_expr", {
                 id: nextIDTerm,
                 varName: types_1.str(e.name.ident),
                 bindingID: types_1.int(bindingID),
@@ -77,7 +77,7 @@ function recurse(nextID, e) {
         case "Lambda": {
             var _d = recurse(nextID + 1, e.body), bodyID = _d.id, nid = _d.nextID, bodyTerms = _d.terms;
             var paramTerms = e.params.map(function (param, idx) {
-                return types_1.rec("lambdaParam", {
+                return types_1.rec("lambda_param", {
                     lambdaID: types_1.int(nextID),
                     idx: types_1.int(idx),
                     name: types_1.str(param.name.ident),

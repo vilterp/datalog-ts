@@ -6,8 +6,17 @@ var types_1 = require("./types");
 // adapted from https://github.com/jneen/parsimmon/blob/master/examples/json.js
 exports.language = P.createLanguage({
     program: function (r) { return P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace); },
-    // TODO: add .load <path> statement
-    statement: function (r) { return P.alt(r.insert, r.rule, r.comment, r.tableDecl); },
+    // TODO: add .graphviz?
+    statement: function (r) { return P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt); },
+    loadStmt: function (r) {
+        return P.seq(word(".load"), r.filePath).map(function (_a) {
+            var _ = _a[0], path = _a[1];
+            return ({
+                type: "LoadStmt",
+                path: path
+            });
+        });
+    },
     tableDecl: function (r) {
         return P.seq(word(".table"), r.recordIdentifier).map(function (_a) {
             var _ = _a[0], name = _a[1];
@@ -88,8 +97,9 @@ exports.language = P.createLanguage({
     },
     pair: function (r) { return P.seq(r.recordIdentifier.skip(r.colon), r.term); },
     recordIdentifier: function () {
-        return P.regex(/([a-z][a-zA-Z0-9_]*)/, 1).desc("recordIdentifier");
+        return P.regex(/([a-z][a-zA-Z0-9_]*)/, 1).desc("record identifier");
     },
+    filePath: function () { return P.regex(/[^\n]+/).desc("file path"); },
     binOp: function () { return P.alt(word("="), word("!=")); },
     lbrace: function () { return word("{"); },
     rbrace: function () { return word("}"); },

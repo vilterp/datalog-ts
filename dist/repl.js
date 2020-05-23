@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.Repl = void 0;
+exports.fsLoader = exports.Repl = void 0;
 var types_1 = require("./types");
 var parser_1 = require("./parser");
 var readline = require("readline");
@@ -10,12 +10,13 @@ var graphviz_1 = require("./graphviz");
 var fs = require("fs");
 var simpleEvaluate_1 = require("./simpleEvaluate");
 var Repl = /** @class */ (function () {
-    function Repl(input, out, stdinTTY, query) {
+    function Repl(input, out, mode, query, loader) {
         this.db = types_1.newDB();
         this["in"] = input;
         this.out = out;
         this.buffer = "";
-        this.stdinTTY = stdinTTY;
+        this.mode = mode;
+        this.loader = loader;
         if (query) {
             this.query = query;
         }
@@ -25,7 +26,7 @@ var Repl = /** @class */ (function () {
     }
     Repl.prototype.run = function () {
         var _this = this;
-        var opts = this.stdinTTY
+        var opts = this.mode === "repl"
             ? {
                 input: this["in"],
                 output: this.out,
@@ -68,10 +69,6 @@ var Repl = /** @class */ (function () {
             rl.prompt();
             return;
         }
-        else if (line.startsWith(".load ")) {
-            this.doLoad(line.slice(".load ".length));
-            return;
-        }
         this.buffer = this.buffer + line;
         if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
             return;
@@ -83,7 +80,7 @@ var Repl = /** @class */ (function () {
         catch (e) {
             // TODO: distinguish between parse errors and others
             this.println("error", e.toString(), e.stack);
-            if (!this.stdinTTY) {
+            if (this.mode === "pipe") {
                 process.exit(-1);
             }
         }
@@ -119,6 +116,8 @@ var Repl = /** @class */ (function () {
                 }
                 this.db.tables[stmt.name] = [];
                 break;
+            case "LoadStmt":
+                this.doLoad(stmt.path);
         }
     };
     Repl.prototype.printQuery = function (record) {
@@ -159,8 +158,8 @@ var Repl = /** @class */ (function () {
     };
     Repl.prototype.doLoad = function (path) {
         try {
-            var buf = fs.readFileSync(path);
-            var program = parser_1.language.program.tryParse(buf.toString());
+            var contents = this.loader(path);
+            var program = parser_1.language.program.tryParse(contents);
             for (var _i = 0, program_1 = program; _i < program_1.length; _i++) {
                 var stmt = program_1[_i];
                 this.handleStmt(stmt);
@@ -182,3 +181,4 @@ var Repl = /** @class */ (function () {
     return Repl;
 }());
 exports.Repl = Repl;
+exports.fsLoader = function (path) { return fs.readFileSync(path).toString(); };

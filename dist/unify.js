@@ -15,13 +15,14 @@ exports.substitute = exports.unifyVars = exports.termEq = exports.unify = void 0
 var types_1 = require("./types");
 var util_1 = require("./util");
 function unify(prior, left, right) {
-    var res = doUnify(prior, left, right);
-    // console.log("unify", {
+    // console.group("unify", {
     //   prior: ppb(prior),
     //   left: ppt(left),
     //   right: ppt(right),
-    //   res: res ? ppb(res) : null,
     // });
+    var res = doUnify(prior, left, right);
+    // console.groupEnd();
+    // console.log("res", res ? ppb(res) : null);
     return res;
 }
 exports.unify = unify;
@@ -46,7 +47,7 @@ function doUnify(prior, left, right) {
                 if (priorBinding.type === "Var") {
                     return _b = {}, _b[left.name] = right, _b;
                 }
-                if (termEq(priorBinding, right)) {
+                if (unify({}, priorBinding, right)) {
                     return _c = {}, _c[left.name] = right, _c;
                 }
                 return null;

@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.repeat = exports.flatMap = exports.flatMapObjToList = exports.mapObjToList = exports.mapObjMaybe = exports.filterMap = exports.mapObj = void 0;
+exports.uniq = exports.repeat = exports.flatMap = exports.flatMapObjToList = exports.mapObjToList = exports.mapObjMaybe = exports.filterMap = exports.mapObj = void 0;
 function mapObj(obj, f) {
     var out = {};
     for (var _i = 0, _a = Object.keys(obj); _i < _a.length; _i++) {
@@ -73,3 +73,17 @@ function repeat(n, str) {
     return out;
 }
 exports.repeat = repeat;
+function uniq(l) {
+    var seen = new Set();
+    var out = [];
+    for (var _i = 0, l_1 = l; _i < l_1.length; _i++) {
+        var line = l_1[_i];
+        if (seen.has(line)) {
+            continue;
+        }
+        seen.add(line);
+        out.push(line);
+    }
+    return out;
+}
+exports.uniq = uniq;
