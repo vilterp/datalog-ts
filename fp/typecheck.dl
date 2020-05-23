@@ -1,19 +1,19 @@
-.table stringLit
-.table intLit
-.table letExpr
+.table string_lit
+.table int_lit
+.table let_expr
 .table lambda
-.table lambdaParam
-.table funcCall
-.table funcArg
+.table lambda_param
+.table func_call
+.table func_arg
 .table var
 .table builtin
 
 expr{id: I} :-
-  stringLit{id: I} |
-  intLit{id: I} |
+  string_lit{id: I} |
+  int_lit{id: I} |
   var{id: I} |
-  letExpr{id: I} |
-  funcCall{id: I} |
+  let_expr{id: I} |
+  func_call{id: I} |
   lambda{id: I}.
 
 type{id: I, type: T} :-
@@ -25,16 +25,16 @@ type{id: I, type: T} :-
   type_var{id: I, type: T}.
 
 type_s{id: I, type: "string"} :-
-  stringLit{id: I}.
+  string_lit{id: I}.
 type_i{id: I, type: "int"} :-
-  intLit{id: I}.
+  int_lit{id: I}.
 type_fc{id: I, type: T} :-
-  funcCall{id: I, name: M} &
+  func_call{id: I, name: M} &
   scope_item{id: I, name: M, type: tapp{from: F, to: T}} &
-  funcArg{callExprID: I, argExprID: AI} &
+  func_arg{callExprID: I, argExprID: AI} &
   type{id: AI, type: F}.
 type_let{id: I, type: T} :-
-  letExpr{id: I, bodyID: BID} &
+  let_expr{id: I, bodyID: BID} &
   type{id: BID, type: T}.
 type_var{id: I, type: T} :-
   var{id: I, name: N} &
@@ -42,7 +42,7 @@ type_var{id: I, type: T} :-
 # TODO: get this to work for multiple parameters...
 type_lambda{id: I, type: tapp{from: F, to: R}} :-
   lambda{id: I, retType: R, body: B} &
-  lambdaParam{lambdaID: I, ty: F} &
+  lambda_param{lambdaID: I, ty: F} &
   type{id: B, type: R}.
 
 scope_item{id: I, name: N, type: T} :-
@@ -53,12 +53,12 @@ scope_item{id: I, name: N, type: T} :-
 
 # this recursion is not working for some reason
 scope_let{id: I, name: N, type: T} :-
-  letExpr{bodyID: I, varName: N, bindingID: B} &
+  let_expr{bodyID: I, varName: N, bindingID: B} &
   type{id: B, type: T}.
 scope_lambda{id: I, name: N, type: T} :-
   lambda{body: I, id: LID} &
-  lambdaParam{lambdaID: LID, name: N, ty: T}.
+  lambda_param{lambdaID: LID, name: N, ty: T}.
 
 parent_expr{id: I, parentID: P} :-
-  letExpr{bodyID: I, id: P} |
-  funcArg{argExprID: I, callExprID: P}.
+  let_expr{bodyID: I, id: P} |
+  func_arg{argExprID: I, callExprID: P}.

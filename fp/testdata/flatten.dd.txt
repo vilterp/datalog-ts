@@ -1,47 +1,47 @@
 map((x: int): int => plus(x, 2), ???)
 ----
-funcCall{id: 0, name: "map", numArgs: 2}.
+func_call{id: 0, name: "map", numArgs: 2}.
 lambda{body: 2, id: 1, numParams: 1, retType: "int"}.
-funcCall{id: 2, name: "plus", numArgs: 2}.
+func_call{id: 2, name: "plus", numArgs: 2}.
 var{id: 3, name: "x"}.
-intLit{id: 4, val: 2}.
-funcArg{argExprID: 3, callExprID: 2, idx: 0}.
-funcArg{argExprID: 4, callExprID: 2, idx: 1}.
-lambdaParam{idx: 0, lambdaID: 1, name: "x", ty: "int"}.
+int_lit{id: 4, val: 2}.
+func_arg{argExprID: 3, callExprID: 2, idx: 0}.
+func_arg{argExprID: 4, callExprID: 2, idx: 1}.
+lambda_param{idx: 0, lambdaID: 1, name: "x", ty: "int"}.
 placeholder{id: 8}.
-funcArg{argExprID: 1, callExprID: 0, idx: 0}.
-funcArg{argExprID: 8, callExprID: 0, idx: 1}.
+func_arg{argExprID: 1, callExprID: 0, idx: 0}.
+func_arg{argExprID: 8, callExprID: 0, idx: 1}.
 
 let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
-letExpr{bindingID: 1, bodyID: 12, id: 0, varName: "x"}.
-funcCall{id: 1, name: "map", numArgs: 2}.
+let_expr{bindingID: 1, bodyID: 12, id: 0, varName: "x"}.
+func_call{id: 1, name: "map", numArgs: 2}.
 lambda{body: 3, id: 2, numParams: 1, retType: "int"}.
-funcCall{id: 3, name: "plus", numArgs: 2}.
+func_call{id: 3, name: "plus", numArgs: 2}.
 var{id: 4, name: "x"}.
-intLit{id: 5, val: 2}.
-funcArg{argExprID: 4, callExprID: 3, idx: 0}.
-funcArg{argExprID: 5, callExprID: 3, idx: 1}.
-lambdaParam{idx: 0, lambdaID: 2, name: "x", ty: "int"}.
+int_lit{id: 5, val: 2}.
+func_arg{argExprID: 4, callExprID: 3, idx: 0}.
+func_arg{argExprID: 5, callExprID: 3, idx: 1}.
+lambda_param{idx: 0, lambdaID: 2, name: "x", ty: "int"}.
 placeholder{id: 9}.
-funcArg{argExprID: 2, callExprID: 1, idx: 0}.
-funcArg{argExprID: 9, callExprID: 1, idx: 1}.
-funcCall{id: 12, name: "filter", numArgs: 2}.
+func_arg{argExprID: 2, callExprID: 1, idx: 0}.
+func_arg{argExprID: 9, callExprID: 1, idx: 1}.
+func_call{id: 12, name: "filter", numArgs: 2}.
 var{id: 13, name: "isEven"}.
 var{id: 14, name: "x"}.
-funcArg{argExprID: 13, callExprID: 12, idx: 0}.
-funcArg{argExprID: 14, callExprID: 12, idx: 1}.
+func_arg{argExprID: 13, callExprID: 12, idx: 0}.
+func_arg{argExprID: 14, callExprID: 12, idx: 1}.
 
 "foo"
 ----
-stringLit{id: 0, val: "foo"}.
+string_lit{id: 0, val: "foo"}.
 
 2
 ----
-intLit{id: 0, val: 2}.
+int_lit{id: 0, val: 2}.
 
 let x = 2 in ???
 ----
-letExpr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
-intLit{id: 1, val: 2}.
+let_expr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
+int_lit{id: 1, val: 2}.
 placeholder{id: 2}.

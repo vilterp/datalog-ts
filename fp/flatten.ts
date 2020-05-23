@@ -20,9 +20,9 @@ function recurse(
     case "Var":
       return simple(rec("var", { id: nextIDTerm, name: str(e.name.ident) }));
     case "StringLit":
-      return simple(rec("stringLit", { id: nextIDTerm, val: str(e.val) }));
+      return simple(rec("string_lit", { id: nextIDTerm, val: str(e.val) }));
     case "IntLit":
-      return simple(rec("intLit", { id: nextIDTerm, val: int(e.val) }));
+      return simple(rec("int_lit", { id: nextIDTerm, val: int(e.val) }));
     case "Placeholder":
       return simple(rec("placeholder", { id: nextIDTerm }));
     case "FuncCall": {
@@ -42,7 +42,7 @@ function recurse(
         { nid: nextID + 1, terms: [], argIDs: [] }
       );
       const argTerms = argIDs.map((argID, idx) =>
-        rec("funcArg", {
+        rec("func_arg", {
           callExprID: int(nextID),
           idx: int(idx),
           argExprID: int(argID),
@@ -50,7 +50,7 @@ function recurse(
       );
       return {
         terms: [
-          rec("funcCall", {
+          rec("func_call", {
             id: nextIDTerm,
             name: str(e.name.ident),
             numArgs: int(e.args.length),
@@ -71,7 +71,7 @@ function recurse(
         nid1,
         e.body
       );
-      const overallTerm = rec("letExpr", {
+      const overallTerm = rec("let_expr", {
         id: nextIDTerm,
         varName: str(e.name.ident),
         bindingID: int(bindingID),
@@ -89,7 +89,7 @@ function recurse(
         e.body
       );
       const paramTerms = e.params.map((param, idx) =>
-        rec("lambdaParam", {
+        rec("lambda_param", {
           lambdaID: int(nextID),
           idx: int(idx),
           name: str(param.name.ident),
