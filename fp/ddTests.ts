@@ -5,9 +5,9 @@ import { language } from "./parser";
 import { prettyPrintTerm } from "../pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
-import { identityTransform } from "../replTests";
-import { Repl } from "../repl";
+import { fsLoader, Repl } from "../repl";
 import { Rec } from "../types";
+import { readAll, identityTransform } from "../streamUtil";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -67,17 +67,17 @@ function typecheckTest(test: DDTest): Result[] {
     const flattened = flatten(parsed);
     const outStream = identityTransform();
     const inStream = identityTransform();
-    const repl = new Repl(inStream, outStream, false, "", null); // hmmm
-    flattened.forEach((t) =>
-      repl.handleStmt({ type: "Insert", record: t as Rec })
-    );
-    repl.doLoad("typecheck.dl");
+    const repl = new Repl(inStream, outStream, "test", "", fsLoader); // hmmm
+    repl.run();
+    flattened.forEach((t) => {
+      repl.handleStmt({ type: "Insert", record: t as Rec });
+    });
+    repl.doLoad("fp/typecheck.dl");
     repl.handleLine("type{id: I, type: T}.");
     repl.handleLine("scope_item{id: I, name: N, type: T}.");
-    const chunk = outStream.read(); // TODO: this seems to not always get everything. sigh.
     return {
       pair: tc,
-      actual: chunk,
+      actual: readAll(outStream),
     };
   });
 }

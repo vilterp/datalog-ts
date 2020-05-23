@@ -1,43 +1,22 @@
-.load fp/typecheck.dl
+"foo"
 ----
+type{id: 0, type: "string"}.
 
-lambda{id: 5, body: 3, numParams: 1, retType: "int"}.
+2
 ----
+type{id: 0, type: "int"}.
 
-stringLit{id: 0, val: "foo"}.
-intLit{id: 1, val: 2}.
+let x = 2 in x
 ----
+type{id: 1, type: "int"}.
+type{id: 0, type: "int"}.
+type{id: 2, type: "int"}.
+scope_item{id: 2, name: "x", type: "int"}.
 
-type{id: 0, type: T}.
+let x = 2 in toString(plus2(x))
 ----
-
-type{id: 1, type: T}.
-----
-
-letExpr{id: 2, bindingID: 3, bodyID: 4, varName: "x"}.
-intLit{id: 3, val: 2}.
-placeholder{id: 4}.
-----
-
-scope_item{id: 4, name: N, type: T}.
-----
-
-lambda{id: 5, retType: T}.
-----
-lambda{body: 3, id: 5, numParams: 1, retType: "int"}.
-
-type_lambda{id: 5, type: T}.
-----
-
-type{id: 5, type: T}.
-----
-
-scope_item{id: 6, name: "plus", type: tapp{to: "int"}}.
-funcCall{id: 6, name: "plus"}.
-----
-
-type_fc{id: 6, type: T}.
-----
-
-type{id: 6, type: T}.
-----
+type{id: 1, type: "int"}.
+type{id: 4, type: "int"}.
+scope_item{id: 2, name: "x", type: "int"}.
+scope_item{id: 4, name: "x", type: "int"}.
+scope_item{id: 3, name: "x", type: "int"}.

@@ -2,6 +2,7 @@ import { Suite } from "./testing";
 import { fsLoader, Repl } from "./repl";
 import * as stream from "stream";
 import { DDTest, Result, runDDTestAtPath } from "./util/dataDrivenTests";
+import { identityTransform, readAll } from "./streamUtil";
 
 const ddTestSuites = ["simple", "family", "recurse", "literals"];
 // const ddTestSuites = ["simple"];
@@ -18,7 +19,7 @@ export function replTests(writeResults: boolean): Suite {
 export function putThroughRepl(test: DDTest): Result[] {
   const input = identityTransform();
   const output = identityTransform();
-  const repl = new Repl(input, output, false, "", fsLoader);
+  const repl = new Repl(input, output, "test", "", fsLoader);
   repl.run();
 
   const results: Result[] = [];
@@ -26,26 +27,14 @@ export function putThroughRepl(test: DDTest): Result[] {
   for (const pair of test) {
     input.write(pair.input + "\n");
 
-    const chunk = output.read(); // TODO: this seems to not always get everything. sigh.
+    const out = readAll(output);
 
     results.push({
       pair,
-      actual: chunk ? chunk.toString() : "",
+      actual: out ? out : "",
     });
   }
   input.end();
 
   return results;
-}
-
-export function identityTransform(): stream.Transform {
-  return new stream.Transform({
-    transform(
-      chunk: any,
-      encoding: string,
-      callback: (error?: Error | null, data?: any) => void
-    ): void {
-      callback(null, chunk);
-    },
-  });
 }

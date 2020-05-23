@@ -18,12 +18,14 @@ import * as fs from "fs";
 import { hasVars, evaluate } from "./simpleEvaluate";
 import * as util from "util";
 
+type Mode = "repl" | "pipe" | "test";
+
 export class Repl {
   db: DB;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
-  stdinTTY: boolean;
+  mode: Mode;
   query: string | null;
   rl: readline.Interface;
   loader: Loader;
@@ -31,7 +33,7 @@ export class Repl {
   constructor(
     input: NodeJS.ReadableStream,
     out: NodeJS.WritableStream,
-    stdinTTY: boolean,
+    mode: Mode,
     query: string,
     loader: Loader
   ) {
@@ -39,7 +41,7 @@ export class Repl {
     this.in = input;
     this.out = out;
     this.buffer = "";
-    this.stdinTTY = stdinTTY;
+    this.mode = mode;
     this.loader = loader;
     if (query) {
       this.query = query;
@@ -49,13 +51,14 @@ export class Repl {
   }
 
   run() {
-    const opts: readline.ReadLineOptions = this.stdinTTY
-      ? {
-          input: this.in,
-          output: this.out,
-          prompt: "> ",
-        }
-      : { input: this.in };
+    const opts: readline.ReadLineOptions =
+      this.mode === "repl"
+        ? {
+            input: this.in,
+            output: this.out,
+            prompt: "> ",
+          }
+        : { input: this.in };
     const rl = readline.createInterface(opts);
     rl.on("line", (line) => {
       this.handleLine(line);
@@ -102,7 +105,7 @@ export class Repl {
     } catch (e) {
       // TODO: distinguish between parse errors and others
       this.println("error", e.toString(), e.stack);
-      if (!this.stdinTTY) {
+      if (this.mode === "pipe") {
         process.exit(-1);
       }
     } finally {
