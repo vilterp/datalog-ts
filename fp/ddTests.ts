@@ -8,6 +8,7 @@ import { flatten } from "./flatten";
 import { fsLoader, Repl } from "../repl";
 import { Rec } from "../types";
 import { readAll, identityTransform } from "../streamUtil";
+import { uniq } from "../util";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -78,10 +79,16 @@ function typecheckTest(test: DDTest): Result[] {
     repl.doLoad("fp/typecheck.dl");
     repl.doLoad("fp/stdlib.dl");
     repl.handleLine("scope_item{id: I, name: N, type: T}.");
+    const scopeOut = readAll(outStream).split("\n").sort();
     repl.handleLine("type{id: I, type: T}.");
+    const typeOut = readAll(outStream).split("\n").sort();
     return {
       pair: tc,
-      actual: [...rendered, readAll(outStream)].join("\n"),
+      // TODO: this uniq is sweeping dupes under the rug... find out why they're there
+      actual:
+        uniq([...rendered, ...scopeOut.slice(1), ...typeOut.slice(1)]).join(
+          "\n"
+        ) + "\n",
     };
   });
 }

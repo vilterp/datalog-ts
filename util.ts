@@ -74,3 +74,16 @@ export function repeat(n: number, str: string): string {
   }
   return out;
 }
+
+export function uniq(l: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const line of l) {
+    if (seen.has(line)) {
+      continue;
+    }
+    seen.add(line);
+    out.push(line);
+  }
+  return out;
+}
