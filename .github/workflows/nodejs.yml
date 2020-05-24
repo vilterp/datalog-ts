@@ -35,3 +35,4 @@ jobs:
         cat family-facts.dl | ts-node ../cmd/repl.ts '.graphviz' ./family-rules.dl > family.dot
         cmp family.dot family-ref.dot
     - run: yarn build-ui
+    - run: yarn build-fp-ui

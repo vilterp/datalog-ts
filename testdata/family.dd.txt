@@ -137,6 +137,32 @@ ancestor{an: "Peter", desc: "Henry"}.
 .graphviz
 ----
 digraph G {
+  "Pete" [label="Pete"];
+  "Paul" [label="Paul"];
+  "Ann" [label="Ann"];
+  "Bob" [label="Bob"];
+  "Mary" [label="Mary"];
+  "Carolyn" [label="Carolyn"];
+  "Mary" [label="Mary"];
+  "Judith" [label="Judith"];
+  "Judith" [label="Judith"];
+  "Ann" [label="Ann"];
+  "Carolyn K" [label="Carolyn K"];
+  "Mary" [label="Mary"];
+  "Pete" [label="Pete"];
+  "Paul" [label="Paul"];
+  "Ann" [label="Ann"];
+  "Mary" [label="Mary"];
+  "Bob" [label="Bob"];
+  "Carolyn" [label="Carolyn"];
+  "Henry" [label="Henry"];
+  "Paul" [label="Paul"];
+  "Peter" [label="Peter"];
+  "Peter" [label="Peter"];
+  "Mark" [label="Mark"];
+  "John" [label="John"];
+  "Paul" [label="Paul"];
+  "Bob" [label="Bob"];
   "Pete" -> "Mary" [label="mother"];
   "Paul" -> "Judith" [label="mother"];
   "Ann" -> "Judith" [label="mother"];

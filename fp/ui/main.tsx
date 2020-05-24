@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { language as fpLanguage } from "../parser";
-import { language as dlLanguage } from "../../parser";
 import { flatten } from "../flatten";
 import { prettyPrintTerm } from "../../pretty";
 import * as pp from "prettier-printer";
-import { DB, Program, Rec, Res, Statement } from "../../types";
-import { evaluate, hasVars } from "../../simpleEvaluate";
+import { Rec, Res } from "../../types";
 import { Loader } from "../../repl";
 // @ts-ignore
 import typecheckDL from "../typecheck.dl";
 // @ts-ignore
 import stdlibDL from "../stdlib.dl";
+import { ReplCore } from "../../replCore";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -88,68 +87,6 @@ function Main() {
       <pre>{typecheckDL}</pre>
     </div>
   );
-}
-
-class ReplCore {
-  db: DB;
-  loader: Loader;
-
-  constructor(loader: Loader) {
-    this.db = {
-      tables: {},
-      rules: {},
-    };
-    this.loader = loader;
-  }
-
-  evalStr(line: string): Res[] {
-    const stmt = dlLanguage.statement.tryParse(line);
-    return this.evalStmt(stmt);
-  }
-
-  evalStmt(stmt: Statement): Res[] {
-    switch (stmt.type) {
-      case "Insert": {
-        const record = stmt.record;
-        if (hasVars(record)) {
-          return this.evalQuery(record);
-        }
-        let tbl = this.db.tables[record.relation];
-        if (!tbl) {
-          tbl = [];
-          this.db.tables[record.relation] = tbl;
-        }
-        tbl.push(record);
-        return [];
-      }
-      case "Rule": {
-        const rule = stmt.rule;
-        this.db.rules[rule.head.relation] = rule;
-        return [];
-      }
-      case "TableDecl":
-        if (this.db.tables[stmt.name]) {
-          return [];
-        }
-        this.db.tables[stmt.name] = [];
-        return [];
-      case "LoadStmt":
-        this.doLoad(stmt.path);
-        return [];
-    }
-  }
-
-  private evalQuery(record: Rec): Res[] {
-    return evaluate(this.db, record);
-  }
-
-  doLoad(path: string) {
-    const contents = this.loader(path);
-    const program: Program = dlLanguage.program.tryParse(contents);
-    for (const stmt of program) {
-      this.evalStmt(stmt);
-    }
-  }
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
