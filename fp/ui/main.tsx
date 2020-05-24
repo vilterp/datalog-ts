@@ -27,7 +27,7 @@ function renderResults(results: Res[]): string[] {
 }
 
 function Main() {
-  const [source, setSource] = useState("let x = 2 in x");
+  const [source, setSource] = useState("let x = 2 in toString(x)");
 
   const repl = new ReplCore(loader);
   repl.doLoad("typecheck.dl");
