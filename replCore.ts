@@ -49,6 +49,8 @@ export class ReplCore {
       case "LoadStmt":
         this.doLoad(stmt.path);
         return [];
+      default:
+        return [];
     }
   }
 

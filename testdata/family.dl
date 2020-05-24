@@ -69,6 +69,7 @@ edge{from: F, to: T, label: L} :-
     edge_gp{from: F, to: T, label: L} |
     edge_sibling{from: F, to: T, label: L} |
     edge_cousin{from: F, to: T, label: L}.
+
 node_mc{id: C, label: C} :-
     mother{child: C}.
 node_mm{id: C, label: C} :-
@@ -77,8 +78,8 @@ node_fc{id: C, label: C} :-
     father{child: C}.
 node_ff{id: C, label: C} :-
     father{father: C}.
-node{id: I, name: N} :-
-    node_mc{id: I, name: N} |
-    node_mm{id: I, name: N} |
-    node_fc{id: I, name: N} |
-    node_ff{id: I, name: N}.
+node{id: I, label: N} :-
+    node_mc{id: I, label: N} |
+    node_mm{id: I, label: N} |
+    node_fc{id: I, label: N} |
+    node_ff{id: I, label: N}.
