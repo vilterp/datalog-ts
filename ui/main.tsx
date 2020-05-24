@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { ReplCore } from "../replCore";
-import { Res } from "../types";
+import { Program, Res } from "../types";
 import { prettyPrintTerm } from "../pretty";
 import * as pp from "prettier-printer";
+import { language } from "../parser";
 
 function Main() {
   const [source, setSource] = useState("");
@@ -13,8 +14,9 @@ function Main() {
 
   try {
     const repl = new ReplCore(null); // TODO: some loader
-    source.split("\n").forEach((line) => {
-      repl.evalStr(line).forEach((res) => output.push(res));
+    const program = language.program.tryParse(source) as Program;
+    program.forEach((stmt) => {
+      repl.evalStmt(stmt).forEach((res) => output.push(res));
     });
   } catch (e) {
     error = e.toString();
