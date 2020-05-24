@@ -72,7 +72,7 @@ function Main() {
         </>
       ) : null}
 
-      <h2>Flattened</h2>
+      <h2>Flattened AST</h2>
       <pre>{rendered.join("\n")}</pre>
 
       <h2>Scope</h2>
