@@ -7,7 +7,7 @@
     "test-write-results": "ts-node allTests.ts --write-results",
     "repl": "ts-node cmd/repl.ts",
     "build": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts && tsc --outDir dist cmd/flatten-fp.ts",
-    "build-ui": "esbuild fp/ui/main.tsx --bundle --outfile=fp/ui/bundle.js '--define:process.env.NODE_ENV=\"development\"'",
+    "build-ui": "esbuild fp/ui/main.tsx --bundle --outfile=fp/ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text",
     "serve-ui": "cd fp/ui && http-server"
   },
   "devDependencies": {

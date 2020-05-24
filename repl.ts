@@ -213,6 +213,6 @@ export class Repl {
 // throws an exception if it's not there I guess
 // TODO: wish there was a stdlib Result<E, T> type, lol
 // keeping synchronous for now
-type Loader = (path: string) => string;
+export type Loader = (path: string) => string;
 
 export const fsLoader: Loader = (path) => fs.readFileSync(path).toString();
