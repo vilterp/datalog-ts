@@ -36,6 +36,7 @@ function Main() {
       repl.evalStr("edge{from: F, to: T, label: L}.").map((res) => ({
         from: ((res.term as Rec).attrs.from as StringLit).val,
         to: ((res.term as Rec).attrs.to as StringLit).val,
+        label: ((res.term as Rec).attrs.label as StringLit).val,
       })),
       (e) => `${e.from}-${e.to}`
     );
@@ -51,20 +52,6 @@ function Main() {
   }
 
   console.log({ nodes, edges });
-
-  // const vertices = [
-  //   { key: "web", name: "web-app : login" },
-  //   { key: "users", name: "user-store : get-user" },
-  //   { key: "cache", name: "cache : get" },
-  //   { key: "db", name: "db : get-user" },
-  //   { key: "auth", name: "auth : login" },
-  // ];
-  // const testEdges = [
-  //   { from: "web", to: "users" },
-  //   { from: "web", to: "auth" },
-  //   { from: "users", to: "cache" },
-  //   { from: "users", to: "db" },
-  // ];
 
   return (
     <div>
