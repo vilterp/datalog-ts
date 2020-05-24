@@ -10,6 +10,7 @@ import { LayoutManager } from "@jaegertracing/plexus";
 import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../testdata/family.dl";
+import { uniqBy } from "../util";
 
 const lm = new LayoutManager({
   useDotEdges: true,
@@ -31,14 +32,20 @@ function Main() {
     program.forEach((stmt) => {
       repl.evalStmt(stmt).forEach((res) => output.push(res));
     });
-    edges = repl.evalStr("edge{from: F, to: T, label: L}.").map((res) => ({
-      from: ((res.term as Rec).attrs.from as StringLit).val,
-      to: ((res.term as Rec).attrs.to as StringLit).val,
-    }));
-    nodes = repl.evalStr("node{id: I, label: L}.").map((res) => ({
-      key: ((res.term as Rec).attrs.id as StringLit).val,
-      label: ((res.term as Rec).attrs.label as StringLit).val,
-    }));
+    edges = uniqBy(
+      repl.evalStr("edge{from: F, to: T, label: L}.").map((res) => ({
+        from: ((res.term as Rec).attrs.from as StringLit).val,
+        to: ((res.term as Rec).attrs.to as StringLit).val,
+      })),
+      (e) => `${e.from}-${e.to}`
+    );
+    nodes = uniqBy(
+      repl.evalStr("node{id: I, label: L}.").map((res) => ({
+        key: ((res.term as Rec).attrs.id as StringLit).val,
+        label: ((res.term as Rec).attrs.label as StringLit).val,
+      })),
+      (n) => n.key
+    );
   } catch (e) {
     error = e.toString();
   }
@@ -83,7 +90,7 @@ function Main() {
           .join("\n")}
       </pre>
       <h3>Graph</h3>
-      <Digraph edges={edges} vertices={nodes} layoutManager={lm} />
+      <Digraph zoom={true} edges={edges} vertices={nodes} layoutManager={lm} />
     </div>
   );
 }

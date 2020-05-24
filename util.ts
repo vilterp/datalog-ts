@@ -76,14 +76,19 @@ export function repeat(n: number, str: string): string {
 }
 
 export function uniq(l: string[]): string[] {
+  return uniqBy(l, (x) => x);
+}
+
+export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
   const seen = new Set<string>();
-  const out: string[] = [];
-  for (const line of l) {
-    if (seen.has(line)) {
+  const out: T[] = [];
+  for (const item of l) {
+    const key = f(item);
+    if (seen.has(key)) {
       continue;
     }
-    seen.add(line);
-    out.push(line);
+    seen.add(key);
+    out.push(item);
   }
   return out;
 }
