@@ -28,6 +28,7 @@ function renderResults(results: Res[]): string[] {
 
 function Main() {
   const [source, setSource] = useState("let x = 2 in x");
+
   const repl = new ReplCore(loader);
   repl.doLoad("typecheck.dl");
   repl.doLoad("stdlib.dl");
@@ -41,6 +42,9 @@ function Main() {
     const printed = flattened.map(prettyPrintTerm);
     rendered = printed.map((t) => pp.render(100, t) + ".");
 
+    flattened.forEach((rec) =>
+      repl.evalStmt({ type: "Insert", record: rec as Rec })
+    );
     scopeItems = repl.evalStr("scope_item{id: I, name: N, type: T}.");
     types = repl.evalStr("type{id: I, type: T}.");
   } catch (e) {
@@ -72,10 +76,16 @@ function Main() {
       <pre>{rendered.join("\n")}</pre>
 
       <h2>Scope</h2>
-      <pre>{renderResults(scopeItems).join("\n")}</pre>
+      <pre>{renderResults(scopeItems).sort().join("\n")}</pre>
 
       <h2>Types</h2>
-      <pre>{renderResults(types).join("\n")}</pre>
+      <pre>{renderResults(types).sort().join("\n")}</pre>
+
+      <h2>Builtins (fixed)</h2>
+      <pre>{stdlibDL}</pre>
+
+      <h2>Rules (fixed)</h2>
+      <pre>{typecheckDL}</pre>
     </div>
   );
 }
