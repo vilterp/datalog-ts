@@ -1,3 +1,4 @@
+import { ReplCore } from "./replCore";
 import {
   DB,
   newDB,
@@ -21,7 +22,7 @@ import * as util from "util";
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  db: DB;
+  core: ReplCore;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -37,7 +38,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.db = newDB();
+    this.core = new ReplCore(loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -82,11 +83,11 @@ export class Repl {
     // special commands
     // TODO: parse these with parser
     if (line === ".dump") {
-      this.println(pp.render(100, prettyPrintDB(this.db)));
+      this.println(pp.render(100, prettyPrintDB(this.core.db)));
       rl.prompt();
       return;
     } else if (line === ".resetFacts") {
-      this.db.tables = {};
+      this.core.db.tables = {};
       rl.prompt();
       return;
     } else if (line === ".graphviz") {
@@ -100,8 +101,9 @@ export class Repl {
       return;
     }
     try {
-      const stmt: Statement = language.statement.tryParse(this.buffer);
-      this.handleStmt(stmt);
+      this.core.evalStr(this.buffer).forEach((res) => {
+        this.println(pp.render(100, prettyPrintTerm(res.term)) + ".");
+      });
     } catch (e) {
       // TODO: distinguish between parse errors and others
       this.println("error", e.toString(), e.stack);
@@ -114,62 +116,9 @@ export class Repl {
     rl.prompt();
   }
 
-  handleStmt(stmt: Statement) {
-    switch (stmt.type) {
-      case "Insert": {
-        const record = stmt.record;
-        if (hasVars(record)) {
-          this.printQuery(record);
-          break;
-        }
-        let tbl = this.db.tables[record.relation];
-        if (!tbl) {
-          tbl = [];
-          this.db.tables[record.relation] = tbl;
-        }
-        tbl.push(record);
-        break;
-      }
-      case "Rule": {
-        const rule = stmt.rule;
-        this.db.rules[rule.head.relation] = rule;
-        break;
-      }
-      case "TableDecl":
-        if (this.db.tables[stmt.name]) {
-          return;
-        }
-        this.db.tables[stmt.name] = [];
-        break;
-      case "LoadStmt":
-        this.doLoad(stmt.path);
-    }
-  }
-
-  private printQuery(record: Rec) {
-    const results = evaluate(this.db, record);
-    for (const res of results) {
-      // console.log(util.inspect(res, { depth: null }));
-      this.println(
-        pp.render(100, [
-          prettyPrintTerm(res.term),
-          // "; ",
-          // prettyPrintBindings(res.bindings),
-          ".",
-        ])
-      );
-    }
-  }
-
   private doGraphviz() {
-    const edges = evaluate(
-      this.db,
-      rec("edge", { from: varr("F"), to: varr("T"), label: varr("L") })
-    );
-    const nodes = evaluate(
-      this.db,
-      rec("node", { id: varr("I"), label: varr("L") })
-    );
+    const edges = this.core.evalStr("edge{from: F, to: T, label: L}.");
+    const nodes = this.core.evalStr("node{id: I, label: L}.");
     // TODO: oof, all this typecasting
     const g: Graph = {
       edges: edges.map((e) => {
@@ -189,19 +138,6 @@ export class Repl {
       }),
     };
     this.println(prettyPrintGraph(g));
-  }
-
-  doLoad(path: string) {
-    try {
-      const contents = this.loader(path);
-      const program: Program = language.program.tryParse(contents);
-      for (const stmt of program) {
-        this.handleStmt(stmt);
-      }
-    } catch (e) {
-      this.println("error: ", e);
-    }
-    this.rl.prompt();
   }
 
   private println(...strings: string[]) {
