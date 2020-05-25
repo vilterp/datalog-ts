@@ -1,3 +1,5 @@
+import { ReplCore } from "../replCore";
+import { ppt } from "../simpleEvaluate";
 import { Suite } from "../testing";
 import { runDDTestAtPath } from "../util/dataDrivenTests";
 import { DDTest, Result } from "../util/dataDrivenTests";
@@ -61,33 +63,29 @@ function flattenTest(test: DDTest): Result[] {
 }
 
 // flatten, then print out all scope and types
+// TODO: DRY up a bit
 function typecheckTest(test: DDTest): Result[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
-    const printed = flattened.map(prettyPrintTerm);
-    const rendered = printed.map((t) => pp.render(100, t) + ".");
+    const rendered = flattened.map((t) => ppt(t) + ".");
 
-    // TODO: use ReplCore directly, without stream?
-    const outStream = identityTransform();
-    const inStream = identityTransform();
-    const repl = new Repl(inStream, outStream, "test", "", fsLoader); // hmmm
-    repl.run();
+    const repl = new ReplCore(fsLoader); // hmmm
     flattened.forEach((t) => {
-      repl.core.evalStmt({ type: "Insert", record: t as Rec });
+      repl.evalStmt({ type: "Insert", record: t as Rec });
     });
-    repl.core.doLoad("fp/typecheck.dl");
-    repl.core.doLoad("fp/stdlib.dl");
-    repl.handleLine("scope_item{id: I, name: N, type: T}.");
-    const scopeOut = readAll(outStream).split("\n").sort();
-    repl.handleLine("type{id: I, type: T}.");
-    const typeOut = readAll(outStream).split("\n").sort();
+    repl.doLoad("fp/typecheck.dl");
+    repl.doLoad("fp/stdlib.dl");
+    const scopeResults = repl.evalStr("scope_item{id: I, name: N, type: T}.");
+    const typeResults = repl.evalStr("type{id: I, type: T}.");
     return {
       pair: tc,
-      // TODO: this uniq is sweeping dupes under the rug... find out why they're there
       actual:
-        [...rendered, ...scopeOut.slice(1), ...typeOut.slice(1)].join("\n") +
-        "\n",
+        [
+          ...rendered,
+          ...scopeResults.map((r) => ppt(r.term) + ".").sort(),
+          ...typeResults.map((r) => ppt(r.term) + ".").sort(),
+        ].join("\n") + "\n",
     };
   });
 }
