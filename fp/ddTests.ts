@@ -68,15 +68,16 @@ function typecheckTest(test: DDTest): Result[] {
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");
 
+    // TODO: use ReplCore directly, without stream?
     const outStream = identityTransform();
     const inStream = identityTransform();
     const repl = new Repl(inStream, outStream, "test", "", fsLoader); // hmmm
     repl.run();
     flattened.forEach((t) => {
-      repl.handleStmt({ type: "Insert", record: t as Rec });
+      repl.core.evalStmt({ type: "Insert", record: t as Rec });
     });
-    repl.doLoad("fp/typecheck.dl");
-    repl.doLoad("fp/stdlib.dl");
+    repl.core.doLoad("fp/typecheck.dl");
+    repl.core.doLoad("fp/stdlib.dl");
     repl.handleLine("scope_item{id: I, name: N, type: T}.");
     const scopeOut = readAll(outStream).split("\n").sort();
     repl.handleLine("type{id: I, type: T}.");
