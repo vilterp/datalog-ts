@@ -1,38 +1,38 @@
 map((x: int): int => plus(x, 2), ???)
 ----
 root_expr{id: 0}.
-func_call{id: 0, name: "map", numArgs: 2}.
-lambda{body: 2, id: 1, numParams: 1, retType: "int"}.
-func_call{id: 2, name: "plus", numArgs: 2}.
-var{id: 3, name: "x"}.
-int_lit{id: 4, val: 2}.
-func_arg{argExprID: 3, callExprID: 2, idx: 0}.
-func_arg{argExprID: 4, callExprID: 2, idx: 1}.
-lambda_param{idx: 0, lambdaID: 1, name: "x", ty: "int"}.
-placeholder{id: 8}.
-func_arg{argExprID: 1, callExprID: 0, idx: 0}.
-func_arg{argExprID: 8, callExprID: 0, idx: 1}.
+func_call{argID: 10, funcID: 1, id: 0}.
+func_call{argID: 3, funcID: 2, id: 1}.
+var{id: 2, name: "map"}.
+lambda{body: 4, id: 3, numParams: 1, retType: "int"}.
+func_call{argID: 8, funcID: 5, id: 4}.
+func_call{argID: 7, funcID: 6, id: 5}.
+var{id: 6, name: "plus"}.
+var{id: 7, name: "x"}.
+int_lit{id: 8, val: 2}.
+lambda_param{idx: 0, lambdaID: 3, name: "x", ty: "int"}.
+placeholder{id: 10}.
 
 let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
 root_expr{id: 0}.
 let_expr{bindingID: 1, bodyID: 12, id: 0, varName: "x"}.
-func_call{id: 1, name: "map", numArgs: 2}.
-lambda{body: 3, id: 2, numParams: 1, retType: "int"}.
-func_call{id: 3, name: "plus", numArgs: 2}.
-var{id: 4, name: "x"}.
-int_lit{id: 5, val: 2}.
-func_arg{argExprID: 4, callExprID: 3, idx: 0}.
-func_arg{argExprID: 5, callExprID: 3, idx: 1}.
-lambda_param{idx: 0, lambdaID: 2, name: "x", ty: "int"}.
-placeholder{id: 9}.
-func_arg{argExprID: 2, callExprID: 1, idx: 0}.
-func_arg{argExprID: 9, callExprID: 1, idx: 1}.
-func_call{id: 12, name: "filter", numArgs: 2}.
-var{id: 13, name: "isEven"}.
-var{id: 14, name: "x"}.
-func_arg{argExprID: 13, callExprID: 12, idx: 0}.
-func_arg{argExprID: 14, callExprID: 12, idx: 1}.
+func_call{argID: 11, funcID: 2, id: 1}.
+func_call{argID: 4, funcID: 3, id: 2}.
+var{id: 3, name: "map"}.
+lambda{body: 5, id: 4, numParams: 1, retType: "int"}.
+func_call{argID: 9, funcID: 6, id: 5}.
+func_call{argID: 8, funcID: 7, id: 6}.
+var{id: 7, name: "plus"}.
+var{id: 8, name: "x"}.
+int_lit{id: 9, val: 2}.
+lambda_param{idx: 0, lambdaID: 4, name: "x", ty: "int"}.
+placeholder{id: 11}.
+func_call{argID: 16, funcID: 13, id: 12}.
+func_call{argID: 15, funcID: 14, id: 13}.
+var{id: 14, name: "filter"}.
+var{id: 15, name: "isEven"}.
+var{id: 16, name: "x"}.
 
 "foo"
 ----

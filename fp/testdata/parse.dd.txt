@@ -40,25 +40,32 @@ myFunc(2, a, "foo")
 ----
 {
   "type": "FuncCall",
-  "name": {
-    "ident": "myFunc",
-    "pos": {
-      "offset": 0,
-      "line": 1,
-      "column": 1
-    }
-  },
-  "args": [
-    {
-      "type": "IntLit",
-      "val": 2,
-      "pos": {
-        "offset": 7,
-        "line": 1,
-        "column": 8
+  "func": {
+    "type": "FuncCall",
+    "func": {
+      "type": "FuncCall",
+      "func": {
+        "type": "Var",
+        "name": {
+          "ident": "myFunc",
+          "pos": {
+            "offset": 0,
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      "arg": {
+        "type": "IntLit",
+        "val": 2,
+        "pos": {
+          "offset": 7,
+          "line": 1,
+          "column": 8
+        }
       }
     },
-    {
+    "arg": {
       "type": "Var",
       "name": {
         "ident": "a",
@@ -68,17 +75,17 @@ myFunc(2, a, "foo")
           "column": 11
         }
       }
-    },
-    {
-      "type": "StringLit",
-      "val": "foo",
-      "pos": {
-        "offset": 13,
-        "line": 1,
-        "column": 14
-      }
     }
-  ]
+  },
+  "arg": {
+    "type": "StringLit",
+    "val": "foo",
+    "pos": {
+      "offset": 13,
+      "line": 1,
+      "column": 14
+    }
+  }
 }
 
 ???
@@ -99,16 +106,20 @@ map((x: int): int => plus(x, 2), ???)
 ----
 {
   "type": "FuncCall",
-  "name": {
-    "ident": "map",
-    "pos": {
-      "offset": 0,
-      "line": 1,
-      "column": 1
-    }
-  },
-  "args": [
-    {
+  "func": {
+    "type": "FuncCall",
+    "func": {
+      "type": "Var",
+      "name": {
+        "ident": "map",
+        "pos": {
+          "offset": 0,
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "arg": {
       "type": "Lambda",
       "params": [
         {
@@ -132,16 +143,20 @@ map((x: int): int => plus(x, 2), ???)
       ],
       "body": {
         "type": "FuncCall",
-        "name": {
-          "ident": "plus",
-          "pos": {
-            "offset": 21,
-            "line": 1,
-            "column": 22
-          }
-        },
-        "args": [
-          {
+        "func": {
+          "type": "FuncCall",
+          "func": {
+            "type": "Var",
+            "name": {
+              "ident": "plus",
+              "pos": {
+                "offset": 21,
+                "line": 1,
+                "column": 22
+              }
+            }
+          },
+          "arg": {
             "type": "Var",
             "name": {
               "ident": "x",
@@ -151,17 +166,17 @@ map((x: int): int => plus(x, 2), ???)
                 "column": 27
               }
             }
-          },
-          {
-            "type": "IntLit",
-            "val": 2,
-            "pos": {
-              "offset": 29,
-              "line": 1,
-              "column": 30
-            }
           }
-        ]
+        },
+        "arg": {
+          "type": "IntLit",
+          "val": 2,
+          "pos": {
+            "offset": 29,
+            "line": 1,
+            "column": 30
+          }
+        }
       },
       "retType": {
         "ident": "int",
@@ -171,17 +186,17 @@ map((x: int): int => plus(x, 2), ???)
           "column": 15
         }
       }
-    },
-    {
-      "type": "Placeholder",
-      "val": {
-        "ident": "???",
-        "pos": {
-          "offset": 33,
-          "line": 1,
-          "column": 34
-        }
+    }
+  },
+  "arg": {
+    "type": "Placeholder",
+    "val": {
+      "ident": "???",
+      "pos": {
+        "offset": 33,
+        "line": 1,
+        "column": 34
       }
     }
-  ]
+  }
 }
