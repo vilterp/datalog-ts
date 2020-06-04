@@ -63,4 +63,5 @@ parent_expr{id: I, parentID: P} :-
   let_expr{bodyID: I, id: P} |
   let_expr{bindingID: I, id: P} |
   func_call{argID: I, id: P} |
-  func_call{funcID: I, id: P}.
+  func_call{funcID: I, id: P} |
+  lambda{body: I, id: P}.
