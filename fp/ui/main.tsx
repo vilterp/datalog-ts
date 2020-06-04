@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { language as fpLanguage } from "../parser";
+import { Expr, language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
 import { prettyPrintTerm } from "../../pretty";
 import * as pp from "prettier-printer";
@@ -31,13 +31,14 @@ function Main() {
   const repl = new ReplCore(loader);
   repl.doLoad("typecheck.dl");
   repl.doLoad("stdlib.dl");
+  let parsed: Expr = null;
   let rendered: string[] = [];
   let scopeItems: Res[] = [];
   let types: Res[] = [];
   let parentExprs: Res[] = [];
   let error = null;
   try {
-    const parsed = fpLanguage.expr.tryParse(source);
+    parsed = fpLanguage.expr.tryParse(source);
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     rendered = printed.map((t) => pp.render(100, t) + ".");
@@ -73,24 +74,51 @@ function Main() {
         </>
       ) : null}
 
-      <h2>Flattened AST</h2>
-      <pre>{rendered.join("\n")}</pre>
+      <Collapsible
+        heading="AST"
+        content={<pre>{JSON.stringify(parsed, null, 2)}</pre>}
+      />
 
-      <h2>Scope</h2>
-      <pre>{renderResults(scopeItems).sort().join("\n")}</pre>
+      <Collapsible
+        heading="Flattened"
+        content={<pre>{rendered.join("\n")}</pre>}
+      />
 
-      <h2>Types</h2>
-      <pre>{renderResults(types).sort().join("\n")}</pre>
+      <Collapsible
+        heading="Scope"
+        content={<pre>{renderResults(scopeItems).sort().join("\n")}</pre>}
+      />
 
-      <h2>Parent Exprs</h2>
-      <pre>{renderResults(parentExprs).sort().join("\n")}</pre>
+      <Collapsible
+        heading="Types"
+        content={<pre>{renderResults(types).sort().join("\n")}</pre>}
+      />
 
-      <h2>Builtins (fixed)</h2>
-      <pre>{stdlibDL}</pre>
+      <Collapsible
+        heading="Parent"
+        content={<pre>{renderResults(parentExprs).sort().join("\n")}</pre>}
+      />
 
-      <h2>Rules (fixed)</h2>
-      <pre>{typecheckDL}</pre>
+      <Collapsible heading="Builtins" content={<pre>{stdlibDL}</pre>} />
+
+      <Collapsible heading="Rules" content={<pre>{typecheckDL}</pre>} />
     </div>
+  );
+}
+
+function Collapsible(props: { heading: string; content: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <>
+      <h2
+        style={{ cursor: "pointer" }}
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        {props.heading}
+      </h2>
+      {collapsed ? null : props.content}
+    </>
   );
 }
 

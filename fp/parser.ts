@@ -32,11 +32,10 @@ export const language = P.createLanguage({
     ).skip(P.optWhitespace),
 
   funcCall: (r) =>
-    P.seq(r.varExpr, r.lparen, r.expr, r.rparen).map(([func, _, arg, __]) => ({
-      type: "FuncCall",
-      func,
-      arg,
-    })),
+    P.seq(r.varExpr, r.lparen, P.sepBy(r.expr, r.comma), r.rparen).map(
+      // TODO: don't curry directly in the parser
+      ([func, _, args, __]) => curry(func, args)
+    ),
   lambda: (r) =>
     P.seq(
       r.lparen,
@@ -107,6 +106,13 @@ export const language = P.createLanguage({
   inWord: () => word("in"),
   rightArrow: () => word("=>"),
 });
+
+function curry(func: Expr, args: Expr[]): Expr {
+  return args.reduce(
+    (accum, arg) => ({ type: "FuncCall", func: accum, arg }),
+    func
+  );
+}
 
 function word(str) {
   return P.string(str).skip(P.optWhitespace);
