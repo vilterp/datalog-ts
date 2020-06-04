@@ -37,7 +37,8 @@ function recurse(
       return {
         terms: [
           rec("func_call", {
-            funcExprID: int(funcExprID),
+            id: int(nextID),
+            funcID: int(funcExprID),
             argID: int(argExprID),
           }),
           ...funcExprTerms,

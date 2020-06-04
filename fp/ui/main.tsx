@@ -34,6 +34,7 @@ function Main() {
   let rendered: string[] = [];
   let scopeItems: Res[] = [];
   let types: Res[] = [];
+  let parentExprs: Res[] = [];
   let error = null;
   try {
     const parsed = fpLanguage.expr.tryParse(source);
@@ -46,6 +47,7 @@ function Main() {
     );
     scopeItems = repl.evalStr("scope_item{id: I, name: N, type: T}.");
     types = repl.evalStr("type{id: I, type: T}.");
+    parentExprs = repl.evalStr("parent_expr{id: I, parentID: P}.");
   } catch (e) {
     error = e.toString();
   }
@@ -79,6 +81,9 @@ function Main() {
 
       <h2>Types</h2>
       <pre>{renderResults(types).sort().join("\n")}</pre>
+
+      <h2>Parent Exprs</h2>
+      <pre>{renderResults(parentExprs).sort().join("\n")}</pre>
 
       <h2>Builtins (fixed)</h2>
       <pre>{stdlibDL}</pre>
