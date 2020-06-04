@@ -32,7 +32,7 @@ export const language = P.createLanguage({
     ).skip(P.optWhitespace),
 
   funcCall: (r) =>
-    P.seq(r.expr, r.lparen, r.expr, r.rparen).map(([func, _, arg, __]) => ({
+    P.seq(r.varExpr, r.lparen, r.expr, r.rparen).map(([func, _, arg, __]) => ({
       type: "FuncCall",
       func,
       arg,

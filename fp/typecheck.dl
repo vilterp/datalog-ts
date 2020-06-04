@@ -30,10 +30,9 @@ type_s{id: I, type: "string"} :-
 type_i{id: I, type: "int"} :-
   int_lit{id: I}.
 type_fc{id: I, type: T} :-
-  func_call{id: I, name: M} &
-  scope_item{id: I, name: M, type: tapp{from: F, to: T}} &
-  func_arg{callExprID: I, argExprID: AI} &
-  type{id: AI, type: F}.
+  func_call{id: I, funcExprID: FEID, argID: AID} &
+  type{id: FEID, type: tapp{from: F, to: T}} &
+  type{id: AID, type: F}.
 type_let{id: I, type: T} :-
   let_expr{id: I, bodyID: BID} &
   type{id: BID, type: T}.
@@ -62,4 +61,5 @@ scope_lambda{id: I, name: N, type: T} :-
 
 parent_expr{id: I, parentID: P} :-
   let_expr{bodyID: I, id: P} |
-  func_arg{argExprID: I, callExprID: P}.
+  func_call{id: P, argExprID: I} |
+  func_call{id: P, funcExprID: I}.
