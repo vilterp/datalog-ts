@@ -26,40 +26,25 @@ function recurse(
     case "Placeholder":
       return simple(rec("placeholder", { id: nextIDTerm }));
     case "FuncCall": {
-      // TODO: args (maybe just do curried?
-      const { nid, terms: argExprTerms, argIDs } = e.args.reduce(
-        (accum, arg) => {
-          const { id: argID, nextID: newNID, terms: newArgTerms } = recurse(
-            accum.nid,
-            arg
-          );
-          return {
-            nid: newNID,
-            terms: [...accum.terms, ...newArgTerms],
-            argIDs: [...accum.argIDs, argID],
-          };
-        },
-        { nid: nextID + 1, terms: [], argIDs: [] }
+      const { terms: funcExprTerms, id: funcExprID, nextID: nid1 } = recurse(
+        nextID + 1,
+        e.func
       );
-      const argTerms = argIDs.map((argID, idx) =>
-        rec("func_arg", {
-          callExprID: int(nextID),
-          idx: int(idx),
-          argExprID: int(argID),
-        })
+      const { terms: argExprTerms, id: argExprID, nextID: nid2 } = recurse(
+        nid1,
+        e.arg
       );
       return {
         terms: [
           rec("func_call", {
-            id: nextIDTerm,
-            name: str(e.name.ident),
-            numArgs: int(e.args.length),
+            funcExprID: int(funcExprID),
+            argID: int(argExprID),
           }),
+          ...funcExprTerms,
           ...argExprTerms,
-          ...argTerms,
         ],
         id: nextID,
-        nextID: nid + argTerms.length,
+        nextID: nid2,
       };
     }
     case "Let": {
