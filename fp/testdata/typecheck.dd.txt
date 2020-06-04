@@ -79,3 +79,54 @@ type{id: 3, type: tapp{from: "int", to: "string"}}.
 type{id: 4, type: "int"}.
 type{id: 5, type: tapp{from: "int", to: "int"}}.
 type{id: 6, type: "int"}.
+
+let ts = (y: int): string => toString(y) in ts(2)
+----
+root_expr{id: 0}.
+let_expr{bindingID: 1, bodyID: 6, id: 0, varName: "ts"}.
+lambda{body: 2, id: 1, numParams: 1, retType: "string"}.
+func_call{argID: 4, funcID: 3, id: 2}.
+var{id: 3, name: "toString"}.
+var{id: 4, name: "y"}.
+lambda_param{idx: 0, lambdaID: 1, name: "y", ty: "int"}.
+func_call{argID: 8, funcID: 7, id: 6}.
+var{id: 7, name: "ts"}.
+int_lit{id: 8, val: 2}.
+scope_item{id: 0, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 0, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 0, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 1, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 1, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 1, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 2, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 2, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 2, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 2, name: "y", type: "int"}.
+scope_item{id: 3, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 3, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 3, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 3, name: "y", type: "int"}.
+scope_item{id: 4, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 4, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 4, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 4, name: "y", type: "int"}.
+scope_item{id: 6, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 6, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 6, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 6, name: "ts", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 7, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 7, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 7, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 7, name: "ts", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 8, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
+scope_item{id: 8, name: "plus2", type: tapp{from: "int", to: "int"}}.
+scope_item{id: 8, name: "toString", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 8, name: "ts", type: tapp{from: "int", to: "string"}}.
+type{id: 0, type: "string"}.
+type{id: 1, type: tapp{from: "int", to: "string"}}.
+type{id: 2, type: "string"}.
+type{id: 3, type: tapp{from: "int", to: "string"}}.
+type{id: 4, type: "int"}.
+type{id: 6, type: "string"}.
+type{id: 7, type: tapp{from: "int", to: "string"}}.
+type{id: 8, type: "int"}.
