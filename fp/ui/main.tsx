@@ -115,7 +115,7 @@ function Collapsible(props: { heading: string; content: React.ReactNode }) {
         style={{ cursor: "pointer" }}
         onClick={() => setCollapsed(!collapsed)}
       >
-        {props.heading}
+        {`${collapsed ? ">" : "v"} ${props.heading}`}
       </h2>
       {collapsed ? null : props.content}
     </>
