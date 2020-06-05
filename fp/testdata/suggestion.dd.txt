@@ -1,3 +1,8 @@
 let x = 2 in plus2(???)
 ----
 suggestion{id: 4, name: "x", type: "int"}.
+
+let x = 2 in (y: int): string => toString(???)
+----
+suggestion{id: 5, name: "x", type: "int"}.
+suggestion{id: 5, name: "y", type: "int"}.
