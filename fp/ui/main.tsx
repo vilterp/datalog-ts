@@ -11,6 +11,7 @@ import typecheckDL from "../typecheck.dl";
 // @ts-ignore
 import stdlibDL from "../stdlib.dl";
 import { ReplCore } from "../../replCore";
+import useLocalStorage from "react-use-localstorage";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -26,7 +27,10 @@ function renderResults(results: Res[]): string[] {
 }
 
 function Main() {
-  const [source, setSource] = useState("let x = 2 in toString(x)");
+  const [source, setSource] = useLocalStorage(
+    "source",
+    "let x = 2 in toString(x)"
+  );
 
   const repl = new ReplCore(loader);
   repl.doLoad("typecheck.dl");

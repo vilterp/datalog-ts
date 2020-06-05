@@ -9,7 +9,6 @@ import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
 import { fsLoader, Repl } from "../repl";
 import { Rec } from "../types";
-import { readAll, identityTransform } from "../streamUtil";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
