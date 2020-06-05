@@ -38,6 +38,16 @@ export function fpTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "suggestion",
+      test() {
+        runDDTestAtPath(
+          "fp/testdata/suggestion.dd.txt",
+          suggestionTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -85,6 +95,26 @@ function typecheckTest(test: DDTest): Result[] {
           ...scopeResults.map((r) => ppt(r.term) + ".").sort(),
           ...typeResults.map((r) => ppt(r.term) + ".").sort(),
         ].join("\n") + "\n",
+    };
+  });
+}
+
+function suggestionTest(test: DDTest): Result[] {
+  return test.map((tc) => {
+    const parsed = language.expr.tryParse(tc.input);
+    const flattened = flatten(parsed);
+
+    const repl = new ReplCore(fsLoader); // hmmm
+    flattened.forEach((t) => {
+      repl.evalStmt({ type: "Insert", record: t as Rec });
+    });
+    repl.doLoad("fp/typecheck.dl");
+    repl.doLoad("fp/stdlib.dl");
+    const suggResults = repl.evalStr("suggestion{id: I, name: N}.");
+    return {
+      pair: tc,
+      actual:
+        [...suggResults.map((r) => ppt(r.term) + ".").sort()].join("\n") + "\n",
     };
   });
 }
