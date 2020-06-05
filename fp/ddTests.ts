@@ -110,7 +110,7 @@ function suggestionTest(test: DDTest): Result[] {
     });
     repl.doLoad("fp/typecheck.dl");
     repl.doLoad("fp/stdlib.dl");
-    const suggResults = repl.evalStr("suggestion{id: I, name: N}.");
+    const suggResults = repl.evalStr("suggestion{id: I, name: N, type: T}.");
     return {
       pair: tc,
       actual:

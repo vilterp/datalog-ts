@@ -41,6 +41,7 @@ function Main() {
   let scopeItems: Res[] = [];
   let types: Res[] = [];
   let parentExprs: Res[] = [];
+  let suggestions: Res[] = [];
   let error = null;
   try {
     parsed = fpLanguage.expr.tryParse(source);
@@ -54,6 +55,7 @@ function Main() {
     scopeItems = repl.evalStr("scope_item{id: I, name: N, type: T}.");
     types = repl.evalStr("type{id: I, type: T}.");
     parentExprs = repl.evalStr("parent_expr{id: I, parentID: P}.");
+    suggestions = repl.evalStr("suggestion{id: I, name: N, type: T}.");
   } catch (e) {
     error = e.toString();
   }
@@ -97,6 +99,11 @@ function Main() {
       <Collapsible
         heading="Types"
         content={<pre>{renderResults(types).sort().join("\n")}</pre>}
+      />
+
+      <Collapsible
+        heading="Suggestions"
+        content={<pre>{renderResults(suggestions).sort().join("\n")}</pre>}
       />
 
       <Collapsible

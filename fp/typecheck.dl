@@ -67,7 +67,7 @@ parent_expr{id: I, parentID: P} :-
   lambda{body: I, id: P}.
 
 # type-directed autocomplete suggestions
-suggestion{id: I, name: N} :-
+suggestion{id: I, name: N, type: TF} :-
   placeholder{id: I} &
   func_call{argID: I, funcID: F} &
   type{id: F, type: tapp{from: TF, to: TT}} &
