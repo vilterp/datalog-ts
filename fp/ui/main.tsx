@@ -12,6 +12,7 @@ import typecheckDL from "../typecheck.dl";
 import stdlibDL from "../stdlib.dl";
 import { ReplCore } from "../../replCore";
 import useLocalStorage from "react-use-localstorage";
+import { useBoolLocalStorage } from "./util";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -111,7 +112,10 @@ function Main() {
 }
 
 function Collapsible(props: { heading: string; content: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useBoolLocalStorage(
+    `collapsed-${props.heading}`,
+    false
+  );
 
   return (
     <>
