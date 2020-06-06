@@ -40,7 +40,7 @@ export const language = P.createLanguage({
     ),
 
   funcCall: (r) =>
-    P.seq(r.varExpr, r.lparen, P.sepBy(r.expr, r.comma), r.rparen).map(
+    P.seq(located(r.varExpr), r.lparen, P.sepBy(r.expr, r.comma), r.rparen).map(
       // TODO: don't curry directly in the parser
       ([func, _, args, __]) => curry(func, args)
     ),
@@ -75,7 +75,7 @@ export const language = P.createLanguage({
       binding,
       body,
     })),
-  varExpr: (r) => r.identifier.map((id) => ({ ...id, type: "Var" })),
+  varExpr: (r) => r.identifier.map((id) => ({ type: "Var", name: id.ident })),
   intLit: () =>
     P.regexp(/[0-9]+/).map((v) => ({
       type: "IntLit",

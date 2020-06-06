@@ -5,7 +5,7 @@ export function flatten(e: Expr): Term[] {
   return [rec("root_expr", { id: int(0) }), ...recurse(0, e).terms];
 }
 
-// TODO: positions
+// TODO: DRY up location being added
 function recurse(
   nextID: number,
   e: Expr
@@ -26,11 +26,25 @@ function recurse(
         })
       );
     case "StringLit":
-      return simple(rec("string_lit", { id: nextIDTerm, val: str(e.val) }));
+      return simple(
+        rec("string_lit", {
+          id: nextIDTerm,
+          val: str(e.val),
+          location: spanToDL(e.span),
+        })
+      );
     case "IntLit":
-      return simple(rec("int_lit", { id: nextIDTerm, val: int(e.val) }));
+      return simple(
+        rec("int_lit", {
+          id: nextIDTerm,
+          val: int(e.val),
+          location: spanToDL(e.span),
+        })
+      );
     case "Placeholder":
-      return simple(rec("placeholder", { id: nextIDTerm }));
+      return simple(
+        rec("placeholder", { id: nextIDTerm, location: spanToDL(e.span) })
+      );
     case "FuncCall": {
       const { terms: funcExprTerms, id: funcExprID, nextID: nid1 } = recurse(
         nextID + 1,
@@ -46,6 +60,7 @@ function recurse(
             id: int(nextID),
             funcID: int(funcExprID),
             argID: int(argExprID),
+            location: spanToDL(e.span),
           }),
           ...funcExprTerms,
           ...argExprTerms,
@@ -68,6 +83,7 @@ function recurse(
         varName: str(e.name.ident),
         bindingID: int(bindingID),
         bodyID: int(bodyID),
+        location: spanToDL(e.span),
       });
       return {
         terms: [overallTerm, ...bindingsTerms, ...bodyTerms],
@@ -97,6 +113,7 @@ function recurse(
             body: int(bodyID),
             retType: str(e.retType.ident),
             numParams: int(e.params.length),
+            location: spanToDL(e.span),
           }),
           ...bodyTerms,
           ...paramTerms,

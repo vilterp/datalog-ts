@@ -1,7 +1,8 @@
 foo
 ----
 {
-  "ident": "foo",
+  "type": "Var",
+  "name": "foo",
   "span": {
     "from": {
       "offset": 0,
@@ -13,8 +14,7 @@ foo
       "line": 1,
       "column": 4
     }
-  },
-  "type": "Var"
+  }
 }
 
 2
@@ -64,7 +64,8 @@ myFunc(2, a, "foo")
     "func": {
       "type": "FuncCall",
       "func": {
-        "ident": "myFunc",
+        "type": "Var",
+        "name": "myFunc",
         "span": {
           "from": {
             "offset": 0,
@@ -76,8 +77,7 @@ myFunc(2, a, "foo")
             "line": 1,
             "column": 7
           }
-        },
-        "type": "Var"
+        }
       },
       "arg": {
         "type": "IntLit",
@@ -109,7 +109,8 @@ myFunc(2, a, "foo")
       }
     },
     "arg": {
-      "ident": "a",
+      "type": "Var",
+      "name": "a",
       "span": {
         "from": {
           "offset": 10,
@@ -121,8 +122,7 @@ myFunc(2, a, "foo")
           "line": 1,
           "column": 12
         }
-      },
-      "type": "Var"
+      }
     },
     "span": {
       "from": {
@@ -222,7 +222,8 @@ let x = 2 in x
     }
   },
   "body": {
-    "ident": "x",
+    "type": "Var",
+    "name": "x",
     "span": {
       "from": {
         "offset": 13,
@@ -234,8 +235,7 @@ let x = 2 in x
         "line": 1,
         "column": 15
       }
-    },
-    "type": "Var"
+    }
   },
   "span": {
     "from": {
@@ -258,7 +258,8 @@ map((x: int): int => plus(x, 2), ???)
   "func": {
     "type": "FuncCall",
     "func": {
-      "ident": "map",
+      "type": "Var",
+      "name": "map",
       "span": {
         "from": {
           "offset": 0,
@@ -270,8 +271,7 @@ map((x: int): int => plus(x, 2), ???)
           "line": 1,
           "column": 4
         }
-      },
-      "type": "Var"
+      }
     },
     "arg": {
       "type": "Lambda",
@@ -314,7 +314,8 @@ map((x: int): int => plus(x, 2), ???)
         "func": {
           "type": "FuncCall",
           "func": {
-            "ident": "plus",
+            "type": "Var",
+            "name": "plus",
             "span": {
               "from": {
                 "offset": 21,
@@ -326,11 +327,11 @@ map((x: int): int => plus(x, 2), ???)
                 "line": 1,
                 "column": 26
               }
-            },
-            "type": "Var"
+            }
           },
           "arg": {
-            "ident": "x",
+            "type": "Var",
+            "name": "x",
             "span": {
               "from": {
                 "offset": 26,
@@ -342,8 +343,7 @@ map((x: int): int => plus(x, 2), ???)
                 "line": 1,
                 "column": 28
               }
-            },
-            "type": "Var"
+            }
           },
           "span": {
             "from": {
