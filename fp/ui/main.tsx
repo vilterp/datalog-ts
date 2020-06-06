@@ -38,10 +38,6 @@ function Main() {
   repl.doLoad("stdlib.dl");
   let parsed: Expr = null;
   let rendered: string[] = [];
-  let scopeItems: Res[] = [];
-  let types: Res[] = [];
-  let parentExprs: Res[] = [];
-  let suggestions: Res[] = [];
   let error = null;
   try {
     parsed = fpLanguage.expr.tryParse(source);
@@ -52,15 +48,9 @@ function Main() {
     flattened.forEach((rec) =>
       repl.evalStmt({ type: "Insert", record: rec as Rec })
     );
-    scopeItems = repl.evalStr("scope_item{id: I, name: N, type: T}.");
-    types = repl.evalStr("type{id: I, type: T}.");
-    parentExprs = repl.evalStr("parent_expr{id: I, parentID: P}.");
-    suggestions = repl.evalStr("suggestion{id: I, name: N, type: T}.");
   } catch (e) {
     error = e.toString();
   }
-
-  console.log({ rendered, scopeItems, types, db: repl.db });
 
   return (
     <div>
@@ -76,7 +66,7 @@ function Main() {
 
       {error ? (
         <>
-          <h2>Error</h2>
+          <h2>Parse Error</h2>
           <pre>{error}</pre>
         </>
       ) : null}
@@ -91,24 +81,24 @@ function Main() {
         content={<pre>{rendered.join("\n")}</pre>}
       />
 
-      <Collapsible
+      <Query
         heading="Scope"
-        content={<pre>{renderResults(scopeItems).sort().join("\n")}</pre>}
+        query="scope_item{id: I, name: N, type: T}."
+        repl={repl}
       />
 
-      <Collapsible
-        heading="Types"
-        content={<pre>{renderResults(types).sort().join("\n")}</pre>}
-      />
+      <Query heading="Types" query="type{id: I, type: T}." repl={repl} />
 
-      <Collapsible
+      <Query
         heading="Suggestions"
-        content={<pre>{renderResults(suggestions).sort().join("\n")}</pre>}
+        query="suggestion{id: I, name: N, type: T}."
+        repl={repl}
       />
 
-      <Collapsible
+      <Query
         heading="Parent"
-        content={<pre>{renderResults(parentExprs).sort().join("\n")}</pre>}
+        query="parent_expr{id: I, parentID: P}."
+        repl={repl}
       />
 
       <Collapsible heading="Builtins" content={<pre>{stdlibDL}</pre>} />
@@ -116,6 +106,25 @@ function Main() {
       <Collapsible heading="Rules" content={<pre>{typecheckDL}</pre>} />
     </div>
   );
+}
+
+function Query(props: { heading: string; query: string; repl: ReplCore }) {
+  try {
+    const results = props.repl.evalStr(props.query);
+    return (
+      <Collapsible
+        heading={props.heading}
+        content={<pre>{renderResults(results).sort().join("\n")}</pre>}
+      />
+    );
+  } catch (e) {
+    return (
+      <Collapsible
+        heading={props.heading}
+        content={<pre>Error: {e.toString()}</pre>}
+      />
+    );
+  }
 }
 
 function Collapsible(props: { heading: string; content: React.ReactNode }) {
