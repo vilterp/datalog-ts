@@ -32,6 +32,7 @@ function Main() {
     "source",
     "let x = 2 in toString(x)"
   );
+  const [cursorPos, setCursorPos] = useState<number>(0);
 
   const repl = new ReplCore(loader);
   repl.doLoad("typecheck.dl");
@@ -48,6 +49,7 @@ function Main() {
     flattened.forEach((rec) =>
       repl.evalStmt({ type: "Insert", record: rec as Rec })
     );
+    repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   } catch (e) {
     error = e.toString();
   }
@@ -58,6 +60,15 @@ function Main() {
       <h2>Source</h2>
       <textarea
         onChange={(evt) => setSource(evt.target.value)}
+        onKeyDown={(evt) => {
+          setCursorPos(evt.target.selectionStart);
+        }}
+        onKeyUp={(evt) => {
+          setCursorPos(evt.target.selectionStart);
+        }}
+        onClick={(evt) => {
+          setCursorPos(evt.target.selectionStart);
+        }}
         style={{ fontFamily: "monospace" }}
         cols={50}
         rows={10}
@@ -80,6 +91,8 @@ function Main() {
         heading="Flattened"
         content={<pre>{rendered.join("\n")}</pre>}
       />
+
+      <Query heading="Cursor" query="cursor{idx: I}." repl={repl} />
 
       <Query
         heading="Scope"
@@ -121,7 +134,7 @@ function Query(props: { heading: string; query: string; repl: ReplCore }) {
     return (
       <Collapsible
         heading={props.heading}
-        content={<pre>Error: {e.toString()}</pre>}
+        content={<pre style={{ color: "red" }}>{e.toString()}</pre>}
       />
     );
   }
@@ -135,12 +148,12 @@ function Collapsible(props: { heading: string; content: React.ReactNode }) {
 
   return (
     <>
-      <h2
+      <h3
         style={{ cursor: "pointer" }}
         onClick={() => setCollapsed(!collapsed)}
       >
         {`${collapsed ? ">" : "v"} ${props.heading}`}
-      </h2>
+      </h3>
       {collapsed ? null : props.content}
     </>
   );
