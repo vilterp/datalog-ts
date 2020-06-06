@@ -1,15 +1,20 @@
 foo
 ----
 {
-  "type": "Var",
-  "name": {
-    "ident": "foo",
-    "pos": {
+  "ident": "foo",
+  "span": {
+    "from": {
       "offset": 0,
       "line": 1,
       "column": 1
+    },
+    "to": {
+      "offset": 3,
+      "line": 1,
+      "column": 4
     }
-  }
+  },
+  "type": "Var"
 }
 
 2
@@ -17,10 +22,17 @@ foo
 {
   "type": "IntLit",
   "val": 2,
-  "pos": {
-    "offset": 0,
-    "line": 1,
-    "column": 1
+  "span": {
+    "from": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    },
+    "to": {
+      "offset": 1,
+      "line": 1,
+      "column": 2
+    }
   }
 }
 
@@ -29,10 +41,17 @@ foo
 {
   "type": "StringLit",
   "val": "hello",
-  "pos": {
-    "offset": 0,
-    "line": 1,
-    "column": 1
+  "span": {
+    "from": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    },
+    "to": {
+      "offset": 7,
+      "line": 1,
+      "column": 8
+    }
   }
 }
 
@@ -45,45 +64,105 @@ myFunc(2, a, "foo")
     "func": {
       "type": "FuncCall",
       "func": {
-        "type": "Var",
-        "name": {
-          "ident": "myFunc",
-          "pos": {
+        "ident": "myFunc",
+        "span": {
+          "from": {
             "offset": 0,
             "line": 1,
             "column": 1
+          },
+          "to": {
+            "offset": 6,
+            "line": 1,
+            "column": 7
           }
-        }
+        },
+        "type": "Var"
       },
       "arg": {
         "type": "IntLit",
         "val": 2,
-        "pos": {
-          "offset": 7,
+        "span": {
+          "from": {
+            "offset": 7,
+            "line": 1,
+            "column": 8
+          },
+          "to": {
+            "offset": 8,
+            "line": 1,
+            "column": 9
+          }
+        }
+      },
+      "span": {
+        "from": {
+          "offset": 0,
           "line": 1,
-          "column": 8
+          "column": 1
+        },
+        "to": {
+          "offset": 6,
+          "line": 1,
+          "column": 7
         }
       }
     },
     "arg": {
-      "type": "Var",
-      "name": {
-        "ident": "a",
-        "pos": {
+      "ident": "a",
+      "span": {
+        "from": {
           "offset": 10,
           "line": 1,
           "column": 11
+        },
+        "to": {
+          "offset": 11,
+          "line": 1,
+          "column": 12
         }
+      },
+      "type": "Var"
+    },
+    "span": {
+      "from": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "to": {
+        "offset": 6,
+        "line": 1,
+        "column": 7
       }
     }
   },
   "arg": {
     "type": "StringLit",
     "val": "foo",
-    "pos": {
-      "offset": 13,
+    "span": {
+      "from": {
+        "offset": 13,
+        "line": 1,
+        "column": 14
+      },
+      "to": {
+        "offset": 18,
+        "line": 1,
+        "column": 19
+      }
+    }
+  },
+  "span": {
+    "from": {
+      "offset": 0,
       "line": 1,
-      "column": 14
+      "column": 1
+    },
+    "to": {
+      "offset": 19,
+      "line": 1,
+      "column": 20
     }
   }
 }
@@ -92,12 +171,82 @@ myFunc(2, a, "foo")
 ----
 {
   "type": "Placeholder",
-  "val": {
-    "ident": "???",
-    "pos": {
+  "ident": "???",
+  "span": {
+    "from": {
       "offset": 0,
       "line": 1,
       "column": 1
+    },
+    "to": {
+      "offset": 3,
+      "line": 1,
+      "column": 4
+    }
+  }
+}
+
+let x = 2 in x
+----
+{
+  "type": "Let",
+  "name": {
+    "ident": "x",
+    "span": {
+      "from": {
+        "offset": 4,
+        "line": 1,
+        "column": 5
+      },
+      "to": {
+        "offset": 5,
+        "line": 1,
+        "column": 6
+      }
+    }
+  },
+  "binding": {
+    "type": "IntLit",
+    "val": 2,
+    "span": {
+      "from": {
+        "offset": 8,
+        "line": 1,
+        "column": 9
+      },
+      "to": {
+        "offset": 9,
+        "line": 1,
+        "column": 10
+      }
+    }
+  },
+  "body": {
+    "ident": "x",
+    "span": {
+      "from": {
+        "offset": 13,
+        "line": 1,
+        "column": 14
+      },
+      "to": {
+        "offset": 14,
+        "line": 1,
+        "column": 15
+      }
+    },
+    "type": "Var"
+  },
+  "span": {
+    "from": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    },
+    "to": {
+      "offset": 14,
+      "line": 1,
+      "column": 15
     }
   }
 }
@@ -109,15 +258,20 @@ map((x: int): int => plus(x, 2), ???)
   "func": {
     "type": "FuncCall",
     "func": {
-      "type": "Var",
-      "name": {
-        "ident": "map",
-        "pos": {
+      "ident": "map",
+      "span": {
+        "from": {
           "offset": 0,
           "line": 1,
           "column": 1
+        },
+        "to": {
+          "offset": 3,
+          "line": 1,
+          "column": 4
         }
-      }
+      },
+      "type": "Var"
     },
     "arg": {
       "type": "Lambda",
@@ -125,18 +279,32 @@ map((x: int): int => plus(x, 2), ???)
         {
           "ty": {
             "ident": "int",
-            "pos": {
-              "offset": 8,
-              "line": 1,
-              "column": 9
+            "span": {
+              "from": {
+                "offset": 8,
+                "line": 1,
+                "column": 9
+              },
+              "to": {
+                "offset": 11,
+                "line": 1,
+                "column": 12
+              }
             }
           },
           "name": {
             "ident": "x",
-            "pos": {
-              "offset": 5,
-              "line": 1,
-              "column": 6
+            "span": {
+              "from": {
+                "offset": 5,
+                "line": 1,
+                "column": 6
+              },
+              "to": {
+                "offset": 6,
+                "line": 1,
+                "column": 7
+              }
             }
           }
         }
@@ -146,57 +314,146 @@ map((x: int): int => plus(x, 2), ???)
         "func": {
           "type": "FuncCall",
           "func": {
-            "type": "Var",
-            "name": {
-              "ident": "plus",
-              "pos": {
+            "ident": "plus",
+            "span": {
+              "from": {
                 "offset": 21,
                 "line": 1,
                 "column": 22
+              },
+              "to": {
+                "offset": 25,
+                "line": 1,
+                "column": 26
               }
-            }
+            },
+            "type": "Var"
           },
           "arg": {
-            "type": "Var",
-            "name": {
-              "ident": "x",
-              "pos": {
+            "ident": "x",
+            "span": {
+              "from": {
                 "offset": 26,
                 "line": 1,
                 "column": 27
+              },
+              "to": {
+                "offset": 27,
+                "line": 1,
+                "column": 28
               }
+            },
+            "type": "Var"
+          },
+          "span": {
+            "from": {
+              "offset": 21,
+              "line": 1,
+              "column": 22
+            },
+            "to": {
+              "offset": 25,
+              "line": 1,
+              "column": 26
             }
           }
         },
         "arg": {
           "type": "IntLit",
           "val": 2,
-          "pos": {
-            "offset": 29,
+          "span": {
+            "from": {
+              "offset": 29,
+              "line": 1,
+              "column": 30
+            },
+            "to": {
+              "offset": 30,
+              "line": 1,
+              "column": 31
+            }
+          }
+        },
+        "span": {
+          "from": {
+            "offset": 21,
             "line": 1,
-            "column": 30
+            "column": 22
+          },
+          "to": {
+            "offset": 31,
+            "line": 1,
+            "column": 32
           }
         }
       },
       "retType": {
         "ident": "int",
-        "pos": {
-          "offset": 14,
-          "line": 1,
-          "column": 15
+        "span": {
+          "from": {
+            "offset": 14,
+            "line": 1,
+            "column": 15
+          },
+          "to": {
+            "offset": 17,
+            "line": 1,
+            "column": 18
+          }
         }
+      },
+      "span": {
+        "from": {
+          "offset": 4,
+          "line": 1,
+          "column": 5
+        },
+        "to": {
+          "offset": 31,
+          "line": 1,
+          "column": 32
+        }
+      }
+    },
+    "span": {
+      "from": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "to": {
+        "offset": 3,
+        "line": 1,
+        "column": 4
       }
     }
   },
   "arg": {
     "type": "Placeholder",
-    "val": {
-      "ident": "???",
-      "pos": {
+    "ident": "???",
+    "span": {
+      "from": {
         "offset": 33,
         "line": 1,
         "column": 34
+      },
+      "to": {
+        "offset": 36,
+        "line": 1,
+        "column": 37
       }
+    }
+  },
+  "span": {
+    "from": {
+      "offset": 0,
+      "line": 1,
+      "column": 1
+    },
+    "to": {
+      "offset": 37,
+      "line": 1,
+      "column": 38
     }
   }
 }

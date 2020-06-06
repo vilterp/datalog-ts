@@ -2,34 +2,42 @@ import * as P from "parsimmon";
 
 // adapted from https://github.com/jneen/parsimmon/blob/master/examples/json.js
 
-export type Expr =
+export type Expr = (
   | { type: "FuncCall"; func: Expr; arg: Expr }
   | { type: "Let"; name: Token; binding: Expr; body: Expr }
-  | { type: "Var"; name: Token }
-  | { type: "StringLit"; val: string; pos: Pos }
-  | { type: "IntLit"; val: number; pos: Pos }
+  | { type: "Var"; name: string }
+  | { type: "StringLit"; val: string }
+  | { type: "IntLit"; val: number }
   | { type: "Lambda"; params: Param[]; retType: Type; body: Expr }
-  | { type: "Placeholder"; val: Token };
+  | { type: "Placeholder"; val: string }
+) &
+  Located;
 
 type Param = { ty: Type; name: Token };
 
 type Type = Token; // TODO: generics, etc
 
-type Pos = { offset: number; line: number; column: number };
+export type Pos = { offset: number; line: number; column: number };
 
-type Token = { ident: string; pos: Pos };
+export type Span = { from: Pos; to: Pos };
+
+type Located = { span: Span };
+
+type Token = { ident: string; span: Span };
 
 export const language = P.createLanguage({
   expr: (r) =>
-    P.alt(
-      r.funcCall,
-      r.lambda,
-      r.letExpr,
-      r.varExpr,
-      r.stringLit,
-      r.intLit,
-      r.placeholder
-    ).skip(P.optWhitespace),
+    located(
+      P.alt(
+        r.funcCall,
+        r.lambda,
+        r.letExpr,
+        r.varExpr,
+        r.stringLit,
+        r.intLit,
+        r.placeholder.skip(P.optWhitespace)
+      )
+    ),
 
   funcCall: (r) =>
     P.seq(r.varExpr, r.lparen, P.sepBy(r.expr, r.comma), r.rparen).map(
@@ -67,34 +75,33 @@ export const language = P.createLanguage({
       binding,
       body,
     })),
-  varExpr: (r) => r.identifier.map((id) => ({ type: "Var", name: id })),
+  varExpr: (r) => r.identifier.map((id) => ({ ...id, type: "Var" })),
   intLit: () =>
-    P.seq(P.index, P.regexp(/[0-9]+/)).map(([pos, v]) => ({
+    P.regexp(/[0-9]+/).map((v) => ({
       type: "IntLit",
       val: Number.parseInt(v),
-      pos,
     })),
 
   stringLit: (r) =>
-    P.seq(
-      P.index,
-      P.regexp(/"((?:\\.|.)*?)"/, 1)
-        .map(interpretEscapes)
-        .desc("string")
-    ).map(([pos, s]) => ({ type: "StringLit", val: s, pos })),
+    P.regexp(/"((?:\\.|.)*?)"/, 1)
+      .map(interpretEscapes)
+      .desc("string")
+      .map((s) => ({ type: "StringLit", val: s })),
 
+  // returns a token. TODO: rename to token?
   identifier: () =>
     P.seq(
       P.index,
-      P.regex(/([a-zA-Z_][a-zA-Z0-9_]*)/, 1).desc("identifier")
-    ).map(([pos, ident]) => ({ ident, pos })),
+      P.regex(/([a-zA-Z_][a-zA-Z0-9_]*)/, 1).desc("identifier"),
+      P.index
+    ).map(([from, ident, to]) => ({ ident, span: { from, to } })),
 
   type: (r) => r.identifier, // TODO: generics, etc
 
   placeholder: () =>
-    P.seq(P.index, word("???")).map(([pos, ident]) => ({
+    P.string("???").map((ident) => ({
       type: "Placeholder",
-      val: { ident, pos },
+      ident,
     })),
 
   eq: () => word("="),
@@ -107,9 +114,17 @@ export const language = P.createLanguage({
   rightArrow: () => word("=>"),
 });
 
+function located<T>(p: P.Parser<T>): P.Parser<T & Located> {
+  return P.seq(P.index, p, P.index).map(([from, res, to]) => ({
+    ...res,
+    span: { from, to },
+  }));
+}
+
 function curry(func: Expr, args: Expr[]): Expr {
+  // TODO: not sure what span to assign here. But this is definitely wrong, lol.
   return args.reduce(
-    (accum, arg) => ({ type: "FuncCall", func: accum, arg }),
+    (accum, arg) => ({ type: "FuncCall", func: accum, arg, span: func.span }),
     func
   );
 }
@@ -138,12 +153,4 @@ function interpretEscapes(str) {
     }
     return type;
   });
-}
-
-function pairsToObj<T>(pairs: [string, T][]): { [key: string]: T } {
-  const out = {};
-  pairs.forEach(([k, v]) => {
-    out[k] = v;
-  });
-  return out;
 }

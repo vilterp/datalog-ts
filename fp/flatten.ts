@@ -1,5 +1,5 @@
-import { int, rec, str, Term } from "../types";
-import { Expr } from "./parser";
+import { int, rec, str, Term, Rec } from "../types";
+import { Expr, Span, Pos } from "./parser";
 
 export function flatten(e: Expr): Term[] {
   return [rec("root_expr", { id: int(0) }), ...recurse(0, e).terms];
@@ -18,7 +18,13 @@ function recurse(
   });
   switch (e.type) {
     case "Var":
-      return simple(rec("var", { id: nextIDTerm, name: str(e.name.ident) }));
+      return simple(
+        rec("var", {
+          id: nextIDTerm,
+          name: str(e.name),
+          location: spanToDL(e.span),
+        })
+      );
     case "StringLit":
       return simple(rec("string_lit", { id: nextIDTerm, val: str(e.val) }));
     case "IntLit":
@@ -98,4 +104,15 @@ function recurse(
       };
     }
   }
+}
+
+function spanToDL(span: Span): Rec {
+  return rec("span", {
+    from: posToDL(span.from),
+    to: posToDL(span.to),
+  });
+}
+
+function posToDL(pos: Pos): Rec {
+  return rec("pos", { idx: int(pos.offset) });
 }
