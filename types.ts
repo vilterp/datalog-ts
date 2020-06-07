@@ -71,9 +71,9 @@ export type BinExpr = {
   op: Operator;
 };
 
-type Bool = { type: "Bool"; val: boolean };
+export type Bool = { type: "Bool"; val: boolean };
 
-type Int = { type: "IntLit"; val: number };
+export type Int = { type: "IntLit"; val: number };
 
 export type StringLit = { type: "StringLit"; val: string };
 

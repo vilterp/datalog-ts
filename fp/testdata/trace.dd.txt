@@ -1,0 +1,550 @@
+let x = 2 in x
+----
+{
+  "type": "AndTrace",
+  "ruleName": "type_let",
+  "sources": [
+    {
+      "term": {
+        "type": "Record",
+        "relation": "let_expr",
+        "attrs": {
+          "id": {
+            "type": "IntLit",
+            "val": 0
+          },
+          "varName": {
+            "type": "StringLit",
+            "val": "x"
+          },
+          "bindingID": {
+            "type": "IntLit",
+            "val": 1
+          },
+          "bodyID": {
+            "type": "IntLit",
+            "val": 2
+          },
+          "location": {
+            "type": "Record",
+            "relation": "span",
+            "attrs": {
+              "from": {
+                "type": "Record",
+                "relation": "pos",
+                "attrs": {
+                  "idx": {
+                    "type": "IntLit",
+                    "val": 0
+                  }
+                }
+              },
+              "to": {
+                "type": "Record",
+                "relation": "pos",
+                "attrs": {
+                  "idx": {
+                    "type": "IntLit",
+                    "val": 14
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "bindings": {
+        "I": {
+          "type": "IntLit",
+          "val": 0
+        },
+        "BID": {
+          "type": "IntLit",
+          "val": 2
+        }
+      },
+      "trace": {
+        "type": "MatchTrace",
+        "match": {
+          "type": "Record",
+          "relation": "let_expr",
+          "attrs": {
+            "id": {
+              "type": "Var",
+              "name": "I"
+            },
+            "bodyID": {
+              "type": "Var",
+              "name": "BID"
+            }
+          }
+        },
+        "fact": {
+          "term": {
+            "type": "Record",
+            "relation": "let_expr",
+            "attrs": {
+              "id": {
+                "type": "IntLit",
+                "val": 0
+              },
+              "varName": {
+                "type": "StringLit",
+                "val": "x"
+              },
+              "bindingID": {
+                "type": "IntLit",
+                "val": 1
+              },
+              "bodyID": {
+                "type": "IntLit",
+                "val": 2
+              },
+              "location": {
+                "type": "Record",
+                "relation": "span",
+                "attrs": {
+                  "from": {
+                    "type": "Record",
+                    "relation": "pos",
+                    "attrs": {
+                      "idx": {
+                        "type": "IntLit",
+                        "val": 0
+                      }
+                    }
+                  },
+                  "to": {
+                    "type": "Record",
+                    "relation": "pos",
+                    "attrs": {
+                      "idx": {
+                        "type": "IntLit",
+                        "val": 14
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "trace": {
+            "type": "BaseFactTrace"
+          },
+          "bindings": {}
+        }
+      }
+    },
+    {
+      "bindings": {
+        "BID": {
+          "type": "IntLit",
+          "val": 2
+        },
+        "T": {
+          "type": "StringLit",
+          "val": "int"
+        }
+      },
+      "term": {
+        "type": "Record",
+        "relation": "type",
+        "attrs": {
+          "id": {
+            "type": "IntLit",
+            "val": 2
+          },
+          "type": {
+            "type": "StringLit",
+            "val": "int"
+          }
+        }
+      },
+      "trace": {
+        "type": "AndTrace",
+        "ruleName": "type_var",
+        "sources": [
+          {
+            "term": {
+              "type": "Record",
+              "relation": "var",
+              "attrs": {
+                "id": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "name": {
+                  "type": "StringLit",
+                  "val": "x"
+                },
+                "location": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "Record",
+                      "relation": "pos",
+                      "attrs": {
+                        "idx": {
+                          "type": "IntLit",
+                          "val": 13
+                        }
+                      }
+                    },
+                    "to": {
+                      "type": "Record",
+                      "relation": "pos",
+                      "attrs": {
+                        "idx": {
+                          "type": "IntLit",
+                          "val": 14
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "bindings": {
+              "I": {
+                "type": "IntLit",
+                "val": 2
+              },
+              "N": {
+                "type": "StringLit",
+                "val": "x"
+              }
+            },
+            "trace": {
+              "type": "MatchTrace",
+              "match": {
+                "type": "Record",
+                "relation": "var",
+                "attrs": {
+                  "id": {
+                    "type": "Var",
+                    "name": "I"
+                  },
+                  "name": {
+                    "type": "Var",
+                    "name": "N"
+                  }
+                }
+              },
+              "fact": {
+                "term": {
+                  "type": "Record",
+                  "relation": "var",
+                  "attrs": {
+                    "id": {
+                      "type": "IntLit",
+                      "val": 2
+                    },
+                    "name": {
+                      "type": "StringLit",
+                      "val": "x"
+                    },
+                    "location": {
+                      "type": "Record",
+                      "relation": "span",
+                      "attrs": {
+                        "from": {
+                          "type": "Record",
+                          "relation": "pos",
+                          "attrs": {
+                            "idx": {
+                              "type": "IntLit",
+                              "val": 13
+                            }
+                          }
+                        },
+                        "to": {
+                          "type": "Record",
+                          "relation": "pos",
+                          "attrs": {
+                            "idx": {
+                              "type": "IntLit",
+                              "val": 14
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "trace": {
+                  "type": "BaseFactTrace"
+                },
+                "bindings": {}
+              }
+            }
+          },
+          {
+            "bindings": {
+              "I": {
+                "type": "IntLit",
+                "val": 2
+              },
+              "N": {
+                "type": "StringLit",
+                "val": "x"
+              },
+              "T": {
+                "type": "StringLit",
+                "val": "int"
+              }
+            },
+            "term": {
+              "type": "Record",
+              "relation": "scope_item",
+              "attrs": {
+                "id": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "name": {
+                  "type": "StringLit",
+                  "val": "x"
+                },
+                "type": {
+                  "type": "StringLit",
+                  "val": "int"
+                }
+              }
+            },
+            "trace": {
+              "type": "AndTrace",
+              "ruleName": "scope_let",
+              "sources": [
+                {
+                  "term": {
+                    "type": "Record",
+                    "relation": "let_expr",
+                    "attrs": {
+                      "id": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "varName": {
+                        "type": "StringLit",
+                        "val": "x"
+                      },
+                      "bindingID": {
+                        "type": "IntLit",
+                        "val": 1
+                      },
+                      "bodyID": {
+                        "type": "IntLit",
+                        "val": 2
+                      },
+                      "location": {
+                        "type": "Record",
+                        "relation": "span",
+                        "attrs": {
+                          "from": {
+                            "type": "Record",
+                            "relation": "pos",
+                            "attrs": {
+                              "idx": {
+                                "type": "IntLit",
+                                "val": 0
+                              }
+                            }
+                          },
+                          "to": {
+                            "type": "Record",
+                            "relation": "pos",
+                            "attrs": {
+                              "idx": {
+                                "type": "IntLit",
+                                "val": 14
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "bindings": {
+                    "I": {
+                      "type": "IntLit",
+                      "val": 2
+                    },
+                    "N": {
+                      "type": "StringLit",
+                      "val": "x"
+                    },
+                    "B": {
+                      "type": "IntLit",
+                      "val": 1
+                    }
+                  },
+                  "trace": {
+                    "type": "MatchTrace",
+                    "match": {
+                      "type": "Record",
+                      "relation": "let_expr",
+                      "attrs": {
+                        "bodyID": {
+                          "type": "Var",
+                          "name": "I"
+                        },
+                        "varName": {
+                          "type": "Var",
+                          "name": "N"
+                        },
+                        "bindingID": {
+                          "type": "Var",
+                          "name": "B"
+                        }
+                      }
+                    },
+                    "fact": {
+                      "term": {
+                        "type": "Record",
+                        "relation": "let_expr",
+                        "attrs": {
+                          "id": {
+                            "type": "IntLit",
+                            "val": 0
+                          },
+                          "varName": {
+                            "type": "StringLit",
+                            "val": "x"
+                          },
+                          "bindingID": {
+                            "type": "IntLit",
+                            "val": 1
+                          },
+                          "bodyID": {
+                            "type": "IntLit",
+                            "val": 2
+                          },
+                          "location": {
+                            "type": "Record",
+                            "relation": "span",
+                            "attrs": {
+                              "from": {
+                                "type": "Record",
+                                "relation": "pos",
+                                "attrs": {
+                                  "idx": {
+                                    "type": "IntLit",
+                                    "val": 0
+                                  }
+                                }
+                              },
+                              "to": {
+                                "type": "Record",
+                                "relation": "pos",
+                                "attrs": {
+                                  "idx": {
+                                    "type": "IntLit",
+                                    "val": 14
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "trace": {
+                        "type": "BaseFactTrace"
+                      },
+                      "bindings": {}
+                    }
+                  }
+                },
+                {
+                  "bindings": {
+                    "B": {
+                      "type": "IntLit",
+                      "val": 1
+                    },
+                    "T": {
+                      "type": "StringLit",
+                      "val": "int"
+                    }
+                  },
+                  "term": {
+                    "type": "Record",
+                    "relation": "type",
+                    "attrs": {
+                      "id": {
+                        "type": "IntLit",
+                        "val": 1
+                      },
+                      "type": {
+                        "type": "StringLit",
+                        "val": "int"
+                      }
+                    }
+                  },
+                  "trace": {
+                    "type": "MatchTrace",
+                    "match": {
+                      "type": "Record",
+                      "relation": "int_lit",
+                      "attrs": {
+                        "id": {
+                          "type": "Var",
+                          "name": "I"
+                        }
+                      }
+                    },
+                    "fact": {
+                      "term": {
+                        "type": "Record",
+                        "relation": "int_lit",
+                        "attrs": {
+                          "id": {
+                            "type": "IntLit",
+                            "val": 1
+                          },
+                          "val": {
+                            "type": "IntLit",
+                            "val": 2
+                          },
+                          "location": {
+                            "type": "Record",
+                            "relation": "span",
+                            "attrs": {
+                              "from": {
+                                "type": "Record",
+                                "relation": "pos",
+                                "attrs": {
+                                  "idx": {
+                                    "type": "IntLit",
+                                    "val": 8
+                                  }
+                                }
+                              },
+                              "to": {
+                                "type": "Record",
+                                "relation": "pos",
+                                "attrs": {
+                                  "idx": {
+                                    "type": "IntLit",
+                                    "val": 9
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "trace": {
+                        "type": "BaseFactTrace"
+                      },
+                      "bindings": {}
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
