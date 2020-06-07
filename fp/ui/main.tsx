@@ -29,7 +29,7 @@ const loader: Loader = (path: string) => {
 function Main() {
   const [source, setSource] = useLocalStorage(
     "source",
-    "let x = 2 in toString(x)"
+    "let x = 2 in intToString(x)"
   );
   const [cursorPos, setCursorPos] = useState<number>(0);
 

@@ -4,13 +4,12 @@ suggestion{id: 4, name: "x", type: "int"}.
 
 let x = 2 in (y: int): string => toString(???)
 ----
-suggestion{id: 5, name: "x", type: "int"}.
-suggestion{id: 5, name: "y", type: "int"}.
+
 
 (x: int): string => ???
 ----
-suggestion{id: 1, name: "toString", type: tapp{from: "int", to: "string"}}.
+suggestion{id: 1, name: "intToString", type: tapp{from: "int", to: "string"}}.
 
 (x: int): string => let x = 2 in ???
 ----
-suggestion{id: 3, name: "toString", type: tapp{from: "int", to: "string"}}.
+suggestion{id: 3, name: "intToString", type: tapp{from: "int", to: "string"}}.
