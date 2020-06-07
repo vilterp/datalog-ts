@@ -15,6 +15,7 @@ import useLocalStorage from "react-use-localstorage";
 import { useBoolLocalStorage } from "./util";
 import * as styles from "./styles";
 import { ppt } from "../../simpleEvaluate";
+import ReactJson from "react-json-view";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -24,10 +25,6 @@ const loader: Loader = (path: string) => {
       return stdlibDL;
   }
 };
-
-function renderResults(results: Res[]): string[] {
-  return results.map((res) => pp.render(100, prettyPrintTerm(res.term)));
-}
 
 function Main() {
   const [source, setSource] = useLocalStorage(
@@ -90,7 +87,16 @@ function Main() {
 
       <Collapsible
         heading="AST"
-        content={<pre>{JSON.stringify(parsed, null, 2)}</pre>}
+        content={
+          <ReactJson
+            name={null}
+            enableClipboard={false}
+            displayObjectSize={false}
+            displayDataTypes={false}
+            src={parsed}
+            shouldCollapse={({ name }) => name === "span"}
+          />
+        }
       />
 
       <Collapsible
