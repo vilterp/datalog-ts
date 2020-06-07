@@ -115,7 +115,10 @@ function Tabs(props: { repl: ReplCore }) {
       records: props.repl.db.tables[name],
     }));
   const allRelations: Relation[] = [...allTables, ...allRules];
-  const [curRelation, setCurRelation] = useState<Relation>(allRelations[0]);
+  const [curRelation, setCurRelation]: [
+    string,
+    (v: string) => void
+  ] = useLocalStorage("selected-relation", allRelations[0].name);
 
   return (
     <div style={{ display: "flex" }}>
@@ -124,8 +127,8 @@ function Tabs(props: { repl: ReplCore }) {
           {allRelations.map((rel) => (
             <li
               key={rel.name}
-              style={styles.tab(rel.name === curRelation.name)}
-              onClick={() => setCurRelation(rel)}
+              style={styles.tab(rel.name === curRelation)}
+              onClick={() => setCurRelation(rel.name)}
             >
               ({rel.type[0]}) {rel.name}
             </li>
@@ -133,7 +136,10 @@ function Tabs(props: { repl: ReplCore }) {
         </ul>
       </div>
       <div>
-        <RelationTable relation={curRelation} repl={props.repl} />
+        <RelationTable
+          relation={allRelations.find((r) => r.name === curRelation)}
+          repl={props.repl}
+        />
       </div>
     </div>
   );
@@ -144,7 +150,6 @@ type Relation =
   | { type: "Rule"; name: string; rule: Rule };
 
 function RelationTable(props: { relation: Relation; repl: ReplCore }) {
-  console.log(props);
   const records: Term[] =
     props.relation.type === "Table"
       ? props.relation.records
