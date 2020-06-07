@@ -86,64 +86,21 @@ function Main() {
         ) : null}
       </div>
 
+      <Tabs repl={repl} />
+
       <Collapsible
         heading="AST"
         content={<pre>{JSON.stringify(parsed, null, 2)}</pre>}
       />
 
-      <Tabs repl={repl} />
-
       <Collapsible
-        heading="Flattened"
+        heading="Flattened AST"
         content={<pre>{rendered.join("\n")}</pre>}
       />
-
-      <Query heading="Cursor" query="cursor{idx: I}." repl={repl} />
-
-      <Query
-        heading="Scope"
-        query="scope_item{id: I, name: N, type: T}."
-        repl={repl}
-      />
-
-      <Query heading="Types" query="type{id: I, type: T}." repl={repl} />
-
-      <Query
-        heading="Suggestions"
-        query="suggestion{id: I, name: N, type: T}."
-        repl={repl}
-      />
-
-      <Query
-        heading="Parent"
-        query="parent_expr{id: I, parentID: P}."
-        repl={repl}
-      />
-
-      <Collapsible heading="Builtins" content={<pre>{stdlibDL}</pre>} />
 
       <Collapsible heading="Rules" content={<pre>{typecheckDL}</pre>} />
     </div>
   );
-}
-
-function Query(props: { heading: string; query: string; repl: ReplCore }) {
-  try {
-    const results = props.repl.evalStr(props.query);
-    return (
-      <Collapsible
-        heading={props.heading}
-        content={<pre>{renderResults(results).sort().join("\n")}</pre>}
-      />
-    );
-  } catch (e) {
-    return (
-      <Collapsible
-        heading={props.heading}
-        content={<pre style={{ color: "red" }}>{e.toString()}</pre>}
-      />
-    );
-  }
 }
 
 function Tabs(props: { repl: ReplCore }) {
@@ -202,13 +159,17 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
       {props.relation.type === "Rule" ? (
         <pre>{pp.render(100, prettyPrintRule(props.relation.rule))}</pre>
       ) : null}
-      <ul>
-        {records.map((r) => (
-          <li key={ppt(r)}>
-            <code>{ppt(r)}</code>
-          </li>
-        ))}
-      </ul>
+      {records.length === 0 ? (
+        <div style={{ marginTop: 16, fontStyle: "italic" }}>No results</div>
+      ) : (
+        <ul>
+          {records.map((r) => (
+            <li key={ppt(r)}>
+              <code>{ppt(r)}</code>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }
