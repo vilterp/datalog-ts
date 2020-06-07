@@ -1,103 +1,29 @@
+2
+----
+Match (int_lit{id: I})
+  int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}; {}
+    base fact
+
 let x = 2 in x
 ----
-{
-  "body": "And (type_let)",
-  "children": [
-    {
-      "body": "let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: \"x\"}; {BID: 2, I: 0}",
-      "children": [
-        {
-          "body": "Match (let_expr{bodyID: BID, id: I})",
-          "children": [
-            {
-              "body": "let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: \"x\"}; {}",
-              "children": [
-                {
-                  "body": "base fact",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "body": "type{id: 2, type: \"int\"}; {BID: 2, T: \"int\"}",
-      "children": [
-        {
-          "body": "And (type_var)",
-          "children": [
-            {
-              "body": "var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: \"x\"}; {I: 2, N: \"x\"}",
-              "children": [
-                {
-                  "body": "Match (var{id: I, name: N})",
-                  "children": [
-                    {
-                      "body": "var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: \"x\"}; {}",
-                      "children": [
-                        {
-                          "body": "base fact",
-                          "children": []
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "body": "scope_item{id: 2, name: \"x\", type: \"int\"}; {I: 2, N: \"x\", T: \"int\"}",
-              "children": [
-                {
-                  "body": "And (scope_let)",
-                  "children": [
-                    {
-                      "body": "let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: \"x\"}; {B: 1, I: 2, N: \"x\"}",
-                      "children": [
-                        {
-                          "body": "Match (let_expr{bindingID: B, bodyID: I, varName: N})",
-                          "children": [
-                            {
-                              "body": "let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: \"x\"}; {}",
-                              "children": [
-                                {
-                                  "body": "base fact",
-                                  "children": []
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "body": "type{id: 1, type: \"int\"}; {B: 1, T: \"int\"}",
-                      "children": [
-                        {
-                          "body": "Match (int_lit{id: I})",
-                          "children": [
-                            {
-                              "body": "int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}; {}",
-                              "children": [
-                                {
-                                  "body": "base fact",
-                                  "children": []
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+And (type_let)
+  let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}; {BID: 2, I: 0}
+    Match (let_expr{bodyID: BID, id: I})
+      let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}; {}
+        base fact
+  type{id: 2, type: "int"}; {BID: 2, T: "int"}
+    And (type_var)
+      var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}; {I: 2, N: "x"}
+        Match (var{id: I, name: N})
+          var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}; {}
+            base fact
+      scope_item{id: 2, name: "x", type: "int"}; {I: 2, N: "x", T: "int"}
+        And (scope_let)
+          let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}; {B: 1, I: 2, N: "x"}
+            Match (let_expr{bindingID: B, bodyID: I, varName: N})
+              let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}; {}
+                base fact
+          type{id: 1, type: "int"}; {B: 1, T: "int"}
+            Match (int_lit{id: I})
+              int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}; {}
+                base fact

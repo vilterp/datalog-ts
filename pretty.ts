@@ -99,7 +99,7 @@ export function ppr(r: Res): string {
 // traces
 
 export function prettyPrintTrace(trace: Trace): string {
-  return pp.render(150, prettyPrintTree(traceToTree(trace)));
+  return prettyPrintTree(traceToTree(trace));
 }
 
 export function traceToTree(trace: Trace): Tree {

@@ -142,7 +142,8 @@ function traceTest(test: DDTest): Result[] {
     }
     return {
       pair: tc,
-      actual: JSON.stringify(traceToTree(typeResults[0].trace), null, 2) + "\n",
+      // actual: JSON.stringify(traceToTree(typeResults[0].trace), null, 2) + "\n",
+      actual: prettyPrintTrace(typeResults[0].trace) + "\n",
     };
   });
 }
