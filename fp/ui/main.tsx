@@ -39,6 +39,7 @@ function Main() {
   const repl = new ReplCore(loader);
   repl.doLoad("typecheck.dl");
   repl.doLoad("stdlib.dl");
+  repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   let parsed: Expr = null;
   let rendered: string[] = [];
   let error = null;
@@ -51,7 +52,6 @@ function Main() {
     flattened.forEach((rec) =>
       repl.evalStmt({ type: "Insert", record: rec as Rec })
     );
-    repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   } catch (e) {
     error = e.toString();
   }
@@ -60,29 +60,31 @@ function Main() {
     <div>
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
-      <textarea
-        onChange={(evt) => setSource(evt.target.value)}
-        onKeyDown={(evt) => {
-          setCursorPos(evt.target.selectionStart);
-        }}
-        onKeyUp={(evt) => {
-          setCursorPos(evt.target.selectionStart);
-        }}
-        onClick={(evt) => {
-          setCursorPos(evt.target.selectionStart);
-        }}
-        style={{ fontFamily: "monospace" }}
-        cols={50}
-        rows={10}
-        value={source}
-      />
+      <div style={{ display: "flex" }}>
+        <textarea
+          onChange={(evt) => setSource(evt.target.value)}
+          onKeyDown={(evt) => {
+            setCursorPos(evt.target.selectionStart);
+          }}
+          onKeyUp={(evt) => {
+            setCursorPos(evt.target.selectionStart);
+          }}
+          onClick={(evt) => {
+            setCursorPos(evt.target.selectionStart);
+          }}
+          style={{ fontFamily: "monospace" }}
+          cols={50}
+          rows={10}
+          value={source}
+        />
 
-      {error ? (
-        <>
-          <h2>Parse Error</h2>
-          <pre>{error}</pre>
-        </>
-      ) : null}
+        {error ? (
+          <div style={{ marginLeft: 15, color: "red" }}>
+            <h2>Parse Error</h2>
+            <pre>{error}</pre>
+          </div>
+        ) : null}
+      </div>
 
       <Collapsible
         heading="AST"
