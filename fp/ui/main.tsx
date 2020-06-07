@@ -159,20 +159,24 @@ function Tabs(props: { repl: ReplCore }) {
   const [curRelation, setCurRelation] = useState<Relation>(allRelations[0]);
 
   return (
-    <>
-      <ul>
-        {allRelations.map((rel) => (
-          <li
-            key={rel.name}
-            style={styles.tab(rel.name === curRelation.name)}
-            onClick={() => setCurRelation(rel)}
-          >
-            ({rel.type[0]}) {rel.name}
-          </li>
-        ))}
-      </ul>
-      <RelationTable relation={curRelation} repl={props.repl} />
-    </>
+    <div style={{ display: "flex" }}>
+      <div>
+        <ul>
+          {allRelations.map((rel) => (
+            <li
+              key={rel.name}
+              style={styles.tab(rel.name === curRelation.name)}
+              onClick={() => setCurRelation(rel)}
+            >
+              ({rel.type[0]}) {rel.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <RelationTable relation={curRelation} repl={props.repl} />
+      </div>
+    </div>
   );
 }
 
