@@ -201,11 +201,13 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
       {records.length === 0 ? (
         <div style={{ fontStyle: "italic" }}>No results</div>
       ) : (
-        <table>
+        <table style={{ borderCollapse: "collapse" }}>
           <thead>
-            <tr>
+            <tr style={{ borderBottom: "1px solid black" }}>
               {fields.map((name) => (
-                <th key={name}>{name}</th>
+                <th key={name}>
+                  <code>{name}</code>
+                </th>
               ))}
             </tr>
           </thead>
@@ -213,7 +215,15 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
             {records.map((record) => (
               <tr key={ppt(record)}>
                 {fields.map((field) => (
-                  <td key={field}>
+                  <td
+                    key={field}
+                    style={{
+                      paddingLeft: 5,
+                      paddingRight: 5,
+                      borderLeft: "1px solid lightgrey",
+                      borderRight: "1px solid lightgrey",
+                    }}
+                  >
                     <code>{ppt((record as Rec).attrs[field])}</code>
                   </td>
                 ))}
