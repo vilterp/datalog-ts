@@ -1,6 +1,7 @@
-import { Bindings, BinExpr, DB, Res, Rule, Term, VarMappings } from "./types";
+import { Bindings, DB, Res, Rule, Term, Trace } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
+import { Tree, prettyPrintTree, node, leaf } from "./treePrinter";
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
@@ -79,6 +80,47 @@ export function prettyPrintRes(res: Res): pp.IDoc {
 
 export function prettyPrintResults(results: Res[]): pp.IDoc {
   return pp.intersperse(pp.line)(results.map(prettyPrintRes));
+}
+
+// compact convenience functions, straight to string
+
+export function ppt(t: Term): string {
+  return pp.render(100, prettyPrintTerm(t));
+}
+
+export function ppb(b: Bindings): string {
+  return pp.render(100, prettyPrintBindings(b));
+}
+
+export function ppr(r: Res): string {
+  return pp.render(100, prettyPrintRes(r));
+}
+
+// traces
+
+export function prettyPrintTrace(trace: Trace): string {
+  return pp.render(150, prettyPrintTree(traceToTree(trace)));
+}
+
+export function traceToTree(trace: Trace): Tree {
+  switch (trace.type) {
+    case "AndTrace":
+      return node(`And (${trace.ruleName})`, trace.sources.map(resToTraceTree));
+    case "MatchTrace":
+      return node(`Match (${ppt(trace.match)})`, [resToTraceTree(trace.fact)]);
+    case "VarTrace":
+      return leaf("var");
+    case "BinExprTrace":
+      return leaf("bin expr");
+    case "BaseFactTrace":
+      return leaf("base fact");
+    case "LiteralTrace":
+      return leaf("literal");
+  }
+}
+
+function resToTraceTree(res: Res): Tree {
+  return { body: ppr(res), children: [traceToTree(res.trace)] };
 }
 
 // util

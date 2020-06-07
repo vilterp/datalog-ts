@@ -1,6 +1,5 @@
-import { Bindings, rec, Rec, str, Term } from "./types";
+import { Bindings, rec, Term } from "./types";
 import { mapObj } from "./util";
-import { ppb, ppt } from "./simpleEvaluate";
 
 export function unify(
   prior: Bindings,

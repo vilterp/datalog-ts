@@ -1,10 +1,9 @@
 import { ReplCore } from "../replCore";
-import { ppt } from "../simpleEvaluate";
 import { Suite } from "../testing";
 import { runDDTestAtPath } from "../util/dataDrivenTests";
 import { DDTest, Result } from "../util/dataDrivenTests";
 import { language } from "./parser";
-import { prettyPrintTerm } from "../pretty";
+import { prettyPrintTerm, ppt, prettyPrintTrace, traceToTree } from "../pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
 import { fsLoader, Repl } from "../repl";
@@ -143,8 +142,7 @@ function traceTest(test: DDTest): Result[] {
     }
     return {
       pair: tc,
-      // TODO: compact pretty printed representation
-      actual: JSON.stringify(typeResults[0].trace, null, 2) + "\n",
+      actual: JSON.stringify(traceToTree(typeResults[0].trace), null, 2) + "\n",
     };
   });
 }

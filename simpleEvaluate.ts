@@ -81,18 +81,6 @@ function doJoin(
   return out;
 }
 
-export function ppt(t: Term): string {
-  return pp.render(100, prettyPrintTerm(t));
-}
-
-export function ppb(b: Bindings): string {
-  return pp.render(100, prettyPrintBindings(b));
-}
-
-export function ppr(r: Res): string {
-  return pp.render(100, prettyPrintRes(r));
-}
-
 function applyFilter(binExpr: BinExpr, res: Res[]): Res[] {
   return res.filter((res) => evalBinExpr(binExpr, res.bindings));
 }
