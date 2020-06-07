@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { Expr, language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { prettyPrintTerm } from "../../pretty";
+import { prettyPrintTerm, prettyPrintRule } from "../../pretty";
 import * as pp from "prettier-printer";
-import { Rec, Res } from "../../types";
+import { Rec, Res, Rule, rec, Term } from "../../types";
 import { Loader } from "../../repl";
 // @ts-ignore
 import typecheckDL from "../typecheck.dl";
@@ -13,6 +13,8 @@ import stdlibDL from "../stdlib.dl";
 import { ReplCore } from "../../replCore";
 import useLocalStorage from "react-use-localstorage";
 import { useBoolLocalStorage } from "./util";
+import * as styles from "./styles";
+import { ppt } from "../../simpleEvaluate";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -87,6 +89,8 @@ function Main() {
         content={<pre>{JSON.stringify(parsed, null, 2)}</pre>}
       />
 
+      <Tabs repl={repl} />
+
       <Collapsible
         heading="Flattened"
         content={<pre>{rendered.join("\n")}</pre>}
@@ -138,6 +142,65 @@ function Query(props: { heading: string; query: string; repl: ReplCore }) {
       />
     );
   }
+}
+
+function Tabs(props: { repl: ReplCore }) {
+  const allRules: Relation[] = Object.keys(props.repl.db.rules)
+    .sort()
+    .map((name) => ({ type: "Rule", name, rule: props.repl.db.rules[name] }));
+  const allTables: Relation[] = Object.keys(props.repl.db.tables)
+    .sort()
+    .map((name) => ({
+      type: "Table",
+      name,
+      records: props.repl.db.tables[name],
+    }));
+  const allRelations: Relation[] = [...allTables, ...allRules];
+  const [curRelation, setCurRelation] = useState(allRelations[0].name);
+
+  return (
+    <>
+      <ul>
+        {allRelations.map((rel) => (
+          <li
+            style={styles.tab(rel.name === curRelation)}
+            onClick={() => setCurRelation(rel.name)}
+          >
+            ({rel.type[0]}) {rel.name}
+          </li>
+        ))}
+      </ul>
+      <RelationTable relation={curRelation} repl={props.repl} />
+    </>
+  );
+}
+
+type Relation =
+  | { type: "Table"; name: string; records: Rec[] }
+  | { type: "Rule"; name: string; rule: Rule };
+
+function RelationTable(props: { relation: Relation; repl: ReplCore }) {
+  const records: Term[] =
+    props.relation.type === "Table"
+      ? props.relation.records
+      : props.repl
+          .evalStmt({
+            type: "Insert",
+            record: props.relation.rule.head,
+          })
+          .map((res) => res.term);
+  return (
+    <>
+      {props.relation.type === "Rule"
+        ? prettyPrintRule(props.relation.rule)
+        : null}
+      <ul>
+        {records.map((r) => (
+          <li>{ppt(r)}</li>
+        ))}
+      </ul>
+    </>
+  );
 }
 
 function Collapsible(props: { heading: string; content: React.ReactNode }) {

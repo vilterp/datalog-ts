@@ -37,7 +37,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
   }
 }
 
-function prettyPrintRule(rule: Rule): pp.IDoc {
+export function prettyPrintRule(rule: Rule): pp.IDoc {
   const oneLine = pp.intersperse(" | ")(
     rule.defn.opts.map((ae) =>
       pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
