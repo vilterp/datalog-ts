@@ -3,11 +3,12 @@ import { Suite } from "../testing";
 import { runDDTestAtPath } from "../util/dataDrivenTests";
 import { DDTest, Result } from "../util/dataDrivenTests";
 import { language } from "./parser";
-import { prettyPrintTerm, ppt, prettyPrintTrace, traceToTree } from "../pretty";
+import { prettyPrintTerm, ppt } from "../pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
-import { fsLoader, Repl } from "../repl";
-import { Rec, Int } from "../types";
+import { fsLoader } from "../repl";
+import { Rec } from "../types";
+import { prettyPrintTrace } from "../traceTree";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
