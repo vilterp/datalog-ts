@@ -128,18 +128,11 @@ function Tabs(props: { repl: ReplCore }) {
 
   return (
     <div style={{ display: "flex" }}>
-      <div>
-        <ul>
-          {allRelations.map((rel) => (
-            <li
-              key={rel.name}
-              style={styles.tab(rel.name === curRelation)}
-              onClick={() => setCurRelation(rel.name)}
-            >
-              ({rel.type[0]}) {rel.name}
-            </li>
-          ))}
-        </ul>
+      <div style={{ marginTop: 15 }}>
+        <h4 style={{ marginBottom: 0, marginTop: 0 }}>Tables</h4>
+        {relList(allTables, curRelation, setCurRelation)}
+        <h4 style={{ marginBottom: 0, marginTop: 0 }}>Rules</h4>
+        {relList(allRules, curRelation, setCurRelation)}
       </div>
       <div>
         <RelationTable
@@ -148,6 +141,26 @@ function Tabs(props: { repl: ReplCore }) {
         />
       </div>
     </div>
+  );
+}
+
+function relList(
+  relations: Relation[],
+  curRelation: string,
+  setCurRelation: (s: string) => void
+) {
+  return (
+    <ul style={{ marginTop: 0, marginBottom: 0 }}>
+      {relations.map((rel) => (
+        <li
+          key={rel.name}
+          style={styles.tab(rel.name === curRelation)}
+          onClick={() => setCurRelation(rel.name)}
+        >
+          {rel.name}
+        </li>
+      ))}
+    </ul>
   );
 }
 

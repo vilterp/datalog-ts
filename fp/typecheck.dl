@@ -5,7 +5,6 @@
 .table lambda
 .table lambda_param
 .table func_call
-.table func_arg
 .table var
 .table placeholder
 .table builtin
