@@ -205,7 +205,7 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
           <thead>
             <tr style={{ borderBottom: "1px solid black" }}>
               {fields.map((name) => (
-                <th key={name}>
+                <th key={name} style={{ paddingLeft: 5, paddingRight: 5 }}>
                   <code>{name}</code>
                 </th>
               ))}
