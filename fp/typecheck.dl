@@ -9,13 +9,14 @@
 .table placeholder
 .table builtin
 
-expr{id: I} :-
-  string_lit{id: I} |
-  int_lit{id: I} |
-  var{id: I} |
-  let_expr{id: I} |
-  func_call{id: I} |
-  lambda{id: I}.
+expr{id: I, location: S} :-
+  string_lit{id: I, location: S} |
+  int_lit{id: I, location: S} |
+  var{id: I, location: S} |
+  let_expr{id: I, location: S} |
+  func_call{id: I, location: S} |
+  lambda{id: I, location: S} |
+  placeholder{id: I, location: S}.
 
 type{id: I, type: T} :-
   type_s{id: I, type: T} |
@@ -72,3 +73,18 @@ suggestion{id: I, name: N, type: TF} :-
   func_call{argID: I, funcID: F} &
   type{id: F, type: tapp{from: TF, to: TT}} &
   scope_item{id: I, type: TF, name: N}.
+
+current_suggestion{id: I, name: N, type: T} :-
+  cursor{idx: Idx} &
+  placeholder{id: I, location: span{from: pos{idx: Idx}}} &
+  suggestion{id: I, name: N, type: T}.
+
+current_scope{id: I, name: N, type: T} :-
+  cursor{idx: Idx} &
+  expr{id: I, location: span{from: pos{idx: Idx}}} &
+  scope_item{id: I, name: N, type: T}.
+
+current_type{id: I, type: T} :-
+  cursor{idx: Idx} &
+  expr{id: I, location: span{from: pos{idx: Idx}}} &
+  type{id: I, type: T}.

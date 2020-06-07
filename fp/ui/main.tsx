@@ -135,9 +135,9 @@ function Tabs(props: { repl: ReplCore }) {
           width: 150,
         }}
       >
-        <h4 style={{ marginBottom: 0, marginTop: 0 }}>Tables</h4>
+        <h4 style={{ marginBottom: 5, marginTop: 5 }}>Tables</h4>
         {relList(allTables, curRelation, setCurRelation)}
-        <h4 style={{ marginBottom: 0, marginTop: 0 }}>Rules</h4>
+        <h4 style={{ marginBottom: 5, marginTop: 5 }}>Rules</h4>
         {relList(allRules, curRelation, setCurRelation)}
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
@@ -187,7 +187,9 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
   return (
     <>
       {props.relation.type === "Rule" ? (
-        <pre>{pp.render(100, prettyPrintRule(props.relation.rule))}</pre>
+        <pre style={{ marginTop: 5 }}>
+          {pp.render(100, prettyPrintRule(props.relation.rule))}
+        </pre>
       ) : null}
       {records.length === 0 ? (
         <div style={{ fontStyle: "italic" }}>No results</div>
