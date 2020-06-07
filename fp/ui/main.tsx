@@ -156,15 +156,16 @@ function Tabs(props: { repl: ReplCore }) {
       records: props.repl.db.tables[name],
     }));
   const allRelations: Relation[] = [...allTables, ...allRules];
-  const [curRelation, setCurRelation] = useState(allRelations[0].name);
+  const [curRelation, setCurRelation] = useState<Relation>(allRelations[0]);
 
   return (
     <>
       <ul>
         {allRelations.map((rel) => (
           <li
-            style={styles.tab(rel.name === curRelation)}
-            onClick={() => setCurRelation(rel.name)}
+            key={rel.name}
+            style={styles.tab(rel.name === curRelation.name)}
+            onClick={() => setCurRelation(rel)}
           >
             ({rel.type[0]}) {rel.name}
           </li>
@@ -180,6 +181,7 @@ type Relation =
   | { type: "Rule"; name: string; rule: Rule };
 
 function RelationTable(props: { relation: Relation; repl: ReplCore }) {
+  console.log(props);
   const records: Term[] =
     props.relation.type === "Table"
       ? props.relation.records
@@ -191,12 +193,14 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
           .map((res) => res.term);
   return (
     <>
-      {props.relation.type === "Rule"
-        ? prettyPrintRule(props.relation.rule)
-        : null}
+      {props.relation.type === "Rule" ? (
+        <pre>{pp.render(100, prettyPrintRule(props.relation.rule))}</pre>
+      ) : null}
       <ul>
         {records.map((r) => (
-          <li>{ppt(r)}</li>
+          <li key={ppt(r)}>
+            <code>{ppt(r)}</code>
+          </li>
         ))}
       </ul>
     </>
