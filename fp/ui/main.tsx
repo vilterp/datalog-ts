@@ -128,13 +128,19 @@ function Tabs(props: { repl: ReplCore }) {
 
   return (
     <div style={{ display: "flex" }}>
-      <div style={{ marginTop: 15 }}>
+      <div
+        style={{
+          padding: 15,
+          border: "1px solid black",
+          width: 150,
+        }}
+      >
         <h4 style={{ marginBottom: 0, marginTop: 0 }}>Tables</h4>
         {relList(allTables, curRelation, setCurRelation)}
         <h4 style={{ marginBottom: 0, marginTop: 0 }}>Rules</h4>
         {relList(allRules, curRelation, setCurRelation)}
       </div>
-      <div>
+      <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
         <RelationTable
           relation={allRelations.find((r) => r.name === curRelation)}
           repl={props.repl}
@@ -150,7 +156,7 @@ function relList(
   setCurRelation: (s: string) => void
 ) {
   return (
-    <ul style={{ marginTop: 0, marginBottom: 0 }}>
+    <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
       {relations.map((rel) => (
         <li
           key={rel.name}
@@ -184,9 +190,9 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
         <pre>{pp.render(100, prettyPrintRule(props.relation.rule))}</pre>
       ) : null}
       {records.length === 0 ? (
-        <div style={{ marginTop: 16, fontStyle: "italic" }}>No results</div>
+        <div style={{ fontStyle: "italic" }}>No results</div>
       ) : (
-        <ul>
+        <ul style={{ marginTop: 5 }}>
           {records.map((r) => (
             <li key={ppt(r)}>
               <code>{ppt(r)}</code>
