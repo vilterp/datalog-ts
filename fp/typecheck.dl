@@ -50,7 +50,7 @@ scope_item{id: I, name: N, type: T} :-
   root_expr{id: I} & builtin{name: N, type: T} |
   scope_let{id: I, name: N, type: T} |
   scope_lambda{id: I, name: N, type: T} |
-  parent_expr{id: I, parentID: P} & scope_item{id: P, name: N, type: T}.
+  parent_scope{id: I, parentID: P} & scope_item{id: P, name: N, type: T}.
 
 # this recursion is not working for some reason
 scope_let{id: I, name: N, type: T} :-
@@ -60,7 +60,7 @@ scope_lambda{id: I, name: N, type: T} :-
   lambda{body: I, id: LID} &
   lambda_param{lambdaID: LID, name: N, ty: T}.
 
-parent_expr{id: I, parentID: P} :-
+parent_scope{id: I, parentID: P} :-
   let_expr{bodyID: I, id: P} |
   let_expr{bindingID: I, id: P} |
   func_call{argID: I, id: P} |
@@ -68,12 +68,25 @@ parent_expr{id: I, parentID: P} :-
   lambda{body: I, id: P}.
 
 # type-directed autocomplete suggestions
-suggestion{id: I, name: N, type: TF} :-
+suggestion{id: I, name: N, type: T} :-
+  suggestion_func_arg{id: I, name: N, type: T} |
+  suggestion_func{id: I, name: N, type: T}.
+
+suggestion_func_arg{id: I, name: N, type: TF} :-
   placeholder{id: I} &
   func_call{argID: I, funcID: F} &
   type{id: F, type: tapp{from: TF, to: TT}} &
   scope_item{id: I, type: TF, name: N}.
 
+suggestion_func{id: I, name: N, type: tapp{from: TF, to: TT}} :-
+  placeholder{id: I} &
+  expected_type{id: I, type: TT} &
+  scope_item{id: I, name: N, type: tapp{from: TF, to: TT}}.
+
+expected_type{id: I, type: T} :-
+  lambda{retType: T, body: I}.
+
+# cursor-dependent rules
 current_suggestion{id: I, name: N, type: T} :-
   cursor{idx: Idx} &
   placeholder{id: I, location: span{from: pos{idx: Idx}}} &
