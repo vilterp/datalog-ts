@@ -184,6 +184,13 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
             record: props.relation.rule.head,
           })
           .map((res) => res.term);
+  const fields =
+    records.length === 0
+      ? []
+      : (props.relation.type === "Rule"
+          ? Object.keys(props.relation.rule.head.attrs)
+          : Object.keys((props.relation.records[0] as Rec).attrs)
+        ).sort((a, b) => fieldComparator(a).localeCompare(fieldComparator(b)));
   return (
     <>
       {props.relation.type === "Rule" ? (
@@ -194,16 +201,33 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
       {records.length === 0 ? (
         <div style={{ fontStyle: "italic" }}>No results</div>
       ) : (
-        <ul style={{ marginTop: 5 }}>
-          {records.map((r) => (
-            <li key={ppt(r)}>
-              <code>{ppt(r)}</code>
-            </li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              {fields.map((name) => (
+                <th key={name}>{name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {records.map((record) => (
+              <tr key={ppt(record)}>
+                {fields.map((field) => (
+                  <td key={field}>
+                    <code>{ppt((record as Rec).attrs[field])}</code>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </>
   );
+}
+
+function fieldComparator(field: string): string {
+  return field === "id" ? "aaaaa_id" : field;
 }
 
 function Collapsible(props: { heading: string; content: React.ReactNode }) {
