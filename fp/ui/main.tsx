@@ -4,7 +4,7 @@ import { Expr, language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
 import { prettyPrintTerm, prettyPrintRule } from "../../pretty";
 import * as pp from "prettier-printer";
-import { Rec, Res, Rule, rec, Term } from "../../types";
+import { Rec, Res, Rule } from "../../types";
 import { Loader } from "../../repl";
 // @ts-ignore
 import typecheckDL from "../typecheck.dl";
@@ -175,15 +175,19 @@ type Relation =
   | { type: "Rule"; name: string; rule: Rule };
 
 function RelationTable(props: { relation: Relation; repl: ReplCore }) {
-  const records: Term[] =
+  const results: Res[] =
     props.relation.type === "Table"
-      ? props.relation.records
-      : props.repl
-          .evalStmt({
-            type: "Insert",
-            record: props.relation.rule.head,
-          })
-          .map((res) => res.term);
+      ? props.relation.records.map((term) => ({
+          term,
+          bindings: {},
+          trace: { type: "BaseFactTrace", fact: term },
+        }))
+      : props.repl.evalStmt({
+          type: "Insert",
+          record: props.relation.rule.head,
+        });
+  console.log({ results });
+  const records = results.map((r) => r.term);
   const fields =
     records.length === 0
       ? []
@@ -237,7 +241,14 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
 }
 
 function fieldComparator(field: string): string {
-  return field === "id" ? "aaaaa_id" : field;
+  switch (field) {
+    case "id":
+      return "aaaaaa_id";
+    case "location":
+      return "zzzzzz_location";
+    default:
+      return field;
+  }
 }
 
 function Collapsible(props: { heading: string; content: React.ReactNode }) {

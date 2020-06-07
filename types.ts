@@ -13,18 +13,24 @@ export function newDB(): DB {
 export interface Res {
   term: Term;
   bindings: Bindings;
-  trace?: Trace;
+  trace: Trace;
 }
 
 type Trace =
-  | { type: "AndTrace"; left: Res; right: Res }
-  | {
-      type: "CallTrace";
-      ruleName: string;
-      mappings: VarMappings;
-      inner: Res;
-    }
-  | { type: "MatchTrace"; record: Rec; inner: Res };
+  | { type: "AndTrace"; sources: Res[]; ruleName: string }
+  | { type: "MatchTrace"; fact: Res; match: Rec }
+  | { type: "BaseFactTrace" }
+  | { type: "LiteralTrace" }
+  | { type: "VarTrace" }
+  | { type: "BinExprTrace" };
+
+export const literalTrace: Trace = { type: "LiteralTrace" };
+
+export const varTrace: Trace = { type: "VarTrace" };
+
+export const baseFactTrace: Trace = { type: "BaseFactTrace" };
+
+export const binExprTrace: Trace = { type: "BinExprTrace" };
 
 export type Bindings = { [key: string]: Term };
 

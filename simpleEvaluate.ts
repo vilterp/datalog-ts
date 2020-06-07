@@ -11,6 +11,10 @@ import {
   Term,
   trueTerm,
   VarMappings,
+  literalTrace,
+  varTrace,
+  binExprTrace,
+  baseFactTrace,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
 import { filterMap, flatMap, mapObj, mapObjMaybe, repeat } from "./util";
@@ -24,6 +28,7 @@ export function evaluate(db: DB, term: Term): Res[] {
 
 function doJoin(
   depth: number,
+  ruleName: string,
   db: DB,
   scope: Bindings,
   clauses: AndClause[]
@@ -48,7 +53,13 @@ function doJoin(
     //   nextScope: ppb(nextScope),
     //   nextScope: nextScope ? ppb(nextScope) : null,
     // });
-    const rightResults = doJoin(depth, db, nextScope, clauses.slice(1));
+    const rightResults = doJoin(
+      depth,
+      ruleName,
+      db,
+      nextScope,
+      clauses.slice(1)
+    );
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
@@ -59,21 +70,26 @@ function doJoin(
       out.push({
         term: leftRes.term, // ???
         bindings: unifyRes,
+        trace: {
+          type: "AndTrace",
+          ruleName,
+          sources: [leftRes, rightRes],
+        },
       });
     }
   }
   return out;
 }
 
-export function ppt(t: Term): pp.IDoc {
+export function ppt(t: Term): string {
   return pp.render(100, prettyPrintTerm(t));
 }
 
-export function ppb(b: Bindings): pp.IDoc {
+export function ppb(b: Bindings): string {
   return pp.render(100, prettyPrintBindings(b));
 }
 
-export function ppr(r: Res): pp.IDoc {
+export function ppr(r: Res): string {
   return pp.render(100, prettyPrintRes(r));
 }
 
@@ -114,6 +130,11 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
             out.push({
               term: rec,
               bindings: unifyRes,
+              trace: {
+                type: "MatchTrace",
+                match: term,
+                fact: { term: rec, trace: baseFactTrace, bindings: {} },
+              },
             });
           }
           return out;
@@ -153,7 +174,7 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           const mappings = getMappings(rule.head.attrs, term.attrs);
           const rawResults = flatMap(rule.defn.opts, (ae) => {
             const { recs, exprs } = extractBinExprs(ae);
-            const recResults = doJoin(depth, db, newScope, recs);
+            const recResults = doJoin(depth, term.relation, db, newScope, recs);
             return applyFilters(exprs, recResults);
           });
           // console.groupEnd();
@@ -184,23 +205,25 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
             return {
               bindings: unif,
               term: nextTerm,
+              trace: res.trace,
             };
           });
         }
         throw new Error(`not found: ${term.relation}`);
       }
       case "Var":
-        return [{ term: scope[term.name], bindings: scope }];
+        return [{ term: scope[term.name], bindings: scope, trace: varTrace }];
       case "BinExpr":
         return [
           {
             term: evalBinExpr(term, scope) ? trueTerm : falseTerm,
             bindings: scope,
+            trace: binExprTrace,
           },
         ];
       case "Bool":
       case "StringLit":
-        return [{ term: term, bindings: scope }];
+        return [{ term: term, bindings: scope, trace: literalTrace }];
     }
   })();
   // console.groupEnd();
