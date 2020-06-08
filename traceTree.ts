@@ -6,6 +6,7 @@ import {
   TermWithBindings,
   SituatedBinding,
   RulePathSegment,
+  ScopePath,
 } from "./types";
 import {
   ppt,
@@ -108,38 +109,39 @@ export function makeTermWithBindings(
 
 // returns bindings further down the proof tree, via mappings
 // TODO: to this in reverse as well...
-// export function childPaths(res: Res, binding: string): SituatedBinding[] {
-//   return childPathsRecurse(res, binding, []);
-// }
+export function childPaths(res: Res, binding: string): SituatedBinding[] {
+  return childPathsRecurse(res, binding, []);
+}
 
-// function childPathsRecurse(
-//   res: Res,
-//   binding: string,
-//   ruleName: string,
-//   invokeLoc: RulePathSegment[]
-// ): SituatedBinding[] {
-//   const trace = res.trace;
-//   switch (trace.type) {
-//     case "RefTrace":
-//       const mapping = Object.keys(trace.mappings).find(
-//         (key) => trace.mappings[key] === binding
-//       );
-//       if (!mapping) {
-//         return [];
-//       }
-//       return childPathsRecurse(trace.innerRes, mapping, [
-//         ...path,
-//         { name: trace.refTerm.relation, invokeLoc: trace.invokeLoc },
-//       ]);
-//     case "AndTrace":
-//       return flatMap(
-//         trace.sources,
-//         (innerRes) => childPathsRecurse(innerRes, binding, path) // TODO: do we have to add something to the path?
-//       );
-//     case "MatchTrace":
-//       // this is the base case
-//       return [{ name }];
-//     default:
-//       return [];
-//   }
-// }
+function childPathsRecurse(
+  res: Res,
+  binding: string,
+  path: ScopePath
+): SituatedBinding[] {
+  const trace = res.trace;
+  switch (trace.type) {
+    case "RefTrace":
+      const mapping = Object.keys(trace.mappings).find(
+        (key) => trace.mappings[key] === binding
+      );
+      if (!mapping) {
+        return [];
+      }
+      console.log("mapping", { binding, mapping });
+      return [
+        { name: binding, path },
+        ...childPathsRecurse(trace.innerRes, mapping, [
+          ...path,
+          { name: trace.refTerm.relation, invokeLoc: trace.invokeLoc },
+        ]),
+      ];
+    case "AndTrace":
+      return flatMap(trace.sources, (innerRes) =>
+        childPathsRecurse(innerRes, binding, path)
+      );
+    case "MatchTrace":
+      return [{ name: binding, path }];
+    default:
+      return [];
+  }
+}

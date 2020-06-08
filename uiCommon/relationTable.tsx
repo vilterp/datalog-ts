@@ -4,7 +4,7 @@ import { Rec, Res, Relation } from "../types";
 import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
-import { traceToTree, makeTermWithBindings } from "../traceTree";
+import { traceToTree, makeTermWithBindings, childPaths } from "../traceTree";
 import { Term, noHighlight, HighlightProps } from "./term";
 import { TraceNode } from "./trace";
 import { pathToScopePath } from "../simpleEvaluate";
@@ -61,6 +61,10 @@ export function RelationTable(props: {
           </thead>
           <tbody>
             {results.map((result) => {
+              const hl = props.highlight.highlight;
+              if (hl.type === "Binding") {
+                console.log("child paths", childPaths(result, hl.binding.name));
+              }
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
