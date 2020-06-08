@@ -1,7 +1,14 @@
-import { Bindings, DB, Res, Rule, Term, Trace } from "./types";
+import {
+  Bindings,
+  DB,
+  Res,
+  Rule,
+  Term,
+  Trace,
+  RecordWithBindings,
+} from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
-import { Tree, prettyPrintTree, node, leaf } from "./treePrinter";
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
@@ -36,6 +43,21 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
     case "IntLit":
       return `${term.val}`;
   }
+}
+
+export function prettyPrintRecWithBindings(rec: RecordWithBindings): pp.IDoc {
+  return [
+    rec.relation,
+    block(
+      pp.braces,
+      mapObjToList(rec.attrs, (k, v) => [
+        k,
+        ": ",
+        v.binding ? [v.binding, "@"] : "",
+        prettyPrintTerm(v.term),
+      ])
+    ),
+  ];
 }
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {

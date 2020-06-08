@@ -57,9 +57,9 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type Term = StringLit | Var | AndClause | Bool | Int | Array;
-
 export type AndClause = Rec | BinExpr;
+
+export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
 
 export type Var = { type: "Var"; name: string };
 
@@ -118,3 +118,9 @@ export const trueTerm: Term = { type: "Bool", val: true };
 export const falseTerm: Term = { type: "Bool", val: false };
 
 export type VarMappings = { [from: string]: string };
+
+// TODO: bindings can be at any level
+export type RecordWithBindings = {
+  relation: string;
+  attrs: { [key: string]: { term: Term; binding: string | undefined } };
+};
