@@ -12,6 +12,7 @@ import familyDL from "../testdata/family.dl";
 import { uniqBy } from "../util";
 import { TabbedTables } from "../uiCommon/tabbedTables";
 import useLocalStorage from "react-use-localstorage";
+import { Collapsible } from "../uiCommon/collapsible";
 
 const lm = new LayoutManager({
   useDotEdges: true,
@@ -73,8 +74,17 @@ function Main() {
       ) : null}
       <h3>Explore</h3>
       <TabbedTables repl={repl} />
-      <h3>Graph</h3>
-      <Digraph zoom={true} edges={edges} vertices={nodes} layoutManager={lm} />
+      <Collapsible
+        heading="Graph"
+        content={
+          <Digraph
+            zoom={true}
+            edges={edges}
+            vertices={nodes}
+            layoutManager={lm}
+          />
+        }
+      />
     </div>
   );
 }

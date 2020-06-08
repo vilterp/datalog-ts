@@ -18,10 +18,15 @@ export function TabbedTables(props: { repl: ReplCore }) {
       records: props.repl.db.tables[name],
     }));
   const allRelations: Relation[] = [...allTables, ...allRules];
-  const [curRelation, setCurRelation]: [
+  const [curRelationName, setCurRelationName]: [
     string,
     (v: string) => void
-  ] = useLocalStorage("selected-relation", allRelations[0].name);
+  ] = useLocalStorage(
+    "selected-relation",
+    allRelations.length === 0 ? null : allRelations[0].name
+  );
+
+  const curRelation = allRelations.find((r) => r.name === curRelationName);
 
   return (
     <div style={{ display: "flex" }}>
@@ -33,15 +38,16 @@ export function TabbedTables(props: { repl: ReplCore }) {
         }}
       >
         <h4 style={{ marginBottom: 5, marginTop: 5 }}>Tables</h4>
-        {relList(allTables, curRelation, setCurRelation)}
+        {relList(allTables, curRelationName, setCurRelationName)}
         <h4 style={{ marginBottom: 5, marginTop: 5 }}>Rules</h4>
-        {relList(allRules, curRelation, setCurRelation)}
+        {relList(allRules, curRelationName, setCurRelationName)}
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
-        <RelationTable
-          relation={allRelations.find((r) => r.name === curRelation)}
-          repl={props.repl}
-        />
+        {curRelation ? (
+          <RelationTable relation={curRelation} repl={props.repl} />
+        ) : (
+          <em>No relations</em>
+        )}
       </div>
     </div>
   );
@@ -96,7 +102,7 @@ function RelationTable(props: { relation: Relation; repl: ReplCore }) {
     <>
       {props.relation.type === "Rule" ? (
         <pre style={{ marginTop: 5 }}>
-          {pp.render(100, prettyPrintRule(props.relation.rule))}
+          {pp.render(50, prettyPrintRule(props.relation.rule))}
         </pre>
       ) : null}
       {records.length === 0 ? (

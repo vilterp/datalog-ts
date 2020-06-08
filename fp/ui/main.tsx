@@ -12,9 +12,9 @@ import typecheckDL from "../typecheck.dl";
 import stdlibDL from "../stdlib.dl";
 import { ReplCore } from "../../replCore";
 import useLocalStorage from "react-use-localstorage";
-import { useBoolLocalStorage } from "./util";
 import { TabbedTables } from "../../uiCommon/tabbedTables";
 import ReactJson from "react-json-view";
+import { Collapsible } from "../../uiCommon/collapsible";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -105,25 +105,6 @@ function Main() {
 
       <Collapsible heading="Rules" content={<pre>{typecheckDL}</pre>} />
     </div>
-  );
-}
-
-function Collapsible(props: { heading: string; content: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useBoolLocalStorage(
-    `collapsed-${props.heading}`,
-    false
-  );
-
-  return (
-    <>
-      <h3
-        style={{ cursor: "pointer" }}
-        onClick={() => setCollapsed(!collapsed)}
-      >
-        {`${collapsed ? ">" : "v"} ${props.heading}`}
-      </h3>
-      {collapsed ? null : props.content}
-    </>
   );
 }
 
