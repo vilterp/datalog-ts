@@ -167,36 +167,26 @@ export function prettyPrintRulePath(path: RulePath): pp.IDoc {
     "[",
     pp.intersperse(
       ", ",
-      path.map((seg) => [
-        seg.name,
-        "(",
-        prettyPrintInvokeLoc(seg.invokeLoc),
-        ")",
-      ])
+      path.map((seg) => [seg.name, prettyPrintInvokeLoc(seg.invokeLoc)])
     ),
     "]",
   ];
 }
 
 export function prettyPrintInvokeLoc(il: InvocationLocation): pp.IDoc {
-  switch (il.type) {
-    case "Top":
-      return "Top";
-    case "Rule":
-      return [
-        "Rule[",
-        pp.intersperse(
-          ", ",
-          il.path.map((seg) => {
-            switch (seg.type) {
-              case "OrOpt":
-                return `or(${seg.idx})`;
-              case "AndClause":
-                return `and(${seg.idx})`;
-            }
-          })
-        ),
-        "]",
-      ];
-  }
+  return [
+    "[",
+    pp.intersperse(
+      ", ",
+      il.map((seg) => {
+        switch (seg.type) {
+          case "OrOpt":
+            return `or(${seg.idx})`;
+          case "AndClause":
+            return `and(${seg.idx})`;
+        }
+      })
+    ),
+    "]",
+  ];
 }

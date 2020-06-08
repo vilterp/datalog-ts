@@ -45,9 +45,7 @@ export const baseFactTrace: Trace = { type: "BaseFactTrace" };
 
 export const binExprTrace: Trace = { type: "BinExprTrace" };
 
-export type InvocationLocation =
-  | { type: "Top" }
-  | { type: "Rule"; path: RulePathSegment[] };
+export type InvocationLocation = RulePathSegment[];
 
 export type RulePathSegment =
   | { type: "OrOpt"; idx: number }

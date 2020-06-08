@@ -179,7 +179,7 @@ function doEvaluate(
             const { recs: clauses, exprs } = extractBinExprs(andExpr);
             const recResults = doJoin(
               depth,
-              [...path, { type: "OrOpt", idx: optIdx }],
+              [{ type: "OrOpt", idx: optIdx }],
               db,
               newScope,
               clauses
@@ -217,7 +217,7 @@ function doEvaluate(
               trace: {
                 type: "RefTrace",
                 refTerm: term,
-                invokeLoc: { type: "Rule", path },
+                invokeLoc: path,
                 innerRes: res,
                 mappings,
               },
