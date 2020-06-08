@@ -4,9 +4,8 @@ import {
   Res,
   Rule,
   Term,
-  Trace,
-  RecordWithBindings,
   VarMappings,
+  TermWithBindings,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
@@ -46,19 +45,36 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
   }
 }
 
-export function prettyPrintRecWithBindings(rec: RecordWithBindings): pp.IDoc {
-  return [
-    rec.relation,
-    block(
-      pp.braces,
-      mapObjToList(rec.attrs, (k, v) => [
-        k,
-        ": ",
-        v.binding ? [v.binding, "@"] : "",
-        prettyPrintTerm(v.term),
-      ])
-    ),
-  ];
+export function prettyPrintTermWithBindings(term: TermWithBindings): pp.IDoc {
+  switch (term.type) {
+    case "RecordWithBindings":
+      return [
+        term.relation,
+        block(
+          pp.braces,
+          mapObjToList(term.attrs, (k, v) => [
+            k,
+            ": ",
+            v.binding ? [v.binding, "@"] : "",
+            prettyPrintTermWithBindings(v.term),
+          ])
+        ),
+      ];
+    case "ArrayWithBindings":
+      return [
+        "[",
+        pp.intersperse(",", term.items.map(prettyPrintTermWithBindings)),
+        "]",
+      ];
+    case "BinExprWithBindings":
+      return [
+        prettyPrintTermWithBindings(term.left),
+        ` ${term.op} `,
+        prettyPrintTermWithBindings(term.right),
+      ];
+    case "Atom":
+      return prettyPrintTerm(term.term);
+  }
 }
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {

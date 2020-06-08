@@ -120,7 +120,28 @@ export const falseTerm: Term = { type: "Bool", val: false };
 export type VarMappings = { [from: string]: string };
 
 // TODO: bindings can be at any level
+export type TermWithBindings =
+  | RecordWithBindings
+  | ArrayWithBindings
+  | BinExprWithBindings
+  | { type: "Atom"; term: Int | Bool | StringLit | Var };
+
 export type RecordWithBindings = {
+  type: "RecordWithBindings";
   relation: string;
-  attrs: { [key: string]: { term: Term; binding: string | undefined } };
+  attrs: {
+    [key: string]: { term: TermWithBindings; binding: string | undefined };
+  };
+};
+
+export type ArrayWithBindings = {
+  type: "ArrayWithBindings";
+  items: TermWithBindings[];
+};
+
+export type BinExprWithBindings = {
+  type: "BinExprWithBindings";
+  left: TermWithBindings;
+  right: TermWithBindings;
+  op: Operator;
 };

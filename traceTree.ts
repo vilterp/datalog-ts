@@ -1,6 +1,13 @@
 import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
-import { Res, Rec, RecordWithBindings } from "./types";
-import { ppt, prettyPrintRecWithBindings, ppVM } from "./pretty";
+import {
+  Res,
+  Rec,
+  RecordWithBindings,
+  Bindings,
+  Term,
+  TermWithBindings,
+} from "./types";
+import { ppt, prettyPrintTermWithBindings, ppVM } from "./pretty";
 import { termEq } from "./unify";
 import { mapObj } from "./util";
 import * as pp from "prettier-printer";
@@ -33,23 +40,44 @@ export function traceToTree(res: Res): Tree {
 }
 
 function printRecWithBindings(res: Res): string {
-  return pp.render(100, prettyPrintRecWithBindings(recordWithBindings(res)));
+  return pp.render(
+    100,
+    prettyPrintTermWithBindings(makeTermWithBindings(res.term, res.bindings))
+  );
 }
 
-// TODO: make this recurse into sub-records
-function recordWithBindings(res: Res): RecordWithBindings {
-  const rec = res.term as Rec;
-  const out = {
-    relation: rec.relation,
-    attrs: mapObj(rec.attrs, (_, val) => {
-      const binding = Object.keys(res.bindings).find((b) =>
-        termEq(val, res.bindings[b])
-      );
+function makeTermWithBindings(
+  term: Term,
+  bindings: Bindings
+): TermWithBindings {
+  switch (term.type) {
+    case "Record":
       return {
-        term: val,
-        binding: binding,
+        type: "RecordWithBindings",
+        relation: term.relation,
+        attrs: mapObj(term.attrs, (_, val) => {
+          const binding = Object.keys(bindings).find((b) =>
+            termEq(val, bindings[b])
+          );
+          return {
+            term: makeTermWithBindings(val, bindings),
+            binding: binding,
+          };
+        }),
       };
-    }),
-  };
-  return out;
+    case "Array":
+      return {
+        type: "ArrayWithBindings",
+        items: term.items.map((item) => makeTermWithBindings(item, bindings)),
+      };
+    case "BinExpr":
+      return {
+        type: "BinExprWithBindings",
+        left: makeTermWithBindings(term.left, bindings),
+        op: term.op,
+        right: makeTermWithBindings(term.right, bindings),
+      };
+    default:
+      return { type: "Atom", term };
+  }
 }

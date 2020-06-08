@@ -2,14 +2,14 @@
 ----
 Rule: type{id: 0, type: T@"int"}; {T: T}
   Rule: type_i{id: I@0, type: T@"int"}; {I: I}
-    Fact: int_lit{id: I@0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
+    Fact: int_lit{id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 1}}, val: 2}
 
 let x = 2 in x
 ----
 Rule: type{id: 0, type: T@"int"}; {T: T}
   Rule: type_let{id: I@0, type: T@"int"}; {I: I, T: T}
     And
-      Fact: let_expr{bindingID: 1, bodyID: BID@2, id: I@0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+      Fact: let_expr{bindingID: 1, bodyID: BID@2, id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 14}}, varName: "x"}
       Rule: type{id: BID@2, type: T@"int"}; {I: BID, T: T}
         Rule: type_var{id: I@2, type: T@"int"}; {I: I, T: T}
           And
