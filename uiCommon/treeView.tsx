@@ -33,9 +33,17 @@ function NodeView(props: {
     childStates: {},
   };
 
+  const icon =
+    props.tree.children.length === 0
+      ? "o"
+      : collapseState.collapsed
+      ? ">"
+      : "v";
+
   return (
     <li>
       <span
+        style={{ cursor: "pointer" }}
         onClick={() =>
           props.setCollapseState({
             ...collapseState,
@@ -43,7 +51,7 @@ function NodeView(props: {
           })
         }
       >
-        {collapseState.collapsed ? ">" : "v"}&nbsp;{props.tree.body}
+        {icon}&nbsp;{props.tree.body}
       </span>
       {collapseState.collapsed ? null : (
         <ul style={listStyle}>
