@@ -1,23 +1,23 @@
 2
 ----
-Ref: type{id: 0, type: "int"}
-  Ref: type_i{id: 0, type: "int"}
-    Match: int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
+Rule: type{id: 0, type: "int"}
+  Rule: type_i{id: 0, type: "int"}
+    Fact: int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
 
 let x = 2 in x
 ----
-Ref: type{id: 0, type: "int"}
-  Ref: type_let{id: 0, type: "int"}
+Rule: type{id: 0, type: "int"}
+  Rule: type_let{id: 0, type: "int"}
     And
-      Match: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-      Ref: type{id: 2, type: "int"}
-        Ref: type_var{id: 2, type: "int"}
+      Fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+      Rule: type{id: 2, type: "int"}
+        Rule: type_var{id: 2, type: "int"}
           And
-            Match: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
-            Ref: scope_item{id: 2, name: "x", type: "int"}
-              Ref: scope_let{id: 2, name: "x", type: "int"}
+            Fact: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
+            Rule: scope_item{id: 2, name: "x", type: "int"}
+              Rule: scope_let{id: 2, name: "x", type: "int"}
                 And
-                  Match: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-                  Ref: type{id: 1, type: "int"}
-                    Ref: type_i{id: 1, type: "int"}
-                      Match: int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
+                  Fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+                  Rule: type{id: 1, type: "int"}
+                    Rule: type_i{id: 1, type: "int"}
+                      Fact: int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
