@@ -1,19 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { Res, VarMappings } from "../types";
-import { Term, noHighlight, Highlight, VarC, HighlightProps } from "./term";
+import { Term, VarC, HighlightProps } from "./term";
 import { makeTermWithBindings } from "../traceTree";
 import { mapObjToList, intersperse } from "../util";
 
-export function Trace(props: { res: Res }) {
+export function TraceNode(props: { res: Res; highlight: HighlightProps }) {
   const res = props.res;
-  const [highlight, setHighlight] = useState(noHighlight);
-
-  const highlightProps: HighlightProps = { highlight, setHighlight };
 
   const term = (
     <Term
       term={makeTermWithBindings(res.term, res.bindings)}
-      highlight={highlightProps}
+      highlight={props.highlight}
     />
   );
   switch (res.trace.type) {
@@ -28,7 +25,7 @@ export function Trace(props: { res: Res }) {
           Rule: {term}{" "}
           <VarMappingsC
             mappings={res.trace.mappings}
-            highlight={highlightProps}
+            highlight={props.highlight}
           />
         </>
       );

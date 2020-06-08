@@ -106,7 +106,7 @@ export function Term(props: {
 
 export function VarC(props: { name: string; highlight: HighlightProps }) {
   const hl = props.highlight.highlight;
-  const isHighlighted = hl.type === "Binding" && hl.name === name;
+  const isHighlighted = hl.type === "Binding" && hl.name === props.name;
   return (
     <span
       className="binding-name"

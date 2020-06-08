@@ -4,6 +4,7 @@ import { ReplCore } from "../replCore";
 import { Relation } from "../types";
 import * as styles from "./styles";
 import { RelationTable, TableCollapseState } from "./relationTable";
+import { noHighlight } from "./term";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
@@ -19,6 +20,9 @@ export function TabbedTables(props: { repl: ReplCore }) {
       records: props.repl.db.tables[name],
     }));
   const allRelations: Relation[] = [...allTables, ...allRules];
+
+  const [highlight, setHighlight] = useState(noHighlight);
+  const highlightProps = { highlight, setHighlight };
 
   const [curRelationName, setCurRelationName]: [
     string,
@@ -52,6 +56,7 @@ export function TabbedTables(props: { repl: ReplCore }) {
           <RelationTable
             relation={curRelation}
             repl={props.repl}
+            highlight={highlightProps}
             collapseState={relationCollapseStates[curRelationName] || {}}
             setCollapseState={(st) =>
               setRelationCollapseStates({
