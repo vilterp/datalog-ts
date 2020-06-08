@@ -184,7 +184,7 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
               term: nextTerm,
               trace: {
                 type: "RefTrace",
-                ruleName: rule.head.relation,
+                refTerm: term,
                 innerRes: res,
               },
             };

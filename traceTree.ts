@@ -10,13 +10,11 @@ export function traceToTree(res: Res): Tree {
   const resStr = ppt(res.term);
   switch (res.trace.type) {
     case "AndTrace":
-      return node(`And: ${resStr}`, res.trace.sources.map(traceToTree));
+      return node(`And`, res.trace.sources.map(traceToTree));
     case "MatchTrace":
-      return node(`Match(${ppt(res.trace.match)}): ${resStr}`, [
-        traceToTree(res.trace.fact),
-      ]);
+      return leaf(`Match(${ppt(res.trace.match)}): ${resStr}`);
     case "RefTrace":
-      return node(`Ref(${res.trace.ruleName}): ${resStr}`, [
+      return node(`Ref(${ppt(res.trace.refTerm)}): ${resStr}`, [
         traceToTree(res.trace.innerRes),
       ]);
     case "VarTrace":
