@@ -6,6 +6,7 @@ import {
   Term,
   Trace,
   RecordWithBindings,
+  VarMappings,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
@@ -116,6 +117,21 @@ export function ppb(b: Bindings): string {
 
 export function ppr(r: Res): string {
   return pp.render(100, prettyPrintRes(r));
+}
+
+export function ppVM(vm: VarMappings): string {
+  return pp.render(100, prettyPrintVarMappings(vm));
+}
+
+function prettyPrintVarMappings(vm: VarMappings): pp.IDoc {
+  return [
+    "{",
+    pp.intersperse(
+      ", ",
+      mapObjToList(vm, (key, value) => [key, ": ", value])
+    ),
+    "}",
+  ];
 }
 
 // util

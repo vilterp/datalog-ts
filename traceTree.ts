@@ -1,6 +1,6 @@
 import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
-import { Res, Rec, Bindings, Term, RecordWithBindings } from "./types";
-import { ppt, ppb, prettyPrintRecWithBindings, ppr } from "./pretty";
+import { Res, Rec, RecordWithBindings } from "./types";
+import { ppt, prettyPrintRecWithBindings, ppVM } from "./pretty";
 import { termEq } from "./unify";
 import { mapObj } from "./util";
 import * as pp from "prettier-printer";
@@ -17,9 +17,10 @@ export function traceToTree(res: Res): Tree {
     case "MatchTrace":
       return leaf(`Fact: ${printRecWithBindings(res)}`);
     case "RefTrace":
-      return node(`Rule: ${printRecWithBindings(res)}`, [
-        traceToTree(res.trace.innerRes),
-      ]);
+      return node(
+        `Rule: ${printRecWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
+        [traceToTree(res.trace.innerRes)]
+      );
     case "VarTrace":
       return leaf(`var: ${resStr}`);
     case "BinExprTrace":

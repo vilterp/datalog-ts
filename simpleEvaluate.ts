@@ -186,6 +186,7 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
                 type: "RefTrace",
                 refTerm: term,
                 innerRes: res,
+                mappings,
               },
             };
             return outerRes;
