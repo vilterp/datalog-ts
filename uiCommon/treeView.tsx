@@ -49,17 +49,22 @@ function NodeView(props: {
         <ul style={listStyle}>
           {props.tree.children.map((child) => (
             <NodeView
+              key={child.body}
               tree={child}
-              collapseState={collapseState[child.body]}
-              setCollapseState={(childState) =>
+              collapseState={collapseState.childStates[child.body]}
+              setCollapseState={(childState) => {
+                console.log("set state for child", {
+                  childState,
+                  key: child.body,
+                });
                 props.setCollapseState({
                   ...collapseState,
                   childStates: {
                     ...collapseState.childStates,
                     [child.body]: childState,
                   },
-                })
-              }
+                });
+              }}
             />
           ))}
         </ul>

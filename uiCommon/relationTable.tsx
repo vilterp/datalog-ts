@@ -16,7 +16,6 @@ export function RelationTable(props: {
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
 }) {
-  console.log("RelationTable", props);
   const results: Res[] =
     props.relation.type === "Table"
       ? props.relation.records.map((term) => ({
@@ -61,9 +60,7 @@ export function RelationTable(props: {
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
               ] || { collapsed: true, childStates: {} };
-              console.log({ rowCollapseState });
               const toggleRowCollapsed = () => {
-                console.log("toggleRowCollapsed", key);
                 props.setCollapseState({
                   ...props.collapseState,
                   [key]: {
@@ -73,8 +70,8 @@ export function RelationTable(props: {
                 });
               };
               return (
-                <>
-                  <tr key={key}>
+                <React.Fragment key={key}>
+                  <tr>
                     {fields.map((field) => (
                       <td
                         key={field}
@@ -96,17 +93,18 @@ export function RelationTable(props: {
                         <TreeView
                           tree={traceToTree(result)}
                           collapseState={rowCollapseState}
-                          setCollapseState={(st) =>
+                          setCollapseState={(st) => {
+                            console.log("RelationTable set state", { key, st });
                             props.setCollapseState({
                               ...props.collapseState,
                               [key]: st,
-                            })
-                          }
+                            });
+                          }}
                         />
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </tbody>
