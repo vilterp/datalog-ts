@@ -4,7 +4,7 @@ import { ReplCore } from "../replCore";
 import { Relation } from "../types";
 import * as styles from "./styles";
 import { RelationTable, TableCollapseState } from "./relationTable";
-import { noHighlight } from "./term";
+import { noHighlight, HighlightProps } from "./term";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
@@ -47,9 +47,19 @@ export function TabbedTables(props: { repl: ReplCore }) {
         }}
       >
         <h4 style={{ marginBottom: 5, marginTop: 5 }}>Tables</h4>
-        {relList(allTables, curRelationName, setCurRelationName)}
+        <RelList
+          relations={allTables}
+          curRelation={curRelationName}
+          setCurRelation={setCurRelationName}
+          highlight={highlightProps}
+        />
         <h4 style={{ marginBottom: 5, marginTop: 5 }}>Rules</h4>
-        {relList(allRules, curRelationName, setCurRelationName)}
+        <RelList
+          relations={allRules}
+          curRelation={curRelationName}
+          setCurRelation={setCurRelationName}
+          highlight={highlightProps}
+        />
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
         {curRelation ? (
@@ -73,18 +83,29 @@ export function TabbedTables(props: { repl: ReplCore }) {
   );
 }
 
-function relList(
-  relations: Relation[],
-  curRelation: string,
-  setCurRelation: (s: string) => void
-) {
+function RelList(props: {
+  relations: Relation[];
+  curRelation: string;
+  setCurRelation: (s: string) => void;
+  highlight: HighlightProps;
+}) {
   return (
     <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
-      {relations.map((rel) => (
+      {props.relations.map((rel) => (
         <li
           key={rel.name}
-          style={styles.tab(rel.name === curRelation)}
-          onClick={() => setCurRelation(rel.name)}
+          style={styles.tab({
+            selected: rel.name === props.curRelation,
+            highlighted:
+              props.highlight.highlight.type === "Relation" &&
+              props.highlight.highlight.name === rel.name,
+          })}
+          onClick={() => props.setCurRelation(rel.name)}
+          // TODO: would be nice to factor out these handlers
+          onMouseOver={() =>
+            props.highlight.setHighlight({ type: "Relation", name: rel.name })
+          }
+          onMouseOut={() => props.highlight.setHighlight(noHighlight)}
         >
           {rel.name}
         </li>

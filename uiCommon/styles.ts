@@ -1,6 +1,13 @@
 import { CSSProperties } from "react";
 
-export function tab(selected: boolean): CSSProperties {
-  const base = { cursor: "pointer" };
-  return selected ? { ...base, fontWeight: "bold" } : base;
+export function tab(props: {
+  selected: boolean;
+  highlighted: boolean;
+}): CSSProperties {
+  return {
+    cursor: "pointer",
+    fontFamily: "monospace",
+    fontWeight: props.selected ? "bold" : "normal",
+    backgroundColor: props.highlighted ? "lightgrey" : "",
+  };
 }
