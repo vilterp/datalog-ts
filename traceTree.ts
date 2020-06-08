@@ -6,6 +6,7 @@ import {
   TermWithBindings,
   SituatedBinding,
   ScopePath,
+  VarMappings,
 } from "./types";
 import {
   ppt,
@@ -14,7 +15,7 @@ import {
   ppVM,
 } from "./pretty";
 import { termEq } from "./unify";
-import { mapObj, flatMap, getFirst } from "./util";
+import { mapObj, flatMap, getFirst, lastItem } from "./util";
 import * as pp from "prettier-printer";
 import { pathToScopePath } from "./simpleEvaluate";
 
@@ -106,24 +107,32 @@ export function makeTermWithBindings(
   }
 }
 
-// returns bindings further down the proof tree, via mappings
-// TODO: to this in reverse as well...
-function resAtPath(node: Res, path: ScopePath): Res {
+type PathSeg = { res: Res; path: ScopePath; mappings: VarMappings };
+
+function walkPath(res: Res, path: ScopePath): PathSeg[] {
   if (path.length === 0) {
-    return node;
+    return [{ res, path: [], mappings: {} }];
   }
   const firstSeg = path[0];
-  switch (node.trace.type) {
+  switch (res.trace.type) {
     case "AndTrace":
       const clauseIdx = getFirst(firstSeg.invokeLoc, (seg) =>
         seg.type === "AndClause" ? seg.idx : null
       );
-      return resAtPath(node.trace.sources[clauseIdx], path.slice(1));
+      return walkPath(res.trace.sources[clauseIdx], path.slice(1));
     case "RefTrace":
-      return resAtPath(node.trace.innerRes, path.slice(1));
+      return [
+        { res, path, mappings: res.trace.mappings },
+        ...walkPath(res.trace.innerRes, path.slice(1)),
+      ];
     default:
       throw new Error("unreachable");
   }
+}
+
+// returns bindings further down the proof tree, via mappings
+function resAtPath(node: Res, path: ScopePath): Res {
+  return lastItem(walkPath(node, path)).res;
 }
 
 // TODO: also get "parent" paths

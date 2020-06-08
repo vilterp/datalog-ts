@@ -133,3 +133,7 @@ export function getFirst<T, V>(arr: T[], f: (t: T) => V | null): V | null {
   }
   return null;
 }
+
+export function lastItem<T>(arr: T[]): T {
+  return arr[arr.length - 1];
+}

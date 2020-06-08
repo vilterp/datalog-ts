@@ -1,10 +1,14 @@
 import React from "react";
-import { ppt, prettyPrintRule } from "../pretty";
+import { ppt, prettyPrintRule, prettyPrintScopePath } from "../pretty";
 import { Rec, Res, Relation } from "../types";
 import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
-import { traceToTree, makeTermWithBindings, getChildPaths } from "../traceTree";
+import {
+  traceToTree,
+  makeTermWithBindings,
+  getRelatedPaths,
+} from "../traceTree";
 import { Term, noHighlight, HighlightProps } from "./term";
 import { TraceNode } from "./trace";
 import { pathToScopePath } from "../simpleEvaluate";
@@ -120,7 +124,7 @@ export function RelationTable(props: {
                                 ...props.highlight,
                                 childPaths:
                                   props.highlight.highlight.type === "Binding"
-                                    ? getChildPaths(
+                                    ? getRelatedPaths(
                                         result,
                                         props.highlight.highlight.binding
                                       )
@@ -146,6 +150,15 @@ export function RelationTable(props: {
           </tbody>
         </table>
       )}
+      {props.highlight.highlight.type === "Binding" ? (
+        <>
+          {props.highlight.highlight.binding.name}:{" "}
+          {pp.render(
+            100,
+            prettyPrintScopePath(props.highlight.highlight.binding.path)
+          )}
+        </>
+      ) : null}
     </>
   );
 }
