@@ -12,11 +12,9 @@ export function traceToTree(res: Res): Tree {
     case "AndTrace":
       return node(`And`, res.trace.sources.map(traceToTree));
     case "MatchTrace":
-      return leaf(`Match(${ppt(res.trace.match)}): ${resStr}`);
+      return leaf(`Match: ${resStr}`);
     case "RefTrace":
-      return node(`Ref(${ppt(res.trace.refTerm)}): ${resStr}`, [
-        traceToTree(res.trace.innerRes),
-      ]);
+      return node(`Ref: ${resStr}`, [traceToTree(res.trace.innerRes)]);
     case "VarTrace":
       return leaf(`var: ${resStr}`);
     case "BinExprTrace":
