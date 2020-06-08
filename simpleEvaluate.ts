@@ -17,10 +17,7 @@ import {
   baseFactTrace,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
-import { filterMap, flatMap, mapObj, mapObjMaybe, repeat } from "./util";
-import * as pp from "prettier-printer";
-import { prettyPrintBindings, prettyPrintRes, prettyPrintTerm } from "./pretty";
-import * as util from "util";
+import { filterMap, flatMap } from "./util";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, db, {}, term);

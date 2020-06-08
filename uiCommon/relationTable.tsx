@@ -47,6 +47,7 @@ export function RelationTable(props: {
         <table style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid black" }}>
+              <th />
               {fields.map((name) => (
                 <th key={name} style={{ paddingLeft: 5, paddingRight: 5 }}>
                   <code>{name}</code>
@@ -69,9 +70,18 @@ export function RelationTable(props: {
                   },
                 });
               };
+              const icon =
+                props.relation.type === "Table"
+                  ? "o"
+                  : rowCollapseState.collapsed
+                  ? ">"
+                  : "v";
               return (
                 <React.Fragment key={key}>
-                  <tr>
+                  <tr onClick={toggleRowCollapsed}>
+                    <td style={{ cursor: "pointer", fontFamily: "monospace" }}>
+                      {icon}
+                    </td>
                     {fields.map((field) => (
                       <td
                         key={field}
@@ -81,7 +91,6 @@ export function RelationTable(props: {
                           borderLeft: "1px solid lightgrey",
                           borderRight: "1px solid lightgrey",
                         }}
-                        onClick={toggleRowCollapsed}
                       >
                         <code>{ppt((result.term as Rec).attrs[field])}</code>
                       </td>
@@ -89,7 +98,7 @@ export function RelationTable(props: {
                   </tr>
                   {rowCollapseState.collapsed ? null : (
                     <tr>
-                      <td colSpan={fields.length}>
+                      <td colSpan={fields.length + 1}>
                         <TreeView
                           tree={traceToTree(result)}
                           collapseState={rowCollapseState}
