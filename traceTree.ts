@@ -1,12 +1,5 @@
 import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
-import {
-  Res,
-  Rec,
-  RecordWithBindings,
-  Bindings,
-  Term,
-  TermWithBindings,
-} from "./types";
+import { Res, Bindings, Term, TermWithBindings } from "./types";
 import { ppt, prettyPrintTermWithBindings, ppVM } from "./pretty";
 import { termEq } from "./unify";
 import { mapObj } from "./util";
@@ -16,30 +9,31 @@ export function prettyPrintTrace(res: Res): string {
   return prettyPrintTree(traceToTree(res));
 }
 
-export function traceToTree(res: Res): Tree {
+export function traceToTree(res: Res): Tree<Res> {
   const resStr = ppt(res.term);
   switch (res.trace.type) {
     case "AndTrace":
-      return node(`And`, res.trace.sources.map(traceToTree));
+      return node(`And`, res, res.trace.sources.map(traceToTree));
     case "MatchTrace":
-      return leaf(`Fact: ${printRecWithBindings(res)}`);
+      return leaf(`Fact: ${printTermWithBindings(res)}`, res);
     case "RefTrace":
       return node(
-        `Rule: ${printRecWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
+        `Rule: ${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
+        res,
         [traceToTree(res.trace.innerRes)]
       );
     case "VarTrace":
-      return leaf(`var: ${resStr}`);
+      return leaf(`var: ${resStr}`, res);
     case "BinExprTrace":
-      return leaf(`bin_expr: ${resStr}`);
+      return leaf(`bin_expr: ${resStr}`, res);
     case "BaseFactTrace":
-      return leaf(`base_fact: ${resStr}`);
+      return leaf(`base_fact: ${resStr}`, res);
     case "LiteralTrace":
-      return leaf(`literal: ${resStr}`);
+      return leaf(`literal: ${resStr}`, res);
   }
 }
 
-function printRecWithBindings(res: Res): string {
+function printTermWithBindings(res: Res): string {
   return pp.render(
     100,
     prettyPrintTermWithBindings(makeTermWithBindings(res.term, res.bindings))

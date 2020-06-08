@@ -1,14 +1,13 @@
 import React from "react";
 import { Tree } from "../treePrinter";
-import { updateAtIdx } from "../util";
 
 export type TreeCollapseState = {
   collapsed: boolean;
   childStates: { [key: string]: TreeCollapseState };
 };
 
-export function TreeView(props: {
-  tree: Tree;
+export function TreeView<T>(props: {
+  tree: Tree<T>;
   collapseState: TreeCollapseState;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
@@ -23,8 +22,8 @@ export function TreeView(props: {
   );
 }
 
-function NodeView(props: {
-  tree: Tree;
+function NodeView<T>(props: {
+  tree: Tree<T>;
   collapseState: TreeCollapseState | undefined;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
@@ -51,25 +50,25 @@ function NodeView(props: {
           })
         }
       >
-        {icon}&nbsp;{props.tree.body}
+        {icon}&nbsp;{props.tree.key}
       </span>
       {collapseState.collapsed ? null : (
         <ul style={listStyle}>
           {props.tree.children.map((child) => (
             <NodeView
-              key={child.body}
+              key={child.key}
               tree={child}
-              collapseState={collapseState.childStates[child.body]}
+              collapseState={collapseState.childStates[child.key]}
               setCollapseState={(childState) => {
                 console.log("set state for child", {
                   childState,
-                  key: child.body,
+                  key: child.key,
                 });
                 props.setCollapseState({
                   ...collapseState,
                   childStates: {
                     ...collapseState.childStates,
-                    [child.body]: childState,
+                    [child.key]: childState,
                   },
                 });
               }}
