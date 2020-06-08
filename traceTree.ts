@@ -1,28 +1,30 @@
 import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
-import { Res, Trace } from "./types";
-import { ppr, ppt } from "./pretty";
+import { Res } from "./types";
+import { ppt } from "./pretty";
 
-export function prettyPrintTrace(trace: Trace): string {
-  return prettyPrintTree(traceToTree(trace));
+export function prettyPrintTrace(res: Res): string {
+  return prettyPrintTree(traceToTree(res));
 }
 
-export function traceToTree(trace: Trace): Tree {
-  switch (trace.type) {
+export function traceToTree(res: Res): Tree {
+  const resStr = ppt(res.term);
+  switch (res.trace.type) {
     case "AndTrace":
-      return node(`And (${trace.ruleName})`, trace.sources.map(resToTraceTree));
+      return node(
+        `And(${res.trace.ruleName}): ${resStr}`,
+        res.trace.sources.map(traceToTree)
+      );
     case "MatchTrace":
-      return node(`Match (${ppt(trace.match)})`, [resToTraceTree(trace.fact)]);
+      return node(`Match(${ppt(res.trace.match)}): ${resStr}`, [
+        traceToTree(res.trace.fact),
+      ]);
     case "VarTrace":
-      return leaf("var");
+      return leaf(`var: ${resStr}`);
     case "BinExprTrace":
-      return leaf("bin expr");
+      return leaf(`bin_expr: ${resStr}`);
     case "BaseFactTrace":
-      return leaf("base fact");
+      return leaf(`base_fact: ${resStr}`);
     case "LiteralTrace":
-      return leaf("literal");
+      return leaf(`literal: ${resStr}`);
   }
-}
-
-function resToTraceTree(res: Res): Tree {
-  return { body: ppr(res), children: [traceToTree(res.trace)] };
 }
