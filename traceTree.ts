@@ -127,42 +127,48 @@ function resAtPath(node: Res, path: ScopePath): Res {
 }
 
 // TODO: also get "parent" paths
-export function getChildPaths(
+export function getRelatedPaths(
   res: Res,
   highlighted: SituatedBinding
 ): SituatedBinding[] {
   const rap = resAtPath(res, highlighted.path);
-  return childPathsRecurse(rap, highlighted.name, highlighted.path);
+  return [
+    ...getChildPaths(rap, highlighted),
+    ...getParentPaths(rap, highlighted),
+  ];
 }
 
-function childPathsRecurse(
-  res: Res,
-  binding: string,
-  path: ScopePath
-): SituatedBinding[] {
+function getChildPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
   const trace = res.trace;
   switch (trace.type) {
     case "RefTrace":
       const mapping = Object.keys(trace.mappings).find(
-        (key) => trace.mappings[key] === binding
+        (key) => trace.mappings[key] === binding.name
       );
       if (!mapping) {
         return [];
       }
       return [
-        { name: binding, path },
-        ...childPathsRecurse(trace.innerRes, mapping, [
-          ...path,
-          { name: trace.refTerm.relation, invokeLoc: trace.invokeLoc },
-        ]),
+        binding,
+        ...getChildPaths(trace.innerRes, {
+          name: mapping,
+          path: [
+            ...binding.path,
+            { name: trace.refTerm.relation, invokeLoc: trace.invokeLoc },
+          ],
+        }),
       ];
     case "AndTrace":
       return flatMap(trace.sources, (innerRes) =>
-        childPathsRecurse(innerRes, binding, path)
+        getChildPaths(innerRes, binding)
       );
     case "MatchTrace":
-      return [{ name: binding, path }];
+      return [binding];
     default:
       return [];
   }
+}
+
+function getParentPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
+  return [];
 }
