@@ -4,7 +4,7 @@ import { updateAtIdx } from "../util";
 
 export type TreeCollapseState = {
   collapsed: boolean;
-  childStates: TreeCollapseState[];
+  childStates: { [key: string]: TreeCollapseState };
 };
 
 export function TreeView(props: {
@@ -13,7 +13,7 @@ export function TreeView(props: {
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
   return (
-    <ul>
+    <ul style={{ fontFamily: "monospace" }}>
       <NodeView
         collapseState={props.collapseState}
         setCollapseState={props.setCollapseState}
@@ -25,35 +25,39 @@ export function TreeView(props: {
 
 function NodeView(props: {
   tree: Tree;
-  collapseState: TreeCollapseState;
+  collapseState: TreeCollapseState | undefined;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
+  const collapseState: TreeCollapseState = props.collapseState || {
+    collapsed: true,
+    childStates: {},
+  };
+
   return (
     <li>
       <span
         onClick={() =>
           props.setCollapseState({
-            ...props.collapseState,
-            collapsed: !props.collapseState.collapsed,
+            ...collapseState,
+            collapsed: !collapseState.collapsed,
           })
         }
       >
-        {props.collapseState.collapsed ? ">" : ":"} {props.tree.body}
+        {collapseState.collapsed ? ">" : "v"}&nbsp;{props.tree.body}
       </span>
-      {props.collapseState.collapsed ? null : (
+      {collapseState.collapsed ? null : (
         <ul>
-          {props.tree.children.map((child, idx) => (
+          {props.tree.children.map((child) => (
             <NodeView
               tree={child}
-              collapseState={props.collapseState[idx]}
+              collapseState={collapseState[child.body]}
               setCollapseState={(childState) =>
                 props.setCollapseState({
-                  ...props.collapseState,
-                  childStates: updateAtIdx(
-                    props.collapseState.childStates,
-                    idx,
-                    (_) => childState
-                  ),
+                  ...collapseState,
+                  childStates: {
+                    ...collapseState.childStates,
+                    [child.body]: childState,
+                  },
                 })
               }
             />

@@ -53,10 +53,12 @@ export function TabbedTables(props: { repl: ReplCore }) {
             relation={curRelation}
             repl={props.repl}
             collapseState={relationCollapseStates[curRelationName] || {}}
-            setCollapseState={(st) => ({
-              ...relationCollapseStates,
-              [curRelationName]: st,
-            })}
+            setCollapseState={(st) =>
+              setRelationCollapseStates({
+                ...relationCollapseStates,
+                [curRelationName]: st,
+              })
+            }
           />
         ) : (
           <em>No relations</em>
