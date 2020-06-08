@@ -52,7 +52,7 @@ export function TabbedTables(props: { repl: ReplCore }) {
           <RelationTable
             relation={curRelation}
             repl={props.repl}
-            collapseState={relationCollapseStates[curRelationName]}
+            collapseState={relationCollapseStates[curRelationName] || {}}
             setCollapseState={(st) => ({
               ...relationCollapseStates,
               [curRelationName]: st,

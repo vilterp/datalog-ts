@@ -16,6 +16,7 @@ export function RelationTable(props: {
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
 }) {
+  console.log("RelationTable", props);
   const results: Res[] =
     props.relation.type === "Table"
       ? props.relation.records.map((term) => ({
@@ -57,7 +58,10 @@ export function RelationTable(props: {
           <tbody>
             {results.map((result) => {
               const key = ppt(result.term);
-              const rowCollapseState = props.collapseState[key];
+              const rowCollapseState: TreeCollapseState = props.collapseState[
+                key
+              ] || { collapsed: true, childStates: [] };
+              console.log({ rowCollapseState });
               const toggleRowCollapsed = () => {
                 console.log("toggleRowCollapsed", key);
                 props.setCollapseState({
@@ -86,7 +90,7 @@ export function RelationTable(props: {
                       </td>
                     ))}
                   </tr>
-                  {props.collapseState[key].collapsed ? null : (
+                  {rowCollapseState.collapsed ? null : (
                     <tr>
                       <td colSpan={fields.length}>
                         <TreeView
