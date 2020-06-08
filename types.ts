@@ -51,10 +51,10 @@ export type RulePathSegment =
   | { type: "OrOpt"; idx: number }
   | { type: "AndClause"; idx: number };
 
-export type RulePath = { name: string; invokeLoc: InvocationLocation }[];
+export type ScopePath = { name: string; invokeLoc: InvocationLocation }[];
 
 // gah this should be derived by the language
-export function rulePathEq(left: RulePath, right: RulePath): boolean {
+export function scopePathEq(left: ScopePath, right: ScopePath): boolean {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
@@ -166,4 +166,9 @@ export type BinExprWithBindings = {
   left: TermWithBindings;
   right: TermWithBindings;
   op: Operator;
+};
+
+export type SituatedBinding = {
+  name: string;
+  path: ScopePath;
 };

@@ -1,14 +1,13 @@
 import React from "react";
 import { ppt, prettyPrintRule } from "../pretty";
-import { Rec, Res, Relation, RulePath } from "../types";
+import { Rec, Res, Relation } from "../types";
 import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
 import { traceToTree, makeTermWithBindings } from "../traceTree";
 import { Term, noHighlight, HighlightProps } from "./term";
 import { TraceNode } from "./trace";
-import { filterMap } from "../util";
-import { pathToRulePath } from "../simpleEvaluate";
+import { pathToScopePath } from "../simpleEvaluate";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -102,7 +101,7 @@ export function RelationTable(props: {
                             highlight: noHighlight,
                             setHighlight: () => {},
                           }}
-                          rulePath={[]}
+                          scopePath={[]}
                         />
                       </td>
                     ))}
@@ -116,7 +115,7 @@ export function RelationTable(props: {
                             <TraceNode
                               res={item}
                               highlight={props.highlight}
-                              rulePath={pathToRulePath(path)}
+                              scopePath={pathToScopePath(path)}
                             />
                           )}
                           collapseState={rowCollapseState}

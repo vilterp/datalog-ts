@@ -6,7 +6,7 @@ import {
   Term,
   VarMappings,
   TermWithBindings,
-  RulePath,
+  ScopePath,
   InvocationLocation,
 } from "./types";
 import * as pp from "prettier-printer";
@@ -162,7 +162,7 @@ export function escapeString(str: string): string {
     .join("\\n");
 }
 
-export function prettyPrintRulePath(path: RulePath): pp.IDoc {
+export function prettyPrintScopePath(path: ScopePath): pp.IDoc {
   return [
     "[",
     pp.intersperse(

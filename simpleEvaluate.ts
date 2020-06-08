@@ -15,7 +15,8 @@ import {
   binExprTrace,
   baseFactTrace,
   RulePathSegment,
-  RulePath,
+  ScopePath,
+  InvocationLocation,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
 import { filterMap, flatMap } from "./util";
@@ -26,7 +27,7 @@ export function evaluate(db: DB, term: Term): Res[] {
 
 function doJoin(
   depth: number,
-  rulePath: RulePathSegment[],
+  invokeLoc: InvocationLocation,
   db: DB,
   scope: Bindings,
   clauses: AndClause[]
@@ -36,7 +37,7 @@ function doJoin(
     // console.log("doJoin: evaluating only clause", ppt(clauses[0]));
     return doEvaluate(
       depth + 1,
-      [...rulePath, { type: "AndClause", idx: 0 }],
+      [...invokeLoc, { type: "AndClause", idx: 0 }],
       db,
       scope,
       clauses[0]
@@ -45,7 +46,7 @@ function doJoin(
   // console.group("doJoin: about to get left results");
   const leftResults = doEvaluate(
     depth + 1,
-    [...rulePath, { type: "AndClause", idx: 0 }],
+    [...invokeLoc, { type: "AndClause", idx: 0 }],
     db,
     scope,
     clauses[0]
@@ -65,7 +66,7 @@ function doJoin(
     // });
     const rightResults = doJoin(
       depth,
-      [...rulePath, { type: "AndClause", idx: 1 }],
+      [...invokeLoc, { type: "AndClause", idx: 1 }],
       db,
       nextScope,
       clauses.slice(1)
@@ -323,7 +324,7 @@ export function hasVars(t: Term): boolean {
   }
 }
 
-export function pathToRulePath(path: Res[]): RulePath {
+export function pathToScopePath(path: Res[]): ScopePath {
   return filterMap(path, (res) =>
     res.trace.type === "RefTrace"
       ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }

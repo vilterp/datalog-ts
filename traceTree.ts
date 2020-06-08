@@ -1,27 +1,34 @@
 import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
-import { Res, Bindings, Term, TermWithBindings } from "./types";
+import {
+  Res,
+  Bindings,
+  Term,
+  TermWithBindings,
+  SituatedBinding,
+  RulePathSegment,
+} from "./types";
 import {
   ppt,
   prettyPrintTermWithBindings,
-  prettyPrintRulePath,
+  prettyPrintScopePath,
   ppVM,
 } from "./pretty";
 import { termEq } from "./unify";
-import { mapObj } from "./util";
+import { mapObj, flatMap } from "./util";
 import * as pp from "prettier-printer";
-import { pathToRulePath } from "./simpleEvaluate";
+import { pathToScopePath } from "./simpleEvaluate";
 
-export type TracePrintOpts = { prettyPrintRulePath: boolean };
+export type TracePrintOpts = { showScopePath: boolean };
 
-export const defaultOpts: TracePrintOpts = { prettyPrintRulePath: false };
+export const defaultOpts: TracePrintOpts = { showScopePath: false };
 
 export function prettyPrintTrace(res: Res, opts: TracePrintOpts): string {
   return prettyPrintTree(
     traceToTree(res),
     ({ key, path }) =>
       `${key}${
-        opts.prettyPrintRulePath
-          ? `; ${pp.render(100, prettyPrintRulePath(pathToRulePath(path)))}`
+        opts.showScopePath
+          ? `; ${pp.render(100, prettyPrintScopePath(pathToScopePath(path)))}`
           : ""
       }`
   );
@@ -98,3 +105,41 @@ export function makeTermWithBindings(
       return { type: "Atom", term };
   }
 }
+
+// returns bindings further down the proof tree, via mappings
+// TODO: to this in reverse as well...
+// export function childPaths(res: Res, binding: string): SituatedBinding[] {
+//   return childPathsRecurse(res, binding, []);
+// }
+
+// function childPathsRecurse(
+//   res: Res,
+//   binding: string,
+//   ruleName: string,
+//   invokeLoc: RulePathSegment[]
+// ): SituatedBinding[] {
+//   const trace = res.trace;
+//   switch (trace.type) {
+//     case "RefTrace":
+//       const mapping = Object.keys(trace.mappings).find(
+//         (key) => trace.mappings[key] === binding
+//       );
+//       if (!mapping) {
+//         return [];
+//       }
+//       return childPathsRecurse(trace.innerRes, mapping, [
+//         ...path,
+//         { name: trace.refTerm.relation, invokeLoc: trace.invokeLoc },
+//       ]);
+//     case "AndTrace":
+//       return flatMap(
+//         trace.sources,
+//         (innerRes) => childPathsRecurse(innerRes, binding, path) // TODO: do we have to add something to the path?
+//       );
+//     case "MatchTrace":
+//       // this is the base case
+//       return [{ name }];
+//     default:
+//       return [];
+//   }
+// }

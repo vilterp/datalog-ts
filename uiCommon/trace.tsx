@@ -1,12 +1,12 @@
 import React from "react";
-import { Res, VarMappings, RulePath } from "../types";
+import { Res, VarMappings, ScopePath } from "../types";
 import { Term, VarC, HighlightProps } from "./term";
 import { makeTermWithBindings } from "../traceTree";
 import { mapObjToList, intersperse } from "../util";
 
 export function TraceNode(props: {
   res: Res;
-  rulePath: RulePath;
+  scopePath: ScopePath;
   highlight: HighlightProps;
 }) {
   const res = props.res;
@@ -15,7 +15,7 @@ export function TraceNode(props: {
     <Term
       term={makeTermWithBindings(res.term, res.bindings)}
       highlight={props.highlight}
-      rulePath={props.rulePath}
+      scopePath={props.scopePath}
     />
   );
   switch (res.trace.type) {
@@ -30,12 +30,12 @@ export function TraceNode(props: {
           <Term
             term={makeTermWithBindings(res.term, res.bindings)}
             highlight={props.highlight}
-            rulePath={props.rulePath.slice(0, props.rulePath.length - 1)}
+            scopePath={props.scopePath.slice(0, props.scopePath.length - 1)}
           />{" "}
           <VarMappingsC
             mappings={res.trace.mappings}
             highlight={props.highlight}
-            innerRulePath={props.rulePath}
+            innerScopePath={props.scopePath}
           />
         </>
       );
@@ -47,12 +47,12 @@ export function TraceNode(props: {
 export function VarMappingsC(props: {
   mappings: VarMappings;
   highlight: HighlightProps;
-  innerRulePath: RulePath;
+  innerScopePath: ScopePath;
 }) {
-  const innerPath = props.innerRulePath;
-  const outerPath = props.innerRulePath.slice(
+  const innerPath = props.innerScopePath;
+  const outerPath = props.innerScopePath.slice(
     0,
-    props.innerRulePath.length - 1
+    props.innerScopePath.length - 1
   );
   return (
     <>
@@ -61,11 +61,15 @@ export function VarMappingsC(props: {
         ", ",
         mapObjToList(props.mappings, (key, value) => (
           <React.Fragment key={key}>
-            <VarC name={key} rulePath={innerPath} highlight={props.highlight} />
+            <VarC
+              name={key}
+              scopePath={innerPath}
+              highlight={props.highlight}
+            />
             :{" "}
             <VarC
               name={value}
-              rulePath={outerPath}
+              scopePath={outerPath}
               highlight={props.highlight}
             />
           </React.Fragment>
