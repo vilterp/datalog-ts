@@ -60,7 +60,7 @@ export function RelationTable(props: {
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
-              ] || { collapsed: true, childStates: [] };
+              ] || { collapsed: true, childStates: {} };
               console.log({ rowCollapseState });
               const toggleRowCollapsed = () => {
                 console.log("toggleRowCollapsed", key);
