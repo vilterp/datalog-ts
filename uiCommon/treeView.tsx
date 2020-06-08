@@ -13,7 +13,7 @@ export function TreeView(props: {
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
   return (
-    <ul style={{ fontFamily: "monospace" }}>
+    <ul style={listStyle}>
       <NodeView
         collapseState={props.collapseState}
         setCollapseState={props.setCollapseState}
@@ -46,7 +46,7 @@ function NodeView(props: {
         {collapseState.collapsed ? ">" : "v"}&nbsp;{props.tree.body}
       </span>
       {collapseState.collapsed ? null : (
-        <ul>
+        <ul style={listStyle}>
           {props.tree.children.map((child) => (
             <NodeView
               tree={child}
@@ -67,3 +67,9 @@ function NodeView(props: {
     </li>
   );
 }
+
+const listStyle = {
+  fontFamily: "monospace",
+  listStyle: "none",
+  paddingLeft: 15,
+};
