@@ -117,6 +117,7 @@ export const trueTerm: Term = { type: "Bool", val: true };
 
 export const falseTerm: Term = { type: "Bool", val: false };
 
+// inner to outer (?)
 export type VarMappings = { [from: string]: string };
 
 // TODO: bindings can be at any level

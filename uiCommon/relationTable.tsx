@@ -5,8 +5,9 @@ import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
 import { traceToTree, makeTermWithBindings } from "../traceTree";
-import { Term, noHighlight, HighlightProps } from "./term";
+import { Term, noHighlight, HighlightProps, RulePath } from "./term";
 import { TraceNode } from "./trace";
+import { filterMap } from "../util";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -100,6 +101,7 @@ export function RelationTable(props: {
                             highlight: noHighlight,
                             setHighlight: () => {},
                           }}
+                          rulePath={[]}
                         />
                       </td>
                     ))}
@@ -109,8 +111,12 @@ export function RelationTable(props: {
                       <td colSpan={fields.length + 1}>
                         <TreeView<Res>
                           tree={traceToTree(result)}
-                          render={({ item }) => (
-                            <TraceNode res={item} highlight={props.highlight} />
+                          render={({ item, path }) => (
+                            <TraceNode
+                              res={item}
+                              highlight={props.highlight}
+                              rulePath={pathToRulePath(path)}
+                            />
                           )}
                           collapseState={rowCollapseState}
                           setCollapseState={(st) => {
@@ -130,6 +136,12 @@ export function RelationTable(props: {
         </table>
       )}
     </>
+  );
+}
+
+function pathToRulePath(path: Res[]): RulePath {
+  return filterMap(path, (res) =>
+    res.trace.type === "RefTrace" ? res.trace.refTerm.relation : null
   );
 }
 

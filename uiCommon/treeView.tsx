@@ -8,7 +8,7 @@ export type TreeCollapseState = {
 
 export function TreeView<T>(props: {
   tree: Tree<T>;
-  render: (props: { item: T; key: string }) => React.ReactNode;
+  render: (props: { item: T; key: string; path: T[] }) => React.ReactNode;
   collapseState: TreeCollapseState;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
@@ -16,6 +16,7 @@ export function TreeView<T>(props: {
     <ul style={listStyle}>
       <NodeView
         tree={props.tree}
+        path={[props.tree.item]}
         render={props.render}
         collapseState={props.collapseState}
         setCollapseState={props.setCollapseState}
@@ -26,7 +27,8 @@ export function TreeView<T>(props: {
 
 function NodeView<T>(props: {
   tree: Tree<T>;
-  render: ({ item: T, key: string }) => React.ReactNode;
+  path: T[];
+  render: (props: { item: T; key: string; path: T[] }) => React.ReactNode;
   collapseState: TreeCollapseState | undefined;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
@@ -54,13 +56,18 @@ function NodeView<T>(props: {
         }
       >
         {icon}&nbsp;
-        {props.render({ key: props.tree.key, item: props.tree.item })}
+        {props.render({
+          key: props.tree.key,
+          item: props.tree.item,
+          path: props.path,
+        })}
       </span>
       {collapseState.collapsed ? null : (
         <ul style={listStyle}>
           {props.tree.children.map((child) => (
             <NodeView
               key={child.key}
+              path={[...props.path, child.item]}
               tree={child}
               render={props.render}
               collapseState={collapseState.childStates[child.key]}

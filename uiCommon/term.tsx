@@ -3,9 +3,11 @@ import { TermWithBindings, VarMappings } from "../types";
 import { intersperse, mapObjToList } from "../util";
 import { escapeString } from "../pretty";
 
+export type RulePath = string[];
+
 export type Highlight =
   | { type: "Relation"; name: string }
-  | { type: "Binding"; name: string } // TODO: need to scope this to a "rule path"
+  | { type: "Binding"; name: string; rulePath: RulePath } // TODO: need to scope this to a "rule path"
   | { type: "None" };
 
 export const noHighlight: Highlight = { type: "None" };
@@ -18,6 +20,7 @@ export type HighlightProps = {
 export function Term(props: {
   term: TermWithBindings;
   highlight: HighlightProps;
+  rulePath: RulePath;
 }) {
   const term = props.term;
   switch (term.type) {
@@ -53,6 +56,7 @@ export function Term(props: {
                     <VarC
                       name={valueWithBinding.binding}
                       highlight={props.highlight}
+                      rulePath={props.rulePath}
                     />
                     @
                   </>
@@ -60,6 +64,7 @@ export function Term(props: {
                 <Term
                   term={valueWithBinding.term}
                   highlight={props.highlight}
+                  rulePath={props.rulePath}
                 />
               </React.Fragment>
             ))
@@ -75,7 +80,11 @@ export function Term(props: {
           {intersperse<React.ReactNode>(
             ", ",
             term.items.map((item) => (
-              <Term term={item} highlight={props.highlight} />
+              <Term
+                term={item}
+                highlight={props.highlight}
+                rulePath={props.rulePath}
+              />
             ))
           )}
           ]
@@ -84,8 +93,17 @@ export function Term(props: {
     case "BinExprWithBindings":
       return (
         <>
-          <Term term={term.left} highlight={props.highlight} /> {term.op}{" "}
-          <Term term={term.right} highlight={props.highlight} />
+          <Term
+            term={term.left}
+            highlight={props.highlight}
+            rulePath={props.rulePath}
+          />{" "}
+          {term.op}{" "}
+          <Term
+            term={term.right}
+            highlight={props.highlight}
+            rulePath={props.rulePath}
+          />
         </>
       );
     case "Atom":
@@ -104,7 +122,11 @@ export function Term(props: {
   }
 }
 
-export function VarC(props: { name: string; highlight: HighlightProps }) {
+export function VarC(props: {
+  name: string;
+  rulePath: RulePath;
+  highlight: HighlightProps;
+}) {
   const hl = props.highlight.highlight;
   const isHighlighted = hl.type === "Binding" && hl.name === props.name;
   return (
@@ -118,6 +140,7 @@ export function VarC(props: { name: string; highlight: HighlightProps }) {
         props.highlight.setHighlight({
           type: "Binding",
           name: props.name,
+          rulePath: props.rulePath,
         })
       }
       onMouseOut={() => props.highlight.setHighlight(noHighlight)}

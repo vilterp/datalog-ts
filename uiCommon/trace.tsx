@@ -1,16 +1,21 @@
 import React from "react";
 import { Res, VarMappings } from "../types";
-import { Term, VarC, HighlightProps } from "./term";
+import { Term, VarC, HighlightProps, RulePath } from "./term";
 import { makeTermWithBindings } from "../traceTree";
 import { mapObjToList, intersperse } from "../util";
 
-export function TraceNode(props: { res: Res; highlight: HighlightProps }) {
+export function TraceNode(props: {
+  res: Res;
+  rulePath: RulePath;
+  highlight: HighlightProps;
+}) {
   const res = props.res;
 
   const term = (
     <Term
       term={makeTermWithBindings(res.term, res.bindings)}
       highlight={props.highlight}
+      rulePath={props.rulePath}
     />
   );
   switch (res.trace.type) {
@@ -21,11 +26,11 @@ export function TraceNode(props: { res: Res; highlight: HighlightProps }) {
     case "RefTrace":
       return (
         <>
-          {/* TODO: XXX */}
           Rule: {term}{" "}
           <VarMappingsC
             mappings={res.trace.mappings}
             highlight={props.highlight}
+            innerRulePath={props.rulePath}
           />
         </>
       );
@@ -37,7 +42,13 @@ export function TraceNode(props: { res: Res; highlight: HighlightProps }) {
 export function VarMappingsC(props: {
   mappings: VarMappings;
   highlight: HighlightProps;
+  innerRulePath: RulePath;
 }) {
+  const innerPath = props.innerRulePath;
+  const outerPath = props.innerRulePath.slice(
+    0,
+    props.innerRulePath.length - 1
+  );
   return (
     <>
       {"{"}
@@ -45,8 +56,13 @@ export function VarMappingsC(props: {
         ", ",
         mapObjToList(props.mappings, (key, value) => (
           <React.Fragment key={key}>
-            <VarC name={key} highlight={props.highlight} />:{" "}
-            <VarC name={value} highlight={props.highlight} />
+            <VarC name={key} rulePath={innerPath} highlight={props.highlight} />
+            :{" "}
+            <VarC
+              name={value}
+              rulePath={outerPath}
+              highlight={props.highlight}
+            />
           </React.Fragment>
         ))
       )}
