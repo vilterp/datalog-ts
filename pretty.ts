@@ -6,6 +6,8 @@ import {
   Term,
   VarMappings,
   TermWithBindings,
+  RulePath,
+  InvocationLocation,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
@@ -158,4 +160,43 @@ export function escapeString(str: string): string {
     .join(`\\"`)
     .split("\n")
     .join("\\n");
+}
+
+export function prettyPrintRulePath(path: RulePath): pp.IDoc {
+  return [
+    "[",
+    pp.intersperse(
+      ", ",
+      path.map((seg) => [
+        seg.name,
+        "(",
+        prettyPrintInvokeLoc(seg.invokeLoc),
+        ")",
+      ])
+    ),
+    "]",
+  ];
+}
+
+export function prettyPrintInvokeLoc(il: InvocationLocation): pp.IDoc {
+  switch (il.type) {
+    case "Top":
+      return "Top";
+    case "Rule":
+      return [
+        "Rule[",
+        pp.intersperse(
+          ", ",
+          il.path.map((seg) => {
+            switch (seg.type) {
+              case "OrOpt":
+                return `or(${seg.idx})`;
+              case "AndClause":
+                return `and(${seg.idx})`;
+            }
+          })
+        ),
+        "]",
+      ];
+  }
 }

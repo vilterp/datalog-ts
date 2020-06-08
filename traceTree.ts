@@ -1,26 +1,45 @@
 import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
 import { Res, Bindings, Term, TermWithBindings } from "./types";
-import { ppt, prettyPrintTermWithBindings, ppVM } from "./pretty";
+import {
+  ppt,
+  prettyPrintTermWithBindings,
+  prettyPrintRulePath,
+  ppVM,
+  prettyPrintInvokeLoc,
+} from "./pretty";
 import { termEq } from "./unify";
 import { mapObj } from "./util";
 import * as pp from "prettier-printer";
 
-export function prettyPrintTrace(res: Res): string {
-  return prettyPrintTree(traceToTree(res));
+export type TracePrintOpts = { printInvokeLoc: boolean };
+
+export const defaultOpts: TracePrintOpts = { printInvokeLoc: false };
+
+export function prettyPrintTrace(res: Res, opts: TracePrintOpts): string {
+  return prettyPrintTree(traceToTree(res, opts));
 }
 
-export function traceToTree(res: Res): Tree<Res> {
+export function traceToTree(res: Res, opts: TracePrintOpts): Tree<Res> {
   const resStr = ppt(res.term);
   switch (res.trace.type) {
     case "AndTrace":
-      return node(`And`, res, res.trace.sources.map(traceToTree));
+      return node(
+        `And`,
+        res,
+        res.trace.sources.map((s) => traceToTree(s, opts))
+      );
     case "MatchTrace":
       return leaf(`Fact: ${printTermWithBindings(res)}`, res);
     case "RefTrace":
       return node(
-        `Rule: ${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
+        // TODO: pretty print invoke loc
+        `Rule: ${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}${
+          opts.printInvokeLoc
+            ? `; ${pp.render(100, prettyPrintInvokeLoc(res.trace.invokeLoc))}`
+            : ""
+        }`,
         res,
-        [traceToTree(res.trace.innerRes)]
+        [traceToTree(res.trace.innerRes, opts)]
       );
     case "VarTrace":
       return leaf(`var: ${resStr}`, res);

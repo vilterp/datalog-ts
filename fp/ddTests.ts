@@ -8,7 +8,7 @@ import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
 import { fsLoader } from "../repl";
 import { Rec } from "../types";
-import { prettyPrintTrace } from "../traceTree";
+import { prettyPrintTrace, TracePrintOpts, defaultOpts } from "../traceTree";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -51,7 +51,21 @@ export function fpTests(writeResults: boolean): Suite {
     {
       name: "trace",
       test() {
-        runDDTestAtPath("fp/testdata/trace.dd.txt", traceTest, writeResults);
+        runDDTestAtPath(
+          "fp/testdata/trace.dd.txt",
+          (t) => traceTest(t, defaultOpts),
+          writeResults
+        );
+      },
+    },
+    {
+      name: "tracePaths",
+      test() {
+        runDDTestAtPath(
+          "fp/testdata/tracePaths.dd.txt",
+          (t) => traceTest(t, { printInvokeLoc: true }),
+          writeResults
+        );
       },
     },
   ];
@@ -125,7 +139,7 @@ function suggestionTest(test: DDTest): Result[] {
   });
 }
 
-function traceTest(test: DDTest): Result[] {
+function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
@@ -143,8 +157,7 @@ function traceTest(test: DDTest): Result[] {
     }
     return {
       pair: tc,
-      // actual: JSON.stringify(traceToTree(typeResults[0].trace), null, 2) + "\n",
-      actual: prettyPrintTrace(typeResults[0]) + "\n",
+      actual: prettyPrintTrace(typeResults[0], opts) + "\n",
     };
   });
 }
