@@ -28,7 +28,6 @@ export function evaluate(db: DB, term: Term): Res[] {
 
 function doJoin(
   depth: number,
-  ruleName: string,
   db: DB,
   scope: Bindings,
   clauses: AndClause[]
@@ -53,13 +52,7 @@ function doJoin(
     //   nextScope: ppb(nextScope),
     //   nextScope: nextScope ? ppb(nextScope) : null,
     // });
-    const rightResults = doJoin(
-      depth,
-      ruleName,
-      db,
-      nextScope,
-      clauses.slice(1)
-    );
+    const rightResults = doJoin(depth, db, nextScope, clauses.slice(1));
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
@@ -72,7 +65,6 @@ function doJoin(
         bindings: unifyRes,
         trace: {
           type: "AndTrace",
-          ruleName,
           sources: [leftRes, rightRes],
         },
       });
@@ -162,7 +154,7 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           const mappings = getMappings(rule.head.attrs, term.attrs);
           const rawResults = flatMap(rule.defn.opts, (ae) => {
             const { recs, exprs } = extractBinExprs(ae);
-            const recResults = doJoin(depth, term.relation, db, newScope, recs);
+            const recResults = doJoin(depth, db, newScope, recs);
             return applyFilters(exprs, recResults);
           });
           // console.groupEnd();
@@ -190,11 +182,16 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
             //   unifRaw: unif,
             //   unif: unif ? ppb(unif) : null,
             // });
-            return {
+            const outerRes: Res = {
               bindings: unif,
               term: nextTerm,
-              trace: res.trace,
+              trace: {
+                type: "RefTrace",
+                ruleName: rule.head.relation,
+                innerRes: res,
+              },
             };
+            return outerRes;
           });
         }
         throw new Error(`not found: ${term.relation}`);

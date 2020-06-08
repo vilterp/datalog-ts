@@ -1,18 +1,28 @@
 2
 ----
-Match(int_lit{id: I}): type{id: 0, type: "int"}
-  base_fact: int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
+Ref(type): type{id: 0, type: "int"}
+  Ref(type_i): type_i{id: 0, type: "int"}
+    Match(int_lit{id: I}): int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
+      base_fact: int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
 
 let x = 2 in x
 ----
-And(type_let): type{id: 0, type: "int"}
-  Match(let_expr{bodyID: BID, id: I}): let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-    base_fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-  And(type_var): type{id: 2, type: "int"}
-    Match(var{id: I, name: N}): var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
-      base_fact: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
-    And(scope_let): scope_item{id: 2, name: "x", type: "int"}
-      Match(let_expr{bindingID: B, bodyID: I, varName: N}): let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+Ref(type): type{id: 0, type: "int"}
+  Ref(type_let): type_let{id: 0, type: "int"}
+    And: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+      Match(let_expr{bodyID: BID, id: I}): let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
         base_fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-      Match(int_lit{id: I}): type{id: 1, type: "int"}
-        base_fact: int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
+      Ref(type): type{id: 2, type: "int"}
+        Ref(type_var): type_var{id: 2, type: "int"}
+          And: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
+            Match(var{id: I, name: N}): var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
+              base_fact: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
+            Ref(scope_item): scope_item{id: 2, name: "x", type: "int"}
+              Ref(scope_let): scope_let{id: 2, name: "x", type: "int"}
+                And: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+                  Match(let_expr{bindingID: B, bodyID: I, varName: N}): let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+                    base_fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
+                  Ref(type): type{id: 1, type: "int"}
+                    Ref(type_i): type_i{id: 1, type: "int"}
+                      Match(int_lit{id: I}): int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
+                        base_fact: int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}

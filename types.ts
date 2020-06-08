@@ -17,8 +17,9 @@ export interface Res {
 }
 
 export type Trace =
-  | { type: "AndTrace"; sources: Res[]; ruleName: string }
+  | { type: "AndTrace"; sources: Res[] }
   | { type: "MatchTrace"; fact: Res; match: Rec }
+  | { type: "RefTrace"; ruleName: string; innerRes: Res }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "VarTrace" }
