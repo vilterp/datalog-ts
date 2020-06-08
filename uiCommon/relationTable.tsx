@@ -3,7 +3,8 @@ import { ppt, prettyPrintRule } from "../pretty";
 import { Rec, Res, Relation } from "../types";
 import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
-import { TreeCollapseState } from "./treeView";
+import { TreeCollapseState, TreeView } from "./treeView";
+import { traceToTree } from "../traceTree";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -26,10 +27,8 @@ export function RelationTable(props: {
           type: "Insert",
           record: props.relation.rule.head,
         });
-  console.log({ results });
-  const records = results.map((r) => r.term);
   const fields =
-    records.length === 0
+    results.length === 0
       ? []
       : (props.relation.type === "Rule"
           ? Object.keys(props.relation.rule.head.attrs)
@@ -42,7 +41,7 @@ export function RelationTable(props: {
           {pp.render(50, prettyPrintRule(props.relation.rule))}
         </pre>
       ) : null}
-      {records.length === 0 ? (
+      {results.length === 0 ? (
         <div style={{ fontStyle: "italic" }}>No results</div>
       ) : (
         <table style={{ borderCollapse: "collapse" }}>
@@ -56,23 +55,56 @@ export function RelationTable(props: {
             </tr>
           </thead>
           <tbody>
-            {records.map((record) => (
-              <tr key={ppt(record)}>
-                {fields.map((field) => (
-                  <td
-                    key={field}
-                    style={{
-                      paddingLeft: 5,
-                      paddingRight: 5,
-                      borderLeft: "1px solid lightgrey",
-                      borderRight: "1px solid lightgrey",
-                    }}
-                  >
-                    <code>{ppt((record as Rec).attrs[field])}</code>
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {results.map((result) => {
+              const key = ppt(result.term);
+              const rowCollapseState = props.collapseState[key];
+              const toggleRowCollapsed = () => {
+                console.log("toggleRowCollapsed", key);
+                props.setCollapseState({
+                  ...props.collapseState,
+                  [key]: {
+                    ...rowCollapseState,
+                    collapsed: !rowCollapseState.collapsed,
+                  },
+                });
+              };
+              return (
+                <>
+                  <tr key={key}>
+                    {fields.map((field) => (
+                      <td
+                        key={field}
+                        style={{
+                          paddingLeft: 5,
+                          paddingRight: 5,
+                          borderLeft: "1px solid lightgrey",
+                          borderRight: "1px solid lightgrey",
+                        }}
+                        onClick={toggleRowCollapsed}
+                      >
+                        <code>{ppt((result.term as Rec).attrs[field])}</code>
+                      </td>
+                    ))}
+                  </tr>
+                  {props.collapseState[key].collapsed ? null : (
+                    <tr>
+                      <td colSpan={fields.length}>
+                        <TreeView
+                          tree={traceToTree(result)}
+                          collapseState={rowCollapseState}
+                          setCollapseState={(st) =>
+                            props.setCollapseState({
+                              ...props.collapseState,
+                              [key]: st,
+                            })
+                          }
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </>
+              );
+            })}
           </tbody>
         </table>
       )}
