@@ -92,3 +92,11 @@ export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
   }
   return out;
 }
+
+export function updateAtIdx<T>(
+  arr: T[],
+  idx: number,
+  update: (t: T) => T
+): T[] {
+  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
+}
