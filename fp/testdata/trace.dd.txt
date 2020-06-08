@@ -1,23 +1,23 @@
 2
 ----
-Rule: type{id: 0, type: "int"}
-  Rule: type_i{id: 0, type: "int"}
-    Fact: int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}
+Rule: type{id: 0, type: "int"}; {T: "int"}
+  Rule: type_i{id: 0, type: "int"}; {I: 0, T: "int"}
+    Fact: int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}; {I: 0}
 
 let x = 2 in x
 ----
-Rule: type{id: 0, type: "int"}
-  Rule: type_let{id: 0, type: "int"}
-    And
-      Fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-      Rule: type{id: 2, type: "int"}
-        Rule: type_var{id: 2, type: "int"}
-          And
-            Fact: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}
-            Rule: scope_item{id: 2, name: "x", type: "int"}
-              Rule: scope_let{id: 2, name: "x", type: "int"}
-                And
-                  Fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}
-                  Rule: type{id: 1, type: "int"}
-                    Rule: type_i{id: 1, type: "int"}
-                      Fact: int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
+Rule: type{id: 0, type: "int"}; {T: "int"}
+  Rule: type_let{id: 0, type: "int"}; {I: 0, T: "int"}
+    And {BID: 2, I: 0, T: "int"}
+      Fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}; {BID: 2, I: 0}
+      Rule: type{id: 2, type: "int"}; {BID: 2, T: "int"}
+        Rule: type_var{id: 2, type: "int"}; {I: 2, T: "int"}
+          And {I: 2, N: "x", T: "int"}
+            Fact: var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}; {I: 2, N: "x"}
+            Rule: scope_item{id: 2, name: "x", type: "int"}; {I: 2, N: "x", T: "int"}
+              Rule: scope_let{id: 2, name: "x", type: "int"}; {I: 2, N: "x", T: "int"}
+                And {B: 1, I: 2, N: "x", T: "int"}
+                  Fact: let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: "x"}; {B: 1, I: 2, N: "x"}
+                  Rule: type{id: 1, type: "int"}; {B: 1, T: "int"}
+                    Rule: type_i{id: 1, type: "int"}; {I: 1, T: "int"}
+                      Fact: int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}; {I: 1}
