@@ -5,7 +5,6 @@ import {
   Term,
   TermWithBindings,
   SituatedBinding,
-  RulePathSegment,
   ScopePath,
 } from "./types";
 import {
@@ -15,7 +14,7 @@ import {
   ppVM,
 } from "./pretty";
 import { termEq } from "./unify";
-import { mapObj, flatMap } from "./util";
+import { mapObj, flatMap, getFirst } from "./util";
 import * as pp from "prettier-printer";
 import { pathToScopePath } from "./simpleEvaluate";
 
@@ -109,8 +108,31 @@ export function makeTermWithBindings(
 
 // returns bindings further down the proof tree, via mappings
 // TODO: to this in reverse as well...
-export function childPaths(res: Res, binding: string): SituatedBinding[] {
-  return childPathsRecurse(res, binding, []);
+function resAtPath(node: Res, path: ScopePath): Res {
+  if (path.length === 0) {
+    return node;
+  }
+  const firstSeg = path[0];
+  switch (node.trace.type) {
+    case "AndTrace":
+      const clauseIdx = getFirst(firstSeg.invokeLoc, (seg) =>
+        seg.type === "AndClause" ? seg.idx : null
+      );
+      return resAtPath(node.trace.sources[clauseIdx], path.slice(1));
+    case "RefTrace":
+      return resAtPath(node.trace.innerRes, path.slice(1));
+    default:
+      throw new Error("unreachable");
+  }
+}
+
+// TODO: also get "parent" paths
+export function getChildPaths(
+  res: Res,
+  highlighted: SituatedBinding
+): SituatedBinding[] {
+  const rap = resAtPath(res, highlighted.path);
+  return childPathsRecurse(rap, highlighted.name, highlighted.path);
 }
 
 function childPathsRecurse(
@@ -127,7 +149,6 @@ function childPathsRecurse(
       if (!mapping) {
         return [];
       }
-      console.log("mapping", { binding, mapping });
       return [
         { name: binding, path },
         ...childPathsRecurse(trace.innerRes, mapping, [

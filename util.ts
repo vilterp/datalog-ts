@@ -123,3 +123,13 @@ export function arrayEq<T>(
     a.reduce((accum, el, idx) => accum && cmp(el, b[idx]), true)
   );
 }
+
+export function getFirst<T, V>(arr: T[], f: (t: T) => V | null): V | null {
+  for (let i = 0; i < arr.length; i++) {
+    const res = f(arr[i]);
+    if (res !== null) {
+      return res;
+    }
+  }
+  return null;
+}
