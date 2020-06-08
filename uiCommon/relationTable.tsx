@@ -95,8 +95,9 @@ export function RelationTable(props: {
                   {rowCollapseState.collapsed ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
-                        <TreeView
+                        <TreeView<Res>
                           tree={traceToTree(result)}
+                          render={({ key }) => key}
                           collapseState={rowCollapseState}
                           setCollapseState={(st) => {
                             console.log("RelationTable set state", { key, st });
