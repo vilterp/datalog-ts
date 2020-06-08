@@ -19,7 +19,7 @@ grandfather{grandchild: A, grandfather: C} :-
   parent{child: A, parent: B} &
   father{child: B, father: C}.
 grandmother{grandchild: A, grandmother: C} :-
-  child{child: A, parent: B} &
+  parent{child: A, parent: B} &
   mother{child: B, mother: C}.
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &

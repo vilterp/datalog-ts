@@ -9,7 +9,8 @@
     "build": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts && tsc --outDir dist cmd/flatten-fp.ts",
     "build-fp-ui": "esbuild fp/ui/main.tsx --bundle --outfile=fp/ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap --trace=fp/ui/build.trace",
     "serve-fp-ui": "cd fp/ui && http-server",
-    "build-ui": "esbuild ui/main.tsx --bundle --outfile=ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap --minify"
+    "build-ui": "esbuild ui/main.tsx --bundle --outfile=ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap",
+    "serve-ui": "cd ui && http-server"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { ReplCore } from "../replCore";
 import { Program, Res, Rec, StringLit } from "../types";
-import { prettyPrintTerm } from "../pretty";
 import * as pp from "prettier-printer";
 import { language } from "../parser";
 import { LayoutManager } from "@jaegertracing/plexus";
@@ -11,6 +10,8 @@ import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../testdata/family.dl";
 import { uniqBy } from "../util";
+import { TabbedTables } from "../uiCommon/tabbedTables";
+import useLocalStorage from "react-use-localstorage";
 
 const lm = new LayoutManager({
   useDotEdges: true,
@@ -19,15 +20,15 @@ const lm = new LayoutManager({
 });
 
 function Main() {
-  const [source, setSource] = useState(familyDL);
+  const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
 
   const output: Res[] = [];
   let error = null;
   let nodes = [];
   let edges = [];
 
+  const repl = new ReplCore(null); // TODO: some loader
   try {
-    const repl = new ReplCore(null); // TODO: some loader
     const program = language.program.tryParse(source) as Program;
     program.forEach((stmt) => {
       repl.evalStmt(stmt).forEach((res) => output.push(res));
@@ -70,12 +71,8 @@ function Main() {
           <pre>{error}</pre>
         </>
       ) : null}
-      <h3>Results</h3>
-      <pre>
-        {output
-          .map((res) => pp.render(100, prettyPrintTerm(res.term)))
-          .join("\n")}
-      </pre>
+      <h3>Explore</h3>
+      <TabbedTables repl={repl} />
       <h3>Graph</h3>
       <Digraph zoom={true} edges={edges} vertices={nodes} layoutManager={lm} />
     </div>
