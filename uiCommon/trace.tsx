@@ -1,6 +1,6 @@
 import React from "react";
-import { Res, VarMappings } from "../types";
-import { Term, VarC, HighlightProps, RulePath } from "./term";
+import { Res, VarMappings, RulePath } from "../types";
+import { Term, VarC, HighlightProps } from "./term";
 import { makeTermWithBindings } from "../traceTree";
 import { mapObjToList, intersperse } from "../util";
 

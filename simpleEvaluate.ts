@@ -6,7 +6,6 @@ import {
   DB,
   falseTerm,
   Rec,
-  rec,
   Res,
   Term,
   trueTerm,
@@ -15,16 +14,18 @@ import {
   varTrace,
   binExprTrace,
   baseFactTrace,
+  RulePathSegment,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
 import { filterMap, flatMap } from "./util";
 
 export function evaluate(db: DB, term: Term): Res[] {
-  return doEvaluate(0, db, {}, term);
+  return doEvaluate(0, [], db, {}, term);
 }
 
 function doJoin(
   depth: number,
+  rulePath: RulePathSegment[],
   db: DB,
   scope: Bindings,
   clauses: AndClause[]
@@ -32,10 +33,22 @@ function doJoin(
   // console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
   if (clauses.length === 1) {
     // console.log("doJoin: evaluating only clause", ppt(clauses[0]));
-    return doEvaluate(depth + 1, db, scope, clauses[0]);
+    return doEvaluate(
+      depth + 1,
+      [...rulePath, { type: "AndClause", idx: 0 }],
+      db,
+      scope,
+      clauses[0]
+    );
   }
   // console.group("doJoin: about to get left results");
-  const leftResults = doEvaluate(depth + 1, db, scope, clauses[0]);
+  const leftResults = doEvaluate(
+    depth + 1,
+    [...rulePath, { type: "AndClause", idx: 0 }],
+    db,
+    scope,
+    clauses[0]
+  );
   // console.groupEnd();
   // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
@@ -49,7 +62,13 @@ function doJoin(
     //   nextScope: ppb(nextScope),
     //   nextScope: nextScope ? ppb(nextScope) : null,
     // });
-    const rightResults = doJoin(depth, db, nextScope, clauses.slice(1));
+    const rightResults = doJoin(
+      depth,
+      [...rulePath, { type: "AndClause", idx: 1 }],
+      db,
+      nextScope,
+      clauses.slice(1)
+    );
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
@@ -81,7 +100,13 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
   return applyFilter(exprs[0], applyFilters(exprs.slice(1), recResults));
 }
 
-function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
+function doEvaluate(
+  depth: number,
+  path: RulePathSegment[],
+  db: DB,
+  scope: Bindings,
+  term: Term
+): Res[] {
   // console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
   //   throw new Error("too deep");
@@ -149,9 +174,15 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
           //   newScope: ppb(newScope),
           // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
-          const rawResults = flatMap(rule.defn.opts, (ae) => {
-            const { recs, exprs } = extractBinExprs(ae);
-            const recResults = doJoin(depth, db, newScope, recs);
+          const rawResults = flatMap(rule.defn.opts, (andExpr, optIdx) => {
+            const { recs: clauses, exprs } = extractBinExprs(andExpr);
+            const recResults = doJoin(
+              depth,
+              [...path, { type: "OrOpt", idx: optIdx }],
+              db,
+              newScope,
+              clauses
+            );
             return applyFilters(exprs, recResults);
           });
           // console.groupEnd();
@@ -185,6 +216,7 @@ function doEvaluate(depth: number, db: DB, scope: Bindings, term: Term): Res[] {
               trace: {
                 type: "RefTrace",
                 refTerm: term,
+                invokeLoc: { type: "Rule", path },
                 innerRes: res,
                 mappings,
               },

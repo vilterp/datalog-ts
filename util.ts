@@ -68,10 +68,11 @@ export function flatMapObjToList<T, V>(
   return out;
 }
 
-export function flatMap<T, U>(arr: T[], f: (t: T) => U[]): U[] {
+export function flatMap<T, U>(arr: T[], f: (t: T, idx: number) => U[]): U[] {
   const out: U[] = [];
-  for (const input of arr) {
-    for (const output of f(input)) {
+  for (let i = 0; i < arr.length; i++) {
+    const input = arr[i];
+    for (const output of f(input, i)) {
       out.push(output);
     }
   }

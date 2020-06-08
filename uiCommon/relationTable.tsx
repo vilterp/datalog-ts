@@ -1,11 +1,11 @@
 import React from "react";
 import { ppt, prettyPrintRule } from "../pretty";
-import { Rec, Res, Relation } from "../types";
+import { Rec, Res, Relation, RulePath } from "../types";
 import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
 import { traceToTree, makeTermWithBindings } from "../traceTree";
-import { Term, noHighlight, HighlightProps, RulePath } from "./term";
+import { Term, noHighlight, HighlightProps } from "./term";
 import { TraceNode } from "./trace";
 import { filterMap } from "../util";
 
@@ -141,7 +141,9 @@ export function RelationTable(props: {
 
 function pathToRulePath(path: Res[]): RulePath {
   return filterMap(path, (res) =>
-    res.trace.type === "RefTrace" ? res.trace.refTerm.relation : null
+    res.trace.type === "RefTrace"
+      ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }
+      : null
   );
 }
 

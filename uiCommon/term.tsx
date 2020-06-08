@@ -1,14 +1,7 @@
 import React from "react";
-import { TermWithBindings } from "../types";
-import { intersperse, mapObjToList, arrayEq } from "../util";
+import { TermWithBindings, RulePath, rulePathEq } from "../types";
+import { intersperse, mapObjToList } from "../util";
 import { escapeString } from "../pretty";
-
-export type RulePath = string[];
-
-// gah this should be derived by the language
-export function rulePathEq(left: RulePath, right: RulePath): boolean {
-  return arrayEq(left, right, (a, b) => a === b);
-}
 
 export type Highlight =
   | { type: "Relation"; name: string }

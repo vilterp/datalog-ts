@@ -20,10 +20,18 @@ export interface Res {
   trace: Trace;
 }
 
+// traces
+
 export type Trace =
   | { type: "AndTrace"; sources: Res[] }
   | { type: "MatchTrace"; fact: Res; match: Rec } // TODO: fact isn't used, since it's always just baseFact
-  | { type: "RefTrace"; refTerm: Rec; innerRes: Res; mappings: VarMappings }
+  | {
+      type: "RefTrace";
+      refTerm: Rec;
+      invokeLoc: InvocationLocation; // where in the calling rule this was
+      innerRes: Res;
+      mappings: VarMappings;
+    }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "VarTrace" }
@@ -36,6 +44,21 @@ export const varTrace: Trace = { type: "VarTrace" };
 export const baseFactTrace: Trace = { type: "BaseFactTrace" };
 
 export const binExprTrace: Trace = { type: "BinExprTrace" };
+
+export type InvocationLocation =
+  | { type: "Top" }
+  | { type: "Rule"; path: RulePathSegment[] };
+
+export type RulePathSegment =
+  | { type: "OrOpt"; idx: number }
+  | { type: "AndClause"; idx: number };
+
+export type RulePath = { name: string; invokeLoc: InvocationLocation }[];
+
+// gah this should be derived by the language
+export function rulePathEq(left: RulePath, right: RulePath): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
 
 export type Bindings = { [key: string]: Term };
 
