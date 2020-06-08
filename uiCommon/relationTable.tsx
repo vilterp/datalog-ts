@@ -8,6 +8,7 @@ import { traceToTree, makeTermWithBindings } from "../traceTree";
 import { Term, noHighlight, HighlightProps } from "./term";
 import { TraceNode } from "./trace";
 import { filterMap } from "../util";
+import { pathToRulePath } from "../simpleEvaluate";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -136,14 +137,6 @@ export function RelationTable(props: {
         </table>
       )}
     </>
-  );
-}
-
-function pathToRulePath(path: Res[]): RulePath {
-  return filterMap(path, (res) =>
-    res.trace.type === "RefTrace"
-      ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }
-      : null
   );
 }
 

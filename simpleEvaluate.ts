@@ -15,6 +15,7 @@ import {
   binExprTrace,
   baseFactTrace,
   RulePathSegment,
+  RulePath,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
 import { filterMap, flatMap } from "./util";
@@ -320,4 +321,12 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
+}
+
+export function pathToRulePath(path: Res[]): RulePath {
+  return filterMap(path, (res) =>
+    res.trace.type === "RefTrace"
+      ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }
+      : null
+  );
 }

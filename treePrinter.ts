@@ -10,16 +10,28 @@ export function leaf<T>(key: string, item: T): Tree<T> {
   return node(key, item, []);
 }
 
-export function prettyPrintTree<T>(tree: Tree<T>): string {
-  return pptRecurse(0, tree).join("\n");
+type RenderNodeFn<T> = (props: { item: T; key: string; path: T[] }) => string;
+
+export function prettyPrintTree<T>(
+  tree: Tree<T>,
+  render: RenderNodeFn<T>
+): string {
+  return pptRecurse(0, tree, [tree.item], render).join("\n");
 }
 
-function pptRecurse<T>(depth: number, tree: Tree<T>): string[] {
+function pptRecurse<T>(
+  depth: number,
+  tree: Tree<T>,
+  path: T[],
+  render: RenderNodeFn<T>
+): string[] {
   return [
     // TODO: maybe allow passing in a T => string render function instead of just
     // using the key. But this is fine for now.
-    repeat(depth, "  ") + tree.key,
-    ...flatMap(tree.children, (child) => pptRecurse(depth + 1, child)),
+    repeat(depth, "  ") + render({ item: tree.item, key: tree.key, path }),
+    ...flatMap(tree.children, (child) =>
+      pptRecurse(depth + 1, child, [...path, tree.item], render)
+    ),
   ];
 }
 

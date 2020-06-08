@@ -1,23 +1,23 @@
 2
 ----
-Rule: type{id: 0, type: T@"int"}; {T: T}; Rule[]
-  Rule: type_i{id: I@0, type: T@"int"}; {I: I}; Rule[or(1), and(0)]
-    Fact: int_lit{id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 1}}, val: 2}
+Rule: type{id: 0, type: T@"int"}; {T: T}; [type(Rule[])]
+  Rule: type_i{id: I@0, type: T@"int"}; {I: I}; [type(Rule[]), type(Rule[])]
+    Fact: int_lit{id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 1}}, val: 2}; [type(Rule[]), type(Rule[]), type_i(Rule[or(1), and(0)])]
 
 let x = 2 in x
 ----
-Rule: type{id: 0, type: T@"int"}; {T: T}; Rule[]
-  Rule: type_let{id: I@0, type: T@"int"}; {I: I, T: T}; Rule[or(4), and(0)]
-    And
-      Fact: let_expr{bindingID: 1, bodyID: BID@2, id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 14}}, varName: "x"}
-      Rule: type{id: BID@2, type: T@"int"}; {I: BID, T: T}; Rule[or(4), and(0), or(0), and(1), and(0)]
-        Rule: type_var{id: I@2, type: T@"int"}; {I: I, T: T}; Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]
-          And
-            Fact: var{id: I@2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: N@"x"}
-            Rule: scope_item{id: I@2, name: N@"x", type: T@"int"}; {I: I, N: N, T: T}; Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)]
-              Rule: scope_let{id: I@2, name: N@"x", type: T@"int"}; {I: I, N: N, T: T}; Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0)]
-                And
-                  Fact: let_expr{bindingID: B@1, bodyID: I@2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: N@"x"}
-                  Rule: type{id: B@1, type: T@"int"}; {I: B, T: T}; Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0), or(0), and(1), and(0)]
-                    Rule: type_i{id: I@1, type: T@"int"}; {I: I}; Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0), or(0), and(1), and(0), or(1), and(0)]
-                      Fact: int_lit{id: I@1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
+Rule: type{id: 0, type: T@"int"}; {T: T}; [type(Rule[])]
+  Rule: type_let{id: I@0, type: T@"int"}; {I: I, T: T}; [type(Rule[]), type(Rule[])]
+    And; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)])]
+      Fact: let_expr{bindingID: 1, bodyID: BID@2, id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 14}}, varName: "x"}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)])]
+      Rule: type{id: BID@2, type: T@"int"}; {I: BID, T: T}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)])]
+        Rule: type_var{id: I@2, type: T@"int"}; {I: I, T: T}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)])]
+          And; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)])]
+            Fact: var{id: I@2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: N@"x"}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)])]
+            Rule: scope_item{id: I@2, name: N@"x", type: T@"int"}; {I: I, N: N, T: T}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)])]
+              Rule: scope_let{id: I@2, name: N@"x", type: T@"int"}; {I: I, N: N, T: T}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]), scope_item(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)])]
+                And; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]), scope_item(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)]), scope_let(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0)])]
+                  Fact: let_expr{bindingID: B@1, bodyID: I@2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varName: N@"x"}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]), scope_item(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)]), scope_let(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0)])]
+                  Rule: type{id: B@1, type: T@"int"}; {I: B, T: T}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]), scope_item(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)]), scope_let(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0)])]
+                    Rule: type_i{id: I@1, type: T@"int"}; {I: I}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]), scope_item(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)]), scope_let(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0), or(0), and(1), and(0)])]
+                      Fact: int_lit{id: I@1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}; [type(Rule[]), type(Rule[]), type_let(Rule[or(4), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0)]), type_var(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0)]), scope_item(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0)]), scope_let(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0)]), type(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0), or(0), and(1), and(0)]), type_i(Rule[or(4), and(0), or(0), and(1), and(0), or(5), and(0), or(0), and(1), and(0), or(1), and(0), or(0), and(1), and(0), or(1), and(0)])]

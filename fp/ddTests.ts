@@ -63,7 +63,7 @@ export function fpTests(writeResults: boolean): Suite {
       test() {
         runDDTestAtPath(
           "fp/testdata/tracePaths.dd.txt",
-          (t) => traceTest(t, { printInvokeLoc: true }),
+          (t) => traceTest(t, { prettyPrintRulePath: true }),
           writeResults
         );
       },
