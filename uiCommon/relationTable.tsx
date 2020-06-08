@@ -96,8 +96,10 @@ export function RelationTable(props: {
                             (result.term as Rec).attrs[field],
                             {}
                           )}
-                          highlight={noHighlight}
-                          setHighlight={() => {}}
+                          highlight={{
+                            highlight: noHighlight,
+                            setHighlight: () => {},
+                          }}
                         />
                       </td>
                     ))}

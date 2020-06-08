@@ -10,16 +10,16 @@ export type Highlight =
 
 export const noHighlight: Highlight = { type: "None" };
 
-export function Term(props: {
-  term: TermWithBindings;
+export type HighlightProps = {
   highlight: Highlight;
   setHighlight: (h: Highlight) => void;
+};
+
+export function Term(props: {
+  term: TermWithBindings;
+  highlight: HighlightProps;
 }) {
   const term = props.term;
-  const highlightProps = {
-    highlight: props.highlight,
-    setHighlight: props.setHighlight,
-  };
   switch (term.type) {
     case "RecordWithBindings":
       return (
@@ -28,9 +28,12 @@ export function Term(props: {
             className="relation-name"
             style={{ fontWeight: "bold" }}
             onMouseOver={() =>
-              props.setHighlight({ type: "Relation", name: term.relation })
+              props.highlight.setHighlight({
+                type: "Relation",
+                name: term.relation,
+              })
             }
-            onMouseOut={() => props.setHighlight(noHighlight)}
+            onMouseOut={() => props.highlight.setHighlight(noHighlight)}
           >
             {term.relation}
           </span>
@@ -42,11 +45,17 @@ export function Term(props: {
                 {key}:{" "}
                 {valueWithBinding.binding ? (
                   <>
-                    <VarC name={valueWithBinding.binding} {...highlightProps} />
+                    <VarC
+                      name={valueWithBinding.binding}
+                      highlight={props.highlight}
+                    />
                     @
                   </>
                 ) : null}
-                <Term term={valueWithBinding.term} {...highlightProps} />
+                <Term
+                  term={valueWithBinding.term}
+                  highlight={props.highlight}
+                />
               </React.Fragment>
             ))
           )}
@@ -59,7 +68,9 @@ export function Term(props: {
           [
           {intersperse<React.ReactNode>(
             ", ",
-            term.items.map((item) => <Term term={item} {...highlightProps} />)
+            term.items.map((item) => (
+              <Term term={item} highlight={props.highlight} />
+            ))
           )}
           ]
         </>
@@ -67,8 +78,8 @@ export function Term(props: {
     case "BinExprWithBindings":
       return (
         <>
-          <Term term={term.left} {...highlightProps} /> {term.op}{" "}
-          <Term term={term.right} {...highlightProps} />
+          <Term term={term.left} highlight={props.highlight} /> {term.op}{" "}
+          <Term term={term.right} highlight={props.highlight} />
         </>
       );
     case "Atom":
@@ -87,22 +98,18 @@ export function Term(props: {
   }
 }
 
-export function VarC(props: {
-  name: string;
-  highlight: Highlight;
-  setHighlight: (h: Highlight) => void;
-}) {
+export function VarC(props: { name: string; highlight: HighlightProps }) {
   return (
     <span
       className="binding-name"
       style={{ color: "orange" }}
       onMouseOver={() =>
-        props.setHighlight({
+        props.highlight.setHighlight({
           type: "Binding",
           name: props.name,
         })
       }
-      onMouseOut={() => props.setHighlight(noHighlight)}
+      onMouseOut={() => props.highlight.setHighlight(noHighlight)}
     >
       {props.name}
     </span>
