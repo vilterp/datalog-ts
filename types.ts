@@ -3,6 +3,10 @@ export interface DB {
   rules: { [name: string]: Rule };
 }
 
+export type Relation =
+  | { type: "Table"; name: string; records: Rec[] }
+  | { type: "Rule"; name: string; rule: Rule };
+
 export function newDB(): DB {
   return {
     rules: {},

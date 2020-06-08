@@ -1,5 +1,5 @@
 import React from "react";
-import { useBoolLocalStorage } from "../fp/ui/util";
+import { useBoolLocalStorage } from "./hooks";
 
 export function Collapsible(props: {
   heading: string;

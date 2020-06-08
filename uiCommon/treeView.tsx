@@ -2,12 +2,15 @@ import React from "react";
 import { Tree } from "../treePrinter";
 import { updateAtIdx } from "../util";
 
-type CollapseState = { collapsed: boolean; childStates: CollapseState[] };
+export type TreeCollapseState = {
+  collapsed: boolean;
+  childStates: TreeCollapseState[];
+};
 
 export function TreeView(props: {
   tree: Tree;
-  collapseState: CollapseState;
-  setCollapseState: (c: CollapseState) => void;
+  collapseState: TreeCollapseState;
+  setCollapseState: (c: TreeCollapseState) => void;
 }) {
   return (
     <ul>
@@ -22,8 +25,8 @@ export function TreeView(props: {
 
 function NodeView(props: {
   tree: Tree;
-  collapseState: CollapseState;
-  setCollapseState: (c: CollapseState) => void;
+  collapseState: TreeCollapseState;
+  setCollapseState: (c: TreeCollapseState) => void;
 }) {
   return (
     <li>

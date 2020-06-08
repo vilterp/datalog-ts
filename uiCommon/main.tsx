@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { Expr, language as fpLanguage } from "../parser";
-import { flatten } from "../flatten";
-import { prettyPrintTerm, prettyPrintRule } from "../../pretty";
+import { Expr, language as fpLanguage } from "../fp/parser";
+import { flatten } from "../fp/flatten";
+import { prettyPrintTerm, prettyPrintRule } from "../pretty";
 import * as pp from "prettier-printer";
-import { Rec, Res, Rule } from "../../types";
-import { Loader } from "../../repl";
+import { Rec, Res, Rule } from "../types";
+import { Loader } from "../repl";
 // @ts-ignore
 import typecheckDL from "../typecheck.dl";
 // @ts-ignore
 import stdlibDL from "../stdlib.dl";
-import { ReplCore } from "../../replCore";
+import { ReplCore } from "../replCore";
 import useLocalStorage from "react-use-localstorage";
-import { TabbedTables } from "../../uiCommon/tabbedTables";
+import { TabbedTables } from "./tabbedTables";
 import ReactJson from "react-json-view";
-import { Collapsible } from "../../uiCommon/collapsible";
+import { Collapsible } from "./collapsible";
 
 const loader: Loader = (path: string) => {
   switch (path) {
