@@ -18,6 +18,7 @@ export const noHighlight: Highlight = { type: "None" };
 export type HighlightProps = {
   highlight: Highlight;
   setHighlight: (h: Highlight) => void;
+  childPaths: SituatedBinding[];
 };
 
 export function Term(props: {
@@ -130,17 +131,13 @@ export function VarC(props: {
   scopePath: ScopePath;
   highlight: HighlightProps;
 }) {
-  const hl = props.highlight.highlight;
-  const isHighlighted =
-    hl.type === "Binding" &&
-    hl.binding.name === props.name &&
-    scopePathEq(props.scopePath, hl.binding.path);
+  const status = highlightStatus(props.highlight, props.scopePath, props.name);
   return (
     <span
       className="binding-name"
       style={{
         color: "orange",
-        backgroundColor: isHighlighted ? "lightgrey" : "",
+        backgroundColor: colorForStatus(status),
       }}
       onMouseOver={() =>
         props.highlight.setHighlight({
@@ -153,4 +150,44 @@ export function VarC(props: {
       {props.name}
     </span>
   );
+}
+
+function colorForStatus(s: HighlightStatus): string {
+  switch (s) {
+    case "parent":
+      return "lightblue";
+    case "hover":
+      return "lightpink";
+    case "child":
+      return "lightgrey";
+    case "none":
+      return "";
+  }
+}
+
+type HighlightStatus = "parent" | "hover" | "child" | "none";
+
+function highlightStatus(
+  highlight: HighlightProps,
+  path: ScopePath,
+  name: string
+): HighlightStatus {
+  // TODO: factor out bindingEq function or something
+  const hl = highlight.highlight;
+  if (hl.type !== "Binding") {
+    return "none";
+  }
+  if (name === hl.binding.name && scopePathEq(path, hl.binding.path)) {
+    return "hover";
+  }
+  if (
+    highlight.childPaths.some(
+      (childPath) =>
+        name === childPath.name && scopePathEq(childPath.path, path)
+    )
+  ) {
+    return "child";
+  }
+  // TODO: parent
+  return "none";
 }

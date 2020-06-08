@@ -62,9 +62,6 @@ export function RelationTable(props: {
           <tbody>
             {results.map((result) => {
               const hl = props.highlight.highlight;
-              if (hl.type === "Binding") {
-                console.log("child paths", getChildPaths(result, hl.binding));
-              }
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
@@ -104,6 +101,7 @@ export function RelationTable(props: {
                           highlight={{
                             highlight: noHighlight,
                             setHighlight: () => {},
+                            childPaths: [],
                           }}
                           scopePath={[]}
                         />
@@ -118,7 +116,16 @@ export function RelationTable(props: {
                           render={({ item, path }) => (
                             <TraceNode
                               res={item}
-                              highlight={props.highlight}
+                              highlight={{
+                                ...props.highlight,
+                                childPaths:
+                                  props.highlight.highlight.type === "Binding"
+                                    ? getChildPaths(
+                                        result,
+                                        props.highlight.highlight.binding
+                                      )
+                                    : [],
+                              }}
                               scopePath={pathToScopePath(path)}
                             />
                           )}
