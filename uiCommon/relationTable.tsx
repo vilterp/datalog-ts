@@ -47,7 +47,7 @@ export function RelationTable(props: {
         <table style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid black" }}>
-              <th />
+              {props.relation.type === "Rule" ? <th /> : null}
               {fields.map((name) => (
                 <th key={name} style={{ paddingLeft: 5, paddingRight: 5 }}>
                   <code>{name}</code>
@@ -70,18 +70,14 @@ export function RelationTable(props: {
                   },
                 });
               };
-              const icon =
-                props.relation.type === "Table"
-                  ? "o"
-                  : rowCollapseState.collapsed
-                  ? ">"
-                  : "v";
+              const icon = rowCollapseState.collapsed ? ">" : "v";
               return (
                 <React.Fragment key={key}>
-                  <tr onClick={toggleRowCollapsed}>
-                    <td style={{ cursor: "pointer", fontFamily: "monospace" }}>
-                      {icon}
-                    </td>
+                  <tr
+                    onClick={toggleRowCollapsed}
+                    style={{ cursor: "pointer", fontFamily: "monospace" }}
+                  >
+                    {props.relation.type === "Rule" ? <td>{icon}</td> : null}
                     {fields.map((field) => (
                       <td
                         key={field}
