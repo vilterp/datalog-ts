@@ -5,7 +5,7 @@ import { escapeString } from "../pretty";
 
 export type Highlight =
   | { type: "Relation"; name: string }
-  | { type: "Binding"; name: string }
+  | { type: "Binding"; name: string } // TODO: need to scope this to a "rule path"
   | { type: "None" };
 
 export const noHighlight: Highlight = { type: "None" };
@@ -21,12 +21,17 @@ export function Term(props: {
 }) {
   const term = props.term;
   switch (term.type) {
-    case "RecordWithBindings":
+    case "RecordWithBindings": {
+      const hl = props.highlight.highlight;
+      const isHighlighted = hl.type === "Relation" && hl.name === term.relation;
       return (
         <>
           <span
             className="relation-name"
-            style={{ color: "purple" }}
+            style={{
+              color: "purple",
+              backgroundColor: isHighlighted ? "lightgrey" : "",
+            }}
             onMouseOver={() =>
               props.highlight.setHighlight({
                 type: "Relation",
@@ -62,6 +67,7 @@ export function Term(props: {
           {"}"}
         </>
       );
+    }
     case "ArrayWithBindings":
       return (
         <>
@@ -99,10 +105,15 @@ export function Term(props: {
 }
 
 export function VarC(props: { name: string; highlight: HighlightProps }) {
+  const hl = props.highlight.highlight;
+  const isHighlighted = hl.type === "Binding" && hl.name === name;
   return (
     <span
       className="binding-name"
-      style={{ color: "orange" }}
+      style={{
+        color: "orange",
+        backgroundColor: isHighlighted ? "lightgrey" : "",
+      }}
       onMouseOver={() =>
         props.highlight.setHighlight({
           type: "Binding",

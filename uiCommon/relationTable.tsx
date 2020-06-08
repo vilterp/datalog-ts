@@ -112,7 +112,6 @@ export function RelationTable(props: {
                           render={({ item }) => <Trace res={item} />}
                           collapseState={rowCollapseState}
                           setCollapseState={(st) => {
-                            console.log("RelationTable set state", { key, st });
                             props.setCollapseState({
                               ...props.collapseState,
                               [key]: st,
