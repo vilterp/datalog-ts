@@ -26,7 +26,7 @@ export function Term(props: {
         <>
           <span
             className="relation-name"
-            style={{ fontWeight: "bold" }}
+            style={{ color: "purple" }}
             onMouseOver={() =>
               props.highlight.setHighlight({
                 type: "Relation",
