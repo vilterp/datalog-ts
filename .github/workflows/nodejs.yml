@@ -18,21 +18,21 @@ jobs:
         node-version: [12.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn
-    - run: yarn test
-      env:
-        CI: true
-    - run: yarn global add ts-node --prefix=.
-    - name: test repl
-      run: |
-        export PATH=$PATH:$GITHUB_WORKSPACE/bin:$GITHUB_WORKSPACE/interp-test
-        cd interp-test
-        cat family-facts.dl | ts-node ../cmd/repl.ts '.graphviz' ./family-rules.dl > family.dot
-        cmp family.dot family-ref.dot
-    - run: yarn build-ui
-    - run: yarn build-fp-ui
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn
+      - run: yarn test
+        env:
+          CI: true
+      - run: yarn global add ts-node --prefix=.
+      - name: test repl
+        run: |
+          export PATH=$PATH:$GITHUB_WORKSPACE/bin:$GITHUB_WORKSPACE/interpTest
+          cd interpTest
+          cat family-facts.dl | ts-node ../cmd/repl.ts '.graphviz' ./family-rules.dl > family.dot
+          cmp family.dot family-ref.dot
+      - run: yarn build-ui
+      - run: yarn build-fp-ui
