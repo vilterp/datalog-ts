@@ -11,3 +11,8 @@ export function useBoolLocalStorage(
 function parseBool(str: string): boolean {
   return str === "true";
 }
+
+export function useJSONLocalStorage<T>(key: string, initVal: T) {
+  const [val, setVal] = useLocalStorage(key, JSON.stringify(initVal));
+  return [JSON.parse(val), (v: T) => setVal(JSON.stringify(v))];
+}

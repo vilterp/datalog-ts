@@ -5,6 +5,7 @@ import { Relation } from "../types";
 import * as styles from "./styles";
 import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "./term";
+import { useJSONLocalStorage } from "./hooks";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
@@ -31,9 +32,10 @@ export function TabbedTables(props: { repl: ReplCore }) {
     "selected-relation",
     allRelations.length === 0 ? null : allRelations[0].name
   );
-  const [relationCollapseStates, setRelationCollapseStates] = useState<
-    RelationCollapseStates
-  >({});
+  const [
+    relationCollapseStates,
+    setRelationCollapseStates,
+  ] = useJSONLocalStorage<RelationCollapseStates>("collapse-state", {});
 
   const curRelation = allRelations.find((r) => r.name === curRelationName);
 
