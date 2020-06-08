@@ -111,3 +111,14 @@ export function updateAtIdx<T>(
 ): T[] {
   return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
 }
+
+export function arrayEq<T>(
+  a: T[],
+  b: T[],
+  cmp: (a: T, b: T) => boolean
+): boolean {
+  return (
+    a.length === b.length &&
+    a.reduce((accum, el, idx) => accum && cmp(el, b[idx]), true)
+  );
+}

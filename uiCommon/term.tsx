@@ -1,9 +1,14 @@
 import React from "react";
-import { TermWithBindings, VarMappings } from "../types";
-import { intersperse, mapObjToList } from "../util";
+import { TermWithBindings } from "../types";
+import { intersperse, mapObjToList, arrayEq } from "../util";
 import { escapeString } from "../pretty";
 
 export type RulePath = string[];
+
+// gah this should be derived by the language
+export function rulePathEq(left: RulePath, right: RulePath): boolean {
+  return arrayEq(left, right, (a, b) => a === b);
+}
 
 export type Highlight =
   | { type: "Relation"; name: string }
@@ -128,7 +133,10 @@ export function VarC(props: {
   highlight: HighlightProps;
 }) {
   const hl = props.highlight.highlight;
-  const isHighlighted = hl.type === "Binding" && hl.name === props.name;
+  const isHighlighted =
+    hl.type === "Binding" &&
+    hl.name === props.name &&
+    rulePathEq(props.rulePath, hl.rulePath);
   return (
     <span
       className="binding-name"

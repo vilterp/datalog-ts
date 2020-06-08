@@ -26,7 +26,12 @@ export function TraceNode(props: {
     case "RefTrace":
       return (
         <>
-          Rule: {term}{" "}
+          Rule:{" "}
+          <Term
+            term={makeTermWithBindings(res.term, res.bindings)}
+            highlight={props.highlight}
+            rulePath={props.rulePath.slice(0, props.rulePath.length - 1)}
+          />{" "}
           <VarMappingsC
             mappings={res.trace.mappings}
             highlight={props.highlight}
