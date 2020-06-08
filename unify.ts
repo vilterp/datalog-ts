@@ -93,6 +93,9 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
 
 // could use some kind of existing JS deepEq
 export function termEq(left: Term, right: Term): boolean {
+  if (!left || !right) {
+    return false; // TODO: shouldn't get here
+  }
   switch (left.type) {
     case "StringLit":
     case "IntLit":

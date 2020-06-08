@@ -8,7 +8,7 @@ export type TreeCollapseState = {
 
 export function TreeView<T>(props: {
   tree: Tree<T>;
-  render: ({ item: T, key: string }) => React.ReactNode;
+  render: (props: { item: T; key: string }) => React.ReactNode;
   collapseState: TreeCollapseState;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {

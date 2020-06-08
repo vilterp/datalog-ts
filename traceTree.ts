@@ -40,7 +40,7 @@ function printTermWithBindings(res: Res): string {
   );
 }
 
-function makeTermWithBindings(
+export function makeTermWithBindings(
   term: Term,
   bindings: Bindings
 ): TermWithBindings {
@@ -50,9 +50,9 @@ function makeTermWithBindings(
         type: "RecordWithBindings",
         relation: term.relation,
         attrs: mapObj(term.attrs, (_, val) => {
-          const binding = Object.keys(bindings).find((b) =>
-            termEq(val, bindings[b])
-          );
+          const binding = Object.keys(bindings).find((b) => {
+            return bindings[b] && termEq(val, bindings[b]);
+          });
           return {
             term: makeTermWithBindings(val, bindings),
             binding: binding,

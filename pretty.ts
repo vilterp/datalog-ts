@@ -25,13 +25,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
     case "Array":
       return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
     case "StringLit":
-      return `"${term.val
-        .split("\\")
-        .join("\\\\")
-        .split(`"`)
-        .join(`\\"`)
-        .split("\n")
-        .join("\\n")}"`;
+      return `"${escapeString(term.val)}"`;
     case "BinExpr":
       return [
         prettyPrintTerm(term.left),
@@ -154,4 +148,14 @@ function prettyPrintVarMappings(vm: VarMappings): pp.IDoc {
 
 export function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
   return [pair[0], pp.intersperse(", ")(docs), pair[1]];
+}
+
+export function escapeString(str: string): string {
+  return str
+    .split("\\")
+    .join("\\\\")
+    .split(`"`)
+    .join(`\\"`)
+    .split("\n")
+    .join("\\n");
 }

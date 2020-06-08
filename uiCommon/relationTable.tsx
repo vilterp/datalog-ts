@@ -1,10 +1,13 @@
 import React from "react";
 import { ppt, prettyPrintRule } from "../pretty";
-import { Rec, Res, Relation } from "../types";
+import { Rec, Res, Relation, VarMappings } from "../types";
 import { ReplCore } from "../replCore";
 import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
-import { traceToTree } from "../traceTree";
+import { traceToTree, makeTermWithBindings } from "../traceTree";
+import { Term, noHighlight } from "./term";
+import { mapObjToList } from "../util";
+import { Trace } from "./trace";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -88,7 +91,14 @@ export function RelationTable(props: {
                           borderRight: "1px solid lightgrey",
                         }}
                       >
-                        <code>{ppt((result.term as Rec).attrs[field])}</code>
+                        <Term
+                          term={makeTermWithBindings(
+                            (result.term as Rec).attrs[field],
+                            {}
+                          )}
+                          highlight={noHighlight}
+                          setHighlight={() => {}}
+                        />
                       </td>
                     ))}
                   </tr>
@@ -97,7 +107,7 @@ export function RelationTable(props: {
                       <td colSpan={fields.length + 1}>
                         <TreeView<Res>
                           tree={traceToTree(result)}
-                          render={({ key }) => key}
+                          render={({ item }) => <Trace res={item} />}
                           collapseState={rowCollapseState}
                           setCollapseState={(st) => {
                             console.log("RelationTable set state", { key, st });

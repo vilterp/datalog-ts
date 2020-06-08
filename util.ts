@@ -21,6 +21,17 @@ export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
   return out;
 }
 
+export function intersperse<T>(sep: T, arr: T[]): T[] {
+  const out: T[] = [];
+  for (let i = 0; i < arr.length; i++) {
+    out.push(arr[i]);
+    if (i < arr.length - 1) {
+      out.push(sep);
+    }
+  }
+  return out;
+}
+
 export function mapObjMaybe<T, V>(
   obj: { [k: string]: T },
   f: (k: string, t: T) => V | undefined | null
