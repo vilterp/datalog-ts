@@ -203,6 +203,8 @@ function getChildPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
       return flatMap(trace.sources, (innerRes) =>
         getChildPaths(innerRes, binding)
       );
+    case "MatchTrace":
+      return [binding];
     default:
       return [];
   }
