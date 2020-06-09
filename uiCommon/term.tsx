@@ -19,6 +19,7 @@ export type HighlightProps = {
   highlight: Highlight;
   setHighlight: (h: Highlight) => void;
   childPaths: SituatedBinding[];
+  parentPaths: SituatedBinding[];
 };
 
 export function Term(props: {
@@ -188,6 +189,13 @@ function highlightStatus(
   ) {
     return "child";
   }
-  // TODO: parent
+  if (
+    highlight.parentPaths.some(
+      (praentPath) =>
+        name === praentPath.name && scopePathEq(praentPath.path, path)
+    )
+  ) {
+    return "child";
+  }
   return "none";
 }

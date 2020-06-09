@@ -107,11 +107,23 @@ export function makeTermWithBindings(
   }
 }
 
-type PathSeg = { res: Res; path: ScopePath; mappings: VarMappings };
+type PathSeg = {
+  res: Res;
+  rule: string;
+  path: ScopePath;
+  mappings: VarMappings;
+};
 
-function walkPath(res: Res, path: ScopePath): PathSeg[] {
+// returns [leat => root]
+// TODO: just pass down list and index?
+function walkPath(
+  res: Res,
+  mappings: VarMappings,
+  soFar: ScopePath,
+  path: ScopePath
+): PathSeg[] {
   if (path.length === 0) {
-    return [{ res, path: [], mappings: {} }];
+    return [{ res, path: soFar, rule: "", mappings: mappings }]; // TODO: avoid empty string
   }
   const firstSeg = path[0];
   switch (res.trace.type) {
@@ -119,32 +131,45 @@ function walkPath(res: Res, path: ScopePath): PathSeg[] {
       const clauseIdx = getFirst(firstSeg.invokeLoc, (seg) =>
         seg.type === "AndClause" ? seg.idx : null
       );
-      return walkPath(res.trace.sources[clauseIdx], path.slice(1));
+      return walkPath(res.trace.sources[clauseIdx], mappings, soFar, path);
     case "RefTrace":
       return [
-        { res, path, mappings: res.trace.mappings },
-        ...walkPath(res.trace.innerRes, path.slice(1)),
+        ...walkPath(
+          res.trace.innerRes,
+          res.trace.mappings,
+          [...soFar, firstSeg],
+          path.slice(1)
+        ),
+        {
+          res,
+          rule: res.trace.refTerm.relation,
+          path: soFar,
+          mappings: res.trace.mappings,
+        },
       ];
     default:
       throw new Error("unreachable");
   }
 }
 
-// returns bindings further down the proof tree, via mappings
-function resAtPath(node: Res, path: ScopePath): Res {
-  return lastItem(walkPath(node, path)).res;
-}
-
 // TODO: also get "parent" paths
 export function getRelatedPaths(
   res: Res,
   highlighted: SituatedBinding
-): SituatedBinding[] {
-  const rap = resAtPath(res, highlighted.path);
-  return [
-    ...getChildPaths(rap, highlighted),
-    ...getParentPaths(rap, highlighted),
-  ];
+): { parents: SituatedBinding[]; children: SituatedBinding[] } {
+  const path = walkPath(res, {}, [], highlighted.path);
+  const resAtPath = path[0].res;
+  const parents = getParentPaths(path, highlighted.name);
+  const children = getChildPaths(resAtPath, highlighted);
+  console.log("getRelatedPaths", {
+    // res,
+    // highlighted: highlighted.path,
+    walkedPath: path,
+    // name: highlighted.name,
+    // parents,
+    // children,
+  });
+  return { children, parents };
 }
 
 function getChildPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
@@ -178,6 +203,17 @@ function getChildPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
   }
 }
 
-function getParentPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
-  return [];
+function getParentPaths(path: PathSeg[], binding: string): SituatedBinding[] {
+  if (path.length === 0) {
+    return [];
+  }
+  const first = path[0];
+  const mapping = first.mappings[binding];
+  // console.log("getParentPath", { binding, mappings: first.mappings, mapping });
+  return mapping
+    ? [
+        { name: binding, path: first.path },
+        ...getParentPaths(path.slice(1), mapping),
+      ]
+    : [];
 }

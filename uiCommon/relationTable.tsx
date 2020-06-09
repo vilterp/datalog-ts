@@ -106,6 +106,7 @@ export function RelationTable(props: {
                             highlight: noHighlight,
                             setHighlight: () => {},
                             childPaths: [],
+                            parentPaths: [],
                           }}
                           scopePath={[]}
                         />
@@ -117,22 +118,26 @@ export function RelationTable(props: {
                       <td colSpan={fields.length + 1}>
                         <TreeView<Res>
                           tree={traceToTree(result)}
-                          render={({ item, path }) => (
-                            <TraceNode
-                              res={item}
-                              highlight={{
-                                ...props.highlight,
-                                childPaths:
-                                  props.highlight.highlight.type === "Binding"
-                                    ? getRelatedPaths(
-                                        result,
-                                        props.highlight.highlight.binding
-                                      )
-                                    : [],
-                              }}
-                              scopePath={pathToScopePath(path)}
-                            />
-                          )}
+                          render={({ item, path }) => {
+                            const { children, parents } =
+                              props.highlight.highlight.type === "Binding"
+                                ? getRelatedPaths(
+                                    result,
+                                    props.highlight.highlight.binding
+                                  )
+                                : { children: [], parents: [] };
+                            return (
+                              <TraceNode
+                                res={item}
+                                highlight={{
+                                  ...props.highlight,
+                                  childPaths: children,
+                                  parentPaths: parents,
+                                }}
+                                scopePath={pathToScopePath(path)}
+                              />
+                            );
+                          }}
                           collapseState={rowCollapseState}
                           setCollapseState={(st) => {
                             props.setCollapseState({
