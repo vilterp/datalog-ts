@@ -32,6 +32,17 @@ export function intersperse<T>(sep: T, arr: T[]): T[] {
   return out;
 }
 
+export function intersperseIdx<T>(sep: (idx: number) => T, arr: T[]): T[] {
+  const out: T[] = [];
+  for (let i = 0; i < arr.length; i++) {
+    out.push(arr[i]);
+    if (i < arr.length - 1) {
+      out.push(sep(i));
+    }
+  }
+  return out;
+}
+
 export function mapObjMaybe<T, V>(
   obj: { [k: string]: T },
   f: (k: string, t: T) => V | undefined | null

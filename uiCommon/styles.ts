@@ -6,6 +6,7 @@ export function tab(props: {
 }): CSSProperties {
   return {
     cursor: "pointer",
+    color: "purple",
     fontFamily: "monospace",
     fontWeight: props.selected ? "bold" : "normal",
     backgroundColor: props.highlighted ? "lightgrey" : "",

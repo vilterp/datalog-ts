@@ -1,15 +1,15 @@
 import React from "react";
-import { ppt, prettyPrintRule, prettyPrintScopePath } from "../pretty";
+import { ppt } from "../pretty";
 import { Rec, Res, Relation } from "../types";
 import { ReplCore } from "../replCore";
-import * as pp from "prettier-printer";
 import { TreeCollapseState, TreeView } from "./treeView";
+import { RuleC } from "./rule";
 import {
   traceToTree,
   makeTermWithBindings,
   getRelatedPaths,
 } from "../traceTree";
-import { Term, noHighlight, HighlightProps } from "./term";
+import { Term, noHighlight, HighlightProps, noHighlightProps } from "./term";
 import { TraceNode } from "./trace";
 import { pathToScopePath } from "../simpleEvaluate";
 
@@ -45,9 +45,7 @@ export function RelationTable(props: {
   return (
     <>
       {props.relation.type === "Rule" ? (
-        <pre style={{ marginTop: 5 }}>
-          {pp.render(50, prettyPrintRule(props.relation.rule))}
-        </pre>
+        <RuleC highlight={props.highlight} rule={props.relation.rule} />
       ) : null}
       {results.length === 0 ? (
         <div style={{ fontStyle: "italic" }}>No results</div>

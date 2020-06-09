@@ -15,6 +15,13 @@ export type Highlight =
 
 export const noHighlight: Highlight = { type: "None" };
 
+export const noHighlightProps: HighlightProps = {
+  highlight: noHighlight,
+  setHighlight: () => {},
+  parentPaths: [],
+  childPaths: [],
+};
+
 export type HighlightProps = {
   highlight: Highlight;
   setHighlight: (h: Highlight) => void;
