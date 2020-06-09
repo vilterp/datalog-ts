@@ -32,10 +32,10 @@ function Main() {
   try {
     const program = language.program.tryParse(source) as Program;
     program.forEach((stmt) => {
-      repl.evalStmt(stmt).forEach((res) => output.push(res));
+      repl.evalStmt(stmt).results.forEach((res) => output.push(res));
     });
     edges = uniqBy(
-      repl.evalStr("edge{from: F, to: T, label: L}.").map((res) => ({
+      repl.evalStr("edge{from: F, to: T, label: L}.").results.map((res) => ({
         from: ((res.term as Rec).attrs.from as StringLit).val,
         to: ((res.term as Rec).attrs.to as StringLit).val,
         label: ((res.term as Rec).attrs.label as StringLit).val,
@@ -43,7 +43,7 @@ function Main() {
       (e) => `${e.from}-${e.to}`
     );
     nodes = uniqBy(
-      repl.evalStr("node{id: I, label: L}.").map((res) => ({
+      repl.evalStr("node{id: I, label: L}.").results.map((res) => ({
         key: ((res.term as Rec).attrs.id as StringLit).val,
         label: ((res.term as Rec).attrs.label as StringLit).val,
       })),
