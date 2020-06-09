@@ -50,7 +50,7 @@ export function TabbedTables(props: { repl: ReplCore }) {
         style={{
           padding: 15,
           border: "1px solid black",
-          width: 150,
+          width: 200,
         }}
       >
         <h4 style={{ marginBottom: 5, marginTop: 5 }}>Tables</h4>
