@@ -30,7 +30,8 @@
     "react-json-view": "^1.19.1",
     "react-use-localstorage": "^3.4.1",
     "ts-node": "^8.10.1",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.2",
+    "use-hash-param": "^0.2.3"
   },
   "bin": {
     "datalog-ts": "dist/cmd/repl.js",

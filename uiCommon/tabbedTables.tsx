@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useLocalStorage from "react-use-localstorage";
+import useHashParam from "use-hash-param";
 import { ReplCore } from "../replCore";
 import { Relation } from "../types";
 import * as styles from "./styles";
@@ -33,8 +33,8 @@ export function TabbedTables(props: { repl: ReplCore }) {
   const [curRelationName, setCurRelationName]: [
     string,
     (v: string) => void
-  ] = useLocalStorage(
-    "selected-relation",
+  ] = useHashParam(
+    "relation",
     allRelations.length === 0 ? null : allRelations[0].name
   );
   const [
