@@ -1,23 +1,11 @@
 import { ReplCore } from "./replCore";
-import {
-  DB,
-  newDB,
-  Program,
-  rec,
-  Rec,
-  Res,
-  Statement,
-  StringLit,
-  varr,
-} from "./types";
-import { language } from "./parser";
+import { Rec, StringLit } from "./types";
 import * as readline from "readline";
-import { prettyPrintDB, prettyPrintTerm, prettyPrintBindings } from "./pretty";
+import { prettyPrintDB, prettyPrintTerm } from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
 import * as fs from "fs";
-import { hasVars, evaluate } from "./simpleEvaluate";
-import * as util from "util";
+import { prettyPrintTrace, defaultOpts } from "./traceTree";
 
 type Mode = "repl" | "pipe" | "test";
 
@@ -101,8 +89,13 @@ export class Repl {
       return;
     }
     try {
-      this.core.evalStr(this.buffer).forEach((res) => {
-        this.println(pp.render(100, prettyPrintTerm(res.term)) + ".");
+      const stmtResult = this.core.evalStr(this.buffer);
+      stmtResult.results.forEach((res) => {
+        this.println(
+          stmtResult.trace
+            ? pp.render(100, prettyPrintTerm(res.term)) + "."
+            : pp.render(150, prettyPrintTrace(res, defaultOpts))
+        );
       });
     } catch (e) {
       // TODO: distinguish between parse errors and others
@@ -121,7 +114,7 @@ export class Repl {
     const nodes = this.core.evalStr("node{id: I, label: L}.");
     // TODO: oof, all this typecasting
     const g: Graph = {
-      edges: edges.map((e) => {
+      edges: edges.results.map((e) => {
         const rec = e.term as Rec;
         return {
           from: (rec.attrs.from as StringLit).val,
@@ -129,7 +122,7 @@ export class Repl {
           attrs: { label: (rec.attrs.label as StringLit).val },
         };
       }),
-      nodes: nodes.map((n) => {
+      nodes: nodes.results.map((n) => {
         const rec = n.term as Rec;
         return {
           id: (rec.attrs.id as StringLit).val,

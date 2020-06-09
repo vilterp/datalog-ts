@@ -3,6 +3,8 @@ import { Loader } from "./repl";
 import { language as dlLanguage } from "./parser";
 import { evaluate, hasVars } from "./simpleEvaluate";
 
+export type StmtResult = { results: Res[]; trace: boolean };
+
 export class ReplCore {
   db: DB;
   loader: Loader;
@@ -15,17 +17,17 @@ export class ReplCore {
     this.loader = loader;
   }
 
-  evalStr(line: string): Res[] {
+  evalStr(line: string): StmtResult {
     const stmt = dlLanguage.statement.tryParse(line);
     return this.evalStmt(stmt);
   }
 
-  evalStmt(stmt: Statement): Res[] {
+  evalStmt(stmt: Statement): StmtResult {
     switch (stmt.type) {
       case "Insert": {
         const record = stmt.record;
         if (hasVars(record)) {
-          return this.evalQuery(record);
+          return noTrace(this.evalQuery(record));
         }
         let tbl = this.db.tables[record.relation];
         if (!tbl) {
@@ -33,24 +35,26 @@ export class ReplCore {
           this.db.tables[record.relation] = tbl;
         }
         tbl.push(record);
-        return [];
+        return noTrace([]);
       }
       case "Rule": {
         const rule = stmt.rule;
         this.db.rules[rule.head.relation] = rule;
-        return [];
+        return noTrace([]);
       }
       case "TableDecl":
         if (this.db.tables[stmt.name]) {
-          return [];
+          return noTrace([]);
         }
         this.db.tables[stmt.name] = [];
-        return [];
+        return noTrace([]);
       case "LoadStmt":
         this.doLoad(stmt.path);
-        return [];
-      default:
-        return [];
+        return noTrace([]);
+      case "TraceStmt":
+        return yesTrace(
+          this.evalStmt({ type: "Insert", record: stmt.record }).results
+        );
     }
   }
 
@@ -65,4 +69,12 @@ export class ReplCore {
       this.evalStmt(stmt);
     }
   }
+}
+
+function noTrace(results: Res[]): StmtResult {
+  return { results, trace: false };
+}
+
+function yesTrace(results: Res[]): StmtResult {
+  return { results, trace: true };
 }

@@ -112,8 +112,8 @@ function typecheckTest(test: DDTest): Result[] {
       actual:
         [
           ...rendered,
-          ...scopeResults.map((r) => ppt(r.term) + ".").sort(),
-          ...typeResults.map((r) => ppt(r.term) + ".").sort(),
+          ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
+          ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
         ].join("\n") + "\n",
     };
   });
@@ -134,7 +134,9 @@ function suggestionTest(test: DDTest): Result[] {
     return {
       pair: tc,
       actual:
-        [...suggResults.map((r) => ppt(r.term) + ".").sort()].join("\n") + "\n",
+        [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join(
+          "\n"
+        ) + "\n",
     };
   });
 }
@@ -152,8 +154,10 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     repl.doLoad("fp/stdlib.dl");
     // TODO: why does replacing I with 0 return no results
     const typeResults = repl.evalStr("type{id: 0, type: T}.");
-    if (typeResults.length !== 1) {
-      throw new Error(`expecting one result, got ${typeResults.length}`);
+    if (typeResults.results.length !== 1) {
+      throw new Error(
+        `expecting one result, got ${typeResults.results.length}`
+      );
     }
     return {
       pair: tc,

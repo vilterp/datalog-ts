@@ -6,11 +6,17 @@ import { falseTerm, trueTerm } from "./types";
 export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
   // TODO: add .graphviz?
-  statement: (r) => P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt),
+  statement: (r) =>
+    P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt, r.traceStmt),
   loadStmt: (r) =>
     P.seq(word(".load"), r.filePath).map(([_, path]) => ({
       type: "LoadStmt",
       path,
+    })),
+  traceStmt: (r) =>
+    P.seq(word(".trace"), r.insert).map(([_, insert]) => ({
+      type: "Trace",
+      rec: insert.record,
     })),
   tableDecl: (r) =>
     P.seq(word(".table"), r.recordIdentifier).map(([_, name]) => ({
