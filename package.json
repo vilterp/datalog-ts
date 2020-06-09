@@ -13,6 +13,8 @@
     "serve-ui": "cd ui && http-server -c-1"
   },
   "devDependencies": {
+    "@jaegertracing/plexus": "^0.1.0",
+    "@types/parsimmon": "^1.10.1",
     "@types/diff": "^4.0.2",
     "@types/node": "^13.13.0",
     "diff": "^4.0.2",
@@ -21,8 +23,6 @@
     "prettier": "^2.0.4"
   },
   "dependencies": {
-    "@jaegertracing/plexus": "^0.1.0",
-    "@types/parsimmon": "^1.10.1",
     "parsimmon": "^1.13.0",
     "prettier-printer": "^1.1.4",
     "react": "^16.13.1",

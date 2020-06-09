@@ -23,7 +23,8 @@ export const language = P.createLanguage({
       type: "TableDecl",
       name,
     })),
-  comment: () => P.regex(/#[^\n]*/),
+  comment: () =>
+    P.regex(/#[^\n]*/).map((comment) => ({ type: "Comment", comment })),
   insert: (r) =>
     r.record.skip(r.period).map((rec) => ({ type: "Insert", record: rec })),
   rule: (r) =>

@@ -54,6 +54,8 @@ export class ReplCore {
       case "TraceStmt":
         const inner = this.evalStmt({ type: "Insert", record: stmt.record });
         return yesTrace(inner.results);
+      case "Comment":
+        return noTrace([]);
     }
   }
 
