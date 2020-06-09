@@ -42,7 +42,7 @@ export function traceToTree(res: Res): Tree<Res> {
       return node(
         `And`,
         res,
-        res.trace.sources.map((s) => traceToTree(s))
+        collapseAndSources(res.trace.sources).map((s) => traceToTree(s))
       );
     case "MatchTrace":
       return leaf(`Fact: ${printTermWithBindings(res)}`, res);
@@ -62,6 +62,13 @@ export function traceToTree(res: Res): Tree<Res> {
     case "LiteralTrace":
       return leaf(`literal: ${resStr}`, res);
   }
+}
+
+function collapseAndSources(sources: Res[]): Res[] {
+  if (sources.length === 2 && sources[1].trace.type === "AndTrace") {
+    return [sources[0], ...collapseAndSources(sources[1].trace.sources)];
+  }
+  return sources;
 }
 
 function printTermWithBindings(res: Res): string {
