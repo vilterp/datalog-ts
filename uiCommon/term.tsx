@@ -133,12 +133,13 @@ export function VarC(props: {
   highlight: HighlightProps;
 }) {
   const status = highlightStatus(props.highlight, props.scopePath, props.name);
+  const { background, letter } = colorForStatus(status);
   return (
     <span
       className="binding-name"
       style={{
-        color: "orange",
-        backgroundColor: colorForStatus(status),
+        color: letter,
+        backgroundColor: background,
       }}
       onMouseOver={() =>
         props.highlight.setHighlight({
@@ -153,16 +154,18 @@ export function VarC(props: {
   );
 }
 
-function colorForStatus(s: HighlightStatus): string {
+function colorForStatus(
+  s: HighlightStatus
+): { background: string; letter: string } {
   switch (s) {
     case "parent":
-      return "lightblue";
+      return { background: "plum", letter: "white" };
     case "hover":
-      return "lightpink";
+      return { background: "lightpink", letter: "white" };
     case "child":
-      return "lightgrey";
+      return { background: "lightgrey", letter: "orange" };
     case "none":
-      return "";
+      return { background: "", letter: "orange" };
   }
 }
 
@@ -195,7 +198,7 @@ function highlightStatus(
         name === praentPath.name && scopePathEq(praentPath.path, path)
     )
   ) {
-    return "child";
+    return "parent";
   }
   return "none";
 }

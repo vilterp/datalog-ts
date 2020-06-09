@@ -122,17 +122,20 @@ function walkPath(
   soFar: ScopePath,
   path: ScopePath
 ): PathSeg[] {
+  console.log("walkPath", { res, soFar, path });
   if (path.length === 0) {
-    return [{ res, path: soFar, rule: "", mappings: mappings }]; // TODO: avoid empty string
+    return [{ res, mappings, path: soFar, rule: "" }];
   }
-  const firstSeg = path[0];
   switch (res.trace.type) {
-    case "AndTrace":
+    case "AndTrace": {
+      const firstSeg = path[0];
       const clauseIdx = getFirst(firstSeg.invokeLoc, (seg) =>
         seg.type === "AndClause" ? seg.idx : null
       );
       return walkPath(res.trace.sources[clauseIdx], mappings, soFar, path);
-    case "RefTrace":
+    }
+    case "RefTrace": {
+      const firstSeg = path[0];
       return [
         ...walkPath(
           res.trace.innerRes,
@@ -144,9 +147,12 @@ function walkPath(
           res,
           rule: res.trace.refTerm.relation,
           path: soFar,
-          mappings: res.trace.mappings,
+          mappings,
         },
       ];
+    }
+    case "MatchTrace":
+      return [];
     default:
       throw new Error("unreachable");
   }
@@ -157,6 +163,7 @@ export function getRelatedPaths(
   res: Res,
   highlighted: SituatedBinding
 ): { parents: SituatedBinding[]; children: SituatedBinding[] } {
+  console.log("===========");
   const path = walkPath(res, {}, [], highlighted.path);
   const resAtPath = path[0].res;
   const parents = getParentPaths(path, highlighted.name);
@@ -166,8 +173,8 @@ export function getRelatedPaths(
     // highlighted: highlighted.path,
     walkedPath: path,
     // name: highlighted.name,
-    // parents,
-    // children,
+    parents,
+    children,
   });
   return { children, parents };
 }
@@ -196,8 +203,6 @@ function getChildPaths(res: Res, binding: SituatedBinding): SituatedBinding[] {
       return flatMap(trace.sources, (innerRes) =>
         getChildPaths(innerRes, binding)
       );
-    case "MatchTrace":
-      return [binding];
     default:
       return [];
   }
