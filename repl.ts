@@ -93,8 +93,8 @@ export class Repl {
       stmtResult.results.forEach((res) => {
         this.println(
           stmtResult.trace
-            ? pp.render(100, prettyPrintTerm(res.term)) + "."
-            : pp.render(150, prettyPrintTrace(res, defaultOpts))
+            ? prettyPrintTrace(res, defaultOpts)
+            : pp.render(100, prettyPrintTerm(res.term)) + "."
         );
       });
     } catch (e) {

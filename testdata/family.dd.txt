@@ -197,3 +197,74 @@ digraph G {
   "Pete" -> "Bob" [label="cousin"];
   "Carolyn" -> "Bob" [label="cousin"]
 }
+
+.trace cousin{left: L, right: R}.
+----
+Rule: cousin{left: L@"Bob", right: R@"Pete"}; {L: L, R: R}
+  And
+    Rule: parent{child: L@"Bob", parent: P1@"Ann"}; {C: L, P: P1}
+      Fact: mother{child: C@"Bob", mother: P@"Ann"}
+    And
+      Rule: sibling{left: P1@"Ann", right: P2@"Paul"}; {L: P1, R: P2}
+        And
+          Rule: parents{child: L@"Ann", father: F@"Peter", mother: M@"Judith"}; {C: L, F: F, M: M}
+            And
+              Fact: mother{child: C@"Ann", mother: M@"Judith"}
+              Fact: father{child: C@"Ann", father: F@"Peter"}
+          Rule: parents{child: R@"Paul", father: F@"Peter", mother: M@"Judith"}; {C: R, F: F, M: M}
+            And
+              Fact: mother{child: C@"Paul", mother: M@"Judith"}
+              Fact: father{child: C@"Paul", father: F@"Peter"}
+      Rule: parent{child: R@"Pete", parent: P2@"Paul"}; {C: R, P: P2}
+        Fact: father{child: C@"Pete", father: P@"Paul"}
+Rule: cousin{left: L@"Bob", right: R@"Carolyn"}; {L: L, R: R}
+  And
+    Rule: parent{child: L@"Bob", parent: P1@"Ann"}; {C: L, P: P1}
+      Fact: mother{child: C@"Bob", mother: P@"Ann"}
+    And
+      Rule: sibling{left: P1@"Ann", right: P2@"Paul"}; {L: P1, R: P2}
+        And
+          Rule: parents{child: L@"Ann", father: F@"Peter", mother: M@"Judith"}; {C: L, F: F, M: M}
+            And
+              Fact: mother{child: C@"Ann", mother: M@"Judith"}
+              Fact: father{child: C@"Ann", father: F@"Peter"}
+          Rule: parents{child: R@"Paul", father: F@"Peter", mother: M@"Judith"}; {C: R, F: F, M: M}
+            And
+              Fact: mother{child: C@"Paul", mother: M@"Judith"}
+              Fact: father{child: C@"Paul", father: F@"Peter"}
+      Rule: parent{child: R@"Carolyn", parent: P2@"Paul"}; {C: R, P: P2}
+        Fact: father{child: C@"Carolyn", father: P@"Paul"}
+Rule: cousin{left: L@"Pete", right: R@"Bob"}; {L: L, R: R}
+  And
+    Rule: parent{child: L@"Pete", parent: P1@"Paul"}; {C: L, P: P1}
+      Fact: father{child: C@"Pete", father: P@"Paul"}
+    And
+      Rule: sibling{left: P1@"Paul", right: P2@"Ann"}; {L: P1, R: P2}
+        And
+          Rule: parents{child: L@"Paul", father: F@"Peter", mother: M@"Judith"}; {C: L, F: F, M: M}
+            And
+              Fact: mother{child: C@"Paul", mother: M@"Judith"}
+              Fact: father{child: C@"Paul", father: F@"Peter"}
+          Rule: parents{child: R@"Ann", father: F@"Peter", mother: M@"Judith"}; {C: R, F: F, M: M}
+            And
+              Fact: mother{child: C@"Ann", mother: M@"Judith"}
+              Fact: father{child: C@"Ann", father: F@"Peter"}
+      Rule: parent{child: R@"Bob", parent: P2@"Ann"}; {C: R, P: P2}
+        Fact: mother{child: C@"Bob", mother: P@"Ann"}
+Rule: cousin{left: L@"Carolyn", right: R@"Bob"}; {L: L, R: R}
+  And
+    Rule: parent{child: L@"Carolyn", parent: P1@"Paul"}; {C: L, P: P1}
+      Fact: father{child: C@"Carolyn", father: P@"Paul"}
+    And
+      Rule: sibling{left: P1@"Paul", right: P2@"Ann"}; {L: P1, R: P2}
+        And
+          Rule: parents{child: L@"Paul", father: F@"Peter", mother: M@"Judith"}; {C: L, F: F, M: M}
+            And
+              Fact: mother{child: C@"Paul", mother: M@"Judith"}
+              Fact: father{child: C@"Paul", father: F@"Peter"}
+          Rule: parents{child: R@"Ann", father: F@"Peter", mother: M@"Judith"}; {C: R, F: F, M: M}
+            And
+              Fact: mother{child: C@"Ann", mother: M@"Judith"}
+              Fact: father{child: C@"Ann", father: F@"Peter"}
+      Rule: parent{child: R@"Bob", parent: P2@"Ann"}; {C: R, P: P2}
+        Fact: mother{child: C@"Bob", mother: P@"Ann"}

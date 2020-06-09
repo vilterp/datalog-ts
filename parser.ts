@@ -15,8 +15,8 @@ export const language = P.createLanguage({
     })),
   traceStmt: (r) =>
     P.seq(word(".trace"), r.insert).map(([_, insert]) => ({
-      type: "Trace",
-      rec: insert.record,
+      type: "TraceStmt",
+      record: insert.record,
     })),
   tableDecl: (r) =>
     P.seq(word(".table"), r.recordIdentifier).map(([_, name]) => ({

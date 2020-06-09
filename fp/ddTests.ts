@@ -161,7 +161,7 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     }
     return {
       pair: tc,
-      actual: prettyPrintTrace(typeResults[0], opts) + "\n",
+      actual: prettyPrintTrace(typeResults.results[0], opts) + "\n",
     };
   });
 }

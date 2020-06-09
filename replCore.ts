@@ -52,9 +52,8 @@ export class ReplCore {
         this.doLoad(stmt.path);
         return noTrace([]);
       case "TraceStmt":
-        return yesTrace(
-          this.evalStmt({ type: "Insert", record: stmt.record }).results
-        );
+        const inner = this.evalStmt({ type: "Insert", record: stmt.record });
+        return yesTrace(inner.results);
     }
   }
 
