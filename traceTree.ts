@@ -46,13 +46,18 @@ export function traceToTree(res: Res): Tree<Res> {
       );
     case "MatchTrace":
       return leaf(`Fact: ${printTermWithBindings(res)}`, res);
-    case "RefTrace":
+    case "RefTrace": {
+      const innerRes = res.trace.innerRes;
       return node(
-        // TODO: pretty print invoke loc
         `Rule: ${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
         res,
-        [traceToTree(res.trace.innerRes)]
+        innerRes.trace.type === "AndTrace"
+          ? collapseAndSources(innerRes.trace.sources).map((s) =>
+              traceToTree(s)
+            )
+          : [traceToTree(innerRes)]
       );
+    }
     case "VarTrace":
       return leaf(`var: ${resStr}`, res);
     case "BinExprTrace":
