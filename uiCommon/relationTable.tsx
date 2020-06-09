@@ -34,7 +34,7 @@ export function RelationTable(props: {
       : props.repl.evalStmt({
           type: "Insert",
           record: props.relation.rule.head,
-        });
+        }).results;
   const fields =
     results.length === 0
       ? []

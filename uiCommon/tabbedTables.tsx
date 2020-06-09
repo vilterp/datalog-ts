@@ -23,7 +23,12 @@ export function TabbedTables(props: { repl: ReplCore }) {
   const allRelations: Relation[] = [...allTables, ...allRules];
 
   const [highlight, setHighlight] = useState(noHighlight);
-  const highlightProps = { highlight, setHighlight };
+  const highlightProps: HighlightProps = {
+    highlight,
+    setHighlight,
+    parentPaths: [],
+    childPaths: [],
+  };
 
   const [curRelationName, setCurRelationName]: [
     string,
