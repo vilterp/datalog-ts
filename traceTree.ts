@@ -45,11 +45,11 @@ export function traceToTree(res: Res): Tree<Res> {
         collapseAndSources(res.trace.sources).map((s) => traceToTree(s))
       );
     case "MatchTrace":
-      return leaf(`Fact: ${printTermWithBindings(res)}`, res);
+      return leaf(printTermWithBindings(res), res);
     case "RefTrace": {
       const innerRes = res.trace.innerRes;
       return node(
-        `Rule: ${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
+        `${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
         res,
         innerRes.trace.type === "AndTrace"
           ? collapseAndSources(innerRes.trace.sources).map((s) =>

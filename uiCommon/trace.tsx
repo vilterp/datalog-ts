@@ -22,11 +22,10 @@ export function TraceNode(props: {
     case "AndTrace":
       return <>And</>;
     case "MatchTrace":
-      return <>Fact: {term}</>;
+      return <>{term}</>;
     case "RefTrace":
       return (
         <>
-          Rule:{" "}
           <Term
             term={makeTermWithBindings(res.term, res.bindings)}
             highlight={props.highlight}
