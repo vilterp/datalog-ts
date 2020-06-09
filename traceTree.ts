@@ -122,7 +122,7 @@ function walkPath(
   soFar: ScopePath,
   path: ScopePath
 ): PathSeg[] {
-  console.log("walkPath", { res, soFar, path });
+  // console.log("walkPath", { res, soFar, path });
   if (path.length === 0) {
     return [{ res, mappings, path: soFar, rule: "" }];
   }
@@ -163,19 +163,19 @@ export function getRelatedPaths(
   res: Res,
   highlighted: SituatedBinding
 ): { parents: SituatedBinding[]; children: SituatedBinding[] } {
-  console.log("===========");
+  // console.log("===========");
   const path = walkPath(res, {}, [], highlighted.path);
   const resAtPath = path[0].res;
   const parents = getParentPaths(path, highlighted.name);
   const children = getChildPaths(resAtPath, highlighted);
-  console.log("getRelatedPaths", {
-    // res,
-    // highlighted: highlighted.path,
-    walkedPath: path,
-    // name: highlighted.name,
-    parents,
-    children,
-  });
+  // console.log("getRelatedPaths", {
+  //   // res,
+  //   // highlighted: highlighted.path,
+  //   walkedPath: path,
+  //   // name: highlighted.name,
+  //   parents,
+  //   children,
+  // });
   return { children, parents };
 }
 
@@ -216,11 +216,16 @@ function getParentPaths(path: PathSeg[], binding: string): SituatedBinding[] {
   }
   const first = path[0];
   const mapping = first.mappings[binding];
-  // console.log("getParentPath", { binding, mappings: first.mappings, mapping });
+  // console.log("getParentPath", {
+  //   path,
+  //   binding,
+  //   mappings: first.mappings,
+  //   mapping,
+  // });
   return mapping
     ? [
         { name: binding, path: first.path },
         ...getParentPaths(path.slice(1), mapping),
       ]
-    : [];
+    : [{ name: binding, path: first.path }];
 }

@@ -155,7 +155,7 @@ export function RelationTable(props: {
           </tbody>
         </table>
       )}
-      {props.highlight.highlight.type === "Binding" ? (
+      {/* {props.highlight.highlight.type === "Binding" ? (
         <>
           {props.highlight.highlight.binding.name}:{" "}
           {pp.render(
@@ -163,7 +163,7 @@ export function RelationTable(props: {
             prettyPrintScopePath(props.highlight.highlight.binding.path)
           )}
         </>
-      ) : null}
+      ) : null} */}
     </>
   );
 }
