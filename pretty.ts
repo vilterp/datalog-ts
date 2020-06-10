@@ -8,6 +8,7 @@ import {
   TermWithBindings,
   ScopePath,
   InvocationLocation,
+  scopePathEq,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
@@ -101,19 +102,39 @@ export function ppr(r: Res): string {
   return pp.render(100, prettyPrintRes(r));
 }
 
-export function ppVM(vm: VarMappings): string {
-  return pp.render(100, prettyPrintVarMappings(vm));
+export function ppVM(
+  vm: VarMappings,
+  scopePath: ScopePath,
+  opts: TracePrintOpts
+): string {
+  return pp.render(100, prettyPrintVarMappings(vm, scopePath, opts));
 }
 
-function prettyPrintVarMappings(vm: VarMappings): pp.IDoc {
+function prettyPrintVarMappings(
+  vm: VarMappings,
+  scopePath: ScopePath,
+  opts: TracePrintOpts
+): pp.IDoc {
   return [
     "{",
     pp.intersperse(
       ", ",
-      mapObjToList(vm, (key, value) => [key, ": ", value])
+      mapObjToList(vm, (key, value) => [
+        prettyPrintVar(key, scopePath, opts),
+        ": ",
+        prettyPrintVar(value, scopePath.slice(0, scopePath.length - 1), opts),
+      ])
     ),
     "}",
   ];
+}
+
+function prettyPrintVar(
+  name: string,
+  scopePath: ScopePath,
+  opts: TracePrintOpts
+): pp.IDoc {
+  return [name, opts.showScopePath ? prettyPrintScopePath(scopePath) : ""];
 }
 
 // trace stuff
@@ -132,13 +153,7 @@ export function prettyPrintTermWithBindings(
           mapObjToList(term.attrs, (k, v) => [
             k,
             ": ",
-            v.binding
-              ? [
-                  v.binding,
-                  opts.showScopePath ? prettyPrintScopePath(scopePath) : "",
-                  "@",
-                ]
-              : "",
+            v.binding ? [prettyPrintVar(v.binding, scopePath, opts), "@"] : "",
             prettyPrintTermWithBindings(v.term, scopePath, opts),
           ])
         ),
@@ -188,7 +203,15 @@ function prettyPrintTraceNode(
   );
   switch (res.trace.type) {
     case "RefTrace":
-      return [termDoc, "; ", ppVM(res.trace.mappings)];
+      return [
+        prettyPrintTermWithBindings(
+          makeTermWithBindings(res.term, res.bindings),
+          path.slice(0, path.length - 1),
+          opts
+        ),
+        "; ",
+        ppVM(res.trace.mappings, path, opts),
+      ];
     case "MatchTrace":
       return termDoc;
     default:

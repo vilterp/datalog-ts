@@ -36,7 +36,9 @@ export function traceToTree(res: Res): Tree<Res> {
       const innerRes = res.trace.innerRes;
       return node(
         `${printTermWithBindings(res, [], defaultTracePrintOpts)}; ${ppVM(
-          res.trace.mappings
+          res.trace.mappings,
+          [],
+          defaultTracePrintOpts
         )}`,
         res,
         innerRes.trace.type === "AndTrace"
