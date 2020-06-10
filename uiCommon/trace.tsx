@@ -1,8 +1,46 @@
 import React from "react";
 import { Res, VarMappings, ScopePath } from "../types";
-import { Term, VarC, HighlightProps } from "./term";
-import { makeTermWithBindings } from "../traceTree";
+import { TermView, VarC, HighlightProps } from "./term";
+import {
+  makeTermWithBindings,
+  traceToTree,
+  getRelatedPaths,
+  pathToScopePath,
+} from "../traceTree";
 import { mapObjToList, intersperse } from "../util";
+import { TreeView, TreeCollapseState } from "./treeView";
+
+export function TraceView(props: {
+  result: Res;
+  highlight: HighlightProps;
+  collapseState: TreeCollapseState;
+  setCollapseState: (c: TreeCollapseState) => void;
+}) {
+  return (
+    <TreeView<Res>
+      tree={traceToTree(props.result)}
+      render={({ item, path }) => {
+        const { children, parents } =
+          props.highlight.highlight.type === "Binding"
+            ? getRelatedPaths(props.result, props.highlight.highlight.binding)
+            : { children: [], parents: [] };
+        return (
+          <TraceNode
+            res={item}
+            highlight={{
+              ...props.highlight,
+              childPaths: children,
+              parentPaths: parents,
+            }}
+            scopePath={pathToScopePath(path)}
+          />
+        );
+      }}
+      collapseState={props.collapseState}
+      setCollapseState={props.setCollapseState}
+    />
+  );
+}
 
 export function TraceNode(props: {
   res: Res;
@@ -12,7 +50,7 @@ export function TraceNode(props: {
   const res = props.res;
 
   const term = (
-    <Term
+    <TermView
       term={makeTermWithBindings(res.term, res.bindings)}
       highlight={props.highlight}
       scopePath={props.scopePath}
@@ -26,12 +64,12 @@ export function TraceNode(props: {
     case "RefTrace":
       return (
         <>
-          <Term
+          <TermView
             term={makeTermWithBindings(res.term, res.bindings)}
             highlight={props.highlight}
             scopePath={props.scopePath.slice(0, props.scopePath.length - 1)}
           />{" "}
-          <VarMappingsC
+          <VarMappingsView
             mappings={res.trace.mappings}
             highlight={props.highlight}
             innerScopePath={props.scopePath}
@@ -43,7 +81,7 @@ export function TraceNode(props: {
   }
 }
 
-export function VarMappingsC(props: {
+export function VarMappingsView(props: {
   mappings: VarMappings;
   highlight: HighlightProps;
   innerScopePath: ScopePath;

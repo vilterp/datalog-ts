@@ -29,7 +29,7 @@ export type HighlightProps = {
   parentPaths: SituatedBinding[];
 };
 
-export function Term(props: {
+export function TermView(props: {
   term: TermWithBindings;
   highlight: HighlightProps;
   scopePath: ScopePath;
@@ -73,7 +73,7 @@ export function Term(props: {
                     @
                   </>
                 ) : null}
-                <Term
+                <TermView
                   term={valueWithBinding.term}
                   highlight={props.highlight}
                   scopePath={props.scopePath}
@@ -92,7 +92,7 @@ export function Term(props: {
           {intersperse<React.ReactNode>(
             ", ",
             term.items.map((item) => (
-              <Term
+              <TermView
                 term={item}
                 highlight={props.highlight}
                 scopePath={props.scopePath}
@@ -105,13 +105,13 @@ export function Term(props: {
     case "BinExprWithBindings":
       return (
         <>
-          <Term
+          <TermView
             term={term.left}
             highlight={props.highlight}
             scopePath={props.scopePath}
           />{" "}
           {term.op}{" "}
-          <Term
+          <TermView
             term={term.right}
             highlight={props.highlight}
             scopePath={props.scopePath}

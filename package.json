@@ -10,7 +10,9 @@
     "build-fp-ui": "esbuild fp/ui/main.tsx --bundle --outfile=fp/ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap --trace=fp/ui/build.trace",
     "serve-fp-ui": "cd fp/ui && http-server -c-1",
     "build-ui": "esbuild ui/main.tsx --bundle --outfile=ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap",
-    "serve-ui": "cd ui && http-server -c-1"
+    "serve-ui": "cd ui && http-server -c-1",
+    "build-essay": "esbuild essay/essay.tsx --bundle --outfile=essay/bundle.js '--define:process.env.NODE_ENV=\"development\"'",
+    "serve-essay": "cd essay && http-server -c-1"
   },
   "devDependencies": {
     "@jaegertracing/plexus": "^0.1.0",

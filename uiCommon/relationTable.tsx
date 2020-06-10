@@ -2,16 +2,11 @@ import React from "react";
 import { ppt } from "../pretty";
 import { Rec, Res, Relation } from "../types";
 import { ReplCore } from "../replCore";
-import { TreeCollapseState, TreeView } from "./treeView";
+import { TreeCollapseState } from "./treeView";
 import { RuleC } from "./rule";
-import {
-  traceToTree,
-  makeTermWithBindings,
-  getRelatedPaths,
-  pathToScopePath,
-} from "../traceTree";
-import { Term, noHighlight, HighlightProps, noHighlightProps } from "./term";
-import { TraceNode } from "./trace";
+import { makeTermWithBindings } from "../traceTree";
+import { TermView, noHighlight, HighlightProps } from "./term";
+import { TraceView } from "./trace";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -95,7 +90,7 @@ export function RelationTable(props: {
                           borderRight: "1px solid lightgrey",
                         }}
                       >
-                        <Term
+                        <TermView
                           term={makeTermWithBindings(
                             (result.term as Rec).attrs[field],
                             {}
@@ -114,35 +109,16 @@ export function RelationTable(props: {
                   {rowCollapseState.collapsed ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
-                        <TreeView<Res>
-                          tree={traceToTree(result)}
-                          render={({ item, path }) => {
-                            const { children, parents } =
-                              props.highlight.highlight.type === "Binding"
-                                ? getRelatedPaths(
-                                    result,
-                                    props.highlight.highlight.binding
-                                  )
-                                : { children: [], parents: [] };
-                            return (
-                              <TraceNode
-                                res={item}
-                                highlight={{
-                                  ...props.highlight,
-                                  childPaths: children,
-                                  parentPaths: parents,
-                                }}
-                                scopePath={pathToScopePath(path)}
-                              />
-                            );
-                          }}
+                        <TraceView
+                          result={result}
+                          highlight={props.highlight}
                           collapseState={rowCollapseState}
-                          setCollapseState={(st) => {
+                          setCollapseState={(st) =>
                             props.setCollapseState({
                               ...props.collapseState,
                               [key]: st,
-                            });
-                          }}
+                            })
+                          }
                         />
                       </td>
                     </tr>
@@ -153,15 +129,6 @@ export function RelationTable(props: {
           </tbody>
         </table>
       )}
-      {/* {props.highlight.highlight.type === "Binding" ? (
-        <>
-          {props.highlight.highlight.binding.name}:{" "}
-          {pp.render(
-            100,
-            prettyPrintScopePath(props.highlight.highlight.binding.path)
-          )}
-        </>
-      ) : null} */}
     </>
   );
 }

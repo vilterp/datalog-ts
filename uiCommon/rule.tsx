@@ -1,8 +1,8 @@
 import React from "react";
 import { Rule } from "../types";
-import { HighlightProps, Term } from "./term";
+import { HighlightProps, TermView } from "./term";
 import { makeTermWithBindings } from "../traceTree";
-import { intersperse, flatMap, intersperseIdx } from "../util";
+import { intersperseIdx } from "../util";
 import { ppt } from "../pretty";
 
 export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
@@ -10,7 +10,7 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
     <div
       style={{ fontFamily: "monospace", paddingBottom: 10, cursor: "default" }}
     >
-      <Term
+      <TermView
         term={makeTermWithBindings(props.rule.head, {})}
         scopePath={[]}
         highlight={props.highlight}
@@ -35,7 +35,7 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
                   </React.Fragment>
                 ),
                 opt.clauses.map((clause) => (
-                  <Term
+                  <TermView
                     key={ppt(clause)}
                     highlight={props.highlight}
                     scopePath={[]}
@@ -46,6 +46,7 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
             </React.Fragment>
           ))
         )}
+        .
       </div>
     </div>
   );
