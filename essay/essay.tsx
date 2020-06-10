@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { rec, str } from "../types";
 import { ReplCore } from "../replCore";
 import { BareTerm, EvalStmt, Query } from "../uiCommon/replViews";
+import { TabbedTables } from "../uiCommon/tabbedTables";
 
 function Essay() {
   const repl = new ReplCore((_) => {
@@ -30,6 +31,8 @@ function Essay() {
       <p>And this is an embedded query:</p>
       <Query repl={repl} query="parent{child: C, parent: P}" />
       <p>And that's how we're gonna write this essay!</p>
+      <p>Here is even an embedded fiddle:</p>
+      <TabbedTables repl={repl} />
     </>
   );
 }
