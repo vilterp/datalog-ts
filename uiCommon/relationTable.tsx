@@ -8,10 +8,10 @@ import {
   traceToTree,
   makeTermWithBindings,
   getRelatedPaths,
+  pathToScopePath,
 } from "../traceTree";
 import { Term, noHighlight, HighlightProps, noHighlightProps } from "./term";
 import { TraceNode } from "./trace";
-import { pathToScopePath } from "../simpleEvaluate";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;

@@ -26,11 +26,9 @@ function pptRecurse<T>(
   render: RenderNodeFn<T>
 ): string[] {
   return [
-    // TODO: maybe allow passing in a T => string render function instead of just
-    // using the key. But this is fine for now.
     repeat(depth, "  ") + render({ item: tree.item, key: tree.key, path }),
     ...flatMap(tree.children, (child) =>
-      pptRecurse(depth + 1, child, [...path, tree.item], render)
+      pptRecurse(depth + 1, child, [...path, child.item], render)
     ),
   ];
 }

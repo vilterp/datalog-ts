@@ -8,7 +8,6 @@ import {
   TermWithBindings,
   ScopePath,
   InvocationLocation,
-  scopePathEq,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
