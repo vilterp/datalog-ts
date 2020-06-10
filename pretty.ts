@@ -8,6 +8,7 @@ import {
   TermWithBindings,
   ScopePath,
   InvocationLocation,
+  SituatedBinding,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
@@ -128,6 +129,13 @@ function prettyPrintVarMappings(
   ];
 }
 
+// trace stuff
+
+// TODO: this and prettyPrintVar are almost the same... lol
+export function prettyPrintSituatedBinding(sb: SituatedBinding): pp.IDoc {
+  return [sb.name, prettyPrintScopePath(sb.path)];
+}
+
 function prettyPrintVar(
   name: string,
   scopePath: ScopePath,
@@ -135,8 +143,6 @@ function prettyPrintVar(
 ): pp.IDoc {
   return [name, opts.showScopePath ? prettyPrintScopePath(scopePath) : ""];
 }
-
-// trace stuff
 
 export function prettyPrintTermWithBindings(
   term: TermWithBindings,

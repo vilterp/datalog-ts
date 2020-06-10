@@ -3,6 +3,8 @@
 type{id: 0, type: T@"int"}; {T: T}
   type_i{id: I@0, type: T@"int"}; {I: I}
     int_lit{id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 1}}, val: 2}
+CHILD PATHS
+
 
 let x = 2 in x
 ----
@@ -18,3 +20,5 @@ type{id: 0, type: T@"int"}; {T: T}
             type{id: B@1, type: T@"int"}; {I: B, T: T}
               type_i{id: I@1, type: T@"int"}; {I: I}
                 int_lit{id: I@1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}
+CHILD PATHS
+

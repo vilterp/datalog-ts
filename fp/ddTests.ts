@@ -9,12 +9,13 @@ import {
   defaultTracePrintOpts,
   TracePrintOpts,
   prettyPrintTrace,
+  prettyPrintSituatedBinding,
 } from "../pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
 import { fsLoader } from "../repl";
 import { Rec } from "../types";
-import { traceToTree } from "../traceTree";
+import { traceToTree, getRelatedPaths } from "../traceTree";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -149,7 +150,8 @@ function suggestionTest(test: DDTest): Result[] {
 
 function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
   return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+    const [expr, bindingName] = tc.input.split("\n");
+    const parsed = language.expr.tryParse(expr);
     const flattened = flatten(parsed);
 
     const repl = new ReplCore(fsLoader); // hmmm
@@ -165,10 +167,20 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
         `expecting one result, got ${typeResults.results.length}`
       );
     }
+    const res = typeResults.results[0];
+    // TODO: allow input of full situated path; get parents (write scope path parser? ugh)
+    const { children } = getRelatedPaths(res, { path: [], name: bindingName });
+    const childPaths = children.map((c) =>
+      pp.render(100, prettyPrintSituatedBinding(c))
+    );
     return {
       pair: tc,
       actual:
-        prettyPrintTrace(traceToTree(typeResults.results[0]), opts) + "\n",
+        prettyPrintTrace(traceToTree(res), opts) +
+        "\n" +
+        "CHILD PATHS\n" +
+        childPaths.join("\n") +
+        "\n",
     };
   });
 }
