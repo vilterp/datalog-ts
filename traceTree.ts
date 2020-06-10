@@ -1,39 +1,23 @@
-import { Tree, leaf, node, prettyPrintTree } from "./treePrinter";
+import { Tree, leaf, node } from "./treePrinter";
 import {
   Res,
-  Bindings,
-  Term,
-  TermWithBindings,
   SituatedBinding,
   ScopePath,
   VarMappings,
+  Term,
+  Bindings,
+  TermWithBindings,
 } from "./types";
 import {
   ppt,
   prettyPrintTermWithBindings,
-  prettyPrintScopePath,
   ppVM,
+  TracePrintOpts,
+  defaultTracePrintOpts,
 } from "./pretty";
-import { termEq } from "./unify";
-import { mapObj, flatMap, getFirst, lastItem } from "./util";
+import { flatMap, getFirst, filterMap, mapObj } from "./util";
 import * as pp from "prettier-printer";
-import { pathToScopePath } from "./simpleEvaluate";
-
-export type TracePrintOpts = { showScopePath: boolean };
-
-export const defaultOpts: TracePrintOpts = { showScopePath: false };
-
-export function prettyPrintTrace(res: Res, opts: TracePrintOpts): string {
-  return prettyPrintTree(
-    traceToTree(res),
-    ({ key, path }) =>
-      `${key}${
-        opts.showScopePath
-          ? `; ${pp.render(100, prettyPrintScopePath(pathToScopePath(path)))}`
-          : ""
-      }`
-  );
-}
+import { termEq } from "./unify";
 
 export function traceToTree(res: Res): Tree<Res> {
   const resStr = ppt(res.term);
@@ -45,11 +29,15 @@ export function traceToTree(res: Res): Tree<Res> {
         collapseAndSources(res.trace.sources).map((s) => traceToTree(s))
       );
     case "MatchTrace":
-      return leaf(printTermWithBindings(res), res);
+      // TODO: might be good to pass actual scope path here
+      // but it is just the key so we don't really need it
+      return leaf(printTermWithBindings(res, [], defaultTracePrintOpts), res);
     case "RefTrace": {
       const innerRes = res.trace.innerRes;
       return node(
-        `${printTermWithBindings(res)}; ${ppVM(res.trace.mappings)}`,
+        `${printTermWithBindings(res, [], defaultTracePrintOpts)}; ${ppVM(
+          res.trace.mappings
+        )}`,
         res,
         innerRes.trace.type === "AndTrace"
           ? collapseAndSources(innerRes.trace.sources).map((s) =>
@@ -76,47 +64,19 @@ function collapseAndSources(sources: Res[]): Res[] {
   return sources;
 }
 
-function printTermWithBindings(res: Res): string {
+function printTermWithBindings(
+  res: Res,
+  scopePath: ScopePath,
+  opts: TracePrintOpts
+): string {
   return pp.render(
     100,
-    prettyPrintTermWithBindings(makeTermWithBindings(res.term, res.bindings))
+    prettyPrintTermWithBindings(
+      makeTermWithBindings(res.term, res.bindings),
+      scopePath,
+      opts
+    )
   );
-}
-
-export function makeTermWithBindings(
-  term: Term,
-  bindings: Bindings
-): TermWithBindings {
-  switch (term.type) {
-    case "Record":
-      return {
-        type: "RecordWithBindings",
-        relation: term.relation,
-        attrs: mapObj(term.attrs, (_, val) => {
-          const binding = Object.keys(bindings).find((b) => {
-            return bindings[b] && termEq(val, bindings[b]);
-          });
-          return {
-            term: makeTermWithBindings(val, bindings),
-            binding: binding,
-          };
-        }),
-      };
-    case "Array":
-      return {
-        type: "ArrayWithBindings",
-        items: term.items.map((item) => makeTermWithBindings(item, bindings)),
-      };
-    case "BinExpr":
-      return {
-        type: "BinExprWithBindings",
-        left: makeTermWithBindings(term.left, bindings),
-        op: term.op,
-        right: makeTermWithBindings(term.right, bindings),
-      };
-    default:
-      return { type: "Atom", term };
-  }
 }
 
 type PathSeg = {
@@ -240,4 +200,48 @@ function getParentPaths(path: PathSeg[], binding: string): SituatedBinding[] {
         ...getParentPaths(path.slice(1), mapping),
       ]
     : [{ name: binding, path: first.path }];
+}
+
+export function pathToScopePath(path: Res[]): ScopePath {
+  return filterMap(path, (res) =>
+    res.trace.type === "RefTrace"
+      ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }
+      : null
+  );
+}
+
+export function makeTermWithBindings(
+  term: Term,
+  bindings: Bindings
+): TermWithBindings {
+  switch (term.type) {
+    case "Record":
+      return {
+        type: "RecordWithBindings",
+        relation: term.relation,
+        attrs: mapObj(term.attrs, (_, val) => {
+          const binding = Object.keys(bindings).find((b) => {
+            return bindings[b] && termEq(val, bindings[b]);
+          });
+          return {
+            term: makeTermWithBindings(val, bindings),
+            binding: binding,
+          };
+        }),
+      };
+    case "Array":
+      return {
+        type: "ArrayWithBindings",
+        items: term.items.map((item) => makeTermWithBindings(item, bindings)),
+      };
+    case "BinExpr":
+      return {
+        type: "BinExprWithBindings",
+        left: makeTermWithBindings(term.left, bindings),
+        op: term.op,
+        right: makeTermWithBindings(term.right, bindings),
+      };
+    default:
+      return { type: "Atom", term };
+  }
 }

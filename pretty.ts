@@ -11,6 +11,8 @@ import {
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
+import { prettyPrintTree, Tree } from "./treePrinter";
+import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
@@ -41,7 +43,11 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
   }
 }
 
-export function prettyPrintTermWithBindings(term: TermWithBindings): pp.IDoc {
+export function prettyPrintTermWithBindings(
+  term: TermWithBindings,
+  scopePath: ScopePath,
+  opts: TracePrintOpts
+): pp.IDoc {
   switch (term.type) {
     case "RecordWithBindings":
       return [
@@ -51,25 +57,67 @@ export function prettyPrintTermWithBindings(term: TermWithBindings): pp.IDoc {
           mapObjToList(term.attrs, (k, v) => [
             k,
             ": ",
-            v.binding ? [v.binding, "@"] : "",
-            prettyPrintTermWithBindings(v.term),
+            v.binding
+              ? [
+                  v.binding,
+                  opts.showScopePath ? prettyPrintScopePath(scopePath) : "",
+                  "@",
+                ]
+              : "",
+            prettyPrintTermWithBindings(v.term, scopePath, opts),
           ])
         ),
       ];
     case "ArrayWithBindings":
       return [
         "[",
-        pp.intersperse(",", term.items.map(prettyPrintTermWithBindings)),
+        pp.intersperse(
+          ",",
+          term.items.map((t) => prettyPrintTermWithBindings(t, scopePath, opts))
+        ),
         "]",
       ];
     case "BinExprWithBindings":
       return [
-        prettyPrintTermWithBindings(term.left),
+        prettyPrintTermWithBindings(term.left, scopePath, opts),
         ` ${term.op} `,
-        prettyPrintTermWithBindings(term.right),
+        prettyPrintTermWithBindings(term.right, scopePath, opts),
       ];
     case "Atom":
       return prettyPrintTerm(term.term);
+  }
+}
+
+export type TracePrintOpts = { showScopePath: boolean };
+
+export const defaultTracePrintOpts: TracePrintOpts = { showScopePath: false };
+
+export function prettyPrintTrace(
+  tree: Tree<Res>,
+  opts: TracePrintOpts
+): string {
+  return prettyPrintTree(tree, ({ item: res, path }) =>
+    pp.render(150, prettyPrintTraceNode(res, pathToScopePath(path), opts))
+  );
+}
+
+function prettyPrintTraceNode(
+  res: Res,
+  path: ScopePath,
+  opts: TracePrintOpts
+): pp.IDoc {
+  const termDoc = prettyPrintTermWithBindings(
+    makeTermWithBindings(res.term, res.bindings),
+    path,
+    opts
+  );
+  switch (res.trace.type) {
+    case "RefTrace":
+      return [termDoc, "; ", ppVM(res.trace.mappings)];
+    case "MatchTrace":
+      return termDoc;
+    default:
+      return termDoc;
   }
 }
 

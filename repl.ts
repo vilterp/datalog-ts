@@ -1,11 +1,16 @@
 import { ReplCore } from "./replCore";
 import { Rec, StringLit } from "./types";
 import * as readline from "readline";
-import { prettyPrintDB, prettyPrintTerm } from "./pretty";
+import {
+  prettyPrintDB,
+  prettyPrintTerm,
+  prettyPrintTrace,
+  defaultTracePrintOpts,
+} from "./pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "./graphviz";
 import * as fs from "fs";
-import { prettyPrintTrace, defaultOpts } from "./traceTree";
+import { traceToTree } from "./traceTree";
 
 type Mode = "repl" | "pipe" | "test";
 
@@ -93,7 +98,7 @@ export class Repl {
       stmtResult.results.forEach((res) => {
         this.println(
           stmtResult.trace
-            ? prettyPrintTrace(res, defaultOpts)
+            ? prettyPrintTrace(traceToTree(res), defaultTracePrintOpts)
             : pp.render(100, prettyPrintTerm(res.term)) + "."
         );
       });

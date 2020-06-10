@@ -17,9 +17,10 @@ import {
   RulePathSegment,
   ScopePath,
   InvocationLocation,
+  TermWithBindings,
 } from "./types";
 import { substitute, termEq, unify, unifyVars } from "./unify";
-import { filterMap, flatMap } from "./util";
+import { filterMap, flatMap, mapObj } from "./util";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -322,12 +323,4 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
-}
-
-export function pathToScopePath(path: Res[]): ScopePath {
-  return filterMap(path, (res) =>
-    res.trace.type === "RefTrace"
-      ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }
-      : null
-  );
 }

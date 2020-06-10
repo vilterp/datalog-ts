@@ -3,12 +3,18 @@ import { Suite } from "../testing";
 import { runDDTestAtPath } from "../util/dataDrivenTests";
 import { DDTest, Result } from "../util/dataDrivenTests";
 import { language } from "./parser";
-import { prettyPrintTerm, ppt } from "../pretty";
+import {
+  prettyPrintTerm,
+  ppt,
+  defaultTracePrintOpts,
+  TracePrintOpts,
+  prettyPrintTrace,
+} from "../pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
 import { fsLoader } from "../repl";
 import { Rec } from "../types";
-import { prettyPrintTrace, TracePrintOpts, defaultOpts } from "../traceTree";
+import { traceToTree } from "../traceTree";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -53,7 +59,7 @@ export function fpTests(writeResults: boolean): Suite {
       test() {
         runDDTestAtPath(
           "fp/testdata/trace.dd.txt",
-          (t) => traceTest(t, defaultOpts),
+          (t) => traceTest(t, defaultTracePrintOpts),
           writeResults
         );
       },
@@ -161,7 +167,8 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     }
     return {
       pair: tc,
-      actual: prettyPrintTrace(typeResults.results[0], opts) + "\n",
+      actual:
+        prettyPrintTrace(traceToTree(typeResults.results[0]), opts) + "\n",
     };
   });
 }
