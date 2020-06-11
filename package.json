@@ -1,6 +1,6 @@
 {
   "name": "datalog-ts",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "scripts": {
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
