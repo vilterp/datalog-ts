@@ -22,7 +22,6 @@ export class Repl {
   mode: Mode;
   query: string | null;
   rl: readline.Interface;
-  loader: Loader;
 
   constructor(
     input: NodeJS.ReadableStream,
@@ -36,7 +35,6 @@ export class Repl {
     this.out = out;
     this.buffer = "";
     this.mode = mode;
-    this.loader = loader;
     if (query) {
       this.query = query;
     } else {
