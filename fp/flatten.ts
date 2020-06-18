@@ -84,6 +84,7 @@ function recurse(
         bindingID: int(bindingID),
         bodyID: int(bodyID),
         location: spanToDL(e.span),
+        varLoc: spanToDL(e.name.span),
       });
       return {
         terms: [overallTerm, ...bindingsTerms, ...bodyTerms],
@@ -102,6 +103,7 @@ function recurse(
           idx: int(idx),
           name: str(param.name.ident),
           ty: str(param.ty.ident),
+          location: spanToDL(param.name.span),
         })
       );
       return {

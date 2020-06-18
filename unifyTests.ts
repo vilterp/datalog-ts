@@ -129,4 +129,18 @@ export const unifyTests = [
       assertDeepEqual(null, unifyRes3);
     },
   },
+  {
+    name: "incomplete record",
+    test() {
+      const unifyRes = unify(
+        {},
+        rec("span", {
+          from: rec("pos", { idx: int(1) }),
+          to: rec("pos", { idx: int(2) }),
+        }),
+        rec("span", { from: rec("pos", { idx: int(1) }) })
+      );
+      assertDeepEqual(unifyRes, {});
+    },
+  },
 ];

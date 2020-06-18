@@ -19,17 +19,24 @@ export function RelationTable(props: {
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
 }) {
-  const results: Res[] =
-    props.relation.type === "Table"
-      ? props.relation.records.map((term) => ({
-          term,
-          bindings: {},
-          trace: { type: "BaseFactTrace", fact: term },
-        }))
-      : props.repl.evalStmt({
-          type: "Insert",
-          record: props.relation.rule.head,
-        }).results;
+  let error: string = "";
+  let results: Res[] = [];
+  try {
+    results =
+      props.relation.type === "Table"
+        ? props.relation.records.map((term) => ({
+            term,
+            bindings: {},
+            trace: { type: "BaseFactTrace", fact: term },
+          }))
+        : props.repl.evalStmt({
+            type: "Insert",
+            record: props.relation.rule.head,
+          }).results;
+  } catch (e) {
+    error = e.toString();
+    console.error(e);
+  }
   const fields =
     results.length === 0
       ? []
@@ -43,7 +50,11 @@ export function RelationTable(props: {
         <RuleC highlight={props.highlight} rule={props.relation.rule} />
       ) : null}
       {results.length === 0 ? (
-        <div style={{ fontStyle: "italic" }}>No results</div>
+        error === "" ? (
+          <div style={{ fontStyle: "italic" }}>No results</div>
+        ) : (
+          <pre style={{ color: "red" }}>{error}</pre>
+        )
       ) : (
         <table style={{ borderCollapse: "collapse" }}>
           <thead>

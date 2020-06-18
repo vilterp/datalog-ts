@@ -46,19 +46,20 @@ type_lambda{id: I, type: tapp{from: F, to: R}} :-
   lambda_param{lambdaID: I, ty: F} &
   type{id: B, type: R}.
 
-scope_item{id: I, name: N, type: T} :-
-  root_expr{id: I} & builtin{name: N, type: T} |
-  scope_let{id: I, name: N, type: T} |
-  scope_lambda{id: I, name: N, type: T} |
-  parent_scope{id: I, parentID: P} & scope_item{id: P, name: N, type: T}.
+scope_item{id: I, name: N, type: T, location: L} :-
+  scope_builtin{id: I, name: N, type: T, location: L} |
+  scope_let{id: I, name: N, type: T, location: L} |
+  scope_lambda{id: I, name: N, type: T, location: L} |
+  parent_scope{id: I, parentID: P} & scope_item{id: P, name: N, type: T, location: L}.
 
-# this recursion is not working for some reason
-scope_let{id: I, name: N, type: T} :-
-  let_expr{bodyID: I, varName: N, bindingID: B} &
+scope_builtin{id: I, name: N, type: T, location: "builtin"} :-
+  root_expr{id: I} & builtin{name: N, type: T}.
+scope_let{id: I, name: N, type: T, location: L} :-
+  let_expr{bodyID: I, varName: N, bindingID: B, varLoc: L} &
   type{id: B, type: T}.
-scope_lambda{id: I, name: N, type: T} :-
+scope_lambda{id: I, name: N, type: T, location: L} :-
   lambda{body: I, id: LID} &
-  lambda_param{lambdaID: LID, name: N, ty: T}.
+  lambda_param{lambdaID: LID, name: N, ty: T, location: L}.
 
 parent_scope{id: I, parentID: P} :-
   let_expr{bodyID: I, id: P} |
@@ -87,6 +88,10 @@ expected_type{id: I, type: T} :-
   lambda{retType: T, body: I} |
   lambda{retType: T, body: B} & let_expr{id: B, bodyID: I}.
 
+usage{definitionLoc: DL, usageLoc: UL, name: N} :-
+  var{id: I, name: N, location: UL} &
+  scope_item{id: I, name: N, location: DL}.
+
 # cursor-dependent rules
 current_suggestion{id: I, name: N, type: T} :-
   cursor{idx: Idx} &
@@ -102,3 +107,11 @@ current_type{id: I, type: T} :-
   cursor{idx: Idx} &
   expr{id: I, location: span{from: pos{idx: Idx}}} &
   type{id: I, type: T}.
+
+current_usage{name: N, usageLoc: ULL} :-
+  cursor{idx: Idx} &
+  usage{definitionLoc: span{from: pos{idx: Idx}}, name: N, usageLoc: ULL}.
+
+current_definition{name: N, definitionLoc: DLL} :-
+  cursor{idx: Idx} &
+  usage{definitionLoc: DLL, name: N, usageLoc: span{from: pos{idx: Idx}}}.

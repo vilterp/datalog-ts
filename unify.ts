@@ -50,7 +50,7 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
             const leftVal = left.attrs[key];
             const rightVal = right.attrs[key];
             if (!rightVal) {
-              return null;
+              continue;
             }
             const res = unify(prior, leftVal, rightVal);
             if (res === null) {
