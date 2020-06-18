@@ -97,13 +97,6 @@ function Main() {
           />
         }
       />
-
-      <Collapsible
-        heading="Flattened AST"
-        content={<pre>{rendered.join("\n")}</pre>}
-      />
-
-      <Collapsible heading="Rules" content={<pre>{typecheckDL}</pre>} />
     </div>
   );
 }
