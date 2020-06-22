@@ -66,7 +66,6 @@ function Main() {
     suggestions = getSuggestions(repl);
   } catch (e) {
     error = e.toString();
-    console.error(e);
   }
 
   return (
