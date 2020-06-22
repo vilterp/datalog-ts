@@ -14,3 +14,7 @@ suggestion{id: 1, name: "intToString", type: tapp{from: "int", to: "string"}}.
 (x: int): string => let x = 2 in ???
 ----
 suggestion{id: 3, name: "intToString", type: tapp{from: "int", to: "string"}}.
+
+let y = 2 in let x = ??? in intToString(x)
+----
+suggestion{id: 3, name: "y", type: "int"}.

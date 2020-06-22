@@ -3,15 +3,14 @@ import ReactDOM from "react-dom";
 import Editor from "react-simple-code-editor/src/index";
 import { Expr, language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { Rec, StringLit } from "../../types";
+import { Rec } from "../../types";
 import { Loader } from "../../repl";
 import { ReplCore } from "../../replCore";
 import useLocalStorage from "react-use-localstorage";
 import { TabbedTables } from "../../uiCommon/tabbedTables";
 import ReactJson from "react-json-view";
 import { Collapsible } from "../../uiCommon/collapsible";
-import { dlToSpan, highlight } from "./highlight";
-import { uniqBy } from "../../util";
+import { highlight } from "./highlight";
 // @ts-ignore
 import highlightCSS from "./highlight.css";
 // @ts-ignore
@@ -22,7 +21,12 @@ import ideDL from "../ide.dl";
 import stdlibDL from "../stdlib.dl";
 // @ts-ignore
 import highlightDL from "../highlight.dl";
-import Parsimmon from "parsimmon";
+import {
+  getSuggestions,
+  insertSuggestion,
+  Suggestion,
+  typeToString,
+} from "./suggestions";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -57,7 +61,7 @@ function Main() {
   repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   let parsed: Expr = null;
   let error: Error | null = null;
-  let suggestions: { name: string; type: string }[] = [];
+  let suggestions: Suggestion[] = [];
   const parseRes = fpLanguage.expr.parse(source);
   if (parseRes.status === false) {
     error = {
@@ -133,15 +137,13 @@ function Main() {
         ) : null}
         {suggestions ? (
           <ul style={{ fontFamily: "monospace" }}>
-            {suggestions.map((s) => (
+            {suggestions.map((sugg) => (
               <li
-                key={`${s.name}-${s.type}`}
+                key={`${sugg.name}-${sugg.type}`}
                 style={{ cursor: "pointer" }}
-                onClick={() =>
-                  setSource(insertSuggestion(repl, source, s.name))
-                }
+                onClick={() => setSource(insertSuggestion(repl, source, sugg))}
               >
-                {s.name}: {s.type}
+                {sugg.name}: {typeToString(sugg.type)}
               </li>
             ))}
           </ul>
@@ -168,26 +170,6 @@ function Main() {
       />
     </div>
   );
-}
-
-function insertSuggestion(repl: ReplCore, code: string, sugg: string): string {
-  const currentPlaceholder = repl.evalStr("current_placeholder{span: S}.")
-    .results[0].term as Rec;
-  const span = dlToSpan(currentPlaceholder.attrs.span as Rec);
-  return code.substring(0, span.from) + sugg + code.substring(span.to);
-}
-
-function getSuggestions(repl: ReplCore): { name: string; type: string }[] {
-  const suggs = repl
-    .evalStr("current_suggestion{name: N, type: T}.")
-    .results.map((res) => {
-      const rec = res.term as Rec;
-      return {
-        name: (rec.attrs.name as StringLit).val,
-        type: (rec.attrs.type as StringLit).val,
-      };
-    });
-  return uniqBy(suggs, ({ name, type }) => `${name}: ${type}`);
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

@@ -29,7 +29,6 @@ export function highlight(
 }
 
 function highlightSyntaxError(code: string, idx: number): React.ReactNode {
-  console.log({ code, idx });
   if (idx === code.length) {
     return (
       <>
@@ -39,9 +38,11 @@ function highlightSyntaxError(code: string, idx: number): React.ReactNode {
     ); // not sure what to highlight at EOF
   }
   return [
-    <>{code.substring(0, idx)}</>,
-    <span className="segment-syntax-error">{code.substr(idx, 1)}</span>,
-    <>{code.substring(idx + 1)}</>,
+    <React.Fragment key="before">{code.substring(0, idx)}</React.Fragment>,
+    <span key="err" className="segment-syntax-error">
+      {code.substr(idx, 1)}
+    </span>,
+    <React.Fragment key="after">{code.substring(idx + 1)}</React.Fragment>,
   ];
 }
 

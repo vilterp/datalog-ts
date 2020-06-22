@@ -24,7 +24,8 @@ type{id: I, type: T} :-
   type_lambda{id: I, type: T} |
   type_fc{id: I, type: T} |
   type_let{id: I, type: T} |
-  type_var{id: I, type: T}.
+  type_var{id: I, type: T} |
+  type_placeholder{id: I, type: T}.
 
 type_s{id: I, type: "string"} :-
   string_lit{id: I}.
@@ -45,6 +46,8 @@ type_lambda{id: I, type: tapp{from: F, to: R}} :-
   lambda{id: I, retType: R, body: B} &
   lambda_param{lambdaID: I, ty: F} &
   type{id: B, type: R}.
+type_placeholder{id: I, type: "unknown"} :-
+  placeholder{id: I}.
 
 scope_item{id: I, name: N, type: T, location: L} :-
   scope_builtin{id: I, name: N, type: T, location: L} |

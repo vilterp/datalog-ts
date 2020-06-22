@@ -1,14 +1,12 @@
 # type-directed autocomplete suggestions
 suggestion{id: I, name: N, type: T} :-
-  suggestion_func_arg{id: I, name: N, type: T} |
+  suggestion_var{id: I, name: N, type: T} |
   suggestion_func{id: I, name: N, type: T}.
 
-suggestion_func_arg{id: I, name: N, type: TF} :-
+suggestion_var{id: I, name: N, type: T} :-
   placeholder{id: I} &
-  func_call{argID: I, funcID: F} &
-  type{id: F, type: tapp{from: TF, to: TT}} &
-  scope_item{id: I, type: TF, name: N}.
-
+  expected_type{id: I, type: T} &
+  scope_item{id: I, type: T, name: N}.
 suggestion_func{id: I, name: N, type: tapp{from: TF, to: TT}} :-
   placeholder{id: I} &
   expected_type{id: I, type: TT} &
@@ -16,7 +14,14 @@ suggestion_func{id: I, name: N, type: tapp{from: TF, to: TT}} :-
 
 expected_type{id: I, type: T} :-
   lambda{retType: T, body: I} |
-  lambda{retType: T, body: B} & let_expr{id: B, bodyID: I}.
+  let_expr{id: L, bodyID: I} & expected_type{id: L, type: T} |
+  func_call{argID: I, funcID: F} & type{id: F, type: tapp{from: T}} |
+  expected_type_binding{id: I, type: T}.
+expected_type_binding{id: I, type: T} :-
+  let_expr{varLoc: VL, bindingID: I} &
+  usage{definitionLoc: VL, usageLoc: UL} &
+  expr{id: UI, location: UL} &
+  expected_type{id: UI, type: T}.
 
 usage{definitionLoc: DL, usageLoc: UL, name: N} :-
   var{id: I, name: N, location: UL} &

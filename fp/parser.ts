@@ -41,7 +41,7 @@ export const language = P.createLanguage({
         r.varExpr,
         r.stringLit,
         r.intLit,
-        r.placeholder.skip(P.optWhitespace)
+        r.placeholder
       )
     ),
 

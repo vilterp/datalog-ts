@@ -91,9 +91,13 @@ export function flatMap<T, U>(arr: T[], f: (t: T, idx: number) => U[]): U[] {
 }
 
 export function repeat(n: number, str: string): string {
-  let out = "";
+  return repeatArr(n, str).join("");
+}
+
+export function repeatArr<T>(n: number, item: T): T[] {
+  let out = [];
   for (let i = 0; i < n; i++) {
-    out += str;
+    out.push(item);
   }
   return out;
 }
