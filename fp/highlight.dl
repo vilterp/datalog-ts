@@ -13,7 +13,7 @@ segment{type: T, span: S, highlight: H} :-
 var_highlight{defnLoc: DL, usageLoc: UL} :-
   var_highlight_defn{defnLoc: DL, usageLoc: UL} |
   var_highlight_usage{defnLoc: DL, usageLoc: UL} |
-  var_highlight_usage_indirect{defnLoc: DL, usageLoc: UL}.
+  var_highlight_usage_indirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
 var_highlight_defn{defnLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} :-
   usage{definitionLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} &
   cursor{idx: CIdx} &
