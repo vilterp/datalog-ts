@@ -26,7 +26,6 @@ export function highlightSegments(
   cursor: number
 ) {
   const usageInfo = getDefnAndUsages(repl, cursor);
-  console.log(usageInfo);
   return segment(code, usageInfo);
 }
 
@@ -48,7 +47,6 @@ function segment(src: string, usageInfo: UsageInfo): OutputSpan[] {
   const allSpans: UsageSpan[] = [...usageSpans, ...defnSpan].sort(
     (a, b) => a.span.from.offset - b.span.from.offset
   );
-  console.log({ allSpans });
   return recurse(src, 0, allSpans);
 }
 
@@ -80,7 +78,6 @@ function recurse(
 function getDefnAndUsages(repl: ReplCore, cursor: number): UsageInfo {
   const defnLoc = getDefnLoc(repl, cursor);
   const usageLocs = defnLoc === null ? [] : getUsageLocs(repl, defnLoc);
-  console.log({ defnLoc });
   return {
     defn: defnLoc,
     usages: usageLocs,
@@ -113,10 +110,8 @@ function getUsageLocs(repl: ReplCore, defnLoc: Span): Span[] {
     definitionLoc: span{from: pos{idx: ${defnLoc.from.offset}}, to: pos{idx: ${defnLoc.to.offset}}},
     usageLoc: span{from: pos{idx: UF}, to: pos{idx: UT}}
   }.`;
-  console.log("getUsageLocs", { defnLoc, query });
   const usages = repl.evalStr(query).results;
 
-  console.log("usage locs:", usages);
   return usages.map((result) =>
     dlToSpan((result.term as Rec).attrs.usageLoc as Rec)
   );

@@ -5,7 +5,7 @@ import { Expr, language as fpLanguage, Span, Pos } from "../parser";
 import { flatten } from "../flatten";
 import { prettyPrintTerm } from "../../pretty";
 import * as pp from "prettier-printer";
-import { Rec, Res, Rule, Int } from "../../types";
+import { Rec, Res, Rule, Int, StringLit } from "../../types";
 import { Loader } from "../../repl";
 // @ts-ignore
 import typecheckDL from "../typecheck.dl";
@@ -17,6 +17,7 @@ import { TabbedTables } from "../../uiCommon/tabbedTables";
 import ReactJson from "react-json-view";
 import { Collapsible } from "../../uiCommon/collapsible";
 import { highlight, highlightSegments } from "./highlight";
+import { uniqBy } from "../../util";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -39,24 +40,22 @@ function Main() {
   repl.doLoad("stdlib.dl");
   repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   let parsed: Expr = null;
-  let rendered: string[] = [];
   let error = null;
+  let suggestions: { name: string; type: string }[] = [];
   try {
+    // insert source
     parsed = fpLanguage.expr.tryParse(source);
     const flattened = flatten(parsed);
-    const printed = flattened.map(prettyPrintTerm);
-    rendered = printed.map((t) => pp.render(100, t) + ".");
 
     flattened.forEach((rec) =>
       repl.evalStmt({ type: "Insert", record: rec as Rec })
     );
+
+    // get suggestions
+    suggestions = getSuggestions(repl);
   } catch (e) {
     error = e.toString();
   }
-
-  console.log("==================");
-  const highlightTest = highlightSegments(repl, source, cursorPos);
-  console.log({ highlightTest });
 
   return (
     <div>
@@ -105,9 +104,21 @@ function Main() {
             <pre>{error}</pre>
           </div>
         ) : null}
+        {suggestions ? (
+          <ul style={{ fontFamily: "monospace" }}>
+            {suggestions.map((s) => (
+              <li key={`${s.name}-${s.type}`}>
+                {s.name}: {s.type}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
 
-      <TabbedTables repl={repl} />
+      <Collapsible
+        heading="Facts &amp; Rules"
+        content={<TabbedTables repl={repl} />}
+      />
 
       <Collapsible
         heading="AST"
@@ -124,6 +135,19 @@ function Main() {
       />
     </div>
   );
+}
+
+function getSuggestions(repl: ReplCore): { name: string; type: string }[] {
+  const suggs = repl
+    .evalStr("current_suggestion{name: N, type: T}.")
+    .results.map((res) => {
+      const rec = res.term as Rec;
+      return {
+        name: (rec.attrs.name as StringLit).val,
+        type: (rec.attrs.type as StringLit).val,
+      };
+    });
+  return uniqBy(suggs, ({ name, type }) => `${name}: ${type}`);
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

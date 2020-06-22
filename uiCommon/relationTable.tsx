@@ -68,7 +68,7 @@ export function RelationTable(props: {
             </tr>
           </thead>
           <tbody>
-            {results.map((result) => {
+            {results.map((result, idx) => {
               const hl = props.highlight.highlight;
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
@@ -85,7 +85,7 @@ export function RelationTable(props: {
               };
               const icon = rowCollapseState.collapsed ? ">" : "v";
               return (
-                <React.Fragment key={key}>
+                <React.Fragment key={`${idx}-${key}`}>
                   <tr
                     onClick={toggleRowCollapsed}
                     style={{ cursor: "pointer", fontFamily: "monospace" }}
