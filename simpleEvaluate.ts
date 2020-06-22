@@ -257,11 +257,6 @@ function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
       return termEq(left, right);
     case "!=":
       return !termEq(left, right);
-    // TODO: should these be virtual relations? idk man
-    case "<=":
-      XXXX;
-    case ">=":
-      XXX;
   }
 }
 
