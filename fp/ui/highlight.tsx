@@ -1,8 +1,8 @@
 import React from "react";
 import classnames from "classnames";
 import { ReplCore } from "../../replCore";
-import { Rec, Int, StringLit, Bool } from "../../types";
-import { Pos, Span } from "../parser";
+import { Rec, Int, StringLit, Bool, Term } from "../../types";
+import { Span } from "../parser";
 import { uniqBy } from "../../util";
 
 export function highlight(repl: ReplCore, code: string): React.ReactNode {
@@ -22,7 +22,7 @@ export function highlight(repl: ReplCore, code: string): React.ReactNode {
 }
 
 function getStartOffset(t: RawSegment): number {
-  return t.span.from.offset;
+  return t.span.from;
 }
 
 function mkRawSegment(rec: Rec): RawSegment {
@@ -65,8 +65,8 @@ function recurse(src: string, offset: number, spans: RawSegment[]): Segment[] {
     ];
   }
   const firstSpan = spans[0];
-  const fromIdx = firstSpan.span.from.offset;
-  const toIdx = firstSpan.span.to.offset;
+  const fromIdx = firstSpan.span.from;
+  const toIdx = firstSpan.span.to;
   if (offset === fromIdx) {
     const outSpan: Segment = {
       type: firstSpan.type,
@@ -90,15 +90,13 @@ function recurse(src: string, offset: number, spans: RawSegment[]): Segment[] {
 
 export function dlToSpan(rec: Rec): Span {
   return {
-    from: dlToPos(rec.attrs.from as Rec),
-    to: dlToPos(rec.attrs.to as Rec),
+    from: dlToPos(rec.attrs.from),
+    to: dlToPos(rec.attrs.to),
   };
 }
 
-// TODO: just have pos's be ints already so we don't have to
-// fake line and column
-function dlToPos(rec: Rec): Pos {
-  return { offset: (rec.attrs.idx as Int).val, line: 0, column: 0 };
+function dlToPos(term: Term): number {
+  return (term as Int).val;
 }
 
 function hlWins(segments: RawSegment[]): RawSegment[] {
@@ -122,5 +120,5 @@ function hlWins(segments: RawSegment[]): RawSegment[] {
 }
 
 function spanToString(span: Span): string {
-  return `${span.from.offset}-${span.to.offset}`;
+  return `${span.from}-${span.to}`;
 }

@@ -14,12 +14,12 @@ var_highlight{defnLoc: DL, usageLoc: UL} :-
   var_highlight_defn{defnLoc: DL, usageLoc: UL} |
   var_highlight_usage{defnLoc: DL, usageLoc: UL} |
   var_highlight_usage_indirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
-var_highlight_defn{defnLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} :-
-  usage{definitionLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} &
+var_highlight_defn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
+  usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
   cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
-var_highlight_usage{defnLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} :-
-  usage{definitionLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
+var_highlight_usage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
+  usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 var_highlight_usage_indirect{defnLoc: DL, usageLoc: UL} :-
@@ -37,8 +37,8 @@ segment_defn_hl{type: "defn", span: S, highlight: true} :-
   var_highlight{defnLoc: S} &
   var_defn{span: S}.
 
-segment_usage{type: "usage", span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, highlight: false} :-
-  var{location: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}}.
+segment_usage{type: "usage", span: span{from: FIdx, to: TIdx}, highlight: false} :-
+  var{location: span{from: FIdx, to: TIdx}}.
 segment_usage_hl{type: "usage", span: S, highlight: true} :-
   var_highlight{usageLoc: S} &
   var{location: S}.

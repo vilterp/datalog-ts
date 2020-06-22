@@ -153,9 +153,7 @@ function insertSuggestion(repl: ReplCore, code: string, sugg: string): string {
   const currentPlaceholder = repl.evalStr("current_placeholder{span: S}.")
     .results[0].term as Rec;
   const span = dlToSpan(currentPlaceholder.attrs.span as Rec);
-  return (
-    code.substring(0, span.from.offset) + sugg + code.substring(span.to.offset)
-  );
+  return code.substring(0, span.from) + sugg + code.substring(span.to);
 }
 
 function getSuggestions(repl: ReplCore): { name: string; type: string }[] {

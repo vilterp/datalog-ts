@@ -24,9 +24,8 @@ type Param = { ty: Type; name: Token };
 
 type Type = Token; // TODO: generics, etc
 
-export type Pos = { offset: number; line: number; column: number };
-
-export type Span = { from: Pos; to: Pos };
+// from and to indices
+export type Span = { from: number; to: number };
 
 type Located = { span: Span };
 
@@ -103,7 +102,10 @@ export const language = P.createLanguage({
       P.index,
       P.regex(/([a-zA-Z_][a-zA-Z0-9_]*)/, 1).desc("identifier"),
       P.index
-    ).map(([from, ident, to]) => ({ ident, span: { from, to } })),
+    ).map(([from, ident, to]) => ({
+      ident,
+      span: { from: from.offset, to: to.offset },
+    })),
 
   type: (r) => r.identifier, // TODO: generics, etc
 
@@ -126,14 +128,14 @@ export const language = P.createLanguage({
 function locWord(str: string): P.Parser<Token> {
   return P.seq(P.index, word(str), P.index).map(([from, _, to]) => ({
     ident: str,
-    span: { from, to },
+    span: { from: from.offset, to: to.offset },
   }));
 }
 
 function located<T>(p: P.Parser<T>): P.Parser<T & Located> {
   return P.seq(P.index, p, P.index).map(([from, res, to]) => ({
     ...res,
-    span: { from, to },
+    span: { from: from.offset, to: to.offset },
   }));
 }
 

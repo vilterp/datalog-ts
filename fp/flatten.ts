@@ -131,11 +131,7 @@ function recurse(
 
 function spanToDL(span: Span): Rec {
   return rec("span", {
-    from: posToDL(span.from),
-    to: posToDL(span.to),
+    from: int(span.from),
+    to: int(span.to),
   });
-}
-
-function posToDL(pos: Pos): Rec {
-  return rec("pos", { idx: int(pos.offset) });
 }
