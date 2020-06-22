@@ -4,7 +4,14 @@ import * as P from "parsimmon";
 
 export type Expr = (
   | { type: "FuncCall"; func: Expr; arg: Expr }
-  | { type: "Let"; name: Token; binding: Expr; body: Expr }
+  | {
+      type: "Let";
+      letT: Token;
+      name: Token;
+      binding: Expr;
+      inT: Token;
+      body: Expr;
+    }
   | { type: "Var"; name: string }
   | { type: "StringLit"; val: string }
   | { type: "IntLit"; val: number }
@@ -69,10 +76,12 @@ export const language = P.createLanguage({
       r.expr,
       P.seq(P.optWhitespace, r.inWord),
       r.expr
-    ).map(([_1, name, _2, binding, _3, body]) => ({
+    ).map(([letT, name, _2, binding, [_, inT], body]) => ({
       type: "Let",
+      letT,
       name,
       binding,
+      inT,
       body,
     })),
   varExpr: (r) => r.identifier.map((id) => ({ type: "Var", name: id.ident })),
@@ -109,10 +118,17 @@ export const language = P.createLanguage({
   rparen: () => word(")"),
   colon: () => word(":"),
   comma: () => word(","),
-  letWord: () => word("let"),
-  inWord: () => word("in"),
-  rightArrow: () => word("=>"),
+  letWord: () => locWord("let"),
+  inWord: () => locWord("in"),
+  rightArrow: () => locWord("=>"),
 });
+
+function locWord(str: string): P.Parser<Token> {
+  return P.seq(P.index, word(str), P.index).map(([from, _, to]) => ({
+    ident: str,
+    span: { from, to },
+  }));
+}
 
 function located<T>(p: P.Parser<T>): P.Parser<T & Located> {
   return P.seq(P.index, p, P.index).map(([from, res, to]) => ({

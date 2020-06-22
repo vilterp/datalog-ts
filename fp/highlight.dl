@@ -6,7 +6,8 @@ segment{type: T, span: S, highlight: H} :-
   segment_usage{type: T, span: S, highlight: H} |
   segment_usage_hl{type: T, span: S, highlight: H} |
   segment_str{type: T, span: S, highlight: H} |
-  segment_int{type: T, span: S, highlight: H}.
+  segment_int{type: T, span: S, highlight: H} |
+  segment_keyword{type: T, span: S, highlight: H}.
 
 var_highlight{defnLoc: DL, usageLoc: UL} :-
   var_highlight_defn{defnLoc: DL, usageLoc: UL} |
@@ -45,3 +46,6 @@ segment_str{type: "string", span: S, highlight: false} :-
   string_lit{location: S}.
 segment_int{type: "int", span: S, highlight: false} :-
   int_lit{location: S}.
+segment_keyword{type: "keyword", span: S, highlight: false} :-
+  let_expr{inLoc: S} |
+  let_expr{letLoc: S}.

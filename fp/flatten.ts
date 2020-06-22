@@ -85,6 +85,8 @@ function recurse(
         bodyID: int(bodyID),
         location: spanToDL(e.span),
         varLoc: spanToDL(e.name.span),
+        letLoc: spanToDL(e.letT.span),
+        inLoc: spanToDL(e.inT.span),
       });
       return {
         terms: [overallTerm, ...bindingsTerms, ...bodyTerms],
