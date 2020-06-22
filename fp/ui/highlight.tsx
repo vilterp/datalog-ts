@@ -5,7 +5,14 @@ import { Rec, Int, StringLit, Bool, Term } from "../../types";
 import { Span } from "../parser";
 import { uniqBy } from "../../util";
 
-export function highlight(repl: ReplCore, code: string): React.ReactNode {
+export function highlight(
+  repl: ReplCore,
+  code: string,
+  syntaxErrorIdx: number | null
+): React.ReactNode {
+  if (syntaxErrorIdx) {
+    return highlightSyntaxError(code, syntaxErrorIdx);
+  }
   const segments = repl.evalStr("segment{type: T, span: S, highlight: H}.");
   const sortedSegments = hlWins(
     uniqBy(
@@ -19,6 +26,23 @@ export function highlight(repl: ReplCore, code: string): React.ReactNode {
   return inOrder.map((s, idx) => (
     <React.Fragment key={idx}>{renderSegment(s)}</React.Fragment>
   ));
+}
+
+function highlightSyntaxError(code: string, idx: number): React.ReactNode {
+  console.log({ code, idx });
+  if (idx === code.length) {
+    return (
+      <>
+        {code}
+        <span className="segment-syntax-error">&nbsp;</span>
+      </>
+    ); // not sure what to highlight at EOF
+  }
+  return [
+    <>{code.substring(0, idx)}</>,
+    <span className="segment-syntax-error">{code.substr(idx, 1)}</span>,
+    <>{code.substring(idx + 1)}</>,
+  ];
 }
 
 function getStartOffset(t: RawSegment): number {

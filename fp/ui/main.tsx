@@ -103,7 +103,13 @@ function Main() {
           padding={10}
           value={source}
           onValueChange={setSource}
-          highlight={(_) => highlight(repl, source)}
+          highlight={(_) =>
+            highlight(
+              repl,
+              source,
+              error && error.type === "ParseError" ? error.offset : null
+            )
+          }
           // highlight={(code) => code}
           onKeyDown={(evt) => {
             setCursorPos(evt.currentTarget.selectionStart);
