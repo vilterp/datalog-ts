@@ -69,9 +69,11 @@ function recurse(
 
 function getDefnAndUsages(repl: ReplCore, cursor: number): UsageInfo {
   const defnLoc = getDefnLoc(repl, cursor);
+  const usageLocs = defnLoc === null ? [] : getUsageLocs(repl, defnLoc);
+  console.log({ defnLoc });
   return {
     defn: defnLoc,
-    usages: defnLoc === null ? [] : getUsageLocs(repl, defnLoc),
+    usages: usageLocs,
   };
 }
 
@@ -97,12 +99,13 @@ function getDefnLoc(repl: ReplCore, cursor: number): Span | null {
 }
 
 function getUsageLocs(repl: ReplCore, defnLoc: Span): Span[] {
-  const usages = repl.evalStr(
-    `usage{
-      defnitionLoc: span{from: pos{idx: ${defnLoc.from.offset}}, to: pos{idx: ${defnLoc.to.offset}}},
-      usageLoc: span{from: pos{idx: UF}, to: pos{idx: UT}}
-    }.`
-  ).results;
+  const query = `usage{
+    definitionLoc: span{from: pos{idx: ${defnLoc.from.offset}}, to: pos{idx: ${defnLoc.to.offset}}},
+    usageLoc: span{from: pos{idx: UF}, to: pos{idx: UT}}
+  }.`;
+  console.log("getUsageLocs", { defnLoc, query });
+  const usages = repl.evalStr(query).results;
+
   console.log("usage locs:", usages);
   return usages.map((result) =>
     dlToSpan((result.term as Rec).attrs.usageLoc as Rec)

@@ -54,6 +54,7 @@ function Main() {
     error = e.toString();
   }
 
+  console.log("==================");
   const highlightTest = highlightSegments(repl, source, cursorPos);
   console.log({ highlightTest });
 

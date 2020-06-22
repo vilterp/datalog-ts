@@ -10,7 +10,7 @@ usage{definitionLoc: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", usag
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 57}, to: pos{idx: 58}}}.
 ----
 
-usage{definitionLoc: span{from: pos{idx: 4}}, usageLoc: span{from: pos{idx: P}}}.
+usage{definitionLoc: span{from: pos{idx: 4}}, usageLoc: span{from: pos{idx: UF}, to: pos{idx: UT}}}.
 ----
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 39}, to: pos{idx: 40}}}.
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 57}, to: pos{idx: 58}}}.
