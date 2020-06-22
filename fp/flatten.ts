@@ -106,6 +106,7 @@ function recurse(
           name: str(param.name.ident),
           ty: str(param.ty.ident),
           location: spanToDL(param.name.span),
+          typeLoc: spanToDL(param.ty.span),
         })
       );
       return {
@@ -118,6 +119,7 @@ function recurse(
             retType: str(e.retType.ident),
             numParams: int(e.params.length),
             location: spanToDL(e.span),
+            retTypeLoc: spanToDL(e.retType.span),
           }),
           ...bodyTerms,
           ...paramTerms,
