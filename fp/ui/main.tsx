@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import Editor from "react-simple-code-editor/src/index";
-import { Expr, language as fpLanguage, Span, Pos } from "../parser";
+import { Expr, language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { prettyPrintTerm } from "../../pretty";
-import * as pp from "prettier-printer";
-import { Rec, Res, Rule, Int, StringLit } from "../../types";
+import { Rec, StringLit } from "../../types";
 import { Loader } from "../../repl";
-// @ts-ignore
-import typecheckDL from "../typecheck.dl";
-// @ts-ignore
-import stdlibDL from "../stdlib.dl";
 import { ReplCore } from "../../replCore";
 import useLocalStorage from "react-use-localstorage";
 import { TabbedTables } from "../../uiCommon/tabbedTables";
 import ReactJson from "react-json-view";
 import { Collapsible } from "../../uiCommon/collapsible";
-import { highlight, highlightSegments } from "./highlight";
+import { highlight } from "./highlight";
 import { uniqBy } from "../../util";
+// @ts-ignore
+import highlightCSS from "./highlight.css";
+// @ts-ignore
+import typecheckDL from "../typecheck.dl";
+// @ts-ignore
+import stdlibDL from "../stdlib.dl";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -64,12 +64,7 @@ function Main() {
       <div style={{ display: "flex" }}>
         <style
           dangerouslySetInnerHTML={{
-            __html: `.segment-defn {
-            background-color: pink;
-          }
-          .segment-usage {
-            background-color: lightgrey;
-          }`,
+            __html: highlightCSS,
           }}
         />
         <Editor

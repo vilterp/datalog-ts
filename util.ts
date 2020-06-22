@@ -148,3 +148,29 @@ export function getFirst<T, V>(arr: T[], f: (t: T) => V | null): V | null {
 export function lastItem<T>(arr: T[]): T {
   return arr[arr.length - 1];
 }
+
+export function groupBy<T>(arr: [string, T][]): { [key: string]: T[] } {
+  const out: { [key: string]: T[] } = {};
+  arr.forEach(([key, item]) => {
+    let items = out[key];
+    if (!items) {
+      items = [];
+      out[key] = items;
+    }
+    items.push(item);
+  });
+  return out;
+}
+
+export function pairsToObj<T>(
+  arr: {
+    key: string;
+    val: T;
+  }[]
+): { [key: string]: T } {
+  const out: { [key: string]: T } = {};
+  arr.forEach(({ key, val }) => {
+    out[key] = val;
+  });
+  return out;
+}
