@@ -22,6 +22,7 @@ import ideDL from "../ide.dl";
 import stdlibDL from "../stdlib.dl";
 // @ts-ignore
 import highlightDL from "../highlight.dl";
+import Parsimmon from "parsimmon";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -35,6 +36,10 @@ const loader: Loader = (path: string) => {
       return highlightDL;
   }
 };
+
+type Error =
+  | { type: "ParseError"; expected: string[]; offset: number }
+  | { type: "EvalError"; err: Error };
 
 function Main() {
   const [source, setSource] = useLocalStorage(
@@ -51,21 +56,28 @@ function Main() {
   repl.doLoad("highlight.dl");
   repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   let parsed: Expr = null;
-  let error = null;
+  let error: Error | null = null;
   let suggestions: { name: string; type: string }[] = [];
-  try {
-    // insert source
-    parsed = fpLanguage.expr.tryParse(source);
-    const flattened = flatten(parsed);
+  const parseRes = fpLanguage.expr.parse(source);
+  if (parseRes.status === false) {
+    error = {
+      type: "ParseError",
+      expected: parseRes.expected,
+      offset: parseRes.index.offset,
+    };
+  } else {
+    try {
+      parsed = parseRes.value;
+      const flattened = flatten(parseRes.value);
+      flattened.forEach((rec) =>
+        repl.evalStmt({ type: "Insert", record: rec as Rec })
+      );
 
-    flattened.forEach((rec) =>
-      repl.evalStmt({ type: "Insert", record: rec as Rec })
-    );
-
-    // get suggestions
-    suggestions = getSuggestions(repl);
-  } catch (e) {
-    error = e.toString();
+      // get suggestions
+      suggestions = getSuggestions(repl);
+    } catch (e) {
+      error = { type: "EvalError", err: e };
+    }
   }
 
   return (
@@ -105,9 +117,12 @@ function Main() {
         />
 
         {error ? (
-          <div style={{ marginLeft: 15, color: "red" }}>
-            <h2>Parse Error</h2>
-            <pre>{error}</pre>
+          <div
+            style={{ fontFamily: "monospace", marginLeft: 15, color: "red" }}
+          >
+            {error.type === "ParseError"
+              ? `Parse error: expected ${error.expected.join(" or ")}`
+              : `Eval error: ${error.err}`}
           </div>
         ) : null}
         {suggestions ? (
