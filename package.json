@@ -32,7 +32,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-json-view": "^1.19.1",
-    "react-simple-code-editor": "ssh://git@github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
+    "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
     "react-use-localstorage": "^3.4.1",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.2",
