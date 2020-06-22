@@ -59,35 +59,29 @@ function Main() {
       <h2>Source</h2>
       <div style={{ display: "flex" }}>
         <Editor
+          name="wut" // type error without this, even tho optional
+          style={{
+            fontFamily: "monospace",
+            height: 150,
+            width: 500,
+            backgroundColor: "rgb(250, 250, 250)",
+            border: "1px solid black",
+            marginBottom: 10,
+          }}
+          padding={10}
           value={source}
           onValueChange={(code) => setSource(code)}
           highlight={(code) => code}
           onKeyDown={(evt) => {
-            setCursorPos(evt.target.selectionStart);
+            setCursorPos(evt.currentTarget.selectionStart);
           }}
           onKeyUp={(evt) => {
-            setCursorPos(evt.target.selectionStart);
+            setCursorPos(evt.currentTarget.selectionStart);
           }}
           onClick={(evt) => {
-            setCursorPos(evt.target.selectionStart);
+            setCursorPos(evt.currentTarget.selectionStart);
           }}
         />
-        {/* <textarea
-          onChange={(evt) => setSource(evt.target.value)}
-          onKeyDown={(evt) => {
-            setCursorPos(evt.target.selectionStart);
-          }}
-          onKeyUp={(evt) => {
-            setCursorPos(evt.target.selectionStart);
-          }}
-          onClick={(evt) => {
-            setCursorPos(evt.target.selectionStart);
-          }}
-          style={{ fontFamily: "monospace" }}
-          cols={50}
-          rows={10}
-          value={source}
-        /> */}
 
         {error ? (
           <div style={{ marginLeft: 15, color: "red" }}>
