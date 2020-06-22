@@ -63,6 +63,16 @@ function Main() {
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
       <div style={{ display: "flex" }}>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `.segment-defn {
+            background-color: pink;
+          }
+          .segment-usage {
+            background-color: lightgrey;
+          }`,
+          }}
+        />
         <Editor
           name="wut" // type error without this, even tho optional
           style={{
@@ -76,8 +86,8 @@ function Main() {
           padding={10}
           value={source}
           onValueChange={(code) => setSource(code)}
-          // highlight={(code) => highlight(repl, code, cursorPos)}
-          highlight={(code) => code}
+          highlight={(code) => highlight(repl, code, cursorPos)}
+          // highlight={(code) => code}
           onKeyDown={(evt) => {
             setCursorPos(evt.currentTarget.selectionStart);
           }}

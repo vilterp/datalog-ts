@@ -48,6 +48,7 @@ function segment(src: string, usageInfo: UsageInfo): OutputSpan[] {
   const allSpans: UsageSpan[] = [...usageSpans, ...defnSpan].sort(
     (a, b) => a.span.from.offset - b.span.from.offset
   );
+  console.log({ allSpans });
   return recurse(src, 0, allSpans);
 }
 
@@ -57,14 +58,23 @@ function recurse(
   spans: UsageSpan[]
 ): OutputSpan[] {
   if (spans.length === 0) {
-    return [];
+    return [{ type: "normal", text: src.substr(offset) }];
   }
-  const toIdx = spans[0].span.to.offset;
-  const outSpan: OutputSpan = {
-    type: spans[0].type,
-    text: src.substr(offset, toIdx),
-  };
-  return [outSpan, ...recurse(src, toIdx, spans.slice(1))];
+  const firstSpan = spans[0];
+  const fromIdx = firstSpan.span.from.offset;
+  const toIdx = firstSpan.span.to.offset;
+  if (offset === fromIdx) {
+    const outSpan: OutputSpan = {
+      type: firstSpan.type,
+      text: src.substr(offset, toIdx - fromIdx),
+    };
+    return [outSpan, ...recurse(src, toIdx, spans.slice(1))];
+  } else {
+    return [
+      { type: "normal", text: src.substr(offset, fromIdx - offset) },
+      ...recurse(src, fromIdx, spans),
+    ];
+  }
 }
 
 function getDefnAndUsages(repl: ReplCore, cursor: number): UsageInfo {
