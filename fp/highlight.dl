@@ -1,0 +1,28 @@
+# TODO: keywords
+# TODO: cursor containment in span, not just at beginning
+segment{type: T, span: S, highlight: H} :-
+  segment_defn{type: T, span: S, highlight: H} |
+  segment_usage{type: T, span: S, highlight: H} |
+  segment_str{type: T, span: S, highlight: H} |
+  segment_int{type: T, span: S, highlight: H}.
+
+var_highlight{defnLoc: DL, usageLoc: UL} :-
+  highlight_defn{defnLoc: DL, usageLoc: UL} |
+  highlight_usage{defnLoc: DL, usageLoc: UL}.
+highlight_defn{defnLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} :-
+  usage{definitionLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} &
+  cursor{idx: FIdx}.
+highlight_usage{defnLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} :-
+  usage{definitionLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
+  cursor{idx: FIdx}.
+
+segment_defn{type: "defn", span: S, highlight: false} :-
+  let_expr{varLoc: S}.
+
+segment_usage{type: "usage", span: S, highlight: false} :-
+  var{location: S}.
+
+segment_str{type: "string", span: S, highlight: false} :-
+  string_lit{location: S}.
+segment_int{type: "int", span: S, highlight: false} :-
+  int_lit{location: S}.

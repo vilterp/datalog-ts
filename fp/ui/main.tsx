@@ -18,6 +18,8 @@ import highlightCSS from "./highlight.css";
 import typecheckDL from "../typecheck.dl";
 // @ts-ignore
 import stdlibDL from "../stdlib.dl";
+// @ts-ignore
+import highlightDL from "../highlight.dl";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -25,6 +27,8 @@ const loader: Loader = (path: string) => {
       return typecheckDL;
     case "stdlib.dl":
       return stdlibDL;
+    case "highlight.dl":
+      return highlightDL;
   }
 };
 
@@ -36,8 +40,10 @@ function Main() {
   const [cursorPos, setCursorPos] = useState<number>(0);
 
   const repl = new ReplCore(loader);
+  // TODO: make REPL immutable; always start from one with this stuff loaded
   repl.doLoad("typecheck.dl");
   repl.doLoad("stdlib.dl");
+  repl.doLoad("highlight.dl");
   repl.evalStr(`cursor{idx: ${cursorPos}}.`);
   let parsed: Expr = null;
   let error = null;
