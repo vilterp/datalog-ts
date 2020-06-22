@@ -139,8 +139,11 @@ function Main() {
           <ul style={{ fontFamily: "monospace" }}>
             {suggestions.map((sugg) => (
               <li
-                key={`${sugg.name}-${sugg.type}`}
-                style={{ cursor: "pointer" }}
+                key={JSON.stringify(sugg)}
+                style={{
+                  cursor: "pointer",
+                  fontWeight: sugg.typeMatch ? "bold" : "normal",
+                }}
                 onClick={() => setSource(insertSuggestion(repl, source, sugg))}
               >
                 {sugg.name}: {typeToString(sugg.type)}

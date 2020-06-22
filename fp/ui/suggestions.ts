@@ -1,21 +1,22 @@
 import { ReplCore } from "../../replCore";
-import { Rec, StringLit, Term } from "../../types";
+import { Rec, StringLit, Term, Bool } from "../../types";
 import { dlToSpan } from "./highlight";
 import { uniqBy, repeatArr } from "../../util";
 
-export type Suggestion = { name: string; type: Term };
+export type Suggestion = { name: string; type: Term; typeMatch: boolean };
 
-export function getSuggestions(repl: ReplCore): { name: string; type: Term }[] {
+export function getSuggestions(repl: ReplCore): Suggestion[] {
   const suggs = repl
-    .evalStr("current_suggestion{name: N, type: T}.")
+    .evalStr("current_suggestion{name: N, type: T, typeMatch: M}.")
     .results.map((res) => {
       const rec = res.term as Rec;
       return {
         name: (rec.attrs.name as StringLit).val,
         type: rec.attrs.type,
+        typeMatch: (rec.attrs.typeMatch as Bool).val,
       };
     });
-  return uniqBy(suggs, ({ name, type }) => `${name}: ${typeToString(type)}`);
+  return uniqBy(suggs, (s) => s.name);
 }
 
 export function typeToString(typeTerm: Term): string {

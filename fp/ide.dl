@@ -1,16 +1,20 @@
 # type-directed autocomplete suggestions
-suggestion{id: I, name: N, type: T} :-
-  suggestion_var{id: I, name: N, type: T} |
-  suggestion_func{id: I, name: N, type: T}.
+suggestion{id: I, name: N, type: T, typeMatch: M} :-
+  suggestion_var{id: I, name: N, type: T, typeMatch: M} |
+  suggestion_func{id: I, name: N, type: T, typeMatch: M} |
+  suggestion_scope{id: I, name: N, type: T, typeMatch: M}.
 
-suggestion_var{id: I, name: N, type: T} :-
+suggestion_var{id: I, name: N, type: T, typeMatch: true} :-
   placeholder{id: I} &
   expected_type{id: I, type: T} &
   scope_item{id: I, type: T, name: N}.
-suggestion_func{id: I, name: N, type: tapp{from: TF, to: TT}} :-
+suggestion_func{id: I, name: N, type: tapp{from: TF, to: TT}, typeMatch: true} :-
   placeholder{id: I} &
   expected_type{id: I, type: TT} &
   scope_item{id: I, name: N, type: tapp{from: TF, to: TT}}.
+suggestion_scope{id: I, name: N, type: T, typeMatch: false} :-
+  placeholder{id: I} &
+  scope_item{id: I, name: N, type: T}.
 
 expected_type{id: I, type: T} :-
   lambda{retType: T, body: I} |
@@ -33,9 +37,9 @@ current_placeholder{id: I, span: span{from: FIdx, to: TIdx}} :-
   cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-current_suggestion{id: I, name: N, type: T} :-
+current_suggestion{id: I, name: N, type: T, typeMatch: M} :-
   current_placeholder{id: I} &
-  suggestion{id: I, name: N, type: T}.
+  suggestion{id: I, name: N, type: T, typeMatch: M}.
 
 current_scope{id: I, name: N, type: T} :-
   cursor{idx: Idx} &
