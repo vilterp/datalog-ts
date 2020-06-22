@@ -1,7 +1,7 @@
 "foo"
 ----
 root_expr{id: 0}.
-string_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 5}}, val: "foo"}.
+string_lit{id: 0, location: span{from: 0, to: 5}, val: "foo"}.
 scope_item{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
@@ -10,7 +10,7 @@ type{id: 0, type: "string"}.
 2
 ----
 root_expr{id: 0}.
-int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}.
+int_lit{id: 0, location: span{from: 0, to: 1}, val: 2}.
 scope_item{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
@@ -19,9 +19,9 @@ type{id: 0, type: "int"}.
 let x = 2 in x
 ----
 root_expr{id: 0}.
-let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: pos{idx: 10}, to: pos{idx: 13}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
-int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}.
-var{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x"}.
+let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 14}, varLoc: span{from: 4, to: 5}, varName: "x"}.
+int_lit{id: 1, location: span{from: 8, to: 9}, val: 2}.
+var{id: 2, location: span{from: 13, to: 14}, name: "x"}.
 scope_item{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
@@ -31,7 +31,7 @@ scope_item{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to:
 scope_item{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 2, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 type{id: 0, type: "int"}.
 type{id: 1, type: "int"}.
 type{id: 2, type: "int"}.
@@ -39,13 +39,13 @@ type{id: 2, type: "int"}.
 let x = 2 in intToString(plus2(x))
 ----
 root_expr{id: 0}.
-let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: pos{idx: 10}, to: pos{idx: 13}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 34}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
-int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}.
-func_call{argID: 4, funcID: 3, id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 34}}}.
-var{id: 3, location: span{from: pos{idx: 13}, to: pos{idx: 24}}, name: "intToString"}.
-func_call{argID: 6, funcID: 5, id: 4, location: span{from: pos{idx: 25}, to: pos{idx: 33}}}.
-var{id: 5, location: span{from: pos{idx: 25}, to: pos{idx: 30}}, name: "plus2"}.
-var{id: 6, location: span{from: pos{idx: 31}, to: pos{idx: 32}}, name: "x"}.
+let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 34}, varLoc: span{from: 4, to: 5}, varName: "x"}.
+int_lit{id: 1, location: span{from: 8, to: 9}, val: 2}.
+func_call{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 34}}.
+var{id: 3, location: span{from: 13, to: 24}, name: "intToString"}.
+func_call{argID: 6, funcID: 5, id: 4, location: span{from: 25, to: 33}}.
+var{id: 5, location: span{from: 25, to: 30}, name: "plus2"}.
+var{id: 6, location: span{from: 31, to: 32}, name: "x"}.
 scope_item{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
@@ -55,23 +55,23 @@ scope_item{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to:
 scope_item{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 2, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 3, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 4, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 5, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 5, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 5, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 5, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 5, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 6, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 6, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 6, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 6, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 6, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 type{id: 1, type: "int"}.
 type{id: 3, type: tapp{from: "int", to: "string"}}.
 type{id: 6, type: "int"}.
@@ -79,15 +79,15 @@ type{id: 6, type: "int"}.
 let ts = (y: int): string => intToString(y) in ts(2)
 ----
 root_expr{id: 0}.
-let_expr{bindingID: 1, bodyID: 6, id: 0, inLoc: span{from: pos{idx: 44}, to: pos{idx: 47}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 52}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 6}}, varName: "ts"}.
-lambda{body: 2, id: 1, location: span{from: pos{idx: 9}, to: pos{idx: 44}}, numParams: 1, retType: "string", retTypeLoc: span{from: pos{idx: 19}, to: pos{idx: 25}}}.
-func_call{argID: 4, funcID: 3, id: 2, location: span{from: pos{idx: 29}, to: pos{idx: 44}}}.
-var{id: 3, location: span{from: pos{idx: 29}, to: pos{idx: 40}}, name: "intToString"}.
-var{id: 4, location: span{from: pos{idx: 41}, to: pos{idx: 42}}, name: "y"}.
-lambda_param{idx: 0, lambdaID: 1, location: span{from: pos{idx: 10}, to: pos{idx: 11}}, name: "y", ty: "int", typeLoc: span{from: pos{idx: 13}, to: pos{idx: 16}}}.
-func_call{argID: 8, funcID: 7, id: 6, location: span{from: pos{idx: 47}, to: pos{idx: 52}}}.
-var{id: 7, location: span{from: pos{idx: 47}, to: pos{idx: 49}}, name: "ts"}.
-int_lit{id: 8, location: span{from: pos{idx: 50}, to: pos{idx: 51}}, val: 2}.
+let_expr{bindingID: 1, bodyID: 6, id: 0, inLoc: span{from: 44, to: 47}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 52}, varLoc: span{from: 4, to: 6}, varName: "ts"}.
+lambda{body: 2, id: 1, location: span{from: 9, to: 44}, numParams: 1, retType: "string", retTypeLoc: span{from: 19, to: 25}}.
+func_call{argID: 4, funcID: 3, id: 2, location: span{from: 29, to: 44}}.
+var{id: 3, location: span{from: 29, to: 40}, name: "intToString"}.
+var{id: 4, location: span{from: 41, to: 42}, name: "y"}.
+lambda_param{idx: 0, lambdaID: 1, location: span{from: 10, to: 11}, name: "y", ty: "int", typeLoc: span{from: 13, to: 16}}.
+func_call{argID: 8, funcID: 7, id: 6, location: span{from: 47, to: 52}}.
+var{id: 7, location: span{from: 47, to: 49}, name: "ts"}.
+int_lit{id: 8, location: span{from: 50, to: 51}, val: 2}.
 scope_item{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
@@ -97,27 +97,27 @@ scope_item{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to:
 scope_item{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 2, location: span{from: pos{idx: 10}, to: pos{idx: 11}}, name: "y", type: "int"}.
+scope_item{id: 2, location: span{from: 10, to: 11}, name: "y", type: "int"}.
 scope_item{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 3, location: span{from: pos{idx: 10}, to: pos{idx: 11}}, name: "y", type: "int"}.
+scope_item{id: 3, location: span{from: 10, to: 11}, name: "y", type: "int"}.
 scope_item{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 4, location: span{from: pos{idx: 10}, to: pos{idx: 11}}, name: "y", type: "int"}.
+scope_item{id: 4, location: span{from: 10, to: 11}, name: "y", type: "int"}.
 scope_item{id: 6, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 6, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 6, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 6, location: span{from: pos{idx: 4}, to: pos{idx: 6}}, name: "ts", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 6, location: span{from: 4, to: 6}, name: "ts", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 7, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 7, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 7, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 7, location: span{from: pos{idx: 4}, to: pos{idx: 6}}, name: "ts", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 7, location: span{from: 4, to: 6}, name: "ts", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 8, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 8, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 8, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 8, location: span{from: pos{idx: 4}, to: pos{idx: 6}}, name: "ts", type: tapp{from: "int", to: "string"}}.
+scope_item{id: 8, location: span{from: 4, to: 6}, name: "ts", type: tapp{from: "int", to: "string"}}.
 type{id: 0, type: "string"}.
 type{id: 1, type: tapp{from: "int", to: "string"}}.
 type{id: 2, type: "string"}.
@@ -130,15 +130,15 @@ type{id: 8, type: "int"}.
 let x = 2 in let y = 3 in plus(2, 3)
 ----
 root_expr{id: 0}.
-let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: pos{idx: 10}, to: pos{idx: 13}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 36}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
-int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}.
-let_expr{bindingID: 3, bodyID: 4, id: 2, inLoc: span{from: pos{idx: 23}, to: pos{idx: 26}}, letLoc: span{from: pos{idx: 13}, to: pos{idx: 17}}, location: span{from: pos{idx: 13}, to: pos{idx: 36}}, varLoc: span{from: pos{idx: 17}, to: pos{idx: 18}}, varName: "y"}.
-int_lit{id: 3, location: span{from: pos{idx: 21}, to: pos{idx: 22}}, val: 3}.
-func_call{argID: 8, funcID: 5, id: 4, location: span{from: pos{idx: 26}, to: pos{idx: 36}}}.
-func_call{argID: 7, funcID: 6, id: 5, location: span{from: pos{idx: 26}, to: pos{idx: 30}}}.
-var{id: 6, location: span{from: pos{idx: 26}, to: pos{idx: 30}}, name: "plus"}.
-int_lit{id: 7, location: span{from: pos{idx: 31}, to: pos{idx: 32}}, val: 2}.
-int_lit{id: 8, location: span{from: pos{idx: 34}, to: pos{idx: 35}}, val: 3}.
+let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 36}, varLoc: span{from: 4, to: 5}, varName: "x"}.
+int_lit{id: 1, location: span{from: 8, to: 9}, val: 2}.
+let_expr{bindingID: 3, bodyID: 4, id: 2, inLoc: span{from: 23, to: 26}, letLoc: span{from: 13, to: 17}, location: span{from: 13, to: 36}, varLoc: span{from: 17, to: 18}, varName: "y"}.
+int_lit{id: 3, location: span{from: 21, to: 22}, val: 3}.
+func_call{argID: 8, funcID: 5, id: 4, location: span{from: 26, to: 36}}.
+func_call{argID: 7, funcID: 6, id: 5, location: span{from: 26, to: 30}}.
+var{id: 6, location: span{from: 26, to: 30}, name: "plus"}.
+int_lit{id: 7, location: span{from: 31, to: 32}, val: 2}.
+int_lit{id: 8, location: span{from: 34, to: 35}, val: 3}.
 scope_item{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
@@ -148,36 +148,36 @@ scope_item{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to:
 scope_item{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 2, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 3, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 4, location: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", type: "int"}.
-scope_item{id: 4, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 4, location: span{from: 17, to: 18}, name: "y", type: "int"}.
+scope_item{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 5, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 5, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 5, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 5, location: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", type: "int"}.
-scope_item{id: 5, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 5, location: span{from: 17, to: 18}, name: "y", type: "int"}.
+scope_item{id: 5, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 6, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 6, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 6, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 6, location: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", type: "int"}.
-scope_item{id: 6, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 6, location: span{from: 17, to: 18}, name: "y", type: "int"}.
+scope_item{id: 6, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 7, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 7, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 7, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 7, location: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", type: "int"}.
-scope_item{id: 7, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 7, location: span{from: 17, to: 18}, name: "y", type: "int"}.
+scope_item{id: 7, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 scope_item{id: 8, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}.
 scope_item{id: 8, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 scope_item{id: 8, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
-scope_item{id: 8, location: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", type: "int"}.
-scope_item{id: 8, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", type: "int"}.
+scope_item{id: 8, location: span{from: 17, to: 18}, name: "y", type: "int"}.
+scope_item{id: 8, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 type{id: 0, type: "int"}.
 type{id: 1, type: "int"}.
 type{id: 2, type: "int"}.

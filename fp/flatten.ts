@@ -1,5 +1,5 @@
 import { int, rec, str, Term, Rec } from "../types";
-import { Expr, Span, Pos } from "./parser";
+import { Expr, Span } from "./parser";
 
 export function flatten(e: Expr): Term[] {
   return [rec("root_expr", { id: int(0) }), ...recurse(0, e).terms];
