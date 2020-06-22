@@ -7,7 +7,7 @@ export function Collapsible(props: {
 }) {
   const [collapsed, setCollapsed] = useBoolLocalStorage(
     `collapsed-${props.heading}`,
-    false
+    true
   );
 
   return (
