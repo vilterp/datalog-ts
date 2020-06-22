@@ -445,6 +445,10 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+"react-simple-code-editor@ssh://git@github.com/vilterp/react-simple-code-editor#9e166c81f50fa2020a8bdc37658c33fa165ca446":
+  version "0.11.0"
+  resolved "ssh://git@github.com/vilterp/react-simple-code-editor#9e166c81f50fa2020a8bdc37658c33fa165ca446"
+
 react-textarea-autosize@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-6.1.0.tgz#df91387f8a8f22020b77e3833c09829d706a09a5"

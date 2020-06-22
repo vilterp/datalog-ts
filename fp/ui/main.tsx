@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import Editor from "react-simple-code-editor/src/index";
 import { Expr, language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { prettyPrintTerm, prettyPrintRule } from "../../pretty";
+import { prettyPrintTerm } from "../../pretty";
 import * as pp from "prettier-printer";
 import { Rec, Res, Rule } from "../../types";
 import { Loader } from "../../repl";
@@ -57,7 +58,21 @@ function Main() {
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
       <div style={{ display: "flex" }}>
-        <textarea
+        <Editor
+          value={source}
+          onValueChange={(code) => setSource(code)}
+          highlight={(code) => code}
+          onKeyDown={(evt) => {
+            setCursorPos(evt.target.selectionStart);
+          }}
+          onKeyUp={(evt) => {
+            setCursorPos(evt.target.selectionStart);
+          }}
+          onClick={(evt) => {
+            setCursorPos(evt.target.selectionStart);
+          }}
+        />
+        {/* <textarea
           onChange={(evt) => setSource(evt.target.value)}
           onKeyDown={(evt) => {
             setCursorPos(evt.target.selectionStart);
@@ -72,7 +87,7 @@ function Main() {
           cols={50}
           rows={10}
           value={source}
-        />
+        /> */}
 
         {error ? (
           <div style={{ marginLeft: 15, color: "red" }}>
