@@ -18,27 +18,22 @@ var_highlight_usage{defnLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{id
   usage{definitionLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
   cursor{idx: FIdx}.
 
-# TODO: dry these up by allowing BinExprs in heads or something
-segment_defn{type: "defn", span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, highlight: false} :-
-  var_defn{span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
-  cursor{idx: CIdx} &
-  CIdx != FIdx.
+# TODO: distinguish these by allowing BinExprs in heads or something
 var_defn{span: S} :-
   let_expr{varLoc: S} |
   lambda_param{location: S}.
-segment_defn_hl{type: "defn", span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, highlight: true} :-
-  var_defn{span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
-  cursor{idx: CIdx} &
-  CIdx == FIdx.
+segment_defn{type: "defn", span: S, highlight: false} :-
+  var_defn{span: S} &
+  usage{definitionLoc: S}.
+segment_defn_hl{type: "defn", span: S, highlight: true} :-
+  var_highlight{defnLoc: S} &
+  var_defn{span: S}.
 
 segment_usage{type: "usage", span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, highlight: false} :-
-  var{location: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
-  cursor{idx: CIdx} &
-  CIdx != FIdx.
-segment_usage_hl{type: "usage", span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, highlight: true} :-
-  var{location: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
-  cursor{idx: CIdx} &
-  CIdx == FIdx.
+  var{location: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}}.
+segment_usage_hl{type: "usage", span: S, highlight: true} :-
+  var_highlight{usageLoc: S} &
+  var{location: S}.
 
 segment_str{type: "string", span: S, highlight: false} :-
   string_lit{location: S}.

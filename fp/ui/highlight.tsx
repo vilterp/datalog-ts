@@ -3,12 +3,18 @@ import classnames from "classnames";
 import { ReplCore } from "../../replCore";
 import { Rec, Int, Term, StringLit, Bool } from "../../types";
 import { Pos, Span } from "../parser";
+import { uniqBy } from "../../util";
 
 export function highlight(repl: ReplCore, code: string): React.ReactNode {
   const segments = repl.evalStr("segment{type: T, span: S, highlight: H}.");
-  const sortedSegments = segments.results
-    .map((res) => mkRawSegment(res.term as Rec))
-    .sort((a, b) => getStartOffset(a) - getStartOffset(b));
+  const sortedSegments = hlWins(
+    uniqBy(
+      segments.results
+        .map((res) => mkRawSegment(res.term as Rec))
+        .sort((a, b) => getStartOffset(a) - getStartOffset(b)),
+      (rs) => `${spanToString(rs.span)}-${rs.highlighted}`
+    )
+  );
   const inOrder = assembleInOrder(code, sortedSegments);
   return inOrder.map((s, idx) => (
     <React.Fragment key={idx}>{renderSegment(s)}</React.Fragment>
@@ -93,4 +99,28 @@ function dlToSpan(rec: Rec): Span {
 // fake line and column
 function dlToPos(rec: Rec): Pos {
   return { offset: (rec.attrs.idx as Int).val, line: 0, column: 0 };
+}
+
+function hlWins(segments: RawSegment[]): RawSegment[] {
+  if (segments.length === 0) {
+    return [];
+  }
+  if (segments.length === 1) {
+    return segments;
+  }
+  const first = segments[0];
+  const second = segments[1];
+
+  if (spanToString(first.span) === spanToString(second.span)) {
+    if (first.type !== second.type) {
+      throw new Error("same span should imply same type");
+    }
+    const chosen = first.highlighted ? first : second;
+    return [chosen, ...hlWins(segments.slice(2))];
+  }
+  return [first, ...hlWins(segments.slice(1))];
+}
+
+function spanToString(span: Span): string {
+  return `${span.from.offset}-${span.to.offset}`;
 }
