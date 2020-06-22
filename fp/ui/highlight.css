@@ -1,17 +1,21 @@
 .segment-defn {
-  color: blue;
+  color: purple;
 }
-
-.segment-usage {
-  color: blue;
-}
-
 .segment-defn__highlighted {
   background-color: rgba(255, 108, 134, 0.3);
 }
 .segment-defn__unused {
   color: grey;
 }
+.segment-usage {
+  color: purple;
+}
 .segment-usage__highlighted {
   background-color: rgba(168, 168, 168, 0.37);
+}
+.segment-string {
+  color: green;
+}
+.segment-int {
+  color: blue;
 }
