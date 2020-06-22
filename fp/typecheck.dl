@@ -93,9 +93,13 @@ usage{definitionLoc: DL, usageLoc: UL, name: N} :-
   scope_item{id: I, name: N, location: DL}.
 
 # cursor-dependent rules
+current_placeholder{id: I, span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} :-
+  placeholder{id: I, location: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
+  cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+
 current_suggestion{id: I, name: N, type: T} :-
-  cursor{idx: Idx} &
-  placeholder{id: I, location: span{from: pos{idx: Idx}}} &
+  current_placeholder{id: I} &
   suggestion{id: I, name: N, type: T}.
 
 current_scope{id: I, name: N, type: T} :-

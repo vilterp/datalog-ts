@@ -88,7 +88,7 @@ function recurse(src: string, offset: number, spans: RawSegment[]): Segment[] {
 
 // helpers
 
-function dlToSpan(rec: Rec): Span {
+export function dlToSpan(rec: Rec): Span {
   return {
     from: dlToPos(rec.attrs.from as Rec),
     to: dlToPos(rec.attrs.to as Rec),

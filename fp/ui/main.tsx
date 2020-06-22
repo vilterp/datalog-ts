@@ -10,7 +10,7 @@ import useLocalStorage from "react-use-localstorage";
 import { TabbedTables } from "../../uiCommon/tabbedTables";
 import ReactJson from "react-json-view";
 import { Collapsible } from "../../uiCommon/collapsible";
-import { highlight } from "./highlight";
+import { dlToSpan, highlight } from "./highlight";
 import { uniqBy } from "../../util";
 // @ts-ignore
 import highlightCSS from "./highlight.css";
@@ -113,7 +113,7 @@ function Main() {
                 key={`${s.name}-${s.type}`}
                 style={{ cursor: "pointer" }}
                 onClick={() =>
-                  setSource(insertSuggestion(source, cursorPos, s.name))
+                  setSource(insertSuggestion(repl, source, s.name))
                 }
               >
                 {s.name}: {s.type}
@@ -145,12 +145,13 @@ function Main() {
   );
 }
 
-function insertSuggestion(
-  code: string,
-  cursorPos: number,
-  sugg: string
-): string {
-  return code.substring(0, cursorPos) + sugg + code.substring(cursorPos + 3);
+function insertSuggestion(repl: ReplCore, code: string, sugg: string): string {
+  const currentPlaceholder = repl.evalStr("current_placeholder{span: S}.")
+    .results[0].term as Rec;
+  const span = dlToSpan(currentPlaceholder.attrs.span as Rec);
+  return (
+    code.substring(0, span.from.offset) + sugg + code.substring(span.to.offset)
+  );
 }
 
 function getSuggestions(repl: ReplCore): { name: string; type: string }[] {
