@@ -19,7 +19,14 @@ import {
   InvocationLocation,
   TermWithBindings,
 } from "./types";
-import { substitute, termEq, unify, unifyVars } from "./unify";
+import {
+  substitute,
+  termEq,
+  termLT,
+  termSameType,
+  unify,
+  unifyVars,
+} from "./unify";
 import { filterMap, flatMap, mapObj } from "./util";
 
 export function evaluate(db: DB, term: Term): Res[] {
@@ -257,6 +264,13 @@ function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
       return termEq(left, right);
     case "!=":
       return !termEq(left, right);
+    case "<=":
+      return (
+        termSameType(left, right) &&
+        (termLT(left, right) || termEq(left, right))
+      );
+    case ">=":
+      return termSameType(left, right) && !termLT(left, right);
   }
 }
 

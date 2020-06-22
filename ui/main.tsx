@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { ReplCore } from "../replCore";
 import { Program, Res, Rec, StringLit } from "../types";
-import * as pp from "prettier-printer";
 import { language } from "../parser";
 import { LayoutManager } from "@jaegertracing/plexus";
 // TODO(joe): Update import after killing `DirectedGraph`

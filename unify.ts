@@ -91,6 +91,10 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
   }
 }
 
+export function termSameType(left: Term, right: Term): boolean {
+  return left.type === right.type;
+}
+
 // could use some kind of existing JS deepEq
 export function termEq(left: Term, right: Term): boolean {
   if (!left || !right) {
@@ -122,6 +126,27 @@ export function termEq(left: Term, right: Term): boolean {
         default:
           return null;
       }
+  }
+}
+
+export function termLT(left: Term, right: Term): boolean {
+  switch (left.type) {
+    case "IntLit":
+      switch (right.type) {
+        case "IntLit":
+          return left.val < right.val;
+        default:
+          return false;
+      }
+    case "StringLit":
+      switch (right.type) {
+        case "StringLit":
+          return left.val < right.val;
+        default:
+          return false;
+      }
+    default:
+      return false;
   }
 }
 

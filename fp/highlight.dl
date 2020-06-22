@@ -14,10 +14,12 @@ var_highlight{defnLoc: DL, usageLoc: UL} :-
   var_highlight_usage_indirect{defnLoc: DL, usageLoc: UL}.
 var_highlight_defn{defnLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} :-
   usage{definitionLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}, usageLoc: UL} &
-  cursor{idx: FIdx}.
+  cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
 var_highlight_usage{defnLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} :-
   usage{definitionLoc: DL, usageLoc: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
-  cursor{idx: FIdx}.
+  cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
 var_highlight_usage_indirect{defnLoc: DL, usageLoc: UL} :-
   var_highlight_usage{defnLoc: DL} &
   usage{definitionLoc: DL, usageLoc: UL}.
