@@ -85,8 +85,8 @@ function Main() {
           }}
           padding={10}
           value={source}
-          onValueChange={(code) => setSource(code)}
-          highlight={(code) => highlight(repl, code, cursorPos)}
+          onValueChange={setSource}
+          highlight={(_) => highlight(repl, source)}
           // highlight={(code) => code}
           onKeyDown={(evt) => {
             setCursorPos(evt.currentTarget.selectionStart);
