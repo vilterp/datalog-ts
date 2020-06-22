@@ -56,7 +56,7 @@ function recurse(
   spans: UsageSpan[]
 ): OutputSpan[] {
   if (spans.length === 0) {
-    return [{ type: "normal", text: src.substr(offset) }];
+    return [{ type: "normal", text: src.substring(offset) }];
   }
   const firstSpan = spans[0];
   const fromIdx = firstSpan.span.from.offset;
@@ -64,12 +64,12 @@ function recurse(
   if (offset === fromIdx) {
     const outSpan: OutputSpan = {
       type: firstSpan.type,
-      text: src.substr(offset, toIdx - fromIdx),
+      text: src.substring(offset, toIdx),
     };
     return [outSpan, ...recurse(src, toIdx, spans.slice(1))];
   } else {
     return [
-      { type: "normal", text: src.substr(offset, fromIdx - offset) },
+      { type: "normal", text: src.substring(offset, fromIdx) },
       ...recurse(src, fromIdx, spans),
     ];
   }

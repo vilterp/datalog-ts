@@ -107,7 +107,13 @@ function Main() {
         {suggestions ? (
           <ul style={{ fontFamily: "monospace" }}>
             {suggestions.map((s) => (
-              <li key={`${s.name}-${s.type}`}>
+              <li
+                key={`${s.name}-${s.type}`}
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  setSource(insertSuggestion(source, cursorPos, s.name))
+                }
+              >
                 {s.name}: {s.type}
               </li>
             ))}
@@ -135,6 +141,14 @@ function Main() {
       />
     </div>
   );
+}
+
+function insertSuggestion(
+  code: string,
+  cursorPos: number,
+  sugg: string
+): string {
+  return code.substring(0, cursorPos) + sugg + code.substring(cursorPos + 3);
 }
 
 function getSuggestions(repl: ReplCore): { name: string; type: string }[] {
