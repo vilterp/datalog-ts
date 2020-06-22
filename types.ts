@@ -108,7 +108,7 @@ export type StringLit = { type: "StringLit"; val: string };
 export type Array = { type: "Array"; items: Term[] };
 
 // TODO: moar, argument types, etc.
-export type Operator = "=" | "!=";
+export type Operator = "==" | "!=";
 
 // term helpers
 

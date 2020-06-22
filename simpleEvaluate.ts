@@ -253,7 +253,7 @@ function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
   const left = substitute(expr.left, scope);
   const right = substitute(expr.right, scope);
   switch (expr.op) {
-    case "=":
+    case "==":
       return termEq(left, right);
     case "!=":
       return !termEq(left, right);
