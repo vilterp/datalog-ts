@@ -8,7 +8,8 @@ segment{type: T, span: S, highlight: H} :-
   segment_str{type: T, span: S, highlight: H} |
   segment_int{type: T, span: S, highlight: H} |
   segment_keyword{type: T, span: S, highlight: H} |
-  segment_type{type: T, span: S, highlight: H}.
+  segment_type{type: T, span: S, highlight: H} |
+  segment_type_hl{type: T, span: S, highlight: H}.
 
 var_highlight{defnLoc: DL, usageLoc: UL} :-
   var_highlight_defn{defnLoc: DL, usageLoc: UL} |
@@ -51,6 +52,21 @@ segment_keyword{type: "keyword", span: S, highlight: false} :-
   let_expr{inLoc: S} |
   let_expr{letLoc: S}.
 
-segment_type{type: "type", span: S, highlight: false} :-
-  lambda_param{typeLoc: S} |
-  lambda{retTypeLoc: S}.
+segment_type{type: "type", span: S, name: N, highlight: false} :-
+  lambda_param{typeLoc: S, ty: N} |
+  lambda{retTypeLoc: S, retType: N}.
+segment_type_hl{type: "type", span: S, highlight: true} :-
+  segment_type{span: S, name: N} &
+  type_highlighted{name: N}.
+
+type_highlighted{name: T} :-
+  type_highlighted_param{name: T} |
+  type_highlighted_ret{name: T}.
+type_highlighted_param{name: T} :-
+  lambda_param{ty: T, typeLoc: span{from: FIdx, to: TIdx}} &
+  cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+type_highlighted_ret{name: T} :-
+  lambda{retType: T, retTypeLoc: span{from: FIdx, to: TIdx}} &
+  cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.

@@ -25,3 +25,6 @@
 .segment-type {
   color: darkgreen;
 }
+.segment-type__highlighted {
+  background-color: rgba(168, 168, 168, 0.37);
+}
