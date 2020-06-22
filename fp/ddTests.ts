@@ -111,6 +111,7 @@ function typecheckTest(test: DDTest): Result[] {
       repl.evalStmt({ type: "Insert", record: t as Rec });
     });
     repl.doLoad("fp/typecheck.dl");
+    repl.doLoad("fp/ide.dl");
     repl.doLoad("fp/stdlib.dl");
     const scopeResults = repl.evalStr("scope_item{id: I, name: N, type: T}.");
     const typeResults = repl.evalStr("type{id: I, type: T}.");
@@ -136,6 +137,7 @@ function suggestionTest(test: DDTest): Result[] {
       repl.evalStmt({ type: "Insert", record: t as Rec });
     });
     repl.doLoad("fp/typecheck.dl");
+    repl.doLoad("fp/ide.dl");
     repl.doLoad("fp/stdlib.dl");
     const suggResults = repl.evalStr("suggestion{id: I, name: N, type: T}.");
     return {
@@ -159,6 +161,7 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
       repl.evalStmt({ type: "Insert", record: t as Rec });
     });
     repl.doLoad("fp/typecheck.dl");
+    repl.doLoad("fp/ide.dl");
     repl.doLoad("fp/stdlib.dl");
     // TODO: why does replacing I with 0 return no results
     const typeResults = repl.evalStr("type{id: 0, type: T}.");

@@ -1,0 +1,51 @@
+# type-directed autocomplete suggestions
+suggestion{id: I, name: N, type: T} :-
+  suggestion_func_arg{id: I, name: N, type: T} |
+  suggestion_func{id: I, name: N, type: T}.
+
+suggestion_func_arg{id: I, name: N, type: TF} :-
+  placeholder{id: I} &
+  func_call{argID: I, funcID: F} &
+  type{id: F, type: tapp{from: TF, to: TT}} &
+  scope_item{id: I, type: TF, name: N}.
+
+suggestion_func{id: I, name: N, type: tapp{from: TF, to: TT}} :-
+  placeholder{id: I} &
+  expected_type{id: I, type: TT} &
+  scope_item{id: I, name: N, type: tapp{from: TF, to: TT}}.
+
+expected_type{id: I, type: T} :-
+  lambda{retType: T, body: I} |
+  lambda{retType: T, body: B} & let_expr{id: B, bodyID: I}.
+
+usage{definitionLoc: DL, usageLoc: UL, name: N} :-
+  var{id: I, name: N, location: UL} &
+  scope_item{id: I, name: N, location: DL}.
+
+# cursor-dependent rules
+current_placeholder{id: I, span: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} :-
+  placeholder{id: I, location: span{from: pos{idx: FIdx}, to: pos{idx: TIdx}}} &
+  cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+
+current_suggestion{id: I, name: N, type: T} :-
+  current_placeholder{id: I} &
+  suggestion{id: I, name: N, type: T}.
+
+current_scope{id: I, name: N, type: T} :-
+  cursor{idx: Idx} &
+  expr{id: I, location: span{from: pos{idx: Idx}}} &
+  scope_item{id: I, name: N, type: T}.
+
+current_type{id: I, type: T} :-
+  cursor{idx: Idx} &
+  expr{id: I, location: span{from: pos{idx: Idx}}} &
+  type{id: I, type: T}.
+
+current_usage{name: N, usageLoc: ULL} :-
+  cursor{idx: Idx} &
+  usage{definitionLoc: span{from: pos{idx: Idx}}, name: N, usageLoc: ULL}.
+
+current_definition{name: N, definitionLoc: DLL} :-
+  cursor{idx: Idx} &
+  usage{definitionLoc: DLL, name: N, usageLoc: span{from: pos{idx: Idx}}}.

@@ -190,6 +190,21 @@ let x = 2 in x
 ----
 {
   "type": "Let",
+  "letT": {
+    "ident": "let",
+    "span": {
+      "from": {
+        "offset": 0,
+        "line": 1,
+        "column": 1
+      },
+      "to": {
+        "offset": 4,
+        "line": 1,
+        "column": 5
+      }
+    }
+  },
   "name": {
     "ident": "x",
     "span": {
@@ -218,6 +233,21 @@ let x = 2 in x
         "offset": 9,
         "line": 1,
         "column": 10
+      }
+    }
+  },
+  "inT": {
+    "ident": "in",
+    "span": {
+      "from": {
+        "offset": 10,
+        "line": 1,
+        "column": 11
+      },
+      "to": {
+        "offset": 13,
+        "line": 1,
+        "column": 14
       }
     }
   },

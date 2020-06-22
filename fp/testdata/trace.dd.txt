@@ -10,13 +10,13 @@ let x = 2 in x
 ----
 type{id: 0, type: T@"int"}; {T: T}
   type_let{id: I@0, type: T@"int"}; {I: I, T: T}
-    let_expr{bindingID: 1, bodyID: BID@2, id: I@0, location: span{from: pos{idx: I@0}, to: pos{idx: 14}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}
+    let_expr{bindingID: 1, bodyID: BID@2, id: I@0, inLoc: span{from: pos{idx: 10}, to: pos{idx: 13}}, letLoc: span{from: pos{idx: I@0}, to: pos{idx: 4}}, location: span{from: pos{idx: I@0}, to: pos{idx: 14}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}
     type{id: BID@2, type: T@"int"}; {I: BID, T: T}
       type_var{id: I@2, type: T@"int"}; {I: I, T: T}
         var{id: I@2, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: N@"x"}
         scope_item{id: I@2, location: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: N@"x", type: T@"int"}; {I: I, N: N, T: T}
           scope_let{id: I@2, location: L@span{from: pos{idx: 4}, to: pos{idx: 5}}, name: N@"x", type: T@"int"}; {I: I, L: L, N: N, T: T}
-            let_expr{bindingID: B@1, bodyID: I@2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varLoc: L@span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: N@"x"}
+            let_expr{bindingID: B@1, bodyID: I@2, id: 0, inLoc: span{from: pos{idx: 10}, to: pos{idx: 13}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 14}}, varLoc: L@span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: N@"x"}
             type{id: B@1, type: T@"int"}; {I: B, T: T}
               type_i{id: I@1, type: T@"int"}; {I: I}
                 int_lit{id: I@1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}

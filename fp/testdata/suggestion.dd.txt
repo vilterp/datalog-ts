@@ -1,10 +1,11 @@
-let x = 2 in plus2(???)
+let x = 2 in plus(3, ???)
 ----
-suggestion{id: 4, name: "x", type: "int"}.
+suggestion{id: 6, name: "x", type: "int"}.
 
-let x = 2 in (y: int): string => toString(???)
+let x = 2 in (y: int): string => intToString(???)
 ----
-
+suggestion{id: 5, name: "x", type: "int"}.
+suggestion{id: 5, name: "y", type: "int"}.
 
 (x: int): string => ???
 ----

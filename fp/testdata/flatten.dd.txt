@@ -4,29 +4,29 @@ root_expr{id: 0}.
 func_call{argID: 10, funcID: 1, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 37}}}.
 func_call{argID: 3, funcID: 2, id: 1, location: span{from: pos{idx: 0}, to: pos{idx: 3}}}.
 var{id: 2, location: span{from: pos{idx: 0}, to: pos{idx: 3}}, name: "map"}.
-lambda{body: 4, id: 3, location: span{from: pos{idx: 4}, to: pos{idx: 31}}, numParams: 1, retType: "int"}.
+lambda{body: 4, id: 3, location: span{from: pos{idx: 4}, to: pos{idx: 31}}, numParams: 1, retType: "int", retTypeLoc: span{from: pos{idx: 14}, to: pos{idx: 17}}}.
 func_call{argID: 8, funcID: 5, id: 4, location: span{from: pos{idx: 21}, to: pos{idx: 31}}}.
 func_call{argID: 7, funcID: 6, id: 5, location: span{from: pos{idx: 21}, to: pos{idx: 25}}}.
 var{id: 6, location: span{from: pos{idx: 21}, to: pos{idx: 25}}, name: "plus"}.
 var{id: 7, location: span{from: pos{idx: 26}, to: pos{idx: 27}}, name: "x"}.
 int_lit{id: 8, location: span{from: pos{idx: 29}, to: pos{idx: 30}}, val: 2}.
-lambda_param{idx: 0, lambdaID: 3, location: span{from: pos{idx: 5}, to: pos{idx: 6}}, name: "x", ty: "int"}.
+lambda_param{idx: 0, lambdaID: 3, location: span{from: pos{idx: 5}, to: pos{idx: 6}}, name: "x", ty: "int", typeLoc: span{from: pos{idx: 8}, to: pos{idx: 11}}}.
 placeholder{id: 10, location: span{from: pos{idx: 33}, to: pos{idx: 36}}}.
 
 let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
 root_expr{id: 0}.
-let_expr{bindingID: 1, bodyID: 12, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 66}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
+let_expr{bindingID: 1, bodyID: 12, id: 0, inLoc: span{from: pos{idx: 46}, to: pos{idx: 49}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 66}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
 func_call{argID: 11, funcID: 2, id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 46}}}.
 func_call{argID: 4, funcID: 3, id: 2, location: span{from: pos{idx: 8}, to: pos{idx: 11}}}.
 var{id: 3, location: span{from: pos{idx: 8}, to: pos{idx: 11}}, name: "map"}.
-lambda{body: 5, id: 4, location: span{from: pos{idx: 12}, to: pos{idx: 39}}, numParams: 1, retType: "int"}.
+lambda{body: 5, id: 4, location: span{from: pos{idx: 12}, to: pos{idx: 39}}, numParams: 1, retType: "int", retTypeLoc: span{from: pos{idx: 22}, to: pos{idx: 25}}}.
 func_call{argID: 9, funcID: 6, id: 5, location: span{from: pos{idx: 29}, to: pos{idx: 39}}}.
 func_call{argID: 8, funcID: 7, id: 6, location: span{from: pos{idx: 29}, to: pos{idx: 33}}}.
 var{id: 7, location: span{from: pos{idx: 29}, to: pos{idx: 33}}, name: "plus"}.
 var{id: 8, location: span{from: pos{idx: 34}, to: pos{idx: 35}}, name: "x"}.
 int_lit{id: 9, location: span{from: pos{idx: 37}, to: pos{idx: 38}}, val: 2}.
-lambda_param{idx: 0, lambdaID: 4, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x", ty: "int"}.
+lambda_param{idx: 0, lambdaID: 4, location: span{from: pos{idx: 13}, to: pos{idx: 14}}, name: "x", ty: "int", typeLoc: span{from: pos{idx: 16}, to: pos{idx: 19}}}.
 placeholder{id: 11, location: span{from: pos{idx: 41}, to: pos{idx: 44}}}.
 func_call{argID: 16, funcID: 13, id: 12, location: span{from: pos{idx: 49}, to: pos{idx: 66}}}.
 func_call{argID: 15, funcID: 14, id: 13, location: span{from: pos{idx: 49}, to: pos{idx: 55}}}.
@@ -47,6 +47,6 @@ int_lit{id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 1}}, val: 2}.
 let x = 2 in ???
 ----
 root_expr{id: 0}.
-let_expr{bindingID: 1, bodyID: 2, id: 0, location: span{from: pos{idx: 0}, to: pos{idx: 16}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
+let_expr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: pos{idx: 10}, to: pos{idx: 13}}, letLoc: span{from: pos{idx: 0}, to: pos{idx: 4}}, location: span{from: pos{idx: 0}, to: pos{idx: 16}}, varLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, varName: "x"}.
 int_lit{id: 1, location: span{from: pos{idx: 8}, to: pos{idx: 9}}, val: 2}.
 placeholder{id: 2, location: span{from: pos{idx: 13}, to: pos{idx: 16}}}.

@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { ReplCore } from "../../replCore";
-import { Rec, Int, Term, StringLit, Bool } from "../../types";
+import { Rec, Int, StringLit, Bool } from "../../types";
 import { Pos, Span } from "../parser";
 import { uniqBy } from "../../util";
 

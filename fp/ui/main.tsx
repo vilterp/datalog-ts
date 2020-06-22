@@ -17,6 +17,8 @@ import highlightCSS from "./highlight.css";
 // @ts-ignore
 import typecheckDL from "../typecheck.dl";
 // @ts-ignore
+import ideDL from "../ide.dl";
+// @ts-ignore
 import stdlibDL from "../stdlib.dl";
 // @ts-ignore
 import highlightDL from "../highlight.dl";
@@ -25,6 +27,8 @@ const loader: Loader = (path: string) => {
   switch (path) {
     case "typecheck.dl":
       return typecheckDL;
+    case "ide.dl":
+      return ideDL;
     case "stdlib.dl":
       return stdlibDL;
     case "highlight.dl":
@@ -42,6 +46,7 @@ function Main() {
   const repl = new ReplCore(loader);
   // TODO: make REPL immutable; always start from one with this stuff loaded
   repl.doLoad("typecheck.dl");
+  repl.doLoad("ide.dl");
   repl.doLoad("stdlib.dl");
   repl.doLoad("highlight.dl");
   repl.evalStr(`cursor{idx: ${cursorPos}}.`);
