@@ -53,12 +53,16 @@ export function insertSuggestion(
   const currentPlaceholder = repl.evalStr("current_placeholder{span: S}.")
     .results[0].term as Rec;
   const span = dlToSpan(currentPlaceholder.attrs.span as Rec);
+  const numPlaceholders = placeholdersNeeded(sugg.type);
+  // if there are placeholders, put cursor on first placeholder
+  const cursorPos =
+    span.from + sugg.name.length + (numPlaceholders === 0 ? 0 : 1);
   return {
     newCode:
       code.substring(0, span.from) +
       suggToString(sugg) +
       code.substring(span.to),
-    cursorPos: span.to,
+    cursorPos,
   };
 }
 

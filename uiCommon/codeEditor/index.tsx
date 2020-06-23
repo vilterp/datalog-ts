@@ -176,5 +176,9 @@ function getDefnForIdx(repl: ReplCore, idx: number): Span | null {
   if (res.length === 0) {
     return null;
   }
+  if (res[0].term.type !== "Record") {
+    // for "builtin"
+    return null;
+  }
   return dlToSpan((res[0].term as Rec).attrs.defnLoc as Rec);
 }
