@@ -113,15 +113,20 @@ export default class Editor extends React.Component<Props, State> {
 
   componentDidMount() {
     this._recordCurrentState();
+    this.updateCursorPos();
   }
 
   componentDidUpdate(prevProps) {
     // TODO: this seems janky... like, it must be breaking something...
     const selecting = this._input.selectionStart != this._input.selectionEnd;
     if (this.props.cursorPos !== prevProps.cursorPos && !selecting) {
-      this._input.selectionStart = this.props.cursorPos;
-      this._input.selectionEnd = this.props.cursorPos;
+      this.updateCursorPos();
     }
+  }
+
+  updateCursorPos() {
+    this._input.selectionStart = this.props.cursorPos;
+    this._input.selectionEnd = this.props.cursorPos;
   }
 
   _recordCurrentState = () => {
