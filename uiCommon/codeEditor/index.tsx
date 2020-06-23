@@ -10,7 +10,6 @@ import {
   insertSuggestion,
 } from "./suggestions";
 import { Rec, Term } from "../../types";
-import { useIntLocalStorage } from "../hooks";
 
 type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -22,11 +21,10 @@ export function CodeEditor<T>(props: {
   repl: ReplCore; // pre-loaded with rules
   source: string;
   setSource: (source: string) => void;
+  cursorPos: number;
+  setCursorPos: (n: number) => void;
   highlightCSS: string;
 }) {
-  // const [cursorPos, setCursorPos] = useIntLocalStorage("cursor-pos", 0);
-  // props.repl.evalStr(`cursor{idx: ${cursorPos}}.`);
-
   // TODO: make REPL immutable; always start from one with this stuff loaded
   let parsed: T = null;
   let error: Error | null = null;
@@ -47,7 +45,7 @@ export function CodeEditor<T>(props: {
       );
 
       // get suggestions
-      // suggestions = getSuggestions(props.repl);
+      suggestions = getSuggestions(props.repl);
     } catch (e) {
       error = { type: "EvalError", err: e };
     }
@@ -73,23 +71,22 @@ export function CodeEditor<T>(props: {
         padding={10}
         value={props.source}
         onValueChange={props.setSource}
-        // highlight={(_) =>
-        //   highlight(
-        //     props.repl,
-        //     props.source,
-        //     error && error.type === "ParseError" ? error.offset : null
-        //   )
-        // }
-        highlight={(code) => code}
-        // onKeyDown={(evt) => {
-        //   setCursorPos(evt.currentTarget.selectionStart);
-        // }}
-        // onKeyUp={(evt) => {
-        //   setCursorPos(evt.currentTarget.selectionStart);
-        // }}
-        // onClick={(evt) => {
-        //   setCursorPos(evt.currentTarget.selectionStart);
-        // }}
+        highlight={(_) =>
+          highlight(
+            props.repl,
+            props.source,
+            error && error.type === "ParseError" ? error.offset : null
+          )
+        }
+        onKeyDown={(evt) => {
+          props.setCursorPos(evt.currentTarget.selectionStart);
+        }}
+        onKeyUp={(evt) => {
+          props.setCursorPos(evt.currentTarget.selectionStart);
+        }}
+        onClick={(evt) => {
+          props.setCursorPos(evt.currentTarget.selectionStart);
+        }}
       />
 
       {error ? (
@@ -99,7 +96,7 @@ export function CodeEditor<T>(props: {
             : `Eval error: ${error.err}`}
         </div>
       ) : null}
-      {/* {suggestions ? (
+      {suggestions ? (
         <ul style={{ fontFamily: "monospace" }}>
           {suggestions.map((sugg) => (
             <li
@@ -118,7 +115,7 @@ export function CodeEditor<T>(props: {
             </li>
           ))}
         </ul>
-      ) : null} */}
+      ) : null}
     </div>
   );
 }

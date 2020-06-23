@@ -19,6 +19,7 @@ import stdlibDL from "../stdlib.dl";
 // @ts-ignore
 import highlightDL from "../highlight.dl";
 import { CodeEditor } from "../../uiCommon/codeEditor";
+import { useIntLocalStorage } from "../../uiCommon/hooks";
 
 const loader: Loader = (path: string) => {
   switch (path) {
@@ -45,6 +46,9 @@ function Main() {
   repl.doLoad("stdlib.dl");
   repl.doLoad("highlight.dl");
 
+  const [cursorPos, setCursorPos] = useIntLocalStorage("cursor-pos", 0);
+  repl.evalStr(`cursor{idx: ${cursorPos}}.`);
+
   return (
     <div>
       <h1>Datalog Typechecker</h1>
@@ -55,6 +59,8 @@ function Main() {
         repl={repl}
         source={source}
         setSource={setSource}
+        cursorPos={cursorPos}
+        setCursorPos={setCursorPos}
         highlightCSS={highlightCSS}
       />
 
