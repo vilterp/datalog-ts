@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ReplCore } from "../../replCore";
-import Editor from "react-simple-code-editor/src";
-import { highlight } from "./highlight";
+import Editor from "./editor";
+import { highlight, dlToSpan, Span } from "./highlight";
 import Parsimmon from "parsimmon";
 import {
   Suggestion,
@@ -19,6 +19,7 @@ type Error =
 const KEY_DOWN_ARROW = 40;
 const KEY_UP_ARROW = 38;
 const KEY_ENTER = 13;
+const KEY_B = 66;
 
 export function CodeEditor<T>(props: {
   parse: Parsimmon.Parser<T>;
@@ -79,6 +80,7 @@ export function CodeEditor<T>(props: {
         padding={10}
         value={props.source}
         onValueChange={props.setSource}
+        cursorPos={props.cursorPos} // would be nice if we could have an onCursorPos
         highlight={(_) =>
           highlight(
             props.repl,
@@ -108,6 +110,14 @@ export function CodeEditor<T>(props: {
                 );
                 props.setSelectedSugg(0);
                 return;
+            }
+          }
+          if (evt.keyCode === KEY_B && evt.metaKey) {
+            evt.preventDefault();
+            const pos = getDefnForIdx(props.repl, props.cursorPos);
+            if (pos) {
+              props.setCursorPos(pos.from);
+              return;
             }
           }
           props.setCursorPos(evt.currentTarget.selectionStart);
@@ -152,4 +162,12 @@ export function CodeEditor<T>(props: {
       ) : null}
     </div>
   );
+}
+
+function getDefnForIdx(repl: ReplCore, idx: number): Span | null {
+  const res = repl.evalStr(`defn_for_cursor{defnLoc: S}.`).results;
+  if (res.length === 0) {
+    return null;
+  }
+  return dlToSpan((res[0].term as Rec).attrs.defnLoc as Rec);
 }
