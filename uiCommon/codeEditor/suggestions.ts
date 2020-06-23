@@ -49,13 +49,17 @@ export function insertSuggestion(
   repl: ReplCore,
   code: string,
   sugg: Suggestion
-): string {
+): { newCode: string; cursorPos: number } {
   const currentPlaceholder = repl.evalStr("current_placeholder{span: S}.")
     .results[0].term as Rec;
   const span = dlToSpan(currentPlaceholder.attrs.span as Rec);
-  return (
-    code.substring(0, span.from) + suggToString(sugg) + code.substring(span.to)
-  );
+  return {
+    newCode:
+      code.substring(0, span.from) +
+      suggToString(sugg) +
+      code.substring(span.to),
+    cursorPos: span.to,
+  };
 }
 
 function suggToString(sugg: Suggestion): string {

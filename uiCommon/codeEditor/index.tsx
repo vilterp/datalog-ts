@@ -101,13 +101,15 @@ export function CodeEditor<T>(props: {
                 return;
               case KEY_ENTER:
                 evt.preventDefault();
-                props.setSource(
-                  insertSuggestion(
-                    props.repl,
-                    props.source,
-                    suggestions[props.selectedSugg]
-                  )
+                // TODO: DRY this up with click-to-insert
+                const { newCode, cursorPos } = insertSuggestion(
+                  props.repl,
+                  props.source,
+                  suggestions[props.selectedSugg]
                 );
+                console.log({ newCode, cursorPos });
+                props.setSource(newCode);
+                props.setCursorPos(cursorPos);
                 props.setSelectedSugg(0);
                 return;
             }
@@ -149,11 +151,16 @@ export function CodeEditor<T>(props: {
                 textDecoration:
                   props.selectedSugg === idx ? "underline" : "none",
               }}
-              onClick={() =>
-                props.setSource(
-                  insertSuggestion(props.repl, props.source, sugg)
-                )
-              }
+              onClick={() => {
+                const { newCode, cursorPos } = insertSuggestion(
+                  props.repl,
+                  props.source,
+                  sugg
+                );
+                console.log({ newCode, cursorPos });
+                props.setSource(newCode);
+                props.setCursorPos(cursorPos);
+              }}
             >
               {sugg.name}: {typeToString(sugg.type)}
             </li>
