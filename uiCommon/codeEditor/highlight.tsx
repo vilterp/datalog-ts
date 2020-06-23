@@ -2,8 +2,9 @@ import React from "react";
 import classnames from "classnames";
 import { ReplCore } from "../../replCore";
 import { Rec, Int, StringLit, Bool, Term } from "../../types";
-import { Span } from "../parser";
 import { uniqBy } from "../../util";
+
+export type Span = { from: number; to: number };
 
 export function highlight(
   repl: ReplCore,
