@@ -1,4 +1,5 @@
-// from react-simple-code-editor
+// from github.com/satya164/react-simple-code-editor
+// which is MIT licensed
 import React from "react";
 
 type Props = {
