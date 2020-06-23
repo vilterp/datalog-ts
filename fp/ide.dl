@@ -63,3 +63,8 @@ defn_for_cursor{defnLoc: DL} :-
   cursor{idx: CIdx} &
   usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   FIdx <= CIdx & CIdx <= TIdx.
+
+usage_for_cursor{usageLoc: UL} :-
+  cursor{idx: CIdx} &
+  usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  FIdx <= CIdx & CIdx <= TIdx.

@@ -20,6 +20,7 @@ const KEY_DOWN_ARROW = 40;
 const KEY_UP_ARROW = 38;
 const KEY_ENTER = 13;
 const KEY_B = 66;
+const KEY_U = 85;
 
 export function CodeEditor<T>(props: {
   parse: Parsimmon.Parser<T>;
@@ -77,6 +78,7 @@ export function CodeEditor<T>(props: {
           border: "1px solid black",
           marginBottom: 10,
         }}
+        autoFocus={true}
         padding={10}
         value={props.source}
         onValueChange={props.setSource}
@@ -114,15 +116,27 @@ export function CodeEditor<T>(props: {
                 return;
             }
           }
-          if (evt.keyCode === KEY_B && evt.metaKey) {
-            evt.preventDefault();
-            const pos = getDefnForIdx(props.repl, props.cursorPos);
-            if (pos) {
-              props.setCursorPos(pos.from);
-              return;
+          if (evt.metaKey) {
+            switch (evt.keyCode) {
+              case KEY_B: {
+                evt.preventDefault();
+                const pos = getDefnForIdx(props.repl, props.cursorPos);
+                if (pos) {
+                  props.setCursorPos(pos.from);
+                  return;
+                }
+                break;
+              }
+              case KEY_U: {
+                evt.preventDefault();
+                const pos = getFirstUsageForIdx(props.repl, props.cursorPos);
+                if (pos) {
+                  props.setCursorPos(pos.from);
+                }
+                break;
+              }
             }
           }
-          props.setCursorPos(evt.currentTarget.selectionStart);
         }}
         onKeyUp={(evt) => {
           props.setCursorPos(evt.currentTarget.selectionStart);
@@ -181,4 +195,16 @@ function getDefnForIdx(repl: ReplCore, idx: number): Span | null {
     return null;
   }
   return dlToSpan((res[0].term as Rec).attrs.defnLoc as Rec);
+}
+
+function getFirstUsageForIdx(repl: ReplCore, idx: number): Span | null {
+  const res = repl.evalStr(`usage_for_cursor{usageLoc: S}.`).results;
+  if (res.length === 0) {
+    return null;
+  }
+  if (res[0].term.type !== "Record") {
+    // for "builtin"
+    return null;
+  }
+  return dlToSpan((res[0].term as Rec).attrs.usageLoc as Rec);
 }
