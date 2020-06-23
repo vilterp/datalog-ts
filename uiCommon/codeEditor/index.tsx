@@ -60,7 +60,7 @@ export function CodeEditor<T>(props: {
   const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
 
   return (
-    <div style={{ display: "flex" }}>
+    <div>
       <style
         dangerouslySetInnerHTML={{
           __html: props.highlightCSS,
@@ -106,6 +106,7 @@ export function CodeEditor<T>(props: {
                     suggestions[props.selectedSugg]
                   )
                 );
+                props.setSelectedSugg(0);
                 return;
             }
           }
@@ -118,15 +119,15 @@ export function CodeEditor<T>(props: {
           props.setCursorPos(evt.currentTarget.selectionStart);
         }}
       />
-
-      {error ? (
-        <div style={{ fontFamily: "monospace", marginLeft: 15, color: "red" }}>
-          {error.type === "ParseError"
-            ? `Parse error: expected ${error.expected.join(" or ")}`
-            : `Eval error: ${error.err}`}
-        </div>
-      ) : null}
-      <p>sugg: {props.selectedSugg}</p>
+      <div style={{ fontFamily: "monospace", color: "red" }}>
+        {!error ? (
+          <>&nbsp;</>
+        ) : error.type === "ParseError" ? (
+          `Parse error: expected ${error.expected.join(" or ")}`
+        ) : (
+          `Eval error: ${error.err}`
+        )}
+      </div>
       {suggestions ? (
         <ul style={{ fontFamily: "monospace" }}>
           {suggestions.map((sugg, idx) => (
