@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ReplCore } from "../../replCore";
 import Editor from "react-simple-code-editor/src";
 import { highlight } from "./highlight";
@@ -10,10 +10,15 @@ import {
   insertSuggestion,
 } from "./suggestions";
 import { Rec, Term } from "../../types";
+import { clamp } from "../../util";
 
 type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
   | { type: "EvalError"; err: Error };
+
+const KEY_DOWN_ARROW = 40;
+const KEY_UP_ARROW = 38;
+const KEY_ENTER = 13;
 
 export function CodeEditor<T>(props: {
   parse: Parsimmon.Parser<T>;
@@ -24,9 +29,10 @@ export function CodeEditor<T>(props: {
   cursorPos: number;
   setCursorPos: (n: number) => void;
   highlightCSS: string;
+  selectedSugg: number;
+  setSelectedSugg: (n: number) => void;
 }) {
   // TODO: make REPL immutable; always start from one with this stuff loaded
-  let parsed: T = null;
   let error: Error | null = null;
   let suggestions: Suggestion[] = [];
   const parseRes = props.parse.parse(props.source);
@@ -38,7 +44,6 @@ export function CodeEditor<T>(props: {
     };
   } else {
     try {
-      parsed = parseRes.value;
       const flattened = props.flatten(parseRes.value);
       flattened.forEach((rec) =>
         props.repl.evalStmt({ type: "Insert", record: rec as Rec })
@@ -50,6 +55,9 @@ export function CodeEditor<T>(props: {
       error = { type: "EvalError", err: e };
     }
   }
+
+  const haveSuggestions = suggestions.length > 0;
+  const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
 
   return (
     <div style={{ display: "flex" }}>
@@ -79,6 +87,28 @@ export function CodeEditor<T>(props: {
           )
         }
         onKeyDown={(evt) => {
+          if (haveSuggestions) {
+            switch (evt.keyCode) {
+              case KEY_DOWN_ARROW:
+                evt.preventDefault();
+                props.setSelectedSugg(clampSuggIdx(props.selectedSugg + 1));
+                return;
+              case KEY_UP_ARROW:
+                evt.preventDefault();
+                props.setSelectedSugg(clampSuggIdx(props.selectedSugg - 1));
+                return;
+              case KEY_ENTER:
+                evt.preventDefault();
+                props.setSource(
+                  insertSuggestion(
+                    props.repl,
+                    props.source,
+                    suggestions[props.selectedSugg]
+                  )
+                );
+                return;
+            }
+          }
           props.setCursorPos(evt.currentTarget.selectionStart);
         }}
         onKeyUp={(evt) => {
@@ -96,14 +126,17 @@ export function CodeEditor<T>(props: {
             : `Eval error: ${error.err}`}
         </div>
       ) : null}
+      <p>sugg: {props.selectedSugg}</p>
       {suggestions ? (
         <ul style={{ fontFamily: "monospace" }}>
-          {suggestions.map((sugg) => (
+          {suggestions.map((sugg, idx) => (
             <li
               key={JSON.stringify(sugg)}
               style={{
                 cursor: "pointer",
                 fontWeight: sugg.typeMatch ? "bold" : "normal",
+                textDecoration:
+                  props.selectedSugg === idx ? "underline" : "none",
               }}
               onClick={() =>
                 props.setSource(

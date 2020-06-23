@@ -49,6 +49,8 @@ function Main() {
   const [cursorPos, setCursorPos] = useIntLocalStorage("cursor-pos", 0);
   repl.evalStr(`cursor{idx: ${cursorPos}}.`);
 
+  const [selectedSugg, setSelectedSugg] = useState(0);
+
   return (
     <div>
       <h1>Datalog Typechecker</h1>
@@ -57,11 +59,13 @@ function Main() {
         parse={fpLanguage.expr}
         flatten={flatten}
         repl={repl}
+        highlightCSS={highlightCSS}
         source={source}
         setSource={setSource}
         cursorPos={cursorPos}
         setCursorPos={setCursorPos}
-        highlightCSS={highlightCSS}
+        selectedSugg={selectedSugg}
+        setSelectedSugg={setSelectedSugg}
       />
 
       <Collapsible

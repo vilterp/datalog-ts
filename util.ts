@@ -178,3 +178,14 @@ export function pairsToObj<T>(
   });
   return out;
 }
+
+export function clamp(n: number, range: [number, number]): number {
+  const [min, max] = range;
+  if (n < min) {
+    return min;
+  }
+  if (n > max) {
+    return max;
+  }
+  return n;
+}
