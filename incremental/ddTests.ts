@@ -6,7 +6,6 @@ import { emptyRuleGraph, RuleGraph } from "./types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { Rule } from "../types";
-import { empty } from "parsimmon";
 
 export function incrTests(writeResults: boolean): Suite {
   return [

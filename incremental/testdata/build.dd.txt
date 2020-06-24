@@ -4,13 +4,13 @@ matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
 digraph G {
-  "0" [label="mother"];
-  "1" [label="father"];
-  "2" [label="matGramp: Union"];
-  "3" [label="Join(foo == bar)"];
-  "0" -> "3" [];
-  "1" -> "3" [];
-  "3" -> "2" []
+  "0" [label="0: Join(foo == bar)"];
+  "father" [label="father"];
+  "matGramp" [label="matGramp: Union"];
+  "mother" [label="mother"];
+  "0" -> "matGramp" [];
+  "father" -> "0" [];
+  "mother" -> "0" []
 }
 
 .table mother;
@@ -19,11 +19,21 @@ matAncestor{desc: D, an: A} :-
   mother{desc: D, an: B} & matAncestor{desc: B, an: A}.
 ----
 digraph G {
-  "0" [label="mother"];
-  "1" [label="matAncestor: Union"];
-  "2" [label="Join(foo == bar)"];
-  "0" -> "1" [];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "1" []
+  "0" [label="0: Join(foo == bar)"];
+  "matAncestor" [label="matAncestor: Union"];
+  "mother" [label="mother"];
+  "0" -> "matAncestor" [];
+  "matAncestor" -> "0" [];
+  "mother" -> "matAncestor" [];
+  "mother" -> "0" []
+}
+
+foo{a: A} :- bar{a: A}.;
+bar{a: A} :- foo{a: A}.
+----
+digraph G {
+  "bar" [label="bar: Union"];
+  "foo" [label="foo: Union"];
+  "bar" -> "foo" [];
+  "foo" -> "bar" []
 }

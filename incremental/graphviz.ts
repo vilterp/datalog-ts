@@ -7,18 +7,13 @@ import * as pp from "prettier-printer";
 export function toGraphviz(graph: RuleGraph): Graph {
   return {
     nodes: mapObjToList(graph.nodes, (id, node) => {
-      const ref = Object.keys(graph.relationRefs).find(
-        (name) => graph.relationRefs[name] === id
-      );
       return {
         id,
         attrs: {
           label:
             node.node.type === "BaseFactTable"
-              ? ref
-              : ref
-              ? `${ref}: ${descToString(node.node)}`
-              : descToString(node.node),
+              ? id
+              : `${id}: ${descToString(node.node)}`,
         },
       };
     }),

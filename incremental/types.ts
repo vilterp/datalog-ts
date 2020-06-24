@@ -8,7 +8,6 @@ export type RuleGraph = {
     [nodeID: string]: { node: NodeDesc; cache: Term[] };
   };
   edges: { [fromID: string]: string[] };
-  relationRefs: { [name: string]: NodeID };
 };
 
 export type NodeDesc =
@@ -22,5 +21,4 @@ export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
   nodes: {},
   edges: {},
-  relationRefs: {},
 };

@@ -1,9 +1,6 @@
 digraph G {
-  "0" [label="mother"];
-  "1" [label="matAncestor: Union"];
-  "2" [label="Join(foo == bar)"];
-  "0" -> "1" [];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "1" []
+  "bar" [label="bar: Union"];
+  "foo" [label="foo: Union"];
+  "bar" -> "foo" [];
+  "foo" -> "bar" []
 }

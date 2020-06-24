@@ -2,16 +2,14 @@ import { Rule, Rec, OrExpr, BinExpr } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
-  const [g1, id] = addNode(graph, { type: "BaseFactTable", name });
-  return addRef(g1, name, id);
+  return addNodeKnownID(graph, { type: "BaseFactTable", name }, name);
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
-  const [g1, orID] = reserveNodeID(graph);
-  const g2 = addRef(g1, rule.head.relation, orID);
-  const g3 = addOr(orID, g2, rule.defn);
+  const orID = rule.head.relation;
+  const g1 = addOr(orID, graph, rule.defn);
   // TODO: what about matches
-  return g3;
+  return g1;
 }
 
 function addOr(orID: NodeID, graph: RuleGraph, or: OrExpr): RuleGraph {
@@ -58,21 +56,11 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
       return addNode(graph, { type: "BinExpr", expr: term });
     case "Record":
       // TODO: match?
-      const relID = graph.relationRefs[term.relation];
-      if (!relID) {
-        throw new Error(`loop: ${term.relation}`);
-      }
-      return [graph, relID];
+      return [graph, term.relation];
   }
 }
 
 // helpers
-
-function reserveNodeID(graph: RuleGraph): [RuleGraph, NodeID] {
-  const id = graph.nextNodeID;
-  const withIDReserved = { ...graph, nextNodeID: id + 1 };
-  return [withIDReserved, `${id}`];
-}
 
 function addNodeKnownID(
   graph: RuleGraph,
@@ -97,12 +85,5 @@ function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
     edges: { ...graph.edges, [from]: [...(graph.edges[from] || []), to] },
-  };
-}
-
-function addRef(graph: RuleGraph, ref: string, id: NodeID): RuleGraph {
-  return {
-    ...graph,
-    relationRefs: { ...graph.relationRefs, [ref]: id },
   };
 }
