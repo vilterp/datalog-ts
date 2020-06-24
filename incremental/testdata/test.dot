@@ -3,7 +3,13 @@ digraph G {
   "1" [label="father"];
   "2" [label="matGramp: Union"];
   "3" [label="Join(foo == bar)"];
+  "4" [label="matAncestor: Union"];
+  "5" [label="Join(foo == bar)"];
   "0" -> "3" [];
+  "0" -> "4" [];
+  "0" -> "5" [];
   "1" -> "3" [];
-  "3" -> "2" []
+  "3" -> "2" [];
+  "5" -> "4" [];
+  "undefined" -> "5" []
 }

@@ -91,6 +91,10 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
       return addNode(graph, { type: "BinExpr", expr: term });
     case "Record":
       // TODO: match?
-      return [graph, graph.relationRefs[term.relation]];
+      const relID = graph.relationRefs[term.relation];
+      if (!relID) {
+        throw new Error(`loop: ${term.relation}`);
+      }
+      return [graph, relID];
   }
 }
