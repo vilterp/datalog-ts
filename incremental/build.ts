@@ -1,7 +1,7 @@
 import { Rule, Rec, AndExpr, OrExpr, BinExpr } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
 
-function declareTable(graph: RuleGraph, name: string): RuleGraph {
+export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   const id = graph.nextNodeID;
   return {
     ...graph,
@@ -11,7 +11,6 @@ function declareTable(graph: RuleGraph, name: string): RuleGraph {
       [id]: {
         node: { type: "BaseFactTable" },
         cache: [],
-        flowsTo: [],
       },
     },
     relationRefs: { ...graph.relationRefs, [name]: `${id}` },

@@ -18,4 +18,9 @@ export type NodeDesc =
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
 
-export const emptyRuleGraph = { nextNodeID: 0, nodes: {} };
+export const emptyRuleGraph: RuleGraph = {
+  nextNodeID: 0,
+  nodes: {},
+  edges: {},
+  relationRefs: {},
+};

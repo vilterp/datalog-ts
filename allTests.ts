@@ -5,6 +5,7 @@ import { replTests } from "./replTests";
 import { fpTests } from "./fp/ddTests";
 import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./prettyTest";
+import { incrTests } from "./incremental/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -12,12 +13,13 @@ const writeResults = flags.has("--write-results");
 const stayAlive = flags.has("--stay-alive");
 
 const suites = {
-  unifyTests,
-  parserTests,
-  replTests: replTests(writeResults),
-  fpTests: fpTests(writeResults),
-  json2DLTests,
-  prettyPrintTests,
+  // unifyTests,
+  // parserTests,
+  // replTests: replTests(writeResults),
+  // fpTests: fpTests(writeResults),
+  incrTests: incrTests(writeResults),
+  // json2DLTests,
+  // prettyPrintTests,
 };
 
 try {
