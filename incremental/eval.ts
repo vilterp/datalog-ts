@@ -5,13 +5,13 @@ function stepAssert(
   graph: RuleGraph,
   rec: Rec
 ): { newGraph: RuleGraph; newFacts: Rec[] } {
-  const tableID = graph.relationRefs[rec.relation];
+  const tableID = rec.relation;
   const g1 = addToCache(graph, tableID, rec);
   const nextNodes = graph.edges[tableID];
   return XXX;
 }
 
-// caller adds facts
+// caller adds resulting facts
 function processAssert(graph: RuleGraph, nodeID: NodeID, rec: Rec): Rec[] {
   const node = graph.nodes[nodeID];
   switch (node.node.type) {
