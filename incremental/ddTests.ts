@@ -3,6 +3,8 @@ import { Suite } from "../testing";
 import { addRule, declareTable } from "./build";
 import { language } from "../parser";
 import { emptyRuleGraph } from "./types";
+import { prettyPrintGraph } from "../graphviz";
+import { toGraphviz } from "./graphviz";
 
 export function incrTests(writeResults: boolean): Suite {
   return [
@@ -31,7 +33,7 @@ function buildTest(test: DDTest): Result[] {
     }
     out.push({
       pair,
-      actual: JSON.stringify(curGraph, null, 2) + "\n",
+      actual: prettyPrintGraph(toGraphviz(curGraph)) + "\n",
     });
   });
   return out;

@@ -1,93 +1,20 @@
 .table mother
 ----
-{
-  "nextNodeID": 1,
-  "nodes": {
-    "0": {
-      "node": {
-        "type": "BaseFactTable"
-      },
-      "cache": []
-    }
-  },
-  "edges": {},
-  "relationRefs": {
-    "mother": "0"
-  }
-}
+digraph G {"0" [label="mother"]}
 
 .table father
 ----
-{
-  "nextNodeID": 2,
-  "nodes": {
-    "0": {
-      "node": {
-        "type": "BaseFactTable"
-      },
-      "cache": []
-    },
-    "1": {
-      "node": {
-        "type": "BaseFactTable"
-      },
-      "cache": []
-    }
-  },
-  "edges": {},
-  "relationRefs": {
-    "mother": "0",
-    "father": "1"
-  }
-}
+digraph G {"0" [label="mother"]; "1" [label="father"]}
 
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
-{
-  "nextNodeID": 4,
-  "nodes": {
-    "0": {
-      "node": {
-        "type": "BaseFactTable"
-      },
-      "cache": []
-    },
-    "1": {
-      "node": {
-        "type": "BaseFactTable"
-      },
-      "cache": []
-    },
-    "2": {
-      "node": {
-        "type": "Union"
-      },
-      "cache": []
-    },
-    "3": {
-      "node": {
-        "type": "Join",
-        "leftAttr": "foo",
-        "rightAttr": "bar"
-      },
-      "cache": []
-    }
-  },
-  "edges": {
-    "0": [
-      "3"
-    ],
-    "1": [
-      "3"
-    ],
-    "3": [
-      "2"
-    ]
-  },
-  "relationRefs": {
-    "mother": "0",
-    "father": "1",
-    "matGramp": "2"
-  }
+digraph G {
+  "0" [label="mother"];
+  "1" [label="father"];
+  "2" [label="matGramp: Union"];
+  "3" [label="Join(foo == bar)"];
+  "0" -> "3" [];
+  "1" -> "3" [];
+  "3" -> "2" []
 }

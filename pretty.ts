@@ -9,6 +9,7 @@ import {
   ScopePath,
   InvocationLocation,
   SituatedBinding,
+  BinExpr,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList } from "./util";
@@ -32,16 +33,20 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
     case "StringLit":
       return `"${escapeString(term.val)}"`;
     case "BinExpr":
-      return [
-        prettyPrintTerm(term.left),
-        ` ${term.op} `,
-        prettyPrintTerm(term.right),
-      ];
+      return prettyPrintBinExpr(term);
     case "Bool":
       return `${term.val}`;
     case "IntLit":
       return `${term.val}`;
   }
+}
+
+export function prettyPrintBinExpr(term: BinExpr): pp.IDoc {
+  return [
+    prettyPrintTerm(term.left),
+    ` ${term.op} `,
+    prettyPrintTerm(term.right),
+  ];
 }
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {

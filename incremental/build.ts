@@ -9,7 +9,7 @@ export function declareTable(graph: RuleGraph, name: string): RuleGraph {
     nodes: {
       ...graph.nodes,
       [id]: {
-        node: { type: "BaseFactTable" },
+        node: { type: "BaseFactTable", name },
         cache: [],
       },
     },
