@@ -1,0 +1,42 @@
+let x = 2 in plus(3, ???)
+----
+ide.Suggestion{id: 6, name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}, typeMatch: false}.
+ide.Suggestion{id: 6, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: false}.
+ide.Suggestion{id: 6, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}, typeMatch: false}.
+ide.Suggestion{id: 6, name: "x", type: "int", typeMatch: false}.
+ide.Suggestion{id: 6, name: "x", type: "int", typeMatch: true}.
+
+let x = 2 in (y: int): string => intToString(???)
+----
+ide.Suggestion{id: 5, name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}, typeMatch: false}.
+ide.Suggestion{id: 5, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: false}.
+ide.Suggestion{id: 5, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}, typeMatch: false}.
+ide.Suggestion{id: 5, name: "x", type: "int", typeMatch: false}.
+ide.Suggestion{id: 5, name: "x", type: "int", typeMatch: true}.
+ide.Suggestion{id: 5, name: "y", type: "int", typeMatch: false}.
+ide.Suggestion{id: 5, name: "y", type: "int", typeMatch: true}.
+
+(x: int): string => ???
+----
+ide.Suggestion{id: 1, name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}, typeMatch: false}.
+ide.Suggestion{id: 1, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: false}.
+ide.Suggestion{id: 1, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: true}.
+ide.Suggestion{id: 1, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}, typeMatch: false}.
+ide.Suggestion{id: 1, name: "x", type: "int", typeMatch: false}.
+
+(x: int): string => let x = 2 in ???
+----
+ide.Suggestion{id: 3, name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}, typeMatch: false}.
+ide.Suggestion{id: 3, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: false}.
+ide.Suggestion{id: 3, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: true}.
+ide.Suggestion{id: 3, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}, typeMatch: false}.
+ide.Suggestion{id: 3, name: "x", type: "int", typeMatch: false}.
+ide.Suggestion{id: 3, name: "x", type: "int", typeMatch: false}.
+
+let y = 2 in let x = ??? in intToString(x)
+----
+ide.Suggestion{id: 3, name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}, typeMatch: false}.
+ide.Suggestion{id: 3, name: "intToString", type: tapp{from: "int", to: "string"}, typeMatch: false}.
+ide.Suggestion{id: 3, name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}, typeMatch: false}.
+ide.Suggestion{id: 3, name: "y", type: "int", typeMatch: false}.
+ide.Suggestion{id: 3, name: "y", type: "int", typeMatch: true}.

@@ -1,0 +1,6 @@
+foo{boo: 2, doo: "asdf", glue: true}.
+----
+
+foo{boo: X, doo: Y, glue: Z}.
+----
+foo{boo: 2, doo: "asdf", glue: true}.

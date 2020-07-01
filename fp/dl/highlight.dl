@@ -1,0 +1,61 @@
+# TODO: keywords
+# TODO: cursor containment in span, not just at beginning
+hl.Segment{type: T, span: S, highlight: H} :-
+  hl.segmentDefn{type: T, span: S, highlight: H} |
+  hl.segmentDefnHL{type: T, span: S, highlight: H} |
+  hl.segmentUsage{type: T, span: S, highlight: H} |
+  hl.segmentUndefinedVar{type: T, span: S, highlight: H} |
+  hl.segmentUsageHL{type: T, span: S, highlight: H} |
+  hl.segmentStr{type: T, span: S, highlight: H} |
+  hl.segmentInt{type: T, span: S, highlight: H} |
+  hl.segmentKeyword{type: T, span: S, highlight: H} |
+  hl.segmentType{type: T, span: S, highlight: H} |
+  hl.segmentTypeHL{type: T, span: S, highlight: H}.
+
+hl.segmentDefn{type: "defn", span: S, highlight: false} :-
+  hl.varDefn{span: S} &
+  ide.Usage{definitionLoc: S}.
+hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
+  ide.CurrentUsage{defnLoc: S} &
+  hl.varDefn{span: S}.
+hl.varDefn{span: S} :-
+  ast.LetExpr{varLoc: S} |
+  ast.LambdaParam{location: S}.
+
+hl.segmentUsage{type: "usage", span: S, highlight: false} :-
+  ast.Var{location: S} & ide.Usage{usageLoc: S}.
+# TODO: this is a hack.
+# it's not that it's undefined, it's just that it'll only be seen
+# if the usage rule doesn't match.
+hl.segmentUndefinedVar{type: "undefined-var", span: S, highlight: false} :-
+  ast.Var{location: S}.
+hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
+  ide.CurrentUsage{usageLoc: S} &
+  ast.Var{location: S}.
+
+hl.segmentStr{type: "string", span: S, highlight: false} :-
+  ast.StringLit{location: S}.
+hl.segmentInt{type: "int", span: S, highlight: false} :-
+  ast.IntLit{location: S}.
+hl.segmentKeyword{type: "keyword", span: S, highlight: false} :-
+  ast.LetExpr{inLoc: S} |
+  ast.LetExpr{letLoc: S}.
+
+hl.segmentType{type: "type", span: S, name: N, highlight: false} :-
+  ast.LambdaParam{typeLoc: S, ty: N} |
+  ast.Lambda{retTypeLoc: S, retType: N}.
+hl.segmentTypeHL{type: "type", span: S, highlight: true} :-
+  hl.segmentType{span: S, name: N} &
+  hl.typeHighlighted{name: N}.
+
+hl.typeHighlighted{name: T} :-
+  hl.typeHighlightedParam{name: T} |
+  hl.typeHighlightedRet{name: T}.
+hl.typeHighlightedParam{name: T} :-
+  ast.LambdaParam{ty: T, typeLoc: span{from: FIdx, to: TIdx}} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+hl.typeHighlightedRet{name: T} :-
+  ast.Lambda{retType: T, retTypeLoc: span{from: FIdx, to: TIdx}} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.

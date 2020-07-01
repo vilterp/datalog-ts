@@ -1,0 +1,39 @@
+node{id: "A", label: "A"}.
+node{id: "B", label: "B"}.
+node{id: "C", label: "C"}.
+node{id: "D", label: "D"}.
+base_edge{from: "A", to: "B"}.
+base_edge{from: "B", to: "C"}.
+base_edge{from: "C", to: "D"}.
+trans_edge{from: X, to: Z} :-
+  base_edge{from: X, to: Z} |
+  base_edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
+----
+
+trans_edge{from: A, to: B}.
+----
+trans_edge{from: "A", to: "B"}.
+trans_edge{from: "B", to: "C"}.
+trans_edge{from: "C", to: "D"}.
+trans_edge{from: "A", to: "C"}.
+trans_edge{from: "A", to: "D"}.
+trans_edge{from: "B", to: "D"}.
+
+edge{to: T, from: F, label: ""} :-
+  trans_edge{to: T, from: F}.
+----
+
+.graphviz
+----
+digraph G {
+  "A" [label="A"];
+  "B" [label="B"];
+  "C" [label="C"];
+  "D" [label="D"];
+  "A" -> "B" [label=""];
+  "B" -> "C" [label=""];
+  "C" -> "D" [label=""];
+  "A" -> "C" [label=""];
+  "A" -> "D" [label=""];
+  "B" -> "D" [label=""]
+}
