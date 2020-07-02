@@ -203,10 +203,10 @@ encoding@^0.1.11:
   dependencies:
     iconv-lite "~0.4.13"
 
-esbuild@^0.3.9:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.3.9.tgz#a9ce2c4d4ef6bc01ac183b8d8635bb265d0a3fa2"
-  integrity sha512-GbuJ/HyxOtVPNtcbgU7vcmPEZIfpeFnVgEGVvV2SrwU70ZZO0d7ZqRPm2gevD7FFxwNFpajdcEZZNJkEm7e4Pg==
+esbuild@^0.5.18:
+  version "0.5.18"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.5.18.tgz#b82f575015c7f3d4326dab0deabf71e52e972122"
+  integrity sha512-kvU6VqPmS7zBN6fPz6zWzu3eHmCFMB92L2cDz6yOWsviz2nIcAnI6bpN7T0mRR+GXbheEIlOj+sjc5a+KxYy/Q==
 
 eventemitter3@^4.0.0:
   version "4.0.4"
