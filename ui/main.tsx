@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Interpreter } from "../interpreter";
 import { nullLoader } from "../loaders";
-import { Program, Res, Rec, StringLit } from "../types";
+import { Program, Rec, StringLit } from "../types";
 import { language } from "../parser";
 import { LayoutManager } from "@jaegertracing/plexus";
 // TODO(joe): Update import after killing `DirectedGraph`
@@ -23,19 +23,20 @@ const lm = new LayoutManager({
 function Main() {
   const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
 
-  const output: Res[] = [];
   let error = null;
   let nodes = [];
   let edges = [];
 
   const interp = new Interpreter(".", nullLoader);
+  let interp2: Interpreter = null;
   try {
     const program = language.program.tryParse(source) as Program;
-    program.forEach((stmt) => {
-      interp.evalStmt(stmt).results.forEach((res) => output.push(res));
-    });
+    interp2 = program.reduce<Interpreter>(
+      (interp, stmt) => interp.evalStmt(stmt)[1],
+      interp
+    );
     edges = uniqBy(
-      interp.evalStr("edge{from: F, to: T, label: L}.").results.map((res) => ({
+      interp2.queryStr("edge{from: F, to: T, label: L}").results.map((res) => ({
         from: ((res.term as Rec).attrs.from as StringLit).val,
         to: ((res.term as Rec).attrs.to as StringLit).val,
         label: ((res.term as Rec).attrs.label as StringLit).val,
@@ -43,7 +44,7 @@ function Main() {
       (e) => `${e.from}-${e.to}`
     );
     nodes = uniqBy(
-      interp.evalStr("node{id: I, label: L}.").results.map((res) => ({
+      interp2.queryStr("node{id: I, label: L}").results.map((res) => ({
         key: ((res.term as Rec).attrs.id as StringLit).val,
         label: ((res.term as Rec).attrs.label as StringLit).val,
       })),
@@ -52,8 +53,6 @@ function Main() {
   } catch (e) {
     error = e.toString();
   }
-
-  console.log({ nodes, edges });
 
   return (
     <div>
@@ -73,7 +72,7 @@ function Main() {
         </>
       ) : null}
       <h3>Explore</h3>
-      <TabbedTables interp={interp} />
+      <TabbedTables interp={interp2} />
       <Collapsible
         heading="Graph"
         initiallyCollapsed={true}

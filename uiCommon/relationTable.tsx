@@ -34,7 +34,7 @@ export function RelationTable(props: {
         : props.interp.evalStmt({
             type: "Insert",
             record: props.relation.rule.head,
-          }).results;
+          })[0].results;
   } catch (e) {
     error = e.toString();
     console.error(e);

@@ -76,10 +76,12 @@ function doEvaluate(depth, path, db, scope, term) {
         switch (term.type) {
             case "Record": {
                 var table = db.tables[term.relation];
-                if (table) {
+                var virtual = db.virtualTables[term.relation];
+                var records = table ? table : virtual ? virtual(db) : null;
+                if (records) {
                     var out = [];
-                    for (var _i = 0, table_1 = table; _i < table_1.length; _i++) {
-                        var rec = table_1[_i];
+                    for (var _i = 0, records_1 = records; _i < records_1.length; _i++) {
+                        var rec = records_1[_i];
                         var unifyRes = unify_1.unify(scope, term, rec);
                         // console.log("scan", {
                         //   scope: ppb(scope),

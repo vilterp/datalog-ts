@@ -38,8 +38,8 @@ export const renameRefactorAction: EditorAction = {
 };
 
 function getSpansToReplace(interp: Interpreter): Span[] {
-  const results = interp.evalStr(
-    "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}."
+  const results = interp.queryStr(
+    "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}"
   ).results;
   return sortSpans(
     uniqBy(

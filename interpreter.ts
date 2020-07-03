@@ -6,63 +6,94 @@ import { mapObjToList, flatMapObjToList, flatMap } from "./util";
 
 export type StmtResult = { results: Res[]; trace: boolean };
 
+const initialDB: DB = {
+  tables: {},
+  rules: {},
+  virtualTables: {
+    "internal.Relation": virtualRelations,
+    "internal.RelationReference": virtualReferences,
+  },
+};
+
 export class Interpreter {
   db: DB;
   cwd: string;
   loader: Loader;
 
-  constructor(cwd: string, loader: Loader) {
-    this.db = {
-      tables: {},
-      rules: {},
-      virtualTables: {
-        "internal.Relation": virtualRelations,
-        "internal.RelationReference": virtualReferences,
-      },
-    };
+  constructor(cwd: string, loader: Loader, db: DB = initialDB) {
+    this.db = db;
     this.cwd = cwd;
     this.loader = loader;
   }
 
-  evalStr(line: string): StmtResult {
+  queryStr(line: string): StmtResult {
+    const record = dlLanguage.record.tryParse(line) as Rec;
+    const [res, _] = this.evalStmt({ type: "Insert", record });
+    return res;
+  }
+
+  evalStr(line: string): [StmtResult, Interpreter] {
     const stmt = dlLanguage.statement.tryParse(line);
     return this.evalStmt(stmt);
   }
 
-  evalStmt(stmt: Statement): StmtResult {
+  evalStmt(stmt: Statement): [StmtResult, Interpreter] {
     switch (stmt.type) {
       case "Insert": {
         const record = stmt.record;
         if (hasVars(record)) {
-          return noTrace(this.evalQuery(record));
+          // TODO: separate method for querying?
+          return [noTrace(this.evalQuery(record)), this];
         }
-        let tbl = this.db.tables[record.relation];
-        if (!tbl) {
-          tbl = [];
-          this.db.tables[record.relation] = tbl;
-        }
-        tbl.push(record);
-        return noTrace([]);
+        let tbl = this.db.tables[record.relation] || [];
+        return [
+          noTrace([]),
+          this.withDB({
+            ...this.db,
+            tables: {
+              ...this.db.tables,
+              [record.relation]: [...tbl, record],
+            },
+          }),
+        ];
       }
       case "Rule": {
         const rule = stmt.rule;
-        this.db.rules[rule.head.relation] = rule;
-        return noTrace([]);
+        return [
+          noTrace([]),
+          this.withDB({
+            ...this.db,
+            rules: {
+              ...this.db.rules,
+              [rule.head.relation]: rule,
+            },
+          }),
+        ];
       }
       case "TableDecl":
         if (this.db.tables[stmt.name]) {
-          return noTrace([]);
+          return [noTrace([]), this];
         }
-        this.db.tables[stmt.name] = [];
-        return noTrace([]);
+        return [
+          noTrace([]),
+          this.withDB({
+            ...this.db,
+            tables: {
+              ...this.db.tables,
+              [stmt.name]: [],
+            },
+          }),
+        ];
       case "LoadStmt":
-        this.doLoad(stmt.path);
-        return noTrace([]);
+        return [noTrace([]), this.doLoad(stmt.path)];
       case "TraceStmt":
-        const inner = this.evalStmt({ type: "Insert", record: stmt.record });
-        return yesTrace(inner.results);
+        const [res, interp] = this.evalStmt({
+          type: "Insert",
+          record: stmt.record,
+        });
+        return [yesTrace(res.results), interp];
       case "Comment":
-        return noTrace([]);
+        return [noTrace([]), this];
     }
   }
 
@@ -70,12 +101,17 @@ export class Interpreter {
     return evaluate(this.db, record);
   }
 
-  doLoad(path: string) {
+  private withDB(db: DB) {
+    return new Interpreter(this.cwd, this.loader, db);
+  }
+
+  doLoad(path: string): Interpreter {
     const contents = this.loader(this.cwd + "/" + path);
     const program: Program = dlLanguage.program.tryParse(contents);
-    for (const stmt of program) {
-      this.evalStmt(stmt);
-    }
+    return program.reduce<Interpreter>(
+      (interp, stmt) => interp.evalStmt(stmt)[1],
+      this
+    );
   }
 }
 

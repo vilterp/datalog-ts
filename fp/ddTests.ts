@@ -108,14 +108,15 @@ function typecheckTest(test: DDTest): Result[] {
     const rendered = flattened.map((t) => ppt(t) + ".");
 
     const interp = new Interpreter("fp/dl", fsLoader); // hmmm
-    flattened.forEach((t) => {
-      interp.evalStmt({ type: "Insert", record: t as Rec });
-    });
-    interp.doLoad("main.dl");
-    const scopeResults = interp.evalStr(
-      "tc.ScopeItem{id: I, name: N, type: T}."
+    const interp2 = flattened.reduce<Interpreter>(
+      (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
+      interp
     );
-    const typeResults = interp.evalStr("tc.Type{id: I, type: T}.");
+    const interp3 = interp2.doLoad("main.dl");
+    const scopeResults = interp3.queryStr(
+      "tc.ScopeItem{id: I, name: N, type: T}"
+    );
+    const typeResults = interp3.queryStr("tc.Type{id: I, type: T}");
     return {
       pair: tc,
       actual:
@@ -134,12 +135,13 @@ function suggestionTest(test: DDTest): Result[] {
     const flattened = flatten(parsed);
 
     const interp = new Interpreter("fp/dl", fsLoader); // hmmm
-    flattened.forEach((t) => {
-      interp.evalStmt({ type: "Insert", record: t as Rec });
-    });
-    interp.doLoad("main.dl");
-    const suggResults = interp.evalStr(
-      "ide.Suggestion{id: I, name: N, type: T}."
+    const interp2 = flattened.reduce<Interpreter>(
+      (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
+      interp
+    );
+    const interp3 = interp2.doLoad("main.dl");
+    const suggResults = interp3.queryStr(
+      "ide.Suggestion{id: I, name: N, type: T}"
     );
     return {
       pair: tc,
@@ -158,12 +160,12 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     const flattened = flatten(parsed);
 
     const interp = new Interpreter("fp/dl", fsLoader); // hmmm
-    flattened.forEach((t) => {
-      interp.evalStmt({ type: "Insert", record: t as Rec });
-    });
-    interp.doLoad("main.dl");
+    const interp2 = flattened.reduce((interp, t) => {
+      return interp.evalStmt({ type: "Insert", record: t as Rec })[1];
+    }, interp);
+    const interp3 = interp2.doLoad("main.dl");
     // TODO: why does interpacing I with 0 return no results
-    const typeResults = interp.evalStr("tc.Type{id: 0, type: T}.");
+    const typeResults = interp3.queryStr("tc.Type{id: 0, type: T}");
     if (typeResults.results.length !== 1) {
       throw new Error(
         `expecting one result, got ${typeResults.results.length}`

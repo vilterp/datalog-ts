@@ -12,12 +12,12 @@ export type DLTypeError = {
 
 export function getTypeErrors(interp: Interpreter): DLTypeError[] {
   const exprTreeRecs = interp
-    .evalStr("ast.ParentExpr{child: C, parent: P}.")
+    .queryStr("ast.ParentExpr{child: C, parent: P}")
     .results.map((res) => res.term as Rec);
   const exprTree = treeFromRecords(exprTreeRecs, "0");
   const exprIDsWithTypes = new Set(
     interp
-      .evalStr("tc.Type{id: I}.")
+      .queryStr("tc.Type{id: I}")
       .results.map((res) => ((res.term as Rec).attrs.id as Int).val)
   );
   const exprErrorTree = mapTree(exprTree, (rec) => {

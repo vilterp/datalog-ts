@@ -7,7 +7,7 @@ import {
   ActionContext,
   EditorState,
 } from "./types";
-import { getPlaceholders, sortSpans, getCursor, spanContainsIdx } from "./util";
+import { getPlaceholders, getCursor, spanContainsIdx } from "./util";
 
 export const jumpToDefnAction: EditorAction = {
   name: "Jump to Definition",
@@ -25,7 +25,7 @@ export const jumpToDefnAction: EditorAction = {
 };
 
 function getDefnForCursor(interp: Interpreter): Span | null {
-  const res = interp.evalStr(`ide.DefnForCursor{defnLoc: S}.`).results;
+  const res = interp.queryStr(`ide.DefnForCursor{defnLoc: S}`).results;
   if (res.length === 0) {
     return null;
   }
@@ -53,7 +53,7 @@ export const jumpToFirstUsageAction: EditorAction = {
 };
 
 function getFirstUsageForCursor(interp: Interpreter): Span | null {
-  const res = interp.evalStr(`ide.UsageForCursor{usageLoc: S}.`).results;
+  const res = interp.queryStr(`ide.UsageForCursor{usageLoc: S}`).results;
   if (res.length === 0) {
     return null;
   }
