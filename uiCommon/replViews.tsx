@@ -44,7 +44,7 @@ export function Stmt(props: { stmt: Statement }) {
   }
 }
 
-function IndependentTraceView(props: { res: Res }) {
+export function IndependentTraceView(props: { res: Res }) {
   const [collapseState, setCollapseState] = useState<TreeCollapseState>({
     collapsed: true,
     childStates: {},
