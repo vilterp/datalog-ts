@@ -12,6 +12,8 @@
     "serve-fp-ui": "cd fp/ui && http-server -c-1",
     "build-ui": "esbuild ui/main.tsx --bundle --outfile=ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap",
     "serve-ui": "cd ui && http-server -c-1",
+    "build-notebook-ui": "esbuild notebook/main.tsx --bundle --outfile=notebook/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
+    "serve-notebook-ui": "cd notebook && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist"
   },
   "devDependencies": {
