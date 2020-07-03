@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -20,7 +20,7 @@ function Viewer(props: { username: string; gistID: string }) {
     <>
       <h1>Notebook viewer</h1>
       <p>
-        Gist: <a href={gistURL}>{gistURL}</a>
+        <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
       </p>
       {loading ? (
         <p>Loading...</p>
@@ -102,11 +102,35 @@ function flatten(results: Res[][]): Res[] {
 }
 
 function HomePage() {
+  const [gistURL, setGistURL] = useState("");
+
   return (
     <>
       <h1>Notebook viewer</h1>
-      <p>Welcome</p>
-      <p>Examples:</p>
+      <h2>View Gist</h2>
+      <div>
+        URL{" "}
+        <form>
+          <input
+            value={gistURL}
+            className="form-control"
+            onChange={(evt) => setGistURL(evt.target.value)}
+            placeholder={"https://gist.github.com/username/gistid"}
+            size={100}
+          />
+          <button
+            className="btn"
+            onClick={(evt) => {
+              evt.preventDefault();
+              const url = new URL(gistURL);
+              window.location.assign(`/#/notebook/gist${url.pathname}`);
+            }}
+          >
+            Go
+          </button>
+        </form>
+      </div>
+      <h2>Examples:</h2>
       <ul>
         <li>
           <Link to="/notebook/gist/vilterp/9f06dbef549ab0fec87d7a79df05cf50">
