@@ -26,6 +26,12 @@ export class Interpreter {
     this.loader = loader;
   }
 
+  queryStr(line: string): StmtResult {
+    const record = dlLanguage.record.tryParse(line) as Rec;
+    const [res, _] = this.evalStmt({ type: "Insert", record });
+    return res;
+  }
+
   evalStr(line: string): [StmtResult, Interpreter] {
     const stmt = dlLanguage.statement.tryParse(line);
     return this.evalStmt(stmt);

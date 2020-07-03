@@ -16,7 +16,7 @@ import { traceToTree } from "./traceTree";
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  core: Interpreter;
+  interp: Interpreter;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -31,7 +31,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.core = new Interpreter(__dirname, loader);
+    this.interp = new Interpreter(__dirname, loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -75,20 +75,20 @@ export class Repl {
     // special commands
     // TODO: parse these with parser
     if (line === ".dump") {
-      this.println(pp.render(100, prettyPrintDB(this.core.db)));
+      this.println(pp.render(100, prettyPrintDB(this.interp.db)));
       rl.prompt();
       return;
     } else if (line === ".resetFacts") {
-      this.core.db.tables = {};
+      this.interp.db.tables = {};
       rl.prompt();
       return;
     } else if (line === ".graphviz") {
       // TODO: remove dot...
       // TODO: allow whole config to be passed in...
       this.doGraphviz(
-        { query: "node{id: I, label: L}.", idAttr: "id", labelAttr: "label" },
+        { query: "node{id: I, label: L}", idAttr: "id", labelAttr: "label" },
         {
-          query: "edge{from: F, to: T, label: L}.",
+          query: "edge{from: F, to: T, label: L}",
           labelAttr: "label",
           fromAttr: "from",
           toAttr: "to",
@@ -99,12 +99,12 @@ export class Repl {
     } else if (line === ".ruleGraph") {
       this.doGraphviz(
         {
-          query: "internal.Relation{name: N, type: T}.",
+          query: "internal.Relation{name: N, type: T}",
           idAttr: "name",
           labelAttr: "name",
         },
         {
-          query: "internal.RelationReference{from: F, to: T}.",
+          query: "internal.RelationReference{from: F, to: T}",
           fromAttr: "from",
           toAttr: "to",
         }
@@ -117,7 +117,8 @@ export class Repl {
       return;
     }
     try {
-      const stmtResult = this.core.evalStr(this.buffer);
+      const [stmtResult, interp] = this.interp.evalStr(this.buffer);
+      this.interp = interp;
       stmtResult.results.forEach((res) => {
         this.println(
           stmtResult.trace
@@ -146,8 +147,8 @@ export class Repl {
       labelAttr?: string;
     }
   ) {
-    const edges = this.core.evalStr(edgesConfig.query);
-    const nodes = this.core.evalStr(nodesConfig.query);
+    const edges = this.interp.queryStr(edgesConfig.query);
+    const nodes = this.interp.queryStr(nodesConfig.query);
     // TODO: oof, all this typecasting
     const g: Graph = {
       edges: edges.results.map((e) => {
