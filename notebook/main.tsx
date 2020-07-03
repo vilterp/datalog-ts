@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { MarkdownDoc, parse } from "./markdown";
 
 function Viewer(props: {
   username: string;
@@ -13,11 +14,24 @@ function Viewer(props: {
 
   const { loading, error, data = "" } = useFetch(gistURL, {}, []);
 
+  const parsedDoc = parse(data);
+
   return (
-    <>
+    <div
+      className="markdown-body"
+      style={{
+        maxWidth: "60rem",
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginBottom: 20,
+        marginTop: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
+      }}
+    >
       <h1>Notebook viewer</h1>
-      <pre>{data}</pre>
-    </>
+      <MarkdownDoc doc={parsedDoc} blockIdxToHeadingIdx={{}} headingRefs={[]} />
+    </div>
   );
 }
 

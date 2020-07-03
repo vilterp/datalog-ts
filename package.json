@@ -12,8 +12,8 @@
     "serve-fp-ui": "cd fp/ui && http-server -c-1",
     "build-ui": "esbuild ui/main.tsx --bundle --outfile=ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap",
     "serve-ui": "cd ui && http-server -c-1",
-    "build-notebook-ui": "esbuild notebook/main.tsx --bundle --outfile=notebook/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
-    "serve-notebook-ui": "cd notebook && http-server -c-1",
+    "build-notebook-ui": "esbuild notebook/main.tsx --bundle --outfile=notebook/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
+    "serve-notebook-ui": "cd notebook/public && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist"
   },
   "devDependencies": {
@@ -38,6 +38,7 @@
     "react-router-dom": "^5.2.0",
     "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
     "react-use-localstorage": "^3.4.1",
+    "simple-markdown": "^0.7.2",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.2",
     "use-hash-param": "^0.2.3",
