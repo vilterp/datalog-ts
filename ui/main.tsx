@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Interpreter } from "../interpreter";
 import { nullLoader } from "../loaders";
-import { Program, Res, Rec, StringLit } from "../types";
+import { Program, Rec, StringLit } from "../types";
 import { language } from "../parser";
 import { LayoutManager } from "@jaegertracing/plexus";
 // TODO(joe): Update import after killing `DirectedGraph`

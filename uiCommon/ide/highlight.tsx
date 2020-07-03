@@ -15,8 +15,8 @@ export function highlight(
   if (syntaxErrorIdx) {
     return highlightSyntaxError(code, syntaxErrorIdx);
   }
-  const segments = interp.evalStr(
-    "hl.Segment{type: T, span: S, highlight: H}."
+  const segments = interp.queryStr(
+    "hl.Segment{type: T, span: S, highlight: H}"
   );
   const sortedSegments = hlWins(
     uniqBy(

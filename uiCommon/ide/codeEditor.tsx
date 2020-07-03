@@ -25,14 +25,14 @@ export function CodeEditor<AST>(props: {
   parse: Parsimmon.Parser<AST>;
   flatten: (t: AST) => Term[];
   interp: Interpreter;
-  dlRulesFile: string;
   getSuggestions: (interp: Interpreter) => Suggestion[];
   highlightCSS: string;
   state: EditorState;
   setState: (st: EditorState) => void;
-}) {
-  props.interp.evalStr(`ide.Cursor{idx: ${props.state.cursorPos}}.`);
-  props.interp.doLoad(props.dlRulesFile);
+}): [Interpreter, React.ReactNode] {
+  const [_, interp2] = props.interp.evalStr(
+    `ide.Cursor{idx: ${props.state.cursorPos}}.`
+  );
 
   const st = props.state;
   const setCursorPos = (pos: number) => {
@@ -42,11 +42,11 @@ export function CodeEditor<AST>(props: {
     });
   };
 
-  // TODO: make REPL immutable; always start from one with this stuff loaded
   let error: Error | null = null;
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
   const parseRes = props.parse.parse(st.source);
+  let interp3: Interpreter = null;
   if (parseRes.status === false) {
     error = {
       type: "ParseError",
@@ -56,13 +56,14 @@ export function CodeEditor<AST>(props: {
   } else {
     try {
       const flattened = props.flatten(parseRes.value);
-      flattened.forEach((rec) =>
-        props.interp.evalStmt({ type: "Insert", record: rec as Rec })
+      interp3 = flattened.reduce<Interpreter>(
+        (int, rec) => int.evalStmt({ type: "Insert", record: rec as Rec })[1],
+        interp2
       );
 
       // get suggestions
-      suggestions = props.getSuggestions(props.interp);
-      typeErrors = getTypeErrors(props.interp);
+      suggestions = props.getSuggestions(interp3);
+      typeErrors = getTypeErrors(interp3);
     } catch (e) {
       error = { type: "EvalError", err: e };
       console.error("eval error", error.err);
@@ -81,7 +82,7 @@ export function CodeEditor<AST>(props: {
   const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
   const applyAction = (action: EditorAction, modifiedState?: EditorState) => {
     const ctx: ActionContext = {
-      interp: props.interp,
+      interp: interp3,
       state: modifiedState ? modifiedState : st,
       suggestions,
       errors,
@@ -91,13 +92,14 @@ export function CodeEditor<AST>(props: {
     }
   };
   const actionCtx = {
-    interp: props.interp,
+    interp: interp3,
     state: st,
     suggestions,
     errors,
   };
 
-  return (
+  return [
+    interp3,
     <div>
       <style
         dangerouslySetInnerHTML={{
@@ -122,7 +124,7 @@ export function CodeEditor<AST>(props: {
           cursorPos={st.cursorPos} // would be nice if we could have an onCursorPos
           highlight={(_) =>
             highlight(
-              props.interp,
+              interp3,
               props.state.source,
               error && error.type === "ParseError" ? error.offset : null,
               typeErrors
@@ -174,6 +176,7 @@ export function CodeEditor<AST>(props: {
           <tbody>
             {mapObjToList(keyMap, (key, action) => (
               <tr
+                key={action.name}
                 style={{
                   color: action.available(actionCtx) ? "black" : "lightgrey",
                 }}
@@ -217,6 +220,6 @@ export function CodeEditor<AST>(props: {
           ))}
         </ul>
       ) : null}
-    </div>
-  );
+    </div>,
+  ];
 }

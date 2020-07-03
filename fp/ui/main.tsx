@@ -5,7 +5,7 @@ import { flatten } from "../flatten";
 import { Interpreter } from "../../interpreter";
 import { TabbedTables } from "../../uiCommon/tabbedTables";
 import { Collapsible } from "../../uiCommon/collapsible";
-import { CodeEditor } from "../../uiCommon/ide/ide";
+import { CodeEditor } from "../../uiCommon/ide/codeEditor";
 import { useJSONLocalStorage } from "../../uiCommon/hooks";
 import { initialEditorState } from "../../uiCommon/ide/types";
 // @ts-ignore
@@ -21,24 +21,27 @@ function Main() {
     initialEditorState("let x = 2 in intToString(x)")
   );
 
+  const interp2 = interp.doLoad("main.dl");
+  // TODO: idk if this is how you're supposed to React. lol
+  const [interp3, editor] = CodeEditor({
+    interp: interp2,
+    parse: fpLanguage.expr,
+    flatten,
+    getSuggestions,
+    highlightCSS,
+    state: editorState,
+    setState: setEditorState,
+  });
+
   return (
     <div>
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
-      <CodeEditor<Expr>
-        interp={interp}
-        parse={fpLanguage.expr}
-        flatten={flatten}
-        dlRulesFile="main.dl"
-        getSuggestions={getSuggestions}
-        highlightCSS={highlightCSS}
-        state={editorState}
-        setState={setEditorState}
-      />
+      {editor}
 
       <Collapsible
         heading="Facts &amp; Rules"
-        content={<TabbedTables interp={interp} />}
+        content={<TabbedTables interp={interp3} />}
       />
 
       {/* TODO: bring back a good way of displaying the AST */}
