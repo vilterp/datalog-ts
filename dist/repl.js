@@ -10,7 +10,7 @@ var fs = require("fs");
 var traceTree_1 = require("./traceTree");
 var Repl = /** @class */ (function () {
     function Repl(input, out, mode, query, loader) {
-        this.core = new interpreter_1.Interpreter(__dirname, loader);
+        this.interp = new interpreter_1.Interpreter(__dirname, loader);
         this["in"] = input;
         this.out = out;
         this.buffer = "";
@@ -53,18 +53,37 @@ var Repl = /** @class */ (function () {
         // special commands
         // TODO: parse these with parser
         if (line === ".dump") {
-            this.println(pp.render(100, pretty_1.prettyPrintDB(this.core.db)));
+            this.println(pp.render(100, pretty_1.prettyPrintDB(this.interp.db)));
             rl.prompt();
             return;
         }
         else if (line === ".resetFacts") {
-            this.core.db.tables = {};
+            this.interp.db.tables = {};
             rl.prompt();
             return;
         }
         else if (line === ".graphviz") {
             // TODO: remove dot...
-            this.doGraphviz();
+            // TODO: allow whole config to be passed in...
+            this.doGraphviz({ query: "node{id: I, label: L}", idAttr: "id", labelAttr: "label" }, {
+                query: "edge{from: F, to: T, label: L}",
+                labelAttr: "label",
+                fromAttr: "from",
+                toAttr: "to"
+            });
+            rl.prompt();
+            return;
+        }
+        else if (line === ".ruleGraph") {
+            this.doGraphviz({
+                query: "internal.Relation{name: N, type: T}",
+                idAttr: "name",
+                labelAttr: "name"
+            }, {
+                query: "internal.RelationReference{from: F, to: T}",
+                fromAttr: "from",
+                toAttr: "to"
+            });
             rl.prompt();
             return;
         }
@@ -73,7 +92,8 @@ var Repl = /** @class */ (function () {
             return;
         }
         try {
-            var stmtResult_1 = this.core.evalStr(this.buffer);
+            var _a = this.interp.evalStr(this.buffer), stmtResult_1 = _a[0], interp = _a[1];
+            this.interp = interp;
             stmtResult_1.results.forEach(function (res) {
                 _this.println(stmtResult_1.trace
                     ? pretty_1.prettyPrintTrace(traceTree_1.traceToTree(res), pretty_1.defaultTracePrintOpts)
@@ -92,24 +112,31 @@ var Repl = /** @class */ (function () {
         }
         rl.prompt();
     };
-    Repl.prototype.doGraphviz = function () {
-        var edges = this.core.evalStr("edge{from: F, to: T, label: L}.");
-        var nodes = this.core.evalStr("node{id: I, label: L}.");
+    Repl.prototype.doGraphviz = function (nodesConfig, edgesConfig) {
+        var edges = this.interp.queryStr(edgesConfig.query);
+        var nodes = this.interp.queryStr(nodesConfig.query);
         // TODO: oof, all this typecasting
         var g = {
             edges: edges.results.map(function (e) {
                 var rec = e.term;
                 return {
-                    from: rec.attrs.from.val,
-                    to: rec.attrs.to.val,
-                    attrs: { label: rec.attrs.label.val }
+                    from: rec.attrs[edgesConfig.fromAttr].val,
+                    to: rec.attrs[edgesConfig.toAttr].val,
+                    attrs: {
+                        label: edgesConfig.labelAttr
+                            ? rec.attrs[edgesConfig.labelAttr].val
+                            : ""
+                    }
                 };
             }),
             nodes: nodes.results.map(function (n) {
+                var _a;
                 var rec = n.term;
                 return {
-                    id: rec.attrs.id.val,
-                    attrs: { label: rec.attrs.label.val }
+                    id: rec.attrs[nodesConfig.idAttr].val,
+                    attrs: {
+                        label: (_a = rec.attrs[nodesConfig.labelAttr]) === null || _a === void 0 ? void 0 : _a.val
+                    }
                 };
             })
         };

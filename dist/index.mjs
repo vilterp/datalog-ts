@@ -1128,18 +1128,24 @@ function hasVars(t) {
 }
 
 // interpreter.ts
+const initialDB = {
+  tables: {},
+  rules: {},
+  virtualTables: {
+    "internal.Relation": virtualRelations,
+    "internal.RelationReference": virtualReferences
+  }
+};
 class Interpreter {
-  constructor(cwd, loader) {
-    this.db = {
-      tables: {},
-      rules: {},
-      virtualTables: {
-        "internal.Relation": virtualRelations,
-        "internal.RelationReference": virtualReferences
-      }
-    };
+  constructor(cwd, loader, db = initialDB) {
+    this.db = db;
     this.cwd = cwd;
     this.loader = loader;
+  }
+  queryStr(line) {
+    const record = language.record.tryParse(line);
+    const [res, _] = this.evalStmt({type: "Insert", record});
+    return res;
   }
   evalStr(line) {
     const stmt = language.statement.tryParse(line);
@@ -1150,46 +1156,63 @@ class Interpreter {
       case "Insert": {
         const record = stmt.record;
         if (hasVars(record)) {
-          return noTrace(this.evalQuery(record));
+          return [noTrace(this.evalQuery(record)), this];
         }
-        let tbl = this.db.tables[record.relation];
-        if (!tbl) {
-          tbl = [];
-          this.db.tables[record.relation] = tbl;
-        }
-        tbl.push(record);
-        return noTrace([]);
+        let tbl = this.db.tables[record.relation] || [];
+        return [
+          noTrace([]),
+          this.withDB(__assign(__assign({}, this.db), {
+            tables: __assign(__assign({}, this.db.tables), {
+              [record.relation]: [...tbl, record]
+            })
+          }))
+        ];
       }
       case "Rule": {
         const rule = stmt.rule;
-        this.db.rules[rule.head.relation] = rule;
-        return noTrace([]);
+        return [
+          noTrace([]),
+          this.withDB(__assign(__assign({}, this.db), {
+            rules: __assign(__assign({}, this.db.rules), {
+              [rule.head.relation]: rule
+            })
+          }))
+        ];
       }
       case "TableDecl":
         if (this.db.tables[stmt.name]) {
-          return noTrace([]);
+          return [noTrace([]), this];
         }
-        this.db.tables[stmt.name] = [];
-        return noTrace([]);
+        return [
+          noTrace([]),
+          this.withDB(__assign(__assign({}, this.db), {
+            tables: __assign(__assign({}, this.db.tables), {
+              [stmt.name]: []
+            })
+          }))
+        ];
       case "LoadStmt":
-        this.doLoad(stmt.path);
-        return noTrace([]);
+        return [noTrace([]), this.doLoad(stmt.path)];
       case "TraceStmt":
-        const inner = this.evalStmt({type: "Insert", record: stmt.record});
-        return yesTrace(inner.results);
+        const [res, interp] = this.evalStmt({
+          type: "Insert",
+          record: stmt.record
+        });
+        return [yesTrace(res.results), interp];
       case "Comment":
-        return noTrace([]);
+        return [noTrace([]), this];
     }
   }
   evalQuery(record) {
     return evaluate(this.db, record);
   }
+  withDB(db) {
+    return new Interpreter(this.cwd, this.loader, db);
+  }
   doLoad(path) {
     const contents = this.loader(this.cwd + "/" + path);
     const program = language.program.tryParse(contents);
-    for (const stmt of program) {
-      this.evalStmt(stmt);
-    }
+    return program.reduce((interp, stmt) => interp.evalStmt(stmt)[1], this);
   }
 }
 function noTrace(results) {

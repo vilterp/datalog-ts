@@ -1,13 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.falseTerm = exports.trueTerm = exports.array = exports.binExpr = exports.varr = exports.rec = exports.int = exports.str = exports.scopePathEq = exports.binExprTrace = exports.baseFactTrace = exports.varTrace = exports.literalTrace = exports.newDB = void 0;
-function newDB() {
-    return {
-        rules: {},
-        tables: {}
-    };
-}
-exports.newDB = newDB;
+exports.falseTerm = exports.trueTerm = exports.array = exports.binExpr = exports.varr = exports.rec = exports.int = exports.str = exports.scopePathEq = exports.binExprTrace = exports.baseFactTrace = exports.varTrace = exports.literalTrace = void 0;
 exports.literalTrace = { type: "LiteralTrace" };
 exports.varTrace = { type: "VarTrace" };
 exports.baseFactTrace = { type: "BaseFactTrace" };
