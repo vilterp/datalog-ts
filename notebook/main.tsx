@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { MarkdownDoc, parse } from "./markdown";
+import { MarkdownDoc, parse, MarkdownNode } from "./markdown";
+import { Interpreter } from "../interpreter";
+import { language } from "../parser";
+import { Program, Res } from "../types";
+import { BareTerm } from "../uiCommon/replViews";
 
 function Viewer(props: { username: string; gistID: string }) {
   const gistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw/`;
@@ -14,9 +18,71 @@ function Viewer(props: { username: string; gistID: string }) {
   return (
     <>
       <h1>Notebook viewer</h1>
-      <MarkdownDoc doc={parsedDoc} blockIdxToHeadingIdx={{}} headingRefs={[]} />
+      <Blocks doc={parsedDoc} />
     </>
   );
+}
+
+type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
+
+function Blocks(props: { doc: MarkdownDoc }) {
+  const interp = new Interpreter(".", null);
+
+  const ctx = props.doc.reduce<Ctx>(
+    (ctx, node): Ctx => {
+      switch (node.type) {
+        case "codeBlock":
+          // TODO: check lang
+          const program: Program = language.program.tryParse(node.content);
+          const newInterpAndResults = program.reduce<{
+            interp: Interpreter;
+            results: Res[][];
+          }>(
+            (accum, stmt) => {
+              const [res, newInterp] = accum.interp.evalStmt(stmt);
+              return {
+                interp: newInterp,
+                results: [...accum.results, res.results],
+              };
+            },
+            { interp: ctx.interp, results: [] }
+          );
+          return {
+            interp: newInterpAndResults.interp,
+            rendered: [
+              ...ctx.rendered,
+              <>
+                <pre>{node.content}</pre>
+                <div className="results">
+                  <ul>
+                    {flatten(newInterpAndResults.results).map((res, idx) => (
+                      <li key={idx}>{<BareTerm term={res.term} />}</li>
+                    ))}
+                  </ul>
+                </div>
+              </>,
+            ],
+          };
+        default:
+          return {
+            interp: ctx.interp,
+            rendered: [...ctx.rendered, <MarkdownNode block={node} />],
+          };
+      }
+    },
+    { interp, rendered: [] }
+  );
+  return <>{ctx.rendered}</>;
+}
+
+function flatten(results: Res[][]): Res[] {
+  const out: Res[] = [];
+  results.forEach((resGroup) => {
+    resGroup.forEach((res) => {
+      out.push(res);
+    });
+  });
+  return out;
 }
 
 function HomePage() {
