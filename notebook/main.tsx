@@ -6,19 +6,29 @@ import { MarkdownDoc, parse, MarkdownNode } from "./markdown";
 import { Interpreter } from "../interpreter";
 import { language } from "../parser";
 import { Program, Res } from "../types";
-import { BareTerm } from "../uiCommon/replViews";
+import { IndependentTraceView } from "../uiCommon/replViews";
 
 function Viewer(props: { username: string; gistID: string }) {
-  const gistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw/`;
+  const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw/`;
+  const gistURL = `https://gist.github.com/${props.username}/${props.gistID}`;
 
-  const { loading, error, data = "" } = useFetch(gistURL, {}, []);
+  const { loading, error, data = "" } = useFetch(rawGistURL, {}, []);
 
   const parsedDoc = parse(data);
 
   return (
     <>
       <h1>Notebook viewer</h1>
-      <Blocks doc={parsedDoc} />
+      <p>
+        Gist: <a href={gistURL}>{gistURL}</a>
+      </p>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <pre>Error: {error}</pre>
+      ) : (
+        <Blocks doc={parsedDoc} />
+      )}
     </>
   );
 }
@@ -56,7 +66,7 @@ function Blocks(props: { doc: MarkdownDoc }) {
                 <div className="results">
                   <ul>
                     {flatten(newInterpAndResults.results).map((res, idx) => (
-                      <li key={idx}>{<BareTerm term={res.term} />}</li>
+                      <IndependentTraceView key={idx} res={res} />
                     ))}
                   </ul>
                 </div>
