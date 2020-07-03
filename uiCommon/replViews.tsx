@@ -12,7 +12,7 @@ import { makeTermWithBindings } from "../traceTree";
 // some views for making repl-like things
 export function Query(props: { query: string; interp: Interpreter }) {
   const record = language.record.tryParse(props.query) as Rec;
-  const results = props.interp.evalStmt({ type: "Insert", record });
+  const results = props.interp.evalStmt({ type: "Insert", record })[0];
   return (
     <div style={{ fontFamily: "monospace" }}>
       <BareTerm term={record} />
