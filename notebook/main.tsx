@@ -72,7 +72,13 @@ function Blocks(props: { doc: MarkdownDoc }) {
     },
     { interp, rendered: [] }
   );
-  return <>{ctx.rendered}</>;
+  return (
+    <>
+      {ctx.rendered.map((r, idx) => (
+        <React.Fragment key={idx}>{r}</React.Fragment>
+      ))}
+    </>
+  );
 }
 
 function flatten(results: Res[][]): Res[] {
