@@ -15,7 +15,7 @@ function Viewer(props: {
 
   return (
     <>
-      <p>Notebook viewer</p>
+      <h1>Notebook viewer</h1>
       <pre>{data}</pre>
     </>
   );
