@@ -29,6 +29,7 @@
     "prettier": "^2.0.4"
   },
   "dependencies": {
+    "@react-hook/window-size": "^3.0.6",
     "classnames": "^2.2.6",
     "parsimmon": "^1.13.0",
     "prettier-printer": "^1.1.4",
@@ -40,6 +41,7 @@
     "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
     "react-textarea-autosize": "^8.2.0",
     "react-use-localstorage": "^3.4.1",
+    "react-use-scrollspy": "^2.0.0",
     "simple-markdown": "^0.7.2",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.2",

@@ -18,6 +18,47 @@
     d3-zoom "^1.7.1"
     viz.js "1.8.1"
 
+"@react-hook/debounce@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@react-hook/debounce/-/debounce-3.0.0.tgz#9eea8b5d81d4cb67cd72dd8657b3ff724afc7cad"
+  integrity sha512-ir/kPrSfAzY12Gre0sOHkZ2rkEmM4fS5M5zFxCi4BnCeXh2nvx9Ujd+U4IGpKCuPA+EQD0pg1eK2NGLvfWejag==
+  dependencies:
+    "@react-hook/latest" "^1.0.2"
+
+"@react-hook/event@^1.2.1":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@react-hook/event/-/event-1.2.2.tgz#f467b82ae7c2567eff2427d6af98f9487a0a3d5d"
+  integrity sha512-TDPC2zyMnvExp6Brg5pbEt8yFGoiVFcyduW2auqbJ825pmlK91rrC+/k8UZpnPjA6UdmFRX16uY9PYeydpJW1Q==
+  dependencies:
+    "@react-hook/latest" "^1.0.2"
+    "@react-hook/passive-layout-effect" "^1.2.0"
+
+"@react-hook/latest@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@react-hook/latest/-/latest-1.0.2.tgz#767eb6974f91eef353981b8b60a87147dadecb18"
+  integrity sha512-zLtOIToct1EBTbwldkMJsXC2eCsmWOOP7z6UG0M/sCgnPExtIjvVMCpPESvPnMbQzDZytXVy0nvMbUuK2gZs2A==
+
+"@react-hook/passive-layout-effect@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@react-hook/passive-layout-effect/-/passive-layout-effect-1.2.0.tgz#1232f0b08f9bfd9f87a2898a3ae50d5f7731d806"
+  integrity sha512-obGcMHoeiG/qp9djzlxwvlsAzL4a+JFaxTLvJv8GykipmS/TEkfvdcpu6orE1ZL4dAT7OpoGwHDc/LGJbkZzXQ==
+
+"@react-hook/throttle@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@react-hook/throttle/-/throttle-2.2.0.tgz#d0402714a06e1ba0bc1da1fdf5c3c5cd0e08d45a"
+  integrity sha512-LJ5eg+yMV8lXtqK3lR+OtOZ2WH/EfWvuiEEu0M3bhR7dZRfTyEJKxH1oK9uyBxiXPtWXiQggWbZirMCXam51tg==
+  dependencies:
+    "@react-hook/latest" "^1.0.2"
+
+"@react-hook/window-size@^3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@react-hook/window-size/-/window-size-3.0.6.tgz#1797ea307cb63d94602140c58af75ab51cae4a55"
+  integrity sha512-qlnpZV+IJFLgftCGQOjUf/VfRA/UO6w6/1kO7OBNLNbWXnAEEFvU+F9qPKIApd2oFmLfAOIlK8jm4wsoC+n9Uw==
+  dependencies:
+    "@react-hook/debounce" "^3.0.0"
+    "@react-hook/event" "^1.2.1"
+    "@react-hook/throttle" "^2.2.0"
+
 "@types/diff@^4.0.2":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/diff/-/diff-4.0.2.tgz#2e9bb89f9acc3ab0108f0f3dc4dbdcf2fff8a99c"
@@ -348,7 +389,7 @@ lodash.flow@^3.3.0:
   resolved "https://registry.yarnpkg.com/lodash.flow/-/lodash.flow-3.5.0.tgz#87bf40292b8cf83e4e8ce1a3ae4209e20071675a"
   integrity sha1-h79AKSuM+D5OjOGjrkIJ4gBxZ1o=
 
-lodash@^4.17.14:
+lodash@^4.17.11, lodash@^4.17.14:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -589,6 +630,13 @@ react-use-localstorage@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/react-use-localstorage/-/react-use-localstorage-3.4.1.tgz#29d802012c0c116bae687e3abc9b47b4eb700b02"
   integrity sha512-OKKAQT3CeDWGhoboE78XchXRJkxCYIFNZBM5gfiBxOcaMQU+CSP7d3iyBHwpgdSen2DlIdy2ZvExwIk4oci3pg==
+
+react-use-scrollspy@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-use-scrollspy/-/react-use-scrollspy-2.0.0.tgz#757be2ad005ab256e0984a9959bda00c250307c7"
+  integrity sha512-pNXG/F+7LnrVB7PsscsGdTLagZBhmjLlGoaw9wwsO7r8sFraxceOc5Zsqs6XXQYazslUa4olhMXtcvkHz9KumQ==
+  dependencies:
+    lodash "^4.17.11"
 
 react@^16.13.1:
   version "16.13.1"
