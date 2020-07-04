@@ -174,7 +174,6 @@ function rawTextSpan(span: MarkdownNode) {
 
 // ugh why isn't this in the library
 export function markdownToText(block: MarkdownNode): string {
-  console.log("mtt", block);
   switch (block.type) {
     case "codeBlock":
       // TODO: look at lang
