@@ -132,8 +132,9 @@ function Cell(props: {
   return {
     interp: res.interp,
     view: (
-      <div style={{ display: "flex" }}>
-        <div>
+      <tr>
+        <td>{res.view}</td>
+        <td style={{ fontSize: 10 }}>
           <button
             className="form-control"
             onClick={() => {
@@ -161,9 +162,8 @@ function Cell(props: {
             setDoc={props.setDoc}
             insertAt={props.idx + 1}
           />
-        </div>
-        <div>{res.view}</div>
-      </div>
+        </td>
+      </tr>
     ),
   };
 }
@@ -193,11 +193,13 @@ function Blocks(props: { doc: Doc; setDoc: (doc: Doc) => void }) {
     { interp, rendered: [] }
   );
   return (
-    <>
-      {ctx.rendered.map((block) => (
-        <React.Fragment key={block.id}>{block.node}</React.Fragment>
-      ))}
-    </>
+    <table>
+      <tbody>
+        {ctx.rendered.map((block) => (
+          <React.Fragment key={block.id}>{block.node}</React.Fragment>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
