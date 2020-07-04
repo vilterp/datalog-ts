@@ -1,6 +1,6 @@
 import React, { Ref } from "react";
 import SimpleMarkdown from "simple-markdown";
-import { getOwnPropertyDescriptor } from "core-js/fn/object";
+import { repeat } from "../util";
 
 export function parse(md: string): MarkdownDoc {
   return SimpleMarkdown.defaultBlockParse(md) as MarkdownDoc;
@@ -12,7 +12,7 @@ export type MarkdownNode =
   | { type: "paragraph"; content: MarkdownNode[] }
   | Heading
   | { type: "codeBlock"; lang: string; content: string }
-  | { type: "list"; ordered: boolean; items: MarkdownNode[] }
+  | { type: "list"; ordered: boolean; items: MarkdownNode[][] }
   | { type: "table"; header: MarkdownNode[][]; cells: MarkdownNode[][][] }
   | { type: "text"; content: string }
   | { type: "inlineCode"; content: string }
@@ -169,5 +169,43 @@ function rawTextSpan(span: MarkdownNode) {
     case "text":
       return span.content;
     // ...
+  }
+}
+
+// ugh why isn't this in the library
+export function markdownToText(block: MarkdownNode | MarkdownNode[]): string {
+  if (Array.isArray(block)) {
+    return block.map(markdownToText).join("");
+  }
+  switch (block.type) {
+    case "codeBlock":
+      // TODO: look at lang
+      return ["```" + (block.lang || ""), block.content, "```"].join("\n");
+    case "heading":
+      return `${repeat(block.level, "#")} ${block.content
+        .map(markdownToText)
+        .join("")}`;
+    case "list":
+      // crap this doesn't work for nested lists
+      // should have used prettier
+      return block.items.map((item) => `- ${markdownToText(item)}`).join("\n");
+    case "paragraph":
+      return block.content.map(markdownToText).join("");
+    case "table":
+      return "TODO: tables";
+    case "inlineCode":
+      return "`" + block.content + "`";
+    case "text":
+      return block.content;
+    case "image":
+      return `![](${block.target})`;
+    case "link":
+      return `[${block.content.map(markdownToText).join("")}](${block.target})`;
+    case "em":
+      return `_${block.content.map(markdownToText).join("")}_`;
+    case "strong":
+      return `**${block.content.map(markdownToText).join("")}**`;
+    case "newline":
+      return "\n";
   }
 }

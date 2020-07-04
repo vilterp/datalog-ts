@@ -120,14 +120,6 @@ export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
   return out;
 }
 
-export function updateAtIdx<T>(
-  arr: T[],
-  idx: number,
-  update: (t: T) => T
-): T[] {
-  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
-}
-
 export function arrayEq<T>(
   a: T[],
   b: T[],
@@ -188,4 +180,30 @@ export function clamp(n: number, range: [number, number]): number {
     return max;
   }
   return n;
+}
+
+export function insertAtIdx<T>(arr: T[], idx: number, item: T): T[] {
+  return [...arr.slice(0, idx), item, ...arr.slice(idx)];
+}
+
+export function removeAtIdx<T>(arr: T[], idx: number): T[] {
+  return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
+}
+
+export function updateAtIdx<T>(
+  arr: T[],
+  idx: number,
+  update: (t: T) => T
+): T[] {
+  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
+}
+
+export function flatten<T>(results: T[][]): T[] {
+  const out: T[] = [];
+  results.forEach((resGroup) => {
+    resGroup.forEach((res) => {
+      out.push(res);
+    });
+  });
+  return out;
 }

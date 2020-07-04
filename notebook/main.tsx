@@ -2,110 +2,65 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { MarkdownDoc, parse, MarkdownNode } from "./markdown";
-import { Interpreter } from "../interpreter";
-import { language } from "../parser";
-import { Program, Res } from "../types";
-import { IndependentTraceView } from "../uiCommon/replViews";
+import { parse, markdownToText } from "./markdown";
+import { Editor, Doc } from "./editor";
 
 function Viewer(props: { username: string; gistID: string }) {
-  const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw/`;
+  const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw`;
   const gistURL = `https://gist.github.com/${props.username}/${props.gistID}`;
 
   const { loading, error, data = "" } = useFetch(rawGistURL, {}, []);
 
-  const parsedDoc = parse(data);
+  const [viewMode, setViewMode] = useState(true);
 
   return (
     <>
-      <h1>Notebook viewer</h1>
-      <p>
-        <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
-      </p>
+      <div className="markdown-body">
+        <h1>Notebook viewer</h1>
+        <p>
+          <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
+        </p>
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <pre>Error: {error}</pre>
       ) : (
-        <Blocks doc={parsedDoc} />
+        <>
+          <Editor viewMode={viewMode} doc={initializeDoc(data)} />
+          <p>
+            <input
+              type="checkbox"
+              id="view-mode-check"
+              checked={viewMode}
+              onChange={(evt) => setViewMode(evt.target.checked)}
+            />{" "}
+            <label htmlFor="view-mode-check">View mode</label>
+          </p>
+        </>
       )}
     </>
   );
 }
 
-type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
-
-function Blocks(props: { doc: MarkdownDoc }) {
-  const interp = new Interpreter(".", null);
-
-  const ctx = props.doc.reduce<Ctx>(
-    (ctx, node): Ctx => {
-      switch (node.type) {
-        case "codeBlock":
-          // TODO: check lang
-          const program: Program = language.program.tryParse(node.content);
-          const newInterpAndResults = program.reduce<{
-            interp: Interpreter;
-            results: Res[][];
-          }>(
-            (accum, stmt) => {
-              const [res, newInterp] = accum.interp.evalStmt(stmt);
-              return {
-                interp: newInterp,
-                results: [...accum.results, res.results],
-              };
-            },
-            { interp: ctx.interp, results: [] }
-          );
-          return {
-            interp: newInterpAndResults.interp,
-            rendered: [
-              ...ctx.rendered,
-              <>
-                <pre>{node.content}</pre>
-                <div className="results">
-                  <ul>
-                    {flatten(newInterpAndResults.results).map((res, idx) => (
-                      <IndependentTraceView key={idx} res={res} />
-                    ))}
-                  </ul>
-                </div>
-              </>,
-            ],
-          };
-        default:
-          return {
-            interp: ctx.interp,
-            rendered: [...ctx.rendered, <MarkdownNode block={node} />],
-          };
-      }
-    },
-    { interp, rendered: [] }
-  );
-  return (
-    <>
-      {ctx.rendered.map((r, idx) => (
-        <React.Fragment key={idx}>{r}</React.Fragment>
-      ))}
-    </>
-  );
-}
-
-function flatten(results: Res[][]): Res[] {
-  const out: Res[] = [];
-  results.forEach((resGroup) => {
-    resGroup.forEach((res) => {
-      out.push(res);
-    });
-  });
-  return out;
+function initializeDoc(markdown: string): Doc {
+  const parsedDoc = parse(markdown);
+  return {
+    blocks: parsedDoc.map((b, idx) =>
+      b.type === "codeBlock" && b.lang === "dl"
+        ? { type: "Code", content: b.content, id: idx }
+        : { type: "Markdown", content: markdownToText(b), id: idx }
+    ),
+    nextID: parsedDoc.length,
+    editingID: null,
+  };
 }
 
 function HomePage() {
   const [gistURL, setGistURL] = useState("");
 
   return (
-    <>
+    <div className="markdown-body">
       <h1>Notebook viewer</h1>
       <h2>View Gist</h2>
       <div>
@@ -138,7 +93,7 @@ function HomePage() {
           </Link>
         </li>
       </ul>
-    </>
+    </div>
   );
 }
 
