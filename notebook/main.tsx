@@ -27,15 +27,42 @@ function Viewer(props: { username: string; gistID: string }) {
       ) : error ? (
         <pre>Error: {error}</pre>
       ) : (
-        <Blocks doc={parsedDoc} />
+        <Editor doc={parsedDoc} />
       )}
+    </>
+  );
+}
+
+function Editor(props: { doc: MarkdownDoc }) {
+  const [doc, setDoc] = useState<MarkdownDoc>(props.doc);
+
+  return (
+    <>
+      <Blocks doc={doc} setDoc={setDoc} />
+      <button
+        className="form-control"
+        onClick={(evt) => {
+          setDoc([
+            ...doc,
+            {
+              type: "paragraph",
+              content: [{ type: "text", content: "new cell" }],
+            },
+          ]);
+        }}
+      >
+        Add cell
+      </button>
     </>
   );
 }
 
 type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
 
-function Blocks(props: { doc: MarkdownDoc }) {
+function Blocks(props: {
+  doc: MarkdownDoc;
+  setDoc: (doc: MarkdownDoc) => void;
+}) {
   const interp = new Interpreter(".", null);
 
   const ctx = props.doc.reduce<Ctx>(

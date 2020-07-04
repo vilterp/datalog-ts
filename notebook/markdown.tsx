@@ -1,6 +1,5 @@
 import React, { Ref } from "react";
 import SimpleMarkdown from "simple-markdown";
-import { getOwnPropertyDescriptor } from "core-js/fn/object";
 
 export function parse(md: string): MarkdownDoc {
   return SimpleMarkdown.defaultBlockParse(md) as MarkdownDoc;
