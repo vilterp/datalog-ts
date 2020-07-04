@@ -15,12 +15,9 @@ function Viewer(props: { username: string; gistID: string }) {
 
   return (
     <>
-      <div className="markdown-body">
-        <h1>Notebook viewer</h1>
-        <p>
-          <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
-        </p>
-      </div>
+      <p>
+        <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
+      </p>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
