@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { parse, markdownToText } from "./markdown";
-import { Editor } from "./editor";
+import { Editor, Doc } from "./editor";
 
 function Viewer(props: { username: string; gistID: string }) {
   const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw/`;
@@ -11,7 +11,6 @@ function Viewer(props: { username: string; gistID: string }) {
 
   const { loading, error, data = "" } = useFetch(rawGistURL, {}, []);
 
-  const parsedDoc = parse(data);
   const [viewMode, setViewMode] = useState(true);
 
   return (
@@ -28,18 +27,7 @@ function Viewer(props: { username: string; gistID: string }) {
         <pre>Error: {error}</pre>
       ) : (
         <>
-          <Editor
-            viewMode={viewMode}
-            doc={{
-              blocks: parsedDoc.map((b, idx) => ({
-                type: b.type === "codeBlock" ? "Code" : "Markdown",
-                content: b.type === "codeBlock" ? b.content : markdownToText(b),
-                id: idx,
-              })),
-              nextID: parsedDoc.length,
-              editingID: null,
-            }}
-          />
+          <Editor viewMode={viewMode} doc={initializeDoc(data)} />
           <p>
             <input
               type="checkbox"
@@ -52,6 +40,19 @@ function Viewer(props: { username: string; gistID: string }) {
       )}
     </>
   );
+}
+
+function initializeDoc(markdown: string): Doc {
+  const parsedDoc = parse(markdown);
+  return {
+    blocks: parsedDoc.map((b, idx) =>
+      b.type === "codeBlock" && b.lang === "dl"
+        ? { type: "Code", content: b.content, id: idx }
+        : { type: "Markdown", content: markdownToText(b), id: idx }
+    ),
+    nextID: parsedDoc.length,
+    editingID: null,
+  };
 }
 
 function HomePage() {
@@ -98,6 +99,7 @@ function HomePage() {
 function Main() {
   return (
     <div
+      className="markdown-body"
       style={{
         maxWidth: "60rem",
         marginLeft: "auto",

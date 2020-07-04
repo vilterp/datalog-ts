@@ -177,7 +177,7 @@ export function markdownToText(block: MarkdownNode): string {
   switch (block.type) {
     case "codeBlock":
       // TODO: look at lang
-      return ["```", block.content, "```"].join("\n");
+      return ["```" + block.lang, block.content, "```"].join("\n");
     case "heading":
       return `${repeat(block.level, "#")} ${block.content
         .map(markdownToText)
@@ -189,7 +189,7 @@ export function markdownToText(block: MarkdownNode): string {
     case "paragraph":
       return block.content.map(markdownToText).join("");
     case "table":
-      throw new Error("TODO: tables");
+      return "TODO: tables";
     case "inlineCode":
       return "`" + block.content + "`";
     case "text":
@@ -197,7 +197,7 @@ export function markdownToText(block: MarkdownNode): string {
     case "image":
       return `![](${block.target})`;
     case "link":
-      return `[${block.content}](${block.target})`;
+      return `[${block.content.map(markdownToText).join("")}](${block.target})`;
     case "em":
       return `_${block.content.map(markdownToText).join("")}_`;
     case "strong":

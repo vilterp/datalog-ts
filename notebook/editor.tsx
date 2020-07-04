@@ -11,7 +11,7 @@ import { Collapsible } from "../uiCommon/collapsible";
 import Parsimmon, { Result } from "parsimmon";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
-type Doc = { blocks: Block[]; nextID: number; editingID: number };
+export type Doc = { blocks: Block[]; nextID: number; editingID: number };
 
 export function Editor(props: { doc: Doc; viewMode: boolean }) {
   const [doc, setDoc] = useState<Doc>(props.doc);
@@ -181,10 +181,10 @@ function Cell(props: {
   return {
     interp: res.interp,
     view: (
-      <tr>
-        <td className="markdown-body">{res.view}</td>
+      <div style={{ display: "flex" }}>
+        <div>{res.view}</div>
         {props.viewMode ? null : (
-          <td style={{ fontSize: 10 }}>
+          <div style={{ fontSize: 10 }}>
             <button
               className="form-control"
               onClick={() => {
@@ -212,9 +212,9 @@ function Cell(props: {
               setDoc={props.setDoc}
               insertAt={props.idx + 1}
             />
-          </td>
+          </div>
         )}
-      </tr>
+      </div>
     ),
   };
 }
@@ -249,13 +249,11 @@ function Blocks(props: {
     { interp, rendered: [] }
   );
   return (
-    <table>
-      <tbody>
-        {ctx.rendered.map((block) => (
-          <React.Fragment key={block.id}>{block.node}</React.Fragment>
-        ))}
-      </tbody>
-    </table>
+    <>
+      {ctx.rendered.map((block) => (
+        <React.Fragment key={block.id}>{block.node}</React.Fragment>
+      ))}
+    </>
   );
 }
 
@@ -307,7 +305,7 @@ function docToMarkdown(doc: Doc): string {
     .map((block) => {
       switch (block.type) {
         case "Code":
-          return ["```", block.content, "```"].join("\n");
+          return ["```dl", block.content, "```"].join("\n");
         case "Markdown":
           return block.content;
       }
