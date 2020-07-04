@@ -13,14 +13,14 @@ import Parsimmon, { Result } from "parsimmon";
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 type Doc = { blocks: Block[]; nextID: number; editingID: number };
 
-export function Editor(props: { doc: Doc }) {
+export function Editor(props: { doc: Doc; viewMode: boolean }) {
   const [doc, setDoc] = useState<Doc>(props.doc);
 
   return (
     <>
       {/* TODO: debug this one */}
       {/* <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} /> */}
-      <Blocks doc={doc} setDoc={setDoc} />
+      <Blocks doc={doc} setDoc={setDoc} viewMode={props.viewMode} />
       <Collapsible
         initiallyCollapsed={true}
         heading="Markdown Export"
@@ -138,8 +138,9 @@ function Cell(props: {
   interp: Interpreter;
   doc: Doc;
   setDoc: (d: Doc) => void;
-  block: Block;
+  viewMode: boolean;
   idx: number;
+  block: Block;
 }): { interp: Interpreter; view: React.ReactNode } {
   const editing = props.doc.editingID === props.block.id;
   const setContent = (content: string) => {
@@ -182,35 +183,37 @@ function Cell(props: {
     view: (
       <tr>
         <td className="markdown-body">{res.view}</td>
-        <td style={{ fontSize: 10 }}>
-          <button
-            className="form-control"
-            onClick={() => {
-              props.setDoc({
-                ...props.doc,
-                blocks: removeAtIdx(props.doc.blocks, props.idx),
-              });
-            }}
-          >
-            Remove
-          </button>
-          <button
-            className="form-control"
-            onClick={() =>
-              props.setDoc({
-                ...props.doc,
-                editingID: editing ? null : props.block.id,
-              })
-            }
-          >
-            {editing ? "Save" : "Edit"}
-          </button>
-          <AddCellButton
-            doc={props.doc}
-            setDoc={props.setDoc}
-            insertAt={props.idx + 1}
-          />
-        </td>
+        {props.viewMode ? null : (
+          <td style={{ fontSize: 10 }}>
+            <button
+              className="form-control"
+              onClick={() => {
+                props.setDoc({
+                  ...props.doc,
+                  blocks: removeAtIdx(props.doc.blocks, props.idx),
+                });
+              }}
+            >
+              Remove
+            </button>
+            <button
+              className="form-control"
+              onClick={() =>
+                props.setDoc({
+                  ...props.doc,
+                  editingID: editing ? null : props.block.id,
+                })
+              }
+            >
+              {editing ? "Save" : "Edit"}
+            </button>
+            <AddCellButton
+              doc={props.doc}
+              setDoc={props.setDoc}
+              insertAt={props.idx + 1}
+            />
+          </td>
+        )}
       </tr>
     ),
   };
@@ -221,7 +224,11 @@ type Ctx = {
   rendered: { node: React.ReactNode; id: number }[];
 };
 
-function Blocks(props: { doc: Doc; setDoc: (doc: Doc) => void }) {
+function Blocks(props: {
+  doc: Doc;
+  setDoc: (doc: Doc) => void;
+  viewMode: boolean;
+}) {
   const interp = new Interpreter(".", null);
 
   const ctx = props.doc.blocks.reduce<Ctx>(
@@ -230,6 +237,7 @@ function Blocks(props: { doc: Doc; setDoc: (doc: Doc) => void }) {
         idx,
         block: block,
         interp: ctx.interp,
+        viewMode: props.viewMode,
         doc: props.doc,
         setDoc: props.setDoc,
       });

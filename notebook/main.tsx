@@ -12,6 +12,7 @@ function Viewer(props: { username: string; gistID: string }) {
   const { loading, error, data = "" } = useFetch(rawGistURL, {}, []);
 
   const parsedDoc = parse(data);
+  const [viewMode, setViewMode] = useState(true);
 
   return (
     <>
@@ -26,17 +27,28 @@ function Viewer(props: { username: string; gistID: string }) {
       ) : error ? (
         <pre>Error: {error}</pre>
       ) : (
-        <Editor
-          doc={{
-            blocks: parsedDoc.map((b, idx) => ({
-              type: b.type === "codeBlock" ? "Code" : "Markdown",
-              content: b.type === "codeBlock" ? b.content : markdownToText(b),
-              id: idx,
-            })),
-            nextID: parsedDoc.length,
-            editingID: null,
-          }}
-        />
+        <>
+          <Editor
+            viewMode={viewMode}
+            doc={{
+              blocks: parsedDoc.map((b, idx) => ({
+                type: b.type === "codeBlock" ? "Code" : "Markdown",
+                content: b.type === "codeBlock" ? b.content : markdownToText(b),
+                id: idx,
+              })),
+              nextID: parsedDoc.length,
+              editingID: null,
+            }}
+          />
+          <p>
+            <input
+              type="checkbox"
+              checked={viewMode}
+              onChange={(evt) => setViewMode(evt.target.checked)}
+            />{" "}
+            View mode
+          </p>
+        </>
       )}
     </>
   );
