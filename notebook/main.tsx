@@ -31,10 +31,11 @@ function Viewer(props: { username: string; gistID: string }) {
           <p>
             <input
               type="checkbox"
+              id="view-mode-check"
               checked={viewMode}
               onChange={(evt) => setViewMode(evt.target.checked)}
             />{" "}
-            View mode
+            <label htmlFor="view-mode-check">View mode</label>
           </p>
         </>
       )}
