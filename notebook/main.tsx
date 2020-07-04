@@ -24,7 +24,12 @@ function Viewer(props: { username: string; gistID: string }) {
       ) : error ? (
         <pre>Error: {error}</pre>
       ) : (
-        <Editor doc={parsedDoc} />
+        <Editor
+          doc={{
+            blocks: parsedDoc.map((b, idx) => ({ ...b, id: idx })),
+            nextID: parsedDoc.length,
+          }}
+        />
       )}
     </>
   );

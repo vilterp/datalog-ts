@@ -6,13 +6,16 @@ import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
 import { insertAt, removeAt } from "../util";
 
-export function Editor(props: { doc: MarkdownDoc }) {
-  const [doc, setDoc] = useState<MarkdownDoc>(props.doc);
+type Block = MarkdownNode & { id: number };
+type Doc = { blocks: Block[]; nextID: number };
+
+export function Editor(props: { doc: Doc }) {
+  const [doc, setDoc] = useState<Doc>(props.doc);
 
   return (
     <>
       <Blocks doc={doc} setDoc={setDoc} />
-      {doc.length === 0 ? (
+      {doc.blocks.length === 0 ? (
         <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} />
       ) : null}
     </>
@@ -57,8 +60,8 @@ function CodeBlock(props: {
 function Cell(props: {
   block: MarkdownNode;
   interp: Interpreter;
-  doc: MarkdownDoc;
-  setDoc: (d: MarkdownDoc) => void;
+  doc: Doc;
+  setDoc: (d: Doc) => void;
 }): { interp: Interpreter; view: React.ReactNode } {
   const res = (() => {
     switch (props.block.type) {
@@ -81,13 +84,11 @@ function Cell(props: {
   return { interp: res.interp, view: <>{res.view}</> };
 }
 
-type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
-
 function EditorSwitcher(props: {
   idx: number;
   view: React.ReactNode;
-  doc: MarkdownDoc;
-  setDoc: (d: MarkdownDoc) => void;
+  doc: Doc;
+  setDoc: (d: Doc) => void;
 }) {
   const [editing, setEditing] = useState(false);
   return (
@@ -96,7 +97,10 @@ function EditorSwitcher(props: {
         <button
           className="form-control"
           onClick={() => {
-            props.setDoc(removeAt(props.doc, props.idx));
+            props.setDoc({
+              ...props.doc,
+              blocks: removeAt(props.doc.blocks, props.idx),
+            });
           }}
         >
           Remove
@@ -118,21 +122,26 @@ function EditorSwitcher(props: {
   );
 }
 
-function Blocks(props: {
-  doc: MarkdownDoc;
-  setDoc: (doc: MarkdownDoc) => void;
-}) {
+type Ctx = {
+  interp: Interpreter;
+  rendered: { node: React.ReactNode; id: number }[];
+};
+
+function Blocks(props: { doc: Doc; setDoc: (doc: Doc) => void }) {
   const interp = new Interpreter(".", null);
 
-  const ctx = props.doc.reduce<Ctx>(
-    (ctx, node): Ctx => {
+  const ctx = props.doc.blocks.reduce<Ctx>(
+    (ctx, block): Ctx => {
       const { interp: newInterp, view } = Cell({
-        block: node,
+        block: block,
         interp: ctx.interp,
         doc: props.doc,
         setDoc: props.setDoc,
       });
-      return { interp: newInterp, rendered: [...ctx.rendered, view] };
+      return {
+        interp: newInterp,
+        rendered: [...ctx.rendered, { node: view, id: block.id }],
+      };
     },
     { interp, rendered: [] }
   );
@@ -140,8 +149,8 @@ function Blocks(props: {
     <>
       {ctx.rendered.map((r, idx) => (
         <EditorSwitcher
-          key={idx}
-          view={r}
+          key={r.id}
+          view={r.node}
           idx={idx}
           doc={props.doc}
           setDoc={props.setDoc}
@@ -152,20 +161,23 @@ function Blocks(props: {
 }
 
 function AddCellButton(props: {
-  doc: MarkdownDoc;
-  setDoc: (doc: MarkdownDoc) => void;
+  doc: Doc;
+  setDoc: (doc: Doc) => void;
   insertAt: number;
 }) {
   return (
     <button
       className="form-control"
       onClick={() => {
-        props.setDoc(
-          insertAt(props.doc, props.insertAt, {
+        props.setDoc({
+          ...props.doc,
+          nextID: props.doc.nextID + 1,
+          blocks: insertAt(props.doc.blocks, props.insertAt, {
             type: "paragraph",
             content: [{ type: "text", content: "new cell" }],
-          })
-        );
+            id: props.doc.nextID,
+          }),
+        });
       }}
     >
       Add cell
