@@ -5,19 +5,18 @@ import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
 import { insertAt, removeAt } from "../util";
+import { domainToASCII } from "url";
 
 type Block = MarkdownNode & { id: number };
-type Doc = { blocks: Block[]; nextID: number };
+type Doc = { blocks: Block[]; nextID: number; editingID: number };
 
 export function Editor(props: { doc: Doc }) {
   const [doc, setDoc] = useState<Doc>(props.doc);
 
   return (
     <>
+      <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} />
       <Blocks doc={doc} setDoc={setDoc} />
-      {doc.blocks.length === 0 ? (
-        <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} />
-      ) : null}
     </>
   );
 }
@@ -69,21 +68,20 @@ function MdBlock(props: {
 }
 
 function Cell(props: {
-  block: MarkdownNode;
   interp: Interpreter;
-  idx: number;
   doc: Doc;
   setDoc: (d: Doc) => void;
+  block: Block;
+  idx: number;
 }): { interp: Interpreter; view: React.ReactNode } {
-  const [editing, setEditing] = useState(false);
-
+  const editing = props.doc.editingID === props.block.id;
   const res = (() => {
     switch (props.block.type) {
       case "codeBlock":
         const { interp: newInterp, rendered } = CodeBlock({
           interp: props.interp,
           code: props.block.content,
-          editing: editing,
+          editing,
           setCode: (code) => {
             console.log("set code", code);
           },
@@ -123,12 +121,19 @@ function Cell(props: {
           >
             Remove
           </button>
-          <button className="form-control" onClick={() => setEditing(!editing)}>
-            Edit
+          <button
+            className="form-control"
+            onClick={() =>
+              props.setDoc({
+                ...props.doc,
+                editingID: editing ? null : props.block.id,
+              })
+            }
+          >
+            {editing ? "Save" : "Edit"}
           </button>
         </div>
         <div>
-          <p>Editing: {`${editing}`}</p>
           {res.view}
           <AddCellButton
             doc={props.doc}

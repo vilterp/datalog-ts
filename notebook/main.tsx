@@ -28,6 +28,7 @@ function Viewer(props: { username: string; gistID: string }) {
           doc={{
             blocks: parsedDoc.map((b, idx) => ({ ...b, id: idx })),
             nextID: parsedDoc.length,
+            editingID: null,
           }}
         />
       )}
