@@ -12,7 +12,7 @@ export type MarkdownNode =
   | { type: "paragraph"; content: MarkdownNode[] }
   | Heading
   | { type: "codeBlock"; lang: string; content: string }
-  | { type: "list"; ordered: boolean; items: MarkdownNode[] }
+  | { type: "list"; ordered: boolean; items: MarkdownNode[][] }
   | { type: "table"; header: MarkdownNode[][]; cells: MarkdownNode[][][] }
   | { type: "text"; content: string }
   | { type: "inlineCode"; content: string }
@@ -173,11 +173,14 @@ function rawTextSpan(span: MarkdownNode) {
 }
 
 // ugh why isn't this in the library
-export function markdownToText(block: MarkdownNode): string {
+export function markdownToText(block: MarkdownNode | MarkdownNode[]): string {
+  if (Array.isArray(block)) {
+    return block.map(markdownToText).join("");
+  }
   switch (block.type) {
     case "codeBlock":
       // TODO: look at lang
-      return ["```" + block.lang, block.content, "```"].join("\n");
+      return ["```" + (block.lang || ""), block.content, "```"].join("\n");
     case "heading":
       return `${repeat(block.level, "#")} ${block.content
         .map(markdownToText)

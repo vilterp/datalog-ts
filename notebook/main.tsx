@@ -6,7 +6,7 @@ import { parse, markdownToText } from "./markdown";
 import { Editor, Doc } from "./editor";
 
 function Viewer(props: { username: string; gistID: string }) {
-  const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw/`;
+  const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw`;
   const gistURL = `https://gist.github.com/${props.username}/${props.gistID}`;
 
   const { loading, error, data = "" } = useFetch(rawGistURL, {}, []);
