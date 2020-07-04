@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MarkdownDoc, MarkdownNode, parse } from "./markdown";
+import { MarkdownNode, parse } from "./markdown";
 import { Interpreter } from "../interpreter";
 import { Program, Res } from "../types";
 import { language } from "../parser";
@@ -15,7 +15,8 @@ export function Editor(props: { doc: Doc }) {
 
   return (
     <>
-      <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} />
+      {/* TODO: debug this one */}
+      {/* <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} /> */}
       <Blocks doc={doc} setDoc={setDoc} />
     </>
   );
@@ -223,24 +224,41 @@ function AddCellButton(props: {
   setDoc: (doc: Doc) => void;
   insertAt: number;
 }) {
-  // TODO: separate button to insert code block?
+  const addCell = (block: Block) => {
+    const newBlocks = insertAtIdx(props.doc.blocks, props.insertAt, block);
+    props.setDoc({
+      ...props.doc,
+      nextID: props.doc.nextID + 1,
+      blocks: newBlocks,
+    });
+  };
   return (
-    <button
-      className="form-control"
-      onClick={() => {
-        props.setDoc({
-          ...props.doc,
-          nextID: props.doc.nextID + 1,
-          blocks: insertAtIdx(props.doc.blocks, props.insertAt, {
+    <>
+      <button
+        className="form-control"
+        onClick={() => {
+          addCell({
             type: "Markdown",
-            content: "new cell",
+            content: `new cell ${props.doc.nextID}`,
             id: props.doc.nextID,
-          }),
-        });
-      }}
-    >
-      Add cell
-    </button>
+          });
+        }}
+      >
+        Add MD
+      </button>
+      <button
+        className="form-control"
+        onClick={() => {
+          addCell({
+            type: "Code",
+            content: "",
+            id: props.doc.nextID,
+          });
+        }}
+      >
+        Add Code
+      </button>
+    </>
   );
 }
 
