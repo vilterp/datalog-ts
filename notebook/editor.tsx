@@ -31,28 +31,44 @@ function CodeBlock(props: {
   const newInterpAndResults = program.reduce<{
     interp: Interpreter;
     results: Res[][];
+    error: string | null;
   }>(
     (accum, stmt) => {
-      const [res, newInterp] = accum.interp.evalStmt(stmt);
-      return {
-        interp: newInterp,
-        results: [...accum.results, res.results],
-      };
+      if (accum.error) {
+        return accum;
+      }
+      try {
+        const [res, newInterp] = accum.interp.evalStmt(stmt);
+        return {
+          error: null,
+          interp: newInterp,
+          results: [...accum.results, res.results],
+        };
+      } catch (e) {
+        return {
+          ...accum,
+          error: e.toString(),
+        };
+      }
     },
-    { interp: props.interp, results: [] }
+    { interp: props.interp, results: [], error: null }
   );
   return {
     interp: newInterpAndResults.interp,
     rendered: (
       <>
         <pre>{props.code}</pre>
-        <div className="results">
-          <ul>
-            {flatten(newInterpAndResults.results).map((res, idx) => (
-              <IndependentTraceView key={idx} res={res} />
-            ))}
-          </ul>
-        </div>
+        {newInterpAndResults.error ? (
+          <pre style={{ color: "red" }}>{newInterpAndResults.error}</pre>
+        ) : (
+          <div className="results">
+            <ul>
+              {flatten(newInterpAndResults.results).map((res, idx) => (
+                <IndependentTraceView key={idx} res={res} />
+              ))}
+            </ul>
+          </div>
+        )}
       </>
     ),
   };
