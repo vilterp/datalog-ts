@@ -57,26 +57,62 @@ function CodeBlock(props: {
 function Cell(props: {
   block: MarkdownNode;
   interp: Interpreter;
+  doc: MarkdownDoc;
+  setDoc: (d: MarkdownDoc) => void;
 }): { interp: Interpreter; view: React.ReactNode } {
-  switch (props.block.type) {
-    case "codeBlock":
-      const { interp: newInterp, rendered } = CodeBlock({
-        interp: props.interp,
-        code: props.block.content,
-      });
-      return {
-        interp: newInterp,
-        view: rendered,
-      };
-    default:
-      return {
-        interp: props.interp,
-        view: <MarkdownNode block={props.block} />,
-      };
-  }
+  const res = (() => {
+    switch (props.block.type) {
+      case "codeBlock":
+        const { interp: newInterp, rendered } = CodeBlock({
+          interp: props.interp,
+          code: props.block.content,
+        });
+        return {
+          interp: newInterp,
+          view: rendered,
+        };
+      default:
+        return {
+          interp: props.interp,
+          view: <MarkdownNode block={props.block} />,
+        };
+    }
+  })();
+  return { interp: res.interp, view: <>{res.view}</> };
 }
 
 type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
+
+function EditorSwitcher(props: {
+  idx: number;
+  view: React.ReactNode;
+  doc: MarkdownDoc;
+  setDoc: (d: MarkdownDoc) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  return (
+    <div style={{ display: "flex" }}>
+      <div>
+        <button
+          className="form-control"
+          onClick={() => {
+            props.setDoc(removeAt(props.doc, props.idx));
+          }}
+        >
+          Remove
+        </button>
+      </div>
+      <div>
+        {props.view}
+        <AddCellButton
+          doc={props.doc}
+          setDoc={props.setDoc}
+          insertAt={props.idx}
+        />
+      </div>
+    </div>
+  );
+}
 
 function Blocks(props: {
   doc: MarkdownDoc;
@@ -89,6 +125,8 @@ function Blocks(props: {
       const { interp: newInterp, view } = Cell({
         block: node,
         interp: ctx.interp,
+        doc: props.doc,
+        setDoc: props.setDoc,
       });
       return { interp: newInterp, rendered: [...ctx.rendered, view] };
     },
@@ -97,26 +135,13 @@ function Blocks(props: {
   return (
     <>
       {ctx.rendered.map((r, idx) => (
-        <div key={idx} style={{ display: "flex" }}>
-          <div>
-            <button
-              className="form-control"
-              onClick={() => {
-                props.setDoc(removeAt(props.doc, idx));
-              }}
-            >
-              Remove
-            </button>
-          </div>
-          <div>
-            {r}
-            <AddCellButton
-              doc={props.doc}
-              setDoc={props.setDoc}
-              insertAt={idx}
-            />
-          </div>
-        </div>
+        <EditorSwitcher
+          key={idx}
+          view={r}
+          idx={idx}
+          doc={props.doc}
+          setDoc={props.setDoc}
+        />
       ))}
     </>
   );
