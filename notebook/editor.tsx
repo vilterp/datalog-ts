@@ -154,7 +154,7 @@ function Cell(props: {
           <AddCellButton
             doc={props.doc}
             setDoc={props.setDoc}
-            insertAt={props.idx}
+            insertAt={props.idx + 1}
           />
         </div>
       </div>
