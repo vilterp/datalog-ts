@@ -101,8 +101,12 @@ function EditorSwitcher(props: {
         >
           Remove
         </button>
+        <button className="form-control" onClick={() => setEditing(!editing)}>
+          Edit
+        </button>
       </div>
       <div>
+        <p>Editing: {`${editing}`}</p>
         {props.view}
         <AddCellButton
           doc={props.doc}
