@@ -37,6 +37,7 @@
     "react-json-view": "^1.19.1",
     "react-router-dom": "^5.2.0",
     "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
+    "react-textarea-autosize": "^8.2.0",
     "react-use-localstorage": "^3.4.1",
     "simple-markdown": "^0.7.2",
     "ts-node": "^8.10.1",

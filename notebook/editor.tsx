@@ -5,6 +5,7 @@ import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
 import { insertAtIdx, removeAtIdx, updateAtIdx } from "../util";
+import TextAreaAutosize from "react-textarea-autosize";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 type Doc = { blocks: Block[]; nextID: number; editingID: number };
@@ -56,13 +57,12 @@ function CodeBlock(props: {
     interp: newInterpAndResults.interp,
     rendered: props.editing ? (
       // TODO: IDE features. lol
-      <textarea
-        style={{ fontFamily: "monospace" }}
+      <TextAreaAutosize
+        style={{ fontFamily: "monospace", fontSize: 13 }}
         value={props.code}
         onChange={(evt) => props.setCode(evt.target.value)}
-        rows={50}
-        cols={40}
-      ></textarea>
+        cols={60}
+      />
     ) : (
       <>
         <pre>{props.code}</pre>
@@ -89,10 +89,11 @@ function MdBlock(props: {
 }) {
   return props.editing ? (
     <div>
-      <textarea
-        style={{ fontFamily: "monospace" }}
+      <TextAreaAutosize
+        style={{ fontFamily: "monospace", fontSize: 13 }}
         onChange={(evt) => props.setContent(evt.target.value)}
         value={props.content}
+        cols={60}
       />
     </div>
   ) : (
