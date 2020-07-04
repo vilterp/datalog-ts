@@ -197,3 +197,13 @@ export function updateAtIdx<T>(
 ): T[] {
   return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
 }
+
+export function flatten<T>(results: T[][]): T[] {
+  const out: T[] = [];
+  results.forEach((resGroup) => {
+    resGroup.forEach((res) => {
+      out.push(res);
+    });
+  });
+  return out;
+}

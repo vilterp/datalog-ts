@@ -4,8 +4,10 @@ import { Interpreter } from "../interpreter";
 import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
-import { insertAtIdx, removeAtIdx, updateAtIdx } from "../util";
+import { insertAtIdx, removeAtIdx, updateAtIdx, flatten } from "../util";
 import TextAreaAutosize from "react-textarea-autosize";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Collapsible } from "../uiCommon/collapsible";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 type Doc = { blocks: Block[]; nextID: number; editingID: number };
@@ -18,7 +20,27 @@ export function Editor(props: { doc: Doc }) {
       {/* TODO: debug this one */}
       {/* <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} /> */}
       <Blocks doc={doc} setDoc={setDoc} />
+      <Collapsible
+        initiallyCollapsed={true}
+        heading="Markdown Export"
+        content={<MdExport doc={doc} />}
+      />
     </>
+  );
+}
+
+function MdExport(props: { doc: Doc }) {
+  const [copied, setCopied] = useState(false);
+
+  const asMarkdown = docToMarkdown(props.doc);
+
+  return (
+    <div>
+      <CopyToClipboard text={asMarkdown} onCopy={() => setCopied(true)}>
+        <button>{copied ? "Copied" : "Copy"}</button>
+      </CopyToClipboard>
+      <pre>{asMarkdown}</pre>
+    </div>
   );
 }
 
@@ -91,7 +113,7 @@ function MdBlock(props: {
   return props.editing ? (
     <div>
       <TextAreaAutosize
-        style={{ fontFamily: "monospace", fontSize: 13 }}
+        style={{ fontSize: 13 }}
         onChange={(evt) => props.setContent(evt.target.value)}
         value={props.content}
         cols={60}
@@ -262,12 +284,15 @@ function AddCellButton(props: {
   );
 }
 
-function flatten(results: Res[][]): Res[] {
-  const out: Res[] = [];
-  results.forEach((resGroup) => {
-    resGroup.forEach((res) => {
-      out.push(res);
-    });
-  });
-  return out;
+function docToMarkdown(doc: Doc): string {
+  return doc.blocks
+    .map((block) => {
+      switch (block.type) {
+        case "Code":
+          return ["```", block.content, "```"].join("\n");
+        case "Markdown":
+          return block.content;
+      }
+    })
+    .join("\n\n");
 }
