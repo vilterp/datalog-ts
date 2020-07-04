@@ -8,6 +8,7 @@ import { insertAtIdx, removeAtIdx, updateAtIdx, flatten } from "../util";
 import TextAreaAutosize from "react-textarea-autosize";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Collapsible } from "../uiCommon/collapsible";
+import Parsimmon, { Result } from "parsimmon";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 type Doc = { blocks: Block[]; nextID: number; editingID: number };
@@ -50,45 +51,54 @@ function CodeBlock(props: {
   interp: Interpreter;
   editing: boolean;
 }): { interp: Interpreter; rendered: React.ReactNode } {
-  const program: Program = language.program.tryParse(props.code);
-  const newInterpAndResults = program.reduce<{
-    interp: Interpreter;
-    results: Res[][];
-    error: string | null;
-  }>(
-    (accum, stmt) => {
-      if (accum.error) {
-        return accum;
-      }
-      try {
-        const [res, newInterp] = accum.interp.evalStmt(stmt);
-        return {
-          error: null,
-          interp: newInterp,
-          results: [...accum.results, res.results],
-        };
-      } catch (e) {
-        return {
-          ...accum,
-          error: e.toString(),
-        };
-      }
-    },
-    { interp: props.interp, results: [], error: null }
-  );
+  const programRes: Result<Program> = language.program.parse(props.code);
+  const newInterpAndResults =
+    programRes.status === false
+      ? {
+          interp: props.interp,
+          results: [],
+          error: Parsimmon.formatError(props.code, programRes),
+        }
+      : programRes.value.reduce<{
+          interp: Interpreter;
+          results: Res[][];
+          error: string | null;
+        }>(
+          (accum, stmt) => {
+            if (accum.error) {
+              return accum;
+            }
+            try {
+              const [res, newInterp] = accum.interp.evalStmt(stmt);
+              return {
+                error: null,
+                interp: newInterp,
+                results: [...accum.results, res.results],
+              };
+            } catch (e) {
+              return {
+                ...accum,
+                error: e.toString(),
+              };
+            }
+          },
+          { interp: props.interp, results: [], error: null }
+        );
   return {
     interp: newInterpAndResults.interp,
-    rendered: props.editing ? (
-      // TODO: IDE features. lol
-      <TextAreaAutosize
-        style={{ fontFamily: "monospace", fontSize: 13 }}
-        value={props.code}
-        onChange={(evt) => props.setCode(evt.target.value)}
-        cols={60}
-      />
-    ) : (
+    rendered: (
       <>
-        <pre>{props.code}</pre>
+        {props.editing ? (
+          // TODO: IDE features. lol
+          <TextAreaAutosize
+            style={{ fontFamily: "monospace", fontSize: 13 }}
+            value={props.code}
+            onChange={(evt) => props.setCode(evt.target.value)}
+            cols={60}
+          />
+        ) : (
+          <pre>{props.code}</pre>
+        )}
         {newInterpAndResults.error ? (
           <pre style={{ color: "red" }}>{newInterpAndResults.error}</pre>
         ) : (
