@@ -189,3 +189,11 @@ export function clamp(n: number, range: [number, number]): number {
   }
   return n;
 }
+
+export function insertAt<T>(arr: T[], idx: number, item: T): T[] {
+  return [...arr.slice(0, idx + 1), item, ...arr.slice(idx + 1)];
+}
+
+export function removeAt<T>(arr: T[], idx: number): T[] {
+  return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
+}

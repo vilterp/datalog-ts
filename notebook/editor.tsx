@@ -4,6 +4,7 @@ import { Interpreter } from "../interpreter";
 import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
+import { insertAt, removeAt } from "../util";
 
 export function Editor(props: { doc: MarkdownDoc }) {
   const [doc, setDoc] = useState<MarkdownDoc>(props.doc);
@@ -11,20 +12,9 @@ export function Editor(props: { doc: MarkdownDoc }) {
   return (
     <>
       <Blocks doc={doc} setDoc={setDoc} />
-      <button
-        className="form-control"
-        onClick={(evt) => {
-          setDoc([
-            ...doc,
-            {
-              type: "paragraph",
-              content: [{ type: "text", content: "new cell" }],
-            },
-          ]);
-        }}
-      >
-        Add cell
-      </button>
+      {doc.length === 0 ? (
+        <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} />
+      ) : null}
     </>
   );
 }
@@ -96,9 +86,50 @@ function Blocks(props: {
   return (
     <>
       {ctx.rendered.map((r, idx) => (
-        <React.Fragment key={idx}>{r}</React.Fragment>
+        <div key={idx} style={{ display: "flex" }}>
+          <div>
+            <button
+              className="form-control"
+              onClick={() => {
+                props.setDoc(removeAt(props.doc, idx));
+              }}
+            >
+              Remove
+            </button>
+          </div>
+          <div>
+            {r}
+            <AddCellButton
+              doc={props.doc}
+              setDoc={props.setDoc}
+              insertAt={idx}
+            />
+          </div>
+        </div>
       ))}
     </>
+  );
+}
+
+function AddCellButton(props: {
+  doc: MarkdownDoc;
+  setDoc: (doc: MarkdownDoc) => void;
+  insertAt: number;
+}) {
+  return (
+    <button
+      className="form-control"
+      onClick={() => {
+        props.setDoc(
+          insertAt(props.doc, props.insertAt, {
+            type: "paragraph",
+            content: [{ type: "text", content: "new cell" }],
+          })
+        );
+      }}
+    >
+      Add cell
+    </button>
   );
 }
 
