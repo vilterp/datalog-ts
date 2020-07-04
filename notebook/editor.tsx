@@ -54,6 +54,28 @@ function CodeBlock(props: {
   };
 }
 
+function Cell(props: {
+  block: MarkdownNode;
+  interp: Interpreter;
+}): { interp: Interpreter; view: React.ReactNode } {
+  switch (props.block.type) {
+    case "codeBlock":
+      const { interp: newInterp, rendered } = CodeBlock({
+        interp: props.interp,
+        code: props.block.content,
+      });
+      return {
+        interp: newInterp,
+        view: rendered,
+      };
+    default:
+      return {
+        interp: props.interp,
+        view: <MarkdownNode block={props.block} />,
+      };
+  }
+}
+
 type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
 
 function Blocks(props: {
@@ -64,22 +86,11 @@ function Blocks(props: {
 
   const ctx = props.doc.reduce<Ctx>(
     (ctx, node): Ctx => {
-      switch (node.type) {
-        case "codeBlock":
-          const { interp: newInterp, rendered } = CodeBlock({
-            interp: ctx.interp,
-            code: node.content,
-          });
-          return {
-            interp: newInterp,
-            rendered: [...ctx.rendered, rendered],
-          };
-        default:
-          return {
-            interp: ctx.interp,
-            rendered: [...ctx.rendered, <MarkdownNode block={node} />],
-          };
-      }
+      const { interp: newInterp, view } = Cell({
+        block: node,
+        interp: ctx.interp,
+      });
+      return { interp: newInterp, rendered: [...ctx.rendered, view] };
     },
     { interp, rendered: [] }
   );
