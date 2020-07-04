@@ -4,7 +4,7 @@ import { Interpreter } from "../interpreter";
 import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
-import { insertAtIdx, removeAtIdx } from "../util";
+import { insertAtIdx, removeAtIdx, updateAtIdx } from "../util";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 type Doc = { blocks: Block[]; nextID: number; editingID: number };
@@ -54,7 +54,16 @@ function CodeBlock(props: {
   );
   return {
     interp: newInterpAndResults.interp,
-    rendered: (
+    rendered: props.editing ? (
+      // TODO: IDE features. lol
+      <textarea
+        style={{ fontFamily: "monospace" }}
+        value={props.code}
+        onChange={(evt) => props.setCode(evt.target.value)}
+        rows={50}
+        cols={40}
+      ></textarea>
+    ) : (
       <>
         <pre>{props.code}</pre>
         {newInterpAndResults.error ? (
@@ -99,6 +108,15 @@ function Cell(props: {
   idx: number;
 }): { interp: Interpreter; view: React.ReactNode } {
   const editing = props.doc.editingID === props.block.id;
+  const setContent = (content: string) => {
+    props.setDoc({
+      ...props.doc,
+      blocks: updateAtIdx(props.doc.blocks, props.idx, (block) => ({
+        ...block,
+        content,
+      })),
+    });
+  };
   const res = (() => {
     switch (props.block.type) {
       case "Code":
@@ -106,9 +124,7 @@ function Cell(props: {
           interp: props.interp,
           code: props.block.content,
           editing,
-          setCode: (code) => {
-            console.log("set code", code);
-          },
+          setCode: setContent,
         });
         return {
           interp: newInterp,
@@ -120,9 +136,7 @@ function Cell(props: {
           view: (
             <MdBlock
               content={props.block.content}
-              setContent={(content) => {
-                console.log("set content", content);
-              }}
+              setContent={setContent}
               editing={editing}
             />
           ),
