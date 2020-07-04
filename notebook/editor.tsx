@@ -24,7 +24,9 @@ export function Editor(props: { doc: Doc }) {
 
 function CodeBlock(props: {
   code: string;
+  setCode: (c: string) => void;
   interp: Interpreter;
+  editing: boolean;
 }): { interp: Interpreter; rendered: React.ReactNode } {
   const program: Program = language.program.tryParse(props.code);
   const newInterpAndResults = program.reduce<{
@@ -57,18 +59,34 @@ function CodeBlock(props: {
   };
 }
 
+function MdBlock(props: {
+  content: MarkdownNode;
+  setContent: (s: string) => void;
+  editing: boolean;
+}) {
+  // TODO: editor
+  return <MarkdownNode block={props.content} />;
+}
+
 function Cell(props: {
   block: MarkdownNode;
   interp: Interpreter;
+  idx: number;
   doc: Doc;
   setDoc: (d: Doc) => void;
 }): { interp: Interpreter; view: React.ReactNode } {
+  const [editing, setEditing] = useState(false);
+
   const res = (() => {
     switch (props.block.type) {
       case "codeBlock":
         const { interp: newInterp, rendered } = CodeBlock({
           interp: props.interp,
           code: props.block.content,
+          editing: editing,
+          setCode: (code) => {
+            console.log("set code", code);
+          },
         });
         return {
           interp: newInterp,
@@ -77,49 +95,50 @@ function Cell(props: {
       default:
         return {
           interp: props.interp,
-          view: <MarkdownNode block={props.block} />,
+          view: (
+            <MdBlock
+              content={props.block}
+              setContent={(content) => {
+                console.log("set content", content);
+              }}
+              editing={editing}
+            />
+          ),
         };
     }
   })();
-  return { interp: res.interp, view: <>{res.view}</> };
-}
-
-function EditorSwitcher(props: {
-  idx: number;
-  view: React.ReactNode;
-  doc: Doc;
-  setDoc: (d: Doc) => void;
-}) {
-  const [editing, setEditing] = useState(false);
-  return (
-    <div style={{ display: "flex" }}>
-      <div>
-        <button
-          className="form-control"
-          onClick={() => {
-            props.setDoc({
-              ...props.doc,
-              blocks: removeAt(props.doc.blocks, props.idx),
-            });
-          }}
-        >
-          Remove
-        </button>
-        <button className="form-control" onClick={() => setEditing(!editing)}>
-          Edit
-        </button>
+  return {
+    interp: res.interp,
+    view: (
+      <div style={{ display: "flex" }}>
+        <div>
+          <button
+            className="form-control"
+            onClick={() => {
+              props.setDoc({
+                ...props.doc,
+                blocks: removeAt(props.doc.blocks, props.idx),
+              });
+            }}
+          >
+            Remove
+          </button>
+          <button className="form-control" onClick={() => setEditing(!editing)}>
+            Edit
+          </button>
+        </div>
+        <div>
+          <p>Editing: {`${editing}`}</p>
+          {res.view}
+          <AddCellButton
+            doc={props.doc}
+            setDoc={props.setDoc}
+            insertAt={props.idx}
+          />
+        </div>
       </div>
-      <div>
-        <p>Editing: {`${editing}`}</p>
-        {props.view}
-        <AddCellButton
-          doc={props.doc}
-          setDoc={props.setDoc}
-          insertAt={props.idx}
-        />
-      </div>
-    </div>
-  );
+    ),
+  };
 }
 
 type Ctx = {
@@ -131,8 +150,9 @@ function Blocks(props: { doc: Doc; setDoc: (doc: Doc) => void }) {
   const interp = new Interpreter(".", null);
 
   const ctx = props.doc.blocks.reduce<Ctx>(
-    (ctx, block): Ctx => {
+    (ctx, block, idx): Ctx => {
       const { interp: newInterp, view } = Cell({
+        idx,
         block: block,
         interp: ctx.interp,
         doc: props.doc,
@@ -147,14 +167,8 @@ function Blocks(props: { doc: Doc; setDoc: (doc: Doc) => void }) {
   );
   return (
     <>
-      {ctx.rendered.map((r, idx) => (
-        <EditorSwitcher
-          key={r.id}
-          view={r.node}
-          idx={idx}
-          doc={props.doc}
-          setDoc={props.setDoc}
-        />
+      {ctx.rendered.map((block) => (
+        <React.Fragment key={block.id}>{block.node}</React.Fragment>
       ))}
     </>
   );
