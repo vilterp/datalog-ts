@@ -133,7 +133,7 @@ function Cell(props: {
     interp: res.interp,
     view: (
       <tr>
-        <td>{res.view}</td>
+        <td className="markdown-body">{res.view}</td>
         <td style={{ fontSize: 10 }}>
           <button
             className="form-control"

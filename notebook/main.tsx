@@ -15,10 +15,12 @@ function Viewer(props: { username: string; gistID: string }) {
 
   return (
     <>
-      <h1>Notebook viewer</h1>
-      <p>
-        <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
-      </p>
+      <div className="markdown-body">
+        <h1>Notebook viewer</h1>
+        <p>
+          <Link to="/">&lt; Back</Link> | Gist: <a href={gistURL}>{gistURL}</a>
+        </p>
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -44,7 +46,7 @@ function HomePage() {
   const [gistURL, setGistURL] = useState("");
 
   return (
-    <>
+    <div className="markdown-body">
       <h1>Notebook viewer</h1>
       <h2>View Gist</h2>
       <div>
@@ -77,14 +79,13 @@ function HomePage() {
           </Link>
         </li>
       </ul>
-    </>
+    </div>
   );
 }
 
 function Main() {
   return (
     <div
-      className="markdown-body"
       style={{
         maxWidth: "60rem",
         marginLeft: "auto",
