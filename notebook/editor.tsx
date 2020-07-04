@@ -79,10 +79,13 @@ function MdBlock(props: {
   editing: boolean;
 }) {
   return props.editing ? (
-    <textarea
-      onChange={(evt) => props.setContent(evt.target.value)}
-      value={props.content}
-    />
+    <div>
+      <textarea
+        style={{ fontFamily: "monospace" }}
+        onChange={(evt) => props.setContent(evt.target.value)}
+        value={props.content}
+      />
+    </div>
   ) : (
     <MarkdownNode block={parse(props.content)} />
   );
@@ -153,15 +156,13 @@ function Cell(props: {
           >
             {editing ? "Save" : "Edit"}
           </button>
-        </div>
-        <div>
-          {res.view}
           <AddCellButton
             doc={props.doc}
             setDoc={props.setDoc}
             insertAt={props.idx + 1}
           />
         </div>
+        <div>{res.view}</div>
       </div>
     ),
   };
