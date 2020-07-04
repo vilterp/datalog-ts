@@ -29,6 +29,41 @@ export function Editor(props: { doc: MarkdownDoc }) {
   );
 }
 
+function CodeBlock(props: {
+  code: string;
+  interp: Interpreter;
+}): { interp: Interpreter; rendered: React.ReactNode } {
+  const program: Program = language.program.tryParse(props.code);
+  const newInterpAndResults = program.reduce<{
+    interp: Interpreter;
+    results: Res[][];
+  }>(
+    (accum, stmt) => {
+      const [res, newInterp] = accum.interp.evalStmt(stmt);
+      return {
+        interp: newInterp,
+        results: [...accum.results, res.results],
+      };
+    },
+    { interp: props.interp, results: [] }
+  );
+  return {
+    interp: newInterpAndResults.interp,
+    rendered: (
+      <>
+        <pre>{props.code}</pre>
+        <div className="results">
+          <ul>
+            {flatten(newInterpAndResults.results).map((res, idx) => (
+              <IndependentTraceView key={idx} res={res} />
+            ))}
+          </ul>
+        </div>
+      </>
+    ),
+  };
+}
+
 type Ctx = { interp: Interpreter; rendered: React.ReactNode[] };
 
 function Blocks(props: {
@@ -41,36 +76,13 @@ function Blocks(props: {
     (ctx, node): Ctx => {
       switch (node.type) {
         case "codeBlock":
-          // TODO: check lang
-          const program: Program = language.program.tryParse(node.content);
-          const newInterpAndResults = program.reduce<{
-            interp: Interpreter;
-            results: Res[][];
-          }>(
-            (accum, stmt) => {
-              const [res, newInterp] = accum.interp.evalStmt(stmt);
-              return {
-                interp: newInterp,
-                results: [...accum.results, res.results],
-              };
-            },
-            { interp: ctx.interp, results: [] }
-          );
+          const { interp: newInterp, rendered } = CodeBlock({
+            interp: ctx.interp,
+            code: node.content,
+          });
           return {
-            interp: newInterpAndResults.interp,
-            rendered: [
-              ...ctx.rendered,
-              <>
-                <pre>{node.content}</pre>
-                <div className="results">
-                  <ul>
-                    {flatten(newInterpAndResults.results).map((res, idx) => (
-                      <IndependentTraceView key={idx} res={res} />
-                    ))}
-                  </ul>
-                </div>
-              </>,
-            ],
+            interp: newInterp,
+            rendered: [...ctx.rendered, rendered],
           };
         default:
           return {
