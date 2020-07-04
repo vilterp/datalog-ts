@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { parse, markdownToText } from "./markdown";
-import { Editor, Doc } from "./editor";
+import { Editor, Doc, emptyDoc } from "./editor";
 
 function Viewer(props: { username: string; gistID: string }) {
   const rawGistURL = `https://gist.githubusercontent.com/${props.username}/${props.gistID}/raw`;
@@ -56,6 +56,14 @@ function initializeDoc(markdown: string): Doc {
   };
 }
 
+const examples: { name: string; gistID: string }[] = [
+  { name: "Family", gistID: "9f06dbef549ab0fec87d7a79df05cf50" },
+  {
+    name: "Datalog Typechecking",
+    gistID: "bbd21b2dece125786a71ed00f435d049",
+  },
+];
+
 function HomePage() {
   const [gistURL, setGistURL] = useState("");
 
@@ -85,13 +93,24 @@ function HomePage() {
           </button>
         </form>
       </div>
+      <p>
+        or{" "}
+        <button
+          className="form-control"
+          onClick={() => {
+            window.location.assign("/#/notebook/new");
+          }}
+        >
+          New Blank Notebook
+        </button>
+      </p>
       <h2>Examples:</h2>
       <ul>
-        <li>
-          <Link to="/notebook/gist/vilterp/9f06dbef549ab0fec87d7a79df05cf50">
-            Family
-          </Link>
-        </li>
+        {examples.map((ex, idx) => (
+          <li key={idx}>
+            <Link to={`/notebook/gist/vilterp/${ex.gistID}`}>{ex.name}</Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
@@ -116,6 +135,15 @@ function Main() {
           <Route path="/" exact>
             <HomePage />
           </Route>
+          <Route
+            path="/notebook/new"
+            render={() => (
+              <>
+                <h1>New Notebook</h1>
+                <Editor doc={emptyDoc} viewMode={false} />
+              </>
+            )}
+          />
           <Route
             path="/notebook/gist/:username/:gistID"
             render={({ match }) => (

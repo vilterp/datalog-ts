@@ -13,6 +13,12 @@ import Parsimmon, { Result } from "parsimmon";
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 export type Doc = { blocks: Block[]; nextID: number; editingID: number };
 
+export const emptyDoc: Doc = {
+  nextID: 1,
+  editingID: null,
+  blocks: [{ type: "Markdown", id: 0, content: "## My Notebook" }],
+};
+
 export function Editor(props: { doc: Doc; viewMode: boolean }) {
   const [doc, setDoc] = useState<Doc>(props.doc);
 
