@@ -120,14 +120,6 @@ export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
   return out;
 }
 
-export function updateAtIdx<T>(
-  arr: T[],
-  idx: number,
-  update: (t: T) => T
-): T[] {
-  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
-}
-
 export function arrayEq<T>(
   a: T[],
   b: T[],
@@ -190,10 +182,18 @@ export function clamp(n: number, range: [number, number]): number {
   return n;
 }
 
-export function insertAt<T>(arr: T[], idx: number, item: T): T[] {
+export function insertAtIdx<T>(arr: T[], idx: number, item: T): T[] {
   return [...arr.slice(0, idx), item, ...arr.slice(idx)];
 }
 
-export function removeAt<T>(arr: T[], idx: number): T[] {
+export function removeAtIdx<T>(arr: T[], idx: number): T[] {
   return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
+}
+
+export function updateAtIdx<T>(
+  arr: T[],
+  idx: number,
+  update: (t: T) => T
+): T[] {
+  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
 }

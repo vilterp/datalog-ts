@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { MarkdownDoc, MarkdownNode } from "./markdown";
+import { MarkdownDoc, MarkdownNode, parse } from "./markdown";
 import { Interpreter } from "../interpreter";
 import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
-import { insertAt, removeAt } from "../util";
-import { domainToASCII } from "url";
+import { insertAtIdx, removeAtIdx } from "../util";
 
-type Block = MarkdownNode & { id: number };
+type Block = { id: number; content: string; type: "Code" | "Markdown" };
 type Doc = { blocks: Block[]; nextID: number; editingID: number };
 
 export function Editor(props: { doc: Doc }) {
@@ -75,12 +74,18 @@ function CodeBlock(props: {
 }
 
 function MdBlock(props: {
-  content: MarkdownNode;
+  content: string;
   setContent: (s: string) => void;
   editing: boolean;
 }) {
-  // TODO: editor
-  return <MarkdownNode block={props.content} />;
+  return props.editing ? (
+    <textarea
+      onChange={(evt) => props.setContent(evt.target.value)}
+      value={props.content}
+    />
+  ) : (
+    <MarkdownNode block={parse(props.content)} />
+  );
 }
 
 function Cell(props: {
@@ -93,7 +98,7 @@ function Cell(props: {
   const editing = props.doc.editingID === props.block.id;
   const res = (() => {
     switch (props.block.type) {
-      case "codeBlock":
+      case "Code":
         const { interp: newInterp, rendered } = CodeBlock({
           interp: props.interp,
           code: props.block.content,
@@ -106,12 +111,12 @@ function Cell(props: {
           interp: newInterp,
           view: rendered,
         };
-      default:
+      case "Markdown":
         return {
           interp: props.interp,
           view: (
             <MdBlock
-              content={props.block}
+              content={props.block.content}
               setContent={(content) => {
                 console.log("set content", content);
               }}
@@ -131,7 +136,7 @@ function Cell(props: {
             onClick={() => {
               props.setDoc({
                 ...props.doc,
-                blocks: removeAt(props.doc.blocks, props.idx),
+                blocks: removeAtIdx(props.doc.blocks, props.idx),
               });
             }}
           >
@@ -200,6 +205,7 @@ function AddCellButton(props: {
   setDoc: (doc: Doc) => void;
   insertAt: number;
 }) {
+  // TODO: separate button to insert code block?
   return (
     <button
       className="form-control"
@@ -207,9 +213,9 @@ function AddCellButton(props: {
         props.setDoc({
           ...props.doc,
           nextID: props.doc.nextID + 1,
-          blocks: insertAt(props.doc.blocks, props.insertAt, {
-            type: "paragraph",
-            content: [{ type: "text", content: "new cell" }],
+          blocks: insertAtIdx(props.doc.blocks, props.insertAt, {
+            type: "Markdown",
+            content: "new cell",
             id: props.doc.nextID,
           }),
         });

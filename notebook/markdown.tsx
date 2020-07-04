@@ -1,5 +1,6 @@
 import React, { Ref } from "react";
 import SimpleMarkdown from "simple-markdown";
+import { repeat } from "../util";
 
 export function parse(md: string): MarkdownDoc {
   return SimpleMarkdown.defaultBlockParse(md) as MarkdownDoc;
@@ -168,5 +169,41 @@ function rawTextSpan(span: MarkdownNode) {
     case "text":
       return span.content;
     // ...
+  }
+}
+
+// ugh why isn't this in the library
+export function markdownToText(block: MarkdownNode): string {
+  console.log("mtt", block);
+  switch (block.type) {
+    case "codeBlock":
+      // TODO: look at lang
+      return ["```", block.content, "```"].join("\n");
+    case "heading":
+      return `${repeat(block.level, "#")} ${block.content
+        .map(markdownToText)
+        .join("")}`;
+    case "list":
+      // crap this doesn't work for nested lists
+      // should have used prettier
+      return block.items.map((item) => `- ${markdownToText(item)}`).join("\n");
+    case "paragraph":
+      return block.content.map(markdownToText).join("");
+    case "table":
+      throw new Error("TODO: tables");
+    case "inlineCode":
+      return "`" + block.content + "`";
+    case "text":
+      return block.content;
+    case "image":
+      return `![](${block.target})`;
+    case "link":
+      return `[${block.content}](${block.target})`;
+    case "em":
+      return `_${block.content.map(markdownToText).join("")}_`;
+    case "strong":
+      return `**${block.content.map(markdownToText).join("")}**`;
+    case "newline":
+      return "\n";
   }
 }

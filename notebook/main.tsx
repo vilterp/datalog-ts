@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { useFetch } from "use-http";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { parse } from "./markdown";
+import { parse, markdownToText } from "./markdown";
 import { Editor } from "./editor";
 
 function Viewer(props: { username: string; gistID: string }) {
@@ -26,7 +26,11 @@ function Viewer(props: { username: string; gistID: string }) {
       ) : (
         <Editor
           doc={{
-            blocks: parsedDoc.map((b, idx) => ({ ...b, id: idx })),
+            blocks: parsedDoc.map((b, idx) => ({
+              type: b.type === "codeBlock" ? "Code" : "Markdown",
+              content: b.type === "codeBlock" ? b.content : markdownToText(b),
+              id: idx,
+            })),
             nextID: parsedDoc.length,
             editingID: null,
           }}
