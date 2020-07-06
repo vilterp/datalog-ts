@@ -44,6 +44,9 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
     case "Record": {
       switch (right.type) {
         case "Record":
+          if (left.relation !== right.relation) {
+            return null;
+          }
           let accum = {};
           for (const key of Object.keys(left.attrs)) {
             // TODO: do bindings fold across keys... how would that be ordered...

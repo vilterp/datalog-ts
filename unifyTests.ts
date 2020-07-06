@@ -143,4 +143,21 @@ export const unifyTests = [
       assertDeepEqual(unifyRes, {});
     },
   },
+  {
+    name: "different relations",
+    test() {
+      const unifyRes = unify(
+        {},
+        rec("foo", {
+          from: rec("pos", { idx: int(1) }),
+          to: rec("pos", { idx: int(2) }),
+        }),
+        rec("bar", {
+          from: rec("pos", { idx: int(1) }),
+          to: rec("pos", { idx: int(2) }),
+        })
+      );
+      assertDeepEqual(unifyRes, null);
+    },
+  },
 ];
