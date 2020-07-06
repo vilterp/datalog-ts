@@ -53,6 +53,7 @@ export function CodeEditor<AST>(props: {
       expected: parseRes.expected,
       offset: parseRes.index.offset,
     };
+    interp3 = interp2;
   } else {
     try {
       const flattened = props.flatten(parseRes.value);
