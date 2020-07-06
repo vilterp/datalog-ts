@@ -300,7 +300,7 @@ function AddCellButton(props: {
           });
         }}
       >
-        Add Code
+        Add DL
       </button>
     </>
   );
