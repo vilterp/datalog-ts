@@ -160,6 +160,21 @@ sibling{left: L, right: R} :-
       assert.equal(output.length, 15);
     },
   },
+  {
+    name: "newline-record",
+    test() {
+      const input = `msg{
+  from: "B1", to: "S",
+  time: 1,
+  payload: login{
+    username: "vilterp@example.com", password: "password"
+  }
+}.`;
+      // just asserting that there isn't a parse error
+      language.statement.tryParse(input);
+      // TODO: rewrite these as data driven tests
+    },
+  },
 ];
 
 function testParser(

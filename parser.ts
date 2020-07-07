@@ -42,13 +42,16 @@ export const language = P.createLanguage({
   term: (r) =>
     P.alt(r.arrayLit, r.var, r.boolLit, r.record, r.stringLit, r.intLit), // TODO: binExpr should be in here...
   record: (r) =>
-    P.seq(r.recordIdentifier, r.lbrace, r.pair.sepBy(r.comma), r.rbrace).map(
-      ([ident, _, pairs, __]) => ({
-        type: "Record",
-        relation: ident,
-        attrs: pairsToObj(pairs),
-      })
-    ),
+    P.seq(
+      r.recordIdentifier,
+      r.lbrace,
+      r.pair.sepBy(r.comma).skip(P.optWhitespace),
+      r.rbrace
+    ).map(([ident, _, pairs, __]) => ({
+      type: "Record",
+      relation: ident,
+      attrs: pairsToObj(pairs),
+    })),
   arrayLit: (r) =>
     P.seq(
       r.lsquare,
