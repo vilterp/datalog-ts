@@ -68,37 +68,6 @@ export function charRuleToString(rule: SingleCharRule): string {
   }
 }
 
-// pos
-
-export type Pos = {
-  line: number;
-  col: number;
-  offset: number;
-};
-
-export function addOffset(pos: Pos, offset: number): Pos {
-  return {
-    ...pos,
-    col: pos.col + offset,
-    offset: pos.offset + offset,
-  };
-}
-
-export function addLine(pos: Pos): Pos {
-  return {
-    line: pos.line + 1,
-    col: 1,
-    offset: pos.offset + 1,
-  };
-}
-
-export function posMax(a: Pos, b: Pos): Pos {
-  if (a.offset > b.offset) {
-    return a;
-  }
-  return b;
-}
-
 // TODO: dedup all the Span definitions in this codebase, lol
 export type Span = {
   from: number;

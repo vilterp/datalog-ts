@@ -1,4 +1,12 @@
-import { Grammar, Rule, Span } from "./grammar";
+import {
+  Grammar,
+  Rule,
+  Span,
+  SingleCharRule,
+  char,
+  charRuleToString,
+} from "./grammar";
+import { start } from "repl";
 
 export type TraceTree = {
   span: Span;
@@ -16,6 +24,7 @@ type TraceInner =
     }
   | { type: "RefTrace"; innerTrace: TraceTree }
   | { type: "TextTrace" }
+  | { type: "CharTrace" }
   | { type: "SucceedTrace" };
 
 export function parse(
@@ -103,8 +112,21 @@ function doParse(
         error: accum.error,
       };
     case "Char":
-      // TODO: replace this with regex?
-      throw new Error("TODO");
+      if (matchesCharRule(rule.rule, input[startIdx])) {
+        return {
+          type: "CharTrace",
+          span: { from: startIdx, to: startIdx + 1 },
+          error: null,
+        };
+      }
+      return {
+        type: "CharTrace",
+        span: { from: startIdx, to: startIdx },
+        error: {
+          expected: [charRuleToString(rule.rule)],
+          got: input[startIdx],
+        },
+      };
     case "RepSep":
       throw new Error("TODO");
     case "Succeed":
@@ -122,3 +144,14 @@ type SequenceSt = {
   pos: number;
   error: ParseError | null;
 };
+
+function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
+  switch (charRule.type) {
+    case "Literal":
+      return c === charRule.value;
+    case "Not":
+      return !matchesCharRule(charRule, c);
+    case "Range":
+      return charRule.from <= c && c <= charRule.to;
+  }
+}
