@@ -26,7 +26,7 @@ type TraceInner =
       innerTrace: TraceTree;
     }
   | { type: "RepSepTrace"; repTraces: TraceTree[]; sepTraces: TraceTree[] }
-  | { type: "RefTrace"; innerTrace: TraceTree }
+  | { type: "RefTrace"; name: string; innerTrace: TraceTree }
   | { type: "TextTrace" }
   | { type: "CharTrace" }
   | { type: "SucceedTrace" };
@@ -69,6 +69,7 @@ function doParse(
       const innerTrace = doParse(grammar, innerRule, startIdx, input);
       return {
         type: "RefTrace",
+        name: rule.name,
         // rule,
         span: innerTrace.span,
         error: innerTrace.error,

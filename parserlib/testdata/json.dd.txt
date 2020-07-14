@@ -5,6 +5,7 @@
   "error": null,
   "innerTrace": {
     "type": "RefTrace",
+    "name": "number",
     "span": {
       "from": 0,
       "to": 1
@@ -71,6 +72,7 @@
   "error": null,
   "innerTrace": {
     "type": "RefTrace",
+    "name": "object",
     "span": {
       "from": 0,
       "to": 9
@@ -92,6 +94,7 @@
           "repTraces": [
             {
               "type": "RefTrace",
+              "name": "keyValue",
               "span": {
                 "from": 1,
                 "to": 8
@@ -225,6 +228,7 @@
                   },
                   {
                     "type": "RefTrace",
+                    "name": "value",
                     "span": {
                       "from": 7,
                       "to": 8
@@ -235,6 +239,7 @@
                       "error": null,
                       "innerTrace": {
                         "type": "RefTrace",
+                        "name": "number",
                         "span": {
                           "from": 7,
                           "to": 8
