@@ -56,3 +56,408 @@ a
     "to": 1
   }
 }
+
+digit
+2
+----
+{
+  "type": "CharTrace",
+  "span": {
+    "from": 0,
+    "to": 1
+  },
+  "error": null
+}
+
+intLit
+1234
+----
+{
+  "type": "RepSepTrace",
+  "repTraces": [
+    {
+      "type": "CharTrace",
+      "span": {
+        "from": 0,
+        "to": 1
+      },
+      "error": null
+    },
+    {
+      "type": "CharTrace",
+      "span": {
+        "from": 1,
+        "to": 2
+      },
+      "error": null
+    },
+    {
+      "type": "CharTrace",
+      "span": {
+        "from": 2,
+        "to": 3
+      },
+      "error": null
+    },
+    {
+      "type": "CharTrace",
+      "span": {
+        "from": 3,
+        "to": 4
+      },
+      "error": null
+    }
+  ],
+  "sepTraces": [],
+  "error": null,
+  "span": {
+    "from": 0,
+    "to": 4
+  }
+}
+
+stringLit
+"fooBarBaz"
+----
+{
+  "type": "SeqTrace",
+  "itemTraces": [
+    {
+      "type": "TextTrace",
+      "span": {
+        "from": 0,
+        "to": 1
+      },
+      "error": null
+    },
+    {
+      "type": "RepSepTrace",
+      "repTraces": [
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 1,
+                "to": 2
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 1,
+              "to": 2
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 1,
+            "to": 2
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 2,
+                "to": 3
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 2,
+              "to": 3
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 2,
+            "to": 3
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 3,
+                "to": 4
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 3,
+              "to": 4
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 3,
+            "to": 4
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 4,
+                "to": 5
+              },
+              "error": null
+            },
+            "optIdx": 1,
+            "span": {
+              "from": 4,
+              "to": 5
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 4,
+            "to": 5
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 5,
+                "to": 6
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 5,
+              "to": 6
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 5,
+            "to": 6
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 6,
+                "to": 7
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 6,
+              "to": 7
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 6,
+            "to": 7
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 7,
+                "to": 8
+              },
+              "error": null
+            },
+            "optIdx": 1,
+            "span": {
+              "from": 7,
+              "to": 8
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 7,
+            "to": 8
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 8,
+                "to": 9
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 8,
+              "to": 9
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 8,
+            "to": 9
+          }
+        },
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "ChoiceTrace",
+            "error": null,
+            "innerTrace": {
+              "type": "CharTrace",
+              "span": {
+                "from": 9,
+                "to": 10
+              },
+              "error": null
+            },
+            "optIdx": 0,
+            "span": {
+              "from": 9,
+              "to": 10
+            }
+          },
+          "optIdx": 0,
+          "span": {
+            "from": 9,
+            "to": 10
+          }
+        }
+      ],
+      "sepTraces": [],
+      "error": null,
+      "span": {
+        "from": 1,
+        "to": 10
+      }
+    },
+    {
+      "type": "TextTrace",
+      "span": {
+        "from": 10,
+        "to": 11
+      },
+      "error": null
+    }
+  ],
+  "span": {
+    "from": 0,
+    "to": 11
+  },
+  "error": null
+}
+
+intOrString
+123
+----
+{
+  "type": "ChoiceTrace",
+  "error": null,
+  "innerTrace": {
+    "type": "RepSepTrace",
+    "repTraces": [
+      {
+        "type": "CharTrace",
+        "span": {
+          "from": 0,
+          "to": 1
+        },
+        "error": null
+      },
+      {
+        "type": "CharTrace",
+        "span": {
+          "from": 1,
+          "to": 2
+        },
+        "error": null
+      },
+      {
+        "type": "CharTrace",
+        "span": {
+          "from": 2,
+          "to": 3
+        },
+        "error": null
+      }
+    ],
+    "sepTraces": [],
+    "error": null,
+    "span": {
+      "from": 0,
+      "to": 3
+    }
+  },
+  "optIdx": 0,
+  "span": {
+    "from": 0,
+    "to": 3
+  }
+}
+
+intOrString
+"foobar"
+----
+{
+  "type": "ChoiceTrace",
+  "error": null,
+  "innerTrace": {
+    "type": "RepSepTrace",
+    "repTraces": [],
+    "sepTraces": [],
+    "error": null,
+    "span": {
+      "from": 0,
+      "to": 0
+    }
+  },
+  "optIdx": 0,
+  "span": {
+    "from": 0,
+    "to": 0
+  }
+}

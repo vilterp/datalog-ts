@@ -1,16 +1,334 @@
+2
+----
+{
+  "type": "ChoiceTrace",
+  "error": null,
+  "innerTrace": {
+    "type": "RefTrace",
+    "span": {
+      "from": 0,
+      "to": 1
+    },
+    "error": null,
+    "innerTrace": {
+      "type": "SeqTrace",
+      "itemTraces": [
+        {
+          "type": "ChoiceTrace",
+          "error": null,
+          "innerTrace": {
+            "type": "SucceedTrace",
+            "error": null,
+            "span": {
+              "from": 0,
+              "to": 0
+            }
+          },
+          "optIdx": 1,
+          "span": {
+            "from": 0,
+            "to": 0
+          }
+        },
+        {
+          "type": "RepSepTrace",
+          "repTraces": [
+            {
+              "type": "CharTrace",
+              "span": {
+                "from": 0,
+                "to": 1
+              },
+              "error": null
+            }
+          ],
+          "sepTraces": [],
+          "error": null,
+          "span": {
+            "from": 0,
+            "to": 1
+          }
+        }
+      ],
+      "span": {
+        "from": 0,
+        "to": 1
+      },
+      "error": null
+    }
+  },
+  "optIdx": 2,
+  "span": {
+    "from": 0,
+    "to": 1
+  }
+}
+
 {"foo":2}
 ----
 {
   "type": "ChoiceTrace",
-  "error": {
-    "expected": [
-      "[object | array | number | stringLit | bool | null]"
-    ],
-    "got": "{\"foo"
+  "error": null,
+  "innerTrace": {
+    "type": "RefTrace",
+    "span": {
+      "from": 0,
+      "to": 9
+    },
+    "error": null,
+    "innerTrace": {
+      "type": "SeqTrace",
+      "itemTraces": [
+        {
+          "type": "TextTrace",
+          "span": {
+            "from": 0,
+            "to": 1
+          },
+          "error": null
+        },
+        {
+          "type": "RepSepTrace",
+          "repTraces": [
+            {
+              "type": "RefTrace",
+              "span": {
+                "from": 1,
+                "to": 8
+              },
+              "error": null,
+              "innerTrace": {
+                "type": "SeqTrace",
+                "itemTraces": [
+                  {
+                    "type": "SeqTrace",
+                    "itemTraces": [
+                      {
+                        "type": "TextTrace",
+                        "span": {
+                          "from": 1,
+                          "to": 2
+                        },
+                        "error": null
+                      },
+                      {
+                        "type": "RepSepTrace",
+                        "repTraces": [
+                          {
+                            "type": "ChoiceTrace",
+                            "error": null,
+                            "innerTrace": {
+                              "type": "ChoiceTrace",
+                              "error": null,
+                              "innerTrace": {
+                                "type": "CharTrace",
+                                "span": {
+                                  "from": 2,
+                                  "to": 3
+                                },
+                                "error": null
+                              },
+                              "optIdx": 0,
+                              "span": {
+                                "from": 2,
+                                "to": 3
+                              }
+                            },
+                            "optIdx": 0,
+                            "span": {
+                              "from": 2,
+                              "to": 3
+                            }
+                          },
+                          {
+                            "type": "ChoiceTrace",
+                            "error": null,
+                            "innerTrace": {
+                              "type": "ChoiceTrace",
+                              "error": null,
+                              "innerTrace": {
+                                "type": "CharTrace",
+                                "span": {
+                                  "from": 3,
+                                  "to": 4
+                                },
+                                "error": null
+                              },
+                              "optIdx": 0,
+                              "span": {
+                                "from": 3,
+                                "to": 4
+                              }
+                            },
+                            "optIdx": 0,
+                            "span": {
+                              "from": 3,
+                              "to": 4
+                            }
+                          },
+                          {
+                            "type": "ChoiceTrace",
+                            "error": null,
+                            "innerTrace": {
+                              "type": "ChoiceTrace",
+                              "error": null,
+                              "innerTrace": {
+                                "type": "CharTrace",
+                                "span": {
+                                  "from": 4,
+                                  "to": 5
+                                },
+                                "error": null
+                              },
+                              "optIdx": 0,
+                              "span": {
+                                "from": 4,
+                                "to": 5
+                              }
+                            },
+                            "optIdx": 0,
+                            "span": {
+                              "from": 4,
+                              "to": 5
+                            }
+                          }
+                        ],
+                        "sepTraces": [],
+                        "error": null,
+                        "span": {
+                          "from": 2,
+                          "to": 5
+                        }
+                      },
+                      {
+                        "type": "TextTrace",
+                        "span": {
+                          "from": 5,
+                          "to": 6
+                        },
+                        "error": null
+                      }
+                    ],
+                    "span": {
+                      "from": 1,
+                      "to": 6
+                    },
+                    "error": null
+                  },
+                  {
+                    "type": "TextTrace",
+                    "span": {
+                      "from": 6,
+                      "to": 7
+                    },
+                    "error": null
+                  },
+                  {
+                    "type": "RefTrace",
+                    "span": {
+                      "from": 7,
+                      "to": 8
+                    },
+                    "error": null,
+                    "innerTrace": {
+                      "type": "ChoiceTrace",
+                      "error": null,
+                      "innerTrace": {
+                        "type": "RefTrace",
+                        "span": {
+                          "from": 7,
+                          "to": 8
+                        },
+                        "error": null,
+                        "innerTrace": {
+                          "type": "SeqTrace",
+                          "itemTraces": [
+                            {
+                              "type": "ChoiceTrace",
+                              "error": null,
+                              "innerTrace": {
+                                "type": "SucceedTrace",
+                                "error": null,
+                                "span": {
+                                  "from": 7,
+                                  "to": 7
+                                }
+                              },
+                              "optIdx": 1,
+                              "span": {
+                                "from": 7,
+                                "to": 7
+                              }
+                            },
+                            {
+                              "type": "RepSepTrace",
+                              "repTraces": [
+                                {
+                                  "type": "CharTrace",
+                                  "span": {
+                                    "from": 7,
+                                    "to": 8
+                                  },
+                                  "error": null
+                                }
+                              ],
+                              "sepTraces": [],
+                              "error": null,
+                              "span": {
+                                "from": 7,
+                                "to": 8
+                              }
+                            }
+                          ],
+                          "span": {
+                            "from": 7,
+                            "to": 8
+                          },
+                          "error": null
+                        }
+                      },
+                      "optIdx": 2,
+                      "span": {
+                        "from": 7,
+                        "to": 8
+                      }
+                    }
+                  }
+                ],
+                "span": {
+                  "from": 1,
+                  "to": 8
+                },
+                "error": null
+              }
+            }
+          ],
+          "sepTraces": [],
+          "error": null,
+          "span": {
+            "from": 1,
+            "to": 8
+          }
+        },
+        {
+          "type": "TextTrace",
+          "span": {
+            "from": 8,
+            "to": 9
+          },
+          "error": null
+        }
+      ],
+      "span": {
+        "from": 0,
+        "to": 9
+      },
+      "error": null
+    }
   },
-  "optIdx": -1,
+  "optIdx": 0,
   "span": {
     "from": 0,
-    "to": 0
+    "to": 9
   }
 }

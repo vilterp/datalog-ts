@@ -149,7 +149,7 @@ function doParse(
         if (mode === "rep") {
           const res = doParse(grammar, rule.rep, curIdx, input);
           if (res.error) {
-            return resTrace(res.error);
+            return resTrace(null);
           }
           repTraces.push(res);
           curIdx = res.span.to;

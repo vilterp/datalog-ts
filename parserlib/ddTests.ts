@@ -3,10 +3,16 @@ import { runDDTestAtPath, DDTest, Result } from "../util/dataDrivenTests";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse } from "./parser";
 import { jsonGrammar } from "./examples/json";
+import { digit, intLit, stringLit } from "./stdlib";
 
+// TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
   abcSeq: seq([text("a"), text("b"), text("c")]),
   abcChoice: choice([text("a"), text("b"), text("c")]),
+  digit: digit,
+  intLit: intLit,
+  stringLit: stringLit,
+  intOrString: choice([intLit, stringLit]),
 };
 
 export function parserlibTests(writeResults: boolean): Suite {
