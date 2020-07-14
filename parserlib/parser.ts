@@ -35,7 +35,8 @@ function doParse(
 ): TraceTree {
   switch (rule.type) {
     case "Text":
-      const next = input.slice(startIdx, rule.value.length);
+      const next = input.slice(startIdx, startIdx + rule.value.length);
+      // console.log("NEXT:", { startIdx, rule, next, input });
       if (next === rule.value) {
         return {
           type: "TextTrace",

@@ -26,7 +26,7 @@ export function parserlibTests(writeResults: boolean): Suite {
 function parserTest(grammar: Grammar, test: DDTest): Result[] {
   return test.map((pair) => {
     const lines = pair.input.split("\n");
-    const tree = parse(grammar, lines[0], lines.slice(0).join("\n"));
+    const tree = parse(grammar, lines[0], lines.slice(1).join("\n"));
     return { pair, actual: JSON.stringify(tree, null, 2) + "\n" };
   });
 }

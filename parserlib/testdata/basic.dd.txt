@@ -16,26 +16,24 @@ abc
       "type": "TextTrace",
       "span": {
         "from": 1,
-        "to": 1
+        "to": 2
       },
-      "error": {
-        "expected": [
-          "b"
-        ],
-        "got": ""
-      }
+      "error": null
+    },
+    {
+      "type": "TextTrace",
+      "span": {
+        "from": 2,
+        "to": 3
+      },
+      "error": null
     }
   ],
   "span": {
     "from": 0,
-    "to": 1
+    "to": 3
   },
-  "error": {
-    "expected": [
-      "b"
-    ],
-    "got": ""
-  }
+  "error": null
 }
 
 abcChoice
