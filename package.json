@@ -14,6 +14,8 @@
     "serve-ui": "cd ui && http-server -c-1",
     "build-notebook-ui": "esbuild notebook/main.tsx --bundle --outfile=notebook/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
     "serve-notebook-ui": "cd notebook/public && http-server -c-1",
+    "build-parserlib-playground": "esbuild parserlib/playground/main.tsx --bundle --outfile=parserlib/playground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
+    "serve-parserlib-playground": "cd parserlib/playground/public && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist"
   },
   "devDependencies": {
