@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { parse } from "../parser";
-import { Grammar } from "../grammar";
+import { Grammar, Span } from "../grammar";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { jsonGrammar } from "../examples/json";
 import { extractRuleTree } from "../ruleTree";
 import { Collapsible } from "../../uiCommon/collapsible";
+import {
+  TreeView,
+  TreeCollapseState,
+  emptyCollapseState,
+} from "../../uiCommon/treeView";
+import { ruleTreeToTree } from "../pretty";
+import { useJSONLocalStorage } from "../../uiCommon/hooks";
 
 function Main() {
   return <Playground grammar={jsonGrammar} startRule="value" />;
@@ -20,6 +27,10 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
   const tree = parse(props.grammar, props.startRule, source);
   const ruleTree = extractRuleTree(tree);
   console.log({ source, tree, ruleTree });
+
+  const [ruleTreeCollapseState, setRuleTreeCollapseState] = useJSONLocalStorage<
+    TreeCollapseState
+  >("rule-tree-collapse-state", emptyCollapseState);
 
   return (
     <>
@@ -52,19 +63,22 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
         heading="Rule Tree"
         content={
           <>
-            <ReactJson
-              name={null}
-              enableClipboard={false}
-              displayObjectSize={false}
-              displayDataTypes={false}
-              src={ruleTree}
-              shouldCollapse={({ name }) => name === "span"}
+            <TreeView
+              tree={ruleTreeToTree(ruleTree)}
+              render={(n) => `${n.item.name} ${spanToString(n.item.span)}`}
+              collapseState={ruleTreeCollapseState}
+              setCollapseState={setRuleTreeCollapseState}
             />
           </>
         }
       />
     </>
   );
+}
+
+// TODO: find a home for this
+function spanToString(span: Span): string {
+  return `[${span.from}-${span.to}]`;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

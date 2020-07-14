@@ -1,4 +1,6 @@
-import { SingleCharRule, Rule } from "./grammar";
+import { SingleCharRule, Rule, Span } from "./grammar";
+import { RuleTree } from "./ruleTree";
+import { Tree } from "../tree";
 
 // supposed to be like regex syntax
 export function prettyPrintCharRule(rule: SingleCharRule): string {
@@ -31,4 +33,14 @@ export function prettyPrintRule(rule: Rule): string {
         rule.sep
       )})`;
   }
+}
+
+export function ruleTreeToTree(
+  tree: RuleTree
+): Tree<{ name: string; span: Span }> {
+  return {
+    key: tree.name,
+    item: { name: tree.name, span: tree.span },
+    children: tree.children.map(ruleTreeToTree),
+  };
 }
