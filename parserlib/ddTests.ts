@@ -12,7 +12,7 @@ const basicGrammar: Grammar = {
   digit: digit,
   intLit: intLit,
   stringLit: stringLit,
-  intOrString: choice([intLit, stringLit]),
+  intOrString: choice([stringLit, intLit]),
 };
 
 export function parserlibTests(writeResults: boolean): Suite {
