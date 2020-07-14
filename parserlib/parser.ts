@@ -1,12 +1,5 @@
-import {
-  Grammar,
-  Rule,
-  Span,
-  SingleCharRule,
-  char,
-  charRuleToString,
-} from "./grammar";
-import { start } from "repl";
+import { Grammar, Rule, Span, SingleCharRule, char } from "./grammar";
+import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 
 export type TraceTree = {
   span: Span;
@@ -22,6 +15,7 @@ type TraceInner =
       optIdx: number;
       innerTrace: TraceTree;
     }
+  | { type: "RepSepTrace"; repTraces: TraceTree[]; sepTraces: TraceTree[] }
   | { type: "RefTrace"; innerTrace: TraceTree }
   | { type: "TextTrace" }
   | { type: "CharTrace" }
@@ -80,13 +74,24 @@ function doParse(
         (choiceTree) => choiceTree.error === null
       );
       const winner = choiceTraces[winnerIdx];
+      // debug
+      if (!winner) {
+        console.error(choiceTraces);
+      }
+      // end debug
       return {
         type: "ChoiceTrace",
         // rule,
-        error: winnerIdx === -1 ? { expected: ["TODO"], got: "TODO" } : null,
+        error:
+          winnerIdx === -1
+            ? {
+                expected: [prettyPrintRule(rule)],
+                got: input.slice(startIdx, startIdx + 5), // lol
+              }
+            : null,
         innerTrace: winner,
         optIdx: winnerIdx,
-        span: winner.span,
+        span: winner ? winner.span : { from: startIdx, to: startIdx },
       };
     case "Sequence":
       const accum = rule.items.reduce<SequenceSt>(
@@ -123,12 +128,42 @@ function doParse(
         type: "CharTrace",
         span: { from: startIdx, to: startIdx },
         error: {
-          expected: [charRuleToString(rule.rule)],
+          expected: [prettyPrintCharRule(rule.rule)],
           got: input[startIdx],
         },
       };
     case "RepSep":
-      throw new Error("TODO");
+      let mode: "rep" | "sep" = "rep";
+      let curIdx = startIdx;
+      const repTraces: TraceTree[] = [];
+      const sepTraces: TraceTree[] = [];
+      const resTrace = (error: ParseError | null): TraceTree => ({
+        type: "RepSepTrace",
+        repTraces,
+        sepTraces,
+        error: error,
+        span: { from: startIdx, to: curIdx },
+      });
+      // TODO: DRY up
+      while (true) {
+        if (mode === "rep") {
+          const res = doParse(grammar, rule.rep, curIdx, input);
+          if (res.error) {
+            return resTrace(res.error);
+          }
+          repTraces.push(res);
+          curIdx = res.span.to;
+        } else {
+          const res = doParse(grammar, rule.sep, curIdx, input);
+          if (res.error) {
+            // sep erroring out means we're done...
+            // TODO: allow trailing separator
+            return resTrace(null);
+          }
+          sepTraces.push(res);
+          curIdx = res.span.to;
+        }
+      }
     case "Succeed":
       return {
         type: "SucceedTrace",

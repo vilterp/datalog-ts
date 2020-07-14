@@ -1,2 +1,16 @@
 {"foo":2}
 ----
+{
+  "type": "ChoiceTrace",
+  "error": {
+    "expected": [
+      "[object | array | number | stringLit | bool | null]"
+    ],
+    "got": "{\"foo"
+  },
+  "optIdx": -1,
+  "span": {
+    "from": 0,
+    "to": 0
+  }
+}

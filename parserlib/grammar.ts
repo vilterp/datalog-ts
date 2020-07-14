@@ -56,18 +56,6 @@ export function range(from: char, to: char): SingleCharRule {
   return { type: "Range", from, to };
 }
 
-// supposed to be like regex syntax
-export function charRuleToString(rule: SingleCharRule): string {
-  switch (rule.type) {
-    case "Range":
-      return `[${rule.from}-${rule.to}]`;
-    case "Not":
-      return `^${charRuleToString(rule.rule)}`;
-    case "Literal":
-      return rule.value;
-  }
-}
-
 // TODO: dedup all the Span definitions in this codebase, lol
 export type Span = {
   from: number;
