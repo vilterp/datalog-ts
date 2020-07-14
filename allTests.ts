@@ -7,6 +7,7 @@ import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./prettyTest";
 import { treeTests } from "./treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
+import { parserlibTests } from "./parserlib/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -22,6 +23,7 @@ const suites = {
   prettyPrintTests,
   treeTests,
   actionsTests,
+  parserlibTests: parserlibTests(writeResults),
 };
 
 try {

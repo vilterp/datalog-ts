@@ -1,7 +1,6 @@
 import { Grammar, Rule, Span } from "./grammar";
 
 export type TraceTree = {
-  rule: Rule;
   span: Span;
   error: ParseError | null;
 } & TraceInner;
@@ -40,14 +39,14 @@ function doParse(
       if (next === rule.value) {
         return {
           type: "TextTrace",
-          rule,
+          // rule,
           span: { from: startIdx, to: startIdx + rule.value.length },
           error: null,
         };
       }
       return {
         type: "TextTrace",
-        rule,
+        // rule,
         span: { from: startIdx, to: startIdx },
         error: { expected: [rule.value], got: next },
       };
@@ -56,7 +55,7 @@ function doParse(
       const innerTrace = doParse(grammar, innerRule, startIdx, input);
       return {
         type: "RefTrace",
-        rule,
+        // rule,
         span: innerTrace.span,
         error: innerTrace.error,
         innerTrace,
@@ -73,7 +72,7 @@ function doParse(
       const winner = choiceTraces[winnerIdx];
       return {
         type: "ChoiceTrace",
-        rule,
+        // rule,
         error: winnerIdx === -1 ? { expected: ["TODO"], got: "TODO" } : null,
         innerTrace: winner,
         optIdx: winnerIdx,
@@ -97,7 +96,7 @@ function doParse(
       );
       return {
         type: "SeqTrace",
-        rule,
+        // rule,
         itemTraces: accum.itemTraces,
         span: { from: startIdx, to: accum.pos },
         error: accum.error,
@@ -110,7 +109,7 @@ function doParse(
     case "Succeed":
       return {
         type: "SucceedTrace",
-        rule,
+        // rule,
         error: null,
         span: { from: startIdx, to: startIdx },
       };

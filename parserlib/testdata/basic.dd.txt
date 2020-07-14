@@ -1,0 +1,60 @@
+abcSeq
+abc
+----
+{
+  "type": "SeqTrace",
+  "itemTraces": [
+    {
+      "type": "TextTrace",
+      "span": {
+        "from": 0,
+        "to": 1
+      },
+      "error": null
+    },
+    {
+      "type": "TextTrace",
+      "span": {
+        "from": 1,
+        "to": 1
+      },
+      "error": {
+        "expected": [
+          "b"
+        ],
+        "got": ""
+      }
+    }
+  ],
+  "span": {
+    "from": 0,
+    "to": 1
+  },
+  "error": {
+    "expected": [
+      "b"
+    ],
+    "got": ""
+  }
+}
+
+abcChoice
+a
+----
+{
+  "type": "ChoiceTrace",
+  "error": null,
+  "innerTrace": {
+    "type": "TextTrace",
+    "span": {
+      "from": 0,
+      "to": 1
+    },
+    "error": null
+  },
+  "optIdx": 0,
+  "span": {
+    "from": 0,
+    "to": 1
+  }
+}
