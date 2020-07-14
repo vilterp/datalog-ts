@@ -3,19 +3,24 @@ import {
   choice,
   seq,
   repSep,
-  char,
+  charRule,
   range,
   Rule,
   succeed,
+  notChar,
+  literalChar,
 } from "./grammar";
 
-export const alpha = choice([char(range("a", "z")), char(range("A", "Z"))]);
+export const alpha = choice([
+  charRule(range("a", "z")),
+  charRule(range("A", "Z")),
+]);
 
-export const digit = char(range("0", "9"));
+export const digit = charRule(range("0", "9"));
 
 export const alphaNum = choice([alpha, digit]);
 
-export const ident = seq([char(range("a", "z")), rep(alphaNum)]);
+export const ident = seq([charRule(range("a", "z")), rep(alphaNum)]);
 
 export const intLit = rep1(digit);
 
@@ -25,10 +30,17 @@ export function opt(rule: Rule): Rule {
   return choice([rule, succeed]);
 }
 
-// TODO: more than just alpha num
-// TODO: escaping
-// regex: \"(\\.|[^"\\])*\"
-export const stringLit = seq([text(`"`), rep(alphaNum), text(`"`)]);
+// TODO: this is pretty cumbersome compared to writing a regex
+export const stringLit = seq([
+  text(`"`),
+  rep(
+    choice([
+      charRule(notChar(literalChar(`"`))),
+      seq([charRule(literalChar(`\\`)), charRule(literalChar(`"`))]),
+    ])
+  ),
+  text(`"`),
+]);
 
 export function rep(rule: Rule): Rule {
   // TODO: this is bad...

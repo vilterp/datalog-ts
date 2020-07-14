@@ -3,8 +3,8 @@ import {
   Rule,
   Span,
   SingleCharRule,
-  char,
   spanLength,
+  char,
 } from "./grammar";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 
@@ -208,7 +208,7 @@ function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
     case "Literal":
       return c === charRule.value;
     case "Not":
-      return !matchesCharRule(charRule, c);
+      return !matchesCharRule(charRule.rule, c);
     case "Range":
       return charRule.from <= c && c <= charRule.to;
   }

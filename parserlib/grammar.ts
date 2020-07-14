@@ -19,7 +19,7 @@ export function text(value: string): Rule {
   return { type: "Text", value };
 }
 
-export function char(rule: SingleCharRule): Rule {
+export function charRule(rule: SingleCharRule): Rule {
   return { type: "Char", rule };
 }
 
@@ -54,6 +54,14 @@ export type SingleCharRule =
 
 export function range(from: char, to: char): SingleCharRule {
   return { type: "Range", from, to };
+}
+
+export function notChar(rule: SingleCharRule): SingleCharRule {
+  return { type: "Not", rule };
+}
+
+export function literalChar(value: char): SingleCharRule {
+  return { type: "Literal", value };
 }
 
 // TODO: dedup all the Span definitions in this codebase, lol

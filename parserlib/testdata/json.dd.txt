@@ -32,8 +32,8 @@
           }
         },
         {
-          "type": "RepSepTrace",
-          "repTraces": [
+          "type": "SeqTrace",
+          "itemTraces": [
             {
               "type": "CharTrace",
               "span": {
@@ -41,14 +41,23 @@
                 "to": 1
               },
               "error": null
+            },
+            {
+              "type": "RepSepTrace",
+              "repTraces": [],
+              "sepTraces": [],
+              "error": null,
+              "span": {
+                "from": 1,
+                "to": 1
+              }
             }
           ],
-          "sepTraces": [],
-          "error": null,
           "span": {
             "from": 0,
             "to": 1
-          }
+          },
+          "error": null
         }
       ],
       "span": {
@@ -121,21 +130,12 @@
                             "type": "ChoiceTrace",
                             "error": null,
                             "innerTrace": {
-                              "type": "ChoiceTrace",
-                              "error": null,
-                              "innerTrace": {
-                                "type": "CharTrace",
-                                "span": {
-                                  "from": 2,
-                                  "to": 3
-                                },
-                                "error": null
-                              },
-                              "optIdx": 0,
+                              "type": "CharTrace",
                               "span": {
                                 "from": 2,
                                 "to": 3
-                              }
+                              },
+                              "error": null
                             },
                             "optIdx": 0,
                             "span": {
@@ -147,21 +147,12 @@
                             "type": "ChoiceTrace",
                             "error": null,
                             "innerTrace": {
-                              "type": "ChoiceTrace",
-                              "error": null,
-                              "innerTrace": {
-                                "type": "CharTrace",
-                                "span": {
-                                  "from": 3,
-                                  "to": 4
-                                },
-                                "error": null
-                              },
-                              "optIdx": 0,
+                              "type": "CharTrace",
                               "span": {
                                 "from": 3,
                                 "to": 4
-                              }
+                              },
+                              "error": null
                             },
                             "optIdx": 0,
                             "span": {
@@ -173,21 +164,12 @@
                             "type": "ChoiceTrace",
                             "error": null,
                             "innerTrace": {
-                              "type": "ChoiceTrace",
-                              "error": null,
-                              "innerTrace": {
-                                "type": "CharTrace",
-                                "span": {
-                                  "from": 4,
-                                  "to": 5
-                                },
-                                "error": null
-                              },
-                              "optIdx": 0,
+                              "type": "CharTrace",
                               "span": {
                                 "from": 4,
                                 "to": 5
-                              }
+                              },
+                              "error": null
                             },
                             "optIdx": 0,
                             "span": {
@@ -266,8 +248,8 @@
                               }
                             },
                             {
-                              "type": "RepSepTrace",
-                              "repTraces": [
+                              "type": "SeqTrace",
+                              "itemTraces": [
                                 {
                                   "type": "CharTrace",
                                   "span": {
@@ -275,14 +257,23 @@
                                     "to": 8
                                   },
                                   "error": null
+                                },
+                                {
+                                  "type": "RepSepTrace",
+                                  "repTraces": [],
+                                  "sepTraces": [],
+                                  "error": null,
+                                  "span": {
+                                    "from": 8,
+                                    "to": 8
+                                  }
                                 }
                               ],
-                              "sepTraces": [],
-                              "error": null,
                               "span": {
                                 "from": 7,
                                 "to": 8
-                              }
+                              },
+                              "error": null
                             }
                           ],
                           "span": {
