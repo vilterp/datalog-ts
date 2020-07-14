@@ -76,7 +76,10 @@ function doParse(
       const winner = choiceTraces[winnerIdx];
       // debug
       if (!winner) {
-        console.error(choiceTraces);
+        console.error({
+          expected: prettyPrintRule(rule),
+          got: input.slice(startIdx, startIdx + 5),
+        });
       }
       // end debug
       return {
