@@ -3,7 +3,7 @@ import * as fs from "fs";
 
 export type DDTest = IOPair[];
 
-interface IOPair {
+export interface IOPair {
   lineNo: number; // 1-indexed
   input: string;
   output: string;

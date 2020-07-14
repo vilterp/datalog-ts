@@ -2,55 +2,20 @@ abcSeq
 abc
 ----
 {
-  "type": "SeqTrace",
-  "itemTraces": [
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 0,
-        "to": 1
-      },
-      "error": null
-    },
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 1,
-        "to": 2
-      },
-      "error": null
-    },
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 2,
-        "to": 3
-      },
-      "error": null
-    }
-  ],
+  "name": "abcSeq",
+  "children": [],
   "span": {
     "from": 0,
     "to": 3
-  },
-  "error": null
+  }
 }
 
 abcChoice
 a
 ----
 {
-  "type": "ChoiceTrace",
-  "error": null,
-  "innerTrace": {
-    "type": "TextTrace",
-    "span": {
-      "from": 0,
-      "to": 1
-    },
-    "error": null
-  },
-  "optIdx": 0,
+  "name": "abcChoice",
+  "children": [],
   "span": {
     "from": 0,
     "to": 1
@@ -61,317 +26,44 @@ digit
 2
 ----
 {
-  "type": "CharTrace",
+  "name": "digit",
+  "children": [],
   "span": {
     "from": 0,
     "to": 1
-  },
-  "error": null
+  }
 }
 
 intLit
 1234
 ----
 {
-  "type": "SeqTrace",
-  "itemTraces": [
-    {
-      "type": "CharTrace",
-      "span": {
-        "from": 0,
-        "to": 1
-      },
-      "error": null
-    },
-    {
-      "type": "RepSepTrace",
-      "repTraces": [
-        {
-          "type": "CharTrace",
-          "span": {
-            "from": 1,
-            "to": 2
-          },
-          "error": null
-        },
-        {
-          "type": "CharTrace",
-          "span": {
-            "from": 2,
-            "to": 3
-          },
-          "error": null
-        },
-        {
-          "type": "CharTrace",
-          "span": {
-            "from": 3,
-            "to": 4
-          },
-          "error": null
-        }
-      ],
-      "sepTraces": [],
-      "error": null,
-      "span": {
-        "from": 1,
-        "to": 4
-      }
-    }
-  ],
+  "name": "intLit",
+  "children": [],
   "span": {
     "from": 0,
     "to": 4
-  },
-  "error": null
+  }
 }
 
 stringLit
 "fooBarBaz"
 ----
 {
-  "type": "SeqTrace",
-  "itemTraces": [
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 0,
-        "to": 1
-      },
-      "error": null
-    },
-    {
-      "type": "RepSepTrace",
-      "repTraces": [
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 1,
-              "to": 2
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 1,
-            "to": 2
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 2,
-              "to": 3
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 2,
-            "to": 3
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 3,
-              "to": 4
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 3,
-            "to": 4
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 4,
-              "to": 5
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 4,
-            "to": 5
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 5,
-              "to": 6
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 5,
-            "to": 6
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 6,
-              "to": 7
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 6,
-            "to": 7
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 7,
-              "to": 8
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 7,
-            "to": 8
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 8,
-              "to": 9
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 8,
-            "to": 9
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 9,
-              "to": 10
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 9,
-            "to": 10
-          }
-        }
-      ],
-      "sepTraces": [],
-      "error": null,
-      "span": {
-        "from": 1,
-        "to": 10
-      }
-    },
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 10,
-        "to": 11
-      },
-      "error": null
-    }
-  ],
+  "name": "stringLit",
+  "children": [],
   "span": {
     "from": 0,
     "to": 11
-  },
-  "error": null
+  }
 }
 
 intOrString
 123
 ----
 {
-  "type": "ChoiceTrace",
-  "error": null,
-  "innerTrace": {
-    "type": "SeqTrace",
-    "itemTraces": [
-      {
-        "type": "CharTrace",
-        "span": {
-          "from": 0,
-          "to": 1
-        },
-        "error": null
-      },
-      {
-        "type": "RepSepTrace",
-        "repTraces": [
-          {
-            "type": "CharTrace",
-            "span": {
-              "from": 1,
-              "to": 2
-            },
-            "error": null
-          },
-          {
-            "type": "CharTrace",
-            "span": {
-              "from": 2,
-              "to": 3
-            },
-            "error": null
-          }
-        ],
-        "sepTraces": [],
-        "error": null,
-        "span": {
-          "from": 1,
-          "to": 3
-        }
-      }
-    ],
-    "span": {
-      "from": 0,
-      "to": 3
-    },
-    "error": null
-  },
-  "optIdx": 0,
+  "name": "intOrString",
+  "children": [],
   "span": {
     "from": 0,
     "to": 3
@@ -382,148 +74,8 @@ intOrString
 "foobar"
 ----
 {
-  "type": "ChoiceTrace",
-  "error": null,
-  "innerTrace": {
-    "type": "SeqTrace",
-    "itemTraces": [
-      {
-        "type": "TextTrace",
-        "span": {
-          "from": 0,
-          "to": 1
-        },
-        "error": null
-      },
-      {
-        "type": "RepSepTrace",
-        "repTraces": [
-          {
-            "type": "ChoiceTrace",
-            "error": null,
-            "innerTrace": {
-              "type": "CharTrace",
-              "span": {
-                "from": 1,
-                "to": 2
-              },
-              "error": null
-            },
-            "optIdx": 0,
-            "span": {
-              "from": 1,
-              "to": 2
-            }
-          },
-          {
-            "type": "ChoiceTrace",
-            "error": null,
-            "innerTrace": {
-              "type": "CharTrace",
-              "span": {
-                "from": 2,
-                "to": 3
-              },
-              "error": null
-            },
-            "optIdx": 0,
-            "span": {
-              "from": 2,
-              "to": 3
-            }
-          },
-          {
-            "type": "ChoiceTrace",
-            "error": null,
-            "innerTrace": {
-              "type": "CharTrace",
-              "span": {
-                "from": 3,
-                "to": 4
-              },
-              "error": null
-            },
-            "optIdx": 0,
-            "span": {
-              "from": 3,
-              "to": 4
-            }
-          },
-          {
-            "type": "ChoiceTrace",
-            "error": null,
-            "innerTrace": {
-              "type": "CharTrace",
-              "span": {
-                "from": 4,
-                "to": 5
-              },
-              "error": null
-            },
-            "optIdx": 0,
-            "span": {
-              "from": 4,
-              "to": 5
-            }
-          },
-          {
-            "type": "ChoiceTrace",
-            "error": null,
-            "innerTrace": {
-              "type": "CharTrace",
-              "span": {
-                "from": 5,
-                "to": 6
-              },
-              "error": null
-            },
-            "optIdx": 0,
-            "span": {
-              "from": 5,
-              "to": 6
-            }
-          },
-          {
-            "type": "ChoiceTrace",
-            "error": null,
-            "innerTrace": {
-              "type": "CharTrace",
-              "span": {
-                "from": 6,
-                "to": 7
-              },
-              "error": null
-            },
-            "optIdx": 0,
-            "span": {
-              "from": 6,
-              "to": 7
-            }
-          }
-        ],
-        "sepTraces": [],
-        "error": null,
-        "span": {
-          "from": 1,
-          "to": 7
-        }
-      },
-      {
-        "type": "TextTrace",
-        "span": {
-          "from": 7,
-          "to": 8
-        },
-        "error": null
-      }
-    ],
-    "span": {
-      "from": 0,
-      "to": 8
-    },
-    "error": null
-  },
-  "optIdx": 0,
+  "name": "intOrString",
+  "children": [],
   "span": {
     "from": 0,
     "to": 8
@@ -534,176 +86,10 @@ stringLit
 "foo\"bar"
 ----
 {
-  "type": "SeqTrace",
-  "itemTraces": [
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 0,
-        "to": 1
-      },
-      "error": null
-    },
-    {
-      "type": "RepSepTrace",
-      "repTraces": [
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 1,
-              "to": 2
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 1,
-            "to": 2
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 2,
-              "to": 3
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 2,
-            "to": 3
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 3,
-              "to": 4
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 3,
-            "to": 4
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "SeqTrace",
-            "itemTraces": [
-              {
-                "type": "CharTrace",
-                "span": {
-                  "from": 4,
-                  "to": 5
-                },
-                "error": null
-              },
-              {
-                "type": "CharTrace",
-                "span": {
-                  "from": 5,
-                  "to": 6
-                },
-                "error": null
-              }
-            ],
-            "span": {
-              "from": 4,
-              "to": 6
-            },
-            "error": null
-          },
-          "optIdx": 1,
-          "span": {
-            "from": 4,
-            "to": 6
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 6,
-              "to": 7
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 6,
-            "to": 7
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 7,
-              "to": 8
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 7,
-            "to": 8
-          }
-        },
-        {
-          "type": "ChoiceTrace",
-          "error": null,
-          "innerTrace": {
-            "type": "CharTrace",
-            "span": {
-              "from": 8,
-              "to": 9
-            },
-            "error": null
-          },
-          "optIdx": 0,
-          "span": {
-            "from": 8,
-            "to": 9
-          }
-        }
-      ],
-      "sepTraces": [],
-      "error": null,
-      "span": {
-        "from": 1,
-        "to": 9
-      }
-    },
-    {
-      "type": "TextTrace",
-      "span": {
-        "from": 9,
-        "to": 10
-      },
-      "error": null
-    }
-  ],
+  "name": "stringLit",
+  "children": [],
   "span": {
     "from": 0,
     "to": 10
-  },
-  "error": null
+  }
 }

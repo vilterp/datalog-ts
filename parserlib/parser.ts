@@ -33,14 +33,21 @@ type TraceInner =
 
 export function parse(
   grammar: Grammar,
-  ruleName: string,
+  startRule: string,
   input: string
 ): TraceTree {
-  const rule = grammar[ruleName];
+  const rule = grammar[startRule];
   if (!rule) {
-    throw new Error(`no such rule: ${ruleName}`);
+    throw new Error(`no such rule: ${startRule}`);
   }
-  return doParse(grammar, rule, 0, input);
+  const res = doParse(grammar, rule, 0, input);
+  return {
+    type: "RefTrace",
+    span: res.span,
+    error: null,
+    name: startRule,
+    innerTrace: res,
+  };
 }
 
 function doParse(

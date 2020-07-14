@@ -5,6 +5,7 @@ import { Grammar } from "../grammar";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { jsonGrammar } from "../examples/json";
+import { extractRuleTree } from "../ruleTree";
 
 function Main() {
   return <Playground grammar={jsonGrammar} startRule="value" />;
@@ -16,6 +17,7 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
     ""
   );
   const tree = parse(props.grammar, props.startRule, source);
+  const ruleTree = extractRuleTree(tree);
   console.log(source, tree);
 
   return (
@@ -34,7 +36,7 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
         enableClipboard={false}
         displayObjectSize={false}
         displayDataTypes={false}
-        src={tree}
+        src={ruleTree}
         shouldCollapse={({ name }) => name === "span"}
       />
     </>
