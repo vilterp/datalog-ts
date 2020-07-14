@@ -92,7 +92,6 @@ function doParse(
       );
       const passed = choiceTraces.filter((c) => c.error === null);
       if (passed.length === 0) {
-        console.log("choice traces", choiceTraces);
         return {
           type: "ChoiceTrace",
           error: {

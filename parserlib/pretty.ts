@@ -35,12 +35,18 @@ export function prettyPrintRule(rule: Rule): string {
   }
 }
 
-export function ruleTreeToTree(
-  tree: RuleTree
-): Tree<{ name: string; span: Span }> {
+export function ruleTreeToTree(tree: RuleTree): Tree<RuleTree> {
   return {
     key: tree.name,
-    item: { name: tree.name, span: tree.span },
+    item: tree, // weird that the children are in here too, but oh well
     children: tree.children.map(ruleTreeToTree),
   };
+}
+
+export function renderRuleNode(n: RuleTree): string {
+  return `${n.name} ${spanToString(n.span)}`;
+}
+
+function spanToString(span: Span): string {
+  return `[${span.from}-${span.to}]`;
 }

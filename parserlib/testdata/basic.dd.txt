@@ -1,95 +1,39 @@
 abcSeq
 abc
 ----
-{
-  "name": "abcSeq",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 3
-  }
-}
+abcSeq [0-3]
 
 abcChoice
 a
 ----
-{
-  "name": "abcChoice",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 1
-  }
-}
+abcChoice [0-1]
 
 digit
 2
 ----
-{
-  "name": "digit",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 1
-  }
-}
+digit [0-1]
 
 intLit
 1234
 ----
-{
-  "name": "intLit",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 4
-  }
-}
+intLit [0-4]
 
 stringLit
 "fooBarBaz"
 ----
-{
-  "name": "stringLit",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 11
-  }
-}
+stringLit [0-11]
 
 intOrString
 123
 ----
-{
-  "name": "intOrString",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 3
-  }
-}
+intOrString [0-3]
 
 intOrString
 "foobar"
 ----
-{
-  "name": "intOrString",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 8
-  }
-}
+intOrString [0-8]
 
 stringLit
 "foo\"bar"
 ----
-{
-  "name": "stringLit",
-  "children": [],
-  "span": {
-    "from": 0,
-    "to": 10
-  }
-}
+stringLit [0-10]

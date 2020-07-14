@@ -12,7 +12,7 @@ import {
   TreeCollapseState,
   emptyCollapseState,
 } from "../../uiCommon/treeView";
-import { ruleTreeToTree } from "../pretty";
+import { ruleTreeToTree, renderRuleNode } from "../pretty";
 import { useJSONLocalStorage } from "../../uiCommon/hooks";
 
 function Main() {
@@ -65,7 +65,7 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
           <>
             <TreeView
               tree={ruleTreeToTree(ruleTree)}
-              render={(n) => `${n.item.name} ${spanToString(n.item.span)}`}
+              render={(n) => renderRuleNode(n.item)}
               collapseState={ruleTreeCollapseState}
               setCollapseState={setRuleTreeCollapseState}
             />
@@ -74,11 +74,6 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
       />
     </>
   );
-}
-
-// TODO: find a home for this
-function spanToString(span: Span): string {
-  return `[${span.from}-${span.to}]`;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
