@@ -61,3 +61,7 @@ export type Span = {
   from: number;
   to: number;
 };
+
+export function spanLength(s: Span): number {
+  return s.to - s.from;
+}

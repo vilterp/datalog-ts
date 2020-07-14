@@ -1,10 +1,20 @@
-import { Grammar, Rule, Span, SingleCharRule, char } from "./grammar";
+import {
+  Grammar,
+  Rule,
+  Span,
+  SingleCharRule,
+  char,
+  spanLength,
+} from "./grammar";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 
 export type TraceTree = {
   span: Span;
   error: ParseError | null;
 } & TraceInner;
+
+// TODO:
+// Either<{span: Span} & TraceInner, ParseError>
 
 type ParseError = { expected: string[]; got: string };
 
@@ -69,32 +79,38 @@ function doParse(
       const choiceTraces = rule.choices.map((choice) =>
         doParse(grammar, choice, startIdx, input)
       );
-      // TODO: find longest trace, not just first?
-      const winnerIdx = choiceTraces.findIndex(
-        (choiceTree) => choiceTree.error === null
-      );
-      const winner = choiceTraces[winnerIdx];
-      // debug
-      if (!winner) {
-        console.error({
-          expected: prettyPrintRule(rule),
-          got: input.slice(startIdx, startIdx + 5),
-        });
+      const passed = choiceTraces.filter((c) => c.error === null);
+      if (passed.length === 0) {
+        return {
+          type: "ChoiceTrace",
+          error: {
+            expected: [prettyPrintRule(rule)],
+            got: input.slice(startIdx, startIdx + 5), // lol
+          },
+          // TODO: these should only be set on success
+          span: { from: startIdx, to: startIdx },
+          innerTrace: null,
+          optIdx: -1,
+        };
       }
-      // end debug
+      const longest = passed.reduce<{
+        idx: number;
+        length: number;
+        trace: TraceTree;
+      }>(
+        (accum, trace, idx) => {
+          const length = spanLength(trace.span);
+          return length > accum.length ? { idx, length, trace } : accum;
+        },
+        { idx: -1, length: -1, trace: null }
+      );
       return {
         type: "ChoiceTrace",
         // rule,
-        error:
-          winnerIdx === -1
-            ? {
-                expected: [prettyPrintRule(rule)],
-                got: input.slice(startIdx, startIdx + 5), // lol
-              }
-            : null,
-        innerTrace: winner,
-        optIdx: winnerIdx,
-        span: winner ? winner.span : { from: startIdx, to: startIdx },
+        error: null,
+        innerTrace: longest.trace,
+        optIdx: longest.idx,
+        span: longest.trace.span,
       };
     case "Sequence":
       const accum = rule.items.reduce<SequenceSt>(
