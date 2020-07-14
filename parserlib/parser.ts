@@ -92,6 +92,7 @@ function doParse(
       );
       const passed = choiceTraces.filter((c) => c.error === null);
       if (passed.length === 0) {
+        console.log("choice traces", choiceTraces);
         return {
           type: "ChoiceTrace",
           error: {
@@ -182,6 +183,7 @@ function doParse(
             return resTrace(null);
           }
           repTraces.push(res);
+          mode = "sep";
           curIdx = res.span.to;
         } else {
           const res = doParse(grammar, rule.sep, curIdx, input);
@@ -191,6 +193,7 @@ function doParse(
             return resTrace(null);
           }
           sepTraces.push(res);
+          mode = "rep";
           curIdx = res.span.to;
         }
       }

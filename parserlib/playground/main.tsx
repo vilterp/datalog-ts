@@ -6,6 +6,7 @@ import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { jsonGrammar } from "../examples/json";
 import { extractRuleTree } from "../ruleTree";
+import { Collapsible } from "../../uiCommon/collapsible";
 
 function Main() {
   return <Playground grammar={jsonGrammar} startRule="value" />;
@@ -18,7 +19,7 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
   );
   const tree = parse(props.grammar, props.startRule, source);
   const ruleTree = extractRuleTree(tree);
-  console.log(source, tree);
+  console.log({ source, tree, ruleTree });
 
   return (
     <>
@@ -31,13 +32,36 @@ function Playground(props: { grammar: Grammar; startRule: string }) {
         cols={50}
       />
 
-      <ReactJson
-        name={null}
-        enableClipboard={false}
-        displayObjectSize={false}
-        displayDataTypes={false}
-        src={ruleTree}
-        shouldCollapse={({ name }) => name === "span"}
+      <Collapsible
+        heading="Trace Tree"
+        content={
+          <>
+            <ReactJson
+              name={null}
+              enableClipboard={false}
+              displayObjectSize={false}
+              displayDataTypes={false}
+              src={tree}
+              shouldCollapse={({ name }) => name === "span"}
+            />
+          </>
+        }
+      />
+
+      <Collapsible
+        heading="Rule Tree"
+        content={
+          <>
+            <ReactJson
+              name={null}
+              enableClipboard={false}
+              displayObjectSize={false}
+              displayDataTypes={false}
+              src={ruleTree}
+              shouldCollapse={({ name }) => name === "span"}
+            />
+          </>
+        }
       />
     </>
   );
