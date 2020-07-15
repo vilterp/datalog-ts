@@ -1,8 +1,9 @@
 foo :- "foo".
 bar :- [foo, "bla"].
 digit :- [0-9].
+intLit :- repSep(digit, <succeed>).
 ----
-grammar [0-50]
+grammar [0-86]
   ruleDefn [0-13]
     ruleName [0-3]
     rule [7-12]
@@ -22,6 +23,14 @@ grammar [0-50]
         crRange [44-49]
           singleChar [45-46]
           singleChar [47-48]
+  ruleDefn [51-86]
+    ruleName [51-57]
+    rule [61-85]
+      repSep [61-85]
+        rule [68-73]
+          ref [68-73]
+        rule [75-84]
+          succeed [75-84]
 {
   "foo": {
     "type": "Text",
@@ -46,6 +55,16 @@ grammar [0-50]
       "type": "Range",
       "from": "0",
       "to": "9"
+    }
+  },
+  "intLit": {
+    "type": "RepSep",
+    "rep": {
+      "type": "Ref",
+      "name": "digit"
+    },
+    "sep": {
+      "type": "Succeed"
     }
   }
 }

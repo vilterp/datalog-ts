@@ -11,6 +11,7 @@ import {
   SingleCharRule,
   literalChar,
   range,
+  succeed,
 } from "./grammar";
 import {
   ident,
@@ -40,6 +41,8 @@ export const metaGrammar: Grammar = {
     ref("ref"),
     ref("text"),
     ref("charRule"),
+    ref("succeed"),
+    ref("repSep"),
   ]),
   seq: block(squareBrackets, repSep(ref("rule"), commaSpace)),
   choice: block(parens, repSep(ref("rule"), spaceAround(text("|")))),
@@ -63,7 +66,14 @@ export const metaGrammar: Grammar = {
   crLiteral: seq([text("'"), ref("singleChar"), text("'")]),
   crAny: text("."),
   singleChar: charRule(anyChar), // TODO: escaping
-  // TODO: repsep
+  succeed: text("<succeed>"),
+  repSep: seq([
+    text("repSep("),
+    ref("rule"),
+    commaSpace,
+    ref("rule"),
+    text(")"),
+  ]),
 };
 
 export function extractGrammar(input: string, rt: RuleTree): Grammar {
@@ -94,6 +104,13 @@ function extractRule(input: string, rt: RuleTree): Rule {
       );
     case "charRule":
       return charRule(extractCharRule(input, rt.children[0]));
+    case "repSep":
+      return repSep(
+        extractRule(input, rt.children[0].children[0]),
+        extractRule(input, rt.children[1].children[0])
+      );
+    case "succeed":
+      return succeed;
     default:
       throw new Error(`don't know how to extract "${rt.name}"`);
   }
