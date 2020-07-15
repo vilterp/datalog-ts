@@ -13,6 +13,7 @@ import {
 import { ruleTreeToTree, renderRuleNode } from "../pretty";
 import { useJSONLocalStorage } from "../../uiCommon/hooks";
 import { metaGrammar, extractGrammar } from "../meta";
+import { validateGrammar } from "../validate";
 
 function Main() {
   return <Playground />;
@@ -27,12 +28,12 @@ function Playground(props: {}) {
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
+  const grammarErrors = validateGrammar(grammar);
 
   const [source, setSource] = useLocalStorage(
     "parserlib-playground-source",
     ""
   );
-  // TODO: catch errors
   let tree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let error: string = null;
@@ -70,6 +71,13 @@ function Playground(props: {}) {
 
       {/* TODO: validate grammar */}
 
+      {grammarErrors ? (
+        <ul style={{ color: "red" }}>
+          {grammarErrors.map((ge) => (
+            <li key={ge}>{ge}</li>
+          ))}
+        </ul>
+      ) : null}
       {error ? (
         <pre style={{ color: "red" }}>{error}</pre>
       ) : (
