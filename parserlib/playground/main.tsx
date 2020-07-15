@@ -14,9 +14,10 @@ import {
 } from "../../uiCommon/treeView";
 import { ruleTreeToTree, renderRuleNode } from "../pretty";
 import { useJSONLocalStorage } from "../../uiCommon/hooks";
+import { metaGrammar } from "../meta";
 
 function Main() {
-  return <Playground grammar={jsonGrammar} startRule="value" />;
+  return <Playground grammar={metaGrammar} startRule="grammar" />;
 }
 
 function Playground(props: { grammar: Grammar; startRule: string }) {

@@ -37,7 +37,7 @@ export function prettyPrintRule(rule: Rule): string {
 
 export function ruleTreeToTree(tree: RuleTree): Tree<RuleTree> {
   return {
-    key: tree.name,
+    key: renderRuleNode(tree),
     item: tree, // weird that the children are in here too, but oh well
     children: tree.children.map(ruleTreeToTree),
   };

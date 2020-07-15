@@ -32,9 +32,17 @@ export const whitespaceChar = choice([
   charRule(literalChar("\n")),
 ]);
 
+// whitespace
+
 export const whitespace = rep1(whitespaceChar);
 
 export const optWhitespace = rep(whitespaceChar);
+
+export const commaSpace = spaceAround(text(","));
+
+export function spaceAround(rule: Rule): Rule {
+  return seq([optWhitespace, rule, optWhitespace]);
+}
 
 export function opt(rule: Rule): Rule {
   return choice([rule, succeed]);
@@ -60,3 +68,13 @@ export function rep(rule: Rule): Rule {
 export function rep1(rule: Rule): Rule {
   return seq([rule, rep(rule)]);
 }
+
+export function block([left, right]: [string, string], inner: Rule): Rule {
+  return seq([text(left), optWhitespace, inner, optWhitespace, text(right)]);
+}
+
+// enclosers
+
+export const squareBrackets: [string, string] = ["[", "]"];
+
+export const parens: [string, string] = ["(", ")"];
