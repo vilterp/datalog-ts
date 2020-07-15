@@ -39,3 +39,11 @@ function getChildren(tt: TraceTree): RuleTree[] {
       return [];
   }
 }
+
+export function childByName(rt: RuleTree, name: string): RuleTree {
+  return rt.children.find((c) => c.name === name);
+}
+
+export function textForSpan(input: string, span: Span): string {
+  return input.substring(span.from, span.to);
+}
