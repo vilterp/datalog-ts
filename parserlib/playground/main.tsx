@@ -1,10 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { parse, TraceTree } from "../parser";
-import { Grammar, Span } from "../grammar";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
-import { jsonGrammar } from "../examples/json";
 import { extractRuleTree, RuleTree } from "../ruleTree";
 import { Collapsible } from "../../uiCommon/collapsible";
 import {
@@ -44,7 +42,7 @@ function Playground(props: {}) {
   } catch (e) {
     error = e.toString();
   }
-  console.log({ grammar, source, tree, ruleTree, error });
+  // console.log({ grammar, source, tree, ruleTree, error });
 
   const [ruleTreeCollapseState, setRuleTreeCollapseState] = useJSONLocalStorage<
     TreeCollapseState
@@ -69,6 +67,8 @@ function Playground(props: {}) {
         rows={10}
         cols={50}
       />
+
+      {/* TODO: validate grammar */}
 
       {error ? (
         <pre style={{ color: "red" }}>{error}</pre>

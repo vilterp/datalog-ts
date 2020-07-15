@@ -1,6 +1,5 @@
 import { Grammar, ref, seq, choice, text, repSep, Rule } from "./grammar";
 import {
-  rep1,
   ident,
   commaSpace,
   block,
@@ -11,8 +10,6 @@ import {
   whitespace,
 } from "./stdlib";
 import { RuleTree, childByName, textForSpan } from "./ruleTree";
-import { prettyPrintRule, ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
-import { prettyPrintTree } from "../pretty";
 
 // hardcoded grammar for parsing grammar rules
 export const metaGrammar: Grammar = {
@@ -29,6 +26,8 @@ export const metaGrammar: Grammar = {
   choice: block(parens, repSep(ref("rule"), spaceAround(text("|")))),
   ref: ident,
   text: stringLit,
+  // TODO: repsep
+  // TODO: char rule
 };
 
 export function extractGrammar(input: string, rt: RuleTree): Grammar {
@@ -42,16 +41,21 @@ export function extractGrammar(input: string, rt: RuleTree): Grammar {
 }
 
 function extractRule(input: string, rt: RuleTree): Rule {
-  console.log("extractRule", prettyPrintRuleTree(rt));
   switch (rt.name) {
     case "choice":
-      return choice(rt.children.map((item) => extractRule(input, item)));
+      return choice(
+        rt.children.map((item) => extractRule(input, item.children[0]))
+      );
     case "seq":
-      return seq(rt.children.map((item) => extractRule(input, item)));
+      return seq(
+        rt.children.map((item) => extractRule(input, item.children[0]))
+      );
     case "ref":
       return ref(textForSpan(input, rt.span));
     case "text":
-      return text(textForSpan(input, rt.span));
+      return text(
+        textForSpan(input, { from: rt.span.from + 1, to: rt.span.to - 1 })
+      );
     default:
       throw new Error(`don't know how to extract "${rt.name}"`);
   }
