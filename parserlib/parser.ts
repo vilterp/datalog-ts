@@ -56,6 +56,13 @@ function doParse(
   startIdx: number,
   input: string
 ): TraceTree {
+  if (startIdx > input.length) {
+    return {
+      type: "TextTrace", // this is messed up... what to return here?
+      error: { expected: ["TODO"], got: "EOF" },
+      span: { from: startIdx, to: startIdx },
+    };
+  }
   switch (rule.type) {
     case "Text":
       const next = input.slice(startIdx, startIdx + rule.value.length);

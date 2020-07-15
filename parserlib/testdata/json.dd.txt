@@ -41,3 +41,7 @@ value [0-31]
             number [26-27]
           value [28-29]
             number [28-29]
+
+"foo
+----
+value [0-0]
