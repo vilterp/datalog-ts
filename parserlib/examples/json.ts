@@ -1,5 +1,5 @@
 import { Grammar, choice, ref, seq, text, repSep } from "../grammar";
-import { signedIntLit, stringLit, rep } from "../stdlib";
+import { signedIntLit, stringLit, rep, optWhitespace } from "../stdlib";
 
 export const jsonGrammar: Grammar = {
   value: choice([
@@ -11,12 +11,24 @@ export const jsonGrammar: Grammar = {
     ref("null"),
   ]),
   // object
-  object: seq([text("{"), repSep(ref("keyValue"), ref("sep")), text("}")]),
-  keyValue: seq([stringLit, text(":"), ref("value")]),
+  object: seq([
+    text("{"),
+    optWhitespace,
+    repSep(ref("keyValue"), ref("sep")),
+    optWhitespace,
+    text("}"),
+  ]),
+  keyValue: seq([stringLit, text(":"), optWhitespace, ref("value")]),
   // array
-  array: seq([text("["), repSep(ref("value"), ref("sep")), text("]")]),
+  array: seq([
+    text("["),
+    optWhitespace,
+    repSep(ref("value"), ref("sep")),
+    optWhitespace,
+    text("]"),
+  ]),
   // TODO: put whitespace back in
-  sep: text(","),
+  sep: seq([text(","), optWhitespace]),
   // literals
   // TODO: parse floats
   bool: choice([text("true"), text("false")]),

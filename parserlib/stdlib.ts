@@ -26,6 +26,16 @@ export const intLit = rep1(digit);
 
 export const signedIntLit = seq([opt(text("-")), intLit]);
 
+export const whitespaceChar = choice([
+  charRule(literalChar(" ")),
+  charRule(literalChar("\t")),
+  charRule(literalChar("\n")),
+]);
+
+export const whitespace = rep1(whitespaceChar);
+
+export const optWhitespace = rep(whitespaceChar);
+
 export function opt(rule: Rule): Rule {
   return choice([rule, succeed]);
 }

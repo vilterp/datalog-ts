@@ -45,3 +45,30 @@ value [0-31]
 "foo
 ----
 value [0-0]
+
+{
+  "foo": [
+    1,
+    2,
+    3
+  ],
+  "bar": {"baz": 5}
+}
+----
+value [0-59]
+  object [0-59]
+    keyValue [4-36]
+      value [11-36]
+        array [11-36]
+          value [17-18]
+            number [17-18]
+          value [24-25]
+            number [24-25]
+          value [31-32]
+            number [31-32]
+    keyValue [40-57]
+      value [47-57]
+        object [47-57]
+          keyValue [48-56]
+            value [55-56]
+              number [55-56]
