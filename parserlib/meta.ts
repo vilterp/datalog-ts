@@ -1,4 +1,17 @@
-import { Grammar, ref, seq, choice, text, repSep, Rule } from "./grammar";
+import {
+  Grammar,
+  ref,
+  seq,
+  choice,
+  text,
+  repSep,
+  Rule,
+  charRule,
+  anyChar,
+  SingleCharRule,
+  literalChar,
+  range,
+} from "./grammar";
 import {
   ident,
   commaSpace,
@@ -21,13 +34,36 @@ export const metaGrammar: Grammar = {
     text("."),
   ]),
   ruleName: ident,
-  rule: choice([ref("seq"), ref("choice"), ref("ref"), ref("text")]),
+  rule: choice([
+    ref("seq"),
+    ref("choice"),
+    ref("ref"),
+    ref("text"),
+    ref("charRule"),
+  ]),
   seq: block(squareBrackets, repSep(ref("rule"), commaSpace)),
   choice: block(parens, repSep(ref("rule"), spaceAround(text("|")))),
   ref: ident,
   text: stringLit,
+  // char rules
+  charRule: choice([
+    ref("crNot"),
+    ref("crRange"),
+    ref("crLiteral"),
+    ref("crAny"),
+  ]),
+  crNot: seq([text("^"), ref("charRule")]),
+  crRange: seq([
+    text("["),
+    ref("singleChar"),
+    text("-"),
+    ref("singleChar"),
+    text("]"),
+  ]),
+  crLiteral: seq([text("'"), ref("singleChar"), text("'")]),
+  crAny: text("."),
+  singleChar: charRule(anyChar), // TODO: escaping
   // TODO: repsep
-  // TODO: char rule
 };
 
 export function extractGrammar(input: string, rt: RuleTree): Grammar {
@@ -56,7 +92,27 @@ function extractRule(input: string, rt: RuleTree): Rule {
       return text(
         textForSpan(input, { from: rt.span.from + 1, to: rt.span.to - 1 })
       );
+    case "charRule":
+      return charRule(extractCharRule(input, rt.children[0]));
     default:
       throw new Error(`don't know how to extract "${rt.name}"`);
+  }
+}
+
+function extractCharRule(input: string, rt: RuleTree): SingleCharRule {
+  switch (rt.name) {
+    case "crNot":
+      return extractCharRule(input, childByName(rt, "charRule"));
+    case "crRange":
+      return range(
+        textForSpan(input, rt.children[0].span),
+        textForSpan(input, rt.children[1].span)
+      );
+    case "crLiteral":
+      return literalChar(
+        textForSpan(input, childByName(rt, "singleChar").span)
+      );
+    case "crAny":
+      return anyChar;
   }
 }

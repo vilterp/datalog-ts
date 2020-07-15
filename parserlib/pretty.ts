@@ -12,6 +12,8 @@ export function prettyPrintCharRule(rule: SingleCharRule): string {
       return `^${prettyPrintCharRule(rule.rule)}`;
     case "Literal":
       return rule.value;
+    case "AnyChar":
+      return ".";
   }
 }
 

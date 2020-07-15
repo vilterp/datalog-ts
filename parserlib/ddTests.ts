@@ -11,7 +11,7 @@ import { jsonGrammar } from "./examples/json";
 import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
-import { metaGrammar } from "./meta";
+import { metaGrammar, extractGrammar } from "./meta";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -50,7 +50,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       test() {
         runDDTestAtPath(
           "parserlib/testdata/meta.dd.txt",
-          (t) => parserTestFixedStartRule(metaGrammar, "grammar", t),
+          metaTest,
           writeResults
         );
       },
@@ -64,6 +64,22 @@ function parserTest(grammar: Grammar, test: DDTest): Result[] {
     const lines = pair.input.split("\n");
     const tree = parse(grammar, lines[0], lines.slice(1).join("\n"));
     return handleResults(pair, tree);
+  });
+}
+
+function metaTest(test: DDTest): Result[] {
+  return test.map((pair) => {
+    const traceTree = parse(metaGrammar, "grammar", pair.input);
+    const ruleTree = extractRuleTree(traceTree);
+    const grammar = extractGrammar(pair.input, ruleTree);
+    return {
+      pair,
+      actual:
+        prettyPrintRuleTree(ruleTree) +
+        "\n" +
+        JSON.stringify(grammar, null, 2) +
+        "\n",
+    };
   });
 }
 

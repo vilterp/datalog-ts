@@ -50,7 +50,8 @@ export type char = string; // lol
 export type SingleCharRule =
   | { type: "Range"; from: char; to: char }
   | { type: "Not"; rule: SingleCharRule }
-  | { type: "Literal"; value: char };
+  | { type: "Literal"; value: char }
+  | { type: "AnyChar" };
 
 export function range(from: char, to: char): SingleCharRule {
   return { type: "Range", from, to };
@@ -63,6 +64,8 @@ export function notChar(rule: SingleCharRule): SingleCharRule {
 export function literalChar(value: char): SingleCharRule {
   return { type: "Literal", value };
 }
+
+export const anyChar: SingleCharRule = { type: "AnyChar" };
 
 // TODO: dedup all the Span definitions in this codebase, lol
 export type Span = {

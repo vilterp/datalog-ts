@@ -227,5 +227,7 @@ function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
       return !matchesCharRule(charRule.rule, c);
     case "Range":
       return charRule.from <= c && c <= charRule.to;
+    case "AnyChar":
+      return true;
   }
 }

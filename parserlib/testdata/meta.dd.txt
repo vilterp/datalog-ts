@@ -1,3 +1,51 @@
-foo :- "foo"
+foo :- "foo".
+bar :- [foo, "bla"].
+digit :- [0-9].
 ----
-grammar [0-3]
+grammar [0-50]
+  ruleDefn [0-13]
+    ruleName [0-3]
+    rule [7-12]
+      text [7-12]
+  ruleDefn [14-34]
+    ruleName [14-17]
+    rule [21-33]
+      seq [21-33]
+        rule [22-25]
+          ref [22-25]
+        rule [27-32]
+          text [27-32]
+  ruleDefn [35-50]
+    ruleName [35-40]
+    rule [44-49]
+      charRule [44-49]
+        crRange [44-49]
+          singleChar [45-46]
+          singleChar [47-48]
+{
+  "foo": {
+    "type": "Text",
+    "value": "foo"
+  },
+  "bar": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "name": "foo"
+      },
+      {
+        "type": "Text",
+        "value": "bla"
+      }
+    ]
+  },
+  "digit": {
+    "type": "Char",
+    "rule": {
+      "type": "Range",
+      "from": "0",
+      "to": "9"
+    }
+  }
+}
