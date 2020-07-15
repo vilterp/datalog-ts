@@ -1,6 +1,7 @@
 import { SingleCharRule, Rule, Span } from "./grammar";
 import { RuleTree } from "./ruleTree";
 import { Tree } from "../tree";
+import { prettyPrintTree } from "../pretty";
 
 // supposed to be like regex syntax
 export function prettyPrintCharRule(rule: SingleCharRule): string {
@@ -49,4 +50,8 @@ export function renderRuleNode(n: RuleTree): string {
 
 function spanToString(span: Span): string {
   return `[${span.from}-${span.to}]`;
+}
+
+export function prettyPrintRuleTree(rt: RuleTree): string {
+  return prettyPrintTree(ruleTreeToTree(rt), (n) => renderRuleNode(n.item));
 }

@@ -10,8 +10,7 @@ import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
 import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
-import { ruleTreeToTree, renderRuleNode } from "./pretty";
-import { prettyPrintTree } from "../pretty";
+import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
 import { metaGrammar } from "./meta";
 
 // TODO: rename to stdlibGrammar? :P
@@ -81,9 +80,8 @@ function parserTestFixedStartRule(
 
 function handleResults(pair: IOPair, tree: TraceTree): Result {
   const ruleTree = extractRuleTree(tree);
-  const genericTree = ruleTreeToTree(ruleTree);
   return {
     pair,
-    actual: prettyPrintTree(genericTree, (n) => renderRuleNode(n.item)) + "\n",
+    actual: prettyPrintRuleTree(ruleTree) + "\n",
   };
 }

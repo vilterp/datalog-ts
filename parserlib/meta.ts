@@ -11,6 +11,8 @@ import {
   whitespace,
 } from "./stdlib";
 import { RuleTree, childByName, textForSpan } from "./ruleTree";
+import { prettyPrintRule, ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
+import { prettyPrintTree } from "../pretty";
 
 // hardcoded grammar for parsing grammar rules
 export const metaGrammar: Grammar = {
@@ -33,12 +35,14 @@ export function extractGrammar(input: string, rt: RuleTree): Grammar {
   const out: Grammar = {};
   rt.children.forEach((ruleDefn) => {
     const name = textForSpan(input, childByName(ruleDefn, "ruleName").span);
-    const rule = extractRule(input, childByName(ruleDefn, "rule"));
+    const rule = extractRule(input, childByName(ruleDefn, "rule").children[0]);
+    out[name] = rule;
   });
   return out;
 }
 
 function extractRule(input: string, rt: RuleTree): Rule {
+  console.log("extractRule", prettyPrintRuleTree(rt));
   switch (rt.name) {
     case "choice":
       return choice(rt.children.map((item) => extractRule(input, item)));
@@ -49,6 +53,6 @@ function extractRule(input: string, rt: RuleTree): Rule {
     case "text":
       return text(textForSpan(input, rt.span));
     default:
-      throw new Error(`don't know how to extract ${rt.name}`);
+      throw new Error(`don't know how to extract "${rt.name}"`);
   }
 }
