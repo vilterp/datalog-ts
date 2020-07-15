@@ -18,7 +18,8 @@ export const jsonGrammar: Grammar = {
     optWhitespace,
     text("}"),
   ]),
-  keyValue: seq([stringLit, text(":"), optWhitespace, ref("value")]),
+  keyValue: seq([ref("key"), text(":"), optWhitespace, ref("value")]),
+  key: stringLit,
   // array
   array: seq([
     text("["),
