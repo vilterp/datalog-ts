@@ -14,7 +14,7 @@ export function getSuggestions(interp: Interpreter): Suggestion[] {
   }
   const varSuggs: Suggestion[] = uniqBy(
     interp
-      .evalStr("ide.CurrentSuggestion{name: N, type: T, typeMatch: M}.")
+      .queryStr("ide.CurrentSuggestion{name: N, type: T, typeMatch: M}")
       .results.map(
         (res): Suggestion => {
           const rec = res.term as Rec;
