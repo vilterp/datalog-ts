@@ -6,3 +6,5 @@ export type ToClient =
       body: Statement;
     }
   | { type: "Error"; msg: string };
+
+export type ToServer = { type: "Statement"; body: Statement };

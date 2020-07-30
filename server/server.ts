@@ -10,14 +10,18 @@ import { ToClient } from "./protocol";
 
 const app = express();
 
-const index = fs.readFileSync("./ui/index.html");
-const bundle = fs.readFileSync("./ui/bundle.js");
-
 app.get("/", (req, res) => {
+  const index = fs.readFileSync("./ui/index.html");
   res.end(index);
 });
 
 app.get("/bundle.js", (req, res) => {
+  const bundle = fs.readFileSync("./ui/bundle.js");
+  res.end(bundle);
+});
+
+app.get("/bundle.js.map", (req, res) => {
+  const bundle = fs.readFileSync("./ui/bundle.js.map");
   res.end(bundle);
 });
 

@@ -1,62 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Interpreter } from "../interpreter";
 import { nullLoader } from "../loaders";
-import { Program, Rec, StringLit } from "../types";
+import { Program } from "../types";
 import { language } from "../parser";
-import { LayoutManager } from "@jaegertracing/plexus";
-// TODO(joe): Update import after killing `DirectedGraph`
-import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../testdata/family.dl";
-import { uniqBy } from "../util";
 import { TabbedTables } from "../uiCommon/tabbedTables";
 import useLocalStorage from "react-use-localstorage";
-import { Collapsible } from "../uiCommon/collapsible";
+import { ToServer } from "../server/protocol";
 
-const lm = new LayoutManager({
-  useDotEdges: true,
-  rankdir: "TB",
-  ranksep: 1.1,
-});
+type WebSocketState =
+  | { type: "Connecting" }
+  | { type: "Open"; socket: WebSocket }
+  | { type: "Closed" }
+  | { type: "Errored"; err: string };
+
+function send(socket: WebSocket, msg: ToServer) {
+  socket.send(JSON.stringify(msg));
+}
 
 function Main() {
-  const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
+  const [source, setSource] = useState("");
+  const [wsState, setWSState] = useState<WebSocketState>({
+    type: "Connecting",
+  });
+
+  useEffect(() => {
+    console.log("ws connect");
+    const ws = new WebSocket(`ws://${window.location.host}/ws`);
+    ws.addEventListener("open", () => {
+      setWSState({ type: "Open", socket: ws });
+    });
+    ws.addEventListener("message", (evt) => {
+      console.log("ws message", evt);
+    });
+    ws.addEventListener("close", () => {
+      setWSState({ type: "Closed" });
+    });
+    ws.addEventListener("error", (evt) => {
+      setWSState({ type: "Errored", err: evt.toString() });
+    });
+  }, []);
 
   let error = null;
-  let nodes = [];
-  let edges = [];
+  let program = [];
 
   const interp = new Interpreter(".", nullLoader);
   let interp2: Interpreter = null;
   try {
-    const program = language.program.tryParse(source) as Program;
+    program = language.program.tryParse(source) as Program;
     interp2 = program.reduce<Interpreter>(
       (interp, stmt) => interp.evalStmt(stmt)[1],
       interp
     );
-    edges = uniqBy(
-      interp2.queryStr("edge{from: F, to: T, label: L}").results.map((res) => ({
-        from: ((res.term as Rec).attrs.from as StringLit).val,
-        to: ((res.term as Rec).attrs.to as StringLit).val,
-        label: ((res.term as Rec).attrs.label as StringLit).val,
-      })),
-      (e) => `${e.from}-${e.to}`
-    );
-    nodes = uniqBy(
-      interp2.queryStr("node{id: I, label: L}").results.map((res) => ({
-        key: ((res.term as Rec).attrs.id as StringLit).val,
-        label: ((res.term as Rec).attrs.label as StringLit).val,
-      })),
-      (n) => n.key
-    );
   } catch (e) {
     error = e.toString();
+    interp2 = interp;
   }
 
   return (
     <div>
       <h1>Datalog Fiddle</h1>
+      <p>
+        WS State:
+        <code>{JSON.stringify(wsState)}</code>
+      </p>
       <textarea
         onChange={(evt) => setSource(evt.target.value)}
         value={source}
@@ -65,26 +74,27 @@ function Main() {
         rows={10}
       />
       <br />
+      <button
+        disabled={wsState.type !== "Open"}
+        onClick={(evt) => {
+          if (wsState.type !== "Open") {
+            return;
+          }
+          send(wsState.socket, { type: "Statement", body: program[0] });
+          wsState.socket.send(JSON.stringify({}));
+        }}
+      >
+        Send
+      </button>
+      <br />
       {error ? (
         <>
           <h3>Error</h3>
-          <pre>{error}</pre>
+          <pre style={{ color: "red" }}>{error}</pre>
         </>
       ) : null}
       <h3>Explore</h3>
       <TabbedTables interp={interp2} />
-      <Collapsible
-        heading="Graph"
-        initiallyCollapsed={true}
-        content={
-          <Digraph
-            zoom={true}
-            edges={edges}
-            vertices={nodes}
-            layoutManager={lm}
-          />
-        }
-      />
     </div>
   );
 }
