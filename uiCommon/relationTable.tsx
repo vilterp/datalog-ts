@@ -142,12 +142,12 @@ export function RelationTable(props: {
           </tbody>
         </table>
       )}
-      <PossibleTreeViz results={results} />
+      <MaybeTreeViz results={results} />
     </>
   );
 }
 
-function PossibleTreeViz(props: { results: Res[] }) {
+function MaybeTreeViz(props: { results: Res[] }) {
   if (props.results.length === 0) {
     return null;
   }

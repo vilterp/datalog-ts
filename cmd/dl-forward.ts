@@ -2,7 +2,7 @@ import * as WebSocket from "ws";
 import * as readline from "readline";
 import { language } from "../parser";
 import { Statement } from "../types";
-import { ToClient, ToServer } from "../server/protocol";
+import { ToServer } from "../server/protocol";
 
 async function main(): Promise<number> {
   const addr = process.argv[2];

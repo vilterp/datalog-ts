@@ -76,8 +76,8 @@ function Main() {
       />
       <br />
       <button
-        disabled={wsState.type !== "Open"}
-        onClick={(evt) => {
+        disabled={wsState.type !== "Open" && !error}
+        onClick={() => {
           if (wsState.type !== "Open") {
             return;
           }
