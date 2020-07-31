@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import ReactDOM from "react-dom";
 import { Interpreter } from "../interpreter";
 import { nullLoader } from "../loaders";
-import { Program } from "../types";
+import { Statement } from "../types";
 import { language } from "../parser";
 // @ts-ignore
 import familyDL from "../testdata/family.dl";
 import { TabbedTables } from "../uiCommon/tabbedTables";
 import useLocalStorage from "react-use-localstorage";
-import { ToServer } from "../server/protocol";
+import { ToServer, ToClient } from "../server/protocol";
 
 type WebSocketState =
   | { type: "Connecting" }
@@ -17,14 +17,19 @@ type WebSocketState =
   | { type: "Errored"; err: string };
 
 function send(socket: WebSocket, msg: ToServer) {
+  console.log("sending", msg);
   socket.send(JSON.stringify(msg));
 }
 
 function Main() {
-  const [source, setSource] = useState("");
+  const [source, setSource] = useLocalStorage("datalog-ui-source", "");
   const [wsState, setWSState] = useState<WebSocketState>({
     type: "Connecting",
   });
+  const [interp, dispatch] = useReducer((interp, stmt) => {
+    const [_, newInterp] = interp.evalStmt(stmt);
+    return newInterp;
+  }, new Interpreter(".", nullLoader));
 
   useEffect(() => {
     console.log("ws connect");
@@ -34,6 +39,15 @@ function Main() {
     });
     ws.addEventListener("message", (evt) => {
       console.log("ws message", evt);
+      const msg = JSON.parse(evt.data) as ToClient;
+      switch (msg.type) {
+        case "Broadcast":
+          dispatch(msg.body);
+          return;
+        case "Error":
+          console.error("error from server", msg.msg);
+          return;
+      }
     });
     ws.addEventListener("close", () => {
       setWSState({ type: "Closed" });
@@ -43,20 +57,13 @@ function Main() {
     });
   }, []);
 
-  let error = null;
-  let program = [];
+  let error: string = null;
+  let stmt: Statement = null;
 
-  const interp = new Interpreter(".", nullLoader);
-  let interp2: Interpreter = null;
   try {
-    program = language.program.tryParse(source) as Program;
-    interp2 = program.reduce<Interpreter>(
-      (interp, stmt) => interp.evalStmt(stmt)[1],
-      interp
-    );
+    stmt = language.statement.tryParse(source) as Statement;
   } catch (e) {
     error = e.toString();
-    interp2 = interp;
   }
 
   return (
@@ -80,7 +87,7 @@ function Main() {
           if (wsState.type !== "Open") {
             return;
           }
-          send(wsState.socket, { type: "Statement", body: program[0] });
+          send(wsState.socket, { type: "Statement", body: stmt });
           wsState.socket.send(JSON.stringify({}));
         }}
       >
@@ -94,7 +101,7 @@ function Main() {
         </>
       ) : null}
       <h3>Explore</h3>
-      <TabbedTables interp={interp2} />
+      <TabbedTables interp={interp} />
     </div>
   );
 }

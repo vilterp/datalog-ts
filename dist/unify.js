@@ -56,6 +56,9 @@ function doUnify(prior, left, right) {
         case "Record": {
             switch (right.type) {
                 case "Record":
+                    if (left.relation !== right.relation) {
+                        return null;
+                    }
                     var accum = {};
                     for (var _i = 0, _f = Object.keys(left.attrs); _i < _f.length; _i++) {
                         var key = _f[_i];

@@ -6,7 +6,7 @@ import * as fs from "fs";
 import { language } from "../parser";
 import { Statement } from "../types";
 import { hasVars } from "../simpleEvaluate";
-import { ToClient } from "./protocol";
+import { ToClient, ToServer } from "./protocol";
 
 const app = express();
 
@@ -31,7 +31,8 @@ const server = http.createServer(app);
 //initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server, path: "/ws" });
 
-const interp = new Interpreter(".", () => {
+// TODO: wrap this up in an object
+let interp = new Interpreter(".", () => {
   throw new Error("not found");
 });
 
@@ -41,16 +42,21 @@ wss.on("connection", (ws: WebSocket) => {
   connections.push(ws);
   //connection is up, let's add a simple simple event
   ws.on("message", (message: string) => {
-    try {
-      const stmt = language.statement.tryParse(message) as Statement;
-      if (evalAndSend(stmt)) {
-        console.log("hello? evaluating", stmt);
-        interp.evalStmt(stmt);
-        sendToAll(connections, { type: "Broadcast", body: stmt });
-      }
-    } catch (e) {
-      console.error(`from: ${ws.url}:`, e);
-      sendToOne(ws, { type: "Error", msg: e.toString() });
+    const msg = JSON.parse(message) as ToServer;
+    switch (msg.type) {
+      case "Statement":
+        const stmt = msg.body;
+        try {
+          if (isDefnOrInsert(stmt)) {
+            const [res, newInterp] = interp.evalStmt(stmt);
+            interp = newInterp;
+            sendToAll(connections, { type: "Broadcast", body: stmt });
+          }
+        } catch (e) {
+          console.error(`from: ${ws.url}:`, e);
+          sendToOne(ws, { type: "Error", msg: e.toString() });
+        }
+        break;
     }
   });
 });
@@ -67,7 +73,7 @@ function sendToOne(conn: WebSocket, msg: ToClient) {
   conn.send(JSON.stringify(msg));
 }
 
-function evalAndSend(stmt: Statement): boolean {
+function isDefnOrInsert(stmt: Statement): boolean {
   switch (stmt.type) {
     case "Insert":
       if (!hasVars(stmt.record)) {

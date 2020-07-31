@@ -35,7 +35,7 @@ function Main() {
 
   return (
     <div>
-      <h1>Datalog Typechecker</h1>
+      <h1>Datalog Typechecker!!!</h1>
       <h2>Source</h2>
       {editor}
 

@@ -1,6 +1,13 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 exports.__esModule = true;
-exports.clamp = exports.pairsToObj = exports.groupBy = exports.lastItem = exports.getFirst = exports.arrayEq = exports.updateAtIdx = exports.uniqBy = exports.uniq = exports.repeatArr = exports.repeat = exports.flatMap = exports.flatMapObjToList = exports.mapObjToList = exports.mapObjMaybe = exports.intersperseIdx = exports.intersperse = exports.filterMap = exports.mapObj = void 0;
+exports.flatten = exports.updateAtIdx = exports.removeAtIdx = exports.insertAtIdx = exports.clamp = exports.pairsToObj = exports.groupBy = exports.lastItem = exports.getFirst = exports.arrayEq = exports.uniqBy = exports.uniq = exports.repeatArr = exports.repeat = exports.flatMap = exports.flatMapObjToList = exports.mapObjToList = exports.mapObjMaybe = exports.intersperseIdx = exports.intersperse = exports.filterMap = exports.mapObj = void 0;
 function mapObj(obj, f) {
     var out = {};
     for (var _i = 0, _a = Object.keys(obj); _i < _a.length; _i++) {
@@ -118,10 +125,6 @@ function uniqBy(l, f) {
     return out;
 }
 exports.uniqBy = uniqBy;
-function updateAtIdx(arr, idx, update) {
-    return arr.map(function (item, curIdx) { return (curIdx === idx ? update(item) : item); });
-}
-exports.updateAtIdx = updateAtIdx;
 function arrayEq(a, b, cmp) {
     return (a.length === b.length &&
         a.reduce(function (accum, el, idx) { return accum && cmp(el, b[idx]); }, true));
@@ -175,3 +178,25 @@ function clamp(n, range) {
     return n;
 }
 exports.clamp = clamp;
+function insertAtIdx(arr, idx, item) {
+    return __spreadArrays(arr.slice(0, idx), [item], arr.slice(idx));
+}
+exports.insertAtIdx = insertAtIdx;
+function removeAtIdx(arr, idx) {
+    return __spreadArrays(arr.slice(0, idx), arr.slice(idx + 1));
+}
+exports.removeAtIdx = removeAtIdx;
+function updateAtIdx(arr, idx, update) {
+    return arr.map(function (item, curIdx) { return (curIdx === idx ? update(item) : item); });
+}
+exports.updateAtIdx = updateAtIdx;
+function flatten(results) {
+    var out = [];
+    results.forEach(function (resGroup) {
+        resGroup.forEach(function (res) {
+            out.push(res);
+        });
+    });
+    return out;
+}
+exports.flatten = flatten;

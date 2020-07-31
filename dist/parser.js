@@ -63,7 +63,7 @@ exports.language = P.createLanguage({
         return P.alt(r.arrayLit, r["var"], r.boolLit, r.record, r.stringLit, r.intLit);
     },
     record: function (r) {
-        return P.seq(r.recordIdentifier, r.lbrace, r.pair.sepBy(r.comma), r.rbrace).map(function (_a) {
+        return P.seq(r.recordIdentifier, r.lbrace, r.pair.sepBy(r.comma).skip(P.optWhitespace), r.rbrace).map(function (_a) {
             var ident = _a[0], _ = _a[1], pairs = _a[2], __ = _a[3];
             return ({
                 type: "Record",
