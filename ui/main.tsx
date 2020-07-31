@@ -66,10 +66,7 @@ function Main() {
   return (
     <div>
       <h1>Datalog Fiddle</h1>
-      <p>
-        WS State:
-        <code>{JSON.stringify(wsState)}</code>
-      </p>
+      <p>WS State: {wsState.type}</p>
       <textarea
         onChange={(evt) => setSource(evt.target.value)}
         value={source}

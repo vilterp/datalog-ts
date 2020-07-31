@@ -3,7 +3,6 @@ import * as http from "http";
 import * as WebSocket from "ws";
 import { Interpreter } from "../interpreter";
 import * as fs from "fs";
-import { language } from "../parser";
 import { Statement } from "../types";
 import { hasVars } from "../simpleEvaluate";
 import { ToClient, ToServer } from "./protocol";
