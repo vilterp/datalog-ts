@@ -39,7 +39,9 @@ let interp = new Interpreter(".", () => {
 const connections: WebSocket[] = [];
 
 wss.on("connection", (ws: WebSocket) => {
+  console.log("connection");
   connections.push(ws);
+  catchUp(ws, interp);
   //connection is up, let's add a simple simple event
   ws.on("message", (message: string) => {
     const msg = JSON.parse(message) as ToServer;
@@ -62,6 +64,21 @@ wss.on("connection", (ws: WebSocket) => {
 });
 
 // TODO: handle disconnect
+
+function catchUp(ws: WebSocket, interp: Interpreter) {
+  console.log("catch up");
+  Object.values(interp.db.tables).forEach((table) => {
+    table.forEach((record) => {
+      sendToOne(ws, { type: "Broadcast", body: { type: "Insert", record } });
+    });
+  });
+  Object.values(interp.db.rules).forEach((rule) => {
+    sendToOne(ws, {
+      type: "Broadcast",
+      body: { type: "Rule", rule },
+    });
+  });
+}
 
 function sendToAll(conns: WebSocket[], msg: ToClient) {
   conns.forEach((conn) => {

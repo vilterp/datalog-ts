@@ -17,7 +17,6 @@ type WebSocketState =
   | { type: "Errored"; err: string };
 
 function send(socket: WebSocket, msg: ToServer) {
-  console.log("sending", msg);
   socket.send(JSON.stringify(msg));
 }
 
@@ -32,13 +31,11 @@ function Main() {
   }, new Interpreter(".", nullLoader));
 
   useEffect(() => {
-    console.log("ws connect");
     const ws = new WebSocket(`ws://${window.location.host}/ws`);
     ws.addEventListener("open", () => {
       setWSState({ type: "Open", socket: ws });
     });
     ws.addEventListener("message", (evt) => {
-      console.log("ws message", evt);
       const msg = JSON.parse(evt.data) as ToClient;
       switch (msg.type) {
         case "Broadcast":
