@@ -32,7 +32,7 @@ function Main() {
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const ws = new WebSocket(`${protocol}://${window.location.host}/ws`);
+    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
     ws.addEventListener("open", () => {
       setWSState({ type: "Open", socket: ws });
     });
