@@ -63,6 +63,8 @@ function Main() {
     error = e.toString();
   }
 
+  console.log([wsState.type !== "Open", !error]);
+
   return (
     <div>
       <h1>Datalog Fiddle</h1>

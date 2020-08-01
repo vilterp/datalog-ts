@@ -9,11 +9,29 @@ import {
   ScopePath,
   InvocationLocation,
   SituatedBinding,
+  Statement,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList, repeat, flatMap } from "./util";
 import { Tree } from "./tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
+
+export function prettyPrintStatement(stmt: Statement): pp.IDoc {
+  switch (stmt.type) {
+    case "Comment":
+      return `# ${stmt.comment}`;
+    case "Insert":
+      return [prettyPrintTerm(stmt.record), "."];
+    case "Rule":
+      return [prettyPrintRule(stmt.rule), "."];
+    case "TableDecl":
+      return `.table ${stmt.type}`;
+    case "LoadStmt":
+      return `.load ${stmt.path}`;
+    case "TraceStmt":
+      return [".trace ", prettyPrintTerm(stmt.record), "."];
+  }
+}
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {

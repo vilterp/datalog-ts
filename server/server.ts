@@ -1,11 +1,34 @@
 import * as express from "express";
 import * as http from "http";
 import * as WebSocket from "ws";
+import * as pp from "prettier-printer";
 import { Interpreter } from "../interpreter";
 import * as fs from "fs";
-import { Statement } from "../types";
+import { Statement, Program } from "../types";
 import { hasVars } from "../simpleEvaluate";
 import { ToClient, ToServer } from "./protocol";
+import { language } from "../parser";
+import { prettyPrintStatement } from "../pretty";
+
+const filePath = process.argv[2];
+
+const fileDesc = fs.openSync(filePath, "as+");
+
+function loadInitial(fileDesc: number): Interpreter {
+  const contents = fs.readFileSync(fileDesc);
+  const prog = language.program.tryParse(contents.toString()) as Program;
+  return prog.reduce(
+    (interp, stmt) => {
+      const [_, newInterp] = interp.evalStmt(stmt);
+      return newInterp;
+    },
+    new Interpreter(".", () => {
+      throw new Error("not found");
+    })
+  );
+}
+
+let interp = loadInitial(fileDesc);
 
 const app = express();
 
@@ -30,11 +53,6 @@ const server = http.createServer(app);
 //initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server, path: "/ws" });
 
-// TODO: wrap this up in an object
-let interp = new Interpreter(".", () => {
-  throw new Error("not found");
-});
-
 const connections: WebSocket[] = [];
 
 wss.on("connection", (ws: WebSocket) => {
@@ -49,9 +67,14 @@ wss.on("connection", (ws: WebSocket) => {
         const stmt = msg.body;
         try {
           if (isDefnOrInsert(stmt)) {
-            const [res, newInterp] = interp.evalStmt(stmt);
+            const [_, newInterp] = interp.evalStmt(stmt);
             interp = newInterp;
             sendToAll(connections, { type: "Broadcast", body: stmt });
+            const printed = prettyPrintStatement(stmt);
+            const prettyPrinted = pp.render(1000, printed);
+            fs.write(fileDesc, prettyPrinted + "\n", () => {
+              // TODO: ack write
+            });
           }
         } catch (e) {
           console.error(`from: ${ws.url}:`, e);
@@ -65,7 +88,6 @@ wss.on("connection", (ws: WebSocket) => {
 // TODO: handle disconnect
 
 function catchUp(ws: WebSocket, interp: Interpreter) {
-  console.log("catch up");
   Object.values(interp.db.tables).forEach((table) => {
     table.forEach((record) => {
       sendToOne(ws, { type: "Broadcast", body: { type: "Insert", record } });
