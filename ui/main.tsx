@@ -2,7 +2,7 @@ import React, { useEffect, useState, useReducer } from "react";
 import ReactDOM from "react-dom";
 import { Interpreter } from "../interpreter";
 import { nullLoader } from "../loaders";
-import { Statement } from "../types";
+import { Program } from "../types";
 import { language } from "../parser";
 // @ts-ignore
 import familyDL from "../testdata/family.dl";
@@ -56,10 +56,10 @@ function Main() {
   }, []);
 
   let error: string = null;
-  let stmt: Statement = null;
+  let prog: Program = null;
 
   try {
-    stmt = language.statement.tryParse(source) as Statement;
+    prog = language.program.tryParse(source) as Program;
   } catch (e) {
     error = e.toString();
   }
@@ -82,7 +82,9 @@ function Main() {
           if (wsState.type !== "Open") {
             return;
           }
-          send(wsState.socket, { type: "Statement", body: stmt });
+          prog.forEach((stmt) => {
+            send(wsState.socket, { type: "Statement", body: stmt });
+          });
           wsState.socket.send(JSON.stringify({}));
         }}
       >
