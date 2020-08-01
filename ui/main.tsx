@@ -31,7 +31,8 @@ function Main() {
   }, new Interpreter(".", nullLoader));
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://${window.location.host}/ws`);
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const ws = new WebSocket(`${protocol}://${window.location.host}/ws`);
     ws.addEventListener("open", () => {
       setWSState({ type: "Open", socket: ws });
     });
@@ -62,8 +63,6 @@ function Main() {
   } catch (e) {
     error = e.toString();
   }
-
-  console.log([wsState.type !== "Open", !error]);
 
   return (
     <div>
