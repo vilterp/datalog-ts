@@ -36,7 +36,7 @@ function lineToRec(line: string): Rec {
       });
     case "finish_span":
       return rec("trace_evt.finish_span", base);
-    default:
-      return null;
+    case "log":
+      return rec("trace_evt.log", { ...base, line: str(evt.line) });
   }
 }
