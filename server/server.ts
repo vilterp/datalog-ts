@@ -17,6 +17,7 @@ const fileDesc = fs.openSync(filePath, "as+");
 function loadInitial(fileDesc: number): Interpreter {
   const contents = fs.readFileSync(fileDesc);
   const prog = language.program.tryParse(contents.toString()) as Program;
+
   return prog.reduce(
     (interp, stmt) => {
       const [_, newInterp] = interp.evalStmt(stmt);
@@ -88,7 +89,12 @@ wss.on("connection", (ws: WebSocket) => {
 // TODO: handle disconnect
 
 function catchUp(ws: WebSocket, interp: Interpreter) {
-  Object.values(interp.db.tables).forEach((table) => {
+  Object.keys(interp.db.tables).forEach((tableName) => {
+    const table = interp.db.tables[tableName];
+    sendToOne(ws, {
+      type: "Broadcast",
+      body: { type: "TableDecl", name: tableName },
+    });
     table.forEach((record) => {
       sendToOne(ws, { type: "Broadcast", body: { type: "Insert", record } });
     });

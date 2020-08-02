@@ -25,7 +25,7 @@ export function prettyPrintStatement(stmt: Statement): pp.IDoc {
     case "Rule":
       return [prettyPrintRule(stmt.rule), "."];
     case "TableDecl":
-      return `.table ${stmt.type}`;
+      return `.table ${stmt.name}`;
     case "LoadStmt":
       return `.load ${stmt.path}`;
     case "TraceStmt":

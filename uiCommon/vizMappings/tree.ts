@@ -1,8 +1,8 @@
 import { Tree } from "../../tree";
-import { Rec, StringLit } from "../../types";
+import { Rec } from "../../types";
 import { ppt } from "../../pretty";
 
-type TermGraph = { [parentTerm: string]: Rec[] };
+type ParentToChildren = { [parentTerm: string]: Rec[] };
 
 export function canTreeViz(rec: Rec): boolean {
   const fields = Object.keys(rec.attrs);
@@ -13,17 +13,20 @@ export function canTreeViz(rec: Rec): boolean {
 // TODO: maybe specify a variable, and grab that binding?
 //   showing whole record is a bit noisy
 export function treeFromRecords(records: Rec[], rootTerm: string): Tree<Rec> {
-  const graph: TermGraph = {};
+  const graph: ParentToChildren = {};
   records.forEach((rec) => {
-    const parentID = (rec.attrs.parent as StringLit).val;
+    const parentID = ppt(rec.attrs.parent);
     const newChildren = [...(graph[parentID] || []), rec];
     graph[parentID] = newChildren;
   });
-  return mkTree(graph, rootTerm, null);
+  console.log(graph);
+  const tree = mkTree(graph, rootTerm, null);
+  console.log(tree);
+  return tree;
 }
 
 function mkTree(
-  termGraph: TermGraph,
+  termGraph: ParentToChildren,
   curID: string,
   curRec: Rec | null
 ): Tree<Rec> {
