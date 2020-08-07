@@ -32,9 +32,11 @@
     "prettier": "^2.0.4"
   },
   "dependencies": {
+    "@types/oboe": "^2.0.29",
     "@types/ws": "^7.2.6",
     "classnames": "^2.2.6",
     "express": "^4.17.1",
+    "oboe": "^2.1.5",
     "parsimmon": "^1.13.0",
     "prettier-printer": "^1.1.4",
     "react": "^16.13.1",

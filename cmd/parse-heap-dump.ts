@@ -5,6 +5,7 @@ const stream = oboe(process.stdin);
 
 const nodes = fs.openSync("./nodes.csv", "w");
 const edges = fs.openSync("./edges.csv", "w");
+const strings = fs.openSync("./strings.csv", "w");
 
 const COLS_NODES = 6;
 const COLS_EDGES = 3;
@@ -35,7 +36,16 @@ stream.node(".edges.*", (val, pathOrHeaders) => {
   fs.writeSync(edges, val);
 });
 
+stream.node(".strings.*", (val, pathOrHeaders) => {
+  const idx = parseInt(pathOrHeaders[1]);
+  fs.writeSync(strings, `${idx},"${escapeStr(val)}"\n`);
+});
+
 stream.done(() => {
   fs.closeSync(nodes);
   fs.closeSync(edges);
 });
+
+function escapeStr(s: string): string {
+  return s.split(`"`).join(`\\"`);
+}
