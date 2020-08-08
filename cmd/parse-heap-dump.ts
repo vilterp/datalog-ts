@@ -47,5 +47,5 @@ stream.done(() => {
 });
 
 function escapeStr(s: string): string {
-  return s.split(`"`).join(`\\"`);
+  return s.split(`"`).join(`""`);
 }
