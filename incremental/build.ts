@@ -1,5 +1,5 @@
 import { Rule, Rec, OrExpr, BinExpr } from "../types";
-import { RuleGraph, NodeDesc, NodeID } from "./types";
+import { RuleGraph, NodeDesc, NodeID, EdgeDestination } from "./types";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(graph, { type: "BaseFactTable", name }, name);
@@ -16,7 +16,7 @@ function addOr(orID: NodeID, graph: RuleGraph, or: OrExpr): RuleGraph {
   const g1 = addNodeKnownID(graph, { type: "Union" }, orID);
   return or.opts.reduce((curG, andExpr) => {
     const [withAnd, andID] = addAnd(curG, andExpr.clauses);
-    return addEdge(withAnd, andID, orID);
+    return addEdge(withAnd, andID, { toID: orID });
   }, g1);
 }
 
@@ -43,8 +43,8 @@ function addAndBinary(
     rightAttr: "bar",
   });
   const [g2, leftID] = addTerm(g1, left);
-  const g3 = addEdge(g2, leftID, joinID);
-  const g4 = addEdge(g3, rightID, joinID);
+  const g3 = addEdge(g2, leftID, { toID: joinID, joinSide: "left" });
+  const g4 = addEdge(g3, rightID, { toID: joinID, joinSide: "right" });
   return [g4, joinID];
 }
 
@@ -81,7 +81,11 @@ function addNode(graph: RuleGraph, node: NodeDesc): [RuleGraph, NodeID] {
   ];
 }
 
-function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
+function addEdge(
+  graph: RuleGraph,
+  from: NodeID,
+  to: EdgeDestination
+): RuleGraph {
   return {
     ...graph,
     edges: { ...graph.edges, [from]: [...(graph.edges[from] || []), to] },

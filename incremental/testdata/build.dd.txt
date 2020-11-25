@@ -8,9 +8,9 @@ digraph G {
   "father" [label="father"];
   "matGramp" [label="matGramp: Union"];
   "mother" [label="mother"];
-  "0" -> "matGramp" [];
-  "father" -> "0" [];
-  "mother" -> "0" []
+  "0" -> "matGramp" [label=""];
+  "father" -> "0" [label="right"];
+  "mother" -> "0" [label="left"]
 }
 
 .table mother;
@@ -22,10 +22,10 @@ digraph G {
   "0" [label="0: Join(foo == bar)"];
   "matAncestor" [label="matAncestor: Union"];
   "mother" [label="mother"];
-  "0" -> "matAncestor" [];
-  "matAncestor" -> "0" [];
-  "mother" -> "matAncestor" [];
-  "mother" -> "0" []
+  "0" -> "matAncestor" [label=""];
+  "matAncestor" -> "0" [label="right"];
+  "mother" -> "matAncestor" [label=""];
+  "mother" -> "0" [label="left"]
 }
 
 foo{a: A} :- bar{a: A}.;
@@ -34,6 +34,25 @@ bar{a: A} :- foo{a: A}.
 digraph G {
   "bar" [label="bar: Union"];
   "foo" [label="foo: Union"];
-  "bar" -> "foo" [];
-  "foo" -> "bar" []
+  "bar" -> "foo" [label=""];
+  "foo" -> "bar" [label=""]
+}
+
+.table a;
+.table b;
+.table c;
+d{} :- a{} & b{} & c{}.
+----
+digraph G {
+  "0" [label="0: Join(foo == bar)"];
+  "1" [label="1: Join(foo == bar)"];
+  "a" [label="a"];
+  "b" [label="b"];
+  "c" [label="c"];
+  "d" [label="d: Union"];
+  "0" -> "1" [label="right"];
+  "1" -> "d" [label=""];
+  "a" -> "1" [label="left"];
+  "b" -> "0" [label="left"];
+  "c" -> "0" [label="right"]
 }

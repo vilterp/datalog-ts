@@ -1,6 +1,30 @@
 import { RuleGraph, NodeID } from "./types";
 import { Rec, Term } from "../types";
 
+export function insertFact(
+  graph: RuleGraph,
+  rec: Rec
+): { newGraph: RuleGraph; newFacts: Rec[] } {
+  let toInsert = [rec];
+  let newGraph = graph;
+  let allNewFacts = [];
+  while (toInsert.length > 0) {
+    const insertingNow = toInsert.shift();
+    let {
+      newGraph: newGraphFromThisIteration,
+      newFacts: newFactsFromThisIteration,
+    } = stepAssert(graph, insertingNow);
+    for (let newFact of newFactsFromThisIteration) {
+      toInsert.push(newFact);
+      allNewFacts.push(newFact);
+      newGraph = newGraphFromThisIteration;
+    }
+  }
+  return { newGraph, newFacts: allNewFacts };
+}
+
+type Insertion = { nodeID: NodeID; rec: Rec; joinSide?: "left" | "right" };
+
 function stepAssert(
   graph: RuleGraph,
   rec: Rec
@@ -12,12 +36,14 @@ function stepAssert(
 }
 
 // caller adds resulting facts
-function processAssert(graph: RuleGraph, nodeID: NodeID, rec: Rec): Rec[] {
-  const node = graph.nodes[nodeID];
+function processAssert(graph: RuleGraph, ins: Insertion): Insertion[] {
+  const node = graph.nodes[ins.nodeID];
+  const outEdges = graph.edges[ins.nodeID];
   switch (node.node.type) {
     case "Union":
-      return [rec];
+      return outEdges.map((nodeID) => ({ rec: ins.rec, nodeID }));
     case "Join":
+      // look at other side of join
       return XXX;
     case "Match":
       // TODO: actually match

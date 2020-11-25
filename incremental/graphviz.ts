@@ -17,11 +17,13 @@ export function toGraphviz(graph: RuleGraph): Graph {
         },
       };
     }),
-    edges: flatMapObjToList(graph.edges, (fromID, toIDs) =>
-      toIDs.map((toID) => ({
+    edges: flatMapObjToList(graph.edges, (fromID, destinations) =>
+      destinations.map((dst) => ({
         from: fromID,
-        to: toID,
-        attrs: {},
+        to: dst.toID,
+        attrs: {
+          label: dst.joinSide || "",
+        },
       }))
     ),
   };
