@@ -189,7 +189,22 @@ mother{child: "Pete", mother: "Mary"}.
           "type": "BaseFactTable",
           "name": "mother"
         },
-        "cache": []
+        "cache": [
+          {
+            "type": "Record",
+            "relation": "mother",
+            "attrs": {
+              "child": {
+                "type": "StringLit",
+                "val": "Pete"
+              },
+              "mother": {
+                "type": "StringLit",
+                "val": "Mary"
+              }
+            }
+          }
+        ]
       },
       "father": {
         "node": {
@@ -302,14 +317,44 @@ father{child: "Mary", father: "Mark"}.
           "type": "BaseFactTable",
           "name": "mother"
         },
-        "cache": []
+        "cache": [
+          {
+            "type": "Record",
+            "relation": "mother",
+            "attrs": {
+              "child": {
+                "type": "StringLit",
+                "val": "Pete"
+              },
+              "mother": {
+                "type": "StringLit",
+                "val": "Mary"
+              }
+            }
+          }
+        ]
       },
       "father": {
         "node": {
           "type": "BaseFactTable",
           "name": "father"
         },
-        "cache": []
+        "cache": [
+          {
+            "type": "Record",
+            "relation": "father",
+            "attrs": {
+              "child": {
+                "type": "StringLit",
+                "val": "Mary"
+              },
+              "father": {
+                "type": "StringLit",
+                "val": "Mark"
+              }
+            }
+          }
+        ]
       },
       "matGramp": {
         "node": {

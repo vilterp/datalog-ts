@@ -1,14 +1,13 @@
-import { runDDTestAtPath, DDTest, Result } from "../util/dataDrivenTests";
+import { runDDTestAtPath, DDTest } from "../util/dataDrivenTests";
 import { Suite } from "../testing";
-import { addRule, declareTable } from "./build";
 import { language } from "../parser";
-import { emptyRuleGraph, RuleGraph } from "./types";
+import { emptyRuleGraph } from "./types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
-import { Rec, Rule, Statement } from "../types";
+import { Statement } from "../types";
 import { scan } from "../util";
-import { insertFact } from "./eval";
-import { ppt, prettyPrintTerm } from "../pretty";
+import { processStmt } from "./eval";
+import { ppt } from "../pretty";
 
 export function incrTests(writeResults: boolean): Suite {
   return [
@@ -71,22 +70,4 @@ function evalTest(test: DDTest): string[] {
 
 function parseStatement(str: string): Statement {
   return language.statement.tryParse(str);
-}
-
-function processStmt(
-  graph: RuleGraph,
-  stmt: Statement
-): { newGraph: RuleGraph; newFacts: Rec[] } {
-  switch (stmt.type) {
-    case "TableDecl": {
-      const newGraph = declareTable(graph, stmt.name);
-      return { newGraph, newFacts: [] };
-    }
-    case "Rule": {
-      const newGraph = addRule(graph, stmt.rule);
-      return { newGraph, newFacts: [] };
-    }
-    case "Insert":
-      return insertFact(graph, stmt.record);
-  }
 }

@@ -25,7 +25,6 @@ function resultsToStr(results: Result[]): string {
   const resultStrs = results.map((r) =>
     [r.pair.input, "----", r.actual].join("\n")
   );
-  console.log({ resultStrs });
   return resultStrs.join("\n\n") + "\n";
 }
 
@@ -42,7 +41,6 @@ export function runDDTestAtPath(
 ) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
-  console.log(test);
   const outputs = getResults(test);
   const results = zip(test, outputs, (pair, actual) => ({ pair, actual }));
   if (writeResults) {

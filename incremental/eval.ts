@@ -1,8 +1,26 @@
 import { RuleGraph, NodeID, EdgeDestination } from "./types";
-import { Bindings, Rec, Term } from "../types";
+import { Bindings, Rec, Statement, Term } from "../types";
 import { unify } from "../unify";
-import { flatten } from "../fp/flatten";
 import { flatMap } from "../util";
+import { addRule, declareTable } from "./build";
+
+export function processStmt(
+  graph: RuleGraph,
+  stmt: Statement
+): { newGraph: RuleGraph; newFacts: Rec[] } {
+  switch (stmt.type) {
+    case "TableDecl": {
+      const newGraph = declareTable(graph, stmt.name);
+      return { newGraph, newFacts: [] };
+    }
+    case "Rule": {
+      const newGraph = addRule(graph, stmt.rule);
+      return { newGraph, newFacts: [] };
+    }
+    case "Insert":
+      return insertFact(graph, stmt.record);
+  }
+}
 
 export function insertFact(
   graph: RuleGraph,
@@ -14,11 +32,11 @@ export function insertFact(
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
     const newInsertions = processInsertion(graph, insertingNow);
+    newGraph = addToCache(newGraph, insertingNow.dest.toID, insertingNow.rec);
     for (let newInsertion of newInsertions) {
       toInsert.push(newInsertion);
       // TODO: maybe limit to just external nodes?
       allNewFacts.push(newInsertion.rec);
-      newGraph = addToCache(newGraph, newInsertion.dest.toID, newInsertion.rec);
     }
   }
   return { newGraph, newFacts: allNewFacts };
