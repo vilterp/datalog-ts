@@ -5,10 +5,12 @@ matGramp{child: A, grandfather: C} :-
 ----
 digraph G {
   "0" [label="0: Join(mother{child: A, mother: B} & father{child: B, father: C})"];
+  "1" [label="1: Match(matGramp{child: A, grandfather: C})"];
   "father" [label="father"];
   "matGramp" [label="matGramp: Union"];
   "mother" [label="mother"];
-  "0" -> "matGramp" [label=""];
+  "0" -> "1" [label=""];
+  "1" -> "matGramp" [label=""];
   "father" -> "0" [label="right"];
   "mother" -> "0" [label="left"]
 }
@@ -19,23 +21,31 @@ matAncestor{desc: D, an: A} :-
   mother{desc: D, an: B} & matAncestor{desc: B, an: A}.
 ----
 digraph G {
-  "0" [label="0: Join(mother{an: B, desc: D} & matAncestor{an: A, desc: B})"];
+  "0" [label="0: Match(matAncestor{an: A, desc: D})"];
+  "1" [label="1: Join(mother{an: B, desc: D} & matAncestor{an: A, desc: B})"];
+  "2" [label="2: Match(matAncestor{an: A, desc: D})"];
   "matAncestor" [label="matAncestor: Union"];
   "mother" [label="mother"];
   "0" -> "matAncestor" [label=""];
-  "matAncestor" -> "0" [label="right"];
-  "mother" -> "matAncestor" [label=""];
-  "mother" -> "0" [label="left"]
+  "1" -> "2" [label=""];
+  "2" -> "matAncestor" [label=""];
+  "matAncestor" -> "1" [label="right"];
+  "mother" -> "0" [label=""];
+  "mother" -> "1" [label="left"]
 }
 
 foo{a: A} :- bar{a: A}.;
 bar{a: A} :- foo{a: A}.
 ----
 digraph G {
+  "0" [label="0: Match(foo{a: A})"];
+  "1" [label="1: Match(bar{a: A})"];
   "bar" [label="bar: Union"];
   "foo" [label="foo: Union"];
-  "bar" -> "foo" [label=""];
-  "foo" -> "bar" [label=""]
+  "0" -> "foo" [label=""];
+  "1" -> "bar" [label=""];
+  "bar" -> "0" [label=""];
+  "foo" -> "1" [label=""]
 }
 
 .table a;
@@ -46,12 +56,14 @@ d{} :- a{} & b{} & c{}.
 digraph G {
   "0" [label="0: Join(b{} & c{})"];
   "1" [label="1: Join(a{} & c{})"];
+  "2" [label="2: Match(d{})"];
   "a" [label="a"];
   "b" [label="b"];
   "c" [label="c"];
   "d" [label="d: Union"];
   "0" -> "1" [label="right"];
-  "1" -> "d" [label=""];
+  "1" -> "2" [label=""];
+  "2" -> "d" [label=""];
   "a" -> "1" [label="left"];
   "b" -> "0" [label="left"];
   "c" -> "0" [label="right"]

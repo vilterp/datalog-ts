@@ -49,7 +49,7 @@ matGramp{child: A, grandfather: C} :-
 {
   "facts": "",
   "graph": {
-    "nextNodeID": 1,
+    "nextNodeID": 2,
     "nodes": {
       "0": {
         "node": {
@@ -85,6 +85,26 @@ matGramp{child: A, grandfather: C} :-
         },
         "cache": []
       },
+      "1": {
+        "node": {
+          "type": "Match",
+          "rec": {
+            "type": "Record",
+            "relation": "matGramp",
+            "attrs": {
+              "child": {
+                "type": "Var",
+                "name": "A"
+              },
+              "grandfather": {
+                "type": "Var",
+                "name": "C"
+              }
+            }
+          }
+        },
+        "cache": []
+      },
       "mother": {
         "node": {
           "type": "BaseFactTable",
@@ -108,6 +128,11 @@ matGramp{child: A, grandfather: C} :-
     },
     "edges": {
       "0": [
+        {
+          "toID": "1"
+        }
+      ],
+      "1": [
         {
           "toID": "matGramp"
         }
@@ -133,7 +158,7 @@ mother{child: "Pete", mother: "Mary"}.
 {
   "facts": "mother{child: \"Pete\", mother: \"Mary\"}",
   "graph": {
-    "nextNodeID": 1,
+    "nextNodeID": 2,
     "nodes": {
       "0": {
         "node": {
@@ -184,6 +209,26 @@ mother{child: "Pete", mother: "Mary"}.
           }
         ]
       },
+      "1": {
+        "node": {
+          "type": "Match",
+          "rec": {
+            "type": "Record",
+            "relation": "matGramp",
+            "attrs": {
+              "child": {
+                "type": "Var",
+                "name": "A"
+              },
+              "grandfather": {
+                "type": "Var",
+                "name": "C"
+              }
+            }
+          }
+        },
+        "cache": []
+      },
       "mother": {
         "node": {
           "type": "BaseFactTable",
@@ -222,6 +267,11 @@ mother{child: "Pete", mother: "Mary"}.
     },
     "edges": {
       "0": [
+        {
+          "toID": "1"
+        }
+      ],
+      "1": [
         {
           "toID": "matGramp"
         }
@@ -245,9 +295,9 @@ mother{child: "Pete", mother: "Mary"}.
 father{child: "Mary", father: "Mark"}.
 ----
 {
-  "facts": "father{child: \"Mary\", father: \"Mark\"}\nfather{child: \"Mary\", father: \"Mark\"}",
+  "facts": "father{child: \"Mary\", father: \"Mark\"}\nfather{child: \"Mary\", father: \"Mark\"}\nfather{child: \"Mary\", father: \"Mark\"}",
   "graph": {
-    "nextNodeID": 1,
+    "nextNodeID": 2,
     "nodes": {
       "0": {
         "node": {
@@ -296,6 +346,41 @@ father{child: "Mary", father: "Mark"}.
               }
             }
           },
+          {
+            "type": "Record",
+            "relation": "father",
+            "attrs": {
+              "child": {
+                "type": "StringLit",
+                "val": "Mary"
+              },
+              "father": {
+                "type": "StringLit",
+                "val": "Mark"
+              }
+            }
+          }
+        ]
+      },
+      "1": {
+        "node": {
+          "type": "Match",
+          "rec": {
+            "type": "Record",
+            "relation": "matGramp",
+            "attrs": {
+              "child": {
+                "type": "Var",
+                "name": "A"
+              },
+              "grandfather": {
+                "type": "Var",
+                "name": "C"
+              }
+            }
+          }
+        },
+        "cache": [
           {
             "type": "Record",
             "relation": "father",
@@ -380,6 +465,11 @@ father{child: "Mary", father: "Mark"}.
     },
     "edges": {
       "0": [
+        {
+          "toID": "1"
+        }
+      ],
+      "1": [
         {
           "toID": "matGramp"
         }
