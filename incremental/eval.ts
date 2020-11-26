@@ -31,8 +31,8 @@ export function insertFact(
   let allNewFacts = [];
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
-    const newInsertions = processInsertion(graph, insertingNow);
     newGraph = addToCache(newGraph, insertingNow.dest.toID, insertingNow.rec);
+    const newInsertions = processInsertion(newGraph, insertingNow);
     for (let newInsertion of newInsertions) {
       toInsert.push(newInsertion);
       // TODO: maybe limit to just external nodes?
