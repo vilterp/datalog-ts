@@ -53,11 +53,20 @@ function evalTest(test: DDTest): string[] {
     emptyRuleGraph,
     (accum, pair) => {
       const stmt = parseStatement(pair.input);
-      const { newGraph, newFacts } = processStmt(accum, stmt);
-      return { newState: newGraph, output: { newFacts, newGraph } };
+      const { newGraph, propagationLog } = processStmt(accum, stmt);
+      return { newState: newGraph, output: { propagationLog, newGraph } };
     },
     test
-  ).map(({ newFacts, newGraph }) => newFacts.map(ppt).join("\n"));
+  ).map(({ propagationLog, newGraph }) =>
+    propagationLog
+      .map(
+        (insertion) =>
+          `${insertion.dest.toID}${insertion.dest.joinSide || ""}: ${ppt(
+            insertion.rec
+          )}`
+      )
+      .join("\n")
+  );
 }
 
 // kind of reimplementing the repl here; lol

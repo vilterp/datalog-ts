@@ -7,15 +7,15 @@ import { addRule, declareTable } from "./build";
 export function processStmt(
   graph: RuleGraph,
   stmt: Statement
-): { newGraph: RuleGraph; newFacts: Rec[] } {
+): { newGraph: RuleGraph; propagationLog: Insertion[] } {
   switch (stmt.type) {
     case "TableDecl": {
       const newGraph = declareTable(graph, stmt.name);
-      return { newGraph, newFacts: [] };
+      return { newGraph, propagationLog: [] };
     }
     case "Rule": {
       const newGraph = addRule(graph, stmt.rule);
-      return { newGraph, newFacts: [] };
+      return { newGraph, propagationLog: [] };
     }
     case "Insert":
       return insertFact(graph, stmt.record);
@@ -25,12 +25,12 @@ export function processStmt(
 export function insertFact(
   graph: RuleGraph,
   rec: Rec
-): { newGraph: RuleGraph; newFacts: Rec[] } {
+): { newGraph: RuleGraph; propagationLog: Insertion[] } {
   let toInsert: Insertion[] = [
     { rec, dest: { toID: rec.relation }, bindings: {} },
   ];
   let newGraph = graph;
-  let allNewFacts = [];
+  let propagationLog = [];
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
     newGraph = addToCache(newGraph, insertingNow.dest.toID, insertingNow.rec);
@@ -38,10 +38,10 @@ export function insertFact(
     for (let newInsertion of newInsertions) {
       toInsert.push(newInsertion);
       // TODO: maybe limit to just external nodes?
-      allNewFacts.push(newInsertion.rec);
+      propagationLog.push(newInsertion);
     }
   }
-  return { newGraph, newFacts: allNewFacts };
+  return { newGraph, propagationLog };
 }
 
 type Insertion = { rec: Rec; dest: EdgeDestination; bindings: Bindings };

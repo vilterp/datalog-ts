@@ -87,10 +87,14 @@ export class Repl {
     }
     try {
       const stmt = language.statement.tryParse(this.buffer);
-      const { newGraph, newFacts } = processStmt(this.state, stmt);
+      const { newGraph, propagationLog } = processStmt(this.state, stmt);
       this.state = newGraph;
-      newFacts.forEach((res) => {
-        this.println(ppt(res));
+      propagationLog.forEach((insertion) => {
+        this.println(
+          `${insertion.dest.toID}${insertion.dest.joinSide || ""}: ${ppt(
+            insertion.rec
+          )}`
+        );
       });
     } catch (e) {
       // TODO: distinguish between parse errors and others
