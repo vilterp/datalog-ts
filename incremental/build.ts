@@ -6,6 +6,7 @@ export function declareTable(graph: RuleGraph, name: string): RuleGraph {
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
+  // TODO: compute cache for this rule when we add it
   const orID = rule.head.relation;
   const g1 = addOr(orID, graph, rule.head, rule.defn);
   // TODO: what about matches

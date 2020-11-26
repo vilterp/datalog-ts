@@ -1,7 +1,7 @@
 import { RuleGraph, NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
-import { ppr, ppt, prettyPrintBinExpr, prettyPrintTerm } from "../pretty";
+import { ppt, prettyPrintBinExpr, prettyPrintTerm } from "../pretty";
 import * as pp from "prettier-printer";
 
 export function toGraphviz(graph: RuleGraph): Graph {

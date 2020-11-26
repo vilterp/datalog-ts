@@ -1,21 +1,14 @@
-import { ReplCore } from "./replCore";
-import { Rec, StringLit } from "./types";
 import * as readline from "readline";
-import {
-  prettyPrintDB,
-  prettyPrintTerm,
-  prettyPrintTrace,
-  defaultTracePrintOpts,
-} from "./pretty";
-import * as pp from "prettier-printer";
-import { Graph, prettyPrintGraph } from "./graphviz";
+import { ppt } from "./pretty";
 import * as fs from "fs";
-import { traceToTree } from "./traceTree";
+import { emptyRuleGraph, RuleGraph } from "./incremental/types";
+import { language } from "./parser";
+import { processStmt } from "./incremental/eval";
 
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  core: ReplCore;
+  state: RuleGraph;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -30,7 +23,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.core = new ReplCore(loader);
+    this.state = emptyRuleGraph;
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -74,31 +67,30 @@ export class Repl {
     // special commands
     // TODO: parse these with parser
     if (line === ".dump") {
-      this.println(pp.render(100, prettyPrintDB(this.core.db)));
+      this.println(JSON.stringify(this.state, null, 2));
       rl.prompt();
       return;
-    } else if (line === ".resetFacts") {
-      this.core.db.tables = {};
-      rl.prompt();
-      return;
-    } else if (line === ".graphviz") {
-      // TODO: remove dot...
-      this.doGraphviz();
-      rl.prompt();
-      return;
+      // } else if (line === ".resetFacts") {
+      //   // TODO: this resets everything; supposed to just reset facts
+      //   this.state = emptyRuleGraph;
+      //   rl.prompt();
+      //   return;
+      // } else if (line === ".graphviz") {
+      //   // TODO: remove dot...
+      //   this.doGraphviz();
+      //   rl.prompt();
+      //   return;
     }
     this.buffer = this.buffer + line;
     if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
       return;
     }
     try {
-      const stmtResult = this.core.evalStr(this.buffer);
-      stmtResult.results.forEach((res) => {
-        this.println(
-          stmtResult.trace
-            ? prettyPrintTrace(traceToTree(res), defaultTracePrintOpts)
-            : pp.render(100, prettyPrintTerm(res.term)) + "."
-        );
+      const stmt = language.statement.tryParse(this.buffer);
+      const { newGraph, newFacts } = processStmt(this.state, stmt);
+      this.state = newGraph;
+      newFacts.forEach((res) => {
+        this.println(ppt(res));
       });
     } catch (e) {
       // TODO: distinguish between parse errors and others
@@ -112,29 +104,29 @@ export class Repl {
     rl.prompt();
   }
 
-  private doGraphviz() {
-    const edges = this.core.evalStr("edge{from: F, to: T, label: L}.");
-    const nodes = this.core.evalStr("node{id: I, label: L}.");
-    // TODO: oof, all this typecasting
-    const g: Graph = {
-      edges: edges.results.map((e) => {
-        const rec = e.term as Rec;
-        return {
-          from: (rec.attrs.from as StringLit).val,
-          to: (rec.attrs.to as StringLit).val,
-          attrs: { label: (rec.attrs.label as StringLit).val },
-        };
-      }),
-      nodes: nodes.results.map((n) => {
-        const rec = n.term as Rec;
-        return {
-          id: (rec.attrs.id as StringLit).val,
-          attrs: { label: (rec.attrs.label as StringLit).val },
-        };
-      }),
-    };
-    this.println(prettyPrintGraph(g));
-  }
+  // private doGraphviz() {
+  //   const edges = this.state.evalStr("edge{from: F, to: T, label: L}.");
+  //   const nodes = this.state.evalStr("node{id: I, label: L}.");
+  //   // TODO: oof, all this typecasting
+  //   const g: Graph = {
+  //     edges: edges.results.map((e) => {
+  //       const rec = e.term as Rec;
+  //       return {
+  //         from: (rec.attrs.from as StringLit).val,
+  //         to: (rec.attrs.to as StringLit).val,
+  //         attrs: { label: (rec.attrs.label as StringLit).val },
+  //       };
+  //     }),
+  //     nodes: nodes.results.map((n) => {
+  //       const rec = n.term as Rec;
+  //       return {
+  //         id: (rec.attrs.id as StringLit).val,
+  //         attrs: { label: (rec.attrs.label as StringLit).val },
+  //       };
+  //     }),
+  //   };
+  //   this.println(prettyPrintGraph(g));
+  // }
 
   private println(...strings: string[]) {
     // console.log("printing", strings[0], strings[1], strings[2]);
