@@ -17,6 +17,9 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
 }
 
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
+  if (or.opts.length === 1) {
+    return addAnd(graph, or.opts[0].clauses);
+  }
   const [g1, orID] = addNode(graph, { type: "Union" });
   const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
     const [withAnd, andID] = addAnd(curG, andExpr.clauses);
