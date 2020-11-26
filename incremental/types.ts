@@ -13,7 +13,7 @@ export type RuleGraph = {
   nextNodeID: number;
   nodes: {
     [nodeID: string]: {
-      // internal: boolean;
+      internal: boolean;
       desc: NodeDesc;
       cache: Res[];
     };

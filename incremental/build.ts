@@ -2,17 +2,22 @@ import { Rule, Rec, OrExpr, BinExpr, Term } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
-  return addNodeKnownID(name, graph, { type: "BaseFactTable", name });
+  return addNodeKnownID(name, graph, { type: "BaseFactTable", name }, false);
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   // TODO: compute cache for this rule when we add it
   const matchID = rule.head.relation;
   const [withOr, orID] = addOr(graph, rule.defn);
-  const withMatch = addNodeKnownID(matchID, withOr, {
-    type: "Substitute",
-    rec: rule.head,
-  });
+  const withMatch = addNodeKnownID(
+    matchID,
+    withOr,
+    {
+      type: "Substitute",
+      rec: rule.head,
+    },
+    false
+  );
   return addEdge(withMatch, orID, matchID);
 }
 
@@ -20,7 +25,7 @@ function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
   if (or.opts.length === 1) {
     return addAnd(graph, or.opts[0].clauses);
   }
-  const [g1, orID] = addNode(graph, { type: "Union" });
+  const [g1, orID] = addNode(graph, { type: "Union" }, true);
   const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
     const [withAnd, andID] = addAnd(curG, andExpr.clauses);
     return addEdge(withAnd, andID, orID);
@@ -50,11 +55,15 @@ function addAndBinary(
     throw new Error("incremental doesn't support BinExprs yet");
   }
   const [g1, leftID] = addTerm(graph, left);
-  const [g2, joinID] = addNode(g1, {
-    type: "Join",
-    leftID,
-    rightID,
-  });
+  const [g2, joinID] = addNode(
+    g1,
+    {
+      type: "Join",
+      leftID,
+      rightID,
+    },
+    true
+  );
   const g3 = addEdge(g2, leftID, joinID);
   const g4 = addEdge(g3, rightID, joinID);
   return [g4, joinID];
@@ -65,12 +74,16 @@ type AndTerm = Rec | BinExpr;
 function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
   switch (term.type) {
     case "BinExpr":
-      return addNode(graph, { type: "BinExpr", expr: term });
+      throw new Error("incremental doesn't support BinExprs yet");
     case "Record":
-      const [withMatch, matchID] = addNode(graph, {
-        type: "Match",
-        rec: term,
-      });
+      const [withMatch, matchID] = addNode(
+        graph,
+        {
+          type: "Match",
+          rec: term,
+        },
+        true
+      );
       const withMatchEdge = addEdge(withMatch, term.relation, matchID);
       return [withMatchEdge, matchID];
   }
@@ -81,17 +94,28 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
 function addNodeKnownID(
   id: NodeID,
   graph: RuleGraph,
-  desc: NodeDesc
+  desc: NodeDesc,
+  internal: boolean
 ): RuleGraph {
-  return { ...graph, nodes: { ...graph.nodes, [id]: { desc, cache: [] } } };
+  return {
+    ...graph,
+    nodes: { ...graph.nodes, [id]: { internal, desc, cache: [] } },
+  };
 }
 
-function addNode(graph: RuleGraph, desc: NodeDesc): [RuleGraph, NodeID] {
+function addNode(
+  graph: RuleGraph,
+  desc: NodeDesc,
+  internal: boolean
+): [RuleGraph, NodeID] {
   return [
     {
       ...graph,
       nextNodeID: graph.nextNodeID + 1,
-      nodes: { ...graph.nodes, [graph.nextNodeID]: { desc, cache: [] } },
+      nodes: {
+        ...graph.nodes,
+        [graph.nextNodeID]: { desc, cache: [], internal },
+      },
     },
     `${graph.nextNodeID}`,
   ];

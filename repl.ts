@@ -96,11 +96,11 @@ export class Repl {
       const { newGraph, emissionLog } = processStmt(this.state, stmt);
       this.state = newGraph;
       emissionLog.forEach((emissionBatch) => {
-        this.println(
-          `${emissionBatch.fromID}: ${emissionBatch.output.map((res) =>
-            ppt(res.term)
-          )}`
-        );
+        if (!this.state.nodes[emissionBatch.fromID].internal) {
+          this.println(
+            emissionBatch.output.map((res) => ppt(res.term)).join("\n")
+          );
+        }
       });
     } catch (e) {
       // TODO: distinguish between parse errors and others
