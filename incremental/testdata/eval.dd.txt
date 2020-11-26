@@ -14,9 +14,9 @@ matGramp{child: A, grandfather: C} :-
 father{child: "Mary", father: "Mark"}.
 ----
 0right: father{child: "Mary", father: "Mark"}
-1: father{child: "Mary", father: "Mark"}
-matGramp: matGramp{child: "Mary", grandfather: "Mark"}
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 0left: mother{child: "Pete", mother: "Mary"}
+1: father{child: "Mary", father: "Mark"}
+matGramp: matGramp{child: "Pete", grandfather: "Mark"}

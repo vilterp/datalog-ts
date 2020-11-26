@@ -62,21 +62,28 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
       if (ins.dest.joinSide === undefined) {
         throw new Error("insertions to a join node must have a joinSide");
       }
-      // TODO: probably need to flip more parts of this around for left/right
-      const otherRelationName =
-        ins.dest.joinSide === "left"
-          ? nodeDesc.leftSide.relation
-          : nodeDesc.rightSide.relation;
-      const bindings: Bindings = {};
-      const leftVars = unify(bindings, nodeDesc.leftSide, ins.rec);
       const insertions: { rec: Rec; bindings: Bindings }[] = [];
-      const otherRelation = graph.nodes[otherRelationName].cache;
-      for (let possibleMatch of otherRelation) {
-        const rightVars = unify(bindings, nodeDesc.rightSide, possibleMatch);
-        const unifyRes = unifyVars(leftVars, rightVars);
-        if (unifyRes !== null) {
-          // TODO: need to pass unifyRes up as well
-          insertions.push({ rec: possibleMatch as Rec, bindings: unifyRes });
+      const bindings: Bindings = ins.bindings;
+      // TODO: DRY this up somehow?
+      if (ins.dest.joinSide === "left") {
+        const leftVars = unify(bindings, nodeDesc.leftSide, ins.rec);
+        const otherRelation = graph.nodes[nodeDesc.rightSide.relation].cache;
+        for (let possibleMatch of otherRelation) {
+          const rightVars = unify(bindings, nodeDesc.rightSide, possibleMatch);
+          const unifyRes = unifyVars(leftVars, rightVars);
+          if (unifyRes !== null) {
+            insertions.push({ rec: possibleMatch as Rec, bindings: unifyRes });
+          }
+        }
+      } else {
+        const rightVars = unify(bindings, ins.rec, nodeDesc.rightSide);
+        const otherRelation = graph.nodes[nodeDesc.leftSide.relation].cache;
+        for (let possibleMatch of otherRelation) {
+          const leftVars = unify(bindings, possibleMatch, nodeDesc.leftSide);
+          const unifyRes = unifyVars(leftVars, rightVars);
+          if (unifyRes !== null) {
+            insertions.push({ rec: possibleMatch as Rec, bindings: unifyRes });
+          }
         }
       }
       return flatMap(outEdges, (dest) =>
