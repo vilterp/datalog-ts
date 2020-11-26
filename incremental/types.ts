@@ -6,7 +6,7 @@ export type NodeID = string;
 // TODO: dedup with ../types.Res when we have traces
 export type Res = {
   term: Term;
-  bindings: Bindings;
+  bindings: Bindings | null;
 };
 
 export type RuleGraph = {
@@ -38,5 +38,5 @@ export const emptyRuleGraph: RuleGraph = {
 // formatters
 
 export function formatRes(res: Res): string {
-  return `${ppt(res.term)}; ${ppb(res.bindings)}`;
+  return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
 }

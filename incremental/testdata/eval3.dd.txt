@@ -13,32 +13,16 @@ grandparent{grandchild: A, grandparent: C} :-
   parent{child: B, parent: C}.
 ----
 
-grandfather{grandchild: A, grandfather: C} :-
-  parent{child: A, parent: B} &
-  father{child: B, father: C}.
-----
-
-grandmother{grandchild: A, grandmother: C} :-
-  parent{child: A, parent: B} &
-  mother{child: B, mother: C}.
-----
-
 father{child: "Mary", father: "Mark"}.
 ----
 father: [father{child: "Mary", father: "Mark"}; {}]
 2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
-6: [father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}]
 0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
-8: []
 parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
 3: [parent{child: "Mary", parent: "Mark"}; {}]
 4: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
-7: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
-10: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
 5: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
 5: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
-8: []
-11: []
 grandparent: [grandparent{grandchild: "Mary", grandparent: C}; {A: "Mary", B: "Mark"}]
 grandparent: [grandparent{grandchild: "Mary", grandparent: C}; {A: "Mary", B: "Mark"}]
 
@@ -46,20 +30,13 @@ mother{child: "Pete", mother: "Mary"}.
 ----
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
 1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
-9: [mother{child: "Pete", mother: "Mary"}; {B: "Pete", C: "Mary"}]
 0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
-11: []
 parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
 3: [parent{child: "Pete", parent: "Mary"}; {}]
 4: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
-7: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
-10: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
 5: [parent{child: "Pete", parent: "Mary"}; {A: "Mary", B: "Mark"}, parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
 5: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}, parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
-8: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
-11: []
 grandparent: [grandparent{grandchild: "Mary", grandparent: C}; {A: "Mary", B: "Mark"}]
 grandparent: [grandparent{grandchild: "Pete", grandparent: C}; {A: "Pete", B: "Mary"}]
 grandparent: [grandparent{grandchild: "Pete", grandparent: C}; {A: "Pete", B: "Mary"}]
 grandparent: [grandparent{grandchild: "Pete", grandparent: C}; {A: "Pete", B: "Mary"}]
-grandfather: [grandfather{grandchild: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
