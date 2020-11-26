@@ -97,9 +97,9 @@ export class Repl {
       this.state = newGraph;
       propagationLog.forEach((insertion) => {
         this.println(
-          `${insertion.dest.toID}${insertion.dest.joinSide || ""}: ${ppt(
-            insertion.rec
-          )}`
+          `${insertion.destination.nodeID}${
+            insertion.destination.joinSide || ""
+          }: ${ppt(insertion.rec)}`
         );
       });
     } catch (e) {

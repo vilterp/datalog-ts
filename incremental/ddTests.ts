@@ -6,8 +6,8 @@ import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { Statement } from "../types";
 import { scan } from "../util";
-import { processStmt } from "./eval";
-import { ppt } from "../pretty";
+import { Insertion, processStmt } from "./eval";
+import { ppb, ppt } from "../pretty";
 
 export function incrTests(writeResults: boolean): Suite {
   return [
@@ -67,16 +67,14 @@ function evalTest(test: DDTest): string[] {
       return { newState: newGraph, output: { propagationLog, newGraph } };
     },
     test
-  ).map(({ propagationLog, newGraph }) =>
-    propagationLog
-      .map(
-        (insertion) =>
-          `${insertion.dest.toID}${insertion.dest.joinSide || ""}: ${ppt(
-            insertion.rec
-          )}`
-      )
-      .join("\n")
+  ).map(({ propagationLog }) =>
+    propagationLog.map((insertion) => formatInsertion(insertion)).join("\n")
   );
+}
+
+function formatInsertion(ins: Insertion): string {
+  const dest = `${ins.destination.nodeID}${ins.destination.joinSide || ""}`;
+  return `${dest}: ${ppt(ins.rec)}; ${ppb(ins.bindings)}`;
 }
 
 // kind of reimplementing the repl here; lol

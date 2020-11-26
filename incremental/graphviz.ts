@@ -20,7 +20,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
     edges: flatMapObjToList(graph.edges, (fromID, destinations) =>
       destinations.map((dst) => ({
         from: fromID,
-        to: dst.toID,
+        to: dst.nodeID,
         attrs: {
           label: dst.joinSide || "",
         },

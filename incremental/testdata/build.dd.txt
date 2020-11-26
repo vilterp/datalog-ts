@@ -5,14 +5,18 @@ matGramp{child: A, grandfather: C} :-
 ----
 digraph G {
   "0" [label="0: Union"];
-  "1" [label="1: Join(mother{child: A, mother: B} & father{child: B, father: C})"];
+  "1" [label="1: Match(father{child: B, father: C})"];
+  "2" [label="2: Join(mother{child: A, mother: B} & father{child: B, father: C})"];
+  "3" [label="3: Match(mother{child: A, mother: B})"];
   "father" [label="father"];
   "matGramp" [label="matGramp: Match(matGramp{child: A, grandfather: C})"];
   "mother" [label="mother"];
   "0" -> "matGramp" [label=""];
-  "1" -> "0" [label=""];
-  "father" -> "1" [label="right"];
-  "mother" -> "1" [label="left"]
+  "1" -> "2" [label="right"];
+  "2" -> "0" [label=""];
+  "3" -> "2" [label="left"];
+  "father" -> "1" [label=""];
+  "mother" -> "3" [label=""]
 }
 
 .table mother;
@@ -22,14 +26,20 @@ matAncestor{desc: D, an: A} :-
 ----
 digraph G {
   "0" [label="0: Union"];
-  "1" [label="1: Join(mother{an: B, desc: D} & matAncestor{an: A, desc: B})"];
+  "1" [label="1: Match(mother{an: A, desc: D})"];
+  "2" [label="2: Match(matAncestor{an: A, desc: B})"];
+  "3" [label="3: Join(mother{an: B, desc: D} & matAncestor{an: A, desc: B})"];
+  "4" [label="4: Match(mother{an: B, desc: D})"];
   "matAncestor" [label="matAncestor: Match(matAncestor{an: A, desc: D})"];
   "mother" [label="mother"];
   "0" -> "matAncestor" [label=""];
   "1" -> "0" [label=""];
-  "matAncestor" -> "1" [label="right"];
-  "mother" -> "0" [label=""];
-  "mother" -> "1" [label="left"]
+  "2" -> "3" [label="right"];
+  "3" -> "0" [label=""];
+  "4" -> "3" [label="left"];
+  "matAncestor" -> "2" [label=""];
+  "mother" -> "1" [label=""];
+  "mother" -> "4" [label=""]
 }
 
 foo{a: A} :- bar{a: A}.;
@@ -37,13 +47,17 @@ bar{a: A} :- foo{a: A}.
 ----
 digraph G {
   "0" [label="0: Union"];
-  "1" [label="1: Union"];
+  "1" [label="1: Match(bar{a: A})"];
+  "2" [label="2: Union"];
+  "3" [label="3: Match(foo{a: A})"];
   "bar" [label="bar: Match(bar{a: A})"];
   "foo" [label="foo: Match(foo{a: A})"];
   "0" -> "foo" [label=""];
-  "1" -> "bar" [label=""];
-  "bar" -> "0" [label=""];
-  "foo" -> "1" [label=""]
+  "1" -> "0" [label=""];
+  "2" -> "bar" [label=""];
+  "3" -> "2" [label=""];
+  "bar" -> "1" [label=""];
+  "foo" -> "3" [label=""]
 }
 
 .table a;
@@ -53,18 +67,24 @@ d{} :- a{} & b{} & c{}.
 ----
 digraph G {
   "0" [label="0: Union"];
-  "1" [label="1: Join(b{} & c{})"];
-  "2" [label="2: Join(a{} & c{})"];
+  "1" [label="1: Match(c{})"];
+  "2" [label="2: Join(b{} & c{})"];
+  "3" [label="3: Match(b{})"];
+  "4" [label="4: Join(a{} & c{})"];
+  "5" [label="5: Match(a{})"];
   "a" [label="a"];
   "b" [label="b"];
   "c" [label="c"];
   "d" [label="d: Match(d{})"];
   "0" -> "d" [label=""];
   "1" -> "2" [label="right"];
-  "2" -> "0" [label=""];
-  "a" -> "2" [label="left"];
-  "b" -> "1" [label="left"];
-  "c" -> "1" [label="right"]
+  "2" -> "4" [label="right"];
+  "3" -> "2" [label="left"];
+  "4" -> "0" [label=""];
+  "5" -> "4" [label="left"];
+  "a" -> "5" [label=""];
+  "b" -> "3" [label=""];
+  "c" -> "1" [label=""]
 }
 
 parent{child: C, parent: P} :-
@@ -72,8 +92,12 @@ parent{child: C, parent: P} :-
 ----
 digraph G {
   "0" [label="0: Union"];
+  "1" [label="1: Match(mother{child: C, mother: P})"];
+  "2" [label="2: Match(father{child: C, father: P})"];
   "parent" [label="parent: Match(parent{child: C, parent: P})"];
   "0" -> "parent" [label=""];
-  "father" -> "0" [label=""];
-  "mother" -> "0" [label=""]
+  "1" -> "0" [label=""];
+  "2" -> "0" [label=""];
+  "father" -> "2" [label=""];
+  "mother" -> "1" [label=""]
 }

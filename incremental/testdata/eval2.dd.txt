@@ -13,5 +13,6 @@ parent{child: C, parent: P} :-
 
 father{child: "Pete", father: "Paul"}.
 ----
-0: father{child: "Pete", father: "Paul"}
-parent: father{child: "Pete", father: "Paul"}
+2: father{child: "Pete", father: "Paul"}; {}
+0: father{child: C, father: P}; {}
+parent: father{child: C, father: P}; {}

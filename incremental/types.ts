@@ -1,13 +1,16 @@
-import { Term, Rec, BinExpr } from "../types";
+import { Term, Rec, BinExpr, Bindings } from "../types";
 
 export type NodeID = string;
 
-export type EdgeDestination = { toID: string; joinSide?: "left" | "right" };
+export type EdgeDestination = { nodeID: string; joinSide?: "left" | "right" };
 
 export type RuleGraph = {
   nextNodeID: number;
   nodes: {
-    [nodeID: string]: { desc: NodeDesc; cache: Term[] };
+    [nodeID: string]: {
+      desc: NodeDesc;
+      cache: { term: Term; bindings: Bindings }[];
+    };
   };
   edges: { [fromID: string]: EdgeDestination[] };
 };

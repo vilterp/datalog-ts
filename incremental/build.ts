@@ -13,14 +13,14 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
     type: "Match",
     rec: rule.head,
   });
-  return addEdge(withMatch, orID, { toID: matchID });
+  return addEdge(withMatch, orID, { nodeID: matchID });
 }
 
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
   const [g1, orID] = addNode(graph, { type: "Union" });
   const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
     const [withAnd, _, andID] = addAnd(curG, andExpr.clauses);
-    return addEdge(withAnd, andID, { toID: orID });
+    return addEdge(withAnd, andID, { nodeID: orID });
   }, g1);
   return [withAndAndEdges, orID];
 }
@@ -56,8 +56,8 @@ function addAndBinary(
     rightSide: right,
   });
   const [g2, leftID] = addTerm(g1, left);
-  const g3 = addEdge(g2, leftID, { toID: joinID, joinSide: "left" });
-  const g4 = addEdge(g3, rightID, { toID: joinID, joinSide: "right" });
+  const g3 = addEdge(g2, leftID, { nodeID: joinID, joinSide: "left" });
+  const g4 = addEdge(g3, rightID, { nodeID: joinID, joinSide: "right" });
   return [g4, right, joinID];
 }
 
@@ -68,8 +68,14 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
     case "BinExpr":
       return addNode(graph, { type: "BinExpr", expr: term });
     case "Record":
-      // TODO: match?
-      return [graph, term.relation];
+      const [withMatch, matchID] = addNode(graph, {
+        type: "Match",
+        rec: term,
+      });
+      const withMatchEdge = addEdge(withMatch, term.relation, {
+        nodeID: matchID,
+      });
+      return [withMatchEdge, matchID];
   }
 }
 
