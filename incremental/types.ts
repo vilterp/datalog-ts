@@ -3,8 +3,6 @@ import { ppb, ppt } from "../pretty";
 
 export type NodeID = string;
 
-export type EdgeDestination = { nodeID: string; joinSide?: "left" | "right" };
-
 // TODO: dedup with ../types.Res when we have traces
 export type Res = {
   term: Term;
@@ -15,11 +13,12 @@ export type RuleGraph = {
   nextNodeID: number;
   nodes: {
     [nodeID: string]: {
+      // internal: boolean;
       desc: NodeDesc;
       cache: Res[];
     };
   };
-  edges: { [fromID: string]: EdgeDestination[] };
+  edges: { [fromID: string]: NodeID[] };
 };
 
 export type NodeDesc =

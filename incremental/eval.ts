@@ -1,4 +1,4 @@
-import { RuleGraph, EdgeDestination, Res, NodeID, formatRes } from "./types";
+import { RuleGraph, Res, NodeID, formatRes } from "./types";
 import { Rec, Statement } from "../types";
 import { substitute, unify, unifyVars } from "../unify";
 import { addRule, declareTable } from "./build";
@@ -24,7 +24,8 @@ export function processStmt(
 
 export type Insertion = {
   res: Res;
-  destination: EdgeDestination;
+  origin: NodeID | null; // null if coming from outside
+  destination: NodeID;
 };
 
 export type Emission = { fromID: NodeID; output: Res[] };
@@ -34,14 +35,18 @@ export function insertFact(
   rec: Rec
 ): { newGraph: RuleGraph; emissionLog: Emission[] } {
   let toInsert: Insertion[] = [
-    { res: { term: rec, bindings: {} }, destination: { nodeID: rec.relation } },
+    {
+      res: { term: rec, bindings: {} },
+      origin: null,
+      destination: rec.relation,
+    },
   ];
   let newGraph = graph;
   // batches of emissions
   const emissionLog: { fromID: NodeID; output: Res[] }[] = [];
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
-    const curNodeID = insertingNow.destination.nodeID;
+    const curNodeID = insertingNow.destination;
     const newEmissions = processInsertion(newGraph, insertingNow);
     // TODO: maybe limit to just external nodes?
     emissionLog.push({
@@ -53,6 +58,7 @@ export function insertFact(
       for (let destination of graph.edges[curNodeID] || []) {
         toInsert.push({
           destination,
+          origin: curNodeID,
           res: emission,
         });
       }
@@ -63,18 +69,15 @@ export function insertFact(
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
-  const node = graph.nodes[ins.destination.nodeID];
+  const node = graph.nodes[ins.destination];
   const nodeDesc = node.desc;
   switch (nodeDesc.type) {
     case "Union":
       return [ins.res];
     case "Join": {
-      if (ins.destination.joinSide === undefined) {
-        throw new Error("insertions to a join node must have a joinSide");
-      }
       const results: Res[] = [];
       // TODO: DRY this up somehow?
-      if (ins.destination.joinSide === "left") {
+      if (ins.origin === nodeDesc.leftID) {
         const leftVars = ins.res.bindings;
         const rightRelation = graph.nodes[nodeDesc.rightID].cache;
         for (let possibleRightMatch of rightRelation) {

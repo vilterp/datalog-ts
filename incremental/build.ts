@@ -1,5 +1,5 @@
 import { Rule, Rec, OrExpr, BinExpr, Term } from "../types";
-import { RuleGraph, NodeDesc, NodeID, EdgeDestination } from "./types";
+import { RuleGraph, NodeDesc, NodeID } from "./types";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, { type: "BaseFactTable", name });
@@ -13,14 +13,14 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
     type: "Substitute",
     rec: rule.head,
   });
-  return addEdge(withMatch, orID, { nodeID: matchID });
+  return addEdge(withMatch, orID, matchID);
 }
 
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
   const [g1, orID] = addNode(graph, { type: "Union" });
   const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
     const [withAnd, andID] = addAnd(curG, andExpr.clauses);
-    return addEdge(withAnd, andID, { nodeID: orID });
+    return addEdge(withAnd, andID, orID);
   }, g1);
   return [withAndAndEdges, orID];
 }
@@ -52,8 +52,8 @@ function addAndBinary(
     leftID,
     rightID,
   });
-  const g3 = addEdge(g2, leftID, { nodeID: joinID, joinSide: "left" });
-  const g4 = addEdge(g3, rightID, { nodeID: joinID, joinSide: "right" });
+  const g3 = addEdge(g2, leftID, joinID);
+  const g4 = addEdge(g3, rightID, joinID);
   return [g4, joinID];
 }
 
@@ -68,9 +68,7 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
         type: "Match",
         rec: term,
       });
-      const withMatchEdge = addEdge(withMatch, term.relation, {
-        nodeID: matchID,
-      });
+      const withMatchEdge = addEdge(withMatch, term.relation, matchID);
       return [withMatchEdge, matchID];
   }
 }
@@ -96,11 +94,7 @@ function addNode(graph: RuleGraph, desc: NodeDesc): [RuleGraph, NodeID] {
   ];
 }
 
-function addEdge(
-  graph: RuleGraph,
-  from: NodeID,
-  to: EdgeDestination
-): RuleGraph {
+function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
     edges: { ...graph.edges, [from]: [...(graph.edges[from] || []), to] },
