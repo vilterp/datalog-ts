@@ -1,5 +1,8 @@
 import { RuleGraph, NodeID, EdgeDestination } from "./types";
-import { Rec, Term } from "../types";
+import { Bindings, Rec, Term } from "../types";
+import { unify } from "../unify";
+import { flatten } from "../fp/flatten";
+import { flatMap } from "../util";
 
 export function insertFact(
   graph: RuleGraph,
@@ -25,20 +28,32 @@ type Insertion = { rec: Rec; dest: EdgeDestination };
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
-  console.log({ ins });
   const node = graph.nodes[ins.dest.toID];
   const outEdges = graph.edges[ins.dest.toID] || [];
   switch (node.node.type) {
     case "Union":
       return outEdges.map((dest) => ({ rec: ins.rec, dest }));
     case "Join": {
-      const newRec: Rec = {
-        type: "Record",
-        relation: ins.dest.toID,
-        attrs: {},
-      };
-      // look at other side of join
-      return outEdges.map((dest) => ({ rec: newRec, dest }));
+      if (ins.dest.joinSide === undefined) {
+        throw new Error("insertions to a join node must have a joinSide");
+      }
+      const otherRelationName =
+        ins.dest.joinSide === "left"
+          ? node.node.leftSide.relation
+          : node.node.rightSide.relation;
+      const insertions: Rec[] = [];
+      const otherRelation = graph.nodes[otherRelationName].cache;
+      const bindings: Bindings = {};
+      for (let possibleMatch of otherRelation) {
+        const unifyRes = unify(bindings, possibleMatch, ins.rec);
+        if (unifyRes !== null) {
+          // TODO: need to pass unifyRes up as well
+          insertions.push(possibleMatch as Rec);
+        }
+      }
+      return flatMap(outEdges, (dest) =>
+        insertions.map((rec) => ({ rec, dest }))
+      );
     }
     case "Match":
       // TODO: actually match

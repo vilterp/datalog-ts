@@ -37,10 +37,16 @@ function addAndBinary(
   rightID: NodeID
 ): [RuleGraph, NodeID] {
   // TODO: identify common vars
+  let leftRec: Rec = null;
+  if (left.type === "Record") {
+    leftRec = left;
+  } else {
+    throw new Error("incremental doesn't support BinExprs yet");
+  }
   const [g1, joinID] = addNode(graph, {
     type: "Join",
-    leftAttr: "foo",
-    rightAttr: "bar",
+    leftSide: leftRec,
+    rightSide: leftRec, // TODO: fix this
   });
   const [g2, leftID] = addTerm(g1, left);
   const g3 = addEdge(g2, leftID, { toID: joinID, joinSide: "left" });
