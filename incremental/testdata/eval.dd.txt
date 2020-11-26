@@ -70,15 +70,15 @@ matGramp{child: A, grandfather: C} :-
           },
           "rightSide": {
             "type": "Record",
-            "relation": "mother",
+            "relation": "father",
             "attrs": {
               "child": {
                 "type": "Var",
-                "name": "A"
-              },
-              "mother": {
-                "type": "Var",
                 "name": "B"
+              },
+              "father": {
+                "type": "Var",
+                "name": "C"
               }
             }
           }
@@ -154,15 +154,15 @@ mother{child: "Pete", mother: "Mary"}.
           },
           "rightSide": {
             "type": "Record",
-            "relation": "mother",
+            "relation": "father",
             "attrs": {
               "child": {
                 "type": "Var",
-                "name": "A"
-              },
-              "mother": {
-                "type": "Var",
                 "name": "B"
+              },
+              "father": {
+                "type": "Var",
+                "name": "C"
               }
             }
           }
@@ -268,15 +268,15 @@ father{child: "Mary", father: "Mark"}.
           },
           "rightSide": {
             "type": "Record",
-            "relation": "mother",
+            "relation": "father",
             "attrs": {
               "child": {
                 "type": "Var",
-                "name": "A"
-              },
-              "mother": {
-                "type": "Var",
                 "name": "B"
+              },
+              "father": {
+                "type": "Var",
+                "name": "C"
               }
             }
           }

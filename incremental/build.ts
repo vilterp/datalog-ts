@@ -1,4 +1,4 @@
-import { Rule, Rec, OrExpr, BinExpr } from "../types";
+import { Rule, Rec, OrExpr, BinExpr, Term } from "../types";
 import { RuleGraph, NodeDesc, NodeID, EdgeDestination } from "./types";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
@@ -15,43 +15,45 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
 function addOr(orID: NodeID, graph: RuleGraph, or: OrExpr): RuleGraph {
   const g1 = addNodeKnownID(graph, { type: "Union" }, orID);
   return or.opts.reduce((curG, andExpr) => {
-    const [withAnd, andID] = addAnd(curG, andExpr.clauses);
+    const [withAnd, _, andID] = addAnd(curG, andExpr.clauses);
     return addEdge(withAnd, andID, { toID: orID });
   }, g1);
 }
 
-function addAnd(graph: RuleGraph, and: AndTerm[]): [RuleGraph, NodeID] {
+function addAnd(graph: RuleGraph, and: AndTerm[]): [RuleGraph, Term, NodeID] {
   if (and.length === 0) {
     throw new Error("empty and");
   }
   if (and.length === 1) {
-    return addTerm(graph, and[0]);
+    const [newGraph, id] = addTerm(graph, and[0]);
+    return [newGraph, and[0], id];
   }
-  const [g1, rightID] = addAnd(graph, and.slice(1));
-  return addAndBinary(g1, and[0], rightID);
+  const [g1, rightTerm, rightID] = addAnd(graph, and.slice(1));
+  return addAndBinary(g1, and[0], rightTerm, rightID);
 }
 
 function addAndBinary(
   graph: RuleGraph,
   left: AndTerm,
+  right: Term,
   rightID: NodeID
-): [RuleGraph, NodeID] {
+): [RuleGraph, Term, NodeID] {
   // TODO: identify common vars
-  let leftRec: Rec = null;
-  if (left.type === "Record") {
-    leftRec = left;
-  } else {
+  if (left.type !== "Record") {
+    throw new Error("incremental doesn't support BinExprs yet");
+  }
+  if (right.type !== "Record") {
     throw new Error("incremental doesn't support BinExprs yet");
   }
   const [g1, joinID] = addNode(graph, {
     type: "Join",
-    leftSide: leftRec,
-    rightSide: leftRec, // TODO: fix this
+    leftSide: left,
+    rightSide: right,
   });
   const [g2, leftID] = addTerm(g1, left);
   const g3 = addEdge(g2, leftID, { toID: joinID, joinSide: "left" });
   const g4 = addEdge(g3, rightID, { toID: joinID, joinSide: "right" });
-  return [g4, joinID];
+  return [g4, right, joinID];
 }
 
 type AndTerm = Rec | BinExpr;
