@@ -2,26 +2,27 @@ import { Rule, Rec, OrExpr, BinExpr, Term } from "../types";
 import { RuleGraph, NodeDesc, NodeID, EdgeDestination } from "./types";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
-  return addNodeKnownID(graph, { type: "BaseFactTable", name }, name);
+  return addNodeKnownID(name, graph, { type: "BaseFactTable", name });
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   // TODO: compute cache for this rule when we add it
-  const orID = rule.head.relation;
-  const withOr = addOr(orID, graph, rule.defn);
-  const [withMatch, matchID] = addNode(withOr, {
+  const matchID = rule.head.relation;
+  const [withOr, orID] = addOr(graph, rule.defn);
+  const withMatch = addNodeKnownID(matchID, withOr, {
     type: "Match",
     rec: rule.head,
   });
   return addEdge(withMatch, orID, { toID: matchID });
 }
 
-function addOr(orID: NodeID, graph: RuleGraph, or: OrExpr): RuleGraph {
-  const g1 = addNodeKnownID(graph, { type: "Union" }, orID);
-  return or.opts.reduce((curG, andExpr) => {
+function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
+  const [g1, orID] = addNode(graph, { type: "Union" });
+  const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
     const [withAnd, _, andID] = addAnd(curG, andExpr.clauses);
     return addEdge(withAnd, andID, { toID: orID });
   }, g1);
+  return [withAndAndEdges, orID];
 }
 
 function addAnd(graph: RuleGraph, and: AndTerm[]): [RuleGraph, Term, NodeID] {
@@ -75,9 +76,9 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
 // helpers
 
 function addNodeKnownID(
+  id: NodeID,
   graph: RuleGraph,
-  desc: NodeDesc,
-  id: NodeID
+  desc: NodeDesc
 ): RuleGraph {
   return { ...graph, nodes: { ...graph.nodes, [id]: { desc, cache: [] } } };
 }
