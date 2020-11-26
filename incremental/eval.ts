@@ -61,8 +61,6 @@ export function insertFact(
   return { newGraph, emissionLog };
 }
 
-// TODO: replace with types.Res when we have traces
-
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   const node = graph.nodes[ins.destination.nodeID];
@@ -82,11 +80,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
-          console.log("join from left", {
-            left: formatRes(ins.res),
-            right: formatRes(possibleRightMatch),
-            unifyRes: ppb(unifyRes),
-          });
+          // console.log("join from left", {
+          //   left: formatRes(ins.res),
+          //   right: formatRes(possibleRightMatch),
+          //   unifyRes: ppb(unifyRes),
+          // });
           if (unifyRes !== null) {
             results.push({
               term: ins.res.term,
@@ -112,11 +110,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     }
     case "Match": {
       const bindings = unify(ins.res.bindings, nodeDesc.rec, ins.res.term);
-      console.log("match", {
-        insRec: ppt(ins.res.term),
-        match: ppt(nodeDesc.rec),
-        bindings: ppb(bindings),
-      });
+      // console.log("match", {
+      //   insRec: ppt(ins.res.term),
+      //   match: ppt(nodeDesc.rec),
+      //   bindings: ppb(bindings),
+      // });
       return [
         {
           term: ins.res.term,
@@ -126,11 +124,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     }
     case "Substitute":
       const rec = substitute(nodeDesc.rec, ins.res.bindings);
-      console.log("substitute", {
-        inBindings: ppb(ins.res.bindings),
-        sub: ppt(nodeDesc.rec),
-        out: ppt(rec),
-      });
+      // console.log("substitute", {
+      //   inBindings: ppb(ins.res.bindings),
+      //   sub: ppt(nodeDesc.rec),
+      //   out: ppt(rec),
+      // });
       return [
         {
           term: rec,

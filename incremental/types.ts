@@ -5,6 +5,7 @@ export type NodeID = string;
 
 export type EdgeDestination = { nodeID: string; joinSide?: "left" | "right" };
 
+// TODO: dedup with ../types.Res when we have traces
 export type Res = {
   term: Term;
   bindings: Bindings;
