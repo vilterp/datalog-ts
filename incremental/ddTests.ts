@@ -1,12 +1,12 @@
 import { runDDTestAtPath, DDTest } from "../util/dataDrivenTests";
 import { Suite } from "../testing";
 import { language } from "../parser";
-import { emptyRuleGraph } from "./types";
+import { emptyRuleGraph, formatRes } from "./types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { Statement } from "../types";
 import { scan } from "../util";
-import { Insertion, processStmt } from "./eval";
+import { Emission, Insertion, processStmt } from "./eval";
 import { ppb, ppt } from "../pretty";
 
 export function incrTests(writeResults: boolean): Suite {
@@ -63,18 +63,18 @@ function evalTest(test: DDTest): string[] {
     emptyRuleGraph,
     (accum, pair) => {
       const stmt = parseStatement(pair.input);
-      const { newGraph, propagationLog } = processStmt(accum, stmt);
-      return { newState: newGraph, output: { propagationLog, newGraph } };
+      const { newGraph, emissionLog } = processStmt(accum, stmt);
+      return { newState: newGraph, output: { emissionLog, newGraph } };
     },
     test
-  ).map(({ propagationLog }) =>
-    propagationLog.map((insertion) => formatInsertion(insertion)).join("\n")
+  ).map(({ emissionLog }) =>
+    emissionLog
+      .map(
+        ({ fromID, output }) =>
+          `${fromID}: [${output.map(formatRes).join(", ")}]`
+      )
+      .join("\n")
   );
-}
-
-function formatInsertion(ins: Insertion): string {
-  const dest = `${ins.destination.nodeID}${ins.destination.joinSide || ""}`;
-  return `${dest}: ${ppt(ins.rec)}; ${ppb(ins.bindings)}`;
 }
 
 // kind of reimplementing the repl here; lol

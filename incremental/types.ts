@@ -1,15 +1,21 @@
 import { Term, Rec, BinExpr, Bindings } from "../types";
+import { ppb, ppt } from "../pretty";
 
 export type NodeID = string;
 
 export type EdgeDestination = { nodeID: string; joinSide?: "left" | "right" };
+
+export type Res = {
+  term: Term;
+  bindings: Bindings;
+};
 
 export type RuleGraph = {
   nextNodeID: number;
   nodes: {
     [nodeID: string]: {
       desc: NodeDesc;
-      cache: { term: Term; bindings: Bindings }[];
+      cache: Res[];
     };
   };
   edges: { [fromID: string]: EdgeDestination[] };
@@ -28,3 +34,9 @@ export const emptyRuleGraph: RuleGraph = {
   nodes: {},
   edges: {},
 };
+
+// formatters
+
+export function formatRes(res: Res): string {
+  return `${ppt(res.term)}; ${ppb(res.bindings)}`;
+}

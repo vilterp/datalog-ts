@@ -1,151 +1,149 @@
-import { RuleGraph, NodeID, EdgeDestination } from "./types";
-import { Bindings, Rec, Statement, Term } from "../types";
+import { RuleGraph, EdgeDestination, Res, NodeID } from "./types";
+import { Rec, Statement } from "../types";
 import { substitute, unify, unifyVars } from "../unify";
-import { flatMap } from "../util";
 import { addRule, declareTable } from "./build";
 import { ppb, ppt } from "../pretty";
 
 export function processStmt(
   graph: RuleGraph,
   stmt: Statement
-): { newGraph: RuleGraph; propagationLog: Insertion[] } {
+): { newGraph: RuleGraph; emissionLog: Emission[] } {
   switch (stmt.type) {
     case "TableDecl": {
       const newGraph = declareTable(graph, stmt.name);
-      return { newGraph, propagationLog: [] };
+      return { newGraph, emissionLog: [] };
     }
     case "Rule": {
       const newGraph = addRule(graph, stmt.rule);
-      return { newGraph, propagationLog: [] };
+      return { newGraph, emissionLog: [] };
     }
     case "Insert":
       return insertFact(graph, stmt.record);
   }
 }
 
+export type Insertion = {
+  res: Res;
+  destination: EdgeDestination;
+};
+
+export type Emission = { fromID: NodeID; output: Res[] };
+
 export function insertFact(
   graph: RuleGraph,
   rec: Rec
-): { newGraph: RuleGraph; propagationLog: Insertion[] } {
+): { newGraph: RuleGraph; emissionLog: Emission[] } {
   let toInsert: Insertion[] = [
-    { rec, destination: { nodeID: rec.relation }, bindings: {} },
+    { res: { term: rec, bindings: {} }, destination: { nodeID: rec.relation } },
   ];
   let newGraph = graph;
-  let propagationLog = [];
+  // batches of emissions
+  const emissionLog: { fromID: NodeID; output: Res[] }[] = [];
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
+    const curNodeID = insertingNow.destination.nodeID;
     newGraph = addToCache(newGraph, insertingNow);
-    const newInsertions = processInsertion(newGraph, insertingNow);
-    for (let newInsertion of newInsertions) {
-      toInsert.push(newInsertion);
-      // TODO: maybe limit to just external nodes?
-      propagationLog.push(newInsertion);
+    const newEmissions = processInsertion(newGraph, insertingNow);
+    // TODO: maybe limit to just external nodes?
+    emissionLog.push({
+      fromID: curNodeID,
+      output: newEmissions,
+    });
+    for (let emission of newEmissions) {
+      for (let destination of graph.edges[curNodeID] || []) {
+        toInsert.push({
+          destination,
+          res: emission,
+        });
+      }
     }
   }
-  return { newGraph, propagationLog };
+  return { newGraph, emissionLog };
 }
 
-export type Insertion = {
-  rec: Rec;
-  destination: EdgeDestination;
-  bindings: Bindings;
-};
+// TODO: replace with types.Res when we have traces
 
 // caller adds resulting facts
-function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
+function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   const node = graph.nodes[ins.destination.nodeID];
-  const outEdges = graph.edges[ins.destination.nodeID] || [];
   const nodeDesc = node.desc;
   switch (nodeDesc.type) {
     case "Union":
-      return outEdges.map((destination) => ({
-        rec: ins.rec,
-        destination,
-        bindings: ins.bindings,
-      }));
+      return [ins.res];
     case "Join": {
       if (ins.destination.joinSide === undefined) {
         throw new Error("insertions to a join node must have a joinSide");
       }
-      const insertions: { rec: Rec; bindings: Bindings }[] = [];
+      const results: Res[] = [];
       // TODO: DRY this up somehow?
       if (ins.destination.joinSide === "left") {
-        const leftVars = ins.bindings;
+        const leftVars = ins.res.bindings;
         const rightRelation = graph.nodes[nodeDesc.rightSide.relation].cache;
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
           console.log({
-            left: ppt(ins.rec),
+            left: ppt(ins.res.term),
             leftVars: ppb(leftVars),
             right: ppt(possibleRightMatch.term),
             rightVars: ppb(rightVars),
             unifyRes: ppb(unifyRes),
           });
           if (unifyRes !== null) {
-            insertions.push({
-              rec: possibleRightMatch.term as Rec,
+            results.push({
+              term: possibleRightMatch.term,
               bindings: unifyRes,
             });
           }
         }
       } else {
-        const rightVars = ins.bindings;
+        const rightVars = ins.res.bindings;
         const leftRelation = graph.nodes[nodeDesc.leftSide.relation].cache;
         for (let possibleLeftMatch of leftRelation) {
           const leftVars = possibleLeftMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
           if (unifyRes !== null) {
-            insertions.push({
-              rec: possibleLeftMatch.term as Rec,
+            results.push({
+              term: possibleLeftMatch.term,
               bindings: unifyRes,
             });
           }
         }
       }
-      return flatMap(outEdges, (destination) =>
-        insertions.map(({ rec, bindings }) => ({
-          rec,
-          destination,
-          bindings,
-        }))
-      );
+      return results;
     }
     case "Match": {
-      // TODO: get rid of all these `as rec`s
-      const bindings = unify(ins.bindings, nodeDesc.rec, ins.rec);
+      const bindings = unify(ins.res.bindings, nodeDesc.rec, ins.res.term);
       // console.log({
       //   insRec: ppt(ins.rec),
       //   match: ppt(nodeDesc.rec),
       //   bindings: ppb(bindings),
       //   rec: ppt(rec),
       // });
-      return outEdges.map((destination) => ({
-        rec: ins.rec,
-        destination,
-        bindings,
-      }));
+      return [
+        {
+          term: ins.res.term,
+          bindings,
+        },
+      ];
     }
     case "Substitute":
-      const rec = substitute(nodeDesc.rec, ins.bindings) as Rec;
-      console.log({
-        inBindings: ppb(ins.bindings),
+      const rec = substitute(nodeDesc.rec, ins.res.bindings);
+      console.log("substitute", {
+        inBindings: ppb(ins.res.bindings),
         sub: ppt(nodeDesc.rec),
         out: ppt(rec),
       });
-      return outEdges.map((destination) => ({
-        rec,
-        destination,
-        bindings: ins.bindings, // apply mapping???
-      }));
+      return [
+        {
+          term: rec,
+          bindings: ins.res.bindings, // TODO: apply mapping?
+        },
+      ];
     case "BinExpr":
       throw new Error("TODO: incremental doesn't support BinExprs yet");
     case "BaseFactTable":
-      return outEdges.map((destination) => ({
-        rec: ins.rec,
-        destination,
-        bindings: {},
-      }));
+      return [ins.res];
   }
 }
 
@@ -153,8 +151,7 @@ function addToCache(graph: RuleGraph, insertion: Insertion): RuleGraph {
   // TODO: bring in an immutable datastructures library
   const {
     destination: { nodeID },
-    rec: term,
-    bindings,
+    res,
   } = insertion;
   return {
     ...graph,
@@ -162,7 +159,7 @@ function addToCache(graph: RuleGraph, insertion: Insertion): RuleGraph {
       ...graph.nodes,
       [nodeID]: {
         ...graph.nodes[nodeID],
-        cache: [...graph.nodes[nodeID].cache, { term, bindings }],
+        cache: [...graph.nodes[nodeID].cache, res],
       },
     },
   };
