@@ -1,15 +1,12 @@
 .table mother
 ----
 
-
 .table father
 ----
-
 
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
-
 
 father{child: "Mary", father: "Mark"}.
 ----

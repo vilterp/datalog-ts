@@ -82,7 +82,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         const rightRelation = graph.nodes[nodeDesc.rightID].cache;
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
-          const unifyRes = unifyVars(leftVars, rightVars);
+          const unifyRes = unifyVars(leftVars || {}, rightVars || {});
           // console.log("join from left", {
           //   left: formatRes(ins.res),
           //   right: formatRes(possibleRightMatch),
@@ -100,7 +100,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         const leftRelation = graph.nodes[nodeDesc.leftID].cache;
         for (let possibleLeftMatch of leftRelation) {
           const leftVars = possibleLeftMatch.bindings;
-          const unifyRes = unifyVars(leftVars, rightVars);
+          const unifyRes = unifyVars(leftVars || {}, rightVars || {});
           if (unifyRes !== null) {
             results.push({
               term: ins.res.term,
@@ -121,7 +121,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       return [
         {
           term: ins.res.term,
-          bindings,
+          bindings: bindings,
         },
       ];
     }

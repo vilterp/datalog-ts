@@ -23,7 +23,10 @@ function checkResults(results: Result[]) {
 
 function resultsToStr(results: Result[]): string {
   const resultStrs = results.map((r) =>
-    [r.pair.input, "----", r.actual].join("\n")
+    (r.actual.length === 0
+      ? [r.pair.input, "----"]
+      : [r.pair.input, "----", r.actual]
+    ).join("\n")
   );
   return resultStrs.join("\n\n") + "\n";
 }

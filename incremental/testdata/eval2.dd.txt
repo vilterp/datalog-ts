@@ -1,15 +1,12 @@
 .table mother
 ----
 
-
 .table father
 ----
-
 
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-
 
 father{child: "Pete", father: "Paul"}.
 ----

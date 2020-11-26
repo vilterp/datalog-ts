@@ -41,6 +41,16 @@ export function incrTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "eval3",
+      test() {
+        runDDTestAtPath(
+          "incremental/testdata/eval3.dd.txt",
+          evalTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
