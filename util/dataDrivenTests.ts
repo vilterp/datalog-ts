@@ -1,5 +1,6 @@
 import { assertStringEqual } from "../testing";
 import * as fs from "fs";
+import { zip } from "../util";
 
 export type DDTest = IOPair[];
 
@@ -30,7 +31,7 @@ function doWriteResults(path: string, results: Result[]) {
   fs.writeFileSync(path, resultsToStr(results));
 }
 
-export type ProcessFn = (test: DDTest) => Result[];
+export type ProcessFn = (test: DDTest) => string[];
 
 export function runDDTestAtPath(
   path: string,
@@ -39,7 +40,8 @@ export function runDDTestAtPath(
 ) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
-  const results = getResults(test);
+  const outputs = getResults(test);
+  const results = zip(test, outputs, (pair, actual) => ({ pair, actual }));
   if (writeResults) {
     doWriteResults(path, results);
   } else {

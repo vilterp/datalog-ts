@@ -1,59 +1,54 @@
-import { RuleGraph, NodeID } from "./types";
+import { RuleGraph, NodeID, EdgeDestination } from "./types";
 import { Rec, Term } from "../types";
 
 export function insertFact(
   graph: RuleGraph,
   rec: Rec
 ): { newGraph: RuleGraph; newFacts: Rec[] } {
-  let toInsert = [rec];
+  let toInsert: Insertion[] = [{ rec, dest: { toID: rec.relation } }];
   let newGraph = graph;
   let allNewFacts = [];
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
-    let {
-      newGraph: newGraphFromThisIteration,
-      newFacts: newFactsFromThisIteration,
-    } = stepAssert(graph, insertingNow);
-    for (let newFact of newFactsFromThisIteration) {
-      toInsert.push(newFact);
-      allNewFacts.push(newFact);
-      newGraph = newGraphFromThisIteration;
+    const newInsertions = processInsertion(graph, insertingNow);
+    for (let newInsertion of newInsertions) {
+      toInsert.push(newInsertion);
+      // TODO: maybe limit to just external nodes?
+      allNewFacts.push(newInsertion.rec);
+      newGraph = addToCache(newGraph, newInsertion.dest.toID, newInsertion.rec);
     }
   }
   return { newGraph, newFacts: allNewFacts };
 }
 
-type Insertion = { nodeID: NodeID; rec: Rec; joinSide?: "left" | "right" };
-
-function stepAssert(
-  graph: RuleGraph,
-  rec: Rec
-): { newGraph: RuleGraph; newFacts: Rec[] } {
-  const tableID = rec.relation;
-  const g1 = addToCache(graph, tableID, rec);
-  const nextNodes = graph.edges[tableID];
-  return XXX;
-}
+type Insertion = { rec: Rec; dest: EdgeDestination };
 
 // caller adds resulting facts
-function processAssert(graph: RuleGraph, ins: Insertion): Insertion[] {
-  const node = graph.nodes[ins.nodeID];
-  const outEdges = graph.edges[ins.nodeID];
+function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
+  console.log({ ins });
+  const node = graph.nodes[ins.dest.toID];
+  const outEdges = graph.edges[ins.dest.toID] || [];
   switch (node.node.type) {
     case "Union":
-      return outEdges.map((nodeID) => ({ rec: ins.rec, nodeID }));
-    case "Join":
+      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
+    case "Join": {
+      const newRec: Rec = {
+        type: "Record",
+        relation: ins.dest.toID,
+        attrs: {},
+      };
       // look at other side of join
-      return XXX;
+      return outEdges.map((dest) => ({ rec: newRec, dest }));
+    }
     case "Match":
       // TODO: actually match
       // call unifyVars or something
-      return [rec];
+      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
     case "BinExpr":
       // TODO: actually evaluate bin expr
-      return [rec];
+      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
     case "BaseFactTable":
-      return [rec];
+      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
   }
 }
 

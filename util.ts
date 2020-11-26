@@ -189,3 +189,31 @@ export function clamp(n: number, range: [number, number]): number {
   }
   return n;
 }
+
+export function scan<A, I, O>(
+  initial: A,
+  f: (accum: A, item: I) => { newState: A; output: O },
+  items: I[]
+): O[] {
+  let state = initial;
+  let outputs: O[] = [];
+  items.forEach((item) => {
+    const { newState, output } = f(state, item);
+    state = newState;
+    outputs.push(output);
+  });
+  return outputs;
+}
+
+// assumes that left and right are the same length
+export function zip<L, R, O>(
+  left: L[],
+  right: R[],
+  combine: (left: L, right: R) => O
+): O[] {
+  const output: O[] = [];
+  for (let i = 0; i < left.length; i++) {
+    output.push(combine(left[i], right[i]));
+  }
+  return output;
+}

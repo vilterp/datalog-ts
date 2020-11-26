@@ -1,0 +1,22 @@
+.table mother
+----
+
+
+.table father
+----
+
+
+matGramp{child: A, grandfather: C} :-
+  mother{child: A, mother: B} & father{child: B, father: C}.
+----
+
+
+mother{child: "Pete", mother: "Mary"}.
+----
+mother{child: "Pete", mother: "Mary"}
+0{}
+
+father{child: "Mary", father: "Mark"}.
+----
+father{child: "Mary", father: "Mark"}
+0{}
