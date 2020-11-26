@@ -57,13 +57,7 @@ function evalTest(test: DDTest): string[] {
       return { newState: newGraph, output: { newFacts, newGraph } };
     },
     test
-  ).map(({ newFacts, newGraph }) =>
-    JSON.stringify(
-      { facts: newFacts.map(ppt).join("\n"), graph: newGraph },
-      null,
-      2
-    )
-  );
+  ).map(({ newFacts, newGraph }) => newFacts.map(ppt).join("\n"));
 }
 
 // kind of reimplementing the repl here; lol
