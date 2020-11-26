@@ -6,7 +6,7 @@
     "nextNodeID": 0,
     "nodes": {
       "mother": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "mother"
         },
@@ -25,14 +25,14 @@
     "nextNodeID": 0,
     "nodes": {
       "mother": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "mother"
         },
         "cache": []
       },
       "father": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "father"
         },
@@ -52,7 +52,7 @@ matGramp{child: A, grandfather: C} :-
     "nextNodeID": 2,
     "nodes": {
       "0": {
-        "node": {
+        "desc": {
           "type": "Join",
           "leftSide": {
             "type": "Record",
@@ -86,7 +86,7 @@ matGramp{child: A, grandfather: C} :-
         "cache": []
       },
       "1": {
-        "node": {
+        "desc": {
           "type": "Match",
           "rec": {
             "type": "Record",
@@ -106,21 +106,21 @@ matGramp{child: A, grandfather: C} :-
         "cache": []
       },
       "mother": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "mother"
         },
         "cache": []
       },
       "father": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "father"
         },
         "cache": []
       },
       "matGramp": {
-        "node": {
+        "desc": {
           "type": "Union"
         },
         "cache": []
@@ -161,7 +161,7 @@ mother{child: "Pete", mother: "Mary"}.
     "nextNodeID": 2,
     "nodes": {
       "0": {
-        "node": {
+        "desc": {
           "type": "Join",
           "leftSide": {
             "type": "Record",
@@ -210,7 +210,7 @@ mother{child: "Pete", mother: "Mary"}.
         ]
       },
       "1": {
-        "node": {
+        "desc": {
           "type": "Match",
           "rec": {
             "type": "Record",
@@ -230,7 +230,7 @@ mother{child: "Pete", mother: "Mary"}.
         "cache": []
       },
       "mother": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "mother"
         },
@@ -252,14 +252,14 @@ mother{child: "Pete", mother: "Mary"}.
         ]
       },
       "father": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "father"
         },
         "cache": []
       },
       "matGramp": {
-        "node": {
+        "desc": {
           "type": "Union"
         },
         "cache": []
@@ -295,12 +295,12 @@ mother{child: "Pete", mother: "Mary"}.
 father{child: "Mary", father: "Mark"}.
 ----
 {
-  "facts": "father{child: \"Mary\", father: \"Mark\"}\nfather{child: \"Mary\", father: \"Mark\"}\nfather{child: \"Mary\", father: \"Mark\"}",
+  "facts": "father{child: \"Mary\", father: \"Mark\"}\nfather{child: \"Mary\", father: \"Mark\"}\nmatGramp{child: \"Mary\", grandfather: \"Mark\"}",
   "graph": {
     "nextNodeID": 2,
     "nodes": {
       "0": {
-        "node": {
+        "desc": {
           "type": "Join",
           "leftSide": {
             "type": "Record",
@@ -363,7 +363,7 @@ father{child: "Mary", father: "Mark"}.
         ]
       },
       "1": {
-        "node": {
+        "desc": {
           "type": "Match",
           "rec": {
             "type": "Record",
@@ -398,7 +398,7 @@ father{child: "Mary", father: "Mark"}.
         ]
       },
       "mother": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "mother"
         },
@@ -420,7 +420,7 @@ father{child: "Mary", father: "Mark"}.
         ]
       },
       "father": {
-        "node": {
+        "desc": {
           "type": "BaseFactTable",
           "name": "father"
         },
@@ -442,19 +442,19 @@ father{child: "Mary", father: "Mark"}.
         ]
       },
       "matGramp": {
-        "node": {
+        "desc": {
           "type": "Union"
         },
         "cache": [
           {
             "type": "Record",
-            "relation": "father",
+            "relation": "matGramp",
             "attrs": {
               "child": {
                 "type": "StringLit",
                 "val": "Mary"
               },
-              "father": {
+              "grandfather": {
                 "type": "StringLit",
                 "val": "Mark"
               }

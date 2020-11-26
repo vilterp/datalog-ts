@@ -83,18 +83,18 @@ function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
 
 function addNodeKnownID(
   graph: RuleGraph,
-  node: NodeDesc,
+  desc: NodeDesc,
   id: NodeID
 ): RuleGraph {
-  return { ...graph, nodes: { ...graph.nodes, [id]: { node, cache: [] } } };
+  return { ...graph, nodes: { ...graph.nodes, [id]: { desc, cache: [] } } };
 }
 
-function addNode(graph: RuleGraph, node: NodeDesc): [RuleGraph, NodeID] {
+function addNode(graph: RuleGraph, desc: NodeDesc): [RuleGraph, NodeID] {
   return [
     {
       ...graph,
       nextNodeID: graph.nextNodeID + 1,
-      nodes: { ...graph.nodes, [graph.nextNodeID]: { node, cache: [] } },
+      nodes: { ...graph.nodes, [graph.nextNodeID]: { desc, cache: [] } },
     },
     `${graph.nextNodeID}`,
   ];

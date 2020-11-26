@@ -1,6 +1,6 @@
 import { RuleGraph, NodeID, EdgeDestination } from "./types";
 import { Bindings, Rec, Statement, Term } from "../types";
-import { unify, unifyVars } from "../unify";
+import { substitute, unify, unifyVars } from "../unify";
 import { flatMap } from "../util";
 import { addRule, declareTable } from "./build";
 
@@ -26,7 +26,9 @@ export function insertFact(
   graph: RuleGraph,
   rec: Rec
 ): { newGraph: RuleGraph; newFacts: Rec[] } {
-  let toInsert: Insertion[] = [{ rec, dest: { toID: rec.relation } }];
+  let toInsert: Insertion[] = [
+    { rec, dest: { toID: rec.relation }, bindings: {} },
+  ];
   let newGraph = graph;
   let allNewFacts = [];
   while (toInsert.length > 0) {
@@ -42,15 +44,20 @@ export function insertFact(
   return { newGraph, newFacts: allNewFacts };
 }
 
-type Insertion = { rec: Rec; dest: EdgeDestination };
+type Insertion = { rec: Rec; dest: EdgeDestination; bindings: Bindings };
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
   const node = graph.nodes[ins.dest.toID];
   const outEdges = graph.edges[ins.dest.toID] || [];
-  switch (node.node.type) {
+  const nodeDesc = node.desc;
+  switch (nodeDesc.type) {
     case "Union":
-      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
+      return outEdges.map((dest) => ({
+        rec: ins.rec,
+        dest,
+        bindings: ins.bindings,
+      }));
     case "Join": {
       if (ins.dest.joinSide === undefined) {
         throw new Error("insertions to a join node must have a joinSide");
@@ -58,33 +65,38 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
       // TODO: probably need to flip more parts of this around for left/right
       const otherRelationName =
         ins.dest.joinSide === "left"
-          ? node.node.leftSide.relation
-          : node.node.rightSide.relation;
+          ? nodeDesc.leftSide.relation
+          : nodeDesc.rightSide.relation;
       const bindings: Bindings = {};
-      const leftVars = unify(bindings, node.node.leftSide, ins.rec);
-      const insertions: Rec[] = [];
+      const leftVars = unify(bindings, nodeDesc.leftSide, ins.rec);
+      const insertions: { rec: Rec; bindings: Bindings }[] = [];
       const otherRelation = graph.nodes[otherRelationName].cache;
       for (let possibleMatch of otherRelation) {
-        const rightVars = unify(bindings, node.node.rightSide, possibleMatch);
+        const rightVars = unify(bindings, nodeDesc.rightSide, possibleMatch);
         const unifyRes = unifyVars(leftVars, rightVars);
         if (unifyRes !== null) {
           // TODO: need to pass unifyRes up as well
-          insertions.push(possibleMatch as Rec);
+          insertions.push({ rec: possibleMatch as Rec, bindings: unifyRes });
         }
       }
       return flatMap(outEdges, (dest) =>
-        insertions.map((rec) => ({ rec, dest }))
+        insertions.map(({ rec, bindings }) => ({ rec, dest, bindings }))
       );
     }
     case "Match":
       // TODO: actually match
       // call unifyVars or something
-      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
+      // substitute
+      return outEdges.map((dest) => ({
+        rec: substitute(nodeDesc.rec, ins.bindings) as Rec,
+        dest,
+        bindings: ins.bindings,
+      }));
     case "BinExpr":
       // TODO: actually evaluate bin expr
-      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
+      return outEdges.map((dest) => ({ rec: ins.rec, dest, bindings: {} }));
     case "BaseFactTable":
-      return outEdges.map((dest) => ({ rec: ins.rec, dest }));
+      return outEdges.map((dest) => ({ rec: ins.rec, dest, bindings: {} }));
   }
 }
 

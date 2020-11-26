@@ -7,7 +7,7 @@ export type EdgeDestination = { toID: string; joinSide?: "left" | "right" };
 export type RuleGraph = {
   nextNodeID: number;
   nodes: {
-    [nodeID: string]: { node: NodeDesc; cache: Term[] };
+    [nodeID: string]: { desc: NodeDesc; cache: Term[] };
   };
   edges: { [fromID: string]: EdgeDestination[] };
 };
