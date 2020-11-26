@@ -19,46 +19,42 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
   const [g1, orID] = addNode(graph, { type: "Union" });
   const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
-    const [withAnd, _, andID] = addAnd(curG, andExpr.clauses);
+    const [withAnd, andID] = addAnd(curG, andExpr.clauses);
     return addEdge(withAnd, andID, { nodeID: orID });
   }, g1);
   return [withAndAndEdges, orID];
 }
 
-function addAnd(graph: RuleGraph, and: AndTerm[]): [RuleGraph, Term, NodeID] {
+function addAnd(graph: RuleGraph, and: AndTerm[]): [RuleGraph, NodeID] {
   if (and.length === 0) {
     throw new Error("empty and");
   }
   if (and.length === 1) {
     const [newGraph, id] = addTerm(graph, and[0]);
-    return [newGraph, and[0], id];
+    return [newGraph, id];
   }
-  const [g1, rightTerm, rightID] = addAnd(graph, and.slice(1));
-  return addAndBinary(g1, and[0], rightTerm, rightID);
+  const [g1, rightID] = addAnd(graph, and.slice(1));
+  return addAndBinary(g1, and[0], rightID);
 }
 
 function addAndBinary(
   graph: RuleGraph,
   left: AndTerm,
-  right: Term,
   rightID: NodeID
-): [RuleGraph, Term, NodeID] {
+): [RuleGraph, NodeID] {
   // TODO: identify common vars
   if (left.type !== "Record") {
     throw new Error("incremental doesn't support BinExprs yet");
   }
-  if (right.type !== "Record") {
-    throw new Error("incremental doesn't support BinExprs yet");
-  }
-  const [g1, joinID] = addNode(graph, {
+  const [g1, leftID] = addTerm(graph, left);
+  const [g2, joinID] = addNode(g1, {
     type: "Join",
-    leftSide: left,
-    rightSide: right,
+    leftID,
+    rightID,
   });
-  const [g2, leftID] = addTerm(g1, left);
   const g3 = addEdge(g2, leftID, { nodeID: joinID, joinSide: "left" });
   const g4 = addEdge(g3, rightID, { nodeID: joinID, joinSide: "right" });
-  return [g4, right, joinID];
+  return [g4, joinID];
 }
 
 type AndTerm = Rec | BinExpr;

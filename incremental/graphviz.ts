@@ -36,7 +36,7 @@ function descToString(node: NodeDesc): string {
     case "BinExpr":
       return pp.render(100, prettyPrintBinExpr(node.expr));
     case "Join":
-      return `Join(${ppt(node.leftSide)} & ${ppt(node.rightSide)})`;
+      return `Join(${node.leftID} & ${node.rightID})`;
     case "Match":
       return `Match(${pp.render(100, prettyPrintTerm(node.rec))})`;
     case "Substitute":

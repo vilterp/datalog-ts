@@ -23,7 +23,7 @@ export type RuleGraph = {
 
 export type NodeDesc =
   | { type: "BaseFactTable"; name: string }
-  | { type: "Join"; leftSide: Rec; rightSide: Rec }
+  | { type: "Join"; leftID: NodeID; rightID: NodeID } // sort of weird to have backpointers in the node
   | { type: "Match"; rec: Rec }
   | { type: "Substitute"; rec: Rec } // TODO: need mappings?
   | { type: "BinExpr"; expr: BinExpr }

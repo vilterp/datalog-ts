@@ -1,4 +1,4 @@
-import { RuleGraph, EdgeDestination, Res, NodeID } from "./types";
+import { RuleGraph, EdgeDestination, Res, NodeID, formatRes } from "./types";
 import { Rec, Statement } from "../types";
 import { substitute, unify, unifyVars } from "../unify";
 import { addRule, declareTable } from "./build";
@@ -42,7 +42,6 @@ export function insertFact(
   while (toInsert.length > 0) {
     const insertingNow = toInsert.shift();
     const curNodeID = insertingNow.destination.nodeID;
-    newGraph = addToCache(newGraph, insertingNow);
     const newEmissions = processInsertion(newGraph, insertingNow);
     // TODO: maybe limit to just external nodes?
     emissionLog.push({
@@ -50,6 +49,7 @@ export function insertFact(
       output: newEmissions,
     });
     for (let emission of newEmissions) {
+      newGraph = addToCache(newGraph, curNodeID, emission);
       for (let destination of graph.edges[curNodeID] || []) {
         toInsert.push({
           destination,
@@ -78,33 +78,31 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       // TODO: DRY this up somehow?
       if (ins.destination.joinSide === "left") {
         const leftVars = ins.res.bindings;
-        const rightRelation = graph.nodes[nodeDesc.rightSide.relation].cache;
+        const rightRelation = graph.nodes[nodeDesc.rightID].cache;
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
-          console.log({
-            left: ppt(ins.res.term),
-            leftVars: ppb(leftVars),
-            right: ppt(possibleRightMatch.term),
-            rightVars: ppb(rightVars),
+          console.log("join from left", {
+            left: formatRes(ins.res),
+            right: formatRes(possibleRightMatch),
             unifyRes: ppb(unifyRes),
           });
           if (unifyRes !== null) {
             results.push({
-              term: possibleRightMatch.term,
+              term: ins.res.term,
               bindings: unifyRes,
             });
           }
         }
       } else {
         const rightVars = ins.res.bindings;
-        const leftRelation = graph.nodes[nodeDesc.leftSide.relation].cache;
+        const leftRelation = graph.nodes[nodeDesc.leftID].cache;
         for (let possibleLeftMatch of leftRelation) {
           const leftVars = possibleLeftMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
           if (unifyRes !== null) {
             results.push({
-              term: possibleLeftMatch.term,
+              term: ins.res.term,
               bindings: unifyRes,
             });
           }
@@ -114,12 +112,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     }
     case "Match": {
       const bindings = unify(ins.res.bindings, nodeDesc.rec, ins.res.term);
-      // console.log({
-      //   insRec: ppt(ins.rec),
-      //   match: ppt(nodeDesc.rec),
-      //   bindings: ppb(bindings),
-      //   rec: ppt(rec),
-      // });
+      console.log("match", {
+        insRec: ppt(ins.res.term),
+        match: ppt(nodeDesc.rec),
+        bindings: ppb(bindings),
+      });
       return [
         {
           term: ins.res.term,
@@ -147,12 +144,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   }
 }
 
-function addToCache(graph: RuleGraph, insertion: Insertion): RuleGraph {
-  // TODO: bring in an immutable datastructures library
-  const {
-    destination: { nodeID },
-    res,
-  } = insertion;
+function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   return {
     ...graph,
     nodes: {

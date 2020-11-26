@@ -6,17 +6,17 @@ matGramp{child: A, grandfather: C} :-
 digraph G {
   "0" [label="0: Union"];
   "1" [label="1: Match(father{child: B, father: C})"];
-  "2" [label="2: Join(mother{child: A, mother: B} & father{child: B, father: C})"];
-  "3" [label="3: Match(mother{child: A, mother: B})"];
+  "2" [label="2: Match(mother{child: A, mother: B})"];
+  "3" [label="3: Join(2 & 1)"];
   "father" [label="father"];
   "matGramp" [label="matGramp: Subst(matGramp{child: A, grandfather: C})"];
   "mother" [label="mother"];
   "0" -> "matGramp" [label=""];
-  "1" -> "2" [label="right"];
-  "2" -> "0" [label=""];
-  "3" -> "2" [label="left"];
+  "1" -> "3" [label="right"];
+  "2" -> "3" [label="left"];
+  "3" -> "0" [label=""];
   "father" -> "1" [label=""];
-  "mother" -> "3" [label=""]
+  "mother" -> "2" [label=""]
 }
 
 foo{a: A} :- bar{a: A}.;
@@ -45,22 +45,22 @@ d{} :- a{} & b{} & c{}.
 digraph G {
   "0" [label="0: Union"];
   "1" [label="1: Match(c{})"];
-  "2" [label="2: Join(b{} & c{})"];
-  "3" [label="3: Match(b{})"];
-  "4" [label="4: Join(a{} & c{})"];
-  "5" [label="5: Match(a{})"];
+  "2" [label="2: Match(b{})"];
+  "3" [label="3: Join(2 & 1)"];
+  "4" [label="4: Match(a{})"];
+  "5" [label="5: Join(4 & 3)"];
   "a" [label="a"];
   "b" [label="b"];
   "c" [label="c"];
   "d" [label="d: Subst(d{})"];
   "0" -> "d" [label=""];
-  "1" -> "2" [label="right"];
-  "2" -> "4" [label="right"];
-  "3" -> "2" [label="left"];
-  "4" -> "0" [label=""];
-  "5" -> "4" [label="left"];
-  "a" -> "5" [label=""];
-  "b" -> "3" [label=""];
+  "1" -> "3" [label="right"];
+  "2" -> "3" [label="left"];
+  "3" -> "5" [label="right"];
+  "4" -> "5" [label="left"];
+  "5" -> "0" [label=""];
+  "a" -> "4" [label=""];
+  "b" -> "2" [label=""];
   "c" -> "1" [label=""]
 }
 
