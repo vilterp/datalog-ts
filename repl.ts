@@ -1,7 +1,7 @@
 import * as readline from "readline";
 import { ppt } from "./pretty";
 import * as fs from "fs";
-import { emptyRuleGraph, RuleGraph } from "./incremental/types";
+import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
 import { processStmt } from "./incremental/eval";
 import { toGraphviz } from "./incremental/graphviz";
@@ -93,13 +93,13 @@ export class Repl {
     }
     try {
       const stmt = language.statement.tryParse(this.buffer);
-      const { newGraph, propagationLog } = processStmt(this.state, stmt);
+      const { newGraph, emissionLog } = processStmt(this.state, stmt);
       this.state = newGraph;
-      propagationLog.forEach((insertion) => {
+      emissionLog.forEach((emissionBatch) => {
         this.println(
-          `${insertion.destination.nodeID}${
-            insertion.destination.joinSide || ""
-          }: ${ppt(insertion.rec)}`
+          `${emissionBatch.fromID}: ${emissionBatch.output.map((res) =>
+            ppt(res.term)
+          )}`
         );
       });
     } catch (e) {
