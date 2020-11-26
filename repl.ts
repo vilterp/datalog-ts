@@ -4,6 +4,8 @@ import * as fs from "fs";
 import { emptyRuleGraph, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
 import { processStmt } from "./incremental/eval";
+import { toGraphviz } from "./incremental/graphviz";
+import { prettyPrintGraph } from "./graphviz";
 
 type Mode = "repl" | "pipe" | "test";
 
@@ -80,6 +82,10 @@ export class Repl {
       //   this.doGraphviz();
       //   rl.prompt();
       //   return;
+    } else if (line === ".rulegraph") {
+      this.dumpRuleGraph();
+      rl.prompt();
+      return;
     }
     this.buffer = this.buffer + line;
     if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
@@ -131,6 +137,11 @@ export class Repl {
   //   };
   //   this.println(prettyPrintGraph(g));
   // }
+
+  private dumpRuleGraph() {
+    const graph = toGraphviz(this.state);
+    this.println(prettyPrintGraph(graph));
+  }
 
   private println(...strings: string[]) {
     // console.log("printing", strings[0], strings[1], strings[2]);

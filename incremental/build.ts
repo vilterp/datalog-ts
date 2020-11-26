@@ -8,27 +8,19 @@ export function declareTable(graph: RuleGraph, name: string): RuleGraph {
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   // TODO: compute cache for this rule when we add it
   const orID = rule.head.relation;
-  const g1 = addOr(orID, graph, rule.head, rule.defn);
-  // TODO: what about matches
-  return g1;
+  const withOr = addOr(orID, graph, rule.defn);
+  const [withMatch, matchID] = addNode(withOr, {
+    type: "Match",
+    rec: rule.head,
+  });
+  return addEdge(withMatch, orID, { toID: matchID });
 }
 
-function addOr(
-  orID: NodeID,
-  graph: RuleGraph,
-  head: Rec,
-  or: OrExpr
-): RuleGraph {
+function addOr(orID: NodeID, graph: RuleGraph, or: OrExpr): RuleGraph {
   const g1 = addNodeKnownID(graph, { type: "Union" }, orID);
   return or.opts.reduce((curG, andExpr) => {
-    // TODO: I think we need to put a match on top of this
     const [withAnd, _, andID] = addAnd(curG, andExpr.clauses);
-    const [withMatch, matchID] = addNode(withAnd, {
-      type: "Match",
-      rec: head,
-    });
-    const withAndEdge = addEdge(withMatch, andID, { toID: matchID });
-    return addEdge(withAndEdge, matchID, { toID: orID });
+    return addEdge(withAnd, andID, { toID: orID });
   }, g1);
 }
 

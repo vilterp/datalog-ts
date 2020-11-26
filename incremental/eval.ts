@@ -91,11 +91,9 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
       );
     }
     case "Match":
-      // TODO: actually match
-      // call unifyVars or something
-      // substitute
+      const rec = substitute(nodeDesc.rec, ins.bindings) as Rec;
       return outEdges.map((dest) => ({
-        rec: substitute(nodeDesc.rec, ins.bindings) as Rec,
+        rec,
         dest,
         bindings: ins.bindings,
       }));

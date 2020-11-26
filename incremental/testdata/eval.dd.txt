@@ -18,5 +18,5 @@ father{child: "Mary", father: "Mark"}.
 mother{child: "Pete", mother: "Mary"}.
 ----
 0left: mother{child: "Pete", mother: "Mary"}
+matGramp: father{child: "Mary", father: "Mark"}
 1: father{child: "Mary", father: "Mark"}
-matGramp: matGramp{child: "Pete", grandfather: "Mark"}
