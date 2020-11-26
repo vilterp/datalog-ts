@@ -1,6 +1,6 @@
 import { RuleGraph, NodeID, EdgeDestination } from "./types";
 import { Bindings, Rec, Statement, Term } from "../types";
-import { unify } from "../unify";
+import { unify, unifyVars } from "../unify";
 import { flatMap } from "../util";
 import { addRule, declareTable } from "./build";
 
@@ -55,15 +55,18 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
       if (ins.dest.joinSide === undefined) {
         throw new Error("insertions to a join node must have a joinSide");
       }
+      // TODO: probably need to flip more parts of this around for left/right
       const otherRelationName =
         ins.dest.joinSide === "left"
           ? node.node.leftSide.relation
           : node.node.rightSide.relation;
+      const bindings: Bindings = {};
+      const leftVars = unify(bindings, node.node.leftSide, ins.rec);
       const insertions: Rec[] = [];
       const otherRelation = graph.nodes[otherRelationName].cache;
-      const bindings: Bindings = {};
       for (let possibleMatch of otherRelation) {
-        const unifyRes = unify(bindings, possibleMatch, ins.rec);
+        const rightVars = unify(bindings, node.node.rightSide, possibleMatch);
+        const unifyRes = unifyVars(leftVars, rightVars);
         if (unifyRes !== null) {
           // TODO: need to pass unifyRes up as well
           insertions.push(possibleMatch as Rec);
