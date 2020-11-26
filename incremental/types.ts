@@ -18,7 +18,8 @@ export type RuleGraph = {
 export type NodeDesc =
   | { type: "BaseFactTable"; name: string }
   | { type: "Join"; leftSide: Rec; rightSide: Rec }
-  | { type: "Match"; rec: Rec } // TODO: mappings?
+  | { type: "Match"; rec: Rec }
+  | { type: "Substitute"; rec: Rec } // TODO: need mappings?
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
 

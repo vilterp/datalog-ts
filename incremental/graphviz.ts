@@ -39,6 +39,8 @@ function descToString(node: NodeDesc): string {
       return `Join(${ppt(node.leftSide)} & ${ppt(node.rightSide)})`;
     case "Match":
       return `Match(${pp.render(100, prettyPrintTerm(node.rec))})`;
+    case "Substitute":
+      return `Subst(${ppt(node.rec)})`;
     case "Union":
       return "Union";
   }

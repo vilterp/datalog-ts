@@ -9,7 +9,7 @@ digraph G {
   "2" [label="2: Join(mother{child: A, mother: B} & father{child: B, father: C})"];
   "3" [label="3: Match(mother{child: A, mother: B})"];
   "father" [label="father"];
-  "matGramp" [label="matGramp: Match(matGramp{child: A, grandfather: C})"];
+  "matGramp" [label="matGramp: Subst(matGramp{child: A, grandfather: C})"];
   "mother" [label="mother"];
   "0" -> "matGramp" [label=""];
   "1" -> "2" [label="right"];
@@ -17,29 +17,6 @@ digraph G {
   "3" -> "2" [label="left"];
   "father" -> "1" [label=""];
   "mother" -> "3" [label=""]
-}
-
-.table mother;
-matAncestor{desc: D, an: A} :-
-  mother{desc: D, an: A} |
-  mother{desc: D, an: B} & matAncestor{desc: B, an: A}.
-----
-digraph G {
-  "0" [label="0: Union"];
-  "1" [label="1: Match(mother{an: A, desc: D})"];
-  "2" [label="2: Match(matAncestor{an: A, desc: B})"];
-  "3" [label="3: Join(mother{an: B, desc: D} & matAncestor{an: A, desc: B})"];
-  "4" [label="4: Match(mother{an: B, desc: D})"];
-  "matAncestor" [label="matAncestor: Match(matAncestor{an: A, desc: D})"];
-  "mother" [label="mother"];
-  "0" -> "matAncestor" [label=""];
-  "1" -> "0" [label=""];
-  "2" -> "3" [label="right"];
-  "3" -> "0" [label=""];
-  "4" -> "3" [label="left"];
-  "matAncestor" -> "2" [label=""];
-  "mother" -> "1" [label=""];
-  "mother" -> "4" [label=""]
 }
 
 foo{a: A} :- bar{a: A}.;
@@ -50,8 +27,8 @@ digraph G {
   "1" [label="1: Match(bar{a: A})"];
   "2" [label="2: Union"];
   "3" [label="3: Match(foo{a: A})"];
-  "bar" [label="bar: Match(bar{a: A})"];
-  "foo" [label="foo: Match(foo{a: A})"];
+  "bar" [label="bar: Subst(bar{a: A})"];
+  "foo" [label="foo: Subst(foo{a: A})"];
   "0" -> "foo" [label=""];
   "1" -> "0" [label=""];
   "2" -> "bar" [label=""];
@@ -75,7 +52,7 @@ digraph G {
   "a" [label="a"];
   "b" [label="b"];
   "c" [label="c"];
-  "d" [label="d: Match(d{})"];
+  "d" [label="d: Subst(d{})"];
   "0" -> "d" [label=""];
   "1" -> "2" [label="right"];
   "2" -> "4" [label="right"];
@@ -94,7 +71,7 @@ digraph G {
   "0" [label="0: Union"];
   "1" [label="1: Match(mother{child: C, mother: P})"];
   "2" [label="2: Match(father{child: C, father: P})"];
-  "parent" [label="parent: Match(parent{child: C, parent: P})"];
+  "parent" [label="parent: Subst(parent{child: C, parent: P})"];
   "0" -> "parent" [label=""];
   "1" -> "0" [label=""];
   "2" -> "0" [label=""];

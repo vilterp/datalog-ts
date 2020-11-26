@@ -10,7 +10,7 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   const matchID = rule.head.relation;
   const [withOr, orID] = addOr(graph, rule.defn);
   const withMatch = addNodeKnownID(matchID, withOr, {
-    type: "Match",
+    type: "Substitute",
     rec: rule.head,
   });
   return addEdge(withMatch, orID, { nodeID: matchID });

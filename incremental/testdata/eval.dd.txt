@@ -14,11 +14,11 @@ matGramp{child: A, grandfather: C} :-
 father{child: "Mary", father: "Mark"}.
 ----
 1: father{child: "Mary", father: "Mark"}; {}
-2right: father{child: B, father: C}; {}
+2right: father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 3: mother{child: "Pete", mother: "Mary"}; {}
-2left: mother{child: A, mother: B}; {}
-0: father{child: "Mary", father: "Mark"}; {}
-matGramp: father{child: "Mary", father: "Mark"}; {}
+2left: mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}
+0: father{child: "Mary", father: "Mark"}; {A: "Pete", B: "Mary"}
+matGramp: father{child: "Mary", father: "Mark"}; {A: "Pete", B: "Mary"}

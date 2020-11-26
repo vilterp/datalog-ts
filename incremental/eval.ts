@@ -3,6 +3,7 @@ import { Bindings, Rec, Statement, Term } from "../types";
 import { substitute, unify, unifyVars } from "../unify";
 import { flatMap } from "../util";
 import { addRule, declareTable } from "./build";
+import { ppb, ppt } from "../pretty";
 
 export function processStmt(
   graph: RuleGraph,
@@ -70,26 +71,33 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
       // TODO: DRY this up somehow?
       if (ins.destination.joinSide === "left") {
         const leftVars = ins.bindings;
-        const otherRelation = graph.nodes[nodeDesc.rightSide.relation].cache;
-        for (let possibleMatch of otherRelation) {
-          const rightVars = possibleMatch.bindings;
+        const rightRelation = graph.nodes[nodeDesc.rightSide.relation].cache;
+        for (let possibleRightMatch of rightRelation) {
+          const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
+          console.log({
+            left: ppt(ins.rec),
+            leftVars: ppb(leftVars),
+            right: ppt(possibleRightMatch.term),
+            rightVars: ppb(rightVars),
+            unifyRes: ppb(unifyRes),
+          });
           if (unifyRes !== null) {
             insertions.push({
-              rec: possibleMatch.term as Rec,
+              rec: possibleRightMatch.term as Rec,
               bindings: unifyRes,
             });
           }
         }
       } else {
         const rightVars = ins.bindings;
-        const otherRelation = graph.nodes[nodeDesc.leftSide.relation].cache;
-        for (let possibleMatch of otherRelation) {
-          const leftVars = possibleMatch.bindings;
+        const leftRelation = graph.nodes[nodeDesc.leftSide.relation].cache;
+        for (let possibleLeftMatch of leftRelation) {
+          const leftVars = possibleLeftMatch.bindings;
           const unifyRes = unifyVars(leftVars, rightVars);
           if (unifyRes !== null) {
             insertions.push({
-              rec: possibleMatch.term as Rec,
+              rec: possibleLeftMatch.term as Rec,
               bindings: unifyRes,
             });
           }
@@ -103,20 +111,35 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Insertion[] {
         }))
       );
     }
-    case "Match":
-      const rec = substitute(nodeDesc.rec, ins.bindings) as Rec;
-      return outEdges.map((dest) => ({
-        rec,
-        destination: dest,
-        bindings: ins.bindings,
-      }));
-    case "BinExpr":
-      // TODO: actually evaluate bin expr
+    case "Match": {
+      // TODO: get rid of all these `as rec`s
+      const bindings = unify(ins.bindings, nodeDesc.rec, ins.rec);
+      // console.log({
+      //   insRec: ppt(ins.rec),
+      //   match: ppt(nodeDesc.rec),
+      //   bindings: ppb(bindings),
+      //   rec: ppt(rec),
+      // });
       return outEdges.map((destination) => ({
         rec: ins.rec,
         destination,
-        bindings: {},
+        bindings,
       }));
+    }
+    case "Substitute":
+      const rec = substitute(nodeDesc.rec, ins.bindings) as Rec;
+      console.log({
+        inBindings: ppb(ins.bindings),
+        sub: ppt(nodeDesc.rec),
+        out: ppt(rec),
+      });
+      return outEdges.map((destination) => ({
+        rec,
+        destination,
+        bindings: ins.bindings, // apply mapping???
+      }));
+    case "BinExpr":
+      throw new Error("TODO: incremental doesn't support BinExprs yet");
     case "BaseFactTable":
       return outEdges.map((destination) => ({
         rec: ins.rec,
