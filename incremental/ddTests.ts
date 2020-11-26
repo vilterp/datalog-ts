@@ -55,10 +55,16 @@ function evalTest(test: DDTest): string[] {
     (accum, pair) => {
       const stmt = parseStatement(pair.input);
       const { newGraph, newFacts } = processStmt(accum, stmt);
-      return { newState: newGraph, output: newFacts };
+      return { newState: newGraph, output: { newFacts, newGraph } };
     },
     test
-  ).map((newFacts) => newFacts.map(ppt).join("\n"));
+  ).map(({ newFacts, newGraph }) =>
+    JSON.stringify(
+      { facts: newFacts.map(ppt).join("\n"), graph: newGraph },
+      null,
+      2
+    )
+  );
 }
 
 // kind of reimplementing the repl here; lol
