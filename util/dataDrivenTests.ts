@@ -22,9 +22,11 @@ function checkResults(results: Result[]) {
 }
 
 function resultsToStr(results: Result[]): string {
-  return results
-    .map((r) => [r.pair.input, "----", r.actual].join("\n"))
-    .join("\n");
+  const resultStrs = results.map((r) =>
+    [r.pair.input, "----", r.actual].join("\n")
+  );
+  console.log({ resultStrs });
+  return resultStrs.join("\n\n") + "\n";
 }
 
 function doWriteResults(path: string, results: Result[]) {
@@ -40,6 +42,7 @@ export function runDDTestAtPath(
 ) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
+  console.log(test);
   const outputs = getResults(test);
   const results = zip(test, outputs, (pair, actual) => ({ pair, actual }));
   if (writeResults) {
@@ -74,7 +77,7 @@ function parseDDTest(str: string): DDTest {
         out.push({
           lineNo: inputLineNo,
           input: curInput.join("\n"),
-          output: curOutput.length === 0 ? "" : curOutput.join("\n") + "\n",
+          output: curOutput.length === 0 ? "" : curOutput.join("\n"),
         });
         curOutput = [];
         curInput = [];

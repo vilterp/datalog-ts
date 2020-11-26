@@ -50,7 +50,6 @@ function buildTest(test: DDTest): string[] {
 }
 
 function evalTest(test: DDTest): string[] {
-  // TODO: get rid of all these `+ "\n"`s.
   return scan(
     emptyRuleGraph,
     (accum, pair) => {
@@ -59,7 +58,7 @@ function evalTest(test: DDTest): string[] {
       return { newState: newGraph, output: newFacts };
     },
     test
-  ).map((newFacts) => newFacts.map(ppt).join("\n") + "\n");
+  ).map((newFacts) => newFacts.map(ppt).join("\n"));
 }
 
 // kind of reimplementing the repl here; lol
