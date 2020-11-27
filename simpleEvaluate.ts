@@ -1,36 +1,29 @@
 import {
   AndClause,
-  AndExpr,
   Bindings,
   BinExpr,
   DB,
   falseTerm,
-  Rec,
   Res,
   Term,
   trueTerm,
-  VarMappings,
   literalTrace,
   varTrace,
   binExprTrace,
   baseFactTrace,
   RulePathSegment,
-  ScopePath,
   InvocationLocation,
-  TermWithBindings,
 } from "./types";
 import {
   applyMappings,
   getMappings,
   substitute,
-  termEq,
-  termLT,
-  termSameType,
   unify,
   unifyVars,
 } from "./unify";
-import { filterMap, flatMap, mapObj } from "./util";
+import { filterMap, flatMap } from "./util";
 import { evalBinExpr } from "./binExpr";
+import { extractBinExprs } from "./evalCommon";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -188,7 +181,7 @@ function doEvaluate(
           // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
           const rawResults = flatMap(rule.defn.opts, (andExpr, optIdx) => {
-            const { recs: clauses, exprs } = extractBinExprs(andExpr);
+            const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
             const recResults = doJoin(
               depth,
               [{ type: "OrOpt", idx: optIdx }],
@@ -257,25 +250,6 @@ function doEvaluate(
   // console.groupEnd();
   // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
-}
-
-function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
-  const recs: Rec[] = [];
-  const exprs: BinExpr[] = [];
-  term.clauses.forEach((clause) => {
-    switch (clause.type) {
-      case "BinExpr":
-        exprs.push(clause);
-        break;
-      case "Record":
-        recs.push(clause);
-        break;
-    }
-  });
-  return {
-    recs,
-    exprs,
-  };
 }
 
 export function hasVars(t: Term): boolean {
