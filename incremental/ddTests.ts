@@ -71,6 +71,16 @@ export function incrTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "cycles",
+      test() {
+        runDDTestAtPath(
+          "incremental/testdata/cycles.dd.txt",
+          evalTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 

@@ -1,0 +1,10 @@
+.table baseEdge
+----
+
+edge{from: F, to: T} :-
+  baseEdge{from: F, to: T} |
+  baseEdge{from: F, to: I} & edge{from: I, to: T}.
+----
+
+.rulegraph
+----
