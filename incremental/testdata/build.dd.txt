@@ -70,3 +70,19 @@ digraph G {
   "father" -> "2" [];
   "mother" -> "1" []
 }
+
+grandparent{grandchild: A, grandparent: C} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C}.
+----
+digraph G {
+  "0" [label="0i: Match(parent{child: B, parent: C})"];
+  "1" [label="1i: Match(parent{child: A, parent: B})"];
+  "2" [label="2i: Join(1 & 0)"];
+  "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})"];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "2" -> "grandparent" [];
+  "parent" -> "0" [];
+  "parent" -> "1" []
+}

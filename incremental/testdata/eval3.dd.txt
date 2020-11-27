@@ -13,6 +13,31 @@ grandparent{grandchild: A, grandparent: C} :-
   parent{child: B, parent: C}.
 ----
 
+.rulegraph
+----
+digraph G {
+  "0" [label="0i: Union"];
+  "1" [label="1i: Match(mother{child: C, mother: P})"];
+  "2" [label="2i: Match(father{child: C, father: P})"];
+  "3" [label="3i: Match(parent{child: B, parent: C})"];
+  "4" [label="4i: Match(parent{child: A, parent: B})"];
+  "5" [label="5i: Join(4 & 3)"];
+  "father" [label="father"];
+  "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})"];
+  "mother" [label="mother"];
+  "parent" [label="parent: Subst(parent{child: C, parent: P})"];
+  "0" -> "parent" [];
+  "1" -> "0" [];
+  "2" -> "0" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "5" -> "grandparent" [];
+  "father" -> "2" [];
+  "mother" -> "1" [];
+  "parent" -> "3" [];
+  "parent" -> "4" []
+}
+
 father{child: "Mary", father: "Mark"}.
 ----
 father: [father{child: "Mary", father: "Mark"}; {}]

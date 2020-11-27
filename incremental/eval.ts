@@ -1,27 +1,6 @@
-import { RuleGraph, Res, NodeID, formatRes } from "./types";
-import { Rec, Statement } from "../types";
+import { RuleGraph, Res, NodeID } from "./types";
+import { Rec } from "../types";
 import { substitute, unify, unifyVars } from "../unify";
-import { addRule, declareTable } from "./build";
-import { ppb, ppt } from "../pretty";
-
-export function processStmt(
-  graph: RuleGraph,
-  stmt: Statement
-): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  switch (stmt.type) {
-    case "TableDecl": {
-      const newGraph = declareTable(graph, stmt.name);
-      return { newGraph, emissionLog: [] };
-    }
-    case "Rule": {
-      const newGraph = addRule(graph, stmt.rule);
-      return { newGraph, emissionLog: [] };
-    }
-    case "Insert":
-      return insertFact(graph, stmt.record);
-  }
-}
-
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside

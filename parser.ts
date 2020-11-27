@@ -7,12 +7,21 @@ export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
   // TODO: add .graphviz?
   statement: (r) =>
-    P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt, r.traceStmt),
+    P.alt(
+      r.insert,
+      r.rule,
+      r.comment,
+      r.tableDecl,
+      r.loadStmt,
+      r.traceStmt,
+      r.ruleGraphStmt
+    ),
   loadStmt: (r) =>
     P.seq(word(".load"), r.filePath).map(([_, path]) => ({
       type: "LoadStmt",
       path,
     })),
+  ruleGraphStmt: () => word(".rulegraph").map(() => ({ type: "RuleGraph" })),
   traceStmt: (r) =>
     P.seq(word(".trace"), r.insert).map(([_, insert]) => ({
       type: "TraceStmt",

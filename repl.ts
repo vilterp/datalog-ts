@@ -3,9 +3,9 @@ import { ppt } from "./pretty";
 import * as fs from "fs";
 import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
-import { processStmt } from "./incremental/eval";
 import { toGraphviz } from "./incremental/graphviz";
 import { prettyPrintGraph } from "./graphviz";
+import { processStmt } from "./incremental/interpreter";
 
 type Mode = "repl" | "pipe" | "test";
 

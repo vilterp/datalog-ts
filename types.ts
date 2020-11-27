@@ -68,7 +68,8 @@ export type Statement =
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string }
   | { type: "TraceStmt"; record: Rec }
-  | { type: "Comment"; comment: string };
+  | { type: "Comment"; comment: string }
+  | { type: "RuleGraph" };
 
 export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
