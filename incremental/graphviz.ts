@@ -1,4 +1,4 @@
-import { RuleGraph, NodeDesc } from "./types";
+import { RuleGraph, NodeDesc, formatDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { ppt, ppVM, prettyPrintBinExpr, prettyPrintTerm } from "../pretty";
@@ -14,7 +14,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
           label:
             node.desc.type === "BaseFactTable"
               ? id
-              : `${id}: ${descToString(node.desc)}`,
+              : `${id}: ${formatDesc(node.desc)}`,
         },
       };
     }),
@@ -26,23 +26,4 @@ export function toGraphviz(graph: RuleGraph): Graph {
       }))
     ),
   };
-}
-
-function descToString(node: NodeDesc): string {
-  switch (node.type) {
-    case "BaseFactTable":
-      return node.name;
-    case "BinExpr":
-      return pp.render(100, prettyPrintBinExpr(node.expr));
-    case "Join":
-      return `Join(${node.leftID} & ${node.rightID})`;
-    case "Match":
-      return `Match(${ppt(node.rec)}; ${ppVM(node.mappings, [], {
-        showScopePath: false,
-      })})`;
-    case "Substitute":
-      return `Subst(${ppt(node.rec)})`;
-    case "Union":
-      return "Union";
-  }
 }

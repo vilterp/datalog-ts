@@ -22,18 +22,26 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
 
 function resolveUnmappedCalls(graph: RuleGraph): RuleGraph {
   return graph.unmappedCallIDs.reduce((newGraph, unmappedCallID) => {
+    console.log("resolveUnmappedCalls", {
+      nodes: newGraph.nodes,
+      unmappedCallID,
+    });
     const callNodeDesc = newGraph.nodes[unmappedCallID].desc;
     if (callNodeDesc.type !== "Match") {
       throw new Error("call should be a Match node");
     }
     const callRec = callNodeDesc.rec;
-    const ruleNodeDesc = newGraph.nodes[callNodeDesc.rec.relation].desc;
+    const ruleNodeDesc = newGraph.nodes[callRec.relation].desc;
+    if (ruleNodeDesc.type === "BaseFactTable") {
+      return graph;
+    }
     if (ruleNodeDesc.type !== "Substitute") {
       throw new Error("rule should be a Subst node");
     }
     const ruleRec = ruleNodeDesc.rec;
     const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-    return updateMappings(newGraph, unmappedCallID, mappings);
+    const withNewMappings = updateMappings(newGraph, unmappedCallID, mappings);
+    return removeUnmappedNode(withNewMappings, unmappedCallID);
   }, graph);
 }
 
@@ -164,5 +172,12 @@ function addUnmappedNode(graph: RuleGraph, nodeID: NodeID): RuleGraph {
   return {
     ...graph,
     unmappedCallIDs: [...graph.unmappedCallIDs, nodeID],
+  };
+}
+
+function removeUnmappedNode(graph: RuleGraph, nodeID: NodeID): RuleGraph {
+  return {
+    ...graph,
+    unmappedCallIDs: graph.unmappedCallIDs.filter((id) => id !== nodeID),
   };
 }

@@ -1,4 +1,4 @@
-import { RuleGraph, Res, NodeID, formatRes } from "./types";
+import { RuleGraph, Res, NodeID, formatRes, formatDesc } from "./types";
 import { Rec } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppt, ppVM } from "../pretty";
@@ -76,9 +76,9 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   if (graph.unmappedCallIDs.length > 0) {
     // TODO: better error message... pointing at match nodes; go get the relation name
     throw new Error(
-      `some nodes still rely on things not defined yet: ${graph.unmappedCallIDs.join(
-        ", "
-      )}`
+      `some nodes still rely on things not defined yet: ${graph.unmappedCallIDs
+        .map((id) => formatDesc(graph.nodes[id].desc))
+        .join(", ")}`
     );
   }
   const node = graph.nodes[ins.destination];

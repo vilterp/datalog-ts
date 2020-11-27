@@ -96,7 +96,7 @@ function buildTest(test: DDTest): string[] {
         return processStmt(accum, stmt).newGraph;
       } catch (err) {
         throw new Error(
-          `processing "${pair.input}" at line ${pair.lineNo}: ${err}`
+          `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
         );
       }
     }, emptyRuleGraph);
@@ -117,7 +117,7 @@ function evalTest(test: DDTest): string[] {
         };
       } catch (err) {
         throw new Error(
-          `processing "${pair.input}" at line ${pair.lineNo}: ${err}`
+          `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
         );
       }
     },

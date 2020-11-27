@@ -1,5 +1,5 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings } from "../types";
-import { ppb, ppt } from "../pretty";
+import { ppb, ppBE, ppt, ppVM } from "../pretty";
 
 export type NodeID = string;
 
@@ -41,4 +41,23 @@ export const emptyRuleGraph: RuleGraph = {
 
 export function formatRes(res: Res): string {
   return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
+}
+
+export function formatDesc(node: NodeDesc): string {
+  switch (node.type) {
+    case "BaseFactTable":
+      return node.name;
+    case "BinExpr":
+      return ppBE(node.expr);
+    case "Join":
+      return `Join(${node.leftID} & ${node.rightID})`;
+    case "Match":
+      return `Match(${ppt(node.rec)}; ${ppVM(node.mappings, [], {
+        showScopePath: false,
+      })})`;
+    case "Substitute":
+      return `Subst(${ppt(node.rec)})`;
+    case "Union":
+      return "Union";
+  }
 }
