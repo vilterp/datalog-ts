@@ -60,3 +60,15 @@ parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
 5: []
 5: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
 grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+
+mother{child: "Carolyn", mother: "Mary"}.
+----
+mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
+1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
+0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
+parent: [parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}]
+3: [parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}]
+4: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}]
+5: []
+5: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
+grandparent: [grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
