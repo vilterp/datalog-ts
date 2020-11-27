@@ -20,7 +20,7 @@ export type RuleGraph = {
   };
   edges: { [fromID: string]: NodeID[] };
   unmappedRules: {
-    [name: string]: { rule: Rule; matchIDs: NodeID[] };
+    [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
   };
 };
 

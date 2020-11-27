@@ -3,6 +3,7 @@ bar{a: A, b: B} :-
   foo{a: A, b: B} & A != B.
 ----
 digraph G {
+  // unmapped: bar [0, 1];
   "0" [label="0: Match(foo{a: A, b: B}; {})" shape="box"];
   "1" [label="1: A != B" shape="box"];
   "bar" [label="bar: Subst(bar{a: A, b: B})" shape="box"];

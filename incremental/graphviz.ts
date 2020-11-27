@@ -1,7 +1,13 @@
 import { RuleGraph, NodeDesc, formatDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
-import { ppt, ppVM, prettyPrintBinExpr, prettyPrintTerm } from "../pretty";
+import {
+  ppRule,
+  ppt,
+  ppVM,
+  prettyPrintBinExpr,
+  prettyPrintTerm,
+} from "../pretty";
 import * as pp from "prettier-printer";
 
 export function toGraphviz(graph: RuleGraph): Graph {
@@ -23,8 +29,12 @@ export function toGraphviz(graph: RuleGraph): Graph {
       }))
     ),
     comments:
-      graph.unmappedCallIDs.length > 0
-        ? [`unmapped: ${graph.unmappedCallIDs.join(", ")}`]
+      Object.keys(graph.unmappedRules).length > 0
+        ? mapObjToList(
+            graph.unmappedRules,
+            (name, rule) =>
+              `unmapped: ${name} [${[...rule.newNodeIDs].join(", ")}]`
+          )
         : [],
   };
 }

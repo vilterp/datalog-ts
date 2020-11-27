@@ -244,3 +244,11 @@ export function zip<L, R, O>(
   }
   return output;
 }
+
+export function setUnion<T>(left: Set<T>, right: Set<T>): Set<T> {
+  return new Set<T>([...left, ...right]);
+}
+
+export function setAdd<T>(set: Set<T>, item: T): Set<T> {
+  return new Set<T>([...set, item]);
+}

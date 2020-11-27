@@ -4,7 +4,8 @@ import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, mapObjToList } from "../util";
-import { addEdge, addNodeKnownID, addOr, resolveUnmappedCall } from "./build";
+import { addEdge, addNodeKnownID, addOr, addUnmappedRule } from "./build";
+
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside
@@ -19,14 +20,22 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   // TODO: compute cache for this rule when we add it
   const matchID = rule.head.relation;
-  const [withOr, orID] = addOr(graph, rule.defn);
-  const withMatch = addNodeKnownID(matchID, withOr, false, {
+  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
+  const withSubst = addNodeKnownID(matchID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
   });
-  const withEdge = addEdge(withMatch, orID, matchID);
-  // console.log("add", ppRule(rule), "=>", withEdge.unmappedCallIDs);
-  return withEdge.unmappedCallIDs.reduce(resolveUnmappedCall, withEdge);
+  const withEdge = addEdge(withSubst, orID, matchID);
+  const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
+  // TODO: add unmapped rule
+  // map unmapped rules
+  // if everything is now mapped
+  //   get roots of new rules
+  //   get facts at those roots
+  //   (do we replay only base facts?)
+  //   replay those facts (leaving out new nodes)
+  // return withUnmapped.unmappedCallIDs.reduce(resolveUnmappedCall, withUnmapped);
+  return { newGraph: withUnmapped, emissionLog: [] };
 }
 
 export function insertFact(

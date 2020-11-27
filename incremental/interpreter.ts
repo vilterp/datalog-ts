@@ -1,9 +1,9 @@
 import { formatRes, Res, RuleGraph } from "./types";
 import { Statement } from "../types";
-import { addRule, declareTable } from "./build";
+import { declareTable } from "./build";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
-import { doQuery, EmissionBatch, insertFact } from "./eval";
+import { addRule, doQuery, EmissionBatch, insertFact } from "./eval";
 import { hasVars } from "../simpleEvaluate";
 import { ppr } from "../pretty";
 
@@ -25,8 +25,8 @@ export function processStmt(
       return { newGraph, output: ack };
     }
     case "Rule": {
-      const newGraph = addRule(graph, stmt.rule);
-      return { newGraph, output: ack };
+      const { newGraph, emissionLog } = addRule(graph, stmt.rule);
+      return { newGraph, output: { type: "EmissionLog", log: emissionLog } };
     }
     case "Insert":
       if (hasVars(stmt.record)) {
