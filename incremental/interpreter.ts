@@ -9,7 +9,6 @@ export function processStmt(
   graph: RuleGraph,
   stmt: Statement
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[]; otherOutput?: string } {
-  console.log(stmt);
   switch (stmt.type) {
     case "TableDecl": {
       const newGraph = declareTable(graph, stmt.name);

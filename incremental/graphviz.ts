@@ -13,7 +13,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
           label:
             node.desc.type === "BaseFactTable"
               ? id
-              : `${id}${node.internal ? "i" : ""}: ${descToString(node.desc)}`,
+              : `${id}: ${descToString(node.desc)}`,
         },
       };
     }),
