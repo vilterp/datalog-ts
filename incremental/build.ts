@@ -1,26 +1,38 @@
-import { Rule, Rec, OrExpr, AndClause } from "../types";
+import { Rule, Rec, OrExpr, AndClause, VarMappings } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
+import { updateObj } from "../util";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
-  return addNodeKnownID(name, graph, { type: "BaseFactTable", name }, false);
+  return addNodeKnownID(name, graph, false, { type: "BaseFactTable", name });
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   // TODO: compute cache for this rule when we add it
   const matchID = rule.head.relation;
   const [withOr, orID] = addOr(graph, rule.defn);
-  const withMatch = addNodeKnownID(
-    matchID,
-    withOr,
-    {
-      type: "Substitute",
-      rec: rule.head,
-    },
-    false
-  );
-  return addEdge(withMatch, orID, matchID);
+  const withMatch = addNodeKnownID(matchID, withOr, false, {
+    type: "Substitute",
+    rec: rule.head,
+  });
+  const withEdge = addEdge(withMatch, orID, matchID);
+  // uh... how many calls are there
+  return resolveMappings(withEdge, rule.head, callID);
+}
+
+function resolveMappings(
+  graph: RuleGraph,
+  ruleHead: Rec,
+  callID: NodeID
+): RuleGraph {
+  const call = graph.nodes[callID];
+  const callDesc = call.desc;
+  if (callDesc.type !== "Match") {
+    throw new Error("call should be a Match");
+  }
+  const newMappings = getMappings(ruleHead.attrs, callDesc.rec.attrs);
+  return updateMappings(graph, ruleHead.relation, newMappings);
 }
 
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
@@ -79,32 +91,13 @@ function addAndBinary(
 }
 
 function addAndClause(graph: RuleGraph, rec: Rec): [RuleGraph, NodeID] {
-  const targetNode = graph.nodes[rec.relation];
-  if (!targetNode) {
-    throw new Error(
-      `references "${rec.relation}", which hasn't been defined yet`
-    );
-  }
-  const desc = targetNode.desc;
-  if (desc.type === "BaseFactTable") {
-    const [withMatch, matchID] = addNode(graph, true, {
-      type: "Match",
-      rec,
-      mappings: {},
-    });
-    const withMatchEdge = addEdge(withMatch, rec.relation, matchID);
-    return [withMatchEdge, matchID];
-  } else if (desc.type === "Substitute") {
-    const [withMatch, matchID] = addNode(graph, true, {
-      type: "Match",
-      rec,
-      mappings: getMappings(desc.rec.attrs, rec.attrs),
-    });
-    const withMatchEdge = addEdge(withMatch, rec.relation, matchID);
-    return [withMatchEdge, matchID];
-  } else {
-    throw new Error("rule should either reference a base fact of a Subst node");
-  }
+  const [withMatch, matchID] = addNode(graph, true, {
+    type: "Match",
+    rec,
+    mappings: {},
+  });
+  const withMatchEdge = addEdge(withMatch, rec.relation, matchID);
+  return [withMatchEdge, matchID];
 }
 
 // helpers
@@ -112,8 +105,8 @@ function addAndClause(graph: RuleGraph, rec: Rec): [RuleGraph, NodeID] {
 function addNodeKnownID(
   id: NodeID,
   graph: RuleGraph,
-  desc: NodeDesc,
-  isInternal: boolean
+  isInternal: boolean,
+  desc: NodeDesc
 ): RuleGraph {
   return {
     ...graph,
@@ -143,5 +136,22 @@ function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
     edges: { ...graph.edges, [from]: [...(graph.edges[from] || []), to] },
+  };
+}
+
+function updateMappings(
+  graph: RuleGraph,
+  from: NodeID,
+  newMappings: VarMappings
+): RuleGraph {
+  return {
+    ...graph,
+    nodes: updateObj(graph.nodes, from, (node) => ({
+      ...node,
+      desc:
+        node.desc.type === "Match"
+          ? { ...node.desc, mappings: newMappings }
+          : node.desc,
+    })),
   };
 }

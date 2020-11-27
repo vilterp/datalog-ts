@@ -9,6 +9,22 @@ export function mapObj<T, V>(
   return out;
 }
 
+export function updateObj<T>(
+  obj: { [k: string]: T },
+  key: string,
+  f: (t: T) => T
+): { [k: string]: T } {
+  const out: { [k: string]: T } = {};
+  for (const curKey of Object.keys(obj)) {
+    if (key === curKey) {
+      out[key] = obj[key];
+    } else {
+      out[key] = f(obj[key]);
+    }
+  }
+  return out;
+}
+
 export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
   const out: U[] = [];
   for (const item of arr) {
