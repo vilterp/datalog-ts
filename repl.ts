@@ -99,7 +99,7 @@ export class Repl {
       });
     } catch (e) {
       // TODO: distinguish between parse errors and others
-      this.println("error", e.toString(), e.stack);
+      this.println(e.stack);
       if (this.mode === "pipe") {
         process.exit(-1);
       }

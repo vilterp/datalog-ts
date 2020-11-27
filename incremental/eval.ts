@@ -27,6 +27,7 @@ export function insertFact(
     newGraph = nextIter.graph;
     iter = nextIter;
   }
+  newGraph = { ...newGraph, factsPropagated: true };
   return { newGraph, emissionLog };
 }
 

@@ -10,6 +10,12 @@ export function declareTable(graph: RuleGraph, name: string): RuleGraph {
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
+  if (graph.factsPropagated) {
+    // TODO: support this
+    throw new Error(
+      "currently can't add rules after facts have been propagated"
+    );
+  }
   // TODO: compute cache for this rule when we add it
   const matchID = rule.head.relation;
   const [withOr, orID] = addOr(graph, rule.defn);
