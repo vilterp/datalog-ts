@@ -3,6 +3,7 @@ import { Rec } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
+import { filterMap } from "../util";
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside
@@ -168,7 +169,13 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
     // TODO: maybe start using result type
     throw new Error(`no such relation: ${query.relation}`);
   }
-  return node.cache.filter((res) => unify({}, res.term, query) !== null);
+  return filterMap(node.cache, (res) => {
+    const bindings = unify({}, res.term, query);
+    if (bindings === null) {
+      return null;
+    }
+    return { term: res.term, bindings };
+  });
 }
 
 // helpers

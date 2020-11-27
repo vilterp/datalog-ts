@@ -67,3 +67,12 @@ edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
 4: []
 2: [edge{from: "A", to: "D"}; {I: "A", T: "D"}]
 4: []
+
+edge{from: F, to: T}.
+----
+edge{from: "A", to: "B"}; {F: "A", T: "B"}
+edge{from: "C", to: "D"}; {F: "C", T: "D"}
+edge{from: "B", to: "C"}; {F: "B", T: "C"}
+edge{from: "B", to: "D"}; {F: "B", T: "D"}
+edge{from: "A", to: "C"}; {F: "A", T: "C"}
+edge{from: "A", to: "D"}; {F: "A", T: "D"}

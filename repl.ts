@@ -89,9 +89,12 @@ export class Repl {
       const stmt = language.statement.tryParse(this.buffer);
       const { newGraph, output } = processStmt(this.state, stmt);
       this.state = newGraph;
-      this.println(
-        formatOutput(newGraph, output, { showInternalEmissions: false })
-      );
+      const outputStr = formatOutput(newGraph, output, {
+        showInternalEmissions: false,
+      });
+      if (outputStr.length > 0) {
+        this.println(outputStr);
+      }
     } catch (e) {
       // TODO: distinguish between parse errors and others
       this.println(e.stack);
