@@ -6,7 +6,7 @@ import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { Statement } from "../types";
 import { scan } from "../util";
-import { Emission, Insertion, processStmt } from "./eval";
+import { EmissionBatch, Insertion, processStmt } from "./eval";
 import { ppb, ppt } from "../pretty";
 
 export function incrTests(writeResults: boolean): Suite {

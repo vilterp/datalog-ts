@@ -7,7 +7,7 @@ import { ppb, ppt } from "../pretty";
 export function processStmt(
   graph: RuleGraph,
   stmt: Statement
-): { newGraph: RuleGraph; emissionLog: Emission[] } {
+): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   switch (stmt.type) {
     case "TableDecl": {
       const newGraph = declareTable(graph, stmt.name);
@@ -28,43 +28,66 @@ export type Insertion = {
   destination: NodeID;
 };
 
-export type Emission = { fromID: NodeID; output: Res[] };
+export type EmissionBatch = { fromID: NodeID; output: Res[] };
 
 export function insertFact(
   graph: RuleGraph,
   rec: Rec
-): { newGraph: RuleGraph; emissionLog: Emission[] } {
-  let toInsert: Insertion[] = [
+): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+  let iter = getInsertionIterator(graph, rec);
+  const emissionLog: EmissionBatch[] = [];
+  let newGraph = graph;
+  while (true) {
+    const [emissions, nextIter] = stepIterator(iter);
+    emissionLog.push(emissions);
+    if (nextIter.queue.length === 0) {
+      break;
+    }
+    newGraph = nextIter.graph;
+    iter = nextIter;
+  }
+  return { newGraph, emissionLog };
+}
+
+export function getInsertionIterator(
+  graph: RuleGraph,
+  rec: Rec
+): InsertionIterator {
+  const queue: Insertion[] = [
     {
       res: { term: rec, bindings: {} },
       origin: null,
       destination: rec.relation,
     },
   ];
-  let newGraph = graph;
-  // batches of emissions
-  const emissionLog: { fromID: NodeID; output: Res[] }[] = [];
-  while (toInsert.length > 0) {
-    const insertingNow = toInsert.shift();
-    const curNodeID = insertingNow.destination;
-    const newEmissions = processInsertion(newGraph, insertingNow);
-    // TODO: maybe limit to just external nodes?
-    emissionLog.push({
-      fromID: curNodeID,
-      output: newEmissions,
-    });
-    for (let emission of newEmissions) {
-      newGraph = addToCache(newGraph, curNodeID, emission);
-      for (let destination of graph.edges[curNodeID] || []) {
-        toInsert.push({
-          destination,
-          origin: curNodeID,
-          res: emission,
-        });
-      }
+  return { graph, queue };
+}
+
+type InsertionIterator = {
+  graph: RuleGraph;
+  queue: Insertion[];
+};
+
+function stepIterator(
+  iter: InsertionIterator
+): [EmissionBatch, InsertionIterator] {
+  const newQueue = iter.queue.slice(1);
+  let newGraph = iter.graph;
+  const insertingNow = iter.queue[0];
+  const curNodeID = insertingNow.destination;
+  const results = processInsertion(iter.graph, insertingNow);
+  for (let result of results) {
+    newGraph = addToCache(newGraph, curNodeID, result);
+    for (let destination of newGraph.edges[curNodeID] || []) {
+      newQueue.push({
+        destination,
+        origin: curNodeID,
+        res: result,
+      });
     }
   }
-  return { newGraph, emissionLog };
+  const newIter = { graph: newGraph, queue: newQueue };
+  return [{ fromID: curNodeID, output: results }, newIter];
 }
 
 // caller adds resulting facts
