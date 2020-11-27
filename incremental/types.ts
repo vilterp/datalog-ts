@@ -23,7 +23,7 @@ export type RuleGraph = {
 };
 
 export type NodeDesc =
-  | { type: "BaseFactTable"; name: string }
+  | { type: "BaseFactTable" }
   | { type: "Join"; leftID: NodeID; rightID: NodeID } // sort of weird to have backpointers in the node
   | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec } // TODO: need mappings?
@@ -46,7 +46,7 @@ export function formatRes(res: Res): string {
 export function formatDesc(node: NodeDesc): string {
   switch (node.type) {
     case "BaseFactTable":
-      return node.name;
+      return `Base`;
     case "BinExpr":
       return ppBE(node.expr);
     case "Join":

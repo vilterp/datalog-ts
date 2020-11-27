@@ -3,9 +3,10 @@ import { RuleGraph, NodeDesc, NodeID } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
 import { updateObj } from "../util";
+import { ppt } from "../pretty";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
-  return addNodeKnownID(name, graph, false, { type: "BaseFactTable", name });
+  return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
 }
 
 export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
@@ -17,12 +18,13 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
     rec: rule.head,
   });
   const withEdge = addEdge(withMatch, orID, matchID);
+  console.log("add", ppt(rule.head));
   return resolveUnmappedCalls(withEdge);
 }
 
 function resolveUnmappedCalls(graph: RuleGraph): RuleGraph {
   return graph.unmappedCallIDs.reduce((newGraph, unmappedCallID) => {
-    console.log("resolveUnmappedCalls", {
+    console.log("resolveUnmappedCall", {
       nodes: newGraph.nodes,
       unmappedCallID,
     });
@@ -31,7 +33,12 @@ function resolveUnmappedCalls(graph: RuleGraph): RuleGraph {
       throw new Error("call should be a Match node");
     }
     const callRec = callNodeDesc.rec;
-    const ruleNodeDesc = newGraph.nodes[callRec.relation].desc;
+    const ruleNode = newGraph.nodes[callRec.relation];
+    if (!ruleNode) {
+      // still not defined
+      return graph;
+    }
+    const ruleNodeDesc = ruleNode.desc;
     if (ruleNodeDesc.type === "BaseFactTable") {
       return graph;
     }

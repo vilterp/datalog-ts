@@ -8,3 +8,20 @@ edge{from: F, to: T} :-
 
 .rulegraph
 ----
+digraph G {
+  "0" [label="0: Union" shape="box"];
+  "1" [label="1: Match(baseEdge{from: F, to: T}; {})" shape="box"];
+  "2" [label="2: Match(edge{from: I, to: T}; {})" shape="box"];
+  "3" [label="3: Match(baseEdge{from: F, to: I}; {})" shape="box"];
+  "4" [label="4: Join(3 & 2)" shape="box"];
+  "baseEdge" [label="baseEdge: Base" shape="box"];
+  "edge" [label="edge: Subst(edge{from: F, to: T})" shape="box"];
+  "0" -> "edge" [];
+  "1" -> "0" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "0" [];
+  "baseEdge" -> "1" [];
+  "baseEdge" -> "3" [];
+  "edge" -> "2" []
+}

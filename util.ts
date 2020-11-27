@@ -11,15 +11,15 @@ export function mapObj<T, V>(
 
 export function updateObj<T>(
   obj: { [k: string]: T },
-  key: string,
-  f: (t: T) => T
+  updateKey: string,
+  update: (t: T) => T
 ): { [k: string]: T } {
   const out: { [k: string]: T } = {};
   for (const curKey of Object.keys(obj)) {
-    if (key === curKey) {
-      out[key] = obj[key];
+    if (updateKey === curKey) {
+      out[curKey] = update(obj[curKey]);
     } else {
-      out[key] = f(obj[key]);
+      out[curKey] = obj[curKey];
     }
   }
   return out;

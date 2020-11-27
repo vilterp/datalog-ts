@@ -6,7 +6,7 @@ digraph G {
   "0" [label="0: Match(foo{a: A, b: B}; {})" shape="box"];
   "1" [label="1: A != B" shape="box"];
   "bar" [label="bar: Subst(bar{a: A, b: B})" shape="box"];
-  "foo" [label="foo" shape="box"];
+  "foo" [label="foo: Base" shape="box"];
   "0" -> "1" [];
   "1" -> "bar" [];
   "foo" -> "0" []

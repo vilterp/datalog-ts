@@ -11,10 +11,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
         id,
         attrs: {
           shape: "box",
-          label:
-            node.desc.type === "BaseFactTable"
-              ? id
-              : `${id}: ${formatDesc(node.desc)}`,
+          label: `${id}: ${formatDesc(node.desc)}`,
         },
       };
     }),
