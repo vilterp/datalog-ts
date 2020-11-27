@@ -1,4 +1,4 @@
-import { Term, Rec, BinExpr, Bindings, VarMappings } from "../types";
+import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 
 export type NodeID = string;
@@ -19,7 +19,9 @@ export type RuleGraph = {
     };
   };
   edges: { [fromID: string]: NodeID[] };
-  unmappedCallIDs: NodeID[]; // pointing at matches that represent calls
+  unmappedRules: {
+    [name: string]: { rule: Rule; matchIDs: NodeID[] };
+  };
 };
 
 export type NodeDesc =
@@ -34,7 +36,7 @@ export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
   nodes: {},
   edges: {},
-  unmappedCallIDs: [],
+  unmappedRules: {},
 };
 
 // formatters

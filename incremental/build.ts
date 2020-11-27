@@ -2,27 +2,14 @@ import { Rule, Rec, OrExpr, AndClause, VarMappings } from "../types";
 import { RuleGraph, NodeDesc, NodeID, Res } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
-import { updateObj } from "../util";
+import { filterMap, filterObj, flatMap, updateObj } from "../util";
 import { ppRule, ppt } from "../pretty";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
 }
 
-export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
-  // TODO: compute cache for this rule when we add it
-  const matchID = rule.head.relation;
-  const [withOr, orID] = addOr(graph, rule.defn);
-  const withMatch = addNodeKnownID(matchID, withOr, false, {
-    type: "Substitute",
-    rec: rule.head,
-  });
-  const withEdge = addEdge(withMatch, orID, matchID);
-  // console.log("add", ppRule(rule), "=>", withEdge.unmappedCallIDs);
-  return withEdge.unmappedCallIDs.reduce(resolveUnmappedCall, withEdge);
-}
-
-function resolveUnmappedCall(
+export function resolveUnmappedCall(
   newGraph: RuleGraph,
   unmappedCallID: NodeID
 ): RuleGraph {
@@ -55,7 +42,10 @@ function resolveUnmappedCall(
   return removeUnmappedNode(withNewMappings, unmappedCallID);
 }
 
-function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
+export function addOr(
+  graph: RuleGraph,
+  or: OrExpr
+): { newGraph: RuleGraph; matchIDs: NodeID[]; tipID: NodeID } {
   if (or.opts.length === 1) {
     return addAnd(graph, or.opts[0].clauses);
   }
@@ -67,7 +57,10 @@ function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
   return [withAndAndEdges, orID];
 }
 
-function addAnd(graph: RuleGraph, clauses: AndClause[]): [RuleGraph, NodeID] {
+function addAnd(
+  graph: RuleGraph,
+  clauses: AndClause[]
+): { newGraph: RuleGraph; matchIDs: NodeID[]; tipID: NodeID } {
   const { recs, exprs } = extractBinExprs(clauses);
   const [withJoin, joinID] = addJoin(graph, recs);
   return exprs.reduce(
@@ -82,7 +75,10 @@ function addAnd(graph: RuleGraph, clauses: AndClause[]): [RuleGraph, NodeID] {
   );
 }
 
-function addJoin(graph: RuleGraph, and: Rec[]): [RuleGraph, NodeID] {
+function addJoin(
+  graph: RuleGraph,
+  and: Rec[]
+): { newGraph: RuleGraph; matchIDs: NodeID[]; tipID: NodeID } {
   if (and.length === 0) {
     throw new Error("empty and");
   }
@@ -98,7 +94,7 @@ function addAndBinary(
   graph: RuleGraph,
   left: Rec,
   rightID: NodeID
-): [RuleGraph, NodeID] {
+): { newGraph: RuleGraph; matchIDs: NodeID[]; tipID: NodeID } {
   const [g1, leftID] = addAndClause(graph, left);
   const [g2, joinID] = addNode(g1, true, {
     type: "Join",
@@ -110,7 +106,10 @@ function addAndBinary(
   return [g4, joinID];
 }
 
-function addAndClause(graph: RuleGraph, rec: Rec): [RuleGraph, NodeID] {
+function addAndClause(
+  graph: RuleGraph,
+  rec: Rec
+): { newGraph: RuleGraph; matchIDs: NodeID[]; tipID: NodeID } {
   const [withMatch, matchID] = addNode(graph, true, {
     type: "Match",
     rec,
@@ -122,9 +121,20 @@ function addAndClause(graph: RuleGraph, rec: Rec): [RuleGraph, NodeID] {
   return [withUnmapped, matchID];
 }
 
+function getRoots(rule: Rule): NodeID[] {
+  return flatMap(rule.defn.opts, (opt) => {
+    return filterMap(opt.clauses, (andClause) => {
+      if (andClause.type === "BinExpr") {
+        return null;
+      }
+      return andClause.relation;
+    });
+  });
+}
+
 // helpers
 
-function addNodeKnownID(
+export function addNodeKnownID(
   id: NodeID,
   graph: RuleGraph,
   isInternal: boolean,
@@ -154,7 +164,7 @@ function addNode(
   ];
 }
 
-function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
+export function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
     edges: { ...graph.edges, [from]: [...(graph.edges[from] || []), to] },
@@ -178,16 +188,26 @@ function updateMappings(
   };
 }
 
-function addUnmappedNode(graph: RuleGraph, nodeID: NodeID): RuleGraph {
+export function addUnmappedRule(
+  graph: RuleGraph,
+  rule: Rule,
+  matchIDs: NodeID[]
+): RuleGraph {
   return {
     ...graph,
-    unmappedCallIDs: [...graph.unmappedCallIDs, nodeID],
+    unmappedRules: {
+      ...graph.unmappedRules,
+      [rule.head.relation]: { rule, matchIDs },
+    },
   };
 }
 
-function removeUnmappedNode(graph: RuleGraph, nodeID: NodeID): RuleGraph {
+function removeUnmappedRule(graph: RuleGraph, ruleName: string): RuleGraph {
   return {
     ...graph,
-    unmappedCallIDs: graph.unmappedCallIDs.filter((id) => id !== nodeID),
+    unmappedRules: filterObj(
+      graph.unmappedRules,
+      (name: string) => name !== ruleName
+    ),
   };
 }

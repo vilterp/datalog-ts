@@ -1,9 +1,10 @@
 import { RuleGraph, Res, NodeID, formatRes, formatDesc } from "./types";
-import { Rec } from "../types";
+import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
-import { filterMap } from "../util";
+import { filterMap, mapObjToList } from "../util";
+import { addEdge, addNodeKnownID, addOr, resolveUnmappedCall } from "./build";
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside
@@ -12,10 +13,35 @@ export type Insertion = {
 
 export type EmissionBatch = { fromID: NodeID; output: Res[] };
 
+export function addRule(
+  graph: RuleGraph,
+  rule: Rule
+): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+  // TODO: compute cache for this rule when we add it
+  const matchID = rule.head.relation;
+  const [withOr, orID] = addOr(graph, rule.defn);
+  const withMatch = addNodeKnownID(matchID, withOr, false, {
+    type: "Substitute",
+    rec: rule.head,
+  });
+  const withEdge = addEdge(withMatch, orID, matchID);
+  // console.log("add", ppRule(rule), "=>", withEdge.unmappedCallIDs);
+  return withEdge.unmappedCallIDs.reduce(resolveUnmappedCall, withEdge);
+}
+
 export function insertFact(
   graph: RuleGraph,
   rec: Rec
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+  if (Object.keys(graph.unmappedRules).length > 0) {
+    throw new Error(
+      `some rules still rely on things not defined yet: [${mapObjToList(
+        graph.unmappedRules,
+        (name) => name
+      ).join(", ")}]`
+    );
+  }
+
   let iter = getInsertionIterator(graph, rec);
   const emissionLog: EmissionBatch[] = [];
   let newGraph = graph;
@@ -74,14 +100,6 @@ function stepIterator(
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
-  if (graph.unmappedCallIDs.length > 0) {
-    // TODO: better error message... pointing at match nodes; go get the relation name
-    throw new Error(
-      `some nodes still rely on things not defined yet: [${graph.unmappedCallIDs
-        .map((id) => formatDesc(graph.nodes[id].desc))
-        .join(", ")}]`
-    );
-  }
   const node = graph.nodes[ins.destination];
   const nodeDesc = node.desc;
   switch (nodeDesc.type) {

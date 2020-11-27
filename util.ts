@@ -59,7 +59,18 @@ export function intersperseIdx<T>(sep: (idx: number) => T, arr: T[]): T[] {
   return out;
 }
 
-export function mapObjMaybe<T, V>(
+export const identity = (x) => x;
+
+export function filterObj<V>(
+  obj: { [k: string]: V },
+  f: (k: string, v: V) => boolean
+): { [k: string]: V } {
+  return filterMapObj(obj, (k, v) => {
+    return f(k, v) ? v : null;
+  });
+}
+
+export function filterMapObj<T, V>(
   obj: { [k: string]: T },
   f: (k: string, t: T) => V | undefined | null
 ): { [k: string]: V } {
