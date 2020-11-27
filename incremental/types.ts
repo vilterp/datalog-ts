@@ -20,7 +20,6 @@ export type RuleGraph = {
   };
   edges: { [fromID: string]: NodeID[] };
   unmappedCallIDs: NodeID[]; // pointing at matches that represent calls
-  factsPropagated: boolean;
 };
 
 export type NodeDesc =
@@ -36,7 +35,6 @@ export const emptyRuleGraph: RuleGraph = {
   nodes: {},
   edges: {},
   unmappedCallIDs: [],
-  factsPropagated: false,
 };
 
 // formatters
