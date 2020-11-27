@@ -48,3 +48,15 @@ parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
 4: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
 5: []
 5: []
+
+mother{child: "Pete", mother: "Mary"}.
+----
+mother: [mother{child: "Pete", mother: "Mary"}; {}]
+1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
+3: [parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}]
+4: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
+5: []
+5: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
+grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]

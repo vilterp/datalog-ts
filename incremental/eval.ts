@@ -117,13 +117,13 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "Match": {
       const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
       const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
-      console.log("match", {
-        insRec: formatRes(ins.res),
-        match: ppt(nodeDesc.rec),
-        bindings: ppb(bindings || {}),
-        mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
-        mappedBindings: ppb(mappedBindings),
-      });
+      // console.log("match", {
+      //   insRec: formatRes(ins.res),
+      //   match: ppt(nodeDesc.rec),
+      //   bindings: ppb(bindings || {}),
+      //   mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
+      //   mappedBindings: ppb(mappedBindings),
+      // });
       return [
         {
           term: ins.res.term,
