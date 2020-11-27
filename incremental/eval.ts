@@ -162,6 +162,17 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   }
 }
 
+export function doQuery(graph: RuleGraph, query: Rec): Res[] {
+  const node = graph.nodes[query.relation];
+  if (!node) {
+    // TODO: maybe start using result type
+    throw new Error(`no such relation: ${query.relation}`);
+  }
+  return node.cache.filter((res) => unify({}, res.term, query) !== null);
+}
+
+// helpers
+
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   return {
     ...graph,

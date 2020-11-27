@@ -3,7 +3,7 @@ import { ppt } from "./pretty";
 import * as fs from "fs";
 import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
-import { processStmt } from "./incremental/interpreter";
+import { formatOutput, processStmt } from "./incremental/interpreter";
 
 type Mode = "repl" | "pipe" | "test";
 
@@ -87,16 +87,11 @@ export class Repl {
     }
     try {
       const stmt = language.statement.tryParse(this.buffer);
-      const { newGraph, emissionLog } = processStmt(this.state, stmt);
+      const { newGraph, output } = processStmt(this.state, stmt);
       this.state = newGraph;
-      emissionLog.forEach((emissionBatch) => {
-        const fromNode = this.state.nodes[emissionBatch.fromID];
-        if (!fromNode.isInternal && fromNode.desc.type !== "BaseFactTable") {
-          this.println(
-            emissionBatch.output.map((res) => ppt(res.term) + ".").join("\n")
-          );
-        }
-      });
+      this.println(
+        formatOutput(newGraph, output, { showInternalEmissions: false })
+      );
     } catch (e) {
       // TODO: distinguish between parse errors and others
       this.println(e.stack);

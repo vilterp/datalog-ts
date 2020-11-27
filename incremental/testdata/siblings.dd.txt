@@ -44,13 +44,11 @@ digraph G {
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-mother: [mother{child: "Pete", mother: "Mary"}; {}]
 1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}]
 2: []
 
 father{child: "Pete", father: "Paul"}.
 ----
-father: [father{child: "Pete", father: "Paul"}; {}]
 0: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}]
 2: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}]
 parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}]
@@ -63,13 +61,11 @@ parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F:
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
 1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
 2: []
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-father: [father{child: "Carolyn", father: "Paul"}; {}]
 0: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
 2: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
 parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]

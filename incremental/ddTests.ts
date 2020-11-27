@@ -7,7 +7,7 @@ import { toGraphviz } from "./graphviz";
 import { Statement } from "../types";
 import { scan } from "../util";
 import { ppb, ppt } from "../pretty";
-import { processStmt } from "./interpreter";
+import { formatOutput, processStmt } from "./interpreter";
 
 export function incrTests(writeResults: boolean): Suite {
   return [
@@ -110,10 +110,12 @@ function evalTest(test: DDTest): string[] {
     (accum, pair) => {
       try {
         const stmt = parseStatement(pair.input);
-        const { newGraph, emissionLog, otherOutput } = processStmt(accum, stmt);
+        const { newGraph, output } = processStmt(accum, stmt);
         return {
           newState: newGraph,
-          output: { emissionLog, newGraph, otherOutput },
+          output: formatOutput(newGraph, output, {
+            showInternalEmissions: true,
+          }),
         };
       } catch (err) {
         throw new Error(
@@ -122,16 +124,6 @@ function evalTest(test: DDTest): string[] {
       }
     },
     test
-  ).map(({ emissionLog, otherOutput }) =>
-    [
-      ...emissionLog.map(
-        ({ fromID, output }) =>
-          `${fromID}: [${output.map(formatRes).join(", ")}]`
-      ),
-      otherOutput || null,
-    ]
-      .filter((x) => x !== null)
-      .join("\n")
   );
 }
 
