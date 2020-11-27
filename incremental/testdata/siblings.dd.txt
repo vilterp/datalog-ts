@@ -17,16 +17,16 @@ sibling{left: L, right: R} :-
 .rulegraph
 ----
 digraph G {
-  "0" [label="0: Match(father{child: C, father: F}; {})"];
-  "1" [label="1: Match(mother{child: C, mother: M}; {})"];
-  "2" [label="2: Join(1 & 0)"];
-  "3" [label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})"];
-  "4" [label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})"];
-  "5" [label="5: Join(4 & 3)"];
-  "father" [label="father"];
-  "mother" [label="mother"];
-  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})"];
-  "sibling" [label="sibling: Subst(sibling{left: L, right: R})"];
+  "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"];
+  "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
+  "2" [label="2: Join(1 & 0)" shape="box"];
+  "3" [label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})" shape="box"];
+  "4" [label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})" shape="box"];
+  "5" [label="5: Join(4 & 3)" shape="box"];
+  "father" [label="father" shape="box"];
+  "mother" [label="mother" shape="box"];
+  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
+  "sibling" [label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];

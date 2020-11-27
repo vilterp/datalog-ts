@@ -37,7 +37,10 @@ export function prettyPrintGraph(g: Graph): string {
         ...g.nodes.map((node) => [
           `"${node.id}"`,
           " [",
-          mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`]),
+          pp.intersperse(
+            " ",
+            mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`])
+          ),
           "]",
         ]),
         ...g.edges.map((edge) => [
@@ -45,7 +48,10 @@ export function prettyPrintGraph(g: Graph): string {
           " -> ",
           `"${edge.to}"`,
           " [",
-          mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`]),
+          pp.intersperse(
+            " ",
+            mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`])
+          ),
           "]",
         ]),
       ],

@@ -10,6 +10,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
       return {
         id,
         attrs: {
+          shape: "box",
           label:
             node.desc.type === "BaseFactTable"
               ? id

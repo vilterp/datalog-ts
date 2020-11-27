@@ -16,16 +16,16 @@ grandparent{grandchild: A, grandparent: C} :-
 .rulegraph
 ----
 digraph G {
-  "0" [label="0: Union"];
-  "1" [label="1: Match(mother{child: C, mother: P}; {})"];
-  "2" [label="2: Match(father{child: C, father: P}; {})"];
-  "3" [label="3: Match(parent{child: B, parent: C}; {C: B, P: C})"];
-  "4" [label="4: Match(parent{child: A, parent: B}; {C: A, P: B})"];
-  "5" [label="5: Join(4 & 3)"];
-  "father" [label="father"];
-  "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})"];
-  "mother" [label="mother"];
-  "parent" [label="parent: Subst(parent{child: C, parent: P})"];
+  "0" [label="0: Union" shape="box"];
+  "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
+  "2" [label="2: Match(father{child: C, father: P}; {})" shape="box"];
+  "3" [label="3: Match(parent{child: B, parent: C}; {C: B, P: C})" shape="box"];
+  "4" [label="4: Match(parent{child: A, parent: B}; {C: A, P: B})" shape="box"];
+  "5" [label="5: Join(4 & 3)" shape="box"];
+  "father" [label="father" shape="box"];
+  "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})" shape="box"];
+  "mother" [label="mother" shape="box"];
+  "parent" [label="parent: Subst(parent{child: C, parent: P})" shape="box"];
   "0" -> "parent" [];
   "1" -> "0" [];
   "2" -> "0" [];
