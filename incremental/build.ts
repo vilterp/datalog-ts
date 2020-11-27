@@ -51,10 +51,6 @@ function addAndBinary(
   left: AndTerm,
   rightID: NodeID
 ): [RuleGraph, NodeID] {
-  // TODO: identify common vars
-  if (left.type !== "Record") {
-    throw new Error("incremental doesn't support BinExprs yet");
-  }
   const [g1, leftID] = addTerm(graph, left);
   const [g2, joinID] = addNode(
     g1,
@@ -75,7 +71,14 @@ type AndTerm = Rec | BinExpr;
 function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
   switch (term.type) {
     case "BinExpr":
-      throw new Error("incremental doesn't support BinExprs yet");
+      return addNode(
+        graph,
+        {
+          type: "BinExpr",
+          expr: term,
+        },
+        true
+      );
     case "Record":
       const targetNode = graph.nodes[term.relation];
       if (!targetNode) {

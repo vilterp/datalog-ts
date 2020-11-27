@@ -22,6 +22,16 @@ export function incrTests(writeResults: boolean): Suite {
       },
     },
     {
+      name: "buildBinExpr",
+      test() {
+        runDDTestAtPath(
+          "incremental/testdata/buildBinExpr.dd.txt",
+          buildTest,
+          writeResults
+        );
+      },
+    },
+    {
       name: "eval",
       test() {
         runDDTestAtPath(

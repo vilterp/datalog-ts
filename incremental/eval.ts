@@ -2,6 +2,7 @@ import { RuleGraph, Res, NodeID, formatRes } from "./types";
 import { Rec } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppt, ppVM } from "../pretty";
+import { evalBinExpr } from "../binExpr";
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside
@@ -145,7 +146,8 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         },
       ];
     case "BinExpr":
-      throw new Error("TODO: incremental doesn't support BinExprs yet");
+      const result = evalBinExpr(nodeDesc.expr, ins.res.bindings);
+      return result ? [ins.res] : [];
     case "BaseFactTable":
       return [ins.res];
   }

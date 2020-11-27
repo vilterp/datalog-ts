@@ -30,6 +30,7 @@ import {
   unifyVars,
 } from "./unify";
 import { filterMap, flatMap, mapObj } from "./util";
+import { evalBinExpr } from "./binExpr";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -256,24 +257,6 @@ function doEvaluate(
   // console.groupEnd();
   // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
-}
-
-function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
-  const left = substitute(expr.left, scope);
-  const right = substitute(expr.right, scope);
-  switch (expr.op) {
-    case "==":
-      return termEq(left, right);
-    case "!=":
-      return !termEq(left, right);
-    case "<=":
-      return (
-        termSameType(left, right) &&
-        (termLT(left, right) || termEq(left, right))
-      );
-    case ">=":
-      return termSameType(left, right) && !termLT(left, right);
-  }
 }
 
 function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
