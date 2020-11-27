@@ -61,7 +61,7 @@ export function runSuite(ts: Suite) {
         );
         console.error(patch);
       } else {
-        console.error("FAIL", t.name, e);
+        console.error("FAIL", t.name, e.message);
       }
       failures.add(t.name);
     }
@@ -79,7 +79,7 @@ export function runSuite(ts: Suite) {
 
 export type Suite = Test[];
 
-export function runSuites(suites: { [name: string]: Suite }) {
+export function runSuites(suites: { [name: string]: Suite }): boolean {
   const failures = new Set();
   for (const suiteName of Object.keys(suites)) {
     console.group("Suite", suiteName);
@@ -94,6 +94,7 @@ export function runSuites(suites: { [name: string]: Suite }) {
   }
   if (failures.size > 0) {
     console.error("failed suites:", failures);
-    throw new Error("test suites failed");
+    return false;
   }
+  return true;
 }
