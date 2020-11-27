@@ -17,20 +17,6 @@ digraph G {
   "mother" -> "1" []
 }
 
-foo{a: A} :- bar{a: A}.;
-bar{a: A} :- foo{a: A}.
-----
-digraph G {
-  "0" [label="0: Match(bar{a: A})"];
-  "1" [label="1: Match(foo{a: A})"];
-  "bar" [label="bar: Subst(bar{a: A})"];
-  "foo" [label="foo: Subst(foo{a: A})"];
-  "0" -> "foo" [];
-  "1" -> "bar" [];
-  "bar" -> "0" [];
-  "foo" -> "1" []
-}
-
 .table a;
 .table b;
 .table c;
@@ -56,6 +42,8 @@ digraph G {
   "c" -> "0" []
 }
 
+.table mother;
+.table father;
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
@@ -63,6 +51,8 @@ digraph G {
   "0" [label="0: Union"];
   "1" [label="1: Match(mother{child: C, mother: P})"];
   "2" [label="2: Match(father{child: C, father: P})"];
+  "father" [label="father"];
+  "mother" [label="mother"];
   "parent" [label="parent: Subst(parent{child: C, parent: P})"];
   "0" -> "parent" [];
   "1" -> "0" [];
@@ -71,18 +61,33 @@ digraph G {
   "mother" -> "1" []
 }
 
+.table mother;
+.table father;
+parent{child: C, parent: P} :-
+  mother{child: C, mother: P} | father{child: C, father: P}.;
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
 digraph G {
-  "0" [label="0: Match(parent{child: B, parent: C})"];
-  "1" [label="1: Match(parent{child: A, parent: B})"];
-  "2" [label="2: Join(1 & 0)"];
+  "0" [label="0: Union"];
+  "1" [label="1: Match(mother{child: C, mother: P})"];
+  "2" [label="2: Match(father{child: C, father: P})"];
+  "3" [label="3: Match(parent{child: B, parent: C})"];
+  "4" [label="4: Match(parent{child: A, parent: B})"];
+  "5" [label="5: Join(4 & 3)"];
+  "father" [label="father"];
   "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "grandparent" [];
-  "parent" -> "0" [];
-  "parent" -> "1" []
+  "mother" [label="mother"];
+  "parent" [label="parent: Subst(parent{child: C, parent: P})"];
+  "0" -> "parent" [];
+  "1" -> "0" [];
+  "2" -> "0" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "5" -> "grandparent" [];
+  "father" -> "2" [];
+  "mother" -> "1" [];
+  "parent" -> "3" [];
+  "parent" -> "4" []
 }

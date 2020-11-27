@@ -1,4 +1,4 @@
-import { Term, Rec, BinExpr, Bindings } from "../types";
+import { Term, Rec, BinExpr, Bindings, VarMappings } from "../types";
 import { ppb, ppt } from "../pretty";
 
 export type NodeID = string;
@@ -13,7 +13,7 @@ export type RuleGraph = {
   nextNodeID: number;
   nodes: {
     [nodeID: string]: {
-      internal: boolean;
+      isInternal: boolean;
       desc: NodeDesc;
       cache: Res[];
     };
@@ -24,7 +24,7 @@ export type RuleGraph = {
 export type NodeDesc =
   | { type: "BaseFactTable"; name: string }
   | { type: "Join"; leftID: NodeID; rightID: NodeID } // sort of weird to have backpointers in the node
-  | { type: "Match"; rec: Rec }
+  | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec } // TODO: need mappings?
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };

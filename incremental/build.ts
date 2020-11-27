@@ -1,5 +1,6 @@
 import { Rule, Rec, OrExpr, BinExpr, Term } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
+import { getMappings } from "../unify";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, { type: "BaseFactTable", name }, false);
@@ -71,21 +72,50 @@ function addAndBinary(
 
 type AndTerm = Rec | BinExpr;
 
-function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
+function addTerm(
+  graph: RuleGraph,
+  term: AndTerm
+): [RuleGraph, NodeID] {
   switch (term.type) {
     case "BinExpr":
       throw new Error("incremental doesn't support BinExprs yet");
     case "Record":
-      const [withMatch, matchID] = addNode(
-        graph,
-        {
-          type: "Match",
-          rec: term,
-        },
-        true
-      );
-      const withMatchEdge = addEdge(withMatch, term.relation, matchID);
-      return [withMatchEdge, matchID];
+      const targetNode = graph.nodes[term.relation];
+      if (!targetNode) {
+        throw new Error(
+          `references "${term.relation}", which hasn't been defined yet`
+        );
+      }
+      const desc = targetNode.desc;
+      if (desc.type === "BaseFactTable") {
+        const [withMatch, matchID] = addNode(
+          graph,
+          {
+            type: "Match",
+            rec: term,
+            mappings: {},
+          },
+          true
+        );
+        const withMatchEdge = addEdge(withMatch, term.relation, matchID);
+        return [withMatchEdge, matchID];
+      } else if (desc.type === "Substitute") {
+        const [withMatch, matchID] = addNode(
+          graph,
+          {
+            type: "Match",
+            rec: term,
+            mappings: getMappings(desc.rec.attrs, term.attrs),
+          },
+          true
+        );
+        const withMatchEdge = addEdge(withMatch, term.relation, matchID);
+        return [withMatchEdge, matchID];
+      } else {
+        throw new Error(
+          "rule should either reference a base fact of a Subst node"
+        );
+      }
   }
 }
 
@@ -95,11 +125,11 @@ function addNodeKnownID(
   id: NodeID,
   graph: RuleGraph,
   desc: NodeDesc,
-  internal: boolean
+  isInternal: boolean
 ): RuleGraph {
   return {
     ...graph,
-    nodes: { ...graph.nodes, [id]: { internal, desc, cache: [] } },
+    nodes: { ...graph.nodes, [id]: { isInternal, desc, cache: [] } },
   };
 }
 

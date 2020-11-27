@@ -21,26 +21,26 @@ export function incrTests(writeResults: boolean): Suite {
         );
       },
     },
-    {
-      name: "eval",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/eval.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "eval2",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/eval2.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
+    // {
+    //   name: "eval",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/eval.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "eval2",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/eval2.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
     {
       name: "eval3",
       test() {
@@ -54,16 +54,22 @@ export function incrTests(writeResults: boolean): Suite {
   ];
 }
 
+// TODO: deprecate this since we have .rulegraph now?
 function buildTest(test: DDTest): string[] {
   return test.map((pair) => {
     const commands = pair.input
       .split(";")
       .map((s) => s.trim())
       .map(parseStatement);
-    const curGraph = commands.reduce(
-      (accum, stmt) => processStmt(accum, stmt).newGraph,
-      emptyRuleGraph
-    );
+    const curGraph = commands.reduce((accum, stmt) => {
+      try {
+        return processStmt(accum, stmt).newGraph;
+      } catch (err) {
+        throw new Error(
+          `processing "${pair.input}" at line ${pair.lineNo}: ${err}`
+        );
+      }
+    }, emptyRuleGraph);
     return prettyPrintGraph(toGraphviz(curGraph));
   });
 }
@@ -72,12 +78,18 @@ function evalTest(test: DDTest): string[] {
   return scan(
     emptyRuleGraph,
     (accum, pair) => {
-      const stmt = parseStatement(pair.input);
-      const { newGraph, emissionLog, otherOutput } = processStmt(accum, stmt);
-      return {
-        newState: newGraph,
-        output: { emissionLog, newGraph, otherOutput },
-      };
+      try {
+        const stmt = parseStatement(pair.input);
+        const { newGraph, emissionLog, otherOutput } = processStmt(accum, stmt);
+        return {
+          newState: newGraph,
+          output: { emissionLog, newGraph, otherOutput },
+        };
+      } catch (err) {
+        throw new Error(
+          `processing "${pair.input}" at line ${pair.lineNo}: ${err}`
+        );
+      }
     },
     test
   ).map(({ emissionLog, otherOutput }) =>

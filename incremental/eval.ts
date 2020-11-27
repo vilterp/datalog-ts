@@ -1,6 +1,7 @@
-import { RuleGraph, Res, NodeID } from "./types";
+import { RuleGraph, Res, NodeID, formatRes } from "./types";
 import { Rec } from "../types";
-import { substitute, unify, unifyVars } from "../unify";
+import { applyMappings, substitute, unify, unifyVars } from "../unify";
+import { ppb, ppt } from "../pretty";
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside
@@ -115,15 +116,15 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     }
     case "Match": {
       const bindings = unify(ins.res.bindings, nodeDesc.rec, ins.res.term);
-      // console.log("match", {
-      //   insRec: ppt(ins.res.term),
-      //   match: ppt(nodeDesc.rec),
-      //   bindings: ppb(bindings),
-      // });
+      console.log("match", {
+        insRec: formatRes(ins.res),
+        match: ppt(nodeDesc.rec),
+        bindings: ppb(bindings || {}),
+      });
       return [
         {
           term: ins.res.term,
-          bindings: bindings,
+          bindings: applyMappings(nodeDesc.mappings, bindings),
         },
       ];
     }

@@ -20,6 +20,8 @@ import {
   TermWithBindings,
 } from "./types";
 import {
+  applyMappings,
+  getMappings,
   substitute,
   termEq,
   termLT,
@@ -272,37 +274,6 @@ function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
     case ">=":
       return termSameType(left, right) && !termLT(left, right);
   }
-}
-
-function getMappings(
-  head: { [p: string]: Term },
-  call: { [p: string]: Term }
-): VarMappings {
-  const out: VarMappings = {};
-  // TODO: detect parameter mismatch!
-  for (const callKey of Object.keys(call)) {
-    const callTerm = call[callKey];
-    const headTerm = head[callKey];
-    if (headTerm?.type === "Var" && callTerm?.type === "Var") {
-      out[headTerm.name] = callTerm.name;
-    }
-  }
-  return out;
-}
-
-function applyMappings(
-  headToCaller: VarMappings,
-  bindings: Bindings
-): Bindings {
-  const out: Bindings = {};
-  for (const key of Object.keys(bindings)) {
-    const callerKey = headToCaller[key];
-    if (!callerKey) {
-      continue;
-    }
-    out[callerKey] = bindings[key];
-  }
-  return out;
 }
 
 function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {

@@ -96,7 +96,7 @@ export class Repl {
       const { newGraph, emissionLog } = processStmt(this.state, stmt);
       this.state = newGraph;
       emissionLog.forEach((emissionBatch) => {
-        if (!this.state.nodes[emissionBatch.fromID].internal) {
+        if (!this.state.nodes[emissionBatch.fromID].isInternal) {
           this.println(
             emissionBatch.output.map((res) => ppt(res.term)).join("\n")
           );
