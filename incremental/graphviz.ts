@@ -1,7 +1,7 @@
 import { RuleGraph, NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
-import { ppt, prettyPrintBinExpr, prettyPrintTerm } from "../pretty";
+import { ppt, ppVM, prettyPrintBinExpr, prettyPrintTerm } from "../pretty";
 import * as pp from "prettier-printer";
 
 export function toGraphviz(graph: RuleGraph): Graph {
@@ -36,7 +36,9 @@ function descToString(node: NodeDesc): string {
     case "Join":
       return `Join(${node.leftID} & ${node.rightID})`;
     case "Match":
-      return `Match(${pp.render(100, prettyPrintTerm(node.rec))})`;
+      return `Match(${ppt(node.rec)}; ${ppVM(node.mappings, [], {
+        showScopePath: false,
+      })})`;
     case "Substitute":
       return `Subst(${ppt(node.rec)})`;
     case "Union":
