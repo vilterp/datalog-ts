@@ -73,6 +73,14 @@ function stepIterator(
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
+  if (graph.unmappedCallIDs.length > 0) {
+    // TODO: better error message... pointing at match nodes; go get the relation name
+    throw new Error(
+      `some nodes still rely on things not defined yet: ${graph.unmappedCallIDs.join(
+        ", "
+      )}`
+    );
+  }
   const node = graph.nodes[ins.destination];
   const nodeDesc = node.desc;
   switch (nodeDesc.type) {

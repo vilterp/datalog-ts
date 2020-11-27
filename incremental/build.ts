@@ -17,22 +17,24 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
     rec: rule.head,
   });
   const withEdge = addEdge(withMatch, orID, matchID);
-  // uh... how many calls are there
-  return resolveMappings(withEdge, rule.head, callID);
+  return resolveUnmappedCalls(withEdge);
 }
 
-function resolveMappings(
-  graph: RuleGraph,
-  ruleHead: Rec,
-  callID: NodeID
-): RuleGraph {
-  const call = graph.nodes[callID];
-  const callDesc = call.desc;
-  if (callDesc.type !== "Match") {
-    throw new Error("call should be a Match");
-  }
-  const newMappings = getMappings(ruleHead.attrs, callDesc.rec.attrs);
-  return updateMappings(graph, ruleHead.relation, newMappings);
+function resolveUnmappedCalls(graph: RuleGraph): RuleGraph {
+  return graph.unmappedCallIDs.reduce((newGraph, unmappedCallID) => {
+    const callNodeDesc = newGraph.nodes[unmappedCallID].desc;
+    if (callNodeDesc.type !== "Match") {
+      throw new Error("call should be a Match node");
+    }
+    const callRec = callNodeDesc.rec;
+    const ruleNodeDesc = newGraph.nodes[callNodeDesc.rec.relation].desc;
+    if (ruleNodeDesc.type !== "Substitute") {
+      throw new Error("rule should be a Subst node");
+    }
+    const ruleRec = ruleNodeDesc.rec;
+    const mappings = getMappings(ruleRec.attrs, callRec.attrs);
+    return updateMappings(newGraph, unmappedCallID, mappings);
+  }, graph);
 }
 
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
@@ -97,7 +99,9 @@ function addAndClause(graph: RuleGraph, rec: Rec): [RuleGraph, NodeID] {
     mappings: {},
   });
   const withMatchEdge = addEdge(withMatch, rec.relation, matchID);
-  return [withMatchEdge, matchID];
+  // mark this node to come back later and resolve the mappings
+  const withUnmapped = addUnmappedNode(withMatchEdge, matchID);
+  return [withUnmapped, matchID];
 }
 
 // helpers
@@ -153,5 +157,12 @@ function updateMappings(
           ? { ...node.desc, mappings: newMappings }
           : node.desc,
     })),
+  };
+}
+
+function addUnmappedNode(graph: RuleGraph, nodeID: NodeID): RuleGraph {
+  return {
+    ...graph,
+    unmappedCallIDs: [...graph.unmappedCallIDs, nodeID],
   };
 }
