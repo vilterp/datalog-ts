@@ -53,6 +53,10 @@ export function ppBE(term: BinExpr): string {
   return pp.render(100, prettyPrintBinExpr(term));
 }
 
+export function ppRule(rule: Rule): string {
+  return pp.render(100, prettyPrintRule(rule));
+}
+
 export function prettyPrintRule(rule: Rule): pp.IDoc {
   const oneLine = pp.intersperse(" | ")(
     rule.defn.opts.map((ae) =>

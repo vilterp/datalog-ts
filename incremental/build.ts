@@ -3,7 +3,7 @@ import { RuleGraph, NodeDesc, NodeID } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
 import { updateObj } from "../util";
-import { ppt } from "../pretty";
+import { ppRule, ppt } from "../pretty";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
@@ -18,38 +18,40 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
     rec: rule.head,
   });
   const withEdge = addEdge(withMatch, orID, matchID);
-  console.log("add", ppt(rule.head));
-  return resolveUnmappedCalls(withEdge);
+  console.log("add", ppRule(rule));
+  return graph.unmappedCallIDs.reduce(resolveUnmappedCall, withEdge);
 }
 
-function resolveUnmappedCalls(graph: RuleGraph): RuleGraph {
-  return graph.unmappedCallIDs.reduce((newGraph, unmappedCallID) => {
-    console.log("resolveUnmappedCall", {
-      nodes: newGraph.nodes,
-      unmappedCallID,
-    });
-    const callNodeDesc = newGraph.nodes[unmappedCallID].desc;
-    if (callNodeDesc.type !== "Match") {
-      throw new Error("call should be a Match node");
-    }
-    const callRec = callNodeDesc.rec;
-    const ruleNode = newGraph.nodes[callRec.relation];
-    if (!ruleNode) {
-      // still not defined
-      return graph;
-    }
-    const ruleNodeDesc = ruleNode.desc;
-    if (ruleNodeDesc.type === "BaseFactTable") {
-      return graph;
-    }
-    if (ruleNodeDesc.type !== "Substitute") {
-      throw new Error("rule should be a Subst node");
-    }
-    const ruleRec = ruleNodeDesc.rec;
-    const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-    const withNewMappings = updateMappings(newGraph, unmappedCallID, mappings);
-    return removeUnmappedNode(withNewMappings, unmappedCallID);
-  }, graph);
+function resolveUnmappedCall(
+  newGraph: RuleGraph,
+  unmappedCallID: NodeID
+): RuleGraph {
+  console.log("resolveUnmappedCall", {
+    nodes: newGraph.nodes,
+    unmappedCallID,
+  });
+  const callNodeDesc = newGraph.nodes[unmappedCallID].desc;
+  if (callNodeDesc.type !== "Match") {
+    throw new Error("call should be a Match node");
+  }
+  const callRec = callNodeDesc.rec;
+  const ruleNode = newGraph.nodes[callRec.relation];
+  if (!ruleNode) {
+    // still not defined
+    return newGraph;
+  }
+  const ruleNodeDesc = ruleNode.desc;
+  if (ruleNodeDesc.type === "BaseFactTable") {
+    // don't need to worry about mappings for base fact tables
+    return removeUnmappedNode(newGraph, unmappedCallID);
+  }
+  if (ruleNodeDesc.type !== "Substitute") {
+    throw new Error("rule should be a Subst node");
+  }
+  const ruleRec = ruleNodeDesc.rec;
+  const mappings = getMappings(ruleRec.attrs, callRec.attrs);
+  const withNewMappings = updateMappings(newGraph, unmappedCallID, mappings);
+  return removeUnmappedNode(withNewMappings, unmappedCallID);
 }
 
 function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {

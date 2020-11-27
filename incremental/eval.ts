@@ -76,9 +76,9 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   if (graph.unmappedCallIDs.length > 0) {
     // TODO: better error message... pointing at match nodes; go get the relation name
     throw new Error(
-      `some nodes still rely on things not defined yet: ${graph.unmappedCallIDs
+      `some nodes still rely on things not defined yet: [${graph.unmappedCallIDs
         .map((id) => formatDesc(graph.nodes[id].desc))
-        .join(", ")}`
+        .join(", ")}]`
     );
   }
   const node = graph.nodes[ins.destination];
