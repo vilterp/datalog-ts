@@ -3,8 +3,6 @@ import { ppt } from "./pretty";
 import * as fs from "fs";
 import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
-import { toGraphviz } from "./incremental/graphviz";
-import { prettyPrintGraph } from "./graphviz";
 import { processStmt } from "./incremental/interpreter";
 
 type Mode = "repl" | "pipe" | "test";
@@ -82,10 +80,6 @@ export class Repl {
       //   this.doGraphviz();
       //   rl.prompt();
       //   return;
-    } else if (line === ".rulegraph") {
-      this.dumpRuleGraph();
-      rl.prompt();
-      return;
     }
     this.buffer = this.buffer + line;
     if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
@@ -96,9 +90,10 @@ export class Repl {
       const { newGraph, emissionLog } = processStmt(this.state, stmt);
       this.state = newGraph;
       emissionLog.forEach((emissionBatch) => {
-        if (!this.state.nodes[emissionBatch.fromID].isInternal) {
+        const fromNode = this.state.nodes[emissionBatch.fromID];
+        if (!fromNode.isInternal && fromNode.desc.type !== "BaseFactTable") {
           this.println(
-            emissionBatch.output.map((res) => ppt(res.term)).join("\n")
+            emissionBatch.output.map((res) => ppt(res.term) + ".").join("\n")
           );
         }
       });
@@ -137,11 +132,6 @@ export class Repl {
   //   };
   //   this.println(prettyPrintGraph(g));
   // }
-
-  private dumpRuleGraph() {
-    const graph = toGraphviz(this.state);
-    this.println(prettyPrintGraph(graph));
-  }
 
   private println(...strings: string[]) {
     // console.log("printing", strings[0], strings[1], strings[2]);

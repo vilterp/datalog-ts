@@ -1,4 +1,4 @@
-import { Rule, Rec, OrExpr, BinExpr, Term, AndClause } from "../types";
+import { Rule, Rec, OrExpr, AndClause } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
@@ -27,7 +27,7 @@ function addOr(graph: RuleGraph, or: OrExpr): [RuleGraph, NodeID] {
   if (or.opts.length === 1) {
     return addAnd(graph, or.opts[0].clauses);
   }
-  const [g1, orID] = addNode(graph, { type: "Union" }, true);
+  const [g1, orID] = addNode(graph, true, { type: "Union" });
   const withAndAndEdges = or.opts.reduce((curG, andExpr) => {
     const [withAnd, andID] = addAnd(curG, andExpr.clauses);
     return addEdge(withAnd, andID, orID);
@@ -40,11 +40,10 @@ function addAnd(graph: RuleGraph, clauses: AndClause[]): [RuleGraph, NodeID] {
   const [withJoin, joinID] = addJoin(graph, recs);
   return exprs.reduce(
     ([latestGraph, latestID], expr) => {
-      const [withNewExpr, newExprID] = addNode(
-        latestGraph,
-        { type: "BinExpr", expr },
-        true
-      );
+      const [withNewExpr, newExprID] = addNode(latestGraph, true, {
+        type: "BinExpr",
+        expr,
+      });
       return [addEdge(withNewExpr, latestID, newExprID), newExprID];
     },
     [withJoin, joinID]
@@ -69,15 +68,11 @@ function addAndBinary(
   rightID: NodeID
 ): [RuleGraph, NodeID] {
   const [g1, leftID] = addAndClause(graph, left);
-  const [g2, joinID] = addNode(
-    g1,
-    {
-      type: "Join",
-      leftID,
-      rightID,
-    },
-    true
-  );
+  const [g2, joinID] = addNode(g1, true, {
+    type: "Join",
+    leftID,
+    rightID,
+  });
   const g3 = addEdge(g2, leftID, joinID);
   const g4 = addEdge(g3, rightID, joinID);
   return [g4, joinID];
@@ -92,27 +87,19 @@ function addAndClause(graph: RuleGraph, rec: Rec): [RuleGraph, NodeID] {
   }
   const desc = targetNode.desc;
   if (desc.type === "BaseFactTable") {
-    const [withMatch, matchID] = addNode(
-      graph,
-      {
-        type: "Match",
-        rec,
-        mappings: {},
-      },
-      true
-    );
+    const [withMatch, matchID] = addNode(graph, true, {
+      type: "Match",
+      rec,
+      mappings: {},
+    });
     const withMatchEdge = addEdge(withMatch, rec.relation, matchID);
     return [withMatchEdge, matchID];
   } else if (desc.type === "Substitute") {
-    const [withMatch, matchID] = addNode(
-      graph,
-      {
-        type: "Match",
-        rec,
-        mappings: getMappings(desc.rec.attrs, rec.attrs),
-      },
-      true
-    );
+    const [withMatch, matchID] = addNode(graph, true, {
+      type: "Match",
+      rec,
+      mappings: getMappings(desc.rec.attrs, rec.attrs),
+    });
     const withMatchEdge = addEdge(withMatch, rec.relation, matchID);
     return [withMatchEdge, matchID];
   } else {
@@ -136,8 +123,8 @@ function addNodeKnownID(
 
 function addNode(
   graph: RuleGraph,
-  desc: NodeDesc,
-  internal: boolean
+  isInternal: boolean,
+  desc: NodeDesc
 ): [RuleGraph, NodeID] {
   return [
     {
@@ -145,7 +132,7 @@ function addNode(
       nextNodeID: graph.nextNodeID + 1,
       nodes: {
         ...graph.nodes,
-        [graph.nextNodeID]: { desc, cache: [], internal },
+        [graph.nextNodeID]: { desc, cache: [], isInternal },
       },
     },
     `${graph.nextNodeID}`,
