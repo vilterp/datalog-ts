@@ -18,23 +18,24 @@ export function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
     rec: rule.head,
   });
   const withEdge = addEdge(withMatch, orID, matchID);
-  console.log("add", ppRule(rule));
-  return graph.unmappedCallIDs.reduce(resolveUnmappedCall, withEdge);
+  // console.log("add", ppRule(rule), "=>", withEdge.unmappedCallIDs);
+  return withEdge.unmappedCallIDs.reduce(resolveUnmappedCall, withEdge);
 }
 
 function resolveUnmappedCall(
   newGraph: RuleGraph,
   unmappedCallID: NodeID
 ): RuleGraph {
-  console.log("resolveUnmappedCall", {
-    nodes: newGraph.nodes,
-    unmappedCallID,
-  });
   const callNodeDesc = newGraph.nodes[unmappedCallID].desc;
   if (callNodeDesc.type !== "Match") {
     throw new Error("call should be a Match node");
   }
   const callRec = callNodeDesc.rec;
+  // console.log("resolveUnmappedCall", {
+  //   nodes: newGraph.nodes,
+  //   unmappedCallID,
+  //   callRec: ppt(callRec),
+  // });
   const ruleNode = newGraph.nodes[callRec.relation];
   if (!ruleNode) {
     // still not defined

@@ -11,7 +11,7 @@ edge{from: F, to: T} :-
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(baseEdge{from: F, to: T}; {})" shape="box"];
-  "2" [label="2: Match(edge{from: I, to: T}; {})" shape="box"];
+  "2" [label="2: Match(edge{from: I, to: T}; {F: I, T: T})" shape="box"];
   "3" [label="3: Match(baseEdge{from: F, to: I}; {})" shape="box"];
   "4" [label="4: Join(3 & 2)" shape="box"];
   "baseEdge" [label="baseEdge: Base" shape="box"];

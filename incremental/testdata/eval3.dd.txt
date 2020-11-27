@@ -22,9 +22,9 @@ digraph G {
   "3" [label="3: Match(parent{child: B, parent: C}; {C: B, P: C})" shape="box"];
   "4" [label="4: Match(parent{child: A, parent: B}; {C: A, P: B})" shape="box"];
   "5" [label="5: Join(4 & 3)" shape="box"];
-  "father" [label="father" shape="box"];
+  "father" [label="father: Base" shape="box"];
   "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})" shape="box"];
-  "mother" [label="mother" shape="box"];
+  "mother" [label="mother: Base" shape="box"];
   "parent" [label="parent: Subst(parent{child: C, parent: P})" shape="box"];
   "0" -> "parent" [];
   "1" -> "0" [];

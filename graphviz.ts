@@ -4,6 +4,7 @@ import { mapObjToList } from "./util";
 export interface Graph {
   nodes: Node[];
   edges: Edge[];
+  comments?: string[];
 }
 
 interface Node {
@@ -34,6 +35,7 @@ export function prettyPrintGraph(g: Graph): string {
     block(
       pp.braces,
       [
+        ...(g.comments || []).map((comment) => `// ${comment}`),
         ...g.nodes.map((node) => [
           `"${node.id}"`,
           " [",

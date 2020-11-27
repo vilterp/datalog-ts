@@ -25,8 +25,8 @@ digraph G {
   "4" [label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})" shape="box"];
   "5" [label="5: Join(4 & 3)" shape="box"];
   "6" [label="6: L != R" shape="box"];
-  "father" [label="father" shape="box"];
-  "mother" [label="mother" shape="box"];
+  "father" [label="father: Base" shape="box"];
+  "mother" [label="mother: Base" shape="box"];
   "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
   "sibling" [label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
   "0" -> "2" [];

@@ -22,5 +22,9 @@ export function toGraphviz(graph: RuleGraph): Graph {
         attrs: {},
       }))
     ),
+    comments:
+      graph.unmappedCallIDs.length > 0
+        ? [`unmapped: ${graph.unmappedCallIDs.join(", ")}`]
+        : [],
   };
 }
