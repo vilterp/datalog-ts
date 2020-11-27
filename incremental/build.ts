@@ -72,10 +72,7 @@ function addAndBinary(
 
 type AndTerm = Rec | BinExpr;
 
-function addTerm(
-  graph: RuleGraph,
-  term: AndTerm
-): [RuleGraph, NodeID] {
+function addTerm(graph: RuleGraph, term: AndTerm): [RuleGraph, NodeID] {
   switch (term.type) {
     case "BinExpr":
       throw new Error("incremental doesn't support BinExprs yet");

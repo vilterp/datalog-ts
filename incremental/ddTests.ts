@@ -21,26 +21,26 @@ export function incrTests(writeResults: boolean): Suite {
         );
       },
     },
-    // {
-    //   name: "eval",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "incremental/testdata/eval.dd.txt",
-    //       evalTest,
-    //       writeResults
-    //     );
-    //   },
-    // },
-    // {
-    //   name: "eval2",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "incremental/testdata/eval2.dd.txt",
-    //       evalTest,
-    //       writeResults
-    //     );
-    //   },
-    // },
+    {
+      name: "eval",
+      test() {
+        runDDTestAtPath(
+          "incremental/testdata/eval.dd.txt",
+          evalTest,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "eval2",
+      test() {
+        runDDTestAtPath(
+          "incremental/testdata/eval2.dd.txt",
+          evalTest,
+          writeResults
+        );
+      },
+    },
     {
       name: "eval3",
       test() {

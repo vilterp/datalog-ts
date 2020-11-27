@@ -1,7 +1,7 @@
 import { RuleGraph, Res, NodeID, formatRes } from "./types";
 import { Rec } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
-import { ppb, ppt } from "../pretty";
+import { ppb, ppt, ppVM } from "../pretty";
 export type Insertion = {
   res: Res;
   origin: NodeID | null; // null if coming from outside
@@ -115,16 +115,19 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       return results;
     }
     case "Match": {
-      const bindings = unify(ins.res.bindings, nodeDesc.rec, ins.res.term);
+      const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
+      const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
       console.log("match", {
         insRec: formatRes(ins.res),
         match: ppt(nodeDesc.rec),
         bindings: ppb(bindings || {}),
+        mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
+        mappedBindings: ppb(mappedBindings),
       });
       return [
         {
           term: ins.res.term,
-          bindings: applyMappings(nodeDesc.mappings, bindings),
+          bindings: bindings,
         },
       ];
     }
@@ -138,7 +141,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       return [
         {
           term: rec,
-          bindings: ins.res.bindings, // TODO: apply mapping?
+          bindings: ins.res.bindings,
         },
       ];
     case "BinExpr":
