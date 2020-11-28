@@ -10,12 +10,23 @@ mother{child: "Pete", mother: "Mary"}.
 father{child: "Pete", father: "Paul"}.
 ----
 
+mother{child: "Carolyn", mother: "Mary"}.
+----
+
+father{child: "Carolyn", father: "Paul"}.
+----
+
 parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
 ----
 1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}]
 2: []
+1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
+2: []
 0: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}]
 2: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}]
 parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}]
+0: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
+2: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
+parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
