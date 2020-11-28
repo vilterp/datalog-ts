@@ -1,4 +1,4 @@
-import { RuleGraph, NodeDesc, formatDesc } from "./types";
+import { RuleGraph, NodeDesc, formatDesc, formatRes } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import {
@@ -19,6 +19,10 @@ export function toGraphviz(graph: RuleGraph): Graph {
           shape: "box",
           label: `${id}: ${formatDesc(node.desc)}`,
         },
+        comment:
+          node.cache.length > 0
+            ? `cache: [${node.cache.map((res) => ppt(res.term)).join(", ")}]`
+            : "",
       };
     }),
     edges: flatMapObjToList(graph.edges, (fromID, destinations) =>

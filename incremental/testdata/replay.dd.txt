@@ -40,16 +40,16 @@ parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Caroly
 .rulegraph
 ----
 digraph G {
-  "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"];
-  "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
-  "2" [label="2: Join(1 & 0)" shape="box"];
-  "father" [label="father: Base" shape="box"];
-  "mother" [label="mother: Base" shape="box"];
-  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "parents" [];
-  "father" -> "0" [];
+  "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"] // cache: [father{child: "Pete", father: "Paul"}, father{child: "Carolyn", father: "Paul"}]
+  "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"] // cache: [mother{child: "Pete", mother: "Mary"}, mother{child: "Carolyn", mother: "Mary"}]
+  "2" [label="2: Join(1 & 0)" shape="box"] // cache: [mother{child: "Pete", mother: "Mary"}, mother{child: "Carolyn", mother: "Mary"}, father{child: "Pete", father: "Paul"}, father{child: "Carolyn", father: "Paul"}]
+  "father" [label="father: Base" shape="box"] // cache: [father{child: "Pete", father: "Paul"}, father{child: "Carolyn", father: "Paul"}]
+  "mother" [label="mother: Base" shape="box"] // cache: [mother{child: "Pete", mother: "Mary"}, mother{child: "Carolyn", mother: "Mary"}]
+  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"] // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}]
+  "0" -> "2" []
+  "1" -> "2" []
+  "2" -> "parents" []
+  "father" -> "0" []
   "mother" -> "1" []
 }
 
@@ -126,26 +126,26 @@ sibling: [sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: 
 .rulegraph
 ----
 digraph G {
-  "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"];
-  "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
-  "2" [label="2: Join(1 & 0)" shape="box"];
-  "3" [label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})" shape="box"];
-  "4" [label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})" shape="box"];
-  "5" [label="5: Join(4 & 3)" shape="box"];
-  "6" [label="6: L != R" shape="box"];
-  "father" [label="father: Base" shape="box"];
-  "mother" [label="mother: Base" shape="box"];
-  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
-  "sibling" [label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "parents" [];
-  "3" -> "5" [];
-  "4" -> "5" [];
-  "5" -> "6" [];
-  "6" -> "sibling" [];
-  "father" -> "0" [];
-  "mother" -> "1" [];
-  "parents" -> "3" [];
+  "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"] // cache: [father{child: "Pete", father: "Paul"}, father{child: "Carolyn", father: "Paul"}]
+  "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"] // cache: [mother{child: "Pete", mother: "Mary"}, mother{child: "Carolyn", mother: "Mary"}]
+  "2" [label="2: Join(1 & 0)" shape="box"] // cache: [mother{child: "Pete", mother: "Mary"}, mother{child: "Carolyn", mother: "Mary"}, father{child: "Pete", father: "Paul"}, father{child: "Carolyn", father: "Paul"}]
+  "3" [label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})" shape="box"] // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}]
+  "4" [label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})" shape="box"] // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}]
+  "5" [label="5: Join(4 & 3)" shape="box"] // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}]
+  "6" [label="6: L != R" shape="box"] // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}]
+  "father" [label="father: Base" shape="box"] // cache: [father{child: "Pete", father: "Paul"}, father{child: "Carolyn", father: "Paul"}]
+  "mother" [label="mother: Base" shape="box"] // cache: [mother{child: "Pete", mother: "Mary"}, mother{child: "Carolyn", mother: "Mary"}]
+  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"] // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}, parents{child: "Pete", father: "Paul", mother: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}]
+  "sibling" [label="sibling: Subst(sibling{left: L, right: R})" shape="box"] // cache: [sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Pete", right: "Carolyn"}, sibling{left: "Carolyn", right: "Pete"}, sibling{left: "Carolyn", right: "Pete"}]
+  "0" -> "2" []
+  "1" -> "2" []
+  "2" -> "parents" []
+  "3" -> "5" []
+  "4" -> "5" []
+  "5" -> "6" []
+  "6" -> "sibling" []
+  "father" -> "0" []
+  "mother" -> "1" []
+  "parents" -> "3" []
   "parents" -> "4" []
 }
