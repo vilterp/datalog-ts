@@ -1,7 +1,7 @@
 import { RuleGraph, Res, NodeID, formatRes, formatDesc } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
-import { ppb, ppRule, ppt, ppVM } from "../pretty";
+import { ppb, ppr, ppRule, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList, reduceObj } from "../util";
 import {
@@ -24,8 +24,7 @@ export function addRule(
   graph: RuleGraph,
   rule: Rule
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  // console.log("add", rule.head.relation);
-  // TODO: compute cache for this rule when we add it
+  console.log("add", rule.head.relation);
   const matchID = rule.head.relation;
   const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
   const withSubst = addNodeKnownID(matchID, withOr, false, {
@@ -64,6 +63,7 @@ function replayFacts(
       toInsert.push(res.term as Rec);
     }
   }
+  console.log({ toInsert });
   for (let rec of toInsert) {
     const { newGraph, emissionLog } = insertFact(outGraph, rec);
     outGraph = newGraph;
@@ -98,16 +98,18 @@ export function insertFact(
     );
   }
 
+  console.log("insertFact", ppt(rec));
+
   let iter = getInsertionIterator(graph, rec);
   const emissionLog: EmissionBatch[] = [];
   let newGraph = graph;
   while (true) {
     const [emissions, nextIter] = stepIterator(iter);
     emissionLog.push(emissions);
+    newGraph = nextIter.graph;
     if (nextIter.queue.length === 0) {
       break;
     }
-    newGraph = nextIter.graph;
     iter = nextIter;
   }
   return { newGraph, emissionLog };
@@ -142,6 +144,7 @@ function stepIterator(
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
     newGraph = addToCache(newGraph, curNodeID, result);
+    console.log("addToCache", curNodeID, formatRes(result));
     for (let destination of newGraph.edges[curNodeID] || []) {
       newQueue.push({
         destination,
