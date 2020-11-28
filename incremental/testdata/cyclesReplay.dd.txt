@@ -1,0 +1,61 @@
+.table baseEdge
+----
+
+baseEdge{from: "A", to: "B"}.
+----
+baseEdge: [baseEdge{from: "A", to: "B"}; {}]
+
+baseEdge{from: "C", to: "D"}.
+----
+baseEdge: [baseEdge{from: "C", to: "D"}; {}]
+
+baseEdge{from: "B", to: "C"}.
+----
+baseEdge: [baseEdge{from: "B", to: "C"}; {}]
+
+edge{from: F, to: T} :-
+  baseEdge{from: F, to: T} |
+  baseEdge{from: F, to: I} & edge{from: I, to: T}.
+----
+1: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
+0: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
+edge: [edge{from: "A", to: "B"}; {F: "A", T: "B"}]
+2: [edge{from: "A", to: "B"}; {I: "A", T: "B"}]
+4: []
+3: [baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}]
+4: []
+1: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
+0: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
+edge: [edge{from: "C", to: "D"}; {F: "C", T: "D"}]
+2: [edge{from: "C", to: "D"}; {I: "C", T: "D"}]
+4: []
+3: [baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}]
+4: []
+1: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
+0: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
+edge: [edge{from: "B", to: "C"}; {F: "B", T: "C"}]
+2: [edge{from: "B", to: "C"}; {I: "B", T: "C"}]
+4: [edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}]
+0: [edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}]
+edge: [edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}]
+2: [edge{from: "A", to: "C"}; {I: "A", T: "C"}]
+4: []
+3: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}]
+4: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}]
+0: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}]
+edge: [edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}]
+2: [edge{from: "B", to: "D"}; {I: "B", T: "D"}]
+4: [edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}]
+0: [edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}]
+edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
+2: [edge{from: "A", to: "D"}; {I: "A", T: "D"}]
+4: []
+
+edge{from: F, to: T}.
+----
+edge{from: "A", to: "B"}; {F: "A", T: "B"}
+edge{from: "C", to: "D"}; {F: "C", T: "D"}
+edge{from: "B", to: "C"}; {F: "B", T: "C"}
+edge{from: "A", to: "C"}; {F: "A", T: "C"}
+edge{from: "B", to: "D"}; {F: "B", T: "D"}
+edge{from: "A", to: "D"}; {F: "A", T: "D"}
