@@ -23,9 +23,7 @@ export function resolveUnmappedRule(
 ): RuleGraph {
   let curGraph = graph;
   let resolved = true;
-  console.log("resolveUnmappedRule", newNodes);
   for (let newNodeID of newNodes) {
-    console.log({ newNodeID });
     const newNode = graph.nodes[newNodeID];
     const nodeDesc = newNode.desc;
     if (nodeDesc.type === "Match") {
@@ -46,7 +44,6 @@ export function resolveUnmappedRule(
       }
       const ruleRec = ruleNodeDesc.rec;
       const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-      console.log(ppVM(mappings, [], { showScopePath: false }));
       curGraph = updateMappings(curGraph, newNodeID, mappings);
     }
   }

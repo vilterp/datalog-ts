@@ -24,7 +24,7 @@ export function addRule(
   graph: RuleGraph,
   rule: Rule
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  console.log("add", rule.head.relation);
+  // console.log("add", rule.head.relation);
   // TODO: compute cache for this rule when we add it
   const matchID = rule.head.relation;
   const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
