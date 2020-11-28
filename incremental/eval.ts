@@ -24,7 +24,7 @@ export function addRule(
   graph: RuleGraph,
   rule: Rule
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  console.log("add", rule.head.relation);
+  // console.log("add", rule.head.relation);
   const matchID = rule.head.relation;
   const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
   const withSubst = addNodeKnownID(matchID, withOr, false, {
@@ -54,7 +54,7 @@ function replayFacts(
   graph: RuleGraph,
   roots: Set<NodeID>
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  console.log("replayFacts", roots);
+  // console.log("replayFacts", roots);
   let outGraph = graph;
   let outLog: EmissionBatch[] = [];
   const toInsert: Rec[] = [];
@@ -63,7 +63,7 @@ function replayFacts(
       toInsert.push(res.term as Rec);
     }
   }
-  console.log({ toInsert });
+  // console.log({ toInsert });
   for (let rec of toInsert) {
     const { newGraph, emissionLog } = insertFact(outGraph, rec);
     outGraph = newGraph;
@@ -98,7 +98,7 @@ export function insertFact(
     );
   }
 
-  console.log("insertFact", ppt(rec));
+  // console.log("insertFact", ppt(rec));
 
   let iter = getInsertionIterator(graph, rec);
   const emissionLog: EmissionBatch[] = [];
@@ -144,7 +144,7 @@ function stepIterator(
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
     newGraph = addToCache(newGraph, curNodeID, result);
-    console.log("addToCache", curNodeID, formatRes(result));
+    // console.log("addToCache", curNodeID, formatRes(result));
     for (let destination of newGraph.edges[curNodeID] || []) {
       newQueue.push({
         destination,

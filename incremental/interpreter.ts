@@ -51,6 +51,7 @@ export function processStmt(
 }
 
 type OutputOptions = {
+  showBaseFactEmissions: boolean;
   showInternalEmissions: boolean;
 };
 
@@ -66,7 +67,7 @@ export function formatOutput(
       const fullLog = output.log.filter((emissionBatch) => {
         const fromNode = graph.nodes[emissionBatch.fromID];
         if (fromNode.desc.type === "BaseFactTable") {
-          return false;
+          return opts.showBaseFactEmissions;
         }
         if (!fromNode.isInternal) {
           return true;

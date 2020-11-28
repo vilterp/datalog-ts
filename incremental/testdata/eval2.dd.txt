@@ -10,6 +10,7 @@ parent{child: C, parent: P} :-
 
 father{child: "Pete", father: "Paul"}.
 ----
+father: [father{child: "Pete", father: "Paul"}; {}]
 2: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
 0: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
 parent: [parent{child: "Pete", parent: "Paul"}; {C: "Pete", P: "Paul"}]

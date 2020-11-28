@@ -28,6 +28,7 @@ digraph G {
 
 baseEdge{from: "A", to: "B"}.
 ----
+baseEdge: [baseEdge{from: "A", to: "B"}; {}]
 1: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
 3: [baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}]
 0: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
@@ -38,6 +39,7 @@ edge: [edge{from: "A", to: "B"}; {F: "A", T: "B"}]
 
 baseEdge{from: "C", to: "D"}.
 ----
+baseEdge: [baseEdge{from: "C", to: "D"}; {}]
 1: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
 3: [baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}]
 0: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
@@ -48,6 +50,7 @@ edge: [edge{from: "C", to: "D"}; {F: "C", T: "D"}]
 
 baseEdge{from: "B", to: "C"}.
 ----
+baseEdge: [baseEdge{from: "B", to: "C"}; {}]
 1: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
 3: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}]
 0: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
