@@ -23,7 +23,7 @@ digraph G {
   "4" -> "0" [];
   "baseEdge" -> "1" [];
   "baseEdge" -> "3" [];
-  "edge" -> "2" []
+  "edge" -> "2" [];
 }
 
 baseEdge{from: "A", to: "B"}.

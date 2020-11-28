@@ -39,7 +39,7 @@ digraph G {
   "father" -> "0" [];
   "mother" -> "1" [];
   "parents" -> "3" [];
-  "parents" -> "4" []
+  "parents" -> "4" [];
 }
 
 mother{child: "Pete", mother: "Mary"}.

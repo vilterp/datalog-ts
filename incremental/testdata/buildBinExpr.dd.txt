@@ -9,5 +9,5 @@ digraph G {
   "foo" [label="foo: Base" shape="box"];
   "0" -> "1" [];
   "1" -> "bar" [];
-  "foo" -> "0" []
+  "foo" -> "0" [];
 }

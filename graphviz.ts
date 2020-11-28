@@ -44,7 +44,7 @@ export function prettyPrintGraph(g: Graph): string {
             " ",
             mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`])
           ),
-          "]",
+          "];",
           node.comment ? ` // ${node.comment}` : "",
         ]),
         ...g.edges.map((edge) => [
@@ -56,7 +56,7 @@ export function prettyPrintGraph(g: Graph): string {
             " ",
             mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`])
           ),
-          "]",
+          "];",
         ]),
       ],
       { sep: "" }

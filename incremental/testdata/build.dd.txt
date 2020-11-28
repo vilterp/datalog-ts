@@ -14,7 +14,7 @@ digraph G {
   "1" -> "2" [];
   "2" -> "matGramp" [];
   "father" -> "0" [];
-  "mother" -> "1" []
+  "mother" -> "1" [];
 }
 
 .table a;
@@ -39,7 +39,7 @@ digraph G {
   "4" -> "d" [];
   "a" -> "3" [];
   "b" -> "1" [];
-  "c" -> "0" []
+  "c" -> "0" [];
 }
 
 .table mother;
@@ -58,7 +58,7 @@ digraph G {
   "1" -> "0" [];
   "2" -> "0" [];
   "father" -> "2" [];
-  "mother" -> "1" []
+  "mother" -> "1" [];
 }
 
 .table mother;
@@ -89,5 +89,5 @@ digraph G {
   "father" -> "2" [];
   "mother" -> "1" [];
   "parent" -> "3" [];
-  "parent" -> "4" []
+  "parent" -> "4" [];
 }
