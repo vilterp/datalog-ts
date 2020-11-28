@@ -47,7 +47,7 @@ export function resolveUnmappedRule(
       const ruleRec = ruleNodeDesc.rec;
       const mappings = getMappings(ruleRec.attrs, callRec.attrs);
       console.log(ppVM(mappings, [], { showScopePath: false }));
-      curGraph = updateMappings(graph, newNodeID, mappings);
+      curGraph = updateMappings(curGraph, newNodeID, mappings);
     }
   }
   return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
