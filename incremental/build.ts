@@ -34,6 +34,7 @@ export function resolveUnmappedRule(
       if (!callNode) {
         // not defined yet
         resolved = false;
+        continue;
       }
       const ruleNodeDesc = callNode.desc;
       if (ruleNodeDesc.type === "BaseFactTable") {
