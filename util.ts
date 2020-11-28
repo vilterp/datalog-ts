@@ -252,3 +252,15 @@ export function setUnion<T>(left: Set<T>, right: Set<T>): Set<T> {
 export function setAdd<T>(set: Set<T>, item: T): Set<T> {
   return new Set<T>([...set, item]);
 }
+
+export function reduceObj<A, I>(
+  obj: { [key: string]: I },
+  initial: A,
+  f: (accum: A, key: string, item: I) => A
+) {
+  let state = initial;
+  for (let key in obj) {
+    state = f(state, key, obj[key]);
+  }
+  return state;
+}

@@ -3,8 +3,14 @@ import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
-import { filterMap, mapObjToList } from "../util";
-import { addEdge, addNodeKnownID, addOr, addUnmappedRule } from "./build";
+import { filterMap, mapObjToList, reduceObj } from "../util";
+import {
+  addEdge,
+  addNodeKnownID,
+  addOr,
+  addUnmappedRule,
+  resolveUnmappedRule,
+} from "./build";
 
 export type Insertion = {
   res: Res;
@@ -18,6 +24,7 @@ export function addRule(
   graph: RuleGraph,
   rule: Rule
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+  console.log("add", rule.head.relation);
   // TODO: compute cache for this rule when we add it
   const matchID = rule.head.relation;
   const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
@@ -35,6 +42,12 @@ export function addRule(
   //   (do we replay only base facts?)
   //   replay those facts (leaving out new nodes)
   // return withUnmapped.unmappedCallIDs.reduce(resolveUnmappedCall, withUnmapped);
+  reduceObj(
+    withUnmapped.unmappedRules,
+    withUnmapped,
+    (graph, _, { rule, newNodeIDs }) =>
+      resolveUnmappedRule(graph, rule, newNodeIDs)
+  );
   return { newGraph: withUnmapped, emissionLog: [] };
 }
 

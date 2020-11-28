@@ -16,38 +16,60 @@ export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
 }
 
-// export function resolveUnmappedCall(
-//   newGraph: RuleGraph,
-//   unmappedCallID: NodeID
-// ): RuleGraph {
-//   const callNodeDesc = newGraph.nodes[unmappedCallID].desc;
-//   if (callNodeDesc.type !== "Match") {
-//     throw new Error("call should be a Match node");
-//   }
-//   const callRec = callNodeDesc.rec;
-//   // console.log("resolveUnmappedCall", {
-//   //   nodes: newGraph.nodes,
-//   //   unmappedCallID,
-//   //   callRec: ppt(callRec),
-//   // });
-//   const ruleNode = newGraph.nodes[callRec.relation];
-//   if (!ruleNode) {
-//     // still not defined
-//     return newGraph;
-//   }
-//   const ruleNodeDesc = ruleNode.desc;
-//   if (ruleNodeDesc.type === "BaseFactTable") {
-//     // don't need to worry about mappings for base fact tables
-//     return removeUnmappedNode(newGraph, unmappedCallID);
-//   }
-//   if (ruleNodeDesc.type !== "Substitute") {
-//     throw new Error("rule should be a Subst node");
-//   }
-//   const ruleRec = ruleNodeDesc.rec;
-//   const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-//   const withNewMappings = updateMappings(newGraph, unmappedCallID, mappings);
-//   return removeUnmappedNode(withNewMappings, unmappedCallID);
-// }
+export function resolveUnmappedRule(
+  graph: RuleGraph,
+  rule: Rule,
+  newNodes: Set<NodeID>
+): RuleGraph {
+  const { newGraph, nowResolved } = [...newNodes].reduce(
+    ({ newGraph: curGraph, nowResolved }, newNodeID) => {
+      const { newGraph, nowResolved: nextResolved } = resolveUnmappedCall(
+        curGraph,
+        newNodeID
+      );
+      return { newGraph, nowResolved: nextResolved && nowResolved };
+    },
+    { newGraph: graph, nowResolved: true }
+  );
+  console.log({ nowResolved });
+  return nowResolved
+    ? removeUnmappedRule(newGraph, rule.head.relation)
+    : newGraph;
+}
+
+function resolveUnmappedCall(
+  graph: RuleGraph,
+  unmappedCallID: NodeID
+): { newGraph: RuleGraph; nowResolved: boolean } {
+  const callNodeDesc = graph.nodes[unmappedCallID].desc;
+  if (callNodeDesc.type !== "Match") {
+    // skip non-match nodes
+    return { newGraph: graph, nowResolved: true };
+  }
+  const callRec = callNodeDesc.rec;
+  // console.log("resolveUnmappedCall", {
+  //   nodes: graph.nodes,
+  //   unmappedCallID,
+  //   callRec: ppt(callRec),
+  // });
+  const ruleNode = graph.nodes[callRec.relation];
+  if (!ruleNode) {
+    // still not defined
+    return { newGraph: graph, nowResolved: false };
+  }
+  const ruleNodeDesc = ruleNode.desc;
+  if (ruleNodeDesc.type === "BaseFactTable") {
+    // don't need to worry about mappings for base fact tables
+    return { newGraph: graph, nowResolved: false };
+  }
+  if (ruleNodeDesc.type !== "Substitute") {
+    throw new Error("rule should be a Subst node");
+  }
+  const ruleRec = ruleNodeDesc.rec;
+  const mappings = getMappings(ruleRec.attrs, callRec.attrs);
+  const newGraph = updateMappings(graph, unmappedCallID, mappings);
+  return { newGraph, nowResolved: true };
+}
 
 type AddResult = {
   newGraph: RuleGraph;
