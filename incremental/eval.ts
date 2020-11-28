@@ -25,13 +25,14 @@ export function addRule(
   rule: Rule
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   // console.log("add", rule.head.relation);
-  const matchID = rule.head.relation;
+  const substID = rule.head.relation;
   const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
-  const withSubst = addNodeKnownID(matchID, withOr, false, {
+  const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
   });
-  const withEdge = addEdge(withSubst, orID, matchID);
+  newNodeIDs.add(substID);
+  const withEdge = addEdge(withSubst, orID, substID);
   const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
   let resultGraph = withUnmapped;
   for (let unmappedRuleName in withUnmapped.unmappedRules) {
@@ -165,7 +166,6 @@ function stepIterator(
     if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
       newGraph = addToCache(newGraph, curNodeID, result);
     }
-    // console.log("addToCache", curNodeID, formatRes(result));
     for (let destination of newGraph.edges[curNodeID] || []) {
       newQueue.push({
         destination,
