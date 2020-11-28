@@ -55,23 +55,27 @@ function replayFacts(
   roots: Set<NodeID>
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   // console.log("replayFacts", roots);
-  let outGraph = graph;
-  let outLog: EmissionBatch[] = [];
-  const toInsert: Rec[] = [];
+  const toInsert: Insertion[] = [];
   for (let rootID of roots) {
     for (let res of graph.nodes[rootID].cache) {
-      toInsert.push(res.term as Rec);
+      for (let destination of graph.edges[rootID]) {
+        toInsert.push({
+          res,
+          origin: rootID,
+          destination,
+        });
+      }
     }
   }
-  // console.log({ toInsert });
-  for (let rec of toInsert) {
-    const { newGraph, emissionLog } = insertFact(outGraph, rec);
-    outGraph = newGraph;
-    for (let emission of emissionLog) {
-      outLog.push(emission);
-    }
-  }
-  return { newGraph: outGraph, emissionLog: outLog };
+  console.log("replayFacts", {
+    toInsert: toInsert.map((ins) => ({
+      origin: ins.origin,
+      destination: ins.destination,
+      res: formatRes(ins.res),
+    })),
+  });
+  const iter = getReplayIterator(graph, toInsert);
+  return stepIteratorAll(graph, iter);
 }
 
 function getRoots(rule: Rule): NodeID[] {
@@ -100,7 +104,14 @@ export function insertFact(
 
   // console.log("insertFact", ppt(rec));
 
-  let iter = getInsertionIterator(graph, rec);
+  const iter = getInsertionIterator(graph, rec);
+  return stepIteratorAll(graph, iter);
+}
+
+function stepIteratorAll(
+  graph: RuleGraph,
+  iter: InsertionIterator
+): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   const emissionLog: EmissionBatch[] = [];
   let newGraph = graph;
   while (true) {
@@ -115,10 +126,7 @@ export function insertFact(
   return { newGraph, emissionLog };
 }
 
-export function getInsertionIterator(
-  graph: RuleGraph,
-  rec: Rec
-): InsertionIterator {
+function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
   const queue: Insertion[] = [
     {
       res: { term: rec, bindings: {} },
@@ -127,6 +135,16 @@ export function getInsertionIterator(
     },
   ];
   return { graph, queue };
+}
+
+function getReplayIterator(
+  graph: RuleGraph,
+  queue: Insertion[]
+): InsertionIterator {
+  return {
+    graph,
+    queue,
+  };
 }
 
 type InsertionIterator = {

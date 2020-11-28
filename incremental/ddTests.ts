@@ -11,81 +11,81 @@ import { formatOutput, processStmt } from "./interpreter";
 
 export function incrTests(writeResults: boolean): Suite {
   return [
-    {
-      name: "build",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/build.dd.txt",
-          buildTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "buildBinExpr",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/buildBinExpr.dd.txt",
-          buildTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "eval",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/eval.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "eval2",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/eval2.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "eval3",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/eval3.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "siblings",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/siblings.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "cycles",
-      test() {
-        runDDTestAtPath(
-          "incremental/testdata/cycles.dd.txt",
-          evalTest,
-          writeResults
-        );
-      },
-    },
+    // {
+    //   name: "build",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/build.dd.txt",
+    //       buildTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "buildBinExpr",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/buildBinExpr.dd.txt",
+    //       buildTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "eval",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/eval.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "eval2",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/eval2.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "eval3",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/eval3.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "siblings",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/siblings.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
+    // {
+    //   name: "cycles",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "incremental/testdata/cycles.dd.txt",
+    //       evalTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
     {
       name: "replay",
       test() {
         runDDTestAtPath(
-          "incremental/testdata/replay.txt",
+          "incremental/testdata/replay.dd.txt",
           evalTest,
           writeResults
         );
