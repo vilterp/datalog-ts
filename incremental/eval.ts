@@ -31,7 +31,7 @@ export function addRule(
     type: "Substitute",
     rec: rule.head,
   });
-  newNodeIDs.add(substID);
+  newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
   const withEdge = addEdge(withSubst, orID, substID);
   const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
   let resultGraph = withUnmapped;
@@ -57,27 +57,27 @@ function replayFacts(
   roots: Set<NodeID>
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   // console.log("replayFacts", roots);
-  const toInsert: Insertion[] = [];
+  let outGraph = graph;
+  let outEmissionLog: EmissionBatch[] = [];
   for (let rootID of roots) {
     for (let res of graph.nodes[rootID].cache) {
       for (let destination of graph.edges[rootID]) {
-        toInsert.push({
-          res,
-          origin: rootID,
-          destination,
-        });
+        const iter = getReplayIterator(outGraph, allNewNodes, [
+          {
+            res,
+            origin: rootID,
+            destination,
+          },
+        ]);
+        const { newGraph, emissionLog } = stepIteratorAll(outGraph, iter);
+        outGraph = newGraph;
+        for (let emission of emissionLog) {
+          outEmissionLog.push(emission);
+        }
       }
     }
   }
-  console.log("replayFacts", {
-    toInsert: toInsert.map((ins) => ({
-      origin: ins.origin,
-      destination: ins.destination,
-      res: formatRes(ins.res),
-    })),
-  });
-  const iter = getReplayIterator(graph, allNewNodes, toInsert);
-  return stepIteratorAll(graph, iter);
+  return { newGraph: outGraph, emissionLog: outEmissionLog };
 }
 
 function getRoots(rule: Rule): NodeID[] {
