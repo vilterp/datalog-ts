@@ -45,13 +45,14 @@ export function addRule(
         getRoots
       ),
     ]);
-    return replayFacts(resultGraph, nodesToReplay);
+    return replayFacts(resultGraph, newNodeIDs, nodesToReplay);
   }
   return { newGraph: resultGraph, emissionLog: [] };
 }
 
 function replayFacts(
   graph: RuleGraph,
+  allNewNodes: Set<NodeID>,
   roots: Set<NodeID>
 ): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
   // console.log("replayFacts", roots);
@@ -74,7 +75,7 @@ function replayFacts(
       res: formatRes(ins.res),
     })),
   });
-  const iter = getReplayIterator(graph, toInsert);
+  const iter = getReplayIterator(graph, allNewNodes, toInsert);
   return stepIteratorAll(graph, iter);
 }
 
@@ -108,24 +109,6 @@ export function insertFact(
   return stepIteratorAll(graph, iter);
 }
 
-function stepIteratorAll(
-  graph: RuleGraph,
-  iter: InsertionIterator
-): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  const emissionLog: EmissionBatch[] = [];
-  let newGraph = graph;
-  while (true) {
-    const [emissions, nextIter] = stepIterator(iter);
-    emissionLog.push(emissions);
-    newGraph = nextIter.graph;
-    if (nextIter.queue.length === 0) {
-      break;
-    }
-    iter = nextIter;
-  }
-  return { newGraph, emissionLog };
-}
-
 function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
   const queue: Insertion[] = [
     {
@@ -134,23 +117,41 @@ function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
       destination: rec.relation,
     },
   ];
-  return { graph, queue };
+  return { graph, queue, mode: { type: "Playing" } };
 }
 
 function getReplayIterator(
   graph: RuleGraph,
+  newNodeIDs: Set<NodeID>,
   queue: Insertion[]
 ): InsertionIterator {
   return {
     graph,
     queue,
+    mode: { type: "Replaying", newNodeIDs },
   };
 }
 
 type InsertionIterator = {
   graph: RuleGraph;
   queue: Insertion[];
+  mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
+
+function stepIteratorAll(
+  graph: RuleGraph,
+  iter: InsertionIterator
+): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+  const emissionLog: EmissionBatch[] = [];
+  let newGraph = graph;
+  while (iter.queue.length > 0) {
+    const [emissions, nextIter] = stepIterator(iter);
+    emissionLog.push(emissions);
+    newGraph = nextIter.graph;
+    iter = nextIter;
+  }
+  return { newGraph, emissionLog };
+}
 
 function stepIterator(
   iter: InsertionIterator
@@ -161,7 +162,9 @@ function stepIterator(
   const curNodeID = insertingNow.destination;
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
-    newGraph = addToCache(newGraph, curNodeID, result);
+    if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
+      newGraph = addToCache(newGraph, curNodeID, result);
+    }
     // console.log("addToCache", curNodeID, formatRes(result));
     for (let destination of newGraph.edges[curNodeID] || []) {
       newQueue.push({
@@ -171,7 +174,7 @@ function stepIterator(
       });
     }
   }
-  const newIter = { graph: newGraph, queue: newQueue };
+  const newIter = { ...iter, graph: newGraph, queue: newQueue };
   return [{ fromID: curNodeID, output: results }, newIter];
 }
 

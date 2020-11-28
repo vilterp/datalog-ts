@@ -21,7 +21,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
         },
         comment:
           node.cache.length > 0
-            ? `cache: [${node.cache.map((res) => ppt(res.term)).join(", ")}]`
+            ? `cache: [${node.cache.map((res) => formatRes(res)).join(", ")}]`
             : "",
       };
     }),
