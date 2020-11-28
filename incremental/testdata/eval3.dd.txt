@@ -19,7 +19,7 @@ digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
   "2" [label="2: Match(father{child: C, father: P}; {})" shape="box"];
-  "3" [label="3: Match(parent{child: B, parent: C}; {C: B, P: C})" shape="box"];
+  "3" [label="3: Match(parent{child: B, parent: C}; {})" shape="box"];
   "4" [label="4: Match(parent{child: A, parent: B}; {C: A, P: B})" shape="box"];
   "5" [label="5: Join(4 & 3)" shape="box"];
   "father" [label="father: Base" shape="box"];

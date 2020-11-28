@@ -10,7 +10,7 @@ import {
   setUnion,
   updateObj,
 } from "../util";
-import { ppRule, ppt } from "../pretty";
+import { ppRule, ppt, ppVM } from "../pretty";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
@@ -21,54 +21,35 @@ export function resolveUnmappedRule(
   rule: Rule,
   newNodes: Set<NodeID>
 ): RuleGraph {
-  const { newGraph, nowResolved } = [...newNodes].reduce(
-    ({ newGraph: curGraph, nowResolved }, newNodeID) => {
-      const { newGraph, nowResolved: nextResolved } = resolveUnmappedCall(
-        curGraph,
-        newNodeID
-      );
-      return { newGraph, nowResolved: nextResolved && nowResolved };
-    },
-    { newGraph: graph, nowResolved: true }
-  );
-  console.log({ nowResolved });
-  return nowResolved
-    ? removeUnmappedRule(newGraph, rule.head.relation)
-    : newGraph;
-}
-
-function resolveUnmappedCall(
-  graph: RuleGraph,
-  unmappedCallID: NodeID
-): { newGraph: RuleGraph; nowResolved: boolean } {
-  const callNodeDesc = graph.nodes[unmappedCallID].desc;
-  if (callNodeDesc.type !== "Match") {
-    // skip non-match nodes
-    return { newGraph: graph, nowResolved: true };
+  let curGraph = graph;
+  let resolved = true;
+  console.log("resolveUnmappedRule", newNodes);
+  for (let newNodeID of newNodes) {
+    console.log({ newNodeID });
+    const newNode = graph.nodes[newNodeID];
+    const nodeDesc = newNode.desc;
+    if (nodeDesc.type === "Match") {
+      const callRec = nodeDesc.rec;
+      const callNode = graph.nodes[callRec.relation];
+      if (!callNode) {
+        // not defined yet
+        resolved = false;
+      }
+      const ruleNodeDesc = callNode.desc;
+      if (ruleNodeDesc.type === "BaseFactTable") {
+        // don't need to worry about mappings for base fact tables
+        continue;
+      }
+      if (ruleNodeDesc.type !== "Substitute") {
+        throw new Error("rule should be a Subst node");
+      }
+      const ruleRec = ruleNodeDesc.rec;
+      const mappings = getMappings(ruleRec.attrs, callRec.attrs);
+      console.log(ppVM(mappings, [], { showScopePath: false }));
+      curGraph = updateMappings(graph, newNodeID, mappings);
+    }
   }
-  const callRec = callNodeDesc.rec;
-  // console.log("resolveUnmappedCall", {
-  //   nodes: graph.nodes,
-  //   unmappedCallID,
-  //   callRec: ppt(callRec),
-  // });
-  const ruleNode = graph.nodes[callRec.relation];
-  if (!ruleNode) {
-    // still not defined
-    return { newGraph: graph, nowResolved: false };
-  }
-  const ruleNodeDesc = ruleNode.desc;
-  if (ruleNodeDesc.type === "BaseFactTable") {
-    // don't need to worry about mappings for base fact tables
-    return { newGraph: graph, nowResolved: false };
-  }
-  if (ruleNodeDesc.type !== "Substitute") {
-    throw new Error("rule should be a Subst node");
-  }
-  const ruleRec = ruleNodeDesc.rec;
-  const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-  const newGraph = updateMappings(graph, unmappedCallID, mappings);
-  return { newGraph, nowResolved: true };
+  return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
 }
 
 type AddResult = {
@@ -82,22 +63,23 @@ export function addOr(graph: RuleGraph, or: OrExpr): AddResult {
     return addAnd(graph, or.opts[0].clauses);
   }
   const [g1, orID] = addNode(graph, true, { type: "Union" });
-  return or.opts.reduce(
-    ({ newGraph, tipID, newNodeIDs }, andExpr) => {
-      const {
-        newGraph: withAnd,
-        tipID: andID,
-        newNodeIDs: moreNodeIDs,
-      } = addAnd(newGraph, andExpr.clauses);
-      const withEdge = addEdge(withAnd, andID, orID);
-      return {
-        newGraph: withEdge,
-        newNodeIDs: setUnion(newNodeIDs, moreNodeIDs),
-        tipID: andID,
-      };
-    },
-    { newGraph: g1, tipID: orID, newNodeIDs: new Set<NodeID>() }
-  );
+
+  let outGraph = g1;
+  let outNodeIDs = new Set<NodeID>([orID]);
+  for (let orOption of or.opts) {
+    const { newGraph, newNodeIDs, tipID: andID } = addAnd(
+      outGraph,
+      orOption.clauses
+    );
+    outGraph = addEdge(newGraph, andID, orID);
+    outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
+  }
+
+  return {
+    newGraph: outGraph,
+    newNodeIDs: outNodeIDs,
+    tipID: orID,
+  };
 }
 
 function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {

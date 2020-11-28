@@ -1,7 +1,7 @@
 import { RuleGraph, Res, NodeID, formatRes, formatDesc } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
-import { ppb, ppt, ppVM } from "../pretty";
+import { ppb, ppRule, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, mapObjToList, reduceObj } from "../util";
 import {
@@ -42,13 +42,12 @@ export function addRule(
   //   (do we replay only base facts?)
   //   replay those facts (leaving out new nodes)
   // return withUnmapped.unmappedCallIDs.reduce(resolveUnmappedCall, withUnmapped);
-  reduceObj(
-    withUnmapped.unmappedRules,
-    withUnmapped,
-    (graph, _, { rule, newNodeIDs }) =>
-      resolveUnmappedRule(graph, rule, newNodeIDs)
-  );
-  return { newGraph: withUnmapped, emissionLog: [] };
+  let resultGraph = withUnmapped;
+  for (let unmappedRuleName in withUnmapped.unmappedRules) {
+    const rule = withUnmapped.unmappedRules[unmappedRuleName];
+    resultGraph = resolveUnmappedRule(resultGraph, rule.rule, rule.newNodeIDs);
+  }
+  return { newGraph: resultGraph, emissionLog: [] };
 }
 
 export function insertFact(

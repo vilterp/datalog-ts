@@ -4,7 +4,6 @@ matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
 digraph G {
-  // unmapped: matGramp [0, 1, 2];
   "0" [label="0: Match(father{child: B, father: C}; {})" shape="box"];
   "1" [label="1: Match(mother{child: A, mother: B}; {})" shape="box"];
   "2" [label="2: Join(1 & 0)" shape="box"];
@@ -24,7 +23,6 @@ digraph G {
 d{} :- a{} & b{} & c{}.
 ----
 digraph G {
-  // unmapped: d [0, 1, 2, 3, 4];
   "0" [label="0: Match(c{}; {})" shape="box"];
   "1" [label="1: Match(b{}; {})" shape="box"];
   "2" [label="2: Join(1 & 0)" shape="box"];
@@ -50,16 +48,15 @@ parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
 digraph G {
-  // unmapped: parent [1, 2];
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
   "2" [label="2: Match(father{child: C, father: P}; {})" shape="box"];
   "father" [label="father: Base" shape="box"];
   "mother" [label="mother: Base" shape="box"];
   "parent" [label="parent: Subst(parent{child: C, parent: P})" shape="box"];
+  "0" -> "parent" [];
   "1" -> "0" [];
   "2" -> "0" [];
-  "2" -> "parent" [];
   "father" -> "2" [];
   "mother" -> "1" []
 }
@@ -73,21 +70,19 @@ grandparent{grandchild: A, grandparent: C} :-
   parent{child: B, parent: C}.
 ----
 digraph G {
-  // unmapped: grandparent [3, 4, 5];
-  // unmapped: parent [1, 2];
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
   "2" [label="2: Match(father{child: C, father: P}; {})" shape="box"];
   "3" [label="3: Match(parent{child: B, parent: C}; {})" shape="box"];
-  "4" [label="4: Match(parent{child: A, parent: B}; {})" shape="box"];
+  "4" [label="4: Match(parent{child: A, parent: B}; {C: A, P: B})" shape="box"];
   "5" [label="5: Join(4 & 3)" shape="box"];
   "father" [label="father: Base" shape="box"];
   "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})" shape="box"];
   "mother" [label="mother: Base" shape="box"];
   "parent" [label="parent: Subst(parent{child: C, parent: P})" shape="box"];
+  "0" -> "parent" [];
   "1" -> "0" [];
   "2" -> "0" [];
-  "2" -> "parent" [];
   "3" -> "5" [];
   "4" -> "5" [];
   "5" -> "grandparent" [];
