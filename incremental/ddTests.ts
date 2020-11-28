@@ -81,6 +81,16 @@ export function incrTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "addRule",
+      test() {
+        runDDTestAtPath(
+          "incremental/testdata/addRule.dd.txt",
+          evalTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 

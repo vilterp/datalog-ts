@@ -3,7 +3,7 @@ import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppRule, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
-import { filterMap, mapObjToList, reduceObj } from "../util";
+import { filterMap, flatMap, mapObjToList, reduceObj } from "../util";
 import {
   addEdge,
   addNodeKnownID,
@@ -34,20 +34,55 @@ export function addRule(
   });
   const withEdge = addEdge(withSubst, orID, matchID);
   const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
-  // TODO: add unmapped rule
-  // map unmapped rules
-  // if everything is now mapped
-  //   get roots of new rules
-  //   get facts at those roots
-  //   (do we replay only base facts?)
-  //   replay those facts (leaving out new nodes)
-  // return withUnmapped.unmappedCallIDs.reduce(resolveUnmappedCall, withUnmapped);
   let resultGraph = withUnmapped;
   for (let unmappedRuleName in withUnmapped.unmappedRules) {
     const rule = withUnmapped.unmappedRules[unmappedRuleName];
     resultGraph = resolveUnmappedRule(resultGraph, rule.rule, rule.newNodeIDs);
   }
+  if (Object.keys(resultGraph.unmappedRules).length === 0) {
+    const nodesToReplay = new Set([
+      ...flatMap(
+        Object.values(withUnmapped.unmappedRules).map(({ rule }) => rule),
+        getRoots
+      ),
+    ]);
+    return replayFacts(resultGraph, nodesToReplay);
+  }
   return { newGraph: resultGraph, emissionLog: [] };
+}
+
+function replayFacts(
+  graph: RuleGraph,
+  roots: Set<NodeID>
+): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+  console.log("replayFacts", roots);
+  let outGraph = graph;
+  let outLog: EmissionBatch[] = [];
+  const toInsert: Rec[] = [];
+  for (let rootID of roots) {
+    for (let res of graph.nodes[rootID].cache) {
+      toInsert.push(res.term as Rec);
+    }
+  }
+  for (let rec of toInsert) {
+    const { newGraph, emissionLog } = insertFact(outGraph, rec);
+    outGraph = newGraph;
+    for (let emission of emissionLog) {
+      outLog.push(emission);
+    }
+  }
+  return { newGraph: outGraph, emissionLog: outLog };
+}
+
+function getRoots(rule: Rule): NodeID[] {
+  return flatMap(rule.defn.opts, (opt) => {
+    return filterMap(opt.clauses, (andClause) => {
+      if (andClause.type === "BinExpr") {
+        return null;
+      }
+      return andClause.relation;
+    });
+  });
 }
 
 export function insertFact(

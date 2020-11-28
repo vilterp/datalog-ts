@@ -149,17 +149,6 @@ function addAndClause(graph: RuleGraph, rec: Rec): AddResult {
   };
 }
 
-function getRoots(rule: Rule): NodeID[] {
-  return flatMap(rule.defn.opts, (opt) => {
-    return filterMap(opt.clauses, (andClause) => {
-      if (andClause.type === "BinExpr") {
-        return null;
-      }
-      return andClause.relation;
-    });
-  });
-}
-
 // helpers
 
 export function addNodeKnownID(
