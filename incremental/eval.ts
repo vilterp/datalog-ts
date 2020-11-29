@@ -155,6 +155,7 @@ function stepIteratorAll(
 function stepIterator(
   iter: InsertionIterator
 ): [EmissionBatch, InsertionIterator] {
+  // console.log("stepIterator", iter.queue);
   const newQueue = iter.queue.slice(1);
   let newGraph = iter.graph;
   const insertingNow = iter.queue[0];

@@ -9,6 +9,7 @@ import { scan } from "../util";
 import { ppb, ppt } from "../pretty";
 import { formatOutput, newInterpreter, processStmt } from "./interpreter";
 import { nullLoader } from "../loaders";
+import { fsLoader } from "../repl";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -21,6 +22,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["cycles", evalTest],
     ["replay", evalTest],
     ["cyclesReplay", evalTest],
+    ["fp", evalTest],
   ];
   return tests.map(([name, func]) => ({
     name,
@@ -49,14 +51,14 @@ function buildTest(test: DDTest): string[] {
           `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
         );
       }
-    }, newInterpreter(nullLoader));
+    }, newInterpreter(fsLoader));
     return prettyPrintGraph(toGraphviz(curInterp.graph));
   });
 }
 
 function evalTest(test: DDTest): string[] {
   return scan(
-    newInterpreter(nullLoader),
+    newInterpreter(fsLoader),
     (interp, pair) => {
       try {
         const stmt = parseStatement(pair.input);

@@ -40,16 +40,16 @@ export function fpTests(writeResults: boolean): Suite {
         );
       },
     },
-    {
-      name: "typecheck",
-      test() {
-        runDDTestAtPath(
-          "fp/testdata/typecheck.dd.txt",
-          typecheckTest,
-          writeResults
-        );
-      },
-    },
+    // {
+    //   name: "typecheck",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "fp/testdata/typecheck.dd.txt",
+    //       typecheckTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
     {
       name: "suggestion",
       test() {
@@ -109,8 +109,10 @@ function typecheckTest(test: DDTest): string[] {
     const rendered = flattened.map((t) => ppt(t) + ".");
 
     const interp = newInterpreter(fsLoader); // hmmm
-    const interp2 = processStmt(interp, { type: "LoadStmt", path: "main.dl" })
-      .newInterp;
+    const interp2 = processStmt(interp, {
+      type: "LoadStmt",
+      path: "fp/dl/main.dl",
+    }).newInterp;
     const interp3 = flattened.reduce<Interpreter>(
       (interp, t) =>
         processStmt(interp, { type: "Insert", record: t as Rec }).newInterp,
@@ -135,8 +137,10 @@ function suggestionTest(test: DDTest): string[] {
     const flattened = flatten(parsed);
 
     const interp = newInterpreter(fsLoader); // hmmm
-    const interp2 = processStmt(interp, { type: "LoadStmt", path: "main.dl" })
-      .newInterp;
+    const interp2 = processStmt(interp, {
+      type: "LoadStmt",
+      path: "fp/dl/main.dl",
+    }).newInterp;
     const interp3 = flattened.reduce<Interpreter>(
       (interp, t) =>
         processStmt(interp, { type: "Insert", record: t as Rec }).newInterp,
@@ -157,13 +161,13 @@ function suggestionTest(test: DDTest): string[] {
 //     const parsed = language.expr.tryParse(expr);
 //     const flattened = flatten(parsed);
 //
-//     const interp = newInterpreter("fp/dl", fsLoader); // hmmm
-//     const interp2 = flattened.reduce<Interpreter>(
+//     const interp = newInterpreter(fsLoader); // hmmm
+//     const interp2 = processStmt(interp, { type: "LoadStmt", path: "main.dl" }).newInterp;
+//     const interp3 = flattened.reduce<Interpreter>(
 //       (interp, t) =>
 //         processStmt(interp, { type: "Insert", record: t as Rec }).newInterp,
-//       interp
+//       interp2
 //     );
-//     const interp3 = processStmt(interp2, { type: "LoadStmt", path: "main.dl" }).newInterp;
 //     // TODO: why does interpacing I with 0 return no results
 //     const typeResults = queryStr(interp3, "tc.Type{id: 0, type: T}");
 //     if (typeResults.length !== 1) {
