@@ -1,22 +1,27 @@
 .table baseEdge
 ----
+text/plain
 
 baseEdge{from: "A", to: "B"}.
 ----
+text/plain
 baseEdge: [baseEdge{from: "A", to: "B"}; {}]
 
 baseEdge{from: "C", to: "D"}.
 ----
+text/plain
 baseEdge: [baseEdge{from: "C", to: "D"}; {}]
 
 baseEdge{from: "B", to: "C"}.
 ----
+text/plain
 baseEdge: [baseEdge{from: "B", to: "C"}; {}]
 
 edge{from: F, to: T} :-
   baseEdge{from: F, to: T} |
   baseEdge{from: F, to: I} & edge{from: I, to: T}.
 ----
+text/plain
 1: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
 0: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
 edge: [edge{from: "A", to: "B"}; {F: "A", T: "B"}]
@@ -53,6 +58,7 @@ edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
 
 edge{from: F, to: T}.
 ----
+text/plain
 edge{from: "A", to: "B"}; {F: "A", T: "B"}.
 edge{from: "C", to: "D"}; {F: "C", T: "D"}.
 edge{from: "B", to: "C"}; {F: "B", T: "C"}.

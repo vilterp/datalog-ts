@@ -1,8 +1,10 @@
 .load testdata/family.dl
 ----
+text/plain
 
 father{child: X, father: Y}.
 ----
+text/plain
 father{child: "Pete", father: "Paul"}.
 father{child: "Paul", father: "Peter"}.
 father{child: "Ann", father: "Peter"}.
@@ -13,10 +15,12 @@ father{child: "Henry", father: "Bob"}.
 
 father{child: "Pete", father: F}.
 ----
+text/plain
 father{child: "Pete", father: "Paul"}.
 
 parent{child: X, parent: Y}.
 ----
+text/plain
 parent{child: "Pete", parent: "Paul"}.
 parent{child: "Paul", parent: "Peter"}.
 parent{child: "Ann", parent: "Peter"}.
@@ -33,16 +37,19 @@ parent{child: "Carolyn", parent: "Mary"}.
 
 parent{child: "Pete", parent: Y}.
 ----
+text/plain
 parent{child: "Pete", parent: "Paul"}.
 parent{child: "Pete", parent: "Mary"}.
 
 grandfather{grandchild: "Pete", grandfather: A}.
 ----
+text/plain
 grandfather{grandchild: "Pete", grandfather: "Mark"}.
 grandfather{grandchild: "Pete", grandfather: "Peter"}.
 
 grandparent{grandchild: "Pete", grandparent: X}.
 ----
+text/plain
 grandparent{grandchild: "Pete", grandparent: "Carolyn K"}.
 grandparent{grandchild: "Pete", grandparent: "Mark"}.
 grandparent{grandchild: "Pete", grandparent: "Judith"}.
@@ -50,6 +57,7 @@ grandparent{grandchild: "Pete", grandparent: "Peter"}.
 
 grandparent{grandchild: X, grandparent: Y}.
 ----
+text/plain
 grandparent{grandchild: "Pete", grandparent: "Carolyn K"}.
 grandparent{grandchild: "Pete", grandparent: "Mark"}.
 grandparent{grandchild: "Bob", grandparent: "Judith"}.
@@ -65,6 +73,7 @@ grandparent{grandchild: "Henry", grandparent: "John"}.
 
 sibling{left: X, right: Y}.
 ----
+text/plain
 sibling{left: "Paul", right: "Ann"}.
 sibling{left: "Ann", right: "Paul"}.
 sibling{left: "Pete", right: "Carolyn"}.
@@ -72,6 +81,7 @@ sibling{left: "Carolyn", right: "Pete"}.
 
 cousin{left: X, right: Y}.
 ----
+text/plain
 cousin{left: "Pete", right: "Bob"}.
 cousin{left: "Carolyn", right: "Bob"}.
 cousin{left: "Bob", right: "Pete"}.
@@ -79,15 +89,18 @@ cousin{left: "Bob", right: "Carolyn"}.
 
 aunt{child: C, aunt: X}.
 ----
+text/plain
 aunt{aunt: "Ann", child: "Pete"}.
 aunt{aunt: "Ann", child: "Carolyn"}.
 
 uncle{child: C, uncle: X}.
 ----
+text/plain
 uncle{child: "Bob", uncle: "Paul"}.
 
 ancestor{desc: "Pete", an: Z}.
 ----
+text/plain
 ancestor{an: "Paul", desc: "Pete"}.
 ancestor{an: "Peter", desc: "Pete"}.
 ancestor{an: "Mary", desc: "Pete"}.
@@ -97,6 +110,7 @@ ancestor{an: "Carolyn K", desc: "Pete"}.
 
 ancestor{desc: X, an: "Peter"}.
 ----
+text/plain
 ancestor{an: "Peter", desc: "Paul"}.
 ancestor{an: "Peter", desc: "Pete"}.
 ancestor{an: "Peter", desc: "Ann"}.
@@ -106,6 +120,7 @@ ancestor{an: "Peter", desc: "Henry"}.
 
 ancestor{desc: X, an: Y}.
 ----
+text/plain
 ancestor{an: "Paul", desc: "Pete"}.
 ancestor{an: "Peter", desc: "Paul"}.
 ancestor{an: "Peter", desc: "Pete"}.
@@ -136,6 +151,7 @@ ancestor{an: "Carolyn K", desc: "Carolyn"}.
 
 .rulegraph
 ----
+text/plain
 digraph G {
   "0" [label="0: Match(father{child: B, father: C}; {})" shape="box"];
   "1" [label="1: Match(parent{child: A, parent: B}; {C: A, P: B})" shape="box"];

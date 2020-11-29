@@ -8,11 +8,13 @@ base_edge{from: "A", to: "B"}.
 base_edge{from: "B", to: "C"}.
 base_edge{from: "C", to: "D"}.
 ----
+text/plain
 
 trans_edge{from: X, to: Z} :-
   base_edge{from: X, to: Z} |
   base_edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
+text/plain
 trans_edge{from: "A", to: "B"}.
 trans_edge{from: "B", to: "C"}.
 trans_edge{from: "A", to: "C"}.
@@ -23,6 +25,7 @@ trans_edge{from: "A", to: "D"}.
 edge{to: T, from: F, label: ""} :-
   trans_edge{to: T, from: F}.
 ----
+text/plain
 edge{from: "A", label: "", to: "B"}.
 trans_edge{from: "A", to: "C"}.
 edge{from: "A", label: "", to: "C"}.
@@ -40,23 +43,6 @@ edge{from: "A", label: "", to: "D"}.
 
 .graphviz
 ----
+text/plain
 Error: 
 -- PARSING FAILED --------------------------------------------------
-
-> 1 | .graphviz
-    | ^
-
-Expected one of the following: 
-
-'.load', '.rulegraph', '.table', '.trace', /#[^\n]*/, record identifier
-
-    at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:95:39)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:55:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-    at Interface._normalWrite (readline.js:433:12)
-    at Transform.ondata (readline.js:149:10)
-    at Transform.emit (events.js:182:13)
-    at Transform.EventEmitter.emit (domain.js:441:20)

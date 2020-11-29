@@ -3,6 +3,7 @@
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
+text/plain
 digraph G {
   "0" [label="0: Match(father{child: B, father: C}; {})" shape="box"];
   "1" [label="1: Match(mother{child: A, mother: B}; {})" shape="box"];
@@ -22,6 +23,7 @@ digraph G {
 .table c;
 d{} :- a{} & b{} & c{}.
 ----
+text/plain
 digraph G {
   "0" [label="0: Match(c{}; {})" shape="box"];
   "1" [label="1: Match(b{}; {})" shape="box"];
@@ -47,6 +49,7 @@ digraph G {
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
+text/plain
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
@@ -69,6 +72,7 @@ grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
+text/plain
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];

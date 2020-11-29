@@ -1,5 +1,6 @@
 foo
 ----
+text/plain
 {
   "type": "Var",
   "name": "foo",
@@ -11,6 +12,7 @@ foo
 
 2
 ----
+text/plain
 {
   "type": "IntLit",
   "val": 2,
@@ -22,6 +24,7 @@ foo
 
 "hello"
 ----
+text/plain
 {
   "type": "StringLit",
   "val": "hello",
@@ -33,6 +36,7 @@ foo
 
 myFunc(2, a, "foo")
 ----
+text/plain
 {
   "type": "FuncCall",
   "func": {
@@ -89,6 +93,7 @@ myFunc(2, a, "foo")
 
 ???
 ----
+text/plain
 {
   "type": "Placeholder",
   "ident": "???",
@@ -100,6 +105,7 @@ myFunc(2, a, "foo")
 
 let x = 2 in x
 ----
+text/plain
 {
   "type": "Let",
   "letT": {
@@ -147,6 +153,7 @@ let x = 2 in x
 
 map((x: int): int => plus(x, 2), ???)
 ----
+text/plain
 {
   "type": "FuncCall",
   "func": {

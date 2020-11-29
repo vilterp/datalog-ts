@@ -1,17 +1,21 @@
 .load fp/dl/ast.dl
 ----
+text/plain
 
 .load fp/dl/typecheck.dl
 ----
+text/plain
 
 lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.
 ----
+text/plain
 lang.Builtin: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
 58: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
 60: []
 
 .rulegraph
 ----
+text/plain
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(ast.StringLit{id: I, location: S}; {})" shape="box"];
@@ -241,6 +245,7 @@ digraph G {
 
 ast.RootExpr{id: 0}.
 ----
+text/plain
 ast.RootExpr: [ast.RootExpr{id: 0}; {}]
 59: [ast.RootExpr{id: 0}; {I: 0}]
 60: [ast.RootExpr{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
@@ -255,6 +260,7 @@ tc.ScopeItem: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", typ
 
 ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
 ----
+text/plain
 ast.FuncCall: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {}]
 5: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
 15: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
@@ -300,6 +306,7 @@ tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", typ
 
 ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
 ----
+text/plain
 ast.Var: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {}]
 3: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
 43: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
@@ -321,6 +328,7 @@ ast.ParentExpr: [ast.ParentExpr{id: 1, parent: 0, span: span{from: 0, to: 10}}; 
 
 ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
 ----
+text/plain
 ast.IntLit: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {}]
 2: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
 33: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2}]

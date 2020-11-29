@@ -13,14 +13,13 @@ export type TestOutput = { content: string; mimeType: string };
 export type Result = { pair: IOPair; actual: TestOutput };
 
 export function resultsToStr(results: Result[]): string {
-  const resultStrs = results.map((r) =>
-    [
-      r.pair.input,
-      "----",
-      r.pair.output.mimeType || "text/plain",
-      r.pair.output.content,
-    ].join("\n")
-  );
+  const resultStrs = results.map((r) => {
+    const out = [r.pair.input, "----", r.pair.output.mimeType || "text/plain"];
+    if (r.pair.output.content.length > 0) {
+      out.push(r.pair.output.content);
+    }
+    return out.join("\n");
+  });
   return resultStrs.join("\n\n") + "\n";
 }
 

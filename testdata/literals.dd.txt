@@ -1,9 +1,12 @@
 .table foo
 ----
+text/plain
 
 foo{boo: 2, doo: "asdf", glue: true}.
 ----
+text/plain
 
 foo{boo: X, doo: Y, glue: Z}.
 ----
+text/plain
 foo{boo: 2, doo: "asdf", glue: true}.

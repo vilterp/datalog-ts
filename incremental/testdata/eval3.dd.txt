@@ -1,20 +1,25 @@
 .table mother
 ----
+text/plain
 
 .table father
 ----
+text/plain
 
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
+text/plain
 
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
+text/plain
 
 .rulegraph
 ----
+text/plain
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
@@ -40,6 +45,7 @@ digraph G {
 
 father{child: "Mary", father: "Mark"}.
 ----
+text/plain
 father: [father{child: "Mary", father: "Mark"}; {}]
 2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
 0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
@@ -51,6 +57,7 @@ parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
 
 mother{child: "Pete", mother: "Mary"}.
 ----
+text/plain
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
 1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
 0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
@@ -63,6 +70,7 @@ grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", 
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
+text/plain
 mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
 1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
 0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]

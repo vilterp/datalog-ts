@@ -26,6 +26,8 @@ export function parseDDTest(str: string): DDTest {
           output: {
             content: curOutput.slice(1).join("\n"),
             mimeType: curOutput[0],
+            // content: curOutput.join("\n"),
+            // mimeType: null,
           },
         });
         curOutput = [];

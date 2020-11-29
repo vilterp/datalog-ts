@@ -7,6 +7,7 @@ array :- ["[", repSep(value, ","), "]"].
 digit :- [0-9].
 stringLit :- ["'", repSep([a-z], <succeed>), "'"].
 ----
+text/plain
 grammar [0-289]
   ruleDefn [0-14]
     ruleName [0-4]

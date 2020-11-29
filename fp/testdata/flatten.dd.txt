@@ -1,5 +1,6 @@
 map((x: int): int => plus(x, 2), ???)
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.FuncCall{argID: 10, funcID: 1, id: 0, location: span{from: 0, to: 37}}.
 ast.FuncCall{argID: 3, funcID: 2, id: 1, location: span{from: 0, to: 3}}.
@@ -15,6 +16,7 @@ ast.Placeholder{id: 10, location: span{from: 33, to: 36}}.
 
 let x = map((x: int): int => plus(x, 2), ???) in filter(isEven, x)
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.LetExpr{bindingID: 1, bodyID: 12, id: 0, inLoc: span{from: 46, to: 49}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 66}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ast.FuncCall{argID: 11, funcID: 2, id: 1, location: span{from: 8, to: 46}}.
@@ -36,16 +38,19 @@ ast.Var{id: 16, location: span{from: 64, to: 65}, name: "x"}.
 
 "foo"
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.StringLit{id: 0, location: span{from: 0, to: 5}, val: "foo"}.
 
 2
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.IntLit{id: 0, location: span{from: 0, to: 1}, val: 2}.
 
 let x = 2 in ???
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 16}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
@@ -53,6 +58,7 @@ ast.Placeholder{id: 2, location: span{from: 13, to: 16}}.
 
 int2string(2)
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
 ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
@@ -61,6 +67,7 @@ ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
 let x = 2 in
 int2string(x)
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
@@ -70,6 +77,7 @@ ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}.
 
 let x = 2 in x
 ----
+text/plain
 ast.RootExpr{id: 0}.
 ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 14}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.

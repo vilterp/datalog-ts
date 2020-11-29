@@ -1,15 +1,19 @@
 .table mother
 ----
+text/plain
 
 .table father
 ----
+text/plain
 
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
+text/plain
 
 father{child: "Pete", father: "Paul"}.
 ----
+text/plain
 father: [father{child: "Pete", father: "Paul"}; {}]
 2: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
 0: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
