@@ -18,7 +18,7 @@ const stayAlive = flags.has("--stay-alive");
 const suites = {
   unifyTests,
   parserTests,
-  replTests: replTests(writeResults),
+  // replTests: replTests(writeResults),
   fpTests: fpTests(writeResults),
   json2DLTests,
   prettyPrintTests,
