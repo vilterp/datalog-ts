@@ -51,17 +51,26 @@ ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLo
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
 ast.Placeholder{id: 2, location: span{from: 13, to: 16}}.
 
-let x = 2 in
-let y = 3 in
-plus(x, y)
+int2string(2)
 ----
 ast.RootExpr{id: 0}.
-ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 36}, varLoc: span{from: 4, to: 5}, varName: "x"}.
+ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
+ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
+ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
+
+let x = 2 in
+int2string(x)
+----
+ast.RootExpr{id: 0}.
+ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
-ast.LetExpr{bindingID: 3, bodyID: 4, id: 2, inLoc: span{from: 23, to: 26}, letLoc: span{from: 13, to: 17}, location: span{from: 13, to: 36}, varLoc: span{from: 17, to: 18}, varName: "y"}.
-ast.IntLit{id: 3, location: span{from: 21, to: 22}, val: 3}.
-ast.FuncCall{argID: 8, funcID: 5, id: 4, location: span{from: 26, to: 36}}.
-ast.FuncCall{argID: 7, funcID: 6, id: 5, location: span{from: 26, to: 30}}.
-ast.Var{id: 6, location: span{from: 26, to: 30}, name: "plus"}.
-ast.Var{id: 7, location: span{from: 31, to: 32}, name: "x"}.
-ast.Var{id: 8, location: span{from: 34, to: 35}, name: "y"}.
+ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}.
+ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}.
+ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}.
+
+let x = 2 in x
+----
+ast.RootExpr{id: 0}.
+ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 14}, varLoc: span{from: 4, to: 5}, varName: "x"}.
+ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
+ast.Var{id: 2, location: span{from: 13, to: 14}, name: "x"}.
