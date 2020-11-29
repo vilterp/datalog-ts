@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "jsx": "react"
   }
 }
