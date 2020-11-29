@@ -274,3 +274,11 @@ export function flatten<T>(results: T[][]): T[] {
   });
   return out;
 }
+
+export function insertAtIdx<T>(arr: T[], idx: number, item: T): T[] {
+  return [...arr.slice(0, idx), item, ...arr.slice(idx)];
+}
+
+export function removeAtIdx<T>(arr: T[], idx: number): T[] {
+  return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
+}
