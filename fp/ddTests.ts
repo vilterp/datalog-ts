@@ -108,7 +108,7 @@ function typecheckTest(test: DDTest): string[] {
     const flattened = flatten(parsed);
     const rendered = flattened.map((t) => ppt(t) + ".");
 
-    const interp = newInterpreter("fp/dl", fsLoader); // hmmm
+    const interp = newInterpreter(fsLoader); // hmmm
     const interp2 = processStmt(interp, { type: "LoadStmt", path: "main.dl" })
       .newInterp;
     const interp3 = flattened.reduce<Interpreter>(
@@ -134,7 +134,7 @@ function suggestionTest(test: DDTest): string[] {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
 
-    const interp = newInterpreter("fp/dl", fsLoader); // hmmm
+    const interp = newInterpreter(fsLoader); // hmmm
     const interp2 = processStmt(interp, { type: "LoadStmt", path: "main.dl" })
       .newInterp;
     const interp3 = flattened.reduce<Interpreter>(

@@ -49,14 +49,14 @@ function buildTest(test: DDTest): string[] {
           `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
         );
       }
-    }, newInterpreter(".", nullLoader));
+    }, newInterpreter(nullLoader));
     return prettyPrintGraph(toGraphviz(curInterp.graph));
   });
 }
 
 function evalTest(test: DDTest): string[] {
   return scan(
-    newInterpreter(".", nullLoader),
+    newInterpreter(nullLoader),
     (interp, pair) => {
       try {
         const stmt = parseStatement(pair.input);

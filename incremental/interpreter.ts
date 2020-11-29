@@ -8,6 +8,13 @@ import { hasVars } from "../simpleEvaluate";
 import { ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
+import * as path from "path";
+
+export type Interpreter = {
+  loadStack: string[];
+  graph: RuleGraph;
+  loader: Loader;
+};
 
 type Output =
   | { type: "EmissionLog"; log: EmissionBatch[] }
@@ -17,11 +24,9 @@ type Output =
 
 const ack: Output = { type: "Acknowledge" };
 
-export type Interpreter = { cwd: string; graph: RuleGraph; loader: Loader };
-
-export function newInterpreter(cwd: string, loader: Loader): Interpreter {
+export function newInterpreter(loader: Loader): Interpreter {
   return {
-    cwd,
+    loadStack: [],
     graph: emptyRuleGraph,
     loader,
   };
@@ -87,13 +92,28 @@ export function processStmt(
   }
 }
 
-function doLoad(interp: Interpreter, path: string): Interpreter {
-  const contents = interp.loader(interp.cwd + "/" + path);
+function doLoad(interp: Interpreter, loadPath: string): Interpreter {
+  const currentDir =
+    interp.loadStack.length > 0
+      ? path.dirname(interp.loadStack[interp.loadStack.length - 1])
+      : ".";
+  const pathToLoad = path.resolve(currentDir, loadPath);
+  const contents = interp.loader(pathToLoad);
   const program: Program = dlLanguage.program.tryParse(contents);
-  return program.reduce<Interpreter>(
+  const withNewStack = {
+    ...interp,
+    loadStack: [...interp.loadStack, loadPath],
+  };
+  // process program with new load stack
+  const withLoaded = program.reduce<Interpreter>(
     (interp, stmt) => processStmt(interp, stmt).newInterp,
-    interp
+    withNewStack
   );
+  // go back to original stack
+  return {
+    ...withLoaded,
+    loadStack: interp.loadStack,
+  };
 }
 
 type OutputOptions = {

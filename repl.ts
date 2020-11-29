@@ -1,7 +1,6 @@
 import * as readline from "readline";
 import { ppt } from "./pretty";
 import * as fs from "fs";
-import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
 import {
   formatOutput,
@@ -29,7 +28,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.interp = newInterpreter("fp/dl", loader);
+    this.interp = newInterpreter(loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
