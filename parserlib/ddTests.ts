@@ -1,5 +1,5 @@
 import { Suite } from "../testing";
-import { runDDTestAtPath, DDTest, Result } from "../util/dataDrivenTests";
+import { runDDTestAtPath, DDTest } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";

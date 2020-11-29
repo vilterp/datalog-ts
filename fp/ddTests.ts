@@ -1,6 +1,5 @@
 import { Suite } from "../testing";
-import { runDDTestAtPath } from "../util/dataDrivenTests";
-import { DDTest, Result } from "../util/dataDrivenTests";
+import { DDTest, runDDTestAtPath } from "../util/ddTest";
 import { language } from "./parser";
 import {
   prettyPrintTerm,
