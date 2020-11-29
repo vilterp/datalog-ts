@@ -16,7 +16,6 @@ import { flatten } from "./flatten";
 import { fsLoader } from "../repl";
 import { Rec } from "../types";
 import { traceToTree, getRelatedPaths } from "../traceTree";
-import * as fs from "fs";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -80,8 +79,8 @@ export function fpTests(writeResults: boolean): Suite {
 }
 
 function parseTest(test: DDTest): string[] {
-  return test.map(
-    (tc) => JSON.stringify(language.expr.tryParse(tc.input), null, 2) + "\n"
+  return test.map((tc) =>
+    JSON.stringify(language.expr.tryParse(tc.input), null, 2)
   );
 }
 
@@ -91,7 +90,7 @@ function flattenTest(test: DDTest): string[] {
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");
-    return rendered.join("\n") + "\n";
+    return rendered.join("\n");
   });
 }
 
@@ -113,13 +112,11 @@ function typecheckTest(test: DDTest): string[] {
       "tc.ScopeItem{id: I, name: N, type: T}"
     );
     const typeResults = interp3.queryStr("tc.Type{id: I, type: T}");
-    return (
-      [
-        ...rendered,
-        ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
-        ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
-      ].join("\n") + "\n"
-    );
+    return [
+      ...rendered,
+      ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
+      ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
+    ].join("\n");
   });
 }
 
@@ -137,8 +134,7 @@ function suggestionTest(test: DDTest): string[] {
     const suggResults = interp3.queryStr(
       "ide.Suggestion{id: I, name: N, type: T}"
     );
-    return (
-      [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join("\n") +
+    return [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join(
       "\n"
     );
   });
@@ -172,8 +168,7 @@ function traceTest(test: DDTest, opts: TracePrintOpts): string[] {
       prettyPrintTrace(traceToTree(res), opts) +
       "\n" +
       "CHILD PATHS\n" +
-      childPaths.join("\n") +
-      "\n"
+      childPaths.join("\n")
     );
   });
 }

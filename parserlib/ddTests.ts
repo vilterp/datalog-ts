@@ -68,10 +68,7 @@ function metaTest(test: DDTest): string[] {
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(pair.input, ruleTree);
     return (
-      prettyPrintRuleTree(ruleTree) +
-      "\n" +
-      JSON.stringify(grammar, null, 2) +
-      "\n"
+      prettyPrintRuleTree(ruleTree) + "\n" + JSON.stringify(grammar, null, 2)
     );
   });
 }
@@ -89,5 +86,5 @@ function parserTestFixedStartRule(
 
 function handleResults(tree: TraceTree): string {
   const ruleTree = extractRuleTree(tree);
-  return prettyPrintRuleTree(ruleTree) + "\n";
+  return prettyPrintRuleTree(ruleTree);
 }
