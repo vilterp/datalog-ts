@@ -12,7 +12,15 @@ function Main() {
 const FORMATTERS = {
   "text/plain": (text) => <pre>{text}</pre>,
   "application/graphviz": (text) => <Graphviz dot={text} />,
-  "application/json": (text) => <ReactJson src={JSON.parse(text)} />,
+  "application/json": (text) => (
+    <ReactJson
+      name={null}
+      enableClipboard={false}
+      displayObjectSize={false}
+      displayDataTypes={false}
+      src={JSON.parse(text)}
+    />
+  ),
 };
 
 function TestViewer() {
