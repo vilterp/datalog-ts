@@ -79,29 +79,25 @@ export function fpTests(writeResults: boolean): Suite {
   ];
 }
 
-function parseTest(test: DDTest): Result[] {
-  return test.map((tc) => ({
-    pair: tc,
-    actual: JSON.stringify(language.expr.tryParse(tc.input), null, 2) + "\n",
-  }));
+function parseTest(test: DDTest): string[] {
+  return test.map(
+    (tc) => JSON.stringify(language.expr.tryParse(tc.input), null, 2) + "\n"
+  );
 }
 
-function flattenTest(test: DDTest): Result[] {
+function flattenTest(test: DDTest): string[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");
-    return {
-      pair: tc,
-      actual: rendered.join("\n") + "\n",
-    };
+    return rendered.join("\n") + "\n";
   });
 }
 
 // flatten, then print out all scope and types
 // TODO: DRY up a bit
-function typecheckTest(test: DDTest): Result[] {
+function typecheckTest(test: DDTest): string[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
@@ -117,19 +113,17 @@ function typecheckTest(test: DDTest): Result[] {
       "tc.ScopeItem{id: I, name: N, type: T}"
     );
     const typeResults = interp3.queryStr("tc.Type{id: I, type: T}");
-    return {
-      pair: tc,
-      actual:
-        [
-          ...rendered,
-          ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
-          ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
-        ].join("\n") + "\n",
-    };
+    return (
+      [
+        ...rendered,
+        ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
+        ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
+      ].join("\n") + "\n"
+    );
   });
 }
 
-function suggestionTest(test: DDTest): Result[] {
+function suggestionTest(test: DDTest): string[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
@@ -143,17 +137,14 @@ function suggestionTest(test: DDTest): Result[] {
     const suggResults = interp3.queryStr(
       "ide.Suggestion{id: I, name: N, type: T}"
     );
-    return {
-      pair: tc,
-      actual:
-        [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join(
-          "\n"
-        ) + "\n",
-    };
+    return (
+      [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join("\n") +
+      "\n"
+    );
   });
 }
 
-function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
+function traceTest(test: DDTest, opts: TracePrintOpts): string[] {
   return test.map((tc) => {
     const [expr, bindingName] = tc.input.split("\n");
     const parsed = language.expr.tryParse(expr);
@@ -177,14 +168,12 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     const childPaths = children.map((c) =>
       pp.render(100, prettyPrintSituatedBinding(c))
     );
-    return {
-      pair: tc,
-      actual:
-        prettyPrintTrace(traceToTree(res), opts) +
-        "\n" +
-        "CHILD PATHS\n" +
-        childPaths.join("\n") +
-        "\n",
-    };
+    return (
+      prettyPrintTrace(traceToTree(res), opts) +
+      "\n" +
+      "CHILD PATHS\n" +
+      childPaths.join("\n") +
+      "\n"
+    );
   });
 }

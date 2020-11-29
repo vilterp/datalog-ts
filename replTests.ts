@@ -16,23 +16,20 @@ export function replTests(writeResults: boolean): Suite {
   }));
 }
 
-export function putThroughRepl(test: DDTest): Result[] {
+export function putThroughRepl(test: DDTest): string[] {
   const input = identityTransform();
   const output = identityTransform();
   const repl = new Repl(input, output, "test", "", fsLoader);
   repl.run();
 
-  const results: Result[] = [];
+  const results: string[] = [];
 
   for (const pair of test) {
     input.write(pair.input + "\n");
 
     const out = readAll(output);
 
-    results.push({
-      pair,
-      actual: out ? out : "",
-    });
+    results.push(out ? out : "");
   }
   input.end();
 

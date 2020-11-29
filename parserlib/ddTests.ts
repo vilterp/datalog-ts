@@ -1,10 +1,5 @@
 import { Suite } from "../testing";
-import {
-  runDDTestAtPath,
-  DDTest,
-  Result,
-  IOPair,
-} from "../util/dataDrivenTests";
+import { runDDTestAtPath, DDTest, Result } from "../util/dataDrivenTests";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
@@ -59,27 +54,25 @@ export function parserlibTests(writeResults: boolean): Suite {
 }
 
 // TODO: DRY these two up
-function parserTest(grammar: Grammar, test: DDTest): Result[] {
+function parserTest(grammar: Grammar, test: DDTest): string[] {
   return test.map((pair) => {
     const lines = pair.input.split("\n");
     const tree = parse(grammar, lines[0], lines.slice(1).join("\n"));
-    return handleResults(pair, tree);
+    return handleResults(tree);
   });
 }
 
-function metaTest(test: DDTest): Result[] {
+function metaTest(test: DDTest): string[] {
   return test.map((pair) => {
     const traceTree = parse(metaGrammar, "grammar", pair.input);
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(pair.input, ruleTree);
-    return {
-      pair,
-      actual:
-        prettyPrintRuleTree(ruleTree) +
-        "\n" +
-        JSON.stringify(grammar, null, 2) +
-        "\n",
-    };
+    return (
+      prettyPrintRuleTree(ruleTree) +
+      "\n" +
+      JSON.stringify(grammar, null, 2) +
+      "\n"
+    );
   });
 }
 
@@ -87,17 +80,14 @@ function parserTestFixedStartRule(
   grammar: Grammar,
   startRule: string,
   test: DDTest
-): Result[] {
+): string[] {
   return test.map((pair) => {
     const tree = parse(grammar, startRule, pair.input);
-    return handleResults(pair, tree);
+    return handleResults(tree);
   });
 }
 
-function handleResults(pair: IOPair, tree: TraceTree): Result {
+function handleResults(tree: TraceTree): string {
   const ruleTree = extractRuleTree(tree);
-  return {
-    pair,
-    actual: prettyPrintRuleTree(ruleTree) + "\n",
-  };
+  return prettyPrintRuleTree(ruleTree) + "\n";
 }

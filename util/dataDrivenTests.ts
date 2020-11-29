@@ -1,9 +1,10 @@
 import { assertStringEqual } from "../testing";
 import * as fs from "fs";
+import { zip } from "../util";
 
 export type DDTest = IOPair[];
 
-export interface IOPair {
+interface IOPair {
   lineNo: number; // 1-indexed
   input: string;
   output: string;
@@ -21,16 +22,20 @@ function checkResults(results: Result[]) {
 }
 
 function resultsToStr(results: Result[]): string {
-  return results
-    .map((r) => [r.pair.input, "----", r.actual].join("\n"))
-    .join("\n");
+  const resultStrs = results.map((r) =>
+    (r.actual.length === 0
+      ? [r.pair.input, "----"]
+      : [r.pair.input, "----", r.actual]
+    ).join("\n")
+  );
+  return resultStrs.join("\n\n") + "\n";
 }
 
 function doWriteResults(path: string, results: Result[]) {
   fs.writeFileSync(path, resultsToStr(results));
 }
 
-export type ProcessFn = (test: DDTest) => Result[];
+export type ProcessFn = (test: DDTest) => string[];
 
 export function runDDTestAtPath(
   path: string,
@@ -39,7 +44,8 @@ export function runDDTestAtPath(
 ) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
-  const results = getResults(test);
+  const outputs = getResults(test);
+  const results = zip(test, outputs, (pair, actual) => ({ pair, actual }));
   if (writeResults) {
     doWriteResults(path, results);
   } else {
@@ -72,7 +78,7 @@ function parseDDTest(str: string): DDTest {
         out.push({
           lineNo: inputLineNo,
           input: curInput.join("\n"),
-          output: curOutput.length === 0 ? "" : curOutput.join("\n") + "\n",
+          output: curOutput.length === 0 ? "" : curOutput.join("\n"),
         });
         curOutput = [];
         curInput = [];
