@@ -50,16 +50,16 @@ export function fpTests(writeResults: boolean): Suite {
     //     );
     //   },
     // },
-    {
-      name: "suggestion",
-      test() {
-        runDDTestAtPath(
-          "fp/testdata/suggestion.dd.txt",
-          suggestionTest,
-          writeResults
-        );
-      },
-    },
+    // {
+    //   name: "suggestion",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "fp/testdata/suggestion.dd.txt",
+    //       suggestionTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
     // TODO: re-enable
     // {
     //   name: "trace",
