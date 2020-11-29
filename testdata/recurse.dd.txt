@@ -9,86 +9,15 @@ trans_edge{from: X, to: Z} :-
   base_edge{from: X, to: Z} |
   base_edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-TypeError: Cannot read property 'desc' of undefined
-    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
-    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
-    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
-    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
-    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
 
 trans_edge{from: A, to: B}.
 ----
+trans_edge{from: "A", to: "B"}.
+trans_edge{from: "B", to: "C"}.
+trans_edge{from: "C", to: "D"}.
+trans_edge{from: "A", to: "C"}.
+trans_edge{from: "A", to: "D"}.
+trans_edge{from: "B", to: "D"}.
 
 edge{to: T, from: F, label: ""} :-
   trans_edge{to: T, from: F}.
@@ -96,23 +25,15 @@ edge{to: T, from: F, label: ""} :-
 
 .graphviz
 ----
-Error: 
--- PARSING FAILED --------------------------------------------------
-
-> 1 | .graphviz
-    | ^
-
-Expected one of the following: 
-
-'.load', '.table', '.trace', /#[^\n]*/, record identifier
-
-    at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:89:39)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-    at Interface._normalWrite (readline.js:433:12)
-    at Transform.ondata (readline.js:149:10)
-    at Transform.emit (events.js:182:13)
-    at Transform.EventEmitter.emit (domain.js:441:20)
+digraph G {
+  "A" [label="A"];
+  "B" [label="B"];
+  "C" [label="C"];
+  "D" [label="D"];
+  "A" -> "B" [label=""];
+  "B" -> "C" [label=""];
+  "C" -> "D" [label=""];
+  "A" -> "C" [label=""];
+  "A" -> "D" [label=""];
+  "B" -> "D" [label=""]
+}
