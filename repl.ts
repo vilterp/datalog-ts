@@ -29,7 +29,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.interp = newInterpreter(".", loader);
+    this.interp = newInterpreter("fp/dl", loader);
     this.in = input;
     this.out = out;
     this.buffer = "";

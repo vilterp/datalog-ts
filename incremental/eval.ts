@@ -104,8 +104,6 @@ export function insertFact(
     );
   }
 
-  // console.log("insertFact", ppt(rec));
-
   const iter = getInsertionIterator(graph, rec);
   return stepIteratorAll(graph, iter);
 }
@@ -181,6 +179,9 @@ function stepIterator(
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   const node = graph.nodes[ins.destination];
+  if (!node) {
+    throw new Error(`not found: node ${ins.destination}`);
+  }
   const nodeDesc = node.desc;
   switch (nodeDesc.type) {
     case "Union":

@@ -1,5 +1,5 @@
 import { emptyRuleGraph, formatRes, Res, RuleGraph } from "./types";
-import { Program, Statement } from "../types";
+import { Program, Rec, Statement } from "../types";
 import { declareTable } from "./build";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
@@ -25,6 +25,11 @@ export function newInterpreter(cwd: string, loader: Loader): Interpreter {
     graph: emptyRuleGraph,
     loader,
   };
+}
+
+export function queryStr(interp: Interpreter, line: string): Res[] {
+  const record = dlLanguage.record.tryParse(line) as Rec;
+  return doQuery(interp.graph, record);
 }
 
 export function processStmt(

@@ -2,4 +2,4 @@
 .load typecheck.dl
 .load ide.dl
 .load highlight.dl
-.load stdlib.dl
+# .load stdlib.dl
