@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { parseDDTest } from "../util/ddTest/parser";
+import { Graphviz } from "graphviz-react";
+import ReactJson from "react-json-view";
+import useLocalStorage from "react-use-localstorage";
 
 function Main() {
   return <TestViewer />;
 }
 
+const FORMATTERS = {
+  "text/plain": (text) => <pre>{text}</pre>,
+  "application/graphviz": (text) => <Graphviz dot={text} />,
+  "application/json": (text) => <ReactJson src={JSON.parse(text)} />,
+};
+
 function TestViewer() {
-  const [testSource, setTestSource] = useState("");
+  const [testSource, setTestSource] = useLocalStorage(
+    "ddtest-viewer-source",
+    ""
+  );
   const parsedTest = parseDDTest(testSource);
 
   return (
@@ -22,7 +34,16 @@ function TestViewer() {
         rows={20}
       />
       <h3>Viewer</h3>
-      <pre>{JSON.stringify(parsedTest, null, 2)}</pre>
+      {parsedTest.map((pair, idx) => (
+        <div key={idx}>
+          <pre>
+            {pair.input}
+            <br />
+            ----
+          </pre>
+          {FORMATTERS[pair.output.mimeType](pair.output.content)}
+        </div>
+      ))}
     </>
   );
 }

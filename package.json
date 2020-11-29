@@ -16,7 +16,7 @@
     "serve-notebook-ui": "cd notebook/public && http-server -c-1",
     "build-parserlib-playground": "esbuild parserlib/playground/main.tsx --bundle --outfile=parserlib/playground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
     "serve-parserlib-playground": "cd parserlib/playground/public && http-server -c-1",
-    "build-ddtest-viewer": "esbuild ddTestViewer/main.tsx --bundle --outfile=ddTestViewer/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
+    "build-ddtest-viewer": "esbuild ddTestViewer/main.tsx --bundle --outfile=ddTestViewer/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto",
     "serve-ddtest-viewer": "cd ddTestViewer && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist"
   },
@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
+    "graphviz-react": "^1.1.1",
     "parsimmon": "^1.13.0",
     "prettier-printer": "^1.1.4",
     "react": "^16.13.1",
