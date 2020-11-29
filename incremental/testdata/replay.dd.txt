@@ -28,7 +28,7 @@ father: [father{child: "Carolyn", father: "Paul"}; {}]
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "father" [label="father: Base" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "mother" [label="mother: Base" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
@@ -52,7 +52,7 @@ parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Caroly
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}, father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
   "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}, mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
@@ -90,7 +90,7 @@ sibling: [sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: 
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}, father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
   "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}, mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]

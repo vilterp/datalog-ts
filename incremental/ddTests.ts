@@ -63,12 +63,10 @@ function evalTest(test: DDTest): TestOutput[] {
         const { newInterp, output } = processStmt(interp, stmt);
         return {
           newState: newInterp,
-          output: plainTextOut(
-            formatOutput(newInterp.graph, output, {
-              emissionLogMode: "test",
-              showBindings: true,
-            })
-          ),
+          output: formatOutput(newInterp.graph, output, {
+            emissionLogMode: "test",
+            showBindings: true,
+          }),
         };
       } catch (err) {
         throw new Error(

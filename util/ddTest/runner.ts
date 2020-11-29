@@ -21,7 +21,8 @@ function checkResults(results: Result[]) {
 }
 
 function doWriteResults(path: string, results: Result[]) {
-  fs.writeFileSync(path, resultsToStr(results));
+  const str = resultsToStr(results);
+  fs.writeFileSync(path, str);
 }
 
 export function runDDTestAtPath(

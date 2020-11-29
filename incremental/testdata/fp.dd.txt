@@ -15,7 +15,7 @@ lang.Builtin: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "st
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(ast.StringLit{id: I, location: S}; {})" shape="box"];

@@ -44,32 +44,14 @@ parent{child: "Pete", parent: "Mary"}.
 grandfather{grandchild: "Pete", grandfather: A}.
 ----
 text/plain
-grandfather{grandchild: "Pete", grandfather: "Mark"}.
-grandfather{grandchild: "Pete", grandfather: "Peter"}.
 
 grandparent{grandchild: "Pete", grandparent: X}.
 ----
 text/plain
-grandparent{grandchild: "Pete", grandparent: "Carolyn K"}.
-grandparent{grandchild: "Pete", grandparent: "Mark"}.
-grandparent{grandchild: "Pete", grandparent: "Judith"}.
-grandparent{grandchild: "Pete", grandparent: "Peter"}.
 
 grandparent{grandchild: X, grandparent: Y}.
 ----
 text/plain
-grandparent{grandchild: "Pete", grandparent: "Carolyn K"}.
-grandparent{grandchild: "Pete", grandparent: "Mark"}.
-grandparent{grandchild: "Bob", grandparent: "Judith"}.
-grandparent{grandchild: "Bob", grandparent: "Peter"}.
-grandparent{grandchild: "Carolyn", grandparent: "Carolyn K"}.
-grandparent{grandchild: "Carolyn", grandparent: "Mark"}.
-grandparent{grandchild: "Pete", grandparent: "Judith"}.
-grandparent{grandchild: "Pete", grandparent: "Peter"}.
-grandparent{grandchild: "Carolyn", grandparent: "Judith"}.
-grandparent{grandchild: "Carolyn", grandparent: "Peter"}.
-grandparent{grandchild: "Henry", grandparent: "Ann"}.
-grandparent{grandchild: "Henry", grandparent: "John"}.
 
 sibling{left: X, right: Y}.
 ----
@@ -90,13 +72,10 @@ cousin{left: "Bob", right: "Carolyn"}.
 aunt{child: C, aunt: X}.
 ----
 text/plain
-aunt{aunt: "Ann", child: "Pete"}.
-aunt{aunt: "Ann", child: "Carolyn"}.
 
 uncle{child: C, uncle: X}.
 ----
 text/plain
-uncle{child: "Bob", uncle: "Paul"}.
 
 ancestor{desc: "Pete", an: Z}.
 ----

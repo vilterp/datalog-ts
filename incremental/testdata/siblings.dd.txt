@@ -21,7 +21,7 @@ text/plain
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
@@ -102,13 +102,13 @@ mother: [mother{child: "Steve", mother: "Jill"}; {}]
 
 mother{child: C, mother: M}.
 ----
-text/plain
+application/datalog
 mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}.
 mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}.
 
 mother{child: C, mother: "Mary"}.
 ----
-text/plain
+application/datalog
 mother{child: "Pete", mother: "Mary"}; {C: "Pete"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn"}.

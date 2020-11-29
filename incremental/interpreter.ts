@@ -9,6 +9,12 @@ import { ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
 import * as path from "path";
+import {
+  datalogOut,
+  graphvizOut,
+  plainTextOut,
+  TestOutput,
+} from "../util/ddTest/types";
 
 export type Interpreter = {
   loadStack: string[];
@@ -125,40 +131,46 @@ export function formatOutput(
   graph: RuleGraph,
   output: Output,
   opts: OutputOptions
-): string {
+): TestOutput {
   switch (output.type) {
     case "Acknowledge":
-      return "";
+      return plainTextOut("");
     case "EmissionLog":
       if (opts.emissionLogMode === "test") {
-        return output.log
-          .map(
-            ({ fromID, output }) =>
-              `${fromID}: [${output
-                .map((res) => `${formatRes(res)}`)
-                .join(", ")}]`
-          )
-          .join("\n");
+        return plainTextOut(
+          output.log
+            .map(
+              ({ fromID, output }) =>
+                `${fromID}: [${output
+                  .map((res) => `${formatRes(res)}`)
+                  .join(", ")}]`
+            )
+            .join("\n")
+        );
       } else {
-        return output.log
-          .filter((emissionBatch) => {
-            const fromNode = graph.nodes[emissionBatch.fromID];
-            return (
-              !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
-            );
-          })
-          .map(({ output }) =>
-            output.map((res) => `${ppt(res.term)}.`).join("\n")
-          )
-          .join("\n");
+        return datalogOut(
+          output.log
+            .filter((emissionBatch) => {
+              const fromNode = graph.nodes[emissionBatch.fromID];
+              return (
+                !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
+              );
+            })
+            .map(({ output }) =>
+              output.map((res) => `${ppt(res.term)}.`).join("\n")
+            )
+            .join("\n")
+        );
       }
     case "Graphviz":
-      // TODO: return a 'mime type' with this so downstream systems
-      //   know what to do with it...
-      return output.dot;
+      return graphvizOut(output.dot);
     case "QueryResults":
-      return output.results
-        .map((res) => `${opts.showBindings ? formatRes(res) : ppt(res.term)}.`)
-        .join("\n");
+      return datalogOut(
+        output.results
+          .map(
+            (res) => `${opts.showBindings ? formatRes(res) : ppt(res.term)}.`
+          )
+          .join("\n")
+      );
   }
 }

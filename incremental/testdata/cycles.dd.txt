@@ -10,7 +10,7 @@ text/plain
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(baseEdge{from: F, to: T}; {})" shape="box"];
@@ -79,7 +79,7 @@ edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
 
 edge{from: F, to: T}.
 ----
-text/plain
+application/datalog
 edge{from: "A", to: "B"}; {F: "A", T: "B"}.
 edge{from: "C", to: "D"}; {F: "C", T: "D"}.
 edge{from: "B", to: "C"}; {F: "B", T: "C"}.

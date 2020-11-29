@@ -46,3 +46,21 @@ edge{from: "A", label: "", to: "D"}.
 text/plain
 Error: 
 -- PARSING FAILED --------------------------------------------------
+
+> 1 | .graphviz
+    | ^
+
+Expected one of the following: 
+
+'.load', '.rulegraph', '.table', '.trace', /#[^\n]*/, record identifier
+
+    at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:94:39)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:54:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+    at Interface._normalWrite (readline.js:433:12)
+    at Transform.ondata (readline.js:149:10)
+    at Transform.emit (events.js:182:13)
+    at Transform.EventEmitter.emit (domain.js:441:20)

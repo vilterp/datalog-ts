@@ -58,7 +58,7 @@ edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
 
 edge{from: F, to: T}.
 ----
-text/plain
+application/datalog
 edge{from: "A", to: "B"}; {F: "A", T: "B"}.
 edge{from: "C", to: "D"}; {F: "C", T: "D"}.
 edge{from: "B", to: "C"}; {F: "B", T: "C"}.

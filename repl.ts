@@ -98,8 +98,8 @@ export class Repl {
         emissionLogMode: "repl",
         showBindings: false,
       });
-      if (outputStr.length > 0) {
-        this.println(outputStr);
+      if (outputStr.content.length > 0) {
+        this.println(outputStr.content);
       }
     } catch (e) {
       // TODO: distinguish between parse errors and others

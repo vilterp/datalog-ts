@@ -19,7 +19,7 @@ text/plain
 
 .rulegraph
 ----
-text/plain
+application/graphviz
 digraph G {
   "0" [label="0: Union" shape="box"];
   "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
