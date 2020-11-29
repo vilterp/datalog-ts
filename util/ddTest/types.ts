@@ -1,3 +1,12 @@
+import React from "react";
+
+export type DDTestSpec = {
+  name: string;
+  func: (inputs: string[]) => TestOutput[];
+  inputs: string[];
+  visualizers: { [mimeType: string]: (output: string) => React.ReactNode };
+};
+
 export type DDTest = IOPair[];
 
 export type ProcessFn = (test: DDTest) => TestOutput[];
