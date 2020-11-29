@@ -1,6 +1,5 @@
 .table node
 .table base_edge
-
 node{id: "A", label: "A"}.
 node{id: "B", label: "B"}.
 node{id: "C", label: "C"}.
@@ -16,26 +15,48 @@ trans_edge{from: X, to: Z} :-
 ----
 trans_edge{from: "A", to: "B"}.
 trans_edge{from: "B", to: "C"}.
-trans_edge{from: "C", to: "D"}.
 trans_edge{from: "A", to: "C"}.
-trans_edge{from: "A", to: "D"}.
+trans_edge{from: "C", to: "D"}.
 trans_edge{from: "B", to: "D"}.
+trans_edge{from: "A", to: "D"}.
 
 edge{to: T, from: F, label: ""} :-
   trans_edge{to: T, from: F}.
 ----
+edge{from: "A", label: "", to: "B"}.
+trans_edge{from: "A", to: "C"}.
+edge{from: "A", label: "", to: "C"}.
+edge{from: "B", label: "", to: "C"}.
+edge{from: "A", label: "", to: "C"}.
+trans_edge{from: "B", to: "D"}.
+edge{from: "B", label: "", to: "D"}.
+trans_edge{from: "A", to: "D"}.
+edge{from: "A", label: "", to: "D"}.
+edge{from: "C", label: "", to: "D"}.
+trans_edge{from: "A", to: "D"}.
+edge{from: "A", label: "", to: "D"}.
+edge{from: "B", label: "", to: "D"}.
+edge{from: "A", label: "", to: "D"}.
 
 .graphviz
 ----
-digraph G {
-  "A" [label="A"];
-  "B" [label="B"];
-  "C" [label="C"];
-  "D" [label="D"];
-  "A" -> "B" [label=""];
-  "B" -> "C" [label=""];
-  "C" -> "D" [label=""];
-  "A" -> "C" [label=""];
-  "A" -> "D" [label=""];
-  "B" -> "D" [label=""]
-}
+Error: 
+-- PARSING FAILED --------------------------------------------------
+
+> 1 | .graphviz
+    | ^
+
+Expected one of the following: 
+
+'.load', '.rulegraph', '.table', '.trace', /#[^\n]*/, record identifier
+
+    at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:95:39)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:55:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+    at Interface._normalWrite (readline.js:433:12)
+    at Transform.ondata (readline.js:149:10)
+    at Transform.emit (events.js:182:13)
+    at Transform.EventEmitter.emit (domain.js:441:20)

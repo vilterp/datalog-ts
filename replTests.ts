@@ -29,7 +29,7 @@ export function putThroughRepl(test: DDTest): string[] {
 
     const out = readAll(output);
 
-    results.push(out ? out : "");
+    results.push(out ? out.slice(0, out.length - 1) : "");
   }
   input.end();
 

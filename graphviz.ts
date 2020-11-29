@@ -42,7 +42,7 @@ export function prettyPrintGraph(g: Graph): string {
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`])
+            mapObjToList(node.attrs, (k, v) => [k, "=", `"${escapeStr(v)}"`])
           ),
           "];",
           node.comment ? ` // ${node.comment}` : "",
@@ -54,7 +54,7 @@ export function prettyPrintGraph(g: Graph): string {
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`])
+            mapObjToList(edge.attrs, (k, v) => [k, "=", `"${escapeStr(v)}"`])
           ),
           "];",
         ]),
@@ -65,6 +65,10 @@ export function prettyPrintGraph(g: Graph): string {
 }
 
 // pretty util
+
+function escapeStr(str: string): string {
+  return str.split('"').join('\\"');
+}
 
 interface BlockOpts {
   sep: string;

@@ -92,11 +92,11 @@ mother: [mother{child: "Steve", mother: "Jill"}; {}]
 
 mother{child: C, mother: M}.
 ----
-mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
-mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
-mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}
+mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}.
+mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}.
+mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}.
 
 mother{child: C, mother: "Mary"}.
 ----
-mother{child: "Pete", mother: "Mary"}; {C: "Pete"}
-mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn"}
+mother{child: "Pete", mother: "Mary"}; {C: "Pete"}.
+mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn"}.
