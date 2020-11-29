@@ -32,8 +32,10 @@ jobs:
           cat family-facts.dl | ts-node ../cmd/repl.ts '.graphviz' ./family-rules.dl > family.dot
           cmp family.dot family-ref.dot
       # Note: this builds them, but doesn't typecheck them
-      - run: yarn build-ui
+      - run: yarn build-fiddle-ui
       - run: yarn build-fp-ui
+      - run: yarn build-notebook-ui
+      - run: yarn build-parserlib-playground
       - name: "Percy FP UI"
         uses: percy/snapshot-action@v0.1.1
         with:
