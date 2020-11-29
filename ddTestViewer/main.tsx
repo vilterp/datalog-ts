@@ -21,6 +21,7 @@ const FORMATTERS = {
       src={JSON.parse(text)}
     />
   ),
+  "application/datalog": (text) => <pre>{text}</pre>,
 };
 
 function TestViewer() {
