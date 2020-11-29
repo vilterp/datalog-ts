@@ -28,10 +28,8 @@ const suites = {
   incrTests: incrTests(writeResults),
 };
 
-try {
-  runSuites(suites);
-} catch (e) {
-  console.error(e);
+const passed = runSuites(suites);
+if (!passed) {
   if (!stayAlive) {
     console.log("exiting");
     process.exit(-1);

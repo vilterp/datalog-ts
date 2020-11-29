@@ -3,12 +3,18 @@ import { ppt } from "./pretty";
 import * as fs from "fs";
 import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
 import { language } from "./parser";
-import { formatOutput, processStmt } from "./incremental/interpreter";
+import {
+  formatOutput,
+  Interpreter,
+  newInterpreter,
+  processStmt,
+} from "./incremental/interpreter";
+import { Loader } from "./loaders";
 
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  state: RuleGraph;
+  interp: Interpreter;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -23,7 +29,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.state = emptyRuleGraph;
+    this.interp = newInterpreter(".", loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -67,7 +73,7 @@ export class Repl {
     // special commands
     // TODO: parse these with parser
     if (line === ".dump") {
-      this.println(JSON.stringify(this.state, null, 2));
+      this.println(JSON.stringify(this.interp.graph, null, 2));
       rl.prompt();
       return;
       // } else if (line === ".resetFacts") {
@@ -87,9 +93,9 @@ export class Repl {
     }
     try {
       const stmt = language.statement.tryParse(this.buffer);
-      const { newGraph, output } = processStmt(this.state, stmt);
-      this.state = newGraph;
-      const outputStr = formatOutput(newGraph, output, {
+      const { newInterp, output } = processStmt(this.interp, stmt);
+      this.interp = newInterp;
+      const outputStr = formatOutput(newInterp.graph, output, {
         emissionLogMode: "repl",
         showBindings: false,
       });
@@ -137,10 +143,5 @@ export class Repl {
     this.out.write(strings.join(" ") + "\n");
   }
 }
-
-// throws an exception if it's not there I guess
-// TODO: wish there was a stdlib Result<E, T> type, lol
-// keeping synchronous for now
-export type Loader = (path: string) => string;
 
 export const fsLoader: Loader = (path) => fs.readFileSync(path).toString();

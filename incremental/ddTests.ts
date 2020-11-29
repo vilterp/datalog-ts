@@ -7,7 +7,8 @@ import { toGraphviz } from "./graphviz";
 import { Statement } from "../types";
 import { scan } from "../util";
 import { ppb, ppt } from "../pretty";
-import { formatOutput, processStmt } from "./interpreter";
+import { formatOutput, newInterpreter, processStmt } from "./interpreter";
+import { nullLoader } from "../loaders";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -40,29 +41,29 @@ function buildTest(test: DDTest): string[] {
       .split(";")
       .map((s) => s.trim())
       .map(parseStatement);
-    const curGraph = commands.reduce((accum, stmt) => {
+    const curInterp = commands.reduce((accum, stmt) => {
       try {
-        return processStmt(accum, stmt).newGraph;
+        return processStmt(accum, stmt).newInterp;
       } catch (err) {
         throw new Error(
           `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
         );
       }
-    }, emptyRuleGraph);
-    return prettyPrintGraph(toGraphviz(curGraph));
+    }, newInterpreter(".", nullLoader));
+    return prettyPrintGraph(toGraphviz(curInterp.graph));
   });
 }
 
 function evalTest(test: DDTest): string[] {
   return scan(
-    emptyRuleGraph,
-    (accum, pair) => {
+    newInterpreter(".", nullLoader),
+    (interp, pair) => {
       try {
         const stmt = parseStatement(pair.input);
-        const { newGraph, output } = processStmt(accum, stmt);
+        const { newInterp, output } = processStmt(interp, stmt);
         return {
-          newState: newGraph,
-          output: formatOutput(newGraph, output, {
+          newState: newInterp,
+          output: formatOutput(newInterp.graph, output, {
             emissionLogMode: "test",
             showBindings: true,
           }),

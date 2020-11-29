@@ -1,11 +1,13 @@
-import { formatRes, Res, RuleGraph } from "./types";
-import { Statement } from "../types";
+import { emptyRuleGraph, formatRes, Res, RuleGraph } from "./types";
+import { Program, Statement } from "../types";
 import { declareTable } from "./build";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { addRule, doQuery, EmissionBatch, insertFact } from "./eval";
 import { hasVars } from "../simpleEvaluate";
 import { ppt } from "../pretty";
+import { Loader } from "../loaders";
+import { language as dlLanguage } from "../parser";
 
 type Output =
   | { type: "EmissionLog"; log: EmissionBatch[] }
@@ -15,23 +17,37 @@ type Output =
 
 const ack: Output = { type: "Acknowledge" };
 
+export type Interpreter = { cwd: string; graph: RuleGraph; loader: Loader };
+
+export function newInterpreter(cwd: string, loader: Loader): Interpreter {
+  return {
+    cwd,
+    graph: emptyRuleGraph,
+    loader,
+  };
+}
+
 export function processStmt(
-  graph: RuleGraph,
+  interp: Interpreter,
   stmt: Statement
-): { newGraph: RuleGraph; output: Output } {
+): { newInterp: Interpreter; output: Output } {
+  const graph = interp.graph;
   switch (stmt.type) {
     case "TableDecl": {
       const newGraph = declareTable(graph, stmt.name);
-      return { newGraph, output: ack };
+      return { newInterp: { ...interp, graph: newGraph }, output: ack };
     }
     case "Rule": {
       const { newGraph, emissionLog } = addRule(graph, stmt.rule);
-      return { newGraph, output: { type: "EmissionLog", log: emissionLog } };
+      return {
+        newInterp: { ...interp, graph: newGraph },
+        output: { type: "EmissionLog", log: emissionLog },
+      };
     }
     case "Insert":
       if (hasVars(stmt.record)) {
         return {
-          newGraph: graph,
+          newInterp: interp,
           output: {
             type: "QueryResults",
             results: doQuery(graph, stmt.record),
@@ -39,20 +55,40 @@ export function processStmt(
         };
       }
       const { newGraph, emissionLog } = insertFact(graph, stmt.record);
-      return { newGraph, output: { type: "EmissionLog", log: emissionLog } };
+      return {
+        newInterp: {
+          ...interp,
+          graph: newGraph,
+        },
+        output: { type: "EmissionLog", log: emissionLog },
+      };
     case "RuleGraph":
       return {
-        newGraph: graph,
+        newInterp: interp,
         output: { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) },
       };
     case "Comment":
       return {
-        newGraph: graph,
+        newInterp: interp,
+        output: ack,
+      };
+    case "LoadStmt":
+      return {
+        newInterp: doLoad(interp, stmt.path),
         output: ack,
       };
     default:
       throw new Error(`unknown statement type: ${stmt.type}`);
   }
+}
+
+function doLoad(interp: Interpreter, path: string): Interpreter {
+  const contents = interp.loader(interp.cwd + "/" + path);
+  const program: Program = dlLanguage.program.tryParse(contents);
+  return program.reduce<Interpreter>(
+    (interp, stmt) => processStmt(interp, stmt).newInterp,
+    interp
+  );
 }
 
 type OutputOptions = {
