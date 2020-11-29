@@ -92,6 +92,7 @@ export class Repl {
       const outputStr = formatOutput(newGraph, output, {
         showBaseFactEmissions: false,
         showInternalEmissions: false,
+        showBindings: false,
       });
       if (outputStr.length > 0) {
         this.println(outputStr);

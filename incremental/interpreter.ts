@@ -58,6 +58,7 @@ export function processStmt(
 type OutputOptions = {
   showBaseFactEmissions: boolean;
   showInternalEmissions: boolean;
+  showBindings: boolean;
 };
 
 export function formatOutput(
