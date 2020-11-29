@@ -5,7 +5,7 @@ import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { addRule, doQuery, EmissionBatch, insertFact } from "./eval";
 import { hasVars } from "../simpleEvaluate";
-import { ppr } from "../pretty";
+import { ppt } from "../pretty";
 
 type Output =
   | { type: "EmissionLog"; log: EmissionBatch[] }
@@ -56,8 +56,7 @@ export function processStmt(
 }
 
 type OutputOptions = {
-  showBaseFactEmissions: boolean;
-  showInternalEmissions: boolean;
+  emissionLogMode: "test" | "repl";
   showBindings: boolean;
 };
 
@@ -70,27 +69,35 @@ export function formatOutput(
     case "Acknowledge":
       return "";
     case "EmissionLog":
-      const fullLog = output.log.filter((emissionBatch) => {
-        const fromNode = graph.nodes[emissionBatch.fromID];
-        if (fromNode.desc.type === "BaseFactTable") {
-          return opts.showBaseFactEmissions;
-        }
-        if (!fromNode.isInternal) {
-          return true;
-        }
-        return opts.showInternalEmissions;
-      });
-      return fullLog
-        .map(
-          ({ fromID, output }) =>
-            `${fromID}: [${output.map(formatRes).join(", ")}]`
-        )
-        .join("\n");
+      if (opts.emissionLogMode === "test") {
+        return output.log
+          .map(
+            ({ fromID, output }) =>
+              `${fromID}: [${output
+                .map((res) => `${formatRes(res)}`)
+                .join(", ")}]`
+          )
+          .join("\n");
+      } else {
+        return output.log
+          .filter((emissionBatch) => {
+            const fromNode = graph.nodes[emissionBatch.fromID];
+            return (
+              !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
+            );
+          })
+          .map(({ output }) =>
+            output.map((res) => `${ppt(res.term)}.`).join("\n")
+          )
+          .join("\n");
+      }
     case "Graphviz":
       // TODO: return a 'mime type' with this so downstream systems
       //   know what to do with it...
       return output.dot;
     case "QueryResults":
-      return output.results.map(ppr).join("\n");
+      return output.results
+        .map((res) => `${opts.showBindings ? formatRes(res) : ppt(res.term)}.`)
+        .join("\n");
   }
 }

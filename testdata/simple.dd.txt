@@ -1,9 +1,15 @@
+.table father
+----
+
 father{child: "Pete", father: "Paul"}.
 ----
 
 father{child: "Pete", father: F}.
 ----
 father{child: "Pete", father: "Paul"}.
+
+.table usage
+----
 
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 39}, to: pos{idx: 40}}}.
 usage{definitionLoc: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", usageLoc: span{from: pos{idx: 42}, to: pos{idx: 43}}}.

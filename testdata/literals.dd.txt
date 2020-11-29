@@ -1,3 +1,6 @@
+.table foo
+----
+
 foo{boo: 2, doo: "asdf", glue: true}.
 ----
 

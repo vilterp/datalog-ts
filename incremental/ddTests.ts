@@ -63,8 +63,7 @@ function evalTest(test: DDTest): string[] {
         return {
           newState: newGraph,
           output: formatOutput(newGraph, output, {
-            showBaseFactEmissions: true,
-            showInternalEmissions: true,
+            emissionLogMode: "test",
             showBindings: true,
           }),
         };

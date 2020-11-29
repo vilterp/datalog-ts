@@ -1,3 +1,7 @@
+.table person
+.table mother
+.table father
+
 person{name: "Paul", gender: "Male"}.
 person{name: "Ann", gender: "Female"}.
 father{child: "Pete", father: "Paul"}.

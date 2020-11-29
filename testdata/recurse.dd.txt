@@ -1,3 +1,6 @@
+.table node
+.table base_edge
+
 node{id: "A", label: "A"}.
 node{id: "B", label: "B"}.
 node{id: "C", label: "C"}.
@@ -5,12 +8,11 @@ node{id: "D", label: "D"}.
 base_edge{from: "A", to: "B"}.
 base_edge{from: "B", to: "C"}.
 base_edge{from: "C", to: "D"}.
+----
+
 trans_edge{from: X, to: Z} :-
   base_edge{from: X, to: Z} |
   base_edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
-----
-
-trans_edge{from: A, to: B}.
 ----
 trans_edge{from: "A", to: "B"}.
 trans_edge{from: "B", to: "C"}.

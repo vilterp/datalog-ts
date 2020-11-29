@@ -90,8 +90,7 @@ export class Repl {
       const { newGraph, output } = processStmt(this.state, stmt);
       this.state = newGraph;
       const outputStr = formatOutput(newGraph, output, {
-        showBaseFactEmissions: false,
-        showInternalEmissions: false,
+        emissionLogMode: "repl",
         showBindings: false,
       });
       if (outputStr.length > 0) {
