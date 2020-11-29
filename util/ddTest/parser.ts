@@ -23,7 +23,10 @@ export function parseDDTest(str: string): DDTest {
         out.push({
           lineNo: inputLineNo,
           input: curInput.join("\n"),
-          output: curOutput.length === 0 ? "" : curOutput.join("\n"),
+          output: {
+            content: curOutput.slice(1).join("\n"),
+            mimeType: curOutput[0],
+          },
         });
         curOutput = [];
         curInput = [];

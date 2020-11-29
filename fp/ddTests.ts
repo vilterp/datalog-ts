@@ -20,6 +20,12 @@ import {
   processStmt,
   queryStr,
 } from "../incremental/interpreter";
+import {
+  datalogOut,
+  jsonOut,
+  plainTextOut,
+  TestOutput,
+} from "../util/ddTest/types";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -83,25 +89,25 @@ export function fpTests(writeResults: boolean): Suite {
   ];
 }
 
-function parseTest(test: DDTest): string[] {
+function parseTest(test: DDTest): TestOutput[] {
   return test.map((tc) =>
-    JSON.stringify(language.expr.tryParse(tc.input), null, 2)
+    jsonOut(JSON.stringify(language.expr.tryParse(tc.input), null, 2))
   );
 }
 
-function flattenTest(test: DDTest): string[] {
+function flattenTest(test: DDTest): TestOutput[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");
-    return rendered.join("\n");
+    return datalogOut(rendered.join("\n"));
   });
 }
 
 // flatten, then print out all scope and types
 // TODO: DRY up a bit
-function typecheckTest(test: DDTest): string[] {
+function typecheckTest(test: DDTest): TestOutput[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
@@ -122,15 +128,17 @@ function typecheckTest(test: DDTest): string[] {
       "tc.ScopeItem{id: I, name: N, type: T}"
     );
     const typeResults = queryStr(interp3, "tc.Type{id: I, type: T}");
-    return [
-      ...rendered,
-      ...scopeResults.map((r) => ppt(r.term) + ".").sort(),
-      ...typeResults.map((r) => ppt(r.term) + ".").sort(),
-    ].join("\n");
+    return datalogOut(
+      [
+        ...rendered,
+        ...scopeResults.map((r) => ppt(r.term) + ".").sort(),
+        ...typeResults.map((r) => ppt(r.term) + ".").sort(),
+      ].join("\n")
+    );
   });
 }
 
-function suggestionTest(test: DDTest): string[] {
+function suggestionTest(test: DDTest): TestOutput[] {
   return test.map((tc) => {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
@@ -149,7 +157,9 @@ function suggestionTest(test: DDTest): string[] {
       interp3,
       "ide.Suggestion{id: I, name: N, type: T}"
     );
-    return [...suggResults.map((r) => ppt(r.term) + ".").sort()].join("\n");
+    return datalogOut(
+      [...suggResults.map((r) => ppt(r.term) + ".").sort()].join("\n")
+    );
   });
 }
 

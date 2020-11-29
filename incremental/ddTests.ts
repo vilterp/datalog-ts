@@ -7,6 +7,7 @@ import { Statement } from "../types";
 import { scan } from "../util";
 import { formatOutput, newInterpreter, processStmt } from "./interpreter";
 import { fsLoader } from "../repl";
+import { graphvizOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -34,7 +35,7 @@ export function incrTests(writeResults: boolean): Suite {
 }
 
 // TODO: deprecate this since we have .rulegraph now?
-function buildTest(test: DDTest): string[] {
+function buildTest(test: DDTest): TestOutput[] {
   return test.map((pair) => {
     const commands = pair.input
       .split(";")
@@ -49,11 +50,11 @@ function buildTest(test: DDTest): string[] {
         );
       }
     }, newInterpreter(fsLoader));
-    return prettyPrintGraph(toGraphviz(curInterp.graph));
+    return graphvizOut(prettyPrintGraph(toGraphviz(curInterp.graph)));
   });
 }
 
-function evalTest(test: DDTest): string[] {
+function evalTest(test: DDTest): TestOutput[] {
   return scan(
     newInterpreter(fsLoader),
     (interp, pair) => {
@@ -62,10 +63,12 @@ function evalTest(test: DDTest): string[] {
         const { newInterp, output } = processStmt(interp, stmt);
         return {
           newState: newInterp,
-          output: formatOutput(newInterp.graph, output, {
-            emissionLogMode: "test",
-            showBindings: true,
-          }),
+          output: plainTextOut(
+            formatOutput(newInterp.graph, output, {
+              emissionLogMode: "test",
+              showBindings: true,
+            })
+          ),
         };
       } catch (err) {
         throw new Error(

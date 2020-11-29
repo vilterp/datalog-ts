@@ -7,6 +7,7 @@ import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar } from "./meta";
+import { plainTextOut, TestOutput } from "../util/ddTest/types";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -54,7 +55,7 @@ export function parserlibTests(writeResults: boolean): Suite {
 }
 
 // TODO: DRY these two up
-function parserTest(grammar: Grammar, test: DDTest): string[] {
+function parserTest(grammar: Grammar, test: DDTest): TestOutput[] {
   return test.map((pair) => {
     const lines = pair.input.split("\n");
     const tree = parse(grammar, lines[0], lines.slice(1).join("\n"));
@@ -62,12 +63,13 @@ function parserTest(grammar: Grammar, test: DDTest): string[] {
   });
 }
 
-function metaTest(test: DDTest): string[] {
+function metaTest(test: DDTest): TestOutput[] {
   return test.map((pair) => {
     const traceTree = parse(metaGrammar, "grammar", pair.input);
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(pair.input, ruleTree);
-    return (
+    // TODO: indicate that it's one after the other...
+    return plainTextOut(
       prettyPrintRuleTree(ruleTree) + "\n" + JSON.stringify(grammar, null, 2)
     );
   });
@@ -77,14 +79,14 @@ function parserTestFixedStartRule(
   grammar: Grammar,
   startRule: string,
   test: DDTest
-): string[] {
+): TestOutput[] {
   return test.map((pair) => {
     const tree = parse(grammar, startRule, pair.input);
     return handleResults(tree);
   });
 }
 
-function handleResults(tree: TraceTree): string {
+function handleResults(tree: TraceTree): TestOutput {
   const ruleTree = extractRuleTree(tree);
-  return prettyPrintRuleTree(ruleTree);
+  return plainTextOut(prettyPrintRuleTree(ruleTree));
 }
