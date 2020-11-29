@@ -9,11 +9,12 @@ import {
   ScopePath,
   InvocationLocation,
   SituatedBinding,
+  BinExpr,
 } from "./types";
 import * as pp from "prettier-printer";
-import { flatMapObjToList, mapObjToList, repeat, flatMap } from "./util";
-import { Tree } from "./tree";
+import { flatMap, flatMapObjToList, mapObjToList, repeat } from "./util";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
+import { Tree } from "./tree";
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
@@ -32,16 +33,28 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
     case "StringLit":
       return `"${escapeString(term.val)}"`;
     case "BinExpr":
-      return [
-        prettyPrintTerm(term.left),
-        ` ${term.op} `,
-        prettyPrintTerm(term.right),
-      ];
+      return prettyPrintBinExpr(term);
     case "Bool":
       return `${term.val}`;
     case "IntLit":
       return `${term.val}`;
   }
+}
+
+export function prettyPrintBinExpr(term: BinExpr): pp.IDoc {
+  return [
+    prettyPrintTerm(term.left),
+    ` ${term.op} `,
+    prettyPrintTerm(term.right),
+  ];
+}
+
+export function ppBE(term: BinExpr): string {
+  return pp.render(100, prettyPrintBinExpr(term));
+}
+
+export function ppRule(rule: Rule): string {
+  return pp.render(100, prettyPrintRule(rule));
 }
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {
@@ -275,30 +288,6 @@ function pptRecurse<T>(
     ),
   ];
 }
-
-// export function prettyPrintTree(tree: Tree): string {
-//   return pp.render(100, prettyPrintNode(tree));
-// }
-
-// function prettyPrintNode(tree: Tree): pp.IDoc {
-//   // console.log("ppn", tree);
-//   const res = [
-//     tree.body,
-//     "X",
-//     pp.indent(2, pp.intersperse("X", tree.children.map(prettyPrintNode))),
-//     // ...(tree.children.length === 0
-//     //   ? []
-//     //   : [
-//     //       pp.line,
-//     //       pp.indent(
-//     //         2,
-//     //         pp.intersperse(pp.line)(tree.children.map(prettyPrintNode))
-//     //       ),
-//     //     ]),
-//   ];
-//   console.log("ppn", res);
-//   return res;
-// }
 
 // util
 

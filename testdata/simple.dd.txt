@@ -1,16 +1,79 @@
 father{child: "Pete", father: "Paul"}.
 ----
+TypeError: Cannot read property 'desc' of undefined
+    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
+    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
+    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
+    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
 
 father{child: "Pete", father: F}.
 ----
-father{child: "Pete", father: "Paul"}.
+Error: no such relation: father
+    at Object.doQuery (/Users/vilterp/code/datalog-ts/incremental/eval.ts:267:11)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:37:22)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+    at Interface._normalWrite (readline.js:433:12)
+    at Transform.ondata (readline.js:149:10)
+    at Transform.emit (events.js:182:13)
 
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 39}, to: pos{idx: 40}}}.
 usage{definitionLoc: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", usageLoc: span{from: pos{idx: 42}, to: pos{idx: 43}}}.
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 57}, to: pos{idx: 58}}}.
 ----
+TypeError: Cannot read property 'desc' of undefined
+    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
+    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
+    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
+    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+TypeError: Cannot read property 'desc' of undefined
+    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
+    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
+    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
+    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+TypeError: Cannot read property 'desc' of undefined
+    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
+    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
+    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
+    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
 
 usage{definitionLoc: span{from: pos{idx: 4}}, usageLoc: span{from: pos{idx: UF}, to: pos{idx: UT}}}.
 ----
-usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 39}, to: pos{idx: 40}}}.
-usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 57}, to: pos{idx: 58}}}.
+Error: no such relation: usage
+    at Object.doQuery (/Users/vilterp/code/datalog-ts/incremental/eval.ts:267:11)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:37:22)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+    at Interface._normalWrite (readline.js:433:12)
+    at Transform.ondata (readline.js:149:10)
+    at Transform.emit (events.js:182:13)

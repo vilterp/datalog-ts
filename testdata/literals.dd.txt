@@ -1,6 +1,27 @@
 foo{boo: 2, doo: "asdf", glue: true}.
 ----
+TypeError: Cannot read property 'desc' of undefined
+    at processInsertion (/Users/vilterp/code/datalog-ts/incremental/eval.ts:184:25)
+    at stepIterator (/Users/vilterp/code/datalog-ts/incremental/eval.ts:164:19)
+    at stepIteratorAll (/Users/vilterp/code/datalog-ts/incremental/eval.ts:149:35)
+    at Object.insertFact (/Users/vilterp/code/datalog-ts/incremental/eval.ts:110:10)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:41:41)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
 
 foo{boo: X, doo: Y, glue: Z}.
 ----
-foo{boo: 2, doo: "asdf", glue: true}.
+Error: no such relation: foo
+    at Object.doQuery (/Users/vilterp/code/datalog-ts/incremental/eval.ts:267:11)
+    at Object.processStmt (/Users/vilterp/code/datalog-ts/incremental/interpreter.ts:37:22)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:90:36)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:49:12)
+    at Interface.emit (events.js:182:13)
+    at Interface.EventEmitter.emit (domain.js:441:20)
+    at Interface._onLine (readline.js:290:10)
+    at Interface._normalWrite (readline.js:433:12)
+    at Transform.ondata (readline.js:149:10)
+    at Transform.emit (events.js:182:13)

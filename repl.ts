@@ -1,22 +1,14 @@
-import { Interpreter } from "./interpreter";
-import { Loader } from "./loaders";
-import { Rec, StringLit } from "./types";
 import * as readline from "readline";
-import {
-  prettyPrintDB,
-  prettyPrintTerm,
-  prettyPrintTrace,
-  defaultTracePrintOpts,
-} from "./pretty";
-import * as pp from "prettier-printer";
-import { Graph, prettyPrintGraph } from "./graphviz";
+import { ppt } from "./pretty";
 import * as fs from "fs";
-import { traceToTree } from "./traceTree";
+import { emptyRuleGraph, formatRes, RuleGraph } from "./incremental/types";
+import { language } from "./parser";
+import { formatOutput, processStmt } from "./incremental/interpreter";
 
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  interp: Interpreter;
+  state: RuleGraph;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -31,7 +23,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.interp = new Interpreter(__dirname, loader);
+    this.state = emptyRuleGraph;
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -75,60 +67,38 @@ export class Repl {
     // special commands
     // TODO: parse these with parser
     if (line === ".dump") {
-      this.println(pp.render(100, prettyPrintDB(this.interp.db)));
+      this.println(JSON.stringify(this.state, null, 2));
       rl.prompt();
       return;
-    } else if (line === ".resetFacts") {
-      this.interp.db.tables = {};
-      rl.prompt();
-      return;
-    } else if (line === ".graphviz") {
-      // TODO: remove dot...
-      // TODO: allow whole config to be passed in...
-      this.doGraphviz(
-        { query: "node{id: I, label: L}", idAttr: "id", labelAttr: "label" },
-        {
-          query: "edge{from: F, to: T, label: L}",
-          labelAttr: "label",
-          fromAttr: "from",
-          toAttr: "to",
-        }
-      );
-      rl.prompt();
-      return;
-    } else if (line === ".ruleGraph") {
-      this.doGraphviz(
-        {
-          query: "internal.Relation{name: N, type: T}",
-          idAttr: "name",
-          labelAttr: "name",
-        },
-        {
-          query: "internal.RelationReference{from: F, to: T}",
-          fromAttr: "from",
-          toAttr: "to",
-        }
-      );
-      rl.prompt();
-      return;
+      // } else if (line === ".resetFacts") {
+      //   // TODO: this resets everything; supposed to just reset facts
+      //   this.state = emptyRuleGraph;
+      //   rl.prompt();
+      //   return;
+      // } else if (line === ".graphviz") {
+      //   // TODO: remove dot...
+      //   this.doGraphviz();
+      //   rl.prompt();
+      //   return;
     }
     this.buffer = this.buffer + line;
     if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
       return;
     }
     try {
-      const [stmtResult, interp] = this.interp.evalStr(this.buffer);
-      this.interp = interp;
-      stmtResult.results.forEach((res) => {
-        this.println(
-          stmtResult.trace
-            ? prettyPrintTrace(traceToTree(res), defaultTracePrintOpts)
-            : pp.render(100, prettyPrintTerm(res.term)) + "."
-        );
+      const stmt = language.statement.tryParse(this.buffer);
+      const { newGraph, output } = processStmt(this.state, stmt);
+      this.state = newGraph;
+      const outputStr = formatOutput(newGraph, output, {
+        showBaseFactEmissions: false,
+        showInternalEmissions: false,
       });
+      if (outputStr.length > 0) {
+        this.println(outputStr);
+      }
     } catch (e) {
       // TODO: distinguish between parse errors and others
-      this.println("error", e.toString(), e.stack);
+      this.println(e.stack);
       if (this.mode === "pipe") {
         process.exit(-1);
       }
@@ -138,48 +108,39 @@ export class Repl {
     rl.prompt();
   }
 
-  private doGraphviz(
-    nodesConfig: { query: string; idAttr: string; labelAttr: string },
-    edgesConfig: {
-      query: string;
-      fromAttr: string;
-      toAttr: string;
-      labelAttr?: string;
-    }
-  ) {
-    const edges = this.interp.queryStr(edgesConfig.query);
-    const nodes = this.interp.queryStr(nodesConfig.query);
-    // TODO: oof, all this typecasting
-    const g: Graph = {
-      edges: edges.results.map((e) => {
-        const rec = e.term as Rec;
-        return {
-          from: (rec.attrs[edgesConfig.fromAttr] as StringLit).val,
-          to: (rec.attrs[edgesConfig.toAttr] as StringLit).val,
-          attrs: {
-            label: edgesConfig.labelAttr
-              ? (rec.attrs[edgesConfig.labelAttr] as StringLit).val
-              : "",
-          },
-        };
-      }),
-      nodes: nodes.results.map((n) => {
-        const rec = n.term as Rec;
-        return {
-          id: (rec.attrs[nodesConfig.idAttr] as StringLit).val,
-          attrs: {
-            label: (rec.attrs[nodesConfig.labelAttr] as StringLit)?.val,
-          },
-        };
-      }),
-    };
-    this.println(prettyPrintGraph(g));
-  }
+  // private doGraphviz() {
+  //   const edges = this.state.evalStr("edge{from: F, to: T, label: L}.");
+  //   const nodes = this.state.evalStr("node{id: I, label: L}.");
+  //   // TODO: oof, all this typecasting
+  //   const g: Graph = {
+  //     edges: edges.results.map((e) => {
+  //       const rec = e.term as Rec;
+  //       return {
+  //         from: (rec.attrs.from as StringLit).val,
+  //         to: (rec.attrs.to as StringLit).val,
+  //         attrs: { label: (rec.attrs.label as StringLit).val },
+  //       };
+  //     }),
+  //     nodes: nodes.results.map((n) => {
+  //       const rec = n.term as Rec;
+  //       return {
+  //         id: (rec.attrs.id as StringLit).val,
+  //         attrs: { label: (rec.attrs.label as StringLit).val },
+  //       };
+  //     }),
+  //   };
+  //   this.println(prettyPrintGraph(g));
+  // }
 
   private println(...strings: string[]) {
     // console.log("printing", strings[0], strings[1], strings[2]);
     this.out.write(strings.join(" ") + "\n");
   }
 }
+
+// throws an exception if it's not there I guess
+// TODO: wish there was a stdlib Result<E, T> type, lol
+// keeping synchronous for now
+export type Loader = (path: string) => string;
 
 export const fsLoader: Loader = (path) => fs.readFileSync(path).toString();

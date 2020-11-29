@@ -1,0 +1,74 @@
+.table mother
+----
+
+.table father
+----
+
+parent{child: C, parent: P} :-
+  mother{child: C, mother: P} | father{child: C, father: P}.
+----
+
+grandparent{grandchild: A, grandparent: C} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C}.
+----
+
+.rulegraph
+----
+digraph G {
+  "0" [label="0: Union" shape="box"];
+  "1" [label="1: Match(mother{child: C, mother: P}; {})" shape="box"];
+  "2" [label="2: Match(father{child: C, father: P}; {})" shape="box"];
+  "3" [label="3: Match(parent{child: B, parent: C}; {C: B, P: C})" shape="box"];
+  "4" [label="4: Match(parent{child: A, parent: B}; {C: A, P: B})" shape="box"];
+  "5" [label="5: Join(4 & 3)" shape="box"];
+  "father" [label="father: Base" shape="box"];
+  "grandparent" [label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})" shape="box"];
+  "mother" [label="mother: Base" shape="box"];
+  "parent" [label="parent: Subst(parent{child: C, parent: P})" shape="box"];
+  "0" -> "parent" [];
+  "1" -> "0" [];
+  "2" -> "0" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "5" -> "grandparent" [];
+  "father" -> "2" [];
+  "mother" -> "1" [];
+  "parent" -> "3" [];
+  "parent" -> "4" [];
+}
+
+father{child: "Mary", father: "Mark"}.
+----
+father: [father{child: "Mary", father: "Mark"}; {}]
+2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
+0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
+parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
+3: [parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}]
+4: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
+5: []
+5: []
+
+mother{child: "Pete", mother: "Mary"}.
+----
+mother: [mother{child: "Pete", mother: "Mary"}; {}]
+1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
+3: [parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}]
+4: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
+5: []
+5: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
+grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+
+mother{child: "Carolyn", mother: "Mary"}.
+----
+mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
+1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
+0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
+parent: [parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}]
+3: [parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}]
+4: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}]
+5: []
+5: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
+grandparent: [grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}]

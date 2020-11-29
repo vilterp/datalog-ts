@@ -9,6 +9,22 @@ export function mapObj<T, V>(
   return out;
 }
 
+export function updateObj<T>(
+  obj: { [k: string]: T },
+  updateKey: string,
+  update: (t: T) => T
+): { [k: string]: T } {
+  const out: { [k: string]: T } = {};
+  for (const curKey of Object.keys(obj)) {
+    if (updateKey === curKey) {
+      out[curKey] = update(obj[curKey]);
+    } else {
+      out[curKey] = obj[curKey];
+    }
+  }
+  return out;
+}
+
 export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
   const out: U[] = [];
   for (const item of arr) {
@@ -43,7 +59,18 @@ export function intersperseIdx<T>(sep: (idx: number) => T, arr: T[]): T[] {
   return out;
 }
 
-export function mapObjMaybe<T, V>(
+export const identity = (x) => x;
+
+export function filterObj<V>(
+  obj: { [k: string]: V },
+  f: (k: string, v: V) => boolean
+): { [k: string]: V } {
+  return filterMapObj(obj, (k, v) => {
+    return f(k, v) ? v : null;
+  });
+}
+
+export function filterMapObj<T, V>(
   obj: { [k: string]: T },
   f: (k: string, t: T) => V | undefined | null
 ): { [k: string]: V } {
@@ -120,6 +147,14 @@ export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
   return out;
 }
 
+export function updateAtIdx<T>(
+  arr: T[],
+  idx: number,
+  update: (t: T) => T
+): T[] {
+  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
+}
+
 export function arrayEq<T>(
   a: T[],
   b: T[],
@@ -182,20 +217,52 @@ export function clamp(n: number, range: [number, number]): number {
   return n;
 }
 
-export function insertAtIdx<T>(arr: T[], idx: number, item: T): T[] {
-  return [...arr.slice(0, idx), item, ...arr.slice(idx)];
+export function scan<A, I, O>(
+  initial: A,
+  f: (accum: A, item: I) => { newState: A; output: O },
+  items: I[]
+): O[] {
+  let state = initial;
+  let outputs: O[] = [];
+  items.forEach((item) => {
+    const { newState, output } = f(state, item);
+    state = newState;
+    outputs.push(output);
+  });
+  return outputs;
 }
 
-export function removeAtIdx<T>(arr: T[], idx: number): T[] {
-  return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
+// assumes that left and right are the same length
+export function zip<L, R, O>(
+  left: L[],
+  right: R[],
+  combine: (left: L, right: R) => O
+): O[] {
+  const output: O[] = [];
+  for (let i = 0; i < left.length; i++) {
+    output.push(combine(left[i], right[i]));
+  }
+  return output;
 }
 
-export function updateAtIdx<T>(
-  arr: T[],
-  idx: number,
-  update: (t: T) => T
-): T[] {
-  return arr.map((item, curIdx) => (curIdx === idx ? update(item) : item));
+export function setUnion<T>(left: Set<T>, right: Set<T>): Set<T> {
+  return new Set<T>([...left, ...right]);
+}
+
+export function setAdd<T>(set: Set<T>, item: T): Set<T> {
+  return new Set<T>([...set, item]);
+}
+
+export function reduceObj<A, I>(
+  obj: { [key: string]: I },
+  initial: A,
+  f: (accum: A, key: string, item: I) => A
+) {
+  let state = initial;
+  for (let key in obj) {
+    state = f(state, key, obj[key]);
+  }
+  return state;
 }
 
 export function flatten<T>(results: T[][]): T[] {

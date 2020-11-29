@@ -64,6 +64,7 @@ export type Statement =
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string }
   | { type: "TraceStmt"; record: Rec }
+  | { type: "RuleGraph" }
   | { type: "Comment"; comment: string };
 
 export interface Rule {

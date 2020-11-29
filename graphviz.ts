@@ -4,11 +4,13 @@ import { mapObjToList } from "./util";
 export interface Graph {
   nodes: Node[];
   edges: Edge[];
+  comments?: string[];
 }
 
 interface Node {
   id: string;
   attrs: { [key: string]: string };
+  comment?: string;
 }
 
 interface Edge {
@@ -34,22 +36,30 @@ export function prettyPrintGraph(g: Graph): string {
     block(
       pp.braces,
       [
+        ...(g.comments || []).map((comment) => `// ${comment}`),
         ...g.nodes.map((node) => [
           `"${node.id}"`,
           " [",
-          mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`]),
-          "]",
+          pp.intersperse(
+            " ",
+            mapObjToList(node.attrs, (k, v) => [k, "=", `"${v}"`])
+          ),
+          "];",
+          node.comment ? ` // ${node.comment}` : "",
         ]),
         ...g.edges.map((edge) => [
           `"${edge.from}"`,
           " -> ",
           `"${edge.to}"`,
           " [",
-          mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`]),
-          "]",
+          pp.intersperse(
+            " ",
+            mapObjToList(edge.attrs, (k, v) => [k, "=", `"${v}"`])
+          ),
+          "];",
         ]),
       ],
-      { sep: ";" }
+      { sep: "" }
     ),
   ]);
 }
