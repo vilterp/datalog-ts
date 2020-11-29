@@ -61,7 +61,7 @@ export function runSuite(ts: Suite) {
         );
         console.error(patch);
       } else {
-        console.error("FAIL", t.name, e.message);
+        console.error("FAIL", t.name, e.stack);
       }
       failures.add(t.name);
     }
