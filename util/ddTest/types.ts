@@ -14,7 +14,12 @@ export type Result = { pair: IOPair; actual: TestOutput };
 
 export function resultsToStr(results: Result[]): string {
   const resultStrs = results.map((r) =>
-    [r.pair.input, "----", r.pair.output.mimeType, r.pair.output].join("\n")
+    [
+      r.pair.input,
+      "----",
+      r.pair.output.mimeType || "text/plain",
+      r.pair.output.content,
+    ].join("\n")
   );
   return resultStrs.join("\n\n") + "\n";
 }
