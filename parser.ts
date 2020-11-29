@@ -96,7 +96,7 @@ export const language = P.createLanguage({
   pair: (r) => P.seq(r.recordIdentifier.skip(r.colon), r.term),
 
   recordIdentifier: () =>
-    P.regex(/([a-z][a-zA-Z0-9_]*)/, 1).desc("record identifier"),
+    P.regex(/([a-z][a-zA-Z0-9._]*)/, 1).desc("record identifier"),
 
   filePath: () => P.regex(/[^\n]+/).desc("file path"),
   binOp: () => P.alt(word("=="), word("!="), word("<="), word(">=")),

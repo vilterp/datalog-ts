@@ -45,6 +45,11 @@ export function processStmt(
         newGraph: graph,
         output: { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) },
       };
+    case "Comment":
+      return {
+        newGraph: graph,
+        output: ack,
+      };
     default:
       throw new Error(`unknown statement type: ${stmt.type}`);
   }
