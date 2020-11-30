@@ -2,39 +2,64 @@ import { Graphviz } from "graphviz-react";
 import ReactJson from "react-json-view";
 import React, { useState } from "react";
 import { useWindowWidth } from "@react-hook/window-size";
-import { EmissionLogAndGraph, formatRes } from "../../incremental/types";
+import {
+  EmissionLogAndGraph,
+  emptyRuleGraph,
+  formatRes,
+} from "../../incremental/types";
 import { toGraphviz } from "../../incremental/graphviz";
 import { prettyPrintGraph } from "../../graphviz";
 import { DagreReact } from "dagre-reactjs";
 import { toDagre } from "../../incremental/dagre";
+import { clamp } from "../../util";
+import { log } from "util";
 
 function EmissionLogViewer(props: { text: string }) {
   const logAndGraph: EmissionLogAndGraph = JSON.parse(props.text);
 
-  const [highlightedNodeID, setHighlightedNodeID] = useState<string | null>(
-    null
-  );
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(0);
+  const highlightedNodeID = logAndGraph.log[highlightedIndex]?.fromID;
   const [stage, setStage] = useState(0);
   const width = useWindowWidth();
 
-  const graph = toDagre(logAndGraph.graph, highlightedNodeID);
+  const dot = prettyPrintGraph(
+    toGraphviz(logAndGraph.graph, highlightedNodeID)
+  );
 
+  const range: [number, number] = [0, logAndGraph.log.length - 1];
   return (
     <div>
-      <svg height={600} width={20000}>
-        <DagreReact stage={stage} nodes={graph.nodes} edges={graph.edges} />
-      </svg>
+      <Graphviz
+        dot={dot}
+        options={{ width, height: 800, fit: true, zoom: false }}
+      />
+      <div>
+        <button
+          onClick={() =>
+            setHighlightedIndex(clamp(highlightedIndex - 1, range))
+          }
+        >
+          &lt;
+        </button>
+        <button
+          onClick={() =>
+            setHighlightedIndex(clamp(highlightedIndex + 1, range))
+          }
+        >
+          &gt;
+        </button>
+      </div>
       <ul>
         {logAndGraph.log.map((batch, idx) => (
           <li
             key={idx}
             onClick={() => {
-              setHighlightedNodeID(batch.fromID);
+              setHighlightedIndex(idx);
               setStage(stage + 1);
             }}
             style={{
               cursor: "pointer",
-              color: highlightedNodeID === batch.fromID ? "red" : "black",
+              color: highlightedIndex === idx ? "red" : "black",
             }}
           >
             {batch.fromID}: {batch.output.map((res) => formatRes(res))}

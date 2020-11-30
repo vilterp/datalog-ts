@@ -13,7 +13,7 @@ export function toGraphviz(
         attrs: {
           shape: "box",
           label: `${id}: ${formatDesc(node.desc)}`,
-          bgcolor: id === highlightedNodeID ? "red" : "white",
+          color: id === highlightedNodeID ? "red" : "black",
         },
         comment:
           node.cache.length > 0
