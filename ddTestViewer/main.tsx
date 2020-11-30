@@ -4,10 +4,10 @@ import { testSpecs } from "../incremental/ddTests";
 import { zip } from "../util";
 
 function Main() {
-  return <TestViewer />;
+  return <TestRunner />;
 }
 
-function TestViewer() {
+function TestRunner() {
   return (
     <>
       <h1>DDTest Runner</h1>

@@ -16,18 +16,42 @@ import { VISUALIZERS } from "../util/ddTest/visualizers";
 import { loader } from "../fp/dl";
 
 export const testSpecs: SuiteSpec[] = [
+  // {
+  //   name: "fp",
+  //   func: evalTest,
+  //   inputs: [
+  //     `.load ./ast.dl`,
+  //     `.load ./typecheck.dl`,
+  //     `lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.`,
+  //     `.rulegraph`,
+  //     `ast.RootExpr{id: 0}.`,
+  //     `ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.`,
+  //     `ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.`,
+  //     `.trace ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.`,
+  //   ],
+  //   visualizers: VISUALIZERS,
+  // },
   {
-    name: "fp",
+    name: "siblings",
     func: evalTest,
     inputs: [
-      `.load ./ast.dl`,
-      `.load ./typecheck.dl`,
-      `lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.`,
+      `.table mother`,
+      `.table father`,
+      `parents{child: C, mother: M, father: F} :-
+        mother{child: C, mother: M} &
+        father{child: C, father: F}.`,
+      `sibling{left: L, right: R} :-
+        parents{child: L, mother: M, father: F} &
+        parents{child: R, mother: M, father: F} &
+        L != R.`,
       `.rulegraph`,
-      `ast.RootExpr{id: 0}.`,
-      `ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.`,
-      `ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.`,
-      `.trace ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.`,
+      `mother{child: "Pete", mother: "Mary"}.`,
+      `father{child: "Pete", father: "Paul"}.`,
+      `mother{child: "Carolyn", mother: "Mary"}.`,
+      `.trace father{child: "Carolyn", father: "Paul"}.`,
+      `mother{child: "Steve", mother: "Jill"}.`,
+      `mother{child: C, mother: M}.`,
+      `mother{child: C, mother: "Mary"}.`,
     ],
     visualizers: VISUALIZERS,
   },

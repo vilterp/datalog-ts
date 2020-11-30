@@ -19,6 +19,7 @@ export function toDagre(
           shape: {
             styles: {
               fill: id === highlightedNodeID ? "red" : "white",
+              fillOpacity: 1,
             },
           },
         },
