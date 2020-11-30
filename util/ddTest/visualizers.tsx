@@ -5,6 +5,8 @@ import { useWindowWidth } from "@react-hook/window-size";
 import { EmissionLogAndGraph, formatRes } from "../../incremental/types";
 import { toGraphviz } from "../../incremental/graphviz";
 import { prettyPrintGraph } from "../../graphviz";
+import { DagreReact } from "dagre-reactjs";
+import { toDagre } from "../../incremental/dagre";
 
 function EmissionLogViewer(props: { text: string }) {
   const logAndGraph: EmissionLogAndGraph = JSON.parse(props.text);
@@ -14,17 +16,13 @@ function EmissionLogViewer(props: { text: string }) {
   );
   const width = useWindowWidth();
 
-  // TODO: running it through graphviz every time is way too slow
-  const graph = toGraphviz(logAndGraph.graph, highlightedNodeID);
-  const dot = prettyPrintGraph(graph);
-  console.log({ graph, dot });
+  const graph = toDagre(logAndGraph.graph, highlightedNodeID);
 
   return (
     <div>
-      <Graphviz
-        dot={dot}
-        options={{ width, height: 500, fit: true, zoom: false }}
-      />
+      <svg height={1000} width={20000}>
+        <DagreReact nodes={graph.nodes} edges={graph.edges} />
+      </svg>
       <ul>
         {logAndGraph.log.map((batch, idx) => (
           <li

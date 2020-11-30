@@ -35,6 +35,8 @@
   "dependencies": {
     "@react-hook/window-size": "^3.0.7",
     "classnames": "^2.2.6",
+    "dagre": "^0.8.5",
+    "dagre-reactjs": "^0.1.4",
     "graphviz-react": "^1.1.1",
     "parsimmon": "^1.13.0",
     "path-browserify": "^1.0.1",
@@ -49,6 +51,7 @@
     "react-use-localstorage": "^3.4.1",
     "simple-markdown": "^0.7.2",
     "ts-node": "^8.10.1",
+    "tslib": "^2.0.3",
     "typescript": "^3.9.2",
     "use-hash-param": "^0.2.3",
     "use-http": "^1.0.13"

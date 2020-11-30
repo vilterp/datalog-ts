@@ -20,8 +20,8 @@ function TestViewer() {
         return (
           <div key={idx}>
             <h2>{suite.name}</h2>
-            {results.map((result) => (
-              <div>
+            {results.map((result, idx) => (
+              <div key={idx}>
                 <pre>
                   {result.input}
                   <br />
