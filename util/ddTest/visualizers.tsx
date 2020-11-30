@@ -14,29 +14,32 @@ function EmissionLogViewer(props: { text: string }) {
   const [highlightedNodeID, setHighlightedNodeID] = useState<string | null>(
     null
   );
+  const [stage, setStage] = useState(0);
   const width = useWindowWidth();
+
+  const graph = toDagre(logAndGraph.graph, highlightedNodeID);
 
   return (
     <div>
+      <svg height={600} width={20000}>
+        <DagreReact stage={stage} nodes={graph.nodes} edges={graph.edges} />
+      </svg>
       <ul>
-        {logAndGraph.log.map((batch, idx) => {
-          const graph = toDagre(logAndGraph.graph, batch.fromID);
-          return (
-            <li
-              key={idx}
-              onClick={() => setHighlightedNodeID(batch.fromID)}
-              style={{
-                cursor: "pointer",
-                color: highlightedNodeID === batch.fromID ? "red" : "black",
-              }}
-            >
-              {batch.fromID}: {batch.output.map((res) => formatRes(res))}
-              <svg height={600} width={20000}>
-                <DagreReact nodes={graph.nodes} edges={graph.edges} />
-              </svg>
-            </li>
-          );
-        })}
+        {logAndGraph.log.map((batch, idx) => (
+          <li
+            key={idx}
+            onClick={() => {
+              setHighlightedNodeID(batch.fromID);
+              setStage(stage + 1);
+            }}
+            style={{
+              cursor: "pointer",
+              color: highlightedNodeID === batch.fromID ? "red" : "black",
+            }}
+          >
+            {batch.fromID}: {batch.output.map((res) => formatRes(res))}
+          </li>
+        ))}
       </ul>
     </div>
   );
