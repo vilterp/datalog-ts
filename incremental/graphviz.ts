@@ -2,7 +2,10 @@ import { RuleGraph, formatDesc, formatRes } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 
-export function toGraphviz(graph: RuleGraph): Graph {
+export function toGraphviz(
+  graph: RuleGraph,
+  highlightedNodeID?: string
+): Graph {
   return {
     nodes: mapObjToList(graph.nodes, (id, node) => {
       return {
@@ -10,6 +13,7 @@ export function toGraphviz(graph: RuleGraph): Graph {
         attrs: {
           shape: "box",
           label: `${id}: ${formatDesc(node.desc)}`,
+          bgcolor: id === highlightedNodeID ? "red" : "white",
         },
         comment:
           node.cache.length > 0

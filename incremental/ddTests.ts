@@ -27,7 +27,7 @@ export const testSpecs: SuiteSpec[] = [
       `ast.RootExpr{id: 0}.`,
       `ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.`,
       `ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.`,
-      `ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.`,
+      `.trace ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.`,
     ],
     visualizers: VISUALIZERS,
   },

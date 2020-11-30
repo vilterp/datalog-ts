@@ -1,5 +1,6 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
+import { EmissionLog } from "./eval";
 
 export type NodeID = string;
 
@@ -63,3 +64,8 @@ export function formatDesc(node: NodeDesc): string {
       return "Union";
   }
 }
+
+export type EmissionLogAndGraph = {
+  graph: RuleGraph;
+  log: EmissionLog;
+};

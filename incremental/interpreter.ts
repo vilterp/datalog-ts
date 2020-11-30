@@ -1,9 +1,21 @@
-import { emptyRuleGraph, formatRes, Res, RuleGraph } from "./types";
+import {
+  EmissionLogAndGraph,
+  emptyRuleGraph,
+  formatRes,
+  Res,
+  RuleGraph,
+} from "./types";
 import { Program, Rec, Statement } from "../types";
 import { declareTable } from "./build";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
-import { addRule, doQuery, EmissionBatch, insertFact } from "./eval";
+import {
+  addRule,
+  doQuery,
+  EmissionBatch,
+  EmissionLog,
+  insertFact,
+} from "./eval";
 import { hasVars } from "../simpleEvaluate";
 import { ppt } from "../pretty";
 import { Loader } from "../loaders";
@@ -21,7 +33,8 @@ export type Interpreter = {
 };
 
 type Output =
-  | { type: "EmissionLog"; log: EmissionBatch[] }
+  | { type: "EmissionLog"; log: EmissionLog }
+  | { type: "Trace"; logAndGraph: EmissionLogAndGraph }
   | { type: "Graphviz"; dot: string }
   | { type: "QueryResults"; results: Res[] }
   | { type: "Acknowledge" };
@@ -57,7 +70,7 @@ export function processStmt(
         output: { type: "EmissionLog", log: emissionLog },
       };
     }
-    case "Insert":
+    case "Insert": {
       if (hasVars(stmt.record)) {
         return {
           newInterp: interp,
@@ -75,6 +88,7 @@ export function processStmt(
         },
         output: { type: "EmissionLog", log: emissionLog },
       };
+    }
     case "RuleGraph":
       return {
         newInterp: interp,
@@ -90,8 +104,22 @@ export function processStmt(
         newInterp: doLoad(interp, stmt.path),
         output: ack,
       };
-    default:
-      throw new Error(`unknown statement type: ${stmt.type}`);
+    case "TraceStmt": {
+      const { newGraph, emissionLog } = insertFact(graph, stmt.record);
+      return {
+        newInterp: {
+          ...interp,
+          graph: newGraph,
+        },
+        output: {
+          type: "Trace",
+          logAndGraph: {
+            graph: newGraph,
+            log: emissionLog,
+          },
+        },
+      };
+    }
   }
 }
 
@@ -155,5 +183,10 @@ export function formatOutput(
           )
           .join("\n")
       );
+    case "Trace":
+      return {
+        content: JSON.stringify(output.logAndGraph),
+        mimeType: "incremental-datalog/trace",
+      };
   }
 }

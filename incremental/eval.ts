@@ -18,12 +18,14 @@ export type Insertion = {
   destination: NodeID;
 };
 
+export type EmissionLog = EmissionBatch[];
+
 export type EmissionBatch = { fromID: NodeID; output: Res[] };
 
 export function addRule(
   graph: RuleGraph,
   rule: Rule
-): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
   const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
@@ -55,10 +57,10 @@ function replayFacts(
   graph: RuleGraph,
   allNewNodes: Set<NodeID>,
   roots: Set<NodeID>
-): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("replayFacts", roots);
   let outGraph = graph;
-  let outEmissionLog: EmissionBatch[] = [];
+  let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
     for (let res of graph.nodes[rootID].cache) {
       for (let destination of graph.edges[rootID]) {
@@ -94,7 +96,7 @@ function getRoots(rule: Rule): NodeID[] {
 export function insertFact(
   graph: RuleGraph,
   rec: Rec
-): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   if (Object.keys(graph.unmappedRules).length > 0) {
     throw new Error(
       `some rules still rely on things not defined yet: [${mapObjToList(
@@ -140,8 +142,8 @@ type InsertionIterator = {
 function stepIteratorAll(
   graph: RuleGraph,
   iter: InsertionIterator
-): { newGraph: RuleGraph; emissionLog: EmissionBatch[] } {
-  const emissionLog: EmissionBatch[] = [];
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+  const emissionLog: EmissionLog = [];
   let newGraph = graph;
   while (iter.queue.length > 0) {
     const [emissions, nextIter] = stepIterator(iter);
