@@ -10,9 +10,7 @@ function Main() {
 function TestViewer() {
   return (
     <>
-      <h1>DDTest Viewer</h1>
-      <h3>Test Source</h3>
-      <h3>Viewer</h3>
+      <h1>DDTest Runner</h1>
       {testSpecs.map((suite, idx) => {
         const outputs = suite.func(suite.inputs);
         const results = zip(suite.inputs, outputs, (input, output) => ({
@@ -21,7 +19,7 @@ function TestViewer() {
         }));
         return (
           <div key={idx}>
-            <h4>{suite.name}</h4>
+            <h2>{suite.name}</h2>
             {results.map((result) => (
               <div>
                 <pre>

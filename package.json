@@ -33,6 +33,7 @@
     "prettier": "^2.0.4"
   },
   "dependencies": {
+    "@react-hook/window-size": "^3.0.7",
     "classnames": "^2.2.6",
     "graphviz-react": "^1.1.1",
     "parsimmon": "^1.13.0",
