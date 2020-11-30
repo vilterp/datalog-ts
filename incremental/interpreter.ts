@@ -8,7 +8,6 @@ import { hasVars } from "../simpleEvaluate";
 import { ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
-import * as path from "path";
 import {
   datalogOut,
   graphvizOut,
@@ -17,7 +16,6 @@ import {
 } from "../util/ddTest/types";
 
 export type Interpreter = {
-  loadStack: string[];
   graph: RuleGraph;
   loader: Loader;
 };
@@ -32,7 +30,6 @@ const ack: Output = { type: "Acknowledge" };
 
 export function newInterpreter(loader: Loader): Interpreter {
   return {
-    loadStack: [],
     graph: emptyRuleGraph,
     loader,
   };
@@ -99,27 +96,13 @@ export function processStmt(
 }
 
 function doLoad(interp: Interpreter, loadPath: string): Interpreter {
-  const currentDir =
-    interp.loadStack.length > 0
-      ? path.dirname(interp.loadStack[interp.loadStack.length - 1])
-      : ".";
-  const pathToLoad = path.resolve(currentDir, loadPath);
-  const contents = interp.loader(pathToLoad);
+  const contents = interp.loader(loadPath);
   const program: Program = dlLanguage.program.tryParse(contents);
-  const withNewStack = {
-    ...interp,
-    loadStack: [...interp.loadStack, loadPath],
-  };
   // process program with new load stack
-  const withLoaded = program.reduce<Interpreter>(
+  return program.reduce<Interpreter>(
     (interp, stmt) => processStmt(interp, stmt).newInterp,
-    withNewStack
+    interp
   );
-  // go back to original stack
-  return {
-    ...withLoaded,
-    loadStack: interp.loadStack,
-  };
 }
 
 type OutputOptions = {

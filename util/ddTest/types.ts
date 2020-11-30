@@ -1,6 +1,6 @@
 import React from "react";
 
-export type DDTestSpec = {
+export type SuiteSpec = {
   name: string;
   func: (inputs: string[]) => TestOutput[];
   inputs: string[];
@@ -9,7 +9,7 @@ export type DDTestSpec = {
 
 export type DDTest = IOPair[];
 
-export type ProcessFn = (test: DDTest) => TestOutput[];
+export type ProcessFn = (test: IOPair[]) => TestOutput[];
 
 interface IOPair {
   lineNo: number; // 1-indexed

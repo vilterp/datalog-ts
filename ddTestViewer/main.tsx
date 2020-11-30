@@ -1,58 +1,42 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import { parseDDTest } from "../util/ddTest/parser";
-import { Graphviz } from "graphviz-react";
-import ReactJson from "react-json-view";
-import useLocalStorage from "react-use-localstorage";
+import { testSpecs } from "../incremental/ddTests";
+import { zip } from "../util";
 
 function Main() {
   return <TestViewer />;
 }
 
-const FORMATTERS = {
-  "text/plain": (text) => <pre>{text}</pre>,
-  "application/graphviz": (text) => <Graphviz dot={text} />,
-  "application/json": (text) => (
-    <ReactJson
-      name={null}
-      enableClipboard={false}
-      displayObjectSize={false}
-      displayDataTypes={false}
-      src={JSON.parse(text)}
-    />
-  ),
-  "application/datalog": (text) => <pre>{text}</pre>,
-};
-
 function TestViewer() {
-  const [testSource, setTestSource] = useLocalStorage(
-    "ddtest-viewer-source",
-    ""
-  );
-  const parsedTest = parseDDTest(testSource);
-
   return (
     <>
       <h1>DDTest Viewer</h1>
       <h3>Test Source</h3>
-      <textarea
-        value={testSource}
-        onChange={(evt) => setTestSource(evt.target.value)}
-        style={{ fontFamily: "monospace" }}
-        cols={100}
-        rows={20}
-      />
       <h3>Viewer</h3>
-      {parsedTest.map((pair, idx) => (
-        <div key={idx}>
-          <pre>
-            {pair.input}
-            <br />
-            ----
-          </pre>
-          {FORMATTERS[pair.output.mimeType](pair.output.content)}
-        </div>
-      ))}
+      {testSpecs.map((suite, idx) => {
+        const outputs = suite.func(suite.inputs);
+        const results = zip(suite.inputs, outputs, (input, output) => ({
+          input,
+          output,
+        }));
+        return (
+          <div key={idx}>
+            <h4>{suite.name}</h4>
+            {results.map((result) => (
+              <div>
+                <pre>
+                  {result.input}
+                  <br />
+                  ----
+                </pre>
+                {suite.visualizers[result.output.mimeType](
+                  result.output.content
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      })}
     </>
   );
 }

@@ -6,33 +6,57 @@ import { toGraphviz } from "./graphviz";
 import { Statement } from "../types";
 import { scan } from "../util";
 import { formatOutput, newInterpreter, processStmt } from "./interpreter";
-import { fsLoader } from "../repl";
-import { graphvizOut, plainTextOut, TestOutput } from "../util/ddTest/types";
+import {
+  SuiteSpec,
+  graphvizOut,
+  plainTextOut,
+  TestOutput,
+} from "../util/ddTest/types";
+import { VISUALIZERS } from "../util/ddTest/visualizers";
+import { loader } from "../fp/dl";
 
-export function incrTests(writeResults: boolean): Suite {
-  const tests: [string, ProcessFn][] = [
-    ["build", buildTest],
-    ["buildBinExpr", buildTest],
-    ["eval", evalTest],
-    ["eval2", evalTest],
-    ["eval3", evalTest],
-    ["siblings", evalTest],
-    ["cycles", evalTest],
-    ["replay", evalTest],
-    ["cyclesReplay", evalTest],
-    ["fp", evalTest],
-  ];
-  return tests.map(([name, func]) => ({
-    name,
-    test() {
-      runDDTestAtPath(
-        `incremental/testdata/${name}.dd.txt`,
-        func,
-        writeResults
-      );
-    },
-  }));
-}
+export const testSpecs: SuiteSpec[] = [
+  {
+    name: "fp",
+    func: evalTest,
+    inputs: [
+      `.load ./ast.dl`,
+      `.load ./typecheck.dl`,
+      `lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.`,
+      `.rulegraph`,
+      `ast.RootExpr{id: 0}.`,
+      `ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.`,
+      `ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.`,
+      `ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.`,
+    ],
+    visualizers: VISUALIZERS,
+  },
+];
+
+// export function incrTests(writeResults: boolean): Suite {
+//   const tests: [string, ProcessFn][] = [
+//     ["build", buildTest],
+//     ["buildBinExpr", buildTest],
+//     ["eval", evalTest],
+//     ["eval2", evalTest],
+//     ["eval3", evalTest],
+//     ["siblings", evalTest],
+//     ["cycles", evalTest],
+//     ["replay", evalTest],
+//     ["cyclesReplay", evalTest],
+//     ["fp", evalTest],
+//   ];
+//   return tests.map(([name, func]) => ({
+//     name,
+//     test() {
+//       runDDTestAtPath(
+//         `incremental/testdata/${name}.dd.txt`,
+//         func,
+//         writeResults
+//       );
+//     },
+//   }));
+// }
 
 // TODO: deprecate this since we have .rulegraph now?
 function buildTest(test: DDTest): TestOutput[] {
@@ -49,17 +73,17 @@ function buildTest(test: DDTest): TestOutput[] {
           `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
         );
       }
-    }, newInterpreter(fsLoader));
+    }, newInterpreter(loader));
     return graphvizOut(prettyPrintGraph(toGraphviz(curInterp.graph)));
   });
 }
 
-function evalTest(test: DDTest): TestOutput[] {
+function evalTest(inputs: string[]): TestOutput[] {
   return scan(
-    newInterpreter(fsLoader),
-    (interp, pair) => {
+    newInterpreter(loader),
+    (interp, input) => {
       try {
-        const stmt = parseStatement(pair.input);
+        const stmt = parseStatement(input);
         const { newInterp, output } = processStmt(interp, stmt);
         return {
           newState: newInterp,
@@ -69,12 +93,10 @@ function evalTest(test: DDTest): TestOutput[] {
           }),
         };
       } catch (err) {
-        throw new Error(
-          `processing "${pair.input}" at line ${pair.lineNo}: ${err.stack}\n`
-        );
+        throw new Error(`processing "${input}": ${err.stack}\n`);
       }
     },
-    test
+    inputs
   );
 }
 
