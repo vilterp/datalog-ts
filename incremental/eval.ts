@@ -1,4 +1,12 @@
-import { RuleGraph, Res, NodeID, formatRes, formatDesc } from "./types";
+import {
+  RuleGraph,
+  Res,
+  NodeID,
+  formatRes,
+  formatDesc,
+  NodeDesc,
+  JoinDesc,
+} from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppr, ppRule, ppt, ppVM } from "../pretty";
@@ -194,41 +202,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "Union":
       return [ins.res];
     case "Join": {
-      const results: Res[] = [];
-      // TODO: DRY this up somehow?
-      if (ins.origin === nodeDesc.leftID) {
-        const leftVars = ins.res.bindings;
-        const rightRelation = graph.nodes.get(nodeDesc.rightID).cache;
-        for (let possibleRightMatch of rightRelation) {
-          const rightVars = possibleRightMatch.bindings;
-          const unifyRes = unifyVars(leftVars || {}, rightVars || {});
-          // console.log("join from left", {
-          //   left: formatRes(ins.res),
-          //   right: formatRes(possibleRightMatch),
-          //   unifyRes: ppb(unifyRes),
-          // });
-          if (unifyRes !== null) {
-            results.push({
-              term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
-              bindings: unifyRes,
-            });
-          }
-        }
-      } else {
-        const rightVars = ins.res.bindings;
-        const leftRelation = graph.nodes.get(nodeDesc.leftID).cache;
-        for (let possibleLeftMatch of leftRelation) {
-          const leftVars = possibleLeftMatch.bindings;
-          const unifyRes = unifyVars(leftVars || {}, rightVars || {});
-          if (unifyRes !== null) {
-            results.push({
-              term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
-              bindings: unifyRes,
-            });
-          }
-        }
-      }
-      return results;
+      return doJoin(graph, nodeDesc, ins);
     }
     case "Match": {
       const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
@@ -275,6 +249,44 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "BaseFactTable":
       return [ins.res];
   }
+}
+
+function doJoin(graph: RuleGraph, nodeDesc: JoinDesc, ins: Insertion): Res[] {
+  const results: Res[] = [];
+  // TODO: DRY this up somehow?
+  if (ins.origin === nodeDesc.leftID) {
+    const leftVars = ins.res.bindings;
+    const rightRelation = graph.nodes.get(nodeDesc.rightID).cache;
+    for (let possibleRightMatch of rightRelation) {
+      const rightVars = possibleRightMatch.bindings;
+      const unifyRes = unifyVars(leftVars || {}, rightVars || {});
+      // console.log("join from left", {
+      //   left: formatRes(ins.res),
+      //   right: formatRes(possibleRightMatch),
+      //   unifyRes: ppb(unifyRes),
+      // });
+      if (unifyRes !== null) {
+        results.push({
+          term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
+          bindings: unifyRes,
+        });
+      }
+    }
+  } else {
+    const rightVars = ins.res.bindings;
+    const leftRelation = graph.nodes.get(nodeDesc.leftID).cache;
+    for (let possibleLeftMatch of leftRelation) {
+      const leftVars = possibleLeftMatch.bindings;
+      const unifyRes = unifyVars(leftVars || {}, rightVars || {});
+      if (unifyRes !== null) {
+        results.push({
+          term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
+          bindings: unifyRes,
+        });
+      }
+    }
+  }
+  return results;
 }
 
 export function doQuery(graph: RuleGraph, query: Rec): Res[] {

@@ -27,9 +27,16 @@ export type RuleGraph = {
   };
 };
 
+export type JoinDesc = {
+  type: "Join";
+  ruleName: string;
+  leftID: NodeID;
+  rightID: NodeID;
+};
+
 export type NodeDesc =
   | { type: "BaseFactTable" }
-  | { type: "Join"; ruleName: string; leftID: NodeID; rightID: NodeID }
+  | JoinDesc
   | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec }
   | { type: "BinExpr"; expr: BinExpr }
