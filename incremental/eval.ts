@@ -19,6 +19,9 @@ import {
   addUnmappedRule,
   resolveUnmappedRule,
 } from "./build";
+// import { Performance } from "w3c-hr-time";
+
+// const performance = new Performance();
 
 export type Insertion = {
   res: Res;
@@ -158,23 +161,17 @@ function stepIteratorAll(
   iter: InsertionIterator
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   const emissionLog: EmissionLog = [];
-  let newGraph = graph;
   while (iter.queue.length > 0) {
-    const [emissions, nextIter] = stepIterator(iter);
+    const emissions = stepIterator(iter);
     emissionLog.push(emissions);
-    newGraph = nextIter.graph;
-    iter = nextIter;
   }
-  return { newGraph, emissionLog };
+  return { newGraph: iter.graph, emissionLog };
 }
 
-function stepIterator(
-  iter: InsertionIterator
-): [EmissionBatch, InsertionIterator] {
+function stepIterator(iter: InsertionIterator): EmissionBatch {
   // console.log("stepIterator", iter.queue);
-  const newQueue = iter.queue.slice(1);
   let newGraph = iter.graph;
-  const insertingNow = iter.queue[0];
+  const insertingNow = iter.queue.shift();
   const curNodeID = insertingNow.destination;
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
@@ -182,15 +179,15 @@ function stepIterator(
       newGraph = addToCache(newGraph, curNodeID, result);
     }
     for (let destination of newGraph.edges.get(curNodeID) || []) {
-      newQueue.push({
+      iter.queue.push({
         destination,
         origin: curNodeID,
         res: result,
       });
     }
   }
-  const newIter = { ...iter, graph: newGraph, queue: newQueue };
-  return [{ fromID: curNodeID, output: results }, newIter];
+  iter.graph = newGraph;
+  return { fromID: curNodeID, output: results };
 }
 
 // caller adds resulting facts

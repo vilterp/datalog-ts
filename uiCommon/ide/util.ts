@@ -7,8 +7,11 @@ export function replaceAtSpan(source: string, span: Span, newText: string) {
 }
 
 export function getCursor(interp: Interpreter): number {
-  return ((queryStr(interp, "ide.Cursor{idx: Idx}")[0].term as Rec).attrs
-    .idx as Int).val;
+  const results = queryStr(interp, "ide.Cursor{idx: Idx}");
+  if (results.length === 0) {
+    return 0;
+  }
+  return ((results[0].term as Rec).attrs.idx as Int).val;
 }
 
 export function spanContainsIdx(span: Span, cursor: number): boolean {
