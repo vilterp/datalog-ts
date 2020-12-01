@@ -23,6 +23,9 @@ text/plain
 ----
 application/graphviz
 digraph G {
+  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
+  "mother" [color="black" label="mother: Base" shape="box"];
+  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
   "0" [color="black" label="0: Match(father{child: C, father: F}; {})" shape="box"];
   "1" [color="black" label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): parents" shape="box"];
@@ -31,9 +34,6 @@ digraph G {
   "5" [color="black" label="5: Join(4 & 3): sibling" shape="box"];
   "6" [color="black" label="6: L != R" shape="box"];
   "father" [color="black" label="father: Base" shape="box"];
-  "mother" [color="black" label="mother: Base" shape="box"];
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
-  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];

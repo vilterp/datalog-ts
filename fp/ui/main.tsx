@@ -17,15 +17,15 @@ import highlightCSS from "./highlight.css";
 import { loader } from "../dl";
 import { getSuggestions } from "./suggestions";
 
-function Main() {
-  const interp = newInterpreter(loader);
+const interp = newInterpreter(loader);
+const interp2 = doLoad(interp, "./main.dl");
 
+function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
     "editor-state",
     initialEditorState("let x = 2 in intToString(x)")
   );
 
-  const interp2 = doLoad(interp, "./main.dl");
   // TODO: idk if this is how you're supposed to React. lol
   const [interp3, editor] = CodeEditor({
     interp: interp2,
