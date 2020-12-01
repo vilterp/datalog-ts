@@ -2,6 +2,9 @@
 .table ast.FuncCall
 .table ast.Var
 
+ast.Expr{id: I} :-
+  ast.Var{id: I}.
+
 # can use this to show an AST
 # TODO: rename location to span everywhere
 # ast.ParentExpr{id: I, parent: P, span: S} :-

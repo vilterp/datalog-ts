@@ -22,9 +22,20 @@ export const testSpecs: SuiteSpec[] = [
     inputs: [
       `.load ./ast.dl`,
       `.load ./typecheck.dl`,
+      `.trace ast.Var{id: 0, location: span{from: 0, to: 10}, name: "intToString"}.`,
+      `.trace lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.`,
+    ],
+    visualizers: VISUALIZERS,
+  },
+  {
+    name: "fp",
+    func: evalTest,
+    inputs: [
+      `.load ./ast.dl`,
+      `.load ./typecheck.dl`,
       `.trace lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.`,
       `.trace ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.`,
-      `.trace ast.Var{id: 1, location: span{from: 0, to: 10}, name: "intTostring"}.`,
+      `.trace ast.Var{id: 1, location: span{from: 0, to: 10}, name: "intToString"}.`,
       `.trace ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.`,
     ],
     visualizers: VISUALIZERS,

@@ -202,6 +202,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars || {}, rightVars || {});
+          console.log({ leftVars, rightVars, unifyRes });
           // console.log("join from left", {
           //   left: formatRes(ins.res),
           //   right: formatRes(possibleRightMatch),

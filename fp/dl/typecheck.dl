@@ -19,7 +19,8 @@ tc.ScopeItem{id: I, name: N, type: T, location: L} :-
   tc.scopeBuiltin{id: I, name: N, type: T, location: L}.
 
 tc.scopeBuiltin{id: I, name: N, type: T, location: "builtin"} :-
-  lang.Builtin{name: N, type: T}.
+  lang.Builtin{name: N, type: T} &
+  ast.Expr{id: I}.
 
 # tc.parentScope{id: I, parentID: P} :-
 #   ast.LetExpr{bodyID: I, id: P} |
