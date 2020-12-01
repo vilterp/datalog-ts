@@ -1,5 +1,5 @@
 import { Span, dlToSpan } from "./types";
-import { Interpreter } from "../../interpreter";
+import { Interpreter, queryStr } from "../../incremental/interpreter";
 import { Rec, Int } from "../../types";
 
 export function replaceAtSpan(source: string, span: Span, newText: string) {
@@ -7,7 +7,7 @@ export function replaceAtSpan(source: string, span: Span, newText: string) {
 }
 
 export function getCursor(interp: Interpreter): number {
-  return ((interp.queryStr("ide.Cursor{idx: Idx}").results[0].term as Rec).attrs
+  return ((queryStr(interp, "ide.Cursor{idx: Idx}")[0].term as Rec).attrs
     .idx as Int).val;
 }
 
@@ -24,7 +24,7 @@ export function sortSpans(spans: Span[]): Span[] {
 }
 
 export function getCurrentPlaceholder(interp: Interpreter): Span | null {
-  const results = interp.queryStr("ide.CurrentPlaceholder{span: S}").results;
+  const results = queryStr(interp, "ide.CurrentPlaceholder{span: S}");
   if (results.length === 0) {
     return null;
   }
@@ -34,8 +34,8 @@ export function getCurrentPlaceholder(interp: Interpreter): Span | null {
 
 export function getPlaceholders(interp: Interpreter): Span[] {
   return sortSpans(
-    interp
-      .queryStr("ast.Placeholder{location: S}")
-      .results.map((res) => dlToSpan((res.term as Rec).attrs.location as Rec))
+    queryStr(interp, "ast.Placeholder{location: S}").map((res) =>
+      dlToSpan((res.term as Rec).attrs.location as Rec)
+    )
   );
 }

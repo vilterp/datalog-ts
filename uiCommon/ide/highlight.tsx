@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Interpreter } from "../../interpreter";
+import { Interpreter, queryStr } from "../../incremental/interpreter";
 import { Rec, StringLit, Bool } from "../../types";
 import { uniqBy } from "../../util";
 import { dlToSpan, Span } from "./types";
@@ -15,12 +15,13 @@ export function highlight(
   if (syntaxErrorIdx) {
     return highlightSyntaxError(code, syntaxErrorIdx);
   }
-  const segments = interp.queryStr(
+  const segments = queryStr(
+    interp,
     "hl.Segment{type: T, span: S, highlight: H}"
   );
   const sortedSegments = hlWins(
     uniqBy(
-      segments.results
+      segments
         .map((res) => mkRawSegment(res.term as Rec))
         .sort((a, b) => getStartOffset(a) - getStartOffset(b)),
       (rs) => `${spanToString(rs.span)}-${rs.state.highlight}`
@@ -161,9 +162,9 @@ function hlWins(segments: SegmentSpan[]): SegmentSpan[] {
   const second = segments[1];
 
   if (spanToString(first.span) === spanToString(second.span)) {
-    if (first.type !== second.type) {
-      throw new Error("same span should imply same type");
-    }
+    // if (first.type !== second.type) {
+    //   throw new Error("same span should imply same type");
+    // }
     const chosen = first.state.highlight ? first : second;
     return [chosen, ...hlWins(segments.slice(2))];
   }

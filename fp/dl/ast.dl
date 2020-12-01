@@ -19,9 +19,9 @@ ast.Expr{id: I, location: S} :-
 
 # can use this to show an AST
 # TODO: rename location to span everywhere
-# ast.ParentExpr{id: I, parent: P, span: S} :-
-#  ast.Expr{id: I, location: S} & ast.LetExpr{id: P, bodyID: I} |
-#  ast.Expr{id: I, location: S} & ast.LetExpr{id: P, bindingID: I} |
-#  ast.Expr{id: I, location: S} & ast.FuncCall{id: P, funcID: I} |
-#  ast.Expr{id: I, location: S} & ast.FuncCall{id: P, argID: I} |
-#  ast.Expr{id: I, location: S} & ast.Lambda{id: P, body: I}.
+ast.ParentExpr{id: I, parent: P, span: S} :-
+  ast.Expr{id: I, location: S} & ast.LetExpr{id: P, bodyID: I} |
+  ast.Expr{id: I, location: S} & ast.LetExpr{id: P, bindingID: I} |
+  ast.Expr{id: I, location: S} & ast.FuncCall{id: P, funcID: I} |
+  ast.Expr{id: I, location: S} & ast.FuncCall{id: P, argID: I} |
+  ast.Expr{id: I, location: S} & ast.Lambda{id: P, body: I}.

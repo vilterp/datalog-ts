@@ -1,4 +1,4 @@
-import { Interpreter } from "../../interpreter";
+import { Interpreter, queryStr } from "../../incremental/interpreter";
 import { Rec } from "../../types";
 import {
   Span,
@@ -25,7 +25,7 @@ export const jumpToDefnAction: EditorAction = {
 };
 
 function getDefnForCursor(interp: Interpreter): Span | null {
-  const res = interp.queryStr(`ide.DefnForCursor{defnLoc: S}`).results;
+  const res = queryStr(interp, `ide.DefnForCursor{defnLoc: S}`);
   if (res.length === 0) {
     return null;
   }
@@ -53,7 +53,7 @@ export const jumpToFirstUsageAction: EditorAction = {
 };
 
 function getFirstUsageForCursor(interp: Interpreter): Span | null {
-  const res = interp.queryStr(`ide.UsageForCursor{usageLoc: S}`).results;
+  const res = queryStr(interp, `ide.UsageForCursor{usageLoc: S}`);
   if (res.length === 0) {
     return null;
   }

@@ -1,5 +1,5 @@
-.load ast.dl
-.load typecheck.dl
-.load ide.dl
-.load highlight.dl
-.load stdlib.dl
+.load ./ast.dl
+.load ./typecheck.dl
+.load ./ide.dl
+.load ./highlight.dl
+.load ./stdlib.dl

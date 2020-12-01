@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { language as fpLanguage, Expr } from "../parser";
 import { flatten } from "../flatten";
-import { Interpreter } from "../../interpreter";
+import {
+  doLoad,
+  Interpreter,
+  newInterpreter,
+} from "../../incremental/interpreter";
 import { TabbedTables } from "../../uiCommon/tabbedTables";
 import { Collapsible } from "../../uiCommon/collapsible";
 import { CodeEditor } from "../../uiCommon/ide/codeEditor";
@@ -14,14 +18,14 @@ import { loader } from "../dl";
 import { getSuggestions } from "./suggestions";
 
 function Main() {
-  const interp = new Interpreter(".", loader);
+  const interp = newInterpreter(loader);
 
   const [editorState, setEditorState] = useJSONLocalStorage(
     "editor-state",
     initialEditorState("let x = 2 in intToString(x)")
   );
 
-  const interp2 = interp.doLoad("main.dl");
+  const interp2 = doLoad(interp, "./main.dl");
   // TODO: idk if this is how you're supposed to React. lol
   const [interp3, editor] = CodeEditor({
     interp: interp2,
@@ -39,10 +43,10 @@ function Main() {
       <h2>Source</h2>
       {editor}
 
-      <Collapsible
-        heading="Facts &amp; Rules"
-        content={<TabbedTables interp={interp3} />}
-      />
+      {/*<Collapsible*/}
+      {/*  heading="Facts &amp; Rules"*/}
+      {/*  content={<TabbedTables interp={interp3} />}*/}
+      {/*/>*/}
 
       {/* TODO: bring back a good way of displaying the AST */}
       {/* <Collapsible

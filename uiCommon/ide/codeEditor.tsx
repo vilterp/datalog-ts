@@ -1,5 +1,9 @@
 import React from "react";
-import { Interpreter } from "../../interpreter";
+import {
+  evalStr,
+  Interpreter,
+  processStmt,
+} from "../../incremental/interpreter";
 import Editor from "./editor";
 import { highlight } from "./highlight";
 import Parsimmon from "parsimmon";
@@ -30,7 +34,8 @@ export function CodeEditor<AST>(props: {
   state: EditorState;
   setState: (st: EditorState) => void;
 }): [Interpreter, React.ReactNode] {
-  const [_, interp2] = props.interp.evalStr(
+  const interp2 = evalStr(
+    props.interp,
     `ide.Cursor{idx: ${props.state.cursorPos}}.`
   );
 
@@ -58,7 +63,8 @@ export function CodeEditor<AST>(props: {
     try {
       const flattened = props.flatten(parseRes.value);
       interp3 = flattened.reduce<Interpreter>(
-        (int, rec) => int.evalStmt({ type: "Insert", record: rec as Rec })[1],
+        (int, rec) =>
+          processStmt(int, { type: "Insert", record: rec as Rec }).newInterp,
         interp2
       );
 

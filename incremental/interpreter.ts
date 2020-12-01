@@ -53,6 +53,14 @@ export function queryStr(interp: Interpreter, line: string): Res[] {
   return doQuery(interp.graph, record);
 }
 
+export function evalStr(interp: Interpreter, line: string): Interpreter {
+  const stmt = dlLanguage.statement.tryParse(line) as Statement;
+  if (stmt.type !== "Insert") {
+    throw new Error("not an insert");
+  }
+  return processStmt(interp, { type: "Insert", record: stmt.record }).newInterp;
+}
+
 export function processStmt(
   interp: Interpreter,
   stmt: Statement
@@ -123,7 +131,7 @@ export function processStmt(
   }
 }
 
-function doLoad(interp: Interpreter, loadPath: string): Interpreter {
+export function doLoad(interp: Interpreter, loadPath: string): Interpreter {
   const contents = interp.loader(loadPath);
   const program: Program = dlLanguage.program.tryParse(contents);
   // process program with new load stack

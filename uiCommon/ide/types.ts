@@ -1,5 +1,5 @@
 import { Rec, Term, Int } from "../../types";
-import { Interpreter } from "../../interpreter";
+import { Interpreter } from "../../incremental/interpreter";
 import { Suggestion } from "./suggestions";
 
 export type Span = { from: number; to: number };
