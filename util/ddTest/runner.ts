@@ -32,7 +32,7 @@ export function runDDTestAtPath(
 ) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
-  const outputs = getResults(test);
+  const outputs = getResults(test.map((t) => t.input));
   const results = zip(test, outputs, (pair, actual) => ({ pair, actual }));
   if (writeResults) {
     doWriteResults(path, results);

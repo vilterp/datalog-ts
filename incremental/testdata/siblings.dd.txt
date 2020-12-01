@@ -23,17 +23,17 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [label="0: Match(father{child: C, father: F}; {})" shape="box"];
-  "1" [label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
-  "2" [label="2: Join(1 & 0)" shape="box"];
-  "3" [label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})" shape="box"];
-  "4" [label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})" shape="box"];
-  "5" [label="5: Join(4 & 3)" shape="box"];
-  "6" [label="6: L != R" shape="box"];
-  "father" [label="father: Base" shape="box"];
-  "mother" [label="mother: Base" shape="box"];
-  "parents" [label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
-  "sibling" [label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
+  "0" [color="black" label="0: Match(father{child: C, father: F}; {})" shape="box"];
+  "1" [color="black" label="1: Match(mother{child: C, mother: M}; {})" shape="box"];
+  "2" [color="black" label="2: Join(1 & 0): parents" shape="box"];
+  "3" [color="black" label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})" shape="box"];
+  "4" [color="black" label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M})" shape="box"];
+  "5" [color="black" label="5: Join(4 & 3): sibling" shape="box"];
+  "6" [color="black" label="6: L != R" shape="box"];
+  "father" [color="black" label="father: Base" shape="box"];
+  "mother" [color="black" label="mother: Base" shape="box"];
+  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"];
+  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R})" shape="box"];
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];
@@ -59,12 +59,12 @@ father{child: "Pete", father: "Paul"}.
 text/plain
 father: [father{child: "Pete", father: "Paul"}; {}]
 0: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}]
-2: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}]
+2: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}]
 parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}]
 3: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}]
 4: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}]
-5: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
-5: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
+5: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
+5: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
 6: []
 6: []
 
@@ -80,15 +80,15 @@ father{child: "Carolyn", father: "Paul"}.
 text/plain
 father: [father{child: "Carolyn", father: "Paul"}; {}]
 0: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
-2: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
+2: [parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
 parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
 3: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}]
 4: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}]
-5: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
-5: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
-6: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
+5: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
+5: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
+6: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
 6: []
-6: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
+6: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
 6: []
 sibling: [sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
 sibling: [sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]

@@ -202,7 +202,6 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars || {}, rightVars || {});
-          console.log({ leftVars, rightVars, unifyRes });
           // console.log("join from left", {
           //   left: formatRes(ins.res),
           //   right: formatRes(possibleRightMatch),
@@ -234,6 +233,15 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "Match": {
       const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
       const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
+      if (bindings === null) {
+        return [];
+      }
+      for (let key of Object.keys(bindings)) {
+        // console.log({ bindings, key });
+        if (bindings[key].type === "Var") {
+          return [];
+        }
+      }
       // console.log("match", {
       //   insRec: formatRes(ins.res),
       //   match: ppt(nodeDesc.rec),

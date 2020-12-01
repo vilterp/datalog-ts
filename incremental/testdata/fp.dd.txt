@@ -10,395 +10,113 @@ lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.
 ----
 text/plain
 lang.Builtin: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
-58: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
-60: []
+16: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+17: []
 
 .rulegraph
 ----
 application/graphviz
 digraph G {
-  "0" [label="0: Union" shape="box"];
-  "1" [label="1: Match(ast.StringLit{id: I, location: S}; {})" shape="box"];
-  "10" [label="10: Match(ast.Expr{id: I, location: S}; {I: I, S: S})" shape="box"];
-  "11" [label="11: Join(10 & 9)" shape="box"];
-  "12" [label="12: Match(ast.LetExpr{bindingID: I, id: P}; {})" shape="box"];
-  "13" [label="13: Match(ast.Expr{id: I, location: S}; {I: I, S: S})" shape="box"];
-  "14" [label="14: Join(13 & 12)" shape="box"];
-  "15" [label="15: Match(ast.FuncCall{funcID: I, id: P}; {})" shape="box"];
-  "16" [label="16: Match(ast.Expr{id: I, location: S}; {I: I, S: S})" shape="box"];
-  "17" [label="17: Join(16 & 15)" shape="box"];
-  "18" [label="18: Match(ast.FuncCall{argID: I, id: P}; {})" shape="box"];
-  "19" [label="19: Match(ast.Expr{id: I, location: S}; {I: I, S: S})" shape="box"];
-  "2" [label="2: Match(ast.IntLit{id: I, location: S}; {})" shape="box"];
-  "20" [label="20: Join(19 & 18)" shape="box"];
-  "21" [label="21: Match(ast.Lambda{body: I, id: P}; {})" shape="box"];
-  "22" [label="22: Match(ast.Expr{id: I, location: S}; {I: I, S: S})" shape="box"];
-  "23" [label="23: Join(22 & 21)" shape="box"];
-  "24" [label="24: Union" shape="box"];
-  "25" [label="25: Match(tc.typeS{id: I, type: T}; {I: I})" shape="box"];
-  "26" [label="26: Match(tc.typeI{id: I, type: T}; {I: I})" shape="box"];
-  "27" [label="27: Match(tc.typeLambda{id: I, type: T}; {I: I})" shape="box"];
-  "28" [label="28: Match(tc.typeFC{id: I, type: T}; {I: I, T: T})" shape="box"];
-  "29" [label="29: Match(tc.typeLet{id: I, type: T}; {I: I, T: T})" shape="box"];
-  "3" [label="3: Match(ast.Var{id: I, location: S}; {})" shape="box"];
-  "30" [label="30: Match(tc.typeVar{id: I, type: T}; {I: I, T: T})" shape="box"];
-  "31" [label="31: Match(tc.typePlaceholder{id: I, type: T}; {I: I})" shape="box"];
-  "32" [label="32: Match(ast.StringLit{id: I}; {})" shape="box"];
-  "33" [label="33: Match(ast.IntLit{id: I}; {})" shape="box"];
-  "34" [label="34: Match(tc.Type{id: AID, type: F}; {I: AID, T: F})" shape="box"];
-  "35" [label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})" shape="box"];
-  "36" [label="36: Join(35 & 34)" shape="box"];
-  "37" [label="37: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {})" shape="box"];
-  "38" [label="38: Join(37 & 36)" shape="box"];
-  "39" [label="39: Match(tc.Type{id: BID, type: T}; {I: BID, T: T})" shape="box"];
-  "4" [label="4: Match(ast.LetExpr{id: I, location: S}; {})" shape="box"];
-  "40" [label="40: Match(ast.LetExpr{bodyID: BID, id: I}; {})" shape="box"];
-  "41" [label="41: Join(40 & 39)" shape="box"];
-  "42" [label="42: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
-  "43" [label="43: Match(ast.Var{id: I, name: N}; {})" shape="box"];
-  "44" [label="44: Join(43 & 42)" shape="box"];
-  "45" [label="45: Match(tc.Type{id: B, type: R}; {I: B, T: R})" shape="box"];
-  "46" [label="46: Match(ast.LambdaParam{lambdaID: I, ty: F}; {})" shape="box"];
-  "47" [label="47: Join(46 & 45)" shape="box"];
-  "48" [label="48: Match(ast.Lambda{body: B, id: I, retType: R}; {})" shape="box"];
-  "49" [label="49: Join(48 & 47)" shape="box"];
-  "5" [label="5: Match(ast.FuncCall{id: I, location: S}; {})" shape="box"];
-  "50" [label="50: Match(ast.Placeholder{id: I}; {})" shape="box"];
-  "51" [label="51: Union" shape="box"];
-  "52" [label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
-  "53" [label="53: Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T})" shape="box"];
-  "54" [label="54: Match(tc.scopeLambda{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T})" shape="box"];
-  "55" [label="55: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})" shape="box"];
-  "56" [label="56: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})" shape="box"];
-  "57" [label="57: Join(56 & 55)" shape="box"];
-  "58" [label="58: Match(lang.Builtin{name: N, type: T}; {})" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
-  "59" [label="59: Match(ast.RootExpr{id: I}; {})" shape="box"];
-  "6" [label="6: Match(ast.Lambda{id: I, location: S}; {})" shape="box"];
-  "60" [label="60: Join(59 & 58)" shape="box"];
-  "61" [label="61: Match(tc.Type{id: B, type: T}; {I: B, T: T})" shape="box"];
-  "62" [label="62: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {})" shape="box"];
-  "63" [label="63: Join(62 & 61)" shape="box"];
-  "64" [label="64: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {})" shape="box"];
-  "65" [label="65: Match(ast.Lambda{body: I, id: LID}; {})" shape="box"];
-  "66" [label="66: Join(65 & 64)" shape="box"];
-  "67" [label="67: Union" shape="box"];
-  "68" [label="68: Match(ast.LetExpr{bodyID: I, id: P}; {})" shape="box"];
-  "69" [label="69: Match(ast.LetExpr{bindingID: I, id: P}; {})" shape="box"];
-  "7" [label="7: Match(ast.Placeholder{id: I, location: S}; {})" shape="box"];
-  "70" [label="70: Match(ast.FuncCall{argID: I, id: P}; {})" shape="box"];
-  "71" [label="71: Match(ast.FuncCall{funcID: I, id: P}; {})" shape="box"];
-  "72" [label="72: Match(ast.Lambda{body: I, id: P}; {})" shape="box"];
-  "8" [label="8: Union" shape="box"];
-  "9" [label="9: Match(ast.LetExpr{bodyID: I, id: P}; {})" shape="box"];
-  "ast.Expr" [label="ast.Expr: Subst(ast.Expr{id: I, location: S})" shape="box"];
-  "ast.FuncCall" [label="ast.FuncCall: Base" shape="box"];
-  "ast.IntLit" [label="ast.IntLit: Base" shape="box"];
-  "ast.Lambda" [label="ast.Lambda: Base" shape="box"];
-  "ast.LambdaParam" [label="ast.LambdaParam: Base" shape="box"];
-  "ast.LetExpr" [label="ast.LetExpr: Base" shape="box"];
-  "ast.ParentExpr" [label="ast.ParentExpr: Subst(ast.ParentExpr{id: I, parent: P, span: S})" shape="box"];
-  "ast.Placeholder" [label="ast.Placeholder: Base" shape="box"];
-  "ast.RootExpr" [label="ast.RootExpr: Base" shape="box"];
-  "ast.StringLit" [label="ast.StringLit: Base" shape="box"];
-  "ast.Var" [label="ast.Var: Base" shape="box"];
-  "lang.Builtin" [label="lang.Builtin: Base" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
-  "tc.ScopeItem" [label="tc.ScopeItem: Subst(tc.ScopeItem{id: I, location: L, name: N, type: T})" shape="box"];
-  "tc.Type" [label="tc.Type: Subst(tc.Type{id: I, type: T})" shape="box"];
-  "tc.parentScope" [label="tc.parentScope: Subst(tc.parentScope{id: I, parentID: P})" shape="box"];
-  "tc.scopeBuiltin" [label="tc.scopeBuiltin: Subst(tc.scopeBuiltin{id: I, location: \"builtin\", name: N, type: T})" shape="box"];
-  "tc.scopeLambda" [label="tc.scopeLambda: Subst(tc.scopeLambda{id: I, location: L, name: N, type: T})" shape="box"];
-  "tc.scopeLet" [label="tc.scopeLet: Subst(tc.scopeLet{id: I, location: L, name: N, type: T})" shape="box"];
-  "tc.typeFC" [label="tc.typeFC: Subst(tc.typeFC{id: I, type: T})" shape="box"];
-  "tc.typeI" [label="tc.typeI: Subst(tc.typeI{id: I, type: \"int\"})" shape="box"];
-  "tc.typeLambda" [label="tc.typeLambda: Subst(tc.typeLambda{id: I, type: tapp{from: F, to: R}})" shape="box"];
-  "tc.typeLet" [label="tc.typeLet: Subst(tc.typeLet{id: I, type: T})" shape="box"];
-  "tc.typePlaceholder" [label="tc.typePlaceholder: Subst(tc.typePlaceholder{id: I, type: \"unknown\"})" shape="box"];
-  "tc.typeS" [label="tc.typeS: Subst(tc.typeS{id: I, type: \"string\"})" shape="box"];
-  "tc.typeVar" [label="tc.typeVar: Subst(tc.typeVar{id: I, type: T})" shape="box"];
+  "0" [color="black" label="0: Match(ast.Var{id: I}; {})" shape="box"];
+  "1" [color="black" label="1: Union" shape="box"];
+  "10" [color="black" label="10: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})" shape="box"];
+  "11" [color="black" label="11: Join(10 & 9): tc.typeFC" shape="box"];
+  "12" [color="black" label="12: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {})" shape="box"];
+  "13" [color="black" label="13: Join(12 & 11): tc.typeFC" shape="box"];
+  "14" [color="black" label="14: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
+  "15" [color="black" label="15: Match(ast.Expr{id: I}; {I: I})" shape="box"];
+  "16" [color="black" label="16: Match(lang.Builtin{name: N, type: T}; {})" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+  "17" [color="black" label="17: Join(16 & 15): tc.scopeBuiltin" shape="box"];
+  "2" [color="black" label="2: Match(tc.typeI{id: I, type: T}; {I: I})" shape="box"];
+  "3" [color="black" label="3: Match(tc.typeFC{id: I, type: T}; {I: I, T: T})" shape="box"];
+  "4" [color="black" label="4: Match(tc.typeVar{id: I, type: T}; {I: I, T: T})" shape="box"];
+  "5" [color="black" label="5: Match(ast.IntLit{id: I}; {})" shape="box"];
+  "6" [color="black" label="6: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
+  "7" [color="black" label="7: Match(ast.Var{id: I, name: N}; {})" shape="box"];
+  "8" [color="black" label="8: Join(7 & 6): tc.typeVar" shape="box"];
+  "9" [color="black" label="9: Match(tc.Type{id: AID, type: F}; {I: AID, T: F})" shape="box"];
+  "ast.Expr" [color="black" label="ast.Expr: Subst(ast.Expr{id: I})" shape="box"];
+  "ast.FuncCall" [color="black" label="ast.FuncCall: Base" shape="box"];
+  "ast.IntLit" [color="black" label="ast.IntLit: Base" shape="box"];
+  "ast.RootExpr" [color="black" label="ast.RootExpr: Base" shape="box"];
+  "ast.Var" [color="black" label="ast.Var: Base" shape="box"];
+  "lang.Builtin" [color="black" label="lang.Builtin: Base" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
+  "tc.ScopeItem" [color="black" label="tc.ScopeItem: Subst(tc.ScopeItem{id: I, location: L, name: N, type: T})" shape="box"];
+  "tc.Type" [color="black" label="tc.Type: Subst(tc.Type{id: I, type: T})" shape="box"];
+  "tc.scopeBuiltin" [color="black" label="tc.scopeBuiltin: Subst(tc.scopeBuiltin{id: I, location: \"builtin\", name: N, type: T})" shape="box"];
+  "tc.typeFC" [color="black" label="tc.typeFC: Subst(tc.typeFC{id: I, type: T})" shape="box"];
+  "tc.typeI" [color="black" label="tc.typeI: Subst(tc.typeI{id: I, type: \"int\"})" shape="box"];
+  "tc.typeVar" [color="black" label="tc.typeVar: Subst(tc.typeVar{id: I, type: T})" shape="box"];
   "0" -> "ast.Expr" [];
-  "1" -> "0" [];
+  "1" -> "tc.Type" [];
   "10" -> "11" [];
-  "11" -> "8" [];
-  "12" -> "14" [];
-  "13" -> "14" [];
-  "14" -> "8" [];
+  "11" -> "13" [];
+  "12" -> "13" [];
+  "13" -> "tc.typeFC" [];
+  "14" -> "tc.ScopeItem" [];
   "15" -> "17" [];
   "16" -> "17" [];
-  "17" -> "8" [];
-  "18" -> "20" [];
-  "19" -> "20" [];
-  "2" -> "0" [];
-  "20" -> "8" [];
-  "21" -> "23" [];
-  "22" -> "23" [];
-  "23" -> "8" [];
-  "24" -> "tc.Type" [];
-  "25" -> "24" [];
-  "26" -> "24" [];
-  "27" -> "24" [];
-  "28" -> "24" [];
-  "29" -> "24" [];
-  "3" -> "0" [];
-  "30" -> "24" [];
-  "31" -> "24" [];
-  "32" -> "tc.typeS" [];
-  "33" -> "tc.typeI" [];
-  "34" -> "36" [];
-  "35" -> "36" [];
-  "36" -> "38" [];
-  "37" -> "38" [];
-  "38" -> "tc.typeFC" [];
-  "39" -> "41" [];
-  "4" -> "0" [];
-  "40" -> "41" [];
-  "41" -> "tc.typeLet" [];
-  "42" -> "44" [];
-  "43" -> "44" [];
-  "44" -> "tc.typeVar" [];
-  "45" -> "47" [];
-  "46" -> "47" [];
-  "47" -> "49" [];
-  "48" -> "49" [];
-  "49" -> "tc.typeLambda" [];
-  "5" -> "0" [];
-  "50" -> "tc.typePlaceholder" [];
-  "51" -> "tc.ScopeItem" [];
-  "52" -> "51" [];
-  "53" -> "51" [];
-  "54" -> "51" [];
-  "55" -> "57" [];
-  "56" -> "57" [];
-  "57" -> "51" [];
-  "58" -> "60" [];
-  "59" -> "60" [];
-  "6" -> "0" [];
-  "60" -> "tc.scopeBuiltin" [];
-  "61" -> "63" [];
-  "62" -> "63" [];
-  "63" -> "tc.scopeLet" [];
-  "64" -> "66" [];
-  "65" -> "66" [];
-  "66" -> "tc.scopeLambda" [];
-  "67" -> "tc.parentScope" [];
-  "68" -> "67" [];
-  "69" -> "67" [];
-  "7" -> "0" [];
-  "70" -> "67" [];
-  "71" -> "67" [];
-  "72" -> "67" [];
-  "8" -> "ast.ParentExpr" [];
+  "17" -> "tc.scopeBuiltin" [];
+  "2" -> "1" [];
+  "3" -> "1" [];
+  "4" -> "1" [];
+  "5" -> "tc.typeI" [];
+  "6" -> "8" [];
+  "7" -> "8" [];
+  "8" -> "tc.typeVar" [];
   "9" -> "11" [];
-  "ast.Expr" -> "10" [];
-  "ast.Expr" -> "13" [];
-  "ast.Expr" -> "16" [];
-  "ast.Expr" -> "19" [];
-  "ast.Expr" -> "22" [];
-  "ast.FuncCall" -> "5" [];
-  "ast.FuncCall" -> "15" [];
-  "ast.FuncCall" -> "18" [];
-  "ast.FuncCall" -> "37" [];
-  "ast.FuncCall" -> "70" [];
-  "ast.FuncCall" -> "71" [];
-  "ast.IntLit" -> "2" [];
-  "ast.IntLit" -> "33" [];
-  "ast.Lambda" -> "6" [];
-  "ast.Lambda" -> "21" [];
-  "ast.Lambda" -> "48" [];
-  "ast.Lambda" -> "65" [];
-  "ast.Lambda" -> "72" [];
-  "ast.LambdaParam" -> "46" [];
-  "ast.LambdaParam" -> "64" [];
-  "ast.LetExpr" -> "4" [];
-  "ast.LetExpr" -> "9" [];
-  "ast.LetExpr" -> "12" [];
-  "ast.LetExpr" -> "40" [];
-  "ast.LetExpr" -> "62" [];
-  "ast.LetExpr" -> "68" [];
-  "ast.LetExpr" -> "69" [];
-  "ast.Placeholder" -> "7" [];
-  "ast.Placeholder" -> "50" [];
-  "ast.RootExpr" -> "59" [];
-  "ast.StringLit" -> "1" [];
-  "ast.StringLit" -> "32" [];
-  "ast.Var" -> "3" [];
-  "ast.Var" -> "43" [];
-  "lang.Builtin" -> "58" [];
-  "tc.ScopeItem" -> "42" [];
-  "tc.ScopeItem" -> "55" [];
-  "tc.Type" -> "34" [];
-  "tc.Type" -> "35" [];
-  "tc.Type" -> "39" [];
-  "tc.Type" -> "45" [];
-  "tc.Type" -> "61" [];
-  "tc.parentScope" -> "56" [];
-  "tc.scopeBuiltin" -> "52" [];
-  "tc.scopeLambda" -> "54" [];
-  "tc.scopeLet" -> "53" [];
-  "tc.typeFC" -> "28" [];
-  "tc.typeI" -> "26" [];
-  "tc.typeLambda" -> "27" [];
-  "tc.typeLet" -> "29" [];
-  "tc.typePlaceholder" -> "31" [];
-  "tc.typeS" -> "25" [];
-  "tc.typeVar" -> "30" [];
+  "ast.Expr" -> "15" [];
+  "ast.FuncCall" -> "12" [];
+  "ast.IntLit" -> "5" [];
+  "ast.Var" -> "0" [];
+  "ast.Var" -> "7" [];
+  "lang.Builtin" -> "16" [];
+  "tc.ScopeItem" -> "6" [];
+  "tc.Type" -> "9" [];
+  "tc.Type" -> "10" [];
+  "tc.scopeBuiltin" -> "14" [];
+  "tc.typeFC" -> "3" [];
+  "tc.typeI" -> "2" [];
+  "tc.typeVar" -> "4" [];
 }
 
 ast.RootExpr{id: 0}.
 ----
 text/plain
 ast.RootExpr: [ast.RootExpr{id: 0}; {}]
-59: [ast.RootExpr{id: 0}; {I: 0}]
-60: [ast.RootExpr{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
-tc.scopeBuiltin: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
-52: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
-51: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
-tc.ScopeItem: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
-42: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
-55: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-44: []
-57: []
 
 ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
 ----
 text/plain
 ast.FuncCall: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {}]
-5: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-15: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
-18: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
-37: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
-70: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
-71: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
-0: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-17: []
-20: []
-38: []
-67: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
-67: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
-ast.Expr: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-tc.parentScope: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
-tc.parentScope: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
-10: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-13: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-16: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-19: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-22: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-56: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
-56: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
-11: []
-14: []
-17: []
-20: []
-23: []
-57: [tc.parentScope{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-57: [tc.parentScope{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-51: [tc.parentScope{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-51: [tc.parentScope{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-tc.ScopeItem: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-42: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}]
-55: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}]
-42: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
-55: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}]
-44: []
-57: []
-44: []
-57: []
+12: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
+13: []
 
 ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
 ----
 text/plain
 ast.Var: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {}]
-3: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
-43: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
-0: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
-44: []
-ast.Expr: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-10: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-13: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-16: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-19: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-22: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-11: []
-14: []
-17: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
-20: []
-23: []
-8: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
-ast.ParentExpr: [ast.ParentExpr{id: 1, parent: 0, span: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
+0: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1}]
+7: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
+ast.Expr: [ast.Expr{id: 1}; {I: 1}]
+8: []
+15: [ast.Expr{id: 1}; {I: 1}]
+17: [tc.scopeBuiltin{id: 1}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
+tc.scopeBuiltin: [tc.scopeBuiltin{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
+14: [tc.scopeBuiltin{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+6: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
+8: []
 
 ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
 ----
 text/plain
 ast.IntLit: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {}]
-2: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
-33: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2}]
-0: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
+5: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2}]
 tc.typeI: [tc.typeI{id: 2, type: "int"}; {I: 2}]
-ast.Expr: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-26: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
-10: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-13: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-16: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-19: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-22: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-24: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
-11: []
-14: []
-17: []
-20: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
-23: []
+2: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
+1: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
 tc.Type: [tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}]
-8: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
-34: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
-35: [tc.Type{id: 2, type: "int"}; {}]
-39: [tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}]
-45: [tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}]
-61: [tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}]
-ast.ParentExpr: [ast.ParentExpr{id: 2, parent: 0, span: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
-36: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
-36: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
-41: []
-47: []
-63: []
-38: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int", FID: 1, I: 0}]
-38: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int", FID: 1, I: 0}]
-tc.typeFC: [tc.typeFC{id: 0, type: T}; {AID: 2, F: "int", FID: 1, I: 0}]
-tc.typeFC: [tc.typeFC{id: 0, type: T}; {AID: 2, F: "int", FID: 1, I: 0}]
-28: [tc.typeFC{id: 0, type: T}; {I: 0, T: T}]
-28: [tc.typeFC{id: 0, type: T}; {I: 0, T: T}]
-24: [tc.typeFC{id: 0, type: T}; {I: 0, T: T}]
-24: [tc.typeFC{id: 0, type: T}; {I: 0, T: T}]
-tc.Type: [tc.Type{id: 0, type: T}; {I: 0, T: T}]
-tc.Type: [tc.Type{id: 0, type: T}; {I: 0, T: T}]
-34: [tc.Type{id: 0, type: T}; {AID: 0, F: T}]
-35: [tc.Type{id: 0, type: T}; {FID: 0, T: tapp{from: F, to: T}}]
-39: [tc.Type{id: 0, type: T}; {BID: 0, T: T}]
-45: [tc.Type{id: 0, type: T}; {B: 0, R: T}]
-61: [tc.Type{id: 0, type: T}; {B: 0, T: T}]
-34: [tc.Type{id: 0, type: T}; {AID: 0, F: T}]
-35: [tc.Type{id: 0, type: T}; {FID: 0, T: tapp{from: F, to: T}}]
-39: [tc.Type{id: 0, type: T}; {BID: 0, T: T}]
-45: [tc.Type{id: 0, type: T}; {B: 0, R: T}]
-61: [tc.Type{id: 0, type: T}; {B: 0, T: T}]
-36: [tc.Type{id: 0, type: T}; {AID: 0, F: T}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}]
-36: [tc.Type{id: 0, type: T}; {AID: 2, F: "int", FID: 0, T: tapp{from: F, to: T}}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}]
-41: []
-47: []
-63: []
-36: [tc.Type{id: 0, type: T}; {AID: 0, F: T}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}]
-36: [tc.Type{id: 0, type: T}; {AID: 2, F: "int", FID: 0, T: tapp{from: F, to: T}}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}, tc.Type{id: 0, type: T}; {AID: 0, F: T, FID: 0, T: tapp{from: F, to: T}}]
-41: []
-47: []
-63: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
-38: []
+9: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
+10: []
+11: []

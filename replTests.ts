@@ -1,6 +1,6 @@
 import { Suite } from "./testing";
 import { fsLoader, Repl } from "./repl";
-import { DDTest, runDDTestAtPath } from "./util/ddTest";
+import { runDDTestAtPath } from "./util/ddTest";
 import { identityTransform, readAll } from "./streamUtil";
 import { TestOutput, plainTextOut } from "./util/ddTest/types";
 
@@ -16,7 +16,7 @@ export function replTests(writeResults: boolean): Suite {
   }));
 }
 
-export function putThroughRepl(test: DDTest): TestOutput[] {
+export function putThroughRepl(test: string[]): TestOutput[] {
   const input = identityTransform();
   const output = identityTransform();
   const repl = new Repl(input, output, "test", "", fsLoader);
@@ -24,8 +24,8 @@ export function putThroughRepl(test: DDTest): TestOutput[] {
 
   const results: TestOutput[] = [];
 
-  for (const pair of test) {
-    input.write(pair.input + "\n");
+  for (const testInput of test) {
+    input.write(testInput + "\n");
 
     const out = readAll(output);
 

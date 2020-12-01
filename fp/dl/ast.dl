@@ -1,6 +1,7 @@
 .table ast.IntLit
 .table ast.FuncCall
 .table ast.Var
+.table ast.RootExpr
 
 ast.Expr{id: I} :-
   ast.Var{id: I}.

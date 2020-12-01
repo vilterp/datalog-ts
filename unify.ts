@@ -1,5 +1,6 @@
 import { Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "./util";
+import { ppb } from "./pretty";
 
 export function unify(
   prior: Bindings,
@@ -154,6 +155,7 @@ export function termLT(left: Term, right: Term): boolean {
 }
 
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
+  // console.log("=> unifyVars", ppb(left), ppb(right));
   const res: Bindings = {};
   for (const leftKey of Object.keys(left)) {
     const leftVal = left[leftKey];
@@ -170,6 +172,13 @@ export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
   for (const key of onlyInRight) {
     res[key] = right[key];
   }
+  for (const key of Object.keys(res)) {
+    if (res[key].type === "Var") {
+      console.log("bail out");
+      return null;
+    }
+  }
+  // console.log("<= unifyVars", ppb(res));
   return res;
 }
 

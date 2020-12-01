@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import { Graphviz } from "graphviz-react";
 import ReactJson from "react-json-view";
-import React, { useState } from "react";
 import { useWindowWidth } from "@react-hook/window-size";
 import {
   EmissionLogAndGraph,
@@ -12,7 +12,14 @@ import { prettyPrintGraph } from "../../graphviz";
 import { DagreReact } from "dagre-reactjs";
 import { toDagre } from "../../incremental/dagre";
 import { clamp } from "../../util";
-import { log } from "util";
+import { TestOutput } from "./types";
+
+export type SuiteSpec = {
+  name: string;
+  func: (inputs: string[]) => TestOutput[];
+  inputs: string[];
+  visualizers: { [mimeType: string]: (output: string) => React.ReactNode };
+};
 
 function EmissionLogViewer(props: { text: string }) {
   const logAndGraph: EmissionLogAndGraph = JSON.parse(props.text);

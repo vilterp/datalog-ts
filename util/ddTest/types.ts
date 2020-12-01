@@ -1,15 +1,6 @@
-import React from "react";
-
-export type SuiteSpec = {
-  name: string;
-  func: (inputs: string[]) => TestOutput[];
-  inputs: string[];
-  visualizers: { [mimeType: string]: (output: string) => React.ReactNode };
-};
-
 export type DDTest = IOPair[];
 
-export type ProcessFn = (test: IOPair[]) => TestOutput[];
+export type ProcessFn = (input: string[]) => TestOutput[];
 
 interface IOPair {
   lineNo: number; // 1-indexed

@@ -89,15 +89,15 @@ export function fpTests(writeResults: boolean): Suite {
   ];
 }
 
-function parseTest(test: DDTest): TestOutput[] {
+function parseTest(test: string[]): TestOutput[] {
   return test.map((tc) =>
-    jsonOut(JSON.stringify(language.expr.tryParse(tc.input), null, 2))
+    jsonOut(JSON.stringify(language.expr.tryParse(tc), null, 2))
   );
 }
 
-function flattenTest(test: DDTest): TestOutput[] {
+function flattenTest(test: string[]): TestOutput[] {
   return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+    const parsed = language.expr.tryParse(tc);
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");

@@ -55,19 +55,19 @@ export function parserlibTests(writeResults: boolean): Suite {
 }
 
 // TODO: DRY these two up
-function parserTest(grammar: Grammar, test: DDTest): TestOutput[] {
-  return test.map((pair) => {
-    const lines = pair.input.split("\n");
+function parserTest(grammar: Grammar, test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const lines = input.split("\n");
     const tree = parse(grammar, lines[0], lines.slice(1).join("\n"));
     return handleResults(tree);
   });
 }
 
-function metaTest(test: DDTest): TestOutput[] {
-  return test.map((pair) => {
-    const traceTree = parse(metaGrammar, "grammar", pair.input);
+function metaTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const traceTree = parse(metaGrammar, "grammar", input);
     const ruleTree = extractRuleTree(traceTree);
-    const grammar = extractGrammar(pair.input, ruleTree);
+    const grammar = extractGrammar(input, ruleTree);
     // TODO: indicate that it's one after the other...
     return plainTextOut(
       prettyPrintRuleTree(ruleTree) + "\n" + JSON.stringify(grammar, null, 2)
@@ -78,10 +78,10 @@ function metaTest(test: DDTest): TestOutput[] {
 function parserTestFixedStartRule(
   grammar: Grammar,
   startRule: string,
-  test: DDTest
+  test: string[]
 ): TestOutput[] {
-  return test.map((pair) => {
-    const tree = parse(grammar, startRule, pair.input);
+  return test.map((input) => {
+    const tree = parse(grammar, startRule, input);
     return handleResults(tree);
   });
 }
