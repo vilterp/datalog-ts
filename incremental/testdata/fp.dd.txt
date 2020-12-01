@@ -10,113 +10,271 @@ lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.
 ----
 text/plain
 lang.Builtin: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
-16: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
-17: []
+42: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+44: []
 
 .rulegraph
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(ast.Var{id: I}; {})" shape="box"];
-  "1" [color="black" label="1: Union" shape="box"];
-  "10" [color="black" label="10: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})" shape="box"];
-  "11" [color="black" label="11: Join(10 & 9): tc.typeFC" shape="box"];
-  "12" [color="black" label="12: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {})" shape="box"];
-  "13" [color="black" label="13: Join(12 & 11): tc.typeFC" shape="box"];
-  "14" [color="black" label="14: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
-  "15" [color="black" label="15: Match(ast.Expr{id: I}; {I: I})" shape="box"];
-  "16" [color="black" label="16: Match(lang.Builtin{name: N, type: T}; {})" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
-  "17" [color="black" label="17: Join(16 & 15): tc.scopeBuiltin" shape="box"];
-  "2" [color="black" label="2: Match(tc.typeI{id: I, type: T}; {I: I})" shape="box"];
-  "3" [color="black" label="3: Match(tc.typeFC{id: I, type: T}; {I: I, T: T})" shape="box"];
-  "4" [color="black" label="4: Match(tc.typeVar{id: I, type: T}; {I: I, T: T})" shape="box"];
-  "5" [color="black" label="5: Match(ast.IntLit{id: I}; {})" shape="box"];
-  "6" [color="black" label="6: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
-  "7" [color="black" label="7: Match(ast.Var{id: I, name: N}; {})" shape="box"];
-  "8" [color="black" label="8: Join(7 & 6): tc.typeVar" shape="box"];
-  "9" [color="black" label="9: Match(tc.Type{id: AID, type: F}; {I: AID, T: F})" shape="box"];
-  "ast.Expr" [color="black" label="ast.Expr: Subst(ast.Expr{id: I})" shape="box"];
+  "0" [color="black" label="0: Union" shape="box"];
+  "1" [color="black" label="1: Match(ast.StringLit{id: I, location: S}; {})" shape="box"];
+  "10" [color="black" label="10: Match(tc.typeI{id: I, type: T}; {I: I})" shape="box"];
+  "11" [color="black" label="11: Match(tc.typeLambda{id: I, type: T}; {I: I})" shape="box"];
+  "12" [color="black" label="12: Match(tc.typeFC{id: I, type: T}; {I: I, T: T})" shape="box"];
+  "13" [color="black" label="13: Match(tc.typeLet{id: I, type: T}; {I: I, T: T})" shape="box"];
+  "14" [color="black" label="14: Match(tc.typeVar{id: I, type: T}; {I: I, T: T})" shape="box"];
+  "15" [color="black" label="15: Match(tc.typePlaceholder{id: I, type: T}; {I: I})" shape="box"];
+  "16" [color="black" label="16: Match(ast.StringLit{id: I}; {})" shape="box"];
+  "17" [color="black" label="17: Match(ast.IntLit{id: I}; {})" shape="box"];
+  "18" [color="black" label="18: Match(tc.Type{id: AID, type: F}; {I: AID, T: F})" shape="box"];
+  "19" [color="black" label="19: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})" shape="box"];
+  "2" [color="black" label="2: Match(ast.IntLit{id: I, location: S}; {})" shape="box"];
+  "20" [color="black" label="20: Join(19 & 18): tc.typeFC" shape="box"];
+  "21" [color="black" label="21: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {})" shape="box"];
+  "22" [color="black" label="22: Join(21 & 20): tc.typeFC" shape="box"];
+  "23" [color="black" label="23: Match(tc.Type{id: BID, type: T}; {I: BID, T: T})" shape="box"];
+  "24" [color="black" label="24: Match(ast.LetExpr{bodyID: BID, id: I}; {})" shape="box"];
+  "25" [color="black" label="25: Join(24 & 23): tc.typeLet" shape="box"];
+  "26" [color="black" label="26: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
+  "27" [color="black" label="27: Match(ast.Var{id: I, name: N}; {})" shape="box"];
+  "28" [color="black" label="28: Join(27 & 26): tc.typeVar" shape="box"];
+  "29" [color="black" label="29: Match(tc.Type{id: B, type: R}; {I: B, T: R})" shape="box"];
+  "3" [color="black" label="3: Match(ast.Var{id: I, location: S}; {})" shape="box"];
+  "30" [color="black" label="30: Match(ast.LambdaParam{lambdaID: I, ty: F}; {})" shape="box"];
+  "31" [color="black" label="31: Join(30 & 29): tc.typeLambda" shape="box"];
+  "32" [color="black" label="32: Match(ast.Lambda{body: B, id: I, retType: R}; {})" shape="box"];
+  "33" [color="black" label="33: Join(32 & 31): tc.typeLambda" shape="box"];
+  "34" [color="black" label="34: Match(ast.Placeholder{id: I}; {})" shape="box"];
+  "35" [color="black" label="35: Union" shape="box"];
+  "36" [color="black" label="36: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})" shape="box"];
+  "37" [color="black" label="37: Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T})" shape="box"];
+  "38" [color="black" label="38: Match(tc.scopeLambda{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T})" shape="box"];
+  "39" [color="black" label="39: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})" shape="box"];
+  "4" [color="black" label="4: Match(ast.LetExpr{id: I, location: S}; {})" shape="box"];
+  "40" [color="black" label="40: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})" shape="box"];
+  "41" [color="black" label="41: Join(40 & 39): tc.ScopeItem" shape="box"];
+  "42" [color="black" label="42: Match(lang.Builtin{name: N, type: T}; {})" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+  "43" [color="black" label="43: Match(ast.RootExpr{id: I}; {})" shape="box"];
+  "44" [color="black" label="44: Join(43 & 42): tc.scopeBuiltin" shape="box"];
+  "45" [color="black" label="45: Match(tc.Type{id: B, type: T}; {I: B, T: T})" shape="box"];
+  "46" [color="black" label="46: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {})" shape="box"];
+  "47" [color="black" label="47: Join(46 & 45): tc.scopeLet" shape="box"];
+  "48" [color="black" label="48: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {})" shape="box"];
+  "49" [color="black" label="49: Match(ast.Lambda{body: I, id: LID}; {})" shape="box"];
+  "5" [color="black" label="5: Match(ast.FuncCall{id: I, location: S}; {})" shape="box"];
+  "50" [color="black" label="50: Join(49 & 48): tc.scopeLambda" shape="box"];
+  "51" [color="black" label="51: Union" shape="box"];
+  "52" [color="black" label="52: Match(ast.LetExpr{bodyID: I, id: P}; {})" shape="box"];
+  "53" [color="black" label="53: Match(ast.LetExpr{bindingID: I, id: P}; {})" shape="box"];
+  "54" [color="black" label="54: Match(ast.FuncCall{argID: I, id: P}; {})" shape="box"];
+  "55" [color="black" label="55: Match(ast.FuncCall{funcID: I, id: P}; {})" shape="box"];
+  "56" [color="black" label="56: Match(ast.Lambda{body: I, id: P}; {})" shape="box"];
+  "6" [color="black" label="6: Match(ast.Lambda{id: I, location: S}; {})" shape="box"];
+  "7" [color="black" label="7: Match(ast.Placeholder{id: I, location: S}; {})" shape="box"];
+  "8" [color="black" label="8: Union" shape="box"];
+  "9" [color="black" label="9: Match(tc.typeS{id: I, type: T}; {I: I})" shape="box"];
+  "ast.Expr" [color="black" label="ast.Expr: Subst(ast.Expr{id: I, location: S})" shape="box"];
   "ast.FuncCall" [color="black" label="ast.FuncCall: Base" shape="box"];
   "ast.IntLit" [color="black" label="ast.IntLit: Base" shape="box"];
+  "ast.Lambda" [color="black" label="ast.Lambda: Base" shape="box"];
+  "ast.LambdaParam" [color="black" label="ast.LambdaParam: Base" shape="box"];
+  "ast.LetExpr" [color="black" label="ast.LetExpr: Base" shape="box"];
+  "ast.Placeholder" [color="black" label="ast.Placeholder: Base" shape="box"];
   "ast.RootExpr" [color="black" label="ast.RootExpr: Base" shape="box"];
+  "ast.StringLit" [color="black" label="ast.StringLit: Base" shape="box"];
   "ast.Var" [color="black" label="ast.Var: Base" shape="box"];
   "lang.Builtin" [color="black" label="lang.Builtin: Base" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
   "tc.ScopeItem" [color="black" label="tc.ScopeItem: Subst(tc.ScopeItem{id: I, location: L, name: N, type: T})" shape="box"];
   "tc.Type" [color="black" label="tc.Type: Subst(tc.Type{id: I, type: T})" shape="box"];
+  "tc.parentScope" [color="black" label="tc.parentScope: Subst(tc.parentScope{id: I, parentID: P})" shape="box"];
   "tc.scopeBuiltin" [color="black" label="tc.scopeBuiltin: Subst(tc.scopeBuiltin{id: I, location: \"builtin\", name: N, type: T})" shape="box"];
+  "tc.scopeLambda" [color="black" label="tc.scopeLambda: Subst(tc.scopeLambda{id: I, location: L, name: N, type: T})" shape="box"];
+  "tc.scopeLet" [color="black" label="tc.scopeLet: Subst(tc.scopeLet{id: I, location: L, name: N, type: T})" shape="box"];
   "tc.typeFC" [color="black" label="tc.typeFC: Subst(tc.typeFC{id: I, type: T})" shape="box"];
   "tc.typeI" [color="black" label="tc.typeI: Subst(tc.typeI{id: I, type: \"int\"})" shape="box"];
+  "tc.typeLambda" [color="black" label="tc.typeLambda: Subst(tc.typeLambda{id: I, type: tapp{from: F, to: R}})" shape="box"];
+  "tc.typeLet" [color="black" label="tc.typeLet: Subst(tc.typeLet{id: I, type: T})" shape="box"];
+  "tc.typePlaceholder" [color="black" label="tc.typePlaceholder: Subst(tc.typePlaceholder{id: I, type: \"unknown\"})" shape="box"];
+  "tc.typeS" [color="black" label="tc.typeS: Subst(tc.typeS{id: I, type: \"string\"})" shape="box"];
   "tc.typeVar" [color="black" label="tc.typeVar: Subst(tc.typeVar{id: I, type: T})" shape="box"];
   "0" -> "ast.Expr" [];
-  "1" -> "tc.Type" [];
-  "10" -> "11" [];
-  "11" -> "13" [];
-  "12" -> "13" [];
-  "13" -> "tc.typeFC" [];
-  "14" -> "tc.ScopeItem" [];
-  "15" -> "17" [];
-  "16" -> "17" [];
-  "17" -> "tc.scopeBuiltin" [];
-  "2" -> "1" [];
-  "3" -> "1" [];
-  "4" -> "1" [];
-  "5" -> "tc.typeI" [];
-  "6" -> "8" [];
-  "7" -> "8" [];
-  "8" -> "tc.typeVar" [];
-  "9" -> "11" [];
-  "ast.Expr" -> "15" [];
-  "ast.FuncCall" -> "12" [];
-  "ast.IntLit" -> "5" [];
-  "ast.Var" -> "0" [];
-  "ast.Var" -> "7" [];
-  "lang.Builtin" -> "16" [];
-  "tc.ScopeItem" -> "6" [];
-  "tc.Type" -> "9" [];
-  "tc.Type" -> "10" [];
-  "tc.scopeBuiltin" -> "14" [];
-  "tc.typeFC" -> "3" [];
-  "tc.typeI" -> "2" [];
-  "tc.typeVar" -> "4" [];
+  "1" -> "0" [];
+  "10" -> "8" [];
+  "11" -> "8" [];
+  "12" -> "8" [];
+  "13" -> "8" [];
+  "14" -> "8" [];
+  "15" -> "8" [];
+  "16" -> "tc.typeS" [];
+  "17" -> "tc.typeI" [];
+  "18" -> "20" [];
+  "19" -> "20" [];
+  "2" -> "0" [];
+  "20" -> "22" [];
+  "21" -> "22" [];
+  "22" -> "tc.typeFC" [];
+  "23" -> "25" [];
+  "24" -> "25" [];
+  "25" -> "tc.typeLet" [];
+  "26" -> "28" [];
+  "27" -> "28" [];
+  "28" -> "tc.typeVar" [];
+  "29" -> "31" [];
+  "3" -> "0" [];
+  "30" -> "31" [];
+  "31" -> "33" [];
+  "32" -> "33" [];
+  "33" -> "tc.typeLambda" [];
+  "34" -> "tc.typePlaceholder" [];
+  "35" -> "tc.ScopeItem" [];
+  "36" -> "35" [];
+  "37" -> "35" [];
+  "38" -> "35" [];
+  "39" -> "41" [];
+  "4" -> "0" [];
+  "40" -> "41" [];
+  "41" -> "35" [];
+  "42" -> "44" [];
+  "43" -> "44" [];
+  "44" -> "tc.scopeBuiltin" [];
+  "45" -> "47" [];
+  "46" -> "47" [];
+  "47" -> "tc.scopeLet" [];
+  "48" -> "50" [];
+  "49" -> "50" [];
+  "5" -> "0" [];
+  "50" -> "tc.scopeLambda" [];
+  "51" -> "tc.parentScope" [];
+  "52" -> "51" [];
+  "53" -> "51" [];
+  "54" -> "51" [];
+  "55" -> "51" [];
+  "56" -> "51" [];
+  "6" -> "0" [];
+  "7" -> "0" [];
+  "8" -> "tc.Type" [];
+  "9" -> "8" [];
+  "ast.FuncCall" -> "5" [];
+  "ast.FuncCall" -> "21" [];
+  "ast.FuncCall" -> "54" [];
+  "ast.FuncCall" -> "55" [];
+  "ast.IntLit" -> "2" [];
+  "ast.IntLit" -> "17" [];
+  "ast.Lambda" -> "6" [];
+  "ast.Lambda" -> "32" [];
+  "ast.Lambda" -> "49" [];
+  "ast.Lambda" -> "56" [];
+  "ast.LambdaParam" -> "30" [];
+  "ast.LambdaParam" -> "48" [];
+  "ast.LetExpr" -> "4" [];
+  "ast.LetExpr" -> "24" [];
+  "ast.LetExpr" -> "46" [];
+  "ast.LetExpr" -> "52" [];
+  "ast.LetExpr" -> "53" [];
+  "ast.Placeholder" -> "7" [];
+  "ast.Placeholder" -> "34" [];
+  "ast.RootExpr" -> "43" [];
+  "ast.StringLit" -> "1" [];
+  "ast.StringLit" -> "16" [];
+  "ast.Var" -> "3" [];
+  "ast.Var" -> "27" [];
+  "lang.Builtin" -> "42" [];
+  "tc.ScopeItem" -> "26" [];
+  "tc.ScopeItem" -> "39" [];
+  "tc.Type" -> "18" [];
+  "tc.Type" -> "19" [];
+  "tc.Type" -> "23" [];
+  "tc.Type" -> "29" [];
+  "tc.Type" -> "45" [];
+  "tc.parentScope" -> "40" [];
+  "tc.scopeBuiltin" -> "36" [];
+  "tc.scopeLambda" -> "38" [];
+  "tc.scopeLet" -> "37" [];
+  "tc.typeFC" -> "12" [];
+  "tc.typeI" -> "10" [];
+  "tc.typeLambda" -> "11" [];
+  "tc.typeLet" -> "13" [];
+  "tc.typePlaceholder" -> "15" [];
+  "tc.typeS" -> "9" [];
+  "tc.typeVar" -> "14" [];
 }
 
 ast.RootExpr{id: 0}.
 ----
 text/plain
 ast.RootExpr: [ast.RootExpr{id: 0}; {}]
+43: [ast.RootExpr{id: 0}; {I: 0}]
+44: [tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+tc.scopeBuiltin: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+36: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+35: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+26: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+39: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+28: []
+41: []
 
 ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
 ----
 text/plain
 ast.FuncCall: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {}]
-12: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
-13: []
+5: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+21: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
+54: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
+55: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
+0: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+22: []
+51: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
+51: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
+ast.Expr: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+tc.parentScope: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
+tc.parentScope: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
+40: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
+40: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
+41: [tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+41: [tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+35: [tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+35: [tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+26: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}]
+39: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}]
+26: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
+39: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}]
+28: []
+41: []
+28: []
+41: []
 
 ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
 ----
 text/plain
 ast.Var: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {}]
-0: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1}]
-7: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
-ast.Expr: [ast.Expr{id: 1}; {I: 1}]
-8: []
-15: [ast.Expr{id: 1}; {I: 1}]
-17: [tc.scopeBuiltin{id: 1}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
-tc.scopeBuiltin: [tc.scopeBuiltin{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
-14: [tc.scopeBuiltin{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
-tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
-6: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
-8: []
+3: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
+27: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
+0: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
+28: []
+ast.Expr: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
 
 ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
 ----
 text/plain
 ast.IntLit: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {}]
-5: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2}]
+2: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
+17: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2}]
+0: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
 tc.typeI: [tc.typeI{id: 2, type: "int"}; {I: 2}]
-2: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
-1: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
+ast.Expr: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+10: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
+8: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
 tc.Type: [tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}]
-9: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
-10: []
-11: []
+18: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
+19: []
+23: [tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}]
+29: [tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}]
+45: [tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}]
+20: []
+25: []
+31: []
+47: []

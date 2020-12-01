@@ -41,7 +41,7 @@ text/plain
 parent{child: "Pete", parent: "Paul"}.
 parent{child: "Pete", parent: "Mary"}.
 
-grandfather{grandchild: "Pete", grandfather: A}.
+grandfather{grandchild: X, grandfather: Y}.
 ----
 text/plain
 

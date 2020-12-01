@@ -1,10 +1,21 @@
+.table ast.RootExpr
+.table ast.StringLit
 .table ast.IntLit
+.table ast.LetExpr
+.table ast.Lambda
+.table ast.LambdaParam
 .table ast.FuncCall
 .table ast.Var
-.table ast.RootExpr
+.table ast.Placeholder
 
-ast.Expr{id: I} :-
-  ast.Var{id: I}.
+ast.Expr{id: I, location: S} :-
+  ast.StringLit{id: I, location: S} |
+  ast.IntLit{id: I, location: S} |
+  ast.Var{id: I, location: S} |
+  ast.LetExpr{id: I, location: S} |
+  ast.FuncCall{id: I, location: S} |
+  ast.Lambda{id: I, location: S} |
+  ast.Placeholder{id: I, location: S}.
 
 # can use this to show an AST
 # TODO: rename location to span everywhere
