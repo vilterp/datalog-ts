@@ -41,6 +41,11 @@ export function resolveUnmappedRule(
       }
       const ruleRec = ruleNodeDesc.rec;
       const mappings = getMappings(ruleRec.attrs, callRec.attrs);
+      // console.log("resolve Match", {
+      //   ruleAttrs: ppt(ruleRec),
+      //   callAttrs: ppt(callRec),
+      //   mappings: ppVM(mappings, [], { showScopePath: false }),
+      // });
       curGraph = updateMappings(curGraph, newNodeID, mappings);
     }
   }
@@ -219,6 +224,10 @@ function updateMappings(
     ...graph,
     nodes: graph.nodes.update(from, (node) => ({
       ...node,
+      // TODO: create index
+      // cache: node.cache.createIndex(XXX, (res) => {
+      //   XXX;
+      // }),
       desc:
         node.desc.type === "Match"
           ? { ...node.desc, mappings: newMappings }

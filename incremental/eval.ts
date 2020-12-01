@@ -248,20 +248,25 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
 
 type JoinStats = {
   joinTimeMS: number;
-  recordsJoined: number;
+  inputRecords: number;
+  outputRecords: number;
 };
 
 let joinStats: JoinStats = {
   joinTimeMS: 0,
-  recordsJoined: 0,
+  inputRecords: 0,
+  outputRecords: 0,
 };
 
-export function getJoinStats(): JoinStats {
-  return joinStats;
+export function getJoinStats(): object {
+  return {
+    ...joinStats,
+    outputPct: (joinStats.outputRecords / joinStats.inputRecords) * 100,
+  };
 }
 
 export function clearJoinStats() {
-  joinStats = { joinTimeMS: 0, recordsJoined: 0 };
+  joinStats = { joinTimeMS: 0, inputRecords: 0, outputRecords: 0 };
 }
 
 function doJoin(
@@ -290,7 +295,8 @@ function doJoin(
     }
   }
   const after = performance.now();
-  joinStats.recordsJoined += otherRelation.size;
+  joinStats.inputRecords += otherRelation.size;
+  joinStats.outputRecords += results.length;
   joinStats.joinTimeMS += after - before;
   return results;
 }

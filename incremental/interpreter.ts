@@ -41,6 +41,8 @@ type Output =
 
 const ack: Output = { type: "Acknowledge" };
 
+// TODO: make back into a class
+
 export function newInterpreter(loader: Loader): Interpreter {
   return {
     graph: emptyRuleGraph,
