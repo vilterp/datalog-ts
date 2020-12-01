@@ -23,7 +23,11 @@ class IndexedCollection<T> {
       this.allRecords,
       this.indexes.set(name, {
         getKey,
-        items: Map(),
+        items: this.allRecords.reduce(
+          (accum, item) =>
+            accum.update(getKey(item), List(), (l) => l.push(item)),
+          Map()
+        ),
       })
     );
   }
