@@ -19,9 +19,9 @@ import {
   addUnmappedRule,
   resolveUnmappedRule,
 } from "./build";
-// import { Performance } from "w3c-hr-time";
+import { Performance } from "w3c-hr-time";
 
-// const performance = new Performance();
+const performance = new Performance();
 
 export type Insertion = {
   res: Res;
