@@ -75,7 +75,7 @@ function replayFacts(
   let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
     for (let res of graph.nodes.get(rootID).cache) {
-      for (let destination of graph.edges[rootID]) {
+      for (let destination of graph.edges.get(rootID)) {
         const iter = getReplayIterator(outGraph, allNewNodes, [
           {
             res,
@@ -179,7 +179,7 @@ function stepIterator(
     if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
       newGraph = addToCache(newGraph, curNodeID, result);
     }
-    for (let destination of newGraph.edges[curNodeID] || []) {
+    for (let destination of newGraph.edges.get(curNodeID) || []) {
       newQueue.push({
         destination,
         origin: curNodeID,

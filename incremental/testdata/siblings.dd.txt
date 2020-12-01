@@ -34,6 +34,9 @@ digraph G {
   "5" [color="black" label="5: Join(4 & 3): sibling" shape="box"];
   "6" [color="black" label="6: L != R" shape="box"];
   "father" [color="black" label="father: Base" shape="box"];
+  "mother" -> "1" [];
+  "parents" -> "3" [];
+  "parents" -> "4" [];
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];
@@ -42,9 +45,6 @@ digraph G {
   "5" -> "6" [];
   "6" -> "sibling" [];
   "father" -> "0" [];
-  "mother" -> "1" [];
-  "parents" -> "3" [];
-  "parents" -> "4" [];
 }
 
 mother{child: "Pete", mother: "Mary"}.

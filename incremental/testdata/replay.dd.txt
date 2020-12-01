@@ -60,11 +60,11 @@ digraph G {
   "1" [color="black" label="1: Match(mother{child: C, mother: M}; {})" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}, mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
   "2" [color="black" label="2: Join(1 & 0): parents" shape="box"]; // cache: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M})" shape="box"]; // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "parents" [];
   "father" -> "0" [];
   "mother" -> "1" [];
+  "1" -> "2" [];
+  "0" -> "2" [];
+  "2" -> "parents" [];
 }
 
 sibling{left: L, right: R} :-
@@ -103,6 +103,9 @@ digraph G {
   "5" [color="black" label="5: Join(4 & 3): sibling" shape="box"]; // cache: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
   "6" [color="black" label="6: L != R" shape="box"]; // cache: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
   "father" [color="black" label="father: Base" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
+  "mother" -> "1" [];
+  "parents" -> "3" [];
+  "parents" -> "4" [];
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];
@@ -111,7 +114,4 @@ digraph G {
   "5" -> "6" [];
   "6" -> "sibling" [];
   "father" -> "0" [];
-  "mother" -> "1" [];
-  "parents" -> "3" [];
-  "parents" -> "4" [];
 }

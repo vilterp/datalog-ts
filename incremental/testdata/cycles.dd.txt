@@ -19,14 +19,14 @@ digraph G {
   "3" [color="black" label="3: Match(baseEdge{from: F, to: I}; {})" shape="box"];
   "4" [color="black" label="4: Join(3 & 2): edge" shape="box"];
   "edge" [color="black" label="edge: Subst(edge{from: F, to: T})" shape="box"];
-  "0" -> "edge" [];
-  "1" -> "0" [];
-  "2" -> "4" [];
-  "3" -> "4" [];
-  "4" -> "0" [];
   "baseEdge" -> "1" [];
   "baseEdge" -> "3" [];
+  "1" -> "0" [];
   "edge" -> "2" [];
+  "3" -> "4" [];
+  "2" -> "4" [];
+  "4" -> "0" [];
+  "0" -> "edge" [];
 }
 
 baseEdge{from: "A", to: "B"}.

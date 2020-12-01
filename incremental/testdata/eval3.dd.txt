@@ -31,6 +31,9 @@ digraph G {
   "5" [color="black" label="5: Join(4 & 3): grandparent" shape="box"];
   "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C})" shape="box"];
   "father" [color="black" label="father: Base" shape="box"];
+  "mother" -> "1" [];
+  "parent" -> "3" [];
+  "parent" -> "4" [];
   "0" -> "parent" [];
   "1" -> "0" [];
   "2" -> "0" [];
@@ -38,9 +41,6 @@ digraph G {
   "4" -> "5" [];
   "5" -> "grandparent" [];
   "father" -> "2" [];
-  "mother" -> "1" [];
-  "parent" -> "3" [];
-  "parent" -> "4" [];
 }
 
 father{child: "Mary", father: "Mark"}.

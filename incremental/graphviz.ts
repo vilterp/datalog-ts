@@ -24,13 +24,16 @@ export function toGraphviz(
       })
       .valueSeq()
       .toArray(),
-    edges: flatMapObjToList(graph.edges, (fromID, destinations) =>
-      destinations.map((dst) => ({
-        from: fromID,
-        to: dst,
-        attrs: {},
-      }))
-    ),
+    edges: graph.edges
+      .entrySeq()
+      .flatMap(([fromID, destinations]) =>
+        destinations.map((dst) => ({
+          from: fromID,
+          to: dst,
+          attrs: {},
+        }))
+      )
+      .toArray(),
     comments:
       Object.keys(graph.unmappedRules).length > 0
         ? mapObjToList(

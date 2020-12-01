@@ -199,7 +199,9 @@ function addNode(
 export function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
-    edges: { ...graph.edges, [from]: [...(graph.edges[from] || []), to] },
+    edges: graph.edges.update(from, List(), (destinations) =>
+      destinations.push(to)
+    ),
   };
 }
 
