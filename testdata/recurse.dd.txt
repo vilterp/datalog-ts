@@ -56,7 +56,7 @@ Expected one of the following:
 
     at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
     at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:94:39)
-    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:54:12)
+    at Interface.rl.on (/Users/vilterp/code/datalog-ts/repl.ts:54:12)
     at Interface.emit (events.js:182:13)
     at Interface.EventEmitter.emit (domain.js:441:20)
     at Interface._onLine (readline.js:290:10)

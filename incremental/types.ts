@@ -1,6 +1,7 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { EmissionLog } from "./eval";
+import { List } from "immutable";
 
 export type NodeID = string;
 
@@ -16,7 +17,7 @@ export type RuleGraph = {
     [nodeID: string]: {
       isInternal: boolean;
       desc: NodeDesc;
-      cache: Res[];
+      cache: List<Res>;
     };
   };
   edges: { [fromID: string]: NodeID[] };

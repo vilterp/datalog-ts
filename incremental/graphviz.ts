@@ -16,7 +16,7 @@ export function toGraphviz(
           color: id === highlightedNodeID ? "red" : "black",
         },
         comment:
-          node.cache.length > 0
+          node.cache.size > 0
             ? `cache: [${node.cache.map((res) => formatRes(res)).join(", ")}]`
             : "",
       };

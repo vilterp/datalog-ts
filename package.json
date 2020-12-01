@@ -38,6 +38,7 @@
     "dagre": "^0.8.5",
     "dagre-reactjs": "^0.1.4",
     "graphviz-react": "^1.1.1",
+    "immutable": "^4.0.0-rc.12",
     "parsimmon": "^1.13.0",
     "path-browserify": "^1.0.1",
     "prettier-printer": "^1.1.4",

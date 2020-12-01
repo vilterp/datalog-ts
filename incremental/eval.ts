@@ -283,25 +283,30 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
     // TODO: maybe start using result type
     throw new Error(`no such relation: ${query.relation}`);
   }
-  return filterMap(node.cache, (res) => {
-    const bindings = unify({}, res.term, query);
-    if (bindings === null) {
-      return null;
-    }
-    return { term: res.term, bindings };
-  });
+  return node.cache
+    .map((res) => {
+      const bindings = unify({}, res.term, query);
+      if (bindings === null) {
+        return null;
+      }
+      return { term: res.term, bindings };
+    })
+    .filter((x) => x !== null)
+    .toArray();
 }
 
 // helpers
 
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
+  const cache = graph.nodes[nodeID].cache;
+  const newCache = cache.push(res);
   return {
     ...graph,
     nodes: {
       ...graph.nodes,
       [nodeID]: {
         ...graph.nodes[nodeID],
-        cache: [...graph.nodes[nodeID].cache, res],
+        cache: newCache,
       },
     },
   };

@@ -4,6 +4,7 @@ import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
 import { filterObj, setAdd, setUnion, updateObj } from "../util";
 import { ppRule, ppt, ppVM } from "../pretty";
+import { List } from "immutable";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
@@ -172,7 +173,7 @@ export function addNodeKnownID(
 ): RuleGraph {
   return {
     ...graph,
-    nodes: { ...graph.nodes, [id]: { isInternal, desc, cache: [] } },
+    nodes: { ...graph.nodes, [id]: { isInternal, desc, cache: List() } },
   };
 }
 
@@ -187,7 +188,7 @@ function addNode(
       nextNodeID: graph.nextNodeID + 1,
       nodes: {
         ...graph.nodes,
-        [graph.nextNodeID]: { desc, cache: [], isInternal },
+        [graph.nextNodeID]: { desc, cache: List(), isInternal },
       },
     },
     `${graph.nextNodeID}`,

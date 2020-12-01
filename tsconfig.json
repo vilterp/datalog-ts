@@ -3,6 +3,7 @@
     "downlevelIteration": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "target": "ES6"
+    "target": "ES6",
+    "moduleResolution": "node"
   }
 }
