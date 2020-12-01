@@ -27,9 +27,9 @@ export type RuleGraph = {
 
 export type NodeDesc =
   | { type: "BaseFactTable" }
-  | { type: "Join"; leftID: NodeID; rightID: NodeID } // sort of weird to have backpointers in the node
+  | { type: "Join"; ruleName: string; leftID: NodeID; rightID: NodeID }
   | { type: "Match"; rec: Rec; mappings: VarMappings }
-  | { type: "Substitute"; rec: Rec } // TODO: need mappings?
+  | { type: "Substitute"; rec: Rec }
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
 
@@ -53,7 +53,7 @@ export function formatDesc(node: NodeDesc): string {
     case "BinExpr":
       return ppBE(node.expr);
     case "Join":
-      return `Join(${node.leftID} & ${node.rightID})`;
+      return `Join(${node.leftID} & ${node.rightID}): ${node.ruleName}`;
     case "Match":
       return `Match(${ppt(node.rec)}; ${ppVM(node.mappings, [], {
         showScopePath: false,

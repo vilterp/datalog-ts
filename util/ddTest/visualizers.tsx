@@ -31,7 +31,7 @@ function EmissionLogViewer(props: { text: string }) {
     <div>
       <Graphviz
         dot={dot}
-        options={{ width, height: 800, fit: true, zoom: false }}
+        options={{ width, height: 700, fit: true, zoom: false }}
       />
       <div>
         <button
@@ -62,7 +62,12 @@ function EmissionLogViewer(props: { text: string }) {
               color: highlightedIndex === idx ? "red" : "black",
             }}
           >
-            {batch.fromID}: {batch.output.map((res) => formatRes(res))}
+            {batch.fromID}:{" "}
+            <ul>
+              {batch.output.map((res, idx) => (
+                <li key={idx}>{formatRes(res)}</li>
+              ))}
+            </ul>
           </li>
         ))}
       </ul>

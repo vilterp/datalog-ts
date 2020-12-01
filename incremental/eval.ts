@@ -28,7 +28,11 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
+  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(
+    graph,
+    rule.head.relation,
+    rule.defn
+  );
   const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
@@ -205,7 +209,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
           // });
           if (unifyRes !== null) {
             results.push({
-              term: ins.res.term,
+              term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
               bindings: unifyRes,
             });
           }
@@ -218,7 +222,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
           const unifyRes = unifyVars(leftVars || {}, rightVars || {});
           if (unifyRes !== null) {
             results.push({
-              term: ins.res.term,
+              term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
               bindings: unifyRes,
             });
           }

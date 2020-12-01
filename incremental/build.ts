@@ -52,9 +52,13 @@ type AddResult = {
   tipID: NodeID;
 };
 
-export function addOr(graph: RuleGraph, or: OrExpr): AddResult {
+export function addOr(
+  graph: RuleGraph,
+  ruleName: string,
+  or: OrExpr
+): AddResult {
   if (or.opts.length === 1) {
-    return addAnd(graph, or.opts[0].clauses);
+    return addAnd(graph, ruleName, or.opts[0].clauses);
   }
   const [g1, orID] = addNode(graph, true, { type: "Union" });
 
@@ -63,6 +67,7 @@ export function addOr(graph: RuleGraph, or: OrExpr): AddResult {
   for (let orOption of or.opts) {
     const { newGraph, newNodeIDs, tipID: andID } = addAnd(
       outGraph,
+      ruleName,
       orOption.clauses
     );
     outGraph = addEdge(newGraph, andID, orID);
@@ -76,9 +81,13 @@ export function addOr(graph: RuleGraph, or: OrExpr): AddResult {
   };
 }
 
-function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
+function addAnd(
+  graph: RuleGraph,
+  ruleName: string,
+  clauses: AndClause[]
+): AddResult {
   const { recs, exprs } = extractBinExprs(clauses);
-  const withJoinRes = addJoin(graph, recs);
+  const withJoinRes = addJoin(graph, ruleName, recs);
   return exprs.reduce(({ newGraph, tipID, newNodeIDs }, expr) => {
     const [withNewExpr, newExprID] = addNode(newGraph, true, {
       type: "BinExpr",
@@ -93,7 +102,7 @@ function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
   }, withJoinRes);
 }
 
-function addJoin(graph: RuleGraph, and: Rec[]): AddResult {
+function addJoin(graph: RuleGraph, ruleName: string, and: Rec[]): AddResult {
   if (and.length === 0) {
     throw new Error("empty and");
   }
@@ -102,23 +111,31 @@ function addJoin(graph: RuleGraph, and: Rec[]): AddResult {
   }
   const { newGraph: g1, tipID: rightID, newNodeIDs: nn1 } = addJoin(
     graph,
+    ruleName,
     and.slice(1)
   );
   const { newGraph: g2, tipID: andID, newNodeIDs: nn2 } = addAndBinary(
     g1,
+    ruleName,
     and[0],
     rightID
   );
   return { newGraph: g2, tipID: andID, newNodeIDs: setUnion(nn1, nn2) };
 }
 
-function addAndBinary(graph: RuleGraph, left: Rec, rightID: NodeID): AddResult {
+function addAndBinary(
+  graph: RuleGraph,
+  ruleName: string,
+  left: Rec,
+  rightID: NodeID
+): AddResult {
   const { newGraph: g1, newNodeIDs: nn1, tipID: leftID } = addAndClause(
     graph,
     left
   );
   const [g2, joinID] = addNode(g1, true, {
     type: "Join",
+    ruleName,
     leftID,
     rightID,
   });
