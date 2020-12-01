@@ -9,13 +9,19 @@ type Index<T> = {
   items: Map<string, List<T>>;
 };
 
-class IndexedCollection<T> {
-  allRecords: List<T>;
-  indexes: Map<string, Index<T>>;
+export class IndexedCollection<T> {
+  private readonly allRecords: List<T>;
+  private readonly indexes: Map<string, Index<T>>;
+  readonly size: number;
 
   constructor(allRecords: List<T>, indexes: Map<string, Index<T>>) {
     this.allRecords = allRecords;
     this.indexes = indexes;
+    this.size = allRecords.size;
+  }
+
+  all(): List<T> {
+    return this.allRecords;
   }
 
   createIndex(name: string, getKey: (t: T) => string): IndexedCollection<T> {

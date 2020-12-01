@@ -2,6 +2,7 @@ import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
+import { IndexedCollection } from "./indexedCollection";
 
 export type NodeID = string;
 
@@ -18,7 +19,7 @@ export type RuleGraph = {
     {
       isInternal: boolean;
       desc: NodeDesc;
-      cache: List<Res>;
+      cache: IndexedCollection<Res>;
     }
   >;
   edges: Map<NodeID, List<NodeID>>;

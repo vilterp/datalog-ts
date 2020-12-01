@@ -5,6 +5,7 @@ import { extractBinExprs } from "../evalCommon";
 import { filterObj, setAdd, setUnion } from "../util";
 import { ppRule, ppt, ppVM } from "../pretty";
 import { List } from "immutable";
+import { emptyIndexedCollection } from "./indexedCollection";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
@@ -173,7 +174,11 @@ export function addNodeKnownID(
 ): RuleGraph {
   return {
     ...graph,
-    nodes: graph.nodes.set(id, { isInternal, desc, cache: List() }),
+    nodes: graph.nodes.set(id, {
+      isInternal,
+      desc,
+      cache: emptyIndexedCollection(),
+    }),
   };
 }
 
@@ -188,7 +193,7 @@ function addNode(
       nextNodeID: graph.nextNodeID + 1,
       nodes: graph.nodes.set(graph.nextNodeID.toString(), {
         desc,
-        cache: List(),
+        cache: emptyIndexedCollection(),
         isInternal,
       }),
     },

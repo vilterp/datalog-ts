@@ -1,17 +1,9 @@
-import {
-  RuleGraph,
-  Res,
-  NodeID,
-  formatRes,
-  formatDesc,
-  NodeDesc,
-  JoinDesc,
-} from "./types";
+import { RuleGraph, Res, NodeID } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppr, ppRule, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
-import { filterMap, flatMap, mapObjToList, reduceObj } from "../util";
+import { filterMap, flatMap, mapObjToList } from "../util";
 import {
   addEdge,
   addNodeKnownID,
@@ -77,7 +69,7 @@ function replayFacts(
   let outGraph = graph;
   let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
-    for (let res of graph.nodes.get(rootID).cache) {
+    for (let res of graph.nodes.get(rootID).cache.all()) {
       for (let destination of graph.edges.get(rootID)) {
         const iter = getReplayIterator(outGraph, allNewNodes, [
           {
@@ -282,7 +274,7 @@ function doJoin(
   const thisVars = ins.res.bindings;
   const otherRelation = graph.nodes.get(otherNode).cache;
   const before = performance.now();
-  for (let possibleOtherMatch of otherRelation) {
+  for (let possibleOtherMatch of otherRelation.all()) {
     const otherVars = possibleOtherMatch.bindings;
     const unifyRes = unifyVars(thisVars || {}, otherVars || {});
     // console.log("join", {
@@ -304,12 +296,14 @@ function doJoin(
 }
 
 export function doQuery(graph: RuleGraph, query: Rec): Res[] {
+  // TODO: use index selection
   const node = graph.nodes.get(query.relation);
   if (!node) {
     // TODO: maybe start using result type
     throw new Error(`no such relation: ${query.relation}`);
   }
   return node.cache
+    .all()
     .map((res) => {
       const bindings = unify({}, res.term, query);
       if (bindings === null) {
@@ -325,7 +319,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.push(res);
+  const newCache = cache.insert(res);
   return {
     ...graph,
     nodes: graph.nodes.set(nodeID, {

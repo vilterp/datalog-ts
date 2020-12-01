@@ -18,7 +18,10 @@ export function toGraphviz(
           },
           comment:
             node.cache.size > 0
-              ? `cache: [${node.cache.map((res) => formatRes(res)).join(", ")}]`
+              ? `cache: [${node.cache
+                  .all()
+                  .map((res) => formatRes(res))
+                  .join(", ")}]`
               : "",
         };
       })
