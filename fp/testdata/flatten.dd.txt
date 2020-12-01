@@ -82,3 +82,31 @@ ast.RootExpr{id: 0}.
 ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 14}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
 ast.Var{id: 2, location: span{from: 13, to: 14}, name: "x"}.
+
+let x = 2 in
+let y = 3 in
+let z = "foo" in
+let a = intToString(plus(x, y)) in
+concat(a, z)
+----
+application/datalog
+ast.RootExpr{id: 0}.
+ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 90}, varLoc: span{from: 4, to: 5}, varName: "x"}.
+ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
+ast.LetExpr{bindingID: 3, bodyID: 4, id: 2, inLoc: span{from: 23, to: 26}, letLoc: span{from: 13, to: 17}, location: span{from: 13, to: 90}, varLoc: span{from: 17, to: 18}, varName: "y"}.
+ast.IntLit{id: 3, location: span{from: 21, to: 22}, val: 3}.
+ast.LetExpr{bindingID: 5, bodyID: 6, id: 4, inLoc: span{from: 40, to: 43}, letLoc: span{from: 26, to: 30}, location: span{from: 26, to: 90}, varLoc: span{from: 30, to: 31}, varName: "z"}.
+ast.StringLit{id: 5, location: span{from: 34, to: 39}, val: "foo"}.
+ast.LetExpr{bindingID: 7, bodyID: 14, id: 6, inLoc: span{from: 75, to: 78}, letLoc: span{from: 43, to: 47}, location: span{from: 43, to: 90}, varLoc: span{from: 47, to: 48}, varName: "a"}.
+ast.FuncCall{argID: 9, funcID: 8, id: 7, location: span{from: 51, to: 75}}.
+ast.Var{id: 8, location: span{from: 51, to: 62}, name: "intToString"}.
+ast.FuncCall{argID: 13, funcID: 10, id: 9, location: span{from: 63, to: 73}}.
+ast.FuncCall{argID: 12, funcID: 11, id: 10, location: span{from: 63, to: 67}}.
+ast.Var{id: 11, location: span{from: 63, to: 67}, name: "plus"}.
+ast.Var{id: 12, location: span{from: 68, to: 69}, name: "x"}.
+ast.Var{id: 13, location: span{from: 71, to: 72}, name: "y"}.
+ast.FuncCall{argID: 18, funcID: 15, id: 14, location: span{from: 78, to: 90}}.
+ast.FuncCall{argID: 17, funcID: 16, id: 15, location: span{from: 78, to: 84}}.
+ast.Var{id: 16, location: span{from: 78, to: 84}, name: "concat"}.
+ast.Var{id: 17, location: span{from: 85, to: 86}, name: "a"}.
+ast.Var{id: 18, location: span{from: 88, to: 89}, name: "z"}.

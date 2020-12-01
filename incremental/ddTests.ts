@@ -91,6 +91,8 @@ export function incrTests(writeResults: boolean): Suite {
     ["replay", evalTest],
     ["cyclesReplay", evalTest],
     ["fp", evalTest],
+    ["fp2", evalTest],
+    ["fp3", evalTest],
   ];
   return tests.map(([name, func]) => ({
     name,
@@ -124,7 +126,10 @@ function evalTest(inputs: string[]): TestOutput[] {
     (interp, input) => {
       try {
         const stmt = parseStatement(input);
+        const before = Date.now();
         const { newInterp, output } = processStmt(interp, stmt);
+        const after = Date.now();
+        console.log(after - before, "ms", stmt);
         return {
           newState: newInterp,
           output: formatOutput(newInterp.graph, output, {
