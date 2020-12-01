@@ -201,7 +201,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "Union":
       return [ins.res];
     case "Join": {
-      return doJoin(graph, nodeDesc, ins);
+      if (ins.origin === nodeDesc.leftID) {
+        return doJoin(graph, ins, nodeDesc.ruleName, nodeDesc.rightID);
+      } else {
+        return doJoin(graph, ins, nodeDesc.ruleName, nodeDesc.leftID);
+      }
     }
     case "Match": {
       const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
@@ -268,49 +272,34 @@ export function clearJoinStats() {
   joinStats = { joinTimeMS: 0, recordsJoined: 0 };
 }
 
-function doJoin(graph: RuleGraph, nodeDesc: JoinDesc, ins: Insertion): Res[] {
+function doJoin(
+  graph: RuleGraph,
+  ins: Insertion,
+  ruleName: string,
+  otherNode: NodeID
+): Res[] {
   const results: Res[] = [];
-  // TODO: DRY this up somehow?
-  if (ins.origin === nodeDesc.leftID) {
-    const leftVars = ins.res.bindings;
-    const rightRelation = graph.nodes.get(nodeDesc.rightID).cache;
-    const before = performance.now();
-    for (let possibleRightMatch of rightRelation) {
-      const rightVars = possibleRightMatch.bindings;
-      const unifyRes = unifyVars(leftVars || {}, rightVars || {});
-      // console.log("join from left", {
-      //   left: formatRes(ins.res),
-      //   right: formatRes(possibleRightMatch),
-      //   unifyRes: ppb(unifyRes),
-      // });
-      if (unifyRes !== null) {
-        results.push({
-          term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
-          bindings: unifyRes,
-        });
-      }
+  const thisVars = ins.res.bindings;
+  const otherRelation = graph.nodes.get(otherNode).cache;
+  const before = performance.now();
+  for (let possibleOtherMatch of otherRelation) {
+    const otherVars = possibleOtherMatch.bindings;
+    const unifyRes = unifyVars(thisVars || {}, otherVars || {});
+    // console.log("join", {
+    //   left: formatRes(ins.res),
+    //   right: formatRes(possibleOtherMatch),
+    //   unifyRes: ppb(unifyRes),
+    // });
+    if (unifyRes !== null) {
+      results.push({
+        term: { ...(ins.res.term as Rec), relation: ruleName },
+        bindings: unifyRes,
+      });
     }
-    const after = performance.now();
-    joinStats.recordsJoined += rightRelation.size;
-    joinStats.joinTimeMS += after - before;
-  } else {
-    const rightVars = ins.res.bindings;
-    const leftRelation = graph.nodes.get(nodeDesc.leftID).cache;
-    const before = performance.now();
-    for (let possibleLeftMatch of leftRelation) {
-      const leftVars = possibleLeftMatch.bindings;
-      const unifyRes = unifyVars(leftVars || {}, rightVars || {});
-      if (unifyRes !== null) {
-        results.push({
-          term: { ...(ins.res.term as Rec), relation: nodeDesc.ruleName },
-          bindings: unifyRes,
-        });
-      }
-    }
-    const after = performance.now();
-    joinStats.recordsJoined += leftRelation.size;
-    joinStats.joinTimeMS += after - before;
   }
+  const after = performance.now();
+  joinStats.recordsJoined += otherRelation.size;
+  joinStats.joinTimeMS += after - before;
   return results;
 }
 
