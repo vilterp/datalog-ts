@@ -119,7 +119,9 @@ export function insertFact(
   }
 
   const iter = getInsertionIterator(graph, rec);
-  return stepIteratorAll(graph, iter);
+  const res = stepIteratorAll(graph, iter);
+
+  return res;
 }
 
 function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
@@ -251,12 +253,31 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   }
 }
 
+type JoinStats = {
+  joinTimeMS: number;
+  recordsJoined: number;
+};
+
+let joinStats: JoinStats = {
+  joinTimeMS: 0,
+  recordsJoined: 0,
+};
+
+export function getJoinStats(): JoinStats {
+  return joinStats;
+}
+
+export function clearJoinStats() {
+  joinStats = { joinTimeMS: 0, recordsJoined: 0 };
+}
+
 function doJoin(graph: RuleGraph, nodeDesc: JoinDesc, ins: Insertion): Res[] {
   const results: Res[] = [];
   // TODO: DRY this up somehow?
   if (ins.origin === nodeDesc.leftID) {
     const leftVars = ins.res.bindings;
     const rightRelation = graph.nodes.get(nodeDesc.rightID).cache;
+    const before = performance.now();
     for (let possibleRightMatch of rightRelation) {
       const rightVars = possibleRightMatch.bindings;
       const unifyRes = unifyVars(leftVars || {}, rightVars || {});
@@ -272,9 +293,13 @@ function doJoin(graph: RuleGraph, nodeDesc: JoinDesc, ins: Insertion): Res[] {
         });
       }
     }
+    const after = performance.now();
+    joinStats.recordsJoined += rightRelation.size;
+    joinStats.joinTimeMS += after - before;
   } else {
     const rightVars = ins.res.bindings;
     const leftRelation = graph.nodes.get(nodeDesc.leftID).cache;
+    const before = performance.now();
     for (let possibleLeftMatch of leftRelation) {
       const leftVars = possibleLeftMatch.bindings;
       const unifyRes = unifyVars(leftVars || {}, rightVars || {});
@@ -285,6 +310,9 @@ function doJoin(graph: RuleGraph, nodeDesc: JoinDesc, ins: Insertion): Res[] {
         });
       }
     }
+    const after = performance.now();
+    joinStats.recordsJoined += leftRelation.size;
+    joinStats.joinTimeMS += after - before;
   }
   return results;
 }

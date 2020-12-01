@@ -20,6 +20,7 @@ import {
   KEY_A,
   KEY_Z,
 } from "./keymap";
+import { clearJoinStats, getJoinStats } from "../../incremental/eval";
 
 type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -67,6 +68,9 @@ export function CodeEditor<AST>(props: {
           processStmt(int, { type: "Insert", record: rec as Rec }).newInterp,
         interp2
       );
+
+      console.log("codeeditor", getJoinStats());
+      clearJoinStats();
 
       // get suggestions
       suggestions = props.getSuggestions(interp3);
