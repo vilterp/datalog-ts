@@ -118,8 +118,8 @@ export function CodeEditor<AST>(props: {
           name="wut" // type error without this, even tho optional
           style={{
             fontFamily: "monospace",
-            height: 150,
-            width: 500,
+            height: 800,
+            width: 1000,
             backgroundColor: "rgb(250, 250, 250)",
             border: "1px solid black",
             marginBottom: 10,
