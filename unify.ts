@@ -49,7 +49,7 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
             return null;
           }
           let accum = {};
-          for (const key of Object.keys(left.attrs)) {
+          for (const key in left.attrs) {
             // TODO: do bindings fold across keys... how would that be ordered...
             const leftVal = left.attrs[key];
             const rightVal = right.attrs[key];
@@ -119,7 +119,7 @@ export function termEq(left: Term, right: Term): boolean {
     case "Record":
       switch (right.type) {
         case "Record":
-          for (const key of Object.keys(left.attrs)) {
+          for (const key in left.attrs) {
             const rightVal = right.attrs[key];
             const leftVal = left.attrs[key];
             if (!termEq(leftVal, rightVal)) {
@@ -157,7 +157,7 @@ export function termLT(left: Term, right: Term): boolean {
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
   // console.log("=> unifyVars", ppb(left), ppb(right));
   const res: Bindings = {};
-  for (const leftKey of Object.keys(left)) {
+  for (const leftKey in left) {
     const leftVal = left[leftKey];
     const rightVal = right[leftKey];
     // console.log("unifyvars", leftKey, leftVal, rightVal);
@@ -172,9 +172,8 @@ export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
   for (const key of onlyInRight) {
     res[key] = right[key];
   }
-  for (const key of Object.keys(res)) {
+  for (const key in res) {
     if (res[key].type === "Var") {
-      console.log("bail out");
       return null;
     }
   }
@@ -202,7 +201,7 @@ export function getMappings(
 ): VarMappings {
   const out: VarMappings = {};
   // TODO: detect parameter mismatch!
-  for (const callKey of Object.keys(call)) {
+  for (const callKey in call) {
     const callTerm = call[callKey];
     const headTerm = head[callKey];
     if (headTerm?.type === "Var" && callTerm?.type === "Var") {
@@ -217,7 +216,7 @@ export function applyMappings(
   bindings: Bindings
 ): Bindings {
   const out: Bindings = {};
-  for (const key of Object.keys(bindings)) {
+  for (const key in bindings) {
     const callerKey = headToCaller[key];
     if (!callerKey) {
       continue;

@@ -126,10 +126,10 @@ function evalTest(inputs: string[]): TestOutput[] {
     (interp, input) => {
       try {
         const stmt = parseStatement(input);
-        const before = Date.now();
+        // const before = Date.now();
         const { newInterp, output } = processStmt(interp, stmt);
-        const after = Date.now();
-        console.log(after - before, "ms", stmt);
+        // const after = Date.now();
+        // console.log(after - before, "ms", stmt);
         return {
           newState: newInterp,
           output: formatOutput(newInterp.graph, output, {
