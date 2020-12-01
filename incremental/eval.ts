@@ -66,7 +66,7 @@ function replayFacts(
   let outGraph = graph;
   let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
-    for (let res of graph.nodes[rootID].cache) {
+    for (let res of graph.nodes.get(rootID).cache) {
       for (let destination of graph.edges[rootID]) {
         const iter = getReplayIterator(outGraph, allNewNodes, [
           {
@@ -185,7 +185,7 @@ function stepIterator(
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
-  const node = graph.nodes[ins.destination];
+  const node = graph.nodes.get(ins.destination);
   if (!node) {
     throw new Error(`not found: node ${ins.destination}`);
   }
@@ -198,7 +198,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       // TODO: DRY this up somehow?
       if (ins.origin === nodeDesc.leftID) {
         const leftVars = ins.res.bindings;
-        const rightRelation = graph.nodes[nodeDesc.rightID].cache;
+        const rightRelation = graph.nodes.get(nodeDesc.rightID).cache;
         for (let possibleRightMatch of rightRelation) {
           const rightVars = possibleRightMatch.bindings;
           const unifyRes = unifyVars(leftVars || {}, rightVars || {});
@@ -216,7 +216,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         }
       } else {
         const rightVars = ins.res.bindings;
-        const leftRelation = graph.nodes[nodeDesc.leftID].cache;
+        const leftRelation = graph.nodes.get(nodeDesc.leftID).cache;
         for (let possibleLeftMatch of leftRelation) {
           const leftVars = possibleLeftMatch.bindings;
           const unifyRes = unifyVars(leftVars || {}, rightVars || {});
@@ -278,7 +278,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
 }
 
 export function doQuery(graph: RuleGraph, query: Rec): Res[] {
-  const node = graph.nodes[query.relation];
+  const node = graph.nodes.get(query.relation);
   if (!node) {
     // TODO: maybe start using result type
     throw new Error(`no such relation: ${query.relation}`);
@@ -298,17 +298,14 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 // helpers
 
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
-  const cache = graph.nodes[nodeID].cache;
+  const cache = graph.nodes.get(nodeID).cache;
   const newCache = cache.push(res);
   return {
     ...graph,
-    nodes: {
-      ...graph.nodes,
-      [nodeID]: {
-        ...graph.nodes[nodeID],
-        cache: newCache,
-      },
-    },
+    nodes: graph.nodes.set(nodeID, {
+      ...graph.nodes.get(nodeID),
+      cache: newCache,
+    }),
   };
 }
 

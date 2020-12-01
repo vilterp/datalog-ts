@@ -7,20 +7,23 @@ export function toGraphviz(
   highlightedNodeID?: string
 ): Graph {
   return {
-    nodes: mapObjToList(graph.nodes, (id, node) => {
-      return {
-        id,
-        attrs: {
-          shape: "box",
-          label: `${id}: ${formatDesc(node.desc)}`,
-          color: id === highlightedNodeID ? "red" : "black",
-        },
-        comment:
-          node.cache.size > 0
-            ? `cache: [${node.cache.map((res) => formatRes(res)).join(", ")}]`
-            : "",
-      };
-    }),
+    nodes: graph.nodes
+      .map((node, id) => {
+        return {
+          id,
+          attrs: {
+            shape: "box",
+            label: `${id}: ${formatDesc(node.desc)}`,
+            color: id === highlightedNodeID ? "red" : "black",
+          },
+          comment:
+            node.cache.size > 0
+              ? `cache: [${node.cache.map((res) => formatRes(res)).join(", ")}]`
+              : "",
+        };
+      })
+      .valueSeq()
+      .toArray(),
     edges: flatMapObjToList(graph.edges, (fromID, destinations) =>
       destinations.map((dst) => ({
         from: fromID,

@@ -2,7 +2,7 @@ import { Rule, Rec, OrExpr, AndClause, VarMappings } from "../types";
 import { RuleGraph, NodeDesc, NodeID } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
-import { filterObj, setAdd, setUnion, updateObj } from "../util";
+import { filterObj, setAdd, setUnion } from "../util";
 import { ppRule, ppt, ppVM } from "../pretty";
 import { List } from "immutable";
 
@@ -19,11 +19,11 @@ export function resolveUnmappedRule(
   let curGraph = graph;
   let resolved = true;
   for (let newNodeID of newNodes) {
-    const newNode = graph.nodes[newNodeID];
+    const newNode = graph.nodes.get(newNodeID);
     const nodeDesc = newNode.desc;
     if (nodeDesc.type === "Match") {
       const callRec = nodeDesc.rec;
-      const callNode = graph.nodes[callRec.relation];
+      const callNode = graph.nodes.get(callRec.relation);
       if (!callNode) {
         // not defined yet
         resolved = false;
@@ -173,7 +173,7 @@ export function addNodeKnownID(
 ): RuleGraph {
   return {
     ...graph,
-    nodes: { ...graph.nodes, [id]: { isInternal, desc, cache: List() } },
+    nodes: graph.nodes.set(id, { isInternal, desc, cache: List() }),
   };
 }
 
@@ -186,10 +186,11 @@ function addNode(
     {
       ...graph,
       nextNodeID: graph.nextNodeID + 1,
-      nodes: {
-        ...graph.nodes,
-        [graph.nextNodeID]: { desc, cache: List(), isInternal },
-      },
+      nodes: graph.nodes.set(graph.nextNodeID.toString(), {
+        desc,
+        cache: List(),
+        isInternal,
+      }),
     },
     `${graph.nextNodeID}`,
   ];
@@ -209,7 +210,7 @@ function updateMappings(
 ): RuleGraph {
   return {
     ...graph,
-    nodes: updateObj(graph.nodes, from, (node) => ({
+    nodes: graph.nodes.update(from, (node) => ({
       ...node,
       desc:
         node.desc.type === "Match"

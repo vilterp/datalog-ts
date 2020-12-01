@@ -170,7 +170,7 @@ export function formatOutput(
         return datalogOut(
           output.log
             .filter((emissionBatch) => {
-              const fromNode = graph.nodes[emissionBatch.fromID];
+              const fromNode = graph.nodes.get(emissionBatch.fromID);
               return (
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );

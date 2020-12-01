@@ -1,7 +1,7 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { EmissionLog } from "./eval";
-import { List } from "immutable";
+import { List, Map } from "immutable";
 
 export type NodeID = string;
 
@@ -13,13 +13,14 @@ export type Res = {
 
 export type RuleGraph = {
   nextNodeID: number;
-  nodes: {
-    [nodeID: string]: {
+  nodes: Map<
+    NodeID,
+    {
       isInternal: boolean;
       desc: NodeDesc;
       cache: List<Res>;
-    };
-  };
+    }
+  >;
   edges: { [fromID: string]: NodeID[] };
   unmappedRules: {
     [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
@@ -36,7 +37,7 @@ export type NodeDesc =
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
-  nodes: {},
+  nodes: Map(),
   edges: {},
   unmappedRules: {},
 };
