@@ -258,7 +258,7 @@ let joinStats: JoinStats = {
   outputRecords: 0,
 };
 
-export function getJoinStats(): object {
+export function getJoinStats(): JoinStats & { outputPct: number } {
   return {
     ...joinStats,
     outputPct: (joinStats.outputRecords / joinStats.inputRecords) * 100,
