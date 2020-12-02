@@ -14,6 +14,7 @@ import {
 } from "../util/ddTest/types";
 import { fsLoader } from "../repl";
 import { getJoinInfo } from "./build";
+import { clearJoinStats, getJoinStats } from "./eval";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -69,7 +70,7 @@ function buildTest(test: string[]): TestOutput[] {
 }
 
 function evalTest(inputs: string[]): TestOutput[] {
-  return scan(
+  const res = scan(
     newInterpreter(fsLoader),
     (interp, input) => {
       try {
@@ -91,6 +92,9 @@ function evalTest(inputs: string[]): TestOutput[] {
     },
     inputs
   );
+  console.log({ joinStats: getJoinStats() });
+  clearJoinStats();
+  return res;
 }
 
 // kind of reimplementing the repl here; lol
