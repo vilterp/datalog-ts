@@ -1,0 +1,11 @@
+father{child: A, father: B}
+father{child: B, father: C}
+----
+application/json
+{
+  "B": {
+    "varName": "B",
+    "leftAttr": "father",
+    "rightAttr": "child"
+  }
+}

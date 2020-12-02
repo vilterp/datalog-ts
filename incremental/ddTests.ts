@@ -3,11 +3,17 @@ import { Suite } from "../testing";
 import { language } from "../parser";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
-import { Statement } from "../types";
+import { Rec, Statement } from "../types";
 import { scan } from "../util";
 import { formatOutput, newInterpreter, processStmt } from "./interpreter";
-import { graphvizOut, plainTextOut, TestOutput } from "../util/ddTest/types";
+import {
+  graphvizOut,
+  jsonOut,
+  plainTextOut,
+  TestOutput,
+} from "../util/ddTest/types";
 import { fsLoader } from "../repl";
+import { findJoinInfo } from "./build";
 // import { SuiteSpec, VISUALIZERS } from "../util/ddTest/visualizers";
 // import { loader } from "../fp/dl";
 
@@ -93,6 +99,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["fp", evalTest],
     ["fp2", evalTest],
     ["fp3", evalTest],
+    ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
     name,
@@ -104,6 +111,16 @@ export function incrTests(writeResults: boolean): Suite {
       );
     },
   }));
+}
+
+function joinInfoTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const [left, right] = input.split("\n");
+    const leftStmt = parseRecord(left);
+    const rightStmt = parseRecord(right);
+    const res = findJoinInfo(leftStmt, rightStmt);
+    return jsonOut(JSON.stringify(res, null, 2));
+  });
 }
 
 // TODO: deprecate this since we have .rulegraph now?
@@ -146,6 +163,10 @@ function evalTest(inputs: string[]): TestOutput[] {
 }
 
 // kind of reimplementing the repl here; lol
+
+function parseRecord(str: string): Rec {
+  return language.record.tryParse(str);
+}
 
 function parseStatement(str: string): Statement {
   return language.statement.tryParse(str);

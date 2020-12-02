@@ -53,6 +53,38 @@ export function resolveUnmappedRule(
   return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
 }
 
+type JoinInfo = {
+  [varName: string]: {
+    varName: string;
+    leftAttr: string;
+    rightAttr: string;
+  };
+};
+
+export function findJoinInfo(left: Rec, right: Rec): JoinInfo {
+  const out: JoinInfo = {};
+  for (let leftAttr in left.attrs) {
+    const leftVar = left.attrs[leftAttr];
+    if (leftVar.type !== "Var") {
+      continue;
+    }
+    for (let rightAttr in right.attrs) {
+      const rightVar = right.attrs[rightAttr];
+      if (rightVar.type !== "Var") {
+        continue;
+      }
+      if (leftVar.name === rightVar.name) {
+        out[leftVar.name] = {
+          varName: leftVar.name,
+          leftAttr,
+          rightAttr,
+        };
+      }
+    }
+  }
+  return out;
+}
+
 type AddResult = {
   newGraph: RuleGraph;
   newNodeIDs: Set<NodeID>;
