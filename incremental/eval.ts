@@ -153,17 +153,23 @@ function stepIteratorAll(
   iter: InsertionIterator
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   const emissionLog: EmissionLog = [];
+  let newGraph = graph;
   while (iter.queue.length > 0) {
-    const emissions = stepIterator(iter);
+    const [emissions, nextIter] = stepIterator(iter);
     emissionLog.push(emissions);
+    newGraph = nextIter.graph;
+    iter = nextIter;
   }
-  return { newGraph: iter.graph, emissionLog };
+  return { newGraph, emissionLog };
 }
 
-function stepIterator(iter: InsertionIterator): EmissionBatch {
+function stepIterator(
+  iter: InsertionIterator
+): [EmissionBatch, InsertionIterator] {
   // console.log("stepIterator", iter.queue);
+  const newQueue = iter.queue.slice(1);
   let newGraph = iter.graph;
-  const insertingNow = iter.queue.shift();
+  const insertingNow = iter.queue[0];
   const curNodeID = insertingNow.destination;
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
@@ -171,15 +177,15 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
       newGraph = addToCache(newGraph, curNodeID, result);
     }
     for (let destination of newGraph.edges.get(curNodeID) || []) {
-      iter.queue.push({
+      newQueue.push({
         destination,
         origin: curNodeID,
         res: result,
       });
     }
   }
-  iter.graph = newGraph;
-  return { fromID: curNodeID, output: results };
+  const newIter = { ...iter, graph: newGraph, queue: newQueue };
+  return [{ fromID: curNodeID, output: results }, newIter];
 }
 
 // caller adds resulting facts
