@@ -27,8 +27,7 @@ import {
   plainTextOut,
   TestOutput,
 } from "../util/ddTest/types";
-// importing path-browserify so this works in the browser
-import path from "path";
+import path from "path-browserify";
 
 export type Interpreter = {
   loadStack: string[];
@@ -150,7 +149,7 @@ export function processStmt(
   }
 }
 
-function doLoad(interp: Interpreter, loadPath: string): Interpreter {
+export function doLoad(interp: Interpreter, loadPath: string): Interpreter {
   const currentDir =
     interp.loadStack.length > 0
       ? path.dirname(interp.loadStack[interp.loadStack.length - 1])

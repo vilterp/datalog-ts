@@ -17,20 +17,20 @@ import { getJoinInfo } from "./build";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
-    // ["build", buildTest],
-    // ["buildBinExpr", buildTest],
-    // ["eval", evalTest],
-    // ["eval2", evalTest],
-    // ["eval3", evalTest],
-    // ["siblings", evalTest],
-    // ["indexes", evalTest],
-    // ["cycles", evalTest],
-    // ["replay", evalTest],
-    // ["cyclesReplay", evalTest],
-    // ["fp", evalTest],
-    // ["fp2", evalTest],
+    ["build", buildTest],
+    ["buildBinExpr", buildTest],
+    ["eval", evalTest],
+    ["eval2", evalTest],
+    ["eval3", evalTest],
+    ["siblings", evalTest],
+    ["indexes", evalTest],
+    ["cycles", evalTest],
+    ["replay", evalTest],
+    ["cyclesReplay", evalTest],
+    ["fp", evalTest],
+    ["fp2", evalTest],
     ["fp3", evalTest],
-    // ["findJoinInfo", joinInfoTest],
+    ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
     name,

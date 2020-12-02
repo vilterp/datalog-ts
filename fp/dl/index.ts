@@ -14,10 +14,10 @@ import astDL from "./ast.dl";
 import mainDL from "./main.dl";
 
 export const loader = makeMemoryLoader({
-  "./typecheck.dl": typecheckDL,
-  "./ide.dl": ideDL,
-  "./stdlib.dl": stdlibDL,
-  "./highlight.dl": highlightDL,
-  "./ast.dl": astDL,
-  "./main.dl": mainDL,
+  "typecheck.dl": typecheckDL,
+  "ide.dl": ideDL,
+  "stdlib.dl": stdlibDL,
+  "highlight.dl": highlightDL,
+  "ast.dl": astDL,
+  "main.dl": mainDL,
 });
