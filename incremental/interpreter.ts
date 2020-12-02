@@ -23,6 +23,7 @@ import { language as dlLanguage } from "../parser";
 import {
   datalogOut,
   graphvizOut,
+  jsonOut,
   plainTextOut,
   TestOutput,
 } from "../util/ddTest/types";
@@ -36,6 +37,7 @@ type Output =
   | { type: "EmissionLog"; log: EmissionLog }
   | { type: "Trace"; logAndGraph: EmissionLogAndGraph }
   | { type: "Graphviz"; dot: string }
+  | { type: "Json"; json: any }
   | { type: "QueryResults"; results: Res[] }
   | { type: "Acknowledge" };
 
@@ -103,6 +105,17 @@ export function processStmt(
       return {
         newInterp: interp,
         output: { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) },
+      };
+    case "DumpCaches":
+      return {
+        newInterp: interp,
+        output: {
+          type: "Json",
+          json: interp.graph.nodes.map((node, nodeID) => ({
+            nodeID,
+            cache: node.cache.toJSON(),
+          })),
+        },
       };
     case "Comment":
       return {
@@ -185,6 +198,8 @@ export function formatOutput(
       }
     case "Graphviz":
       return graphvizOut(output.dot);
+    case "Json":
+      return jsonOut(JSON.stringify(output.json, null, 2));
     case "QueryResults":
       return datalogOut(
         output.results

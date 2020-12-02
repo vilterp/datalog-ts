@@ -112,3 +112,353 @@ mother{child: C, mother: "Mary"}.
 application/datalog
 mother{child: "Pete", mother: "Mary"}; {C: "Pete"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn"}.
+
+.dumpcaches
+----
+application/json
+{
+  "0": {
+    "nodeID": "0",
+    "cache": {
+      "child": {
+        "items": {
+          "List [ \"\\\"Pete\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "father",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Pete"
+                  },
+                  "father": {
+                    "type": "StringLit",
+                    "val": "Paul"
+                  }
+                }
+              },
+              "bindings": {
+                "C": {
+                  "type": "StringLit",
+                  "val": "Pete"
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "Paul"
+                }
+              }
+            }
+          ],
+          "List [ \"\\\"Carolyn\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "father",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Carolyn"
+                  },
+                  "father": {
+                    "type": "StringLit",
+                    "val": "Paul"
+                  }
+                }
+              },
+              "bindings": {
+                "C": {
+                  "type": "StringLit",
+                  "val": "Carolyn"
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "Paul"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "1": {
+    "nodeID": "1",
+    "cache": {
+      "child": {
+        "items": {
+          "List [ \"\\\"Pete\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "mother",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Pete"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Mary"
+                  }
+                }
+              },
+              "bindings": {
+                "C": {
+                  "type": "StringLit",
+                  "val": "Pete"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Mary"
+                }
+              }
+            }
+          ],
+          "List [ \"\\\"Carolyn\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "mother",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Carolyn"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Mary"
+                  }
+                }
+              },
+              "bindings": {
+                "C": {
+                  "type": "StringLit",
+                  "val": "Carolyn"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Mary"
+                }
+              }
+            }
+          ],
+          "List [ \"\\\"Steve\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "mother",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Steve"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Jill"
+                  }
+                }
+              },
+              "bindings": {
+                "C": {
+                  "type": "StringLit",
+                  "val": "Steve"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Jill"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "2": {
+    "nodeID": "2",
+    "cache": {}
+  },
+  "3": {
+    "nodeID": "3",
+    "cache": {
+      "mother-father": {
+        "items": {
+          "List [ \"\\\"Mary\\\"\", \"\\\"Paul\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Pete"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Mary"
+                  },
+                  "father": {
+                    "type": "StringLit",
+                    "val": "Paul"
+                  }
+                }
+              },
+              "bindings": {
+                "R": {
+                  "type": "StringLit",
+                  "val": "Pete"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Mary"
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "Paul"
+                }
+              }
+            },
+            {
+              "term": {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Carolyn"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Mary"
+                  },
+                  "father": {
+                    "type": "StringLit",
+                    "val": "Paul"
+                  }
+                }
+              },
+              "bindings": {
+                "R": {
+                  "type": "StringLit",
+                  "val": "Carolyn"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Mary"
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "Paul"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "4": {
+    "nodeID": "4",
+    "cache": {
+      "mother-father": {
+        "items": {
+          "List [ \"\\\"Mary\\\"\", \"\\\"Paul\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Pete"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Mary"
+                  },
+                  "father": {
+                    "type": "StringLit",
+                    "val": "Paul"
+                  }
+                }
+              },
+              "bindings": {
+                "L": {
+                  "type": "StringLit",
+                  "val": "Pete"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Mary"
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "Paul"
+                }
+              }
+            },
+            {
+              "term": {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "StringLit",
+                    "val": "Carolyn"
+                  },
+                  "mother": {
+                    "type": "StringLit",
+                    "val": "Mary"
+                  },
+                  "father": {
+                    "type": "StringLit",
+                    "val": "Paul"
+                  }
+                }
+              },
+              "bindings": {
+                "L": {
+                  "type": "StringLit",
+                  "val": "Carolyn"
+                },
+                "M": {
+                  "type": "StringLit",
+                  "val": "Mary"
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "Paul"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "5": {
+    "nodeID": "5",
+    "cache": {}
+  },
+  "6": {
+    "nodeID": "6",
+    "cache": {}
+  },
+  "sibling": {
+    "nodeID": "sibling",
+    "cache": {}
+  },
+  "mother": {
+    "nodeID": "mother",
+    "cache": {}
+  },
+  "parents": {
+    "nodeID": "parents",
+    "cache": {}
+  },
+  "father": {
+    "nodeID": "father",
+    "cache": {}
+  }
+}

@@ -202,6 +202,7 @@ function addAndBinary(
   const colsToIndex = getColsToIndex(joinInfo);
   const g3 = addEdge(g2, leftID, joinID);
   const g4 = addEdge(g3, rightID, joinID);
+  // console.log({ colsToIndex });
   const g5 = addIndex(g4, leftID, colsToIndex.left);
   const g6 = addIndex(g5, rightID, colsToIndex.right);
   return {
@@ -234,10 +235,11 @@ function addIndex(
     ...graph,
     nodes: graph.nodes.update(nodeID, (node) => ({
       ...node,
-      cache: node.cache.createIndex(attrs.join("-"), (res) =>
-        // TODO: is JSON.stringify the fastest serialization method we have?
-        List(attrs).map((attr) => JSON.stringify((res.term as Rec).attrs[attr]))
-      ),
+      cache: node.cache.createIndex(attrs.join("-"), (res) => {
+        // TODO: is this gonna be a perf bottleneck?
+        // console.log({ attrs, res: ppt(res.term) });
+        return List(attrs).map((attr) => ppt((res.term as Rec).attrs[attr]));
+      }),
     })),
   };
 }

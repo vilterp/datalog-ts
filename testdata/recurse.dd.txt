@@ -52,7 +52,7 @@ Error:
 
 Expected one of the following: 
 
-'.load', '.rulegraph', '.table', '.trace', /#[^\n]*/, record identifier
+'.dumpcaches', '.load', '.rulegraph', '.table', '.trace', /#[^\n]*/, record identifier
 
     at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
     at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:94:39)

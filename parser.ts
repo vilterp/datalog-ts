@@ -14,6 +14,7 @@ export const language = P.createLanguage({
       r.tableDecl,
       r.loadStmt,
       r.traceStmt,
+      r.dumpCachesStmt,
       r.ruleGraphStmt
     ),
   loadStmt: (r) =>
@@ -22,6 +23,7 @@ export const language = P.createLanguage({
       path,
     })),
   ruleGraphStmt: () => word(".rulegraph").map(() => ({ type: "RuleGraph" })),
+  dumpCachesStmt: () => word(".dumpcaches").map(() => ({ type: "DumpCaches" })),
   traceStmt: (r) =>
     P.seq(word(".trace"), r.insert).map(([_, insert]) => ({
       type: "TraceStmt",

@@ -1,0 +1,141 @@
+.table need
+----
+text/plain
+
+.table worker
+----
+text/plain
+
+opportunity{worker: N, capability: C, objective: O} :-
+  need{capability: C, objective: O} &
+  worker{name: N, capability: C}.
+----
+text/plain
+
+.rulegraph
+----
+application/graphviz
+digraph G {
+  "need" [color="black" label="need: Base []" shape="box"];
+  "worker" [color="black" label="worker: Base []" shape="box"];
+  "0" [color="black" label="0: Match(worker{capability: C, name: N}; {}) [capability]" shape="box"];
+  "1" [color="black" label="1: Match(need{capability: C, objective: O}; {}) [capability]" shape="box"];
+  "2" [color="black" label="2: Join(1 & 0): opportunity []" shape="box"];
+  "opportunity" [color="black" label="opportunity: Subst(opportunity{capability: C, objective: O, worker: N}) []" shape="box"];
+  "worker" -> "0" [];
+  "need" -> "1" [];
+  "1" -> "2" [];
+  "0" -> "2" [];
+  "2" -> "opportunity" [];
+}
+
+need{capability: "write HTML", objective: "make website"}.
+----
+text/plain
+need: [need{capability: "write HTML", objective: "make website"}; {}]
+1: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
+2: []
+
+worker{name: "Pete", capability: "write HTML"}.
+----
+text/plain
+worker: [worker{capability: "write HTML", name: "Pete"}; {}]
+0: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
+2: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
+opportunity: [opportunity{capability: "write HTML", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
+
+.dumpcaches
+----
+application/json
+{
+  "0": {
+    "nodeID": "0",
+    "cache": {
+      "capability": {
+        "items": {
+          "List [ \"\\\"write HTML\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "worker",
+                "attrs": {
+                  "name": {
+                    "type": "StringLit",
+                    "val": "Pete"
+                  },
+                  "capability": {
+                    "type": "StringLit",
+                    "val": "write HTML"
+                  }
+                }
+              },
+              "bindings": {
+                "N": {
+                  "type": "StringLit",
+                  "val": "Pete"
+                },
+                "C": {
+                  "type": "StringLit",
+                  "val": "write HTML"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "1": {
+    "nodeID": "1",
+    "cache": {
+      "capability": {
+        "items": {
+          "List [ \"\\\"write HTML\\\"\" ]": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "need",
+                "attrs": {
+                  "capability": {
+                    "type": "StringLit",
+                    "val": "write HTML"
+                  },
+                  "objective": {
+                    "type": "StringLit",
+                    "val": "make website"
+                  }
+                }
+              },
+              "bindings": {
+                "C": {
+                  "type": "StringLit",
+                  "val": "write HTML"
+                },
+                "O": {
+                  "type": "StringLit",
+                  "val": "make website"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "2": {
+    "nodeID": "2",
+    "cache": {}
+  },
+  "need": {
+    "nodeID": "need",
+    "cache": {}
+  },
+  "worker": {
+    "nodeID": "worker",
+    "cache": {}
+  },
+  "opportunity": {
+    "nodeID": "opportunity",
+    "cache": {}
+  }
+}

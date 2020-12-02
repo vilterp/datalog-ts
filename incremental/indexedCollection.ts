@@ -28,6 +28,10 @@ export class IndexedCollection<T> {
     return this.indexes.keySeq().toArray();
   }
 
+  toJSON(): object {
+    return this.indexes.toJSON();
+  }
+
   createIndex(
     name: string,
     getKey: (t: T) => List<string>

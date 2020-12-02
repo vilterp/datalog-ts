@@ -65,6 +65,7 @@ export type Statement =
   | { type: "LoadStmt"; path: string }
   | { type: "TraceStmt"; record: Rec }
   | { type: "RuleGraph" }
+  | { type: "DumpCaches" }
   | { type: "Comment"; comment: string };
 
 export interface Rule {
