@@ -61,7 +61,8 @@ type JoinInfo = {
   };
 };
 
-export function findJoinInfo(left: Rec, right: Rec): JoinInfo {
+export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
+  console.log({ left, right });
   const out: JoinInfo = {};
   for (let leftAttr in left.attrs) {
     const leftVar = left.attrs[leftAttr];
@@ -81,6 +82,23 @@ export function findJoinInfo(left: Rec, right: Rec): JoinInfo {
         };
       }
     }
+  }
+  return out;
+}
+
+type ColsToIndexByRelation = {
+  left: string[];
+  right: string[];
+};
+
+function getColsToIndex(joinInfo: JoinInfo): ColsToIndexByRelation {
+  const out: ColsToIndexByRelation = {
+    left: [],
+    right: [],
+  };
+  for (let varName of Object.keys(joinInfo)) {
+    out.left.push(joinInfo[varName].leftAttr);
+    out.right.push(joinInfo[varName].rightAttr);
   }
   return out;
 }
@@ -157,6 +175,7 @@ function addJoin(graph: RuleGraph, ruleName: string, and: Rec[]): AddResult {
     g1,
     ruleName,
     and[0],
+    and[1],
     rightID
   );
   return { newGraph: g2, tipID: andID, newNodeIDs: setUnion(nn1, nn2) };
@@ -166,6 +185,7 @@ function addAndBinary(
   graph: RuleGraph,
   ruleName: string,
   left: Rec,
+  right: Rec,
   rightID: NodeID
 ): AddResult {
   const { newGraph: g1, newNodeIDs: nn1, tipID: leftID } = addAndClause(
@@ -178,10 +198,14 @@ function addAndBinary(
     leftID,
     rightID,
   });
+  const joinInfo = getJoinInfo(left, right);
+  const colsToIndex = getColsToIndex(joinInfo);
   const g3 = addEdge(g2, leftID, joinID);
   const g4 = addEdge(g3, rightID, joinID);
+  const g5 = addIndex(g4, leftID, colsToIndex.left);
+  const g6 = addIndex(g5, rightID, colsToIndex.right);
   return {
-    newGraph: g4,
+    newGraph: g6,
     tipID: joinID,
     newNodeIDs: setAdd(nn1, joinID),
   };
@@ -198,6 +222,23 @@ function addAndClause(graph: RuleGraph, rec: Rec): AddResult {
     newGraph: withMatchEdge,
     newNodeIDs: new Set([matchID]),
     tipID: matchID,
+  };
+}
+
+function addIndex(
+  graph: RuleGraph,
+  nodeID: NodeID,
+  attrs: string[]
+): RuleGraph {
+  return {
+    ...graph,
+    nodes: graph.nodes.update(nodeID, (node) => ({
+      ...node,
+      cache: node.cache.createIndex(attrs.join("-"), (res) =>
+        // TODO: is JSON.stringify the fastest serialization method we have?
+        List(attrs).map((attr) => JSON.stringify((res.term as Rec).attrs[attr]))
+      ),
+    })),
   };
 }
 

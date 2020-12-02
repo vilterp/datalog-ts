@@ -19,7 +19,7 @@ export type RuleGraph = {
     {
       isInternal: boolean;
       desc: NodeDesc;
-      cache: IndexedCollection<Res>;
+      cache: IndexedCollection<Res>; // TODO: should this be just Rec?
     }
   >;
   edges: Map<NodeID, List<NodeID>>;

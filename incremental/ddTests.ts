@@ -13,7 +13,7 @@ import {
   TestOutput,
 } from "../util/ddTest/types";
 import { fsLoader } from "../repl";
-import { findJoinInfo } from "./build";
+import { getJoinInfo } from "./build";
 // import { SuiteSpec, VISUALIZERS } from "../util/ddTest/visualizers";
 // import { loader } from "../fp/dl";
 
@@ -118,7 +118,7 @@ function joinInfoTest(test: string[]): TestOutput[] {
     const [left, right] = input.split("\n");
     const leftStmt = parseRecord(left);
     const rightStmt = parseRecord(right);
-    const res = findJoinInfo(leftStmt, rightStmt);
+    const res = getJoinInfo(leftStmt, rightStmt);
     return jsonOut(JSON.stringify(res, null, 2));
   });
 }

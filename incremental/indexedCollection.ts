@@ -5,8 +5,8 @@ export function emptyIndexedCollection<T>(): IndexedCollection<T> {
 }
 
 type Index<T> = {
-  getKey: (t: T) => string;
-  items: Map<string, List<T>>;
+  getKey: (t: T) => List<string>;
+  items: Map<List<string>, List<T>>;
 };
 
 export class IndexedCollection<T> {
@@ -24,7 +24,10 @@ export class IndexedCollection<T> {
     return this.allRecords;
   }
 
-  createIndex(name: string, getKey: (t: T) => string): IndexedCollection<T> {
+  createIndex(
+    name: string,
+    getKey: (t: T) => List<string>
+  ): IndexedCollection<T> {
     return new IndexedCollection<T>(
       this.allRecords,
       this.indexes.set(name, {
@@ -50,7 +53,7 @@ export class IndexedCollection<T> {
     );
   }
 
-  get(indexName: string, key: string): List<T> {
+  get(indexName: string, key: List<string>): List<T> {
     return this.indexes.get(indexName).items.get(key);
   }
 }
