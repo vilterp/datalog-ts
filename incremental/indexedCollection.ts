@@ -62,6 +62,6 @@ export class IndexedCollection<T> {
   }
 
   get(indexName: string, key: List<string>): List<T> {
-    return this.indexes.get(indexName).items.get(key);
+    return this.indexes.get(indexName).items.get(key, List());
   }
 }

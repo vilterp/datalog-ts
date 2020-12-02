@@ -1,4 +1,4 @@
-import { RuleGraph, Res, NodeID } from "./types";
+import { RuleGraph, Res, NodeID, JoinDesc, JoinInfo } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppr, ppRule, ppt, ppVM } from "../pretty";
@@ -9,9 +9,12 @@ import {
   addNodeKnownID,
   addOr,
   addUnmappedRule,
+  getIndexKey,
+  getIndexName,
   resolveUnmappedRule,
 } from "./build";
 import { Performance } from "w3c-hr-time";
+import { List, Map } from "immutable";
 
 const performance = new Performance();
 
@@ -200,9 +203,23 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       return [ins.res];
     case "Join": {
       if (ins.origin === nodeDesc.leftID) {
-        return doJoin(graph, ins, nodeDesc.ruleName, nodeDesc.rightID);
+        return doJoin(
+          graph,
+          ins,
+          nodeDesc,
+          nodeDesc.rightID,
+          nodeDesc.indexes.left,
+          nodeDesc.indexes.right
+        );
       } else {
-        return doJoin(graph, ins, nodeDesc.ruleName, nodeDesc.leftID);
+        return doJoin(
+          graph,
+          ins,
+          nodeDesc,
+          nodeDesc.leftID,
+          nodeDesc.indexes.right,
+          nodeDesc.indexes.left
+        );
       }
     }
     case "Match": {
@@ -278,14 +295,25 @@ export function clearJoinStats() {
 function doJoin(
   graph: RuleGraph,
   ins: Insertion,
-  ruleName: string,
-  otherNode: NodeID
+  joinDesc: JoinDesc,
+  otherNodeID: NodeID,
+  thisIndex: string[],
+  otherIndex: string[]
 ): Res[] {
   const results: Res[] = [];
   const thisVars = ins.res.bindings;
-  const otherRelation = graph.nodes.get(otherNode).cache;
+  const otherNode = graph.nodes.get(otherNodeID);
+  const indexName = getIndexName(otherIndex);
+  const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
+  const otherEntries = otherNode.cache.get(indexName, indexKey);
+  console.log({
+    indexName,
+    indexKey,
+    otherEntries,
+    cache: otherNode.cache.toJSON(),
+  });
   const before = performance.now();
-  for (let possibleOtherMatch of otherRelation.all()) {
+  for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch.bindings;
     const unifyRes = unifyVars(thisVars || {}, otherVars || {});
     // console.log("join", {
@@ -295,13 +323,13 @@ function doJoin(
     // });
     if (unifyRes !== null) {
       results.push({
-        term: { ...(ins.res.term as Rec), relation: ruleName },
+        term: { ...(ins.res.term as Rec), relation: joinDesc.ruleName },
         bindings: unifyRes,
       });
     }
   }
   const after = performance.now();
-  joinStats.inputRecords += otherRelation.size;
+  joinStats.inputRecords += otherEntries.size;
   joinStats.outputRecords += results.length;
   joinStats.joinTimeMS += after - before;
   return results;

@@ -1,5 +1,11 @@
 import { Rule, Rec, OrExpr, AndClause, VarMappings } from "../types";
-import { RuleGraph, NodeDesc, NodeID } from "./types";
+import {
+  RuleGraph,
+  NodeDesc,
+  NodeID,
+  JoinInfo,
+  ColsToIndexByRelation,
+} from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
 import { filterObj, setAdd, setUnion } from "../util";
@@ -53,14 +59,6 @@ export function resolveUnmappedRule(
   return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
 }
 
-type JoinInfo = {
-  [varName: string]: {
-    varName: string;
-    leftAttr: string;
-    rightAttr: string;
-  };
-};
-
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   // console.log({ left, right });
   const out: JoinInfo = {};
@@ -85,11 +83,6 @@ export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   }
   return out;
 }
-
-type ColsToIndexByRelation = {
-  left: string[];
-  right: string[];
-};
 
 function getColsToIndex(joinInfo: JoinInfo): ColsToIndexByRelation {
   const out: ColsToIndexByRelation = {
@@ -188,18 +181,20 @@ function addAndBinary(
   right: Rec,
   rightID: NodeID
 ): AddResult {
+  const joinInfo = getJoinInfo(left, right);
+  const colsToIndex = getColsToIndex(joinInfo);
   const { newGraph: g1, newNodeIDs: nn1, tipID: leftID } = addAndClause(
     graph,
     left
   );
   const [g2, joinID] = addNode(g1, true, {
     type: "Join",
+    indexes: colsToIndex,
+    joinInfo,
     ruleName,
     leftID,
     rightID,
   });
-  const joinInfo = getJoinInfo(left, right);
-  const colsToIndex = getColsToIndex(joinInfo);
   const g3 = addEdge(g2, leftID, joinID);
   const g4 = addEdge(g3, rightID, joinID);
   // console.log({ colsToIndex });
@@ -235,13 +230,23 @@ function addIndex(
     ...graph,
     nodes: graph.nodes.update(nodeID, (node) => ({
       ...node,
-      cache: node.cache.createIndex(attrs.join("-"), (res) => {
+      cache: node.cache.createIndex(getIndexName(attrs), (res) => {
         // TODO: is this gonna be a perf bottleneck?
         // console.log({ attrs, res: ppt(res.term) });
-        return List(attrs).map((attr) => ppt((res.term as Rec).attrs[attr]));
+        return getIndexKey(res.term as Rec, attrs);
       }),
     })),
   };
+}
+
+type ColName = string;
+
+export function getIndexKey(rec: Rec, attrs: ColName[]): List<string> {
+  return List(attrs).map((attr) => ppt(rec.attrs[attr]));
+}
+
+export function getIndexName(attrs: ColName[]): string {
+  return attrs.join("-");
 }
 
 // helpers

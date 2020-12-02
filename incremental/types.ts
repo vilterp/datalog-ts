@@ -27,9 +27,24 @@ type NodeAndCache = {
   cache: IndexedCollection<Res>; // TODO: should this be just Rec?
 };
 
+export type JoinInfo = {
+  [varName: string]: {
+    varName: string;
+    leftAttr: string;
+    rightAttr: string;
+  };
+};
+
+export type ColsToIndexByRelation = {
+  left: string[];
+  right: string[];
+};
+
 export type JoinDesc = {
   type: "Join";
   ruleName: string;
+  joinInfo: JoinInfo;
+  indexes: ColsToIndexByRelation;
   leftID: NodeID;
   rightID: NodeID;
 };
