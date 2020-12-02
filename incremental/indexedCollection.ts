@@ -24,6 +24,10 @@ export class IndexedCollection<T> {
     return this.allRecords;
   }
 
+  indexNames(): string[] {
+    return this.indexes.keySeq().toArray();
+  }
+
   createIndex(
     name: string,
     getKey: (t: T) => List<string>

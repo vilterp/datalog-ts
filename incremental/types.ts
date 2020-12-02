@@ -14,18 +14,17 @@ export type Res = {
 
 export type RuleGraph = {
   nextNodeID: number;
-  nodes: Map<
-    NodeID,
-    {
-      isInternal: boolean;
-      desc: NodeDesc;
-      cache: IndexedCollection<Res>; // TODO: should this be just Rec?
-    }
-  >;
+  nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
   unmappedRules: {
     [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
   };
+};
+
+type NodeAndCache = {
+  isInternal: boolean;
+  desc: NodeDesc;
+  cache: IndexedCollection<Res>; // TODO: should this be just Rec?
 };
 
 export type JoinDesc = {
@@ -56,23 +55,27 @@ export function formatRes(res: Res): string {
   return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
 }
 
-export function formatDesc(node: NodeDesc): string {
-  switch (node.type) {
-    case "BaseFactTable":
-      return `Base`;
-    case "BinExpr":
-      return ppBE(node.expr);
-    case "Join":
-      return `Join(${node.leftID} & ${node.rightID}): ${node.ruleName}`;
-    case "Match":
-      return `Match(${ppt(node.rec)}; ${ppVM(node.mappings, [], {
-        showScopePath: false,
-      })})`;
-    case "Substitute":
-      return `Subst(${ppt(node.rec)})`;
-    case "Union":
-      return "Union";
-  }
+export function formatDesc(node: NodeAndCache): string {
+  const nodeDesc = node.desc;
+  const mainRes = (() => {
+    switch (nodeDesc.type) {
+      case "BaseFactTable":
+        return `Base`;
+      case "BinExpr":
+        return ppBE(nodeDesc.expr);
+      case "Join":
+        return `Join(${nodeDesc.leftID} & ${nodeDesc.rightID}): ${nodeDesc.ruleName}`;
+      case "Match":
+        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
+          showScopePath: false,
+        })})`;
+      case "Substitute":
+        return `Subst(${ppt(nodeDesc.rec)})`;
+      case "Union":
+        return "Union";
+    }
+  })();
+  return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
 }
 
 export type EmissionLogAndGraph = {

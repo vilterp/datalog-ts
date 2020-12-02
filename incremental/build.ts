@@ -62,7 +62,7 @@ type JoinInfo = {
 };
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
-  console.log({ left, right });
+  // console.log({ left, right });
   const out: JoinInfo = {};
   for (let leftAttr in left.attrs) {
     const leftVar = left.attrs[leftAttr];
