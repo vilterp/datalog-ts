@@ -27,8 +27,11 @@ import {
   plainTextOut,
   TestOutput,
 } from "../util/ddTest/types";
+// importing path-browserify so this works in the browser
+import path from "path";
 
 export type Interpreter = {
+  loadStack: string[];
   graph: RuleGraph;
   loader: Loader;
 };
@@ -47,6 +50,7 @@ const ack: Output = { type: "Acknowledge" };
 
 export function newInterpreter(loader: Loader): Interpreter {
   return {
+    loadStack: [],
     graph: emptyRuleGraph,
     loader,
   };
@@ -146,14 +150,28 @@ export function processStmt(
   }
 }
 
-export function doLoad(interp: Interpreter, loadPath: string): Interpreter {
-  const contents = interp.loader(loadPath);
+function doLoad(interp: Interpreter, loadPath: string): Interpreter {
+  const currentDir =
+    interp.loadStack.length > 0
+      ? path.dirname(interp.loadStack[interp.loadStack.length - 1])
+      : ".";
+  const pathToLoad = path.resolve(currentDir, loadPath);
+  const contents = interp.loader(pathToLoad);
   const program: Program = dlLanguage.program.tryParse(contents);
+  const withNewStack = {
+    ...interp,
+    loadStack: [...interp.loadStack, loadPath],
+  };
   // process program with new load stack
-  return program.reduce<Interpreter>(
+  const withLoaded = program.reduce<Interpreter>(
     (interp, stmt) => processStmt(interp, stmt).newInterp,
-    interp
+    withNewStack
   );
+  // go back to original stack
+  return {
+    ...withLoaded,
+    loadStack: interp.loadStack,
+  };
 }
 
 type OutputOptions = {
