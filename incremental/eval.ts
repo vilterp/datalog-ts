@@ -109,12 +109,7 @@ export function insertFact(graph: RuleGraph, rec: Rec): EmissionLog {
   }
 
   const iter = getInsertionIterator(graph, rec);
-  const res = stepIteratorAll(graph, iter);
-
-  // console.log("insertFact", { joinStats: getJoinStats() });
-  // clearJoinStats();
-
-  return res;
+  return stepIteratorAll(graph, iter);
 }
 
 function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
@@ -277,13 +272,15 @@ const emptyJoinStats = () => ({
 let joinStats: JoinStats = emptyJoinStats();
 
 export function getJoinStats(): JoinStats & { outputPct: number } {
-  return {
+  const res = {
     ...joinStats,
     outputPct: (joinStats.outputRecords / joinStats.inputRecords) * 100,
   };
+  clearJoinStats();
+  return res;
 }
 
-export function clearJoinStats() {
+function clearJoinStats() {
   joinStats = emptyJoinStats();
 }
 

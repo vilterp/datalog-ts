@@ -20,11 +20,7 @@ import {
   KEY_A,
   KEY_Z,
 } from "./keymap";
-import {
-  clearCaches,
-  clearJoinStats,
-  getJoinStats,
-} from "../../incremental/eval";
+import { clearCaches, getJoinStats } from "../../incremental/eval";
 import { getUnifyCalls } from "../../unify";
 
 type Error =
@@ -39,11 +35,10 @@ export function CodeEditor<AST>(props: {
   highlightCSS: string;
   state: EditorState;
   setState: (st: EditorState) => void;
-}): [Interpreter, React.ReactNode] {
-  const interp2 = evalStr(
-    props.interp,
-    `ide.Cursor{idx: ${props.state.cursorPos}}.`
-  );
+}) {
+  const interp = props.interp;
+  clearCaches(interp.graph); // wuh-oh, side effects in render
+  evalStr(props.interp, `ide.Cursor{idx: ${props.state.cursorPos}}.`);
 
   const st = props.state;
   const setCursorPos = (pos: number) => {
@@ -57,33 +52,27 @@ export function CodeEditor<AST>(props: {
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
   const parseRes = props.parse.parse(st.source);
-  let interp3: Interpreter = null;
   if (parseRes.status === false) {
     error = {
       type: "ParseError",
       expected: parseRes.expected,
       offset: parseRes.index.offset,
     };
-    interp3 = interp2;
   } else {
     try {
       // awk
-      clearCaches(interp2.graph);
       const flattened = props.flatten(parseRes.value);
-      interp3 = flattened.reduce<Interpreter>(
-        (int, rec) =>
-          processStmt(int, { type: "Insert", record: rec as Rec }).newInterp,
-        interp2
-      );
+      for (let record of flattened) {
+        processStmt(interp, { type: "Insert", record: record as Rec });
+      }
 
       console.log("codeeditor", getJoinStats());
-      clearJoinStats();
 
       console.log("unify calls", getUnifyCalls());
 
       // get suggestions
-      suggestions = props.getSuggestions(interp3);
-      typeErrors = getTypeErrors(interp3);
+      suggestions = props.getSuggestions(interp);
+      typeErrors = getTypeErrors(interp);
     } catch (e) {
       error = { type: "EvalError", err: e };
       console.error("eval error", error.err);
@@ -102,7 +91,7 @@ export function CodeEditor<AST>(props: {
   const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
   const applyAction = (action: EditorAction, modifiedState?: EditorState) => {
     const ctx: ActionContext = {
-      interp: interp3,
+      interp,
       state: modifiedState ? modifiedState : st,
       suggestions,
       errors,
@@ -112,14 +101,13 @@ export function CodeEditor<AST>(props: {
     }
   };
   const actionCtx = {
-    interp: interp3,
+    interp,
     state: st,
     suggestions,
     errors,
   };
 
-  return [
-    interp3,
+  return (
     <div>
       <style
         dangerouslySetInnerHTML={{
@@ -144,7 +132,7 @@ export function CodeEditor<AST>(props: {
           cursorPos={st.cursorPos} // would be nice if we could have an onCursorPos
           highlight={(_) =>
             highlight(
-              interp3,
+              interp,
               props.state.source,
               error && error.type === "ParseError" ? error.offset : null,
               typeErrors
@@ -240,6 +228,6 @@ export function CodeEditor<AST>(props: {
           ))}
         </ul>
       ) : null}
-    </div>,
-  ];
+    </div>
+  );
 }

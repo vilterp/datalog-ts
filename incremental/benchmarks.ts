@@ -5,7 +5,7 @@ import {
   runDDBenchmarkManual,
 } from "../util/benchmark";
 import { evalTest } from "./ddTests";
-import { clearCaches, clearJoinStats, getJoinStats } from "./eval";
+import { clearCaches, getJoinStats } from "./eval";
 import { language } from "../fp/parser";
 import { flatten } from "../fp/flatten";
 import { ppt } from "../pretty";
@@ -32,7 +32,6 @@ export const incrBenchmarks: BenchmarkSpec[] = [
         2000
       );
       console.log(getJoinStats());
-      clearJoinStats();
       return res;
     },
   },
@@ -68,6 +67,8 @@ function fpTest(repetitions: number, inputs: string[]): BenchmarkResult {
   }
 
   const after = performance.now();
+
+  console.log(getJoinStats());
 
   return {
     repetitions,

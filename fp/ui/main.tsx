@@ -18,7 +18,7 @@ import { loader } from "../dl";
 import { getSuggestions } from "./suggestions";
 
 const interp = newInterpreter(loader);
-const interp2 = doLoad(interp, "./main.dl");
+doLoad(interp, "./main.dl");
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -27,21 +27,20 @@ function Main() {
   );
 
   // TODO: idk if this is how you're supposed to React. lol
-  const [interp3, editor] = CodeEditor({
-    interp: interp2,
-    parse: fpLanguage.expr,
-    flatten,
-    getSuggestions,
-    highlightCSS,
-    state: editorState,
-    setState: setEditorState,
-  });
 
   return (
     <div>
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
-      {editor}
+      <CodeEditor
+        interp={interp}
+        parse={fpLanguage.expr}
+        flatten={flatten}
+        getSuggestions={getSuggestions}
+        highlightCSS={highlightCSS}
+        state={editorState}
+        setState={setEditorState}
+      />
 
       {/*<Collapsible*/}
       {/*  heading="Facts &amp; Rules"*/}

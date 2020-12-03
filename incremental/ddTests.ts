@@ -14,7 +14,6 @@ import {
 } from "../util/ddTest/types";
 import { fsLoader } from "../repl";
 import { getJoinInfo } from "./build";
-import { clearJoinStats, getJoinStats } from "./eval";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
