@@ -28,7 +28,7 @@ import {
   TestOutput,
 } from "../util/ddTest/types";
 import path from "path-browserify";
-import { mapObjToList } from "../util";
+import { mapObj, mapObjToList } from "../util";
 
 export type Interpreter = {
   loadStack: string[];
@@ -112,7 +112,7 @@ export function processStmt(
         newInterp: interp,
         output: {
           type: "Json",
-          json: mapObjToList(interp.graph.nodes, (nodeID, node) => ({
+          json: mapObj(interp.graph.nodes, (nodeID, node) => ({
             nodeID,
             cache: node.cache.toJSON(),
           })),

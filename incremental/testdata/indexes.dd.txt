@@ -16,17 +16,17 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "need" [color="black" label="need: Base []" shape="box"];
-  "worker" [color="black" label="worker: Base []" shape="box"];
   "0" [color="black" label="0: Match(worker{capability: C, name: N}; {}) [capability]" shape="box"];
   "1" [color="black" label="1: Match(need{capability: C, objective: O}; {}) [capability]" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): opportunity []" shape="box"];
+  "need" [color="black" label="need: Base []" shape="box"];
+  "worker" [color="black" label="worker: Base []" shape="box"];
   "opportunity" [color="black" label="opportunity: Subst(opportunity{capability: C, objective: O, worker: N}) []" shape="box"];
-  "worker" -> "0" [];
-  "need" -> "1" [];
-  "1" -> "2" [];
   "0" -> "2" [];
+  "1" -> "2" [];
   "2" -> "opportunity" [];
+  "need" -> "1" [];
+  "worker" -> "0" [];
 }
 
 need{capability: "write HTML", objective: "make website"}.
