@@ -35,6 +35,9 @@ jobs:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
           BENCHMARK_ENV: github-actions
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_SECRET: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          PROFILES_S3_BUCKET_NAME: datalog-ts-profiles
       # disabling percy for the time being
       # - name: "Percy FP UI"
       #   uses: percy/snapshot-action@v0.1.1
