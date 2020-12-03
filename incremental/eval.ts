@@ -1,4 +1,4 @@
-import { RuleGraph, Res, NodeID, JoinDesc } from "./types";
+import { RuleGraph, Res, NodeID, JoinDesc, MatchDesc } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import Denque from "denque";
@@ -205,31 +205,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       }
     }
     case "Match": {
-      const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
-      joinStats.matchUnifyCalls++;
-      const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
-      if (bindings === null) {
-        return [];
-      }
-      for (let key in bindings) {
-        // console.log({ bindings, key });
-        if (bindings[key].type === "Var") {
-          return [];
-        }
-      }
-      // console.log("match", {
-      //   insRec: formatRes(ins.res),
-      //   match: ppt(nodeDesc.rec),
-      //   bindings: ppb(bindings || {}),
-      //   mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
-      //   mappedBindings: ppb(mappedBindings),
-      // });
-      return [
-        {
-          term: ins.res.term,
-          bindings: bindings,
-        },
-      ];
+      return doMatch(nodeDesc, ins);
     }
     case "Substitute":
       const rec = substitute(nodeDesc.rec, ins.res.bindings);
@@ -250,6 +226,34 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "BaseFactTable":
       return [ins.res];
   }
+}
+
+function doMatch(nodeDesc: MatchDesc, ins: Insertion): Res[] {
+  const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
+  joinStats.matchUnifyCalls++;
+  const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
+  if (bindings === null) {
+    return [];
+  }
+  for (let key in bindings) {
+    // console.log({ bindings, key });
+    if (bindings[key].type === "Var") {
+      return [];
+    }
+  }
+  // console.log("match", {
+  //   insRec: formatRes(ins.res),
+  //   match: ppt(nodeDesc.rec),
+  //   bindings: ppb(bindings || {}),
+  //   mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
+  //   mappedBindings: ppb(mappedBindings),
+  // });
+  return [
+    {
+      term: ins.res.term,
+      bindings: bindings,
+    },
+  ];
 }
 
 type JoinStats = {

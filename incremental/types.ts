@@ -49,10 +49,16 @@ export type JoinDesc = {
   rightID: NodeID;
 };
 
+export type MatchDesc = {
+  type: "Match";
+  rec: Rec;
+  mappings: VarMappings;
+};
+
 export type NodeDesc =
   | { type: "BaseFactTable" }
   | JoinDesc
-  | { type: "Match"; rec: Rec; mappings: VarMappings }
+  | MatchDesc
   | { type: "Substitute"; rec: Rec }
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
