@@ -60,6 +60,9 @@ function fpTest(repetitions: number, inputs: string[]): BenchmarkResult {
   const before = performance.now();
 
   for (let i = 0; i < repetitions; i++) {
+    if (i % 10 === 0) {
+      console.log("  ", i);
+    }
     for (let record of flattened) {
       processStmt(interp, { type: "Insert", record: record as Rec });
     }
