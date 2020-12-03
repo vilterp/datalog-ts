@@ -1,6 +1,7 @@
 import { RuleGraph, Res, NodeID, JoinDesc } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
+import Denque from "denque";
 import { ppb, ppr, ppRule, ppt, ppVM } from "../pretty";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../util";
@@ -117,13 +118,13 @@ export function insertFact(graph: RuleGraph, rec: Rec): EmissionLog {
 }
 
 function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
-  const queue: Insertion[] = [
+  const queue = new Denque([
     {
       res: { term: rec, bindings: {} },
       origin: null,
       destination: rec.relation,
     },
-  ];
+  ]);
   return { graph, queue, mode: { type: "Playing" } };
 }
 
@@ -134,14 +135,14 @@ function getReplayIterator(
 ): InsertionIterator {
   return {
     graph,
-    queue,
+    queue: new Denque(queue),
     mode: { type: "Replaying", newNodeIDs },
   };
 }
 
 type InsertionIterator = {
   graph: RuleGraph;
-  queue: Insertion[];
+  queue: Denque<Insertion>;
   mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
 
@@ -215,7 +216,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       if (bindings === null) {
         return [];
       }
-      for (let key of Object.keys(bindings)) {
+      for (let key in bindings) {
         // console.log({ bindings, key });
         if (bindings[key].type === "Var") {
           return [];
