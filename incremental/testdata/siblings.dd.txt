@@ -23,9 +23,6 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
   "0" [color="black" label="0: Match(father{child: C, father: F}; {}) [child]" shape="box"];
   "1" [color="black" label="1: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): parents []" shape="box"];
@@ -33,10 +30,10 @@ digraph G {
   "4" [color="black" label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [mother-father]" shape="box"];
   "5" [color="black" label="5: Join(4 & 3): sibling []" shape="box"];
   "6" [color="black" label="6: L != R []" shape="box"];
+  "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];
-  "mother" -> "1" [];
-  "parents" -> "3" [];
-  "parents" -> "4" [];
+  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
+  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];
@@ -45,6 +42,9 @@ digraph G {
   "5" -> "6" [];
   "6" -> "sibling" [];
   "father" -> "0" [];
+  "mother" -> "1" [];
+  "parents" -> "3" [];
+  "parents" -> "4" [];
 }
 
 mother{child: "Pete", mother: "Mary"}.
@@ -445,20 +445,20 @@ application/json
     "nodeID": "6",
     "cache": {}
   },
-  "sibling": {
-    "nodeID": "sibling",
-    "cache": {}
-  },
   "mother": {
     "nodeID": "mother",
+    "cache": {}
+  },
+  "father": {
+    "nodeID": "father",
     "cache": {}
   },
   "parents": {
     "nodeID": "parents",
     "cache": {}
   },
-  "father": {
-    "nodeID": "father",
+  "sibling": {
+    "nodeID": "sibling",
     "cache": {}
   }
 }
