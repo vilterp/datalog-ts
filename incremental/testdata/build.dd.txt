@@ -5,17 +5,17 @@ matGramp{child: A, grandfather: C} :-
 ----
 application/graphviz
 digraph G {
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "father" [color="black" label="father: Base []" shape="box"];
   "0" [color="black" label="0: Match(father{child: B, father: C}; {}) [child]" shape="box"];
   "1" [color="black" label="1: Match(mother{child: A, mother: B}; {}) [mother]" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): matGramp []" shape="box"];
+  "mother" [color="black" label="mother: Base []" shape="box"];
+  "father" [color="black" label="father: Base []" shape="box"];
   "matGramp" [color="black" label="matGramp: Subst(matGramp{child: A, grandfather: C}) []" shape="box"];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "2" -> "matGramp" [];
   "father" -> "0" [];
   "mother" -> "1" [];
-  "1" -> "2" [];
-  "0" -> "2" [];
-  "2" -> "matGramp" [];
 }
 
 .table a;
@@ -25,23 +25,23 @@ d{} :- a{} & b{} & c{}.
 ----
 application/graphviz
 digraph G {
-  "a" [color="black" label="a: Base []" shape="box"];
-  "b" [color="black" label="b: Base []" shape="box"];
-  "c" [color="black" label="c: Base []" shape="box"];
-  "d" [color="black" label="d: Subst(d{}) []" shape="box"];
   "0" [color="black" label="0: Match(c{}; {}) []" shape="box"];
   "1" [color="black" label="1: Match(b{}; {}) []" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): d []" shape="box"];
   "3" [color="black" label="3: Match(a{}; {}) []" shape="box"];
   "4" [color="black" label="4: Join(3 & 2): d []" shape="box"];
-  "c" -> "0" [];
-  "b" -> "1" [];
-  "1" -> "2" [];
+  "a" [color="black" label="a: Base []" shape="box"];
+  "b" [color="black" label="b: Base []" shape="box"];
+  "c" [color="black" label="c: Base []" shape="box"];
+  "d" [color="black" label="d: Subst(d{}) []" shape="box"];
   "0" -> "2" [];
-  "a" -> "3" [];
-  "3" -> "4" [];
+  "1" -> "2" [];
   "2" -> "4" [];
+  "3" -> "4" [];
   "4" -> "d" [];
+  "a" -> "3" [];
+  "b" -> "1" [];
+  "c" -> "0" [];
 }
 
 .table mother;
@@ -51,17 +51,17 @@ parent{child: C, parent: P} :-
 ----
 application/graphviz
 digraph G {
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "father" [color="black" label="father: Base []" shape="box"];
   "0" [color="black" label="0: Union []" shape="box"];
   "1" [color="black" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box"];
   "2" [color="black" label="2: Match(father{child: C, father: P}; {}) []" shape="box"];
+  "mother" [color="black" label="mother: Base []" shape="box"];
+  "father" [color="black" label="father: Base []" shape="box"];
   "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
-  "mother" -> "1" [];
-  "1" -> "0" [];
-  "father" -> "2" [];
-  "2" -> "0" [];
   "0" -> "parent" [];
+  "1" -> "0" [];
+  "2" -> "0" [];
+  "father" -> "2" [];
+  "mother" -> "1" [];
 }
 
 .table mother;
@@ -74,19 +74,16 @@ grandparent{grandchild: A, grandparent: C} :-
 ----
 application/graphviz
 digraph G {
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
   "0" [color="black" label="0: Union []" shape="box"];
   "1" [color="black" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box"];
   "2" [color="black" label="2: Match(father{child: C, father: P}; {}) []" shape="box"];
   "3" [color="black" label="3: Match(parent{child: B, parent: C}; {C: B, P: C}) [child]" shape="box"];
   "4" [color="black" label="4: Match(parent{child: A, parent: B}; {C: A, P: B}) [parent]" shape="box"];
   "5" [color="black" label="5: Join(4 & 3): grandparent []" shape="box"];
-  "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box"];
+  "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];
-  "mother" -> "1" [];
-  "parent" -> "3" [];
-  "parent" -> "4" [];
+  "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
+  "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box"];
   "0" -> "parent" [];
   "1" -> "0" [];
   "2" -> "0" [];
@@ -94,4 +91,7 @@ digraph G {
   "4" -> "5" [];
   "5" -> "grandparent" [];
   "father" -> "2" [];
+  "mother" -> "1" [];
+  "parent" -> "3" [];
+  "parent" -> "4" [];
 }

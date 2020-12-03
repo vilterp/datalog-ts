@@ -57,12 +57,14 @@ export type NodeDesc =
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
 
-export const emptyRuleGraph: RuleGraph = {
-  nextNodeID: 0,
-  nodes: {},
-  edges: {},
-  unmappedRules: {},
-};
+export function emptyRuleGraph(): RuleGraph {
+  return {
+    nextNodeID: 0,
+    nodes: {},
+    edges: {},
+    unmappedRules: {},
+  };
+}
 
 // formatters
 

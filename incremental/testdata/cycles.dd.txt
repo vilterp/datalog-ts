@@ -12,21 +12,21 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "baseEdge" [color="black" label="baseEdge: Base []" shape="box"];
   "0" [color="black" label="0: Union []" shape="box"];
   "1" [color="black" label="1: Match(baseEdge{from: F, to: T}; {}) []" shape="box"];
   "2" [color="black" label="2: Match(edge{from: I, to: T}; {F: I, T: T}) [from]" shape="box"];
   "3" [color="black" label="3: Match(baseEdge{from: F, to: I}; {}) [to]" shape="box"];
   "4" [color="black" label="4: Join(3 & 2): edge []" shape="box"];
+  "baseEdge" [color="black" label="baseEdge: Base []" shape="box"];
   "edge" [color="black" label="edge: Subst(edge{from: F, to: T}) []" shape="box"];
+  "0" -> "edge" [];
+  "1" -> "0" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "0" [];
   "baseEdge" -> "1" [];
   "baseEdge" -> "3" [];
-  "1" -> "0" [];
   "edge" -> "2" [];
-  "3" -> "4" [];
-  "2" -> "4" [];
-  "4" -> "0" [];
-  "0" -> "edge" [];
 }
 
 baseEdge{from: "A", to: "B"}.

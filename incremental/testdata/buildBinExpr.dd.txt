@@ -4,11 +4,11 @@ bar{a: A, b: B} :-
 ----
 application/graphviz
 digraph G {
-  "foo" [color="black" label="foo: Base []" shape="box"];
   "0" [color="black" label="0: Match(foo{a: A, b: B}; {}) []" shape="box"];
   "1" [color="black" label="1: A != B []" shape="box"];
+  "foo" [color="black" label="foo: Base []" shape="box"];
   "bar" [color="black" label="bar: Subst(bar{a: A, b: B}) []" shape="box"];
-  "foo" -> "0" [];
   "0" -> "1" [];
   "1" -> "bar" [];
+  "foo" -> "0" [];
 }

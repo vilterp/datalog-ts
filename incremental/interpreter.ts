@@ -51,7 +51,7 @@ const ack: Output = { type: "Acknowledge" };
 export function newInterpreter(loader: Loader): Interpreter {
   return {
     loadStack: [],
-    graph: emptyRuleGraph,
+    graph: emptyRuleGraph(),
     loader,
   };
 }
