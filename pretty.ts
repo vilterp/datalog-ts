@@ -16,20 +16,17 @@ import { flatMap, flatMapObjToList, mapObjToList, repeat } from "./util";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 import { Tree } from "./tree";
 
-export function prettyPrintTerm(term: Term): pp.IDoc {
+export function prettyPrintTerm(term: Term): string {
   switch (term.type) {
     case "Var":
       return term.name;
     case "Record":
-      return [
-        term.relation,
-        block(
-          pp.braces,
-          mapObjToList(term.attrs, (k, v) => [k, ": ", prettyPrintTerm(v)])
-        ),
-      ];
+      return `${term.relation}{${mapObjToList(
+        term.attrs,
+        (k, v) => `${k}: ${prettyPrintTerm(v)}`
+      ).join(", ")}}`;
     case "Array":
-      return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
+      return `[${term.items.map(prettyPrintTerm).join(", ")}]`;
     case "StringLit":
       return `"${escapeString(term.val)}"`;
     case "BinExpr":
@@ -41,12 +38,10 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
   }
 }
 
-export function prettyPrintBinExpr(term: BinExpr): pp.IDoc {
-  return [
-    prettyPrintTerm(term.left),
-    ` ${term.op} `,
-    prettyPrintTerm(term.right),
-  ];
+export function prettyPrintBinExpr(term: BinExpr): string {
+  return `${prettyPrintTerm(term.left)} ${term.op} ${prettyPrintTerm(
+    term.right
+  )}`;
 }
 
 export function ppBE(term: BinExpr): string {
@@ -104,7 +99,7 @@ export function prettyPrintResults(results: Res[]): pp.IDoc {
 // compact convenience functions, straight to string
 
 export function ppt(t: Term): string {
-  return pp.render(100, prettyPrintTerm(t));
+  return prettyPrintTerm(t);
 }
 
 export function ppb(b: Bindings): string {
