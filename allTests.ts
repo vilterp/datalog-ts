@@ -16,15 +16,15 @@ const writeResults = flags.has("--write-results");
 const stayAlive = flags.has("--stay-alive");
 
 const suites = {
-  unifyTests,
-  parserTests,
+  // unifyTests,
+  // parserTests,
   // replTests: replTests(writeResults),
-  fpTests: fpTests(writeResults),
-  json2DLTests,
-  prettyPrintTests,
-  treeTests,
-  actionsTests,
-  parserlibTests: parserlibTests(writeResults),
+  // fpTests: fpTests(writeResults),
+  // json2DLTests,
+  // prettyPrintTests,
+  // treeTests,
+  // actionsTests,
+  // parserlibTests: parserlibTests(writeResults),
   incrTests: incrTests(writeResults),
 };
 
