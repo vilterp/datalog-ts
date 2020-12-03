@@ -34,15 +34,16 @@ jobs:
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-      - name: "Percy FP UI"
-        uses: percy/snapshot-action@v0.1.1
-        with:
-          build-directory: fp/ui
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
-      - name: "Percy: Generic Fiddle"
-        uses: percy/snapshot-action@v0.1.1
-        with:
-          build-directory: ui
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
+      # disabling percy for the time being
+      # - name: "Percy FP UI"
+      #   uses: percy/snapshot-action@v0.1.1
+      #   with:
+      #     build-directory: fp/ui
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
+      # - name: "Percy: Generic Fiddle"
+      #   uses: percy/snapshot-action@v0.1.1
+      #   with:
+      #     build-directory: ui
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
