@@ -20,7 +20,12 @@ import {
   KEY_A,
   KEY_Z,
 } from "./keymap";
-import { clearJoinStats, getJoinStats } from "../../incremental/eval";
+import {
+  clearCaches,
+  clearJoinStats,
+  getJoinStats,
+} from "../../incremental/eval";
+import { getUnifyCalls } from "../../unify";
 
 type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -62,6 +67,8 @@ export function CodeEditor<AST>(props: {
     interp3 = interp2;
   } else {
     try {
+      // awk
+      clearCaches(interp2.graph);
       const flattened = props.flatten(parseRes.value);
       interp3 = flattened.reduce<Interpreter>(
         (int, rec) =>
@@ -71,6 +78,8 @@ export function CodeEditor<AST>(props: {
 
       console.log("codeeditor", getJoinStats());
       clearJoinStats();
+
+      console.log("unify calls", getUnifyCalls());
 
       // get suggestions
       suggestions = props.getSuggestions(interp3);

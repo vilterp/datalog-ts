@@ -18,7 +18,14 @@ export function unify(
   return res;
 }
 
+let unifyCalls = 0;
+
+export function getUnifyCalls() {
+  return unifyCalls;
+}
+
 function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
+  unifyCalls++;
   switch (left.type) {
     case "StringLit":
     case "IntLit":

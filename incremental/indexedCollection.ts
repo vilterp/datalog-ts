@@ -6,7 +6,7 @@ type Index<T> = {
 };
 
 export class IndexedCollection<T> {
-  private readonly allRecords: T[];
+  private allRecords: T[];
   private readonly indexes: { [name: string]: Index<T> };
 
   constructor() {
@@ -51,6 +51,14 @@ export class IndexedCollection<T> {
   }
 
   get(indexName: string, key: string[]): T[] {
-    return this.indexes[indexName][key.join("-")] || [];
+    return this.indexes[indexName].items[key.join("-")] || [];
+  }
+
+  clear() {
+    this.allRecords = [];
+    for (let indexName in this.indexes) {
+      const index = this.indexes[indexName];
+      index.items = {};
+    }
   }
 }

@@ -15,6 +15,7 @@ import {
 } from "./build";
 import { Performance } from "w3c-hr-time";
 import { List, Map } from "immutable";
+import { IndexedCollection } from "./indexedCollection";
 
 const performance = new Performance();
 
@@ -362,6 +363,13 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res) {
   // TODO: mutating something in an immutable map is wonky
   graph.nodes.get(nodeID).cache.insert(res);
+}
+
+export function clearCaches(graph: RuleGraph) {
+  for (let nodeID of graph.nodes.keySeq()) {
+    const node = graph.nodes.get(nodeID);
+    node.cache.clear();
+  }
 }
 
 // TODO: retractStep
