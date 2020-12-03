@@ -31,7 +31,7 @@ export const incrBenchmarks: BenchmarkSpec[] = [
       return runDDBenchmarkManual(
         "incremental/testdata/fp4.dd.txt",
         fpTest,
-        20
+        100
       );
     },
   },
