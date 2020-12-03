@@ -92,9 +92,8 @@ export class Repl {
     }
     try {
       const stmt = language.statement.tryParse(this.buffer);
-      const { newInterp, output } = processStmt(this.interp, stmt);
-      this.interp = newInterp;
-      const outputStr = formatOutput(newInterp.graph, output, {
+      const output = processStmt(this.interp, stmt);
+      const outputStr = formatOutput(this.interp.graph, output, {
         emissionLogMode: "repl",
         showBindings: false,
       });

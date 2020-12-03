@@ -43,6 +43,19 @@ export function runDDBenchmark(
   });
 }
 
+export function runDDBenchmarkManual(
+  path: string,
+  getTiming: (repetitions: number, inputs: string[]) => BenchmarkResult,
+  repetitions: number
+): BenchmarkResult {
+  const contents = fs.readFileSync(path);
+  const inputs = parseDDTest(contents.toString());
+  return getTiming(
+    repetitions,
+    inputs.map((pair) => pair.input)
+  );
+}
+
 export async function uploadResultToAirtable(
   name: string,
   result: BenchmarkResult
@@ -50,26 +63,16 @@ export async function uploadResultToAirtable(
   const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
     process.env.AIRTABLE_BASE_ID
   );
-  return new Promise((resolve, reject) => {
-    base("Benchmark Runs").create(
-      [
-        {
-          fields: {
-            "benchmark name": name,
-            repetitions: result.repetitions,
-            "total time ms": result.totalTimeMS,
-            "commit sha": process.env.GIT_SHA || process.env.GITHUB_SHA,
-            "git branch": process.env.GIT_BRANCH || process.env.GITHUB_REF,
-          },
-        },
-      ],
-      (err, records) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(records);
-        console.log("result uploaded to airtable");
-      }
-    );
-  });
+  await base("Benchmark Runs").create([
+    {
+      fields: {
+        "benchmark name": name,
+        repetitions: result.repetitions,
+        "total time ms": result.totalTimeMS,
+        "commit sha": process.env.GIT_SHA || process.env.GITHUB_SHA,
+        "git branch": process.env.GIT_BRANCH || process.env.GITHUB_REF,
+        environment: process.env.BENCHMARK_ENV,
+      },
+    },
+  ]);
 }

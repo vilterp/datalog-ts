@@ -61,90 +61,64 @@ export function queryStr(interp: Interpreter, line: string): Res[] {
   return doQuery(interp.graph, record);
 }
 
-export function evalStr(interp: Interpreter, line: string): Interpreter {
+export function evalStr(interp: Interpreter, line: string) {
   const stmt = dlLanguage.statement.tryParse(line) as Statement;
   if (stmt.type !== "Insert") {
     throw new Error("not an insert");
   }
-  return processStmt(interp, { type: "Insert", record: stmt.record }).newInterp;
+  return processStmt(interp, { type: "Insert", record: stmt.record });
 }
 
-export function processStmt(
-  interp: Interpreter,
-  stmt: Statement
-): { newInterp: Interpreter; output: Output } {
+export function processStmt(interp: Interpreter, stmt: Statement): Output {
   const graph = interp.graph;
   switch (stmt.type) {
     case "TableDecl": {
       declareTable(graph, stmt.name);
-      return { newInterp: interp, output: ack };
+      return ack;
     }
     case "Rule": {
       const emissionLog = addRule(graph, stmt.rule);
-      return {
-        newInterp: interp,
-        output: { type: "EmissionLog", log: emissionLog },
-      };
+      return { type: "EmissionLog", log: emissionLog };
     }
     case "Insert": {
       if (hasVars(stmt.record)) {
         return {
-          newInterp: interp,
-          output: {
-            type: "QueryResults",
-            results: doQuery(graph, stmt.record),
-          },
+          type: "QueryResults",
+          results: doQuery(graph, stmt.record),
         };
       }
       const emissionLog = insertFact(graph, stmt.record);
-      return {
-        newInterp: interp,
-        output: { type: "EmissionLog", log: emissionLog },
-      };
+      return { type: "EmissionLog", log: emissionLog };
     }
     case "RuleGraph":
-      return {
-        newInterp: interp,
-        output: { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) },
-      };
+      return { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) };
     case "DumpCaches":
       return {
-        newInterp: interp,
-        output: {
-          type: "Json",
-          json: mapObj(interp.graph.nodes, (nodeID, node) => ({
-            nodeID,
-            cache: node.cache.toJSON(),
-          })),
-        },
+        type: "Json",
+        json: mapObj(interp.graph.nodes, (nodeID, node) => ({
+          nodeID,
+          cache: node.cache.toJSON(),
+        })),
       };
     case "Comment":
-      return {
-        newInterp: interp,
-        output: ack,
-      };
+      return ack;
     case "LoadStmt":
-      return {
-        newInterp: doLoad(interp, stmt.path),
-        output: ack,
-      };
+      doLoad(interp, stmt.path);
+      return ack;
     case "TraceStmt": {
       const emissionLog = insertFact(graph, stmt.record);
       return {
-        newInterp: interp,
-        output: {
-          type: "Trace",
-          logAndGraph: {
-            graph: interp.graph,
-            log: emissionLog,
-          },
+        type: "Trace",
+        logAndGraph: {
+          graph: interp.graph,
+          log: emissionLog,
         },
       };
     }
   }
 }
 
-export function doLoad(interp: Interpreter, loadPath: string): Interpreter {
+export function doLoad(interp: Interpreter, loadPath: string) {
   const currentDir =
     interp.loadStack.length > 0
       ? path.dirname(interp.loadStack[interp.loadStack.length - 1])
@@ -152,20 +126,12 @@ export function doLoad(interp: Interpreter, loadPath: string): Interpreter {
   const pathToLoad = path.resolve(currentDir, loadPath);
   const contents = interp.loader(pathToLoad);
   const program: Program = dlLanguage.program.tryParse(contents);
-  const withNewStack = {
-    ...interp,
-    loadStack: [...interp.loadStack, loadPath],
-  };
+  interp.loadStack.push(loadPath);
   // process program with new load stack
-  const withLoaded = program.reduce<Interpreter>(
-    (interp, stmt) => processStmt(interp, stmt).newInterp,
-    withNewStack
-  );
-  // go back to original stack
-  return {
-    ...withLoaded,
-    loadStack: interp.loadStack,
-  };
+  for (let stmt of program) {
+    processStmt(interp, stmt);
+  }
+  interp.loadStack.pop();
 }
 
 type OutputOptions = {

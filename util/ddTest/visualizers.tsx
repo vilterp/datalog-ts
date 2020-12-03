@@ -9,8 +9,6 @@ import {
 } from "../../incremental/types";
 import { toGraphviz } from "../../incremental/graphviz";
 import { prettyPrintGraph } from "../../graphviz";
-import { DagreReact } from "dagre-reactjs";
-import { toDagre } from "../../incremental/dagre";
 import { clamp } from "../../util";
 import { TestOutput } from "./types";
 

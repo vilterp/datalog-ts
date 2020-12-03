@@ -58,14 +58,15 @@ function joinInfoTest(test: string[]): TestOutput[] {
 // TODO: deprecate this since we have .rulegraph now?
 function buildTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const commands = input
+    const statements = input
       .split(";")
       .map((s) => s.trim())
       .map(parseStatement);
-    const curInterp = commands.reduce((accum, stmt) => {
-      return processStmt(accum, stmt).newInterp;
-    }, newInterpreter(fsLoader));
-    return graphvizOut(prettyPrintGraph(toGraphviz(curInterp.graph)));
+    const interp = newInterpreter(fsLoader);
+    for (let stmt of statements) {
+      processStmt(interp, stmt);
+    }
+    return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
   });
 }
 
@@ -75,11 +76,11 @@ export function evalTest(inputs: string[]): TestOutput[] {
   for (let input of inputs) {
     const stmt = parseStatement(input);
     // const before = Date.now();
-    const { newInterp, output } = processStmt(interp, stmt);
+    const output = processStmt(interp, stmt);
     // const after = Date.now();
     // console.log(after - before, "ms", stmt);
     out.push(
-      formatOutput(newInterp.graph, output, {
+      formatOutput(interp.graph, output, {
         emissionLogMode: "test",
         showBindings: true,
       })

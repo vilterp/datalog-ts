@@ -34,6 +34,7 @@ jobs:
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          BENCHMARK_ENV: github-actions
       # disabling percy for the time being
       # - name: "Percy FP UI"
       #   uses: percy/snapshot-action@v0.1.1
