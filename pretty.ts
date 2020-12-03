@@ -290,12 +290,10 @@ export function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
   return [pair[0], pp.intersperse(", ")(docs), pair[1]];
 }
 
+const re1 = /\\/g;
+const re2 = /"/g;
+const re3 = /\\n/g;
+
 export function escapeString(str: string): string {
-  return str
-    .split("\\")
-    .join("\\\\")
-    .split(`"`)
-    .join(`\\"`)
-    .split("\n")
-    .join("\\n");
+  return str.replace(re1, `\\\\`).replace(re2, `\\"`).replace(re3, `\\n`);
 }
