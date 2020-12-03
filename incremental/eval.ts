@@ -1,4 +1,4 @@
-import { RuleGraph, Res, NodeID, JoinDesc, JoinInfo } from "./types";
+import { RuleGraph, Res, NodeID, JoinDesc } from "./types";
 import { Rec, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { ppb, ppr, ppRule, ppt, ppVM } from "../pretty";
@@ -14,8 +14,6 @@ import {
   resolveUnmappedRule,
 } from "./build";
 import { Performance } from "w3c-hr-time";
-import { List, Map } from "immutable";
-import { IndexedCollection } from "./indexedCollection";
 
 const performance = new Performance();
 
@@ -29,40 +27,35 @@ export type EmissionLog = EmissionBatch[];
 
 export type EmissionBatch = { fromID: NodeID; output: Res[] };
 
-export function addRule(
-  graph: RuleGraph,
-  rule: Rule
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+export function addRule(graph: RuleGraph, rule: Rule): EmissionLog {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(
+  const { tipID: orID, newNodeIDs } = addOr(
     graph,
     rule.head.relation,
     rule.defn
   );
-  const withSubst = addNodeKnownID(substID, withOr, false, {
+  addNodeKnownID(substID, graph, false, {
     type: "Substitute",
     rec: rule.head,
   });
   newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
-  const withEdge = addEdge(withSubst, orID, substID);
-  const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
-  let resultGraph = withUnmapped;
-  for (let unmappedRuleName in withUnmapped.unmappedRules) {
-    const rule = withUnmapped.unmappedRules[unmappedRuleName];
-    resultGraph = resolveUnmappedRule(resultGraph, rule.rule, rule.newNodeIDs);
+  addEdge(graph, orID, substID);
+  addUnmappedRule(graph, rule, newNodeIDs);
+  for (let unmappedRuleName in graph.unmappedRules) {
+    const rule = graph.unmappedRules[unmappedRuleName];
+    resolveUnmappedRule(graph, rule.rule, rule.newNodeIDs);
   }
-  if (Object.keys(resultGraph.unmappedRules).length === 0) {
+  if (Object.keys(graph.unmappedRules).length === 0) {
     const nodesToReplay = new Set([
       ...flatMap(
-        Object.values(withUnmapped.unmappedRules).map(({ rule }) => rule),
+        Object.values(graph.unmappedRules).map(({ rule }) => rule),
         getRoots
       ),
     ]);
-    const emissionLog = replayFacts(resultGraph, newNodeIDs, nodesToReplay);
-    return { newGraph: resultGraph, emissionLog };
+    return replayFacts(graph, newNodeIDs, nodesToReplay);
   }
-  return { newGraph: resultGraph, emissionLog: [] };
+  return [];
 }
 
 function replayFacts(
@@ -74,8 +67,8 @@ function replayFacts(
   let outGraph = graph;
   let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
-    for (let res of graph.nodes.get(rootID).cache.all()) {
-      for (let destination of graph.edges.get(rootID)) {
+    for (let res of graph.nodes[rootID].cache.all()) {
+      for (let destination of graph.edges[rootID]) {
         const iter = getReplayIterator(outGraph, allNewNodes, [
           {
             res,
@@ -173,7 +166,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
     if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
       addToCache(iter.graph, curNodeID, result);
     }
-    for (let destination of iter.graph.edges.get(curNodeID) || []) {
+    for (let destination of iter.graph.edges[curNodeID] || []) {
       iter.queue.push({
         destination,
         origin: curNodeID,
@@ -186,7 +179,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
 
 // caller adds resulting facts
 function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
-  const node = graph.nodes.get(ins.destination);
+  const node = graph.nodes[ins.destination];
   if (!node) {
     throw new Error(`not found: node ${ins.destination}`);
   }
@@ -303,7 +296,7 @@ function doJoin(
 ): Res[] {
   const results: Res[] = [];
   const thisVars = ins.res.bindings;
-  const otherNode = graph.nodes.get(otherNodeID);
+  const otherNode = graph.nodes[otherNodeID];
   const indexName = getIndexName(otherIndex);
   const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
@@ -338,7 +331,7 @@ function doJoin(
 
 export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   // TODO: use index selection
-  const node = graph.nodes.get(query.relation);
+  const node = graph.nodes[query.relation];
   if (!node) {
     // TODO: maybe start using result type
     throw new Error(`no such relation: ${query.relation}`);
@@ -360,12 +353,12 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res) {
   // TODO: mutating something in an immutable map is wonky
-  graph.nodes.get(nodeID).cache.insert(res);
+  graph.nodes[nodeID].cache.insert(res);
 }
 
 export function clearCaches(graph: RuleGraph) {
-  for (let nodeID of graph.nodes.keySeq()) {
-    const node = graph.nodes.get(nodeID);
+  for (let nodeID of Object.keys(graph.nodes)) {
+    const node = graph.nodes[nodeID];
     node.cache.clear();
   }
 }

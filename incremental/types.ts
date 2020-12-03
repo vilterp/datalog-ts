@@ -14,8 +14,8 @@ export type Res = {
 
 export type RuleGraph = {
   nextNodeID: number;
-  nodes: Map<NodeID, NodeAndCache>;
-  edges: Map<NodeID, List<NodeID>>;
+  nodes: { [nodeID: string]: NodeAndCache };
+  edges: { [nodeID: string]: NodeID[] };
   unmappedRules: {
     [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
   };
@@ -59,8 +59,8 @@ export type NodeDesc =
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
-  nodes: Map(),
-  edges: Map(),
+  nodes: {},
+  edges: {},
   unmappedRules: {},
 };
 

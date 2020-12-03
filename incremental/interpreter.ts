@@ -28,6 +28,7 @@ import {
   TestOutput,
 } from "../util/ddTest/types";
 import path from "path-browserify";
+import { mapObjToList } from "../util";
 
 export type Interpreter = {
   loadStack: string[];
@@ -75,13 +76,13 @@ export function processStmt(
   const graph = interp.graph;
   switch (stmt.type) {
     case "TableDecl": {
-      const newGraph = declareTable(graph, stmt.name);
-      return { newInterp: { ...interp, graph: newGraph }, output: ack };
+      declareTable(graph, stmt.name);
+      return { newInterp: interp, output: ack };
     }
     case "Rule": {
-      const { newGraph, emissionLog } = addRule(graph, stmt.rule);
+      const emissionLog = addRule(graph, stmt.rule);
       return {
-        newInterp: { ...interp, graph: newGraph },
+        newInterp: interp,
         output: { type: "EmissionLog", log: emissionLog },
       };
     }
@@ -111,7 +112,7 @@ export function processStmt(
         newInterp: interp,
         output: {
           type: "Json",
-          json: interp.graph.nodes.map((node, nodeID) => ({
+          json: mapObjToList(interp.graph.nodes, (nodeID, node) => ({
             nodeID,
             cache: node.cache.toJSON(),
           })),
@@ -196,7 +197,7 @@ export function formatOutput(
         return datalogOut(
           output.log
             .filter((emissionBatch) => {
-              const fromNode = graph.nodes.get(emissionBatch.fromID);
+              const fromNode = graph.nodes[emissionBatch.fromID];
               return (
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );
