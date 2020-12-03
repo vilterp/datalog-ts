@@ -5,13 +5,14 @@ import {
   NodeID,
   JoinInfo,
   ColsToIndexByRelation,
+  Res,
 } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../evalCommon";
 import { filterObj, setAdd, setUnion } from "../util";
 import { ppRule, ppt, ppVM } from "../pretty";
 import { List } from "immutable";
-import { emptyIndexedCollection } from "./indexedCollection";
+import { IndexedCollection } from "./indexedCollection";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
@@ -198,10 +199,10 @@ function addAndBinary(
   const g3 = addEdge(g2, leftID, joinID);
   const g4 = addEdge(g3, rightID, joinID);
   // console.log({ colsToIndex });
-  const g5 = addIndex(g4, leftID, colsToIndex.left);
-  const g6 = addIndex(g5, rightID, colsToIndex.right);
+  addIndex(g4, leftID, colsToIndex.left);
+  addIndex(g4, rightID, colsToIndex.right);
   return {
-    newGraph: g6,
+    newGraph: g4,
     tipID: joinID,
     newNodeIDs: setAdd(nn1, joinID),
   };
@@ -221,28 +222,18 @@ function addAndClause(graph: RuleGraph, rec: Rec): AddResult {
   };
 }
 
-function addIndex(
-  graph: RuleGraph,
-  nodeID: NodeID,
-  attrs: string[]
-): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (node) => ({
-      ...node,
-      cache: node.cache.createIndex(getIndexName(attrs), (res) => {
-        // TODO: is this gonna be a perf bottleneck?
-        // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(res.term as Rec, attrs);
-      }),
-    })),
-  };
+function addIndex(graph: RuleGraph, nodeID: NodeID, attrs: string[]) {
+  graph.nodes.get(nodeID).cache.createIndex(getIndexName(attrs), (res) => {
+    // TODO: is this gonna be a perf bottleneck?
+    // console.log({ attrs, res: ppt(res.term) });
+    return getIndexKey(res.term as Rec, attrs);
+  });
 }
 
 type ColName = string;
 
-export function getIndexKey(rec: Rec, attrs: ColName[]): List<string> {
-  return List(attrs).map((attr) => ppt(rec.attrs[attr]));
+export function getIndexKey(rec: Rec, attrs: ColName[]): string[] {
+  return attrs.map((attr) => ppt(rec.attrs[attr]));
 }
 
 export function getIndexName(attrs: ColName[]): string {
@@ -262,7 +253,7 @@ export function addNodeKnownID(
     nodes: graph.nodes.set(id, {
       isInternal,
       desc,
-      cache: emptyIndexedCollection(),
+      cache: new IndexedCollection<Res>(),
     }),
   };
 }
@@ -278,7 +269,7 @@ function addNode(
       nextNodeID: graph.nextNodeID + 1,
       nodes: graph.nodes.set(graph.nextNodeID.toString(), {
         desc,
-        cache: emptyIndexedCollection(),
+        cache: new IndexedCollection<Res>(),
         isInternal,
       }),
     },

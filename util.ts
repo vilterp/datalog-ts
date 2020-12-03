@@ -282,3 +282,16 @@ export function insertAtIdx<T>(arr: T[], idx: number, item: T): T[] {
 export function removeAtIdx<T>(arr: T[], idx: number): T[] {
   return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
 }
+
+export function appendToKey<T>(
+  obj: { [key: string]: T[] },
+  key: string,
+  val: T
+) {
+  const arr = obj[key];
+  if (arr) {
+    arr.push(val);
+    return;
+  }
+  obj[key] = [val];
+}

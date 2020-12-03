@@ -1,67 +1,56 @@
-import { List, Map } from "immutable";
-
-export function emptyIndexedCollection<T>(): IndexedCollection<T> {
-  return new IndexedCollection(List(), Map());
-}
+import { appendToKey } from "../util";
 
 type Index<T> = {
-  getKey: (t: T) => List<string>;
-  items: Map<List<string>, List<T>>;
+  getKey: (t: T) => string[];
+  items: { [key: string]: T[] };
 };
 
 export class IndexedCollection<T> {
-  private readonly allRecords: List<T>;
-  private readonly indexes: Map<string, Index<T>>;
-  readonly size: number;
+  private readonly allRecords: T[];
+  private readonly indexes: { [name: string]: Index<T> };
 
-  constructor(allRecords: List<T>, indexes: Map<string, Index<T>>) {
-    this.allRecords = allRecords;
-    this.indexes = indexes;
-    this.size = allRecords.size;
+  constructor() {
+    this.allRecords = [];
+    this.indexes = {};
   }
 
-  all(): List<T> {
+  size() {
+    return this.allRecords.length;
+  }
+
+  all(): T[] {
     return this.allRecords;
   }
 
   indexNames(): string[] {
-    return this.indexes.keySeq().toArray();
+    return Object.keys(this.indexes);
   }
 
   toJSON(): object {
-    return this.indexes.toJSON();
+    return this.indexes;
   }
 
-  createIndex(
-    name: string,
-    getKey: (t: T) => List<string>
-  ): IndexedCollection<T> {
-    return new IndexedCollection<T>(
-      this.allRecords,
-      this.indexes.set(name, {
-        getKey,
-        items: this.allRecords.reduce(
-          (accum, item) =>
-            accum.update(getKey(item), List(), (l) => l.push(item)),
-          Map()
-        ),
-      })
-    );
+  createIndex(name: string, getKey: (t: T) => string[]) {
+    const items = {};
+    for (let item of this.allRecords) {
+      // TODO: better join strategy? extract?
+      appendToKey(items, getKey(item).join("-"), item);
+    }
+    this.indexes[name] = {
+      getKey,
+      items,
+    };
   }
 
-  insert(item: T): IndexedCollection<T> {
-    return new IndexedCollection<T>(
-      this.allRecords.push(item),
-      this.indexes.map((index) => ({
-        ...index,
-        items: index.items.update(index.getKey(item), List(), (items) =>
-          items.push(item)
-        ),
-      }))
-    );
+  insert(item: T) {
+    this.allRecords.push(item);
+    for (let indexName in this.indexes) {
+      const index = this.indexes[indexName];
+      appendToKey(index.items, index.getKey(item).join("-"), item);
+    }
   }
 
-  get(indexName: string, key: List<string>): List<T> {
-    return this.indexes.get(indexName).items.get(key, List());
+  get(indexName: string, key: string[]): T[] {
+    return this.indexes[indexName][key.join("-")] || [];
   }
 }

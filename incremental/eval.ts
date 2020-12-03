@@ -180,7 +180,7 @@ function stepIterator(
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
     if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
-      newGraph = addToCache(newGraph, curNodeID, result);
+      addToCache(newGraph, curNodeID, result);
     }
     for (let destination of newGraph.edges.get(curNodeID) || []) {
       newQueue.push({
@@ -332,7 +332,7 @@ function doJoin(
     }
   }
   const after = performance.now();
-  joinStats.inputRecords += otherEntries.size;
+  joinStats.inputRecords += otherEntries.length;
   joinStats.outputRecords += results.length;
   joinStats.joinTimeMS += after - before;
   return results;
@@ -354,22 +354,14 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
       }
       return { term: res.term, bindings };
     })
-    .filter((x) => x !== null)
-    .toArray();
+    .filter((x) => x !== null);
 }
 
 // helpers
 
-function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
-  const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.insert(res);
-  return {
-    ...graph,
-    nodes: graph.nodes.set(nodeID, {
-      ...graph.nodes.get(nodeID),
-      cache: newCache,
-    }),
-  };
+function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res) {
+  // TODO: mutating something in an immutable map is wonky
+  graph.nodes.get(nodeID).cache.insert(res);
 }
 
 // TODO: retractStep
