@@ -1,5 +1,6 @@
-import { BenchmarkSpec, uploadResultToAirtable } from "./util/benchmark";
+import { BenchmarkSpec } from "./util/benchmark";
 import { incrBenchmarks } from "./incremental/benchmarks";
+import { uploadResultToAirtable } from "./util/airtable";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
   incrBenchmarks,

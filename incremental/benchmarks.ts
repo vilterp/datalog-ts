@@ -31,7 +31,7 @@ export const incrBenchmarks: BenchmarkSpec[] = [
       return runDDBenchmarkManual(
         "incremental/testdata/fp4.dd.txt",
         fpTest,
-        10
+        1000
       );
     },
   },
@@ -90,5 +90,6 @@ function fpTest(repetitions: number, inputs: string[]): BenchmarkResult {
     repetitions,
     totalTimeMS: after - before,
     profilePath,
+    profiling: true,
   };
 }

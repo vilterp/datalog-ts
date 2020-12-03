@@ -2,7 +2,6 @@ import { ProcessFn } from "./ddTest";
 import fs from "fs";
 import { parseDDTest } from "./ddTest/parser";
 import { Performance } from "w3c-hr-time";
-import Airtable from "airtable";
 
 const performance = new Performance();
 
@@ -15,6 +14,7 @@ export type BenchmarkResult = {
   repetitions: number;
   totalTimeMS: number;
   profilePath?: string;
+  profiling?: boolean;
 };
 
 function doBenchmark<T>(repetitions: number, op: () => void): BenchmarkResult {
@@ -55,25 +55,4 @@ export function runDDBenchmarkManual(
     repetitions,
     inputs.map((pair) => pair.input)
   );
-}
-
-export async function uploadResultToAirtable(
-  name: string,
-  result: BenchmarkResult
-) {
-  const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-    process.env.AIRTABLE_BASE_ID
-  );
-  await base("Benchmark Runs").create([
-    {
-      fields: {
-        "benchmark name": name,
-        repetitions: result.repetitions,
-        "total time ms": result.totalTimeMS,
-        "commit sha": process.env.GIT_SHA || process.env.GITHUB_SHA,
-        "git branch": process.env.GIT_BRANCH || process.env.GITHUB_REF,
-        environment: process.env.BENCHMARK_ENV,
-      },
-    },
-  ]);
 }
