@@ -69,7 +69,7 @@ function buildTest(test: string[]): TestOutput[] {
   });
 }
 
-function evalTest(inputs: string[]): TestOutput[] {
+export function evalTest(inputs: string[]): TestOutput[] {
   const res = scan(
     newInterpreter(fsLoader),
     (interp, input) => {
@@ -92,8 +92,8 @@ function evalTest(inputs: string[]): TestOutput[] {
     },
     inputs
   );
-  console.log({ joinStats: getJoinStats() });
-  clearJoinStats();
+  // console.log({ joinStats: getJoinStats() });
+  // clearJoinStats();
   return res;
 }
 
