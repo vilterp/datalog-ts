@@ -27,7 +27,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["indexes", evalTest],
     ["cycles", evalTest],
     ["replay", evalTest],
-    ["cyclesReplay", evalTest],
+    // ["cyclesReplay", evalTest],
     ["fp", evalTest],
     ["fp2", evalTest],
     // ["fp3", evalTest],
