@@ -21,13 +21,14 @@ ide.suggestionScope{id: I, name: N, type: T, typeMatch: false} :-
 ide.expectedType{id: I, type: T} :-
   ast.Lambda{retType: T, body: I} |
   ast.LetExpr{id: L, bodyID: I} & ide.expectedType{id: L, type: T} |
-  ast.FuncCall{argID: I, funcID: F} & tc.Type{id: F, type: tapp{from: T}}.
-  # ide.expectedTypeBinding{id: I, type: T}.
-# ide.expectedTypeBinding{id: I, type: T} :-
-#   ast.LetExpr{varLoc: VL, bindingID: I} &
-#   ide.Usage{definitionLoc: VL, usageLoc: UL} &
-#   ast.Expr{id: UI, location: UL} &
-#   ide.expectedType{id: UI, type: T}.
+  ast.FuncCall{argID: I, funcID: F} & tc.Type{id: F, type: tapp{from: T}} |
+  ide.expectedTypeBinding{id: I, type: T}.
+
+ide.expectedTypeBinding{id: I, type: T} :-
+  ast.LetExpr{varLoc: VL, bindingID: I} &
+  ide.Usage{definitionLoc: VL, usageLoc: UL} &
+  ast.Expr{id: UI, location: UL} &
+  ide.expectedType{id: UI, type: T}.
 
 ide.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
   ast.Var{id: I, name: N, location: UL} &

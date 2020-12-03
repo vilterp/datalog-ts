@@ -5,7 +5,9 @@ import { ppb } from "./pretty";
 let unifyCalls = 0;
 
 export function getUnifyCalls() {
-  return unifyCalls;
+  const ret = unifyCalls;
+  unifyCalls = 0;
+  return ret;
 }
 
 export function unify(
