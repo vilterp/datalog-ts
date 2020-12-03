@@ -20,11 +20,11 @@ export const json2DLTests: Suite = [
           },
         ],
       };
-      const expected = `val{path: ["foo",0], val: "bar"}.
-val{path: ["foo",1], val: "baz"}.
+      const expected = `val{path: ["foo", 0], val: "bar"}.
+val{path: ["foo", 1], val: "baz"}.
 val{path: ["bar"], val: 2}.
-val{path: ["bleep",0,"blorp"], val: "bloop"}.
-val{path: ["bleep",1,"blorp"], val: "blop"}.`;
+val{path: ["bleep", 0, "blorp"], val: "bloop"}.
+val{path: ["bleep", 1, "blorp"], val: "blop"}.`;
       const recs: Rec[] = [];
       jsonToDL(json, (rec) => recs.push(rec));
       assertStringEqual(

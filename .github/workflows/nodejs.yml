@@ -36,6 +36,7 @@ jobs:
       - run: yarn build-fp-ui
       - run: yarn build-notebook-ui
       - run: yarn build-parserlib-playground
+      - run: yarn benchmarks
       - name: "Percy FP UI"
         uses: percy/snapshot-action@v0.1.1
         with:
