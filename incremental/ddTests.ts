@@ -1,5 +1,5 @@
 import { runDDTestAtPath, ProcessFn } from "../util/ddTest";
-import { Suite } from "../testing";
+import { Suite, Test } from "../testing";
 import { language } from "../parser";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
@@ -70,31 +70,22 @@ function buildTest(test: string[]): TestOutput[] {
 }
 
 export function evalTest(inputs: string[]): TestOutput[] {
-  const res = scan(
-    newInterpreter(fsLoader),
-    (interp, input) => {
-      try {
-        const stmt = parseStatement(input);
-        // const before = Date.now();
-        const { newInterp, output } = processStmt(interp, stmt);
-        // const after = Date.now();
-        // console.log(after - before, "ms", stmt);
-        return {
-          newState: newInterp,
-          output: formatOutput(newInterp.graph, output, {
-            emissionLogMode: "test",
-            showBindings: true,
-          }),
-        };
-      } catch (err) {
-        throw new Error(`processing "${input}": ${err.stack}\n`);
-      }
-    },
-    inputs
-  );
-  // console.log({ joinStats: getJoinStats() });
-  // clearJoinStats();
-  return res;
+  const out: TestOutput[] = [];
+  const interp = newInterpreter(fsLoader);
+  for (let input of inputs) {
+    const stmt = parseStatement(input);
+    // const before = Date.now();
+    const { newInterp, output } = processStmt(interp, stmt);
+    // const after = Date.now();
+    // console.log(after - before, "ms", stmt);
+    out.push(
+      formatOutput(newInterp.graph, output, {
+        emissionLogMode: "test",
+        showBindings: true,
+      })
+    );
+  }
+  return out;
 }
 
 // kind of reimplementing the repl here; lol
