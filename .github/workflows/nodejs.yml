@@ -25,12 +25,6 @@ jobs:
         env:
           CI: true
       - run: yarn global add ts-node --prefix=.
-      - name: test repl
-        run: |
-          export PATH=$PATH:$GITHUB_WORKSPACE/bin:$GITHUB_WORKSPACE/interpTest
-          cd interpTest
-          cat family-facts.dl | ts-node ../cmd/repl.ts '.graphviz' ./family-rules.dl > family.dot
-          cmp family.dot family-ref.dot
       # Note: this builds them, but doesn't typecheck them
       - run: yarn build-fiddle-ui
       - run: yarn build-fp-ui
