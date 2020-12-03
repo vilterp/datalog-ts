@@ -30,6 +30,7 @@
     "@types/react": "^16.9.38",
     "@types/react-dom": "^16.9.8",
     "airtable": "^0.10.1",
+    "aws-sdk": "^2.802.0",
     "diff": "^4.0.2",
     "esbuild": "^0.5.18",
     "http-server": "^0.12.3",

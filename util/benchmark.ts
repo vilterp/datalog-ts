@@ -14,7 +14,6 @@ export type BenchmarkResult = {
   repetitions: number;
   totalTimeMS: number;
   profilePath?: string;
-  profiling?: boolean;
 };
 
 function doBenchmark<T>(repetitions: number, op: () => void): BenchmarkResult {
