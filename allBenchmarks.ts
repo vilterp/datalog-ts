@@ -19,4 +19,9 @@ async function runAll() {
 }
 
 // just cuz we don't have top-level await...
-runAll().then(() => console.log("done"));
+runAll()
+  .then(() => console.log("done"))
+  .catch((err) => {
+    console.error(err);
+    process.exit(-1);
+  });

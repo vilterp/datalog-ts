@@ -68,6 +68,7 @@ export async function uploadResultToAirtable(
           reject(err);
         }
         resolve(records);
+        console.log("result uploaded to airtable");
       }
     );
   });
