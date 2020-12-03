@@ -95,12 +95,9 @@ export function processStmt(
           },
         };
       }
-      const { newGraph, emissionLog } = insertFact(graph, stmt.record);
+      const emissionLog = insertFact(graph, stmt.record);
       return {
-        newInterp: {
-          ...interp,
-          graph: newGraph,
-        },
+        newInterp: interp,
         output: { type: "EmissionLog", log: emissionLog },
       };
     }
@@ -131,16 +128,13 @@ export function processStmt(
         output: ack,
       };
     case "TraceStmt": {
-      const { newGraph, emissionLog } = insertFact(graph, stmt.record);
+      const emissionLog = insertFact(graph, stmt.record);
       return {
-        newInterp: {
-          ...interp,
-          graph: newGraph,
-        },
+        newInterp: interp,
         output: {
           type: "Trace",
           logAndGraph: {
-            graph: newGraph,
+            graph: interp.graph,
             log: emissionLog,
           },
         },

@@ -53,7 +53,7 @@ application/json
     "cache": {
       "capability": {
         "items": {
-          "List [ \"\\\"write HTML\\\"\" ]": [
+          "\"write HTML\"": [
             {
               "term": {
                 "type": "Record",
@@ -90,7 +90,7 @@ application/json
     "cache": {
       "capability": {
         "items": {
-          "List [ \"\\\"write HTML\\\"\" ]": [
+          "\"write HTML\"": [
             {
               "term": {
                 "type": "Record",

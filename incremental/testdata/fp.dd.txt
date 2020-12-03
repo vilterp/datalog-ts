@@ -413,7 +413,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -461,7 +461,7 @@ application/json
               }
             }
           ],
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -509,7 +509,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -578,7 +578,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -626,7 +626,7 @@ application/json
               }
             }
           ],
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -674,7 +674,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -735,7 +735,7 @@ application/json
     "cache": {
       "funcID": {
         "items": {
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -790,7 +790,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -838,7 +838,7 @@ application/json
               }
             }
           ],
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -886,7 +886,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -947,7 +947,7 @@ application/json
     "cache": {
       "argID": {
         "items": {
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -1002,7 +1002,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -1050,7 +1050,7 @@ application/json
               }
             }
           ],
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -1098,7 +1098,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -1167,7 +1167,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -1215,7 +1215,7 @@ application/json
               }
             }
           ],
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -1263,7 +1263,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -1364,7 +1364,7 @@ application/json
     "cache": {
       "": {
         "items": {
-          "List []": [
+          "": [
             {
               "term": {
                 "type": "Record",
@@ -1417,7 +1417,7 @@ application/json
     "cache": {
       "funcID": {
         "items": {
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -1480,7 +1480,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",
@@ -1529,7 +1529,7 @@ application/json
     "cache": {
       "id-name": {
         "items": {
-          "List [ \"0\", \"\\\"intToString\\\"\" ]": [
+          "0-\"intToString\"": [
             {
               "term": {
                 "type": "Record",
@@ -1589,7 +1589,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\", \"\\\"intToString\\\"\" ]": [
+          "2-\"intToString\"": [
             {
               "term": {
                 "type": "Record",
@@ -1649,7 +1649,7 @@ application/json
               }
             }
           ],
-          "List [ \"1\", \"\\\"intToString\\\"\" ]": [
+          "1-\"intToString\"": [
             {
               "term": {
                 "type": "Record",
@@ -1718,7 +1718,7 @@ application/json
     "cache": {
       "id-name": {
         "items": {
-          "List [ \"1\", \"\\\"int2string\\\"\" ]": [
+          "1-\"int2string\"": [
             {
               "term": {
                 "type": "Record",
@@ -1773,7 +1773,7 @@ application/json
     "cache": {
       "": {
         "items": {
-          "List []": [
+          "": [
             {
               "term": {
                 "type": "Record",
@@ -1858,7 +1858,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -1922,71 +1922,7 @@ application/json
               }
             }
           ],
-          "List [ \"2\" ]": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "tc.ScopeItem",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 2
-                  },
-                  "name": {
-                    "type": "StringLit",
-                    "val": "intToString"
-                  },
-                  "type": {
-                    "type": "Record",
-                    "relation": "tapp",
-                    "attrs": {
-                      "from": {
-                        "type": "StringLit",
-                        "val": "int"
-                      },
-                      "to": {
-                        "type": "StringLit",
-                        "val": "string"
-                      }
-                    }
-                  },
-                  "location": {
-                    "type": "StringLit",
-                    "val": "builtin"
-                  }
-                }
-              },
-              "bindings": {
-                "P": {
-                  "type": "IntLit",
-                  "val": 2
-                },
-                "N": {
-                  "type": "StringLit",
-                  "val": "intToString"
-                },
-                "T": {
-                  "type": "Record",
-                  "relation": "tapp",
-                  "attrs": {
-                    "from": {
-                      "type": "StringLit",
-                      "val": "int"
-                    },
-                    "to": {
-                      "type": "StringLit",
-                      "val": "string"
-                    }
-                  }
-                },
-                "L": {
-                  "type": "StringLit",
-                  "val": "builtin"
-                }
-              }
-            }
-          ],
-          "List [ \"1\" ]": [
+          "1": [
             {
               "term": {
                 "type": "Record",
@@ -2049,6 +1985,70 @@ application/json
                 }
               }
             }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "P": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                },
+                "L": {
+                  "type": "StringLit",
+                  "val": "builtin"
+                }
+              }
+            }
           ]
         }
       }
@@ -2059,7 +2059,7 @@ application/json
     "cache": {
       "parentID": {
         "items": {
-          "List [ \"0\" ]": [
+          "0": [
             {
               "term": {
                 "type": "Record",
@@ -2126,7 +2126,7 @@ application/json
     "cache": {
       "": {
         "items": {
-          "List []": [
+          "": [
             {
               "term": {
                 "type": "Record",
@@ -2183,7 +2183,7 @@ application/json
     "cache": {
       "": {
         "items": {
-          "List []": [
+          "": [
             {
               "term": {
                 "type": "Record",
@@ -2216,7 +2216,7 @@ application/json
     "cache": {
       "id": {
         "items": {
-          "List [ \"2\" ]": [
+          "2": [
             {
               "term": {
                 "type": "Record",

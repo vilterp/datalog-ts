@@ -2,29 +2,17 @@ import { Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "./util";
 import { ppb } from "./pretty";
 
-export function unify(
-  prior: Bindings,
-  left: Term,
-  right: Term
-): Bindings | null {
-  // console.group("unify", {
-  //   prior: ppb(prior),
-  //   left: ppt(left),
-  //   right: ppt(right),
-  // });
-  const res = doUnify(prior, left, right);
-  // console.groupEnd();
-  // console.log("res", res ? ppb(res) : null);
-  return res;
-}
-
 let unifyCalls = 0;
 
 export function getUnifyCalls() {
   return unifyCalls;
 }
 
-function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
+export function unify(
+  prior: Bindings,
+  left: Term,
+  right: Term
+): Bindings | null {
   unifyCalls++;
   switch (left.type) {
     case "StringLit":

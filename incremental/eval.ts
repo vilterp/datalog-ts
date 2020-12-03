@@ -59,7 +59,8 @@ export function addRule(
         getRoots
       ),
     ]);
-    return replayFacts(resultGraph, newNodeIDs, nodesToReplay);
+    const emissionLog = replayFacts(resultGraph, newNodeIDs, nodesToReplay);
+    return { newGraph: resultGraph, emissionLog };
   }
   return { newGraph: resultGraph, emissionLog: [] };
 }
@@ -68,7 +69,7 @@ function replayFacts(
   graph: RuleGraph,
   allNewNodes: Set<NodeID>,
   roots: Set<NodeID>
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+): EmissionLog {
   // console.log("replayFacts", roots);
   let outGraph = graph;
   let outEmissionLog: EmissionLog = [];
@@ -82,15 +83,14 @@ function replayFacts(
             destination,
           },
         ]);
-        const { newGraph, emissionLog } = stepIteratorAll(outGraph, iter);
-        outGraph = newGraph;
+        const emissionLog = stepIteratorAll(outGraph, iter);
         for (let emission of emissionLog) {
           outEmissionLog.push(emission);
         }
       }
     }
   }
-  return { newGraph: outGraph, emissionLog: outEmissionLog };
+  return outEmissionLog;
 }
 
 function getRoots(rule: Rule): NodeID[] {
@@ -104,10 +104,7 @@ function getRoots(rule: Rule): NodeID[] {
   });
 }
 
-export function insertFact(
-  graph: RuleGraph,
-  rec: Rec
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+export function insertFact(graph: RuleGraph, rec: Rec): EmissionLog {
   if (Object.keys(graph.unmappedRules).length > 0) {
     throw new Error(
       `some rules still rely on things not defined yet: [${mapObjToList(
@@ -158,41 +155,33 @@ type InsertionIterator = {
 function stepIteratorAll(
   graph: RuleGraph,
   iter: InsertionIterator
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+): EmissionLog {
   const emissionLog: EmissionLog = [];
-  let newGraph = graph;
   while (iter.queue.length > 0) {
-    const [emissions, nextIter] = stepIterator(iter);
+    const emissions = stepIterator(iter);
     emissionLog.push(emissions);
-    newGraph = nextIter.graph;
-    iter = nextIter;
   }
-  return { newGraph, emissionLog };
+  return emissionLog;
 }
 
-function stepIterator(
-  iter: InsertionIterator
-): [EmissionBatch, InsertionIterator] {
+function stepIterator(iter: InsertionIterator): EmissionBatch {
   // console.log("stepIterator", iter.queue);
-  const newQueue = iter.queue.slice(1);
-  let newGraph = iter.graph;
-  const insertingNow = iter.queue[0];
+  const insertingNow = iter.queue.shift();
   const curNodeID = insertingNow.destination;
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
     if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
-      addToCache(newGraph, curNodeID, result);
+      addToCache(iter.graph, curNodeID, result);
     }
-    for (let destination of newGraph.edges.get(curNodeID) || []) {
-      newQueue.push({
+    for (let destination of iter.graph.edges.get(curNodeID) || []) {
+      iter.queue.push({
         destination,
         origin: curNodeID,
         res: result,
       });
     }
   }
-  const newIter = { ...iter, graph: newGraph, queue: newQueue };
-  return [{ fromID: curNodeID, output: results }, newIter];
+  return { fromID: curNodeID, output: results };
 }
 
 // caller adds resulting facts
@@ -228,6 +217,7 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     }
     case "Match": {
       const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
+      joinStats.matchUnifyCalls++;
       const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
       if (bindings === null) {
         return [];
@@ -277,13 +267,20 @@ type JoinStats = {
   joinTimeMS: number;
   inputRecords: number;
   outputRecords: number;
+
+  matchUnifyCalls: number;
+  queryUnifyCalls: number;
 };
 
-let joinStats: JoinStats = {
+const emptyJoinStats = () => ({
   joinTimeMS: 0,
   inputRecords: 0,
   outputRecords: 0,
-};
+  matchUnifyCalls: 0,
+  queryUnifyCalls: 0,
+});
+
+let joinStats: JoinStats = emptyJoinStats();
 
 export function getJoinStats(): JoinStats & { outputPct: number } {
   return {
@@ -293,7 +290,7 @@ export function getJoinStats(): JoinStats & { outputPct: number } {
 }
 
 export function clearJoinStats() {
-  joinStats = { joinTimeMS: 0, inputRecords: 0, outputRecords: 0 };
+  joinStats = emptyJoinStats();
 }
 
 function doJoin(
@@ -349,6 +346,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   return node.cache
     .all()
     .map((res) => {
+      joinStats.queryUnifyCalls++;
       const bindings = unify({}, res.term, query);
       if (bindings === null) {
         return null;
