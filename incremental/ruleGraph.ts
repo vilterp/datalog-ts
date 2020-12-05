@@ -160,9 +160,9 @@ export class RuleGraph {
     this.nodes[nodeID].cache.insert(res);
   }
 
-  clearCaches(graph: RuleGraph) {
-    for (let nodeID of Object.keys(graph.nodes)) {
-      const node = graph.nodes[nodeID];
+  clearCaches() {
+    for (let nodeID of Object.keys(this.nodes)) {
+      const node = this.nodes[nodeID];
       node.cache.clear();
     }
   }

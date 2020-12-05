@@ -8,18 +8,12 @@ import { evalTest } from "./ddTests";
 import { language } from "../fp/parser";
 import { flatten } from "../fp/flatten";
 import v8profiler from "v8-profiler-node8";
-import { ppt } from "../pretty";
-import {
-  Interpreter,
-  newInterpreter,
-  processStmt,
-  queryStr,
-} from "./interpreter";
+import { Interpreter } from "./interpreter";
 import { fsLoader } from "../repl";
 import { Rec } from "../types";
-import { datalogOut, TestOutput } from "../util/ddTest/types";
 import { Performance } from "w3c-hr-time";
 import * as fs from "fs";
+import { getJoinStats } from "./ruleGraph";
 
 const performance = new Performance();
 
@@ -49,8 +43,8 @@ export const incrBenchmarks: BenchmarkSpec[] = [
 ];
 
 function fpTest(repetitions: number, inputs: string[]): BenchmarkResult {
-  const interp = newInterpreter(fsLoader); // hmmm
-  processStmt(interp, {
+  const interp = new Interpreter(fsLoader); // hmmm
+  interp.processStmt({
     type: "LoadStmt",
     path: "fp/dl/main.dl",
   });
@@ -66,9 +60,9 @@ function fpTest(repetitions: number, inputs: string[]): BenchmarkResult {
       console.log("  ", i);
     }
     for (let record of flattened) {
-      processStmt(interp, { type: "Insert", record: record as Rec });
+      interp.processStmt({ type: "Insert", record: record as Rec });
     }
-    clearCaches(interp.graph);
+    interp.graph.clearCaches();
   }
 
   const after = performance.now();
