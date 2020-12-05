@@ -1,7 +1,5 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
-import { EmissionLog } from "./eval";
-import { List, Map } from "immutable";
 import { IndexedCollection } from "./indexedCollection";
 import { RuleGraph } from "./ruleGraph";
 
@@ -93,3 +91,13 @@ export type AddResult = {
   newNodeIDs: Set<NodeID>;
   tipID: NodeID;
 };
+
+export type Insertion = {
+  res: Res;
+  origin: NodeID | null; // null if coming from outside
+  destination: NodeID;
+};
+
+export type EmissionLog = EmissionBatch[];
+
+export type EmissionBatch = { fromID: NodeID; output: Res[] };
