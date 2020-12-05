@@ -1,17 +1,11 @@
 import { runDDTestAtPath, ProcessFn } from "../util/ddTest";
-import { Suite, Test } from "../testing";
+import { Suite } from "../testing";
 import { language } from "../parser";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
 import { Rec, Statement } from "../types";
-import { scan } from "../util";
-import { formatOutput, newInterpreter, processStmt } from "./interpreter";
-import {
-  graphvizOut,
-  jsonOut,
-  plainTextOut,
-  TestOutput,
-} from "../util/ddTest/types";
+import { formatOutput, Interpreter } from "./interpreter";
+import { graphvizOut, jsonOut, TestOutput } from "../util/ddTest/types";
 import { fsLoader } from "../repl";
 import { getJoinInfo } from "./build";
 
@@ -61,9 +55,9 @@ function buildTest(test: string[]): TestOutput[] {
       .split(";")
       .map((s) => s.trim())
       .map(parseStatement);
-    const interp = newInterpreter(fsLoader);
+    const interp = new Interpreter(fsLoader);
     for (let stmt of statements) {
-      processStmt(interp, stmt);
+      interp.processStmt(stmt);
     }
     return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
   });
@@ -71,11 +65,11 @@ function buildTest(test: string[]): TestOutput[] {
 
 export function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
-  const interp = newInterpreter(fsLoader);
+  const interp = new Interpreter(fsLoader);
   for (let input of inputs) {
     const stmt = parseStatement(input);
     // const before = Date.now();
-    const output = processStmt(interp, stmt);
+    const output = interp.processStmt(stmt);
     // const after = Date.now();
     // console.log(after - before, "ms", stmt);
     out.push(

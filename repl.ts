@@ -1,13 +1,7 @@
 import * as readline from "readline";
-import { ppt } from "./pretty";
 import * as fs from "fs";
 import { language } from "./parser";
-import {
-  formatOutput,
-  Interpreter,
-  newInterpreter,
-  processStmt,
-} from "./incremental/interpreter";
+import { formatOutput, Interpreter } from "./incremental/interpreter";
 import { Loader } from "./loaders";
 
 type Mode = "repl" | "pipe" | "test";
@@ -28,7 +22,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.interp = newInterpreter(loader);
+    this.interp = new Interpreter(loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -92,7 +86,7 @@ export class Repl {
     }
     try {
       const stmt = language.statement.tryParse(this.buffer);
-      const output = processStmt(this.interp, stmt);
+      const output = this.interp.processStmt(stmt);
       const outputStr = formatOutput(this.interp.graph, output, {
         emissionLogMode: "repl",
         showBindings: false,

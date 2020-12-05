@@ -1,21 +1,7 @@
-import {
-  EmissionLogAndGraph,
-  emptyRuleGraph,
-  formatRes,
-  Res,
-  RuleGraph,
-} from "./types";
+import { EmissionLog, EmissionLogAndGraph, formatRes, Res } from "./types";
 import { Program, Rec, Statement } from "../types";
-import { declareTable } from "./build";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
-import {
-  addRule,
-  doQuery,
-  EmissionBatch,
-  EmissionLog,
-  insertFact,
-} from "./eval";
 import { hasVars } from "../simpleEvaluate";
 import { ppt } from "../pretty";
 import { Loader } from "../loaders";
@@ -28,13 +14,8 @@ import {
   TestOutput,
 } from "../util/ddTest/types";
 import path from "path-browserify";
-import { mapObj, mapObjToList } from "../util";
-
-export type Interpreter = {
-  loadStack: string[];
-  graph: RuleGraph;
-  loader: Loader;
-};
+import { mapObj } from "../util";
+import { RuleGraph } from "./ruleGraph";
 
 type Output =
   | { type: "EmissionLog"; log: EmissionLog }
@@ -46,92 +27,94 @@ type Output =
 
 const ack: Output = { type: "Acknowledge" };
 
-// TODO: make back into a class
+export class Interpreter {
+  loadStack: string[];
+  graph: RuleGraph;
+  loader: Loader;
 
-export function newInterpreter(loader: Loader): Interpreter {
-  return {
-    loadStack: [],
-    graph: emptyRuleGraph(),
-    loader,
-  };
-}
-
-export function queryStr(interp: Interpreter, line: string): Res[] {
-  const record = dlLanguage.record.tryParse(line) as Rec;
-  return doQuery(interp.graph, record);
-}
-
-export function evalStr(interp: Interpreter, line: string) {
-  const stmt = dlLanguage.statement.tryParse(line) as Statement;
-  if (stmt.type !== "Insert") {
-    throw new Error("not an insert");
+  constructor(loader: Loader) {
+    this.loadStack = [];
+    this.graph = new RuleGraph();
+    this.loader = loader;
   }
-  return processStmt(interp, { type: "Insert", record: stmt.record });
-}
 
-export function processStmt(interp: Interpreter, stmt: Statement): Output {
-  const graph = interp.graph;
-  switch (stmt.type) {
-    case "TableDecl": {
-      declareTable(graph, stmt.name);
-      return ack;
+  queryStr(line: string): Res[] {
+    const record = dlLanguage.record.tryParse(line) as Rec;
+    return this.graph.doQuery(record);
+  }
+
+  evalStr(line: string) {
+    const stmt = dlLanguage.statement.tryParse(line) as Statement;
+    if (stmt.type !== "Insert") {
+      throw new Error("not an insert");
     }
-    case "Rule": {
-      const emissionLog = addRule(graph, stmt.rule);
-      return { type: "EmissionLog", log: emissionLog };
-    }
-    case "Insert": {
-      if (hasVars(stmt.record)) {
+    return this.processStmt({ type: "Insert", record: stmt.record });
+  }
+
+  processStmt(stmt: Statement): Output {
+    const graph = this.graph;
+    switch (stmt.type) {
+      case "TableDecl": {
+        this.graph.declareTable(stmt.name);
+        return ack;
+      }
+      case "Rule": {
+        const emissionLog = this.graph.addRule(stmt.rule);
+        return { type: "EmissionLog", log: emissionLog };
+      }
+      case "Insert": {
+        if (hasVars(stmt.record)) {
+          return {
+            type: "QueryResults",
+            results: this.graph.doQuery(stmt.record),
+          };
+        }
+        const emissionLog = this.graph.insertFact(stmt.record);
+        return { type: "EmissionLog", log: emissionLog };
+      }
+      case "RuleGraph":
+        return { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) };
+      case "DumpCaches":
         return {
-          type: "QueryResults",
-          results: doQuery(graph, stmt.record),
+          type: "Json",
+          json: mapObj(this.graph.nodes, (nodeID, node) => ({
+            nodeID,
+            cache: node.cache.toJSON(),
+          })),
+        };
+      case "Comment":
+        return ack;
+      case "LoadStmt":
+        this.doLoad(stmt.path);
+        return ack;
+      case "TraceStmt": {
+        const emissionLog = this.graph.insertFact(stmt.record);
+        return {
+          type: "Trace",
+          logAndGraph: {
+            graph: this.graph,
+            log: emissionLog,
+          },
         };
       }
-      const emissionLog = insertFact(graph, stmt.record);
-      return { type: "EmissionLog", log: emissionLog };
-    }
-    case "RuleGraph":
-      return { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) };
-    case "DumpCaches":
-      return {
-        type: "Json",
-        json: mapObj(interp.graph.nodes, (nodeID, node) => ({
-          nodeID,
-          cache: node.cache.toJSON(),
-        })),
-      };
-    case "Comment":
-      return ack;
-    case "LoadStmt":
-      doLoad(interp, stmt.path);
-      return ack;
-    case "TraceStmt": {
-      const emissionLog = insertFact(graph, stmt.record);
-      return {
-        type: "Trace",
-        logAndGraph: {
-          graph: interp.graph,
-          log: emissionLog,
-        },
-      };
     }
   }
-}
 
-export function doLoad(interp: Interpreter, loadPath: string) {
-  const currentDir =
-    interp.loadStack.length > 0
-      ? path.dirname(interp.loadStack[interp.loadStack.length - 1])
-      : ".";
-  const pathToLoad = path.resolve(currentDir, loadPath);
-  const contents = interp.loader(pathToLoad);
-  const program: Program = dlLanguage.program.tryParse(contents);
-  interp.loadStack.push(loadPath);
-  // process program with new load stack
-  for (let stmt of program) {
-    processStmt(interp, stmt);
+  doLoad(loadPath: string) {
+    const currentDir =
+      this.loadStack.length > 0
+        ? path.dirname(this.loadStack[this.loadStack.length - 1])
+        : ".";
+    const pathToLoad = path.resolve(currentDir, loadPath);
+    const contents = this.loader(pathToLoad);
+    const program: Program = dlLanguage.program.tryParse(contents);
+    this.loadStack.push(loadPath);
+    // process program with new load stack
+    for (let stmt of program) {
+      this.processStmt(stmt);
+    }
+    this.loadStack.pop();
   }
-  interp.loadStack.pop();
 }
 
 type OutputOptions = {

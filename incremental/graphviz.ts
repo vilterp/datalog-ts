@@ -1,6 +1,7 @@
-import { RuleGraph, formatDesc, formatRes } from "./types";
+import { formatDesc, formatRes } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
+import { RuleGraph } from "./ruleGraph";
 
 export function toGraphviz(
   graph: RuleGraph,

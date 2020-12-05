@@ -5,7 +5,6 @@ import {
   runDDBenchmarkManual,
 } from "../util/benchmark";
 import { evalTest } from "./ddTests";
-import { clearCaches, getJoinStats } from "./eval";
 import { language } from "../fp/parser";
 import { flatten } from "../fp/flatten";
 import v8profiler from "v8-profiler-node8";

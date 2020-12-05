@@ -17,7 +17,14 @@ import {
   getIndexName,
   getJoinInfo,
 } from "./build";
-import { appendToKey, mapObjToList, setAdd, setUnion } from "../util";
+import {
+  appendToKey,
+  filterMap,
+  flatMap,
+  mapObjToList,
+  setAdd,
+  setUnion,
+} from "../util";
 import {
   applyMappings,
   getMappings,
@@ -29,6 +36,9 @@ import { extractBinExprs } from "../evalCommon";
 import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
+import { Performance } from "w3c-hr-time";
+
+const performance = new Performance();
 
 export class RuleGraph {
   nextNodeID: number;
@@ -234,6 +244,36 @@ export class RuleGraph {
 
   declareTable(name: string) {
     this.addNodeKnownID(name, false, { type: "BaseFactTable" });
+  }
+
+  addRule(rule: Rule): EmissionLog {
+    // console.log("add", rule.head.relation);
+    const substID = rule.head.relation;
+    const { tipID: orID, newNodeIDs } = this.addOr(
+      rule.head.relation,
+      rule.defn
+    );
+    this.addNodeKnownID(substID, false, {
+      type: "Substitute",
+      rec: rule.head,
+    });
+    newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
+    this.addEdge(orID, substID);
+    this.addUnmappedRule(rule, newNodeIDs);
+    for (let unmappedRuleName in this.unmappedRules) {
+      const rule = this.unmappedRules[unmappedRuleName];
+      this.resolveUnmappedRule(rule.rule, rule.newNodeIDs);
+    }
+    if (Object.keys(this.unmappedRules).length === 0) {
+      const nodesToReplay = new Set([
+        ...flatMap(
+          Object.values(this.unmappedRules).map(({ rule }) => rule),
+          getRoots
+        ),
+      ]);
+      return this.replayFacts(newNodeIDs, nodesToReplay);
+    }
+    return [];
   }
 
   addJoin(ruleName: string, and: Rec[]): AddResult {
@@ -524,4 +564,15 @@ export function getJoinStats(): JoinStats & { outputPct: number } {
 
 function clearJoinStats() {
   joinStats = emptyJoinStats();
+}
+
+function getRoots(rule: Rule): NodeID[] {
+  return flatMap(rule.defn.opts, (opt) => {
+    return filterMap(opt.clauses, (andClause) => {
+      if (andClause.type === "BinExpr") {
+        return null;
+      }
+      return andClause.relation;
+    });
+  });
 }
