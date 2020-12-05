@@ -28,37 +28,6 @@ export type EmissionLog = EmissionBatch[];
 
 export type EmissionBatch = { fromID: NodeID; output: Res[] };
 
-export function addRule(graph: RuleGraph, rule: Rule): EmissionLog {
-  // console.log("add", rule.head.relation);
-  const substID = rule.head.relation;
-  const { tipID: orID, newNodeIDs } = addOr(
-    graph,
-    rule.head.relation,
-    rule.defn
-  );
-  addNodeKnownID(substID, graph, false, {
-    type: "Substitute",
-    rec: rule.head,
-  });
-  newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
-  addEdge(graph, orID, substID);
-  addUnmappedRule(graph, rule, newNodeIDs);
-  for (let unmappedRuleName in graph.unmappedRules) {
-    const rule = graph.unmappedRules[unmappedRuleName];
-    resolveUnmappedRule(graph, rule.rule, rule.newNodeIDs);
-  }
-  if (Object.keys(graph.unmappedRules).length === 0) {
-    const nodesToReplay = new Set([
-      ...flatMap(
-        Object.values(graph.unmappedRules).map(({ rule }) => rule),
-        getRoots
-      ),
-    ]);
-    return replayFacts(graph, newNodeIDs, nodesToReplay);
-  }
-  return [];
-}
-
 function replayFacts(
   graph: RuleGraph,
   allNewNodes: Set<NodeID>,

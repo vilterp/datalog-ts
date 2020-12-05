@@ -3,6 +3,7 @@ import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
 import { IndexedCollection } from "./indexedCollection";
+import { RuleGraph } from "./ruleGraph";
 
 export type NodeID = string;
 
@@ -12,16 +13,7 @@ export type Res = {
   bindings: Bindings | null;
 };
 
-export type RuleGraph = {
-  nextNodeID: number;
-  nodes: { [nodeID: string]: NodeAndCache };
-  edges: { [nodeID: string]: NodeID[] };
-  unmappedRules: {
-    [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
-  };
-};
-
-type NodeAndCache = {
+export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
   cache: IndexedCollection<Res>; // TODO: should this be just Rec?
@@ -63,15 +55,6 @@ export type NodeDesc =
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
 
-export function emptyRuleGraph(): RuleGraph {
-  return {
-    nextNodeID: 0,
-    nodes: {},
-    edges: {},
-    unmappedRules: {},
-  };
-}
-
 // formatters
 
 export function formatRes(res: Res): string {
@@ -104,4 +87,9 @@ export function formatDesc(node: NodeAndCache): string {
 export type EmissionLogAndGraph = {
   graph: RuleGraph;
   log: EmissionLog;
+};
+
+export type AddResult = {
+  newNodeIDs: Set<NodeID>;
+  tipID: NodeID;
 };
