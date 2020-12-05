@@ -12,7 +12,7 @@ import {
   spanLength,
   sortSpans,
 } from "./util";
-import { Interpreter, queryStr } from "../../incremental/interpreter";
+import { Interpreter } from "../../incremental/interpreter";
 import { flatMap, uniqBy } from "../../util";
 import { Rec } from "../../types";
 
@@ -38,8 +38,7 @@ export const renameRefactorAction: EditorAction = {
 };
 
 function getSpansToReplace(interp: Interpreter): Span[] {
-  const results = queryStr(
-    interp,
+  const results = interp.queryStr(
     "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}"
   );
   return sortSpans(

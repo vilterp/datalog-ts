@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { Interpreter, queryStr } from "../../incremental/interpreter";
+import { Interpreter } from "../../incremental/interpreter";
 import { Rec, StringLit, Bool } from "../../types";
 import { uniqBy } from "../../util";
 import { dlToSpan, Span } from "./types";
@@ -15,8 +15,7 @@ export function highlight(
   if (syntaxErrorIdx) {
     return highlightSyntaxError(code, syntaxErrorIdx);
   }
-  const segments = queryStr(
-    interp,
+  const segments = interp.queryStr(
     "hl.Segment{type: T, span: S, highlight: H}"
   );
   const sortedSegments = hlWins(

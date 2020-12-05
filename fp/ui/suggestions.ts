@@ -1,6 +1,6 @@
 import { StringLit, Rec, Bool, Term } from "../../types";
 import { Suggestion } from "../../uiCommon/ide/suggestions";
-import { Interpreter, queryStr } from "../../incremental/interpreter";
+import { Interpreter } from "../../incremental/interpreter";
 import { repeatArr, uniqBy } from "../../util";
 import { getCurrentPlaceholder } from "../../uiCommon/ide/util";
 import { Span } from "../../uiCommon/ide/types";
@@ -13,31 +13,30 @@ export function getSuggestions(interp: Interpreter): Suggestion[] {
     return [];
   }
   const varSuggs: Suggestion[] = uniqBy(
-    queryStr(
-      interp,
-      "ide.CurrentSuggestion{name: N, type: T, typeMatch: M}"
-    ).map(
-      (res): Suggestion => {
-        const rec = res.term as Rec;
-        const type = rec.attrs.type as Rec;
-        const name = (rec.attrs.name as StringLit).val;
-        const numPlaceholders = placeholdersNeeded(type);
-        const typeMatch = (rec.attrs.typeMatch as Bool).val;
+    interp
+      .queryStr("ide.CurrentSuggestion{name: N, type: T, typeMatch: M}")
+      .map(
+        (res): Suggestion => {
+          const rec = res.term as Rec;
+          const type = rec.attrs.type as Rec;
+          const name = (rec.attrs.name as StringLit).val;
+          const numPlaceholders = placeholdersNeeded(type);
+          const typeMatch = (rec.attrs.typeMatch as Bool).val;
 
-        return {
-          kind: typeToString(rec.attrs.type),
-          textToInsert:
-            numPlaceholders === 0
-              ? name
-              : `${name}(${repeatArr(numPlaceholders, "???").join(", ")})`,
-          cursorOffsetAfter:
-            numPlaceholders === 0 ? name.length : name.length + 1,
-          bold: typeMatch,
-          replacementSpan,
-          display: name,
-        };
-      }
-    ),
+          return {
+            kind: typeToString(rec.attrs.type),
+            textToInsert:
+              numPlaceholders === 0
+                ? name
+                : `${name}(${repeatArr(numPlaceholders, "???").join(", ")})`,
+            cursorOffsetAfter:
+              numPlaceholders === 0 ? name.length : name.length + 1,
+            bold: typeMatch,
+            replacementSpan,
+            display: name,
+          };
+        }
+      ),
     (s) => s.textToInsert
   );
   const syntaxSuggs: Suggestion[] = [

@@ -1,4 +1,4 @@
-import { Interpreter, queryStr } from "../../incremental/interpreter";
+import { Interpreter } from "../../incremental/interpreter";
 import { Rec, Int } from "../../types";
 import { Span, dlToSpan } from "./types";
 import { treeFromRecords } from "../vizMappings/tree";
@@ -11,15 +11,14 @@ export type DLTypeError = {
 };
 
 export function getTypeErrors(interp: Interpreter): DLTypeError[] {
-  const exprTreeRecs = queryStr(
-    interp,
-    "ast.ParentExpr{child: C, parent: P}"
-  ).map((res) => res.term as Rec);
+  const exprTreeRecs = interp
+    .queryStr("ast.ParentExpr{child: C, parent: P}")
+    .map((res) => res.term as Rec);
   const exprTree = treeFromRecords(exprTreeRecs, "0");
   const exprIDsWithTypes = new Set(
-    queryStr(interp, "tc.Type{id: I}").map(
-      (res) => ((res.term as Rec).attrs.id as Int).val
-    )
+    interp
+      .queryStr("tc.Type{id: I}")
+      .map((res) => ((res.term as Rec).attrs.id as Int).val)
   );
   const exprErrorTree = mapTree(exprTree, (rec) => {
     if (!rec) {

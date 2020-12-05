@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  evalStr,
-  Interpreter,
-  processStmt,
-} from "../../incremental/interpreter";
+import { Interpreter } from "../../incremental/interpreter";
 import Editor from "./editor";
 import { highlight } from "./highlight";
 import Parsimmon from "parsimmon";
@@ -20,8 +16,8 @@ import {
   KEY_A,
   KEY_Z,
 } from "./keymap";
-import { clearCaches, getJoinStats } from "../../incremental/eval";
 import { getUnifyCalls } from "../../unify";
+import { getJoinStats } from "../../incremental/ruleGraph";
 
 type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -37,8 +33,8 @@ export function CodeEditor<AST>(props: {
   setState: (st: EditorState) => void;
 }) {
   const interp = props.interp;
-  clearCaches(interp.graph); // wuh-oh, side effects in render
-  evalStr(props.interp, `ide.Cursor{idx: ${props.state.cursorPos}}.`);
+  interp.graph.clearCaches(); // wuh-oh, side effects in render
+  interp.evalStr(`ide.Cursor{idx: ${props.state.cursorPos}}.`);
 
   const st = props.state;
   const setCursorPos = (pos: number) => {
@@ -63,7 +59,7 @@ export function CodeEditor<AST>(props: {
       // awk
       const flattened = props.flatten(parseRes.value);
       for (let record of flattened) {
-        processStmt(interp, { type: "Insert", record: record as Rec });
+        interp.processStmt({ type: "Insert", record: record as Rec });
       }
 
       console.log("codeeditor", getJoinStats());
