@@ -69,7 +69,7 @@ export class RuleGraph {
     return stepIteratorAll(iter);
   }
 
-  getInsertionIterator(rec: Rec): InsertionIterator {
+  private getInsertionIterator(rec: Rec): InsertionIterator {
     return new InsertionIterator(
       this,
       [
@@ -167,7 +167,10 @@ export class RuleGraph {
     }
   }
 
-  replayFacts(allNewNodes: Set<NodeID>, roots: Set<NodeID>): EmissionLog {
+  private replayFacts(
+    allNewNodes: Set<NodeID>,
+    roots: Set<NodeID>
+  ): EmissionLog {
     // console.log("replayFacts", roots);
     let outEmissionLog: EmissionLog = [];
     for (let rootID of roots) {
@@ -190,7 +193,7 @@ export class RuleGraph {
     return outEmissionLog;
   }
 
-  getReplayIterator(
+  private getReplayIterator(
     newNodeIDs: Set<NodeID>,
     queue: Insertion[]
   ): InsertionIterator {
@@ -200,7 +203,7 @@ export class RuleGraph {
     });
   }
 
-  doJoin(
+  private doJoin(
     ins: Insertion,
     joinDesc: JoinDesc,
     otherNodeID: NodeID,
@@ -276,7 +279,7 @@ export class RuleGraph {
     return [];
   }
 
-  addJoin(ruleName: string, and: Rec[]): AddResult {
+  private addJoin(ruleName: string, and: Rec[]): AddResult {
     if (and.length === 0) {
       throw new Error("empty and");
     }
@@ -296,7 +299,7 @@ export class RuleGraph {
     return { tipID: andID, newNodeIDs: setUnion(nn1, nn2) };
   }
 
-  addAndClause(rec: Rec): AddResult {
+  private addAndClause(rec: Rec): AddResult {
     const matchID = this.addNode(true, {
       type: "Match",
       rec,
@@ -309,7 +312,7 @@ export class RuleGraph {
     };
   }
 
-  resolveUnmappedRule(rule: Rule, newNodes: Set<NodeID>) {
+  private resolveUnmappedRule(rule: Rule, newNodes: Set<NodeID>) {
     // console.log("try resolving", rule.head.relation);
     let resolved = true;
     for (let newNodeID of newNodes) {
@@ -348,7 +351,7 @@ export class RuleGraph {
     }
   }
 
-  addOr(ruleName: string, or: OrExpr): AddResult {
+  private addOr(ruleName: string, or: OrExpr): AddResult {
     if (or.opts.length === 1) {
       return this.addAnd(ruleName, or.opts[0].clauses);
     }
@@ -370,7 +373,7 @@ export class RuleGraph {
     };
   }
 
-  addAnd(ruleName: string, clauses: AndClause[]): AddResult {
+  private addAnd(ruleName: string, clauses: AndClause[]): AddResult {
     const { recs, exprs } = extractBinExprs(clauses);
     const withJoinRes = this.addJoin(ruleName, recs);
     return exprs.reduce(({ tipID, newNodeIDs }, expr) => {
@@ -386,7 +389,7 @@ export class RuleGraph {
     }, withJoinRes);
   }
 
-  addAndBinary(
+  private addAndBinary(
     ruleName: string,
     left: Rec,
     right: Rec,
@@ -414,7 +417,7 @@ export class RuleGraph {
     };
   }
 
-  addNode(isInternal: boolean, desc: NodeDesc): NodeID {
+  private addNode(isInternal: boolean, desc: NodeDesc): NodeID {
     const ret = `${this.nextNodeID}`;
     this.nodes[this.nextNodeID] = {
       desc,
@@ -425,18 +428,18 @@ export class RuleGraph {
     return ret;
   }
 
-  updateMappings(from: NodeID, newMappings: VarMappings) {
+  private updateMappings(from: NodeID, newMappings: VarMappings) {
     const node = this.nodes[from];
     if (node.desc.type === "Match") {
       node.desc.mappings = newMappings;
     }
   }
 
-  addUnmappedRule(rule: Rule, newNodeIDs: Set<NodeID>) {
+  private addUnmappedRule(rule: Rule, newNodeIDs: Set<NodeID>) {
     this.unmappedRules[rule.head.relation] = { rule, newNodeIDs };
   }
 
-  addIndex(nodeID: NodeID, attrs: string[]) {
+  private addIndex(nodeID: NodeID, attrs: string[]) {
     this.nodes[nodeID].cache.createIndex(getIndexName(attrs), (res) => {
       // TODO: is this gonna be a perf bottleneck?
       // console.log({ attrs, res: ppt(res.term) });
@@ -444,15 +447,15 @@ export class RuleGraph {
     });
   }
 
-  addEdge(from: NodeID, to: NodeID) {
+  private addEdge(from: NodeID, to: NodeID) {
     appendToKey(this.edges, from, to);
   }
 
-  removeUnmappedRule(ruleName: string) {
+  private removeUnmappedRule(ruleName: string) {
     delete this.unmappedRules[ruleName];
   }
 
-  addNodeKnownID(id: NodeID, isInternal: boolean, desc: NodeDesc) {
+  private addNodeKnownID(id: NodeID, isInternal: boolean, desc: NodeDesc) {
     this.nodes[id] = {
       isInternal,
       desc,
