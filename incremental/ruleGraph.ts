@@ -1,11 +1,18 @@
-import { AndClause, OrExpr, Rec, Rule, VarMappings } from "../types";
+import {
+  AndClause,
+  Bindings,
+  BinExpr,
+  OrExpr,
+  Rec,
+  Rule,
+  VarMappings,
+} from "../types";
 import {
   AddResult,
   EmissionBatch,
   EmissionLog,
   Insertion,
   JoinDesc,
-  MatchDesc,
   NodeAndCache,
   NodeDesc,
   NodeID,
@@ -32,7 +39,6 @@ import {
   unify,
   unifyVars,
 } from "../unify";
-import { extractBinExprs } from "../evalCommon";
 import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
@@ -93,26 +99,7 @@ export class RuleGraph {
       case "Union":
         return [ins.res];
       case "Join": {
-        if (ins.origin === nodeDesc.leftID) {
-          return this.doJoin(
-            ins,
-            nodeDesc,
-            nodeDesc.rightID,
-            nodeDesc.indexes.left,
-            nodeDesc.indexes.right
-          );
-        } else {
-          return this.doJoin(
-            ins,
-            nodeDesc,
-            nodeDesc.leftID,
-            nodeDesc.indexes.right,
-            nodeDesc.indexes.left
-          );
-        }
-      }
-      case "Match": {
-        return doMatch(nodeDesc, ins);
+        return this.doJoin(ins, nodeDesc);
       }
       case "Substitute":
         const rec = substitute(nodeDesc.rec, ins.res.bindings);
@@ -203,46 +190,17 @@ export class RuleGraph {
     });
   }
 
-  private doJoin(
+  private doJoin(ins: Insertion, nodeDesc: JoinDesc): Res[] {
+    return this.doJoinRecur(ins, {}, nodeDesc, 0);
+  }
+
+  private doJoinRecur(
     ins: Insertion,
-    joinDesc: JoinDesc,
-    otherNodeID: NodeID,
-    thisIndex: string[],
-    otherIndex: string[]
+    bindings: Bindings,
+    nodeDesc: JoinDesc,
+    clauseIndex: 0
   ): Res[] {
-    const results: Res[] = [];
-    const thisVars = ins.res.bindings;
-    const otherNode = this.nodes[otherNodeID];
-    const indexName = getIndexName(otherIndex);
-    const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
-    const otherEntries = otherNode.cache.get(indexName, indexKey);
-    // console.log({
-    //   indexName,
-    //   indexKey,
-    //   otherEntries,
-    //   cache: otherNode.cache.toJSON(),
-    // });
-    const before = performance.now();
-    for (let possibleOtherMatch of otherEntries) {
-      const otherVars = possibleOtherMatch.bindings;
-      const unifyRes = unifyVars(thisVars || {}, otherVars || {});
-      // console.log("join", {
-      //   left: formatRes(ins.res),
-      //   right: formatRes(possibleOtherMatch),
-      //   unifyRes: ppb(unifyRes),
-      // });
-      if (unifyRes !== null) {
-        results.push({
-          term: { ...(ins.res.term as Rec), relation: joinDesc.ruleName },
-          bindings: unifyRes,
-        });
-      }
-    }
-    const after = performance.now();
-    joinStats.inputRecords += otherEntries.length;
-    joinStats.outputRecords += results.length;
-    joinStats.joinTimeMS += after - before;
-    return results;
+    return XXX;
   }
 
   declareTable(name: string) {
@@ -252,10 +210,7 @@ export class RuleGraph {
   addRule(rule: Rule): EmissionLog {
     // console.log("add", rule.head.relation);
     const substID = rule.head.relation;
-    const { tipID: orID, newNodeIDs } = this.addOr(
-      rule.head.relation,
-      rule.defn
-    );
+    const { tipID: orID, newNodeIDs } = this.addOr(rule.head, rule.defn);
     this.addNodeKnownID(substID, false, {
       type: "Substitute",
       rec: rule.head,
@@ -277,39 +232,6 @@ export class RuleGraph {
       return this.replayFacts(newNodeIDs, nodesToReplay);
     }
     return [];
-  }
-
-  private addJoin(ruleName: string, and: Rec[]): AddResult {
-    if (and.length === 0) {
-      throw new Error("empty and");
-    }
-    if (and.length === 1) {
-      return this.addAndClause(and[0]);
-    }
-    const { tipID: rightID, newNodeIDs: nn1 } = this.addJoin(
-      ruleName,
-      and.slice(1)
-    );
-    const { tipID: andID, newNodeIDs: nn2 } = this.addAndBinary(
-      ruleName,
-      and[0],
-      and[1],
-      rightID
-    );
-    return { tipID: andID, newNodeIDs: setUnion(nn1, nn2) };
-  }
-
-  private addAndClause(rec: Rec): AddResult {
-    const matchID = this.addNode(true, {
-      type: "Match",
-      rec,
-      mappings: {},
-    });
-    this.addEdge(rec.relation, matchID);
-    return {
-      newNodeIDs: new Set([matchID]),
-      tipID: matchID,
-    };
   }
 
   private resolveUnmappedRule(rule: Rule, newNodes: Set<NodeID>) {
@@ -351,18 +273,15 @@ export class RuleGraph {
     }
   }
 
-  private addOr(ruleName: string, or: OrExpr): AddResult {
+  private addOr(head: Rec, or: OrExpr): AddResult {
     if (or.opts.length === 1) {
-      return this.addAnd(ruleName, or.opts[0].clauses);
+      return this.addAnd(head, or.opts[0].clauses);
     }
     const orID = this.addNode(true, { type: "Union" });
 
     let outNodeIDs = new Set<NodeID>([orID]);
     for (let orOption of or.opts) {
-      const { newNodeIDs, tipID: andID } = this.addAnd(
-        ruleName,
-        orOption.clauses
-      );
+      const { newNodeIDs, tipID: andID } = this.addAnd(head, orOption.clauses);
       this.addEdge(andID, orID);
       outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
     }
@@ -373,47 +292,37 @@ export class RuleGraph {
     };
   }
 
-  private addAnd(ruleName: string, clauses: AndClause[]): AddResult {
+  private addAnd(head: Rec, clauses: AndClause[]): AddResult {
     const { recs, exprs } = extractBinExprs(clauses);
-    const withJoinRes = this.addJoin(ruleName, recs);
-    return exprs.reduce(({ tipID, newNodeIDs }, expr) => {
+    const addResult = this.addJoin(head, recs);
+    let tipID = addResult.tipID;
+    const newNodeIDs = addResult.newNodeIDs;
+    for (let expr of exprs) {
       const newExprID = this.addNode(true, {
         type: "BinExpr",
         expr,
       });
       this.addEdge(tipID, newExprID);
-      return {
-        tipID: newExprID,
-        newNodeIDs: setAdd(newNodeIDs, newExprID),
-      };
-    }, withJoinRes);
+      newNodeIDs.add(newExprID);
+      tipID = newExprID;
+    }
+    return {
+      tipID,
+      newNodeIDs,
+    };
   }
 
-  private addAndBinary(
-    ruleName: string,
-    left: Rec,
-    right: Rec,
-    rightID: NodeID
-  ): AddResult {
-    const joinInfo = getJoinInfo(left, right);
-    const colsToIndex = getColsToIndex(joinInfo);
-    const { newNodeIDs: nn1, tipID: leftID } = this.addAndClause(left);
-    const joinID = this.addNode(true, {
+  private addJoin(head: Rec, joinClauses: Rec[]): AddResult {
+    // TODO: index by variable or something?
+    const tipID = this.addNode(true, {
       type: "Join",
-      indexes: colsToIndex,
-      joinInfo,
-      ruleName,
-      leftID,
-      rightID,
+      head,
+      joinClauses,
     });
-    this.addEdge(leftID, joinID);
-    this.addEdge(rightID, joinID);
-    // console.log({ colsToIndex });
-    this.addIndex(leftID, colsToIndex.left);
-    this.addIndex(rightID, colsToIndex.right);
+    // TODO: add indexes
     return {
-      tipID: joinID,
-      newNodeIDs: setAdd(nn1, joinID),
+      tipID,
+      newNodeIDs: new Set<NodeID>([tipID]),
     };
   }
 
@@ -426,13 +335,6 @@ export class RuleGraph {
     };
     this.nextNodeID++;
     return ret;
-  }
-
-  private updateMappings(from: NodeID, newMappings: VarMappings) {
-    const node = this.nodes[from];
-    if (node.desc.type === "Match") {
-      node.desc.mappings = newMappings;
-    }
   }
 
   private addUnmappedRule(rule: Rule, newNodeIDs: Set<NodeID>) {
@@ -509,34 +411,6 @@ class InsertionIterator {
   }
 }
 
-function doMatch(nodeDesc: MatchDesc, ins: Insertion): Res[] {
-  const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
-  joinStats.matchUnifyCalls++;
-  const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
-  if (bindings === null) {
-    return [];
-  }
-  for (let key in bindings) {
-    // console.log({ bindings, key });
-    if (bindings[key].type === "Var") {
-      return [];
-    }
-  }
-  // console.log("match", {
-  //   insRec: formatRes(ins.res),
-  //   match: ppt(nodeDesc.rec),
-  //   bindings: ppb(bindings || {}),
-  //   mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
-  //   mappedBindings: ppb(mappedBindings),
-  // });
-  return [
-    {
-      term: ins.res.term,
-      bindings: bindings,
-    },
-  ];
-}
-
 type JoinStats = {
   joinTimeMS: number;
   inputRecords: number;
@@ -578,4 +452,25 @@ function getRoots(rule: Rule): NodeID[] {
       return andClause.relation;
     });
   });
+}
+
+export function extractBinExprs(
+  clauses: AndClause[]
+): { recs: Rec[]; exprs: BinExpr[] } {
+  const recs: Rec[] = [];
+  const exprs: BinExpr[] = [];
+  clauses.forEach((clause) => {
+    switch (clause.type) {
+      case "BinExpr":
+        exprs.push(clause);
+        break;
+      case "Record":
+        recs.push(clause);
+        break;
+    }
+  });
+  return {
+    recs,
+    exprs,
+  };
 }

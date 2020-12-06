@@ -1,5 +1,5 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
-import { ppb, ppBE, ppt, ppVM } from "../pretty";
+import { ppb, ppBE, ppRule, ppt, ppVM } from "../pretty";
 import { IndexedCollection } from "./indexedCollection";
 
 export type NodeID = string;
@@ -31,23 +31,13 @@ export type ColsToIndexByRelation = {
 
 export type JoinDesc = {
   type: "Join";
-  ruleName: string;
-  joinInfo: JoinInfo;
-  indexes: ColsToIndexByRelation;
-  leftID: NodeID;
-  rightID: NodeID;
-};
-
-export type MatchDesc = {
-  type: "Match";
-  rec: Rec;
-  mappings: VarMappings;
+  head: Rec;
+  joinClauses: Rec[];
 };
 
 export type NodeDesc =
   | { type: "BaseFactTable" }
   | JoinDesc
-  | MatchDesc
   | { type: "Substitute"; rec: Rec }
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
@@ -67,11 +57,7 @@ export function formatDesc(node: NodeAndCache): string {
       case "BinExpr":
         return ppBE(nodeDesc.expr);
       case "Join":
-        return `Join(${nodeDesc.leftID} & ${nodeDesc.rightID}): ${nodeDesc.ruleName}`;
-      case "Match":
-        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-          showScopePath: false,
-        })})`;
+        return `Join(${ppRule(nodeDesc.rule)})`;
       case "Substitute":
         return `Subst(${ppt(nodeDesc.rec)})`;
       case "Union":
