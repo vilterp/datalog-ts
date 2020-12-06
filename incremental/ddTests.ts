@@ -7,13 +7,12 @@ import { Rec, Statement } from "../types";
 import { formatOutput, Interpreter } from "./interpreter";
 import { graphvizOut, jsonOut, TestOutput } from "../util/ddTest/types";
 import { fsLoader } from "../repl";
-import { getJoinInfo } from "./build";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
     ["build", buildTest],
     ["buildBinExpr", buildTest],
-    // ["eval", evalTest],
+    ["eval", evalTest],
     // ["eval2", evalTest],
     // ["eval3", evalTest],
     // ["indexes", evalTest],
@@ -38,15 +37,15 @@ export function incrTests(writeResults: boolean): Suite {
   }));
 }
 
-function joinInfoTest(test: string[]): TestOutput[] {
-  return test.map((input) => {
-    const [left, right] = input.split("\n");
-    const leftStmt = parseRecord(left);
-    const rightStmt = parseRecord(right);
-    const res = getJoinInfo(leftStmt, rightStmt);
-    return jsonOut(JSON.stringify(res, null, 2));
-  });
-}
+// function joinInfoTest(test: string[]): TestOutput[] {
+//   return test.map((input) => {
+//     const [left, right] = input.split("\n");
+//     const leftStmt = parseRecord(left);
+//     const rightStmt = parseRecord(right);
+//     const res = getJoinInfo(leftStmt, rightStmt);
+//     return jsonOut(JSON.stringify(res, null, 2));
+//   });
+// }
 
 // TODO: deprecate this since we have .rulegraph now?
 function buildTest(test: string[]): TestOutput[] {

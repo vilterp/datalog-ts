@@ -1,9 +1,10 @@
-import { AndClause, Bindings, BinExpr, OrExpr, Rec, Rule } from "../types";
+import { AndClause, BinExpr, OrExpr, Rec, Rule } from "../types";
 import {
   AddResult,
   EmissionBatch,
   EmissionLog,
   Insertion,
+  JoinClause,
   JoinDesc,
   NodeAndCache,
   NodeDesc,
@@ -11,12 +12,11 @@ import {
   Res,
 } from "./types";
 import {
-  getColsToIndex,
+  extractBindings,
   getIndexKey,
   getIndexName,
   getJoinAttrs,
-  getJoinInfo,
-} from "./build";
+} from "./join";
 import {
   appendToKey,
   filterMap,
@@ -24,13 +24,7 @@ import {
   mapObjToList,
   setUnion,
 } from "../util";
-import {
-  applyMappings,
-  getMappings,
-  substitute,
-  unify,
-  unifyVars,
-} from "../unify";
+import { substitute, unify, unifyVars } from "../unify";
 import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
@@ -183,17 +177,50 @@ export class RuleGraph {
   }
 
   private doJoin(ins: Insertion, nodeDesc: JoinDesc): Res[] {
-    return this.doJoinRecur(ins, {}, nodeDesc, 0);
+    // TODO: avoid linear-time stuff here
+    const clauses = nodeDesc.joinClauses.filter(
+      (c) => c.rec.relation !== ins.origin
+    );
+    const curClause = nodeDesc.joinClauses.find(
+      (c) => c.rec.relation === ins.origin
+    );
+    const bindings = extractBindings(ins.res.term as Rec, curClause.joinVars);
+    const res: Res = {
+      term: ins.res.term,
+      bindings,
+    };
+    return this.doJoinRecur(res, clauses, 0);
   }
 
   private doJoinRecur(
-    ins: Insertion,
-    bindings: Bindings,
-    nodeDesc: JoinDesc,
-    clauseIndex: 0
+    res: Res,
+    clauses: JoinClause[],
+    clauseIndex: number
   ): Res[] {
-    // TODO: XXX
-    return [];
+    if (clauseIndex === clauses.length) {
+      // TODO: some mappings / bindings?
+      return [res];
+    }
+    const nextClause = clauses[clauseIndex];
+    const nextRelationName = nextClause.rec.relation;
+    const nextRelation = this.nodes[nextRelationName];
+    const indexKey = getIndexKey(res.term as Rec, nextClause.colsToIndex);
+    const results = nextRelation.cache.get(nextClause.indexName, indexKey);
+    const totalResults: Res[] = [];
+    for (let result of results) {
+      const unifiedBindings = unifyVars(res.bindings, result.bindings);
+      if (unifiedBindings !== null) {
+        const nextRes: Res = {
+          term: result.term,
+          bindings: unifiedBindings,
+        };
+        const outputs = this.doJoinRecur(nextRes, clauses, clauseIndex + 1);
+        for (let output of outputs) {
+          totalResults.push(output);
+        }
+      }
+    }
+    return totalResults;
   }
 
   declareTable(name: string) {
@@ -235,7 +262,7 @@ export class RuleGraph {
       const nodeDesc = newNode.desc;
       if (nodeDesc.type === "Join") {
         for (let clause of nodeDesc.joinClauses) {
-          const clauseResolved = this.checkClauseResolved(clause);
+          const clauseResolved = this.checkClauseResolved(clause.rec);
           if (!clauseResolved) {
             resolved = false;
           }
@@ -304,14 +331,22 @@ export class RuleGraph {
     };
   }
 
-  private addJoin(head: Rec, joinClauses: Rec[]): AddResult {
+  private addJoin(head: Rec, joinRecs: Rec[]): AddResult {
     // TODO: index by variable or something?
     const tipID = this.addNode(true, {
       type: "Join",
       head,
-      joinClauses,
+      joinClauses: joinRecs.map((rec) => {
+        const joinAttrs = getJoinAttrs(rec);
+        return {
+          rec,
+          joinVars: joinAttrs,
+          indexName: getIndexName(Object.values(joinAttrs)),
+          colsToIndex: Object.values(joinAttrs),
+        };
+      }),
     });
-    for (let clause of joinClauses) {
+    for (let clause of joinRecs) {
       this.addEdge(clause.relation, tipID);
       const attrs = getJoinAttrs(clause);
       this.addIndex(clause.relation, Object.values(attrs));

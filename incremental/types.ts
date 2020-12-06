@@ -16,23 +16,24 @@ export type NodeAndCache = {
   cache: IndexedCollection<Res>; // TODO: should this be just Rec?
 };
 
-export type JoinInfo = {
-  [varName: string]: {
-    varName: string;
-    leftAttr: string;
-    rightAttr: string;
-  };
+export type ColName = string;
+
+export type JoinVars = {
+  // TODO: support nested records & arrays...
+  [varname: string]: ColName;
 };
 
-export type ColsToIndexByRelation = {
-  left: string[];
-  right: string[];
+export type JoinClause = {
+  rec: Rec;
+  joinVars: JoinVars;
+  colsToIndex: string[];
+  indexName: string;
 };
 
 export type JoinDesc = {
   type: "Join";
   head: Rec;
-  joinClauses: Rec[];
+  joinClauses: JoinClause[];
 };
 
 export type NodeDesc =
@@ -57,8 +58,10 @@ export function formatDesc(node: NodeAndCache): string {
       case "BinExpr":
         return ppBE(nodeDesc.expr);
       case "Join":
-        return `Join(${ppt(nodeDesc.head)} :- ${nodeDesc.joinClauses
-          .map(ppt)
+        return `Join(${ppt(
+          nodeDesc.head
+        )} :- ${nodeDesc.joinClauses
+          .map((clause) => ppt(clause.rec))
           .join(" & ")})`;
       case "Substitute":
         return `Subst(${ppt(nodeDesc.rec)})`;
