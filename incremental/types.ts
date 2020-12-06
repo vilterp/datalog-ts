@@ -1,7 +1,6 @@
 import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { IndexedCollection } from "./indexedCollection";
-import { RuleGraph } from "./ruleGraph";
 
 export type NodeID = string;
 
@@ -81,11 +80,6 @@ export function formatDesc(node: NodeAndCache): string {
   })();
   return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
 }
-
-export type EmissionLogAndGraph = {
-  graph: RuleGraph;
-  log: EmissionLog;
-};
 
 export type AddResult = {
   newNodeIDs: Set<NodeID>;

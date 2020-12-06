@@ -1,4 +1,4 @@
-import { EmissionLog, EmissionLogAndGraph, formatRes, Res } from "./types";
+import { EmissionLog, formatRes, NodeID, Res } from "./types";
 import { Program, Rec, Statement } from "../types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
@@ -24,6 +24,11 @@ type Output =
   | { type: "Json"; json: any }
   | { type: "QueryResults"; results: Res[] }
   | { type: "Acknowledge" };
+
+export type EmissionLogAndGraph = {
+  graph: RuleGraph;
+  log: EmissionLog;
+};
 
 const ack: Output = { type: "Acknowledge" };
 
