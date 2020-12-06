@@ -57,7 +57,9 @@ export function formatDesc(node: NodeAndCache): string {
       case "BinExpr":
         return ppBE(nodeDesc.expr);
       case "Join":
-        return `Join(${ppRule(nodeDesc.rule)})`;
+        return `Join(${ppt(nodeDesc.head)} :- ${nodeDesc.joinClauses
+          .map(ppt)
+          .join(" & ")})`;
       case "Substitute":
         return `Subst(${ppt(nodeDesc.rec)})`;
       case "Union":

@@ -5,17 +5,13 @@ matGramp{child: A, grandfather: C} :-
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(father{child: B, father: C}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Match(mother{child: A, mother: B}; {}) [mother]" shape="box"];
-  "2" [color="black" label="2: Join(1 & 0): matGramp []" shape="box"];
+  "0" [color="black" label="0: Join(matGramp{child: A, grandfather: C} :- mother{child: A, mother: B} & father{child: B, father: C}) []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];
   "matGramp" [color="black" label="matGramp: Subst(matGramp{child: A, grandfather: C}) []" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "matGramp" [];
+  "0" -> "matGramp" [];
   "father" -> "0" [];
-  "mother" -> "1" [];
+  "mother" -> "0" [];
 }
 
 .table a;
@@ -25,22 +21,14 @@ d{} :- a{} & b{} & c{}.
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(c{}; {}) []" shape="box"];
-  "1" [color="black" label="1: Match(b{}; {}) []" shape="box"];
-  "2" [color="black" label="2: Join(1 & 0): d []" shape="box"];
-  "3" [color="black" label="3: Match(a{}; {}) []" shape="box"];
-  "4" [color="black" label="4: Join(3 & 2): d []" shape="box"];
+  "0" [color="black" label="0: Join(d{} :- a{} & b{} & c{}) []" shape="box"];
   "a" [color="black" label="a: Base []" shape="box"];
   "b" [color="black" label="b: Base []" shape="box"];
   "c" [color="black" label="c: Base []" shape="box"];
   "d" [color="black" label="d: Subst(d{}) []" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "4" [];
-  "3" -> "4" [];
-  "4" -> "d" [];
-  "a" -> "3" [];
-  "b" -> "1" [];
+  "0" -> "d" [];
+  "a" -> "0" [];
+  "b" -> "0" [];
   "c" -> "0" [];
 }
 
@@ -52,8 +40,8 @@ parent{child: C, parent: P} :-
 application/graphviz
 digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
-  "1" [color="black" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box"];
-  "2" [color="black" label="2: Match(father{child: C, father: P}; {}) []" shape="box"];
+  "1" [color="black" label="1: Join(parent{child: C, parent: P} :- mother{child: C, mother: P}) []" shape="box"];
+  "2" [color="black" label="2: Join(parent{child: C, parent: P} :- father{child: C, father: P}) []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];
   "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
@@ -75,11 +63,9 @@ grandparent{grandchild: A, grandparent: C} :-
 application/graphviz
 digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
-  "1" [color="black" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box"];
-  "2" [color="black" label="2: Match(father{child: C, father: P}; {}) []" shape="box"];
-  "3" [color="black" label="3: Match(parent{child: B, parent: C}; {C: B, P: C}) [child]" shape="box"];
-  "4" [color="black" label="4: Match(parent{child: A, parent: B}; {C: A, P: B}) [parent]" shape="box"];
-  "5" [color="black" label="5: Join(4 & 3): grandparent []" shape="box"];
+  "1" [color="black" label="1: Join(parent{child: C, parent: P} :- mother{child: C, mother: P}) []" shape="box"];
+  "2" [color="black" label="2: Join(parent{child: C, parent: P} :- father{child: C, father: P}) []" shape="box"];
+  "3" [color="black" label="3: Join(grandparent{grandchild: A, grandparent: C} :- parent{child: A, parent: B} & parent{child: B, parent: C}) []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];
   "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
@@ -87,11 +73,9 @@ digraph G {
   "0" -> "parent" [];
   "1" -> "0" [];
   "2" -> "0" [];
-  "3" -> "5" [];
-  "4" -> "5" [];
-  "5" -> "grandparent" [];
+  "3" -> "grandparent" [];
   "father" -> "2" [];
   "mother" -> "1" [];
   "parent" -> "3" [];
-  "parent" -> "4" [];
+  "parent" -> "3" [];
 }

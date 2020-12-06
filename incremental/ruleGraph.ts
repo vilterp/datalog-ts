@@ -1,12 +1,4 @@
-import {
-  AndClause,
-  Bindings,
-  BinExpr,
-  OrExpr,
-  Rec,
-  Rule,
-  VarMappings,
-} from "../types";
+import { AndClause, Bindings, BinExpr, OrExpr, Rec, Rule } from "../types";
 import {
   AddResult,
   EmissionBatch,
@@ -29,7 +21,6 @@ import {
   filterMap,
   flatMap,
   mapObjToList,
-  setAdd,
   setUnion,
 } from "../util";
 import {
@@ -200,7 +191,8 @@ export class RuleGraph {
     nodeDesc: JoinDesc,
     clauseIndex: 0
   ): Res[] {
-    return XXX;
+    // TODO: XXX
+    return [];
   }
 
   declareTable(name: string) {
@@ -240,37 +232,36 @@ export class RuleGraph {
     for (let newNodeID of newNodes) {
       const newNode = this.nodes[newNodeID];
       const nodeDesc = newNode.desc;
-      if (nodeDesc.type === "Match") {
-        const callRec = nodeDesc.rec;
-        const callNode = this.nodes[callRec.relation];
-        if (!callNode) {
-          // not defined yet
-          resolved = false;
-          // console.log("=> exit: not defined yet:", callRec.relation);
-          continue;
+      if (nodeDesc.type === "Join") {
+        for (let clause of nodeDesc.joinClauses) {
+          const clauseResolved = this.checkClauseResolved(clause);
+          if (!clauseResolved) {
+            resolved = false;
+          }
         }
-        const ruleNodeDesc = callNode.desc;
-        if (ruleNodeDesc.type === "BaseFactTable") {
-          // don't need to worry about mappings for base fact tables
-          continue;
-        }
-        if (ruleNodeDesc.type !== "Substitute") {
-          throw new Error("rule should be a Subst node");
-        }
-        const ruleRec = ruleNodeDesc.rec;
-        const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-        // console.log("resolve Match", {
-        //   ruleAttrs: ppt(ruleRec),
-        //   callAttrs: ppt(callRec),
-        //   mappings: ppVM(mappings, [], { showScopePath: false }),
-        // });
-        this.updateMappings(newNodeID, mappings);
       }
     }
     // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
     if (resolved) {
       this.removeUnmappedRule(rule.head.relation);
     }
+  }
+
+  private checkClauseResolved(clause: Rec): boolean {
+    const callNode = this.nodes[clause.relation];
+    if (!callNode) {
+      // not defined yet
+      return false;
+    }
+    const ruleNodeDesc = callNode.desc;
+    if (ruleNodeDesc.type === "BaseFactTable") {
+      // don't need to worry about mappings for base fact tables
+      return true;
+    }
+    if (ruleNodeDesc.type !== "Substitute") {
+      throw new Error("rule should be a Subst node");
+    }
+    return true;
   }
 
   private addOr(head: Rec, or: OrExpr): AddResult {
@@ -319,7 +310,10 @@ export class RuleGraph {
       head,
       joinClauses,
     });
-    // TODO: add indexes
+    for (let clause of joinClauses) {
+      this.addEdge(clause.relation, tipID);
+      // TODO: add index on clause.relation
+    }
     return {
       tipID,
       newNodeIDs: new Set<NodeID>([tipID]),
