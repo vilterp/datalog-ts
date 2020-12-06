@@ -14,6 +14,7 @@ import {
   getColsToIndex,
   getIndexKey,
   getIndexName,
+  getJoinAttrs,
   getJoinInfo,
 } from "./build";
 import {
@@ -312,7 +313,8 @@ export class RuleGraph {
     });
     for (let clause of joinClauses) {
       this.addEdge(clause.relation, tipID);
-      // TODO: add index on clause.relation
+      const attrs = getJoinAttrs(clause);
+      this.addIndex(clause.relation, Object.values(attrs));
     }
     return {
       tipID,

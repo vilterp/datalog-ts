@@ -2,6 +2,22 @@ import { Rec } from "../types";
 import { JoinInfo, ColsToIndexByRelation } from "./types";
 import { ppt } from "../pretty";
 
+export type JoinAttrs = {
+  // TODO: support nested records & arrays...
+  [varname: string]: ColName;
+};
+
+export function getJoinAttrs(rec: Rec): JoinAttrs {
+  const ret: JoinAttrs = {};
+  for (let attr in rec.attrs) {
+    const term = rec.attrs[attr];
+    if (term.type === "Var") {
+      ret[term.name] = attr;
+    }
+  }
+  return ret;
+}
+
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   // console.log({ left, right });
   const out: JoinInfo = {};
