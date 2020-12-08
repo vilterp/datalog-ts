@@ -6,9 +6,14 @@ text/plain
 ----
 text/plain
 
-opportunity{worker: N, capability: C, objective: O} :-
+.table fundingSource
+----
+text/plain
+
+opportunity{worker: N, capability: C, objective: O, fundingSource: S} :-
   need{capability: C, objective: O} &
-  worker{name: N, capability: C}.
+  worker{name: N, capability: C} &
+  fundingSource{objective: O, source: S}.
 ----
 text/plain
 
@@ -16,126 +21,44 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(worker{capability: C, name: N}; {}) [capability]" shape="box"];
-  "1" [color="black" label="1: Match(need{capability: C, objective: O}; {}) [capability]" shape="box"];
-  "2" [color="black" label="2: Join(1 & 0): opportunity []" shape="box"];
+  "0" [color="black" label="0: Match(fundingSource{objective: O, source: S}; {}) []" shape="box"];
+  "1" [color="black" label="1: Match(worker{capability: C, name: N}; {}) []" shape="box"];
+  "2" [color="black" label="2: Join(1 & 0): opportunity [capability]" shape="box"];
+  "3" [color="black" label="3: Match(need{capability: C, objective: O}; {}) [capability]" shape="box"];
+  "4" [color="black" label="4: Join(3 & 2): opportunity []" shape="box"];
   "need" [color="black" label="need: Base []" shape="box"];
   "worker" [color="black" label="worker: Base []" shape="box"];
-  "opportunity" [color="black" label="opportunity: Subst(opportunity{capability: C, objective: O, worker: N}) []" shape="box"];
+  "fundingSource" [color="black" label="fundingSource: Base []" shape="box"];
+  "opportunity" [color="black" label="opportunity: Subst(opportunity{capability: C, fundingSource: S, objective: O, worker: N}) []" shape="box"];
   "0" -> "2" [];
   "1" -> "2" [];
-  "2" -> "opportunity" [];
-  "need" -> "1" [];
-  "worker" -> "0" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "opportunity" [];
+  "fundingSource" -> "0" [];
+  "need" -> "3" [];
+  "worker" -> "1" [];
 }
 
 need{capability: "write HTML", objective: "make website"}.
 ----
 text/plain
 need: [need{capability: "write HTML", objective: "make website"}; {}]
-1: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
-2: []
+3: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
+4: []
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
 text/plain
 worker: [worker{capability: "write HTML", name: "Pete"}; {}]
-0: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
-2: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
-opportunity: [opportunity{capability: "write HTML", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
+1: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
+2: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+4: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
 
-.dumpcaches
+fundingSource{objective: "make website", source: "some company"}.
 ----
-application/json
-{
-  "0": {
-    "nodeID": "0",
-    "cache": {
-      "capability": {
-        "items": {
-          "\"write HTML\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "worker",
-                "attrs": {
-                  "name": {
-                    "type": "StringLit",
-                    "val": "Pete"
-                  },
-                  "capability": {
-                    "type": "StringLit",
-                    "val": "write HTML"
-                  }
-                }
-              },
-              "bindings": {
-                "N": {
-                  "type": "StringLit",
-                  "val": "Pete"
-                },
-                "C": {
-                  "type": "StringLit",
-                  "val": "write HTML"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
-  "1": {
-    "nodeID": "1",
-    "cache": {
-      "capability": {
-        "items": {
-          "\"write HTML\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "need",
-                "attrs": {
-                  "capability": {
-                    "type": "StringLit",
-                    "val": "write HTML"
-                  },
-                  "objective": {
-                    "type": "StringLit",
-                    "val": "make website"
-                  }
-                }
-              },
-              "bindings": {
-                "C": {
-                  "type": "StringLit",
-                  "val": "write HTML"
-                },
-                "O": {
-                  "type": "StringLit",
-                  "val": "make website"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
-  "2": {
-    "nodeID": "2",
-    "cache": {}
-  },
-  "need": {
-    "nodeID": "need",
-    "cache": {}
-  },
-  "worker": {
-    "nodeID": "worker",
-    "cache": {}
-  },
-  "opportunity": {
-    "nodeID": "opportunity",
-    "cache": {}
-  }
-}
+text/plain
+fundingSource: [fundingSource{objective: "make website", source: "some company"}; {}]
+0: [fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}]
+2: []
