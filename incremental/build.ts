@@ -1,5 +1,5 @@
-import { Rec } from "../types";
-import { JoinInfo, ColsToIndexByRelation } from "./types";
+import { Rec, Term } from "../types";
+import { JoinInfo, ColsToIndexByRelation, AttrPath } from "./types";
 import { ppt } from "../pretty";
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
@@ -19,8 +19,8 @@ export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
       if (leftVar.name === rightVar.name) {
         out[leftVar.name] = {
           varName: leftVar.name,
-          leftAttr,
-          rightAttr,
+          leftAttr: [leftAttr],
+          rightAttr: [rightAttr],
         };
       }
     }
@@ -45,12 +45,22 @@ export function getColsToIndex(joinInfo: JoinInfo): ColsToIndexByRelation {
   return out;
 }
 
-type ColName = string;
-
-export function getIndexKey(rec: Rec, attrs: ColName[]): string[] {
-  return attrs.map((attr) => ppt(rec.attrs[attr]));
+// TODO: allocate less here
+function getAtPath(term: Term, path: AttrPath): Term {
+  if (path.length === 0) {
+    return term;
+  }
+  if (term.type !== "Record") {
+    throw new Error("expecting Rec");
+  }
+  const next = term.attrs[path[0]];
+  return getAtPath(next, path.slice(1));
 }
 
-export function getIndexName(attrs: ColName[]): string {
-  return attrs.join("-");
+export function getIndexKey(rec: Rec, attrPaths: AttrPath[]): string[] {
+  return attrPaths.map((attrPath) => ppt(getAtPath(rec, attrPath)));
+}
+
+export function getIndexName(attrs: AttrPath[]): string {
+  return attrs.map((path) => path.join("/")).join("-");
 }

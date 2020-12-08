@@ -5,7 +5,11 @@ application/json
 {
   "B": {
     "varName": "B",
-    "leftAttr": "father",
-    "rightAttr": "child"
+    "leftAttr": [
+      "father"
+    ],
+    "rightAttr": [
+      "child"
+    ]
   }
 }

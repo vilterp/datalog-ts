@@ -16,17 +16,21 @@ export type NodeAndCache = {
   cache: IndexedCollection<Res>; // TODO: should this be just Rec?
 };
 
+export type AttrName = string;
+
+export type AttrPath = AttrName[];
+
 export type JoinInfo = {
   [varName: string]: {
     varName: string;
-    leftAttr: string;
-    rightAttr: string;
+    leftAttr: AttrPath;
+    rightAttr: AttrPath;
   };
 };
 
 export type ColsToIndexByRelation = {
-  left: string[];
-  right: string[];
+  left: AttrPath[];
+  right: AttrPath[];
 };
 
 export type JoinDesc = {

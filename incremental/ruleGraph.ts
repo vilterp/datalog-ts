@@ -1,6 +1,7 @@
 import { AndClause, OrExpr, Rec, Rule, VarMappings } from "../types";
 import {
   AddResult,
+  AttrPath,
   EmissionBatch,
   EmissionLog,
   Insertion,
@@ -207,8 +208,8 @@ export class RuleGraph {
     ins: Insertion,
     joinDesc: JoinDesc,
     otherNodeID: NodeID,
-    thisIndex: string[],
-    otherIndex: string[]
+    thisIndex: AttrPath[],
+    otherIndex: AttrPath[]
   ): Res[] {
     const results: Res[] = [];
     const thisVars = ins.res.bindings;
@@ -440,11 +441,11 @@ export class RuleGraph {
     this.unmappedRules[rule.head.relation] = { rule, newNodeIDs };
   }
 
-  private addIndex(nodeID: NodeID, attrs: string[]) {
-    this.nodes[nodeID].cache.createIndex(getIndexName(attrs), (res) => {
+  private addIndex(nodeID: NodeID, attrPaths: AttrPath[]) {
+    this.nodes[nodeID].cache.createIndex(getIndexName(attrPaths), (res) => {
       // TODO: is this gonna be a perf bottleneck?
       // console.log({ attrs, res: ppt(res.term) });
-      return getIndexKey(res.term as Rec, attrs);
+      return getIndexKey(res.term as Rec, attrPaths);
     });
   }
 
