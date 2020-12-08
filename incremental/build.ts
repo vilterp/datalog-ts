@@ -4,6 +4,7 @@ import { ppt } from "../pretty";
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   // console.log({ left, right });
+  // TODO: make this work for nested records
   const out: JoinInfo = {};
   for (let leftAttr in left.attrs) {
     const leftVar = left.attrs[leftAttr];
@@ -23,6 +24,11 @@ export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
         };
       }
     }
+  }
+  if (Object.keys(out).length === 0) {
+    throw new Error(
+      `no common attributes found between ${ppt(left)} and ${ppt(right)}`
+    );
   }
   return out;
 }

@@ -216,6 +216,7 @@ export class RuleGraph {
     const indexName = getIndexName(otherIndex);
     const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
     const otherEntries = otherNode.cache.get(indexName, indexKey);
+    // console.log(joinDesc);
     // console.log({
     //   indexName,
     //   indexKey,
