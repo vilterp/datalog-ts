@@ -13,3 +13,8 @@ application/json
     ]
   }
 }
+
+tc.Type{id: FID, type: tapp{from: F, to: T}}
+tc.Type{id: AID, type: F}
+----
+
