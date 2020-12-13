@@ -51,8 +51,8 @@ digraph G {
   "31" [color="black" label="31: Match(tc.typePlaceholder{id: I, type: T}; {I: I}) []" shape="box"];
   "32" [color="black" label="32: Match(ast.StringLit{id: I}; {}) []" shape="box"];
   "33" [color="black" label="33: Match(ast.IntLit{id: I}; {}) []" shape="box"];
-  "34" [color="black" label="34: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) []" shape="box"];
-  "35" [color="black" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) []" shape="box"];
+  "34" [color="black" label="34: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [type]" shape="box"];
+  "35" [color="black" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [type/from]" shape="box"];
   "36" [color="black" label="36: Join(35 & 34): tc.typeFC [id]" shape="box"];
   "37" [color="black" label="37: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [funcID]" shape="box"];
   "38" [color="black" label="38: Join(37 & 36): tc.typeFC []" shape="box"];
@@ -62,10 +62,10 @@ digraph G {
   "42" [color="black" label="42: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [id-name]" shape="box"];
   "43" [color="black" label="43: Match(ast.Var{id: I, name: N}; {}) [id-name]" shape="box"];
   "44" [color="black" label="44: Join(43 & 42): tc.typeVar []" shape="box"];
-  "45" [color="black" label="45: Match(tc.Type{id: B, type: R}; {I: B, T: R}) []" shape="box"];
-  "46" [color="black" label="46: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) []" shape="box"];
-  "47" [color="black" label="47: Join(46 & 45): tc.typeLambda [lambdaID]" shape="box"];
-  "48" [color="black" label="48: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [id]" shape="box"];
+  "45" [color="black" label="45: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [type-id]" shape="box"];
+  "46" [color="black" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [retType-body]" shape="box"];
+  "47" [color="black" label="47: Join(46 & 45): tc.typeLambda [id]" shape="box"];
+  "48" [color="black" label="48: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [lambdaID]" shape="box"];
   "49" [color="black" label="49: Join(48 & 47): tc.typeLambda []" shape="box"];
   "50" [color="black" label="50: Match(ast.Placeholder{id: I}; {}) []" shape="box"];
   "51" [color="black" label="51: Union []" shape="box"];
@@ -203,10 +203,10 @@ digraph G {
   "ast.IntLit" -> "33" [];
   "ast.Lambda" -> "6" [];
   "ast.Lambda" -> "21" [];
-  "ast.Lambda" -> "48" [];
+  "ast.Lambda" -> "46" [];
   "ast.Lambda" -> "65" [];
   "ast.Lambda" -> "72" [];
-  "ast.LambdaParam" -> "46" [];
+  "ast.LambdaParam" -> "48" [];
   "ast.LambdaParam" -> "64" [];
   "ast.LetExpr" -> "4" [];
   "ast.LetExpr" -> "9" [];
@@ -1362,9 +1362,9 @@ application/json
   "34": {
     "nodeID": "34",
     "cache": {
-      "": {
+      "type": {
         "items": {
-          "": [
+          "\"int\"": [
             {
               "term": {
                 "type": "Record",
@@ -1399,7 +1399,7 @@ application/json
   "35": {
     "nodeID": "35",
     "cache": {
-      "": {
+      "type/from": {
         "items": {}
       }
     }
@@ -1771,9 +1771,9 @@ application/json
   "45": {
     "nodeID": "45",
     "cache": {
-      "": {
+      "type-id": {
         "items": {
-          "": [
+          "\"int\"-2": [
             {
               "term": {
                 "type": "Record",
@@ -1808,7 +1808,7 @@ application/json
   "46": {
     "nodeID": "46",
     "cache": {
-      "": {
+      "retType-body": {
         "items": {}
       }
     }
@@ -1816,7 +1816,7 @@ application/json
   "47": {
     "nodeID": "47",
     "cache": {
-      "lambdaID": {
+      "id": {
         "items": {}
       }
     }
@@ -1824,7 +1824,7 @@ application/json
   "48": {
     "nodeID": "48",
     "cache": {
-      "id": {
+      "lambdaID": {
         "items": {}
       }
     }

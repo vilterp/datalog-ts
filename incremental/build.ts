@@ -65,3 +65,31 @@ export function getIndexKey(rec: Rec, attrPaths: AttrPath[]): string[] {
 export function getIndexName(attrs: AttrPath[]): string {
   return attrs.map((path) => path.join("/")).join("-");
 }
+
+export type JoinTree =
+  | {
+      type: "Leaf";
+      rec: Rec;
+    }
+  | { type: "Node"; left: Rec; joinInfo: JoinInfo; right: JoinTree | null };
+
+export function getJoinTree(recs: Rec[]): JoinTree {
+  if (recs.length === 1) {
+    return { type: "Leaf", rec: recs[0] };
+  }
+  return {
+    type: "Node",
+    left: recs[0],
+    // are we joining with just the next record, or everything on the right?
+    joinInfo: getJoinInfo(recs[0], recs[1]),
+    right: getJoinTree(recs.slice(1)),
+  };
+}
+
+export function allJoinsHaveCommonVars(joinTree: JoinTree): boolean {
+  if (joinTree.type === "Leaf") {
+    return true;
+  }
+  const thisDoes = Object.keys(joinTree.joinInfo).length > 0;
+  return thisDoes && allJoinsHaveCommonVars(joinTree.right);
+}

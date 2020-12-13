@@ -13,16 +13,20 @@ import {
   Res,
 } from "./types";
 import {
+  allJoinsHaveCommonVars,
   getColsToIndex,
   getIndexKey,
   getIndexName,
   getJoinInfo,
+  getJoinTree,
+  JoinTree,
 } from "./build";
 import {
   appendToKey,
   filterMap,
   flatMap,
   mapObjToList,
+  permute,
   setAdd,
   setUnion,
 } from "../util";
@@ -38,6 +42,7 @@ import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
 import { Performance } from "w3c-hr-time";
+import { ppt } from "../pretty";
 
 const performance = new Performance();
 
@@ -281,27 +286,7 @@ export class RuleGraph {
     return [];
   }
 
-  private addJoin(ruleName: string, and: Rec[]): AddResult {
-    if (and.length === 0) {
-      throw new Error("empty and");
-    }
-    if (and.length === 1) {
-      return this.addAndClause(and[0]);
-    }
-    const { tipID: rightID, newNodeIDs: nn1 } = this.addJoin(
-      ruleName,
-      and.slice(1)
-    );
-    const { tipID: andID, newNodeIDs: nn2 } = this.addAndBinary(
-      ruleName,
-      and[0],
-      and[1],
-      rightID
-    );
-    return { tipID: andID, newNodeIDs: setUnion(nn1, nn2) };
-  }
-
-  private addAndClause(rec: Rec): AddResult {
+  private addRec(rec: Rec): AddResult {
     const matchID = this.addNode(true, {
       type: "Match",
       rec,
@@ -310,6 +295,7 @@ export class RuleGraph {
     this.addEdge(rec.relation, matchID);
     return {
       newNodeIDs: new Set([matchID]),
+      rec,
       tipID: matchID,
     };
   }
@@ -371,13 +357,30 @@ export class RuleGraph {
 
     return {
       newNodeIDs: outNodeIDs,
+      rec: null,
       tipID: orID,
     };
   }
 
   private addAnd(ruleName: string, clauses: AndClause[]): AddResult {
     const { recs, exprs } = extractBinExprs(clauses);
-    const withJoinRes = this.addJoin(ruleName, recs);
+    const allRecPermutations = permute(recs);
+    const allJoinTrees = allRecPermutations.map(getJoinTree);
+    let joinTree = allJoinTrees.find(allJoinsHaveCommonVars);
+
+    if (!joinTree) {
+      // TODO: handle cartesian product joins downstream
+      console.warn(
+        "no join order with common variables at each join",
+        ruleName,
+        ":-",
+        recs.map(ppt).join(" & ")
+      );
+      joinTree = allJoinTrees[0];
+    }
+
+    const withJoinRes = this.addJoinTree(ruleName, joinTree);
+
     return exprs.reduce(({ tipID, newNodeIDs }, expr) => {
       const newExprID = this.addNode(true, {
         type: "BinExpr",
@@ -386,9 +389,27 @@ export class RuleGraph {
       this.addEdge(tipID, newExprID);
       return {
         tipID: newExprID,
+        rec: null, // TODO: fix
         newNodeIDs: setAdd(newNodeIDs, newExprID),
       };
     }, withJoinRes);
+  }
+
+  private addJoinTree(ruleName: string, joinTree: JoinTree): AddResult {
+    if (joinTree.type === "Leaf") {
+      return this.addRec(joinTree.rec);
+    }
+    const { tipID: rightID, rec: rightRec, newNodeIDs: nn1 } = this.addJoinTree(
+      ruleName,
+      joinTree.right
+    );
+    const { tipID: andID, newNodeIDs: nn2 } = this.addAndBinary(
+      ruleName,
+      joinTree.left,
+      rightRec,
+      rightID
+    );
+    return { tipID: andID, rec: joinTree.left, newNodeIDs: setUnion(nn1, nn2) };
   }
 
   private addAndBinary(
@@ -399,7 +420,7 @@ export class RuleGraph {
   ): AddResult {
     const joinInfo = getJoinInfo(left, right);
     const colsToIndex = getColsToIndex(joinInfo);
-    const { newNodeIDs: nn1, tipID: leftID } = this.addAndClause(left);
+    const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
     const joinID = this.addNode(true, {
       type: "Join",
       indexes: colsToIndex,
@@ -415,6 +436,7 @@ export class RuleGraph {
     this.addIndex(rightID, colsToIndex.right);
     return {
       tipID: joinID,
+      rec: left,
       newNodeIDs: setAdd(nn1, joinID),
     };
   }

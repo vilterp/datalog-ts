@@ -87,6 +87,7 @@ export function formatDesc(node: NodeAndCache): string {
 
 export type AddResult = {
   newNodeIDs: Set<NodeID>;
+  rec: Rec;
   tipID: NodeID;
 };
 
