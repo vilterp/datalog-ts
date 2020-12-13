@@ -17,4 +17,16 @@ application/json
 tc.Type{id: FID, type: tapp{from: F, to: T}}
 tc.Type{id: AID, type: F}
 ----
-
+application/json
+{
+  "F": {
+    "varName": "F",
+    "leftAttr": [
+      "type",
+      "from"
+    ],
+    "rightAttr": [
+      "type"
+    ]
+  }
+}

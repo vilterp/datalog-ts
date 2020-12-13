@@ -313,3 +313,19 @@ export function permute<T>(items: T[]): T[][] {
   }
   return out;
 }
+
+export function combineObjects<T, U>(
+  left: { [key: string]: T },
+  right: { [key: string]: T },
+  combine: (key: string, left: T, right: T) => U
+): { [key: string]: U } {
+  const out: { [key: string]: U } = {};
+  for (let leftKey in left) {
+    const rightItem = right[leftKey];
+    if (rightItem) {
+      const leftItem = left[leftKey];
+      out[leftKey] = combine(leftKey, leftItem, rightItem);
+    }
+  }
+  return out;
+}

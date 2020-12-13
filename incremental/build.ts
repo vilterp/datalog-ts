@@ -1,35 +1,36 @@
 import { Rec, Term } from "../types";
 import { JoinInfo, ColsToIndexByRelation, AttrPath } from "./types";
 import { ppt } from "../pretty";
+import { combineObjects } from "../util";
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
-  // console.log({ left, right });
-  // TODO: make this work for nested records
-  const out: JoinInfo = {};
-  for (let leftAttr in left.attrs) {
-    const leftVar = left.attrs[leftAttr];
-    if (leftVar.type !== "Var") {
-      continue;
+  const leftVars = getVarToPath(left);
+  const rightVars = getVarToPath(right);
+  return combineObjects(
+    leftVars,
+    rightVars,
+    (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
+  );
+}
+
+type VarToPath = { [varName: string]: AttrPath };
+
+function getVarToPath(rec: Rec): VarToPath {
+  const out: VarToPath = {};
+  Object.entries(rec.attrs).forEach(([attr, attrVal]) => {
+    switch (attrVal.type) {
+      case "Var":
+        out[attrVal.name] = [attr];
+        break;
+      case "Record":
+        const subMapping = getVarToPath(attrVal);
+        Object.entries(subMapping).forEach(([subVar, subPath]) => {
+          out[subVar] = [attr, ...subPath];
+        });
+        break;
+      // TODO: lists?
     }
-    for (let rightAttr in right.attrs) {
-      const rightVar = right.attrs[rightAttr];
-      if (rightVar.type !== "Var") {
-        continue;
-      }
-      if (leftVar.name === rightVar.name) {
-        out[leftVar.name] = {
-          varName: leftVar.name,
-          leftAttr: [leftAttr],
-          rightAttr: [rightAttr],
-        };
-      }
-    }
-  }
-  if (Object.keys(out).length === 0) {
-    throw new Error(
-      `no common attributes found between ${ppt(left)} and ${ppt(right)}`
-    );
-  }
+  });
   return out;
 }
 
