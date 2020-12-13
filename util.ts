@@ -295,3 +295,21 @@ export function appendToKey<T>(
   }
   obj[key] = [val];
 }
+
+export function permute<T>(items: T[]): T[][] {
+  if (items.length === 1) {
+    return [items];
+  }
+  const out: T[][] = [];
+  const firstEl = items[0];
+  for (let perm of permute(items.slice(1))) {
+    for (let i = 0; i < items.length; i++) {
+      let outArr: T[] = [];
+      outArr = outArr.concat(perm.slice(0, i));
+      outArr.push(firstEl);
+      outArr = outArr.concat(perm.slice(i));
+      out.push(outArr);
+    }
+  }
+  return out;
+}
