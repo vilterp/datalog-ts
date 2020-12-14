@@ -56,34 +56,3 @@ sister{person: L, sister: R} :-
 ancestor{desc: X, an: Z} :-
   parent{child: X, parent: Z} |
   parent{child: X, parent: Y} & ancestor{desc: Y, an: Z}.
-
-edge_m{from: C, to: M, label: "mother"} :-
-  mother{child: C, mother: M}.
-edge_f{from: C, to: F, label: "father"} :-
-  father{child: C, father: F}.
-edge_gp{from: A, to: B, label: "grandparent"} :-
-  grandparent{grandchild: A, grandparent: B}.
-edge_sibling{from: A, to: B, label: "sibling"} :-
-  sibling{left: A, right: B}.
-edge_cousin{from: A, to: B, label: "cousin"} :-
-  cousin{left: A, right: B}.
-edge{from: F, to: T, label: L} :-
-    edge_m{from: F, to: T, label: L} |
-    edge_f{from: F, to: T, label: L} |
-    edge_gp{from: F, to: T, label: L} |
-    edge_sibling{from: F, to: T, label: L} |
-    edge_cousin{from: F, to: T, label: L}.
-
-node_mc{id: C, label: C} :-
-    mother{child: C}.
-node_mm{id: C, label: C} :-
-    mother{mother: C}.
-node_fc{id: C, label: C} :-
-    father{child: C}.
-node_ff{id: C, label: C} :-
-    father{father: C}.
-node{id: I, label: N} :-
-    node_mc{id: I, label: N} |
-    node_mm{id: I, label: N} |
-    node_fc{id: I, label: N} |
-    node_ff{id: I, label: N}.

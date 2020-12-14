@@ -16,6 +16,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["eval", evalTest],
     ["eval2", evalTest],
     ["eval3", evalTest],
+    ["family", evalTest],
     ["indexes", evalTest],
     ["siblings", evalTest],
     ["cycles", evalTest],

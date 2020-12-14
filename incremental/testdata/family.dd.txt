@@ -1,0 +1,80 @@
+.load testdata/family.dl
+----
+text/plain
+
+.rulegraph
+----
+application/graphviz
+digraph G {
+  "0" [color="black" label="0: grandfather: Join(B: father.child = parent.parent) []" shape="box"];
+  "1" [color="black" label="1: grandmother: Join(B: mother.child = parent.parent) []" shape="box"];
+  "2" [color="black" label="2: grandparent: Join(B: parent.child = parent.parent) []" shape="box"];
+  "3" [color="black" label="3: Union []" shape="box"];
+  "4" [color="black" label="4: parents: Join(C: father.child = mother.child) []" shape="box"];
+  "5" [color="black" label="5: sibling: Join(F: parents.father = parents.father & M: parents.mother = parents.mother) []" shape="box"];
+  "6" [color="black" label="6: L != R []" shape="box"];
+  "7" [color="black" label="7: cousin: Join(P1: sibling.left = parent.parent) []" shape="box"];
+  "8" [color="black" label="8: cousin: Join(P2: parent.parent = 7.right) []" shape="box"];
+  "9" [color="black" label="9: uncle: Join(P: brother.person = parent.parent) []" shape="box"];
+  "10" [color="black" label="10: aunt: Join(P: sister.person = parent.parent) []" shape="box"];
+  "11" [color="black" label="11: brother: Join(R: sibling.right = person.name) []" shape="box"];
+  "12" [color="black" label="12: sister: Join(R: sibling.right = person.name) []" shape="box"];
+  "13" [color="black" label="13: Union []" shape="box"];
+  "14" [color="black" label="14: ancestor: Join(Y: ancestor.desc = parent.parent) []" shape="box"];
+  "person" [color="black" label="person" shape="box"]; // cache: [person{gender: "Male", name: "Paul"}; {}, person{gender: "Female", name: "Ann"}; {}]
+  "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Paul", mother: "Judith"}; {}, mother{child: "Ann", mother: "Judith"}; {}, mother{child: "Bob", mother: "Ann"}; {}, mother{child: "Mary", mother: "Carolyn K"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
+  "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Paul", father: "Peter"}; {}, father{child: "Ann", father: "Peter"}; {}, father{child: "Mary", father: "Mark"}; {}, father{child: "Bob", father: "John"}; {}, father{child: "Carolyn", father: "Paul"}; {}, father{child: "Henry", father: "Bob"}; {}]
+  "grandfather" [color="black" label="grandfather: Subst(grandfather{grandchild: A, grandfather: C}) []" shape="box"];
+  "grandmother" [color="black" label="grandmother: Subst(grandmother{grandchild: A, grandmother: C}) []" shape="box"];
+  "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box"];
+  "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
+  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
+  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
+  "cousin" [color="black" label="cousin: Subst(cousin{left: L, right: R}) []" shape="box"];
+  "uncle" [color="black" label="uncle: Subst(uncle{child: C, uncle: U}) []" shape="box"];
+  "aunt" [color="black" label="aunt: Subst(aunt{aunt: U, child: C}) []" shape="box"];
+  "brother" [color="black" label="brother: Subst(brother{brother: R, person: L}) []" shape="box"];
+  "sister" [color="black" label="sister: Subst(sister{person: L, sister: R}) []" shape="box"];
+  "ancestor" [color="black" label="ancestor: Subst(ancestor{an: Z, desc: X}) []" shape="box"];
+  "0" -> "grandfather" [];
+  "1" -> "grandmother" [];
+  "10" -> "aunt" [];
+  "11" -> "brother" [];
+  "12" -> "sister" [];
+  "13" -> "ancestor" [];
+  "14" -> "13" [];
+  "2" -> "grandparent" [];
+  "3" -> "parent" [];
+  "4" -> "parents" [];
+  "5" -> "6" [];
+  "6" -> "sibling" [];
+  "7" -> "8" [];
+  "8" -> "cousin" [];
+  "9" -> "uncle" [];
+  "ancestor" -> "14" [];
+  "brother" -> "9" [];
+  "father" -> "0" [];
+  "father" -> "3" [];
+  "father" -> "4" [];
+  "mother" -> "1" [];
+  "mother" -> "3" [];
+  "mother" -> "4" [];
+  "parent" -> "0" [];
+  "parent" -> "1" [];
+  "parent" -> "2" [];
+  "parent" -> "2" [];
+  "parent" -> "7" [];
+  "parent" -> "8" [];
+  "parent" -> "9" [];
+  "parent" -> "10" [];
+  "parent" -> "13" [];
+  "parent" -> "14" [];
+  "parents" -> "5" [];
+  "parents" -> "5" [];
+  "person" -> "11" [];
+  "person" -> "12" [];
+  "sibling" -> "7" [];
+  "sibling" -> "11" [];
+  "sibling" -> "12" [];
+  "sister" -> "10" [];
+}

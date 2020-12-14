@@ -23,24 +23,20 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Join(father & 0): parents []" shape="box"];
-  "2" [color="black" label="2: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [mother-father]" shape="box"];
-  "3" [color="black" label="3: Join(parents & 2): sibling []" shape="box"];
-  "4" [color="black" label="4: L != R []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "father" [color="black" label="father: Base [child]" shape="box"];
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) [mother-father]" shape="box"];
+  "0" [color="black" label="0: parents: Join(C: father.child = mother.child) []" shape="box"];
+  "1" [color="black" label="1: sibling: Join(F: parents.father = parents.father & M: parents.mother = parents.mother) []" shape="box"];
+  "2" [color="black" label="2: L != R []" shape="box"];
+  "mother" [color="black" label="mother" shape="box"];
+  "father" [color="black" label="father" shape="box"];
+  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
   "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
-  "0" -> "1" [];
-  "1" -> "parents" [];
-  "2" -> "3" [];
-  "3" -> "4" [];
-  "4" -> "sibling" [];
-  "father" -> "1" [];
+  "0" -> "parents" [];
+  "1" -> "2" [];
+  "2" -> "sibling" [];
+  "father" -> "0" [];
   "mother" -> "0" [];
-  "parents" -> "2" [];
-  "parents" -> "3" [];
+  "parents" -> "1" [];
+  "parents" -> "1" [];
 }
 
 mother{child: "Pete", mother: "Mary"}.
