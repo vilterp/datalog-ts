@@ -5,7 +5,7 @@ matGramp{child: A, grandfather: C} :-
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: matGramp: Join(B: child=mother) []" shape="box"];
+  "0" [color="black" label="0: matGramp: Join(B: father.child = mother.mother) []" shape="box"];
   "mother" [color="black" label="mother" shape="box"];
   "father" [color="black" label="father" shape="box"];
   "matGramp" [color="black" label="matGramp: Subst(matGramp{child: A, grandfather: C}) []" shape="box"];
@@ -61,7 +61,7 @@ grandparent{grandchild: A, grandparent: C} :-
 application/graphviz
 digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
-  "1" [color="black" label="1: grandparent: Join(B: child=parent) []" shape="box"];
+  "1" [color="black" label="1: grandparent: Join(B: parent.child = parent.parent) []" shape="box"];
   "mother" [color="black" label="mother" shape="box"];
   "father" [color="black" label="father" shape="box"];
   "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];

@@ -1,4 +1,4 @@
-import { AttrPath, formatRes, JoinInfo, NodeAndCache } from "./types";
+import { AttrPath, formatRes, JoinDesc, JoinInfo, NodeAndCache } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { RuleGraph } from "./ruleGraph";
@@ -54,9 +54,7 @@ function formatDesc(node: NodeAndCache): string {
       case "BinExpr":
         return ppBE(nodeDesc.expr);
       case "Join":
-        return `${nodeDesc.ruleName}: Join(${formatJoinInfo(
-          nodeDesc.joinInfo
-        )})`;
+        return `${nodeDesc.ruleName}: Join(${formatJoinDesc(nodeDesc)})`;
       case "Match":
         return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
           showScopePath: false,
@@ -70,11 +68,13 @@ function formatDesc(node: NodeAndCache): string {
   return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
 }
 
-function formatJoinInfo(joinInfo: JoinInfo): string {
+function formatJoinDesc(joinDesc: JoinDesc): string {
   return mapObjToList(
-    joinInfo,
+    joinDesc.joinInfo,
     (key, { leftAttr, rightAttr }) =>
-      `${key}: ${formatAttrPath(leftAttr)}=${formatAttrPath(rightAttr)}`
+      `${key}: ${joinDesc.leftID}.${formatAttrPath(leftAttr)} = ${
+        joinDesc.rightID
+      }.${formatAttrPath(rightAttr)}`
   ).join(" & ");
 }
 

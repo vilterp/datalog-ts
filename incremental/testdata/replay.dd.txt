@@ -44,7 +44,7 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: parents: Join(C: child=child) []" shape="box"];
+  "0" [color="black" label="0: parents: Join(C: father.child = mother.child) []" shape="box"];
   "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
@@ -64,8 +64,8 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: parents: Join(C: child=child) []" shape="box"];
-  "1" [color="black" label="1: sibling: Join(F: father=father & M: mother=mother) []" shape="box"];
+  "0" [color="black" label="0: parents: Join(C: father.child = mother.child) []" shape="box"];
+  "1" [color="black" label="1: sibling: Join(F: parents.father = parents.father & M: parents.mother = parents.mother) []" shape="box"];
   "2" [color="black" label="2: L != R []" shape="box"];
   "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
