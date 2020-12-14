@@ -5,7 +5,7 @@ bar{a: A, b: B} :-
 application/graphviz
 digraph G {
   "0" [color="black" label="0: A != B []" shape="box"];
-  "foo" [color="black" label="foo: Base []" shape="box"];
+  "foo" [color="black" label="foo" shape="box"];
   "bar" [color="black" label="bar: Subst(bar{a: A, b: B}) []" shape="box"];
   "0" -> "bar" [];
   "foo" -> "0" [];

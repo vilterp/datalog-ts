@@ -66,8 +66,6 @@ export function formatDesc(node: NodeAndCache): string {
   const nodeDesc = node.desc;
   const mainRes = (() => {
     switch (nodeDesc.type) {
-      case "BaseFactTable":
-        return `Base`;
       case "BinExpr":
         return ppBE(nodeDesc.expr);
       case "Join":

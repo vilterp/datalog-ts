@@ -6,8 +6,8 @@ matGramp{child: A, grandfather: C} :-
 application/graphviz
 digraph G {
   "0" [color="black" label="0: Join(father & mother): matGramp []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "father" [color="black" label="father: Base []" shape="box"];
+  "mother" [color="black" label="mother" shape="box"];
+  "father" [color="black" label="father" shape="box"];
   "matGramp" [color="black" label="matGramp: Subst(matGramp{child: A, grandfather: C}) []" shape="box"];
   "0" -> "matGramp" [];
   "father" -> "0" [];
@@ -23,9 +23,9 @@ application/graphviz
 digraph G {
   "0" [color="black" label="0: Join(b & a): d []" shape="box"];
   "1" [color="black" label="1: Join(c & 0): d []" shape="box"];
-  "a" [color="black" label="a: Base []" shape="box"];
-  "b" [color="black" label="b: Base []" shape="box"];
-  "c" [color="black" label="c: Base []" shape="box"];
+  "a" [color="black" label="a" shape="box"];
+  "b" [color="black" label="b" shape="box"];
+  "c" [color="black" label="c" shape="box"];
   "d" [color="black" label="d: Subst(d{}) []" shape="box"];
   "0" -> "1" [];
   "1" -> "d" [];
@@ -42,8 +42,8 @@ parent{child: C, parent: P} :-
 application/graphviz
 digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "father" [color="black" label="father: Base []" shape="box"];
+  "mother" [color="black" label="mother" shape="box"];
+  "father" [color="black" label="father" shape="box"];
   "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
   "0" -> "parent" [];
   "father" -> "0" [];
@@ -62,8 +62,8 @@ application/graphviz
 digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
   "1" [color="black" label="1: Join(parent & parent): grandparent []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"];
-  "father" [color="black" label="father: Base []" shape="box"];
+  "mother" [color="black" label="mother" shape="box"];
+  "father" [color="black" label="father" shape="box"];
   "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
   "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box"];
   "0" -> "parent" [];

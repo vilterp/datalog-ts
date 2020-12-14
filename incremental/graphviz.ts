@@ -13,7 +13,10 @@ export function toGraphviz(
         id,
         attrs: {
           shape: "box",
-          label: `${id}: ${formatDesc(node)}`,
+          label:
+            node.desc.type === "BaseFactTable"
+              ? id
+              : `${id}: ${formatDesc(node)}`,
           color: id === highlightedNodeID ? "red" : "black",
         },
         comment:

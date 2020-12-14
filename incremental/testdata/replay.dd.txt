@@ -30,8 +30,8 @@ father: [father{child: "Carolyn", father: "Paul"}; {}]
 ----
 application/graphviz
 digraph G {
-  "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
-  "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
+  "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
+  "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
 }
 
 parents{child: C, mother: M, father: F} :-
@@ -45,8 +45,8 @@ text/plain
 application/graphviz
 digraph G {
   "0" [color="black" label="0: Join(father & mother): parents []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
-  "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
+  "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
+  "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
   "0" -> "parents" [];
   "father" -> "0" [];
@@ -67,8 +67,8 @@ digraph G {
   "0" [color="black" label="0: Join(father & mother): parents []" shape="box"];
   "1" [color="black" label="1: Join(parents & parents): sibling []" shape="box"];
   "2" [color="black" label="2: L != R []" shape="box"];
-  "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
-  "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
+  "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
+  "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
   "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
   "0" -> "parents" [];
