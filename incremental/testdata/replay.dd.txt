@@ -44,15 +44,13 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Match(father{child: C, father: F}; {}) [child]" shape="box"];
-  "2" [color="black" label="2: Join(1 & 0): parents []" shape="box"];
+  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) []" shape="box"];
+  "1" [color="black" label="1: Join(father & 0): parents []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "parents" [];
+  "0" -> "1" [];
+  "1" -> "parents" [];
   "father" -> "1" [];
   "mother" -> "0" [];
 }
@@ -68,26 +66,22 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Match(father{child: C, father: F}; {}) [child]" shape="box"];
-  "2" [color="black" label="2: Join(1 & 0): parents []" shape="box"];
-  "3" [color="black" label="3: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [mother-father]" shape="box"];
-  "4" [color="black" label="4: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [mother-father]" shape="box"];
-  "5" [color="black" label="5: Join(4 & 3): sibling []" shape="box"];
-  "6" [color="black" label="6: L != R []" shape="box"];
+  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) []" shape="box"];
+  "1" [color="black" label="1: Join(father & 0): parents []" shape="box"];
+  "2" [color="black" label="2: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) []" shape="box"];
+  "3" [color="black" label="3: Join(parents & 2): sibling []" shape="box"];
+  "4" [color="black" label="4: L != R []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
   "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "parents" [];
-  "3" -> "5" [];
-  "4" -> "5" [];
-  "5" -> "6" [];
-  "6" -> "sibling" [];
+  "0" -> "1" [];
+  "1" -> "parents" [];
+  "2" -> "3" [];
+  "3" -> "4" [];
+  "4" -> "sibling" [];
   "father" -> "1" [];
   "mother" -> "0" [];
+  "parents" -> "2" [];
   "parents" -> "3" [];
-  "parents" -> "4" [];
 }

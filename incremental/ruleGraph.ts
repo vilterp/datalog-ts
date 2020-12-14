@@ -413,7 +413,8 @@ export class RuleGraph {
   ): AddResult {
     const joinInfo = getJoinInfo(left, right);
     const colsToIndex = getColsToIndex(joinInfo);
-    const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
+    // const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
+    const leftID = left.relation;
     const joinID = this.addNode(true, {
       type: "Join",
       indexes: colsToIndex,
@@ -425,12 +426,13 @@ export class RuleGraph {
     this.addEdge(leftID, joinID);
     this.addEdge(rightID, joinID);
     // console.log({ colsToIndex });
-    this.addIndex(leftID, colsToIndex.left);
-    this.addIndex(rightID, colsToIndex.right);
+    // TODO: do these later
+    // this.addIndex(leftID, colsToIndex.left);
+    // this.addIndex(rightID, colsToIndex.right);
     return {
       tipID: joinID,
       rec: left,
-      newNodeIDs: setAdd(nn1, joinID),
+      newNodeIDs: new Set([joinID]),
     };
   }
 

@@ -15,13 +15,12 @@ father{child: "Mary", father: "Mark"}.
 ----
 text/plain
 father: [father{child: "Mary", father: "Mark"}; {}]
-1: [father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}]
-2: []
+1: []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
 0: [mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}]
-2: [matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
-matGramp: [matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+1: [matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}]
+matGramp: [matGramp{child: "Pete", grandfather: C}; {A: "Pete", B: "Mary"}]
