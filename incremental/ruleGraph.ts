@@ -13,13 +13,13 @@ import {
   Res,
 } from "./types";
 import {
-  allJoinsHaveCommonVars,
   getColsToIndex,
   getIndexKey,
   getIndexName,
   getJoinInfo,
   getJoinTree,
   JoinTree,
+  numJoinsWithCommonVars,
 } from "./build";
 import {
   appendToKey,
@@ -366,18 +366,11 @@ export class RuleGraph {
     const { recs, exprs } = extractBinExprs(clauses);
     const allRecPermutations = permute(recs);
     const allJoinTrees = allRecPermutations.map(getJoinTree);
-    let joinTree = allJoinTrees.find(allJoinsHaveCommonVars);
-
-    if (!joinTree) {
-      // TODO: handle cartesian product joins downstream
-      console.warn(
-        "no join order with common variables at each join",
-        ruleName,
-        ":-",
-        recs.map(ppt).join(" & ")
-      );
-      joinTree = allJoinTrees[0];
-    }
+    // TODO: cache these
+    allJoinTrees.sort((left, right) => {
+      return numJoinsWithCommonVars(left) - numJoinsWithCommonVars(right);
+    });
+    const joinTree = allJoinTrees[allJoinTrees.length - 1];
 
     const withJoinRes = this.addJoinTree(ruleName, joinTree);
 

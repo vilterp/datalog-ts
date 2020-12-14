@@ -86,10 +86,10 @@ export function getJoinTree(recs: Rec[]): JoinTree {
   };
 }
 
-export function allJoinsHaveCommonVars(joinTree: JoinTree): boolean {
+export function numJoinsWithCommonVars(joinTree: JoinTree): number {
   if (joinTree.type === "Leaf") {
-    return true;
+    return 0;
   }
-  const thisDoes = Object.keys(joinTree.joinInfo).length > 0;
-  return thisDoes && allJoinsHaveCommonVars(joinTree.right);
+  const thisDoes = Object.keys(joinTree.joinInfo).length > 0 ? 1 : 0;
+  return thisDoes + numJoinsWithCommonVars(joinTree.right);
 }
