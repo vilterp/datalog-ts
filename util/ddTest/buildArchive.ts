@@ -1,15 +1,16 @@
 import * as fs from "fs/promises";
 import * as path from "path";
-import { DDTest } from "./types";
+import { Archive } from "./types";
 import { parseDDTest } from "./parser";
-
-type Archive = { [path: string]: DDTest };
 
 async function* walk(dir) {
   for await (const d of await fs.opendir(dir)) {
     const entry = path.join(dir, d.name);
-    if (d.isDirectory()) yield* walk(entry);
-    else if (d.isFile()) yield entry;
+    if (d.isDirectory()) {
+      yield* walk(entry);
+    } else if (d.isFile()) {
+      yield entry;
+    }
   }
 }
 

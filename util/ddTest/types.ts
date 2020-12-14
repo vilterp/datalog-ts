@@ -1,3 +1,5 @@
+export type Archive = { [path: string]: DDTest };
+
 export type DDTest = IOPair[];
 
 export type ProcessFn = (input: string[]) => TestOutput[];

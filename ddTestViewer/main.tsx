@@ -1,33 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { parseDDTest } from "../util/ddTest/parser";
-import useLocalStorage from "react-use-localstorage";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
+// @ts-ignore
+import testArchive from "../test-archive.dd.json";
+import { mapObjToList } from "../util";
+import { Archive } from "../util/ddTest/types";
 
 function Main() {
   return <TestViewer />;
 }
 
 function TestViewer() {
-  const [testSource, setTestSource] = useLocalStorage(
-    "ddtest-viewer-source",
-    ""
-  );
-  const parsedTest = parseDDTest(testSource);
+  const [currentTest, setCurrentTest] = useState(
+    Object.keys(testArchive).sort()[0]
+  ); // TODO: use URL
 
   return (
     <>
       <h1>DDTest Viewer</h1>
-      <h3>Test Source</h3>
-      <textarea
-        value={testSource}
-        onChange={(evt) => setTestSource(evt.target.value)}
-        style={{ fontFamily: "monospace" }}
-        cols={100}
-        rows={20}
-      />
+      <select
+        value={currentTest}
+        onChange={(evt) => setCurrentTest(evt.target.value)}
+      >
+        {mapObjToList(testArchive as Archive, (filePath, test) => (
+          <option key={filePath}>{filePath}</option>
+        ))}
+      </select>
       <h3>Viewer</h3>
-      {parsedTest.map((pair, idx) => (
+      {(testArchive[currentTest] || []).map((pair, idx) => (
         <div key={idx}>
           <pre>
             {pair.input}
