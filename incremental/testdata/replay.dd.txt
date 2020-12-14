@@ -47,7 +47,7 @@ digraph G {
   "0" [color="black" label="0: parents: Join(C: father.child = mother.child) []" shape="box"];
   "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
+  "parents" [color="black" label="parents: Subst({child: C, father: F, mother: M}) []" shape="box"];
   "0" -> "parents" [];
   "father" -> "0" [];
   "mother" -> "0" [];
@@ -69,8 +69,8 @@ digraph G {
   "2" [color="black" label="2: L != R []" shape="box"];
   "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
-  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
+  "parents" [color="black" label="parents: Subst({child: C, father: F, mother: M}) []" shape="box"];
+  "sibling" [color="black" label="sibling: Subst({left: L, right: R}) []" shape="box"];
   "0" -> "parents" [];
   "1" -> "2" [];
   "2" -> "sibling" [];

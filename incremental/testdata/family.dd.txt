@@ -24,18 +24,18 @@ digraph G {
   "person" [color="black" label="person" shape="box"]; // cache: [person{gender: "Male", name: "Paul"}; {}, person{gender: "Female", name: "Ann"}; {}]
   "mother" [color="black" label="mother" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Paul", mother: "Judith"}; {}, mother{child: "Ann", mother: "Judith"}; {}, mother{child: "Bob", mother: "Ann"}; {}, mother{child: "Mary", mother: "Carolyn K"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Paul", father: "Peter"}; {}, father{child: "Ann", father: "Peter"}; {}, father{child: "Mary", father: "Mark"}; {}, father{child: "Bob", father: "John"}; {}, father{child: "Carolyn", father: "Paul"}; {}, father{child: "Henry", father: "Bob"}; {}]
-  "grandfather" [color="black" label="grandfather: Subst(grandfather{grandchild: A, grandfather: C}) []" shape="box"];
-  "grandmother" [color="black" label="grandmother: Subst(grandmother{grandchild: A, grandmother: C}) []" shape="box"];
-  "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box"];
-  "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
-  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
-  "cousin" [color="black" label="cousin: Subst(cousin{left: L, right: R}) []" shape="box"];
-  "uncle" [color="black" label="uncle: Subst(uncle{child: C, uncle: U}) []" shape="box"];
-  "aunt" [color="black" label="aunt: Subst(aunt{aunt: U, child: C}) []" shape="box"];
-  "brother" [color="black" label="brother: Subst(brother{brother: R, person: L}) []" shape="box"];
-  "sister" [color="black" label="sister: Subst(sister{person: L, sister: R}) []" shape="box"];
-  "ancestor" [color="black" label="ancestor: Subst(ancestor{an: Z, desc: X}) []" shape="box"];
+  "grandfather" [color="black" label="grandfather: Subst({grandchild: A, grandfather: C}) []" shape="box"];
+  "grandmother" [color="black" label="grandmother: Subst({grandchild: A, grandmother: C}) []" shape="box"];
+  "grandparent" [color="black" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box"];
+  "parent" [color="black" label="parent: Subst({child: C, parent: P}) []" shape="box"];
+  "parents" [color="black" label="parents: Subst({child: C, father: F, mother: M}) []" shape="box"];
+  "sibling" [color="black" label="sibling: Subst({left: L, right: R}) []" shape="box"];
+  "cousin" [color="black" label="cousin: Subst({left: L, right: R}) []" shape="box"];
+  "uncle" [color="black" label="uncle: Subst({child: C, uncle: U}) []" shape="box"];
+  "aunt" [color="black" label="aunt: Subst({aunt: U, child: C}) []" shape="box"];
+  "brother" [color="black" label="brother: Subst({brother: R, person: L}) []" shape="box"];
+  "sister" [color="black" label="sister: Subst({person: L, sister: R}) []" shape="box"];
+  "ancestor" [color="black" label="ancestor: Subst({an: Z, desc: X}) []" shape="box"];
   "0" -> "grandfather" [];
   "1" -> "grandmother" [];
   "10" -> "aunt" [];

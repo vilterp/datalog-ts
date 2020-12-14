@@ -60,7 +60,10 @@ function formatDesc(node: NodeAndCache): string {
           showScopePath: false,
         })})`;
       case "Substitute":
-        return `Subst(${ppt(nodeDesc.rec)})`;
+        return `Subst({${mapObjToList(
+          nodeDesc.rec.attrs,
+          (key, val) => `${key}: ${ppt(val)}`
+        ).join(", ")}})`;
       case "Union":
         return "Union";
     }

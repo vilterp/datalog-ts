@@ -8,7 +8,7 @@ digraph G {
   "0" [color="black" label="0: matGramp: Join(B: father.child = mother.mother) []" shape="box"];
   "mother" [color="black" label="mother" shape="box"];
   "father" [color="black" label="father" shape="box"];
-  "matGramp" [color="black" label="matGramp: Subst(matGramp{child: A, grandfather: C}) []" shape="box"];
+  "matGramp" [color="black" label="matGramp: Subst({child: A, grandfather: C}) []" shape="box"];
   "0" -> "matGramp" [];
   "father" -> "0" [];
   "mother" -> "0" [];
@@ -26,7 +26,7 @@ digraph G {
   "a" [color="black" label="a" shape="box"];
   "b" [color="black" label="b" shape="box"];
   "c" [color="black" label="c" shape="box"];
-  "d" [color="black" label="d: Subst(d{}) []" shape="box"];
+  "d" [color="black" label="d: Subst({}) []" shape="box"];
   "0" -> "1" [];
   "1" -> "d" [];
   "a" -> "0" [];
@@ -44,7 +44,7 @@ digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
   "mother" [color="black" label="mother" shape="box"];
   "father" [color="black" label="father" shape="box"];
-  "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
+  "parent" [color="black" label="parent: Subst({child: C, parent: P}) []" shape="box"];
   "0" -> "parent" [];
   "father" -> "0" [];
   "mother" -> "0" [];
@@ -64,8 +64,8 @@ digraph G {
   "1" [color="black" label="1: grandparent: Join(B: parent.child = parent.parent) []" shape="box"];
   "mother" [color="black" label="mother" shape="box"];
   "father" [color="black" label="father" shape="box"];
-  "parent" [color="black" label="parent: Subst(parent{child: C, parent: P}) []" shape="box"];
-  "grandparent" [color="black" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box"];
+  "parent" [color="black" label="parent: Subst({child: C, parent: P}) []" shape="box"];
+  "grandparent" [color="black" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box"];
   "0" -> "parent" [];
   "1" -> "grandparent" [];
   "father" -> "0" [];
