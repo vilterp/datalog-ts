@@ -62,27 +62,6 @@ export function formatRes(res: Res): string {
   return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
 }
 
-export function formatDesc(node: NodeAndCache): string {
-  const nodeDesc = node.desc;
-  const mainRes = (() => {
-    switch (nodeDesc.type) {
-      case "BinExpr":
-        return ppBE(nodeDesc.expr);
-      case "Join":
-        return `Join(${nodeDesc.leftID} & ${nodeDesc.rightID}): ${nodeDesc.ruleName}`;
-      case "Match":
-        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-          showScopePath: false,
-        })})`;
-      case "Substitute":
-        return `Subst(${ppt(nodeDesc.rec)})`;
-      case "Union":
-        return "Union";
-    }
-  })();
-  return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
-}
-
 export type AddResult = {
   newNodeIDs: Set<NodeID>;
   rec: Rec;
