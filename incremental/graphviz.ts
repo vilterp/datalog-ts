@@ -51,13 +51,13 @@ export function toGraphviz(
 function getNodeColor(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "BaseFactTable":
-      return "peachpuff";
+      return "lightcoral";
     case "Join":
       return "thistle";
     case "BinExpr":
-      return "lightblue";
-    case "Substitute":
       return "darkseagreen1";
+    case "Substitute":
+      return "lightblue";
     case "Union":
       return "cornsilk";
   }

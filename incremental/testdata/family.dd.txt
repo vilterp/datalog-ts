@@ -12,7 +12,7 @@ digraph G {
   "3" [fillcolor="cornsilk" label="3: Union []" shape="box" style="filled"];
   "4" [fillcolor="thistle" label="4: parents: Join(C: father.child = mother.child) []" shape="box" style="filled"];
   "5" [fillcolor="thistle" label="5: sibling: Join(F: parents.father = parents.father & M: parents.mother = parents.mother) []" shape="box" style="filled"];
-  "6" [fillcolor="lightblue" label="6: L != R []" shape="box" style="filled"];
+  "6" [fillcolor="darkseagreen1" label="6: L != R []" shape="box" style="filled"];
   "7" [fillcolor="thistle" label="7: cousin: Join(P1: sibling.left = parent.parent) []" shape="box" style="filled"];
   "8" [fillcolor="thistle" label="8: cousin: Join(P2: parent.parent = 7.right) []" shape="box" style="filled"];
   "9" [fillcolor="thistle" label="9: uncle: Join(P: brother.person = parent.parent) []" shape="box" style="filled"];
@@ -21,21 +21,21 @@ digraph G {
   "12" [fillcolor="thistle" label="12: sister: Join(R: sibling.right = person.name) []" shape="box" style="filled"];
   "13" [fillcolor="cornsilk" label="13: Union []" shape="box" style="filled"];
   "14" [fillcolor="thistle" label="14: ancestor: Join(Y: ancestor.desc = parent.parent) []" shape="box" style="filled"];
-  "person" [fillcolor="peachpuff" label="person" shape="box" style="filled"]; // cache: [person{gender: "Male", name: "Paul"}; {}, person{gender: "Female", name: "Ann"}; {}]
-  "mother" [fillcolor="peachpuff" label="mother" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Paul", mother: "Judith"}; {}, mother{child: "Ann", mother: "Judith"}; {}, mother{child: "Bob", mother: "Ann"}; {}, mother{child: "Mary", mother: "Carolyn K"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
-  "father" [fillcolor="peachpuff" label="father" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Paul", father: "Peter"}; {}, father{child: "Ann", father: "Peter"}; {}, father{child: "Mary", father: "Mark"}; {}, father{child: "Bob", father: "John"}; {}, father{child: "Carolyn", father: "Paul"}; {}, father{child: "Henry", father: "Bob"}; {}]
-  "grandfather" [fillcolor="darkseagreen1" label="grandfather: Subst({grandchild: A, grandfather: C}) []" shape="box" style="filled"];
-  "grandmother" [fillcolor="darkseagreen1" label="grandmother: Subst({grandchild: A, grandmother: C}) []" shape="box" style="filled"];
-  "grandparent" [fillcolor="darkseagreen1" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box" style="filled"];
-  "parent" [fillcolor="darkseagreen1" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
-  "parents" [fillcolor="darkseagreen1" label="parents: Subst({child: C, father: F, mother: M}) []" shape="box" style="filled"];
-  "sibling" [fillcolor="darkseagreen1" label="sibling: Subst({left: L, right: R}) []" shape="box" style="filled"];
-  "cousin" [fillcolor="darkseagreen1" label="cousin: Subst({left: L, right: R}) []" shape="box" style="filled"];
-  "uncle" [fillcolor="darkseagreen1" label="uncle: Subst({child: C, uncle: U}) []" shape="box" style="filled"];
-  "aunt" [fillcolor="darkseagreen1" label="aunt: Subst({aunt: U, child: C}) []" shape="box" style="filled"];
-  "brother" [fillcolor="darkseagreen1" label="brother: Subst({brother: R, person: L}) []" shape="box" style="filled"];
-  "sister" [fillcolor="darkseagreen1" label="sister: Subst({person: L, sister: R}) []" shape="box" style="filled"];
-  "ancestor" [fillcolor="darkseagreen1" label="ancestor: Subst({an: Z, desc: X}) []" shape="box" style="filled"];
+  "person" [fillcolor="lightcoral" label="person" shape="box" style="filled"]; // cache: [person{gender: "Male", name: "Paul"}; {}, person{gender: "Female", name: "Ann"}; {}]
+  "mother" [fillcolor="lightcoral" label="mother" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Paul", mother: "Judith"}; {}, mother{child: "Ann", mother: "Judith"}; {}, mother{child: "Bob", mother: "Ann"}; {}, mother{child: "Mary", mother: "Carolyn K"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
+  "father" [fillcolor="lightcoral" label="father" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Paul", father: "Peter"}; {}, father{child: "Ann", father: "Peter"}; {}, father{child: "Mary", father: "Mark"}; {}, father{child: "Bob", father: "John"}; {}, father{child: "Carolyn", father: "Paul"}; {}, father{child: "Henry", father: "Bob"}; {}]
+  "grandfather" [fillcolor="lightblue" label="grandfather: Subst({grandchild: A, grandfather: C}) []" shape="box" style="filled"];
+  "grandmother" [fillcolor="lightblue" label="grandmother: Subst({grandchild: A, grandmother: C}) []" shape="box" style="filled"];
+  "grandparent" [fillcolor="lightblue" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box" style="filled"];
+  "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
+  "parents" [fillcolor="lightblue" label="parents: Subst({child: C, father: F, mother: M}) []" shape="box" style="filled"];
+  "sibling" [fillcolor="lightblue" label="sibling: Subst({left: L, right: R}) []" shape="box" style="filled"];
+  "cousin" [fillcolor="lightblue" label="cousin: Subst({left: L, right: R}) []" shape="box" style="filled"];
+  "uncle" [fillcolor="lightblue" label="uncle: Subst({child: C, uncle: U}) []" shape="box" style="filled"];
+  "aunt" [fillcolor="lightblue" label="aunt: Subst({aunt: U, child: C}) []" shape="box" style="filled"];
+  "brother" [fillcolor="lightblue" label="brother: Subst({brother: R, person: L}) []" shape="box" style="filled"];
+  "sister" [fillcolor="lightblue" label="sister: Subst({person: L, sister: R}) []" shape="box" style="filled"];
+  "ancestor" [fillcolor="lightblue" label="ancestor: Subst({an: Z, desc: X}) []" shape="box" style="filled"];
   "0" -> "grandfather" [];
   "1" -> "grandmother" [];
   "10" -> "aunt" [];
