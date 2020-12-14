@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import useHashParam from "use-hash-param";
 import ReactDOM from "react-dom";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
 // @ts-ignore
@@ -11,9 +12,9 @@ function Main() {
 }
 
 function TestViewer() {
-  const [currentTest, setCurrentTest] = useState(
+  const [currentTest, setCurrentTest] = useHashParam(
     Object.keys(testArchive).sort()[0]
-  ); // TODO: use URL
+  );
 
   return (
     <>
@@ -22,7 +23,7 @@ function TestViewer() {
         value={currentTest}
         onChange={(evt) => setCurrentTest(evt.target.value)}
       >
-        {mapObjToList(testArchive as Archive, (filePath, test) => (
+        {mapObjToList(testArchive as Archive, (filePath) => (
           <option key={filePath}>{filePath}</option>
         ))}
       </select>
