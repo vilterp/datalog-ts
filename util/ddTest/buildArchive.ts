@@ -25,7 +25,7 @@ async function main(archivePath: string) {
   await fs.writeFile(archivePath, JSON.stringify(archive));
 }
 
-const archivePath = "test-archive.dd.json";
+const archivePath = "ddTestViewer/public/test-archive.dd.json";
 main(archivePath).then(() => {
   console.log(`archive written to ${archivePath}`);
 });

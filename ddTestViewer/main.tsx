@@ -2,21 +2,32 @@ import React from "react";
 import useHashParam from "use-hash-param";
 import ReactDOM from "react-dom";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
-// @ts-ignore
-import testArchive from "../test-archive.dd.json";
 import { mapObjToList } from "../util";
 import { Archive } from "../util/ddTest/types";
+import { useFetch } from "use-http";
 
 function Main() {
-  return <TestViewer />;
+  const [archiveURL] = useHashParam(
+    "archiveUrl",
+    `${window.location.origin}/test-archive.dd.json`
+  );
+  const { loading, error, data } = useFetch(archiveURL, {}, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (error) {
+    return <p style={{ color: "red" }}>Error: {error}</p>;
+  }
+  return <TestViewer archive={data} />;
 }
 
-function TestViewer() {
+function TestViewer(props: { archive: Archive }) {
+  const testArchive = props.archive;
   const [currentTest, setCurrentTest] = useHashParam(
     "testPath",
     Object.keys(testArchive).sort()[0]
   );
-
   return (
     <>
       <h1>DDTest Viewer</h1>
