@@ -13,6 +13,7 @@ function Main() {
 
 function TestViewer() {
   const [currentTest, setCurrentTest] = useHashParam(
+    "testPath",
     Object.keys(testArchive).sort()[0]
   );
 
