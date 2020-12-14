@@ -44,8 +44,8 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(father{child: C, father: F}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
+  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
+  "1" [color="black" label="1: Match(father{child: C, father: F}; {}) [child]" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): parents []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
@@ -53,8 +53,8 @@ digraph G {
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "parents" [];
-  "father" -> "0" [];
-  "mother" -> "1" [];
+  "father" -> "1" [];
+  "mother" -> "0" [];
 }
 
 sibling{left: L, right: R} :-
@@ -68,11 +68,11 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(father{child: C, father: F}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
+  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) [child]" shape="box"];
+  "1" [color="black" label="1: Match(father{child: C, father: F}; {}) [child]" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): parents []" shape="box"];
-  "3" [color="black" label="3: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [mother-father]" shape="box"];
-  "4" [color="black" label="4: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [mother-father]" shape="box"];
+  "3" [color="black" label="3: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [mother-father]" shape="box"];
+  "4" [color="black" label="4: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [mother-father]" shape="box"];
   "5" [color="black" label="5: Join(4 & 3): sibling []" shape="box"];
   "6" [color="black" label="6: L != R []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
@@ -86,8 +86,8 @@ digraph G {
   "4" -> "5" [];
   "5" -> "6" [];
   "6" -> "sibling" [];
-  "father" -> "0" [];
-  "mother" -> "1" [];
+  "father" -> "1" [];
+  "mother" -> "0" [];
   "parents" -> "3" [];
   "parents" -> "4" [];
 }

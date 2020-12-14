@@ -5,8 +5,8 @@ matGramp{child: A, grandfather: C} :-
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(father{child: B, father: C}; {}) [child]" shape="box"];
-  "1" [color="black" label="1: Match(mother{child: A, mother: B}; {}) [mother]" shape="box"];
+  "0" [color="black" label="0: Match(mother{child: A, mother: B}; {}) [mother]" shape="box"];
+  "1" [color="black" label="1: Match(father{child: B, father: C}; {}) [child]" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): matGramp []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];
@@ -14,8 +14,8 @@ digraph G {
   "0" -> "2" [];
   "1" -> "2" [];
   "2" -> "matGramp" [];
-  "father" -> "0" [];
-  "mother" -> "1" [];
+  "father" -> "1" [];
+  "mother" -> "0" [];
 }
 
 .table a;
@@ -25,10 +25,10 @@ d{} :- a{} & b{} & c{}.
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(c{}; {}) []" shape="box"];
+  "0" [color="black" label="0: Match(a{}; {}) []" shape="box"];
   "1" [color="black" label="1: Match(b{}; {}) []" shape="box"];
   "2" [color="black" label="2: Join(1 & 0): d []" shape="box"];
-  "3" [color="black" label="3: Match(a{}; {}) []" shape="box"];
+  "3" [color="black" label="3: Match(c{}; {}) []" shape="box"];
   "4" [color="black" label="4: Join(3 & 2): d []" shape="box"];
   "a" [color="black" label="a: Base []" shape="box"];
   "b" [color="black" label="b: Base []" shape="box"];
@@ -39,9 +39,9 @@ digraph G {
   "2" -> "4" [];
   "3" -> "4" [];
   "4" -> "d" [];
-  "a" -> "3" [];
+  "a" -> "0" [];
   "b" -> "1" [];
-  "c" -> "0" [];
+  "c" -> "3" [];
 }
 
 .table mother;
@@ -77,8 +77,8 @@ digraph G {
   "0" [color="black" label="0: Union []" shape="box"];
   "1" [color="black" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box"];
   "2" [color="black" label="2: Match(father{child: C, father: P}; {}) []" shape="box"];
-  "3" [color="black" label="3: Match(parent{child: B, parent: C}; {C: B, P: C}) [child]" shape="box"];
-  "4" [color="black" label="4: Match(parent{child: A, parent: B}; {C: A, P: B}) [parent]" shape="box"];
+  "3" [color="black" label="3: Match(parent{child: A, parent: B}; {C: A, P: B}) [parent]" shape="box"];
+  "4" [color="black" label="4: Match(parent{child: B, parent: C}; {C: B, P: C}) [child]" shape="box"];
   "5" [color="black" label="5: Join(4 & 3): grandparent []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"];
   "father" [color="black" label="father: Base []" shape="box"];

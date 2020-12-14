@@ -59,7 +59,13 @@ function getAtPath(term: Term, path: AttrPath): Term {
 }
 
 export function getIndexKey(rec: Rec, attrPaths: AttrPath[]): string[] {
-  return attrPaths.map((attrPath) => ppt(getAtPath(rec, attrPath)));
+  return attrPaths.map((attrPath) => {
+    const term = getAtPath(rec, attrPath);
+    if (!term) {
+      throw new Error(`couldn't get attr "${attrPath}" of "${ppt(rec)}"`);
+    }
+    return ppt(term);
+  });
 }
 
 export function getIndexName(attrs: AttrPath[]): string {

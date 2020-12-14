@@ -10,7 +10,7 @@ lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.
 ----
 text/plain
 lang.Builtin: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
-58: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+59: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
 60: []
 
 .rulegraph
@@ -26,20 +26,20 @@ digraph G {
   "6" [color="black" label="6: Match(ast.Lambda{id: I, location: S}; {}) []" shape="box"];
   "7" [color="black" label="7: Match(ast.Placeholder{id: I, location: S}; {}) []" shape="box"];
   "8" [color="black" label="8: Union []" shape="box"];
-  "9" [color="black" label="9: Match(ast.LetExpr{bodyID: I, id: P}; {}) [bodyID]" shape="box"];
-  "10" [color="black" label="10: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "9" [color="black" label="9: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "10" [color="black" label="10: Match(ast.LetExpr{bodyID: I, id: P}; {}) [bodyID]" shape="box"];
   "11" [color="black" label="11: Join(10 & 9): ast.ParentExpr []" shape="box"];
-  "12" [color="black" label="12: Match(ast.LetExpr{bindingID: I, id: P}; {}) [bindingID]" shape="box"];
-  "13" [color="black" label="13: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "12" [color="black" label="12: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "13" [color="black" label="13: Match(ast.LetExpr{bindingID: I, id: P}; {}) [bindingID]" shape="box"];
   "14" [color="black" label="14: Join(13 & 12): ast.ParentExpr []" shape="box"];
-  "15" [color="black" label="15: Match(ast.FuncCall{funcID: I, id: P}; {}) [funcID]" shape="box"];
-  "16" [color="black" label="16: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "15" [color="black" label="15: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "16" [color="black" label="16: Match(ast.FuncCall{funcID: I, id: P}; {}) [funcID]" shape="box"];
   "17" [color="black" label="17: Join(16 & 15): ast.ParentExpr []" shape="box"];
-  "18" [color="black" label="18: Match(ast.FuncCall{argID: I, id: P}; {}) [argID]" shape="box"];
-  "19" [color="black" label="19: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "18" [color="black" label="18: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "19" [color="black" label="19: Match(ast.FuncCall{argID: I, id: P}; {}) [argID]" shape="box"];
   "20" [color="black" label="20: Join(19 & 18): ast.ParentExpr []" shape="box"];
-  "21" [color="black" label="21: Match(ast.Lambda{body: I, id: P}; {}) [body]" shape="box"];
-  "22" [color="black" label="22: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "21" [color="black" label="21: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "22" [color="black" label="22: Match(ast.Lambda{body: I, id: P}; {}) [body]" shape="box"];
   "23" [color="black" label="23: Join(22 & 21): ast.ParentExpr []" shape="box"];
   "24" [color="black" label="24: Union []" shape="box"];
   "25" [color="black" label="25: Match(tc.typeS{id: I, type: T}; {I: I}) []" shape="box"];
@@ -51,38 +51,38 @@ digraph G {
   "31" [color="black" label="31: Match(tc.typePlaceholder{id: I, type: T}; {I: I}) []" shape="box"];
   "32" [color="black" label="32: Match(ast.StringLit{id: I}; {}) []" shape="box"];
   "33" [color="black" label="33: Match(ast.IntLit{id: I}; {}) []" shape="box"];
-  "34" [color="black" label="34: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [type]" shape="box"];
-  "35" [color="black" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [type/from]" shape="box"];
-  "36" [color="black" label="36: Join(35 & 34): tc.typeFC [id]" shape="box"];
-  "37" [color="black" label="37: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [funcID]" shape="box"];
+  "34" [color="black" label="34: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [funcID]" shape="box"];
+  "35" [color="black" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [id]" shape="box"];
+  "36" [color="black" label="36: Join(35 & 34): tc.typeFC [type/from]" shape="box"];
+  "37" [color="black" label="37: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [type]" shape="box"];
   "38" [color="black" label="38: Join(37 & 36): tc.typeFC []" shape="box"];
-  "39" [color="black" label="39: Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [id]" shape="box"];
-  "40" [color="black" label="40: Match(ast.LetExpr{bodyID: BID, id: I}; {}) [bodyID]" shape="box"];
+  "39" [color="black" label="39: Match(ast.LetExpr{bodyID: BID, id: I}; {}) [bodyID]" shape="box"];
+  "40" [color="black" label="40: Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [id]" shape="box"];
   "41" [color="black" label="41: Join(40 & 39): tc.typeLet []" shape="box"];
-  "42" [color="black" label="42: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [id-name]" shape="box"];
-  "43" [color="black" label="43: Match(ast.Var{id: I, name: N}; {}) [id-name]" shape="box"];
+  "42" [color="black" label="42: Match(ast.Var{id: I, name: N}; {}) [id-name]" shape="box"];
+  "43" [color="black" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [id-name]" shape="box"];
   "44" [color="black" label="44: Join(43 & 42): tc.typeVar []" shape="box"];
-  "45" [color="black" label="45: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [type-id]" shape="box"];
-  "46" [color="black" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [retType-body]" shape="box"];
-  "47" [color="black" label="47: Join(46 & 45): tc.typeLambda [id]" shape="box"];
-  "48" [color="black" label="48: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [lambdaID]" shape="box"];
+  "45" [color="black" label="45: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [lambdaID]" shape="box"];
+  "46" [color="black" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [id]" shape="box"];
+  "47" [color="black" label="47: Join(46 & 45): tc.typeLambda [body-retType]" shape="box"];
+  "48" [color="black" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [id-type]" shape="box"];
   "49" [color="black" label="49: Join(48 & 47): tc.typeLambda []" shape="box"];
   "50" [color="black" label="50: Match(ast.Placeholder{id: I}; {}) []" shape="box"];
   "51" [color="black" label="51: Union []" shape="box"];
   "52" [color="black" label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []" shape="box"];
   "53" [color="black" label="53: Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box"];
   "54" [color="black" label="54: Match(tc.scopeLambda{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box"];
-  "55" [color="black" label="55: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [id]" shape="box"];
-  "56" [color="black" label="56: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [parentID]" shape="box"];
+  "55" [color="black" label="55: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [parentID]" shape="box"];
+  "56" [color="black" label="56: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [id]" shape="box"];
   "57" [color="black" label="57: Join(56 & 55): tc.ScopeItem []" shape="box"];
-  "58" [color="black" label="58: Match(lang.Builtin{name: N, type: T}; {}) []" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
-  "59" [color="black" label="59: Match(ast.RootExpr{id: I}; {}) []" shape="box"];
+  "58" [color="black" label="58: Match(ast.RootExpr{id: I}; {}) []" shape="box"];
+  "59" [color="black" label="59: Match(lang.Builtin{name: N, type: T}; {}) []" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
   "60" [color="black" label="60: Join(59 & 58): tc.scopeBuiltin []" shape="box"];
-  "61" [color="black" label="61: Match(tc.Type{id: B, type: T}; {I: B, T: T}) [id]" shape="box"];
-  "62" [color="black" label="62: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [bindingID]" shape="box"];
+  "61" [color="black" label="61: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [bindingID]" shape="box"];
+  "62" [color="black" label="62: Match(tc.Type{id: B, type: T}; {I: B, T: T}) [id]" shape="box"];
   "63" [color="black" label="63: Join(62 & 61): tc.scopeLet []" shape="box"];
-  "64" [color="black" label="64: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {}) [lambdaID]" shape="box"];
-  "65" [color="black" label="65: Match(ast.Lambda{body: I, id: LID}; {}) [id]" shape="box"];
+  "64" [color="black" label="64: Match(ast.Lambda{body: I, id: LID}; {}) [id]" shape="box"];
+  "65" [color="black" label="65: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {}) [lambdaID]" shape="box"];
   "66" [color="black" label="66: Join(65 & 64): tc.scopeLambda []" shape="box"];
   "67" [color="black" label="67: Union []" shape="box"];
   "68" [color="black" label="68: Match(ast.LetExpr{bodyID: I, id: P}; {}) []" shape="box"];
@@ -188,49 +188,49 @@ digraph G {
   "72" -> "67" [];
   "8" -> "ast.ParentExpr" [];
   "9" -> "11" [];
-  "ast.Expr" -> "10" [];
-  "ast.Expr" -> "13" [];
-  "ast.Expr" -> "16" [];
-  "ast.Expr" -> "19" [];
-  "ast.Expr" -> "22" [];
+  "ast.Expr" -> "9" [];
+  "ast.Expr" -> "12" [];
+  "ast.Expr" -> "15" [];
+  "ast.Expr" -> "18" [];
+  "ast.Expr" -> "21" [];
   "ast.FuncCall" -> "5" [];
-  "ast.FuncCall" -> "15" [];
-  "ast.FuncCall" -> "18" [];
-  "ast.FuncCall" -> "37" [];
+  "ast.FuncCall" -> "16" [];
+  "ast.FuncCall" -> "19" [];
+  "ast.FuncCall" -> "34" [];
   "ast.FuncCall" -> "70" [];
   "ast.FuncCall" -> "71" [];
   "ast.IntLit" -> "2" [];
   "ast.IntLit" -> "33" [];
   "ast.Lambda" -> "6" [];
-  "ast.Lambda" -> "21" [];
+  "ast.Lambda" -> "22" [];
   "ast.Lambda" -> "46" [];
-  "ast.Lambda" -> "65" [];
+  "ast.Lambda" -> "64" [];
   "ast.Lambda" -> "72" [];
-  "ast.LambdaParam" -> "48" [];
-  "ast.LambdaParam" -> "64" [];
+  "ast.LambdaParam" -> "45" [];
+  "ast.LambdaParam" -> "65" [];
   "ast.LetExpr" -> "4" [];
-  "ast.LetExpr" -> "9" [];
-  "ast.LetExpr" -> "12" [];
-  "ast.LetExpr" -> "40" [];
-  "ast.LetExpr" -> "62" [];
+  "ast.LetExpr" -> "10" [];
+  "ast.LetExpr" -> "13" [];
+  "ast.LetExpr" -> "39" [];
+  "ast.LetExpr" -> "61" [];
   "ast.LetExpr" -> "68" [];
   "ast.LetExpr" -> "69" [];
   "ast.Placeholder" -> "7" [];
   "ast.Placeholder" -> "50" [];
-  "ast.RootExpr" -> "59" [];
+  "ast.RootExpr" -> "58" [];
   "ast.StringLit" -> "1" [];
   "ast.StringLit" -> "32" [];
   "ast.Var" -> "3" [];
-  "ast.Var" -> "43" [];
-  "lang.Builtin" -> "58" [];
-  "tc.ScopeItem" -> "42" [];
-  "tc.ScopeItem" -> "55" [];
-  "tc.Type" -> "34" [];
+  "ast.Var" -> "42" [];
+  "lang.Builtin" -> "59" [];
+  "tc.ScopeItem" -> "43" [];
+  "tc.ScopeItem" -> "56" [];
   "tc.Type" -> "35" [];
-  "tc.Type" -> "39" [];
-  "tc.Type" -> "45" [];
-  "tc.Type" -> "61" [];
-  "tc.parentScope" -> "56" [];
+  "tc.Type" -> "37" [];
+  "tc.Type" -> "40" [];
+  "tc.Type" -> "48" [];
+  "tc.Type" -> "62" [];
+  "tc.parentScope" -> "55" [];
   "tc.scopeBuiltin" -> "52" [];
   "tc.scopeLambda" -> "54" [];
   "tc.scopeLet" -> "53" [];
@@ -247,14 +247,14 @@ ast.RootExpr{id: 0}.
 ----
 text/plain
 ast.RootExpr: [ast.RootExpr{id: 0}; {}]
-59: [ast.RootExpr{id: 0}; {I: 0}]
+58: [ast.RootExpr{id: 0}; {I: 0}]
 60: [tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
 tc.scopeBuiltin: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
 52: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
 51: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
 tc.ScopeItem: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
-42: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
-55: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+43: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+56: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
 44: []
 57: []
 
@@ -263,27 +263,27 @@ ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
 text/plain
 ast.FuncCall: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {}]
 5: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-15: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
-18: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
-37: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
+16: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
+19: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
+34: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
 70: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
 71: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
 0: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
 17: []
 20: []
-38: []
+36: []
 67: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
 67: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
 ast.Expr: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
 tc.parentScope: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
 tc.parentScope: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
-10: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-13: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-16: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-19: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-22: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
-56: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
-56: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
+9: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+12: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+15: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+18: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+21: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+55: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
+55: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
 11: []
 14: []
 17: []
@@ -295,10 +295,10 @@ tc.parentScope: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
 51: [tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
 tc.ScopeItem: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
 tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
-42: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}]
-55: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}]
-42: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
-55: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}]
+43: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}]
+56: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}]
+43: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
+56: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}]
 44: []
 57: []
 44: []
@@ -309,15 +309,15 @@ ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
 text/plain
 ast.Var: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {}]
 3: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
-43: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
+42: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
 0: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
 44: []
 ast.Expr: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-10: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-13: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-16: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-19: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
-22: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+9: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+12: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+15: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+18: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+21: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
 11: []
 14: []
 17: [ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
@@ -336,11 +336,11 @@ ast.IntLit: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {}]
 tc.typeI: [tc.typeI{id: 2, type: "int"}; {I: 2}]
 ast.Expr: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
 26: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
-10: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-13: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-16: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-19: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
-22: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+9: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+12: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+15: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+18: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+21: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
 24: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
 11: []
 14: []
@@ -349,15 +349,15 @@ ast.Expr: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{fro
 23: []
 tc.Type: [tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}]
 8: [ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
-34: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
 35: []
-39: [tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}]
-45: [tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}]
-61: [tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}]
+37: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
+40: [tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}]
+48: [tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}]
+62: [tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}]
 ast.ParentExpr: [ast.ParentExpr{id: 2, parent: 0, span: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
-36: []
+38: []
 41: []
-47: []
+49: []
 63: []
 
 .dumpcaches
@@ -403,14 +403,6 @@ application/json
   "9": {
     "nodeID": "9",
     "cache": {
-      "bodyID": {
-        "items": {}
-      }
-    }
-  },
-  "10": {
-    "nodeID": "10",
-    "cache": {
       "id": {
         "items": {
           "0": [
@@ -558,6 +550,14 @@ application/json
             }
           ]
         }
+      }
+    }
+  },
+  "10": {
+    "nodeID": "10",
+    "cache": {
+      "bodyID": {
+        "items": {}
       }
     }
   },
@@ -568,13 +568,170 @@ application/json
   "12": {
     "nodeID": "12",
     "cache": {
-      "bindingID": {
-        "items": {}
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 13
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 10
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 11
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 12
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 11
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 12
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
       }
     }
   },
   "13": {
     "nodeID": "13",
+    "cache": {
+      "bindingID": {
+        "items": {}
+      }
+    }
+  },
+  "14": {
+    "nodeID": "14",
+    "cache": {}
+  },
+  "15": {
+    "nodeID": "15",
     "cache": {
       "id": {
         "items": {
@@ -726,12 +883,8 @@ application/json
       }
     }
   },
-  "14": {
-    "nodeID": "14",
-    "cache": {}
-  },
-  "15": {
-    "nodeID": "15",
+  "16": {
+    "nodeID": "16",
     "cache": {
       "funcID": {
         "items": {
@@ -785,8 +938,12 @@ application/json
       }
     }
   },
-  "16": {
-    "nodeID": "16",
+  "17": {
+    "nodeID": "17",
+    "cache": {}
+  },
+  "18": {
+    "nodeID": "18",
     "cache": {
       "id": {
         "items": {
@@ -938,12 +1095,8 @@ application/json
       }
     }
   },
-  "17": {
-    "nodeID": "17",
-    "cache": {}
-  },
-  "18": {
-    "nodeID": "18",
+  "19": {
+    "nodeID": "19",
     "cache": {
       "argID": {
         "items": {
@@ -997,159 +1150,6 @@ application/json
       }
     }
   },
-  "19": {
-    "nodeID": "19",
-    "cache": {
-      "id": {
-        "items": {
-          "0": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "ast.Expr",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 0
-                  },
-                  "location": {
-                    "type": "Record",
-                    "relation": "span",
-                    "attrs": {
-                      "from": {
-                        "type": "IntLit",
-                        "val": 0
-                      },
-                      "to": {
-                        "type": "IntLit",
-                        "val": 13
-                      }
-                    }
-                  }
-                }
-              },
-              "bindings": {
-                "I": {
-                  "type": "IntLit",
-                  "val": 0
-                },
-                "S": {
-                  "type": "Record",
-                  "relation": "span",
-                  "attrs": {
-                    "from": {
-                      "type": "IntLit",
-                      "val": 0
-                    },
-                    "to": {
-                      "type": "IntLit",
-                      "val": 13
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "1": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "ast.Expr",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 1
-                  },
-                  "location": {
-                    "type": "Record",
-                    "relation": "span",
-                    "attrs": {
-                      "from": {
-                        "type": "IntLit",
-                        "val": 0
-                      },
-                      "to": {
-                        "type": "IntLit",
-                        "val": 10
-                      }
-                    }
-                  }
-                }
-              },
-              "bindings": {
-                "I": {
-                  "type": "IntLit",
-                  "val": 1
-                },
-                "S": {
-                  "type": "Record",
-                  "relation": "span",
-                  "attrs": {
-                    "from": {
-                      "type": "IntLit",
-                      "val": 0
-                    },
-                    "to": {
-                      "type": "IntLit",
-                      "val": 10
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "2": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "ast.Expr",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 2
-                  },
-                  "location": {
-                    "type": "Record",
-                    "relation": "span",
-                    "attrs": {
-                      "from": {
-                        "type": "IntLit",
-                        "val": 11
-                      },
-                      "to": {
-                        "type": "IntLit",
-                        "val": 12
-                      }
-                    }
-                  }
-                }
-              },
-              "bindings": {
-                "I": {
-                  "type": "IntLit",
-                  "val": 2
-                },
-                "S": {
-                  "type": "Record",
-                  "relation": "span",
-                  "attrs": {
-                    "from": {
-                      "type": "IntLit",
-                      "val": 11
-                    },
-                    "to": {
-                      "type": "IntLit",
-                      "val": 12
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
   "20": {
     "nodeID": "20",
     "cache": {}
@@ -1157,14 +1157,6 @@ application/json
   "21": {
     "nodeID": "21",
     "cache": {
-      "body": {
-        "items": {}
-      }
-    }
-  },
-  "22": {
-    "nodeID": "22",
-    "cache": {
       "id": {
         "items": {
           "0": [
@@ -1312,6 +1304,14 @@ application/json
             }
           ]
         }
+      }
+    }
+  },
+  "22": {
+    "nodeID": "22",
+    "cache": {
+      "body": {
+        "items": {}
       }
     }
   },
@@ -1361,59 +1361,6 @@ application/json
   },
   "34": {
     "nodeID": "34",
-    "cache": {
-      "type": {
-        "items": {
-          "\"int\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "tc.Type",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 2
-                  },
-                  "type": {
-                    "type": "StringLit",
-                    "val": "int"
-                  }
-                }
-              },
-              "bindings": {
-                "AID": {
-                  "type": "IntLit",
-                  "val": 2
-                },
-                "F": {
-                  "type": "StringLit",
-                  "val": "int"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
-  "35": {
-    "nodeID": "35",
-    "cache": {
-      "type/from": {
-        "items": {}
-      }
-    }
-  },
-  "36": {
-    "nodeID": "36",
-    "cache": {
-      "id": {
-        "items": {}
-      }
-    }
-  },
-  "37": {
-    "nodeID": "37",
     "cache": {
       "funcID": {
         "items": {
@@ -1471,12 +1418,73 @@ application/json
       }
     }
   },
+  "35": {
+    "nodeID": "35",
+    "cache": {
+      "id": {
+        "items": {}
+      }
+    }
+  },
+  "36": {
+    "nodeID": "36",
+    "cache": {
+      "type/from": {
+        "items": {}
+      }
+    }
+  },
+  "37": {
+    "nodeID": "37",
+    "cache": {
+      "type": {
+        "items": {
+          "\"int\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.Type",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "type": {
+                    "type": "StringLit",
+                    "val": "int"
+                  }
+                }
+              },
+              "bindings": {
+                "AID": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "int"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
   "38": {
     "nodeID": "38",
     "cache": {}
   },
   "39": {
     "nodeID": "39",
+    "cache": {
+      "bodyID": {
+        "items": {}
+      }
+    }
+  },
+  "40": {
+    "nodeID": "40",
     "cache": {
       "id": {
         "items": {
@@ -1512,20 +1520,63 @@ application/json
       }
     }
   },
-  "40": {
-    "nodeID": "40",
-    "cache": {
-      "bodyID": {
-        "items": {}
-      }
-    }
-  },
   "41": {
     "nodeID": "41",
     "cache": {}
   },
   "42": {
     "nodeID": "42",
+    "cache": {
+      "id-name": {
+        "items": {
+          "1-\"int2string\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Var",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "int2string"
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "int2string"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "43": {
+    "nodeID": "43",
     "cache": {
       "id-name": {
         "items": {
@@ -1713,57 +1764,6 @@ application/json
       }
     }
   },
-  "43": {
-    "nodeID": "43",
-    "cache": {
-      "id-name": {
-        "items": {
-          "1-\"int2string\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "ast.Var",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 1
-                  },
-                  "location": {
-                    "type": "Record",
-                    "relation": "span",
-                    "attrs": {
-                      "from": {
-                        "type": "IntLit",
-                        "val": 0
-                      },
-                      "to": {
-                        "type": "IntLit",
-                        "val": 10
-                      }
-                    }
-                  },
-                  "name": {
-                    "type": "StringLit",
-                    "val": "int2string"
-                  }
-                }
-              },
-              "bindings": {
-                "I": {
-                  "type": "IntLit",
-                  "val": 1
-                },
-                "N": {
-                  "type": "StringLit",
-                  "val": "int2string"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
   "44": {
     "nodeID": "44",
     "cache": {}
@@ -1771,9 +1771,33 @@ application/json
   "45": {
     "nodeID": "45",
     "cache": {
-      "type-id": {
+      "lambdaID": {
+        "items": {}
+      }
+    }
+  },
+  "46": {
+    "nodeID": "46",
+    "cache": {
+      "id": {
+        "items": {}
+      }
+    }
+  },
+  "47": {
+    "nodeID": "47",
+    "cache": {
+      "body-retType": {
+        "items": {}
+      }
+    }
+  },
+  "48": {
+    "nodeID": "48",
+    "cache": {
+      "id-type": {
         "items": {
-          "\"int\"-2": [
+          "2-\"int\"": [
             {
               "term": {
                 "type": "Record",
@@ -1805,30 +1829,6 @@ application/json
       }
     }
   },
-  "46": {
-    "nodeID": "46",
-    "cache": {
-      "retType-body": {
-        "items": {}
-      }
-    }
-  },
-  "47": {
-    "nodeID": "47",
-    "cache": {
-      "id": {
-        "items": {}
-      }
-    }
-  },
-  "48": {
-    "nodeID": "48",
-    "cache": {
-      "lambdaID": {
-        "items": {}
-      }
-    }
-  },
   "49": {
     "nodeID": "49",
     "cache": {}
@@ -1855,6 +1855,69 @@ application/json
   },
   "55": {
     "nodeID": "55",
+    "cache": {
+      "parentID": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.parentScope",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "parentID": {
+                    "type": "IntLit",
+                    "val": 0
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                }
+              }
+            },
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.parentScope",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "parentID": {
+                    "type": "IntLit",
+                    "val": 0
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "56": {
+    "nodeID": "56",
     "cache": {
       "id": {
         "items": {
@@ -2054,22 +2117,22 @@ application/json
       }
     }
   },
-  "56": {
-    "nodeID": "56",
+  "57": {
+    "nodeID": "57",
+    "cache": {}
+  },
+  "58": {
+    "nodeID": "58",
     "cache": {
-      "parentID": {
+      "": {
         "items": {
-          "0": [
+          "": [
             {
               "term": {
                 "type": "Record",
-                "relation": "tc.parentScope",
+                "relation": "ast.RootExpr",
                 "attrs": {
                   "id": {
-                    "type": "IntLit",
-                    "val": 2
-                  },
-                  "parentID": {
                     "type": "IntLit",
                     "val": 0
                   }
@@ -2077,36 +2140,6 @@ application/json
               },
               "bindings": {
                 "I": {
-                  "type": "IntLit",
-                  "val": 2
-                },
-                "P": {
-                  "type": "IntLit",
-                  "val": 0
-                }
-              }
-            },
-            {
-              "term": {
-                "type": "Record",
-                "relation": "tc.parentScope",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 1
-                  },
-                  "parentID": {
-                    "type": "IntLit",
-                    "val": 0
-                  }
-                }
-              },
-              "bindings": {
-                "I": {
-                  "type": "IntLit",
-                  "val": 1
-                },
-                "P": {
                   "type": "IntLit",
                   "val": 0
                 }
@@ -2117,12 +2150,8 @@ application/json
       }
     }
   },
-  "57": {
-    "nodeID": "57",
-    "cache": {}
-  },
-  "58": {
-    "nodeID": "58",
+  "59": {
+    "nodeID": "59",
     "cache": {
       "": {
         "items": {
@@ -2178,41 +2207,20 @@ application/json
       }
     }
   },
-  "59": {
-    "nodeID": "59",
-    "cache": {
-      "": {
-        "items": {
-          "": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "ast.RootExpr",
-                "attrs": {
-                  "id": {
-                    "type": "IntLit",
-                    "val": 0
-                  }
-                }
-              },
-              "bindings": {
-                "I": {
-                  "type": "IntLit",
-                  "val": 0
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
   "60": {
     "nodeID": "60",
     "cache": {}
   },
   "61": {
     "nodeID": "61",
+    "cache": {
+      "bindingID": {
+        "items": {}
+      }
+    }
+  },
+  "62": {
+    "nodeID": "62",
     "cache": {
       "id": {
         "items": {
@@ -2248,14 +2256,6 @@ application/json
       }
     }
   },
-  "62": {
-    "nodeID": "62",
-    "cache": {
-      "bindingID": {
-        "items": {}
-      }
-    }
-  },
   "63": {
     "nodeID": "63",
     "cache": {}
@@ -2263,7 +2263,7 @@ application/json
   "64": {
     "nodeID": "64",
     "cache": {
-      "lambdaID": {
+      "id": {
         "items": {}
       }
     }
@@ -2271,7 +2271,7 @@ application/json
   "65": {
     "nodeID": "65",
     "cache": {
-      "id": {
+      "lambdaID": {
         "items": {}
       }
     }
