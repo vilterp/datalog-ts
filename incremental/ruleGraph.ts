@@ -390,7 +390,11 @@ export class RuleGraph {
 
   private addJoinTree(ruleName: string, joinTree: JoinTree): AddResult {
     if (joinTree.type === "Leaf") {
-      return this.addRec(joinTree.rec);
+      return {
+        rec: joinTree.rec,
+        newNodeIDs: new Set<NodeID>(),
+        tipID: joinTree.rec.relation,
+      };
     }
     const { tipID: rightID, rec: rightRec, newNodeIDs: nn1 } = this.addJoinTree(
       ruleName,

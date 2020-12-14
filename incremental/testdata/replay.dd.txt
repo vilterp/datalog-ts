@@ -44,14 +44,12 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) []" shape="box"];
-  "1" [color="black" label="1: Join(father & 0): parents []" shape="box"];
+  "0" [color="black" label="0: Join(father & mother): parents []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
-  "0" -> "1" [];
-  "1" -> "parents" [];
-  "father" -> "1" [];
+  "0" -> "parents" [];
+  "father" -> "0" [];
   "mother" -> "0" [];
 }
 
@@ -66,22 +64,18 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(mother{child: C, mother: M}; {}) []" shape="box"];
-  "1" [color="black" label="1: Join(father & 0): parents []" shape="box"];
-  "2" [color="black" label="2: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) []" shape="box"];
-  "3" [color="black" label="3: Join(parents & 2): sibling []" shape="box"];
-  "4" [color="black" label="4: L != R []" shape="box"];
+  "0" [color="black" label="0: Join(father & mother): parents []" shape="box"];
+  "1" [color="black" label="1: Join(parents & parents): sibling []" shape="box"];
+  "2" [color="black" label="2: L != R []" shape="box"];
   "mother" [color="black" label="mother: Base []" shape="box"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [color="black" label="father: Base []" shape="box"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
   "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
-  "0" -> "1" [];
-  "1" -> "parents" [];
-  "2" -> "3" [];
-  "3" -> "4" [];
-  "4" -> "sibling" [];
-  "father" -> "1" [];
+  "0" -> "parents" [];
+  "1" -> "2" [];
+  "2" -> "sibling" [];
+  "father" -> "0" [];
   "mother" -> "0" [];
-  "parents" -> "2" [];
-  "parents" -> "3" [];
+  "parents" -> "1" [];
+  "parents" -> "1" [];
 }
