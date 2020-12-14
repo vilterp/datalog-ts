@@ -1,4 +1,4 @@
-import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
+import { Term, Rec, BinExpr, Bindings, VarMappings } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { IndexedCollection } from "./indexedCollection";
 
@@ -51,7 +51,6 @@ export type MatchDesc = {
 export type NodeDesc =
   | { type: "BaseFactTable" }
   | JoinDesc
-  | MatchDesc
   | { type: "Substitute"; rec: Rec }
   | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };

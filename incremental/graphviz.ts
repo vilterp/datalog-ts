@@ -1,4 +1,4 @@
-import { AttrPath, formatRes, JoinDesc, JoinInfo, NodeAndCache } from "./types";
+import { AttrPath, formatRes, JoinDesc, NodeAndCache, NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { RuleGraph } from "./ruleGraph";
@@ -18,7 +18,8 @@ export function toGraphviz(
             node.desc.type === "BaseFactTable"
               ? id
               : `${id}: ${formatDesc(node)}`,
-          color: id === highlightedNodeID ? "red" : "black",
+          fillcolor: getNodeColor(node.desc) || "",
+          style: "filled",
         },
         comment:
           node.cache.size() > 0
@@ -47,6 +48,21 @@ export function toGraphviz(
   };
 }
 
+function getNodeColor(nodeDesc: NodeDesc): string {
+  switch (nodeDesc.type) {
+    case "BaseFactTable":
+      return "lightgrey";
+    case "Join":
+      return "lightblue";
+    case "BinExpr":
+      return "lavender";
+    case "Substitute":
+      return "darkseagreen1";
+    case "Union":
+      return "cornsilk";
+  }
+}
+
 function formatDesc(node: NodeAndCache): string {
   const nodeDesc = node.desc;
   const mainRes = (() => {
@@ -55,10 +71,6 @@ function formatDesc(node: NodeAndCache): string {
         return ppBE(nodeDesc.expr);
       case "Join":
         return `${nodeDesc.ruleName}: Join(${formatJoinDesc(nodeDesc)})`;
-      case "Match":
-        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-          showScopePath: false,
-        })})`;
       case "Substitute":
         return `Subst({${mapObjToList(
           nodeDesc.rec.attrs,

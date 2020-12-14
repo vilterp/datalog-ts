@@ -34,7 +34,7 @@ function TestViewer() {
             <br />
             ----
           </pre>
-          {VISUALIZERS[pair.output.mimeType || "text/plain"](
+          {(VISUALIZERS[pair.output.mimeType] || VISUALIZERS["text/plain"])(
             pair.output.content
           )}
         </div>

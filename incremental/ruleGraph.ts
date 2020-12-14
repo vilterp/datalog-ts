@@ -117,9 +117,6 @@ export class RuleGraph {
           );
         }
       }
-      case "Match": {
-        return doMatch(nodeDesc, ins);
-      }
       case "Substitute":
         const rec = substitute(nodeDesc.rec, ins.res.bindings);
         // console.log("substitute", {
@@ -286,52 +283,13 @@ export class RuleGraph {
     return [];
   }
 
-  private addRec(rec: Rec): AddResult {
-    const matchID = this.addNode(true, {
-      type: "Match",
-      rec,
-      mappings: {},
-    });
-    this.addEdge(rec.relation, matchID);
-    return {
-      newNodeIDs: new Set([matchID]),
-      rec,
-      tipID: matchID,
-    };
-  }
-
   private resolveUnmappedRule(rule: Rule, newNodes: Set<NodeID>) {
     // console.log("try resolving", rule.head.relation);
     let resolved = true;
     for (let newNodeID of newNodes) {
       const newNode = this.nodes[newNodeID];
       const nodeDesc = newNode.desc;
-      if (nodeDesc.type === "Match") {
-        const callRec = nodeDesc.rec;
-        const callNode = this.nodes[callRec.relation];
-        if (!callNode) {
-          // not defined yet
-          resolved = false;
-          // console.log("=> exit: not defined yet:", callRec.relation);
-          continue;
-        }
-        const ruleNodeDesc = callNode.desc;
-        if (ruleNodeDesc.type === "BaseFactTable") {
-          // don't need to worry about mappings for base fact tables
-          continue;
-        }
-        if (ruleNodeDesc.type !== "Substitute") {
-          throw new Error("rule should be a Subst node");
-        }
-        const ruleRec = ruleNodeDesc.rec;
-        const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-        // console.log("resolve Match", {
-        //   ruleAttrs: ppt(ruleRec),
-        //   callAttrs: ppt(callRec),
-        //   mappings: ppVM(mappings, [], { showScopePath: false }),
-        // });
-        this.updateMappings(newNodeID, mappings);
-      }
+      // TODO: add indexes
     }
     // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
     if (resolved) {
@@ -452,10 +410,7 @@ export class RuleGraph {
   }
 
   private updateMappings(from: NodeID, newMappings: VarMappings) {
-    const node = this.nodes[from];
-    if (node.desc.type === "Match") {
-      node.desc.mappings = newMappings;
-    }
+    // TODO: add indexes
   }
 
   private addUnmappedRule(rule: Rule, newNodeIDs: Set<NodeID>) {
