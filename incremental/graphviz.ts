@@ -14,10 +14,7 @@ export function toGraphviz(
         id,
         attrs: {
           shape: "box",
-          label:
-            node.desc.type === "BaseFactTable"
-              ? id
-              : `${id}: ${formatDesc(node)}`,
+          label: `${id}: ${formatDesc(node)}`,
           fillcolor: getNodeColor(node.desc) || "",
           style: "filled",
         },
@@ -78,6 +75,8 @@ function formatDesc(node: NodeAndCache): string {
         ).join(", ")}})`;
       case "Union":
         return "Union";
+      case "BaseFactTable":
+        return "";
     }
   })();
   return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
