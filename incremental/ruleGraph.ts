@@ -289,7 +289,15 @@ export class RuleGraph {
     for (let newNodeID of newNodes) {
       const newNode = this.nodes[newNodeID];
       const nodeDesc = newNode.desc;
-      // TODO: add indexes
+      if (nodeDesc.type === "Join") {
+        const colsToIndex = getColsToIndex(nodeDesc.joinInfo);
+        if (!this.nodes[nodeDesc.leftID] || !this.nodes[nodeDesc.rightID]) {
+          resolved = false;
+          continue;
+        }
+        this.addIndex(nodeDesc.leftID, colsToIndex.left);
+        this.addIndex(nodeDesc.rightID, colsToIndex.right);
+      }
     }
     // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
     if (resolved) {

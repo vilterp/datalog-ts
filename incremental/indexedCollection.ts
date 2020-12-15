@@ -51,7 +51,11 @@ export class IndexedCollection<T> {
   }
 
   get(indexName: string, key: string[]): T[] {
-    return this.indexes[indexName].items[key.join("-")] || [];
+    const index = this.indexes[indexName];
+    if (!index) {
+      throw new Error(`no such index: "${indexName}"`);
+    }
+    return index.items[key.join("-")] || [];
   }
 
   clear() {
