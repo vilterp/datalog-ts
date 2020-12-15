@@ -6,6 +6,7 @@
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
     "test-write-results": "ts-node allTests.ts --write-results",
     "test-build-archive": "ts-node util/ddTest/buildArchive.ts",
+    "test-write-and-archive": "yarn test-write-results; yarn test-build-archive",
     "repl": "ts-node cmd/repl.ts",
     "build-js": "tsc --outDir dist cmd/repl.ts && tsc --outDir dist cmd/json2dl.ts && tsc --outDir dist cmd/flatten-fp.ts",
     "build-interp-bundle": "esbuild --bundle --outfile=dist/index.mjs --format=esm --target=es6 interpreter.ts",

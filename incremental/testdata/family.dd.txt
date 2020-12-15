@@ -21,9 +21,9 @@ digraph G {
   "12" [fillcolor="thistle" label="12: sister: Join(R: sibling.right = person.name) []" shape="box" style="filled"];
   "13" [fillcolor="moccasin" label="13: Union []" shape="box" style="filled"];
   "14" [fillcolor="thistle" label="14: ancestor: Join(Y: ancestor.desc = parent.parent) []" shape="box" style="filled"];
-  "person" [fillcolor="darksalmon" label="person" shape="box" style="filled"]; // cache: [person{gender: "Male", name: "Paul"}; {}, person{gender: "Female", name: "Ann"}; {}]
-  "mother" [fillcolor="darksalmon" label="mother" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Paul", mother: "Judith"}; {}, mother{child: "Ann", mother: "Judith"}; {}, mother{child: "Bob", mother: "Ann"}; {}, mother{child: "Mary", mother: "Carolyn K"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
-  "father" [fillcolor="darksalmon" label="father" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Paul", father: "Peter"}; {}, father{child: "Ann", father: "Peter"}; {}, father{child: "Mary", father: "Mark"}; {}, father{child: "Bob", father: "John"}; {}, father{child: "Carolyn", father: "Paul"}; {}, father{child: "Henry", father: "Bob"}; {}]
+  "person" [fillcolor="darksalmon" label="person" shape="box" style="filled"];
+  "mother" [fillcolor="darksalmon" label="mother" shape="box" style="filled"];
+  "father" [fillcolor="darksalmon" label="father" shape="box" style="filled"];
   "grandfather" [fillcolor="lightblue" label="grandfather: Subst({grandchild: A, grandfather: C}) []" shape="box" style="filled"];
   "grandmother" [fillcolor="lightblue" label="grandmother: Subst({grandchild: A, grandmother: C}) []" shape="box" style="filled"];
   "grandparent" [fillcolor="lightblue" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box" style="filled"];
