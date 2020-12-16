@@ -1,7 +1,6 @@
 import { AndClause, OrExpr, Rec, Rule, VarMappings } from "../types";
 import {
   AddResult,
-  AttrPath,
   EmissionBatch,
   EmissionLog,
   Insertion,
@@ -13,7 +12,6 @@ import {
   Res,
 } from "./types";
 import {
-  getColsToIndex,
   getIndexKey,
   getIndexName,
   getJoinInfo,
@@ -253,20 +251,20 @@ export class RuleGraph {
       type: "Substitute",
       rec: rule.head,
     });
-    newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
+    newNodeIDs.add(substID);
     this.addEdge(orID, substID);
     this.addUnmappedRule(rule, newNodeIDs);
+    const rulesJustMapped: Rule[] = [];
     for (let unmappedRuleName in this.unmappedRules) {
-      const rule = this.unmappedRules[unmappedRuleName];
-      this.resolveUnmappedRule(rule.rule, rule.newNodeIDs);
+      const unmapped = this.unmappedRules[unmappedRuleName];
+      const resolved = this.attemptResolveUnmappedRule(unmapped.newNodeIDs);
+      if (resolved) {
+        this.removeUnmappedRule(unmapped.rule.head.relation);
+        rulesJustMapped.push(unmapped.rule);
+      }
     }
     if (Object.keys(this.unmappedRules).length === 0) {
-      const nodesToReplay = new Set([
-        ...flatMap(
-          Object.values(this.unmappedRules).map(({ rule }) => rule),
-          getRoots
-        ),
-      ]);
+      const nodesToReplay = new Set([...flatMap(rulesJustMapped, getRoots)]);
       return this.replayFacts(newNodeIDs, nodesToReplay);
     }
     return [];
@@ -286,7 +284,7 @@ export class RuleGraph {
     };
   }
 
-  private resolveUnmappedRule(rule: Rule, newNodes: Set<NodeID>) {
+  private attemptResolveUnmappedRule(newNodes: Set<NodeID>): boolean {
     // console.log("try resolving", rule.head.relation);
     let resolved = true;
     for (let newNodeID of newNodes) {
@@ -319,10 +317,8 @@ export class RuleGraph {
         this.updateMappings(newNodeID, mappings);
       }
     }
-    // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
-    if (resolved) {
-      this.removeUnmappedRule(rule.head.relation);
-    }
+    // console.log("attemptResolveUnmappedRule", { head: rule.head.relation, resolved });
+    return resolved;
   }
 
   private addOr(ruleName: string, or: OrExpr): AddResult {
