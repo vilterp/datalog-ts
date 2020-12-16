@@ -51,11 +51,11 @@ digraph G {
   "42" [fillcolor="darkseagreen2" label="42: Match(ast.Var{id: I, name: N}; {}) [I-N]" shape="box" style="filled"];
   "43" [fillcolor="darkseagreen2" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]" shape="box" style="filled"];
   "44" [fillcolor="thistle" label="44: Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []" shape="box" style="filled"];
-  "45" [fillcolor="darkseagreen2" label="45: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [I]" shape="box" style="filled"];
-  "46" [fillcolor="darkseagreen2" label="46: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [I]" shape="box" style="filled"];
-  "47" [fillcolor="thistle" label="47: Join(tc.typeLambda, I: 46.lambdaID = 45.id) []" shape="box" style="filled"];
-  "48" [fillcolor="darkseagreen2" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) []" shape="box" style="filled"];
-  "49" [fillcolor="thistle" label="49: Join(tc.typeLambda, ) []" shape="box" style="filled"];
+  "45" [fillcolor="darkseagreen2" label="45: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [I]" shape="box" style="filled"];
+  "46" [fillcolor="darkseagreen2" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [I]" shape="box" style="filled"];
+  "47" [fillcolor="thistle" label="47: Join(tc.typeLambda, I: 46.id = 45.lambdaID) [B-R]" shape="box" style="filled"];
+  "48" [fillcolor="darkseagreen2" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [B-R]" shape="box" style="filled"];
+  "49" [fillcolor="thistle" label="49: Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType) []" shape="box" style="filled"];
   "50" [fillcolor="darkseagreen2" label="50: Match(ast.Placeholder{id: I}; {}) []" shape="box" style="filled"];
   "51" [fillcolor="moccasin" label="51: Union []" shape="box" style="filled"];
   "52" [fillcolor="darkseagreen2" label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []" shape="box" style="filled"];
@@ -505,13 +505,13 @@ digraph G {
   "ast.IntLit" -> "187" [];
   "ast.Lambda" -> "6" [];
   "ast.Lambda" -> "22" [];
-  "ast.Lambda" -> "45" [];
+  "ast.Lambda" -> "46" [];
   "ast.Lambda" -> "64" [];
   "ast.Lambda" -> "72" [];
   "ast.Lambda" -> "91" [];
   "ast.Lambda" -> "193" [];
   "ast.Lambda" -> "205" [];
-  "ast.LambdaParam" -> "46" [];
+  "ast.LambdaParam" -> "45" [];
   "ast.LambdaParam" -> "65" [];
   "ast.LambdaParam" -> "178" [];
   "ast.LambdaParam" -> "192" [];
@@ -1059,7 +1059,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I
   ast.ParentExpr{id: 1, parent: 0, span: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}
 38 from 37: tc.Type{id: 1, type: "int"}; {AID: 1, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 1, type: "int"}; {BID: 1, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 1, type: "int"}; {B: 1, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
   tc.scopeLet{id: 1, type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
 126 from 125: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Join(ide.CurrentType, I: 125.id = 124.id)
@@ -1482,7 +1482,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 3, location: span{from: 21, to: 22}}; 
   ast.ParentExpr{id: 3, parent: 2, span: span{from: 21, to: 22}}; {I: 3, P: 2, S: span{from: 21, to: 22}}
 38 from 37: tc.Type{id: 3, type: "int"}; {AID: 3, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 3, type: "int"}; {BID: 3, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 3, type: "int"}; {B: 3, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 3, type: "int"}; {B: 3, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 3, type: "int"}; {B: 3, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
   tc.scopeLet{id: 3, type: "int"}; {B: 3, I: 4, L: span{from: 17, to: 18}, N: "y", T: "int"}
 126 from 125: tc.Type{id: 3, type: "int"}; {I: 3, T: "int"}. Join(ide.CurrentType, I: 125.id = 124.id)
@@ -1953,7 +1953,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 5, location: span{from: 34, to: 39}}; 
   ast.ParentExpr{id: 5, parent: 4, span: span{from: 34, to: 39}}; {I: 5, P: 4, S: span{from: 34, to: 39}}
 38 from 37: tc.Type{id: 5, type: "string"}; {AID: 5, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 5, type: "string"}; {BID: 5, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 5, type: "string"}; {B: 5, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 5, type: "string"}; {B: 5, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 5, type: "string"}; {B: 5, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
   tc.scopeLet{id: 5, type: "string"}; {B: 5, I: 6, L: span{from: 30, to: 31}, N: "z", T: "string"}
 126 from 125: tc.Type{id: 5, type: "string"}; {I: 5, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
@@ -2886,7 +2886,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 8, location: span{from: 51, to: 62}}; 
   tc.typeFC{id: 8, type: tapp{from: "int", to: "string"}}; {AID: 9, F: "int", FID: 8, I: 7, T: "string"}
 38 from 37: tc.Type{id: 8, type: tapp{from: "int", to: "string"}}; {AID: 8, F: tapp{from: "int", to: "string"}}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 8, type: tapp{from: "int", to: "string"}}; {BID: 8, T: tapp{from: "int", to: "string"}}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 8, type: tapp{from: "int", to: "string"}}; {B: 8, R: tapp{from: "int", to: "string"}}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 8, type: tapp{from: "int", to: "string"}}; {B: 8, R: tapp{from: "int", to: "string"}}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 8, type: tapp{from: "int", to: "string"}}; {B: 8, T: tapp{from: "int", to: "string"}}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 97 from 96: tc.Type{id: 8, type: tapp{from: "int", to: "string"}}; {F: 8, T: "int"}. Join(ide.expectedType, F: 96.id = 95.funcID)
   ide.expectedType{id: 8, type: tapp{from: "int", to: "string"}}; {F: 8, I: 9, T: "int"}
@@ -3772,7 +3772,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 11, location: span{from: 63, to: 67}};
   tc.typeFC{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {AID: 12, F: "int", FID: 11, I: 10, T: tapp{from: "int", to: "int"}}
 38 from 37: tc.Type{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {AID: 11, F: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {BID: 11, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {B: 11, R: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {B: 11, R: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {B: 11, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 97 from 96: tc.Type{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {F: 11, T: "int"}. Join(ide.expectedType, F: 96.id = 95.funcID)
   ide.expectedType{id: 11, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {F: 11, I: 12, T: "int"}
@@ -3927,7 +3927,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 12, location: span{from: 68, to: 69}};
 38 from 37: tc.Type{id: 12, type: "int"}; {AID: 12, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
   tc.typeFC{id: 12, type: "int"}; {AID: 12, F: "int", FID: 11, I: 10, T: tapp{from: "int", to: "int"}}
 41 from 40: tc.Type{id: 12, type: "int"}; {BID: 12, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 12, type: "int"}; {B: 12, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 12, type: "int"}; {B: 12, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 12, type: "int"}; {B: 12, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 12, type: "int"}; {I: 12, T: "int"}. Join(ide.CurrentType, I: 125.id = 124.id)
 ide.expectedTypeBinding from 105: ide.expectedTypeBinding{definitionLoc: span{from: 4, to: 5}, name: "x", usageLoc: span{from: 68, to: 69}}; {I: 1, T: "int", UI: 12, UL: span{from: 68, to: 69}, VL: span{from: 4, to: 5}}. Subst({id: I, type: T})
@@ -3984,7 +3984,7 @@ tc.Type from 24: tc.typeFC{id: 10, type: tapp{from: "int", to: "int"}}; {I: 10, 
   tc.typeFC{id: 10, type: tapp{from: "int", to: "int"}}; {AID: 13, F: "int", FID: 10, I: 9, T: "int"}
 38 from 37: tc.Type{id: 10, type: tapp{from: "int", to: "int"}}; {AID: 10, F: tapp{from: "int", to: "int"}}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 10, type: tapp{from: "int", to: "int"}}; {BID: 10, T: tapp{from: "int", to: "int"}}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 10, type: tapp{from: "int", to: "int"}}; {B: 10, R: tapp{from: "int", to: "int"}}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 10, type: tapp{from: "int", to: "int"}}; {B: 10, R: tapp{from: "int", to: "int"}}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 10, type: tapp{from: "int", to: "int"}}; {B: 10, T: tapp{from: "int", to: "int"}}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 97 from 96: tc.Type{id: 10, type: tapp{from: "int", to: "int"}}; {F: 10, T: "int"}. Join(ide.expectedType, F: 96.id = 95.funcID)
   ide.expectedType{id: 10, type: tapp{from: "int", to: "int"}}; {F: 10, I: 13, T: "int"}
@@ -4135,7 +4135,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 13, location: span{from: 71, to: 72}};
 38 from 37: tc.Type{id: 13, type: "int"}; {AID: 13, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
   tc.typeFC{id: 13, type: "int"}; {AID: 13, F: "int", FID: 10, I: 9, T: "int"}
 41 from 40: tc.Type{id: 13, type: "int"}; {BID: 13, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 13, type: "int"}; {B: 13, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 13, type: "int"}; {B: 13, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 13, type: "int"}; {B: 13, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 13, type: "int"}; {I: 13, T: "int"}. Join(ide.CurrentType, I: 125.id = 124.id)
 ide.expectedTypeBinding from 105: ide.expectedTypeBinding{definitionLoc: span{from: 17, to: 18}, name: "y", usageLoc: span{from: 71, to: 72}}; {I: 3, T: "int", UI: 13, UL: span{from: 71, to: 72}, VL: span{from: 17, to: 18}}. Subst({id: I, type: T})
@@ -4189,7 +4189,7 @@ tc.Type from 24: tc.typeFC{id: 9, type: "int"}; {I: 9, T: "int"}. Subst({id: I, 
 38 from 37: tc.Type{id: 9, type: "int"}; {AID: 9, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
   tc.typeFC{id: 9, type: "int"}; {AID: 9, F: "int", FID: 8, I: 7, T: "string"}
 41 from 40: tc.Type{id: 9, type: "int"}; {BID: 9, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 9, type: "int"}; {B: 9, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 9, type: "int"}; {B: 9, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 9, type: "int"}; {B: 9, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 9, type: "int"}; {I: 9, T: "int"}. Join(ide.CurrentType, I: 125.id = 124.id)
 tc.typeFC from 38: tc.typeFC{id: 9, type: "int"}; {AID: 9, F: "int", FID: 8, I: 7, T: "string"}. Subst({id: I, type: T})
@@ -4214,7 +4214,7 @@ tc.Type from 24: tc.typeFC{id: 7, type: "string"}; {I: 7, T: "string"}. Subst({i
   tc.Type{id: 7, type: "string"}; {I: 7, T: "string"}
 38 from 37: tc.Type{id: 7, type: "string"}; {AID: 7, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 7, type: "string"}; {BID: 7, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 7, type: "string"}; {B: 7, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 7, type: "string"}; {B: 7, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 7, type: "string"}; {B: 7, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
   tc.scopeLet{id: 7, type: "string"}; {B: 7, I: 14, L: span{from: 47, to: 48}, N: "a", T: "string"}
 126 from 125: tc.Type{id: 7, type: "string"}; {I: 7, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
@@ -5201,7 +5201,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 16, location: span{from: 78, to: 84}};
   tc.typeFC{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {AID: 17, F: "string", FID: 16, I: 15, T: tapp{from: "string", to: "string"}}
 38 from 37: tc.Type{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {AID: 16, F: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {BID: 16, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {B: 16, R: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {B: 16, R: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {B: 16, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 97 from 96: tc.Type{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {F: 16, T: "string"}. Join(ide.expectedType, F: 96.id = 95.funcID)
   ide.expectedType{id: 16, type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {F: 16, I: 17, T: "string"}
@@ -5356,7 +5356,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 17, location: span{from: 85, to: 86}};
 38 from 37: tc.Type{id: 17, type: "string"}; {AID: 17, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
   tc.typeFC{id: 17, type: "string"}; {AID: 17, F: "string", FID: 16, I: 15, T: tapp{from: "string", to: "string"}}
 41 from 40: tc.Type{id: 17, type: "string"}; {BID: 17, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 17, type: "string"}; {B: 17, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 17, type: "string"}; {B: 17, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 17, type: "string"}; {B: 17, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 17, type: "string"}; {I: 17, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
 ide.expectedTypeBinding from 105: ide.expectedTypeBinding{definitionLoc: span{from: 47, to: 48}, name: "a", usageLoc: span{from: 85, to: 86}}; {I: 7, T: "string", UI: 17, UL: span{from: 85, to: 86}, VL: span{from: 47, to: 48}}. Subst({id: I, type: T})
@@ -5413,7 +5413,7 @@ tc.Type from 24: tc.typeFC{id: 15, type: tapp{from: "string", to: "string"}}; {I
   tc.typeFC{id: 15, type: tapp{from: "string", to: "string"}}; {AID: 18, F: "string", FID: 15, I: 14, T: "string"}
 38 from 37: tc.Type{id: 15, type: tapp{from: "string", to: "string"}}; {AID: 15, F: tapp{from: "string", to: "string"}}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 15, type: tapp{from: "string", to: "string"}}; {BID: 15, T: tapp{from: "string", to: "string"}}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 15, type: tapp{from: "string", to: "string"}}; {B: 15, R: tapp{from: "string", to: "string"}}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 15, type: tapp{from: "string", to: "string"}}; {B: 15, R: tapp{from: "string", to: "string"}}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 15, type: tapp{from: "string", to: "string"}}; {B: 15, T: tapp{from: "string", to: "string"}}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 97 from 96: tc.Type{id: 15, type: tapp{from: "string", to: "string"}}; {F: 15, T: "string"}. Join(ide.expectedType, F: 96.id = 95.funcID)
   ide.expectedType{id: 15, type: tapp{from: "string", to: "string"}}; {F: 15, I: 18, T: "string"}
@@ -5564,7 +5564,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 18, location: span{from: 88, to: 89}};
 38 from 37: tc.Type{id: 18, type: "string"}; {AID: 18, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
   tc.typeFC{id: 18, type: "string"}; {AID: 18, F: "string", FID: 15, I: 14, T: "string"}
 41 from 40: tc.Type{id: 18, type: "string"}; {BID: 18, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 18, type: "string"}; {B: 18, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 18, type: "string"}; {B: 18, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 18, type: "string"}; {B: 18, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 18, type: "string"}; {I: 18, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
 ide.expectedTypeBinding from 105: ide.expectedTypeBinding{definitionLoc: span{from: 30, to: 31}, name: "z", usageLoc: span{from: 88, to: 89}}; {I: 5, T: "string", UI: 18, UL: span{from: 88, to: 89}, VL: span{from: 30, to: 31}}. Subst({id: I, type: T})
@@ -5618,7 +5618,7 @@ tc.Type from 24: tc.typeFC{id: 14, type: "string"}; {I: 14, T: "string"}. Subst(
 38 from 37: tc.Type{id: 14, type: "string"}; {AID: 14, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 14, type: "string"}; {BID: 14, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
   tc.typeLet{id: 14, type: "string"}; {BID: 14, I: 6, T: "string"}
-49 from 48: tc.Type{id: 14, type: "string"}; {B: 14, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 14, type: "string"}; {B: 14, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 14, type: "string"}; {B: 14, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 14, type: "string"}; {I: 14, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
 tc.typeLet from 41: tc.typeLet{id: 14, type: "string"}; {BID: 14, I: 6, T: "string"}. Subst({id: I, type: T})
@@ -5644,7 +5644,7 @@ tc.Type from 24: tc.typeLet{id: 6, type: "string"}; {I: 6, T: "string"}. Subst({
 38 from 37: tc.Type{id: 6, type: "string"}; {AID: 6, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 6, type: "string"}; {BID: 6, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
   tc.typeLet{id: 6, type: "string"}; {BID: 6, I: 4, T: "string"}
-49 from 48: tc.Type{id: 6, type: "string"}; {B: 6, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 6, type: "string"}; {B: 6, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 6, type: "string"}; {B: 6, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 6, type: "string"}; {I: 6, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
 tc.typeLet from 41: tc.typeLet{id: 6, type: "string"}; {BID: 6, I: 4, T: "string"}. Subst({id: I, type: T})
@@ -5670,7 +5670,7 @@ tc.Type from 24: tc.typeLet{id: 4, type: "string"}; {I: 4, T: "string"}. Subst({
 38 from 37: tc.Type{id: 4, type: "string"}; {AID: 4, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 4, type: "string"}; {BID: 4, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
   tc.typeLet{id: 4, type: "string"}; {BID: 4, I: 2, T: "string"}
-49 from 48: tc.Type{id: 4, type: "string"}; {B: 4, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 4, type: "string"}; {B: 4, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 4, type: "string"}; {B: 4, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 4, type: "string"}; {I: 4, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
 tc.typeLet from 41: tc.typeLet{id: 4, type: "string"}; {BID: 4, I: 2, T: "string"}. Subst({id: I, type: T})
@@ -5696,7 +5696,7 @@ tc.Type from 24: tc.typeLet{id: 2, type: "string"}; {I: 2, T: "string"}. Subst({
 38 from 37: tc.Type{id: 2, type: "string"}; {AID: 2, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 2, type: "string"}; {BID: 2, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
   tc.typeLet{id: 2, type: "string"}; {BID: 2, I: 0, T: "string"}
-49 from 48: tc.Type{id: 2, type: "string"}; {B: 2, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 2, type: "string"}; {B: 2, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 2, type: "string"}; {B: 2, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 2, type: "string"}; {I: 2, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)
 tc.typeLet from 41: tc.typeLet{id: 2, type: "string"}; {BID: 2, I: 0, T: "string"}. Subst({id: I, type: T})
@@ -5721,6 +5721,6 @@ tc.Type from 24: tc.typeLet{id: 0, type: "string"}; {I: 0, T: "string"}. Subst({
   tc.Type{id: 0, type: "string"}; {I: 0, T: "string"}
 38 from 37: tc.Type{id: 0, type: "string"}; {AID: 0, F: "string"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 0, type: "string"}; {BID: 0, T: "string"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 0, type: "string"}; {B: 0, R: "string"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 0, type: "string"}; {B: 0, R: "string"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 0, type: "string"}; {B: 0, T: "string"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 126 from 125: tc.Type{id: 0, type: "string"}; {I: 0, T: "string"}. Join(ide.CurrentType, I: 125.id = 124.id)

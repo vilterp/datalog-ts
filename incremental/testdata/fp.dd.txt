@@ -64,11 +64,11 @@ digraph G {
   "42" [fillcolor="darkseagreen2" label="42: Match(ast.Var{id: I, name: N}; {}) [I-N]" shape="box" style="filled"];
   "43" [fillcolor="darkseagreen2" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]" shape="box" style="filled"];
   "44" [fillcolor="thistle" label="44: Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []" shape="box" style="filled"];
-  "45" [fillcolor="darkseagreen2" label="45: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [I]" shape="box" style="filled"];
-  "46" [fillcolor="darkseagreen2" label="46: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [I]" shape="box" style="filled"];
-  "47" [fillcolor="thistle" label="47: Join(tc.typeLambda, I: 46.lambdaID = 45.id) []" shape="box" style="filled"];
-  "48" [fillcolor="darkseagreen2" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) []" shape="box" style="filled"];
-  "49" [fillcolor="thistle" label="49: Join(tc.typeLambda, ) []" shape="box" style="filled"];
+  "45" [fillcolor="darkseagreen2" label="45: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [I]" shape="box" style="filled"];
+  "46" [fillcolor="darkseagreen2" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [I]" shape="box" style="filled"];
+  "47" [fillcolor="thistle" label="47: Join(tc.typeLambda, I: 46.id = 45.lambdaID) [B-R]" shape="box" style="filled"];
+  "48" [fillcolor="darkseagreen2" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [B-R]" shape="box" style="filled"];
+  "49" [fillcolor="thistle" label="49: Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType) []" shape="box" style="filled"];
   "50" [fillcolor="darkseagreen2" label="50: Match(ast.Placeholder{id: I}; {}) []" shape="box" style="filled"];
   "51" [fillcolor="moccasin" label="51: Union []" shape="box" style="filled"];
   "52" [fillcolor="darkseagreen2" label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []" shape="box" style="filled"];
@@ -205,10 +205,10 @@ digraph G {
   "ast.IntLit" -> "33" [];
   "ast.Lambda" -> "6" [];
   "ast.Lambda" -> "22" [];
-  "ast.Lambda" -> "45" [];
+  "ast.Lambda" -> "46" [];
   "ast.Lambda" -> "64" [];
   "ast.Lambda" -> "72" [];
-  "ast.LambdaParam" -> "46" [];
+  "ast.LambdaParam" -> "45" [];
   "ast.LambdaParam" -> "65" [];
   "ast.LetExpr" -> "4" [];
   "ast.LetExpr" -> "10" [];
@@ -432,7 +432,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; 
   ast.ParentExpr{id: 2, parent: 0, span: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}
 38 from 37: tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
 
 .dumpcaches
@@ -1862,7 +1862,7 @@ application/json
   "47": {
     "nodeID": "47",
     "cache": {
-      "": {
+      "B-R": {
         "items": {}
       }
     }
@@ -1870,9 +1870,9 @@ application/json
   "48": {
     "nodeID": "48",
     "cache": {
-      "": {
+      "B-R": {
         "items": {
-          "": [
+          "2-\"int\"": [
             {
               "term": {
                 "type": "Record",

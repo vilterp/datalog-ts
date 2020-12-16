@@ -239,7 +239,7 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I
   ast.ParentExpr{id: 1, parent: 0, span: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}
 38 from 37: tc.Type{id: 1, type: "int"}; {AID: 1, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 1, type: "int"}; {BID: 1, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 1, type: "int"}; {B: 1, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
   tc.scopeLet{id: 1, type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
 tc.scopeLet from 63: tc.scopeLet{id: 1, type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Subst({id: I, location: L, name: N, type: T})
@@ -493,5 +493,5 @@ ast.ParentExpr from 8: ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; 
   tc.Type{id: 4, type: "int"}; {B: 4, T: "int"}
 38 from 37: tc.Type{id: 4, type: "int"}; {AID: 4, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
 41 from 40: tc.Type{id: 4, type: "int"}; {BID: 4, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
-49 from 48: tc.Type{id: 4, type: "int"}; {B: 4, R: "int"}. Join(tc.typeLambda, )
+49 from 48: tc.Type{id: 4, type: "int"}; {B: 4, R: "int"}. Join(tc.typeLambda, B: 48.id = 47.body & R: 48.type = 47.retType)
 63 from 62: tc.Type{id: 4, type: "int"}; {B: 4, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
