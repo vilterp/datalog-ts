@@ -175,8 +175,8 @@ export class RuleGraph {
               destination,
             },
           ]);
-          const PropagationLog = stepIteratorAll(iter);
-          for (let emission of PropagationLog) {
+          const propagationLog = stepIteratorAll(iter);
+          for (let emission of propagationLog) {
             outPropagationLog.push(emission);
           }
         }
@@ -472,12 +472,12 @@ type IteratorMode =
   | { type: "Playing" };
 
 function stepIteratorAll(iter: InsertionIterator): PropagationLog {
-  const PropagationLog: PropagationLog = [];
+  const propagationLog: PropagationLog = [];
   while (iter.queue.length > 0) {
     const emissions = iter.step();
-    PropagationLog.push(emissions);
+    propagationLog.push(emissions);
   }
-  return PropagationLog;
+  return propagationLog;
 }
 
 class InsertionIterator {
