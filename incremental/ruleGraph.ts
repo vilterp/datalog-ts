@@ -44,7 +44,7 @@ import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
 import { Performance } from "w3c-hr-time";
-import { ppt } from "../pretty";
+import { ppb, ppt } from "../pretty";
 
 const performance = new Performance();
 
@@ -101,6 +101,7 @@ export class RuleGraph {
       case "Union":
         return [ins.res];
       case "Join": {
+        console.log("ins", ins);
         if (ins.origin === nodeDesc.leftID) {
           return this.doJoin(
             ins,
@@ -220,32 +221,23 @@ export class RuleGraph {
   ): Res[] {
     const results: Res[] = [];
     const thisBindings = getBindings(ins.res.term as Rec, thisVars);
+    console.log(ins.destination, "thisBindings", ppb(thisBindings));
     const otherNode = this.nodes[otherNodeID];
     const indexName = getIndexName(otherIndex);
     const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
+    console.log("index", indexName, indexKey);
     const otherEntries = otherNode.cache.get(indexName, indexKey);
-    // console.log(joinDesc);
-    // console.log({
-    //   indexName,
-    //   indexKey,
-    //   otherEntries,
-    //   cache: otherNode.cache.toJSON(),
-    // });
     const before = performance.now();
     for (let possibleOtherMatch of otherEntries) {
       const otherVars = possibleOtherMatch.bindings;
       const unifyRes = unifyVars(thisBindings || {}, otherVars || {});
-      // console.log("join", {
-      //   left: formatRes(ins.res),
-      //   right: formatRes(possibleOtherMatch),
-      //   unifyRes: ppb(unifyRes),
-      // });
       if (unifyRes !== null) {
         results.push({
           term: { ...(ins.res.term as Rec), relation: joinDesc.ruleName },
           bindings: unifyRes,
         });
       }
+      console.log("unifyRes", ppb(unifyRes));
     }
     const after = performance.now();
     joinStats.inputRecords += otherEntries.length;
