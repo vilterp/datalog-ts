@@ -34,7 +34,7 @@ export const incrBenchmarks: BenchmarkSpec[] = [
       const res = runDDBenchmark(
         "incremental/testdata/fp2.dd.txt",
         evalTest,
-        2000
+        1000
       );
       console.log(getJoinStats());
       return res;
