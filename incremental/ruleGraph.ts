@@ -6,7 +6,6 @@ import {
   EmissionLog,
   Insertion,
   JoinDesc,
-  MatchDesc,
   NodeAndCache,
   NodeDesc,
   NodeID,
@@ -32,19 +31,13 @@ import {
   setAdd,
   setUnion,
 } from "../util";
-import {
-  applyMappings,
-  getMappings,
-  substitute,
-  unify,
-  unifyVars,
-} from "../unify";
+import { substitute, unify, unifyVars } from "../unify";
 import { extractBinExprs } from "../evalCommon";
 import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
 import { Performance } from "w3c-hr-time";
-import { ppb, ppt } from "../pretty";
+import { ppb } from "../pretty";
 
 const performance = new Performance();
 
