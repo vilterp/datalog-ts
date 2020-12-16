@@ -1,4 +1,4 @@
-import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
+import { Term, Rec, BinExpr, Bindings, VarMappings } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { IndexedCollection } from "./indexedCollection";
 
@@ -16,17 +16,27 @@ export type NodeAndCache = {
   cache: IndexedCollection<Res>; // TODO: should this be just Rec?
 };
 
+export type AttrName = string;
+
+export type AttrPath = AttrName[];
+
+export type VarToPath = { [varName: string]: AttrPath };
+
 export type JoinInfo = {
-  [varName: string]: {
-    varName: string;
-    leftAttr: string;
-    rightAttr: string;
+  leftVars: VarToPath;
+  rightVars: VarToPath;
+  join: {
+    [varName: string]: {
+      varName: string;
+      leftAttr: AttrPath;
+      rightAttr: AttrPath;
+    };
   };
 };
 
 export type ColsToIndexByRelation = {
-  left: string[];
-  right: string[];
+  left: AttrPath[];
+  right: AttrPath[];
 };
 
 export type JoinDesc = {
@@ -58,31 +68,9 @@ export function formatRes(res: Res): string {
   return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
 }
 
-export function formatDesc(node: NodeAndCache): string {
-  const nodeDesc = node.desc;
-  const mainRes = (() => {
-    switch (nodeDesc.type) {
-      case "BaseFactTable":
-        return `Base`;
-      case "BinExpr":
-        return ppBE(nodeDesc.expr);
-      case "Join":
-        return `Join(${nodeDesc.leftID} & ${nodeDesc.rightID}): ${nodeDesc.ruleName}`;
-      case "Match":
-        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-          showScopePath: false,
-        })})`;
-      case "Substitute":
-        return `Subst(${ppt(nodeDesc.rec)})`;
-      case "Union":
-        return "Union";
-    }
-  })();
-  return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
-}
-
 export type AddResult = {
   newNodeIDs: Set<NodeID>;
+  rec: Rec;
   tipID: NodeID;
 };
 

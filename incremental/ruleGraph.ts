@@ -1,6 +1,7 @@
 import { AndClause, OrExpr, Rec, Rule, VarMappings } from "../types";
 import {
   AddResult,
+  AttrPath,
   EmissionBatch,
   EmissionLog,
   Insertion,
@@ -16,12 +17,16 @@ import {
   getIndexKey,
   getIndexName,
   getJoinInfo,
+  getJoinTree,
+  JoinTree,
+  numJoinsWithCommonVars,
 } from "./build";
 import {
   appendToKey,
   filterMap,
   flatMap,
   mapObjToList,
+  permute,
   setAdd,
   setUnion,
 } from "../util";
@@ -207,8 +212,8 @@ export class RuleGraph {
     ins: Insertion,
     joinDesc: JoinDesc,
     otherNodeID: NodeID,
-    thisIndex: string[],
-    otherIndex: string[]
+    thisIndex: AttrPath[],
+    otherIndex: AttrPath[]
   ): Res[] {
     const results: Res[] = [];
     const thisVars = ins.res.bindings;
@@ -279,26 +284,6 @@ export class RuleGraph {
     return [];
   }
 
-  private addJoin(ruleName: string, and: Rec[]): AddResult {
-    if (and.length === 0) {
-      throw new Error("empty and");
-    }
-    if (and.length === 1) {
-      return this.addAndClause(and[0]);
-    }
-    const { tipID: rightID, newNodeIDs: nn1 } = this.addJoin(
-      ruleName,
-      and.slice(1)
-    );
-    const { tipID: andID, newNodeIDs: nn2 } = this.addAndBinary(
-      ruleName,
-      and[0],
-      and[1],
-      rightID
-    );
-    return { tipID: andID, newNodeIDs: setUnion(nn1, nn2) };
-  }
-
   private addAndClause(rec: Rec): AddResult {
     const matchID = this.addNode(true, {
       type: "Match",
@@ -308,6 +293,7 @@ export class RuleGraph {
     this.addEdge(rec.relation, matchID);
     return {
       newNodeIDs: new Set([matchID]),
+      rec,
       tipID: matchID,
     };
   }
@@ -369,13 +355,23 @@ export class RuleGraph {
 
     return {
       newNodeIDs: outNodeIDs,
+      rec: null,
       tipID: orID,
     };
   }
 
   private addAnd(ruleName: string, clauses: AndClause[]): AddResult {
     const { recs, exprs } = extractBinExprs(clauses);
-    const withJoinRes = this.addJoin(ruleName, recs);
+    const allRecPermutations = permute(recs);
+    const allJoinTrees = allRecPermutations.map(getJoinTree);
+    // TODO: cache these
+    allJoinTrees.sort((left, right) => {
+      return numJoinsWithCommonVars(left) - numJoinsWithCommonVars(right);
+    });
+    const joinTree = allJoinTrees[allJoinTrees.length - 1];
+
+    const withJoinRes = this.addJoinTree(ruleName, joinTree);
+
     return exprs.reduce(({ tipID, newNodeIDs }, expr) => {
       const newExprID = this.addNode(true, {
         type: "BinExpr",
@@ -384,6 +380,7 @@ export class RuleGraph {
       this.addEdge(tipID, newExprID);
       return {
         tipID: newExprID,
+        rec: null, // TODO: fix
         newNodeIDs: setAdd(newNodeIDs, newExprID),
       };
     }, withJoinRes);
@@ -413,8 +410,30 @@ export class RuleGraph {
     this.addIndex(rightID, colsToIndex.right);
     return {
       tipID: joinID,
+      rec: left,
       newNodeIDs: setAdd(nn1, joinID),
     };
+  }
+
+  private addJoinTree(ruleName: string, joinTree: JoinTree): AddResult {
+    if (joinTree.type === "Leaf") {
+      return {
+        rec: joinTree.rec,
+        newNodeIDs: new Set<NodeID>(),
+        tipID: joinTree.rec.relation,
+      };
+    }
+    const { tipID: rightID, rec: rightRec, newNodeIDs: nn1 } = this.addJoinTree(
+      ruleName,
+      joinTree.right
+    );
+    const { tipID: andID, newNodeIDs: nn2 } = this.addAndBinary(
+      ruleName,
+      joinTree.left,
+      rightRec,
+      rightID
+    );
+    return { tipID: andID, rec: joinTree.left, newNodeIDs: setUnion(nn1, nn2) };
   }
 
   private addNode(isInternal: boolean, desc: NodeDesc): NodeID {
@@ -439,11 +458,11 @@ export class RuleGraph {
     this.unmappedRules[rule.head.relation] = { rule, newNodeIDs };
   }
 
-  private addIndex(nodeID: NodeID, attrs: string[]) {
-    this.nodes[nodeID].cache.createIndex(getIndexName(attrs), (res) => {
+  private addIndex(nodeID: NodeID, attrPaths: AttrPath[]) {
+    this.nodes[nodeID].cache.createIndex(getIndexName(attrPaths), (res) => {
       // TODO: is this gonna be a perf bottleneck?
       // console.log({ attrs, res: ppt(res.term) });
-      return getIndexKey(res.term as Rec, attrs);
+      return getIndexKey(res.term as Rec, attrPaths);
     });
   }
 

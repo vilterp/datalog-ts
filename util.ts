@@ -295,3 +295,37 @@ export function appendToKey<T>(
   }
   obj[key] = [val];
 }
+
+export function permute<T>(items: T[]): T[][] {
+  if (items.length === 1) {
+    return [items];
+  }
+  const out: T[][] = [];
+  const firstEl = items[0];
+  for (let perm of permute(items.slice(1))) {
+    for (let i = 0; i < items.length; i++) {
+      let outArr: T[] = [];
+      outArr = outArr.concat(perm.slice(0, i));
+      outArr.push(firstEl);
+      outArr = outArr.concat(perm.slice(i));
+      out.push(outArr);
+    }
+  }
+  return out;
+}
+
+export function combineObjects<T, U>(
+  left: { [key: string]: T },
+  right: { [key: string]: T },
+  combine: (key: string, left: T, right: T) => U
+): { [key: string]: U } {
+  const out: { [key: string]: U } = {};
+  for (let leftKey in left) {
+    const rightItem = right[leftKey];
+    if (rightItem) {
+      const leftItem = left[leftKey];
+      out[leftKey] = combine(leftKey, leftItem, rightItem);
+    }
+  }
+  return out;
+}

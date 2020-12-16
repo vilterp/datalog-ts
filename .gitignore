@@ -4,3 +4,4 @@ secret-testdata
 gen
 .env
 *.cpuprofile
+*.dd.json
