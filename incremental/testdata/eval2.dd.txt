@@ -14,11 +14,11 @@ text/propagation-log
 father{child: "Pete", father: "Paul"}.
 ----
 text/propagation-log
-from null to father: father{child: "Pete", father: "Paul"}; {}.  []
+from null to father: father{child: "Pete", father: "Paul"}; {}. 
   father{child: "Pete", father: "Paul"}; {}
-from father to 2: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: P}; {}) []
+from father to 2: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: P}; {})
   father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
-from 2 to 0: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}. Union []
+from 2 to 0: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}. Union
   father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
-from 0 to parent: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}. Subst({child: C, parent: P}) []
+from 0 to parent: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}. Subst({child: C, parent: P})
   parent{child: "Pete", parent: "Paul"}; {C: "Pete", P: "Paul"}

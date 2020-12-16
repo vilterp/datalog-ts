@@ -2,7 +2,7 @@ import { NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { RuleGraph } from "./ruleGraph";
-import { formatNode, ppr } from "./pretty";
+import { formatNodeWithIndexes, ppr } from "./pretty";
 
 export function toGraphviz(
   graph: RuleGraph,
@@ -14,7 +14,7 @@ export function toGraphviz(
         id,
         attrs: {
           shape: "box",
-          label: `${id}: ${formatNode(node)}`,
+          label: `${id}: ${formatNodeWithIndexes(node)}`,
           fillcolor: getNodeColor(node.desc) || "",
           style: "filled",
         },

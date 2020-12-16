@@ -16,7 +16,7 @@ import {
 import path from "path-browserify";
 import { mapObj } from "../util";
 import { RuleGraph } from "./ruleGraph";
-import { formatNode, ppr } from "./pretty";
+import { formatNodeDesc, formatNodeWithIndexes, ppr } from "./pretty";
 
 type Output =
   | { type: "PropagationLog"; log: PropagationLog }
@@ -144,8 +144,8 @@ export function formatOutput(
               return [
                 `from ${batch.insertion.origin} to ${
                   batch.insertion.destination
-                }: ${ppr(batch.insertion.res)}. ${formatNode(
-                  graph.nodes[batch.insertion.destination]
+                }: ${ppr(batch.insertion.res)}. ${formatNodeDesc(
+                  graph.nodes[batch.insertion.destination].desc
                 )}`,
                 ...batch.output.map((res) => `  ${ppr(res)}`),
               ].join("\n");

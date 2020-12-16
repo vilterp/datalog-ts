@@ -13,485 +13,485 @@ text/plain
 ast.RootExpr{id: 0}.
 ----
 text/propagation-log
-from null to ast.RootExpr: ast.RootExpr{id: 0}; {}.  []
+from null to ast.RootExpr: ast.RootExpr{id: 0}; {}. 
   ast.RootExpr{id: 0}; {}
-from ast.RootExpr to 58: ast.RootExpr{id: 0}; {}. Match(ast.RootExpr{id: I}; {}) []
+from ast.RootExpr to 58: ast.RootExpr{id: 0}; {}. Match(ast.RootExpr{id: I}; {})
   ast.RootExpr{id: 0}; {I: 0}
-from 58 to 60: ast.RootExpr{id: 0}; {I: 0}. Join(tc.scopeBuiltin, ) []
+from 58 to 60: ast.RootExpr{id: 0}; {I: 0}. Join(tc.scopeBuiltin, )
   tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
   tc.scopeBuiltin{id: 0}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
   tc.scopeBuiltin{id: 0}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 60 to tc.scopeBuiltin: tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Subst({id: I, location: "builtin", name: N, type: T}) []
+from 60 to tc.scopeBuiltin: tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Subst({id: I, location: "builtin", name: N, type: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
-from 60 to tc.scopeBuiltin: tc.scopeBuiltin{id: 0}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: "builtin", name: N, type: T}) []
+from 60 to tc.scopeBuiltin: tc.scopeBuiltin{id: 0}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: "builtin", name: N, type: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 60 to tc.scopeBuiltin: tc.scopeBuiltin{id: 0}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: "builtin", name: N, type: T}) []
+from 60 to tc.scopeBuiltin: tc.scopeBuiltin{id: 0}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: "builtin", name: N, type: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.scopeBuiltin to 52: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []
+from tc.scopeBuiltin to 52: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}
-from tc.scopeBuiltin to 52: tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []
+from tc.scopeBuiltin to 52: tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.scopeBuiltin to 52: tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []
+from tc.scopeBuiltin to 52: tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 52 to 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Union []
+from 52 to 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Union
   tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}
-from 52 to 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union []
+from 52 to 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union
   tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 52 to 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union []
+from 52 to 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union
   tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 51 to tc.ScopeItem: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}
-from 51 to tc.ScopeItem: tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.scopeBuiltin{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 51 to tc.ScopeItem: tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.scopeBuiltin{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, L: "builtin", N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, L: "builtin", N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 43 to 44: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 43 to 44: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 0, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 0, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
 
 ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ----
 text/propagation-log
-from null to ast.LetExpr: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}.  []
+from null to ast.LetExpr: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. 
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}
-from ast.LetExpr to 4: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{id: I, location: S}; {}) []
+from ast.LetExpr to 4: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{id: I, location: S}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 0, S: span{from: 0, to: 26}}
-from ast.LetExpr to 10: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bodyID: I, id: P}; {}) [I]
+from ast.LetExpr to 10: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bodyID: I, id: P}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}
-from ast.LetExpr to 13: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bindingID: I, id: P}; {}) [I]
+from ast.LetExpr to 13: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bindingID: I, id: P}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}
-from ast.LetExpr to 39: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bodyID: BID, id: I}; {}) [BID]
+from ast.LetExpr to 39: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bodyID: BID, id: I}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {BID: 2, I: 0}
-from ast.LetExpr to 61: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [B]
+from ast.LetExpr to 61: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x"}
-from ast.LetExpr to 68: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bodyID: I, id: P}; {}) []
+from ast.LetExpr to 68: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bodyID: I, id: P}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}
-from ast.LetExpr to 69: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bindingID: I, id: P}; {}) []
+from ast.LetExpr to 69: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{bindingID: I, id: P}; {})
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}
-from 4 to 0: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 0, S: span{from: 0, to: 26}}. Union []
+from 4 to 0: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 0, S: span{from: 0, to: 26}}. Union
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 0, S: span{from: 0, to: 26}}
-from 10 to 11: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}. Join(ast.ParentExpr, I: 10.bodyID = 9.id) []
-from 13 to 14: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}. Join(ast.ParentExpr, I: 13.bindingID = 12.id) []
-from 39 to 41: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {BID: 2, I: 0}. Join(tc.typeLet, BID: 40.id = 39.bodyID) []
-from 61 to 63: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x"}. Join(tc.scopeLet, B: 62.id = 61.bindingID) []
-from 68 to 67: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}. Union []
+from 10 to 11: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}. Join(ast.ParentExpr, I: 10.bodyID = 9.id)
+from 13 to 14: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}. Join(ast.ParentExpr, I: 13.bindingID = 12.id)
+from 39 to 41: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {BID: 2, I: 0}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
+from 61 to 63: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
+from 68 to 67: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}. Union
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}
-from 69 to 67: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}. Union []
+from 69 to 67: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}. Union
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}
-from 0 to ast.Expr: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 0, S: span{from: 0, to: 26}}. Subst({id: I, location: S}) []
+from 0 to ast.Expr: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 0, S: span{from: 0, to: 26}}. Subst({id: I, location: S})
   ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}
-from 67 to tc.parentScope: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}. Subst({id: I, parentID: P}) []
+from 67 to tc.parentScope: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 2, P: 0}. Subst({id: I, parentID: P})
   tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}
-from 67 to tc.parentScope: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}. Subst({id: I, parentID: P}) []
+from 67 to tc.parentScope: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {I: 1, P: 0}. Subst({id: I, parentID: P})
   tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}
-from ast.Expr to 9: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 9: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}
-from ast.Expr to 12: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 12: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}
-from ast.Expr to 15: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 15: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}
-from ast.Expr to 18: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 18: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}
-from ast.Expr to 21: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 21: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}
-from tc.parentScope to 55: tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [P]
+from tc.parentScope to 55: tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})
   tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}
-from tc.parentScope to 55: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [P]
+from tc.parentScope to 55: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})
   tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}
-from 9 to 11: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id) []
-from 12 to 14: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id) []
-from 15 to 17: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 16.funcID = 15.id) []
-from 18 to 20: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 19.argID = 18.id) []
-from 21 to 23: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 22.body = 21.id) []
-from 55 to 57: tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 9 to 11: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id)
+from 12 to 14: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id)
+from 15 to 17: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 16.funcID = 15.id)
+from 18 to 20: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 19.argID = 18.id)
+from 21 to 23: ast.Expr{id: 0, location: span{from: 0, to: 26}}; {I: 0, S: span{from: 0, to: 26}}. Join(ast.ParentExpr, I: 22.body = 21.id)
+from 55 to 57: tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
   tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
   tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
   tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 55 to 57: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 55 to 57: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
   tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
   tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
   tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 57 to 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union []
+from 57 to 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union
   tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-from 57 to 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union
   tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 57 to 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union
   tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 57 to 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union []
+from 57 to 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union
   tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-from 57 to 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union
   tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 57 to 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union
   tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, L: "builtin", N: "plus", P: 0, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 1, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, L: "builtin", N: "concat", P: 0, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 1, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 43 to 44: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 1, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 1, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 43 to 44: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 2, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 2, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 2, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 2, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 1, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 1, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 1, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 1, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
 
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
 ----
 text/propagation-log
-from null to ast.IntLit: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}.  []
+from null to ast.IntLit: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}. 
   ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}
-from ast.IntLit to 2: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}. Match(ast.IntLit{id: I, location: S}; {}) []
+from ast.IntLit to 2: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}. Match(ast.IntLit{id: I, location: S}; {})
   ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1, S: span{from: 8, to: 9}}
-from ast.IntLit to 33: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}. Match(ast.IntLit{id: I}; {}) []
+from ast.IntLit to 33: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}. Match(ast.IntLit{id: I}; {})
   ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1}
-from 2 to 0: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1, S: span{from: 8, to: 9}}. Union []
+from 2 to 0: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1, S: span{from: 8, to: 9}}. Union
   ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1, S: span{from: 8, to: 9}}
-from 33 to tc.typeI: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1}. Subst({id: I, type: "int"}) []
+from 33 to tc.typeI: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1}. Subst({id: I, type: "int"})
   tc.typeI{id: 1, type: "int"}; {I: 1}
-from 0 to ast.Expr: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1, S: span{from: 8, to: 9}}. Subst({id: I, location: S}) []
+from 0 to ast.Expr: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {I: 1, S: span{from: 8, to: 9}}. Subst({id: I, location: S})
   ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}
-from tc.typeI to 26: tc.typeI{id: 1, type: "int"}; {I: 1}. Match(tc.typeI{id: I, type: T}; {I: I}) []
+from tc.typeI to 26: tc.typeI{id: 1, type: "int"}; {I: 1}. Match(tc.typeI{id: I, type: T}; {I: I})
   tc.typeI{id: 1, type: "int"}; {I: 1, T: "int"}
-from ast.Expr to 9: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 9: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}
-from ast.Expr to 12: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 12: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}
-from ast.Expr to 15: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 15: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}
-from ast.Expr to 18: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 18: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}
-from ast.Expr to 21: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 21: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}
-from 26 to 24: tc.typeI{id: 1, type: "int"}; {I: 1, T: "int"}. Union []
+from 26 to 24: tc.typeI{id: 1, type: "int"}; {I: 1, T: "int"}. Union
   tc.typeI{id: 1, type: "int"}; {I: 1, T: "int"}
-from 9 to 11: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id) []
-from 12 to 14: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id) []
+from 9 to 11: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id)
+from 12 to 14: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id)
   ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}
-from 15 to 17: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 16.funcID = 15.id) []
-from 18 to 20: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 19.argID = 18.id) []
-from 21 to 23: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 22.body = 21.id) []
-from 24 to tc.Type: tc.typeI{id: 1, type: "int"}; {I: 1, T: "int"}. Subst({id: I, type: T}) []
+from 15 to 17: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 16.funcID = 15.id)
+from 18 to 20: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 19.argID = 18.id)
+from 21 to 23: ast.Expr{id: 1, location: span{from: 8, to: 9}}; {I: 1, S: span{from: 8, to: 9}}. Join(ast.ParentExpr, I: 22.body = 21.id)
+from 24 to tc.Type: tc.typeI{id: 1, type: "int"}; {I: 1, T: "int"}. Subst({id: I, type: T})
   tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}
-from 14 to 8: ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}. Union []
+from 14 to 8: ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}. Union
   ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}
-from tc.Type to 35: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [FID]
-from tc.Type to 37: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [F]
+from tc.Type to 35: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})
+from tc.Type to 37: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: AID, type: F}; {I: AID, T: F})
   tc.Type{id: 1, type: "int"}; {AID: 1, F: "int"}
-from tc.Type to 40: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [BID]
+from tc.Type to 40: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: BID, type: T}; {I: BID, T: T})
   tc.Type{id: 1, type: "int"}; {BID: 1, T: "int"}
-from tc.Type to 48: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: B, type: R}; {I: B, T: R}) []
+from tc.Type to 48: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: B, type: R}; {I: B, T: R})
   tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}
-from tc.Type to 62: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: B, type: T}; {I: B, T: T}) [B]
+from tc.Type to 62: tc.Type{id: 1, type: "int"}; {I: 1, T: "int"}. Match(tc.Type{id: B, type: T}; {I: B, T: T})
   tc.Type{id: 1, type: "int"}; {B: 1, T: "int"}
-from 8 to ast.ParentExpr: ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}. Subst({id: I, parent: P, span: S}) []
+from 8 to ast.ParentExpr: ast.ParentExpr{id: 1, location: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}. Subst({id: I, parent: P, span: S})
   ast.ParentExpr{id: 1, parent: 0, span: span{from: 8, to: 9}}; {I: 1, P: 0, S: span{from: 8, to: 9}}
-from 37 to 38: tc.Type{id: 1, type: "int"}; {AID: 1, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from) []
-from 40 to 41: tc.Type{id: 1, type: "int"}; {BID: 1, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID) []
-from 48 to 49: tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}. Join(tc.typeLambda, ) []
-from 62 to 63: tc.Type{id: 1, type: "int"}; {B: 1, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID) []
+from 37 to 38: tc.Type{id: 1, type: "int"}; {AID: 1, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
+from 40 to 41: tc.Type{id: 1, type: "int"}; {BID: 1, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
+from 48 to 49: tc.Type{id: 1, type: "int"}; {B: 1, R: "int"}. Join(tc.typeLambda, )
+from 62 to 63: tc.Type{id: 1, type: "int"}; {B: 1, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)
   tc.scopeLet{id: 1, type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
-from 63 to tc.scopeLet: tc.scopeLet{id: 1, type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Subst({id: I, location: L, name: N, type: T}) []
+from 63 to tc.scopeLet: tc.scopeLet{id: 1, type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Subst({id: I, location: L, name: N, type: T})
   tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
-from tc.scopeLet to 53: tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []
+from tc.scopeLet to 53: tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {B: 1, I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T})
   tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
-from 53 to 51: tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Union []
+from 53 to 51: tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Union
   tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
-from 51 to tc.ScopeItem: tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.scopeLet{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, N: "x", T: "int"}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, L: span{from: 4, to: 5}, N: "x", T: "int"}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from 43 to 44: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, N: "x", T: "int"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 43 to 44: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 2, N: "x", T: "int"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
 
 ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}.
 ----
 text/propagation-log
-from null to ast.FuncCall: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}.  []
+from null to ast.FuncCall: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. 
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}
-from ast.FuncCall to 5: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{id: I, location: S}; {}) []
+from ast.FuncCall to 5: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{id: I, location: S}; {})
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from ast.FuncCall to 16: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{funcID: I, id: P}; {}) [I]
+from ast.FuncCall to 16: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{funcID: I, id: P}; {})
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}
-from ast.FuncCall to 19: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{argID: I, id: P}; {}) [I]
+from ast.FuncCall to 19: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{argID: I, id: P}; {})
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}
-from ast.FuncCall to 34: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [FID]
+from ast.FuncCall to 34: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {})
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {AID: 4, FID: 3, I: 2}
-from ast.FuncCall to 70: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{argID: I, id: P}; {}) []
+from ast.FuncCall to 70: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{argID: I, id: P}; {})
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}
-from ast.FuncCall to 71: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{funcID: I, id: P}; {}) []
+from ast.FuncCall to 71: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{funcID: I, id: P}; {})
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}
-from 5 to 0: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Union []
+from 5 to 0: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Union
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from 16 to 17: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}. Join(ast.ParentExpr, I: 16.funcID = 15.id) []
-from 19 to 20: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}. Join(ast.ParentExpr, I: 19.argID = 18.id) []
-from 34 to 36: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {AID: 4, FID: 3, I: 2}. Join(tc.typeFC, FID: 35.id = 34.funcID) [F]
-from 70 to 67: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}. Union []
+from 16 to 17: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}. Join(ast.ParentExpr, I: 16.funcID = 15.id)
+from 19 to 20: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}. Join(ast.ParentExpr, I: 19.argID = 18.id)
+from 34 to 36: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {AID: 4, FID: 3, I: 2}. Join(tc.typeFC, FID: 35.id = 34.funcID)
+from 70 to 67: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}. Union
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}
-from 71 to 67: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}. Union []
+from 71 to 67: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}. Union
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}
-from 0 to ast.Expr: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Subst({id: I, location: S}) []
+from 0 to ast.Expr: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Subst({id: I, location: S})
   ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from 67 to tc.parentScope: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}. Subst({id: I, parentID: P}) []
+from 67 to tc.parentScope: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 4, P: 2}. Subst({id: I, parentID: P})
   tc.parentScope{id: 4, parentID: 2}; {I: 4, P: 2}
-from 67 to tc.parentScope: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}. Subst({id: I, parentID: P}) []
+from 67 to tc.parentScope: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {I: 3, P: 2}. Subst({id: I, parentID: P})
   tc.parentScope{id: 3, parentID: 2}; {I: 3, P: 2}
-from ast.Expr to 9: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 9: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from ast.Expr to 12: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 12: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from ast.Expr to 15: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 15: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from ast.Expr to 18: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 18: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from ast.Expr to 21: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 21: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}
-from tc.parentScope to 55: tc.parentScope{id: 4, parentID: 2}; {I: 4, P: 2}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [P]
+from tc.parentScope to 55: tc.parentScope{id: 4, parentID: 2}; {I: 4, P: 2}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})
   tc.parentScope{id: 4, parentID: 2}; {I: 4, P: 2}
-from tc.parentScope to 55: tc.parentScope{id: 3, parentID: 2}; {I: 3, P: 2}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [P]
+from tc.parentScope to 55: tc.parentScope{id: 3, parentID: 2}; {I: 3, P: 2}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})
   tc.parentScope{id: 3, parentID: 2}; {I: 3, P: 2}
-from 9 to 11: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id) []
+from 9 to 11: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id)
   ast.ParentExpr{id: 2, location: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}
-from 12 to 14: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id) []
-from 15 to 17: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 16.funcID = 15.id) []
-from 18 to 20: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 19.argID = 18.id) []
-from 21 to 23: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 22.body = 21.id) []
-from 55 to 57: tc.parentScope{id: 4, parentID: 2}; {I: 4, P: 2}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 12 to 14: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id)
+from 15 to 17: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 16.funcID = 15.id)
+from 18 to 20: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 19.argID = 18.id)
+from 21 to 23: ast.Expr{id: 2, location: span{from: 13, to: 26}}; {I: 2, S: span{from: 13, to: 26}}. Join(ast.ParentExpr, I: 22.body = 21.id)
+from 55 to 57: tc.parentScope{id: 4, parentID: 2}; {I: 4, P: 2}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from 55 to 57: tc.parentScope{id: 3, parentID: 2}; {I: 3, P: 2}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 55 to 57: tc.parentScope{id: 3, parentID: 2}; {I: 3, P: 2}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from 11 to 8: ast.ParentExpr{id: 2, location: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}. Union []
+from 11 to 8: ast.ParentExpr{id: 2, location: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}. Union
   ast.ParentExpr{id: 2, location: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}
-from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Union []
+from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Union
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
-from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Union []
+from 57 to 51: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Union
   tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Union []
+from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Union
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
-from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Union
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union []
+from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Union
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Union []
+from 57 to 51: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Union
   tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from 8 to ast.ParentExpr: ast.ParentExpr{id: 2, location: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}. Subst({id: I, parent: P, span: S}) []
+from 8 to ast.ParentExpr: ast.ParentExpr{id: 2, location: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}. Subst({id: I, parent: P, span: S})
   ast.ParentExpr{id: 2, parent: 0, span: span{from: 13, to: 26}}; {I: 2, P: 0, S: span{from: 13, to: 26}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 4, parentID: 2}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Subst({id: I, location: L, name: N, type: T}) []
+from 51 to tc.ScopeItem: tc.ScopeItem{id: 3, parentID: 2}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, N: "intToString", T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 4, T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 4, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 4, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, N: "x", T: "int"}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 4, T: "int"}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, N: "intToString", T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 3, T: tapp{from: "int", to: "string"}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, L: "builtin", N: "plus", P: 2, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 3, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, L: "builtin", N: "concat", P: 2, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 3, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}
-from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]
+from tc.ScopeItem to 43: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, N: "x", T: "int"}
-from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]
+from tc.ScopeItem to 56: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, L: span{from: 4, to: 5}, N: "x", P: 2, T: "int"}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 3, T: "int"}
-from 43 to 44: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 4, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 4, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 4, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, N: "x", T: "int"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 4, T: "int"}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 3, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 3, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 3, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
-from 43 to 44: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, N: "x", T: "int"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 56 to 57: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 3, T: "int"}. Join(tc.ScopeItem, P: 56.id = 55.parentID) []
+from 43 to 44: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 4, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 4, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 4, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 4, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 4, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 4, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 4, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 4, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 4, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 4, N: "x", T: "int"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 4, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 4, T: "int"}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 3, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 3, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 3, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {I: 3, N: "plus", T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 3, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}; {L: "builtin", N: "plus", P: 3, T: tapp{from: "int", to: tapp{from: "int", to: "int"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {I: 3, N: "concat", T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 3, location: "builtin", name: "concat", type: tapp{from: "string", to: tapp{from: "string", to: "string"}}}; {L: "builtin", N: "concat", P: 3, T: tapp{from: "string", to: tapp{from: "string", to: "string"}}}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
+from 43 to 44: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {I: 3, N: "x", T: "int"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 56 to 57: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", type: "int"}; {L: span{from: 4, to: 5}, N: "x", P: 3, T: "int"}. Join(tc.ScopeItem, P: 56.id = 55.parentID)
 
 ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}.
 ----
 text/propagation-log
-from null to ast.Var: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}.  []
+from null to ast.Var: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}. 
   ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}
-from ast.Var to 3: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}. Match(ast.Var{id: I, location: S}; {}) []
+from ast.Var to 3: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}. Match(ast.Var{id: I, location: S}; {})
   ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, S: span{from: 13, to: 23}}
-from ast.Var to 42: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}. Match(ast.Var{id: I, name: N}; {}) [I-N]
+from ast.Var to 42: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}. Match(ast.Var{id: I, name: N}; {})
   ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, N: "int2string"}
-from 3 to 0: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, S: span{from: 13, to: 23}}. Union []
+from 3 to 0: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, S: span{from: 13, to: 23}}. Union
   ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, S: span{from: 13, to: 23}}
-from 42 to 44: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, N: "int2string"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
-from 0 to ast.Expr: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, S: span{from: 13, to: 23}}. Subst({id: I, location: S}) []
+from 42 to 44: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, N: "int2string"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
+from 0 to ast.Expr: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {I: 3, S: span{from: 13, to: 23}}. Subst({id: I, location: S})
   ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}
-from ast.Expr to 9: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 9: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}
-from ast.Expr to 12: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 12: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}
-from ast.Expr to 15: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 15: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}
-from ast.Expr to 18: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 18: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}
-from ast.Expr to 21: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 21: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}
-from 9 to 11: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id) []
-from 12 to 14: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id) []
-from 15 to 17: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 16.funcID = 15.id) []
+from 9 to 11: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id)
+from 12 to 14: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id)
+from 15 to 17: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 16.funcID = 15.id)
   ast.ParentExpr{id: 3, location: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}
-from 18 to 20: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 19.argID = 18.id) []
-from 21 to 23: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 22.body = 21.id) []
-from 17 to 8: ast.ParentExpr{id: 3, location: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}. Union []
+from 18 to 20: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 19.argID = 18.id)
+from 21 to 23: ast.Expr{id: 3, location: span{from: 13, to: 23}}; {I: 3, S: span{from: 13, to: 23}}. Join(ast.ParentExpr, I: 22.body = 21.id)
+from 17 to 8: ast.ParentExpr{id: 3, location: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}. Union
   ast.ParentExpr{id: 3, location: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}
-from 8 to ast.ParentExpr: ast.ParentExpr{id: 3, location: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}. Subst({id: I, parent: P, span: S}) []
+from 8 to ast.ParentExpr: ast.ParentExpr{id: 3, location: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}. Subst({id: I, parent: P, span: S})
   ast.ParentExpr{id: 3, parent: 2, span: span{from: 13, to: 23}}; {I: 3, P: 2, S: span{from: 13, to: 23}}
 
 ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}.
 ----
 text/propagation-log
-from null to ast.Var: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}.  []
+from null to ast.Var: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}. 
   ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}
-from ast.Var to 3: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}. Match(ast.Var{id: I, location: S}; {}) []
+from ast.Var to 3: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}. Match(ast.Var{id: I, location: S}; {})
   ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, S: span{from: 24, to: 25}}
-from ast.Var to 42: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}. Match(ast.Var{id: I, name: N}; {}) [I-N]
+from ast.Var to 42: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}. Match(ast.Var{id: I, name: N}; {})
   ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, N: "x"}
-from 3 to 0: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, S: span{from: 24, to: 25}}. Union []
+from 3 to 0: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, S: span{from: 24, to: 25}}. Union
   ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, S: span{from: 24, to: 25}}
-from 42 to 44: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, N: "x"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name) []
+from 42 to 44: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, N: "x"}. Join(tc.typeVar, I: 43.id = 42.id & N: 43.name = 42.name)
   tc.typeVar{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, N: "x", T: "int"}
-from 0 to ast.Expr: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, S: span{from: 24, to: 25}}. Subst({id: I, location: S}) []
+from 0 to ast.Expr: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, S: span{from: 24, to: 25}}. Subst({id: I, location: S})
   ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}
-from 44 to tc.typeVar: tc.typeVar{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, N: "x", T: "int"}. Subst({id: I, type: T}) []
+from 44 to tc.typeVar: tc.typeVar{id: 4, location: span{from: 24, to: 25}, name: "x"}; {I: 4, N: "x", T: "int"}. Subst({id: I, type: T})
   tc.typeVar{id: 4, type: "int"}; {I: 4, N: "x", T: "int"}
-from ast.Expr to 9: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 9: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}
-from ast.Expr to 12: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 12: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}
-from ast.Expr to 15: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 15: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}
-from ast.Expr to 18: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 18: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}
-from ast.Expr to 21: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]
+from ast.Expr to 21: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}
-from tc.typeVar to 30: tc.typeVar{id: 4, type: "int"}; {I: 4, N: "x", T: "int"}. Match(tc.typeVar{id: I, type: T}; {I: I, T: T}) []
+from tc.typeVar to 30: tc.typeVar{id: 4, type: "int"}; {I: 4, N: "x", T: "int"}. Match(tc.typeVar{id: I, type: T}; {I: I, T: T})
   tc.typeVar{id: 4, type: "int"}; {I: 4, T: "int"}
-from 9 to 11: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id) []
-from 12 to 14: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id) []
-from 15 to 17: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 16.funcID = 15.id) []
-from 18 to 20: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 19.argID = 18.id) []
+from 9 to 11: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 10.bodyID = 9.id)
+from 12 to 14: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 13.bindingID = 12.id)
+from 15 to 17: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 16.funcID = 15.id)
+from 18 to 20: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 19.argID = 18.id)
   ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}
-from 21 to 23: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 22.body = 21.id) []
-from 30 to 24: tc.typeVar{id: 4, type: "int"}; {I: 4, T: "int"}. Union []
+from 21 to 23: ast.Expr{id: 4, location: span{from: 24, to: 25}}; {I: 4, S: span{from: 24, to: 25}}. Join(ast.ParentExpr, I: 22.body = 21.id)
+from 30 to 24: tc.typeVar{id: 4, type: "int"}; {I: 4, T: "int"}. Union
   tc.typeVar{id: 4, type: "int"}; {I: 4, T: "int"}
-from 20 to 8: ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}. Union []
+from 20 to 8: ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}. Union
   ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}
-from 24 to tc.Type: tc.typeVar{id: 4, type: "int"}; {I: 4, T: "int"}. Subst({id: I, type: T}) []
+from 24 to tc.Type: tc.typeVar{id: 4, type: "int"}; {I: 4, T: "int"}. Subst({id: I, type: T})
   tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}
-from 8 to ast.ParentExpr: ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}. Subst({id: I, parent: P, span: S}) []
+from 8 to ast.ParentExpr: ast.ParentExpr{id: 4, location: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}. Subst({id: I, parent: P, span: S})
   ast.ParentExpr{id: 4, parent: 2, span: span{from: 24, to: 25}}; {I: 4, P: 2, S: span{from: 24, to: 25}}
-from tc.Type to 35: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [FID]
-from tc.Type to 37: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [F]
+from tc.Type to 35: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})
+from tc.Type to 37: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: AID, type: F}; {I: AID, T: F})
   tc.Type{id: 4, type: "int"}; {AID: 4, F: "int"}
-from tc.Type to 40: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [BID]
+from tc.Type to 40: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: BID, type: T}; {I: BID, T: T})
   tc.Type{id: 4, type: "int"}; {BID: 4, T: "int"}
-from tc.Type to 48: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: B, type: R}; {I: B, T: R}) []
+from tc.Type to 48: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: B, type: R}; {I: B, T: R})
   tc.Type{id: 4, type: "int"}; {B: 4, R: "int"}
-from tc.Type to 62: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: B, type: T}; {I: B, T: T}) [B]
+from tc.Type to 62: tc.Type{id: 4, type: "int"}; {I: 4, T: "int"}. Match(tc.Type{id: B, type: T}; {I: B, T: T})
   tc.Type{id: 4, type: "int"}; {B: 4, T: "int"}
-from 37 to 38: tc.Type{id: 4, type: "int"}; {AID: 4, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from) []
-from 40 to 41: tc.Type{id: 4, type: "int"}; {BID: 4, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID) []
-from 48 to 49: tc.Type{id: 4, type: "int"}; {B: 4, R: "int"}. Join(tc.typeLambda, ) []
-from 62 to 63: tc.Type{id: 4, type: "int"}; {B: 4, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID) []
+from 37 to 38: tc.Type{id: 4, type: "int"}; {AID: 4, F: "int"}. Join(tc.typeFC, F: 37.type = 36.type.from)
+from 40 to 41: tc.Type{id: 4, type: "int"}; {BID: 4, T: "int"}. Join(tc.typeLet, BID: 40.id = 39.bodyID)
+from 48 to 49: tc.Type{id: 4, type: "int"}; {B: 4, R: "int"}. Join(tc.typeLambda, )
+from 62 to 63: tc.Type{id: 4, type: "int"}; {B: 4, T: "int"}. Join(tc.scopeLet, B: 62.id = 61.bindingID)

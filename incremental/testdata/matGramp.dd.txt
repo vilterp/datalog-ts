@@ -31,20 +31,20 @@ digraph G {
 father{child: "Mary", father: "Mark"}.
 ----
 text/propagation-log
-from null to father: father{child: "Mary", father: "Mark"}; {}.  []
+from null to father: father{child: "Mary", father: "Mark"}; {}. 
   father{child: "Mary", father: "Mark"}; {}
-from father to 1: father{child: "Mary", father: "Mark"}; {}. Match(father{child: B, father: C}; {}) [B]
+from father to 1: father{child: "Mary", father: "Mark"}; {}. Match(father{child: B, father: C}; {})
   father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}
-from 1 to 2: father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}. Join(matGramp, B: 1.child = 0.mother) []
+from 1 to 2: father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}. Join(matGramp, B: 1.child = 0.mother)
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 text/propagation-log
-from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
+from null to mother: mother{child: "Pete", mother: "Mary"}; {}. 
   mother{child: "Pete", mother: "Mary"}; {}
-from mother to 0: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: A, mother: B}; {}) [B]
+from mother to 0: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: A, mother: B}; {})
   mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}
-from 0 to 2: mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}. Join(matGramp, B: 1.child = 0.mother) []
+from 0 to 2: mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}. Join(matGramp, B: 1.child = 0.mother)
   matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
-from 2 to matGramp: matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}. Subst({child: A, grandfather: C}) []
+from 2 to matGramp: matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}. Subst({child: A, grandfather: C})
   matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}
