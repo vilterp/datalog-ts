@@ -1,8 +1,8 @@
 import { AndClause, OrExpr, Rec, Rule, VarMappings } from "../types";
 import {
   AddResult,
-  EmissionBatch,
-  EmissionLog,
+  PropagationStep,
+  PropagationLog,
   Insertion,
   JoinDesc,
   MatchDesc,
@@ -59,7 +59,7 @@ export class RuleGraph {
     this.unmappedRules = {};
   }
 
-  insertFact(rec: Rec): EmissionLog {
+  insertFact(rec: Rec): PropagationLog {
     if (Object.keys(this.unmappedRules).length > 0) {
       throw new Error(
         `some rules still rely on things not defined yet: [${mapObjToList(
@@ -162,9 +162,9 @@ export class RuleGraph {
   private replayFacts(
     allNewNodes: Set<NodeID>,
     roots: Set<NodeID>
-  ): EmissionLog {
+  ): PropagationLog {
     // console.log("replayFacts", roots);
-    let outEmissionLog: EmissionLog = [];
+    let outPropagationLog: PropagationLog = [];
     for (let rootID of roots) {
       for (let res of this.nodes[rootID].cache.all()) {
         for (let destination of this.edges[rootID]) {
@@ -175,14 +175,14 @@ export class RuleGraph {
               destination,
             },
           ]);
-          const emissionLog = stepIteratorAll(iter);
-          for (let emission of emissionLog) {
-            outEmissionLog.push(emission);
+          const PropagationLog = stepIteratorAll(iter);
+          for (let emission of PropagationLog) {
+            outPropagationLog.push(emission);
           }
         }
       }
     }
-    return outEmissionLog;
+    return outPropagationLog;
   }
 
   private getReplayIterator(
@@ -241,7 +241,7 @@ export class RuleGraph {
     this.addNodeKnownID(name, false, { type: "BaseFactTable" });
   }
 
-  addRule(rule: Rule): EmissionLog {
+  addRule(rule: Rule): PropagationLog {
     // console.log("add", rule.head.relation);
     const substID = rule.head.relation;
     const { tipID: orID, newNodeIDs } = this.addOr(
@@ -471,13 +471,13 @@ type IteratorMode =
   | { type: "Replaying"; newNodeIDs: Set<NodeID> }
   | { type: "Playing" };
 
-function stepIteratorAll(iter: InsertionIterator): EmissionLog {
-  const emissionLog: EmissionLog = [];
+function stepIteratorAll(iter: InsertionIterator): PropagationLog {
+  const PropagationLog: PropagationLog = [];
   while (iter.queue.length > 0) {
     const emissions = iter.step();
-    emissionLog.push(emissions);
+    PropagationLog.push(emissions);
   }
-  return emissionLog;
+  return PropagationLog;
 }
 
 class InsertionIterator {
@@ -491,7 +491,7 @@ class InsertionIterator {
     this.mode = mode;
   }
 
-  step(): EmissionBatch {
+  step(): PropagationStep {
     // console.log("stepIterator", iter.queue);
     const insertingNow = this.queue.shift();
     const curNodeID = insertingNow.destination;

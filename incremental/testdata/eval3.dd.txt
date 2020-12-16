@@ -9,13 +9,13 @@ text/plain
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-text/emission-log
+text/propagation-log
 
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
-text/emission-log
+text/propagation-log
 
 .rulegraph
 ----
@@ -45,7 +45,7 @@ digraph G {
 
 father{child: "Mary", father: "Mark"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Mary", father: "Mark"}; {}.  []
   father{child: "Mary", father: "Mark"}; {}
 from father to 2: father{child: "Mary", father: "Mark"}; {}. Match(father{child: C, father: P}; {}) []
@@ -63,7 +63,7 @@ from 4 to 5: parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}. Join
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
   mother{child: "Pete", mother: "Mary"}; {}
 from mother to 1: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: C, mother: P}; {}) []
@@ -84,7 +84,7 @@ from 5 to grandparent: grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Carolyn", mother: "Mary"}; {}.  []
   mother{child: "Carolyn", mother: "Mary"}; {}
 from mother to 1: mother{child: "Carolyn", mother: "Mary"}; {}. Match(mother{child: C, mother: P}; {}) []

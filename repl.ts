@@ -88,7 +88,7 @@ export class Repl {
       const stmt = language.statement.tryParse(this.buffer);
       const output = this.interp.processStmt(stmt);
       const outputStr = formatOutput(this.interp.graph, output, {
-        emissionLogMode: "repl",
+        propagationLogMode: "repl",
         showBindings: false,
       });
       if (outputStr.content.length > 0) {

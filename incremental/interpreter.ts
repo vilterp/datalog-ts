@@ -1,4 +1,4 @@
-import { EmissionLog, Res } from "./types";
+import { PropagationLog, Res } from "./types";
 import { Program, Rec, Statement } from "../types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
@@ -19,16 +19,16 @@ import { RuleGraph } from "./ruleGraph";
 import { formatNode, ppr } from "./pretty";
 
 type Output =
-  | { type: "EmissionLog"; log: EmissionLog }
-  | { type: "Trace"; logAndGraph: EmissionLogAndGraph }
+  | { type: "PropagationLog"; log: PropagationLog }
+  | { type: "Trace"; logAndGraph: PropagationLogAndGraph }
   | { type: "Graphviz"; dot: string }
   | { type: "Json"; json: any }
   | { type: "QueryResults"; results: Res[] }
   | { type: "Acknowledge" };
 
-export type EmissionLogAndGraph = {
+export type PropagationLogAndGraph = {
   graph: RuleGraph;
-  log: EmissionLog;
+  log: PropagationLog;
 };
 
 const ack: Output = { type: "Acknowledge" };
@@ -65,8 +65,8 @@ export class Interpreter {
         return ack;
       }
       case "Rule": {
-        const emissionLog = this.graph.addRule(stmt.rule);
-        return { type: "EmissionLog", log: emissionLog };
+        const PropagationLog = this.graph.addRule(stmt.rule);
+        return { type: "PropagationLog", log: PropagationLog };
       }
       case "Insert": {
         if (hasVars(stmt.record)) {
@@ -75,8 +75,8 @@ export class Interpreter {
             results: this.graph.doQuery(stmt.record),
           };
         }
-        const emissionLog = this.graph.insertFact(stmt.record);
-        return { type: "EmissionLog", log: emissionLog };
+        const PropagationLog = this.graph.insertFact(stmt.record);
+        return { type: "PropagationLog", log: PropagationLog };
       }
       case "RuleGraph":
         return { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) };
@@ -94,12 +94,12 @@ export class Interpreter {
         this.doLoad(stmt.path);
         return ack;
       case "TraceStmt": {
-        const emissionLog = this.graph.insertFact(stmt.record);
+        const PropagationLog = this.graph.insertFact(stmt.record);
         return {
           type: "Trace",
           logAndGraph: {
             graph: this.graph,
-            log: emissionLog,
+            log: PropagationLog,
           },
         };
       }
@@ -124,7 +124,7 @@ export class Interpreter {
 }
 
 type OutputOptions = {
-  emissionLogMode: "test" | "repl";
+  propagationLogMode: "test" | "repl";
   showBindings: boolean;
 };
 
@@ -136,8 +136,8 @@ export function formatOutput(
   switch (output.type) {
     case "Acknowledge":
       return plainTextOut("");
-    case "EmissionLog":
-      if (opts.emissionLogMode === "test") {
+    case "PropagationLog":
+      if (opts.propagationLogMode === "test") {
         return {
           content: output.log
             .map((batch) => {
@@ -151,13 +151,14 @@ export function formatOutput(
               ].join("\n");
             })
             .join("\n"),
-          mimeType: "text/emission-log",
+          mimeType: "text/propagation-log",
         };
       } else {
         return datalogOut(
           output.log
-            .filter((emissionBatch) => {
-              const fromNode = graph.nodes[emissionBatch.insertion.destination];
+            .filter((PropagationStep) => {
+              const fromNode =
+                graph.nodes[PropagationStep.insertion.destination];
               return (
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );

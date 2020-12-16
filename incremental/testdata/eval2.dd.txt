@@ -9,11 +9,11 @@ text/plain
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-text/emission-log
+text/propagation-log
 
 father{child: "Pete", father: "Paul"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Pete", father: "Paul"}; {}.  []
   father{child: "Pete", father: "Paul"}; {}
 from father to 2: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: P}; {}) []

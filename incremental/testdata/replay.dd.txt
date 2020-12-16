@@ -8,25 +8,25 @@ text/plain
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
   mother{child: "Pete", mother: "Mary"}; {}
 
 father{child: "Pete", father: "Paul"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Pete", father: "Paul"}; {}.  []
   father{child: "Pete", father: "Paul"}; {}
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Carolyn", mother: "Mary"}; {}.  []
   mother{child: "Carolyn", mother: "Mary"}; {}
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Carolyn", father: "Paul"}; {}.  []
   father{child: "Carolyn", father: "Paul"}; {}
 
@@ -42,7 +42,7 @@ parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
 ----
-text/emission-log
+text/propagation-log
 from mother to 0: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {}) [C]
   mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
 from 0 to 2: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}. Join(parents, C: 1.child = 0.child) []
@@ -84,7 +84,7 @@ sibling{left: L, right: R} :-
   parents{child: R, mother: M, father: F} &
   L != R.
 ----
-text/emission-log
+text/propagation-log
 from parents to 3: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}. Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [M-F]
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}
 from 3 to 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []

@@ -75,6 +75,6 @@ export type Insertion = {
   destination: NodeID;
 };
 
-export type EmissionLog = EmissionBatch[];
+export type PropagationLog = PropagationStep[];
 
-export type EmissionBatch = { insertion: Insertion; output: Res[] };
+export type PropagationStep = { insertion: Insertion; output: Res[] };

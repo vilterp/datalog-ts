@@ -6,7 +6,7 @@ edge{from: F, to: T} :-
   baseEdge{from: F, to: T} |
   baseEdge{from: F, to: I} & edge{from: I, to: T}.
 ----
-text/emission-log
+text/propagation-log
 
 .rulegraph
 ----
@@ -31,7 +31,7 @@ digraph G {
 
 baseEdge{from: "A", to: "B"}.
 ----
-text/emission-log
+text/propagation-log
 from null to baseEdge: baseEdge{from: "A", to: "B"}; {}.  []
   baseEdge{from: "A", to: "B"}; {}
 from baseEdge to 1: baseEdge{from: "A", to: "B"}; {}. Match(baseEdge{from: F, to: T}; {}) []
@@ -49,7 +49,7 @@ from 3 to 4: edge{from: "A", to: "B"}; {I: "A", T: "B"}. Join(edge, I: 3.from = 
 
 baseEdge{from: "C", to: "D"}.
 ----
-text/emission-log
+text/propagation-log
 from null to baseEdge: baseEdge{from: "C", to: "D"}; {}.  []
   baseEdge{from: "C", to: "D"}; {}
 from baseEdge to 1: baseEdge{from: "C", to: "D"}; {}. Match(baseEdge{from: F, to: T}; {}) []
@@ -67,7 +67,7 @@ from 3 to 4: edge{from: "C", to: "D"}; {I: "C", T: "D"}. Join(edge, I: 3.from = 
 
 baseEdge{from: "B", to: "C"}.
 ----
-text/emission-log
+text/propagation-log
 from null to baseEdge: baseEdge{from: "B", to: "C"}; {}.  []
   baseEdge{from: "B", to: "C"}; {}
 from baseEdge to 1: baseEdge{from: "B", to: "C"}; {}. Match(baseEdge{from: F, to: T}; {}) []

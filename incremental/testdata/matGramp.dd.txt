@@ -9,7 +9,7 @@ text/plain
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
-text/emission-log
+text/propagation-log
 
 .rulegraph
 ----
@@ -30,7 +30,7 @@ digraph G {
 
 father{child: "Mary", father: "Mark"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Mary", father: "Mark"}; {}.  []
   father{child: "Mary", father: "Mark"}; {}
 from father to 1: father{child: "Mary", father: "Mark"}; {}. Match(father{child: B, father: C}; {}) [B]
@@ -39,7 +39,7 @@ from 1 to 2: father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}. Join
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
   mother{child: "Pete", mother: "Mary"}; {}
 from mother to 0: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: A, mother: B}; {}) [B]

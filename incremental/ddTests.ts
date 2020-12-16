@@ -75,7 +75,7 @@ export function evalTest(inputs: string[]): TestOutput[] {
       // console.log(after - before, "ms", stmt);
       out.push(
         formatOutput(interp.graph, output, {
-          emissionLogMode: "test",
+          propagationLogMode: "test",
           showBindings: true,
         })
       );

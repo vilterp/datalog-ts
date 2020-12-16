@@ -12,7 +12,7 @@ text/plain
 
 ast.RootExpr{id: 0}.
 ----
-text/emission-log
+text/propagation-log
 from null to ast.RootExpr: ast.RootExpr{id: 0}; {}.  []
   ast.RootExpr{id: 0}; {}
 from ast.RootExpr to 58: ast.RootExpr{id: 0}; {}. Match(ast.RootExpr{id: I}; {}) []
@@ -66,7 +66,7 @@ from 56 to 57: tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: ta
 
 ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}.
 ----
-text/emission-log
+text/propagation-log
 from null to ast.LetExpr: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}.  []
   ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}
 from ast.LetExpr to 4: ast.LetExpr{bindingID: 1, bodyID: 2, id: 0, inLoc: span{from: 10, to: 13}, letLoc: span{from: 0, to: 4}, location: span{from: 0, to: 26}, varLoc: span{from: 4, to: 5}, varName: "x"}; {}. Match(ast.LetExpr{id: I, location: S}; {}) []
@@ -189,7 +189,7 @@ from 56 to 57: tc.ScopeItem{id: 1, location: "builtin", name: "concat", type: ta
 
 ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}.
 ----
-text/emission-log
+text/propagation-log
 from null to ast.IntLit: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}.  []
   ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}
 from ast.IntLit to 2: ast.IntLit{id: 1, location: span{from: 8, to: 9}, val: 2}; {}. Match(ast.IntLit{id: I, location: S}; {}) []
@@ -259,7 +259,7 @@ from 56 to 57: tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", ty
 
 ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}.
 ----
-text/emission-log
+text/propagation-log
 from null to ast.FuncCall: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}.  []
   ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}
 from ast.FuncCall to 5: ast.FuncCall{argID: 4, funcID: 3, id: 2, location: span{from: 13, to: 26}}; {}. Match(ast.FuncCall{id: I, location: S}; {}) []
@@ -406,7 +406,7 @@ from 56 to 57: tc.ScopeItem{id: 3, location: span{from: 4, to: 5}, name: "x", ty
 
 ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}.
 ----
-text/emission-log
+text/propagation-log
 from null to ast.Var: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}.  []
   ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}
 from ast.Var to 3: ast.Var{id: 3, location: span{from: 13, to: 23}, name: "int2string"}; {}. Match(ast.Var{id: I, location: S}; {}) []
@@ -441,7 +441,7 @@ from 8 to ast.ParentExpr: ast.ParentExpr{id: 3, location: span{from: 13, to: 23}
 
 ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}.
 ----
-text/emission-log
+text/propagation-log
 from null to ast.Var: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}.  []
   ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}
 from ast.Var to 3: ast.Var{id: 4, location: span{from: 24, to: 25}, name: "x"}; {}. Match(ast.Var{id: I, location: S}; {}) []

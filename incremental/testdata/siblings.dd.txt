@@ -10,14 +10,14 @@ parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
 ----
-text/emission-log
+text/propagation-log
 
 sibling{left: L, right: R} :-
   parents{child: L, mother: M, father: F} &
   parents{child: R, mother: M, father: F} &
   L != R.
 ----
-text/emission-log
+text/propagation-log
 
 .rulegraph
 ----
@@ -49,7 +49,7 @@ digraph G {
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
   mother{child: "Pete", mother: "Mary"}; {}
 from mother to 0: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {}) [C]
@@ -58,7 +58,7 @@ from 0 to 2: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}. Join
 
 father{child: "Pete", father: "Paul"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Pete", father: "Paul"}; {}.  []
   father{child: "Pete", father: "Paul"}; {}
 from father to 1: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: F}; {}) [C]
@@ -80,7 +80,7 @@ from 5 to 6: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul",
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Carolyn", mother: "Mary"}; {}.  []
   mother{child: "Carolyn", mother: "Mary"}; {}
 from mother to 0: mother{child: "Carolyn", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {}) [C]
@@ -89,7 +89,7 @@ from 0 to 2: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-text/emission-log
+text/propagation-log
 from null to father: father{child: "Carolyn", father: "Paul"}; {}.  []
   father{child: "Carolyn", father: "Paul"}; {}
 from father to 1: father{child: "Carolyn", father: "Paul"}; {}. Match(father{child: C, father: F}; {}) [C]
@@ -121,7 +121,7 @@ from 6 to sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F
 
 mother{child: "Steve", mother: "Jill"}.
 ----
-text/emission-log
+text/propagation-log
 from null to mother: mother{child: "Steve", mother: "Jill"}; {}.  []
   mother{child: "Steve", mother: "Jill"}; {}
 from mother to 0: mother{child: "Steve", mother: "Jill"}; {}. Match(mother{child: C, mother: M}; {}) [C]

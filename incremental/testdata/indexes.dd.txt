@@ -10,7 +10,7 @@ opportunity{worker: N, capability: C, objective: O} :-
   need{capability: C, objective: O} &
   worker{name: N, capability: C}.
 ----
-text/emission-log
+text/propagation-log
 
 .rulegraph
 ----
@@ -31,7 +31,7 @@ digraph G {
 
 need{capability: "write HTML", objective: "make website"}.
 ----
-text/emission-log
+text/propagation-log
 from null to need: need{capability: "write HTML", objective: "make website"}; {}.  []
   need{capability: "write HTML", objective: "make website"}; {}
 from need to 0: need{capability: "write HTML", objective: "make website"}; {}. Match(need{capability: C, objective: O}; {}) [C]
@@ -40,7 +40,7 @@ from 0 to 2: need{capability: "write HTML", objective: "make website"}; {C: "wri
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
-text/emission-log
+text/propagation-log
 from null to worker: worker{capability: "write HTML", name: "Pete"}; {}.  []
   worker{capability: "write HTML", name: "Pete"}; {}
 from worker to 1: worker{capability: "write HTML", name: "Pete"}; {}. Match(worker{capability: C, name: N}; {}) [C]
