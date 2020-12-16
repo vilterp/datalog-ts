@@ -142,8 +142,8 @@ export function formatOutput(
           content: output.log
             .map((batch) => {
               return [
-                `from ${batch.insertion.origin} to ${
-                  batch.insertion.destination
+                `${batch.insertion.destination} from ${
+                  batch.insertion.origin
                 }: ${ppr(batch.insertion.res)}. ${formatNodeDesc(
                   graph.nodes[batch.insertion.destination].desc
                 )}`,
