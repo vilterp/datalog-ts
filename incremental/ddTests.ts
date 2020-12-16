@@ -20,7 +20,7 @@ export function incrTests(writeResults: boolean): Suite {
     // ["siblings", evalTest],
     // ["cycles", evalTest],
     ["replay", evalTest],
-    // ["cyclesReplay", evalTest],
+    ["cyclesReplay", evalTest],
     // ["fp", evalTest],
     // ["fp2", evalTest],
     // ["fpIde", evalTest],
