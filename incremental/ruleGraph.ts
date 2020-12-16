@@ -498,34 +498,6 @@ class InsertionIterator {
   }
 }
 
-function doMatch(nodeDesc: MatchDesc, ins: Insertion): Res[] {
-  const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
-  joinStats.matchUnifyCalls++;
-  const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
-  if (bindings === null) {
-    return [];
-  }
-  for (let key in bindings) {
-    // console.log({ bindings, key });
-    if (bindings[key].type === "Var") {
-      return [];
-    }
-  }
-  // console.log("match", {
-  //   insRec: formatRes(ins.res),
-  //   match: ppt(nodeDesc.rec),
-  //   bindings: ppb(bindings || {}),
-  //   mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
-  //   mappedBindings: ppb(mappedBindings),
-  // });
-  return [
-    {
-      term: ins.res.term,
-      bindings: bindings,
-    },
-  ];
-}
-
 type JoinStats = {
   joinTimeMS: number;
   inputRecords: number;
