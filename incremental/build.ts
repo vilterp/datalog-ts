@@ -1,19 +1,21 @@
-import { Rec, Term } from "../types";
-import { JoinInfo, ColsToIndexByRelation, AttrPath } from "./types";
+import { Bindings, Rec, Term } from "../types";
+import { JoinInfo, ColsToIndexByRelation, AttrPath, VarToPath } from "./types";
 import { ppt } from "../pretty";
 import { combineObjects } from "../util";
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   const leftVars = getVarToPath(left);
   const rightVars = getVarToPath(right);
-  return combineObjects(
+  return {
     leftVars,
     rightVars,
-    (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
-  );
+    join: combineObjects(
+      leftVars,
+      rightVars,
+      (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
+    ),
+  };
 }
-
-type VarToPath = { [varName: string]: AttrPath };
 
 function getVarToPath(rec: Rec): VarToPath {
   const out: VarToPath = {};
@@ -39,10 +41,10 @@ export function getColsToIndex(joinInfo: JoinInfo): ColsToIndexByRelation {
     left: [],
     right: [],
   };
-  for (let varName of Object.keys(joinInfo)) {
-    out.left.push(joinInfo[varName].leftAttr);
-    out.right.push(joinInfo[varName].rightAttr);
-  }
+  Object.values(joinInfo.join).forEach((info) => {
+    out.left.push(info.leftAttr);
+    out.right.push(info.rightAttr);
+  });
   return out;
 }
 
@@ -98,4 +100,12 @@ export function numJoinsWithCommonVars(joinTree: JoinTree): number {
   }
   const thisDoes = Object.keys(joinTree.joinInfo).length > 0 ? 1 : 0;
   return thisDoes + numJoinsWithCommonVars(joinTree.right);
+}
+
+export function getBindings(rec: Rec, varPaths: VarToPath): Bindings {
+  const out: Bindings = {};
+  for (let varName in varPaths) {
+    out[varName] = getAtPath(rec, varPaths[varName]);
+  }
+  return out;
 }

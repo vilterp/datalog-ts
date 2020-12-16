@@ -78,3 +78,24 @@ digraph G {
   "sibling" -> "12" [];
   "sister" -> "10" [];
 }
+
+mother{child: "Pete", mother: "Mary"}.
+----
+text/plain
+mother: [mother{child: "Pete", mother: "Mary"}; {}]
+1: []
+3: [mother{child: "Pete", mother: "Mary"}; {}]
+4: []
+parent: [parent{child: C, parent: P}; {}]
+0: []
+1: []
+2: []
+2: []
+7: []
+8: []
+9: []
+10: []
+13: [parent{child: C, parent: P}; {}]
+14: []
+ancestor: [ancestor{an: Z, desc: X}; {}]
+14: []

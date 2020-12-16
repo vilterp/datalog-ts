@@ -11,8 +11,10 @@ import {
   NodeDesc,
   NodeID,
   Res,
+  VarToPath,
 } from "./types";
 import {
+  getBindings,
   getColsToIndex,
   getIndexKey,
   getIndexName,
@@ -104,6 +106,7 @@ export class RuleGraph {
             ins,
             nodeDesc,
             nodeDesc.rightID,
+            nodeDesc.joinInfo.leftVars,
             nodeDesc.indexes.left,
             nodeDesc.indexes.right
           );
@@ -112,6 +115,7 @@ export class RuleGraph {
             ins,
             nodeDesc,
             nodeDesc.leftID,
+            nodeDesc.joinInfo.rightVars,
             nodeDesc.indexes.right,
             nodeDesc.indexes.left
           );
@@ -210,11 +214,12 @@ export class RuleGraph {
     ins: Insertion,
     joinDesc: JoinDesc,
     otherNodeID: NodeID,
+    thisVars: VarToPath,
     thisIndex: AttrPath[],
     otherIndex: AttrPath[]
   ): Res[] {
     const results: Res[] = [];
-    const thisVars = ins.res.bindings;
+    const thisBindings = getBindings(ins.res.term as Rec, thisVars);
     const otherNode = this.nodes[otherNodeID];
     const indexName = getIndexName(otherIndex);
     const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
@@ -229,7 +234,7 @@ export class RuleGraph {
     const before = performance.now();
     for (let possibleOtherMatch of otherEntries) {
       const otherVars = possibleOtherMatch.bindings;
-      const unifyRes = unifyVars(thisVars || {}, otherVars || {});
+      const unifyRes = unifyVars(thisBindings || {}, otherVars || {});
       // console.log("join", {
       //   left: formatRes(ins.res),
       //   right: formatRes(possibleOtherMatch),

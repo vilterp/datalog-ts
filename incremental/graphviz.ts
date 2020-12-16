@@ -84,7 +84,7 @@ function formatDesc(node: NodeAndCache): string {
 
 function formatJoinDesc(joinDesc: JoinDesc): string {
   return mapObjToList(
-    joinDesc.joinInfo,
+    joinDesc.joinInfo.join,
     (key, { leftAttr, rightAttr }) =>
       `${key}: ${joinDesc.leftID}.${formatAttrPath(leftAttr)} = ${
         joinDesc.rightID
