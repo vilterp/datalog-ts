@@ -2,10 +2,11 @@ import React from "react";
 import useHashParam from "use-hash-param";
 import ReactDOM from "react-dom";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
-import { mapObjToList } from "../util";
+import { mapObj, mapObjToList } from "../util";
 import { Archive } from "../util/ddTest/types";
 import { useFetch } from "use-http";
 import { Collapsible } from "../uiCommon/collapsible";
+import Select from "react-select";
 
 function Main() {
   const [archiveURL] = useHashParam(
@@ -32,14 +33,14 @@ function TestViewer(props: { archive: Archive }) {
   return (
     <>
       <h1>DDTest Viewer</h1>
-      <select
+      <Select
+        onChange={(newVal) => setCurrentTest(newVal.value)}
         value={currentTest}
-        onChange={(evt) => setCurrentTest(evt.target.value)}
-      >
-        {mapObjToList(testArchive as Archive, (filePath) => (
-          <option key={filePath}>{filePath}</option>
-        ))}
-      </select>
+        options={mapObjToList(testArchive, (testPath) => ({
+          value: testPath,
+          label: testPath,
+        }))}
+      />
       <h3>Viewer</h3>
       {(testArchive[currentTest] || []).map((pair, idx) => (
         <div key={idx}>
