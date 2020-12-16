@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Graphviz } from "graphviz-react";
 import ReactJson from "react-json-view";
 import { useWindowWidth } from "@react-hook/window-size";
-import { ppr } from "../../incremental/types";
 import { toGraphviz } from "../../incremental/graphviz";
 import { prettyPrintGraph } from "../../graphviz";
 import { clamp } from "../../util";
 import { TestOutput } from "./types";
-import { EmissionLogAndGraph } from "../../incremental/interpreter";
+import { PropagationLogAndGraph } from "../../incremental/interpreter";
+import { ppr } from "../../incremental/pretty";
 
 export type SuiteSpec = {
   name: string;
@@ -17,10 +17,11 @@ export type SuiteSpec = {
 };
 
 function EmissionLogViewer(props: { text: string }) {
-  const logAndGraph: EmissionLogAndGraph = JSON.parse(props.text);
+  const logAndGraph: PropagationLogAndGraph = JSON.parse(props.text);
 
   const [highlightedIndex, setHighlightedIndex] = useState<number>(0);
-  const highlightedNodeID = logAndGraph.log[highlightedIndex]?.fromID;
+  const highlightedNodeID =
+    logAndGraph.log[highlightedIndex]?.insertion.destination;
   const [stage, setStage] = useState(0);
   const width = useWindowWidth();
 
@@ -64,7 +65,7 @@ function EmissionLogViewer(props: { text: string }) {
               color: highlightedIndex === idx ? "red" : "black",
             }}
           >
-            {batch.fromID}:{" "}
+            {batch.insertion.destination}:{" "}
             <ul>
               {batch.output.map((res, idx) => (
                 <li key={idx}>{ppr(res)}</li>
