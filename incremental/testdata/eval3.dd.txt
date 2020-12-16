@@ -9,13 +9,13 @@ text/plain
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-emission-log
+text/emission-log
 
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
-emission-log
+text/emission-log
 
 .rulegraph
 ----
@@ -26,7 +26,7 @@ digraph G {
   "2" [fillcolor="darkseagreen2" label="2: Match(father{child: C, father: P}; {}) []" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(parent{child: A, parent: B}; {C: A, P: B}) [B]" shape="box" style="filled"];
   "4" [fillcolor="darkseagreen2" label="4: Match(parent{child: B, parent: C}; {C: B, P: C}) [B]" shape="box" style="filled"];
-  "5" [fillcolor="thistle" label="5: grandparent: Join(B: 4.child = 3.parent) []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(grandparent, B: 4.child = 3.parent) []" shape="box" style="filled"];
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
   "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
@@ -45,60 +45,60 @@ digraph G {
 
 father{child: "Mary", father: "Mark"}.
 ----
-emission-log
-null => father: father{child: "Mary", father: "Mark"}; {}
+text/emission-log
+from null to father: father{child: "Mary", father: "Mark"}; {}.  []
   father{child: "Mary", father: "Mark"}; {}
-father => 2: father{child: "Mary", father: "Mark"}; {}
+from father to 2: father{child: "Mary", father: "Mark"}; {}. Match(father{child: C, father: P}; {}) []
   father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
-2 => 0: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
+from 2 to 0: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}. Union []
   father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
-0 => parent: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
+from 0 to parent: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}. Subst({child: C, parent: P}) []
   parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}
-parent => 3: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}
+from parent to 3: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}. Match(parent{child: A, parent: B}; {C: A, P: B}) [B]
   parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}
-parent => 4: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}
+from parent to 4: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}. Match(parent{child: B, parent: C}; {C: B, P: C}) [B]
   parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}
-3 => 5: parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}
-4 => 5: parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}
+from 3 to 5: parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}. Join(grandparent, B: 4.child = 3.parent) []
+from 4 to 5: parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}. Join(grandparent, B: 4.child = 3.parent) []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-emission-log
-null => mother: mother{child: "Pete", mother: "Mary"}; {}
+text/emission-log
+from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
   mother{child: "Pete", mother: "Mary"}; {}
-mother => 1: mother{child: "Pete", mother: "Mary"}; {}
+from mother to 1: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: C, mother: P}; {}) []
   mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
-1 => 0: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
+from 1 to 0: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}. Union []
   mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
-0 => parent: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
+from 0 to parent: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}. Subst({child: C, parent: P}) []
   parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}
-parent => 3: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}
+from parent to 3: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}. Match(parent{child: A, parent: B}; {C: A, P: B}) [B]
   parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}
-parent => 4: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}
+from parent to 4: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}. Match(parent{child: B, parent: C}; {C: B, P: C}) [B]
   parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}
-3 => 5: parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}
+from 3 to 5: parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}. Join(grandparent, B: 4.child = 3.parent) []
   grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
-4 => 5: parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}
-5 => grandparent: grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
+from 4 to 5: parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}. Join(grandparent, B: 4.child = 3.parent) []
+from 5 to grandparent: grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}. Subst({grandchild: A, grandparent: C}) []
   grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-emission-log
-null => mother: mother{child: "Carolyn", mother: "Mary"}; {}
+text/emission-log
+from null to mother: mother{child: "Carolyn", mother: "Mary"}; {}.  []
   mother{child: "Carolyn", mother: "Mary"}; {}
-mother => 1: mother{child: "Carolyn", mother: "Mary"}; {}
+from mother to 1: mother{child: "Carolyn", mother: "Mary"}; {}. Match(mother{child: C, mother: P}; {}) []
   mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
-1 => 0: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
+from 1 to 0: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}. Union []
   mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
-0 => parent: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
+from 0 to parent: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}. Subst({child: C, parent: P}) []
   parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}
-parent => 3: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}
+from parent to 3: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}. Match(parent{child: A, parent: B}; {C: A, P: B}) [B]
   parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}
-parent => 4: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}
+from parent to 4: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}. Match(parent{child: B, parent: C}; {C: B, P: C}) [B]
   parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}
-3 => 5: parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}
+from 3 to 5: parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}. Join(grandparent, B: 4.child = 3.parent) []
   grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}
-4 => 5: parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}
-5 => grandparent: grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}
+from 4 to 5: parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}. Join(grandparent, B: 4.child = 3.parent) []
+from 5 to grandparent: grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}. Subst({grandchild: A, grandparent: C}) []
   grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}

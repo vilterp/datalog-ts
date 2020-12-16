@@ -9,16 +9,16 @@ text/plain
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-emission-log
+text/emission-log
 
 father{child: "Pete", father: "Paul"}.
 ----
-emission-log
-null => father: father{child: "Pete", father: "Paul"}; {}
+text/emission-log
+from null to father: father{child: "Pete", father: "Paul"}; {}.  []
   father{child: "Pete", father: "Paul"}; {}
-father => 2: father{child: "Pete", father: "Paul"}; {}
+from father to 2: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: P}; {}) []
   father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
-2 => 0: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
+from 2 to 0: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}. Union []
   father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
-0 => parent: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
+from 0 to parent: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}. Subst({child: C, parent: P}) []
   parent{child: "Pete", parent: "Paul"}; {C: "Pete", P: "Paul"}

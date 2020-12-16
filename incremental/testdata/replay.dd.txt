@@ -8,26 +8,26 @@ text/plain
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-emission-log
-null => mother: mother{child: "Pete", mother: "Mary"}; {}
+text/emission-log
+from null to mother: mother{child: "Pete", mother: "Mary"}; {}.  []
   mother{child: "Pete", mother: "Mary"}; {}
 
 father{child: "Pete", father: "Paul"}.
 ----
-emission-log
-null => father: father{child: "Pete", father: "Paul"}; {}
+text/emission-log
+from null to father: father{child: "Pete", father: "Paul"}; {}.  []
   father{child: "Pete", father: "Paul"}; {}
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-emission-log
-null => mother: mother{child: "Carolyn", mother: "Mary"}; {}
+text/emission-log
+from null to mother: mother{child: "Carolyn", mother: "Mary"}; {}.  []
   mother{child: "Carolyn", mother: "Mary"}; {}
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-emission-log
-null => father: father{child: "Carolyn", father: "Paul"}; {}
+text/emission-log
+from null to father: father{child: "Carolyn", father: "Paul"}; {}.  []
   father{child: "Carolyn", father: "Paul"}; {}
 
 .rulegraph
@@ -42,24 +42,24 @@ parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
 ----
-emission-log
-mother => 0: mother{child: "Pete", mother: "Mary"}; {}
+text/emission-log
+from mother to 0: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {}) [C]
   mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
-0 => 2: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
-mother => 0: mother{child: "Carolyn", mother: "Mary"}; {}
+from 0 to 2: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}. Join(parents, C: 1.child = 0.child) []
+from mother to 0: mother{child: "Carolyn", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {}) [C]
   mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
-0 => 2: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
-father => 1: father{child: "Pete", father: "Paul"}; {}
+from 0 to 2: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}. Join(parents, C: 1.child = 0.child) []
+from father to 1: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: F}; {}) [C]
   father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}
-1 => 2: father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}
+from 1 to 2: father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}. Join(parents, C: 1.child = 0.child) []
   parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}
-2 => parents: parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}
+from 2 to parents: parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}. Subst({child: C, father: F, mother: M}) []
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
-father => 1: father{child: "Carolyn", father: "Paul"}; {}
+from father to 1: father{child: "Carolyn", father: "Paul"}; {}. Match(father{child: C, father: F}; {}) [C]
   father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}
-1 => 2: father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}
+from 1 to 2: father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}. Join(parents, C: 1.child = 0.child) []
   parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}
-2 => parents: parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+from 2 to parents: parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}. Subst({child: C, father: F, mother: M}) []
   parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
 
 .rulegraph
@@ -68,7 +68,7 @@ application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(mother{child: C, mother: M}; {}) [C]" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}, mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
   "1" [fillcolor="darkseagreen2" label="1: Match(father{child: C, father: F}; {}) [C]" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}, father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
-  "2" [fillcolor="thistle" label="2: parents: Join(C: 1.child = 0.child) []" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
+  "2" [fillcolor="thistle" label="2: Join(parents, C: 1.child = 0.child) []" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]
   "parents" [fillcolor="lightblue" label="parents: Subst({child: C, father: F, mother: M}) []" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
@@ -84,32 +84,32 @@ sibling{left: L, right: R} :-
   parents{child: R, mother: M, father: F} &
   L != R.
 ----
-emission-log
-parents => 3: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
+text/emission-log
+from parents to 3: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}. Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [M-F]
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}
-3 => 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}
-parents => 4: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
+from 3 to 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []
+from parents to 4: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}. Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [M-F]
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}
-4 => 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}
+from 4 to 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []
   sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
-5 => 6: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
-parents => 3: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+from 5 to 6: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}. L != R []
+from parents to 3: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}. Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [M-F]
   parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}
-3 => 5: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}
+from 3 to 5: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
-5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+from 5 to 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}. L != R []
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
-6 => sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+from 6 to sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}. Subst({left: L, right: R}) []
   sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
-parents => 4: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+from parents to 4: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}. Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [M-F]
   parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}
-4 => 5: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}
+from 4 to 5: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
-5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
+from 5 to 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}. L != R []
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
-5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
-6 => sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
+from 5 to 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}. L != R []
+from 6 to sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}. Subst({left: L, right: R}) []
   sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
 
 .rulegraph
@@ -118,10 +118,10 @@ application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(mother{child: C, mother: M}; {}) [C]" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}, mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
   "1" [fillcolor="darkseagreen2" label="1: Match(father{child: C, father: F}; {}) [C]" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}, father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
-  "2" [fillcolor="thistle" label="2: parents: Join(C: 1.child = 0.child) []" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
+  "2" [fillcolor="thistle" label="2: Join(parents, C: 1.child = 0.child) []" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}, parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
   "3" [fillcolor="darkseagreen2" label="3: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [M-F]" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}]
   "4" [fillcolor="darkseagreen2" label="4: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [M-F]" shape="box" style="filled"]; // cache: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}, parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}]
-  "5" [fillcolor="thistle" label="5: sibling: Join(F: 4.father = 3.father & M: 4.mother = 3.mother) []" shape="box" style="filled"]; // cache: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
+  "5" [fillcolor="thistle" label="5: Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []" shape="box" style="filled"]; // cache: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
   "6" [fillcolor="darkseagreen1" label="6: L != R []" shape="box" style="filled"]; // cache: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"]; // cache: [mother{child: "Pete", mother: "Mary"}; {}, mother{child: "Carolyn", mother: "Mary"}; {}]
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"]; // cache: [father{child: "Pete", father: "Paul"}; {}, father{child: "Carolyn", father: "Paul"}; {}]

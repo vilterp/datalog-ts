@@ -1,4 +1,4 @@
-import { EmissionLog, ppr, NodeID, Res } from "./types";
+import { EmissionLog, Res } from "./types";
 import { Program, Rec, Statement } from "../types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
@@ -16,6 +16,7 @@ import {
 import path from "path-browserify";
 import { mapObj } from "../util";
 import { RuleGraph } from "./ruleGraph";
+import { formatNode, ppr } from "./pretty";
 
 type Output =
   | { type: "EmissionLog"; log: EmissionLog }
@@ -141,14 +142,16 @@ export function formatOutput(
           content: output.log
             .map((batch) => {
               return [
-                `${batch.insertion.origin} => ${
+                `from ${batch.insertion.origin} to ${
                   batch.insertion.destination
-                }: ${ppr(batch.insertion.res)}`,
+                }: ${ppr(batch.insertion.res)}. ${formatNode(
+                  graph.nodes[batch.insertion.destination]
+                )}`,
                 ...batch.output.map((res) => `  ${ppr(res)}`),
               ].join("\n");
             })
             .join("\n"),
-          mimeType: "emission-log",
+          mimeType: "text/emission-log",
         };
       } else {
         return datalogOut(

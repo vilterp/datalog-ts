@@ -1,8 +1,8 @@
-import { AttrPath, ppr, JoinDesc, NodeAndCache, NodeDesc } from "./types";
+import { NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { RuleGraph } from "./ruleGraph";
-import { ppBE, ppt, ppVM } from "../pretty";
+import { formatNode, ppr } from "./pretty";
 
 export function toGraphviz(
   graph: RuleGraph,
@@ -14,7 +14,7 @@ export function toGraphviz(
         id,
         attrs: {
           shape: "box",
-          label: `${id}: ${formatDesc(node)}`,
+          label: `${id}: ${formatNode(node)}`,
           fillcolor: getNodeColor(node.desc) || "",
           style: "filled",
         },
@@ -60,44 +60,4 @@ function getNodeColor(nodeDesc: NodeDesc): string {
     case "Union":
       return "moccasin";
   }
-}
-
-function formatDesc(node: NodeAndCache): string {
-  const nodeDesc = node.desc;
-  const mainRes = (() => {
-    switch (nodeDesc.type) {
-      case "BinExpr":
-        return ppBE(nodeDesc.expr);
-      case "Join":
-        return `${nodeDesc.ruleName}: Join(${formatJoinDesc(nodeDesc)})`;
-      case "Match":
-        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-          showScopePath: false,
-        })})`;
-      case "Substitute":
-        return `Subst({${mapObjToList(
-          nodeDesc.rec.attrs,
-          (key, val) => `${key}: ${ppt(val)}`
-        ).join(", ")}})`;
-      case "Union":
-        return "Union";
-      case "BaseFactTable":
-        return "";
-    }
-  })();
-  return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
-}
-
-function formatJoinDesc(joinDesc: JoinDesc): string {
-  return mapObjToList(
-    joinDesc.joinInfo.join,
-    (key, { leftAttr, rightAttr }) =>
-      `${key}: ${joinDesc.leftID}.${formatAttrPath(leftAttr)} = ${
-        joinDesc.rightID
-      }.${formatAttrPath(rightAttr)}`
-  ).join(" & ");
-}
-
-function formatAttrPath(path: AttrPath): string {
-  return path.join(".");
 }

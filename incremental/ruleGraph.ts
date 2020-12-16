@@ -3,7 +3,6 @@ import {
   AddResult,
   EmissionBatch,
   EmissionLog,
-  ppr,
   Insertion,
   JoinDesc,
   MatchDesc,
@@ -41,6 +40,7 @@ import { IndexedCollection } from "./indexedCollection";
 import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
 import { Performance } from "w3c-hr-time";
+import { ppr } from "./pretty";
 
 const performance = new Performance();
 

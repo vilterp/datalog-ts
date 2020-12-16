@@ -63,10 +63,6 @@ export type NodeDesc =
 
 // formatters
 
-export function ppr(res: Res): string {
-  return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
-}
-
 export type AddResult = {
   newNodeIDs: Set<NodeID>;
   rec: Rec;

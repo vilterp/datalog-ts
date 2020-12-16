@@ -7,7 +7,7 @@ application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(mother{child: A, mother: B}; {}) [B]" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" label="1: Match(father{child: B, father: C}; {}) [B]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: matGramp: Join(B: 1.child = 0.mother) []" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(matGramp, B: 1.child = 0.mother) []" shape="box" style="filled"];
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
   "matGramp" [fillcolor="lightblue" label="matGramp: Subst({child: A, grandfather: C}) []" shape="box" style="filled"];
@@ -27,9 +27,9 @@ application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(a{}; {}) []" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" label="1: Match(b{}; {}) []" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: d: Join() []" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(d, ) []" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(c{}; {}) []" shape="box" style="filled"];
-  "4" [fillcolor="thistle" label="4: d: Join() []" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(d, ) []" shape="box" style="filled"];
   "a" [fillcolor="darksalmon" label="a:  []" shape="box" style="filled"];
   "b" [fillcolor="darksalmon" label="b:  []" shape="box" style="filled"];
   "c" [fillcolor="darksalmon" label="c:  []" shape="box" style="filled"];
@@ -79,7 +79,7 @@ digraph G {
   "2" [fillcolor="darkseagreen2" label="2: Match(father{child: C, father: P}; {}) []" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(parent{child: A, parent: B}; {C: A, P: B}) [B]" shape="box" style="filled"];
   "4" [fillcolor="darkseagreen2" label="4: Match(parent{child: B, parent: C}; {C: B, P: C}) [B]" shape="box" style="filled"];
-  "5" [fillcolor="thistle" label="5: grandparent: Join(B: 4.child = 3.parent) []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(grandparent, B: 4.child = 3.parent) []" shape="box" style="filled"];
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
   "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
