@@ -1,4 +1,4 @@
-import { AttrPath, formatRes, JoinDesc, NodeAndCache, NodeDesc } from "./types";
+import { AttrPath, ppr, JoinDesc, NodeAndCache, NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { RuleGraph } from "./ruleGraph";
@@ -22,7 +22,7 @@ export function toGraphviz(
           node.cache.size() > 0
             ? `cache: [${node.cache
                 .all()
-                .map((res) => formatRes(res))
+                .map((res) => ppr(res))
                 .join(", ")}]`
             : "",
       };

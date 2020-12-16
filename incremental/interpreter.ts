@@ -1,4 +1,4 @@
-import { EmissionLog, formatRes, NodeID, Res } from "./types";
+import { EmissionLog, ppr, NodeID, Res } from "./types";
 import { Program, Rec, Statement } from "../types";
 import { prettyPrintGraph } from "../graphviz";
 import { toGraphviz } from "./graphviz";
@@ -141,9 +141,7 @@ export function formatOutput(
           output.log
             .map(
               ({ fromID, output }) =>
-                `${fromID}: [${output
-                  .map((res) => `${formatRes(res)}`)
-                  .join(", ")}]`
+                `${fromID}: [${output.map((res) => `${ppr(res)}`).join(", ")}]`
             )
             .join("\n")
         );
@@ -169,9 +167,7 @@ export function formatOutput(
     case "QueryResults":
       return datalogOut(
         output.results
-          .map(
-            (res) => `${opts.showBindings ? formatRes(res) : ppt(res.term)}.`
-          )
+          .map((res) => `${opts.showBindings ? ppr(res) : ppt(res.term)}.`)
           .join("\n")
       );
     case "Trace":

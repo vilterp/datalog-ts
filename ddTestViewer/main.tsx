@@ -35,7 +35,7 @@ function TestViewer(props: { archive: Archive }) {
       <h1>DDTest Viewer</h1>
       <Select
         onChange={(newVal) => setCurrentTest(newVal.value)}
-        value={currentTest}
+        value={{ value: currentTest, label: currentTest }} // wtf react-select
         options={mapObjToList(testArchive, (testPath) => ({
           value: testPath,
           label: testPath,

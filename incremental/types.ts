@@ -63,7 +63,7 @@ export type NodeDesc =
 
 // formatters
 
-export function formatRes(res: Res): string {
+export function ppr(res: Res): string {
   return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
 }
 

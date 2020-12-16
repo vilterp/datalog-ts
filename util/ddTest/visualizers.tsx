@@ -2,15 +2,12 @@ import React, { useState } from "react";
 import { Graphviz } from "graphviz-react";
 import ReactJson from "react-json-view";
 import { useWindowWidth } from "@react-hook/window-size";
-import {
-  EmissionLogAndGraph,
-  emptyRuleGraph,
-  formatRes,
-} from "../../incremental/types";
+import { ppr } from "../../incremental/types";
 import { toGraphviz } from "../../incremental/graphviz";
 import { prettyPrintGraph } from "../../graphviz";
 import { clamp } from "../../util";
 import { TestOutput } from "./types";
+import { EmissionLogAndGraph } from "../../incremental/interpreter";
 
 export type SuiteSpec = {
   name: string;
@@ -70,7 +67,7 @@ function EmissionLogViewer(props: { text: string }) {
             {batch.fromID}:{" "}
             <ul>
               {batch.output.map((res, idx) => (
-                <li key={idx}>{formatRes(res)}</li>
+                <li key={idx}>{ppr(res)}</li>
               ))}
             </ul>
           </li>
