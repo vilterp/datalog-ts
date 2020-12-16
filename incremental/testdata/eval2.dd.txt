@@ -9,12 +9,16 @@ text/plain
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-text/plain
+emission-log
 
 father{child: "Pete", father: "Paul"}.
 ----
-text/plain
-father: [father{child: "Pete", father: "Paul"}; {}]
-2: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
-0: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
-parent: [parent{child: "Pete", parent: "Paul"}; {C: "Pete", P: "Paul"}]
+emission-log
+null => father: father{child: "Pete", father: "Paul"}; {}
+  father{child: "Pete", father: "Paul"}; {}
+father => 2: father{child: "Pete", father: "Paul"}; {}
+  father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
+2 => 0: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
+  father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
+0 => parent: father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}
+  parent{child: "Pete", parent: "Paul"}; {C: "Pete", P: "Paul"}

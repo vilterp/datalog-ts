@@ -137,19 +137,24 @@ export function formatOutput(
       return plainTextOut("");
     case "EmissionLog":
       if (opts.emissionLogMode === "test") {
-        return plainTextOut(
-          output.log
-            .map(
-              ({ fromID, output }) =>
-                `${fromID}: [${output.map((res) => `${ppr(res)}`).join(", ")}]`
-            )
-            .join("\n")
-        );
+        return {
+          content: output.log
+            .map((batch) => {
+              return [
+                `${batch.insertion.origin} => ${
+                  batch.insertion.destination
+                }: ${ppr(batch.insertion.res)}`,
+                ...batch.output.map((res) => `  ${ppr(res)}`),
+              ].join("\n");
+            })
+            .join("\n"),
+          mimeType: "emission-log",
+        };
       } else {
         return datalogOut(
           output.log
             .filter((emissionBatch) => {
-              const fromNode = graph.nodes[emissionBatch.fromID];
+              const fromNode = graph.nodes[emissionBatch.insertion.destination];
               return (
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );

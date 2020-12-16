@@ -10,14 +10,14 @@ parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
 ----
-text/plain
+emission-log
 
 sibling{left: L, right: R} :-
   parents{child: L, mother: M, father: F} &
   parents{child: R, mother: M, father: F} &
   L != R.
 ----
-text/plain
+emission-log
 
 .rulegraph
 ----
@@ -49,56 +49,84 @@ digraph G {
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/plain
-mother: [mother{child: "Pete", mother: "Mary"}; {}]
-0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}]
-2: []
+emission-log
+null => mother: mother{child: "Pete", mother: "Mary"}; {}
+  mother{child: "Pete", mother: "Mary"}; {}
+mother => 0: mother{child: "Pete", mother: "Mary"}; {}
+  mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
+0 => 2: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
 
 father{child: "Pete", father: "Paul"}.
 ----
-text/plain
-father: [father{child: "Pete", father: "Paul"}; {}]
-1: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}]
-2: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}]
-parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}]
-3: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}]
-4: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}]
-5: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
-5: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
-6: []
-6: []
+emission-log
+null => father: father{child: "Pete", father: "Paul"}; {}
+  father{child: "Pete", father: "Paul"}; {}
+father => 1: father{child: "Pete", father: "Paul"}; {}
+  father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}
+1 => 2: father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}
+  parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}
+2 => parents: parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}
+  parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
+parents => 3: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
+  parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}
+parents => 4: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
+  parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}
+3 => 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}
+  sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
+4 => 5: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}
+  sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
+5 => 6: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
+5 => 6: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/plain
-mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
-0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
-2: []
+emission-log
+null => mother: mother{child: "Carolyn", mother: "Mary"}; {}
+  mother{child: "Carolyn", mother: "Mary"}; {}
+mother => 0: mother{child: "Carolyn", mother: "Mary"}; {}
+  mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
+0 => 2: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-text/plain
-father: [father{child: "Carolyn", father: "Paul"}; {}]
-1: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
-2: [parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
-parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
-3: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}]
-4: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}]
-5: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
-5: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
-6: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
-6: []
-6: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
-6: []
-sibling: [sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
-sibling: [sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
+emission-log
+null => father: father{child: "Carolyn", father: "Paul"}; {}
+  father{child: "Carolyn", father: "Paul"}; {}
+father => 1: father{child: "Carolyn", father: "Paul"}; {}
+  father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}
+1 => 2: father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}
+  parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+2 => parents: parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+  parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+parents => 3: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+  parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}
+parents => 4: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
+  parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}
+3 => 5: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}
+  sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+  sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
+4 => 5: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}
+  sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
+  sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
+5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+  sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
+5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
+  sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
+5 => 6: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
+6 => sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+  sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
+6 => sibling: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
+  sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
 
 mother{child: "Steve", mother: "Jill"}.
 ----
-text/plain
-mother: [mother{child: "Steve", mother: "Jill"}; {}]
-0: [mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}]
-2: []
+emission-log
+null => mother: mother{child: "Steve", mother: "Jill"}; {}
+  mother{child: "Steve", mother: "Jill"}; {}
+mother => 0: mother{child: "Steve", mother: "Jill"}; {}
+  mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}
+0 => 2: mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}
 
 mother{child: C, mother: M}.
 ----

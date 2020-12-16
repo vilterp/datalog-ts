@@ -9,13 +9,13 @@ text/plain
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-text/plain
+emission-log
 
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
-text/plain
+emission-log
 
 .rulegraph
 ----
@@ -45,38 +45,60 @@ digraph G {
 
 father{child: "Mary", father: "Mark"}.
 ----
-text/plain
-father: [father{child: "Mary", father: "Mark"}; {}]
-2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
-0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
-parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
-3: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
-4: [parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}]
-5: []
-5: []
+emission-log
+null => father: father{child: "Mary", father: "Mark"}; {}
+  father{child: "Mary", father: "Mark"}; {}
+father => 2: father{child: "Mary", father: "Mark"}; {}
+  father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
+2 => 0: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
+  father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
+0 => parent: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}
+  parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}
+parent => 3: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}
+  parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}
+parent => 4: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}
+  parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}
+3 => 5: parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}
+4 => 5: parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/plain
-mother: [mother{child: "Pete", mother: "Mary"}; {}]
-1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
-0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
-parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
-3: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
-4: [parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}]
-5: [grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
-5: []
-grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+emission-log
+null => mother: mother{child: "Pete", mother: "Mary"}; {}
+  mother{child: "Pete", mother: "Mary"}; {}
+mother => 1: mother{child: "Pete", mother: "Mary"}; {}
+  mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
+1 => 0: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
+  mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
+0 => parent: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}
+  parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}
+parent => 3: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}
+  parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}
+parent => 4: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}
+  parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}
+3 => 5: parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}
+  grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
+4 => 5: parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}
+5 => grandparent: grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
+  grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/plain
-mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
-1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
-0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
-parent: [parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}]
-3: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}]
-4: [parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}]
-5: [grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
-5: []
-grandparent: [grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
+emission-log
+null => mother: mother{child: "Carolyn", mother: "Mary"}; {}
+  mother{child: "Carolyn", mother: "Mary"}; {}
+mother => 1: mother{child: "Carolyn", mother: "Mary"}; {}
+  mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
+1 => 0: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
+  mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
+0 => parent: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}
+  parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}
+parent => 3: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}
+  parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}
+parent => 4: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}
+  parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}
+3 => 5: parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}
+  grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}
+4 => 5: parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}
+5 => grandparent: grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}
+  grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}

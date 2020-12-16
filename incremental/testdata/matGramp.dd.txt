@@ -9,7 +9,7 @@ text/plain
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
-text/plain
+emission-log
 
 .rulegraph
 ----
@@ -30,15 +30,21 @@ digraph G {
 
 father{child: "Mary", father: "Mark"}.
 ----
-text/plain
-father: [father{child: "Mary", father: "Mark"}; {}]
-1: [father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}]
-2: []
+emission-log
+null => father: father{child: "Mary", father: "Mark"}; {}
+  father{child: "Mary", father: "Mark"}; {}
+father => 1: father{child: "Mary", father: "Mark"}; {}
+  father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}
+1 => 2: father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/plain
-mother: [mother{child: "Pete", mother: "Mary"}; {}]
-0: [mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}]
-2: [matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
-matGramp: [matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+emission-log
+null => mother: mother{child: "Pete", mother: "Mary"}; {}
+  mother{child: "Pete", mother: "Mary"}; {}
+mother => 0: mother{child: "Pete", mother: "Mary"}; {}
+  mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}
+0 => 2: mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}
+  matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
+2 => matGramp: matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
+  matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}

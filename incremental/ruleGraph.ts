@@ -515,7 +515,7 @@ class InsertionIterator {
         });
       }
     }
-    return { fromID: curNodeID, output: results };
+    return { insertion: insertingNow, output: results };
   }
 }
 

@@ -81,4 +81,4 @@ export type Insertion = {
 
 export type EmissionLog = EmissionBatch[];
 
-export type EmissionBatch = { fromID: NodeID; output: Res[] };
+export type EmissionBatch = { insertion: Insertion; output: Res[] };

@@ -10,7 +10,7 @@ opportunity{worker: N, capability: C, objective: O} :-
   need{capability: C, objective: O} &
   worker{name: N, capability: C}.
 ----
-text/plain
+emission-log
 
 .rulegraph
 ----
@@ -31,18 +31,24 @@ digraph G {
 
 need{capability: "write HTML", objective: "make website"}.
 ----
-text/plain
-need: [need{capability: "write HTML", objective: "make website"}; {}]
-0: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
-2: []
+emission-log
+null => need: need{capability: "write HTML", objective: "make website"}; {}
+  need{capability: "write HTML", objective: "make website"}; {}
+need => 0: need{capability: "write HTML", objective: "make website"}; {}
+  need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}
+0 => 2: need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
-text/plain
-worker: [worker{capability: "write HTML", name: "Pete"}; {}]
-1: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
-2: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
-opportunity: [opportunity{capability: "write HTML", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
+emission-log
+null => worker: worker{capability: "write HTML", name: "Pete"}; {}
+  worker{capability: "write HTML", name: "Pete"}; {}
+worker => 1: worker{capability: "write HTML", name: "Pete"}; {}
+  worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}
+1 => 2: worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}
+  opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}
+2 => opportunity: opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}
+  opportunity{capability: "write HTML", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}
 
 .dumpcaches
 ----

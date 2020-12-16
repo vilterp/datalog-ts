@@ -6,7 +6,7 @@ edge{from: F, to: T} :-
   baseEdge{from: F, to: T} |
   baseEdge{from: F, to: I} & edge{from: I, to: T}.
 ----
-text/plain
+emission-log
 
 .rulegraph
 ----
@@ -31,51 +31,81 @@ digraph G {
 
 baseEdge{from: "A", to: "B"}.
 ----
-text/plain
-baseEdge: [baseEdge{from: "A", to: "B"}; {}]
-1: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
-2: [baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}]
-0: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
-4: []
-edge: [edge{from: "A", to: "B"}; {F: "A", T: "B"}]
-3: [edge{from: "A", to: "B"}; {I: "A", T: "B"}]
-4: []
+emission-log
+null => baseEdge: baseEdge{from: "A", to: "B"}; {}
+  baseEdge{from: "A", to: "B"}; {}
+baseEdge => 1: baseEdge{from: "A", to: "B"}; {}
+  baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}
+baseEdge => 2: baseEdge{from: "A", to: "B"}; {}
+  baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}
+1 => 0: baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}
+  baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}
+2 => 4: baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}
+0 => edge: baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}
+  edge{from: "A", to: "B"}; {F: "A", T: "B"}
+edge => 3: edge{from: "A", to: "B"}; {F: "A", T: "B"}
+  edge{from: "A", to: "B"}; {I: "A", T: "B"}
+3 => 4: edge{from: "A", to: "B"}; {I: "A", T: "B"}
 
 baseEdge{from: "C", to: "D"}.
 ----
-text/plain
-baseEdge: [baseEdge{from: "C", to: "D"}; {}]
-1: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
-2: [baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}]
-0: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
-4: []
-edge: [edge{from: "C", to: "D"}; {F: "C", T: "D"}]
-3: [edge{from: "C", to: "D"}; {I: "C", T: "D"}]
-4: []
+emission-log
+null => baseEdge: baseEdge{from: "C", to: "D"}; {}
+  baseEdge{from: "C", to: "D"}; {}
+baseEdge => 1: baseEdge{from: "C", to: "D"}; {}
+  baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}
+baseEdge => 2: baseEdge{from: "C", to: "D"}; {}
+  baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}
+1 => 0: baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}
+  baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}
+2 => 4: baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}
+0 => edge: baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}
+  edge{from: "C", to: "D"}; {F: "C", T: "D"}
+edge => 3: edge{from: "C", to: "D"}; {F: "C", T: "D"}
+  edge{from: "C", to: "D"}; {I: "C", T: "D"}
+3 => 4: edge{from: "C", to: "D"}; {I: "C", T: "D"}
 
 baseEdge{from: "B", to: "C"}.
 ----
-text/plain
-baseEdge: [baseEdge{from: "B", to: "C"}; {}]
-1: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
-2: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}]
-0: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
-4: [edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}]
-edge: [edge{from: "B", to: "C"}; {F: "B", T: "C"}]
-0: [edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}]
-3: [edge{from: "B", to: "C"}; {I: "B", T: "C"}]
-edge: [edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}]
-4: [edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}]
-3: [edge{from: "B", to: "D"}; {I: "B", T: "D"}]
-0: [edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}]
-4: [edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}]
-edge: [edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}]
-0: [edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}]
-3: [edge{from: "A", to: "C"}; {I: "A", T: "C"}]
-edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
-4: []
-3: [edge{from: "A", to: "D"}; {I: "A", T: "D"}]
-4: []
+emission-log
+null => baseEdge: baseEdge{from: "B", to: "C"}; {}
+  baseEdge{from: "B", to: "C"}; {}
+baseEdge => 1: baseEdge{from: "B", to: "C"}; {}
+  baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}
+baseEdge => 2: baseEdge{from: "B", to: "C"}; {}
+  baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}
+1 => 0: baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}
+  baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}
+2 => 4: baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}
+  edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}
+0 => edge: baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}
+  edge{from: "B", to: "C"}; {F: "B", T: "C"}
+4 => 0: edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}
+  edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}
+edge => 3: edge{from: "B", to: "C"}; {F: "B", T: "C"}
+  edge{from: "B", to: "C"}; {I: "B", T: "C"}
+0 => edge: edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}
+  edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}
+3 => 4: edge{from: "B", to: "C"}; {I: "B", T: "C"}
+  edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}
+edge => 3: edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}
+  edge{from: "B", to: "D"}; {I: "B", T: "D"}
+4 => 0: edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}
+  edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}
+3 => 4: edge{from: "B", to: "D"}; {I: "B", T: "D"}
+  edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}
+0 => edge: edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}
+  edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}
+4 => 0: edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}
+  edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}
+edge => 3: edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}
+  edge{from: "A", to: "C"}; {I: "A", T: "C"}
+0 => edge: edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}
+  edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}
+3 => 4: edge{from: "A", to: "C"}; {I: "A", T: "C"}
+edge => 3: edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}
+  edge{from: "A", to: "D"}; {I: "A", T: "D"}
+3 => 4: edge{from: "A", to: "D"}; {I: "A", T: "D"}
 
 edge{from: F, to: T}.
 ----
