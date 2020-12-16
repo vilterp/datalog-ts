@@ -67,17 +67,21 @@ export function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
   const interp = new Interpreter(fsLoader);
   for (let input of inputs) {
-    const stmt = parseStatement(input);
-    // const before = Date.now();
-    const output = interp.processStmt(stmt);
-    // const after = Date.now();
-    // console.log(after - before, "ms", stmt);
-    out.push(
-      formatOutput(interp.graph, output, {
-        emissionLogMode: "test",
-        showBindings: true,
-      })
-    );
+    try {
+      const stmt = parseStatement(input);
+      // const before = Date.now();
+      const output = interp.processStmt(stmt);
+      // const after = Date.now();
+      // console.log(after - before, "ms", stmt);
+      out.push(
+        formatOutput(interp.graph, output, {
+          emissionLogMode: "test",
+          showBindings: true,
+        })
+      );
+    } catch (err) {
+      throw new Error(`processing "${input}": ${err.stack}`);
+    }
   }
   return out;
 }

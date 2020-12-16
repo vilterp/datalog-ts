@@ -459,7 +459,11 @@ export class RuleGraph {
   }
 
   private addIndex(nodeID: NodeID, attrPaths: AttrPath[]) {
-    this.nodes[nodeID].cache.createIndex(getIndexName(attrPaths), (res) => {
+    const node = this.nodes[nodeID];
+    if (!node) {
+      throw new Error(`can't add index to nonexistent node ${nodeID}`);
+    }
+    node.cache.createIndex(getIndexName(attrPaths), (res) => {
       // TODO: is this gonna be a perf bottleneck?
       // console.log({ attrs, res: ppt(res.term) });
       return getIndexKey(res.term as Rec, attrPaths);
