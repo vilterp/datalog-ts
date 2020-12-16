@@ -34,6 +34,7 @@ export function CodeEditor<AST>(props: {
 }) {
   const interp = props.interp;
   interp.graph.clearCaches(); // wuh-oh, side effects in render
+  interp.doLoad("./stdlib.dl"); // yeah reloading this each time kinda sucks
   interp.evalStr(`ide.Cursor{idx: ${props.state.cursorPos}}.`);
 
   const st = props.state;
@@ -62,8 +63,7 @@ export function CodeEditor<AST>(props: {
         interp.processStmt({ type: "Insert", record: record as Rec });
       }
 
-      console.log("codeeditor", getJoinStats());
-
+      console.log("join stats", getJoinStats());
       console.log("unify calls", getUnifyCalls());
 
       // get suggestions

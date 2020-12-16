@@ -36,7 +36,8 @@ export function getSuggestions(interp: Interpreter): Suggestion[] {
             display: name,
           };
         }
-      ),
+      )
+      .reverse(),
     (s) => s.textToInsert
   );
   const syntaxSuggs: Suggestion[] = [
