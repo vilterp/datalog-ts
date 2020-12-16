@@ -106,7 +106,7 @@ export function numJoinsWithCommonVars(joinTree: JoinTree): number {
   if (joinTree.type === "Leaf") {
     return 0;
   }
-  const thisDoes = Object.keys(joinTree.joinInfo).length > 0 ? 1 : 0;
+  const thisDoes = Object.keys(joinTree.joinInfo.join).length > 0 ? 1 : 0;
   return thisDoes + numJoinsWithCommonVars(joinTree.right);
 }
 

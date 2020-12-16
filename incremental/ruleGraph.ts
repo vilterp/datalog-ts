@@ -348,12 +348,14 @@ export class RuleGraph {
   private addAnd(ruleName: string, clauses: AndClause[]): AddResult {
     const { recs, exprs } = extractBinExprs(clauses);
     const allRecPermutations = permute(recs);
-    const allJoinTrees = allRecPermutations.map(getJoinTree);
-    // TODO: cache these
-    allJoinTrees.sort((left, right) => {
-      return numJoinsWithCommonVars(left) - numJoinsWithCommonVars(right);
+    const allJoinTrees = allRecPermutations.map((recs) => {
+      const tree = getJoinTree(recs);
+      return { tree, numCommonVars: numJoinsWithCommonVars(tree) };
     });
-    const joinTree = allJoinTrees[allJoinTrees.length - 1];
+    allJoinTrees.sort((left, right) => {
+      return left.numCommonVars - right.numCommonVars;
+    });
+    const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
 
     const withJoinRes = this.addJoinTree(ruleName, joinTree);
 
