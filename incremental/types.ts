@@ -42,7 +42,7 @@ export type ColsToIndexByRelation = {
 export type JoinDesc = {
   type: "Join";
   ruleName: string;
-  joinInfo: JoinInfo;
+  joinVars: string[];
   leftID: NodeID;
   rightID: NodeID;
 };

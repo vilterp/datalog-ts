@@ -25,10 +25,10 @@ application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(mother{child: C, mother: M}; {}) [C]" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" label="1: Match(father{child: C, father: F}; {}) [C]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: Join(parents, C: 1.child = 0.child) []" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(parents, [C]) []" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(parents{child: L, father: F, mother: M}; {C: L, F: F, M: M}) [M-F]" shape="box" style="filled"];
   "4" [fillcolor="darkseagreen2" label="4: Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M}) [M-F]" shape="box" style="filled"];
-  "5" [fillcolor="thistle" label="5: Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother) []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(sibling, [M, F]) []" shape="box" style="filled"];
   "6" [fillcolor="darkseagreen1" label="6: L != R []" shape="box" style="filled"];
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
@@ -54,7 +54,7 @@ mother from null: mother{child: "Pete", mother: "Mary"}; {}.
   mother{child: "Pete", mother: "Mary"}; {}
 0 from mother: mother{child: "Pete", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {})
   mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}
-2 from 0: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}. Join(parents, C: 1.child = 0.child)
+2 from 0: mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}. Join(parents, [C])
 
 father{child: "Pete", father: "Paul"}.
 ----
@@ -63,7 +63,7 @@ father from null: father{child: "Pete", father: "Paul"}; {}.
   father{child: "Pete", father: "Paul"}; {}
 1 from father: father{child: "Pete", father: "Paul"}; {}. Match(father{child: C, father: F}; {})
   father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}
-2 from 1: father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}. Join(parents, C: 1.child = 0.child)
+2 from 1: father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}. Join(parents, [C])
   parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}
 parents from 2: parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}. Subst({child: C, father: F, mother: M})
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}
@@ -71,9 +71,9 @@ parents from 2: parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}
 4 from parents: parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}. Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})
   parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}
-5 from 3: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother)
+5 from 3: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}. Join(sibling, [M, F])
   sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
-5 from 4: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother)
+5 from 4: parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}. Join(sibling, [M, F])
   sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}
 6 from 5: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}. L != R
 6 from 5: sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}. L != R
@@ -85,7 +85,7 @@ mother from null: mother{child: "Carolyn", mother: "Mary"}; {}.
   mother{child: "Carolyn", mother: "Mary"}; {}
 0 from mother: mother{child: "Carolyn", mother: "Mary"}; {}. Match(mother{child: C, mother: M}; {})
   mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}
-2 from 0: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}. Join(parents, C: 1.child = 0.child)
+2 from 0: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}. Join(parents, [C])
 
 father{child: "Carolyn", father: "Paul"}.
 ----
@@ -94,7 +94,7 @@ father from null: father{child: "Carolyn", father: "Paul"}; {}.
   father{child: "Carolyn", father: "Paul"}; {}
 1 from father: father{child: "Carolyn", father: "Paul"}; {}. Match(father{child: C, father: F}; {})
   father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}
-2 from 1: father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}. Join(parents, C: 1.child = 0.child)
+2 from 1: father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}. Join(parents, [C])
   parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}
 parents from 2: parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}. Subst({child: C, father: F, mother: M})
   parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}
@@ -102,10 +102,10 @@ parents from 2: parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Pa
   parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}
 4 from parents: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}. Match(parents{child: R, father: F, mother: M}; {C: R, F: F, M: M})
   parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}
-5 from 3: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother)
+5 from 3: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}. Join(sibling, [M, F])
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
-5 from 4: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}. Join(sibling, F: 4.father = 3.father & M: 4.mother = 3.mother)
+5 from 4: parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}. Join(sibling, [M, F])
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}
   sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}
 6 from 5: sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}. L != R
@@ -126,7 +126,7 @@ mother from null: mother{child: "Steve", mother: "Jill"}; {}.
   mother{child: "Steve", mother: "Jill"}; {}
 0 from mother: mother{child: "Steve", mother: "Jill"}; {}. Match(mother{child: C, mother: M}; {})
   mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}
-2 from 0: mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}. Join(parents, C: 1.child = 0.child)
+2 from 0: mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}. Join(parents, [C])
 
 mother{child: C, mother: M}.
 ----

@@ -204,9 +204,8 @@ export class RuleGraph {
     const thisVars = ins.res.bindings;
     const otherNode = this.nodes[otherNodeID];
     // TODO: avoid this allocation
-    const varNames = Object.keys(joinDesc.joinInfo.join);
-    const indexName = getIndexName(varNames);
-    const indexKey = getIndexKey(ins.res, varNames);
+    const indexName = getIndexName(joinDesc.joinVars);
+    const indexKey = getIndexKey(ins.res, joinDesc.joinVars);
     const otherEntries = otherNode.cache.get(indexName, indexKey);
     // console.log({
     //   indexName,
@@ -384,8 +383,8 @@ export class RuleGraph {
     const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
     const joinID = this.addNode(true, {
       type: "Join",
-      joinInfo,
       ruleName,
+      joinVars: Object.keys(joinInfo.join),
       leftID,
       rightID,
     });

@@ -23,9 +23,9 @@ application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(worker{capability: C, name: N}; {}) [C]" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" label="1: Match(need{capability: C, objective: O}; {}) [C]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: Join(opportunity, C: 1.capability = 0.capability) [O]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(opportunity, [C]) [O]" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(fundingSource{objective: O, source: S}; {}) [O]" shape="box" style="filled"];
-  "4" [fillcolor="thistle" label="4: Join(opportunity, O: 3.objective = 2.objective) []" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(opportunity, [O]) []" shape="box" style="filled"];
   "need" [fillcolor="darksalmon" label="need:  []" shape="box" style="filled"];
   "worker" [fillcolor="darksalmon" label="worker:  []" shape="box" style="filled"];
   "fundingSource" [fillcolor="darksalmon" label="fundingSource:  []" shape="box" style="filled"];
@@ -47,7 +47,7 @@ need from null: need{capability: "write HTML", objective: "make website"}; {}.
   need{capability: "write HTML", objective: "make website"}; {}
 1 from need: need{capability: "write HTML", objective: "make website"}; {}. Match(need{capability: C, objective: O}; {})
   need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}
-2 from 1: need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}. Join(opportunity, C: 1.capability = 0.capability)
+2 from 1: need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}. Join(opportunity, [C])
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
@@ -56,9 +56,9 @@ worker from null: worker{capability: "write HTML", name: "Pete"}; {}.
   worker{capability: "write HTML", name: "Pete"}; {}
 0 from worker: worker{capability: "write HTML", name: "Pete"}; {}. Match(worker{capability: C, name: N}; {})
   worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}
-2 from 0: worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}. Join(opportunity, C: 1.capability = 0.capability)
+2 from 0: worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}. Join(opportunity, [C])
   opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}
-4 from 2: opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}. Join(opportunity, O: 3.objective = 2.objective)
+4 from 2: opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}. Join(opportunity, [O])
 
 fundingSource{objective: "make website", source: "some company"}.
 ----
@@ -67,7 +67,7 @@ fundingSource from null: fundingSource{objective: "make website", source: "some 
   fundingSource{objective: "make website", source: "some company"}; {}
 3 from fundingSource: fundingSource{objective: "make website", source: "some company"}; {}. Match(fundingSource{objective: O, source: S}; {})
   fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}
-4 from 3: fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}. Join(opportunity, O: 3.objective = 2.objective)
+4 from 3: fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}. Join(opportunity, [O])
   opportunity{objective: "make website", source: "some company"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}
 opportunity from 4: opportunity{objective: "make website", source: "some company"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}. Subst({capability: C, fundingSource: S, objective: O, worker: N})
   opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}

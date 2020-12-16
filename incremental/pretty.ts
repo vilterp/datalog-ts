@@ -7,7 +7,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BinExpr":
       return ppBE(nodeDesc.expr);
     case "Join":
-      return `Join(${nodeDesc.ruleName}, ${formatJoinDesc(nodeDesc)})`;
+      return `Join(${nodeDesc.ruleName}, [${nodeDesc.joinVars.join(", ")}])`;
     case "Match":
       return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
         showScopePath: false,
@@ -26,20 +26,6 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
 
 export function formatNodeWithIndexes(node: NodeAndCache): string {
   return `${formatNodeDesc(node.desc)} [${node.cache.indexNames().join(", ")}]`;
-}
-
-function formatJoinDesc(joinDesc: JoinDesc): string {
-  return mapObjToList(
-    joinDesc.joinInfo.join,
-    (key, { leftAttr, rightAttr }) =>
-      `${key}: ${joinDesc.leftID}.${formatAttrPath(leftAttr)} = ${
-        joinDesc.rightID
-      }.${formatAttrPath(rightAttr)}`
-  ).join(" & ");
-}
-
-function formatAttrPath(path: AttrPath): string {
-  return path.join(".");
 }
 
 export function ppr(res: Res): string {
