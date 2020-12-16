@@ -26,20 +26,20 @@ digraph G {
   "6" [fillcolor="darkseagreen2" label="6: Match(ast.Lambda{id: I, location: S}; {}) []" shape="box" style="filled"];
   "7" [fillcolor="darkseagreen2" label="7: Match(ast.Placeholder{id: I, location: S}; {}) []" shape="box" style="filled"];
   "8" [fillcolor="moccasin" label="8: Union []" shape="box" style="filled"];
-  "9" [fillcolor="darkseagreen2" label="9: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box" style="filled"];
-  "10" [fillcolor="darkseagreen2" label="10: Match(ast.LetExpr{bodyID: I, id: P}; {}) [bodyID]" shape="box" style="filled"];
+  "9" [fillcolor="darkseagreen2" label="9: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" label="10: Match(ast.LetExpr{bodyID: I, id: P}; {}) [I]" shape="box" style="filled"];
   "11" [fillcolor="thistle" label="11: ast.ParentExpr: Join(I: 10.bodyID = 9.id) []" shape="box" style="filled"];
-  "12" [fillcolor="darkseagreen2" label="12: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box" style="filled"];
-  "13" [fillcolor="darkseagreen2" label="13: Match(ast.LetExpr{bindingID: I, id: P}; {}) [bindingID]" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" label="12: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
+  "13" [fillcolor="darkseagreen2" label="13: Match(ast.LetExpr{bindingID: I, id: P}; {}) [I]" shape="box" style="filled"];
   "14" [fillcolor="thistle" label="14: ast.ParentExpr: Join(I: 13.bindingID = 12.id) []" shape="box" style="filled"];
-  "15" [fillcolor="darkseagreen2" label="15: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box" style="filled"];
-  "16" [fillcolor="darkseagreen2" label="16: Match(ast.FuncCall{funcID: I, id: P}; {}) [funcID]" shape="box" style="filled"];
+  "15" [fillcolor="darkseagreen2" label="15: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
+  "16" [fillcolor="darkseagreen2" label="16: Match(ast.FuncCall{funcID: I, id: P}; {}) [I]" shape="box" style="filled"];
   "17" [fillcolor="thistle" label="17: ast.ParentExpr: Join(I: 16.funcID = 15.id) []" shape="box" style="filled"];
-  "18" [fillcolor="darkseagreen2" label="18: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box" style="filled"];
-  "19" [fillcolor="darkseagreen2" label="19: Match(ast.FuncCall{argID: I, id: P}; {}) [argID]" shape="box" style="filled"];
+  "18" [fillcolor="darkseagreen2" label="18: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
+  "19" [fillcolor="darkseagreen2" label="19: Match(ast.FuncCall{argID: I, id: P}; {}) [I]" shape="box" style="filled"];
   "20" [fillcolor="thistle" label="20: ast.ParentExpr: Join(I: 19.argID = 18.id) []" shape="box" style="filled"];
-  "21" [fillcolor="darkseagreen2" label="21: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box" style="filled"];
-  "22" [fillcolor="darkseagreen2" label="22: Match(ast.Lambda{body: I, id: P}; {}) [body]" shape="box" style="filled"];
+  "21" [fillcolor="darkseagreen2" label="21: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
+  "22" [fillcolor="darkseagreen2" label="22: Match(ast.Lambda{body: I, id: P}; {}) [I]" shape="box" style="filled"];
   "23" [fillcolor="thistle" label="23: ast.ParentExpr: Join(I: 22.body = 21.id) []" shape="box" style="filled"];
   "24" [fillcolor="moccasin" label="24: Union []" shape="box" style="filled"];
   "25" [fillcolor="darkseagreen2" label="25: Match(tc.typeS{id: I, type: T}; {I: I}) []" shape="box" style="filled"];
@@ -51,19 +51,19 @@ digraph G {
   "31" [fillcolor="darkseagreen2" label="31: Match(tc.typePlaceholder{id: I, type: T}; {I: I}) []" shape="box" style="filled"];
   "32" [fillcolor="darkseagreen2" label="32: Match(ast.StringLit{id: I}; {}) []" shape="box" style="filled"];
   "33" [fillcolor="darkseagreen2" label="33: Match(ast.IntLit{id: I}; {}) []" shape="box" style="filled"];
-  "34" [fillcolor="darkseagreen2" label="34: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [funcID]" shape="box" style="filled"];
-  "35" [fillcolor="darkseagreen2" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [id]" shape="box" style="filled"];
-  "36" [fillcolor="thistle" label="36: tc.typeFC: Join(FID: 35.id = 34.funcID) [type/from]" shape="box" style="filled"];
-  "37" [fillcolor="darkseagreen2" label="37: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [type]" shape="box" style="filled"];
+  "34" [fillcolor="darkseagreen2" label="34: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [FID]" shape="box" style="filled"];
+  "35" [fillcolor="darkseagreen2" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [FID]" shape="box" style="filled"];
+  "36" [fillcolor="thistle" label="36: tc.typeFC: Join(FID: 35.id = 34.funcID) [F]" shape="box" style="filled"];
+  "37" [fillcolor="darkseagreen2" label="37: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [F]" shape="box" style="filled"];
   "38" [fillcolor="thistle" label="38: tc.typeFC: Join(F: 37.type = 36.type.from) []" shape="box" style="filled"];
-  "39" [fillcolor="darkseagreen2" label="39: Match(ast.LetExpr{bodyID: BID, id: I}; {}) [bodyID]" shape="box" style="filled"];
-  "40" [fillcolor="darkseagreen2" label="40: Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [id]" shape="box" style="filled"];
+  "39" [fillcolor="darkseagreen2" label="39: Match(ast.LetExpr{bodyID: BID, id: I}; {}) [BID]" shape="box" style="filled"];
+  "40" [fillcolor="darkseagreen2" label="40: Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [BID]" shape="box" style="filled"];
   "41" [fillcolor="thistle" label="41: tc.typeLet: Join(BID: 40.id = 39.bodyID) []" shape="box" style="filled"];
-  "42" [fillcolor="darkseagreen2" label="42: Match(ast.Var{id: I, name: N}; {}) [id-name]" shape="box" style="filled"];
-  "43" [fillcolor="darkseagreen2" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [id-name]" shape="box" style="filled"];
+  "42" [fillcolor="darkseagreen2" label="42: Match(ast.Var{id: I, name: N}; {}) [I-N]" shape="box" style="filled"];
+  "43" [fillcolor="darkseagreen2" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]" shape="box" style="filled"];
   "44" [fillcolor="thistle" label="44: tc.typeVar: Join(I: 43.id = 42.id & N: 43.name = 42.name) []" shape="box" style="filled"];
-  "45" [fillcolor="darkseagreen2" label="45: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [id]" shape="box" style="filled"];
-  "46" [fillcolor="darkseagreen2" label="46: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [lambdaID]" shape="box" style="filled"];
+  "45" [fillcolor="darkseagreen2" label="45: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [I]" shape="box" style="filled"];
+  "46" [fillcolor="darkseagreen2" label="46: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [I]" shape="box" style="filled"];
   "47" [fillcolor="thistle" label="47: tc.typeLambda: Join(I: 46.lambdaID = 45.id) []" shape="box" style="filled"];
   "48" [fillcolor="darkseagreen2" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) []" shape="box" style="filled"];
   "49" [fillcolor="thistle" label="49: tc.typeLambda: Join() []" shape="box" style="filled"];
@@ -72,17 +72,17 @@ digraph G {
   "52" [fillcolor="darkseagreen2" label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []" shape="box" style="filled"];
   "53" [fillcolor="darkseagreen2" label="53: Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box" style="filled"];
   "54" [fillcolor="darkseagreen2" label="54: Match(tc.scopeLambda{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box" style="filled"];
-  "55" [fillcolor="darkseagreen2" label="55: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [parentID]" shape="box" style="filled"];
-  "56" [fillcolor="darkseagreen2" label="56: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [id]" shape="box" style="filled"];
+  "55" [fillcolor="darkseagreen2" label="55: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [P]" shape="box" style="filled"];
+  "56" [fillcolor="darkseagreen2" label="56: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]" shape="box" style="filled"];
   "57" [fillcolor="thistle" label="57: tc.ScopeItem: Join(P: 56.id = 55.parentID) []" shape="box" style="filled"];
   "58" [fillcolor="darkseagreen2" label="58: Match(ast.RootExpr{id: I}; {}) []" shape="box" style="filled"];
   "59" [fillcolor="darkseagreen2" label="59: Match(lang.Builtin{name: N, type: T}; {}) []" shape="box" style="filled"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
   "60" [fillcolor="thistle" label="60: tc.scopeBuiltin: Join() []" shape="box" style="filled"];
-  "61" [fillcolor="darkseagreen2" label="61: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [bindingID]" shape="box" style="filled"];
-  "62" [fillcolor="darkseagreen2" label="62: Match(tc.Type{id: B, type: T}; {I: B, T: T}) [id]" shape="box" style="filled"];
+  "61" [fillcolor="darkseagreen2" label="61: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [B]" shape="box" style="filled"];
+  "62" [fillcolor="darkseagreen2" label="62: Match(tc.Type{id: B, type: T}; {I: B, T: T}) [B]" shape="box" style="filled"];
   "63" [fillcolor="thistle" label="63: tc.scopeLet: Join(B: 62.id = 61.bindingID) []" shape="box" style="filled"];
-  "64" [fillcolor="darkseagreen2" label="64: Match(ast.Lambda{body: I, id: LID}; {}) [id]" shape="box" style="filled"];
-  "65" [fillcolor="darkseagreen2" label="65: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {}) [lambdaID]" shape="box" style="filled"];
+  "64" [fillcolor="darkseagreen2" label="64: Match(ast.Lambda{body: I, id: LID}; {}) [LID]" shape="box" style="filled"];
+  "65" [fillcolor="darkseagreen2" label="65: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {}) [LID]" shape="box" style="filled"];
   "66" [fillcolor="thistle" label="66: tc.scopeLambda: Join(LID: 65.lambdaID = 64.id) []" shape="box" style="filled"];
   "67" [fillcolor="moccasin" label="67: Union []" shape="box" style="filled"];
   "68" [fillcolor="darkseagreen2" label="68: Match(ast.LetExpr{bodyID: I, id: P}; {}) []" shape="box" style="filled"];
@@ -403,7 +403,7 @@ application/json
   "9": {
     "nodeID": "9",
     "cache": {
-      "id": {
+      "I": {
         "items": {
           "0": [
             {
@@ -556,7 +556,7 @@ application/json
   "10": {
     "nodeID": "10",
     "cache": {
-      "bodyID": {
+      "I": {
         "items": {}
       }
     }
@@ -568,7 +568,7 @@ application/json
   "12": {
     "nodeID": "12",
     "cache": {
-      "id": {
+      "I": {
         "items": {
           "0": [
             {
@@ -721,7 +721,7 @@ application/json
   "13": {
     "nodeID": "13",
     "cache": {
-      "bindingID": {
+      "I": {
         "items": {}
       }
     }
@@ -733,7 +733,7 @@ application/json
   "15": {
     "nodeID": "15",
     "cache": {
-      "id": {
+      "I": {
         "items": {
           "0": [
             {
@@ -886,7 +886,7 @@ application/json
   "16": {
     "nodeID": "16",
     "cache": {
-      "funcID": {
+      "I": {
         "items": {
           "1": [
             {
@@ -945,7 +945,7 @@ application/json
   "18": {
     "nodeID": "18",
     "cache": {
-      "id": {
+      "I": {
         "items": {
           "0": [
             {
@@ -1098,7 +1098,7 @@ application/json
   "19": {
     "nodeID": "19",
     "cache": {
-      "argID": {
+      "I": {
         "items": {
           "2": [
             {
@@ -1157,7 +1157,7 @@ application/json
   "21": {
     "nodeID": "21",
     "cache": {
-      "id": {
+      "I": {
         "items": {
           "0": [
             {
@@ -1310,7 +1310,7 @@ application/json
   "22": {
     "nodeID": "22",
     "cache": {
-      "body": {
+      "I": {
         "items": {}
       }
     }
@@ -1362,7 +1362,7 @@ application/json
   "34": {
     "nodeID": "34",
     "cache": {
-      "funcID": {
+      "FID": {
         "items": {
           "1": [
             {
@@ -1421,7 +1421,7 @@ application/json
   "35": {
     "nodeID": "35",
     "cache": {
-      "id": {
+      "FID": {
         "items": {}
       }
     }
@@ -1429,7 +1429,7 @@ application/json
   "36": {
     "nodeID": "36",
     "cache": {
-      "type/from": {
+      "F": {
         "items": {}
       }
     }
@@ -1437,7 +1437,7 @@ application/json
   "37": {
     "nodeID": "37",
     "cache": {
-      "type": {
+      "F": {
         "items": {
           "\"int\"": [
             {
@@ -1478,7 +1478,7 @@ application/json
   "39": {
     "nodeID": "39",
     "cache": {
-      "bodyID": {
+      "BID": {
         "items": {}
       }
     }
@@ -1486,7 +1486,7 @@ application/json
   "40": {
     "nodeID": "40",
     "cache": {
-      "id": {
+      "BID": {
         "items": {
           "2": [
             {
@@ -1527,7 +1527,7 @@ application/json
   "42": {
     "nodeID": "42",
     "cache": {
-      "id-name": {
+      "I-N": {
         "items": {
           "1-\"int2string\"": [
             {
@@ -1578,7 +1578,7 @@ application/json
   "43": {
     "nodeID": "43",
     "cache": {
-      "id-name": {
+      "I-N": {
         "items": {
           "0-\"intToString\"": [
             {
@@ -1771,7 +1771,7 @@ application/json
   "45": {
     "nodeID": "45",
     "cache": {
-      "id": {
+      "I": {
         "items": {}
       }
     }
@@ -1779,7 +1779,7 @@ application/json
   "46": {
     "nodeID": "46",
     "cache": {
-      "lambdaID": {
+      "I": {
         "items": {}
       }
     }
@@ -1856,7 +1856,7 @@ application/json
   "55": {
     "nodeID": "55",
     "cache": {
-      "parentID": {
+      "P": {
         "items": {
           "0": [
             {
@@ -1919,7 +1919,7 @@ application/json
   "56": {
     "nodeID": "56",
     "cache": {
-      "id": {
+      "P": {
         "items": {
           "0": [
             {
@@ -2214,7 +2214,7 @@ application/json
   "61": {
     "nodeID": "61",
     "cache": {
-      "bindingID": {
+      "B": {
         "items": {}
       }
     }
@@ -2222,7 +2222,7 @@ application/json
   "62": {
     "nodeID": "62",
     "cache": {
-      "id": {
+      "B": {
         "items": {
           "2": [
             {
@@ -2263,7 +2263,7 @@ application/json
   "64": {
     "nodeID": "64",
     "cache": {
-      "id": {
+      "LID": {
         "items": {}
       }
     }
@@ -2271,7 +2271,7 @@ application/json
   "65": {
     "nodeID": "65",
     "cache": {
-      "lambdaID": {
+      "LID": {
         "items": {}
       }
     }

@@ -43,7 +43,6 @@ export type JoinDesc = {
   type: "Join";
   ruleName: string;
   joinInfo: JoinInfo;
-  indexes: ColsToIndexByRelation;
   leftID: NodeID;
   rightID: NodeID;
 };

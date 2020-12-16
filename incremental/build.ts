@@ -1,6 +1,12 @@
 import { Bindings, Rec, Term } from "../types";
-import { JoinInfo, ColsToIndexByRelation, AttrPath, VarToPath } from "./types";
-import { ppt } from "../pretty";
+import {
+  JoinInfo,
+  ColsToIndexByRelation,
+  AttrPath,
+  VarToPath,
+  Res,
+} from "./types";
+import { ppb, ppt } from "../pretty";
 import { combineObjects } from "../util";
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
@@ -60,18 +66,20 @@ function getAtPath(term: Term, path: AttrPath): Term {
   return getAtPath(next, path.slice(1));
 }
 
-export function getIndexKey(rec: Rec, attrPaths: AttrPath[]): string[] {
-  return attrPaths.map((attrPath) => {
-    const term = getAtPath(rec, attrPath);
+export function getIndexKey(res: Res, varNames: string[]): string[] {
+  return varNames.map((varName) => {
+    const term = res.bindings[varName];
     if (!term) {
-      throw new Error(`couldn't get attr "${attrPath}" of "${ppt(rec)}"`);
+      throw new Error(
+        `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
+      );
     }
     return ppt(term);
   });
 }
 
-export function getIndexName(attrs: AttrPath[]): string {
-  return attrs.map((path) => path.join("/")).join("-");
+export function getIndexName(varNames: string[]): string {
+  return varNames.join("-");
 }
 
 export type JoinTree =

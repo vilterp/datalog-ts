@@ -99,21 +99,9 @@ export class RuleGraph {
         return [ins.res];
       case "Join": {
         if (ins.origin === nodeDesc.leftID) {
-          return this.doJoin(
-            ins,
-            nodeDesc,
-            nodeDesc.rightID,
-            nodeDesc.indexes.left,
-            nodeDesc.indexes.right
-          );
+          return this.doJoin(ins, nodeDesc, nodeDesc.rightID);
         } else {
-          return this.doJoin(
-            ins,
-            nodeDesc,
-            nodeDesc.leftID,
-            nodeDesc.indexes.right,
-            nodeDesc.indexes.left
-          );
+          return this.doJoin(ins, nodeDesc, nodeDesc.leftID);
         }
       }
       case "Match": {
@@ -211,15 +199,15 @@ export class RuleGraph {
   private doJoin(
     ins: Insertion,
     joinDesc: JoinDesc,
-    otherNodeID: NodeID,
-    thisIndex: AttrPath[],
-    otherIndex: AttrPath[]
+    otherNodeID: NodeID
   ): Res[] {
     const results: Res[] = [];
     const thisVars = ins.res.bindings;
     const otherNode = this.nodes[otherNodeID];
-    const indexName = getIndexName(otherIndex);
-    const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
+    // TODO: avoid this allocation
+    const varNames = Object.keys(joinDesc.joinInfo.join);
+    const indexName = getIndexName(varNames);
+    const indexKey = getIndexKey(ins.res, varNames);
     const otherEntries = otherNode.cache.get(indexName, indexKey);
     // console.log({
     //   indexName,
@@ -393,11 +381,10 @@ export class RuleGraph {
     rightID: NodeID
   ): AddResult {
     const joinInfo = getJoinInfo(left, right);
-    const colsToIndex = getColsToIndex(joinInfo);
+    const varsToIndex = Object.keys(joinInfo.join);
     const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
     const joinID = this.addNode(true, {
       type: "Join",
-      indexes: colsToIndex,
       joinInfo,
       ruleName,
       leftID,
@@ -406,8 +393,8 @@ export class RuleGraph {
     this.addEdge(leftID, joinID);
     this.addEdge(rightID, joinID);
     // console.log({ colsToIndex });
-    this.addIndex(leftID, colsToIndex.left);
-    this.addIndex(rightID, colsToIndex.right);
+    this.addIndex(leftID, varsToIndex);
+    this.addIndex(rightID, varsToIndex);
     return {
       tipID: joinID,
       rec: left,
@@ -454,15 +441,15 @@ export class RuleGraph {
     this.unmappedRules[rule.head.relation] = { rule, newNodeIDs };
   }
 
-  private addIndex(nodeID: NodeID, attrPaths: AttrPath[]) {
+  private addIndex(nodeID: NodeID, varNames: string[]) {
     const node = this.nodes[nodeID];
     if (!node) {
       throw new Error(`can't add index to nonexistent node ${nodeID}`);
     }
-    node.cache.createIndex(getIndexName(attrPaths), (res) => {
+    node.cache.createIndex(getIndexName(varNames), (res) => {
       // TODO: is this gonna be a perf bottleneck?
       // console.log({ attrs, res: ppt(res.term) });
-      return getIndexKey(res.term as Rec, attrPaths);
+      return getIndexKey(res, varNames);
     });
   }
 

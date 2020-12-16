@@ -16,8 +16,8 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [fillcolor="darkseagreen2" label="0: Match(need{capability: C, objective: O}; {}) [capability]" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" label="1: Match(worker{capability: C, name: N}; {}) [capability]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" label="0: Match(need{capability: C, objective: O}; {}) [C]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(worker{capability: C, name: N}; {}) [C]" shape="box" style="filled"];
   "2" [fillcolor="thistle" label="2: opportunity: Join(C: 1.capability = 0.capability) []" shape="box" style="filled"];
   "need" [fillcolor="darksalmon" label="need:  []" shape="box" style="filled"];
   "worker" [fillcolor="darksalmon" label="worker:  []" shape="box" style="filled"];
@@ -51,7 +51,7 @@ application/json
   "0": {
     "nodeID": "0",
     "cache": {
-      "capability": {
+      "C": {
         "items": {
           "\"write HTML\"": [
             {
@@ -88,7 +88,7 @@ application/json
   "1": {
     "nodeID": "1",
     "cache": {
-      "capability": {
+      "C": {
         "items": {
           "\"write HTML\"": [
             {
