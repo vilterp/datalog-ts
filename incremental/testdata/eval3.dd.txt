@@ -22,44 +22,61 @@ text/plain
 application/graphviz
 digraph G {
   "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" label="1: Match(parent{child: B, parent: C}; {C: B, P: C}) [child]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: grandparent: Join(B: 1.child = parent.parent) []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(father{child: C, father: P}; {}) []" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(parent{child: A, parent: B}; {C: A, P: B}) [parent]" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" label="4: Match(parent{child: B, parent: C}; {C: B, P: C}) [child]" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: grandparent: Join(B: 4.child = 3.parent) []" shape="box" style="filled"];
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
-  "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) [parent]" shape="box" style="filled"];
+  "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
   "grandparent" [fillcolor="lightblue" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box" style="filled"];
   "0" -> "parent" [];
-  "1" -> "2" [];
-  "2" -> "grandparent" [];
-  "father" -> "0" [];
-  "mother" -> "0" [];
-  "parent" -> "1" [];
-  "parent" -> "2" [];
+  "1" -> "0" [];
+  "2" -> "0" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "5" -> "grandparent" [];
+  "father" -> "2" [];
+  "mother" -> "1" [];
+  "parent" -> "3" [];
+  "parent" -> "4" [];
 }
 
 father{child: "Mary", father: "Mark"}.
 ----
 text/plain
 father: [father{child: "Mary", father: "Mark"}; {}]
-0: [father{child: "Mary", father: "Mark"}; {}]
-parent: [parent{child: C, parent: P}; {}]
-1: []
-2: []
+2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
+0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
+parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
+3: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
+4: [parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}]
+5: []
+5: []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
-0: [mother{child: "Pete", mother: "Mary"}; {}]
-parent: [parent{child: C, parent: P}; {}]
-1: []
-2: []
+1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
+3: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
+4: [parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}]
+5: [grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
+5: []
+grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
-0: [mother{child: "Carolyn", mother: "Mary"}; {}]
-parent: [parent{child: C, parent: P}; {}]
-1: []
-2: []
+1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
+0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
+parent: [parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}]
+3: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}]
+4: [parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}]
+5: [grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
+5: []
+grandparent: [grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}]

@@ -284,7 +284,7 @@ export class RuleGraph {
     return [];
   }
 
-  private addAndClause(rec: Rec): AddResult {
+  private addRec(rec: Rec): AddResult {
     const matchID = this.addNode(true, {
       type: "Match",
       rec,
@@ -394,7 +394,7 @@ export class RuleGraph {
   ): AddResult {
     const joinInfo = getJoinInfo(left, right);
     const colsToIndex = getColsToIndex(joinInfo);
-    const { newNodeIDs: nn1, tipID: leftID } = this.addAndClause(left);
+    const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
     const joinID = this.addNode(true, {
       type: "Join",
       indexes: colsToIndex,
@@ -417,11 +417,7 @@ export class RuleGraph {
 
   private addJoinTree(ruleName: string, joinTree: JoinTree): AddResult {
     if (joinTree.type === "Leaf") {
-      return {
-        rec: joinTree.rec,
-        newNodeIDs: new Set<NodeID>(),
-        tipID: joinTree.rec.relation,
-      };
+      return this.addRec(joinTree.rec);
     }
     const { tipID: rightID, rec: rightRec, newNodeIDs: nn1 } = this.addJoinTree(
       ruleName,

@@ -15,27 +15,30 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [fillcolor="darkseagreen2" label="0: Match(father{child: B, father: C}; {}) [child]" shape="box" style="filled"];
-  "1" [fillcolor="thistle" label="1: matGramp: Join(B: 0.child = mother.mother) []" shape="box" style="filled"];
-  "mother" [fillcolor="darksalmon" label="mother:  [mother]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" label="0: Match(mother{child: A, mother: B}; {}) [mother]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(father{child: B, father: C}; {}) [child]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: matGramp: Join(B: 1.child = 0.mother) []" shape="box" style="filled"];
+  "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
   "matGramp" [fillcolor="lightblue" label="matGramp: Subst({child: A, grandfather: C}) []" shape="box" style="filled"];
-  "0" -> "1" [];
-  "1" -> "matGramp" [];
-  "father" -> "0" [];
-  "mother" -> "1" [];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "2" -> "matGramp" [];
+  "father" -> "1" [];
+  "mother" -> "0" [];
 }
 
 father{child: "Mary", father: "Mark"}.
 ----
 text/plain
 father: [father{child: "Mary", father: "Mark"}; {}]
-0: [father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}]
-1: []
+1: [father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}]
+2: []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
-1: [matGramp{child: "Pete", mother: "Mary"}; {B: "Mary", C: "Mark"}]
-matGramp: [matGramp{child: A, grandfather: "Mark"}; {B: "Mary", C: "Mark"}]
+0: [mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}]
+2: [matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
+matGramp: [matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]

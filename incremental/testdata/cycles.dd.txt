@@ -13,48 +13,76 @@ text/plain
 application/graphviz
 digraph G {
   "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" label="1: Match(edge{from: I, to: T}; {F: I, T: T}) [from]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: edge: Join(I: 1.from = baseEdge.to) []" shape="box" style="filled"];
-  "baseEdge" [fillcolor="darksalmon" label="baseEdge:  [to]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(baseEdge{from: F, to: T}; {}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(baseEdge{from: F, to: I}; {}) [to]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(edge{from: I, to: T}; {F: I, T: T}) [from]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: edge: Join(I: 3.from = 2.to) []" shape="box" style="filled"];
+  "baseEdge" [fillcolor="darksalmon" label="baseEdge:  []" shape="box" style="filled"];
   "edge" [fillcolor="lightblue" label="edge: Subst({from: F, to: T}) []" shape="box" style="filled"];
   "0" -> "edge" [];
-  "1" -> "2" [];
-  "2" -> "0" [];
-  "baseEdge" -> "0" [];
+  "1" -> "0" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "0" [];
+  "baseEdge" -> "1" [];
   "baseEdge" -> "2" [];
-  "edge" -> "1" [];
+  "edge" -> "3" [];
 }
 
 baseEdge{from: "A", to: "B"}.
 ----
 text/plain
 baseEdge: [baseEdge{from: "A", to: "B"}; {}]
-0: [baseEdge{from: "A", to: "B"}; {}]
-2: []
-edge: [edge{from: F, to: T}; {}]
-1: []
+1: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
+2: [baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}]
+0: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
+4: []
+edge: [edge{from: "A", to: "B"}; {F: "A", T: "B"}]
+3: [edge{from: "A", to: "B"}; {I: "A", T: "B"}]
+4: []
 
 baseEdge{from: "C", to: "D"}.
 ----
 text/plain
 baseEdge: [baseEdge{from: "C", to: "D"}; {}]
-0: [baseEdge{from: "C", to: "D"}; {}]
-2: []
-edge: [edge{from: F, to: T}; {}]
-1: []
+1: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
+2: [baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}]
+0: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
+4: []
+edge: [edge{from: "C", to: "D"}; {F: "C", T: "D"}]
+3: [edge{from: "C", to: "D"}; {I: "C", T: "D"}]
+4: []
 
 baseEdge{from: "B", to: "C"}.
 ----
 text/plain
 baseEdge: [baseEdge{from: "B", to: "C"}; {}]
-0: [baseEdge{from: "B", to: "C"}; {}]
-2: []
-edge: [edge{from: F, to: T}; {}]
-1: []
+1: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
+2: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}]
+0: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
+4: [edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}]
+edge: [edge{from: "B", to: "C"}; {F: "B", T: "C"}]
+0: [edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}]
+3: [edge{from: "B", to: "C"}; {I: "B", T: "C"}]
+edge: [edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}]
+4: [edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}]
+3: [edge{from: "B", to: "D"}; {I: "B", T: "D"}]
+0: [edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}]
+4: [edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}]
+edge: [edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}]
+0: [edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}]
+3: [edge{from: "A", to: "C"}; {I: "A", T: "C"}]
+edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
+4: []
+3: [edge{from: "A", to: "D"}; {I: "A", T: "D"}]
+4: []
 
 edge{from: F, to: T}.
 ----
 application/datalog
-edge{from: F, to: T}; {F: F, T: T}.
-edge{from: F, to: T}; {F: F, T: T}.
-edge{from: F, to: T}; {F: F, T: T}.
+edge{from: "A", to: "B"}; {F: "A", T: "B"}.
+edge{from: "C", to: "D"}; {F: "C", T: "D"}.
+edge{from: "B", to: "C"}; {F: "B", T: "C"}.
+edge{from: "B", to: "D"}; {F: "B", T: "D"}.
+edge{from: "A", to: "C"}; {F: "A", T: "C"}.
+edge{from: "A", to: "D"}; {F: "A", T: "D"}.
