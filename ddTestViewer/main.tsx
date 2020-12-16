@@ -1,40 +1,54 @@
 import React from "react";
+import useHashParam from "use-hash-param";
 import ReactDOM from "react-dom";
-import { parseDDTest } from "../util/ddTest/parser";
-import useLocalStorage from "react-use-localstorage";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
+import { mapObjToList } from "../util";
+import { Archive } from "../util/ddTest/types";
+import { useFetch } from "use-http";
+import { Collapsible } from "../uiCommon/collapsible";
 
 function Main() {
-  return <TestViewer />;
+  const [archiveURL] = useHashParam(
+    "archiveUrl",
+    `${window.location.origin}/test-archive.dd.json`
+  );
+  const { loading, error, data } = useFetch(archiveURL, {}, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (error) {
+    return <p style={{ color: "red" }}>Error: {error}</p>;
+  }
+  return <TestViewer archive={data} />;
 }
 
-function TestViewer() {
-  const [testSource, setTestSource] = useLocalStorage(
-    "ddtest-viewer-source",
-    ""
+function TestViewer(props: { archive: Archive }) {
+  const testArchive = props.archive;
+  const [currentTest, setCurrentTest] = useHashParam(
+    "testPath",
+    Object.keys(testArchive).sort()[0]
   );
-  const parsedTest = parseDDTest(testSource);
-
   return (
     <>
       <h1>DDTest Viewer</h1>
-      <h3>Test Source</h3>
-      <textarea
-        value={testSource}
-        onChange={(evt) => setTestSource(evt.target.value)}
-        style={{ fontFamily: "monospace" }}
-        cols={100}
-        rows={20}
-      />
+      <select
+        value={currentTest}
+        onChange={(evt) => setCurrentTest(evt.target.value)}
+      >
+        {mapObjToList(testArchive as Archive, (filePath) => (
+          <option key={filePath}>{filePath}</option>
+        ))}
+      </select>
       <h3>Viewer</h3>
-      {parsedTest.map((pair, idx) => (
+      {(testArchive[currentTest] || []).map((pair, idx) => (
         <div key={idx}>
-          <pre>
-            {pair.input}
-            <br />
-            ----
-          </pre>
-          {VISUALIZERS[pair.output.mimeType](pair.output.content)}
+          <Collapsible
+            heading={pair.input}
+            content={(
+              VISUALIZERS[pair.output.mimeType] || VISUALIZERS["text/plain"]
+            )(pair.output.content)}
+          />
         </div>
       ))}
     </>
