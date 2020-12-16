@@ -3,9 +3,31 @@ father{child: B, father: C}
 ----
 application/json
 {
-  "B": {
-    "varName": "B",
-    "leftAttr": "father",
-    "rightAttr": "child"
+  "leftVars": {
+    "A": [
+      "child"
+    ],
+    "B": [
+      "father"
+    ]
+  },
+  "rightVars": {
+    "B": [
+      "child"
+    ],
+    "C": [
+      "father"
+    ]
+  },
+  "join": {
+    "B": {
+      "varName": "B",
+      "leftAttr": [
+        "father"
+      ],
+      "rightAttr": [
+        "child"
+      ]
+    }
   }
 }

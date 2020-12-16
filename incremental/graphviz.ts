@@ -2,7 +2,7 @@ import { AttrPath, formatRes, JoinDesc, NodeAndCache, NodeDesc } from "./types";
 import { Graph } from "../graphviz";
 import { mapObjToList, flatMapObjToList } from "../util";
 import { RuleGraph } from "./ruleGraph";
-import { ppBE, ppt } from "../pretty";
+import { ppBE, ppt, ppVM } from "../pretty";
 
 export function toGraphviz(
   graph: RuleGraph,
@@ -49,6 +49,8 @@ function getNodeColor(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "BaseFactTable":
       return "darksalmon";
+    case "Match":
+      return "darkseagreen2";
     case "Join":
       return "thistle";
     case "BinExpr":
@@ -68,6 +70,10 @@ function formatDesc(node: NodeAndCache): string {
         return ppBE(nodeDesc.expr);
       case "Join":
         return `${nodeDesc.ruleName}: Join(${formatJoinDesc(nodeDesc)})`;
+      case "Match":
+        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
+          showScopePath: false,
+        })})`;
       case "Substitute":
         return `Subst({${mapObjToList(
           nodeDesc.rec.attrs,
