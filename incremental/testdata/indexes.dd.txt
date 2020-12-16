@@ -21,44 +21,35 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: Match(fundingSource{objective: O, source: S}; {}) []" shape="box"];
-  "1" [color="black" label="1: Match(worker{capability: C, name: N}; {}) []" shape="box"];
-  "2" [color="black" label="2: Join(1 & 0): opportunity [capability]" shape="box"];
-  "3" [color="black" label="3: Match(need{capability: C, objective: O}; {}) [capability]" shape="box"];
-  "4" [color="black" label="4: Join(3 & 2): opportunity []" shape="box"];
-  "need" [color="black" label="need: Base []" shape="box"];
-  "worker" [color="black" label="worker: Base []" shape="box"];
-  "fundingSource" [color="black" label="fundingSource: Base []" shape="box"];
-  "opportunity" [color="black" label="opportunity: Subst(opportunity{capability: C, fundingSource: S, objective: O, worker: N}) []" shape="box"];
-  "0" -> "2" [];
-  "1" -> "2" [];
-  "2" -> "4" [];
-  "3" -> "4" [];
-  "4" -> "opportunity" [];
-  "fundingSource" -> "0" [];
-  "need" -> "3" [];
-  "worker" -> "1" [];
+  "0" [fillcolor="thistle" label="0: opportunity: Join(C: worker.capability = need.capability) []" shape="box" style="filled"];
+  "1" [fillcolor="thistle" label="1: opportunity: Join() []" shape="box" style="filled"];
+  "need" [fillcolor="darksalmon" label="need:  [capability]" shape="box" style="filled"];
+  "worker" [fillcolor="darksalmon" label="worker:  [capability]" shape="box" style="filled"];
+  "fundingSource" [fillcolor="darksalmon" label="fundingSource:  []" shape="box" style="filled"];
+  "opportunity" [fillcolor="lightblue" label="opportunity: Subst({capability: C, fundingSource: S, objective: O, worker: N}) []" shape="box" style="filled"];
+  "0" -> "1" [];
+  "1" -> "opportunity" [];
+  "fundingSource" -> "1" [];
+  "need" -> "0" [];
+  "worker" -> "0" [];
 }
 
 need{capability: "write HTML", objective: "make website"}.
 ----
 text/plain
 need: [need{capability: "write HTML", objective: "make website"}; {}]
-3: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
-4: []
+0: []
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
 text/plain
 worker: [worker{capability: "write HTML", name: "Pete"}; {}]
-1: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
-2: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
-4: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
-opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+0: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
+1: []
 
 fundingSource{objective: "make website", source: "some company"}.
 ----
 text/plain
 fundingSource: [fundingSource{objective: "make website", source: "some company"}; {}]
-0: [fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}]
-2: []
+1: [opportunity{objective: "make website", source: "some company"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]

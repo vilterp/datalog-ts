@@ -23,13 +23,13 @@ text/plain
 ----
 application/graphviz
 digraph G {
-  "0" [color="black" label="0: parents: Join(C: father.child = mother.child) []" shape="box"];
-  "1" [color="black" label="1: sibling: Join(F: parents.father = parents.father & M: parents.mother = parents.mother) []" shape="box"];
-  "2" [color="black" label="2: L != R []" shape="box"];
-  "mother" [color="black" label="mother" shape="box"];
-  "father" [color="black" label="father" shape="box"];
-  "parents" [color="black" label="parents: Subst(parents{child: C, father: F, mother: M}) []" shape="box"];
-  "sibling" [color="black" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box"];
+  "0" [fillcolor="thistle" label="0: parents: Join(C: father.child = mother.child) []" shape="box" style="filled"];
+  "1" [fillcolor="thistle" label="1: sibling: Join(F: parents.father = parents.father & M: parents.mother = parents.mother) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen1" label="2: L != R []" shape="box" style="filled"];
+  "mother" [fillcolor="darksalmon" label="mother:  [child]" shape="box" style="filled"];
+  "father" [fillcolor="darksalmon" label="father:  [child]" shape="box" style="filled"];
+  "parents" [fillcolor="lightblue" label="parents: Subst({child: C, father: F, mother: M}) [mother-father]" shape="box" style="filled"];
+  "sibling" [fillcolor="lightblue" label="sibling: Subst({left: L, right: R}) []" shape="box" style="filled"];
   "0" -> "parents" [];
   "1" -> "2" [];
   "2" -> "sibling" [];
@@ -43,40 +43,45 @@ mother{child: "Pete", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
-0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}]
-1: []
+0: []
 
 father{child: "Pete", father: "Paul"}.
 ----
 text/plain
 father: [father{child: "Pete", father: "Paul"}; {}]
-1: [parents{child: "Pete", father: "Paul"}; {C: "Pete", M: "Mary"}]
-parents: [parents{child: "Pete", father: F, mother: "Mary"}; {C: "Pete", M: "Mary"}]
+0: [parents{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul", M: "Mary"}]
+parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F: "Paul", M: "Mary"}]
+1: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
+1: [sibling{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
 2: []
-3: []
+2: []
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
-0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
-1: []
+0: []
 
 father{child: "Carolyn", father: "Paul"}.
 ----
 text/plain
 father: [father{child: "Carolyn", father: "Paul"}; {}]
-1: [parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", M: "Mary"}]
-parents: [parents{child: "Carolyn", father: F, mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
+0: [parents{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
+parents: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {C: "Carolyn", F: "Paul", M: "Mary"}]
+1: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
+1: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
+2: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
 2: []
-3: []
+2: [sibling{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
+2: []
+sibling: [sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
+sibling: [sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
 
 mother{child: "Steve", mother: "Jill"}.
 ----
 text/plain
 mother: [mother{child: "Steve", mother: "Jill"}; {}]
-0: [mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}]
-1: []
+0: []
 
 mother{child: C, mother: M}.
 ----
@@ -90,248 +95,3 @@ mother{child: C, mother: "Mary"}.
 application/datalog
 mother{child: "Pete", mother: "Mary"}; {C: "Pete"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn"}.
-
-.dumpcaches
-----
-application/json
-{
-  "0": {
-    "nodeID": "0",
-    "cache": {
-      "child": {
-        "items": {
-          "\"Pete\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "mother",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Pete"
-                  },
-                  "mother": {
-                    "type": "StringLit",
-                    "val": "Mary"
-                  }
-                }
-              },
-              "bindings": {
-                "C": {
-                  "type": "StringLit",
-                  "val": "Pete"
-                },
-                "M": {
-                  "type": "StringLit",
-                  "val": "Mary"
-                }
-              }
-            }
-          ],
-          "\"Carolyn\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "mother",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Carolyn"
-                  },
-                  "mother": {
-                    "type": "StringLit",
-                    "val": "Mary"
-                  }
-                }
-              },
-              "bindings": {
-                "C": {
-                  "type": "StringLit",
-                  "val": "Carolyn"
-                },
-                "M": {
-                  "type": "StringLit",
-                  "val": "Mary"
-                }
-              }
-            }
-          ],
-          "\"Steve\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "mother",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Steve"
-                  },
-                  "mother": {
-                    "type": "StringLit",
-                    "val": "Jill"
-                  }
-                }
-              },
-              "bindings": {
-                "C": {
-                  "type": "StringLit",
-                  "val": "Steve"
-                },
-                "M": {
-                  "type": "StringLit",
-                  "val": "Jill"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
-  "1": {
-    "nodeID": "1",
-    "cache": {}
-  },
-  "2": {
-    "nodeID": "2",
-    "cache": {
-      "mother-father": {
-        "items": {}
-      }
-    }
-  },
-  "3": {
-    "nodeID": "3",
-    "cache": {}
-  },
-  "4": {
-    "nodeID": "4",
-    "cache": {}
-  },
-  "mother": {
-    "nodeID": "mother",
-    "cache": {}
-  },
-  "father": {
-    "nodeID": "father",
-    "cache": {
-      "child": {
-        "items": {
-          "\"Pete\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "father",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Pete"
-                  },
-                  "father": {
-                    "type": "StringLit",
-                    "val": "Paul"
-                  }
-                }
-              },
-              "bindings": {}
-            }
-          ],
-          "\"Carolyn\"": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "father",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Carolyn"
-                  },
-                  "father": {
-                    "type": "StringLit",
-                    "val": "Paul"
-                  }
-                }
-              },
-              "bindings": {}
-            }
-          ]
-        }
-      }
-    }
-  },
-  "parents": {
-    "nodeID": "parents",
-    "cache": {
-      "mother-father": {
-        "items": {
-          "\"Mary\"-F": [
-            {
-              "term": {
-                "type": "Record",
-                "relation": "parents",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Pete"
-                  },
-                  "mother": {
-                    "type": "StringLit",
-                    "val": "Mary"
-                  },
-                  "father": {
-                    "type": "Var",
-                    "name": "F"
-                  }
-                }
-              },
-              "bindings": {
-                "C": {
-                  "type": "StringLit",
-                  "val": "Pete"
-                },
-                "M": {
-                  "type": "StringLit",
-                  "val": "Mary"
-                }
-              }
-            },
-            {
-              "term": {
-                "type": "Record",
-                "relation": "parents",
-                "attrs": {
-                  "child": {
-                    "type": "StringLit",
-                    "val": "Carolyn"
-                  },
-                  "mother": {
-                    "type": "StringLit",
-                    "val": "Mary"
-                  },
-                  "father": {
-                    "type": "Var",
-                    "name": "F"
-                  }
-                }
-              },
-              "bindings": {
-                "C": {
-                  "type": "StringLit",
-                  "val": "Carolyn"
-                },
-                "M": {
-                  "type": "StringLit",
-                  "val": "Mary"
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  },
-  "sibling": {
-    "nodeID": "sibling",
-    "cache": {}
-  }
-}

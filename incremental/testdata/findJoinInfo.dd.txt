@@ -3,14 +3,32 @@ father{child: B, father: C}
 ----
 application/json
 {
-  "B": {
-    "varName": "B",
-    "leftAttr": [
-      "father"
-    ],
-    "rightAttr": [
+  "leftVars": {
+    "A": [
       "child"
+    ],
+    "B": [
+      "father"
     ]
+  },
+  "rightVars": {
+    "B": [
+      "child"
+    ],
+    "C": [
+      "father"
+    ]
+  },
+  "join": {
+    "B": {
+      "varName": "B",
+      "leftAttr": [
+        "father"
+      ],
+      "rightAttr": [
+        "child"
+      ]
+    }
   }
 }
 
@@ -19,14 +37,37 @@ tc.Type{id: AID, type: F}
 ----
 application/json
 {
-  "F": {
-    "varName": "F",
-    "leftAttr": [
+  "leftVars": {
+    "FID": [
+      "id"
+    ],
+    "F": [
       "type",
       "from"
     ],
-    "rightAttr": [
+    "T": [
+      "type",
+      "to"
+    ]
+  },
+  "rightVars": {
+    "AID": [
+      "id"
+    ],
+    "F": [
       "type"
     ]
+  },
+  "join": {
+    "F": {
+      "varName": "F",
+      "leftAttr": [
+        "type",
+        "from"
+      ],
+      "rightAttr": [
+        "type"
+      ]
+    }
   }
 }
