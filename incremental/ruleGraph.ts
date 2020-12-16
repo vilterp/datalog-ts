@@ -108,6 +108,7 @@ export class RuleGraph {
             nodeDesc,
             nodeDesc.rightID,
             nodeDesc.joinInfo.leftVars,
+            nodeDesc.joinInfo.rightVars,
             nodeDesc.indexes.left,
             nodeDesc.indexes.right
           );
@@ -117,6 +118,7 @@ export class RuleGraph {
             nodeDesc,
             nodeDesc.leftID,
             nodeDesc.joinInfo.rightVars,
+            nodeDesc.joinInfo.leftVars,
             nodeDesc.indexes.right,
             nodeDesc.indexes.left
           );
@@ -216,6 +218,7 @@ export class RuleGraph {
     joinDesc: JoinDesc,
     otherNodeID: NodeID,
     thisVars: VarToPath,
+    otherVars: VarToPath,
     thisIndex: AttrPath[],
     otherIndex: AttrPath[]
   ): Res[] {
@@ -229,8 +232,11 @@ export class RuleGraph {
     const otherEntries = otherNode.cache.get(indexName, indexKey);
     const before = performance.now();
     for (let possibleOtherMatch of otherEntries) {
-      const otherVars = possibleOtherMatch.bindings;
-      const unifyRes = unifyVars(thisBindings || {}, otherVars || {});
+      const otherBindings = getBindings(
+        possibleOtherMatch.term as Rec,
+        otherVars
+      );
+      const unifyRes = unifyVars(thisBindings || {}, otherBindings || {});
       if (unifyRes !== null) {
         results.push({
           term: { ...(ins.res.term as Rec), relation: joinDesc.ruleName },

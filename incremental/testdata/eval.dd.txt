@@ -34,5 +34,5 @@ mother{child: "Pete", mother: "Mary"}.
 ----
 text/plain
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
-0: [matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}]
-matGramp: [matGramp{child: "Pete", grandfather: C}; {A: "Pete", B: "Mary"}]
+0: [matGramp{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}]
+matGramp: [matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
