@@ -413,10 +413,6 @@ export class RuleGraph {
     return ret;
   }
 
-  private updateMappings(from: NodeID, newMappings: VarMappings) {
-    // TODO: add indexes
-  }
-
   private addUnmappedRule(rule: Rule, newNodeIDs: Set<NodeID>) {
     this.unmappedRules[rule.head.relation] = { rule, newNodeIDs };
   }
