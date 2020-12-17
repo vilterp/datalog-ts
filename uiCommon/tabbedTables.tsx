@@ -8,7 +8,7 @@ import { noHighlight, HighlightProps } from "./term";
 import { useJSONLocalStorage, useBoolLocalStorage } from "./hooks";
 import { TreeView, TreeCollapseState, emptyCollapseState } from "./treeView";
 import { Tree, insertAtPath, filterTree } from "../tree";
-import { lastItem } from "../util";
+import { lastItem } from "../util/util";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 

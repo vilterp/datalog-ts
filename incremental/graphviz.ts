@@ -1,6 +1,6 @@
 import { NodeDesc } from "./types";
-import { Graph } from "../graphviz";
-import { mapObjToList, flatMapObjToList } from "../util";
+import { Graph } from "../util/graphviz";
+import { mapObjToList, flatMapObjToList } from "../util/util";
 import { RuleGraph } from "./ruleGraph";
 import { formatNodeWithIndexes, ppr } from "./pretty";
 

@@ -1,5 +1,5 @@
 import { Bindings, rec, Term, VarMappings } from "./types";
-import { mapObj } from "./util";
+import { mapObj } from "./util/util";
 import { ppb } from "./pretty";
 
 let unifyCalls = 0;

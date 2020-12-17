@@ -1,6 +1,6 @@
 import { PropagationLog, Res } from "./types";
 import { Program, Rec, Statement } from "../types";
-import { prettyPrintGraph } from "../graphviz";
+import { prettyPrintGraph } from "../util/graphviz";
 import { toGraphviz } from "./graphviz";
 import { hasVars } from "../simpleEvaluate";
 import { ppt } from "../pretty";
@@ -14,7 +14,7 @@ import {
   TestOutput,
 } from "../util/ddTest/types";
 import path from "path-browserify";
-import { mapObj } from "../util";
+import { mapObj } from "../util/util";
 import { RuleGraph } from "./ruleGraph";
 import { formatNodeDesc, formatNodeWithIndexes, ppr } from "./pretty";
 

@@ -1,7 +1,7 @@
-import { Suite } from "./testing";
+import { Suite } from "./util/testing";
 import { fsLoader, Repl } from "./repl";
 import { runDDTestAtPath } from "./util/ddTest";
-import { identityTransform, readAll } from "./streamUtil";
+import { identityTransform, readAll } from "./util/streamUtil";
 import { TestOutput, plainTextOut } from "./util/ddTest/types";
 
 const ddTestSuites = ["simple", "family", "recurse", "literals"];

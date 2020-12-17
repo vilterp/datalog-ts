@@ -1,4 +1,4 @@
-import { assertDeepEqual, Suite } from "./testing";
+import { assertDeepEqual, Suite } from "./util/testing";
 import { language } from "./parser";
 import { Parser } from "parsimmon";
 import { array, binExpr, int, rec, str, trueTerm, varr } from "./types";

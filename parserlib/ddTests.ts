@@ -1,4 +1,4 @@
-import { Suite } from "../testing";
+import { Suite } from "../util/testing";
 import { runDDTestAtPath, DDTest } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";

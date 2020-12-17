@@ -13,7 +13,7 @@ import {
   sortSpans,
 } from "./util";
 import { Interpreter } from "../../incremental/interpreter";
-import { flatMap, uniqBy } from "../../util";
+import { flatMap, uniqBy } from "../../util/util";
 import { Rec } from "../../types";
 
 export const renameRefactorAction: EditorAction = {

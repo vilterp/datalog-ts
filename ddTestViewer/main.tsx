@@ -2,7 +2,7 @@ import React from "react";
 import useHashParam from "use-hash-param";
 import ReactDOM from "react-dom";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
-import { mapObj, mapObjToList } from "../util";
+import { mapObj, mapObjToList } from "../util/util";
 import { Archive } from "../util/ddTest/types";
 import { useFetch } from "use-http";
 import { Collapsible } from "../uiCommon/collapsible";

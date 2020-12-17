@@ -1,6 +1,6 @@
 import { AttrPath, JoinDesc, NodeAndCache, NodeDesc, Res } from "./types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
-import { mapObjToList } from "../util";
+import { mapObjToList } from "../util/util";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {

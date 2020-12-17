@@ -1,4 +1,4 @@
-import { appendToKey } from "../util";
+import { appendToKey } from "../util/util";
 
 type Index<T> = {
   getKey: (t: T) => string[];

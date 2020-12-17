@@ -7,7 +7,7 @@ import {
   Res,
 } from "./types";
 import { ppb, ppt } from "../pretty";
-import { combineObjects } from "../util";
+import { combineObjects } from "../util/util";
 
 export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   const leftVars = getVarToPath(left);

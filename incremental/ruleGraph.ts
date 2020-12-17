@@ -27,7 +27,7 @@ import {
   permute,
   setAdd,
   setUnion,
-} from "../util";
+} from "../util/util";
 import {
   applyMappings,
   getMappings,

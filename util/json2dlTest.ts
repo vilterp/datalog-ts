@@ -1,4 +1,4 @@
-import { assertStringEqual, Suite } from "../testing";
+import { assertStringEqual, Suite } from "./testing";
 import { jsonToDL } from "./json2dl";
 import { Rec } from "../types";
 import { prettyPrintTerm } from "../pretty";

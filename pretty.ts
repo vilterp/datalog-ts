@@ -12,7 +12,7 @@ import {
   BinExpr,
 } from "./types";
 import * as pp from "prettier-printer";
-import { flatMap, flatMapObjToList, mapObjToList, repeat } from "./util";
+import { flatMap, flatMapObjToList, mapObjToList, repeat } from "./util/util";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 import { Tree } from "./tree";
 

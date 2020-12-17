@@ -15,7 +15,7 @@ import {
   TracePrintOpts,
   defaultTracePrintOpts,
 } from "./pretty";
-import { flatMap, getFirst, filterMap, mapObj } from "./util";
+import { flatMap, getFirst, filterMap, mapObj } from "./util/util";
 import * as pp from "prettier-printer";
 import { termEq } from "./unify";
 

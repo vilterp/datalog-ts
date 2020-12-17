@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { Interpreter } from "../../incremental/interpreter";
 import { Rec, StringLit, Bool } from "../../types";
-import { uniqBy } from "../../util";
+import { uniqBy } from "../../util/util";
 import { dlToSpan, Span } from "./types";
 import { DLTypeError } from "./errors";
 

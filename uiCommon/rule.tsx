@@ -2,7 +2,7 @@ import React from "react";
 import { Rule } from "../types";
 import { HighlightProps, TermView } from "./term";
 import { makeTermWithBindings } from "../traceTree";
-import { intersperseIdx } from "../util";
+import { intersperseIdx } from "../util/util";
 import { ppt } from "../pretty";
 
 export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {

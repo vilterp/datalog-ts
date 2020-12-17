@@ -1,7 +1,7 @@
 import { runDDTestAtPath, ProcessFn } from "../util/ddTest";
-import { Suite } from "../testing";
+import { Suite } from "../util/testing";
 import { language } from "../parser";
-import { prettyPrintGraph } from "../graphviz";
+import { prettyPrintGraph } from "../util/graphviz";
 import { toGraphviz } from "./graphviz";
 import { Rec, Statement } from "../types";
 import { formatOutput, Interpreter } from "./interpreter";

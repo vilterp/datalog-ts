@@ -1,4 +1,4 @@
-import { Suite, assertStringEqual } from "./testing";
+import { Suite, assertStringEqual } from "./util/testing";
 import { insertAtPath, Tree } from "./tree";
 import { prettyPrintTree } from "./pretty";
 

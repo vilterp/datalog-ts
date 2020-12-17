@@ -1,4 +1,4 @@
-import { runSuites } from "./testing";
+import { runSuites } from "./util/testing";
 import { unifyTests } from "./unifyTests";
 import { parserTests } from "./parserTest";
 import { replTests } from "./replTests";

@@ -1,4 +1,4 @@
-import { flatMap, updateAtIdx } from "./util";
+import { flatMap, updateAtIdx } from "./util/util";
 
 export type Tree<T> = { key: string; item: T; children: Tree<T>[] };
 

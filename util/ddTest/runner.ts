@@ -1,6 +1,6 @@
-import { assertStringEqual } from "../../testing";
+import { assertStringEqual } from "../testing";
 import fs from "fs";
-import { zip } from "../../util";
+import { zip } from "../util";
 import { parseDDTest } from "./parser";
 import { ProcessFn, Result, resultsToStr } from "./types";
 
