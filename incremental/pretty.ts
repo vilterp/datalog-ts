@@ -7,7 +7,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BinExpr":
       return ppBE(nodeDesc.expr);
     case "Join":
-      return `Join(${nodeDesc.ruleName}, [${nodeDesc.joinVars.join(", ")}])`;
+      return `Join(${nodeDesc.joinVars.join(", ")})`;
     case "Match":
       return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
         showScopePath: false,
@@ -29,5 +29,5 @@ export function formatNodeWithIndexes(node: NodeAndCache): string {
 }
 
 export function ppr(res: Res): string {
-  return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
+  return `${res.term ? ppt(res.term) : "()"}; ${ppb(res.bindings || {})}`;
 }

@@ -224,7 +224,7 @@ export class RuleGraph {
       // });
       if (unifyRes !== null) {
         results.push({
-          term: { ...(ins.res.term as Rec), relation: joinDesc.ruleName },
+          term: null,
           bindings: unifyRes,
         });
       }
@@ -243,10 +243,7 @@ export class RuleGraph {
   addRule(rule: Rule): PropagationLog {
     // console.log("add", rule.head.relation);
     const substID = rule.head.relation;
-    const { tipID: orID, newNodeIDs } = this.addOr(
-      rule.head.relation,
-      rule.defn
-    );
+    const { tipID: orID, newNodeIDs } = this.addOr(rule.defn);
     this.addNodeKnownID(substID, false, {
       type: "Substitute",
       rec: rule.head,
@@ -321,18 +318,15 @@ export class RuleGraph {
     return resolved;
   }
 
-  private addOr(ruleName: string, or: OrExpr): AddResult {
+  private addOr(or: OrExpr): AddResult {
     if (or.opts.length === 1) {
-      return this.addAnd(ruleName, or.opts[0].clauses);
+      return this.addAnd(or.opts[0].clauses);
     }
     const orID = this.addNode(true, { type: "Union" });
 
     let outNodeIDs = new Set<NodeID>([orID]);
     for (let orOption of or.opts) {
-      const { newNodeIDs, tipID: andID } = this.addAnd(
-        ruleName,
-        orOption.clauses
-      );
+      const { newNodeIDs, tipID: andID } = this.addAnd(orOption.clauses);
       this.addEdge(andID, orID);
       outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
     }
@@ -344,7 +338,7 @@ export class RuleGraph {
     };
   }
 
-  private addAnd(ruleName: string, clauses: AndClause[]): AddResult {
+  private addAnd(clauses: AndClause[]): AddResult {
     const { recs, exprs } = extractBinExprs(clauses);
     const allRecPermutations = permute(recs);
     const allJoinTrees = allRecPermutations.map((recs) => {
@@ -356,7 +350,7 @@ export class RuleGraph {
     });
     const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
 
-    const withJoinRes = this.addJoinTree(ruleName, joinTree);
+    const withJoinRes = this.addJoinTree(joinTree);
 
     return exprs.reduce(({ tipID, newNodeIDs }, expr) => {
       const newExprID = this.addNode(true, {
@@ -372,18 +366,12 @@ export class RuleGraph {
     }, withJoinRes);
   }
 
-  private addAndBinary(
-    ruleName: string,
-    left: Rec,
-    right: Rec,
-    rightID: NodeID
-  ): AddResult {
+  private addAndBinary(left: Rec, right: Rec, rightID: NodeID): AddResult {
     const joinInfo = getJoinInfo(left, right);
     const varsToIndex = Object.keys(joinInfo.join);
     const { newNodeIDs: nn1, tipID: leftID } = this.addRec(left);
     const joinID = this.addNode(true, {
       type: "Join",
-      ruleName,
       joinVars: Object.keys(joinInfo.join),
       leftID,
       rightID,
@@ -400,16 +388,14 @@ export class RuleGraph {
     };
   }
 
-  private addJoinTree(ruleName: string, joinTree: JoinTree): AddResult {
+  private addJoinTree(joinTree: JoinTree): AddResult {
     if (joinTree.type === "Leaf") {
       return this.addRec(joinTree.rec);
     }
     const { tipID: rightID, rec: rightRec, newNodeIDs: nn1 } = this.addJoinTree(
-      ruleName,
       joinTree.right
     );
     const { tipID: andID, newNodeIDs: nn2 } = this.addAndBinary(
-      ruleName,
       joinTree.left,
       rightRec,
       rightID

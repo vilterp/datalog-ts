@@ -26,7 +26,7 @@ digraph G {
   "2" [fillcolor="darkseagreen2" label="2: Match(father{child: C, father: P}; {}) []" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(parent{child: A, parent: B}; {C: A, P: B}) [B]" shape="box" style="filled"];
   "4" [fillcolor="darkseagreen2" label="4: Match(parent{child: B, parent: C}; {C: B, P: C}) [B]" shape="box" style="filled"];
-  "5" [fillcolor="thistle" label="5: Join(grandparent, [B]) []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(B) []" shape="box" style="filled"];
   "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
   "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
@@ -58,8 +58,8 @@ parent from 0: father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}. Su
   parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}
 4 from parent: parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}. Match(parent{child: B, parent: C}; {C: B, P: C})
   parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}
-5 from 3: parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}. Join(grandparent, [B])
-5 from 4: parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}. Join(grandparent, [B])
+5 from 3: parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}. Join(B)
+5 from 4: parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}. Join(B)
 
 mother{child: "Pete", mother: "Mary"}.
 ----
@@ -76,10 +76,10 @@ parent from 0: mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}. Su
   parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}
 4 from parent: parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}. Match(parent{child: B, parent: C}; {C: B, P: C})
   parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}
-5 from 3: parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}. Join(grandparent, [B])
-  grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}
-5 from 4: parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}. Join(grandparent, [B])
-grandparent from 5: grandparent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary", C: "Mark"}. Subst({grandchild: A, grandparent: C})
+5 from 3: parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}. Join(B)
+  (); {A: "Pete", B: "Mary", C: "Mark"}
+5 from 4: parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}. Join(B)
+grandparent from 5: (); {A: "Pete", B: "Mary", C: "Mark"}. Subst({grandchild: A, grandparent: C})
   grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}
 
 mother{child: "Carolyn", mother: "Mary"}.
@@ -97,8 +97,8 @@ parent from 0: mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary
   parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}
 4 from parent: parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}. Match(parent{child: B, parent: C}; {C: B, P: C})
   parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}
-5 from 3: parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}. Join(grandparent, [B])
-  grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}
-5 from 4: parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}. Join(grandparent, [B])
-grandparent from 5: grandparent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary", C: "Mark"}. Subst({grandchild: A, grandparent: C})
+5 from 3: parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}. Join(B)
+  (); {A: "Carolyn", B: "Mary", C: "Mark"}
+5 from 4: parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}. Join(B)
+grandparent from 5: (); {A: "Carolyn", B: "Mary", C: "Mark"}. Subst({grandchild: A, grandparent: C})
   grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}

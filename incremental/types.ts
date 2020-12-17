@@ -6,7 +6,7 @@ export type NodeID = string;
 
 // TODO: dedup with ../types.Res when we have traces
 export type Res = {
-  term: Term;
+  term: Term | null; // null for join results. TODO: mark this more explicitly
   bindings: Bindings | null;
 };
 
@@ -41,7 +41,6 @@ export type ColsToIndexByRelation = {
 
 export type JoinDesc = {
   type: "Join";
-  ruleName: string;
   joinVars: string[];
   leftID: NodeID;
   rightID: NodeID;

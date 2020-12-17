@@ -13,7 +13,7 @@ lang.Builtin from null: lang.Builtin{name: "intToString", type: tapp{from: "int"
   lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}
 59 from lang.Builtin: lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}. Match(lang.Builtin{name: N, type: T}; {})
   lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}
-60 from 59: lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.scopeBuiltin, [])
+60 from 59: lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}. Join()
 
 .rulegraph
 ----
@@ -30,19 +30,19 @@ digraph G {
   "8" [fillcolor="moccasin" label="8: Union []" shape="box" style="filled"];
   "9" [fillcolor="darkseagreen2" label="9: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
   "10" [fillcolor="darkseagreen2" label="10: Match(ast.LetExpr{bodyID: I, id: P}; {}) [I]" shape="box" style="filled"];
-  "11" [fillcolor="thistle" label="11: Join(ast.ParentExpr, [I]) []" shape="box" style="filled"];
+  "11" [fillcolor="thistle" label="11: Join(I) []" shape="box" style="filled"];
   "12" [fillcolor="darkseagreen2" label="12: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
   "13" [fillcolor="darkseagreen2" label="13: Match(ast.LetExpr{bindingID: I, id: P}; {}) [I]" shape="box" style="filled"];
-  "14" [fillcolor="thistle" label="14: Join(ast.ParentExpr, [I]) []" shape="box" style="filled"];
+  "14" [fillcolor="thistle" label="14: Join(I) []" shape="box" style="filled"];
   "15" [fillcolor="darkseagreen2" label="15: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
   "16" [fillcolor="darkseagreen2" label="16: Match(ast.FuncCall{funcID: I, id: P}; {}) [I]" shape="box" style="filled"];
-  "17" [fillcolor="thistle" label="17: Join(ast.ParentExpr, [I]) []" shape="box" style="filled"];
+  "17" [fillcolor="thistle" label="17: Join(I) []" shape="box" style="filled"];
   "18" [fillcolor="darkseagreen2" label="18: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
   "19" [fillcolor="darkseagreen2" label="19: Match(ast.FuncCall{argID: I, id: P}; {}) [I]" shape="box" style="filled"];
-  "20" [fillcolor="thistle" label="20: Join(ast.ParentExpr, [I]) []" shape="box" style="filled"];
+  "20" [fillcolor="thistle" label="20: Join(I) []" shape="box" style="filled"];
   "21" [fillcolor="darkseagreen2" label="21: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [I]" shape="box" style="filled"];
   "22" [fillcolor="darkseagreen2" label="22: Match(ast.Lambda{body: I, id: P}; {}) [I]" shape="box" style="filled"];
-  "23" [fillcolor="thistle" label="23: Join(ast.ParentExpr, [I]) []" shape="box" style="filled"];
+  "23" [fillcolor="thistle" label="23: Join(I) []" shape="box" style="filled"];
   "24" [fillcolor="moccasin" label="24: Union []" shape="box" style="filled"];
   "25" [fillcolor="darkseagreen2" label="25: Match(tc.typeS{id: I, type: T}; {I: I}) []" shape="box" style="filled"];
   "26" [fillcolor="darkseagreen2" label="26: Match(tc.typeI{id: I, type: T}; {I: I}) []" shape="box" style="filled"];
@@ -55,20 +55,20 @@ digraph G {
   "33" [fillcolor="darkseagreen2" label="33: Match(ast.IntLit{id: I}; {}) []" shape="box" style="filled"];
   "34" [fillcolor="darkseagreen2" label="34: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [FID]" shape="box" style="filled"];
   "35" [fillcolor="darkseagreen2" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [FID]" shape="box" style="filled"];
-  "36" [fillcolor="thistle" label="36: Join(tc.typeFC, [FID]) [F]" shape="box" style="filled"];
+  "36" [fillcolor="thistle" label="36: Join(FID) [F]" shape="box" style="filled"];
   "37" [fillcolor="darkseagreen2" label="37: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [F]" shape="box" style="filled"];
-  "38" [fillcolor="thistle" label="38: Join(tc.typeFC, [F]) []" shape="box" style="filled"];
+  "38" [fillcolor="thistle" label="38: Join(F) []" shape="box" style="filled"];
   "39" [fillcolor="darkseagreen2" label="39: Match(ast.LetExpr{bodyID: BID, id: I}; {}) [BID]" shape="box" style="filled"];
   "40" [fillcolor="darkseagreen2" label="40: Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [BID]" shape="box" style="filled"];
-  "41" [fillcolor="thistle" label="41: Join(tc.typeLet, [BID]) []" shape="box" style="filled"];
+  "41" [fillcolor="thistle" label="41: Join(BID) []" shape="box" style="filled"];
   "42" [fillcolor="darkseagreen2" label="42: Match(ast.Var{id: I, name: N}; {}) [I-N]" shape="box" style="filled"];
   "43" [fillcolor="darkseagreen2" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [I-N]" shape="box" style="filled"];
-  "44" [fillcolor="thistle" label="44: Join(tc.typeVar, [I, N]) []" shape="box" style="filled"];
+  "44" [fillcolor="thistle" label="44: Join(I, N) []" shape="box" style="filled"];
   "45" [fillcolor="darkseagreen2" label="45: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [I]" shape="box" style="filled"];
   "46" [fillcolor="darkseagreen2" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [I]" shape="box" style="filled"];
-  "47" [fillcolor="thistle" label="47: Join(tc.typeLambda, [I]) [B-R]" shape="box" style="filled"];
+  "47" [fillcolor="thistle" label="47: Join(I) [B-R]" shape="box" style="filled"];
   "48" [fillcolor="darkseagreen2" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [B-R]" shape="box" style="filled"];
-  "49" [fillcolor="thistle" label="49: Join(tc.typeLambda, [B, R]) []" shape="box" style="filled"];
+  "49" [fillcolor="thistle" label="49: Join(B, R) []" shape="box" style="filled"];
   "50" [fillcolor="darkseagreen2" label="50: Match(ast.Placeholder{id: I}; {}) []" shape="box" style="filled"];
   "51" [fillcolor="moccasin" label="51: Union []" shape="box" style="filled"];
   "52" [fillcolor="darkseagreen2" label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []" shape="box" style="filled"];
@@ -76,16 +76,16 @@ digraph G {
   "54" [fillcolor="darkseagreen2" label="54: Match(tc.scopeLambda{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box" style="filled"];
   "55" [fillcolor="darkseagreen2" label="55: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [P]" shape="box" style="filled"];
   "56" [fillcolor="darkseagreen2" label="56: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [P]" shape="box" style="filled"];
-  "57" [fillcolor="thistle" label="57: Join(tc.ScopeItem, [P]) []" shape="box" style="filled"];
+  "57" [fillcolor="thistle" label="57: Join(P) []" shape="box" style="filled"];
   "58" [fillcolor="darkseagreen2" label="58: Match(ast.RootExpr{id: I}; {}) []" shape="box" style="filled"];
   "59" [fillcolor="darkseagreen2" label="59: Match(lang.Builtin{name: N, type: T}; {}) []" shape="box" style="filled"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
-  "60" [fillcolor="thistle" label="60: Join(tc.scopeBuiltin, []) []" shape="box" style="filled"];
+  "60" [fillcolor="thistle" label="60: Join() []" shape="box" style="filled"];
   "61" [fillcolor="darkseagreen2" label="61: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [B]" shape="box" style="filled"];
   "62" [fillcolor="darkseagreen2" label="62: Match(tc.Type{id: B, type: T}; {I: B, T: T}) [B]" shape="box" style="filled"];
-  "63" [fillcolor="thistle" label="63: Join(tc.scopeLet, [B]) []" shape="box" style="filled"];
+  "63" [fillcolor="thistle" label="63: Join(B) []" shape="box" style="filled"];
   "64" [fillcolor="darkseagreen2" label="64: Match(ast.Lambda{body: I, id: LID}; {}) [LID]" shape="box" style="filled"];
   "65" [fillcolor="darkseagreen2" label="65: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {}) [LID]" shape="box" style="filled"];
-  "66" [fillcolor="thistle" label="66: Join(tc.scopeLambda, [LID]) []" shape="box" style="filled"];
+  "66" [fillcolor="thistle" label="66: Join(LID) []" shape="box" style="filled"];
   "67" [fillcolor="moccasin" label="67: Union []" shape="box" style="filled"];
   "68" [fillcolor="darkseagreen2" label="68: Match(ast.LetExpr{bodyID: I, id: P}; {}) []" shape="box" style="filled"];
   "69" [fillcolor="darkseagreen2" label="69: Match(ast.LetExpr{bindingID: I, id: P}; {}) []" shape="box" style="filled"];
@@ -252,9 +252,9 @@ ast.RootExpr from null: ast.RootExpr{id: 0}; {}.
   ast.RootExpr{id: 0}; {}
 58 from ast.RootExpr: ast.RootExpr{id: 0}; {}. Match(ast.RootExpr{id: I}; {})
   ast.RootExpr{id: 0}; {I: 0}
-60 from 58: ast.RootExpr{id: 0}; {I: 0}. Join(tc.scopeBuiltin, [])
-  tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
-tc.scopeBuiltin from 60: tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Subst({id: I, location: "builtin", name: N, type: T})
+60 from 58: ast.RootExpr{id: 0}; {I: 0}. Join()
+  (); {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
+tc.scopeBuiltin from 60: (); {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Subst({id: I, location: "builtin", name: N, type: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
 52 from tc.scopeBuiltin: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T})
   tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}
@@ -266,8 +266,8 @@ tc.ScopeItem from 51: tc.scopeBuiltin{id: 0, location: "builtin", name: "intToSt
   tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}
 56 from tc.ScopeItem: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-44 from 43: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, [I, N])
-57 from 56: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, [P])
+44 from 43: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(I, N)
+57 from 56: tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Join(P)
 
 ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
 ----
@@ -288,9 +288,9 @@ ast.FuncCall from null: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{
   ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}
 0 from 5: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Union
   ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}
-17 from 16: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}. Join(ast.ParentExpr, [I])
-20 from 19: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}. Join(ast.ParentExpr, [I])
-36 from 34: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}. Join(tc.typeFC, [FID])
+17 from 16: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}. Join(I)
+20 from 19: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}. Join(I)
+36 from 34: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}. Join(FID)
 67 from 70: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}. Union
   ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}
 67 from 71: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}. Union
@@ -315,22 +315,22 @@ tc.parentScope from 67: ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{
   tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}
 55 from tc.parentScope: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P})
   tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}
-11 from 9: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(ast.ParentExpr, [I])
-14 from 12: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(ast.ParentExpr, [I])
-17 from 15: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(ast.ParentExpr, [I])
-20 from 18: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(ast.ParentExpr, [I])
-23 from 21: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(ast.ParentExpr, [I])
-57 from 55: tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}. Join(tc.ScopeItem, [P])
-  tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-57 from 55: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Join(tc.ScopeItem, [P])
-  tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-51 from 57: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union
-  tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-51 from 57: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union
-  tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-tc.ScopeItem from 51: tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
+11 from 9: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(I)
+14 from 12: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(I)
+17 from 15: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(I)
+20 from 18: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(I)
+23 from 21: ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}. Join(I)
+57 from 55: tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}. Join(P)
+  (); {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
+57 from 55: tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}. Join(P)
+  (); {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
+51 from 57: (); {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union
+  (); {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
+51 from 57: (); {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Union
+  (); {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
+tc.ScopeItem from 51: (); {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
-tc.ScopeItem from 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
+tc.ScopeItem from 51: (); {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Subst({id: I, location: L, name: N, type: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}
 43 from tc.ScopeItem: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T})
   tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}
@@ -340,10 +340,10 @@ tc.ScopeItem from 51: tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: 
   tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}
 56 from tc.ScopeItem: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}. Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T})
   tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}
-44 from 43: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, [I, N])
-57 from 56: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, [P])
-44 from 43: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(tc.typeVar, [I, N])
-57 from 56: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}. Join(tc.ScopeItem, [P])
+44 from 43: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(I, N)
+57 from 56: tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}. Join(P)
+44 from 43: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}. Join(I, N)
+57 from 56: tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}. Join(P)
 
 ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
 ----
@@ -356,7 +356,7 @@ ast.Var from null: ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2st
   ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}
 0 from 3: ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}. Union
   ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}
-44 from 42: ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}. Join(tc.typeVar, [I, N])
+44 from 42: ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}. Join(I, N)
 ast.Expr from 0: ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}. Subst({id: I, location: S})
   ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}
 9 from ast.Expr: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
@@ -369,15 +369,15 @@ ast.Expr from 0: ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2stri
   ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}
 21 from ast.Expr: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Match(ast.Expr{id: I, location: S}; {I: I, S: S})
   ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}
-11 from 9: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(ast.ParentExpr, [I])
-14 from 12: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(ast.ParentExpr, [I])
-17 from 15: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(ast.ParentExpr, [I])
-  ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}
-20 from 18: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(ast.ParentExpr, [I])
-23 from 21: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(ast.ParentExpr, [I])
-8 from 17: ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}. Union
-  ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}
-ast.ParentExpr from 8: ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}. Subst({id: I, parent: P, span: S})
+11 from 9: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(I)
+14 from 12: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(I)
+17 from 15: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(I)
+  (); {I: 1, P: 0, S: span{from: 0, to: 10}}
+20 from 18: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(I)
+23 from 21: ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}. Join(I)
+8 from 17: (); {I: 1, P: 0, S: span{from: 0, to: 10}}. Union
+  (); {I: 1, P: 0, S: span{from: 0, to: 10}}
+ast.ParentExpr from 8: (); {I: 1, P: 0, S: span{from: 0, to: 10}}. Subst({id: I, parent: P, span: S})
   ast.ParentExpr{id: 1, parent: 0, span: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}
 
 ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
@@ -409,16 +409,16 @@ ast.Expr from 0: ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I
   ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}
 24 from 26: tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}. Union
   tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}
-11 from 9: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(ast.ParentExpr, [I])
-14 from 12: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(ast.ParentExpr, [I])
-17 from 15: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(ast.ParentExpr, [I])
-20 from 18: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(ast.ParentExpr, [I])
-  ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}
-23 from 21: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(ast.ParentExpr, [I])
+11 from 9: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(I)
+14 from 12: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(I)
+17 from 15: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(I)
+20 from 18: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(I)
+  (); {I: 2, P: 0, S: span{from: 11, to: 12}}
+23 from 21: ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}. Join(I)
 tc.Type from 24: tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}. Subst({id: I, type: T})
   tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}
-8 from 20: ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}. Union
-  ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}
+8 from 20: (); {I: 2, P: 0, S: span{from: 11, to: 12}}. Union
+  (); {I: 2, P: 0, S: span{from: 11, to: 12}}
 35 from tc.Type: tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}. Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID})
 37 from tc.Type: tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}. Match(tc.Type{id: AID, type: F}; {I: AID, T: F})
   tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}
@@ -428,12 +428,12 @@ tc.Type from 24: tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}. Subst({id: I, t
   tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}
 62 from tc.Type: tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}. Match(tc.Type{id: B, type: T}; {I: B, T: T})
   tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}
-ast.ParentExpr from 8: ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}. Subst({id: I, parent: P, span: S})
+ast.ParentExpr from 8: (); {I: 2, P: 0, S: span{from: 11, to: 12}}. Subst({id: I, parent: P, span: S})
   ast.ParentExpr{id: 2, parent: 0, span: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}
-38 from 37: tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}. Join(tc.typeFC, [F])
-41 from 40: tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}. Join(tc.typeLet, [BID])
-49 from 48: tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}. Join(tc.typeLambda, [B, R])
-63 from 62: tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}. Join(tc.scopeLet, [B])
+38 from 37: tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}. Join(F)
+41 from 40: tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}. Join(BID)
+49 from 48: tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}. Join(B, R)
+63 from 62: tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}. Join(B)
 
 .dumpcaches
 ----

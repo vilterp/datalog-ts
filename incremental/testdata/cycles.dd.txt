@@ -16,7 +16,7 @@ digraph G {
   "1" [fillcolor="darkseagreen2" label="1: Match(baseEdge{from: F, to: T}; {}) []" shape="box" style="filled"];
   "2" [fillcolor="darkseagreen2" label="2: Match(baseEdge{from: F, to: I}; {}) [I]" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" label="3: Match(edge{from: I, to: T}; {F: I, T: T}) [I]" shape="box" style="filled"];
-  "4" [fillcolor="thistle" label="4: Join(edge, [I]) []" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(I) []" shape="box" style="filled"];
   "baseEdge" [fillcolor="darksalmon" label="baseEdge:  []" shape="box" style="filled"];
   "edge" [fillcolor="lightblue" label="edge: Subst({from: F, to: T}) []" shape="box" style="filled"];
   "0" -> "edge" [];
@@ -40,12 +40,12 @@ baseEdge from null: baseEdge{from: "A", to: "B"}; {}.
   baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}
 0 from 1: baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}. Union
   baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}
-4 from 2: baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}. Join(edge, [I])
+4 from 2: baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}. Join(I)
 edge from 0: baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}. Subst({from: F, to: T})
   edge{from: "A", to: "B"}; {F: "A", T: "B"}
 3 from edge: edge{from: "A", to: "B"}; {F: "A", T: "B"}. Match(edge{from: I, to: T}; {F: I, T: T})
   edge{from: "A", to: "B"}; {I: "A", T: "B"}
-4 from 3: edge{from: "A", to: "B"}; {I: "A", T: "B"}. Join(edge, [I])
+4 from 3: edge{from: "A", to: "B"}; {I: "A", T: "B"}. Join(I)
 
 baseEdge{from: "C", to: "D"}.
 ----
@@ -58,12 +58,12 @@ baseEdge from null: baseEdge{from: "C", to: "D"}; {}.
   baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}
 0 from 1: baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}. Union
   baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}
-4 from 2: baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}. Join(edge, [I])
+4 from 2: baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}. Join(I)
 edge from 0: baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}. Subst({from: F, to: T})
   edge{from: "C", to: "D"}; {F: "C", T: "D"}
 3 from edge: edge{from: "C", to: "D"}; {F: "C", T: "D"}. Match(edge{from: I, to: T}; {F: I, T: T})
   edge{from: "C", to: "D"}; {I: "C", T: "D"}
-4 from 3: edge{from: "C", to: "D"}; {I: "C", T: "D"}. Join(edge, [I])
+4 from 3: edge{from: "C", to: "D"}; {I: "C", T: "D"}. Join(I)
 
 baseEdge{from: "B", to: "C"}.
 ----
@@ -76,36 +76,36 @@ baseEdge from null: baseEdge{from: "B", to: "C"}; {}.
   baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}
 0 from 1: baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}. Union
   baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}
-4 from 2: baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}. Join(edge, [I])
-  edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}
+4 from 2: baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}. Join(I)
+  (); {F: "B", I: "C", T: "D"}
 edge from 0: baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}. Subst({from: F, to: T})
   edge{from: "B", to: "C"}; {F: "B", T: "C"}
-0 from 4: edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}. Union
-  edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}
+0 from 4: (); {F: "B", I: "C", T: "D"}. Union
+  (); {F: "B", I: "C", T: "D"}
 3 from edge: edge{from: "B", to: "C"}; {F: "B", T: "C"}. Match(edge{from: I, to: T}; {F: I, T: T})
   edge{from: "B", to: "C"}; {I: "B", T: "C"}
-edge from 0: edge{from: "B", to: "C"}; {F: "B", I: "C", T: "D"}. Subst({from: F, to: T})
+edge from 0: (); {F: "B", I: "C", T: "D"}. Subst({from: F, to: T})
   edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}
-4 from 3: edge{from: "B", to: "C"}; {I: "B", T: "C"}. Join(edge, [I])
-  edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}
+4 from 3: edge{from: "B", to: "C"}; {I: "B", T: "C"}. Join(I)
+  (); {F: "A", I: "B", T: "C"}
 3 from edge: edge{from: "B", to: "D"}; {F: "B", I: "C", T: "D"}. Match(edge{from: I, to: T}; {F: I, T: T})
   edge{from: "B", to: "D"}; {I: "B", T: "D"}
-0 from 4: edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}. Union
-  edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}
-4 from 3: edge{from: "B", to: "D"}; {I: "B", T: "D"}. Join(edge, [I])
-  edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}
-edge from 0: edge{from: "B", to: "C"}; {F: "A", I: "B", T: "C"}. Subst({from: F, to: T})
+0 from 4: (); {F: "A", I: "B", T: "C"}. Union
+  (); {F: "A", I: "B", T: "C"}
+4 from 3: edge{from: "B", to: "D"}; {I: "B", T: "D"}. Join(I)
+  (); {F: "A", I: "B", T: "D"}
+edge from 0: (); {F: "A", I: "B", T: "C"}. Subst({from: F, to: T})
   edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}
-0 from 4: edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}. Union
-  edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}
+0 from 4: (); {F: "A", I: "B", T: "D"}. Union
+  (); {F: "A", I: "B", T: "D"}
 3 from edge: edge{from: "A", to: "C"}; {F: "A", I: "B", T: "C"}. Match(edge{from: I, to: T}; {F: I, T: T})
   edge{from: "A", to: "C"}; {I: "A", T: "C"}
-edge from 0: edge{from: "B", to: "D"}; {F: "A", I: "B", T: "D"}. Subst({from: F, to: T})
+edge from 0: (); {F: "A", I: "B", T: "D"}. Subst({from: F, to: T})
   edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}
-4 from 3: edge{from: "A", to: "C"}; {I: "A", T: "C"}. Join(edge, [I])
+4 from 3: edge{from: "A", to: "C"}; {I: "A", T: "C"}. Join(I)
 3 from edge: edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}. Match(edge{from: I, to: T}; {F: I, T: T})
   edge{from: "A", to: "D"}; {I: "A", T: "D"}
-4 from 3: edge{from: "A", to: "D"}; {I: "A", T: "D"}. Join(edge, [I])
+4 from 3: edge{from: "A", to: "D"}; {I: "A", T: "D"}. Join(I)
 
 edge{from: F, to: T}.
 ----
