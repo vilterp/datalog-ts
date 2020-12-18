@@ -1,5 +1,7 @@
 // TODO: ...
 
+// type i32 = number;
+
 class Res {
   rec: Rec;
   bindings: Map<string, Term>;
@@ -19,6 +21,14 @@ class StrTerm extends Term {
 class Rec extends Term {
   relation: string;
   attrs: Map<string, Term>;
+}
+
+function termEq(left: Term, right: Term): boolean {
+  return (
+    left instanceof StrTerm &&
+    right instanceof StrTerm &&
+    (left as StrTerm).val === (right as StrTerm).val
+  );
 }
 
 type NodeID = i32;
@@ -139,7 +149,7 @@ export class MatGramp {
       // TODO: use index
       for (let i = 0; i < this.cache_0.length; i++) {
         const item_0 = this.cache_0[i];
-        if (item_0.bindings.get("B") === ins.res.bindings.get("B")) {
+        if (termEq(item_0.bindings.get("B"), ins.res.bindings.get("B"))) {
           const bindings = new Map<string, Term>();
           bindings.set("A", item_0.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
