@@ -188,7 +188,7 @@ export class MatGramp {
     this.cache_matGramp.push(ins.res);
     const out: Res[] = [];
     const attrs = new Map<string, Term>();
-    attrs.set("child", ins.res.bindings.get("A"));
+    attrs.set("grandchild", ins.res.bindings.get("A"));
     attrs.set("grandfather", ins.res.bindings.get("C"));
     const rec: Rec = { relation: "matGramp", attrs };
     const res: Res = { rec, bindings: ins.res.bindings };
@@ -208,6 +208,10 @@ export function test(): i32 {
   fAttrs.set("child", new StrTerm("Mary"));
   fAttrs.set("father", new StrTerm("Mark"));
   const o2 = mg.insertFact({ relation: "father", attrs: fAttrs });
+
+  trace(o2[0].rec.relation);
+  trace((o2[0].rec.attrs.get("grandchild") as StrTerm).val);
+  trace((o2[0].rec.attrs.get("grandfather") as StrTerm).val);
 
   return o2.length;
 }
