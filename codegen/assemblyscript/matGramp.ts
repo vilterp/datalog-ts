@@ -21,13 +21,17 @@ class Rec extends Term {
   attrs: Map<string, Term>;
 }
 
-type NodeID = string;
+type NodeID = i32;
 
 class Insertion {
-  origin: NodeID | null; // null: inserted from outside
+  origin: NodeID; // -1: inserted from outside
   destination: NodeID;
   res: Res;
 }
+
+const MOTHER = 10;
+const FATHER = 11;
+const MAT_GRAMP = 12;
 
 class MatGramp {
   // TODO: indexes on these relations
@@ -44,36 +48,45 @@ class MatGramp {
     this.cache_matGramp = [];
   }
 
+  getInsId(relation: string): NodeID {
+    if (relation === "mother") {
+      return MOTHER;
+    } else if (relation === "father") {
+      return FATHER;
+    }
+    return -1;
+  }
+
   // idk man
   insertFact(rec: Rec): Res[] {
     this.queue.push({
-      origin: null,
-      destination: rec.relation,
+      origin: -1,
+      destination: this.getInsId(rec.relation),
       res: { rec, bindings: new Map<string, Term>() },
     });
     const out: Res[] = [];
     while (this.queue.length > 0) {
       const ins = this.queue.shift();
       switch (ins.destination) {
-        case "mother":
+        case MOTHER:
           this.insert_mother(ins);
           break;
-        case "father":
+        case FATHER:
           this.insert_father(ins);
           break;
-        case "0":
+        case 0:
           this.insert_0(ins);
           break;
-        case "1":
+        case 1:
           this.insert_1(ins);
           break;
-        case "2":
+        case 2:
           this.insert_2(ins);
           break;
-        case "matGramp":
+        case MAT_GRAMP:
           const out_matGramp = this.insert_matGramp(ins);
-          for (let o of out_matGramp) {
-            out.push(o);
+          for (let i = 0; i < out_matGramp.length; i++) {
+            out.push(out_matGramp[i]);
           }
           break;
       }
@@ -82,11 +95,11 @@ class MatGramp {
   }
 
   insert_mother(ins: Insertion): void {
-    this.queue.push({ destination: "0", origin: "mother", res: ins.res });
+    this.queue.push({ destination: 0, origin: MOTHER, res: ins.res });
   }
 
   insert_father(ins: Insertion): void {
-    this.queue.push({ destination: "1", origin: "father", res: ins.res });
+    this.queue.push({ destination: 1, origin: FATHER, res: ins.res });
   }
 
   insert_0(ins: Insertion): void {
@@ -99,8 +112,8 @@ class MatGramp {
     };
     this.cache_0.push(res);
     this.queue.push({
-      destination: "2",
-      origin: "0",
+      destination: 2,
+      origin: 0,
       res,
     });
   }
@@ -115,40 +128,42 @@ class MatGramp {
     };
     this.cache_1.push(res);
     this.queue.push({
-      destination: "2",
-      origin: "1",
+      destination: 2,
+      origin: 1,
       res: res,
     });
   }
 
   insert_2(ins: Insertion): void {
-    if (ins.origin === "1") {
+    if (ins.origin === 1) {
       // TODO: use index
-      for (let item_0 of this.cache_0) {
+      for (let i = 0; i < this.cache_0.length; i++) {
+        const item_0 = this.cache_0[i];
         if (item_0.bindings.get("B") === ins.res.bindings.get("B")) {
           const bindings = new Map<string, Term>();
           bindings.set("A", item_0.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
           bindings.set("C", ins.res.bindings.get("C"));
           this.queue.push({
-            destination: "matGramp",
-            origin: "2",
-            res: { rec: null, bindings },
+            destination: MAT_GRAMP,
+            origin: 2,
+            res: { rec: ins.res.rec, bindings },
           });
         }
       }
-    } else if (ins.origin === "0") {
-      for (let item_1 of this.cache_1) {
+    } else if (ins.origin === 0) {
+      for (let i = 0; i < this.cache_1.length; i++) {
+        const item_1 = this.cache_1[i];
         if (item_1.bindings.get("B") === ins.res.bindings.get("B")) {
           const bindings = new Map<string, Term>();
           bindings.set("A", ins.res.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
           bindings.set("C", item_1.bindings.get("C"));
           this.queue.push({
-            destination: "matGramp",
-            origin: "2",
+            destination: MAT_GRAMP,
+            origin: 2,
             res: {
-              rec: null,
+              rec: ins.res.rec,
               bindings,
             },
           });
