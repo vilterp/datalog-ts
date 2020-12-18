@@ -9,6 +9,7 @@ import { treeTests } from "./treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
 import { parserlibTests } from "./parserlib/ddTests";
 import { incrTests } from "./incremental/ddTests";
+import { genTests } from "./codegen/tests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -26,6 +27,7 @@ const suites = {
   // actionsTests,
   // parserlibTests: parserlibTests(writeResults),
   incrTests: incrTests(writeResults),
+  genTests,
 };
 
 const passed = runSuites(suites);

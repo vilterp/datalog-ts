@@ -1,32 +1,13 @@
-type Father = { child: string; father: string };
-type Mother = { child: string; father: string };
-
 // TODO: ...
-type Res = { rec: Rec; bindings: Map<string, Term> };
 
-type Term = string | Rec;
+import { Insertion, Rec, Res, Term } from "./types";
 
-type Rec = { relation: string; attrs: { [key: string]: Term } };
-
-type NodeID = string;
-
-type Insertion = { origin: NodeID; destination: NodeID; res: Res };
-
-class MatGramp {
+export class MatGramp {
   // TODO: indexes on these relations
-  cache_father: {
-    all: Res[];
-  };
-  cache_mother: {
-    all: Res[];
-  };
   cache_0: {
     all: Res[];
   };
   cache_1: {
-    all: Res[];
-  };
-  cache_2: {
     all: Res[];
   };
   cache_matGramp: {
@@ -37,19 +18,10 @@ class MatGramp {
 
   constructor() {
     this.queue = [];
-    this.cache_father = {
-      all: [],
-    };
-    this.cache_mother = {
-      all: [],
-    };
     this.cache_0 = {
       all: [],
     };
     this.cache_1 = {
-      all: [],
-    };
-    this.cache_2 = {
       all: [],
     };
     this.cache_matGramp = {
@@ -67,7 +39,6 @@ class MatGramp {
     const out: Res[] = [];
     while (this.queue.length > 0) {
       const ins = this.queue.shift();
-      // console.log({ ins });
       switch (ins.destination) {
         case "mother":
           this.insert_mother(ins);
@@ -96,12 +67,10 @@ class MatGramp {
   }
 
   private insert_mother(ins: Insertion) {
-    this.cache_mother.all.push(ins.res);
     this.queue.push({ destination: "0", origin: "mother", res: ins.res });
   }
 
   private insert_father(ins: Insertion) {
-    this.cache_father.all.push(ins.res);
     this.queue.push({ destination: "1", origin: "father", res: ins.res });
   }
 
@@ -146,15 +115,10 @@ class MatGramp {
           bindings.set("A", item_0.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
           bindings.set("C", ins.res.bindings.get("C"));
-          const res = {
-            rec: null,
-            bindings,
-          };
-          this.cache_2.all.push(res);
           this.queue.push({
             destination: "matGramp",
             origin: "2",
-            res,
+            res: { rec: null, bindings },
           });
         }
       }
@@ -165,11 +129,6 @@ class MatGramp {
           bindings.set("A", item_1.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
           bindings.set("C", ins.res.bindings.get("C"));
-          const res = {
-            rec: null,
-            bindings,
-          };
-          this.cache_2.all.push(res);
           this.queue.push({
             destination: "matGramp",
             origin: "2",
@@ -201,19 +160,3 @@ class MatGramp {
     return out;
   }
 }
-
-function main() {
-  const mg = new MatGramp();
-  const o1 = mg.insertFact({
-    relation: "mother",
-    attrs: { child: "Pete", mother: "Mary" },
-  });
-  console.log(o1);
-  const o2 = mg.insertFact({
-    relation: "father",
-    attrs: { child: "Mary", father: "Mark" },
-  });
-  console.log(o2);
-}
-
-main();
