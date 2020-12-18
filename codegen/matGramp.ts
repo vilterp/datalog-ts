@@ -67,6 +67,7 @@ class MatGramp {
     const out: Res[] = [];
     while (this.queue.length > 0) {
       const ins = this.queue.shift();
+      // console.log({ ins });
       switch (ins.destination) {
         case "mother":
           this.insert_mother(ins);
@@ -105,37 +106,38 @@ class MatGramp {
   }
 
   private insert_0(ins: Insertion) {
-    this.cache_0.all.push(ins.res);
     const bindings = new Map<string, Term>();
     bindings.set("A", ins.res.rec.attrs.child);
     bindings.set("B", ins.res.rec.attrs.mother);
+    const res: Res = {
+      rec: ins.res.rec,
+      bindings,
+    };
+    this.cache_0.all.push(res);
     this.queue.push({
       destination: "2",
       origin: "0",
-      res: {
-        rec: ins.res.rec,
-        bindings,
-      },
+      res,
     });
   }
 
   private insert_1(ins: Insertion) {
-    this.cache_1.all.push(ins.res);
     const bindings = new Map<string, Term>();
     bindings.set("B", ins.res.rec.attrs.child);
     bindings.set("C", ins.res.rec.attrs.father);
+    const res: Res = {
+      rec: ins.res.rec,
+      bindings,
+    };
+    this.cache_1.all.push(res);
     this.queue.push({
       destination: "2",
       origin: "1",
-      res: {
-        rec: ins.res.rec,
-        bindings,
-      },
+      res: res,
     });
   }
 
   private insert_2(ins: Insertion) {
-    this.cache_2.all.push(ins.res);
     if (ins.origin === "1") {
       // TODO: use index
       for (let item_0 of this.cache_0.all) {
@@ -144,13 +146,15 @@ class MatGramp {
           bindings.set("A", item_0.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
           bindings.set("C", ins.res.bindings.get("C"));
+          const res = {
+            rec: null,
+            bindings,
+          };
+          this.cache_2.all.push(res);
           this.queue.push({
             destination: "matGramp",
             origin: "2",
-            res: {
-              rec: null,
-              bindings,
-            },
+            res,
           });
         }
       }
@@ -161,6 +165,11 @@ class MatGramp {
           bindings.set("A", item_1.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
           bindings.set("C", ins.res.bindings.get("C"));
+          const res = {
+            rec: null,
+            bindings,
+          };
+          this.cache_2.all.push(res);
           this.queue.push({
             destination: "matGramp",
             origin: "2",
@@ -199,12 +208,12 @@ function main() {
     relation: "mother",
     attrs: { child: "Pete", mother: "Mary" },
   });
-  console.log({ o1 });
+  console.log(o1);
   const o2 = mg.insertFact({
     relation: "father",
-    attrs: { child: "Mary", mother: "Mark" },
+    attrs: { child: "Mary", father: "Mark" },
   });
-  console.log({ o2 });
+  console.log(o2);
 }
 
 main();

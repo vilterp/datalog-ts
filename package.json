@@ -22,7 +22,7 @@
     "serve-ddtest-viewer": "cd ddTestViewer && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist",
     "benchmarks": "ts-node allBenchmarks.ts",
-    "gen-test": "ts-node gen/matGramp.ts"
+    "gen-test": "ts-node codegen/matGramp.ts"
   },
   "devDependencies": {
     "@jaegertracing/plexus": "^0.1.0",
