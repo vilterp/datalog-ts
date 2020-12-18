@@ -126,9 +126,9 @@ export class MatGramp {
       for (let item_1 of this.cache_1.all) {
         if (item_1.bindings.get("B") === ins.res.bindings.get("B")) {
           const bindings = new Map<string, Term>();
-          bindings.set("A", item_1.bindings.get("A"));
+          bindings.set("A", ins.res.bindings.get("A"));
           bindings.set("B", ins.res.bindings.get("B"));
-          bindings.set("C", ins.res.bindings.get("C"));
+          bindings.set("C", item_1.bindings.get("C"));
           this.queue.push({
             destination: "matGramp",
             origin: "2",
