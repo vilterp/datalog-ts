@@ -22,7 +22,8 @@
     "serve-ddtest-viewer": "cd ddTestViewer && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist",
     "benchmarks": "ts-node allBenchmarks.ts",
-    "gen-test": "ts-node codegen/matGramp.ts"
+    "gen-test": "ts-node codegen/matGramp.ts",
+    "gen-assemblyscript-test": "asc codegen/assemblyscript/matGramp.ts -b codegen/assemblyscript/matGramp.wasm"
   },
   "devDependencies": {
     "@jaegertracing/plexus": "^0.1.0",
@@ -42,6 +43,7 @@
     "typescript": "^3.9.2"
   },
   "dependencies": {
+    "assemblyscript": "^0.17.9",
     "classnames": "^2.2.6",
     "denque": "^1.4.1",
     "graphviz-react": "^1.1.1",
