@@ -23,7 +23,7 @@
     "cloc": "cloc --vcs=git --exclude-dir=dist",
     "benchmarks": "ts-node allBenchmarks.ts",
     "gen-test": "ts-node codegen/matGramp.ts",
-    "build-as-matgramp": "asc codegen/assemblyscript/matGramp.ts -b codegen/assemblyscript/matGramp.wasm",
+    "build-as-matgramp": "asc codegen/assemblyscript/matGramp.ts --sourceMap -b codegen/assemblyscript/matGramp.wasm -t codegen/assemblyscript/matGramp.wat",
     "test-as-matgramp": "cd codegen/assemblyscript && node runAs.mjs",
     "tst-ts-matgramp": "ts-node codegen/assemblyscript/runAsTs.ts"
   },

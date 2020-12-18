@@ -1,1 +1,3 @@
 *.wasm
+*.wat
+*.wasm.map
