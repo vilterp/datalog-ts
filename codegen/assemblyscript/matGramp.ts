@@ -33,7 +33,7 @@ const MOTHER = 10;
 const FATHER = 11;
 const MAT_GRAMP = 12;
 
-class MatGramp {
+export class MatGramp {
   // TODO: indexes on these relations
   cache_0: Res[];
   cache_1: Res[];
@@ -187,14 +187,18 @@ class MatGramp {
   }
 }
 
-const mg = new MatGramp();
-const mAttrs = new Map<string, Term>();
-mAttrs.set("child", new StrTerm("Pete"));
-mAttrs.set("mother", new StrTerm("Mary"));
-mg.insertFact({ relation: "mother", attrs: mAttrs });
+export function test(): i32 {
+  const mg = new MatGramp();
+  const mAttrs = new Map<string, Term>();
+  mAttrs.set("child", new StrTerm("Pete"));
+  mAttrs.set("mother", new StrTerm("Mary"));
+  const o1 = mg.insertFact({ relation: "mother", attrs: mAttrs });
 
-const fAttrs = new Map<string, Term>();
-fAttrs.set("child", new StrTerm("Mary"));
-fAttrs.set("father", new StrTerm("Mark"));
-const out = mg.insertFact({ relation: "father", attrs: fAttrs });
-console.log(out);
+  const fAttrs = new Map<string, Term>();
+  fAttrs.set("child", new StrTerm("Mary"));
+  fAttrs.set("father", new StrTerm("Mark"));
+  const o2 = mg.insertFact({ relation: "father", attrs: fAttrs });
+
+  return o2.length;
+}
+// console.log(out);
