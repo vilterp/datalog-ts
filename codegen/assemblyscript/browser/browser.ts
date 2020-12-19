@@ -5,6 +5,8 @@ async function main() {
   const module = await loader.instantiateStreaming(resp);
   const res = module.exports.test();
   console.log(res);
+  const tn = document.createTextNode(`hello from Wasm! Result: ${res}`);
+  document.body.appendChild(tn);
 }
 
 main().then(() => console.log("done"));
