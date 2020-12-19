@@ -2,3 +2,5 @@
 *.wat
 *.wasm.map
 *.o
+build/bundle.js
+build/bundle.js.map

@@ -21,12 +21,7 @@
     "build-ddtest-viewer": "esbuild ddTestViewer/main.tsx --bundle --outfile=ddTestViewer/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto",
     "serve-ddtest-viewer": "cd ddTestViewer && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist",
-    "benchmarks": "ts-node allBenchmarks.ts",
-    "gen-test": "ts-node codegen/matGramp.ts",
-    "build-as-matgramp": "asc codegen/assemblyscript/matGramp.ts --sourceMap -b codegen/assemblyscript/matGramp.wasm -t codegen/assemblyscript/matGramp.wat",
-    "test-as-matgramp": "cd codegen/assemblyscript && node runAs.mjs",
-    "test-ts-matgramp": "ts-node codegen/assemblyscript/runAsTs.ts",
-    "test-wasmtime-matgramp": "wasmtime codegen/assemblyscript/matGramp.wasm"
+    "benchmarks": "ts-node allBenchmarks.ts"
   },
   "devDependencies": {
     "@jaegertracing/plexus": "^0.1.0",
@@ -46,7 +41,6 @@
     "typescript": "^3.9.2"
   },
   "dependencies": {
-    "assemblyscript": "^0.17.9",
     "classnames": "^2.2.6",
     "denque": "^1.4.1",
     "graphviz-react": "^1.1.1",

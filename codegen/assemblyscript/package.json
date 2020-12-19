@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "build-as-matgramp": "asc matGramp.ts --sourceMap -b build/matGramp.wasm -t build/matGramp.wat",
+    "test-as-matgramp": "node runAs.mjs",
+    "test-ts-matgramp": "ts-node runAsTs.ts",
+    "test-wasmtime-matgramp": "wasmtime build/matGramp.wasm",
+    "build-browser-test": "cd browser && esbuild --sourcemap --target=es6 --bundle browser.ts --outfile=../build/bundle.js",
+    "serve-browser-test": "light-server -s build"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.17.10",
+    "esbuild": "^0.8.24",
+    "light-server": "^2.9.1"
+  },
+  "dependencies": {
+    "@assemblyscript/loader": "^0.17.10"
+  }
+}

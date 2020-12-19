@@ -2,5 +2,11 @@
   "extends": "assemblyscript/std/assembly.json",
   "include": [
     "./**/*.ts"
-  ]
+  ],
+  "compilerOptions": {
+    "lib": [
+      "esnext.full",
+      "dom"
+    ]
+  }
 }

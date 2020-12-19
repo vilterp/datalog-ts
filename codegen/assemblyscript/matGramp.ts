@@ -1,4 +1,4 @@
-import "wasi";
+// import "wasi";
 
 // type i32 = number;
 
