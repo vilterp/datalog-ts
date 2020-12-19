@@ -2,5 +2,8 @@
 *.wat
 *.wasm.map
 *.o
+build/matGramp.js
+build/*.idl
+build/*.d.ts
 build/bundle.js
 build/bundle.js.map

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build-as-matgramp": "asc matGramp.ts --sourceMap -b build/matGramp.wasm -t build/matGramp.wat",
+    "build-as-matgramp": "asc matGramp.ts --sourceMap -b build/matGramp.wasm -t build/matGramp.wat -j build/matGramp.js -i build/matGramp.idl -d build/matGramp.d.ts",
     "test-as-matgramp": "node runAs.mjs",
     "test-ts-matgramp": "ts-node runAsTs.ts",
     "test-wasmtime-matgramp": "wasmtime build/matGramp.wasm",
