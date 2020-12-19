@@ -25,7 +25,8 @@
     "gen-test": "ts-node codegen/matGramp.ts",
     "build-as-matgramp": "asc codegen/assemblyscript/matGramp.ts --sourceMap -b codegen/assemblyscript/matGramp.wasm -t codegen/assemblyscript/matGramp.wat",
     "test-as-matgramp": "cd codegen/assemblyscript && node runAs.mjs",
-    "tst-ts-matgramp": "ts-node codegen/assemblyscript/runAsTs.ts"
+    "test-ts-matgramp": "ts-node codegen/assemblyscript/runAsTs.ts",
+    "test-wasmtime-matgramp": "wasmtime codegen/assemblyscript/matGramp.wasm"
   },
   "devDependencies": {
     "@jaegertracing/plexus": "^0.1.0",

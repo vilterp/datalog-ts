@@ -1,4 +1,4 @@
-// TODO: ...
+import "wasi";
 
 // type i32 = number;
 
@@ -43,7 +43,7 @@ const MOTHER = 10;
 const FATHER = 11;
 const MAT_GRAMP = 12;
 
-export class MatGramp {
+class MatGramp {
   // TODO: indexes on these relations
   cache_0: Res[];
   cache_1: Res[];
@@ -216,3 +216,5 @@ export function test(): i32 {
   return o2.length;
 }
 // console.log(out);
+
+test();
