@@ -1,0 +1,8 @@
+main :- value.
+value :- (object | array | intLit | stringLit).
+object :- ["{", repSep(keyValue, ","), "}"].
+keyValue :- [stringLit, ": ", value].
+intLit :- repSep(digit, <succeed>).
+array :- ["[", repSep(value, ","), "]"].
+digit :- [0-9].
+stringLit :- ["'", repSep([a-z], <succeed>), "'"].
