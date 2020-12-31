@@ -2,14 +2,20 @@
 ----
 text/plain
 
+.table next
+----
+text/plain
+
 value{from: F, to: T} :-
   null{from: F, to: T}.
 ----
 text/propagation-log
 
 null{from: P1, to: P3} :-
-  source{pos: P1, char: "n", next: P2} &
-  source{pos: P2, char: "u", next: P3} &
+  source{pos: P1, char: "n"} &
+  next{left: P1, right: P2} &
+  source{pos: P2, char: "u"} &
+  next{left: P2, right: P3} &
   source{pos: P3, char: "l"}.
 ----
 text/propagation-log
@@ -19,12 +25,17 @@ text/propagation-log
 application/graphviz
 digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(null{from: F, to: T}; {P1: F, P3: T}) []" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" label="1: Match(source{char: \"n\", next: P2, pos: P1}; {}) [P2]" shape="box" style="filled"];
-  "2" [fillcolor="darkseagreen2" label="2: Match(source{char: \"u\", next: P3, pos: P2}; {}) [P2]" shape="box" style="filled"];
-  "3" [fillcolor="thistle" label="3: Join(P2) [P3]" shape="box" style="filled"];
-  "4" [fillcolor="darkseagreen2" label="4: Match(source{char: \"l\", pos: P3}; {}) [P3]" shape="box" style="filled"];
-  "5" [fillcolor="thistle" label="5: Join(P3) []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(source{char: \"n\", pos: P1}; {}) [P1]" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "3" [fillcolor="thistle" label="3: Join(P1) [P2]" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" label="4: Match(source{char: \"u\", pos: P2}; {}) [P2]" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(P2) [P2]" shape="box" style="filled"];
+  "6" [fillcolor="darkseagreen2" label="6: Match(next{left: P2, right: P3}; {}) [P2]" shape="box" style="filled"];
+  "7" [fillcolor="thistle" label="7: Join(P2) [P3]" shape="box" style="filled"];
+  "8" [fillcolor="darkseagreen2" label="8: Match(source{char: \"l\", pos: P3}; {}) [P3]" shape="box" style="filled"];
+  "9" [fillcolor="thistle" label="9: Join(P3) []" shape="box" style="filled"];
   "source" [fillcolor="darksalmon" label="source:  []" shape="box" style="filled"];
+  "next" [fillcolor="darksalmon" label="next:  []" shape="box" style="filled"];
   "value" [fillcolor="lightblue" label="value: Subst({from: F, to: T}) []" shape="box" style="filled"];
   "null" [fillcolor="lightblue" label="null: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
   "0" -> "value" [];
@@ -32,51 +43,97 @@ digraph G {
   "2" -> "3" [];
   "3" -> "5" [];
   "4" -> "5" [];
-  "5" -> "null" [];
+  "5" -> "7" [];
+  "6" -> "7" [];
+  "7" -> "9" [];
+  "8" -> "9" [];
+  "9" -> "null" [];
+  "next" -> "2" [];
+  "next" -> "6" [];
   "null" -> "0" [];
   "source" -> "1" [];
-  "source" -> "2" [];
   "source" -> "4" [];
+  "source" -> "8" [];
 }
 
-source{pos: 0, char: "n", next: 1}.
+source{pos: 0, char: "n"}.
 ----
 text/propagation-log
-source from null: source{char: "n", next: 1, pos: 0}; {}. 
-  source{char: "n", next: 1, pos: 0}; {}
-1 from source: source{char: "n", next: 1, pos: 0}; {}. Match(source{char: "n", next: P2, pos: P1}; {})
-  source{char: "n", next: 1, pos: 0}; {P1: 0, P2: 1}
-2 from source: source{char: "n", next: 1, pos: 0}; {}. Match(source{char: "u", next: P3, pos: P2}; {})
-4 from source: source{char: "n", next: 1, pos: 0}; {}. Match(source{char: "l", pos: P3}; {})
-3 from 1: source{char: "n", next: 1, pos: 0}; {P1: 0, P2: 1}. Join(P2)
+source from null: source{char: "n", pos: 0}; {}. 
+  source{char: "n", pos: 0}; {}
+1 from source: source{char: "n", pos: 0}; {}. Match(source{char: "n", pos: P1}; {})
+  source{char: "n", pos: 0}; {P1: 0}
+4 from source: source{char: "n", pos: 0}; {}. Match(source{char: "u", pos: P2}; {})
+8 from source: source{char: "n", pos: 0}; {}. Match(source{char: "l", pos: P3}; {})
+3 from 1: source{char: "n", pos: 0}; {P1: 0}. Join(P1)
 
-source{pos: 1, char: "u", next: 2}.
+source{pos: 1, char: "u"}.
 ----
 text/propagation-log
-source from null: source{char: "u", next: 2, pos: 1}; {}. 
-  source{char: "u", next: 2, pos: 1}; {}
-1 from source: source{char: "u", next: 2, pos: 1}; {}. Match(source{char: "n", next: P2, pos: P1}; {})
-2 from source: source{char: "u", next: 2, pos: 1}; {}. Match(source{char: "u", next: P3, pos: P2}; {})
-  source{char: "u", next: 2, pos: 1}; {P2: 1, P3: 2}
-4 from source: source{char: "u", next: 2, pos: 1}; {}. Match(source{char: "l", pos: P3}; {})
-3 from 2: source{char: "u", next: 2, pos: 1}; {P2: 1, P3: 2}. Join(P2)
-  (); {P1: 0, P2: 1, P3: 2}
-5 from 3: (); {P1: 0, P2: 1, P3: 2}. Join(P3)
+source from null: source{char: "u", pos: 1}; {}. 
+  source{char: "u", pos: 1}; {}
+1 from source: source{char: "u", pos: 1}; {}. Match(source{char: "n", pos: P1}; {})
+4 from source: source{char: "u", pos: 1}; {}. Match(source{char: "u", pos: P2}; {})
+  source{char: "u", pos: 1}; {P2: 1}
+8 from source: source{char: "u", pos: 1}; {}. Match(source{char: "l", pos: P3}; {})
+5 from 4: source{char: "u", pos: 1}; {P2: 1}. Join(P2)
 
-source{pos: 2, char: "l", next: 3}.
+source{pos: 2, char: "l"}.
 ----
 text/propagation-log
-source from null: source{char: "l", next: 3, pos: 2}; {}. 
-  source{char: "l", next: 3, pos: 2}; {}
-1 from source: source{char: "l", next: 3, pos: 2}; {}. Match(source{char: "n", next: P2, pos: P1}; {})
-2 from source: source{char: "l", next: 3, pos: 2}; {}. Match(source{char: "u", next: P3, pos: P2}; {})
-4 from source: source{char: "l", next: 3, pos: 2}; {}. Match(source{char: "l", pos: P3}; {})
-  source{char: "l", next: 3, pos: 2}; {P3: 2}
-5 from 4: source{char: "l", next: 3, pos: 2}; {P3: 2}. Join(P3)
+source from null: source{char: "l", pos: 2}; {}. 
+  source{char: "l", pos: 2}; {}
+1 from source: source{char: "l", pos: 2}; {}. Match(source{char: "n", pos: P1}; {})
+4 from source: source{char: "l", pos: 2}; {}. Match(source{char: "u", pos: P2}; {})
+8 from source: source{char: "l", pos: 2}; {}. Match(source{char: "l", pos: P3}; {})
+  source{char: "l", pos: 2}; {P3: 2}
+9 from 8: source{char: "l", pos: 2}; {P3: 2}. Join(P3)
+
+next{left: 0, right: 1}.
+----
+text/propagation-log
+next from null: next{left: 0, right: 1}; {}. 
+  next{left: 0, right: 1}; {}
+2 from next: next{left: 0, right: 1}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 0, right: 1}; {P1: 0, P2: 1}
+6 from next: next{left: 0, right: 1}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 0, right: 1}; {P2: 0, P3: 1}
+3 from 2: next{left: 0, right: 1}; {P1: 0, P2: 1}. Join(P1)
+  (); {P1: 0, P2: 1}
+7 from 6: next{left: 0, right: 1}; {P2: 0, P3: 1}. Join(P2)
+5 from 3: (); {P1: 0, P2: 1}. Join(P2)
+  (); {P1: 0, P2: 1}
+7 from 5: (); {P1: 0, P2: 1}. Join(P2)
+
+next{left: 1, right: 2}.
+----
+text/propagation-log
+next from null: next{left: 1, right: 2}; {}. 
+  next{left: 1, right: 2}; {}
+2 from next: next{left: 1, right: 2}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 1, right: 2}; {P1: 1, P2: 2}
+6 from next: next{left: 1, right: 2}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 1, right: 2}; {P2: 1, P3: 2}
+3 from 2: next{left: 1, right: 2}; {P1: 1, P2: 2}. Join(P1)
+7 from 6: next{left: 1, right: 2}; {P2: 1, P3: 2}. Join(P2)
   (); {P1: 0, P2: 1, P3: 2}
-null from 5: (); {P1: 0, P2: 1, P3: 2}. Subst({from: P1, to: P3})
+9 from 7: (); {P1: 0, P2: 1, P3: 2}. Join(P3)
+  (); {P1: 0, P2: 1, P3: 2}
+null from 9: (); {P1: 0, P2: 1, P3: 2}. Subst({from: P1, to: P3})
   null{from: 0, to: 2}; {P1: 0, P2: 1, P3: 2}
 0 from null: null{from: 0, to: 2}; {P1: 0, P2: 1, P3: 2}. Match(null{from: F, to: T}; {P1: F, P3: T})
   null{from: 0, to: 2}; {F: 0, T: 2}
 value from 0: null{from: 0, to: 2}; {F: 0, T: 2}. Subst({from: F, to: T})
   value{from: 0, to: 2}; {F: 0, T: 2}
+
+next{left: 2, right: 3}.
+----
+text/propagation-log
+next from null: next{left: 2, right: 3}; {}. 
+  next{left: 2, right: 3}; {}
+2 from next: next{left: 2, right: 3}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 2, right: 3}; {P1: 2, P2: 3}
+6 from next: next{left: 2, right: 3}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 2, right: 3}; {P2: 2, P3: 3}
+3 from 2: next{left: 2, right: 3}; {P1: 2, P2: 3}. Join(P1)
+7 from 6: next{left: 2, right: 3}; {P2: 2, P3: 3}. Join(P2)
