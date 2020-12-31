@@ -18,7 +18,7 @@ import { mapObj } from "../util/util";
 import { RuleGraph } from "./ruleGraph";
 import { formatNodeDesc, formatNodeWithIndexes, ppr } from "./pretty";
 
-type Output =
+export type Output =
   | { type: "PropagationLog"; log: PropagationLog }
   | { type: "Trace"; logAndGraph: PropagationLogAndGraph }
   | { type: "Graphviz"; dot: string }
@@ -51,10 +51,7 @@ export class Interpreter {
 
   evalStr(line: string) {
     const stmt = dlLanguage.statement.tryParse(line) as Statement;
-    if (stmt.type !== "Insert") {
-      throw new Error("not an insert");
-    }
-    return this.processStmt({ type: "Insert", record: stmt.record });
+    return this.processStmt(stmt);
   }
 
   processStmt(stmt: Statement): Output {

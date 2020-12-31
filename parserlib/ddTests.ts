@@ -11,6 +11,8 @@ import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { grammarToDL, inputToDL } from "./genDatalog";
 import { ppRule, ppt } from "../pretty";
 import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
+import { formatOutput, Interpreter, Output } from "../incremental/interpreter";
+import { nullLoader } from "../loaders";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -29,6 +31,7 @@ export function parserlibTests(writeResults: boolean): Suite {
     ["meta", metaTest],
     ["dlgen", dlGenTest],
     ["inputgen", inputGenTest],
+    ["dlparse", dlParseTest],
   ]);
 }
 
@@ -84,6 +87,43 @@ function inputGenTest(test: string[]): TestOutput[] {
     return datalogOut(
       inputToDL(input)
         .map((t) => ppt(t) + ".")
+        .join("\n")
+    );
+  });
+}
+
+function dlParseTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const [grammarText, inputText] = input.split("--");
+
+    const traceTree = parse(metaGrammar, "grammar", grammarText);
+    const ruleTree = extractRuleTree(traceTree);
+    const grammar = extractGrammar(input, ruleTree);
+    const rules = grammarToDL(grammar);
+
+    const inputRecs = inputToDL(inputText);
+
+    const interp = new Interpreter(nullLoader);
+    interp.evalStr(".table source");
+    interp.evalStr(".table next");
+
+    for (let rule of rules) {
+      interp.processStmt({ type: "Rule", rule });
+    }
+
+    let outputs: Output[] = [];
+    for (let record of inputRecs) {
+      outputs = outputs.concat(interp.processStmt({ type: "Insert", record }));
+    }
+
+    return plainTextOut(
+      outputs
+        .map((out) =>
+          formatOutput(interp.graph, out, {
+            propagationLogMode: "repl",
+            showBindings: false,
+          })
+        )
         .join("\n")
     );
   });
