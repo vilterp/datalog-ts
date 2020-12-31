@@ -23,21 +23,20 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
             opts: [
               {
                 type: "And",
-                clauses: stringToArray(rule.value)
-                  .map((char, idx) =>
+                clauses: [
+                  ...stringToArray(rule.value).map((char, idx) =>
                     rec("source", {
                       pos: varr(`P${idx + 1}`),
                       char: str(char),
                     })
-                  )
-                  .concat(
-                    range(rule.value.length - 1).map((idx) =>
-                      rec("next", {
-                        left: varr(`P${idx + 1}`),
-                        right: varr(`P${idx + 2}`),
-                      })
-                    )
                   ),
+                  ...range(rule.value.length - 1).map((idx) =>
+                    rec("next", {
+                      left: varr(`P${idx + 1}`),
+                      right: varr(`P${idx + 2}`),
+                    })
+                  ),
+                ],
               },
             ],
           },
