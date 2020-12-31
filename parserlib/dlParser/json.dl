@@ -1,0 +1,41 @@
+.table source
+.table next
+
+value{from: F, to: T} :-
+  null{from: F, to: T}.
+#  stringLit{from: F, to: T} |
+#  intLit{from: F, to: T} |
+#  array{from: F, to: T} |
+#  object{from: F, to: T} |
+
+
+#stringLit{from: F, to: T} :-
+#  XXX.
+
+#intLit{from: F, to: T} :-
+#  XXX.
+
+#array{from: F, to: T} :-
+#  XXX.
+
+#object{from: F, to: T} :-
+#  XXX.
+
+null{from: F, to: T} :-
+  source{pos: F, char: "n"} &
+  next{left: F, right: P1} &
+  source{pos: P1, char: "u"} &
+  next{left: P1, right: P2} &
+  source{pos: P2, char: "l"} &
+  next{pos: P2, right: P3} &
+  source{pos: P3, char: "l"}.
+
+source{pos: 0, char: "n"}.
+source{pos: 1, char: "u"}.
+source{pos: 2, char: "l"}.
+source{pos: 3, char: "l"}.
+
+next{left: 0, right: 1}.
+next{left: 1, right: 2}.
+next{left: 2, right: 3}.
+next{left: 3, right: 4}.
