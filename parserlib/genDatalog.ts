@@ -1,7 +1,7 @@
 import * as dl from "../types";
-import { flatMap, flatMapObjToList, range, stringToArray } from "../util/util";
+import { flatMapObjToList, range, stringToArray } from "../util/util";
 import * as gram from "./grammar";
-import { rec, str, varr } from "../types";
+import { int, Rec, rec, str, varr } from "../types";
 
 export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
   return flatMapObjToList(grammar, (ruleName, gramRule): dl.Rule[] => {
@@ -59,3 +59,12 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
 }
 
 // TODO: input to DL
+export function inputToDL(input: string): Rec[] {
+  return stringToArray(input)
+    .map((char, idx) => rec("source", { char: str(char), idx: int(idx) }))
+    .concat(
+      range(input.length - 1).map((idx) =>
+        rec("next", { left: int(idx), right: int(idx + 1) })
+      )
+    );
+}

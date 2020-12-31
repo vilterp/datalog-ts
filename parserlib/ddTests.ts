@@ -8,8 +8,8 @@ import { extractRuleTree } from "./ruleTree";
 import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
-import { grammarToDL } from "./genDatalog";
-import { ppRule } from "../pretty";
+import { grammarToDL, inputToDL } from "./genDatalog";
+import { ppRule, ppt } from "../pretty";
 import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
 
 // TODO: rename to stdlibGrammar? :P
@@ -28,6 +28,7 @@ export function parserlibTests(writeResults: boolean): Suite {
     ["json", (t) => parserTestFixedStartRule(jsonGrammar, "value", t)],
     ["meta", metaTest],
     ["dlgen", dlGenTest],
+    ["inputgen", inputGenTest],
   ]);
 }
 
@@ -75,5 +76,15 @@ function dlGenTest(test: string[]): TestOutput[] {
     const grammar = extractGrammar(input, ruleTree);
     const rules = grammarToDL(grammar);
     return datalogOut(rules.map(ppRule).join("\n"));
+  });
+}
+
+function inputGenTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    return datalogOut(
+      inputToDL(input)
+        .map((t) => ppt(t) + ".")
+        .join("\n")
+    );
   });
 }
