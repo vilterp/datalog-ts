@@ -1,5 +1,5 @@
 import * as dl from "../types";
-import { flatMap, flatMapObjToList, stringToArray } from "../util/util";
+import { flatMap, flatMapObjToList, range, stringToArray } from "../util/util";
 import * as gram from "./grammar";
 import { rec, str, varr } from "../types";
 
@@ -23,18 +23,21 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
             opts: [
               {
                 type: "And",
-                clauses: flatMap(stringToArray(rule.value), (char, idx) => {
-                  return [
+                clauses: stringToArray(rule.value)
+                  .map((char, idx) =>
                     rec("source", {
                       pos: varr(`P${idx + 1}`),
                       char: str(char),
-                    }),
-                    rec("next", {
-                      left: varr(`P${idx + 1}`),
-                      right: varr(`P${idx + 2}`),
-                    }),
-                  ];
-                }),
+                    })
+                  )
+                  .concat(
+                    range(rule.value.length - 1).map((idx) =>
+                      rec("next", {
+                        left: varr(`P${idx + 1}`),
+                        right: varr(`P${idx + 2}`),
+                      })
+                    )
+                  ),
               },
             ],
           },
