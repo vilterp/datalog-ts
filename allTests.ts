@@ -18,14 +18,14 @@ const stayAlive = flags.has("--stay-alive");
 
 const suites = {
   // unifyTests,
-  // parserTests,
+  parserTests,
+  parserlibTests: parserlibTests(writeResults),
   // replTests: replTests(writeResults),
   // fpTests: fpTests(writeResults),
   // json2DLTests,
   // prettyPrintTests,
   // treeTests,
   // actionsTests,
-  // parserlibTests: parserlibTests(writeResults),
   incrTests: incrTests(writeResults),
   genTests,
 };

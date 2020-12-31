@@ -8,9 +8,10 @@ import { formatOutput, Interpreter } from "./interpreter";
 import { graphvizOut, jsonOut, TestOutput } from "../util/ddTest/types";
 import { fsLoader } from "../repl";
 import { getJoinInfo } from "./build";
+import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
 
 export function incrTests(writeResults: boolean): Suite {
-  const tests: [string, ProcessFn][] = [
+  return suiteFromDDTestsInDir("incremental/testdata", writeResults, [
     ["build", buildTest],
     ["buildBinExpr", buildTest],
     ["matgramp", evalTest],
@@ -26,17 +27,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["fpIde", evalTest],
     ["findJoinInfo", joinInfoTest],
     ["parse", evalTest],
-  ];
-  return tests.map(([name, func]) => ({
-    name,
-    test() {
-      runDDTestAtPath(
-        `incremental/testdata/${name}.dd.txt`,
-        func,
-        writeResults
-      );
-    },
-  }));
+  ]);
 }
 
 function joinInfoTest(test: string[]): TestOutput[] {

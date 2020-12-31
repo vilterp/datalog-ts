@@ -1,4 +1,4 @@
-import { assertStringEqual } from "../testing";
+import { assertStringEqual, Suite } from "../testing";
 import fs from "fs";
 import { zip } from "../util";
 import { parseDDTest } from "./parser";
@@ -23,6 +23,19 @@ function checkResults(results: Result[]) {
 function doWriteResults(path: string, results: Result[]) {
   const str = resultsToStr(results);
   fs.writeFileSync(path, str);
+}
+
+export function suiteFromDDTestsInDir(
+  dir: string,
+  writeResults: boolean,
+  tests: [string, ProcessFn][]
+): Suite {
+  return tests.map(([name, fn]) => ({
+    name,
+    test() {
+      runDDTestAtPath(`${dir}/${name}.dd.txt`, fn, writeResults);
+    },
+  }));
 }
 
 export function runDDTestAtPath(

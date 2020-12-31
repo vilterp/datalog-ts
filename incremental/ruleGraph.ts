@@ -484,13 +484,6 @@ class InsertionIterator {
     const curNodeID = insertingNow.destination;
     const results = this.graph.processInsertion(insertingNow);
     for (let result of results) {
-      if (this.mode.type === "Replaying") {
-        console.log("replaying", {
-          curNodeID,
-          result: ppr(result),
-          newNodeIDs: this.mode.newNodeIDs,
-        });
-      }
       if (this.mode.type === "Playing" || this.mode.newNodeIDs.has(curNodeID)) {
         this.graph.addToCache(curNodeID, result);
       }

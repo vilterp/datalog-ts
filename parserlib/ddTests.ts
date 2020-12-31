@@ -7,7 +7,10 @@ import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar } from "./meta";
-import { plainTextOut, TestOutput } from "../util/ddTest/types";
+import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
+import { grammarToDL } from "./genDatalog";
+import { ppRule } from "../pretty";
+import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -20,38 +23,12 @@ const basicGrammar: Grammar = {
 };
 
 export function parserlibTests(writeResults: boolean): Suite {
-  return [
-    {
-      name: "basic",
-      test() {
-        runDDTestAtPath(
-          "parserlib/testdata/basic.dd.txt",
-          (t) => parserTest(basicGrammar, t),
-          writeResults
-        );
-      },
-    },
-    {
-      name: "json",
-      test() {
-        runDDTestAtPath(
-          "parserlib/testdata/json.dd.txt",
-          (t) => parserTestFixedStartRule(jsonGrammar, "value", t),
-          writeResults
-        );
-      },
-    },
-    {
-      name: "meta",
-      test() {
-        runDDTestAtPath(
-          "parserlib/testdata/meta.dd.txt",
-          metaTest,
-          writeResults
-        );
-      },
-    },
-  ];
+  return suiteFromDDTestsInDir("parserlib/testdata", writeResults, [
+    ["basic", (t) => parserTest(basicGrammar, t)],
+    ["json", (t) => parserTestFixedStartRule(jsonGrammar, "value", t)],
+    ["meta", metaTest],
+    ["dlgen", dlGenTest],
+  ]);
 }
 
 // TODO: DRY these two up
@@ -89,4 +66,14 @@ function parserTestFixedStartRule(
 function handleResults(tree: TraceTree): TestOutput {
   const ruleTree = extractRuleTree(tree);
   return plainTextOut(prettyPrintRuleTree(ruleTree));
+}
+
+function dlGenTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const traceTree = parse(metaGrammar, "grammar", input);
+    const ruleTree = extractRuleTree(traceTree);
+    const grammar = extractGrammar(input, ruleTree);
+    const rules = grammarToDL(grammar);
+    return datalogOut(rules.map(ppRule).join("\n"));
+  });
 }
