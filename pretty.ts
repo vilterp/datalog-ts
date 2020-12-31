@@ -69,7 +69,7 @@ export function prettyPrintRule(rule: Rule): pp.IDoc {
       )
     ),
   ];
-  return [prettyPrintTerm(rule.head), " :- ", pp.choice(oneLine, splitUp)];
+  return [prettyPrintTerm(rule.head), " :- ", pp.choice(oneLine, splitUp), "."];
 }
 
 export function prettyPrintDB(db: DB): pp.IDoc {

@@ -329,3 +329,11 @@ export function combineObjects<T, U>(
   }
   return out;
 }
+
+export function stringToArray(str: string): string[] {
+  const out = [];
+  for (let i = 0; i < str.length; i++) {
+    out.push(str[i]);
+  }
+  return out;
+}

@@ -14,79 +14,24 @@ import { flatten } from "./flatten";
 import { fsLoader } from "../repl";
 import { Rec } from "../types";
 import { traceToTree, getRelatedPaths } from "../traceTree";
-import {
-  Interpreter,
-  newInterpreter,
-  processStmt,
-  queryStr,
-} from "../incremental/interpreter";
+import { Interpreter } from "../incremental/interpreter";
 import {
   datalogOut,
   jsonOut,
   plainTextOut,
   TestOutput,
 } from "../util/ddTest/types";
+import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
 
 export function fpTests(writeResults: boolean): Suite {
-  return [
-    {
-      name: "parse",
-      test() {
-        runDDTestAtPath("fp/testdata/parse.dd.txt", parseTest, writeResults);
-      },
-    },
-    {
-      name: "flatten",
-      test() {
-        runDDTestAtPath(
-          "fp/testdata/flatten.dd.txt",
-          flattenTest,
-          writeResults
-        );
-      },
-    },
-    // {
-    //   name: "typecheck",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "fp/testdata/typecheck.dd.txt",
-    //       typecheckTest,
-    //       writeResults
-    //     );
-    //   },
-    // },
-    // {
-    //   name: "suggestion",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "fp/testdata/suggestion.dd.txt",
-    //       suggestionTest,
-    //       writeResults
-    //     );
-    //   },
-    // },
-    // TODO: re-enable
-    // {
-    //   name: "trace",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "fp/testdata/trace.dd.txt",
-    //       (t) => traceTest(t, defaultTracePrintOpts),
-    //       writeResults
-    //     );
-    //   },
-    // },
-    // {
-    //   name: "tracePaths",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "fp/testdata/tracePaths.dd.txt",
-    //       (t) => traceTest(t, { showScopePath: true }),
-    //       writeResults
-    //     );
-    //   },
-    // },
-  ];
+  return suiteFromDDTestsInDir("fp/testdata", writeResults, [
+    ["parse", parseTest],
+    ["flatten", flattenTest],
+    ["typecheck", typecheckTest],
+    ["suggestion", suggestionTest],
+    // ["trace", (t) => traceTest(t, defaultTracePrintOpts)],
+    // ["tracePaths", (t) => traceTest(t, { showScopePath: true })],
+  ]);
 }
 
 function parseTest(test: string[]): TestOutput[] {
@@ -107,27 +52,24 @@ function flattenTest(test: string[]): TestOutput[] {
 
 // flatten, then print out all scope and types
 // TODO: DRY up a bit
-function typecheckTest(test: DDTest): TestOutput[] {
-  return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+function typecheckTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const parsed = language.expr.tryParse(input);
     const flattened = flatten(parsed);
     const rendered = flattened.map((t) => ppt(t) + ".");
 
-    const interp = newInterpreter(fsLoader); // hmmm
-    const interp2 = processStmt(interp, {
+    const interp = new Interpreter(fsLoader);
+    interp.processStmt({
       type: "LoadStmt",
       path: "fp/dl/main.dl",
-    }).newInterp;
-    const interp3 = flattened.reduce<Interpreter>(
-      (interp, t) =>
-        processStmt(interp, { type: "Insert", record: t as Rec }).newInterp,
-      interp2
+    });
+    flattened.forEach((t) =>
+      interp.processStmt({ type: "Insert", record: t as Rec })
     );
-    const scopeResults = queryStr(
-      interp3,
+    const scopeResults = interp.queryStr(
       "tc.ScopeItem{id: I, name: N, type: T}"
     );
-    const typeResults = queryStr(interp3, "tc.Type{id: I, type: T}");
+    const typeResults = interp.queryStr("tc.Type{id: I, type: T}");
     return datalogOut(
       [
         ...rendered,
@@ -138,23 +80,20 @@ function typecheckTest(test: DDTest): TestOutput[] {
   });
 }
 
-function suggestionTest(test: DDTest): TestOutput[] {
-  return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+function suggestionTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const parsed = language.expr.tryParse(input);
     const flattened = flatten(parsed);
 
-    const interp = newInterpreter(fsLoader); // hmmm
-    const interp2 = processStmt(interp, {
+    const interp = new Interpreter(fsLoader);
+    interp.processStmt({
       type: "LoadStmt",
       path: "fp/dl/main.dl",
-    }).newInterp;
-    const interp3 = flattened.reduce<Interpreter>(
-      (interp, t) =>
-        processStmt(interp, { type: "Insert", record: t as Rec }).newInterp,
-      interp2
+    });
+    flattened.forEach((t) =>
+      interp.processStmt({ type: "Insert", record: t as Rec })
     );
-    const suggResults = queryStr(
-      interp3,
+    const suggResults = interp.queryStr(
       "ide.Suggestion{id: I, name: N, type: T}"
     );
     return datalogOut(

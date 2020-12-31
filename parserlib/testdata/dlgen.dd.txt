@@ -1,3 +1,10 @@
-main :- "foo"
+main :- "foo".
 ----
 application/datalog
+main{from: P1, to: P3} :- 
+  source{char: "f", pos: P1} &
+  next{left: P1, right: P2} &
+  source{char: "o", pos: P2} &
+  next{left: P2, right: P3} &
+  source{char: "o", pos: P3} &
+  next{left: P3, right: P4}.
