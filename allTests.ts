@@ -21,7 +21,7 @@ const suites = {
   parserTests,
   parserlibTests: parserlibTests(writeResults),
   // replTests: replTests(writeResults),
-  // fpTests: fpTests(writeResults),
+  fpTests: fpTests(writeResults),
   // json2DLTests,
   // prettyPrintTests,
   // treeTests,
