@@ -7,12 +7,19 @@ import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar } from "./meta";
-import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
+import {
+  datalogOut,
+  graphvizOut,
+  plainTextOut,
+  TestOutput,
+} from "../util/ddTest/types";
 import { grammarToDL, inputToDL } from "./genDatalog";
 import { ppRule, ppt } from "../pretty";
 import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
 import { formatOutput, Interpreter, Output } from "../incremental/interpreter";
 import { nullLoader } from "../loaders";
+import { toGraphviz } from "../incremental/graphviz";
+import { prettyPrintGraph } from "../util/graphviz";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -78,7 +85,17 @@ function dlGenTest(test: string[]): TestOutput[] {
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(input, ruleTree);
     const rules = grammarToDL(grammar);
-    return datalogOut(rules.map(ppRule).join("\n"));
+    // return datalogOut(rules.map(ppRule).join("\n"));
+
+    const interp = new Interpreter(nullLoader);
+    interp.evalStr(".table source");
+    interp.evalStr(".table next");
+
+    for (let rule of rules) {
+      interp.processStmt({ type: "Rule", rule });
+    }
+
+    return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
   });
 }
 
@@ -118,13 +135,14 @@ function dlParseTest(test: string[]): TestOutput[] {
 
     return plainTextOut(
       outputs
-        .map((out) =>
-          formatOutput(interp.graph, out, {
-            propagationLogMode: "repl",
-            showBindings: false,
-          })
+        .map(
+          (out) =>
+            formatOutput(interp.graph, out, {
+              propagationLogMode: "repl",
+              showBindings: true,
+            }).content
         )
-        .join("\n")
+        .join("")
     );
   });
 }

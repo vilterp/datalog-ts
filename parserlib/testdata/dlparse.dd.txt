@@ -1,4 +1,6 @@
-main :- "foo".
+main :- "f".
 --
-foo
+f
 ----
+text/plain
+main{from: P1, to: P1}; {}.

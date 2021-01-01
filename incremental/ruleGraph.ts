@@ -41,6 +41,7 @@ import Denque from "denque";
 import { evalBinExpr } from "../binExpr";
 import { Performance } from "w3c-hr-time";
 import { ppr } from "./pretty";
+import { ppb, ppt } from "../pretty";
 
 const performance = new Performance();
 
@@ -217,11 +218,11 @@ export class RuleGraph {
     for (let possibleOtherMatch of otherEntries) {
       const otherVars = possibleOtherMatch.bindings;
       const unifyRes = unifyVars(thisVars || {}, otherVars || {});
-      // console.log("join", {
-      //   left: formatRes(ins.res),
-      //   right: formatRes(possibleOtherMatch),
-      //   unifyRes: ppb(unifyRes),
-      // });
+      console.log("join", {
+        left: ppb(thisVars),
+        right: ppb(otherVars),
+        unifyRes: ppb(unifyRes),
+      });
       if (unifyRes !== null) {
         results.push({
           term: null,

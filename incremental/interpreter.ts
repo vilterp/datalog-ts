@@ -160,9 +160,7 @@ export function formatOutput(
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );
             })
-            .map(({ output }) =>
-              output.map((res) => `${ppt(res.term)}.`).join("\n")
-            )
+            .map(({ output }) => output.map((res) => `${ppr(res)}.`).join("\n"))
             .join("\n")
         );
       }
