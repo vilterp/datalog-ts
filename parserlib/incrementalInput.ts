@@ -33,15 +33,18 @@ export class IncrementalInputManager {
           },
         ];
         if (evt.index > 0) {
+          const leftID = this.indexToID.peekAt(evt.index - 1);
+          // TODO: retract old linkage
           out.push({
             type: "Insert",
             record: rec("next", {
-              left: int(this.indexToID.peekAt(evt.index - 1)),
+              left: int(leftID),
               right: int(newID),
             }),
           });
         }
         if (evt.index < lengthBefore) {
+          // TODO: retract old linkage
           out.push({
             type: "Insert",
             record: rec("next", {
@@ -50,6 +53,7 @@ export class IncrementalInputManager {
             }),
           });
         }
+        this.indexToID.splice(evt.index, 0, newID);
         return out;
       }
       case "Delete":

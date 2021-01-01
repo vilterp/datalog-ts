@@ -7,10 +7,11 @@ text/plain
 ----
 text/plain
 > source{char: "o", id: 1}
-> next{left: undefined, right: 1}
+> next{left: 0, right: 1}
 
 {"type":"Insert","index":2,"char":"o"}
 ----
 text/plain
 > source{char: "o", id: 2}
-> next{left: undefined, right: 2}
+> next{left: 1, right: 2}
+main{from: 0, to: 2}; {P1: 0, P2: 1, P3: 2}.
