@@ -3,7 +3,7 @@ import { int, rec, Statement, str } from "../types";
 
 export type InputEvt =
   | { type: "Insert"; index: number; char: string }
-  | { type: "Delete"; index: number };
+  | { type: "Delete"; index: number }; // index of character to be deleted
 
 export class IncrementalInputManager {
   nextID: 0;

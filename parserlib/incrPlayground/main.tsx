@@ -40,8 +40,9 @@ function Main() {
   // TODO: useCallback, useEffect
   const handleChange = (evt: ChangeEvent<HTMLTextAreaElement>) => {
     console.log("handleChange", evt);
-    setSource(evt.target.value);
 
+    // TODO: there may be some way to get input events directly from DOM events,
+    //   without having to diff the entire string
     const changes = diff.diffChars(source, evt.target.value);
     const events = changesToEvents(changes);
     console.log("changes", changes);
@@ -50,6 +51,7 @@ function Main() {
     // console.log(statements);
 
     setLog([...log, ...events.map((input) => ({ input, outputs: [] }))]);
+    setSource(evt.target.value);
   };
 
   return (
@@ -81,7 +83,10 @@ function changesToEvents(changes: Change[]): InputEvt[] {
         index++;
       }
     } else if (change.removed) {
-      throw new Error("TODO: process remove changes");
+      for (let i = 0; i < change.value.length; i++) {
+        out.push({ type: "Delete", index });
+        index++;
+      }
     } else {
       index += change.value.length;
     }
