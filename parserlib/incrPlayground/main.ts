@@ -23,7 +23,10 @@ for (let rule of gramamrRules) {
 let nextID = 0;
 const positionToID = [];
 
-document.getElementById("input").addEventListener("change", (evt) => {
+const inputBox = document.getElementById("input");
+inputBox.focus();
+
+inputBox.addEventListener("input", (evt) => {
   console.log("evt", evt);
 
   const insertedChar = "a"; // TODO: ???
@@ -51,14 +54,14 @@ document.getElementById("input").addEventListener("change", (evt) => {
       })
     );
   }
-  if (insertedIdx < positionToID.length) {
+  if (insertedIdx <= positionToID.length) {
     // TODO: ???
     handleEmissions(
       interp.processStmt({
         type: "Insert",
         record: rec("next", {
           left: int(newID),
-          right: str(positionToID[insertedIdx + 1]),
+          right: int(positionToID[insertedIdx + 1]),
         }),
       })
     );
@@ -69,13 +72,25 @@ document.getElementById("input").addEventListener("change", (evt) => {
 const log = document.getElementById("log");
 
 function handleEmissions(output: Output) {
+  console.log("output", output);
   switch (output.type) {
     case "PropagationLog":
       for (let batch of output.log) {
-        const newItem = document.createElement("li");
-        const label = document.createTextNode(batch.output.map(ppr).join(", "));
-        newItem.appendChild(label);
-        log.appendChild(newItem);
+        const newInsertion = document.createElement("li");
+        const insertionLabel = document.createTextNode(
+          `${batch.insertion.origin} -> ${batch.insertion.destination}: ${ppr(
+            batch.insertion.res
+          )}`
+        );
+        newInsertion.appendChild(insertionLabel);
+        const outputs = document.createElement("ul");
+        for (let item of batch.output) {
+          const label = document.createTextNode(ppr(item));
+          const itemLi = document.createElement("li");
+          itemLi.appendChild(label);
+          newInsertion.appendChild(outputs);
+        }
+        log.appendChild(newInsertion);
       }
   }
 }
