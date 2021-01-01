@@ -125,6 +125,7 @@ function Playground(props: {}) {
               </>
             }
           />
+          {/* TODO: interpret generated DL and show resulting rules  */}
         </>
       )}
     </>
