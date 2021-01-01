@@ -43,16 +43,30 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           },
         },
       ];
-    case "Char":
-      throw new Error("todo");
     case "Choice":
-      // generate a rule for each clause
-      // or them together
-      throw new Error("todo");
-    case "Ref":
-      throw new Error("todo");
-    case "RepSep":
-      throw new Error("todo");
+      return [
+        {
+          head: rec(name, {
+            from: varr("P1"),
+            to: varr(`P2`),
+          }),
+          defn: {
+            type: "Or",
+            opts: rule.choices.map((choice, idx) => ({
+              type: "And",
+              clauses: [
+                rec(choiceName(name, idx), {
+                  from: varr("P1"),
+                  to: varr("P2"),
+                }),
+              ],
+            })),
+          },
+        },
+        ...flatMap(rule.choices, (subRule, idx) =>
+          ruleToDL(choiceName(name, idx), subRule)
+        ),
+      ];
     case "Sequence":
       return [
         {
@@ -87,6 +101,12 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           ruleToDL(seqItemName(name, idx), subRule)
         ),
       ];
+    case "Ref":
+      throw new Error("todo");
+    case "RepSep":
+      throw new Error("todo");
+    case "Char":
+      throw new Error("todo");
     case "Succeed":
       throw new Error("todo");
   }
@@ -94,6 +114,10 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
 
 function seqItemName(name: string, idx: number): string {
   return `${name}_seq_${idx}`;
+}
+
+function choiceName(name: string, idx: number): string {
+  return `${name}_choice_${idx}`;
 }
 
 // TODO: input to DL
