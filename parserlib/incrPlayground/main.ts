@@ -15,6 +15,8 @@ const gramamrRules = grammarToDL(grammarParsed);
 const interp = new Interpreter(nullLoader);
 interp.evalStr(".table source");
 interp.evalStr(".table next");
+// @ts-ignore
+window.interp = interp;
 
 for (let rule of gramamrRules) {
   interp.processStmt({ type: "Rule", rule });
@@ -35,6 +37,7 @@ inputBox.addEventListener("input", (evt) => {
   // TODO: maybe use linked list to avoid linear operation here
   const newID = nextID;
   nextID++;
+  const lengthBefore = positionToID.length;
   positionToID.splice(insertedIdx, 1, newID);
 
   handleEmissions(
@@ -54,7 +57,7 @@ inputBox.addEventListener("input", (evt) => {
       })
     );
   }
-  if (insertedIdx <= positionToID.length) {
+  if (insertedIdx < lengthBefore) {
     // TODO: ???
     handleEmissions(
       interp.processStmt({
