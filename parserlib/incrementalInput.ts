@@ -49,7 +49,7 @@ export class IncrementalInputManager {
             type: "Insert",
             record: rec("next", {
               left: int(newID),
-              right: int(this.indexToID.peekAt(evt.index + 1)),
+              right: int(this.indexToID.peekAt(evt.index)),
             }),
           });
         }

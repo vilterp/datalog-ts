@@ -40,6 +40,7 @@ export function parserlibTests(writeResults: boolean): Suite {
     ["inputgen", inputGenTest],
     ["dlparse", dlParseTest],
     ["incrInput", incrInputTest],
+    ["incrInput2", incrInputTest],
   ]);
 }
 

@@ -1,0 +1,18 @@
+{"type":"Insert","index":0,"char":"f"}
+----
+text/plain
+> source{char: "f", id: 0}
+
+{"type":"Insert","index":1,"char":"o"}
+----
+text/plain
+> source{char: "o", id: 1}
+> next{left: 0, right: 1}
+
+{"type":"Insert","index":1,"char":"o"}
+----
+text/plain
+> source{char: "o", id: 2}
+> next{left: 0, right: 2}
+> next{left: 2, right: 1}
+main{from: 0, to: 1}; {P1: 0, P2: 2, P3: 1}.

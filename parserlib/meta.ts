@@ -39,7 +39,7 @@ export function parseGrammar(input: string): Grammar {
   }
   const ruleTree = extractRuleTree(traceTree);
   const grammar = extractGrammar(input, ruleTree);
-  console.log("parseGrammar", { traceTree, errors, grammar });
+  // console.log("parseGrammar", { traceTree, errors, grammar });
   return grammar;
 }
 
