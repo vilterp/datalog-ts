@@ -29,15 +29,18 @@ import {
   textForSpan,
   extractRuleTree,
 } from "./ruleTree";
-import { parse } from "./parser";
+import { formatParseError, getErrors, parse } from "./parser";
 
 export function parseGrammar(input: string): Grammar {
   const traceTree = parse(metaGrammar, "grammar", input);
-  if (traceTree.error) {
-    throw traceTree.error;
+  const errors = getErrors(traceTree);
+  if (errors.length > 0) {
+    throw new Error(`parse errors: ${errors.map(formatParseError).join(", ")}`);
   }
   const ruleTree = extractRuleTree(traceTree);
-  return extractGrammar(input, ruleTree);
+  const grammar = extractGrammar(input, ruleTree);
+  console.log("parseGrammar", { traceTree, errors, grammar });
+  return grammar;
 }
 
 // hardcoded grammar for parsing grammar rules

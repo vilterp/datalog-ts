@@ -18,6 +18,10 @@ export type TraceTree = {
 
 type ParseError = { expected: string[]; got: string };
 
+export function formatParseError(error: ParseError): string {
+  return `expected ${error.expected.join(" | ")}; got ${error.got}`;
+}
+
 type TraceInner =
   | { type: "SeqTrace"; itemTraces: TraceTree[] }
   | {
@@ -230,4 +234,40 @@ function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
     case "AnyChar":
       return true;
   }
+}
+
+function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
+  fn(tree);
+  switch (tree.type) {
+    case "ChoiceTrace":
+      forEachTraceTreeNode(tree.innerTrace, fn);
+      break;
+    case "SeqTrace":
+      tree.itemTraces.forEach((itemTrace) => {
+        forEachTraceTreeNode(itemTrace, fn);
+      });
+      break;
+    case "RefTrace":
+      forEachTraceTreeNode(tree.innerTrace, fn);
+      break;
+    case "RepSepTrace":
+      // TODO: in order?
+      tree.repTraces.forEach((innerTrace) => {
+        forEachTraceTreeNode(innerTrace, fn);
+      });
+      tree.sepTraces.forEach((innerTrace) => {
+        forEachTraceTreeNode(innerTrace, fn);
+      });
+      break;
+  }
+}
+
+export function getErrors(tree: TraceTree): ParseError[] {
+  const out: ParseError[] = [];
+  forEachTraceTreeNode(tree, (node) => {
+    if (node.error) {
+      out.push(node.error);
+    }
+  });
+  return out;
 }

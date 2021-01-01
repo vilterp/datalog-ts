@@ -8,9 +8,10 @@ import { Change } from "diff";
 import { flatMap } from "../../util/util";
 import { initializeInterp } from "../genDatalog";
 
-const GRAMMAR_TEXT = `main :- (foo | barBaz).
+const GRAMMAR_TEXT = `main :- (foo | barBaz | fooBarBaz).
 foo :- "foo".
-barBaz :- ["bar", "baz"].`;
+barBaz :- ["bar", "baz"].
+fooBarBaz :- [foo, barBaz].`;
 
 // TODO: put these somewhere in React-land
 const interp = initializeInterp(GRAMMAR_TEXT);
@@ -68,18 +69,20 @@ function Main() {
             {JSON.stringify(inputOutput.input)}
             <br />
             <ul>
-              {inputOutput.outputs.map((output, idx2) => (
-                <li key={idx2}>
-                  <pre>
-                    {
-                      formatOutput(interp.graph, output, {
-                        propagationLogMode: "test",
-                        showBindings: false,
-                      }).content
-                    }
-                  </pre>
-                </li>
-              ))}
+              {inputOutput.outputs
+                .map(
+                  (output) =>
+                    formatOutput(interp.graph, output, {
+                      propagationLogMode: "repl",
+                      showBindings: false,
+                    }).content
+                )
+                .filter((output) => output.length > 0)
+                .map((output, idx2) => (
+                  <li key={idx2}>
+                    <pre>{output}</pre>
+                  </li>
+                ))}
             </ul>
           </li>
         ))}
