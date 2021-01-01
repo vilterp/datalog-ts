@@ -9,7 +9,7 @@ export const prettyPrintTests = [
     test() {
       const term = str("hello\nworld");
       const expected = '"hello\\nworld"';
-      const actual = pp.render(200, prettyPrintTerm(term));
+      const actual = prettyPrintTerm(term);
       assertStringEqual(expected, actual);
     },
   },

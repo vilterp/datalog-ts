@@ -15,31 +15,43 @@ trans_edge{from: X, to: Z} :-
   base_edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
 text/plain
-trans_edge{from: "A", to: "B"}.
-trans_edge{from: "B", to: "C"}.
-trans_edge{from: "A", to: "C"}.
-trans_edge{from: "C", to: "D"}.
-trans_edge{from: "B", to: "D"}.
-trans_edge{from: "A", to: "D"}.
+trans_edge{from: "A", to: "B"}; {X: "A", Z: "B"}.
+trans_edge{from: "B", to: "C"}; {X: "B", Z: "C"}.
+trans_edge{from: "A", to: "C"}; {X: "A", Y: "B", Z: "C"}.
+trans_edge{from: "C", to: "D"}; {X: "C", Z: "D"}.
+trans_edge{from: "B", to: "D"}; {X: "B", Y: "C", Z: "D"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
+trans_edge{from: "A", to: "C"}; {X: "A", Y: "B", Z: "C"}.
+trans_edge{from: "B", to: "D"}; {X: "B", Y: "C", Z: "D"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
 
 edge{to: T, from: F, label: ""} :-
   trans_edge{to: T, from: F}.
 ----
 text/plain
-edge{from: "A", label: "", to: "B"}.
-trans_edge{from: "A", to: "C"}.
-edge{from: "A", label: "", to: "C"}.
-edge{from: "B", label: "", to: "C"}.
-edge{from: "A", label: "", to: "C"}.
-trans_edge{from: "B", to: "D"}.
-edge{from: "B", label: "", to: "D"}.
-trans_edge{from: "A", to: "D"}.
-edge{from: "A", label: "", to: "D"}.
-edge{from: "C", label: "", to: "D"}.
-trans_edge{from: "A", to: "D"}.
-edge{from: "A", label: "", to: "D"}.
-edge{from: "B", label: "", to: "D"}.
-edge{from: "A", label: "", to: "D"}.
+edge{from: "A", label: "", to: "B"}; {F: "A", T: "B"}.
+trans_edge{from: "A", to: "C"}; {X: "A", Y: "B", Z: "C"}.
+edge{from: "A", label: "", to: "C"}; {F: "A", T: "C"}.
+edge{from: "B", label: "", to: "C"}; {F: "B", T: "C"}.
+edge{from: "A", label: "", to: "C"}; {F: "A", T: "C"}.
+trans_edge{from: "B", to: "D"}; {X: "B", Y: "C", Z: "D"}.
+edge{from: "B", label: "", to: "D"}; {F: "B", T: "D"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
+edge{from: "C", label: "", to: "D"}; {F: "C", T: "D"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
+edge{from: "B", label: "", to: "D"}; {F: "B", T: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
+edge{from: "A", label: "", to: "C"}; {F: "A", T: "C"}.
+trans_edge{from: "A", to: "D"}; {X: "A", Y: "B", Z: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
+edge{from: "B", label: "", to: "D"}; {F: "B", T: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
+edge{from: "A", label: "", to: "D"}; {F: "A", T: "D"}.
 
 .graphviz
 ----
@@ -55,12 +67,12 @@ Expected one of the following:
 '.dumpcaches', '.load', '.rulegraph', '.table', '.trace', /#[^\n]*/, record identifier
 
     at Parsimmon._.tryParse (/Users/vilterp/code/datalog-ts/node_modules/parsimmon/src/parsimmon.js:845:15)
-    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:94:39)
-    at Interface.rl.on (/Users/vilterp/code/datalog-ts/repl.ts:54:12)
-    at Interface.emit (events.js:182:13)
-    at Interface.EventEmitter.emit (domain.js:441:20)
-    at Interface._onLine (readline.js:290:10)
-    at Interface._normalWrite (readline.js:433:12)
-    at Transform.ondata (readline.js:149:10)
-    at Transform.emit (events.js:182:13)
-    at Transform.EventEmitter.emit (domain.js:441:20)
+    at Repl.handleLine (/Users/vilterp/code/datalog-ts/repl.ts:88:39)
+    at Interface.<anonymous> (/Users/vilterp/code/datalog-ts/repl.ts:48:12)
+    at Interface.emit (node:events:376:20)
+    at Interface.EventEmitter.emit (node:domain:470:12)
+    at Interface._onLine (node:readline:363:10)
+    at Interface._normalWrite (node:readline:508:12)
+    at Transform.ondata (node:readline:215:10)
+    at Transform.emit (node:events:376:20)
+    at Transform.EventEmitter.emit (node:domain:470:12)

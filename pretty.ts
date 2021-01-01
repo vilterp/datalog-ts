@@ -292,7 +292,7 @@ export function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
 
 const re1 = /\\/g;
 const re2 = /"/g;
-const re3 = /\\n/g;
+const re3 = /\n/g;
 
 export function escapeString(str: string): string {
   return str.replace(re1, `\\\\`).replace(re2, `\\"`).replace(re3, `\\n`);

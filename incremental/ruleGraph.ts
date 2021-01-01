@@ -218,11 +218,11 @@ export class RuleGraph {
     for (let possibleOtherMatch of otherEntries) {
       const otherVars = possibleOtherMatch.bindings;
       const unifyRes = unifyVars(thisVars || {}, otherVars || {});
-      console.log("join", {
-        left: ppb(thisVars),
-        right: ppb(otherVars),
-        unifyRes: ppb(unifyRes),
-      });
+      // console.log("join", {
+      //   left: ppb(thisVars),
+      //   right: ppb(otherVars),
+      //   unifyRes: ppb(unifyRes),
+      // });
       if (unifyRes !== null) {
         results.push({
           term: null,

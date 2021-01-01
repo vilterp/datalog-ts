@@ -139,7 +139,7 @@ function dlParseTest(test: string[]): TestOutput[] {
           (out) =>
             formatOutput(interp.graph, out, {
               propagationLogMode: "repl",
-              showBindings: true,
+              showBindings: false,
             }).content
         )
         .join("")
