@@ -20,7 +20,11 @@ import { formatOutput, Interpreter, Output } from "../incremental/interpreter";
 import { nullLoader } from "../loaders";
 import { toGraphviz } from "../incremental/graphviz";
 import { prettyPrintGraph } from "../util/graphviz";
-import { IncrementalInputManager, InputEvt } from "./incrementalInput";
+import {
+  IncrementalInputManager,
+  initializeInterp,
+  InputEvt,
+} from "./incrementalInput";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -154,10 +158,9 @@ function dlParseTest(test: string[]): TestOutput[] {
 }
 
 function incrInputTest(test: string[]): TestOutput[] {
-  const interp = new Interpreter(nullLoader);
   const inputManager = new IncrementalInputManager();
 
-  // TODO: initialize interpreter with grammar
+  const interp = initializeInterp(`main :- "foo".`);
 
   const out: TestOutput[] = [];
   for (let input of test) {
@@ -177,7 +180,7 @@ function incrInputTest(test: string[]): TestOutput[] {
         }).content
       );
     }
-    out.push(plainTextOut(outLines.join("\n")));
+    out.push(plainTextOut(outLines.filter((l) => l.length > 0).join("\n")));
   }
 
   return out;

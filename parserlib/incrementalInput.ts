@@ -1,5 +1,9 @@
 import Denque from "denque";
 import { int, rec, Statement, str } from "../types";
+import { Interpreter } from "../incremental/interpreter";
+import { parseGrammar } from "./meta";
+import { grammarToDL } from "./genDatalog";
+import { nullLoader } from "../loaders";
 
 export type InputEvt =
   | { type: "Insert"; index: number; char: string }
@@ -58,4 +62,18 @@ export class IncrementalInputManager {
     this.nextID++;
     return newID;
   }
+}
+
+export function initializeInterp(grammarText: string): Interpreter {
+  const grammarParsed = parseGrammar(grammarText);
+  const gramamrRules = grammarToDL(grammarParsed);
+
+  const interp = new Interpreter(nullLoader);
+  interp.evalStr(".table source");
+  interp.evalStr(".table next");
+
+  for (let rule of gramamrRules) {
+    interp.processStmt({ type: "Rule", rule });
+  }
+  return interp;
 }

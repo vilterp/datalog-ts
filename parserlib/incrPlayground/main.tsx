@@ -10,7 +10,11 @@ import {
 import { nullLoader } from "../../loaders";
 import { parseGrammar } from "../meta";
 import { grammarToDL } from "../genDatalog";
-import { IncrementalInputManager, InputEvt } from "../incrementalInput";
+import {
+  IncrementalInputManager,
+  initializeInterp,
+  InputEvt,
+} from "../incrementalInput";
 import { Change } from "diff";
 import { flatMap } from "../../util/util";
 
@@ -18,24 +22,8 @@ const GRAMMAR_TEXT = `main :- (foo | barBaz).
 foo :- "foo".
 barBaz :- ["bar", "baz"].`;
 
-function initializeInterp(): Interpreter {
-  const grammarParsed = parseGrammar(GRAMMAR_TEXT);
-  const gramamrRules = grammarToDL(grammarParsed);
-
-  const interp = new Interpreter(nullLoader);
-  interp.evalStr(".table source");
-  interp.evalStr(".table next");
-  // @ts-ignore
-  window.interp = interp;
-
-  for (let rule of gramamrRules) {
-    interp.processStmt({ type: "Rule", rule });
-  }
-  return interp;
-}
-
 // TODO: put these somewhere in React-land
-const interp = initializeInterp();
+const interp = initializeInterp(GRAMMAR_TEXT);
 const inputManager = new IncrementalInputManager();
 
 function Main() {
