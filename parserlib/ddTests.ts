@@ -6,7 +6,7 @@ import { jsonGrammar } from "./examples/json";
 import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
-import { metaGrammar, extractGrammar } from "./meta";
+import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import {
   datalogOut,
   graphvizOut,
@@ -82,9 +82,7 @@ function handleResults(tree: TraceTree): TestOutput {
 
 function dlGenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const traceTree = parse(metaGrammar, "grammar", input);
-    const ruleTree = extractRuleTree(traceTree);
-    const grammar = extractGrammar(input, ruleTree);
+    const grammar = parseGrammar(input);
     const rules = grammarToDL(grammar);
     return datalogOut(rules.map(ppRule).join("\n"));
   });
@@ -92,9 +90,7 @@ function dlGenTest(test: string[]): TestOutput[] {
 
 function dlGenGraphTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const traceTree = parse(metaGrammar, "grammar", input);
-    const ruleTree = extractRuleTree(traceTree);
-    const grammar = extractGrammar(input, ruleTree);
+    const grammar = parseGrammar(input);
     const rules = grammarToDL(grammar);
 
     const interp = new Interpreter(nullLoader);
@@ -123,10 +119,7 @@ function dlParseTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const [grammarText, inputText] = input.split("--");
 
-    const traceTree = parse(metaGrammar, "grammar", grammarText);
-    // TODO: check error
-    const ruleTree = extractRuleTree(traceTree);
-    const grammar = extractGrammar(input, ruleTree);
+    const grammar = parseGrammar(grammarText);
     const rules = grammarToDL(grammar);
 
     const inputRecs = inputToDL(inputText);

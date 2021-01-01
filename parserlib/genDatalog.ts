@@ -27,7 +27,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                 clauses: [
                   ...stringToArray(rule.value).map((char, idx) =>
                     rec("source", {
-                      pos: varr(`P${idx + 1}`),
+                      id: varr(`P${idx + 1}`),
                       char: str(char),
                     })
                   ),
@@ -141,7 +141,7 @@ function choiceName(name: string, idx: number): string {
 // TODO: input to DL
 export function inputToDL(input: string): Rec[] {
   return stringToArray(input)
-    .map((char, idx) => rec("source", { char: str(char), pos: int(idx) }))
+    .map((char, idx) => rec("source", { char: str(char), id: int(idx) }))
     .concat(
       range(input.length - 1).map((idx) =>
         rec("next", { left: int(idx), right: int(idx + 1) })
