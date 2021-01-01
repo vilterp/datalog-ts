@@ -2,12 +2,17 @@ import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
 import * as diff from "diff";
-import { Interpreter, Output } from "../../incremental/interpreter";
+import {
+  formatOutput,
+  Interpreter,
+  Output,
+} from "../../incremental/interpreter";
 import { nullLoader } from "../../loaders";
 import { parseGrammar } from "../meta";
 import { grammarToDL } from "../genDatalog";
 import { IncrementalInputManager, InputEvt } from "../incrementalInput";
 import { Change } from "diff";
+import { flatMap } from "../../util/util";
 
 const GRAMMAR_TEXT = `main :- (foo | barBaz).
 foo :- "foo".
@@ -29,9 +34,9 @@ function initializeInterp(): Interpreter {
   return interp;
 }
 
+// TODO: put these somewhere in React-land
 const interp = initializeInterp();
 const inputManager = new IncrementalInputManager();
-const log: Output[] = [];
 
 function Main() {
   const [source, setSource] = useState("");
@@ -39,34 +44,66 @@ function Main() {
 
   // TODO: useCallback, useEffect
   const handleChange = (evt: ChangeEvent<HTMLTextAreaElement>) => {
-    console.log("handleChange", evt);
-
     // TODO: there may be some way to get input events directly from DOM events,
     //   without having to diff the entire string
     const changes = diff.diffChars(source, evt.target.value);
     const events = changesToEvents(changes);
-    console.log("changes", changes);
 
-    // const statements = inputManager.processEvent(inputEvent);
-    // console.log(statements);
+    const statements = flatMap(events, (event) =>
+      inputManager.processEvent(event)
+    );
+    const outputs: Output[] = [];
+    for (let stmt of statements) {
+      const newOutput = interp.processStmt(stmt);
+      outputs.push(newOutput);
+    }
+    console.log("handleChange", { changes, statements, outputs });
 
-    setLog([...log, ...events.map((input) => ({ input, outputs: [] }))]);
+    setLog([...log, ...events.map((input) => ({ input, outputs }))]);
     setSource(evt.target.value);
   };
 
   return (
     <>
-      <textarea
-        autoFocus={true}
-        rows={10}
-        cols={80}
-        onChange={handleChange}
-        value={source}
-      />
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <textarea
+                autoFocus={true}
+                rows={10}
+                cols={80}
+                onChange={handleChange}
+                value={source}
+              />
+            </td>
+            <td>
+              <pre>{GRAMMAR_TEXT}</pre>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <h3>Log</h3>
       <ul>
         {log.map((inputOutput, idx) => (
-          <li key={idx}>{JSON.stringify(inputOutput.input)}</li>
+          <li key={idx}>
+            {JSON.stringify(inputOutput.input)}
+            <br />
+            <ul>
+              {inputOutput.outputs.map((output, idx2) => (
+                <li key={idx2}>
+                  <pre>
+                    {
+                      formatOutput(interp.graph, output, {
+                        propagationLogMode: "test",
+                        showBindings: false,
+                      }).content
+                    }
+                  </pre>
+                </li>
+              ))}
+            </ul>
+          </li>
         ))}
       </ul>
     </>
