@@ -14,6 +14,9 @@ import { ruleTreeToTree, renderRuleNode } from "../pretty";
 import { useJSONLocalStorage } from "../../uiCommon/hooks";
 import { metaGrammar, extractGrammar } from "../meta";
 import { validateGrammar } from "../validate";
+import { grammarToDL } from "../genDatalog";
+import * as dl from "../../types";
+import { ppRule } from "../../pretty";
 
 function Main() {
   return <Playground />;
@@ -37,9 +40,11 @@ function Playground(props: {}) {
   let tree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let error: string = null;
+  let dlRules: dl.Rule[] = [];
   try {
     tree = parse(grammar, "main", source);
     ruleTree = extractRuleTree(tree);
+    dlRules = grammarToDL(grammar);
   } catch (e) {
     error = e.toString();
   }
@@ -108,6 +113,15 @@ function Playground(props: {}) {
                   collapseState={ruleTreeCollapseState}
                   setCollapseState={setRuleTreeCollapseState}
                 />
+              </>
+            }
+          />
+
+          <Collapsible
+            heading="Generated DL"
+            content={
+              <>
+                <pre>{dlRules.map(ppRule).join("\n")}</pre>
               </>
             }
           />
