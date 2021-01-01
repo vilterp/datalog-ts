@@ -65,12 +65,20 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
             opts: [
               {
                 type: "And",
-                clauses: rule.items.map((char, idx) =>
-                  rec(seqItemName(name, idx), {
-                    from: varr(`P${idx + 1}`),
-                    to: varr(`P${idx + 2}`),
-                  })
-                ),
+                clauses: [
+                  ...rule.items.map((char, idx) =>
+                    rec(seqItemName(name, idx), {
+                      from: varr(`P${idx * 2 + 1}`),
+                      to: varr(`P${idx * 2 + 2}`),
+                    })
+                  ),
+                  ...range(rule.items.length - 1).map((idx) =>
+                    rec("next", {
+                      left: varr(`P${idx * 2 + 2}`),
+                      right: varr(`P${idx * 2 + 3}`),
+                    })
+                  ),
+                ],
               },
             ],
           },
