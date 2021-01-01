@@ -58,7 +58,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         {
           head: rec(name, {
             from: varr("P1"),
-            to: varr(`P${rule.items.length + 1}`),
+            to: varr(`P${rule.items.length * 2}`),
           }),
           defn: {
             type: "Or",

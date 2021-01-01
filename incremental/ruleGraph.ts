@@ -208,15 +208,15 @@ export class RuleGraph {
     const indexName = getIndexName(joinDesc.joinVars);
     const indexKey = getIndexKey(ins.res, joinDesc.joinVars);
     const otherEntries = otherNode.cache.get(indexName, indexKey);
-    console.log({
-      originID: ins.origin,
-      joinID: ins.destination,
-      otherID: otherNodeID,
-      indexName,
-      indexKey,
-      otherEntries,
-      cache: otherNode.cache.toJSON(),
-    });
+    // console.log("doJoin", {
+    //   originID: ins.origin,
+    //   joinID: ins.destination,
+    //   otherID: otherNodeID,
+    //   indexName,
+    //   indexKey,
+    //   otherEntries,
+    //   cache: otherNode.cache.toJSON(),
+    // });
     const before = performance.now();
     for (let possibleOtherMatch of otherEntries) {
       const otherVars = possibleOtherMatch.bindings;
