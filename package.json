@@ -20,7 +20,7 @@
     "serve-parserlib-playground": "cd parserlib/playground/public && http-server -c-1",
     "build-ddtest-viewer": "esbuild ddTestViewer/main.tsx --bundle --outfile=ddTestViewer/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto",
     "serve-ddtest-viewer": "cd ddTestViewer && http-server -c-1",
-    "build-incr-playground": "esbuild parserlib/incrPlayground/main.ts --bundle --sourcemap --outfile=parserlib/incrPlayground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --define:process=window --define:global=window",
+    "build-incr-playground": "esbuild parserlib/incrPlayground/main.tsx --bundle --sourcemap --outfile=parserlib/incrPlayground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --define:process=window --define:global=window",
     "serve-incr-playground": "cd parserlib/incrPlayground/public && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist",
     "benchmarks": "ts-node allBenchmarks.ts"
