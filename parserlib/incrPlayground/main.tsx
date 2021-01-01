@@ -1,11 +1,13 @@
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
+import * as diff from "diff";
 import { Interpreter, Output } from "../../incremental/interpreter";
 import { nullLoader } from "../../loaders";
 import { parseGrammar } from "../meta";
 import { grammarToDL } from "../genDatalog";
 import { IncrementalInputManager, InputEvt } from "../incrementalInput";
+import { Change } from "diff";
 
 const GRAMMAR_TEXT = `main :- (foo | barBaz).
 foo :- "foo".
@@ -40,17 +42,14 @@ function Main() {
     console.log("handleChange", evt);
     setSource(evt.target.value);
 
-    const inputEvent: InputEvt = {
-      type: "Insert",
-      index: 0,
-      char: "f",
-    };
+    const changes = diff.diffChars(source, evt.target.value);
+    const events = changesToEvents(changes);
+    console.log("changes", changes);
 
-    // TODO: get actual event
-    const statements = inputManager.processEvent(inputEvent);
-    console.log(statements);
+    // const statements = inputManager.processEvent(inputEvent);
+    // console.log(statements);
 
-    setLog([...log, { input: inputEvent, outputs: [] }]);
+    setLog([...log, ...events.map((input) => ({ input, outputs: [] }))]);
   };
 
   return (
@@ -70,6 +69,24 @@ function Main() {
       </ul>
     </>
   );
+}
+
+function changesToEvents(changes: Change[]): InputEvt[] {
+  const out: InputEvt[] = [];
+  let index = 0;
+  for (let change of changes) {
+    if (change.added) {
+      for (let i = 0; i < change.value.length; i++) {
+        out.push({ type: "Insert", index, char: change.value[i] });
+        index++;
+      }
+    } else if (change.removed) {
+      throw new Error("TODO: process remove changes");
+    } else {
+      index += change.value.length;
+    }
+  }
+  return out;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
