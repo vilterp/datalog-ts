@@ -130,6 +130,11 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
+"@hookeasy/use-title@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@hookeasy/use-title/-/use-title-1.0.2.tgz#bfd31af75e489cc107226c28a7293967a7b55f55"
+  integrity sha512-5pkwqdPTILZFG+X0r9QVf/Disjns9GwGEd3vNy6ccNM/vZHZBXUj/9G8x++rnO2QDGEq/F+N3QdJidWW7QGynQ==
+
 "@jaegertracing/plexus@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@jaegertracing/plexus/-/plexus-0.1.0.tgz#afd73833ae34574d4bb4d0906878b2136c3c34c1"

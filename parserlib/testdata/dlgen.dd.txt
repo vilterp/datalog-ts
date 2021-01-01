@@ -44,3 +44,24 @@ main_choice_1{from: P1, to: P3} :-
   source{char: "r", pos: P3} &
   next{left: P1, right: P2} &
   next{left: P2, right: P3}.
+
+main :- (foo | bar).
+foo :- "foo".
+bar :- "bar".
+----
+application/datalog
+bar{from: P1, to: P3} :- 
+  source{char: "b", pos: P1} &
+  source{char: "a", pos: P2} &
+  source{char: "r", pos: P3} &
+  next{left: P1, right: P2} &
+  next{left: P2, right: P3}.
+foo{from: P1, to: P3} :- 
+  source{char: "f", pos: P1} &
+  source{char: "o", pos: P2} &
+  source{char: "o", pos: P3} &
+  next{left: P1, right: P2} &
+  next{left: P2, right: P3}.
+main{from: P1, to: P2} :- main_choice_0{from: P1, to: P2} | main_choice_1{from: P1, to: P2}.
+main_choice_0{from: P1, to: P2} :- foo{from: P1, to: P2}.
+main_choice_1{from: P1, to: P2} :- bar{from: P1, to: P2}.

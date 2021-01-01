@@ -41,6 +41,7 @@
     "typescript": "^3.9.2"
   },
   "dependencies": {
+    "@hookeasy/use-title": "^1.0.2",
     "classnames": "^2.2.6",
     "denque": "^1.4.1",
     "graphviz-react": "^1.1.1",

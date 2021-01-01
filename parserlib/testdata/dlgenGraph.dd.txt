@@ -164,3 +164,78 @@ digraph G {
   "source" -> "15" [];
   "source" -> "19" [];
 }
+
+main :- (foo | bar).
+foo :- "foo".
+bar :- "bar".
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="darkseagreen2" label="0: Match(source{char: \"b\", pos: P1}; {}) [P1]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(P1) [P2]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(source{char: \"a\", pos: P2}; {}) [P2]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(P2) [P2]" shape="box" style="filled"];
+  "5" [fillcolor="darkseagreen2" label="5: Match(next{left: P2, right: P3}; {}) [P2]" shape="box" style="filled"];
+  "6" [fillcolor="thistle" label="6: Join(P2) [P3]" shape="box" style="filled"];
+  "7" [fillcolor="darkseagreen2" label="7: Match(source{char: \"r\", pos: P3}; {}) [P3]" shape="box" style="filled"];
+  "8" [fillcolor="thistle" label="8: Join(P3) []" shape="box" style="filled"];
+  "9" [fillcolor="darkseagreen2" label="9: Match(source{char: \"f\", pos: P1}; {}) [P1]" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" label="10: Match(next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "11" [fillcolor="thistle" label="11: Join(P1) [P2]" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" label="12: Match(source{char: \"o\", pos: P2}; {}) [P2]" shape="box" style="filled"];
+  "13" [fillcolor="thistle" label="13: Join(P2) [P2]" shape="box" style="filled"];
+  "14" [fillcolor="darkseagreen2" label="14: Match(next{left: P2, right: P3}; {}) [P2]" shape="box" style="filled"];
+  "15" [fillcolor="thistle" label="15: Join(P2) [P3]" shape="box" style="filled"];
+  "16" [fillcolor="darkseagreen2" label="16: Match(source{char: \"o\", pos: P3}; {}) [P3]" shape="box" style="filled"];
+  "17" [fillcolor="thistle" label="17: Join(P3) []" shape="box" style="filled"];
+  "18" [fillcolor="moccasin" label="18: Union []" shape="box" style="filled"];
+  "19" [fillcolor="darkseagreen2" label="19: Match(main_choice_0{from: P1, to: P2}; {P1: P1, P2: P2}) []" shape="box" style="filled"];
+  "20" [fillcolor="darkseagreen2" label="20: Match(main_choice_1{from: P1, to: P2}; {P1: P1, P2: P2}) []" shape="box" style="filled"];
+  "21" [fillcolor="darkseagreen2" label="21: Match(foo{from: P1, to: P2}; {P1: P1, P3: P2}) []" shape="box" style="filled"];
+  "22" [fillcolor="darkseagreen2" label="22: Match(bar{from: P1, to: P2}; {P1: P1, P3: P2}) []" shape="box" style="filled"];
+  "source" [fillcolor="darksalmon" label="source:  []" shape="box" style="filled"];
+  "next" [fillcolor="darksalmon" label="next:  []" shape="box" style="filled"];
+  "bar" [fillcolor="lightblue" label="bar: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
+  "foo" [fillcolor="lightblue" label="foo: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
+  "main" [fillcolor="lightblue" label="main: Subst({from: P1, to: P2}) []" shape="box" style="filled"];
+  "main_choice_0" [fillcolor="lightblue" label="main_choice_0: Subst({from: P1, to: P2}) []" shape="box" style="filled"];
+  "main_choice_1" [fillcolor="lightblue" label="main_choice_1: Subst({from: P1, to: P2}) []" shape="box" style="filled"];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "10" -> "11" [];
+  "11" -> "13" [];
+  "12" -> "13" [];
+  "13" -> "15" [];
+  "14" -> "15" [];
+  "15" -> "17" [];
+  "16" -> "17" [];
+  "17" -> "foo" [];
+  "18" -> "main" [];
+  "19" -> "18" [];
+  "2" -> "4" [];
+  "20" -> "18" [];
+  "21" -> "main_choice_0" [];
+  "22" -> "main_choice_1" [];
+  "3" -> "4" [];
+  "4" -> "6" [];
+  "5" -> "6" [];
+  "6" -> "8" [];
+  "7" -> "8" [];
+  "8" -> "bar" [];
+  "9" -> "11" [];
+  "bar" -> "22" [];
+  "foo" -> "21" [];
+  "main_choice_0" -> "19" [];
+  "main_choice_1" -> "20" [];
+  "next" -> "1" [];
+  "next" -> "5" [];
+  "next" -> "10" [];
+  "next" -> "14" [];
+  "source" -> "0" [];
+  "source" -> "3" [];
+  "source" -> "7" [];
+  "source" -> "9" [];
+  "source" -> "12" [];
+  "source" -> "16" [];
+}

@@ -1,8 +1,9 @@
 import React from "react";
-import useHashParam from "use-hash-param";
 import ReactDOM from "react-dom";
+import useTitle from "@hookeasy/use-title";
+import useHashParam from "use-hash-param";
 import { VISUALIZERS } from "../util/ddTest/visualizers";
-import { mapObj, mapObjToList } from "../util/util";
+import { lastItem, mapObjToList } from "../util/util";
 import { Archive } from "../util/ddTest/types";
 import { useFetch } from "use-http";
 import { Collapsible } from "../uiCommon/collapsible";
@@ -30,6 +31,9 @@ function TestViewer(props: { archive: Archive }) {
     "testPath",
     Object.keys(testArchive).sort()[0]
   );
+
+  useTitle(`${lastItem((currentTest || "").split("/"))} | DDTest Viewer`);
+
   return (
     <>
       <h1>DDTest Viewer</h1>

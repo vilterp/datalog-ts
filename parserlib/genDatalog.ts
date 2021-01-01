@@ -102,7 +102,25 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         ),
       ];
     case "Ref":
-      throw new Error("todo");
+      // TODO: this one seems a bit unnecessary...
+      //   these should be collapsed out somehow
+      return [
+        {
+          head: rec(name, {
+            from: varr("P1"),
+            to: varr(`P2`),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [rec(rule.name, { from: varr("P1"), to: varr("P2") })],
+              },
+            ],
+          },
+        },
+      ];
     case "RepSep":
       throw new Error("todo");
     case "Char":

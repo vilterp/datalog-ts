@@ -511,3 +511,120 @@ main_choice_1 from 20: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
   main_choice_1{from: 1, to: 3}; {P1: 1, P2: 3}
 main from 0: main_choice_1{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
   main{from: 1, to: 3}; {P1: 1, P2: 3}
+
+main :- (foo | bar).
+foo :- "foo".
+bar :- "bar".
+--
+foo
+----
+text/plain
+source from null: source{char: "\n", pos: 0}; {}. 
+  source{char: "\n", pos: 0}; {}
+0 from source: source{char: "\n", pos: 0}; {}. Match(source{char: "b", pos: P1}; {})
+3 from source: source{char: "\n", pos: 0}; {}. Match(source{char: "a", pos: P2}; {})
+7 from source: source{char: "\n", pos: 0}; {}. Match(source{char: "r", pos: P3}; {})
+9 from source: source{char: "\n", pos: 0}; {}. Match(source{char: "f", pos: P1}; {})
+12 from source: source{char: "\n", pos: 0}; {}. Match(source{char: "o", pos: P2}; {})
+16 from source: source{char: "\n", pos: 0}; {}. Match(source{char: "o", pos: P3}; {})
+--
+source from null: source{char: "f", pos: 1}; {}. 
+  source{char: "f", pos: 1}; {}
+0 from source: source{char: "f", pos: 1}; {}. Match(source{char: "b", pos: P1}; {})
+3 from source: source{char: "f", pos: 1}; {}. Match(source{char: "a", pos: P2}; {})
+7 from source: source{char: "f", pos: 1}; {}. Match(source{char: "r", pos: P3}; {})
+9 from source: source{char: "f", pos: 1}; {}. Match(source{char: "f", pos: P1}; {})
+  source{char: "f", pos: 1}; {P1: 1}
+12 from source: source{char: "f", pos: 1}; {}. Match(source{char: "o", pos: P2}; {})
+16 from source: source{char: "f", pos: 1}; {}. Match(source{char: "o", pos: P3}; {})
+11 from 9: source{char: "f", pos: 1}; {P1: 1}. Join(P1)
+--
+source from null: source{char: "o", pos: 2}; {}. 
+  source{char: "o", pos: 2}; {}
+0 from source: source{char: "o", pos: 2}; {}. Match(source{char: "b", pos: P1}; {})
+3 from source: source{char: "o", pos: 2}; {}. Match(source{char: "a", pos: P2}; {})
+7 from source: source{char: "o", pos: 2}; {}. Match(source{char: "r", pos: P3}; {})
+9 from source: source{char: "o", pos: 2}; {}. Match(source{char: "f", pos: P1}; {})
+12 from source: source{char: "o", pos: 2}; {}. Match(source{char: "o", pos: P2}; {})
+  source{char: "o", pos: 2}; {P2: 2}
+16 from source: source{char: "o", pos: 2}; {}. Match(source{char: "o", pos: P3}; {})
+  source{char: "o", pos: 2}; {P3: 2}
+13 from 12: source{char: "o", pos: 2}; {P2: 2}. Join(P2)
+17 from 16: source{char: "o", pos: 2}; {P3: 2}. Join(P3)
+--
+source from null: source{char: "o", pos: 3}; {}. 
+  source{char: "o", pos: 3}; {}
+0 from source: source{char: "o", pos: 3}; {}. Match(source{char: "b", pos: P1}; {})
+3 from source: source{char: "o", pos: 3}; {}. Match(source{char: "a", pos: P2}; {})
+7 from source: source{char: "o", pos: 3}; {}. Match(source{char: "r", pos: P3}; {})
+9 from source: source{char: "o", pos: 3}; {}. Match(source{char: "f", pos: P1}; {})
+12 from source: source{char: "o", pos: 3}; {}. Match(source{char: "o", pos: P2}; {})
+  source{char: "o", pos: 3}; {P2: 3}
+16 from source: source{char: "o", pos: 3}; {}. Match(source{char: "o", pos: P3}; {})
+  source{char: "o", pos: 3}; {P3: 3}
+13 from 12: source{char: "o", pos: 3}; {P2: 3}. Join(P2)
+17 from 16: source{char: "o", pos: 3}; {P3: 3}. Join(P3)
+--
+next from null: next{left: 0, right: 1}; {}. 
+  next{left: 0, right: 1}; {}
+1 from next: next{left: 0, right: 1}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 0, right: 1}; {P1: 0, P2: 1}
+5 from next: next{left: 0, right: 1}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 0, right: 1}; {P2: 0, P3: 1}
+10 from next: next{left: 0, right: 1}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 0, right: 1}; {P1: 0, P2: 1}
+14 from next: next{left: 0, right: 1}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 0, right: 1}; {P2: 0, P3: 1}
+2 from 1: next{left: 0, right: 1}; {P1: 0, P2: 1}. Join(P1)
+6 from 5: next{left: 0, right: 1}; {P2: 0, P3: 1}. Join(P2)
+11 from 10: next{left: 0, right: 1}; {P1: 0, P2: 1}. Join(P1)
+15 from 14: next{left: 0, right: 1}; {P2: 0, P3: 1}. Join(P2)
+--
+next from null: next{left: 1, right: 2}; {}. 
+  next{left: 1, right: 2}; {}
+1 from next: next{left: 1, right: 2}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 1, right: 2}; {P1: 1, P2: 2}
+5 from next: next{left: 1, right: 2}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 1, right: 2}; {P2: 1, P3: 2}
+10 from next: next{left: 1, right: 2}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 1, right: 2}; {P1: 1, P2: 2}
+14 from next: next{left: 1, right: 2}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 1, right: 2}; {P2: 1, P3: 2}
+2 from 1: next{left: 1, right: 2}; {P1: 1, P2: 2}. Join(P1)
+6 from 5: next{left: 1, right: 2}; {P2: 1, P3: 2}. Join(P2)
+11 from 10: next{left: 1, right: 2}; {P1: 1, P2: 2}. Join(P1)
+  (); {P1: 1, P2: 2}
+15 from 14: next{left: 1, right: 2}; {P2: 1, P3: 2}. Join(P2)
+13 from 11: (); {P1: 1, P2: 2}. Join(P2)
+  (); {P1: 1, P2: 2}
+15 from 13: (); {P1: 1, P2: 2}. Join(P2)
+--
+next from null: next{left: 2, right: 3}; {}. 
+  next{left: 2, right: 3}; {}
+1 from next: next{left: 2, right: 3}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 2, right: 3}; {P1: 2, P2: 3}
+5 from next: next{left: 2, right: 3}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 2, right: 3}; {P2: 2, P3: 3}
+10 from next: next{left: 2, right: 3}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 2, right: 3}; {P1: 2, P2: 3}
+14 from next: next{left: 2, right: 3}; {}. Match(next{left: P2, right: P3}; {})
+  next{left: 2, right: 3}; {P2: 2, P3: 3}
+2 from 1: next{left: 2, right: 3}; {P1: 2, P2: 3}. Join(P1)
+6 from 5: next{left: 2, right: 3}; {P2: 2, P3: 3}. Join(P2)
+11 from 10: next{left: 2, right: 3}; {P1: 2, P2: 3}. Join(P1)
+15 from 14: next{left: 2, right: 3}; {P2: 2, P3: 3}. Join(P2)
+  (); {P1: 1, P2: 2, P3: 3}
+17 from 15: (); {P1: 1, P2: 2, P3: 3}. Join(P3)
+  (); {P1: 1, P2: 2, P3: 3}
+foo from 17: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
+  foo{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}
+21 from foo: foo{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}. Match(foo{from: P1, to: P2}; {P1: P1, P3: P2})
+  foo{from: 1, to: 3}; {P1: 1, P2: 3}
+main_choice_0 from 21: foo{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
+  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
+19 from main_choice_0: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Match(main_choice_0{from: P1, to: P2}; {P1: P1, P2: P2})
+  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
+18 from 19: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Union
+  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
+main from 18: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
+  main{from: 1, to: 3}; {P1: 1, P2: 3}
