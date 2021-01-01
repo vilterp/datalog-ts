@@ -2,21 +2,11 @@ import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
 import * as diff from "diff";
-import {
-  formatOutput,
-  Interpreter,
-  Output,
-} from "../../incremental/interpreter";
-import { nullLoader } from "../../loaders";
-import { parseGrammar } from "../meta";
-import { grammarToDL } from "../genDatalog";
-import {
-  IncrementalInputManager,
-  initializeInterp,
-  InputEvt,
-} from "../incrementalInput";
+import { formatOutput, Output } from "../../incremental/interpreter";
+import { IncrementalInputManager, InputEvt } from "../incrementalInput";
 import { Change } from "diff";
 import { flatMap } from "../../util/util";
+import { initializeInterp } from "../genDatalog";
 
 const GRAMMAR_TEXT = `main :- (foo | barBaz).
 foo :- "foo".
