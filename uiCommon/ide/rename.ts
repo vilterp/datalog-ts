@@ -19,7 +19,7 @@ import { Rec } from "../../types";
 export const renameRefactorAction: EditorAction = {
   name: "Rename",
   available(ctx: ActionContext): boolean {
-    return getSpansToReplace(ctx.interp).allSpans.length > 0;
+    return getSpansToReplace(ctx.interp) !== null;
   },
   apply(ctx: ActionContext): EditorState {
     const { defnSpan, allSpans } = getSpansToReplace(ctx.interp);
@@ -40,15 +40,15 @@ export const renameRefactorAction: EditorAction = {
 
 function getSpansToReplace(
   interp: Interpreter
-): { defnSpan: Span | null; allSpans: Span[] } {
+): { defnSpan: Span; allSpans: Span[] } | null {
   const results = interp.queryStr(
     "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}"
   );
+  if (results.length === 0) {
+    return null;
+  }
   return {
-    defnSpan:
-      results.length > 0
-        ? dlToSpan((results[0].term as Rec).attrs.defnLoc as Rec)
-        : null,
+    defnSpan: dlToSpan((results[0].term as Rec).attrs.defnLoc as Rec),
     allSpans: sortSpans(
       uniqBy(
         flatMap(results, (res) => {
