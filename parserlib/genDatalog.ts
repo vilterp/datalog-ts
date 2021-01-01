@@ -1,8 +1,9 @@
 import * as dl from "../types";
-import { flatMapObjToList, range, stringToArray } from "../util/util";
+import { flatMap, flatMapObjToList, range, stringToArray } from "../util/util";
 import * as gram from "./grammar";
-import { int, Rec, rec, str, varr } from "../types";
+import { int, Rec, rec, str, Term, varr } from "../types";
 
+// generate datalog rules that implement a parser for this grammar
 export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
   return flatMapObjToList(grammar, (ruleName, gramRule): dl.Rule[] => {
     return ruleToDL(ruleName, gramRule);
@@ -45,16 +46,46 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
     case "Char":
       throw new Error("todo");
     case "Choice":
+      // generate a rule for each clause
+      // or them together
       throw new Error("todo");
     case "Ref":
       throw new Error("todo");
     case "RepSep":
       throw new Error("todo");
     case "Sequence":
-      throw new Error("todo");
+      return [
+        {
+          head: rec(name, {
+            from: varr("P1"),
+            to: varr(`P${rule.items.length + 1}`),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: rule.items.map((char, idx) =>
+                  rec(seqItemName(name, idx), {
+                    from: varr(`P${idx + 1}`),
+                    to: varr(`P${idx + 2}`),
+                  })
+                ),
+              },
+            ],
+          },
+        },
+        ...flatMap(rule.items, (subRule, idx) =>
+          ruleToDL(seqItemName(name, idx), subRule)
+        ),
+      ];
     case "Succeed":
       throw new Error("todo");
   }
+}
+
+function seqItemName(name: string, idx: number): string {
+  return `${name}_seq_${idx}`;
 }
 
 // TODO: input to DL

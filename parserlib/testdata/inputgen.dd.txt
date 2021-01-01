@@ -6,3 +6,18 @@ source{char: "o", pos: 1}.
 source{char: "o", pos: 2}.
 next{left: 0, right: 1}.
 next{left: 1, right: 2}.
+
+foobar
+----
+application/datalog
+source{char: "f", pos: 0}.
+source{char: "o", pos: 1}.
+source{char: "o", pos: 2}.
+source{char: "b", pos: 3}.
+source{char: "a", pos: 4}.
+source{char: "r", pos: 5}.
+next{left: 0, right: 1}.
+next{left: 1, right: 2}.
+next{left: 2, right: 3}.
+next{left: 3, right: 4}.
+next{left: 4, right: 5}.

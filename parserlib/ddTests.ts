@@ -114,6 +114,7 @@ function dlParseTest(test: string[]): TestOutput[] {
     const [grammarText, inputText] = input.split("--");
 
     const traceTree = parse(metaGrammar, "grammar", grammarText);
+    // TODO: check error
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(input, ruleTree);
     const rules = grammarToDL(grammar);
@@ -138,8 +139,8 @@ function dlParseTest(test: string[]): TestOutput[] {
         .map(
           (out) =>
             formatOutput(interp.graph, out, {
-              propagationLogMode: "repl",
-              showBindings: false,
+              propagationLogMode: "test",
+              showBindings: true,
             }).content
         )
         .join("")
