@@ -1,11 +1,10 @@
 import { Suite } from "../util/testing";
-import { runDDTestAtPath, DDTest } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
 import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
-import { ruleTreeToTree, prettyPrintRuleTree } from "./pretty";
+import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import {
   datalogOut,
@@ -13,18 +12,13 @@ import {
   plainTextOut,
   TestOutput,
 } from "../util/ddTest/types";
-import { grammarToDL, inputToDL } from "./genDatalog";
+import { grammarToDL, initializeInterp, inputToDL } from "./genDatalog";
 import { ppRule, ppt } from "../pretty";
 import { suiteFromDDTestsInDir } from "../util/ddTest/runner";
-import { formatOutput, Interpreter, Output } from "../incremental/interpreter";
-import { nullLoader } from "../loaders";
+import { formatOutput, Output } from "../incremental/interpreter";
 import { toGraphviz } from "../incremental/graphviz";
 import { prettyPrintGraph } from "../util/graphviz";
-import {
-  IncrementalInputManager,
-  initializeInterp,
-  InputEvt,
-} from "./incrementalInput";
+import { IncrementalInputManager, InputEvt } from "./incrementalInput";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -96,16 +90,7 @@ function dlGenTest(test: string[]): TestOutput[] {
 
 function dlGenGraphTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const grammar = parseGrammar(input);
-    const rules = grammarToDL(grammar);
-
-    const interp = new Interpreter(nullLoader);
-    interp.evalStr(".table source");
-    interp.evalStr(".table next");
-
-    for (let rule of rules) {
-      interp.processStmt({ type: "Rule", rule });
-    }
+    const interp = initializeInterp(input);
 
     return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
   });
@@ -125,18 +110,9 @@ function dlParseTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const [grammarText, inputText] = input.split("--");
 
-    const grammar = parseGrammar(grammarText);
-    const rules = grammarToDL(grammar);
-
     const inputRecs = inputToDL(inputText);
 
-    const interp = new Interpreter(nullLoader);
-    interp.evalStr(".table source");
-    interp.evalStr(".table next");
-
-    for (let rule of rules) {
-      interp.processStmt({ type: "Rule", rule });
-    }
+    const interp = initializeInterp(grammarText);
 
     let outputs: Output[] = [];
     for (let record of inputRecs) {

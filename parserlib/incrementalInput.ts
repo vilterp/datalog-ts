@@ -67,17 +67,3 @@ export class IncrementalInputManager {
     return newID;
   }
 }
-
-export function initializeInterp(grammarText: string): Interpreter {
-  const grammarParsed = parseGrammar(grammarText);
-  const gramamrRules = grammarToDL(grammarParsed);
-
-  const interp = new Interpreter(nullLoader);
-  interp.evalStr(".table source");
-  interp.evalStr(".table next");
-
-  for (let rule of gramamrRules) {
-    interp.processStmt({ type: "Rule", rule });
-  }
-  return interp;
-}
