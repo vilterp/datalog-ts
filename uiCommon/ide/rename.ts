@@ -19,40 +19,49 @@ import { Rec } from "../../types";
 export const renameRefactorAction: EditorAction = {
   name: "Rename",
   available(ctx: ActionContext): boolean {
-    return getSpansToReplace(ctx.interp).length > 0;
+    return getSpansToReplace(ctx.interp).allSpans.length > 0;
   },
   apply(ctx: ActionContext): EditorState {
-    const spans = getSpansToReplace(ctx.interp);
-    const newText = window.prompt("new text"); // TODO: do this inline or something. lol
+    const { defnSpan, allSpans } = getSpansToReplace(ctx.interp);
+    const currentName = ctx.state.source.slice(defnSpan.from, defnSpan.to);
+    const newText = window.prompt("new name", currentName); // TODO: do this inline or something. lol
     const cursor = getCursor(ctx.interp);
-    const cursorSpanIdx = spans.findIndex((span) =>
+    const cursorSpanIdx = allSpans.findIndex((span) =>
       spanContainsIdx(span, cursor)
     );
-    const newSpans = getNewSpans(spans, newText.length);
+    const newSpans = getNewSpans(allSpans, newText.length);
     return {
       ...ctx.state,
-      source: replaceAtSpans(ctx.state.source, spans, newText),
+      source: replaceAtSpans(ctx.state.source, allSpans, newText),
       cursorPos: newSpans[cursorSpanIdx].to,
     };
   },
 };
 
-function getSpansToReplace(interp: Interpreter): Span[] {
+function getSpansToReplace(
+  interp: Interpreter
+): { defnSpan: Span | null; allSpans: Span[] } {
   const results = interp.queryStr(
     "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}"
   );
-  return sortSpans(
-    uniqBy(
-      flatMap(results, (res) => {
-        const rec = res.term as Rec;
-        return [
-          dlToSpan(rec.attrs.defnLoc as Rec),
-          dlToSpan(rec.attrs.usageLoc as Rec),
-        ];
-      }),
-      (s) => `${s.from}`
-    )
-  );
+  return {
+    defnSpan:
+      results.length > 0
+        ? dlToSpan((results[0].term as Rec).attrs.defnLoc as Rec)
+        : null,
+    allSpans: sortSpans(
+      uniqBy(
+        flatMap(results, (res) => {
+          const rec = res.term as Rec;
+          return [
+            dlToSpan(rec.attrs.defnLoc as Rec),
+            dlToSpan(rec.attrs.usageLoc as Rec),
+          ];
+        }),
+        (s) => `${s.from}`
+      )
+    ),
+  };
 }
 
 function replaceAtSpans(code: string, spans: Span[], newText: string): string {
