@@ -20,6 +20,7 @@ import { formatOutput, Interpreter, Output } from "../incremental/interpreter";
 import { nullLoader } from "../loaders";
 import { toGraphviz } from "../incremental/graphviz";
 import { prettyPrintGraph } from "../util/graphviz";
+import { IncrementalInputManager, InputEvt } from "./incrementalInput";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -40,6 +41,7 @@ export function parserlibTests(writeResults: boolean): Suite {
     ["dlgenGraph", dlGenGraphTest],
     ["inputgen", inputGenTest],
     ["dlparse", dlParseTest],
+    ["incrInput", incrInputTest],
   ]);
 }
 
@@ -149,4 +151,34 @@ function dlParseTest(test: string[]): TestOutput[] {
         .join("\n--\n")
     );
   });
+}
+
+function incrInputTest(test: string[]): TestOutput[] {
+  const interp = new Interpreter(nullLoader);
+  const inputManager = new IncrementalInputManager();
+
+  // TODO: initialize interpreter with grammar
+
+  const out: TestOutput[] = [];
+  for (let input of test) {
+    const inputEvent: InputEvt = JSON.parse(input) as InputEvt;
+
+    const statements = inputManager.processEvent(inputEvent);
+    const outLines: string[] = [];
+    for (let stmt of statements) {
+      if (stmt.type === "Insert") {
+        outLines.push("> " + ppt(stmt.record));
+      }
+      const output = interp.processStmt(stmt);
+      outLines.push(
+        formatOutput(interp.graph, output, {
+          showBindings: false,
+          propagationLogMode: "repl",
+        }).content
+      );
+    }
+    out.push(plainTextOut(outLines.join("\n")));
+  }
+
+  return out;
 }

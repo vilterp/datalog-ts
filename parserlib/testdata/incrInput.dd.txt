@@ -1,0 +1,8 @@
+{"type":"Insert","index":0,"char":"f"}
+----
+
+{"type":"Insert","index":1,"char":"o"}
+----
+
+{"type":"Insert","index":2,"char":"o"}
+----
