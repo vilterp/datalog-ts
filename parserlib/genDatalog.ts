@@ -60,7 +60,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
 // TODO: input to DL
 export function inputToDL(input: string): Rec[] {
   return stringToArray(input)
-    .map((char, idx) => rec("source", { char: str(char), idx: int(idx) }))
+    .map((char, idx) => rec("source", { char: str(char), pos: int(idx) }))
     .concat(
       range(input.length - 1).map((idx) =>
         rec("next", { left: int(idx), right: int(idx + 1) })

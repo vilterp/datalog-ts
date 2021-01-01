@@ -1,8 +1,8 @@
 foo
 ----
 application/datalog
-source{char: "f", idx: 0}.
-source{char: "o", idx: 1}.
-source{char: "o", idx: 2}.
+source{char: "f", pos: 0}.
+source{char: "o", pos: 1}.
+source{char: "o", pos: 2}.
 next{left: 0, right: 1}.
 next{left: 1, right: 2}.
