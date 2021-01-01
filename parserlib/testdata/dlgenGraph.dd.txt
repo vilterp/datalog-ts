@@ -1,0 +1,96 @@
+main :- "foo".
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="darkseagreen2" label="0: Match(source{char: \"f\", pos: P1}; {}) [P1]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(P1) [P2]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(source{char: \"o\", pos: P2}; {}) [P2]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(P2) [P2]" shape="box" style="filled"];
+  "5" [fillcolor="darkseagreen2" label="5: Match(next{left: P2, right: P3}; {}) [P2]" shape="box" style="filled"];
+  "6" [fillcolor="thistle" label="6: Join(P2) [P3]" shape="box" style="filled"];
+  "7" [fillcolor="darkseagreen2" label="7: Match(source{char: \"o\", pos: P3}; {}) [P3]" shape="box" style="filled"];
+  "8" [fillcolor="thistle" label="8: Join(P3) []" shape="box" style="filled"];
+  "source" [fillcolor="darksalmon" label="source:  []" shape="box" style="filled"];
+  "next" [fillcolor="darksalmon" label="next:  []" shape="box" style="filled"];
+  "main" [fillcolor="lightblue" label="main: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "6" [];
+  "5" -> "6" [];
+  "6" -> "8" [];
+  "7" -> "8" [];
+  "8" -> "main" [];
+  "next" -> "1" [];
+  "next" -> "5" [];
+  "source" -> "0" [];
+  "source" -> "3" [];
+  "source" -> "7" [];
+}
+
+main :- ["foo", "bar"].
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="darkseagreen2" label="0: Match(main_seq_0{from: P1, to: P2}; {P1: P1, P3: P2}) [P2]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(main_seq_1{from: P2, to: P3}; {P1: P2, P3: P3}) [P2]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(P2) []" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(source{char: \"f\", pos: P1}; {}) [P1]" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" label="4: Match(next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(P1) [P2]" shape="box" style="filled"];
+  "6" [fillcolor="darkseagreen2" label="6: Match(source{char: \"o\", pos: P2}; {}) [P2]" shape="box" style="filled"];
+  "7" [fillcolor="thistle" label="7: Join(P2) [P2]" shape="box" style="filled"];
+  "8" [fillcolor="darkseagreen2" label="8: Match(next{left: P2, right: P3}; {}) [P2]" shape="box" style="filled"];
+  "9" [fillcolor="thistle" label="9: Join(P2) [P3]" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" label="10: Match(source{char: \"o\", pos: P3}; {}) [P3]" shape="box" style="filled"];
+  "11" [fillcolor="thistle" label="11: Join(P3) []" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" label="12: Match(source{char: \"b\", pos: P1}; {}) [P1]" shape="box" style="filled"];
+  "13" [fillcolor="darkseagreen2" label="13: Match(next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "14" [fillcolor="thistle" label="14: Join(P1) [P2]" shape="box" style="filled"];
+  "15" [fillcolor="darkseagreen2" label="15: Match(source{char: \"a\", pos: P2}; {}) [P2]" shape="box" style="filled"];
+  "16" [fillcolor="thistle" label="16: Join(P2) [P2]" shape="box" style="filled"];
+  "17" [fillcolor="darkseagreen2" label="17: Match(next{left: P2, right: P3}; {}) [P2]" shape="box" style="filled"];
+  "18" [fillcolor="thistle" label="18: Join(P2) [P3]" shape="box" style="filled"];
+  "19" [fillcolor="darkseagreen2" label="19: Match(source{char: \"r\", pos: P3}; {}) [P3]" shape="box" style="filled"];
+  "20" [fillcolor="thistle" label="20: Join(P3) []" shape="box" style="filled"];
+  "source" [fillcolor="darksalmon" label="source:  []" shape="box" style="filled"];
+  "next" [fillcolor="darksalmon" label="next:  []" shape="box" style="filled"];
+  "main" [fillcolor="lightblue" label="main: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
+  "main_seq_0" [fillcolor="lightblue" label="main_seq_0: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
+  "main_seq_1" [fillcolor="lightblue" label="main_seq_1: Subst({from: P1, to: P3}) []" shape="box" style="filled"];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "10" -> "11" [];
+  "11" -> "main_seq_0" [];
+  "12" -> "14" [];
+  "13" -> "14" [];
+  "14" -> "16" [];
+  "15" -> "16" [];
+  "16" -> "18" [];
+  "17" -> "18" [];
+  "18" -> "20" [];
+  "19" -> "20" [];
+  "2" -> "main" [];
+  "20" -> "main_seq_1" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "5" -> "7" [];
+  "6" -> "7" [];
+  "7" -> "9" [];
+  "8" -> "9" [];
+  "9" -> "11" [];
+  "main_seq_0" -> "0" [];
+  "main_seq_1" -> "1" [];
+  "next" -> "4" [];
+  "next" -> "8" [];
+  "next" -> "13" [];
+  "next" -> "17" [];
+  "source" -> "3" [];
+  "source" -> "6" [];
+  "source" -> "10" [];
+  "source" -> "12" [];
+  "source" -> "15" [];
+  "source" -> "19" [];
+}

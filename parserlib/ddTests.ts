@@ -37,6 +37,7 @@ export function parserlibTests(writeResults: boolean): Suite {
     ["json", (t) => parserTestFixedStartRule(jsonGrammar, "value", t)],
     ["meta", metaTest],
     ["dlgen", dlGenTest],
+    ["dlgenGraph", dlGenGraphTest],
     ["inputgen", inputGenTest],
     ["dlparse", dlParseTest],
   ]);
@@ -85,7 +86,16 @@ function dlGenTest(test: string[]): TestOutput[] {
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(input, ruleTree);
     const rules = grammarToDL(grammar);
-    // return datalogOut(rules.map(ppRule).join("\n"));
+    return datalogOut(rules.map(ppRule).join("\n"));
+  });
+}
+
+function dlGenGraphTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const traceTree = parse(metaGrammar, "grammar", input);
+    const ruleTree = extractRuleTree(traceTree);
+    const grammar = extractGrammar(input, ruleTree);
+    const rules = grammarToDL(grammar);
 
     const interp = new Interpreter(nullLoader);
     interp.evalStr(".table source");
@@ -143,7 +153,7 @@ function dlParseTest(test: string[]): TestOutput[] {
               showBindings: true,
             }).content
         )
-        .join("")
+        .join("\n--\n")
     );
   });
 }
