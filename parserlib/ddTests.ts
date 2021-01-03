@@ -19,6 +19,8 @@ import { formatOutput, Output } from "../incremental/interpreter";
 import { toGraphviz } from "../incremental/graphviz";
 import { prettyPrintGraph } from "../util/graphviz";
 import { IncrementalInputManager, InputEvt } from "./incrementalInput";
+import { Rec } from "../types";
+import { flatMap } from "../util/util";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -115,21 +117,24 @@ function dlParseTest(test: string[]): TestOutput[] {
 
     const { interp } = initializeInterp(grammarText);
 
-    let outputs: Output[] = [];
+    let outputs: { record: Rec; output: Output }[] = [];
     for (let record of inputRecs) {
-      outputs = outputs.concat(interp.processStmt({ type: "Insert", record }));
+      outputs.push({
+        record,
+        output: interp.processStmt({ type: "Insert", record }),
+      });
     }
 
     return plainTextOut(
-      outputs
-        .map(
-          (out) =>
-            formatOutput(interp.graph, out, {
-              propagationLogMode: "test",
-              showBindings: true,
-            }).content
-        )
-        .join("\n--\n")
+      flatMap(outputs, ({ record, output }) => [
+        `> ${ppt(record)}`,
+        formatOutput(interp.graph, output, {
+          propagationLogMode: "repl",
+          showBindings: false,
+        }).content,
+      ])
+        .filter((l) => l.length > 0)
+        .join("\n")
     );
   });
 }
