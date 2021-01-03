@@ -291,8 +291,8 @@ main_seq_1 from 22: (); {P1: 4, P2: 5, P3: 6}. Subst({from: P1, to: P3})
   (); {P2: 3, P3: 4, P4: 6}
 4 from 2: (); {P2: 3, P3: 4, P4: 6}. Join(P2)
   (); {P1: 1, P2: 3, P3: 4, P4: 6}
-main from 4: (); {P1: 1, P2: 3, P3: 4, P4: 6}. Subst({from: P1, seq_0_start: P1, seq_1_start: P3, to: P4})
-  main{from: 1, seq_0_start: 1, seq_1_start: 4, to: 6}; {P1: 1, P2: 3, P3: 4, P4: 6}
+main from 4: (); {P1: 1, P2: 3, P3: 4, P4: 6}. Subst({from: P1, seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, to: P4})
+  main{from: 1, seq_0: span{from: 1, to: 3}, seq_1: span{from: 4, to: 6}, to: 6}; {P1: 1, P2: 3, P3: 4, P4: 6}
 
 main :- ("foo" | "bar").
 --

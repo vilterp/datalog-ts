@@ -95,8 +95,11 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
     case "Sequence": {
       const headVars: { [key: string]: Term } = pairsToObj(
         range(rule.items.length).map((idx) => ({
-          key: `seq_${idx}_start`,
-          val: varr(`P${idx * 2 + 1}`),
+          key: `seq_${idx}`,
+          val: rec("span", {
+            from: varr(`P${idx * 2 + 1}`),
+            to: varr(`P${idx * 2 + 2}`),
+          }),
         }))
       );
       return [
