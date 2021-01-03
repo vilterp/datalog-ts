@@ -815,3 +815,123 @@ main_choice_0 from 25: foo{span: span{from: 1, to: "end"}}; {P1: 1, P2: "end"}. 
   main_choice_0{span: span{from: 1, to: "end"}}; {P1: 1, P2: "end"}
 main from 22: main_choice_0{span: span{from: 1, to: "end"}}; {P1: 1, P2: "end"}. Subst({span: span{from: P1, to: P2}})
   main{span: span{from: 1, to: "end"}}; {P1: 1, P2: "end"}
+
+main :- repSep("a", <succeed>).
+--
+aaa
+----
+text/plain
+source from null: source{char: "\n", id: 0}; {}. 
+  source{char: "\n", id: 0}; {}
+5 from source: source{char: "\n", id: 0}; {}. Match(source{char: "a", id: P1}; {})
+--
+source from null: source{char: "a", id: 1}; {}. 
+  source{char: "a", id: 1}; {}
+5 from source: source{char: "a", id: 1}; {}. Match(source{char: "a", id: P1}; {})
+  source{char: "a", id: 1}; {P1: 1}
+7 from 5: source{char: "a", id: 1}; {P1: 1}. Join(P1)
+--
+source from null: source{char: "a", id: 2}; {}. 
+  source{char: "a", id: 2}; {}
+5 from source: source{char: "a", id: 2}; {}. Match(source{char: "a", id: P1}; {})
+  source{char: "a", id: 2}; {P1: 2}
+7 from 5: source{char: "a", id: 2}; {P1: 2}. Join(P1)
+--
+source from null: source{char: "a", id: 3}; {}. 
+  source{char: "a", id: 3}; {}
+5 from source: source{char: "a", id: 3}; {}. Match(source{char: "a", id: P1}; {})
+  source{char: "a", id: 3}; {P1: 3}
+7 from 5: source{char: "a", id: 3}; {P1: 3}. Join(P1)
+--
+next from null: next{left: 0, right: 1}; {}. 
+  next{left: 0, right: 1}; {}
+6 from next: next{left: 0, right: 1}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 0, right: 1}; {P1: 0, P2: 1}
+7 from 6: next{left: 0, right: 1}; {P1: 0, P2: 1}. Join(P1)
+--
+next from null: next{left: 1, right: 2}; {}. 
+  next{left: 1, right: 2}; {}
+6 from next: next{left: 1, right: 2}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 1, right: 2}; {P1: 1, P2: 2}
+7 from 6: next{left: 1, right: 2}; {P1: 1, P2: 2}. Join(P1)
+  (); {P1: 1, P2: 2}
+main_item from 7: (); {P1: 1, P2: 2}. Subst({span: span{from: P1, to: P2}})
+  main_item{span: span{from: 1, to: 2}}; {P1: 1, P2: 2}
+1 from main_item: main_item{span: span{from: 1, to: 2}}; {P1: 1, P2: 2}. Match(main_item{span: span{from: P1, to: PN}}; {})
+  main_item{span: span{from: 1, to: 2}}; {P1: 1, PN: 2}
+2 from main_item: main_item{span: span{from: 1, to: 2}}; {P1: 1, P2: 2}. Match(main_item{span: span{from: P1, to: P2}}; {})
+  main_item{span: span{from: 1, to: 2}}; {P1: 1, P2: 2}
+0 from 1: main_item{span: span{from: 1, to: 2}}; {P1: 1, PN: 2}. Union
+  main_item{span: span{from: 1, to: 2}}; {P1: 1, PN: 2}
+4 from 2: main_item{span: span{from: 1, to: 2}}; {P1: 1, P2: 2}. Join(P2)
+main from 0: main_item{span: span{from: 1, to: 2}}; {P1: 1, PN: 2}. Subst({span: span{from: P1, to: PN}})
+  main{span: span{from: 1, to: 2}}; {P1: 1, PN: 2}
+3 from main: main{span: span{from: 1, to: 2}}; {P1: 1, PN: 2}. Match(main{span: span{from: P2, to: PN}}; {})
+  main{span: span{from: 1, to: 2}}; {P2: 1, PN: 2}
+4 from 3: main{span: span{from: 1, to: 2}}; {P2: 1, PN: 2}. Join(P2)
+--
+next from null: next{left: 2, right: 3}; {}. 
+  next{left: 2, right: 3}; {}
+6 from next: next{left: 2, right: 3}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 2, right: 3}; {P1: 2, P2: 3}
+7 from 6: next{left: 2, right: 3}; {P1: 2, P2: 3}. Join(P1)
+  (); {P1: 2, P2: 3}
+main_item from 7: (); {P1: 2, P2: 3}. Subst({span: span{from: P1, to: P2}})
+  main_item{span: span{from: 2, to: 3}}; {P1: 2, P2: 3}
+1 from main_item: main_item{span: span{from: 2, to: 3}}; {P1: 2, P2: 3}. Match(main_item{span: span{from: P1, to: PN}}; {})
+  main_item{span: span{from: 2, to: 3}}; {P1: 2, PN: 3}
+2 from main_item: main_item{span: span{from: 2, to: 3}}; {P1: 2, P2: 3}. Match(main_item{span: span{from: P1, to: P2}}; {})
+  main_item{span: span{from: 2, to: 3}}; {P1: 2, P2: 3}
+0 from 1: main_item{span: span{from: 2, to: 3}}; {P1: 2, PN: 3}. Union
+  main_item{span: span{from: 2, to: 3}}; {P1: 2, PN: 3}
+4 from 2: main_item{span: span{from: 2, to: 3}}; {P1: 2, P2: 3}. Join(P2)
+main from 0: main_item{span: span{from: 2, to: 3}}; {P1: 2, PN: 3}. Subst({span: span{from: P1, to: PN}})
+  main{span: span{from: 2, to: 3}}; {P1: 2, PN: 3}
+3 from main: main{span: span{from: 2, to: 3}}; {P1: 2, PN: 3}. Match(main{span: span{from: P2, to: PN}}; {})
+  main{span: span{from: 2, to: 3}}; {P2: 2, PN: 3}
+4 from 3: main{span: span{from: 2, to: 3}}; {P2: 2, PN: 3}. Join(P2)
+  (); {P1: 1, P2: 2, PN: 3}
+0 from 4: (); {P1: 1, P2: 2, PN: 3}. Union
+  (); {P1: 1, P2: 2, PN: 3}
+main from 0: (); {P1: 1, P2: 2, PN: 3}. Subst({span: span{from: P1, to: PN}})
+  main{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, PN: 3}
+3 from main: main{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, PN: 3}. Match(main{span: span{from: P2, to: PN}}; {})
+  main{span: span{from: 1, to: 3}}; {P2: 1, PN: 3}
+4 from 3: main{span: span{from: 1, to: 3}}; {P2: 1, PN: 3}. Join(P2)
+--
+next from null: next{left: 3, right: "end"}; {}. 
+  next{left: 3, right: "end"}; {}
+6 from next: next{left: 3, right: "end"}; {}. Match(next{left: P1, right: P2}; {})
+  next{left: 3, right: "end"}; {P1: 3, P2: "end"}
+7 from 6: next{left: 3, right: "end"}; {P1: 3, P2: "end"}. Join(P1)
+  (); {P1: 3, P2: "end"}
+main_item from 7: (); {P1: 3, P2: "end"}. Subst({span: span{from: P1, to: P2}})
+  main_item{span: span{from: 3, to: "end"}}; {P1: 3, P2: "end"}
+1 from main_item: main_item{span: span{from: 3, to: "end"}}; {P1: 3, P2: "end"}. Match(main_item{span: span{from: P1, to: PN}}; {})
+  main_item{span: span{from: 3, to: "end"}}; {P1: 3, PN: "end"}
+2 from main_item: main_item{span: span{from: 3, to: "end"}}; {P1: 3, P2: "end"}. Match(main_item{span: span{from: P1, to: P2}}; {})
+  main_item{span: span{from: 3, to: "end"}}; {P1: 3, P2: "end"}
+0 from 1: main_item{span: span{from: 3, to: "end"}}; {P1: 3, PN: "end"}. Union
+  main_item{span: span{from: 3, to: "end"}}; {P1: 3, PN: "end"}
+4 from 2: main_item{span: span{from: 3, to: "end"}}; {P1: 3, P2: "end"}. Join(P2)
+main from 0: main_item{span: span{from: 3, to: "end"}}; {P1: 3, PN: "end"}. Subst({span: span{from: P1, to: PN}})
+  main{span: span{from: 3, to: "end"}}; {P1: 3, PN: "end"}
+3 from main: main{span: span{from: 3, to: "end"}}; {P1: 3, PN: "end"}. Match(main{span: span{from: P2, to: PN}}; {})
+  main{span: span{from: 3, to: "end"}}; {P2: 3, PN: "end"}
+4 from 3: main{span: span{from: 3, to: "end"}}; {P2: 3, PN: "end"}. Join(P2)
+  (); {P1: 2, P2: 3, PN: "end"}
+0 from 4: (); {P1: 2, P2: 3, PN: "end"}. Union
+  (); {P1: 2, P2: 3, PN: "end"}
+main from 0: (); {P1: 2, P2: 3, PN: "end"}. Subst({span: span{from: P1, to: PN}})
+  main{span: span{from: 2, to: "end"}}; {P1: 2, P2: 3, PN: "end"}
+3 from main: main{span: span{from: 2, to: "end"}}; {P1: 2, P2: 3, PN: "end"}. Match(main{span: span{from: P2, to: PN}}; {})
+  main{span: span{from: 2, to: "end"}}; {P2: 2, PN: "end"}
+4 from 3: main{span: span{from: 2, to: "end"}}; {P2: 2, PN: "end"}. Join(P2)
+  (); {P1: 1, P2: 2, PN: "end"}
+0 from 4: (); {P1: 1, P2: 2, PN: "end"}. Union
+  (); {P1: 1, P2: 2, PN: "end"}
+main from 0: (); {P1: 1, P2: 2, PN: "end"}. Subst({span: span{from: P1, to: PN}})
+  main{span: span{from: 1, to: "end"}}; {P1: 1, P2: 2, PN: "end"}
+3 from main: main{span: span{from: 1, to: "end"}}; {P1: 1, P2: 2, PN: "end"}. Match(main{span: span{from: P2, to: PN}}; {})
+  main{span: span{from: 1, to: "end"}}; {P2: 1, PN: "end"}
+4 from 3: main{span: span{from: 1, to: "end"}}; {P2: 1, PN: "end"}. Join(P2)
