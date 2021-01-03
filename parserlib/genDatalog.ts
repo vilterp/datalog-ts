@@ -208,9 +208,36 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         },
       ];
     case "RepSep":
-      throw new Error("todo");
+      // TODO: actual repSep. Just doing rep1 for now.
+      return [
+        {
+          head: rec(name, {
+            span: rec("span", { from: varr("P1"), to: varr("PN") }),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec(`${name}_item`, {
+                    span: rec("span", { from: varr("P1"), to: varr("P2") }),
+                  }),
+                  // recurse
+                  rec(name, {
+                    span: rec("span", { from: varr("P2"), to: varr("PN") }),
+                  }),
+                ],
+              },
+            ],
+          },
+        },
+        ...ruleToDL(`${name}_item`, rule.rep),
+        // TODO: do the sep as well
+      ];
     case "Succeed":
-      throw new Error("todo");
+      console.error("TODO: generate succeed");
+      return [];
   }
 }
 
