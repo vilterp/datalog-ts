@@ -54,7 +54,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           head: rec(name, {
             span: rec("span", {
               from: varr("P1"),
-              to: varr(`P${rule.value.length}`),
+              to: varr(`P${rule.value.length + 1}`),
             }),
           }),
           defn: {
@@ -69,7 +69,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                       char: str(char),
                     })
                   ),
-                  ...range(rule.value.length - 1).map((idx) =>
+                  ...range(rule.value.length).map((idx) =>
                     rec("next", {
                       left: varr(`P${idx + 1}`),
                       right: varr(`P${idx + 2}`),
@@ -114,8 +114,8 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         range(rule.items.length).map((idx) => ({
           key: `seq_${idx}`,
           val: rec("span", {
-            from: varr(`P${idx * 2 + 1}`),
-            to: varr(`P${idx * 2 + 2}`),
+            from: varr(`P${idx}`),
+            to: varr(`P${idx + 1}`),
           }),
         }))
       );
@@ -124,7 +124,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           head: rec(name, {
             span: rec("span", {
               from: varr("P1"),
-              to: varr(`P${rule.items.length * 2}`),
+              to: varr(`P${rule.items.length}`),
             }),
             ...headVars,
           }),
@@ -137,15 +137,9 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                   ...rule.items.map((char, idx) =>
                     rec(seqItemName(name, idx), {
                       span: rec("span", {
-                        from: varr(`P${idx * 2 + 1}`),
-                        to: varr(`P${idx * 2 + 2}`),
+                        from: varr(`P${idx}`),
+                        to: varr(`P${idx + 1}`),
                       }),
-                    })
-                  ),
-                  ...range(rule.items.length - 1).map((idx) =>
-                    rec("next", {
-                      left: varr(`P${idx * 2 + 2}`),
-                      right: varr(`P${idx * 2 + 3}`),
                     })
                   ),
                 ],

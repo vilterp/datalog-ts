@@ -15,4 +15,3 @@ text/plain
 > source{char: "o", id: 2}
 > next{left: 0, right: 2}
 > next{left: 2, right: 1}
-main{span: span{from: 0, to: 1}}; {P1: 0, P2: 2, P3: 1}.
