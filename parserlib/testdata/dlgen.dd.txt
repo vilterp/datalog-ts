@@ -1,3 +1,14 @@
+main :- "foo".
+----
+application/datalog
+main{span: span{from: P1, to: P4}} :- 
+  source{char: "f", id: P1} &
+  source{char: "o", id: P2} &
+  source{char: "o", id: P3} &
+  next{left: P1, right: P2} &
+  next{left: P2, right: P3} &
+  next{left: P3, right: P4}.
+
 main :- expr.
 expr :- (intLit | funcCall).
 intLit :- [0-9].
@@ -12,28 +23,28 @@ expr_choice_0{span: span{from: P1, to: P2}} :-
   intLit{span: span{from: P1, to: P2}}.
 expr_choice_1{span: span{from: P1, to: P2}} :- 
   funcCall{span: span{from: P1, to: P2}}.
-funcCall{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, seq_3: span{from: P7, to: P8}, span: span{from: P1, to: P8}} :- 
-  funcCall_seq_0{span: span{from: P1, to: P2}} &
-  funcCall_seq_1{span: span{from: P3, to: P4}} &
-  funcCall_seq_2{span: span{from: P5, to: P6}} &
-  funcCall_seq_3{span: span{from: P7, to: P8}} &
-  next{left: P2, right: P3} &
-  next{left: P4, right: P5} &
-  next{left: P6, right: P7}.
+funcCall{seq_0: span{from: P0, to: P1}, seq_1: span{from: P1, to: P2}, seq_2: span{from: P2, to: P3}, seq_3: span{from: P3, to: P4}, span: span{from: P1, to: P4}} :- 
+  funcCall_seq_0{span: span{from: P0, to: P1}} &
+  funcCall_seq_1{span: span{from: P1, to: P2}} &
+  funcCall_seq_2{span: span{from: P2, to: P3}} &
+  funcCall_seq_3{span: span{from: P3, to: P4}}.
 funcCall_seq_0{span: span{from: P1, to: P2}} :- 
   ident{span: span{from: P1, to: P2}}.
-funcCall_seq_1{span: span{from: P1, to: P1}} :- 
-  source{char: "(", id: P1}.
+funcCall_seq_1{span: span{from: P1, to: P2}} :- 
+  source{char: "(", id: P1} &
+  next{left: P1, right: P2}.
 funcCall_seq_2{span: span{from: P1, to: P2}} :- 
   expr{span: span{from: P1, to: P2}}.
-funcCall_seq_3{span: span{from: P1, to: P1}} :- 
-  source{char: ")", id: P1}.
-ident{span: span{from: P1, to: P3}} :- 
+funcCall_seq_3{span: span{from: P1, to: P2}} :- 
+  source{char: ")", id: P1} &
+  next{left: P1, right: P2}.
+ident{span: span{from: P1, to: P4}} :- 
   source{char: "f", id: P1} &
   source{char: "o", id: P2} &
   source{char: "o", id: P3} &
   next{left: P1, right: P2} &
-  next{left: P2, right: P3}.
+  next{left: P2, right: P3} &
+  next{left: P3, right: P4}.
 intLit{span: span{from: P1, to: P1}} :- 
   source{char: C, id: P1} &
   "0" <= C &
