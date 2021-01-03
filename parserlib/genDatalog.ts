@@ -41,8 +41,10 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         {
           head: rec(name, {
-            from: varr("P1"),
-            to: varr(`P${rule.value.length}`),
+            span: rec("span", {
+              from: varr("P1"),
+              to: varr(`P${rule.value.length}`),
+            }),
           }),
           defn: {
             type: "Or",
@@ -72,8 +74,10 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         {
           head: rec(name, {
-            from: varr("P1"),
-            to: varr(`P2`),
+            span: rec("span", {
+              from: varr("P1"),
+              to: varr(`P2`),
+            }),
           }),
           defn: {
             type: "Or",
@@ -81,8 +85,10 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
               type: "And",
               clauses: [
                 rec(choiceName(name, idx), {
-                  from: varr("P1"),
-                  to: varr("P2"),
+                  span: rec("span", {
+                    from: varr("P1"),
+                    to: varr("P2"),
+                  }),
                 }),
               ],
             })),
@@ -105,8 +111,10 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         {
           head: rec(name, {
-            from: varr("P1"),
-            to: varr(`P${rule.items.length * 2}`),
+            span: rec("span", {
+              from: varr("P1"),
+              to: varr(`P${rule.items.length * 2}`),
+            }),
             ...headVars,
           }),
           defn: {
@@ -117,8 +125,10 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                 clauses: [
                   ...rule.items.map((char, idx) =>
                     rec(seqItemName(name, idx), {
-                      from: varr(`P${idx * 2 + 1}`),
-                      to: varr(`P${idx * 2 + 2}`),
+                      span: rec("span", {
+                        from: varr(`P${idx * 2 + 1}`),
+                        to: varr(`P${idx * 2 + 2}`),
+                      }),
                     })
                   ),
                   ...range(rule.items.length - 1).map((idx) =>
@@ -143,15 +153,21 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         {
           head: rec(name, {
-            from: varr("P1"),
-            to: varr(`P2`),
+            span: rec("span", {
+              from: varr("P1"),
+              to: varr(`P2`),
+            }),
           }),
           defn: {
             type: "Or",
             opts: [
               {
                 type: "And",
-                clauses: [rec(rule.name, { from: varr("P1"), to: varr("P2") })],
+                clauses: [
+                  rec(rule.name, {
+                    span: rec("span", { from: varr("P1"), to: varr("P2") }),
+                  }),
+                ],
               },
             ],
           },

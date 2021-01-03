@@ -70,8 +70,8 @@ next from null: next{left: 2, right: 3}; {}.
   (); {P1: 1, P2: 2, P3: 3}
 8 from 6: (); {P1: 1, P2: 2, P3: 3}. Join(P3)
   (); {P1: 1, P2: 2, P3: 3}
-main from 8: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
-  main{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}
+main from 8: (); {P1: 1, P2: 2, P3: 3}. Subst({span: span{from: P1, to: P3}})
+  main{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}
 
 main :- ["foo", "bar"].
 --
@@ -217,11 +217,11 @@ next from null: next{left: 2, right: 3}; {}.
 20 from 19: next{left: 2, right: 3}; {P2: 2, P3: 3}. Join(P2)
 13 from 11: (); {P1: 1, P2: 2, P3: 3}. Join(P3)
   (); {P1: 1, P2: 2, P3: 3}
-main_seq_0 from 13: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
-  main_seq_0{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}
-3 from main_seq_0: main_seq_0{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}. Match(main_seq_0{from: P1, to: P2}; {P1: P1, P3: P2})
-  main_seq_0{from: 1, to: 3}; {P1: 1, P2: 3}
-4 from 3: main_seq_0{from: 1, to: 3}; {P1: 1, P2: 3}. Join(P2)
+main_seq_0 from 13: (); {P1: 1, P2: 2, P3: 3}. Subst({span: span{from: P1, to: P3}})
+  main_seq_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}
+3 from main_seq_0: main_seq_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}. Match(main_seq_0{span: span{from: P1, to: P2}}; {})
+  main_seq_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+4 from 3: main_seq_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Join(P2)
 --
 next from null: next{left: 3, right: 4}; {}. 
   next{left: 3, right: 4}; {}
@@ -283,16 +283,16 @@ next from null: next{left: 5, right: 6}; {}.
   (); {P1: 4, P2: 5, P3: 6}
 22 from 20: (); {P1: 4, P2: 5, P3: 6}. Join(P3)
   (); {P1: 4, P2: 5, P3: 6}
-main_seq_1 from 22: (); {P1: 4, P2: 5, P3: 6}. Subst({from: P1, to: P3})
-  main_seq_1{from: 4, to: 6}; {P1: 4, P2: 5, P3: 6}
-0 from main_seq_1: main_seq_1{from: 4, to: 6}; {P1: 4, P2: 5, P3: 6}. Match(main_seq_1{from: P3, to: P4}; {P1: P3, P3: P4})
-  main_seq_1{from: 4, to: 6}; {P3: 4, P4: 6}
-2 from 0: main_seq_1{from: 4, to: 6}; {P3: 4, P4: 6}. Join(P3)
+main_seq_1 from 22: (); {P1: 4, P2: 5, P3: 6}. Subst({span: span{from: P1, to: P3}})
+  main_seq_1{span: span{from: 4, to: 6}}; {P1: 4, P2: 5, P3: 6}
+0 from main_seq_1: main_seq_1{span: span{from: 4, to: 6}}; {P1: 4, P2: 5, P3: 6}. Match(main_seq_1{span: span{from: P3, to: P4}}; {})
+  main_seq_1{span: span{from: 4, to: 6}}; {P3: 4, P4: 6}
+2 from 0: main_seq_1{span: span{from: 4, to: 6}}; {P3: 4, P4: 6}. Join(P3)
   (); {P2: 3, P3: 4, P4: 6}
 4 from 2: (); {P2: 3, P3: 4, P4: 6}. Join(P2)
   (); {P1: 1, P2: 3, P3: 4, P4: 6}
-main from 4: (); {P1: 1, P2: 3, P3: 4, P4: 6}. Subst({from: P1, seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, to: P4})
-  main{from: 1, seq_0: span{from: 1, to: 3}, seq_1: span{from: 4, to: 6}, to: 6}; {P1: 1, P2: 3, P3: 4, P4: 6}
+main from 4: (); {P1: 1, P2: 3, P3: 4, P4: 6}. Subst({seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{from: P1, to: P4}})
+  main{seq_0: span{from: 1, to: 3}, seq_1: span{from: 4, to: 6}, span: span{from: 1, to: 6}}; {P1: 1, P2: 3, P3: 4, P4: 6}
 
 main :- ("foo" | "bar").
 --
@@ -396,14 +396,14 @@ next from null: next{left: 2, right: 3}; {}.
 18 from 17: next{left: 2, right: 3}; {P2: 2, P3: 3}. Join(P2)
 11 from 9: (); {P1: 1, P2: 2, P3: 3}. Join(P3)
   (); {P1: 1, P2: 2, P3: 3}
-main_choice_0 from 11: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
-  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}
-1 from main_choice_0: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}. Match(main_choice_0{from: P1, to: P2}; {P1: P1, P3: P2})
-  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
-0 from 1: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Union
-  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
-main from 0: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
-  main{from: 1, to: 3}; {P1: 1, P2: 3}
+main_choice_0 from 11: (); {P1: 1, P2: 2, P3: 3}. Subst({span: span{from: P1, to: P3}})
+  main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}
+1 from main_choice_0: main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}. Match(main_choice_0{span: span{from: P1, to: P2}}; {})
+  main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+0 from 1: main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Union
+  main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+main from 0: main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Subst({span: span{from: P1, to: P2}})
+  main{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
 
 main :- ("foo" | "bar").
 --
@@ -503,14 +503,14 @@ next from null: next{left: 2, right: 3}; {}.
   (); {P1: 1, P2: 2, P3: 3}
 20 from 18: (); {P1: 1, P2: 2, P3: 3}. Join(P3)
   (); {P1: 1, P2: 2, P3: 3}
-main_choice_1 from 20: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
-  main_choice_1{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}
-2 from main_choice_1: main_choice_1{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}. Match(main_choice_1{from: P1, to: P2}; {P1: P1, P3: P2})
-  main_choice_1{from: 1, to: 3}; {P1: 1, P2: 3}
-0 from 2: main_choice_1{from: 1, to: 3}; {P1: 1, P2: 3}. Union
-  main_choice_1{from: 1, to: 3}; {P1: 1, P2: 3}
-main from 0: main_choice_1{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
-  main{from: 1, to: 3}; {P1: 1, P2: 3}
+main_choice_1 from 20: (); {P1: 1, P2: 2, P3: 3}. Subst({span: span{from: P1, to: P3}})
+  main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}
+2 from main_choice_1: main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}. Match(main_choice_1{span: span{from: P1, to: P2}}; {})
+  main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+0 from 2: main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Union
+  main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+main from 0: main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Subst({span: span{from: P1, to: P2}})
+  main{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
 
 main :- (foo | bar).
 foo :- "foo".
@@ -616,15 +616,15 @@ next from null: next{left: 2, right: 3}; {}.
   (); {P1: 1, P2: 2, P3: 3}
 17 from 15: (); {P1: 1, P2: 2, P3: 3}. Join(P3)
   (); {P1: 1, P2: 2, P3: 3}
-foo from 17: (); {P1: 1, P2: 2, P3: 3}. Subst({from: P1, to: P3})
-  foo{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}
-21 from foo: foo{from: 1, to: 3}; {P1: 1, P2: 2, P3: 3}. Match(foo{from: P1, to: P2}; {P1: P1, P3: P2})
-  foo{from: 1, to: 3}; {P1: 1, P2: 3}
-main_choice_0 from 21: foo{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
-  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
-19 from main_choice_0: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Match(main_choice_0{from: P1, to: P2}; {P1: P1, P2: P2})
-  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
-18 from 19: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Union
-  main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}
-main from 18: main_choice_0{from: 1, to: 3}; {P1: 1, P2: 3}. Subst({from: P1, to: P2})
-  main{from: 1, to: 3}; {P1: 1, P2: 3}
+foo from 17: (); {P1: 1, P2: 2, P3: 3}. Subst({span: span{from: P1, to: P3}})
+  foo{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}
+21 from foo: foo{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}. Match(foo{span: span{from: P1, to: P2}}; {})
+  foo{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+main_choice_0 from 21: foo{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Subst({span: span{from: P1, to: P2}})
+  main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+19 from main_choice_0: main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Match(main_choice_0{span: span{from: P1, to: P2}}; {})
+  main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+18 from 19: main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Union
+  main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
+main from 18: main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}. Subst({span: span{from: P1, to: P2}})
+  main{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}
