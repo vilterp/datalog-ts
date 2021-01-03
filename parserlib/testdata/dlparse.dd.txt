@@ -3,66 +3,58 @@ main :- "foo".
 foo
 ----
 text/plain
-> source{char: "\n", id: 0}
-> source{char: "f", id: 1}
+> source{char: "f", id: 0}
+> source{char: "o", id: 1}
 > source{char: "o", id: 2}
-> source{char: "o", id: 3}
 > next{left: 0, right: 1}
 > next{left: 1, right: 2}
-> next{left: 2, right: 3}
-main{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}.
+main{span: span{from: 0, to: 2}}; {P1: 0, P2: 1, P3: 2}.
 
 main :- ["foo", "bar"].
 --
 foobar
 ----
 text/plain
-> source{char: "\n", id: 0}
-> source{char: "f", id: 1}
+> source{char: "f", id: 0}
+> source{char: "o", id: 1}
 > source{char: "o", id: 2}
-> source{char: "o", id: 3}
-> source{char: "b", id: 4}
-> source{char: "a", id: 5}
-> source{char: "r", id: 6}
+> source{char: "b", id: 3}
+> source{char: "a", id: 4}
+> source{char: "r", id: 5}
 > next{left: 0, right: 1}
 > next{left: 1, right: 2}
+main_seq_0{span: span{from: 0, to: 2}}; {P1: 0, P2: 1, P3: 2}.
 > next{left: 2, right: 3}
-main_seq_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}.
 > next{left: 3, right: 4}
 > next{left: 4, right: 5}
-> next{left: 5, right: 6}
-main_seq_1{span: span{from: 4, to: 6}}; {P1: 4, P2: 5, P3: 6}.
-main{seq_0: span{from: 1, to: 3}, seq_1: span{from: 4, to: 6}, span: span{from: 1, to: 6}}; {P1: 1, P2: 3, P3: 4, P4: 6}.
+main_seq_1{span: span{from: 3, to: 5}}; {P1: 3, P2: 4, P3: 5}.
+main{seq_0: span{from: 0, to: 2}, seq_1: span{from: 3, to: 5}, span: span{from: 0, to: 5}}; {P1: 0, P2: 2, P3: 3, P4: 5}.
 
 main :- ("foo" | "bar").
 --
 foo
 ----
 text/plain
-> source{char: "\n", id: 0}
-> source{char: "f", id: 1}
+> source{char: "f", id: 0}
+> source{char: "o", id: 1}
 > source{char: "o", id: 2}
-> source{char: "o", id: 3}
 > next{left: 0, right: 1}
 > next{left: 1, right: 2}
-> next{left: 2, right: 3}
-main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}.
-main{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}.
+main_choice_0{span: span{from: 0, to: 2}}; {P1: 0, P2: 1, P3: 2}.
+main{span: span{from: 0, to: 2}}; {P1: 0, P2: 2}.
 
 main :- ("foo" | "bar").
 --
 bar
 ----
 text/plain
-> source{char: "\n", id: 0}
-> source{char: "b", id: 1}
-> source{char: "a", id: 2}
-> source{char: "r", id: 3}
+> source{char: "b", id: 0}
+> source{char: "a", id: 1}
+> source{char: "r", id: 2}
 > next{left: 0, right: 1}
 > next{left: 1, right: 2}
-> next{left: 2, right: 3}
-main_choice_1{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}.
-main{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}.
+main_choice_1{span: span{from: 0, to: 2}}; {P1: 0, P2: 1, P3: 2}.
+main{span: span{from: 0, to: 2}}; {P1: 0, P2: 2}.
 
 main :- (foo | bar).
 foo :- "foo".
@@ -71,13 +63,11 @@ bar :- "bar".
 foo
 ----
 text/plain
-> source{char: "\n", id: 0}
-> source{char: "f", id: 1}
+> source{char: "f", id: 0}
+> source{char: "o", id: 1}
 > source{char: "o", id: 2}
-> source{char: "o", id: 3}
 > next{left: 0, right: 1}
 > next{left: 1, right: 2}
-> next{left: 2, right: 3}
-foo{span: span{from: 1, to: 3}}; {P1: 1, P2: 2, P3: 3}.
-main_choice_0{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}.
-main{span: span{from: 1, to: 3}}; {P1: 1, P2: 3}.
+foo{span: span{from: 0, to: 2}}; {P1: 0, P2: 1, P3: 2}.
+main_choice_0{span: span{from: 0, to: 2}}; {P1: 0, P2: 2}.
+main{span: span{from: 0, to: 2}}; {P1: 0, P2: 2}.

@@ -111,10 +111,8 @@ function inputGenTest(test: string[]): TestOutput[] {
 
 function dlParseTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const [grammarText, inputText] = input.split("--");
-
+    const [grammarText, inputText] = input.split("\n--\n");
     const inputRecs = inputToDL(inputText);
-
     const { interp } = initializeInterp(grammarText);
 
     let outputs: { record: Rec; output: Output }[] = [];
