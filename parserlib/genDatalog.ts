@@ -207,7 +207,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           },
         },
       ];
-    case "RepSep":
+    case "RepSep": {
       // TODO: actual repSep. Just doing rep1 for now.
       return [
         {
@@ -217,6 +217,14 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           defn: {
             type: "Or",
             opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec(`${name}_item`, {
+                    span: rec("span", { from: varr("P1"), to: varr("PN") }),
+                  }),
+                ],
+              },
               {
                 type: "And",
                 clauses: [
@@ -235,6 +243,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         ...ruleToDL(`${name}_item`, rule.rep),
         // TODO: do the sep as well
       ];
+    }
     case "Succeed":
       console.error("TODO: generate succeed");
       return [];
