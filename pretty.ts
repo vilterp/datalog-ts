@@ -53,11 +53,6 @@ export function ppRule(rule: Rule): string {
 }
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {
-  const oneLine = pp.intersperse(" | ")(
-    rule.defn.opts.map((ae) =>
-      pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
-    )
-  );
   const splitUp = [
     pp.line,
     pp.indent(
@@ -69,7 +64,7 @@ export function prettyPrintRule(rule: Rule): pp.IDoc {
       )
     ),
   ];
-  return [prettyPrintTerm(rule.head), " :- ", pp.choice(oneLine, splitUp), "."];
+  return [prettyPrintTerm(rule.head), " :- ", splitUp, "."];
 }
 
 export function prettyPrintDB(db: DB): pp.IDoc {
