@@ -2,12 +2,14 @@
 ----
 text/plain
 > source{char: "f", id: 0}
+> next{left: 0, right: "end"}
 
 {"type":"Insert","index":1,"char":"o"}
 ----
 text/plain
 > source{char: "o", id: 1}
 > next{left: 0, right: 1}
+> next{left: 1, right: "end"}
 
 {"type":"Insert","index":1,"char":"o"}
 ----
@@ -15,3 +17,4 @@ text/plain
 > source{char: "o", id: 2}
 > next{left: 0, right: 2}
 > next{left: 2, right: 1}
+main{span: span{from: 0, to: "end"}}; {P1: 0, P2: 2, P3: 1, P4: "end"}.

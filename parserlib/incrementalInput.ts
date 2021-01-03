@@ -53,6 +53,15 @@ export class IncrementalInputManager {
             }),
           });
         }
+        if (evt.index === lengthBefore) {
+          out.push({
+            type: "Insert",
+            record: rec("next", {
+              left: int(newID),
+              right: str("end"),
+            }),
+          });
+        }
         this.indexToID.splice(evt.index, 0, newID);
         return out;
       }
