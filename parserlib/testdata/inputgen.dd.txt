@@ -6,6 +6,7 @@ source{char: "o", id: 1}.
 source{char: "o", id: 2}.
 next{left: 0, right: 1}.
 next{left: 1, right: 2}.
+next{left: 2, right: "end"}.
 
 foobar
 ----
@@ -21,3 +22,4 @@ next{left: 1, right: 2}.
 next{left: 2, right: 3}.
 next{left: 3, right: 4}.
 next{left: 4, right: 5}.
+next{left: 5, right: "end"}.
