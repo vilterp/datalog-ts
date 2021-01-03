@@ -13,7 +13,7 @@ const GRAMMAR_TEXT = `main :- expr.
 expr :- (intLit | funcCall).
 intLit :- [0-9].
 funcCall :- [ident, "(", expr, ")"].
-ident :- "foo".
+ident :- ([a-z] | [A-Z]).
 `;
 
 // TODO: put these somewhere in React-land
