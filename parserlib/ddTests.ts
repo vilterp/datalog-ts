@@ -91,7 +91,7 @@ function dlGenTest(test: string[]): TestOutput[] {
 
 function dlGenGraphTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const interp = initializeInterp(input);
+    const { interp } = initializeInterp(input);
 
     return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
   });
@@ -113,7 +113,7 @@ function dlParseTest(test: string[]): TestOutput[] {
 
     const inputRecs = inputToDL(inputText);
 
-    const interp = initializeInterp(grammarText);
+    const { interp } = initializeInterp(grammarText);
 
     let outputs: Output[] = [];
     for (let record of inputRecs) {
@@ -137,7 +137,7 @@ function dlParseTest(test: string[]): TestOutput[] {
 function incrInputTest(test: string[]): TestOutput[] {
   const inputManager = new IncrementalInputManager();
 
-  const interp = initializeInterp(`main :- "foo".`);
+  const { interp } = initializeInterp(`main :- "foo".`);
 
   const out: TestOutput[] = [];
   for (let input of test) {

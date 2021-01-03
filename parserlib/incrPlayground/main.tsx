@@ -7,6 +7,7 @@ import { IncrementalInputManager, InputEvt } from "../incrementalInput";
 import { Change } from "diff";
 import { flatMap } from "../../util/util";
 import { initializeInterp } from "../genDatalog";
+import { ppRule } from "../../pretty";
 
 const GRAMMAR_TEXT = `main :- (foo | barBaz | fooBarBaz).
 foo :- "foo".
@@ -14,7 +15,7 @@ barBaz :- ["bar", "baz"].
 fooBarBaz :- [foo, barBaz].`;
 
 // TODO: put these somewhere in React-land
-const interp = initializeInterp(GRAMMAR_TEXT);
+const { interp, rules } = initializeInterp(GRAMMAR_TEXT);
 const inputManager = new IncrementalInputManager();
 
 function Main() {
@@ -58,6 +59,9 @@ function Main() {
             </td>
             <td>
               <pre>{GRAMMAR_TEXT}</pre>
+            </td>
+            <td>
+              <pre>{rules.map(ppRule).join("\n")}</pre>
             </td>
           </tr>
         </tbody>

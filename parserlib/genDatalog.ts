@@ -1,23 +1,25 @@
 import * as dl from "../types";
 import { flatMap, flatMapObjToList, range, stringToArray } from "../util/util";
 import * as gram from "./grammar";
-import { int, Rec, rec, str, varr } from "../types";
+import { int, Rec, rec, Rule, str, varr } from "../types";
 import { Interpreter } from "../incremental/interpreter";
 import { parseGrammar } from "./meta";
 import { nullLoader } from "../loaders";
 
-export function initializeInterp(grammarText: string): Interpreter {
+export function initializeInterp(
+  grammarText: string
+): { interp: Interpreter; rules: Rule[] } {
   const grammarParsed = parseGrammar(grammarText);
-  const gramamrRules = grammarToDL(grammarParsed);
+  const rules = grammarToDL(grammarParsed);
 
   const interp = new Interpreter(nullLoader);
   interp.evalStr(".table source");
   interp.evalStr(".table next");
 
-  for (let rule of gramamrRules) {
+  for (let rule of rules) {
     interp.processStmt({ type: "Rule", rule });
   }
-  return interp;
+  return { interp, rules };
 }
 
 // generate datalog rules that implement a parser for this grammar
