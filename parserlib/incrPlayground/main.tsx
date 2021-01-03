@@ -11,7 +11,7 @@ import { ppRule } from "../../pretty";
 
 const GRAMMAR_TEXT = `main :- expr.
 expr :- (intLit | funcCall).
-intLit :- "2".
+intLit :- [0-9].
 funcCall :- [ident, "(", expr, ")"].
 ident :- "foo".
 `;

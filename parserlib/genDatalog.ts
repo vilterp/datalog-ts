@@ -7,10 +7,21 @@ import {
   stringToArray,
 } from "../util/util";
 import * as gram from "./grammar";
-import { int, Rec, rec, Rule, str, Term, varr } from "../types";
+import {
+  BinExpr,
+  binExpr,
+  int,
+  Rec,
+  rec,
+  Rule,
+  str,
+  Term,
+  varr,
+} from "../types";
 import { Interpreter } from "../incremental/interpreter";
 import { parseGrammar } from "./meta";
 import { nullLoader } from "../loaders";
+import { CharRule, SingleCharRule } from "./grammar";
 
 export function initializeInterp(
   grammarText: string
@@ -173,12 +184,49 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           },
         },
       ];
-    case "RepSep":
-      throw new Error("todo");
     case "Char":
+      return [
+        {
+          head: rec(name, {
+            span: rec("span", { from: varr("P1"), to: varr("P1") }),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec("source", {
+                    id: varr("P1"),
+                    char: varr("C"),
+                  }),
+                  ...exprsForCharRule(rule.rule),
+                ],
+              },
+            ],
+          },
+        },
+      ];
+    case "RepSep":
       throw new Error("todo");
     case "Succeed":
       throw new Error("todo");
+  }
+}
+
+function exprsForCharRule(charRule: SingleCharRule): BinExpr[] {
+  switch (charRule.type) {
+    case "AnyChar":
+      return [];
+    case "Literal":
+      return [binExpr(varr("C"), "==", str(charRule.value))];
+    case "Range":
+      return [
+        binExpr(str(charRule.from), "<=", varr("C")),
+        binExpr(varr("C"), "<=", str(charRule.to)),
+      ];
+    case "Not":
+      throw new Error("TODO: `not` single char rules");
   }
 }
 
