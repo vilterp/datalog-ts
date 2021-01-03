@@ -11,7 +11,7 @@ main{from: P1, to: P3} :-
 main :- ["foo", "bar"].
 ----
 application/datalog
-main{from: P1, to: P4} :- 
+main{from: P1, seq_0_start: P1, seq_1_start: P3, to: P4} :- 
   main_seq_0{from: P1, to: P2} &
   main_seq_1{from: P3, to: P4} &
   next{left: P2, right: P3}.

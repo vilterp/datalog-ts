@@ -1,7 +1,13 @@
 import * as dl from "../types";
-import { flatMap, flatMapObjToList, range, stringToArray } from "../util/util";
+import {
+  flatMap,
+  flatMapObjToList,
+  pairsToObj,
+  range,
+  stringToArray,
+} from "../util/util";
 import * as gram from "./grammar";
-import { int, Rec, rec, Rule, str, varr } from "../types";
+import { int, Rec, rec, Rule, str, Term, varr } from "../types";
 import { Interpreter } from "../incremental/interpreter";
 import { parseGrammar } from "./meta";
 import { nullLoader } from "../loaders";
@@ -86,12 +92,19 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           ruleToDL(choiceName(name, idx), subRule)
         ),
       ];
-    case "Sequence":
+    case "Sequence": {
+      const headVars: { [key: string]: Term } = pairsToObj(
+        range(rule.items.length).map((idx) => ({
+          key: `seq_${idx}_start`,
+          val: varr(`P${idx * 2 + 1}`),
+        }))
+      );
       return [
         {
           head: rec(name, {
             from: varr("P1"),
             to: varr(`P${rule.items.length * 2}`),
+            ...headVars,
           }),
           defn: {
             type: "Or",
@@ -120,6 +133,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           ruleToDL(seqItemName(name, idx), subRule)
         ),
       ];
+    }
     case "Ref":
       // TODO: this one seems a bit unnecessary...
       //   these should be collapsed out somehow

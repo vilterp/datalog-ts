@@ -9,10 +9,12 @@ import { flatMap } from "../../util/util";
 import { initializeInterp } from "../genDatalog";
 import { ppRule } from "../../pretty";
 
-const GRAMMAR_TEXT = `main :- (foo | barBaz | fooBarBaz).
-foo :- "foo".
-barBaz :- ["bar", "baz"].
-fooBarBaz :- [foo, barBaz].`;
+const GRAMMAR_TEXT = `main :- expr.
+expr :- (intLit | funcCall).
+intLit :- "2".
+funcCall :- [ident, "(", expr, ")"].
+ident :- "foo".
+`;
 
 // TODO: put these somewhere in React-land
 const { interp, rules } = initializeInterp(GRAMMAR_TEXT);
