@@ -1,3 +1,33 @@
+main :- repSep([a-z], <succeed>).
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(main_item{span: span{from: P1, to: PN}}; {}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(main_item{span: span{from: P1, to: P2}}; {}) [P2]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(main{span: span{from: P2, to: PN}}; {}) [P2]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(P2) []" shape="box" style="filled"];
+  "5" [fillcolor="darkseagreen2" label="5: Match(source{char: C, id: P1}; {}) []" shape="box" style="filled"];
+  "6" [fillcolor="darkseagreen1" label="6: \"a\" <= C []" shape="box" style="filled"];
+  "7" [fillcolor="darkseagreen1" label="7: C <= \"z\" []" shape="box" style="filled"];
+  "source" [fillcolor="darksalmon" label="source:  []" shape="box" style="filled"];
+  "next" [fillcolor="darksalmon" label="next:  []" shape="box" style="filled"];
+  "main" [fillcolor="lightblue" label="main: Subst({span: span{from: P1, to: PN}}) []" shape="box" style="filled"];
+  "main_item" [fillcolor="lightblue" label="main_item: Subst({span: span{from: P1, to: P1}}) []" shape="box" style="filled"];
+  "0" -> "main" [];
+  "1" -> "0" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "0" [];
+  "5" -> "6" [];
+  "6" -> "7" [];
+  "7" -> "main_item" [];
+  "main" -> "3" [];
+  "main_item" -> "1" [];
+  "main_item" -> "2" [];
+  "source" -> "5" [];
+}
+
 main :- expr.
 expr :- (intLit | funcCall).
 intLit :- [0-9].
