@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { fsLoader, Repl } from "../../core/repl";
+import { fsLoader, Repl } from "./repl/repl";
 import * as fs from "fs";
 
 const interp = new Repl(

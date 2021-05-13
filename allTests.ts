@@ -1,7 +1,7 @@
 import { runSuites } from "./util/testing";
 import { unifyTests } from "./core/unifyTests";
 import { parserTests } from "./core/parserTest";
-import { replTests } from "./core/replTests";
+import { replTests } from "./apps/cmd/repl/replTests";
 import { fpTests } from "./apps/fp/ddTests";
 import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./core/prettyTest";

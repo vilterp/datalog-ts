@@ -1,17 +1,17 @@
-import { Interpreter } from "./interpreter";
-import { Loader } from "./loaders";
-import { Rec, StringLit } from "./types";
+import { Interpreter } from "../../../core/interpreter";
+import { Loader } from "../../../core/loaders";
+import { Rec, StringLit } from "../../../core/types";
 import * as readline from "readline";
 import {
   prettyPrintDB,
   prettyPrintTerm,
   prettyPrintTrace,
   defaultTracePrintOpts,
-} from "./pretty";
+} from "../../../core/pretty";
 import * as pp from "prettier-printer";
-import { Graph, prettyPrintGraph } from "../util/graphviz";
+import { Graph, prettyPrintGraph } from "../../../util/graphviz";
 import * as fs from "fs";
-import { traceToTree } from "./traceTree";
+import { traceToTree } from "../../../core/traceTree";
 
 type Mode = "repl" | "pipe" | "test";
 
