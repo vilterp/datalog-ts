@@ -1,4 +1,4 @@
-import { assertStringEqual } from "../testing";
+import { assertStringEqual } from "./testing";
 import * as fs from "fs";
 
 export type DDTest = IOPair[];

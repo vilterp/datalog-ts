@@ -2,7 +2,7 @@ import { DB, Program, Rec, Res, Statement, rec, str, Term } from "./types";
 import { language as dlLanguage } from "./parser";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "./loaders";
-import { mapObjToList, flatMapObjToList, flatMap } from "./util";
+import { mapObjToList, flatMapObjToList, flatMap } from "./util/util";
 
 export type StmtResult = { results: Res[]; trace: boolean };
 

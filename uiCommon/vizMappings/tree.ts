@@ -1,4 +1,4 @@
-import { Tree } from "../../tree";
+import { Tree } from "../../util/tree";
 import { Rec, StringLit } from "../../types";
 import { ppt } from "../../pretty";
 

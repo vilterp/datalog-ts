@@ -1,8 +1,8 @@
-import { Suite } from "./testing";
+import { Suite } from "./util/testing";
 import { fsLoader, Repl } from "./repl";
 import * as stream from "stream";
 import { DDTest, Result, runDDTestAtPath } from "./util/dataDrivenTests";
-import { identityTransform, readAll } from "./streamUtil";
+import { identityTransform, readAll } from "./util/streamUtil";
 
 const ddTestSuites = ["simple", "family", "recurse", "literals"];
 // const ddTestSuites = ["simple"];

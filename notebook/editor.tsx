@@ -4,7 +4,7 @@ import { Interpreter } from "../interpreter";
 import { Program, Res } from "../types";
 import { language } from "../parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
-import { insertAtIdx, removeAtIdx, updateAtIdx, flatten } from "../util";
+import { insertAtIdx, removeAtIdx, updateAtIdx, flatten } from "../util/util";
 import TextAreaAutosize from "react-textarea-autosize";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Collapsible } from "../uiCommon/collapsible";

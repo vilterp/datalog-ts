@@ -1,6 +1,6 @@
 import React from "react";
-import { Tree } from "../tree";
-import { pairsToObj } from "../util";
+import { Tree } from "../util/tree";
+import { pairsToObj } from "../util/util";
 
 export type TreeCollapseState = {
   collapsed: boolean;

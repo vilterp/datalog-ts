@@ -1,5 +1,5 @@
 import * as diff from "diff";
-import * as util from "util";
+import * as util from "util/util";
 
 export function assertStringEqual(
   expected: string,

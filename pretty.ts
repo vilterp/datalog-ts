@@ -11,8 +11,8 @@ import {
   SituatedBinding,
 } from "./types";
 import * as pp from "prettier-printer";
-import { flatMapObjToList, mapObjToList, repeat, flatMap } from "./util";
-import { Tree } from "./tree";
+import { flatMapObjToList, mapObjToList, repeat, flatMap } from "./util/util";
+import { Tree } from "./util/tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 
 export function prettyPrintTerm(term: Term): pp.IDoc {

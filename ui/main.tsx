@@ -9,7 +9,7 @@ import { LayoutManager } from "@jaegertracing/plexus";
 import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../testdata/family.dl";
-import { uniqBy } from "../util";
+import { uniqBy } from "../util/util";
 import { TabbedTables } from "../uiCommon/tabbedTables";
 import useLocalStorage from "react-use-localstorage";
 import { Collapsible } from "../uiCommon/collapsible";

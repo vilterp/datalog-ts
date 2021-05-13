@@ -2,7 +2,7 @@ import { Interpreter } from "../../interpreter";
 import { Rec, Int } from "../../types";
 import { Span, dlToSpan } from "./types";
 import { treeFromRecords } from "../vizMappings/tree";
-import { mapTree, filterTree, getLeaves } from "../../tree";
+import { mapTree, filterTree, getLeaves } from "../../util/tree";
 
 // just `TypeError` is a builtin
 export type DLTypeError = {

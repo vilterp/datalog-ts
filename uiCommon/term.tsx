@@ -5,7 +5,7 @@ import {
   scopePathEq,
   SituatedBinding,
 } from "../types";
-import { intersperse, mapObjToList } from "../util";
+import { intersperse, mapObjToList } from "../util/util";
 import { escapeString } from "../pretty";
 
 export type Highlight =

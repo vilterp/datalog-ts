@@ -1,6 +1,6 @@
 import { SingleCharRule, Rule, Span } from "./grammar";
 import { RuleTree } from "./ruleTree";
-import { Tree } from "../tree";
+import { Tree } from "../util/tree";
 import { prettyPrintTree } from "../pretty";
 
 // supposed to be like regex syntax

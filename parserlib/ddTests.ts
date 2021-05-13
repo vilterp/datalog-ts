@@ -1,4 +1,4 @@
-import { Suite } from "../testing";
+import { Suite } from "../util/testing";
 import {
   runDDTestAtPath,
   DDTest,

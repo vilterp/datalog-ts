@@ -1,5 +1,5 @@
 import { Bindings, rec, Term } from "./types";
-import { mapObj } from "./util";
+import { mapObj } from "./util/util";
 
 export function unify(
   prior: Bindings,

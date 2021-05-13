@@ -1,5 +1,5 @@
 import * as pp from "prettier-printer";
-import { mapObjToList } from "./util";
+import { mapObjToList } from "./util/util";
 
 export interface Graph {
   nodes: Node[];

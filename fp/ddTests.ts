@@ -1,5 +1,5 @@
 import { Interpreter } from "../interpreter";
-import { Suite } from "../testing";
+import { Suite } from "../util/testing";
 import { runDDTestAtPath } from "../util/dataDrivenTests";
 import { DDTest, Result } from "../util/dataDrivenTests";
 import { language } from "./parser";
