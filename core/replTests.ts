@@ -11,7 +11,11 @@ export function replTests(writeResults: boolean): Suite {
   return ddTestSuites.map((name) => ({
     name,
     test() {
-      runDDTestAtPath(`testdata/${name}.dd.txt`, putThroughRepl, writeResults);
+      runDDTestAtPath(
+        `core/testdata/${name}.dd.txt`,
+        putThroughRepl,
+        writeResults
+      );
     },
   }));
 }

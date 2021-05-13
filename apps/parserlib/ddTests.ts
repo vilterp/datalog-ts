@@ -29,7 +29,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "basic",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/basic.dd.txt",
+          "apps/parserlib/testdata/basic.dd.txt",
           (t) => parserTest(basicGrammar, t),
           writeResults
         );
@@ -39,7 +39,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "json",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/json.dd.txt",
+          "apps/parserlib/testdata/json.dd.txt",
           (t) => parserTestFixedStartRule(jsonGrammar, "value", t),
           writeResults
         );
@@ -49,7 +49,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "meta",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/meta.dd.txt",
+          "apps/parserlib/testdata/meta.dd.txt",
           metaTest,
           writeResults
         );

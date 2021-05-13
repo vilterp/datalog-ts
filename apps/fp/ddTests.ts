@@ -16,21 +16,24 @@ import { flatten } from "./flatten";
 import { fsLoader } from "../../core/repl";
 import { Rec } from "../../core/types";
 import { traceToTree, getRelatedPaths } from "../../core/traceTree";
-import * as fs from "fs";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
     {
       name: "parse",
       test() {
-        runDDTestAtPath("fp/testdata/parse.dd.txt", parseTest, writeResults);
+        runDDTestAtPath(
+          "apps/fp/testdata/parse.dd.txt",
+          parseTest,
+          writeResults
+        );
       },
     },
     {
       name: "flatten",
       test() {
         runDDTestAtPath(
-          "fp/testdata/flatten.dd.txt",
+          "apps/fp/testdata/flatten.dd.txt",
           flattenTest,
           writeResults
         );
@@ -40,7 +43,7 @@ export function fpTests(writeResults: boolean): Suite {
       name: "typecheck",
       test() {
         runDDTestAtPath(
-          "fp/testdata/typecheck.dd.txt",
+          "apps/fp/testdata/typecheck.dd.txt",
           typecheckTest,
           writeResults
         );
@@ -50,7 +53,7 @@ export function fpTests(writeResults: boolean): Suite {
       name: "suggestion",
       test() {
         runDDTestAtPath(
-          "fp/testdata/suggestion.dd.txt",
+          "apps/fp/testdata/suggestion.dd.txt",
           suggestionTest,
           writeResults
         );
@@ -60,7 +63,7 @@ export function fpTests(writeResults: boolean): Suite {
       name: "trace",
       test() {
         runDDTestAtPath(
-          "fp/testdata/trace.dd.txt",
+          "apps/fp/testdata/trace.dd.txt",
           (t) => traceTest(t, defaultTracePrintOpts),
           writeResults
         );
@@ -70,7 +73,7 @@ export function fpTests(writeResults: boolean): Suite {
       name: "tracePaths",
       test() {
         runDDTestAtPath(
-          "fp/testdata/tracePaths.dd.txt",
+          "apps/fp/testdata/tracePaths.dd.txt",
           (t) => traceTest(t, { showScopePath: true }),
           writeResults
         );
@@ -107,7 +110,7 @@ function typecheckTest(test: DDTest): Result[] {
     const flattened = flatten(parsed);
     const rendered = flattened.map((t) => ppt(t) + ".");
 
-    const interp = new Interpreter("fp/dl", fsLoader); // hmmm
+    const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
     const interp2 = flattened.reduce<Interpreter>(
       (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
       interp
@@ -134,7 +137,7 @@ function suggestionTest(test: DDTest): Result[] {
     const parsed = language.expr.tryParse(tc.input);
     const flattened = flatten(parsed);
 
-    const interp = new Interpreter("fp/dl", fsLoader); // hmmm
+    const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
     const interp2 = flattened.reduce<Interpreter>(
       (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
       interp
@@ -159,7 +162,7 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     const parsed = language.expr.tryParse(expr);
     const flattened = flatten(parsed);
 
-    const interp = new Interpreter("fp/dl", fsLoader); // hmmm
+    const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
     const interp2 = flattened.reduce((interp, t) => {
       return interp.evalStmt({ type: "Insert", record: t as Rec })[1];
     }, interp);

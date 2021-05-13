@@ -2,9 +2,9 @@
   "name": "datalog-ts",
   "version": "0.5.9",
   "scripts": {
-    "test": "ts-node core/allTests.ts",
-    "test-stay-alive": "ts-node core/allTests.ts --stay-alive",
-    "test-write-results": "ts-node core/allTests.ts --write-results",
+    "test": "ts-node allTests.ts",
+    "test-stay-alive": "ts-node allTests.ts --stay-alive",
+    "test-write-results": "ts-node allTests.ts --write-results",
     "repl": "ts-node apps/cmd/repl.ts",
     "build-dist": "tsc --jsx react --outDir dist --declaration --esModuleInterop apps/fiddle/main.tsx && tsc --outDir dist apps/cmd/repl.ts",
     "build-interp-bundle": "esbuild --bundle --outfile=dist/index.mjs --format=esm --target=es6 core/interpreter.ts",
