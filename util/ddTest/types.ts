@@ -1,3 +1,5 @@
+import { Json } from "../json";
+
 export type Archive = { [path: string]: DDTest };
 
 export type DDTest = IOPair[];
@@ -32,9 +34,9 @@ export function plainTextOut(content: string): TestOutput {
   };
 }
 
-export function jsonOut(content: string): TestOutput {
+export function jsonOut(content: Json): TestOutput {
   return {
-    content,
+    content: JSON.stringify(content, null, 2),
     mimeType: "application/json",
   };
 }

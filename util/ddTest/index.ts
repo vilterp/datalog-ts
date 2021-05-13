@@ -1,4 +1,4 @@
 import { runDDTestAtPath } from "./runner";
-import { DDTest, Result, ProcessFn } from "./types";
+import { DDTest, TestOutput, Result, ProcessFn } from "./types";
 
-export { runDDTestAtPath, DDTest, Result, ProcessFn };
+export { runDDTestAtPath, DDTest, Result, ProcessFn, TestOutput };

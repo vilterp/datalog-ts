@@ -1,5 +1,6 @@
 foo
 ----
+application/json
 {
   "type": "Var",
   "name": "foo",
@@ -11,6 +12,7 @@ foo
 
 2
 ----
+application/json
 {
   "type": "IntLit",
   "val": 2,
@@ -22,6 +24,7 @@ foo
 
 "hello"
 ----
+application/json
 {
   "type": "StringLit",
   "val": "hello",
@@ -33,6 +36,7 @@ foo
 
 myFunc(2, a, "foo")
 ----
+application/json
 {
   "type": "FuncCall",
   "func": {
@@ -89,6 +93,7 @@ myFunc(2, a, "foo")
 
 ???
 ----
+application/json
 {
   "type": "Placeholder",
   "ident": "???",
@@ -100,6 +105,7 @@ myFunc(2, a, "foo")
 
 let x = 2 in x
 ----
+application/json
 {
   "type": "Let",
   "letT": {
@@ -147,6 +153,7 @@ let x = 2 in x
 
 map((x: int): int => plus(x, 2), ???)
 ----
+application/json
 {
   "type": "FuncCall",
   "func": {

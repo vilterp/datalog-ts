@@ -1,8 +1,9 @@
 import { Suite } from "../util/testing";
-import { DDTest, Result, runDDTestAtPath } from "../util/dataDrivenTests";
+import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { Interpreter } from "./interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
+import { datalogOut } from "../util/ddTest/types";
 
 export function coreTests(writeResults: boolean): Suite {
   return ["simple", "family", "recurse", "literals"].map((name) => ({
@@ -17,19 +18,20 @@ export function coreTests(writeResults: boolean): Suite {
   }));
 }
 
-export function putThroughInterp(test: DDTest): Result[] {
+export function putThroughInterp(test: string[]): TestOutput[] {
   let interp = new Interpreter(".", fsLoader);
 
-  const results: Result[] = [];
+  const results: TestOutput[] = [];
 
-  for (const pair of test) {
-    const [stmtResult, newInterp] = interp.evalStr(pair.input + "\n");
+  for (const input of test) {
+    const [stmtResult, newInterp] = interp.evalStr(input + "\n");
     interp = newInterp;
 
-    results.push({
-      pair,
-      actual: stmtResult.results.map((res) => ppt(res.term) + ".").join("\n"),
-    });
+    results.push(
+      datalogOut(
+        stmtResult.results.map((res) => ppt(res.term) + ".").join("\n")
+      )
+    );
   }
 
   return results;

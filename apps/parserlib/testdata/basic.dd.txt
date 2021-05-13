@@ -1,39 +1,55 @@
 abcSeq
 abc
 ----
+text/plain
 abcSeq [0-3]
+
 
 abcChoice
 a
 ----
+text/plain
 abcChoice [0-1]
+
 
 digit
 2
 ----
+text/plain
 digit [0-1]
+
 
 intLit
 1234
 ----
+text/plain
 intLit [0-4]
+
 
 stringLit
 "fooBarBaz"
 ----
+text/plain
 stringLit [0-11]
+
 
 intOrString
 123
 ----
+text/plain
 intOrString [0-3]
+
 
 intOrString
 "foobar"
 ----
+text/plain
 intOrString [0-8]
+
 
 stringLit
 "foo\"bar"
 ----
+text/plain
 stringLit [0-10]
+

@@ -5,6 +5,8 @@
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
     "test-write-results": "ts-node allTests.ts --write-results",
+    "test-build-archive": "ts-node util/ddTest/buildArchive.ts",
+    "test-write-and-archive": "yarn test-write-results; yarn test-build-archive",
     "repl": "ts-node apps/cmd/repl/main.ts",
     "build-dist": "tsc --jsx react --outDir dist --declaration --esModuleInterop apps/fiddle/main.tsx && tsc --outDir dist apps/cmd/repl/main.ts",
     "build-interp-bundle": "esbuild --bundle --outfile=dist/index.mjs --format=esm --target=es6 core/interpreter.ts",
@@ -18,6 +20,8 @@
     "serve-actors-ui": "cd apps/actors/public && http-server -c-1",
     "build-parserlib-playground": "esbuild apps/parserlib/playground/main.tsx --bundle --outfile=apps/parserlib/playground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
     "serve-parserlib-playground": "cd apps/parserlib/playground/public && http-server -c-1",
+    "build-ddtest-viewer": "esbuild util/ddTest/viewer/main.tsx --bundle --outfile=util/ddTest/viewer/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto",
+    "serve-ddtest-viewer": "cd util/ddTest/viewer && http-server -c-1",
     "cloc": "cloc --vcs=git --exclude-dir=dist"
   },
   "devDependencies": {
@@ -33,6 +37,7 @@
     "prettier": "^2.0.4"
   },
   "dependencies": {
+    "@hookeasy/use-title": "^1.0.2",
     "@react-hook/window-size": "^3.0.7",
     "classnames": "^2.2.6",
     "graphviz-react": "^1.2.0",
@@ -43,6 +48,7 @@
     "react-dom": "^17.0.2",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^5.2.0",
+    "react-select": "^4.3.1",
     "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
     "react-textarea-autosize": "^8.3.2",
     "react-use-localstorage": "^3.4.1",

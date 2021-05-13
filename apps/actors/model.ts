@@ -2,9 +2,9 @@ import { Interpreter } from "../../core/interpreter";
 import { makeMemoryLoader } from "../../core/loaders";
 import { rec, int, str, Rec, StringLit } from "../../core/types";
 import { adtToRec, dlToJson, jsonToDL } from "./conversion";
-import { Json } from "./util";
 // @ts-ignore
 import patterns from "./patterns.dl";
+import { Json } from "../../util/json";
 
 // === overall model ===
 
