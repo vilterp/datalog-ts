@@ -34,15 +34,16 @@ jobs:
       # build dist (does typecheck)
       - run: yarn run build-dist
       # Percy UI tests
-      - name: "Percy FP UI"
-        uses: percy/snapshot-action@v0.1.1
-        with:
-          build-directory: fp/fiddle
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
-      - name: "Percy: Generic Fiddle"
-        uses: percy/snapshot-action@v0.1.1
-        with:
-          build-directory: fiddle
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
+      # TODO: re-enable
+      # - name: "Percy FP UI"
+      #   uses: percy/snapshot-action@v0.1.1
+      #   with:
+      #     build-directory: fp/fiddle
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
+      # - name: "Percy: Generic Fiddle"
+      #   uses: percy/snapshot-action@v0.1.1
+      #   with:
+      #     build-directory: fiddle
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
