@@ -92,7 +92,7 @@ function flattenTest(test: string[]): TestOutput[] {
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");
-    return datalogOut(rendered.join("\n") + "\n");
+    return datalogOut(rendered.join("\n"));
   });
 }
 
@@ -119,7 +119,7 @@ function typecheckTest(test: string[]): TestOutput[] {
         ...rendered,
         ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
         ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
-      ].join("\n") + "\n"
+      ].join("\n")
     );
   });
 }
@@ -139,8 +139,7 @@ function suggestionTest(test: string[]): TestOutput[] {
       "ide.Suggestion{id: I, name: N, type: T}"
     );
     return plainTextOut(
-      [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join("\n") +
-        "\n"
+      [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join("\n")
     );
   });
 }
@@ -170,11 +169,11 @@ function traceTest(test: string[], opts: TracePrintOpts): TestOutput[] {
       pp.render(100, prettyPrintSituatedBinding(c))
     );
     return plainTextOut(
-      prettyPrintTrace(traceToTree(res), opts) +
-        "\n" +
-        "CHILD PATHS\n" +
-        childPaths.join("\n") +
-        "\n"
+      [
+        prettyPrintTrace(traceToTree(res), opts),
+        "CHILD PATHS",
+        ...childPaths,
+      ].join("\n")
     );
   });
 }

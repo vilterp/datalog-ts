@@ -4,7 +4,6 @@ text/plain
 value [0-1]
   number [0-1]
 
-
 {"foo":2}
 ----
 text/plain
@@ -14,7 +13,6 @@ value [0-9]
       key [1-6]
       value [7-8]
         number [7-8]
-
 
 [12,11,13]
 ----
@@ -27,7 +25,6 @@ value [0-10]
       number [4-6]
     value [7-9]
       number [7-9]
-
 
 {"foo":2,"bar":3,"baz":[5,6,7]}
 ----
@@ -53,12 +50,10 @@ value [0-31]
           value [28-29]
             number [28-29]
 
-
 "foo
 ----
 text/plain
 value [0-0]
-
 
 {
   "foo": [
@@ -94,4 +89,3 @@ value [0-73]
             key [58-64]
             value [66-70]
               null [66-70]
-

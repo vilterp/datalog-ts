@@ -8,7 +8,6 @@ tc.Type{id: 0, type: T[]@"int"}; {T[tc.Type[]]: T[]}
 CHILD PATHS
 T[]
 
-
 let x = 2 in x
 T
 ----
@@ -36,4 +35,3 @@ T[tc.Type[], tc.typeLet[or(4), and(0)], tc.Type[or(0), and(1), and(0)], tc.typeV
 T[tc.Type[], tc.typeLet[or(4), and(0)], tc.Type[or(0), and(1), and(0)], tc.typeVar[or(5), and(0)], tc.ScopeItem[or(0), and(1), and(0)]]
 T[tc.Type[], tc.typeLet[or(4), and(0)], tc.Type[or(0), and(1), and(0)], tc.typeVar[or(5), and(0)], tc.ScopeItem[or(0), and(1), and(0)], tc.scopeLet[or(1), and(0)]]
 T[tc.Type[], tc.typeLet[or(4), and(0)], tc.Type[or(0), and(1), and(0)], tc.typeVar[or(5), and(0)], tc.ScopeItem[or(0), and(1), and(0)], tc.scopeLet[or(1), and(0)]]
-

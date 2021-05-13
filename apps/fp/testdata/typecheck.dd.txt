@@ -8,7 +8,6 @@ tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "
 tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
 tc.Type{id: 0, type: "string"}.
 
-
 2
 ----
 text/plain
@@ -18,7 +17,6 @@ tc.ScopeItem{id: 0, location: "builtin", name: "concat", type: tapp{from: "strin
 tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}.
 tc.ScopeItem{id: 0, location: "builtin", name: "plus", type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
 tc.Type{id: 0, type: "int"}.
-
 
 let x = 2 in x
 ----
@@ -40,7 +38,6 @@ tc.ScopeItem{id: 2, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 tc.Type{id: 0, type: "int"}.
 tc.Type{id: 1, type: "int"}.
 tc.Type{id: 2, type: "int"}.
-
 
 let x = 2 in intToString(plus2(x))
 ----
@@ -82,7 +79,6 @@ tc.ScopeItem{id: 6, location: span{from: 4, to: 5}, name: "x", type: "int"}.
 tc.Type{id: 1, type: "int"}.
 tc.Type{id: 3, type: tapp{from: "int", to: "string"}}.
 tc.Type{id: 6, type: "int"}.
-
 
 let ts = (y: int): string => intToString(y) in ts(2)
 ----
@@ -135,7 +131,6 @@ tc.Type{id: 4, type: "int"}.
 tc.Type{id: 6, type: "string"}.
 tc.Type{id: 7, type: tapp{from: "int", to: "string"}}.
 tc.Type{id: 8, type: "int"}.
-
 
 let x = 2 in let y = 3 in plus(2, 3)
 ----
@@ -198,4 +193,3 @@ tc.Type{id: 5, type: tapp{from: "int", to: "int"}}.
 tc.Type{id: 6, type: tapp{from: "int", to: tapp{from: "int", to: "int"}}}.
 tc.Type{id: 7, type: "int"}.
 tc.Type{id: 8, type: "int"}.
-
