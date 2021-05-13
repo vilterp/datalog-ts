@@ -1,6 +1,6 @@
 {
   "name": "datalog-ts",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "scripts": {
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
@@ -50,5 +50,8 @@
   },
   "bin": {
     "datalog-ts": "dist/cmd/repl.js"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
