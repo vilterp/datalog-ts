@@ -29,10 +29,10 @@ jobs:
         env:
           CI: true
       # build UIs (note doesn't typecheck them)
-      - run: yarn build-fiddle
-      - run: yarn build-fp-fiddle
+      - run: yarn run build-fiddle
+      - run: yarn run build-fp
       # build dist (does typecheck)
-      - run: yarn build-dist
+      - run: yarn run build-dist
       # Percy UI tests
       - name: "Percy FP UI"
         uses: percy/snapshot-action@v0.1.1
