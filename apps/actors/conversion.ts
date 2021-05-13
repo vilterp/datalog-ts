@@ -1,4 +1,4 @@
-import { rec, str, Rec, array, int, Term } from "../../core/types";
+import { rec, str, Rec, array, int, Term, bool } from "../../core/types";
 import { Json } from "./util";
 
 type ADT = { type: string; [more: string]: Json };
@@ -10,6 +10,8 @@ export function jsonToDL(json: Json): Term {
       return int(json);
     case "string":
       return str(json);
+    case "boolean":
+      return bool(json);
     case "object":
       if (Array.isArray(json)) {
         return array(json.map(jsonToDL));
