@@ -25,7 +25,7 @@ import {
   unify,
   unifyVars,
 } from "./unify";
-import { filterMap, flatMap, mapObj } from "./util/util";
+import { filterMap, flatMap, mapObj } from "../util/util";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);

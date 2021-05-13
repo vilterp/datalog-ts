@@ -1,7 +1,7 @@
 import { assertStringEqual, Suite } from "./testing";
 import { jsonToDL } from "./json2dl";
-import { Rec } from "../types";
-import { prettyPrintTerm } from "../pretty";
+import { Rec } from "../core/types";
+import { prettyPrintTerm } from "../core/pretty";
 import * as pp from "prettier-printer";
 
 export const json2DLTests: Suite = [

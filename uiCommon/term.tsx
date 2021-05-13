@@ -4,9 +4,9 @@ import {
   ScopePath,
   scopePathEq,
   SituatedBinding,
-} from "../types";
+} from "../core/types";
 import { intersperse, mapObjToList } from "../util/util";
-import { escapeString } from "../pretty";
+import { escapeString } from "../core/pretty";
 
 export type Highlight =
   | { type: "Relation"; name: string }

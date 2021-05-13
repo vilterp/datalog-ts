@@ -1,4 +1,4 @@
-import { makeMemoryLoader } from "../../loaders";
+import { makeMemoryLoader } from "../../core/loaders";
 
 // @ts-ignore
 import typecheckDL from "./typecheck.dl";

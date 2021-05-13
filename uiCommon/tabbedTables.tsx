@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useHashParam from "use-hash-param";
-import { Interpreter } from "../interpreter";
-import { Relation } from "../types";
+import { Interpreter } from "../core/interpreter";
+import { Relation } from "../core/types";
 import * as styles from "./styles";
 import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "./term";

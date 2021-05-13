@@ -1,5 +1,5 @@
-import { Interpreter } from "../../interpreter";
-import { Rec, Int } from "../../types";
+import { Interpreter } from "../../core/interpreter";
+import { Rec, Int } from "../../core/types";
 import { Span, dlToSpan } from "./types";
 import { treeFromRecords } from "../vizMappings/tree";
 import { mapTree, filterTree, getLeaves } from "../../util/tree";

@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Interpreter } from "../interpreter";
-import { nullLoader } from "../loaders";
-import { Program, Rec, StringLit } from "../types";
-import { language } from "../parser";
+import { Interpreter } from "../core/interpreter";
+import { nullLoader } from "../core/loaders";
+import { Program, Rec, StringLit } from "../core/types";
+import { language } from "../core/parser";
 import { LayoutManager } from "@jaegertracing/plexus";
 // TODO(joe): Update import after killing `DirectedGraph`
 import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";

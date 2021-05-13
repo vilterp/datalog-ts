@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as pp from "prettier-printer";
-import { prettyPrintTerm } from "../pretty";
+import { prettyPrintTerm } from "../core/pretty";
 import { jsonToDL } from "../util/json2dl";
 
 const fs = require("fs");

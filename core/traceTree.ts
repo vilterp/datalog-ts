@@ -1,4 +1,4 @@
-import { Tree, leaf, node } from "./util/tree";
+import { Tree, leaf, node } from "../util/tree";
 import {
   Res,
   SituatedBinding,
@@ -15,7 +15,7 @@ import {
   TracePrintOpts,
   defaultTracePrintOpts,
 } from "./pretty";
-import { flatMap, getFirst, filterMap, mapObj } from "./util/util";
+import { flatMap, getFirst, filterMap, mapObj } from "../util/util";
 import * as pp from "prettier-printer";
 import { termEq } from "./unify";
 

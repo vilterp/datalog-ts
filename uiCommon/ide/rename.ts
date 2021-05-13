@@ -12,9 +12,9 @@ import {
   spanLength,
   sortSpans,
 } from "./util";
-import { Interpreter } from "../../interpreter";
+import { Interpreter } from "../../core/interpreter";
 import { flatMap, uniqBy } from "../../util/util";
-import { Rec } from "../../types";
+import { Rec } from "../../core/types";
 
 export const renameRefactorAction: EditorAction = {
   name: "Rename",

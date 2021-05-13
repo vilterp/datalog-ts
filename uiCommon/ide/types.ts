@@ -1,5 +1,5 @@
-import { Rec, Term, Int } from "../../types";
-import { Interpreter } from "../../interpreter";
+import { Rec, Term, Int } from "../../core/types";
+import { Interpreter } from "../../core/interpreter";
 import { Suggestion } from "./suggestions";
 
 export type Span = { from: number; to: number };

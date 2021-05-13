@@ -1,13 +1,13 @@
-import { runSuites } from "./util/testing";
+import { runSuites } from "../util/testing";
 import { unifyTests } from "./unifyTests";
 import { parserTests } from "./parserTest";
 import { replTests } from "./replTests";
-import { fpTests } from "./fp/ddTests";
-import { json2DLTests } from "./util/json2dlTest";
+import { fpTests } from "../fp/ddTests";
+import { json2DLTests } from "../util/json2dlTest";
 import { prettyPrintTests } from "./prettyTest";
-import { treeTests } from "./util/treeTest";
-import { actionsTests } from "./uiCommon/ide/actionsTest";
-import { parserlibTests } from "./parserlib/ddTests";
+import { treeTests } from "../util/treeTest";
+import { actionsTests } from "../uiCommon/ide/actionsTest";
+import { parserlibTests } from "../parserlib/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));

@@ -1,5 +1,5 @@
-import { Interpreter } from "../../interpreter";
-import { Rec } from "../../types";
+import { Interpreter } from "../../core/interpreter";
+import { Rec } from "../../core/types";
 import {
   Span,
   dlToSpan,

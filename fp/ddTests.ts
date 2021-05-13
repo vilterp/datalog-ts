@@ -1,4 +1,4 @@
-import { Interpreter } from "../interpreter";
+import { Interpreter } from "../core/interpreter";
 import { Suite } from "../util/testing";
 import { runDDTestAtPath } from "../util/dataDrivenTests";
 import { DDTest, Result } from "../util/dataDrivenTests";
@@ -10,12 +10,12 @@ import {
   TracePrintOpts,
   prettyPrintTrace,
   prettyPrintSituatedBinding,
-} from "../pretty";
+} from "../core/pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
-import { fsLoader } from "../repl";
-import { Rec } from "../types";
-import { traceToTree, getRelatedPaths } from "../traceTree";
+import { fsLoader } from "../core/repl";
+import { Rec } from "../core/types";
+import { traceToTree, getRelatedPaths } from "../core/traceTree";
 import * as fs from "fs";
 
 export function fpTests(writeResults: boolean): Suite {

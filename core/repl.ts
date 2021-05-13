@@ -9,7 +9,7 @@ import {
   defaultTracePrintOpts,
 } from "./pretty";
 import * as pp from "prettier-printer";
-import { Graph, prettyPrintGraph } from "./util/graphviz";
+import { Graph, prettyPrintGraph } from "../util/graphviz";
 import * as fs from "fs";
 import { traceToTree } from "./traceTree";
 

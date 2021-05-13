@@ -1,7 +1,7 @@
 import { array, int, rec, str, varr } from "./types";
 import { unify, unifyVars } from "./unify";
 import * as assert from "assert";
-import { assertDeepEqual } from "./util/testing";
+import { assertDeepEqual } from "../util/testing";
 
 export const unifyTests = [
   {

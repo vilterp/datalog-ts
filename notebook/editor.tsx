@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { MarkdownNode, parse } from "./markdown";
-import { Interpreter } from "../interpreter";
-import { Program, Res } from "../types";
-import { language } from "../parser";
+import { Interpreter } from "../core/interpreter";
+import { Program, Res } from "../core/types";
+import { language } from "../core/parser";
 import { IndependentTraceView } from "../uiCommon/replViews";
 import { insertAtIdx, removeAtIdx, updateAtIdx, flatten } from "../util/util";
 import TextAreaAutosize from "react-textarea-autosize";

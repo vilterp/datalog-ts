@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as pp from "prettier-printer";
-import { prettyPrintTerm } from "../pretty";
+import { prettyPrintTerm } from "../core/pretty";
 import { language } from "../fp/parser";
 import { flatten } from "../fp/flatten";
 
