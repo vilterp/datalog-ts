@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { ppt } from "../pretty";
-import { Rec, Res, Relation } from "../types";
-import { Interpreter } from "../interpreter";
+import { ppt } from "../core/pretty";
+import { Rec, Res, Relation } from "../core/types";
+import { Interpreter } from "../core/interpreter";
 import { TreeCollapseState, TreeView, emptyCollapseState } from "./treeView";
 import { RuleC } from "./rule";
-import { makeTermWithBindings } from "../traceTree";
+import { makeTermWithBindings } from "../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "./term";
 import { TraceView } from "./trace";
 import { canTreeViz, treeFromRecords } from "./vizMappings/tree";

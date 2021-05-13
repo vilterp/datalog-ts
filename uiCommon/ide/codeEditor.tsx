@@ -1,11 +1,11 @@
 import React from "react";
-import { Interpreter } from "../../interpreter";
+import { Interpreter } from "../../core/interpreter";
 import Editor from "./editor";
 import { highlight } from "./highlight";
 import Parsimmon from "parsimmon";
 import { insertSuggestionAction, Suggestion } from "./suggestions";
-import { Rec, Term } from "../../types";
-import { clamp, mapObjToList } from "../../util";
+import { Rec, Term } from "../../core/types";
+import { clamp, mapObjToList } from "../../util/util";
 import { getTypeErrors, DLTypeError } from "./errors";
 import { EditorState, EditorAction, ActionContext } from "./types";
 import {

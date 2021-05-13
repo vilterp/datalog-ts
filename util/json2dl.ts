@@ -1,4 +1,13 @@
-import { array, falseTerm, int, rec, Rec, str, Term, trueTerm } from "../types";
+import {
+  array,
+  falseTerm,
+  int,
+  rec,
+  Rec,
+  str,
+  Term,
+  trueTerm,
+} from "../core/types";
 import { Json } from "./json";
 
 export function jsonToDL(json: Json, emit: (rec: Rec) => void) {

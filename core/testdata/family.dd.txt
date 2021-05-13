@@ -1,0 +1,135 @@
+.load core/testdata/family.dl
+----
+
+father{child: X, father: Y}.
+----
+father{child: "Pete", father: "Paul"}.
+father{child: "Paul", father: "Peter"}.
+father{child: "Ann", father: "Peter"}.
+father{child: "Mary", father: "Mark"}.
+father{child: "Bob", father: "John"}.
+father{child: "Carolyn", father: "Paul"}.
+father{child: "Henry", father: "Bob"}.
+
+father{child: "Pete", father: F}.
+----
+father{child: "Pete", father: "Paul"}.
+
+parent{child: X, parent: Y}.
+----
+parent{child: "Pete", parent: "Mary"}.
+parent{child: "Paul", parent: "Judith"}.
+parent{child: "Ann", parent: "Judith"}.
+parent{child: "Bob", parent: "Ann"}.
+parent{child: "Mary", parent: "Carolyn K"}.
+parent{child: "Carolyn", parent: "Mary"}.
+parent{child: "Pete", parent: "Paul"}.
+parent{child: "Paul", parent: "Peter"}.
+parent{child: "Ann", parent: "Peter"}.
+parent{child: "Mary", parent: "Mark"}.
+parent{child: "Bob", parent: "John"}.
+parent{child: "Carolyn", parent: "Paul"}.
+parent{child: "Henry", parent: "Bob"}.
+
+parent{child: "Pete", parent: Y}.
+----
+parent{child: "Pete", parent: "Mary"}.
+parent{child: "Pete", parent: "Paul"}.
+
+grandfather{grandchild: "Pete", grandfather: A}.
+----
+grandfather{grandchild: "Pete", grandfather: "Mark"}.
+grandfather{grandchild: "Pete", grandfather: "Peter"}.
+
+grandparent{grandchild: "Pete", grandparent: X}.
+----
+grandparent{grandchild: "Pete", grandparent: "Carolyn K"}.
+grandparent{grandchild: "Pete", grandparent: "Mark"}.
+grandparent{grandchild: "Pete", grandparent: "Judith"}.
+grandparent{grandchild: "Pete", grandparent: "Peter"}.
+
+grandparent{grandchild: X, grandparent: Y}.
+----
+grandparent{grandchild: "Pete", grandparent: "Carolyn K"}.
+grandparent{grandchild: "Pete", grandparent: "Mark"}.
+grandparent{grandchild: "Bob", grandparent: "Judith"}.
+grandparent{grandchild: "Bob", grandparent: "Peter"}.
+grandparent{grandchild: "Carolyn", grandparent: "Carolyn K"}.
+grandparent{grandchild: "Carolyn", grandparent: "Mark"}.
+grandparent{grandchild: "Pete", grandparent: "Judith"}.
+grandparent{grandchild: "Pete", grandparent: "Peter"}.
+grandparent{grandchild: "Carolyn", grandparent: "Judith"}.
+grandparent{grandchild: "Carolyn", grandparent: "Peter"}.
+grandparent{grandchild: "Henry", grandparent: "Ann"}.
+grandparent{grandchild: "Henry", grandparent: "John"}.
+
+sibling{left: X, right: Y}.
+----
+sibling{left: "Pete", right: "Carolyn"}.
+sibling{left: "Paul", right: "Ann"}.
+sibling{left: "Ann", right: "Paul"}.
+sibling{left: "Carolyn", right: "Pete"}.
+
+cousin{left: X, right: Y}.
+----
+cousin{left: "Bob", right: "Pete"}.
+cousin{left: "Bob", right: "Carolyn"}.
+cousin{left: "Pete", right: "Bob"}.
+cousin{left: "Carolyn", right: "Bob"}.
+
+aunt{child: C, aunt: X}.
+----
+aunt{aunt: "Ann", child: "Pete"}.
+aunt{aunt: "Ann", child: "Carolyn"}.
+
+uncle{child: C, uncle: X}.
+----
+uncle{child: "Bob", uncle: "Paul"}.
+
+ancestor{desc: "Pete", an: Z}.
+----
+ancestor{an: "Mary", desc: "Pete"}.
+ancestor{an: "Paul", desc: "Pete"}.
+ancestor{an: "Carolyn K", desc: "Pete"}.
+ancestor{an: "Mark", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Pete"}.
+
+ancestor{desc: X, an: "Peter"}.
+----
+ancestor{an: "Peter", desc: "Paul"}.
+ancestor{an: "Peter", desc: "Ann"}.
+ancestor{an: "Peter", desc: "Bob"}.
+ancestor{an: "Peter", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Carolyn"}.
+ancestor{an: "Peter", desc: "Henry"}.
+
+ancestor{desc: X, an: Y}.
+----
+ancestor{an: "Mary", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Paul"}.
+ancestor{an: "Judith", desc: "Ann"}.
+ancestor{an: "Ann", desc: "Bob"}.
+ancestor{an: "Carolyn K", desc: "Mary"}.
+ancestor{an: "Mary", desc: "Carolyn"}.
+ancestor{an: "Paul", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Paul"}.
+ancestor{an: "Peter", desc: "Ann"}.
+ancestor{an: "Mark", desc: "Mary"}.
+ancestor{an: "John", desc: "Bob"}.
+ancestor{an: "Paul", desc: "Carolyn"}.
+ancestor{an: "Bob", desc: "Henry"}.
+ancestor{an: "Carolyn K", desc: "Pete"}.
+ancestor{an: "Mark", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Bob"}.
+ancestor{an: "Peter", desc: "Bob"}.
+ancestor{an: "Carolyn K", desc: "Carolyn"}.
+ancestor{an: "Mark", desc: "Carolyn"}.
+ancestor{an: "Judith", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Carolyn"}.
+ancestor{an: "Peter", desc: "Carolyn"}.
+ancestor{an: "Ann", desc: "Henry"}.
+ancestor{an: "John", desc: "Henry"}.
+ancestor{an: "Judith", desc: "Henry"}.
+ancestor{an: "Peter", desc: "Henry"}.

@@ -1,13 +1,13 @@
 import React from "react";
-import { Res, VarMappings, ScopePath } from "../types";
+import { Res, VarMappings, ScopePath } from "../core/types";
 import { TermView, VarC, HighlightProps } from "./term";
 import {
   makeTermWithBindings,
   traceToTree,
   getRelatedPaths,
   pathToScopePath,
-} from "../traceTree";
-import { mapObjToList, intersperse } from "../util";
+} from "../core/traceTree";
+import { mapObjToList, intersperse } from "../util/util";
 import { TreeView, TreeCollapseState } from "./treeView";
 
 export function TraceView(props: {

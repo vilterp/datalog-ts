@@ -1,8 +1,8 @@
 import React from "react";
 import classnames from "classnames";
-import { Interpreter } from "../../interpreter";
-import { Rec, StringLit, Bool } from "../../types";
-import { uniqBy } from "../../util";
+import { Interpreter } from "../../core/interpreter";
+import { Rec, StringLit, Bool } from "../../core/types";
+import { uniqBy } from "../../util/util";
 import { dlToSpan, Span } from "./types";
 import { DLTypeError } from "./errors";
 

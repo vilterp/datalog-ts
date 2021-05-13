@@ -1,6 +1,6 @@
-import { Tree } from "../../tree";
-import { Rec, StringLit } from "../../types";
-import { ppt } from "../../pretty";
+import { Tree } from "../../util/tree";
+import { Rec, StringLit } from "../../core/types";
+import { ppt } from "../../core/pretty";
 
 type TermGraph = { [parentTerm: string]: Rec[] };
 

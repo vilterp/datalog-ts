@@ -15,34 +15,35 @@ jobs:
       matrix:
         node-version: [12.x]
     steps:
+      # setup
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: yarn global add ts-node --prefix=.
+      # install deps
       - run: yarn
+      # unit tests
       - run: yarn test
         env:
           CI: true
-      - run: yarn global add ts-node --prefix=.
-      - name: test repl
-        run: |
-          export PATH=$PATH:$GITHUB_WORKSPACE/bin:$GITHUB_WORKSPACE/interpTest
-          cd interpTest
-          cat family-facts.dl | ts-node ../cmd/repl.ts '.graphviz' ./family-rules.dl > family.dot
-          cmp family.dot family-ref.dot
-      # Note: this builds them, but doesn't typecheck them
-      - run: yarn build-ui
-      - run: yarn build-fp-ui
-      - name: "Percy FP UI"
-        uses: percy/snapshot-action@v0.1.1
-        with:
-          build-directory: fp/ui
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
-      - name: "Percy: Generic Fiddle"
-        uses: percy/snapshot-action@v0.1.1
-        with:
-          build-directory: ui
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
+      # build UIs (note doesn't typecheck them)
+      - run: yarn run build-fiddle
+      - run: yarn run build-fp-ui
+      # build dist (does typecheck)
+      - run: yarn run build-dist
+      # Percy UI tests
+      # TODO: re-enable
+      # - name: "Percy FP UI"
+      #   uses: percy/snapshot-action@v0.1.1
+      #   with:
+      #     build-directory: fp/fiddle
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
+      # - name: "Percy: Generic Fiddle"
+      #   uses: percy/snapshot-action@v0.1.1
+      #   with:
+      #     build-directory: fiddle
+      #   env:
+      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
