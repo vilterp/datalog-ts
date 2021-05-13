@@ -207,3 +207,16 @@ export function flatten<T>(results: T[][]): T[] {
   });
   return out;
 }
+
+// assumes that left and right are the same length
+export function zip<L, R, O>(
+  left: L[],
+  right: R[],
+  combine: (left: L, right: R) => O
+): O[] {
+  const output: O[] = [];
+  for (let i = 0; i < left.length; i++) {
+    output.push(combine(left[i], right[i]));
+  }
+  return output;
+}
