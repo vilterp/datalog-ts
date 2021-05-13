@@ -1,0 +1,32 @@
+.table message
+.table tick
+.table timeout
+# maybe this should be declared internally
+.table internal.visualization
+
+# TODO: is this enough, or do messages need to say a specific message id
+#   that they're responding to?
+requestResponse{
+  fromActorID: ClientActor,
+  toActorID: ServerActor,
+  request: Req,
+  response: Resp,
+  sendTick: SendTick,
+  respondTick: RespondTick,
+  handleResponseTick: HandleResponseTick
+} :-
+  message{id: ReqID, fromTickID: SendTick, payload: Req} &
+  tick{id: SendTick, actorID: ClientActor} &
+  tick{id: RespondTick, actorID: ServerActor, initiator: messageReceived{messageID: ReqID}} &
+  message{id: RespID, fromTickID: RespondTick, toActorID: ClientActor, payload: Resp} &
+  tick{id: HandleResponseTick, actorID: ClientActor, initiator: messageReceived{messageID: RespID}}.
+
+# TODO: don't really like these being quoted, but...
+internal.visualization{
+  name: "sequence",
+  spec: sequence{
+    actors: "actor{id: ID, name: Name}",
+    ticks: "tick{id: ID, actorID: ActorID}",
+    messages: "message{id: ID, fromTickID: FromTickID, toActorID: ToActorID, payload: Payload}"
+  }
+}.

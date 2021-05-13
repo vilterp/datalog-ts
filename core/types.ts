@@ -108,12 +108,16 @@ export type Operator = "==" | "!=" | ">=" | "<=";
 
 // term helpers
 
-export function str(s: string): StringLit {
-  return { type: "StringLit", val: s };
+export function str(val: string): StringLit {
+  return { type: "StringLit", val };
 }
 
-export function int(i: number): Int {
-  return { type: "IntLit", val: i };
+export function int(val: number): Int {
+  return { type: "IntLit", val };
+}
+
+export function bool(val: boolean): Bool {
+  return { type: "Bool", val };
 }
 
 export function rec(relation: string, attrs: { [key: string]: Term }): Rec {

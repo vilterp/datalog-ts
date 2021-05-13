@@ -1,0 +1,3 @@
+[submodule "testing-utils-ts"]
+	path = testing-utils-ts
+	url = git@github.com:vilterp/testing-utils-ts
