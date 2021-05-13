@@ -1,12 +1,12 @@
 {
   "name": "datalog-ts",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "scripts": {
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
     "test-write-results": "ts-node allTests.ts --write-results",
     "repl": "ts-node cmd/repl.ts",
-    "build": "tsc --jsx react --outDir dist --declaration ui/main.tsx",
+    "build": "tsc --jsx react --outDir dist --declaration --esModuleInterop ui/main.tsx && tsc --outDir dist cmd/repl.ts",
     "build-interp-bundle": "esbuild --bundle --outfile=dist/index.mjs --format=esm --target=es6 interpreter.ts",
     "build-fp-ui": "esbuild fp/ui/main.tsx --bundle --outfile=fp/ui/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --loader:.css=text --sourcemap --trace=fp/ui/build.trace",
     "serve-fp-ui": "cd fp/ui && http-server -c-1",
@@ -49,8 +49,6 @@
     "use-http": "^1.0.13"
   },
   "bin": {
-    "datalog-ts": "dist/cmd/repl.js",
-    "json2dl": "dist/cmd/json2dl.js",
-    "flatten-fp": "dist/cmd/flatten-fp.js"
+    "datalog-ts": "dist/cmd/repl.js"
   }
 }
