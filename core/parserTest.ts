@@ -61,6 +61,15 @@ export const parserTests: Suite = [
     },
   },
   {
+    name: "loadStmt",
+    test() {
+      testParser(language.statement, `.load foo/bar.dl`, {
+        type: "LoadStmt",
+        path: "foo/bar.dl",
+      });
+    },
+  },
+  {
     name: "statement",
     test() {
       testParser(language.statement, `father{child: "Pete", father: "Paul"}.`, {

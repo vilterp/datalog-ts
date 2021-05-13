@@ -13,9 +13,9 @@ import {
 } from "../../core/pretty";
 import * as pp from "prettier-printer";
 import { flatten } from "./flatten";
-import { fsLoader } from "../cmd/repl/repl";
 import { Rec } from "../../core/types";
 import { traceToTree, getRelatedPaths } from "../../core/traceTree";
+import { fsLoader } from "../../core/fsLoader";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
