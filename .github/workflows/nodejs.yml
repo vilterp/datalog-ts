@@ -32,7 +32,7 @@ jobs:
       - run: yarn run build-fiddle
       - run: yarn run build-fp-ui
       # build dist (does typecheck)
-      - run: yarn run build-dist
+      # - run: yarn run build-dist
       # Percy UI tests
       # TODO: re-enable
       # - name: "Percy FP UI"
