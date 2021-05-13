@@ -30,7 +30,7 @@ jobs:
           CI: true
       # build UIs (note doesn't typecheck them)
       - run: yarn run build-fiddle
-      - run: yarn run build-fp
+      - run: yarn run build-fp-ui
       # build dist (does typecheck)
       - run: yarn run build-dist
       # Percy UI tests
