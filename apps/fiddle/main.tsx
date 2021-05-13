@@ -1,18 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Interpreter } from "../core/interpreter";
-import { nullLoader } from "../core/loaders";
-import { Program, Rec, StringLit } from "../core/types";
-import { language } from "../core/parser";
+import { Interpreter } from "../../core/interpreter";
+import { nullLoader } from "../../core/loaders";
+import { Program, Rec, StringLit } from "../../core/types";
+import { language } from "../../core/parser";
 import { LayoutManager } from "@jaegertracing/plexus";
 // TODO(joe): Update import after killing `DirectedGraph`
 import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
-import familyDL from "../testdata/family.dl";
-import { uniqBy } from "../util/util";
-import { TabbedTables } from "../uiCommon/tabbedTables";
+import familyDL from "../../core/testdata/family.dl";
+import { uniqBy } from "../../util/util";
+import { TabbedTables } from "../../uiCommon/tabbedTables";
 import useLocalStorage from "react-use-localstorage";
-import { Collapsible } from "../uiCommon/collapsible";
+import { Collapsible } from "../../uiCommon/collapsible";
 
 const lm = new LayoutManager({
   useDotEdges: true,

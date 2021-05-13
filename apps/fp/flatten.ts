@@ -1,4 +1,4 @@
-import { int, rec, str, Term, Rec } from "../core/types";
+import { int, rec, str, Term, Rec } from "../../core/types";
 import { Expr, Span } from "./parser";
 
 export function flatten(e: Expr): Term[] {

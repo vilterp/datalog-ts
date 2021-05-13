@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { MarkdownNode, parse } from "./markdown";
-import { Interpreter } from "../core/interpreter";
-import { Program, Res } from "../core/types";
-import { language } from "../core/parser";
-import { IndependentTraceView } from "../uiCommon/replViews";
-import { insertAtIdx, removeAtIdx, updateAtIdx, flatten } from "../util/util";
+import { Interpreter } from "../../core/interpreter";
+import { Program, Res } from "../../core/types";
+import { language } from "../../core/parser";
+import { IndependentTraceView } from "../../uiCommon/replViews";
+import {
+  insertAtIdx,
+  removeAtIdx,
+  updateAtIdx,
+  flatten,
+} from "../../util/util";
 import TextAreaAutosize from "react-textarea-autosize";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Collapsible } from "../uiCommon/collapsible";
+import { Collapsible } from "../../uiCommon/collapsible";
 import Parsimmon, { Result } from "parsimmon";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };

@@ -2,12 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { language as fpLanguage, Expr } from "../parser";
 import { flatten } from "../flatten";
-import { Interpreter } from "../../core/interpreter";
-import { TabbedTables } from "../../uiCommon/tabbedTables";
-import { Collapsible } from "../../uiCommon/collapsible";
-import { CodeEditor } from "../../uiCommon/ide/codeEditor";
-import { useJSONLocalStorage } from "../../uiCommon/hooks";
-import { initialEditorState } from "../../uiCommon/ide/types";
+import { Interpreter } from "../../../core/interpreter";
+import { TabbedTables } from "../../../uiCommon/tabbedTables";
+import { Collapsible } from "../../../uiCommon/collapsible";
+import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
+import { useJSONLocalStorage } from "../../../uiCommon/hooks";
+import { initialEditorState } from "../../../uiCommon/ide/types";
 // @ts-ignore
 import highlightCSS from "./highlight.css";
 import { loader } from "../dl";

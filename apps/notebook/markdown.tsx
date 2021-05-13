@@ -1,6 +1,6 @@
 import React, { Ref } from "react";
 import SimpleMarkdown from "simple-markdown";
-import { repeat } from "../util/util";
+import { repeat } from "../../util/util";
 
 export function parse(md: string): MarkdownDoc {
   return SimpleMarkdown.defaultBlockParse(md) as MarkdownDoc;

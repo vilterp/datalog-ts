@@ -1,9 +1,9 @@
-import { StringLit, Rec, Bool, Term } from "../../core/types";
-import { Suggestion } from "../../uiCommon/ide/suggestions";
-import { Interpreter } from "../../core/interpreter";
-import { repeatArr, uniqBy } from "../../util/util";
-import { getCurrentPlaceholder } from "../../uiCommon/ide/util";
-import { Span } from "../../uiCommon/ide/types";
+import { StringLit, Rec, Bool, Term } from "../../../core/types";
+import { Suggestion } from "../../../uiCommon/ide/suggestions";
+import { Interpreter } from "../../../core/interpreter";
+import { repeatArr, uniqBy } from "../../../util/util";
+import { getCurrentPlaceholder } from "../../../uiCommon/ide/util";
+import { Span } from "../../../uiCommon/ide/types";
 
 // TODO: derive more of this from the grammar & rules :P
 

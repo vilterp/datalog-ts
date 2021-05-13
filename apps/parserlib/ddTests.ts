@@ -1,10 +1,10 @@
-import { Suite } from "../util/testing";
+import { Suite } from "../../util/testing";
 import {
   runDDTestAtPath,
   DDTest,
   Result,
   IOPair,
-} from "../util/dataDrivenTests";
+} from "../../util/dataDrivenTests";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";

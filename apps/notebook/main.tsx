@@ -83,7 +83,7 @@ function HomePage() {
             onClick={(evt) => {
               evt.preventDefault();
               const url = new URL(gistURL);
-              window.location.assign(`/#/notebook/gist${url.pathname}`);
+              window.location.assign(`/gist${url.pathname}`);
             }}
           >
             Go
@@ -95,7 +95,7 @@ function HomePage() {
         <button
           className="form-control"
           onClick={() => {
-            window.location.assign("/#/notebook/new");
+            window.location.assign("/new");
           }}
         >
           New Blank Notebook
