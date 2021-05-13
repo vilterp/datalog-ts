@@ -1,31 +1,40 @@
 node{id: "A", label: "A"}.
 ----
+application/datalog
 
 node{id: "B", label: "B"}.
 ----
+application/datalog
 
 node{id: "C", label: "C"}.
 ----
+application/datalog
 
 node{id: "D", label: "D"}.
 ----
+application/datalog
 
 base_edge{from: "A", to: "B"}.
 ----
+application/datalog
 
 base_edge{from: "B", to: "C"}.
 ----
+application/datalog
 
 base_edge{from: "C", to: "D"}.
 ----
+application/datalog
 
 trans_edge{from: X, to: Z} :-
   base_edge{from: X, to: Z} |
   base_edge{from: X, to: Y} & trans_edge{from: Y, to: Z}.
 ----
+application/datalog
 
 trans_edge{from: A, to: B}.
 ----
+application/datalog
 trans_edge{from: "A", to: "B"}.
 trans_edge{from: "B", to: "C"}.
 trans_edge{from: "C", to: "D"}.
@@ -36,3 +45,4 @@ trans_edge{from: "B", to: "D"}.
 edge{to: T, from: F, label: ""} :-
   trans_edge{to: T, from: F}.
 ----
+application/datalog

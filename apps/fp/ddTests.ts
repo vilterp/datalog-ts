@@ -1,7 +1,6 @@
 import { Interpreter } from "../../core/interpreter";
 import { Suite } from "../../util/testing";
-import { runDDTestAtPath } from "../../util/dataDrivenTests";
-import { DDTest, Result } from "../../util/dataDrivenTests";
+import { TestOutput, runDDTestAtPath } from "../../util/ddTest";
 import { language } from "./parser";
 import {
   prettyPrintTerm,
@@ -16,6 +15,7 @@ import { flatten } from "./flatten";
 import { Rec } from "../../core/types";
 import { traceToTree, getRelatedPaths } from "../../core/traceTree";
 import { fsLoader } from "../../core/fsLoader";
+import { datalogOut, jsonOut, plainTextOut } from "../../util/ddTest/types";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -82,31 +82,25 @@ export function fpTests(writeResults: boolean): Suite {
   ];
 }
 
-function parseTest(test: DDTest): Result[] {
-  return test.map((tc) => ({
-    pair: tc,
-    actual: JSON.stringify(language.expr.tryParse(tc.input), null, 2) + "\n",
-  }));
+function parseTest(test: string[]): TestOutput[] {
+  return test.map((input) => jsonOut(language.expr.tryParse(input)));
 }
 
-function flattenTest(test: DDTest): Result[] {
-  return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+function flattenTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const parsed = language.expr.tryParse(input);
     const flattened = flatten(parsed);
     const printed = flattened.map(prettyPrintTerm);
     const rendered = printed.map((t) => pp.render(100, t) + ".");
-    return {
-      pair: tc,
-      actual: rendered.join("\n") + "\n",
-    };
+    return datalogOut(rendered.join("\n"));
   });
 }
 
 // flatten, then print out all scope and types
 // TODO: DRY up a bit
-function typecheckTest(test: DDTest): Result[] {
-  return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+function typecheckTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const parsed = language.expr.tryParse(input);
     const flattened = flatten(parsed);
     const rendered = flattened.map((t) => ppt(t) + ".");
 
@@ -120,21 +114,19 @@ function typecheckTest(test: DDTest): Result[] {
       "tc.ScopeItem{id: I, name: N, type: T}"
     );
     const typeResults = interp3.queryStr("tc.Type{id: I, type: T}");
-    return {
-      pair: tc,
-      actual:
-        [
-          ...rendered,
-          ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
-          ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
-        ].join("\n") + "\n",
-    };
+    return plainTextOut(
+      [
+        ...rendered,
+        ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
+        ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
+      ].join("\n")
+    );
   });
 }
 
-function suggestionTest(test: DDTest): Result[] {
-  return test.map((tc) => {
-    const parsed = language.expr.tryParse(tc.input);
+function suggestionTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const parsed = language.expr.tryParse(input);
     const flattened = flatten(parsed);
 
     const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
@@ -146,19 +138,15 @@ function suggestionTest(test: DDTest): Result[] {
     const suggResults = interp3.queryStr(
       "ide.Suggestion{id: I, name: N, type: T}"
     );
-    return {
-      pair: tc,
-      actual:
-        [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join(
-          "\n"
-        ) + "\n",
-    };
+    return plainTextOut(
+      [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join("\n")
+    );
   });
 }
 
-function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
-  return test.map((tc) => {
-    const [expr, bindingName] = tc.input.split("\n");
+function traceTest(test: string[], opts: TracePrintOpts): TestOutput[] {
+  return test.map((input) => {
+    const [expr, bindingName] = input.split("\n");
     const parsed = language.expr.tryParse(expr);
     const flattened = flatten(parsed);
 
@@ -180,14 +168,12 @@ function traceTest(test: DDTest, opts: TracePrintOpts): Result[] {
     const childPaths = children.map((c) =>
       pp.render(100, prettyPrintSituatedBinding(c))
     );
-    return {
-      pair: tc,
-      actual:
-        prettyPrintTrace(traceToTree(res), opts) +
-        "\n" +
-        "CHILD PATHS\n" +
-        childPaths.join("\n") +
-        "\n",
-    };
+    return plainTextOut(
+      [
+        prettyPrintTrace(traceToTree(res), opts),
+        "CHILD PATHS",
+        ...childPaths,
+      ].join("\n")
+    );
   });
 }

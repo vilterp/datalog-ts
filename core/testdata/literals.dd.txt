@@ -1,6 +1,8 @@
 foo{boo: 2, doo: "asdf", glue: true}.
 ----
+application/datalog
 
 foo{boo: X, doo: Y, glue: Z}.
 ----
+application/datalog
 foo{boo: 2, doo: "asdf", glue: true}.

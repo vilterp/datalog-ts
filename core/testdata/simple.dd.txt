@@ -1,20 +1,26 @@
 father{child: "Pete", father: "Paul"}.
 ----
+application/datalog
 
 father{child: "Pete", father: F}.
 ----
+application/datalog
 father{child: "Pete", father: "Paul"}.
 
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 39}, to: pos{idx: 40}}}.
 ----
+application/datalog
 
 usage{definitionLoc: span{from: pos{idx: 17}, to: pos{idx: 18}}, name: "y", usageLoc: span{from: pos{idx: 42}, to: pos{idx: 43}}}.
 ----
+application/datalog
 
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 57}, to: pos{idx: 58}}}.
 ----
+application/datalog
 
 usage{definitionLoc: span{from: pos{idx: 4}}, usageLoc: span{from: pos{idx: UF}, to: pos{idx: UT}}}.
 ----
+application/datalog
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 39}, to: pos{idx: 40}}}.
 usage{definitionLoc: span{from: pos{idx: 4}, to: pos{idx: 5}}, name: "x", usageLoc: span{from: pos{idx: 57}, to: pos{idx: 58}}}.

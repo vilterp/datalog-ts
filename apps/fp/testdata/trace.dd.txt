@@ -1,13 +1,14 @@
 2
 ----
+text/plain
 tc.Type{id: 0, type: T@"int"}; {T: T}
   tc.typeI{id: I@0, type: T@"int"}; {I: I}
     ast.IntLit{id: I@0, location: span{from: I@0, to: 1}, val: 2}
 CHILD PATHS
 
-
 let x = 2 in x
 ----
+text/plain
 tc.Type{id: 0, type: T@"int"}; {T: T}
   tc.typeLet{id: I@0, type: T@"int"}; {I: I, T: T}
     ast.LetExpr{bindingID: 1, bodyID: BID@2, id: I@0, inLoc: span{from: 10, to: 13}, letLoc: span{from: I@0, to: 4}, location: span{from: I@0, to: 14}, varLoc: span{from: 4, to: 5}, varName: "x"}
@@ -21,4 +22,3 @@ tc.Type{id: 0, type: T@"int"}; {T: T}
               tc.typeI{id: I@1, type: T@"int"}; {I: I}
                 ast.IntLit{id: I@1, location: span{from: 8, to: 9}, val: 2}
 CHILD PATHS
-

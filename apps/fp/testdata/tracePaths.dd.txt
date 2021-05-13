@@ -1,6 +1,7 @@
 2
 T
 ----
+text/plain
 tc.Type{id: 0, type: T[]@"int"}; {T[tc.Type[]]: T[]}
   tc.typeI{id: I[tc.Type[]]@0, type: T[tc.Type[]]@"int"}; {I[tc.Type[], tc.typeI[or(1), and(0)]]: I[tc.Type[]]}
     ast.IntLit{id: I[tc.Type[], tc.typeI[or(1), and(0)]]@0, location: span{from: I[tc.Type[], tc.typeI[or(1), and(0)]]@0, to: 1}, val: 2}
@@ -10,6 +11,7 @@ T[]
 let x = 2 in x
 T
 ----
+text/plain
 tc.Type{id: 0, type: T[]@"int"}; {T[tc.Type[]]: T[]}
   tc.typeLet{id: I[tc.Type[]]@0, type: T[tc.Type[]]@"int"}; {I[tc.Type[], tc.typeLet[or(4), and(0)]]: I[tc.Type[]], T[tc.Type[], tc.typeLet[or(4), and(0)]]: T[tc.Type[]]}
     ast.LetExpr{bindingID: 1, bodyID: BID[tc.Type[], tc.typeLet[or(4), and(0)]]@2, id: I[tc.Type[], tc.typeLet[or(4), and(0)]]@0, inLoc: span{from: 10, to: 13}, letLoc: span{from: I[tc.Type[], tc.typeLet[or(4), and(0)]]@0, to: 4}, location: span{from: I[tc.Type[], tc.typeLet[or(4), and(0)]]@0, to: 14}, varLoc: span{from: 4, to: 5}, varName: "x"}

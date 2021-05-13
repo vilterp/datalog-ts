@@ -1,5 +1,5 @@
 import { rec, str, Rec, array, int, Term, bool } from "../../core/types";
-import { Json } from "./util";
+import { Json } from "../../util/json";
 
 type ADT = { type: string; [more: string]: Json };
 
