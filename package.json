@@ -1,6 +1,6 @@
 {
   "name": "datalog-ts",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "scripts": {
     "test": "ts-node allTests.ts",
     "test-stay-alive": "ts-node allTests.ts --stay-alive",
@@ -34,9 +34,9 @@
     "classnames": "^2.2.6",
     "parsimmon": "^1.13.0",
     "prettier-printer": "^1.1.4",
-    "react": "^16.13.1",
+    "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.2",
-    "react-dom": "^16.13.1",
+    "react-dom": "^17.0.2",
     "react-json-view": "^1.19.1",
     "react-router-dom": "^5.2.0",
     "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
