@@ -31,6 +31,7 @@ jobs:
       # build UIs (note doesn't typecheck them)
       - run: yarn run build-fiddle
       - run: yarn run build-fp-ui
+      # TODO: re-enable
       # build dist (does typecheck)
       # - run: yarn run build-dist
       # Percy UI tests
@@ -47,3 +48,12 @@ jobs:
       #     build-directory: fiddle
       #   env:
       #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
+      # benchmarks
+      - run: yarn benchmarks
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          BENCHMARK_ENV: github-actions
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_SECRET: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          PROFILES_S3_BUCKET_NAME: datalog-ts-profiles
