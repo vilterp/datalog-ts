@@ -6,7 +6,7 @@ import { scenario as simpleClientServer } from "./scenarios/clientServer";
 import { scenario as lsm } from "./scenarios/lsm";
 import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
-import { Trace } from "./model";
+import { Trace } from "./types";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
