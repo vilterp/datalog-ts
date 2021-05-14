@@ -1,5 +1,5 @@
 import React from "react";
-import { Trace, UpdateFn } from "./model";
+import { Trace, UpdateFn } from "./types";
 
 export type Scenario<St, Msg> = {
   name: string;

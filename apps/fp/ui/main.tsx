@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { language as fpLanguage, Expr } from "../parser";
 import { flatten } from "../flatten";
 import { Interpreter } from "../../../core/interpreter";
-import { TabbedTables } from "../../../uiCommon/tabbedTables";
+import { Explorer } from "../../../uiCommon/explorer";
 import { Collapsible } from "../../../uiCommon/collapsible";
 import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
 import { useJSONLocalStorage } from "../../../uiCommon/hooks";
@@ -41,7 +41,7 @@ function Main() {
 
       <Collapsible
         heading="Facts &amp; Rules"
-        content={<TabbedTables interp={interp3} />}
+        content={<Explorer interp={interp3} />}
       />
 
       {/* TODO: bring back a good way of displaying the AST */}

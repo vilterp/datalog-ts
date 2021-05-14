@@ -1,4 +1,4 @@
-import { ActorID, ActorResp, IncomingMessage } from "./model";
+import { ActorID, ActorResp, IncomingMessage } from "./types";
 
 export function reply<ServerState, Req, Resp>(
   newSt: ServerState,

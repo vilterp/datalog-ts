@@ -1,14 +1,8 @@
 import React from "react";
-import {
-  ActorResp,
-  initialSteps,
-  LoadedTickInitiator,
-  sendUserInput,
-  Trace,
-  UpdateFn,
-} from "../model";
+import { ActorResp, LoadedTickInitiator, Trace, UpdateFn } from "../types";
 import * as effects from "../effects";
 import { Scenario } from "../scenario";
+import { initialSteps, sendUserInput } from "../step";
 
 // states
 
