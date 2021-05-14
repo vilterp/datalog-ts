@@ -1,15 +1,12 @@
 import {
   AndClause,
-  AndExpr,
   Bindings,
   BinExpr,
   DB,
   falseTerm,
-  Rec,
   Res,
   Term,
   trueTerm,
-  VarMappings,
   literalTrace,
   varTrace,
   binExprTrace,
@@ -18,14 +15,14 @@ import {
   InvocationLocation,
 } from "./types";
 import {
+  applyMappings,
+  getMappings,
   substitute,
-  termEq,
-  termLT,
-  termSameType,
   unify,
   unifyVars,
 } from "./unify";
 import { filterMap, flatMap, mapObj } from "../util/util";
+import { evalBinExpr, extractBinExprs } from "./binExpr";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -185,7 +182,7 @@ function doEvaluate(
           // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
           const rawResults = flatMap(rule.defn.opts, (andExpr, optIdx) => {
-            const { recs: clauses, exprs } = extractBinExprs(andExpr);
+            const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
             const recResults = doJoin(
               depth,
               [{ type: "OrOpt", idx: optIdx }],
@@ -254,74 +251,6 @@ function doEvaluate(
   // console.groupEnd();
   // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
-}
-
-function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
-  const left = substitute(expr.left, scope);
-  const right = substitute(expr.right, scope);
-  switch (expr.op) {
-    case "==":
-      return termEq(left, right);
-    case "!=":
-      return !termEq(left, right);
-    case "<=":
-      return (
-        termSameType(left, right) &&
-        (termLT(left, right) || termEq(left, right))
-      );
-    case ">=":
-      return termSameType(left, right) && !termLT(left, right);
-  }
-}
-
-function getMappings(
-  head: { [p: string]: Term },
-  call: { [p: string]: Term }
-): VarMappings {
-  const out: VarMappings = {};
-  // TODO: detect parameter mismatch!
-  for (const callKey of Object.keys(call)) {
-    const callTerm = call[callKey];
-    const headTerm = head[callKey];
-    if (headTerm?.type === "Var" && callTerm?.type === "Var") {
-      out[headTerm.name] = callTerm.name;
-    }
-  }
-  return out;
-}
-
-function applyMappings(
-  headToCaller: VarMappings,
-  bindings: Bindings
-): Bindings {
-  const out: Bindings = {};
-  for (const key of Object.keys(bindings)) {
-    const callerKey = headToCaller[key];
-    if (!callerKey) {
-      continue;
-    }
-    out[callerKey] = bindings[key];
-  }
-  return out;
-}
-
-function extractBinExprs(term: AndExpr): { recs: Rec[]; exprs: BinExpr[] } {
-  const recs: Rec[] = [];
-  const exprs: BinExpr[] = [];
-  term.clauses.forEach((clause) => {
-    switch (clause.type) {
-      case "BinExpr":
-        exprs.push(clause);
-        break;
-      case "Record":
-        recs.push(clause);
-        break;
-    }
-  });
-  return {
-    recs,
-    exprs,
-  };
 }
 
 export function hasVars(t: Term): boolean {

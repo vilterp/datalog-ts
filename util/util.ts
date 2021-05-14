@@ -220,3 +220,34 @@ export function zip<L, R, O>(
   }
   return output;
 }
+
+export function setUnion<T>(left: Set<T>, right: Set<T>): Set<T> {
+  return new Set<T>([...left, ...right]);
+}
+
+export function setAdd<T>(set: Set<T>, item: T): Set<T> {
+  return new Set<T>([...set, item]);
+}
+
+export function filterObj<V>(
+  obj: { [k: string]: V },
+  f: (k: string, v: V) => boolean
+): { [k: string]: V } {
+  return filterMapObj(obj, (k, v) => {
+    return f(k, v) ? v : null;
+  });
+}
+
+export function filterMapObj<T, V>(
+  obj: { [k: string]: T },
+  f: (k: string, t: T) => V | undefined | null
+): { [k: string]: V } {
+  const out: { [k: string]: V } = {};
+  for (const key of Object.keys(obj)) {
+    const res = f(key, obj[key]);
+    if (res) {
+      out[key] = res;
+    }
+  }
+  return out;
+}

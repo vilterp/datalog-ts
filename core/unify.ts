@@ -1,4 +1,4 @@
-import { Bindings, rec, Term } from "./types";
+import { Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "../util/util";
 
 export function unify(
@@ -185,4 +185,35 @@ export function substitute(term: Term, bindings: Bindings): Term {
     default:
       return term;
   }
+}
+
+export function applyMappings(
+  headToCaller: VarMappings,
+  bindings: Bindings
+): Bindings {
+  const out: Bindings = {};
+  for (const key in bindings) {
+    const callerKey = headToCaller[key];
+    if (!callerKey) {
+      continue;
+    }
+    out[callerKey] = bindings[key];
+  }
+  return out;
+}
+
+export function getMappings(
+  head: { [p: string]: Term },
+  call: { [p: string]: Term }
+): VarMappings {
+  const out: VarMappings = {};
+  // TODO: detect parameter mismatch!
+  for (const callKey in call) {
+    const callTerm = call[callKey];
+    const headTerm = head[callKey];
+    if (headTerm?.type === "Var" && callTerm?.type === "Var") {
+      out[headTerm.name] = callTerm.name;
+    }
+  }
+  return out;
 }
