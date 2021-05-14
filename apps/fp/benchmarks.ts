@@ -7,6 +7,7 @@ import { Performance } from "w3c-hr-time";
 // import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";
 import { ppt } from "../../core/pretty";
+import { assertStringEqual } from "../../util/testing";
 
 const performance = new Performance();
 
@@ -15,7 +16,7 @@ export const fpBenchmarks: BenchmarkSpec[] = [
     name: "typeQuery1",
     run(): BenchmarkResult {
       return fpTest(
-        100,
+        1000,
         `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`
       );
     },
@@ -47,7 +48,10 @@ function fpTest(repetitions: number, input): BenchmarkResult {
       interp = newInterp;
     }
     const res = interp.queryStr("tc.Type{id: 0, type: T}");
-    console.log(res.results.map((res) => ppt(res.term)));
+    assertStringEqual(
+      'tc.Type{id: 0, type: "string"}',
+      res.results.map((res) => ppt(res.term)).join(".\n")
+    );
   }
 
   const after = performance.now();
