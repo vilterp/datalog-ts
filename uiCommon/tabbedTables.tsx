@@ -97,6 +97,7 @@ export function TabbedTables(props: { interp: Interpreter }) {
           <em>No relations</em>
         )}
       </div>
+      <div>Visualizations here</div>
     </div>
   );
 }
