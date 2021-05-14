@@ -138,11 +138,14 @@ export function TermView(props: {
 
 export function SimpleTermView(props: { term: Term }) {
   return (
-    <TermView
-      term={makeTermWithBindings(props.term, {})}
-      highlight={noHighlightProps}
-      scopePath={[]}
-    />
+    // TODO: move this into TermView itself??
+    <div style={{ fontFamily: "monospace" }}>
+      <TermView
+        term={makeTermWithBindings(props.term, {})}
+        highlight={noHighlightProps}
+        scopePath={[]}
+      />
+    </div>
   );
 }
 

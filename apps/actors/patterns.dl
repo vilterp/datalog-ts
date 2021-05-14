@@ -1,3 +1,4 @@
+.table actor
 .table message
 .table tick
 .table timeout
