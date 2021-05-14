@@ -49,7 +49,7 @@ jobs:
       #   env:
       #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
       # benchmarks
-      - run: yarn benchmarks
+      - run: yarn benchmark
         env:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
