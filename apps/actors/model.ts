@@ -109,7 +109,17 @@ export function step<ActorState extends Json, Msg extends Json>(
     const nextInitiator = queue.shift();
 
     if (nextInitiator.init.type === "spawned") {
-      newTrace.latestStates[nextInitiator.to] = nextInitiator.init.initialState;
+      const spawn = nextInitiator.init;
+      newTrace.latestStates[nextInitiator.to] = spawn.initialState;
+      const [__, newInterp] = newTrace.interp.evalStmt({
+        type: "Insert",
+        record: rec("actor", {
+          id: str(nextInitiator.to),
+          spawningTickID: str(nextInitiator.init.spawningTickID),
+          initialState: jsonToDL(spawn.initialState),
+        }),
+      });
+      newTrace.interp = newInterp;
       continue;
     }
 
