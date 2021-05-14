@@ -5,7 +5,7 @@ import { Scenario } from "./scenario";
 import { scenario as simpleClientServer } from "./scenarios/clientServer";
 import { scenario as lsm } from "./scenarios/lsm";
 import useHashParam from "use-hash-param";
-import { TabbedTables } from "../../uiCommon/tabbedTables";
+import { Explorer } from "../../uiCommon/explorer";
 import { Trace } from "./model";
 
 type ScenarioAndState<St, Msg> = {
@@ -53,7 +53,7 @@ function Main() {
                 <h2>State</h2>
                 <pre>{JSON.stringify(trace.latestStates, null, 2)}</pre>
 
-                <TabbedTables interp={trace.interp} />
+                <Explorer interp={trace.interp} />
               </>
             );
           },

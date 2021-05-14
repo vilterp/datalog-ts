@@ -4,9 +4,11 @@ import {
   ScopePath,
   scopePathEq,
   SituatedBinding,
+  Term,
 } from "../core/types";
 import { intersperse, mapObjToList } from "../util/util";
 import { escapeString } from "../core/pretty";
+import { makeTermWithBindings } from "../core/traceTree";
 
 export type Highlight =
   | { type: "Relation"; name: string }
@@ -132,6 +134,16 @@ export function TermView(props: {
           return <span style={{ color: "darkorange" }}>{`${t.name}`}</span>;
       }
   }
+}
+
+export function SimpleTermView(props: { term: Term }) {
+  return (
+    <TermView
+      term={makeTermWithBindings(props.term, {})}
+      highlight={noHighlightProps}
+      scopePath={[]}
+    />
+  );
 }
 
 export function VarC(props: {

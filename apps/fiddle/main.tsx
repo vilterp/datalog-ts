@@ -10,7 +10,7 @@ import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../../core/testdata/family.dl";
 import { uniqBy } from "../../util/util";
-import { TabbedTables } from "../../uiCommon/tabbedTables";
+import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
 import { Collapsible } from "../../uiCommon/collapsible";
 
@@ -72,7 +72,7 @@ function Main() {
         </>
       ) : null}
       <h3>Explore</h3>
-      <TabbedTables interp={interp2} />
+      <Explorer interp={interp2} />
       <Collapsible
         heading="Graph"
         initiallyCollapsed={true}
