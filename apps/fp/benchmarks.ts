@@ -6,6 +6,8 @@ import { Interpreter } from "../../core/interpreter";
 import { Performance } from "w3c-hr-time";
 // import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";
+import { ppt } from "../../core/pretty";
+import { assertStringEqual } from "../../util/testing";
 
 const performance = new Performance();
 
@@ -14,20 +16,20 @@ export const fpBenchmarks: BenchmarkSpec[] = [
     name: "typeQuery1",
     run(): BenchmarkResult {
       return fpTest(
-        100,
-        `let x = 2 in let y = 3 in let z = "hello world " in concat(z, plus(x, 3))`
+        1000,
+        `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`
       );
     },
   },
 ];
 
 function fpTest(repetitions: number, input): BenchmarkResult {
-  let interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
-  const [_, newInterp] = interp.evalStmt({
+  let originalInterp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
+  const [_, newInterp] = originalInterp.evalStmt({
     type: "LoadStmt",
     path: "main.dl",
   });
-  interp = newInterp;
+  originalInterp = newInterp;
 
   // TODO: get these from a DD file
   const parsed = language.expr.tryParse(input);
@@ -37,12 +39,19 @@ function fpTest(repetitions: number, input): BenchmarkResult {
 
   // v8profiler.startProfiling();
   for (let i = 0; i < repetitions; i++) {
+    let interp = originalInterp;
     if (i % 10 === 0) {
       console.log("  ", i);
     }
     for (let record of flattened) {
-      interp.queryStr("tc.Type{id: 0, type: T}");
+      const [_, newInterp] = interp.evalStmt({ type: "Insert", record });
+      interp = newInterp;
     }
+    const res = interp.queryStr("tc.Type{id: 0, type: T}");
+    assertStringEqual(
+      'tc.Type{id: 0, type: "string"}',
+      res.results.map((res) => ppt(res.term)).join(".\n")
+    );
   }
 
   const after = performance.now();

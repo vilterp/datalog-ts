@@ -1,7 +1,7 @@
-import { int, rec, str, Term, Rec } from "../../core/types";
+import { int, rec, str, Rec } from "../../core/types";
 import { Expr, Span } from "./parser";
 
-export function flatten(e: Expr): Term[] {
+export function flatten(e: Expr): Rec[] {
   return [rec("ast.RootExpr", { id: int(0) }), ...recurse(0, e).terms];
 }
 
@@ -9,9 +9,9 @@ export function flatten(e: Expr): Term[] {
 function recurse(
   nextID: number,
   e: Expr
-): { terms: Term[]; id: number; nextID: number } {
+): { terms: Rec[]; id: number; nextID: number } {
   const nextIDTerm = int(nextID);
-  const simple = (term: Term) => ({
+  const simple = (term: Rec) => ({
     terms: [term],
     id: nextID,
     nextID: nextID + 1,
