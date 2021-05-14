@@ -53,7 +53,7 @@ function Main() {
                 <h2>State</h2>
                 <pre>{JSON.stringify(trace.latestStates, null, 2)}</pre>
 
-                <Explorer interp={trace.interp} />
+                <Explorer interp={trace.interp} showViz={true} />
               </>
             );
           },

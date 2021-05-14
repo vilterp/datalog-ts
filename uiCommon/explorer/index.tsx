@@ -10,7 +10,7 @@ import { VizArea } from "./vizArea";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
-export function Explorer(props: { interp: Interpreter }) {
+export function Explorer(props: { interp: Interpreter; showViz?: boolean }) {
   const allRules: Relation[] = Object.keys(props.interp.db.rules)
     .sort()
     .map((name) => ({ type: "Rule", name, rule: props.interp.db.rules[name] }));
@@ -95,9 +95,11 @@ export function Explorer(props: { interp: Interpreter }) {
           <em>No relations</em>
         )}
       </div>
-      <div style={{ padding: 10, border: "1px solid black" }}>
-        <VizArea interp={props.interp} />
-      </div>
+      {props.showViz ? (
+        <div style={{ padding: 10, border: "1px solid black" }}>
+          <VizArea interp={props.interp} />
+        </div>
+      ) : null}
     </div>
   );
 }
