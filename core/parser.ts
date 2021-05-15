@@ -15,10 +15,12 @@ export const language = P.createLanguage({
         path,
       })),
   tableDecl: (r) =>
-    P.seq(word(".table"), r.recordIdentifier).map(([_, name]) => ({
-      type: "TableDecl",
-      name,
-    })),
+    P.seq(word(".table"), r.recordIdentifier)
+      .skip(P.optWhitespace)
+      .map(([_, name]) => ({
+        type: "TableDecl",
+        name,
+      })),
   comment: () =>
     P.regex(/#[^\n]*/).map((comment) => ({ type: "Comment", comment })),
   insert: (r) =>

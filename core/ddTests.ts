@@ -28,7 +28,8 @@ function coreTests(
       runDDTestAtPath(
         `core/testdata/${name}.dd.txt`,
         (test: string[]) => putThroughInterp(test, getInterp),
-        writeResults
+        writeResults,
+        "lineOrderIndependent"
       );
     },
   }));

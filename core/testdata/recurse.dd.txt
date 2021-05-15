@@ -1,3 +1,11 @@
+.table node
+----
+application/datalog
+
+.table base_edge
+----
+application/datalog
+
 node{id: "A", label: "A"}.
 ----
 application/datalog
