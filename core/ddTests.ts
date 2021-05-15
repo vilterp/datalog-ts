@@ -4,6 +4,7 @@ import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
 import { datalogOut } from "../util/ddTest/types";
+import { AbstractInterpreter } from "./abstractInterpreter";
 
 export function coreTests(writeResults: boolean): Suite {
   return ["simple", "family", "recurse", "literals"].map((name) => ({
@@ -19,7 +20,7 @@ export function coreTests(writeResults: boolean): Suite {
 }
 
 export function putThroughInterp(test: string[]): TestOutput[] {
-  let interp = new SimpleInterpreter(".", fsLoader);
+  let interp: AbstractInterpreter = new SimpleInterpreter(".", fsLoader);
 
   const results: TestOutput[] = [];
 

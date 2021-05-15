@@ -5,11 +5,12 @@ import * as readline from "readline";
 import { prettyPrintDB, prettyPrintTerm } from "../../../core/pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "../../../util/graphviz";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  interp: SimpleInterpreter;
+  interp: AbstractInterpreter;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -67,15 +68,7 @@ export class Repl {
     }
     // special commands
     // TODO: parse these with parser
-    if (line === ".dump") {
-      this.println(pp.render(100, prettyPrintDB(this.interp.db)));
-      rl.prompt();
-      return;
-    } else if (line === ".resetFacts") {
-      this.interp.db.tables = {};
-      rl.prompt();
-      return;
-    } else if (line === ".graphviz") {
+    if (line === ".graphviz") {
       // TODO: remove dot...
       // TODO: allow whole config to be passed in...
       this.doGraphviz(
