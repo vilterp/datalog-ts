@@ -251,3 +251,7 @@ export function filterMapObj<T, V>(
   }
   return out;
 }
+
+export function sortBy<T>(arr: T[], attr: (t: T) => string): T[] {
+  return arr.sort((a, b) => attr(a).localeCompare(attr(b)));
+}

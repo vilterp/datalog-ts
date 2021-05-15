@@ -13,7 +13,7 @@ export type Relation =
 export interface Res {
   term: Term;
   bindings: Bindings;
-  trace: Trace;
+  trace?: Trace; // incremental interp doesn't give traces yet
 }
 
 // traces

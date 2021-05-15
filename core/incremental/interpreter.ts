@@ -4,10 +4,10 @@ import {
   formatRes,
   RuleGraph,
 } from "./types";
-import { Rec, Res, Statement } from "../types";
+import { Rec, Res, Rule, Statement } from "../types";
 import { declareTable } from "./build";
 import { addRule, doQuery, EmissionLog, insertFact } from "./eval";
-import { hasVars } from "../simpleEvaluate";
+import { hasVars } from "../simple/simpleEvaluate";
 import { ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
@@ -60,7 +60,16 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
+      case "Query":
+        return {
+          newInterp: interp,
+          output: {
+            type: "QueryResults",
+            results: doQuery(graph, stmt.record),
+          },
+        };
       case "Insert": {
+        // TODO: don't do this in insert?
         if (hasVars(stmt.record)) {
           return {
             newInterp: interp,
@@ -127,6 +136,14 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   queryStr(str: string): Res[] {
     const record = dlLanguage.record.tryParse(str) as Rec;
     return doQuery(this.graph, record);
+  }
+
+  getRules(): Rule[] {
+    throw new Error("TODO");
+  }
+
+  getTables(): string[] {
+    throw new Error("TODO");
   }
 }
 

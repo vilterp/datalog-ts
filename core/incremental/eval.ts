@@ -1,5 +1,5 @@
-import { RuleGraph, Res, NodeID, JoinDesc, JoinInfo } from "./types";
-import { Rec, Rule } from "../types";
+import { RuleGraph, NodeID, JoinDesc, JoinInfo } from "./types";
+import { Rec, Res, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../../util/util";

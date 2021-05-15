@@ -1,6 +1,16 @@
-import { DB, Program, Rec, Res, Statement, rec, str, Term } from "../types";
+import {
+  DB,
+  Program,
+  Rec,
+  Res,
+  Statement,
+  rec,
+  str,
+  Term,
+  Rule,
+} from "../types";
 import { language as dlLanguage } from "../parser";
-import { evaluate, hasVars } from "../simpleEvaluate";
+import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
@@ -26,6 +36,8 @@ export class SimpleInterpreter extends AbstractInterpreter {
 
   evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
+      case "Query":
+        return [this.evalQuery(stmt.record), this];
       case "Insert": {
         const record = stmt.record;
         if (hasVars(record)) {
@@ -84,6 +96,14 @@ export class SimpleInterpreter extends AbstractInterpreter {
 
   private withDB(db: DB) {
     return new SimpleInterpreter(this.cwd, this.loader, db);
+  }
+
+  getRules(): Rule[] {
+    return Object.values(this.db.rules);
+  }
+
+  getTables(): string[] {
+    return Object.keys(this.db.tables);
   }
 }
 

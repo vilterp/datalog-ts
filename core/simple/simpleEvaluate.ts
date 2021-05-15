@@ -13,16 +13,16 @@ import {
   baseFactTrace,
   RulePathSegment,
   InvocationLocation,
-} from "./types";
+} from "../types";
 import {
   applyMappings,
   getMappings,
   substitute,
   unify,
   unifyVars,
-} from "./unify";
-import { filterMap, flatMap, mapObj } from "../util/util";
-import { evalBinExpr, extractBinExprs } from "./binExpr";
+} from "../unify";
+import { filterMap, flatMap } from "../../util/util";
+import { evalBinExpr, extractBinExprs } from "../binExpr";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);

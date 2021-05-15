@@ -1,4 +1,4 @@
-import { Program, Rec, Res, Statement } from "./types";
+import { Program, Rec, Res, Rule, Statement } from "./types";
 import { language as dlLanguage } from "./parser";
 import { Loader } from "./loaders";
 
@@ -39,4 +39,8 @@ export abstract class AbstractInterpreter {
       this
     );
   }
+
+  // TODO: do these two with queries to virtual tables
+  abstract getRules(): Rule[];
+  abstract getTables(): string[];
 }

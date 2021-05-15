@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ppt } from "../core/pretty";
-import { Rec, Res, Relation } from "../core/types";
+import { Rec, Res, Relation, rec } from "../core/types";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { TreeCollapseState, TreeView, emptyCollapseState } from "./treeView";
 import { RuleC } from "./rule";
@@ -26,10 +26,10 @@ export function RelationTable(props: {
   try {
     results =
       props.relation.type === "Table"
-        ? props.relation.records.map((term) => ({
-            term,
+        ? props.interp.queryRec(rec(props.relation.name, {})).map((res) => ({
+            term: res.term,
             bindings: {},
-            trace: { type: "BaseFactTrace", fact: term },
+            trace: { type: "BaseFactTrace", fact: res.term },
           }))
         : props.interp.evalStmt({
             type: "Insert",
@@ -44,7 +44,7 @@ export function RelationTable(props: {
       ? []
       : (props.relation.type === "Rule"
           ? Object.keys(props.relation.rule.head.attrs)
-          : Object.keys((props.relation.records[0] as Rec).attrs)
+          : Object.keys((results[0].term as Rec).attrs)
         ).sort((a, b) => fieldComparator(a).localeCompare(fieldComparator(b)));
   return (
     <>
