@@ -23,9 +23,6 @@ export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
     })
   );
   const interp2 = interp.doLoad("patterns.dl");
-  console.log(
-    prettyPrintGraph(toGraphviz((interp2 as IncrementalInterpreter).graph))
-  );
   return {
     latestStates: {},
     nextID: 0,

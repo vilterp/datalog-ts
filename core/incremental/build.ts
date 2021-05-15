@@ -97,6 +97,7 @@ function getVarToPath(rec: Rec): VarToPath {
 
 // TODO: put RuleGraph back into this
 export type AddResult = {
+  newGraph: RuleGraph;
   newNodeIDs: Set<NodeID>;
   rec: Rec;
   tipID: NodeID;
@@ -106,7 +107,7 @@ export function addOr(
   graph: RuleGraph,
   ruleName: string,
   or: OrExpr
-): [RuleGraph, AddResult] {
+): AddResult {
   if (or.opts.length === 1) {
     return addAnd(graph, or.opts[0].clauses);
   }
@@ -115,7 +116,7 @@ export function addOr(
   let outGraph = g1;
   let outNodeIDs = new Set<NodeID>([orID]);
   for (let orOption of or.opts) {
-    const [newGraph, { newNodeIDs, tipID: andID }] = addAnd(
+    const { newGraph, newNodeIDs, tipID: andID } = addAnd(
       outGraph,
       orOption.clauses
     );
@@ -123,20 +124,15 @@ export function addOr(
     outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
   }
 
-  return [
-    outGraph,
-    {
-      newNodeIDs: outNodeIDs,
-      rec: null, // ???
-      tipID: orID,
-    },
-  ];
+  return {
+    newGraph: outGraph,
+    newNodeIDs: outNodeIDs,
+    rec: null, // ???
+    tipID: orID,
+  };
 }
 
-function addAnd(
-  graph: RuleGraph,
-  clauses: AndClause[]
-): [RuleGraph, AddResult] {
+function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
   const { recs, exprs } = extractBinExprs(clauses);
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
@@ -148,22 +144,23 @@ function addAnd(
   });
   const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
 
-  let [outGraph, outRes] = addJoinTree(graph, joinTree);
+  let outRes = addJoinTree(graph, joinTree);
 
   for (const expr of exprs) {
-    const [outGraph2, newExprID] = addNode(outGraph, true, {
+    const [outGraph2, newExprID] = addNode(outRes.newGraph, true, {
       type: "BinExpr",
       expr,
     });
-    outGraph = outGraph2;
-    outGraph = addEdge(outGraph, outRes.tipID, newExprID);
+    outRes.newGraph = outGraph2;
+    outRes.newGraph = addEdge(outRes.newGraph, outRes.tipID, newExprID);
     outRes = {
+      newGraph: outRes.newGraph,
       tipID: newExprID,
       rec: null, // TODO: fix
       newNodeIDs: setAdd(outRes.newNodeIDs, newExprID),
     };
   }
-  return [outGraph, outRes];
+  return outRes;
 }
 
 function addAndBinary(
@@ -171,11 +168,11 @@ function addAndBinary(
   left: Rec,
   right: Rec,
   rightID: NodeID
-): [RuleGraph, AddResult] {
+): AddResult {
   let outGraph = graph;
   const joinInfo = getJoinInfo(left, right);
   const varsToIndex = Object.keys(joinInfo.join);
-  const [outGraph2, { newNodeIDs: nn1, tipID: leftID }] = addRec(
+  const { newGraph: outGraph2, newNodeIDs: nn1, tipID: leftID } = addRec(
     outGraph,
     left
   );
@@ -192,54 +189,51 @@ function addAndBinary(
   // console.log({ colsToIndex });
   outGraph = addIndex(outGraph, leftID, varsToIndex);
   outGraph = addIndex(outGraph, rightID, varsToIndex);
-  return [
-    outGraph,
-    {
-      tipID: joinID,
-      rec: left,
-      newNodeIDs: setAdd(nn1, joinID),
-    },
-  ];
+  return {
+    newGraph: outGraph,
+    tipID: joinID,
+    rec: left,
+    newNodeIDs: setAdd(nn1, joinID),
+  };
 }
 
-function addJoinTree(
-  ruleGraph: RuleGraph,
-  joinTree: JoinTree
-): [RuleGraph, AddResult] {
+function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
   if (joinTree.type === "Leaf") {
     return addRec(ruleGraph, joinTree.rec);
   }
-  const [
+  const {
     newGraph,
-    { tipID: rightID, rec: rightRec, newNodeIDs: nn1 },
-  ] = addJoinTree(ruleGraph, joinTree.right);
-  const [newGraph2, { tipID: andID, newNodeIDs: nn2 }] = addAndBinary(
+    tipID: rightID,
+    rec: rightRec,
+    newNodeIDs: nn1,
+  } = addJoinTree(ruleGraph, joinTree.right);
+  const { newGraph: newGraph2, tipID: andID, newNodeIDs: nn2 } = addAndBinary(
     newGraph,
     joinTree.left,
     rightRec,
     rightID
   );
-  return [
-    newGraph2,
-    { tipID: andID, rec: joinTree.left, newNodeIDs: setUnion(nn1, nn2) },
-  ];
+  return {
+    newGraph: newGraph2,
+    tipID: andID,
+    rec: joinTree.left,
+    newNodeIDs: setUnion(nn1, nn2),
+  };
 }
 
-function addRec(graph: RuleGraph, rec: Rec): [RuleGraph, AddResult] {
+function addRec(graph: RuleGraph, rec: Rec): AddResult {
   const [graph2, matchID] = addNode(graph, true, {
     type: "Match",
     rec,
     mappings: {},
   });
   const graph3 = addEdge(graph2, rec.relation, matchID);
-  return [
-    graph3,
-    {
-      newNodeIDs: new Set([matchID]),
-      rec,
-      tipID: matchID,
-    },
-  ];
+  return {
+    newGraph: graph3,
+    newNodeIDs: new Set([matchID]),
+    rec,
+    tipID: matchID,
+  };
 }
 
 type ColName = string;

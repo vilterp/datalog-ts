@@ -29,7 +29,7 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const [withOr, { tipID: orID, newNodeIDs }] = addOr(
+  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(
     graph,
     rule.head.relation,
     rule.defn
