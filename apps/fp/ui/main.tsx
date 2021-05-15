@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
 import { Collapsible } from "../../../uiCommon/collapsible";
 import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
@@ -12,9 +11,10 @@ import { initialEditorState } from "../../../uiCommon/ide/types";
 import highlightCSS from "./highlight.css";
 import { loader } from "../dl";
 import { getSuggestions } from "./suggestions";
+import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 
 function Main() {
-  const interp = new SimpleInterpreter(".", loader);
+  const interp = new IncrementalInterpreter(".", loader);
 
   const [editorState, setEditorState] = useJSONLocalStorage(
     "editor-state",

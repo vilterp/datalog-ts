@@ -12,6 +12,7 @@ import {
   getIndexName,
   resolveUnmappedRule,
 } from "./build";
+import { ppt } from "../pretty";
 
 export type Insertion = {
   res: Res;
@@ -123,7 +124,9 @@ export function insertFact(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   if (Object.keys(graph.unmappedRules).length > 0) {
     throw new Error(
-      `some rules still rely on things not defined yet: [${mapObjToList(
+      `processing: ${ppt(
+        rec
+      )}: some rules still rely on things not defined yet: [${mapObjToList(
         graph.unmappedRules,
         (name) => name
       ).join(", ")}]`
