@@ -53,11 +53,27 @@ export function addRule(
         getRoots
       ),
     ]);
-    return replayFacts(resultGraph, newNodeIDs, nodesToReplay);
+    return addRuleToRes(
+      rule,
+      replayFacts(resultGraph, newNodeIDs, nodesToReplay)
+    );
   }
-  return {
-    newGraph: { ...resultGraph, rules: [...graph.rules, rule] },
+  return addRuleToRes(rule, {
+    newGraph: resultGraph,
     emissionLog: [],
+  });
+}
+
+function addRuleToRes(
+  rule: Rule,
+  res: { newGraph: RuleGraph; emissionLog: EmissionLog }
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+  return {
+    ...res,
+    newGraph: {
+      ...res.newGraph,
+      rules: [...res.newGraph.rules, rule],
+    },
   };
 }
 
