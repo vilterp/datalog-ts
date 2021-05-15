@@ -1,5 +1,5 @@
 import React from "react";
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit } from "../../core/types";
 import { VIZ_REGISTRY } from "../vizRegistry";
 

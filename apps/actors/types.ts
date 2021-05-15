@@ -1,4 +1,4 @@
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { makeMemoryLoader } from "../../core/loaders";
 // @ts-ignore
 import patterns from "./patterns.dl";

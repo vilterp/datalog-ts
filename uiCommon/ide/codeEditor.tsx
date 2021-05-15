@@ -1,5 +1,5 @@
 import React from "react";
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import Editor from "./editor";
 import { highlight } from "./highlight";
 import Parsimmon from "parsimmon";

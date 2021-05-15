@@ -1,4 +1,4 @@
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Suite } from "../../util/testing";
 import { TestOutput, runDDTestAtPath } from "../../util/ddTest";
 import { language } from "./parser";

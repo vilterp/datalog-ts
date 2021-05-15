@@ -1,4 +1,4 @@
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec } from "../../core/types";
 import {
   Span,

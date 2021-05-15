@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit, Bool } from "../../core/types";
 import { uniqBy } from "../../util/util";
 import { dlToSpan, Span } from "./types";

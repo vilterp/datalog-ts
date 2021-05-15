@@ -1,4 +1,4 @@
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Int } from "../../core/types";
 import { Span, dlToSpan } from "./types";
 import { treeFromRecords } from "../visualizations/tree";

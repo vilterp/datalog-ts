@@ -12,7 +12,7 @@ import {
   spanLength,
   sortSpans,
 } from "./util";
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { flatMap, uniqBy } from "../../util/util";
 import { Rec } from "../../core/types";
 

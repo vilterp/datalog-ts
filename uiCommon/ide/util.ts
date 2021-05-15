@@ -1,5 +1,5 @@
 import { Span, dlToSpan } from "./types";
-import { AbstractInterpreter } from "../../core/abstractinterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Int } from "../../core/types";
 
 export function replaceAtSpan(source: string, span: Span, newText: string) {
