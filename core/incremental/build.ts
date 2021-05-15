@@ -58,9 +58,6 @@ export function resolveUnmappedRule(
       curGraph = updateMappings(curGraph, newNodeID, mappings);
     }
   }
-  if (rule.head.relation === "hl.typeHighlightedParam") {
-    console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
-  }
   return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
 }
 
