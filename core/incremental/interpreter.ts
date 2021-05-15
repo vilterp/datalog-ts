@@ -40,7 +40,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     return [output.type === "QueryResults" ? output.results : [], newInterp];
   }
 
-  private processStmt(
+  processStmt(
     stmt: Statement
   ): { newInterp: AbstractInterpreter; output: Output } {
     const interp = this;
@@ -170,7 +170,7 @@ export function formatOutput(
 ): TestOutput {
   switch (output.type) {
     case "Acknowledge":
-      return plainTextOut("");
+      return datalogOut("");
     case "EmissionLog":
       if (opts.emissionLogMode === "test") {
         return plainTextOut(

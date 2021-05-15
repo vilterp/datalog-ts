@@ -8,6 +8,7 @@ import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
 import { parserlibTests } from "./apps/parserlib/ddTests";
+import { incrTests } from "./core/incremental/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -20,6 +21,7 @@ const suites = {
   // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
   coreTestsSimple: coreTestsSimple(writeResults),
   coreTestsIncremental: coreTestsIncremental(writeResults),
+  incrTests: incrTests(writeResults),
   fpTests: fpTests(writeResults),
   json2DLTests,
   prettyPrintTests,
