@@ -29,7 +29,7 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(
+  const [withOr, { tipID: orID, newNodeIDs }] = addOr(
     graph,
     rule.head.relation,
     rule.defn
@@ -220,23 +220,9 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       return [ins.res];
     case "Join": {
       if (ins.origin === nodeDesc.leftID) {
-        return doJoin(
-          graph,
-          ins,
-          nodeDesc,
-          nodeDesc.rightID,
-          nodeDesc.indexes.left,
-          nodeDesc.indexes.right
-        );
+        return doJoin(graph, ins, nodeDesc, nodeDesc.rightID);
       } else {
-        return doJoin(
-          graph,
-          ins,
-          nodeDesc,
-          nodeDesc.leftID,
-          nodeDesc.indexes.right,
-          nodeDesc.indexes.left
-        );
+        return doJoin(graph, ins, nodeDesc, nodeDesc.leftID);
       }
     }
     case "Match": {
@@ -313,17 +299,19 @@ function doJoin(
   graph: RuleGraph,
   ins: Insertion,
   joinDesc: JoinDesc,
-  otherNodeID: NodeID,
-  thisIndex: string[],
-  otherIndex: string[]
+  otherNodeID: NodeID
 ): Res[] {
   const results: Res[] = [];
   const thisVars = ins.res.bindings;
   const otherNode = graph.nodes.get(otherNodeID);
-  const indexName = getIndexName(otherIndex);
-  const indexKey = getIndexKey(ins.res.term as Rec, thisIndex);
+  // TODO: avoid this allocation
+  const indexName = getIndexName(joinDesc.joinVars);
+  const indexKey = getIndexKey(ins.res, joinDesc.joinVars);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
-  // console.log({
+  // console.log("doJoin", {
+  //   originID: ins.origin,
+  //   joinID: ins.destination,
+  //   otherID: otherNodeID,
   //   indexName,
   //   indexKey,
   //   otherEntries,
@@ -333,19 +321,17 @@ function doJoin(
     const otherVars = possibleOtherMatch.bindings;
     const unifyRes = unifyVars(thisVars || {}, otherVars || {});
     // console.log("join", {
-    //   left: formatRes(ins.res),
-    //   right: formatRes(possibleOtherMatch),
+    //   left: ppb(thisVars),
+    //   right: ppb(otherVars),
     //   unifyRes: ppb(unifyRes),
     // });
     if (unifyRes !== null) {
       results.push({
-        term: { ...(ins.res.term as Rec), relation: joinDesc.ruleName },
+        term: null,
         bindings: unifyRes,
       });
     }
   }
-  joinStats.inputRecords += otherEntries.size;
-  joinStats.outputRecords += results.length;
   return results;
 }
 
