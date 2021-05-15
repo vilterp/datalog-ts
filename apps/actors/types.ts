@@ -4,6 +4,8 @@ import { makeMemoryLoader } from "../../core/loaders";
 import patterns from "./patterns.dl";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { toGraphviz } from "../../core/incremental/graphviz";
+import { prettyPrintGraph } from "../../util/graphviz";
 
 // === overall model ===
 
@@ -21,6 +23,9 @@ export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
     })
   );
   const interp2 = interp.doLoad("patterns.dl");
+  console.log(
+    prettyPrintGraph(toGraphviz((interp2 as IncrementalInterpreter).graph))
+  );
   return {
     latestStates: {},
     nextID: 0,
