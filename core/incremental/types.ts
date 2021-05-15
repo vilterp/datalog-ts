@@ -1,5 +1,4 @@
 import { Rec, BinExpr, VarMappings, Rule, Res } from "../types";
-import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
 import { IndexedCollection } from "./indexedCollection";
@@ -39,11 +38,6 @@ export type JoinInfo = {
       rightAttr: AttrPath;
     };
   };
-};
-
-export type ColsToIndexByRelation = {
-  left: string[];
-  right: string[];
 };
 
 export type JoinDesc = {

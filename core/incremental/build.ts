@@ -95,6 +95,7 @@ function getVarToPath(rec: Rec): VarToPath {
   return out;
 }
 
+// TODO: put RuleGraph back into this
 export type AddResult = {
   newNodeIDs: Set<NodeID>;
   rec: Rec;
