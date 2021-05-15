@@ -58,7 +58,7 @@ export function CodeEditor<AST>(props: {
     try {
       const flattened = props.flatten(parseRes.value);
       interp3 = flattened.reduce<AbstractInterpreter>(
-        (int, rec) => int.evalStmt({ type: "Insert", record: rec as Rec })[1],
+        (interp, rec) => interp.insert(rec as Rec),
         interp2
       );
 

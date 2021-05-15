@@ -107,7 +107,7 @@ function typecheckTest(test: string[]): TestOutput[] {
 
     const interp = new SimpleInterpreter("apps/fp/dl", fsLoader); // hmmm
     const interp2 = flattened.reduce<AbstractInterpreter>(
-      (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
+      (interp, t) => interp.insert(t as Rec),
       interp
     );
     const interp3 = interp2.doLoad("main.dl");
@@ -132,7 +132,7 @@ function suggestionTest(test: string[]): TestOutput[] {
 
     const interp = new SimpleInterpreter("apps/fp/dl", fsLoader); // hmmm
     const interp2 = flattened.reduce<AbstractInterpreter>(
-      (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
+      (interp, t) => interp.insert(t as Rec),
       interp
     );
     const interp3 = interp2.doLoad("main.dl");
@@ -152,9 +152,10 @@ function traceTest(test: string[], opts: TracePrintOpts): TestOutput[] {
     const flattened = flatten(parsed);
 
     const interp = new SimpleInterpreter("apps/fp/dl", fsLoader); // hmmm
-    const interp2 = flattened.reduce((interp, t) => {
-      return interp.evalStmt({ type: "Insert", record: t as Rec })[1];
-    }, interp);
+    const interp2 = flattened.reduce(
+      (interp, t) => interp.insert(t as Rec),
+      interp
+    );
     const interp3 = interp2.doLoad("main.dl");
     // TODO: why does interpacing I with 0 return no results
     const typeResults = interp3.queryStr("tc.Type{id: 0, type: T}");

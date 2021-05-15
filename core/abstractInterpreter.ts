@@ -16,6 +16,11 @@ export abstract class AbstractInterpreter {
 
   abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
 
+  insert(record: Rec): AbstractInterpreter {
+    const [_, newInterp] = this.evalStmt({ type: "Insert", record });
+    return newInterp;
+  }
+
   queryStr(str: string): Res[] {
     const record = dlLanguage.record.tryParse(str) as Rec;
     const [res, _] = this.evalStmt({ type: "Query", record });
