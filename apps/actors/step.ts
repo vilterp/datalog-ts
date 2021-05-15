@@ -32,15 +32,13 @@ export function step<ActorState extends Json, Msg extends Json>(
     if (nextInitiator.init.type === "spawned") {
       const spawn = nextInitiator.init;
       newTrace.latestStates[nextInitiator.to] = spawn.initialState;
-      const [__, newInterp] = newTrace.interp.evalStmt({
-        type: "Insert",
-        record: rec("actor", {
+      newTrace.interp = newTrace.interp.insert(
+        rec("actor", {
           id: str(nextInitiator.to),
           spawningTickID: str(nextInitiator.init.spawningTickID),
           initialState: jsonToDL(spawn.initialState),
-        }),
-      });
-      newTrace.interp = newInterp;
+        })
+      );
       continue;
     }
 
@@ -53,16 +51,14 @@ export function step<ActorState extends Json, Msg extends Json>(
 
     const newTickID = newTrace.nextID;
     newTrace.nextID++;
-    const [_, newInterp] = newTrace.interp.evalStmt({
-      type: "Insert",
-      record: rec("tick", {
+    newTrace.interp = newTrace.interp.insert(
+      rec("tick", {
         id: str(newTickID.toString()),
         actorID: str(curActorID),
         initiator: jsonToDL(nextInitiator.init),
         resp: jsonToDL(actorResp),
-      }),
-    });
-    newTrace.interp = newInterp;
+      })
+    );
 
     switch (actorResp.type) {
       case "continue": {
@@ -73,16 +69,14 @@ export function step<ActorState extends Json, Msg extends Json>(
           // record this message
           const newMessageID = newTrace.nextID;
           newTrace.nextID++;
-          const [_, newInterp] = newTrace.interp.evalStmt({
-            type: "Insert",
-            record: rec("message", {
+          newTrace.interp = newTrace.interp.insert(
+            rec("message", {
               id: str(newMessageID.toString()),
               toActorID: str(outgoingMsg.to),
               payload: jsonToDL(outgoingMsg.msg),
               fromTickID: str(newTickID.toString()),
-            }),
-          });
-          newTrace.interp = newInterp;
+            })
+          );
           // insert into queue so we can keep processing this step
           queue.push({
             to: outgoingMsg.to,
@@ -101,14 +95,12 @@ export function step<ActorState extends Json, Msg extends Json>(
       case "sleep":
         const newTimeoutID = trace.nextID;
         newTrace.nextID++;
-        const [_, newInterp] = trace.interp.evalStmt({
-          type: "Insert",
-          record: rec("timeout", {
+        newTrace.interp = trace.interp.insert(
+          rec("timeout", {
             id: str(newTimeoutID.toString()),
             durationMS: int(actorResp.durationMS),
-          }),
-        });
-        newTrace.interp = newInterp;
+          })
+        );
     }
   }
   return newTrace;
@@ -136,9 +128,8 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
 
   const newTickID = trace.nextID;
   newTrace.nextID++;
-  const [_, newInterp] = trace.interp.evalStmt({
-    type: "Insert",
-    record: rec("tick", {
+  newTrace.interp = trace.interp.insert(
+    rec("tick", {
       id: str(newTickID.toString()),
       actorID: str(message.from),
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
@@ -152,22 +143,19 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
           },
         ],
       } as ActorResp<ActorState, Msg>),
-    }),
-  });
-  newTrace.interp = newInterp;
+    })
+  );
 
   const newMessageID = trace.nextID;
   newTrace.nextID++;
-  const [_1, newInterp2] = newTrace.interp.evalStmt({
-    type: "Insert",
-    record: rec("message", {
+  newTrace.interp = newTrace.interp.insert(
+    rec("message", {
       id: str(newMessageID.toString()),
       toActorID: str(message.to),
       payload: jsonToDL(message.payload),
       fromTickID: str(newTickID.toString()),
-    }),
-  });
-  newTrace.interp = newInterp2;
+    })
+  );
 
   return step(newTrace, update, {
     to: message.to,
