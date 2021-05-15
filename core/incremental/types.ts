@@ -17,7 +17,7 @@ export type RuleGraph = {
   };
 };
 
-type NodeAndCache = {
+export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
   cache: IndexedCollection<Res>;
@@ -38,9 +38,7 @@ export type ColsToIndexByRelation = {
 
 export type JoinDesc = {
   type: "Join";
-  ruleName: string;
-  joinInfo: JoinInfo;
-  indexes: ColsToIndexByRelation;
+  joinVars: string[];
   leftID: NodeID;
   rightID: NodeID;
 };
@@ -61,35 +59,6 @@ export const emptyRuleGraph: RuleGraph = {
   edges: Map(),
   unmappedRules: {},
 };
-
-// formatters
-
-export function formatRes(res: Res): string {
-  return `${ppt(res.term)}; ${ppb(res.bindings || {})}`;
-}
-
-export function formatDesc(node: NodeAndCache): string {
-  const nodeDesc = node.desc;
-  const mainRes = (() => {
-    switch (nodeDesc.type) {
-      case "BaseFactTable":
-        return `Base`;
-      case "BinExpr":
-        return ppBE(nodeDesc.expr);
-      case "Join":
-        return `Join(${nodeDesc.leftID} & ${nodeDesc.rightID}): ${nodeDesc.ruleName}`;
-      case "Match":
-        return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-          showScopePath: false,
-        })})`;
-      case "Substitute":
-        return `Subst(${ppt(nodeDesc.rec)})`;
-      case "Union":
-        return "Union";
-    }
-  })();
-  return `${mainRes} [${node.cache.indexNames().join(", ")}]`;
-}
 
 export type EmissionLogAndGraph = {
   graph: RuleGraph;

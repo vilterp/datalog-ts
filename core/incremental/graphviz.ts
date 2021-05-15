@@ -1,6 +1,8 @@
-import { RuleGraph, formatDesc, formatRes } from "./types";
+import { RuleGraph, NodeDesc } from "./types";
 import { Graph } from "../../util/graphviz";
-import { mapObjToList } from "../../util/util";
+import { flatMapObjToList, mapObjToList } from "../../util/util";
+import { ppr } from "../pretty";
+import { formatNodeWithIndexes } from "./pretty";
 
 export function toGraphviz(
   graph: RuleGraph,
@@ -13,14 +15,15 @@ export function toGraphviz(
           id,
           attrs: {
             shape: "box",
-            label: `${id}: ${formatDesc(node)}`,
-            color: id === highlightedNodeID ? "red" : "black",
+            label: `${id}: ${formatNodeWithIndexes(node)}`,
+            fillcolor: getNodeColor(node.desc) || "",
+            style: "filled",
           },
           comment:
             node.cache.size > 0
               ? `cache: [${node.cache
                   .all()
-                  .map((res) => formatRes(res))
+                  .map((res) => ppr(res))
                   .join(", ")}]`
               : "",
         };
@@ -28,14 +31,17 @@ export function toGraphviz(
       .valueSeq()
       .toArray(),
     edges: graph.edges
-      .entrySeq()
-      .flatMap(([fromID, destinations]) =>
-        destinations.map((dst) => ({
-          from: fromID,
-          to: dst,
-          attrs: {},
-        }))
+      .flatMap((destinations, fromID) =>
+        destinations.map((dst) => [
+          fromID,
+          {
+            from: fromID,
+            to: dst,
+            attrs: {},
+          },
+        ])
       )
+      .valueSeq()
       .toArray(),
     comments:
       Object.keys(graph.unmappedRules).length > 0
@@ -46,4 +52,21 @@ export function toGraphviz(
           )
         : [],
   };
+}
+
+function getNodeColor(nodeDesc: NodeDesc): string {
+  switch (nodeDesc.type) {
+    case "BaseFactTable":
+      return "darksalmon";
+    case "Match":
+      return "darkseagreen2";
+    case "Join":
+      return "thistle";
+    case "BinExpr":
+      return "darkseagreen1";
+    case "Substitute":
+      return "lightblue";
+    case "Union":
+      return "moccasin";
+  }
 }

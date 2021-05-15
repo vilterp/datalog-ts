@@ -1,14 +1,9 @@
-import {
-  EmissionLogAndGraph,
-  emptyRuleGraph,
-  formatRes,
-  RuleGraph,
-} from "./types";
+import { EmissionLogAndGraph, emptyRuleGraph, RuleGraph } from "./types";
 import { Rec, Res, Rule, Statement } from "../types";
 import { declareTable } from "./build";
 import { addRule, doQuery, EmissionLog, insertFact } from "./eval";
 import { hasVars } from "../simple/simpleEvaluate";
-import { ppt } from "../pretty";
+import { ppr, ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
 import {
@@ -182,9 +177,7 @@ export function formatOutput(
           output.log
             .map(
               ({ fromID, output }) =>
-                `${fromID}: [${output
-                  .map((res) => `${formatRes(res)}`)
-                  .join(", ")}]`
+                `${fromID}: [${output.map((res) => `${ppr(res)}`).join(", ")}]`
             )
             .join("\n")
         );
@@ -210,9 +203,7 @@ export function formatOutput(
     case "QueryResults":
       return datalogOut(
         output.results
-          .map(
-            (res) => `${opts.showBindings ? formatRes(res) : ppt(res.term)}.`
-          )
+          .map((res) => `${opts.showBindings ? ppr(res) : ppt(res.term)}.`)
           .join("\n")
       );
     case "Trace":
