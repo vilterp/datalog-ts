@@ -91,7 +91,9 @@ export function RelationTable(props: {
                     onClick={toggleRowCollapsed}
                     style={{ cursor: "pointer", fontFamily: "monospace" }}
                   >
-                    {props.relation.type === "Rule" ? <td>{icon}</td> : null}
+                    {props.relation.type === "Rule" && result.trace ? (
+                      <td>{icon}</td>
+                    ) : null}
                     {fields.map((field) => (
                       <td
                         key={field}
@@ -118,7 +120,7 @@ export function RelationTable(props: {
                       </td>
                     ))}
                   </tr>
-                  {rowCollapseState.collapsed ? null : (
+                  {rowCollapseState.collapsed || !result.trace ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
                         <TraceView
@@ -146,6 +148,7 @@ export function RelationTable(props: {
   );
 }
 
+// TODO: phase out in favor of explorer's viz capabilities
 function PossibleTreeViz(props: { results: Res[] }) {
   if (props.results.length === 0) {
     return null;
