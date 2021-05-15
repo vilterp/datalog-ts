@@ -6,8 +6,7 @@ import { falseTerm, trueTerm } from "./types";
 export const language = P.createLanguage({
   program: (r) => P.sepBy(r.statement, P.optWhitespace).trim(P.optWhitespace),
   // TODO: add .graphviz?
-  statement: (r) =>
-    P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt, r.traceStmt),
+  statement: (r) => P.alt(r.insert, r.rule, r.comment, r.tableDecl, r.loadStmt),
   loadStmt: (r) =>
     P.seq(word(".load"), r.filePath)
       .skip(P.optWhitespace)
@@ -15,11 +14,6 @@ export const language = P.createLanguage({
         type: "LoadStmt",
         path,
       })),
-  traceStmt: (r) =>
-    P.seq(word(".trace"), r.insert).map(([_, insert]) => ({
-      type: "TraceStmt",
-      record: insert.record,
-    })),
   tableDecl: (r) =>
     P.seq(word(".table"), r.recordIdentifier).map(([_, name]) => ({
       type: "TableDecl",

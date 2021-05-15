@@ -1,13 +1,13 @@
 import { Span, dlToSpan } from "./types";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { Rec, Int } from "../../core/types";
 
 export function replaceAtSpan(source: string, span: Span, newText: string) {
   return source.substring(0, span.from) + newText + source.substring(span.to);
 }
 
-export function getCursor(interp: Interpreter): number {
-  return ((interp.queryStr("ide.Cursor{idx: Idx}").results[0].term as Rec).attrs
+export function getCursor(interp: AbstractInterpreter): number {
+  return ((interp.queryStr("ide.Cursor{idx: Idx}")[0].term as Rec).attrs
     .idx as Int).val;
 }
 
@@ -23,8 +23,10 @@ export function sortSpans(spans: Span[]): Span[] {
   return spans.sort((a, b) => a.from - b.from);
 }
 
-export function getCurrentPlaceholder(interp: Interpreter): Span | null {
-  const results = interp.queryStr("ide.CurrentPlaceholder{span: S}").results;
+export function getCurrentPlaceholder(
+  interp: AbstractInterpreter
+): Span | null {
+  const results = interp.queryStr("ide.CurrentPlaceholder{span: S}");
   if (results.length === 0) {
     return null;
   }
@@ -32,10 +34,10 @@ export function getCurrentPlaceholder(interp: Interpreter): Span | null {
   return dlToSpan(currentPlaceholder.attrs.span as Rec);
 }
 
-export function getPlaceholders(interp: Interpreter): Span[] {
+export function getPlaceholders(interp: AbstractInterpreter): Span[] {
   return sortSpans(
     interp
       .queryStr("ast.Placeholder{location: S}")
-      .results.map((res) => dlToSpan((res.term as Rec).attrs.location as Rec))
+      .map((res) => dlToSpan((res.term as Rec).attrs.location as Rec))
   );
 }

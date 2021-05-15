@@ -2,7 +2,7 @@ import { BenchmarkResult, BenchmarkSpec } from "../../util/benchmark";
 import { language } from "./parser";
 import { flatten } from "./flatten";
 // import v8profiler from "v8-profiler-node8";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { Performance } from "w3c-hr-time";
 // import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";

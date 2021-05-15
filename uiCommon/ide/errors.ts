@@ -1,4 +1,4 @@
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { Rec, Int } from "../../core/types";
 import { Span, dlToSpan } from "./types";
 import { treeFromRecords } from "../visualizations/tree";
@@ -10,15 +10,15 @@ export type DLTypeError = {
   span: Span;
 };
 
-export function getTypeErrors(interp: Interpreter): DLTypeError[] {
+export function getTypeErrors(interp: AbstractInterpreter): DLTypeError[] {
   const exprTreeRecs = interp
     .queryStr("ast.ParentExpr{child: C, parent: P}")
-    .results.map((res) => res.term as Rec);
+    .map((res) => res.term as Rec);
   const exprTree = treeFromRecords(exprTreeRecs, "0");
   const exprIDsWithTypes = new Set(
     interp
       .queryStr("tc.Type{id: I}")
-      .results.map((res) => ((res.term as Rec).attrs.id as Int).val)
+      .map((res) => ((res.term as Rec).attrs.id as Int).val)
   );
   const exprErrorTree = mapTree(exprTree, (rec) => {
     if (!rec) {

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { language as fpLanguage, Expr } from "../parser";
 import { flatten } from "../flatten";
-import { Interpreter } from "../../../core/interpreter";
+import { AbstractInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
 import { Collapsible } from "../../../uiCommon/collapsible";
 import { CodeEditor } from "../../../uiCommon/ide/codeEditor";

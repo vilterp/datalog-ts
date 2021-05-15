@@ -1,4 +1,4 @@
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { Rec } from "../../core/types";
 import {
   Span,
@@ -24,8 +24,8 @@ export const jumpToDefnAction: EditorAction = {
   },
 };
 
-function getDefnForCursor(interp: Interpreter): Span | null {
-  const res = interp.queryStr(`ide.DefnForCursor{defnLoc: S}`).results;
+function getDefnForCursor(interp: AbstractInterpreter): Span | null {
+  const res = interp.queryStr(`ide.DefnForCursor{defnLoc: S}`);
   if (res.length === 0) {
     return null;
   }
@@ -52,8 +52,8 @@ export const jumpToFirstUsageAction: EditorAction = {
   },
 };
 
-function getFirstUsageForCursor(interp: Interpreter): Span | null {
-  const res = interp.queryStr(`ide.UsageForCursor{usageLoc: S}`).results;
+function getFirstUsageForCursor(interp: AbstractInterpreter): Span | null {
+  const res = interp.queryStr(`ide.UsageForCursor{usageLoc: S}`);
   if (res.length === 0) {
     return null;
   }

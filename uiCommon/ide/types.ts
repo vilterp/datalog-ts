@@ -1,5 +1,5 @@
 import { Rec, Term, Int } from "../../core/types";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { Suggestion } from "./suggestions";
 
 export type Span = { from: number; to: number };
@@ -22,7 +22,7 @@ export type EditorState = {
 };
 
 export type ActionContext = {
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   state: EditorState;
   // TODO: remove suggestions param, for the sake of DRY?
   //   they can be computed from the repl, but will always have been computed
@@ -43,8 +43,4 @@ export function initialEditorState(source: string): EditorState {
     selectedSuggIdx: 0,
     source,
   };
-}
-
-export function spanEq(left: Span, right: Span): boolean {
-  return left.from === right.from && left.to === right.to;
 }

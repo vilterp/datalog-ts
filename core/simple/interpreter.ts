@@ -1,10 +1,9 @@
-import { DB, Program, Rec, Res, Statement, rec, str, Term } from "./types";
-import { language as dlLanguage } from "./parser";
-import { evaluate, hasVars } from "./simpleEvaluate";
-import { Loader } from "./loaders";
-import { mapObjToList, flatMapObjToList, flatMap } from "../util/util";
-
-export type StmtResult = { results: Res[]; trace: boolean };
+import { DB, Program, Rec, Res, Statement, rec, str, Term } from "../types";
+import { language as dlLanguage } from "../parser";
+import { evaluate, hasVars } from "../simpleEvaluate";
+import { Loader } from "../loaders";
+import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
+import { AbstractInterpreter } from "../abstractInterpreter";
 
 const initialDB: DB = {
   tables: {},
@@ -15,39 +14,27 @@ const initialDB: DB = {
   },
 };
 
-export class Interpreter {
+export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;
-  cwd: string;
-  loader: Loader;
 
   constructor(cwd: string, loader: Loader, db: DB = initialDB) {
+    super(cwd, loader);
     this.db = db;
     this.cwd = cwd;
     this.loader = loader;
   }
 
-  queryStr(line: string): StmtResult {
-    const record = dlLanguage.record.tryParse(line) as Rec;
-    const [res, _] = this.evalStmt({ type: "Insert", record });
-    return res;
-  }
-
-  evalStr(line: string): [StmtResult, Interpreter] {
-    const stmt = dlLanguage.statement.tryParse(line);
-    return this.evalStmt(stmt);
-  }
-
-  evalStmt(stmt: Statement): [StmtResult, Interpreter] {
+  evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
       case "Insert": {
         const record = stmt.record;
         if (hasVars(record)) {
           // TODO: separate method for querying?
-          return [noTrace(this.evalQuery(record)), this];
+          return [this.evalQuery(record), this];
         }
         let tbl = this.db.tables[record.relation] || [];
         return [
-          noTrace([]),
+          [],
           this.withDB({
             ...this.db,
             tables: {
@@ -60,7 +47,7 @@ export class Interpreter {
       case "Rule": {
         const rule = stmt.rule;
         return [
-          noTrace([]),
+          [],
           this.withDB({
             ...this.db,
             rules: {
@@ -72,10 +59,10 @@ export class Interpreter {
       }
       case "TableDecl":
         if (this.db.tables[stmt.name]) {
-          return [noTrace([]), this];
+          return [[], this];
         }
         return [
-          noTrace([]),
+          [],
           this.withDB({
             ...this.db,
             tables: {
@@ -85,15 +72,9 @@ export class Interpreter {
           }),
         ];
       case "LoadStmt":
-        return [noTrace([]), this.doLoad(stmt.path)];
-      case "TraceStmt":
-        const [res, interp] = this.evalStmt({
-          type: "Insert",
-          record: stmt.record,
-        });
-        return [yesTrace(res.results), interp];
+        return [[], this.doLoad(stmt.path)];
       case "Comment":
-        return [noTrace([]), this];
+        return [[], this];
     }
   }
 
@@ -102,25 +83,8 @@ export class Interpreter {
   }
 
   private withDB(db: DB) {
-    return new Interpreter(this.cwd, this.loader, db);
+    return new SimpleInterpreter(this.cwd, this.loader, db);
   }
-
-  doLoad(path: string): Interpreter {
-    const contents = this.loader(this.cwd + "/" + path);
-    const program: Program = dlLanguage.program.tryParse(contents);
-    return program.reduce<Interpreter>(
-      (interp, stmt) => interp.evalStmt(stmt)[1],
-      this
-    );
-  }
-}
-
-function noTrace(results: Res[]): StmtResult {
-  return { results, trace: false };
-}
-
-function yesTrace(results: Res[]): StmtResult {
-  return { results, trace: true };
 }
 
 function virtualRelations(db: DB): Rec[] {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ppt } from "../core/pretty";
 import { Rec, Res, Relation } from "../core/types";
-import { Interpreter } from "../core/interpreter";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { TreeCollapseState, TreeView, emptyCollapseState } from "./treeView";
 import { RuleC } from "./rule";
 import { makeTermWithBindings } from "../core/traceTree";
@@ -16,7 +16,7 @@ export type TableCollapseState = {
 
 export function RelationTable(props: {
   relation: Relation;
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
@@ -34,7 +34,7 @@ export function RelationTable(props: {
         : props.interp.evalStmt({
             type: "Insert",
             record: props.relation.rule.head,
-          })[0].results;
+          })[0];
   } catch (e) {
     error = e.toString();
     console.error(e);
@@ -71,7 +71,6 @@ export function RelationTable(props: {
           </thead>
           <tbody>
             {results.map((result, idx) => {
-              const hl = props.highlight.highlight;
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key

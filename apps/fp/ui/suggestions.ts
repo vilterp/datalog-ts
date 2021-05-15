@@ -1,6 +1,6 @@
 import { StringLit, Rec, Bool, Term } from "../../../core/types";
 import { Suggestion } from "../../../uiCommon/ide/suggestions";
-import { Interpreter } from "../../../core/interpreter";
+import { AbstractInterpreter } from "../../../core/simple/interpreter";
 import { repeatArr, uniqBy } from "../../../util/util";
 import { getCurrentPlaceholder } from "../../../uiCommon/ide/util";
 import { Span } from "../../../uiCommon/ide/types";

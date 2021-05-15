@@ -1,18 +1,19 @@
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { makeMemoryLoader } from "../../core/loaders";
 // @ts-ignore
 import patterns from "./patterns.dl";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 // === overall model ===
 
 export type Trace<ActorState, Msg> = {
   latestStates: { [actorID: string]: ActorState }; // TODO: can we get this in the DB somehow?
   nextID: number;
-  interp: Interpreter;
+  interp: AbstractInterpreter;
 };
 
 export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
-  const interp = new Interpreter(
+  const interp = new SimpleInterpreter(
     ".",
     makeMemoryLoader({
       "./patterns.dl": patterns,

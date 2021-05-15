@@ -1,5 +1,5 @@
 import React from "react";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import Editor from "./editor";
 import { highlight } from "./highlight";
 import Parsimmon from "parsimmon";
@@ -24,12 +24,12 @@ type Error =
 export function CodeEditor<AST>(props: {
   parse: Parsimmon.Parser<AST>;
   flatten: (t: AST) => Term[];
-  interp: Interpreter;
-  getSuggestions: (interp: Interpreter) => Suggestion[];
+  interp: AbstractInterpreter;
+  getSuggestions: (interp: AbstractInterpreter) => Suggestion[];
   highlightCSS: string;
   state: EditorState;
   setState: (st: EditorState) => void;
-}): [Interpreter, React.ReactNode] {
+}): [AbstractInterpreter, React.ReactNode] {
   const [_, interp2] = props.interp.evalStr(
     `ide.Cursor{idx: ${props.state.cursorPos}}.`
   );
@@ -46,7 +46,7 @@ export function CodeEditor<AST>(props: {
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
   const parseRes = props.parse.parse(st.source);
-  let interp3: Interpreter = null;
+  let interp3: AbstractInterpreter = null;
   if (parseRes.status === false) {
     error = {
       type: "ParseError",
@@ -57,7 +57,7 @@ export function CodeEditor<AST>(props: {
   } else {
     try {
       const flattened = props.flatten(parseRes.value);
-      interp3 = flattened.reduce<Interpreter>(
+      interp3 = flattened.reduce<AbstractInterpreter>(
         (int, rec) => int.evalStmt({ type: "Insert", record: rec as Rec })[1],
         interp2
       );

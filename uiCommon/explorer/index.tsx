@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useHashParam from "use-hash-param";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
 import { RelationTable, TableCollapseState } from "../relationTable";
 import { noHighlight, HighlightProps } from "../term";
@@ -10,7 +10,10 @@ import { VizArea } from "./vizArea";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
-export function Explorer(props: { interp: Interpreter; showViz?: boolean }) {
+export function Explorer(props: {
+  interp: AbstractInterpreter;
+  showViz?: boolean;
+}) {
   const allRules: Relation[] = Object.keys(props.interp.db.rules)
     .sort()
     .map((name) => ({ type: "Rule", name, rule: props.interp.db.rules[name] }));
@@ -21,7 +24,6 @@ export function Explorer(props: { interp: Interpreter; showViz?: boolean }) {
         (name): Relation => ({
           type: "Table",
           name,
-          records: props.interp.db.tables[name],
         })
       ),
     ...Object.keys(props.interp.db.virtualTables)
@@ -30,7 +32,6 @@ export function Explorer(props: { interp: Interpreter; showViz?: boolean }) {
         (name): Relation => ({
           type: "Table",
           name,
-          records: props.interp.db.virtualTables[name](props.interp.db),
         })
       ),
   ];

@@ -7,7 +7,7 @@ export interface DB {
 type VirtualTable = (db: DB) => Rec[];
 
 export type Relation =
-  | { type: "Table"; name: string; records: Rec[] }
+  | { type: "Table"; name: string }
   | { type: "Rule"; name: string; rule: Rule };
 
 export interface Res {
@@ -60,6 +60,7 @@ export type Program = Statement[];
 
 export type Statement =
   | { type: "Rule"; rule: Rule }
+  | { type: "Query"; record: Rec }
   | { type: "Insert"; record: Rec }
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string }

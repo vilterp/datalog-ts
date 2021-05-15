@@ -1,16 +1,10 @@
-import { Term, Rec, BinExpr, Bindings, VarMappings, Rule } from "../types";
+import { Rec, BinExpr, VarMappings, Rule, Res } from "../types";
 import { ppb, ppBE, ppt, ppVM } from "../pretty";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
 import { IndexedCollection } from "./indexedCollection";
 
 export type NodeID = string;
-
-// TODO: dedup with ../types.Res when we have traces
-export type Res = {
-  term: Term;
-  bindings: Bindings | null;
-};
 
 export type RuleGraph = {
   nextNodeID: number;
@@ -24,7 +18,7 @@ export type RuleGraph = {
 type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
-  cache: IndexedCollection<Res>; // TODO: should this be just Rec?
+  cache: IndexedCollection<Res>;
 };
 
 export type JoinInfo = {

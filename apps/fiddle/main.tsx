@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { nullLoader } from "../../core/loaders";
 import { Program, Rec, StringLit } from "../../core/types";
 import { language } from "../../core/parser";

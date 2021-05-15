@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MarkdownNode, parse } from "./markdown";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractinterpreter";
 import { Program, Res } from "../../core/types";
 import { language } from "../../core/parser";
 import { IndependentTraceView } from "../../uiCommon/replViews";

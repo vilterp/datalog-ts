@@ -1,6 +1,6 @@
 import { Suite } from "../util/testing";
 import { runDDTestAtPath, TestOutput } from "../util/ddTest";
-import { Interpreter } from "./interpreter";
+import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
 import { datalogOut } from "../util/ddTest/types";
@@ -19,7 +19,7 @@ export function coreTests(writeResults: boolean): Suite {
 }
 
 export function putThroughInterp(test: string[]): TestOutput[] {
-  let interp = new Interpreter(".", fsLoader);
+  let interp = new SimpleInterpreter(".", fsLoader);
 
   const results: TestOutput[] = [];
 
@@ -28,9 +28,7 @@ export function putThroughInterp(test: string[]): TestOutput[] {
     interp = newInterp;
 
     results.push(
-      datalogOut(
-        stmtResult.results.map((res) => ppt(res.term) + ".").join("\n")
-      )
+      datalogOut(stmtResult.map((res) => ppt(res.term) + ".").join("\n"))
     );
   }
 
