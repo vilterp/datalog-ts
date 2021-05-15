@@ -12,9 +12,6 @@ import {
   getIndexName,
   resolveUnmappedRule,
 } from "./build";
-import { Performance } from "w3c-hr-time";
-
-const performance = new Performance();
 
 export type Insertion = {
   res: Res;
@@ -313,7 +310,6 @@ function doJoin(
   //   otherEntries,
   //   cache: otherNode.cache.toJSON(),
   // });
-  const before = performance.now();
   for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch.bindings;
     const unifyRes = unifyVars(thisVars || {}, otherVars || {});
@@ -329,10 +325,8 @@ function doJoin(
       });
     }
   }
-  const after = performance.now();
   joinStats.inputRecords += otherEntries.size;
   joinStats.outputRecords += results.length;
-  joinStats.joinTimeMS += after - before;
   return results;
 }
 

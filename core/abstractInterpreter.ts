@@ -1,6 +1,7 @@
 import { Program, Rec, Res, Rule, Statement } from "./types";
 import { language as dlLanguage } from "./parser";
 import { Loader } from "./loaders";
+import { initialTrace } from "../apps/actors/types";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -34,10 +35,12 @@ export abstract class AbstractInterpreter {
   doLoad(path: string): AbstractInterpreter {
     const contents = this.loader(this.cwd + "/" + path);
     const program: Program = dlLanguage.program.tryParse(contents);
-    return program.reduce<AbstractInterpreter>(
-      (interp, stmt) => interp.evalStmt(stmt)[1],
-      this
-    );
+    let out: AbstractInterpreter = this;
+    for (const stmt of program) {
+      const [_, newInterp] = out.evalStmt(stmt);
+      out = newInterp;
+    }
+    return out;
   }
 
   // TODO: do these two with queries to virtual tables

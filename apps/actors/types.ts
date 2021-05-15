@@ -3,6 +3,7 @@ import { makeMemoryLoader } from "../../core/loaders";
 // @ts-ignore
 import patterns from "./patterns.dl";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 // === overall model ===
 
@@ -13,7 +14,7 @@ export type Trace<ActorState, Msg> = {
 };
 
 export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
-  const interp = new SimpleInterpreter(
+  const interp = new IncrementalInterpreter(
     ".",
     makeMemoryLoader({
       "./patterns.dl": patterns,

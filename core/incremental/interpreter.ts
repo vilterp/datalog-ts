@@ -31,11 +31,11 @@ type Output =
 export class IncrementalInterpreter extends AbstractInterpreter {
   graph: RuleGraph;
 
-  constructor(cwd: string, loader: Loader) {
+  // TODO: kind of don't want to expose the graph parameter on the public
+  //   constructor, but there's no constructor overloading...
+  constructor(cwd: string, loader: Loader, graph: RuleGraph = emptyRuleGraph) {
     super(cwd, loader);
-    this.loadStack = [];
-    this.graph = emptyRuleGraph;
-    this.loader = loader;
+    this.graph = graph;
   }
 
   evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
@@ -51,12 +51,23 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     switch (stmt.type) {
       case "TableDecl": {
         const newGraph = declareTable(graph, stmt.name);
-        return { newInterp: { ...interp, graph: newGraph }, output: ack };
+        return {
+          newInterp: new IncrementalInterpreter(
+            this.cwd,
+            this.loader,
+            newGraph
+          ),
+          output: ack,
+        };
       }
       case "Rule": {
         const { newGraph, emissionLog } = addRule(graph, stmt.rule);
         return {
-          newInterp: { ...interp, graph: newGraph },
+          newInterp: new IncrementalInterpreter(
+            this.cwd,
+            this.loader,
+            newGraph
+          ),
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
@@ -81,10 +92,11 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         }
         const { newGraph, emissionLog } = insertFact(graph, stmt.record);
         return {
-          newInterp: {
-            ...interp,
-            graph: newGraph,
-          },
+          newInterp: new IncrementalInterpreter(
+            this.cwd,
+            this.loader,
+            newGraph
+          ),
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
