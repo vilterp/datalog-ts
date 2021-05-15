@@ -48,8 +48,7 @@ function fpTest(repetitions: number, input): BenchmarkResult {
       console.log("  ", i);
     }
     for (let record of flattened) {
-      const [_, newInterp] = interp.evalStmt({ type: "Insert", record });
-      interp = newInterp;
+      interp = interp.insert(record);
     }
     const res = interp.queryStr("tc.Type{id: 0, type: T}");
     assertStringEqual(

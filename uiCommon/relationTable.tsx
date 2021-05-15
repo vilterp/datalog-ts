@@ -31,10 +31,7 @@ export function RelationTable(props: {
             bindings: {},
             trace: { type: "BaseFactTrace", fact: res.term },
           }))
-        : props.interp.evalStmt({
-            type: "Insert",
-            record: props.relation.rule.head,
-          })[0];
+        : props.interp.queryRec(props.relation.rule.head);
   } catch (e) {
     error = e.toString();
     console.error(e);
