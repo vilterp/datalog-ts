@@ -28,8 +28,7 @@ function coreTests(
       runDDTestAtPath(
         `core/testdata/${name}.dd.txt`,
         (test: string[]) => putThroughInterp(test, getInterp),
-        writeResults,
-        "lineOrderIndependent"
+        writeResults
       );
     },
   }));
@@ -48,7 +47,12 @@ export function putThroughInterp(
     interp = newInterp;
 
     results.push(
-      datalogOut(stmtResult.map((res) => ppt(res.term) + ".").join("\n"))
+      datalogOut(
+        stmtResult
+          .map((res) => ppt(res.term) + ".")
+          .sort()
+          .join("\n")
+      )
     );
   }
 
