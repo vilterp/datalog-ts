@@ -289,3 +289,15 @@ export function combineObjects<T, U>(
   }
   return out;
 }
+
+export function setEq<T>(left: Set<T>, right: Set<T>): boolean {
+  if (left.size !== right.size) {
+    return false;
+  }
+  for (const item of left) {
+    if (!right.has(item)) {
+      return false;
+    }
+  }
+  return true;
+}

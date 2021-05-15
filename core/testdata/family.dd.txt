@@ -1,4 +1,8 @@
-.load core/testdata/family.dl
+.load core/testdata/family_rules.dl
+----
+application/datalog
+
+.load core/testdata/family_facts.dl
 ----
 application/datalog
 

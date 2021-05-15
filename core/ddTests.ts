@@ -5,22 +5,41 @@ import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
 import { datalogOut } from "../util/ddTest/types";
 import { AbstractInterpreter } from "./abstractInterpreter";
+import { IncrementalInterpreter } from "./incremental/interpreter";
 
-export function coreTests(writeResults: boolean): Suite {
+export function coreTestsSimple(writeResults: boolean): Suite {
+  return coreTests(writeResults, () => new SimpleInterpreter(".", fsLoader));
+}
+
+export function coreTestsIncremental(writeResults: boolean): Suite {
+  return coreTests(
+    writeResults,
+    () => new IncrementalInterpreter(".", fsLoader)
+  );
+}
+
+function coreTests(
+  writeResults: boolean,
+  getInterp: () => AbstractInterpreter
+): Suite {
   return ["simple", "family", "recurse", "literals"].map((name) => ({
     name,
     test() {
       runDDTestAtPath(
         `core/testdata/${name}.dd.txt`,
-        putThroughInterp,
-        writeResults
+        (test: string[]) => putThroughInterp(test, getInterp),
+        writeResults,
+        "lineOrderIndependent"
       );
     },
   }));
 }
 
-export function putThroughInterp(test: string[]): TestOutput[] {
-  let interp: AbstractInterpreter = new SimpleInterpreter(".", fsLoader);
+export function putThroughInterp(
+  test: string[],
+  getInterp: () => AbstractInterpreter
+): TestOutput[] {
+  let interp = getInterp();
 
   const results: TestOutput[] = [];
 

@@ -1,13 +1,14 @@
 import { runSuites } from "./util/testing";
 import { unifyTests } from "./core/unifyTests";
 import { parserTests } from "./core/parserTest";
-import { coreTests } from "./core/ddTests";
+import { coreTestsSimple, coreTestsIncremental } from "./core/ddTests";
 import { fpTests } from "./apps/fp/ddTests";
 import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
 import { parserlibTests } from "./apps/parserlib/ddTests";
+import { incrTests } from "./core/incremental/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -17,7 +18,10 @@ const stayAlive = flags.has("--stay-alive");
 const suites = {
   unifyTests,
   parserTests,
-  coreTests: coreTests(writeResults),
+  // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
+  coreTestsSimple: coreTestsSimple(writeResults),
+  coreTestsIncremental: coreTestsIncremental(writeResults),
+  incrTests: incrTests(writeResults),
   fpTests: fpTests(writeResults),
   json2DLTests,
   prettyPrintTests,

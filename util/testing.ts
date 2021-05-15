@@ -1,6 +1,18 @@
 import * as diff from "diff";
 import * as util from "util";
 
+// TODO: assert order-independent equal
+export function assert(
+  cond: boolean,
+  expected: string,
+  actual: string,
+  msg: string
+) {
+  if (!cond) {
+    throw new DiffError(expected, actual, msg);
+  }
+}
+
 export function assertStringEqual(
   expected: string,
   actual: string,

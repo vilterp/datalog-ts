@@ -1,0 +1,41 @@
+.table person
+.table father
+.table mother
+
+grandfather{grandchild: A, grandfather: C} :-
+  parent{child: A, parent: B} &
+  father{child: B, father: C}.
+grandmother{grandchild: A, grandmother: C} :-
+  parent{child: A, parent: B} &
+  mother{child: B, mother: C}.
+grandparent{grandchild: A, grandparent: C} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C}.
+parent{child: C, parent: P} :-
+  mother{child: C, mother: P} | father{child: C, father: P}.
+parents{child: C, mother: M, father: F} :-
+  mother{child: C, mother: M} &
+  father{child: C, father: F}.
+sibling{left: L, right: R} :-
+  L != R &
+  parents{child: L, mother: M, father: F} &
+  parents{child: R, mother: M, father: F}.
+cousin{left: L, right: R} :-
+  parent{child: L, parent: P1} &
+  sibling{left: P1, right: P2} &
+  parent{child: R, parent: P2}.
+uncle{child: C, uncle: U} :-
+  parent{child: C, parent: P} &
+  brother{person: P, brother: U}.
+aunt{child: C, aunt: U} :-
+  parent{child: C, parent: P} &
+  sister{person: P, sister: U}.
+brother{person: L, brother: R} :-
+  person{name: R, gender: "Male"} &
+  sibling{left: L, right: R}.
+sister{person: L, sister: R} :-
+  person{name: R, gender: "Female"} &
+  sibling{left: L, right: R}.
+ancestor{desc: X, an: Z} :-
+  parent{child: X, parent: Z} |
+  parent{child: X, parent: Y} & ancestor{desc: Y, an: Z}.

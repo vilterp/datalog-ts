@@ -8,7 +8,7 @@ import { LayoutManager } from "@jaegertracing/plexus";
 // TODO(joe): Update import after killing `DirectedGraph`
 import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
-import familyDL from "../../core/testdata/family.dl";
+import familyDL from "../../core/testdata/family_rules.dl";
 import { uniqBy } from "../../util/util";
 import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";

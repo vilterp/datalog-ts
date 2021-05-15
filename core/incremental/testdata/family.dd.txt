@@ -1,0 +1,7 @@
+.load ../../testdata/family_rules.dl
+----
+application/datalog
+
+.load ../../testdata/family_facts.dl
+----
+application/datalog

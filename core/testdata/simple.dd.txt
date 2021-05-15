@@ -1,3 +1,11 @@
+.table father
+----
+application/datalog
+
+.table usage
+----
+application/datalog
+
 father{child: "Pete", father: "Paul"}.
 ----
 application/datalog
