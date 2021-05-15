@@ -187,10 +187,10 @@ function loadTickInitiator<ActorState, Msg extends Json>(
     case "messageReceived": {
       const msg = trace.interp.queryStr(
         `message{id: "${init.messageID}", fromTickID: T}`
-      ).results[0].term as Rec;
+      )[0].term as Rec;
       const fromTick = trace.interp.queryStr(
         `tick{id: "${(msg.attrs.fromTickID as StringLit).val}", actorID: A}`
-      ).results[0].term as Rec;
+      )[0].term as Rec;
       return {
         type: "messageReceived",
         from: (fromTick.attrs.actorID as StringLit).val,

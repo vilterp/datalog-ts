@@ -1,4 +1,4 @@
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Suite } from "../../util/testing";
 import { TestOutput, runDDTestAtPath } from "../../util/ddTest";
 import { language } from "./parser";
@@ -16,6 +16,7 @@ import { Rec } from "../../core/types";
 import { traceToTree, getRelatedPaths } from "../../core/traceTree";
 import { fsLoader } from "../../core/fsLoader";
 import { datalogOut, jsonOut, plainTextOut } from "../../util/ddTest/types";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 export function fpTests(writeResults: boolean): Suite {
   return [
@@ -104,8 +105,8 @@ function typecheckTest(test: string[]): TestOutput[] {
     const flattened = flatten(parsed);
     const rendered = flattened.map((t) => ppt(t) + ".");
 
-    const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
-    const interp2 = flattened.reduce<Interpreter>(
+    const interp = new SimpleInterpreter("apps/fp/dl", fsLoader); // hmmm
+    const interp2 = flattened.reduce<AbstractInterpreter>(
       (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
       interp
     );
@@ -117,8 +118,8 @@ function typecheckTest(test: string[]): TestOutput[] {
     return plainTextOut(
       [
         ...rendered,
-        ...scopeResults.results.map((r) => ppt(r.term) + ".").sort(),
-        ...typeResults.results.map((r) => ppt(r.term) + ".").sort(),
+        ...scopeResults.map((r) => ppt(r.term) + ".").sort(),
+        ...typeResults.map((r) => ppt(r.term) + ".").sort(),
       ].join("\n")
     );
   });
@@ -129,8 +130,8 @@ function suggestionTest(test: string[]): TestOutput[] {
     const parsed = language.expr.tryParse(input);
     const flattened = flatten(parsed);
 
-    const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
-    const interp2 = flattened.reduce<Interpreter>(
+    const interp = new SimpleInterpreter("apps/fp/dl", fsLoader); // hmmm
+    const interp2 = flattened.reduce<AbstractInterpreter>(
       (interp, t) => interp.evalStmt({ type: "Insert", record: t as Rec })[1],
       interp
     );
@@ -139,7 +140,7 @@ function suggestionTest(test: string[]): TestOutput[] {
       "ide.Suggestion{id: I, name: N, type: T}"
     );
     return plainTextOut(
-      [...suggResults.results.map((r) => ppt(r.term) + ".").sort()].join("\n")
+      [...suggResults.map((r) => ppt(r.term) + ".").sort()].join("\n")
     );
   });
 }
@@ -150,19 +151,17 @@ function traceTest(test: string[], opts: TracePrintOpts): TestOutput[] {
     const parsed = language.expr.tryParse(expr);
     const flattened = flatten(parsed);
 
-    const interp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
+    const interp = new SimpleInterpreter("apps/fp/dl", fsLoader); // hmmm
     const interp2 = flattened.reduce((interp, t) => {
       return interp.evalStmt({ type: "Insert", record: t as Rec })[1];
     }, interp);
     const interp3 = interp2.doLoad("main.dl");
     // TODO: why does interpacing I with 0 return no results
     const typeResults = interp3.queryStr("tc.Type{id: 0, type: T}");
-    if (typeResults.results.length !== 1) {
-      throw new Error(
-        `expecting one result, got ${typeResults.results.length}`
-      );
+    if (typeResults.length !== 1) {
+      throw new Error(`expecting one result, got ${typeResults.length}`);
     }
-    const res = typeResults.results[0];
+    const res = typeResults[0];
     // TODO: allow input of full situated path; get parents (write scope path parser? ugh)
     const { children } = getRelatedPaths(res, { path: [], name: bindingName });
     const childPaths = children.map((c) =>

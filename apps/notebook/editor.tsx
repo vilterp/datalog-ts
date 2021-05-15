@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MarkdownNode, parse } from "./markdown";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Program, Res } from "../../core/types";
 import { language } from "../../core/parser";
 import { IndependentTraceView } from "../../uiCommon/replViews";
@@ -14,6 +14,7 @@ import TextAreaAutosize from "react-textarea-autosize";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Collapsible } from "../../uiCommon/collapsible";
 import Parsimmon, { Result } from "parsimmon";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 type Block = { id: number; content: string; type: "Code" | "Markdown" };
 export type Doc = { blocks: Block[]; nextID: number; editingID: number };
@@ -59,9 +60,9 @@ function MdExport(props: { doc: Doc }) {
 function CodeBlock(props: {
   code: string;
   setCode: (c: string) => void;
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   editing: boolean;
-}): { interp: Interpreter; rendered: React.ReactNode } {
+}): { interp: AbstractInterpreter; rendered: React.ReactNode } {
   const programRes: Result<Program> = language.program.parse(props.code);
   const newInterpAndResults =
     programRes.status === false
@@ -71,7 +72,7 @@ function CodeBlock(props: {
           error: Parsimmon.formatError(props.code, programRes),
         }
       : programRes.value.reduce<{
-          interp: Interpreter;
+          interp: AbstractInterpreter;
           results: Res[][];
           error: string | null;
         }>(
@@ -84,7 +85,7 @@ function CodeBlock(props: {
               return {
                 error: null,
                 interp: newInterp,
-                results: [...accum.results, res.results],
+                results: [...accum.results, res],
               };
             } catch (e) {
               return {
@@ -146,13 +147,13 @@ function MdBlock(props: {
 }
 
 function Cell(props: {
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   doc: Doc;
   setDoc: (d: Doc) => void;
   viewMode: boolean;
   idx: number;
   block: Block;
-}): { interp: Interpreter; view: React.ReactNode } {
+}): { interp: AbstractInterpreter; view: React.ReactNode } {
   const editing = props.doc.editingID === props.block.id;
   const setContent = (content: string) => {
     props.setDoc({
@@ -231,7 +232,7 @@ function Cell(props: {
 }
 
 type Ctx = {
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   rendered: { node: React.ReactNode; id: number }[];
 };
 
@@ -240,7 +241,7 @@ function Blocks(props: {
   setDoc: (doc: Doc) => void;
   viewMode: boolean;
 }) {
-  const interp = new Interpreter(".", null);
+  const interp = new SimpleInterpreter(".", null);
 
   const ctx = props.doc.blocks.reduce<Ctx>(
     (ctx, block, idx): Ctx => {

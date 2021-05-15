@@ -1,9 +1,9 @@
 import React from "react";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit } from "../../core/types";
 import { VIZ_REGISTRY } from "../vizRegistry";
 
-export function VizArea(props: { interp: Interpreter }) {
+export function VizArea(props: { interp: AbstractInterpreter }) {
   const interp = ensureVizTable(props.interp);
   const specs = interp.queryStr(
     "internal.visualization{name: Name, spec: Spec}"
@@ -13,7 +13,7 @@ export function VizArea(props: { interp: Interpreter }) {
     <>
       <h3>Visualizations</h3>
 
-      {specs.results.map((result) => (
+      {specs.map((result) => (
         <IndividualViz
           interp={props.interp}
           name={(result.bindings.Name as StringLit).val}
@@ -25,7 +25,7 @@ export function VizArea(props: { interp: Interpreter }) {
 }
 
 function IndividualViz(props: {
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   name: string;
   spec: Rec;
 }) {
@@ -42,7 +42,7 @@ function IndividualViz(props: {
   );
 }
 
-function ensureVizTable(interp: Interpreter): Interpreter {
+function ensureVizTable(interp: AbstractInterpreter): AbstractInterpreter {
   const [_, newInterp] = interp.evalStmt({
     type: "TableDecl",
     name: "internal.visualization",

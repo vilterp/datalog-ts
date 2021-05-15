@@ -1,13 +1,13 @@
 import React from "react";
 import classnames from "classnames";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit, Bool } from "../../core/types";
 import { uniqBy } from "../../util/util";
 import { dlToSpan, Span } from "./types";
 import { DLTypeError } from "./errors";
 
 export function highlight(
-  interp: Interpreter,
+  interp: AbstractInterpreter,
   code: string,
   syntaxErrorIdx: number | null,
   typeErrors: DLTypeError[]
@@ -20,7 +20,7 @@ export function highlight(
   );
   const sortedSegments = hlWins(
     uniqBy(
-      segments.results
+      segments
         .map((res) => mkRawSegment(res.term as Rec))
         .sort((a, b) => getStartOffset(a) - getStartOffset(b)),
       (rs) => `${spanToString(rs.span)}-${rs.state.highlight}`

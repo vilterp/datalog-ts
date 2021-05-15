@@ -1,6 +1,6 @@
 import React from "react";
 import { VizTypeSpec } from "./typeSpec";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit } from "../../core/types";
 import { SimpleTermView } from "../term";
 
@@ -10,7 +10,7 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-function SequenceDiagram(props: { interp: Interpreter; spec: Rec }) {
+function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
   const actors = props.interp.queryStr(
     (props.spec.attrs.actors as StringLit).val
   );
@@ -27,24 +27,24 @@ function SequenceDiagram(props: { interp: Interpreter; spec: Rec }) {
       <SimpleTermView term={props.spec} />
       Actors:
       <ul>
-        {actors.results.map((actor) => (
-          <li>
+        {actors.map((actor) => (
+          <li key={((actor.term as Rec).attrs.id as StringLit).val}>
             <SimpleTermView term={actor.term} />
           </li>
         ))}
       </ul>
       Messages:
       <ul>
-        {messages.results.map((message) => (
-          <li>
+        {messages.map((message) => (
+          <li key={((message.term as Rec).attrs.id as StringLit).val}>
             <SimpleTermView term={message.term} />
           </li>
         ))}
       </ul>
       Ticks:
       <ul>
-        {ticks.results.map((tick) => (
-          <li>
+        {ticks.map((tick) => (
+          <li key={((tick.term as Rec).attrs.id as StringLit).val}>
             <SimpleTermView term={tick.term} />
           </li>
         ))}

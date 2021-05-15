@@ -220,3 +220,72 @@ export function zip<L, R, O>(
   }
   return output;
 }
+
+export function setUnion<T>(left: Set<T>, right: Set<T>): Set<T> {
+  return new Set<T>([...left, ...right]);
+}
+
+export function setAdd<T>(set: Set<T>, item: T): Set<T> {
+  return new Set<T>([...set, item]);
+}
+
+export function filterObj<V>(
+  obj: { [k: string]: V },
+  f: (k: string, v: V) => boolean
+): { [k: string]: V } {
+  return filterMapObj(obj, (k, v) => {
+    return f(k, v) ? v : null;
+  });
+}
+
+export function filterMapObj<T, V>(
+  obj: { [k: string]: T },
+  f: (k: string, t: T) => V | undefined | null
+): { [k: string]: V } {
+  const out: { [k: string]: V } = {};
+  for (const key of Object.keys(obj)) {
+    const res = f(key, obj[key]);
+    if (res) {
+      out[key] = res;
+    }
+  }
+  return out;
+}
+
+export function sortBy<T>(arr: T[], attr: (t: T) => string): T[] {
+  return arr.sort((a, b) => attr(a).localeCompare(attr(b)));
+}
+
+export function permute<T>(items: T[]): T[][] {
+  if (items.length === 1) {
+    return [items];
+  }
+  const out: T[][] = [];
+  const firstEl = items[0];
+  for (let perm of permute(items.slice(1))) {
+    for (let i = 0; i < items.length; i++) {
+      let outArr: T[] = [];
+      outArr = outArr.concat(perm.slice(0, i));
+      outArr.push(firstEl);
+      outArr = outArr.concat(perm.slice(i));
+      out.push(outArr);
+    }
+  }
+  return out;
+}
+
+export function combineObjects<T, U>(
+  left: { [key: string]: T },
+  right: { [key: string]: T },
+  combine: (key: string, left: T, right: T) => U
+): { [key: string]: U } {
+  const out: { [key: string]: U } = {};
+  for (let leftKey in left) {
+    const rightItem = right[leftKey];
+    if (rightItem) {
+      const leftItem = left[leftKey];
+      out[leftKey] = combine(leftKey, leftItem, rightItem);
+    }
+  }
+  return out;
+}

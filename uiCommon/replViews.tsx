@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { language } from "../core/parser";
 import { Rec, Statement, Res, Term } from "../core/types";
-import { Interpreter } from "../core/interpreter";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { ppr } from "../core/pretty";
 import { RuleC } from "./rule";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";
@@ -10,14 +10,14 @@ import { TraceView } from "./trace";
 import { makeTermWithBindings } from "../core/traceTree";
 
 // some views for making repl-like things
-export function Query(props: { query: string; interp: Interpreter }) {
+export function Query(props: { query: string; interp: AbstractInterpreter }) {
   const record = language.record.tryParse(props.query) as Rec;
   const results = props.interp.evalStmt({ type: "Insert", record })[0];
   return (
     <div style={{ fontFamily: "monospace" }}>
       <BareTerm term={record} />
       <hr />
-      {results.results.map((res) => (
+      {results.map((res) => (
         <IndependentTraceView key={ppr(res)} res={res} />
       ))}
     </div>
@@ -26,8 +26,8 @@ export function Query(props: { query: string; interp: Interpreter }) {
 
 export function EvalStmt(props: {
   stmt: string;
-  interp: Interpreter;
-}): [Interpreter, React.ReactNode] {
+  interp: AbstractInterpreter;
+}): [AbstractInterpreter, React.ReactNode] {
   const stmt = language.statement.tryParse(props.stmt) as Statement;
   const [_, interp2] = props.interp.evalStmt(stmt);
   return [interp2, <Stmt stmt={stmt} />];

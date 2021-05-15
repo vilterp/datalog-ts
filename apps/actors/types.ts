@@ -1,24 +1,31 @@
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { makeMemoryLoader } from "../../core/loaders";
 // @ts-ignore
 import patterns from "./patterns.dl";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { toGraphviz } from "../../core/incremental/graphviz";
+import { prettyPrintGraph } from "../../util/graphviz";
 
 // === overall model ===
 
 export type Trace<ActorState, Msg> = {
   latestStates: { [actorID: string]: ActorState }; // TODO: can we get this in the DB somehow?
   nextID: number;
-  interp: Interpreter;
+  interp: AbstractInterpreter;
 };
 
 export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
-  const interp = new Interpreter(
+  const interp = new IncrementalInterpreter(
     ".",
     makeMemoryLoader({
       "./patterns.dl": patterns,
     })
   );
   const interp2 = interp.doLoad("patterns.dl");
+  console.log(
+    prettyPrintGraph(toGraphviz((interp2 as IncrementalInterpreter).graph))
+  );
   return {
     latestStates: {},
     nextID: 0,

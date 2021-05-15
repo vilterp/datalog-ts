@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ppt } from "../core/pretty";
-import { Rec, Res, Relation } from "../core/types";
-import { Interpreter } from "../core/interpreter";
+import { Rec, Res, Relation, rec } from "../core/types";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { TreeCollapseState, TreeView, emptyCollapseState } from "./treeView";
 import { RuleC } from "./rule";
 import { makeTermWithBindings } from "../core/traceTree";
@@ -16,7 +16,7 @@ export type TableCollapseState = {
 
 export function RelationTable(props: {
   relation: Relation;
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
@@ -26,15 +26,15 @@ export function RelationTable(props: {
   try {
     results =
       props.relation.type === "Table"
-        ? props.relation.records.map((term) => ({
-            term,
+        ? props.interp.queryRec(rec(props.relation.name, {})).map((res) => ({
+            term: res.term,
             bindings: {},
-            trace: { type: "BaseFactTrace", fact: term },
+            trace: { type: "BaseFactTrace", fact: res.term },
           }))
         : props.interp.evalStmt({
             type: "Insert",
             record: props.relation.rule.head,
-          })[0].results;
+          })[0];
   } catch (e) {
     error = e.toString();
     console.error(e);
@@ -44,7 +44,7 @@ export function RelationTable(props: {
       ? []
       : (props.relation.type === "Rule"
           ? Object.keys(props.relation.rule.head.attrs)
-          : Object.keys((props.relation.records[0] as Rec).attrs)
+          : Object.keys((results[0].term as Rec).attrs)
         ).sort((a, b) => fieldComparator(a).localeCompare(fieldComparator(b)));
   return (
     <>
@@ -71,7 +71,6 @@ export function RelationTable(props: {
           </thead>
           <tbody>
             {results.map((result, idx) => {
-              const hl = props.highlight.highlight;
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
@@ -92,7 +91,9 @@ export function RelationTable(props: {
                     onClick={toggleRowCollapsed}
                     style={{ cursor: "pointer", fontFamily: "monospace" }}
                   >
-                    {props.relation.type === "Rule" ? <td>{icon}</td> : null}
+                    {props.relation.type === "Rule" && result.trace ? (
+                      <td>{icon}</td>
+                    ) : null}
                     {fields.map((field) => (
                       <td
                         key={field}
@@ -119,7 +120,7 @@ export function RelationTable(props: {
                       </td>
                     ))}
                   </tr>
-                  {rowCollapseState.collapsed ? null : (
+                  {rowCollapseState.collapsed || !result.trace ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
                         <TraceView
@@ -147,6 +148,7 @@ export function RelationTable(props: {
   );
 }
 
+// TODO: phase out in favor of explorer's viz capabilities
 function PossibleTreeViz(props: { results: Res[] }) {
   if (props.results.length === 0) {
     return null;

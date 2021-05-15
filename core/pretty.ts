@@ -9,6 +9,7 @@ import {
   ScopePath,
   InvocationLocation,
   SituatedBinding,
+  BinExpr,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList, repeat, flatMap } from "../util/util";
@@ -314,4 +315,14 @@ export function escapeString(str: string): string {
     .join(`\\"`)
     .split("\n")
     .join("\\n");
+}
+
+export function prettyPrintBinExpr(term: BinExpr): string {
+  return `${prettyPrintTerm(term.left)} ${term.op} ${prettyPrintTerm(
+    term.right
+  )}`;
+}
+
+export function ppBE(term: BinExpr): string {
+  return pp.render(100, prettyPrintBinExpr(term));
 }

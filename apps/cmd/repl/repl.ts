@@ -1,21 +1,16 @@
-import { Interpreter } from "../../../core/interpreter";
+import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Loader } from "../../../core/loaders";
 import { Rec, StringLit } from "../../../core/types";
 import * as readline from "readline";
-import {
-  prettyPrintDB,
-  prettyPrintTerm,
-  prettyPrintTrace,
-  defaultTracePrintOpts,
-} from "../../../core/pretty";
+import { prettyPrintDB, prettyPrintTerm } from "../../../core/pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "../../../util/graphviz";
-import { traceToTree } from "../../../core/traceTree";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 
 type Mode = "repl" | "pipe" | "test";
 
 export class Repl {
-  interp: Interpreter;
+  interp: AbstractInterpreter;
   in: NodeJS.ReadableStream;
   out: NodeJS.WritableStream;
   buffer: string;
@@ -30,7 +25,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.interp = new Interpreter(__dirname, loader);
+    this.interp = new SimpleInterpreter(__dirname, loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
@@ -73,15 +68,7 @@ export class Repl {
     }
     // special commands
     // TODO: parse these with parser
-    if (line === ".dump") {
-      this.println(pp.render(100, prettyPrintDB(this.interp.db)));
-      rl.prompt();
-      return;
-    } else if (line === ".resetFacts") {
-      this.interp.db.tables = {};
-      rl.prompt();
-      return;
-    } else if (line === ".graphviz") {
+    if (line === ".graphviz") {
       // TODO: remove dot...
       // TODO: allow whole config to be passed in...
       this.doGraphviz(
@@ -118,12 +105,8 @@ export class Repl {
     try {
       const [stmtResult, interp] = this.interp.evalStr(this.buffer);
       this.interp = interp;
-      stmtResult.results.forEach((res) => {
-        this.println(
-          stmtResult.trace
-            ? prettyPrintTrace(traceToTree(res), defaultTracePrintOpts)
-            : pp.render(100, prettyPrintTerm(res.term)) + "."
-        );
+      stmtResult.forEach((res) => {
+        this.println(pp.render(100, prettyPrintTerm(res.term)) + ".");
       });
     } catch (e) {
       // TODO: distinguish between parse errors and others
@@ -150,7 +133,7 @@ export class Repl {
     const nodes = this.interp.queryStr(nodesConfig.query);
     // TODO: oof, all this typecasting
     const g: Graph = {
-      edges: edges.results.map((e) => {
+      edges: edges.map((e) => {
         const rec = e.term as Rec;
         return {
           from: (rec.attrs[edgesConfig.fromAttr] as StringLit).val,
@@ -162,7 +145,7 @@ export class Repl {
           },
         };
       }),
-      nodes: nodes.results.map((n) => {
+      nodes: nodes.map((n) => {
         const rec = n.term as Rec;
         return {
           id: (rec.attrs[nodesConfig.idAttr] as StringLit).val,

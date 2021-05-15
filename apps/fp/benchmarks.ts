@@ -2,12 +2,13 @@ import { BenchmarkResult, BenchmarkSpec } from "../../util/benchmark";
 import { language } from "./parser";
 import { flatten } from "./flatten";
 // import v8profiler from "v8-profiler-node8";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Performance } from "w3c-hr-time";
 // import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";
 import { ppt } from "../../core/pretty";
 import { assertStringEqual } from "../../util/testing";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 const performance = new Performance();
 
@@ -24,7 +25,10 @@ export const fpBenchmarks: BenchmarkSpec[] = [
 ];
 
 function fpTest(repetitions: number, input): BenchmarkResult {
-  let originalInterp = new Interpreter("apps/fp/dl", fsLoader); // hmmm
+  let originalInterp: AbstractInterpreter = new SimpleInterpreter(
+    "apps/fp/dl",
+    fsLoader
+  ); // hmmm
   const [_, newInterp] = originalInterp.evalStmt({
     type: "LoadStmt",
     path: "main.dl",
@@ -50,7 +54,7 @@ function fpTest(repetitions: number, input): BenchmarkResult {
     const res = interp.queryStr("tc.Type{id: 0, type: T}");
     assertStringEqual(
       'tc.Type{id: 0, type: "string"}',
-      res.results.map((res) => ppt(res.term)).join(".\n")
+      res.map((res) => ppt(res.term)).join(".\n")
     );
   }
 

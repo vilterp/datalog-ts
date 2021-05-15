@@ -1,8 +1,11 @@
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec } from "../../core/types";
 
 export type VizTypeSpec = {
   name: string;
   description: string;
-  component: (props: { interp: Interpreter; spec: Rec }) => React.ReactElement;
+  component: (props: {
+    interp: AbstractInterpreter;
+    spec: Rec;
+  }) => React.ReactElement;
 };

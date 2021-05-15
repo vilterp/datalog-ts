@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { language as fpLanguage, Expr } from "../parser";
+import { language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { Interpreter } from "../../../core/interpreter";
+import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
 import { Collapsible } from "../../../uiCommon/collapsible";
 import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
@@ -14,7 +14,7 @@ import { loader } from "../dl";
 import { getSuggestions } from "./suggestions";
 
 function Main() {
-  const interp = new Interpreter(".", loader);
+  const interp = new SimpleInterpreter(".", loader);
 
   const [editorState, setEditorState] = useJSONLocalStorage(
     "editor-state",

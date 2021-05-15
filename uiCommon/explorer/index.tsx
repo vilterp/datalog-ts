@@ -1,38 +1,39 @@
 import React, { useState } from "react";
 import useHashParam from "use-hash-param";
-import { Interpreter } from "../../core/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
 import { RelationTable, TableCollapseState } from "../relationTable";
 import { noHighlight, HighlightProps } from "../term";
 import { useJSONLocalStorage } from "../hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
+import { sortBy } from "../../util/util";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
-export function Explorer(props: { interp: Interpreter; showViz?: boolean }) {
-  const allRules: Relation[] = Object.keys(props.interp.db.rules)
-    .sort()
-    .map((name) => ({ type: "Rule", name, rule: props.interp.db.rules[name] }));
+export function Explorer(props: {
+  interp: AbstractInterpreter;
+  showViz?: boolean;
+}) {
+  const allRules: Relation[] = sortBy(
+    props.interp.getRules(),
+    (r) => r.head.relation
+  ).map((rule) => ({
+    type: "Rule",
+    name: rule.head.relation,
+    rule,
+  }));
   const allTables: Relation[] = [
-    ...Object.keys(props.interp.db.tables)
+    ...props.interp
+      .getTables()
       .sort()
       .map(
         (name): Relation => ({
           type: "Table",
           name,
-          records: props.interp.db.tables[name],
         })
       ),
-    ...Object.keys(props.interp.db.virtualTables)
-      .sort()
-      .map(
-        (name): Relation => ({
-          type: "Table",
-          name,
-          records: props.interp.db.virtualTables[name](props.interp.db),
-        })
-      ),
+    // TODO: virtual tables
   ];
   const allRelations: Relation[] = [...allTables, ...allRules];
 
