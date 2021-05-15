@@ -14,7 +14,10 @@ import { List } from "immutable";
 import { emptyIndexedCollection } from "./indexedCollection";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
-  return addNodeKnownID(name, graph, false, { type: "BaseFactTable" });
+  const withNode = addNodeKnownID(name, graph, false, {
+    type: "BaseFactTable",
+  });
+  return { ...withNode, tables: [...graph.tables, name] };
 }
 
 export function resolveUnmappedRule(

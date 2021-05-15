@@ -30,6 +30,8 @@ type Output =
 
 export class IncrementalInterpreter extends AbstractInterpreter {
   graph: RuleGraph;
+  rules: Rule[];
+  tables: string[];
 
   // TODO: kind of don't want to expose the graph parameter on the public
   //   constructor, but there's no constructor overloading...
@@ -151,11 +153,11 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   }
 
   getRules(): Rule[] {
-    throw new Error("TODO");
+    return this.graph.rules;
   }
 
   getTables(): string[] {
-    throw new Error("TODO");
+    return this.graph.tables;
   }
 }
 

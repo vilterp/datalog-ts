@@ -55,7 +55,10 @@ export function addRule(
     ]);
     return replayFacts(resultGraph, newNodeIDs, nodesToReplay);
   }
-  return { newGraph: resultGraph, emissionLog: [] };
+  return {
+    newGraph: { ...resultGraph, rules: [...graph.rules, rule] },
+    emissionLog: [],
+  };
 }
 
 function replayFacts(
