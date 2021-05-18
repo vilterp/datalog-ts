@@ -3,6 +3,21 @@ import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit } from "../../core/types";
 import { SimpleTermView } from "../term";
+import {
+  AbsPos,
+  Circle,
+  Diag,
+  EMPTY_DIAGRAM,
+  HLayout,
+  Line,
+  ORIGIN,
+  Tag,
+  Text,
+  VLayout,
+  ZLayout,
+} from "../diagrams/types";
+import { getCoords } from "../diagrams/getCoords";
+import { flatMap } from "../../util/util";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -51,4 +66,102 @@ function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
       </ul>
     </div>
   );
+}
+
+export type Location = string;
+export type Time = number;
+
+export interface Sequence {
+  locations: Location[];
+  hops: Hop[];
+}
+
+export interface Hop {
+  from: TimeAndPlace;
+  to: TimeAndPlace;
+}
+
+interface TimeAndPlace {
+  location: Location;
+  time: Time;
+}
+
+function yForTime(t: Time): number {
+  return t * 10;
+}
+
+export function sequenceDiagram(seq: Sequence): Diag<TimeAndPlace> {
+  const locationLines = AbsPos(
+    { x: 40, y: 20 },
+    HLayout(
+      seq.locations.map((loc) =>
+        VLayout([
+          Text({
+            text: loc,
+            fontSize: 10,
+          }),
+          ZLayout([
+            Line({
+              width: 1,
+              stroke: "black",
+              start: ORIGIN,
+              end: { x: 0, y: 200 },
+            }),
+            ...pointsForLocation(loc, seq.hops).map((tp) =>
+              AbsPos(
+                { x: 0, y: yForTime(tp.time) },
+                Tag<TimeAndPlace>(tp, EMPTY_DIAGRAM)
+              )
+            ),
+          ]),
+        ])
+      )
+    )
+  );
+  const dots = ZLayout(
+    flatMap(seq.locations, (loc) =>
+      pointsForLocation(loc, seq.hops).map((pt) => {
+        const coords = getCoords(locationLines, pt);
+        if (coords === null) {
+          return EMPTY_DIAGRAM;
+        }
+        return AbsPos(
+          coords,
+          Circle({
+            radius: 5,
+            fill: "red",
+          })
+        );
+      })
+    )
+  );
+  const hops = ZLayout(
+    seq.hops.map((hop) => {
+      const fromCoords = getCoords(locationLines, hop.from);
+      const toCoords = getCoords(locationLines, hop.to);
+      if (fromCoords === null || toCoords === null) {
+        return EMPTY_DIAGRAM;
+      }
+      return Line({
+        stroke: "blue",
+        width: 3,
+        start: fromCoords,
+        end: toCoords,
+      });
+    })
+  );
+  return ZLayout([locationLines, hops, dots]);
+}
+
+function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {
+  return flatMap(hops, (hop) => {
+    const out: TimeAndPlace[] = [];
+    if (hop.to.location === loc) {
+      out.push(hop.to);
+    }
+    if (hop.from.location === loc) {
+      out.push(hop.from);
+    }
+    return out;
+  });
 }
