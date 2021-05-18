@@ -16,6 +16,7 @@ import {
   VLayout,
   ZLayout,
 } from "../diagrams/types";
+import { Diagram } from "../diagrams/render";
 import { getCoords } from "../diagrams/getCoords";
 import { flatMap } from "../../util/util";
 
@@ -64,6 +65,8 @@ function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
           </li>
         ))}
       </ul>
+      <h4>Test diagram:</h4>
+      <Diagram diagram={sequenceDiagram(TEST_SEQ)} />
     </div>
   );
 }
@@ -89,6 +92,25 @@ interface TimeAndPlace {
 function yForTime(t: Time): number {
   return t * 10;
 }
+
+const TEST_SEQ: Sequence = {
+  locations: ["New York", "Dublin", "Stockholm", "London", "Munich"],
+  hops: [
+    {
+      from: { location: "New York", time: 0 },
+      to: { location: "Dublin", time: 10 },
+    },
+    // layover
+    {
+      from: { location: "Dublin", time: 10 },
+      to: { location: "Dublin", time: 16 },
+    },
+    {
+      from: { location: "Dublin", time: 16 },
+      to: { location: "Stockholm", time: 19 },
+    },
+  ],
+};
 
 export function sequenceDiagram(seq: Sequence): Diag<TimeAndPlace> {
   const locationLines = AbsPos(
