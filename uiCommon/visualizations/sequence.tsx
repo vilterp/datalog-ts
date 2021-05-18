@@ -1,7 +1,7 @@
 import React from "react";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, StringLit } from "../../core/types";
+import { Rec, Res, StringLit } from "../../core/types";
 import { SimpleTermView } from "../term";
 import {
   AbsPos,
@@ -39,36 +39,31 @@ function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
 
   return (
     <div>
-      Hello world. This is a sequence diagram. Spec:{" "}
-      <SimpleTermView term={props.spec} />
-      Actors:
-      <ul>
-        {actors.map((actor) => (
-          <li key={((actor.term as Rec).attrs.id as StringLit).val}>
-            <SimpleTermView term={actor.term} />
-          </li>
-        ))}
-      </ul>
-      Messages:
-      <ul>
-        {messages.map((message) => (
-          <li key={((message.term as Rec).attrs.id as StringLit).val}>
-            <SimpleTermView term={message.term} />
-          </li>
-        ))}
-      </ul>
-      Ticks:
-      <ul>
-        {ticks.map((tick) => (
-          <li key={((tick.term as Rec).attrs.id as StringLit).val}>
-            <SimpleTermView term={tick.term} />
-          </li>
-        ))}
-      </ul>
-      <h4>Test diagram:</h4>
-      <Diagram diagram={sequenceDiagram(TEST_SEQ)} />
+      <div>
+        <Diagram
+          diagram={sequenceDiagram(makeSequenceSpec(actors, messages))}
+        />
+      </div>
     </div>
   );
+}
+
+// TODO: maybe integrate this into one of the above functions??
+//   or not
+function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
+  return {
+    locations: actors.map((actor) => (actor.bindings.ID as StringLit).val),
+    hops: messages.map((message) => ({
+      from: {
+        location: (message.bindings.FromActorID as StringLit).val,
+        time: parseInt((message.bindings.FromTickID as StringLit).val),
+      },
+      to: {
+        location: (message.bindings.ToActorID as StringLit).val,
+        time: parseInt((message.bindings.ToTickID as StringLit).val),
+      },
+    })),
+  };
 }
 
 export type Location = string;

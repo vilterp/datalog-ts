@@ -28,6 +28,17 @@ internal.visualization{
   spec: sequence{
     actors: "actor{id: ID}",
     ticks: "tick{id: ID, actorID: ActorID}",
-    messages: "message{id: ID, fromTickID: FromTickID, toActorID: ToActorID, payload: Payload}"
+    messages: "hop{fromTickID: FromTickID, fromActorID: FromActorID, toTickID: ToTickID, toActorID: ToActorID}"
   }
 }.
+
+hop{
+  messageID: MessageID,
+  fromTickID: FromTickID,
+  fromActorID: FromActorID,
+  toTickID: ToTickID,
+  toActorID: ToActorID
+} :-
+  message{id: MessageID, fromTickID: FromTickID, toActorID: ToActorID} &
+  tick{id: FromTickID, actorID: FromActorID} &
+  tick{id: ToTickID, initiator: messageReceived{messageID: MessageID}}.
