@@ -32,6 +32,10 @@ internal.visualization{
   }
 }.
 
+messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Payload} :-
+  message{id: ID, fromTickID: FromTick, toActorID: ToActor, payload: Payload} &
+  tick{id: FromTick, actorID: FromActor}.
+
 hop{
   messageID: MessageID,
   fromTickID: FromTickID,
