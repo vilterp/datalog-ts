@@ -14,6 +14,9 @@ import { List } from "immutable";
 import { emptyIndexedCollection } from "./indexedCollection";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
+  if (graph.nodes.has(name)) {
+    return graph;
+  }
   const withNode = addNodeKnownID(name, graph, false, {
     type: "BaseFactTable",
   });
