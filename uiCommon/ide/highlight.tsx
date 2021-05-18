@@ -161,9 +161,10 @@ function hlWins(segments: SegmentSpan[]): SegmentSpan[] {
   const second = segments[1];
 
   if (spanToString(first.span) === spanToString(second.span)) {
-    // if (first.type !== second.type) {
-    //   throw new Error("same span should imply same type");
-    // }
+    if (first.type !== second.type) {
+      // throw new Error("same span should imply same type");
+      console.error("same span should imply same type");
+    }
     const chosen = first.state.highlight ? first : second;
     return [chosen, ...hlWins(segments.slice(2))];
   }
