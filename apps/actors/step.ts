@@ -136,6 +136,7 @@ export function initialSteps<ActorState extends Json, Msg extends Json>(
   );
 }
 
+// TODO: don't make me say from: 'user'
 export function sendUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,

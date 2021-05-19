@@ -231,33 +231,19 @@ export function ClientServerUI(props: {
 }) {
   return (
     <>
-      <h2>Client</h2>
-      <button
-        onClick={() =>
-          props.setTrace(
-            sendUserInput(props.trace, update, {
-              to: "client",
-              from: "user",
-              payload: "decrement",
-            })
-          )
+      <h2>TodoMVC</h2>
+      <input
+        type="text"
+        value={(props.trace.latestStates.client as ClientState).currentText}
+        onInput={(evt) =>
+          sendUserInput(props.trace, update, {
+            from: "user",
+            to: "client",
+            payload: { type: "enterText", value: evt.target.value },
+          })
         }
-      >
-        -
-      </button>
-      <button
-        onClick={() =>
-          props.setTrace(
-            sendUserInput(props.trace, update, {
-              to: "client",
-              from: "user",
-              payload: "increment",
-            })
-          )
-        }
-      >
-        +
-      </button>
+      />
+      {/*  TODO: todo list*/}
     </>
   );
 }
