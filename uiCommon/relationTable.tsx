@@ -90,7 +90,9 @@ export function RelationTable(props: {
                   >
                     {props.relation.type === "Rule" && result.trace ? (
                       <td>{icon}</td>
-                    ) : null}
+                    ) : (
+                      <td />
+                    )}
                     {fields.map((field) => (
                       <td
                         key={field}
