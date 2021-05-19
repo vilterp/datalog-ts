@@ -16,7 +16,7 @@
     "serve-fiddle": "cd apps/fiddle/public && http-server -c-1",
     "build-notebook-ui": "esbuild apps/notebook/main.tsx --bundle --outfile=apps/notebook/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
     "serve-notebook-ui": "cd apps/notebook/public && http-server -c-1",
-    "build-actors-ui": "esbuild apps/actors/ui.tsx --bundle --outfile=apps/actors/public/bundle.js --sourcemap '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text",
+    "build-actors-ui": "esbuild apps/actors/main.tsx --bundle --outfile=apps/actors/public/bundle.js --sourcemap '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text",
     "serve-actors-ui": "cd apps/actors/public && http-server -c-1",
     "build-parserlib-playground": "esbuild apps/parserlib/playground/main.tsx --bundle --outfile=apps/parserlib/playground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
     "serve-parserlib-playground": "cd apps/parserlib/playground/public && http-server -c-1",

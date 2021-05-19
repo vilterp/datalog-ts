@@ -1,14 +1,14 @@
-import { ActorID, ActorResp, IncomingMessage } from "./types";
+import { ActorID, ActorResp, LoadedMessageReceivedInitiator } from "./types";
 
 export function reply<ServerState, Req, Resp>(
+  init: LoadedMessageReceivedInitiator<Req>,
   newSt: ServerState,
-  msg: IncomingMessage<Req>,
   resp: Resp
 ): ActorResp<ServerState, Resp> {
   return {
     type: "continue",
     state: newSt,
-    messages: [{ to: msg.from, msg: resp }],
+    messages: [{ to: init.from, msg: resp }],
   };
 }
 
@@ -25,8 +25,8 @@ export function sleep<State, Msg>(
 
 export function send<State, Msg>(
   newState: State,
-  msg: Msg,
-  to: ActorID
+  to: ActorID,
+  msg: Msg
 ): ActorResp<State, Msg> {
   return {
     type: "continue",
@@ -35,12 +35,16 @@ export function send<State, Msg>(
   };
 }
 
-export function update<State, Msg>(newSt: State): ActorResp<State, Msg> {
+export function updateState<State, Msg>(newSt: State): ActorResp<State, Msg> {
   return {
     type: "continue",
     state: newSt,
     messages: [],
   };
+}
+
+export function doNothing<State, Msg>(st: State): ActorResp<State, Msg> {
+  return updateState(st);
 }
 
 export function exit<State, Message>(): ActorResp<State, Message> {

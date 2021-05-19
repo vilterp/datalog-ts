@@ -10,6 +10,8 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
+import { update } from "./scenarios/todoMVC";
+import { mapObjToList } from "../../util/util";
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
@@ -106,6 +108,24 @@ export function step<ActorState extends Json, Msg extends Json>(
   return newTrace;
 }
 
+export function spawnActors<ActorState extends Json, Msg extends Json>(
+  update: UpdateFn<ActorState, Msg>,
+  initialStates: { [actorID: string]: ActorState }
+): Trace<ActorState, Msg> {
+  return initialSteps(
+    update,
+    mapObjToList(initialStates, (actorID, initialState) => ({
+      to: actorID,
+      from: "<god>", // lol
+      init: {
+        type: "spawned",
+        spawningTickID: "0",
+        initialState,
+      },
+    }))
+  );
+}
+
 export function initialSteps<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
   steps: AddressedTickInitiator<ActorState>[]
@@ -119,7 +139,6 @@ export function initialSteps<ActorState extends Json, Msg extends Json>(
 export function sendUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
-  newState: ActorState,
   message: { from: string; to: string; payload: Msg }
 ): Trace<ActorState, Msg> {
   const newTrace = {
@@ -135,7 +154,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
       resp: adtToRec({
         type: "continue",
-        state: newState,
+        state: trace.latestStates[message.from],
         messages: [
           {
             to: message.to,

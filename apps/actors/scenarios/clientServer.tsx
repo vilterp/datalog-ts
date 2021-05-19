@@ -1,8 +1,13 @@
 import React from "react";
-import { ActorResp, LoadedTickInitiator, Trace, UpdateFn } from "../types";
+import {
+  ActorResp,
+  LoadedTickInitiator,
+  Scenario,
+  Trace,
+  UpdateFn,
+} from "../types";
 import * as effects from "../effects";
-import { Scenario } from "../scenario";
-import { initialSteps, sendUserInput } from "../step";
+import { sendUserInput, spawnActors } from "../step";
 
 // states
 
@@ -36,36 +41,11 @@ export function getInitialState(): Trace<
   ClientServerActorState,
   ClientServerMsg
 > {
-  // TODO: something about <god>, lol
-  return initialSteps(update, [
-    {
-      to: "client",
-      from: "<god>",
-      init: {
-        type: "spawned",
-        initialState: { type: "ClientState", value: 0, status: "steady" },
-        spawningTickID: "init",
-      },
-    },
-    {
-      to: "server",
-      from: "<god>",
-      init: {
-        type: "spawned",
-        initialState: { type: "ServerState", value: 0 },
-        spawningTickID: "init",
-      },
-    },
-    {
-      to: "user",
-      from: "<god>",
-      init: {
-        type: "spawned",
-        initialState: { type: "UserState", step: 0 },
-        spawningTickID: "init",
-      },
-    },
-  ]);
+  return spawnActors(update, {
+    client: { type: "ClientState", value: 0, status: "steady" },
+    server: { type: "ServerState", value: 0 },
+    user: { type: "UserState", step: 0 },
+  });
 }
 
 // behaviors
@@ -80,22 +60,22 @@ export function server(
       switch (msg) {
         case "increment":
           return effects.reply(
-            { type: "ServerState", value: state.value + 1 },
-            { from: init.from, msg: init.payload },
+            init,
+            { ...state, value: state.value + 1 },
             "ack"
           );
         case "decrement":
           return effects.reply(
-            { type: "ServerState", value: state.value - 1 },
-            { from: init.from, msg: init.payload },
+            init,
+            { ...state, value: state.value - 1 },
             "ack"
           );
         default:
-          return effects.update(state);
+          return effects.doNothing(state);
       }
     }
     default:
-      return effects.update(state);
+      return effects.doNothing(state);
   }
 }
 
@@ -110,24 +90,24 @@ export function client(
         case "increment":
           return effects.send(
             { type: "ClientState", value: state.value + 1, status: "saving" },
-            "increment",
-            "server"
+            "server",
+            "increment"
           );
         case "decrement":
           return effects.send(
             { type: "ClientState", value: state.value - 1, status: "saving" },
-            "decrement",
-            "server"
+            "server",
+            "decrement"
           );
         // from server
         case "ack":
           // unless there are concurrent requests...
-          return effects.update({ ...state, status: "steady" });
+          return effects.updateState({ ...state, status: "steady" });
       }
       break;
     }
     default:
-      return effects.update(state);
+      return effects.updateState(state);
   }
 }
 
@@ -149,7 +129,7 @@ export const update: UpdateFn<ClientServerActorState, ClientServerMsg> = (
         init as LoadedTickInitiator<ServerState, MsgToServer>
       );
     case "UserState":
-      return effects.update(state);
+      return effects.updateState(state);
   }
 };
 
@@ -167,16 +147,11 @@ export function ClientServerUI(props: {
       <button
         onClick={() =>
           props.setTrace(
-            sendUserInput(
-              props.trace,
-              update,
-              { type: "UserState", step: 0 },
-              {
-                to: "client",
-                from: "user",
-                payload: "decrement",
-              }
-            )
+            sendUserInput(props.trace, update, {
+              to: "client",
+              from: "user",
+              payload: "decrement",
+            })
           )
         }
       >
@@ -185,16 +160,11 @@ export function ClientServerUI(props: {
       <button
         onClick={() =>
           props.setTrace(
-            sendUserInput(
-              props.trace,
-              update,
-              { type: "UserState", step: 0 },
-              {
-                to: "client",
-                from: "user",
-                payload: "increment",
-              }
-            )
+            sendUserInput(props.trace, update, {
+              to: "client",
+              from: "user",
+              payload: "increment",
+            })
           )
         }
       >

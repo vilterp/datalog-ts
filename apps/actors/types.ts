@@ -6,6 +6,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { toGraphviz } from "../../core/incremental/graphviz";
 import { prettyPrintGraph } from "../../util/graphviz";
+import React from "react";
 
 // === overall model ===
 
@@ -30,6 +31,8 @@ export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
   };
 }
 
+// TODO: DRY up all these initiators
+
 type NonMsgTickInitiator<ActorState> =
   | { type: "timerFired"; timerID: TimerID }
   | {
@@ -44,12 +47,14 @@ export type TickInitiator<ActorState> =
   | NonMsgTickInitiator<ActorState>;
 
 export type LoadedTickInitiator<ActorState, Msg> =
-  | {
-      type: "messageReceived";
-      from: ActorID;
-      payload: Msg;
-    }
+  | LoadedMessageReceivedInitiator<Msg>
   | NonMsgTickInitiator<ActorState>;
+
+export type LoadedMessageReceivedInitiator<Msg> = {
+  type: "messageReceived";
+  from: ActorID;
+  payload: Msg;
+};
 
 export type AddressedTickInitiator<ActorState> = {
   to: ActorID;
@@ -90,3 +95,14 @@ export type UpdateFn<ActorState, Msg> = (
   state: ActorState,
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
+
+export type Scenario<St, Msg> = {
+  name: string;
+  id: string;
+  initialState: Trace<St, Msg>;
+  update: UpdateFn<St, Msg>;
+  ui: (props: {
+    trace: Trace<St, Msg>;
+    setTrace: (t: Trace<St, Msg>) => void;
+  }) => React.ReactElement;
+};
