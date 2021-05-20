@@ -1,12 +1,11 @@
 import * as React from "react";
 import { useState } from "react";
 import * as ReactDOM from "react-dom";
-import { Scenario } from "./scenario";
 import { scenario as simpleClientServer } from "./scenarios/clientServer";
-import { scenario as lsm } from "./scenarios/lsm";
+import { scenario as todoMVC } from "./scenarios/todoMVC";
 import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
-import { Trace } from "./types";
+import { Scenario, Trace } from "./types";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
@@ -15,7 +14,7 @@ type ScenarioAndState<St, Msg> = {
 
 const initialScenarioAndStates: ScenarioAndState<any, any>[] = [
   simpleClientServer,
-  lsm,
+  todoMVC,
 ].map((scenario) => ({ scenario, trace: scenario.initialState }));
 
 function Main() {

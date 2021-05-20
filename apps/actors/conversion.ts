@@ -47,12 +47,10 @@ export function dlToJson(term: Term): Json {
     case "Record":
       const out: Json = {};
       for (const key in term.attrs) {
-        out[key] = dlToJson(term[key]);
+        out[key] = dlToJson(term.attrs[key]);
       }
-      // this also might not be desired.
-      if (term.type) {
-        out.type = term.type;
-      }
+      // this also might not always be desired.
+      out.type = term.relation;
       return out;
     case "Array":
       return term.items.map(dlToJson);
