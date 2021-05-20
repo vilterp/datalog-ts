@@ -135,6 +135,7 @@ export function client(
             type: "continue",
             state: {
               ...state,
+              currentText: "",
               nextTodoID: state.nextTodoID + 1,
               todos: {
                 ...state.todos,
@@ -181,6 +182,7 @@ export function client(
             },
           });
         case "putTodoResp":
+          // TODO: rebase on changes that have been made since
           return effects.updateState({
             ...state,
             todos: {
@@ -191,6 +193,7 @@ export function client(
               },
             },
           });
+        // TODO: handle updates from other clients
         default:
           return effects.doNothing(state);
       }
@@ -237,6 +240,13 @@ export function ClientServerUI(props: {
       <input
         type="text"
         value={clientState.currentText}
+        onKeyDown={(evt) => {
+          if (evt.keyCode === 13) {
+            props.setTrace(
+              sendUserInput(props.trace, update, { type: "submitTodo" })
+            );
+          }
+        }}
         onInput={(evt) =>
           props.setTrace(
             sendUserInput(props.trace, update, {

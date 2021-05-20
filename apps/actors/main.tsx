@@ -6,6 +6,7 @@ import { scenario as todoMVC } from "./scenarios/todoMVC";
 import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
+import ReactJson from "react-json-view";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
@@ -13,8 +14,8 @@ type ScenarioAndState<St, Msg> = {
 };
 
 const initialScenarioAndStates: ScenarioAndState<any, any>[] = [
-  simpleClientServer,
   todoMVC,
+  simpleClientServer,
 ].map((scenario) => ({ scenario, trace: scenario.initialState }));
 
 function Main() {
@@ -50,7 +51,7 @@ function Main() {
                 />
 
                 <h2>State</h2>
-                <pre>{JSON.stringify(trace.latestStates, null, 2)}</pre>
+                <ReactJson src={trace.latestStates} />
 
                 <Explorer interp={trace.interp} showViz={true} />
               </>
