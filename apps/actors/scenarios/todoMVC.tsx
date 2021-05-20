@@ -154,7 +154,7 @@ export function client(
           };
         }
         case "toggleTodo": {
-          const currentTodo = state.todos[msg.id];
+          const currentTodo = state.todos.value[msg.id];
           return effects.updateState({
             ...state,
             todos: {
@@ -270,11 +270,11 @@ export function ClientServerUI(props: {
           <li key={id}>
             <input
               type="checkbox"
-              onInput={(evt) =>
+              onChange={(evt) =>
                 props.setTrace(
                   sendUserInput(props.trace, update, {
                     type: "toggleTodo",
-                    value: (evt.target as HTMLInputElement).value === "on",
+                    value: (evt.target as HTMLInputElement).checked,
                     id,
                   })
                 )
