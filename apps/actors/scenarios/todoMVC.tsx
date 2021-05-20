@@ -155,19 +155,28 @@ export function client(
         }
         case "toggleTodo": {
           const currentTodo = state.todos.value[msg.id];
-          return effects.updateState({
-            ...state,
-            todos: {
-              ...state.todos,
-              value: {
-                ...state.todos.value,
-                [msg.id]: {
-                  status: "saving",
-                  thing: { ...currentTodo.thing, done: msg.value },
+          return {
+            type: "continue",
+            state: {
+              ...state,
+              todos: {
+                ...state.todos,
+                value: {
+                  ...state.todos.value,
+                  [msg.id]: {
+                    status: "saving",
+                    thing: { ...currentTodo.thing, done: msg.value },
+                  },
                 },
               },
             },
-          });
+            messages: [
+              {
+                to: "server",
+                msg: { type: "putTodo", todo: currentTodo.thing },
+              },
+            ],
+          };
         }
         // from server
         case "getTodosResp":
