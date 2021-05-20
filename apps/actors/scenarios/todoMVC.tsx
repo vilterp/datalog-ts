@@ -8,7 +8,7 @@ import {
 } from "../types";
 import * as effects from "../effects";
 import { sendUserInput, spawnActors } from "../step";
-import { mapObj } from "../../../util/util";
+import { mapObj, mapObjToList } from "../../../util/util";
 
 // states
 
@@ -229,21 +229,39 @@ export function ClientServerUI(props: {
   trace: CSTrace;
   setTrace: (t: CSTrace) => void;
 }) {
+  const clientState = props.trace.latestStates.client as ClientState;
   return (
     <>
       <h2>TodoMVC</h2>
       <input
         type="text"
-        value={(props.trace.latestStates.client as ClientState).currentText}
+        value={clientState.currentText}
         onInput={(evt) =>
           sendUserInput(props.trace, update, {
-            from: "user",
-            to: "client",
-            payload: { type: "enterText", value: evt.target.value },
+            type: "enterText",
+            value: (evt.target as HTMLInputElement).value,
           })
         }
       />
-      {/*  TODO: todo list*/}
+      <ul>
+        {mapObjToList(clientState.todos.value, (id, savingTodo) => (
+          <li key={id}>
+            <input
+              type="checkbox"
+              onInput={(evt) =>
+                sendUserInput(props.trace, update, {
+                  type: "toggleTodo",
+                  value: (evt.target as HTMLInputElement).value === "on",
+                  id,
+                })
+              }
+              value={savingTodo.thing.done ? "on" : "off"}
+            />{" "}
+            {savingTodo.thing.body}
+            {/*  TODO: saving indicator*/}
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
@@ -251,8 +269,8 @@ export function ClientServerUI(props: {
 // scenario
 
 export const scenario: Scenario<State, Msg> = {
-  name: "Simple Client/Server",
-  id: "simple-client-server",
+  name: "Todo List",
+  id: "todo-mvc",
   ui: ClientServerUI,
   update,
   initialState: getInitialState(),

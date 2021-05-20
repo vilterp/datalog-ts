@@ -136,30 +136,32 @@ export function initialSteps<ActorState extends Json, Msg extends Json>(
   );
 }
 
-// TODO: don't make me say from: 'user'
 export function sendUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
-  message: { from: string; to: string; payload: Msg }
+  payload: Msg
 ): Trace<ActorState, Msg> {
   const newTrace = {
     ...trace,
   };
+
+  const from = "user";
+  const to = "client";
 
   const newTickID = trace.nextID;
   newTrace.nextID++;
   newTrace.interp = trace.interp.insert(
     rec("tick", {
       id: str(newTickID.toString()),
-      actorID: str(message.from),
+      actorID: str(from),
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
       resp: adtToRec({
         type: "continue",
-        state: trace.latestStates[message.from],
+        state: trace.latestStates[from],
         messages: [
           {
-            to: message.to,
-            msg: message.payload,
+            to: to,
+            msg: payload,
           },
         ],
       } as ActorResp<ActorState, Msg>),
@@ -171,15 +173,15 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
   newTrace.interp = newTrace.interp.insert(
     rec("message", {
       id: str(newMessageID.toString()),
-      toActorID: str(message.to),
-      payload: jsonToDL(message.payload),
+      toActorID: str(to),
+      payload: jsonToDL(payload),
       fromTickID: str(newTickID.toString()),
     })
   );
 
   return step(newTrace, update, {
-    to: message.to,
-    from: message.from,
+    to,
+    from,
     init: {
       type: "messageReceived",
       messageID: newMessageID.toString(),

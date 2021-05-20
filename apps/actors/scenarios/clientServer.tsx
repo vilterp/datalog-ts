@@ -146,26 +146,14 @@ export function ClientServerUI(props: {
       <h2>Client</h2>
       <button
         onClick={() =>
-          props.setTrace(
-            sendUserInput(props.trace, update, {
-              to: "client",
-              from: "user",
-              payload: "decrement",
-            })
-          )
+          props.setTrace(sendUserInput(props.trace, update, "decrement"))
         }
       >
         -
       </button>
       <button
         onClick={() =>
-          props.setTrace(
-            sendUserInput(props.trace, update, {
-              to: "client",
-              from: "user",
-              payload: "increment",
-            })
-          )
+          props.setTrace(sendUserInput(props.trace, update, "increment"))
         }
       >
         +
