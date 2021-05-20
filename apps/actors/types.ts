@@ -96,13 +96,13 @@ export type UpdateFn<ActorState, Msg> = (
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
 
-export type Scenario<St, Msg> = {
+export type Scenario<ActorState, Msg> = {
   name: string;
   id: string;
-  initialState: Trace<St, Msg>;
-  update: UpdateFn<St, Msg>;
+  initialState: Trace<ActorState, Msg>;
+  update: UpdateFn<ActorState, Msg>;
   ui: (props: {
-    trace: Trace<St, Msg>;
-    setTrace: (t: Trace<St, Msg>) => void;
+    state: ActorState;
+    sendUserInput: (input: Msg) => void;
   }) => React.ReactElement;
 };

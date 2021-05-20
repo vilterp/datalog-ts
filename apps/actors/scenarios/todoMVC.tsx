@@ -236,44 +236,38 @@ export const update: UpdateFn<State, Msg> = (
 
 // ui
 
-type CSTrace = Trace<State, Msg>;
-
 export function ClientServerUI(props: {
-  trace: CSTrace;
-  setTrace: (t: CSTrace) => void;
+  state: ClientState;
+  sendUserInput: (msg: UserInput) => void;
 }) {
-  const clientState = props.trace.latestStates.client as ClientState;
-  const updateWithUserInput = (input: UserInput) => {
-    props.setTrace(sendUserInput(props.trace, update, input));
-  };
   return (
     <>
       <h2>TodoMVC</h2>
       <input
         type="text"
-        value={clientState.currentText}
+        value={props.state.currentText}
         onKeyDown={(evt) => {
           if (evt.keyCode === 13) {
-            updateWithUserInput({ type: "submitTodo" });
+            props.sendUserInput({ type: "submitTodo" });
           }
         }}
         onInput={(evt) =>
-          updateWithUserInput({
+          props.sendUserInput({
             type: "enterText",
             value: (evt.target as HTMLInputElement).value,
           })
         }
       />
-      <button onClick={() => updateWithUserInput({ type: "submitTodo" })}>
+      <button onClick={() => props.sendUserInput({ type: "submitTodo" })}>
         Submit
       </button>
       <ul>
-        {mapObjToList(clientState.todos.value, (id, savingTodo) => (
+        {mapObjToList(props.state.todos.value, (id, savingTodo) => (
           <li key={id}>
             <input
               type="checkbox"
               onChange={(evt) =>
-                updateWithUserInput({
+                props.sendUserInput({
                   type: "toggleTodo",
                   value: (evt.target as HTMLInputElement).checked,
                   id,

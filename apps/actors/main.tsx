@@ -7,6 +7,7 @@ import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
+import { sendUserInput } from "./step";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
@@ -37,9 +38,12 @@ function Main() {
 
             return (
               <>
+                {/*TODO: make it more clear you have to have an actor with id "client"??*/}
+                {/*I guess this will become more clear with multi-client*/}
                 <scenario.ui
-                  trace={trace}
-                  setTrace={(newTrace) => {
+                  state={trace.latestStates.client}
+                  sendUserInput={(msg) => {
+                    const newTrace = sendUserInput(trace, scenario.update, msg);
                     setScenarioAndStates(
                       updateList(
                         scenarioAndStates,
