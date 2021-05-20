@@ -6,6 +6,8 @@ import { scenario as todoMVC } from "./scenarios/todoMVC";
 import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
+import ReactJson from "react-json-view";
+import { sendUserInput } from "./step";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
@@ -13,8 +15,8 @@ type ScenarioAndState<St, Msg> = {
 };
 
 const initialScenarioAndStates: ScenarioAndState<any, any>[] = [
-  simpleClientServer,
   todoMVC,
+  simpleClientServer,
 ].map((scenario) => ({ scenario, trace: scenario.initialState }));
 
 function Main() {
@@ -36,9 +38,12 @@ function Main() {
 
             return (
               <>
+                {/*TODO: make it more clear you have to have an actor with id "client"??*/}
+                {/*I guess this will become more clear with multi-client*/}
                 <scenario.ui
-                  trace={trace}
-                  setTrace={(newTrace) => {
+                  state={trace.latestStates.client}
+                  sendUserInput={(msg) => {
+                    const newTrace = sendUserInput(trace, scenario.update, msg);
                     setScenarioAndStates(
                       updateList(
                         scenarioAndStates,
@@ -50,7 +55,7 @@ function Main() {
                 />
 
                 <h2>State</h2>
-                <pre>{JSON.stringify(trace.latestStates, null, 2)}</pre>
+                <ReactJson src={trace.latestStates} />
 
                 <Explorer interp={trace.interp} showViz={true} />
               </>

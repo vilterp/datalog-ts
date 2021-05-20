@@ -135,6 +135,7 @@ export function client(
             type: "continue",
             state: {
               ...state,
+              currentText: "",
               nextTodoID: state.nextTodoID + 1,
               todos: {
                 ...state.todos,
@@ -153,20 +154,29 @@ export function client(
           };
         }
         case "toggleTodo": {
-          const currentTodo = state.todos[msg.id];
-          return effects.updateState({
-            ...state,
-            todos: {
-              ...state.todos,
-              value: {
-                ...state.todos.value,
-                [msg.id]: {
-                  status: "saving",
-                  thing: { ...currentTodo.thing, done: msg.value },
+          const currentTodo = state.todos.value[msg.id];
+          return {
+            type: "continue",
+            state: {
+              ...state,
+              todos: {
+                ...state.todos,
+                value: {
+                  ...state.todos.value,
+                  [msg.id]: {
+                    status: "saving",
+                    thing: { ...currentTodo.thing, done: msg.value },
+                  },
                 },
               },
             },
-          });
+            messages: [
+              {
+                to: "server",
+                msg: { type: "putTodo", todo: currentTodo.thing },
+              },
+            ],
+          };
         }
         // from server
         case "getTodosResp":
@@ -181,6 +191,7 @@ export function client(
             },
           });
         case "putTodoResp":
+          // TODO: rebase on changes that have been made since
           return effects.updateState({
             ...state,
             todos: {
@@ -191,6 +202,7 @@ export function client(
               },
             },
           });
+        // TODO: handle updates from other clients
         default:
           return effects.doNothing(state);
       }
@@ -224,50 +236,42 @@ export const update: UpdateFn<State, Msg> = (
 
 // ui
 
-type CSTrace = Trace<State, Msg>;
-
 export function ClientServerUI(props: {
-  trace: CSTrace;
-  setTrace: (t: CSTrace) => void;
+  state: ClientState;
+  sendUserInput: (msg: UserInput) => void;
 }) {
-  const clientState = props.trace.latestStates.client as ClientState;
   return (
     <>
       <h2>TodoMVC</h2>
       <input
         type="text"
-        value={clientState.currentText}
+        value={props.state.currentText}
+        onKeyDown={(evt) => {
+          if (evt.keyCode === 13) {
+            props.sendUserInput({ type: "submitTodo" });
+          }
+        }}
         onInput={(evt) =>
-          props.setTrace(
-            sendUserInput(props.trace, update, {
-              type: "enterText",
-              value: (evt.target as HTMLInputElement).value,
-            })
-          )
+          props.sendUserInput({
+            type: "enterText",
+            value: (evt.target as HTMLInputElement).value,
+          })
         }
       />
-      <button
-        onClick={() =>
-          props.setTrace(
-            sendUserInput(props.trace, update, { type: "submitTodo" })
-          )
-        }
-      >
+      <button onClick={() => props.sendUserInput({ type: "submitTodo" })}>
         Submit
       </button>
       <ul>
-        {mapObjToList(clientState.todos.value, (id, savingTodo) => (
+        {mapObjToList(props.state.todos.value, (id, savingTodo) => (
           <li key={id}>
             <input
               type="checkbox"
-              onInput={(evt) =>
-                props.setTrace(
-                  sendUserInput(props.trace, update, {
-                    type: "toggleTodo",
-                    value: (evt.target as HTMLInputElement).value === "on",
-                    id,
-                  })
-                )
+              onChange={(evt) =>
+                props.sendUserInput({
+                  type: "toggleTodo",
+                  value: (evt.target as HTMLInputElement).checked,
+                  id,
+                })
               }
               value={savingTodo.thing.done ? "on" : "off"}
             />{" "}

@@ -29,7 +29,9 @@ export type ClientServerMsg = MsgToUser | MsgToClient | MsgToServer;
 
 type MsgToUser = never;
 
-type MsgToClient = "increment" | "decrement" | ServerResp;
+type MsgToClient = UserInput | ServerResp;
+
+type UserInput = "increment" | "decrement";
 
 type MsgToServer = "increment" | "decrement";
 
@@ -135,29 +137,15 @@ export const update: UpdateFn<ClientServerActorState, ClientServerMsg> = (
 
 // ui
 
-type CSTrace = Trace<ClientServerActorState, ClientServerMsg>;
-
 export function ClientServerUI(props: {
-  trace: CSTrace;
-  setTrace: (t: CSTrace) => void;
+  state: ClientState;
+  sendUserInput: (msg: UserInput) => void;
 }) {
   return (
     <>
       <h2>Client</h2>
-      <button
-        onClick={() =>
-          props.setTrace(sendUserInput(props.trace, update, "decrement"))
-        }
-      >
-        -
-      </button>
-      <button
-        onClick={() =>
-          props.setTrace(sendUserInput(props.trace, update, "increment"))
-        }
-      >
-        +
-      </button>
+      <button onClick={() => props.sendUserInput("decrement")}>-</button>
+      <button onClick={() => props.sendUserInput("increment")}>+</button>
     </>
   );
 }
