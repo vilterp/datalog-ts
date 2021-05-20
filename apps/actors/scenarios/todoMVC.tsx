@@ -191,8 +191,9 @@ export function client(
               },
             },
           });
+        default:
+          return effects.doNothing(state);
       }
-      break;
     }
     default:
       return effects.doNothing(state);
@@ -237,23 +238,36 @@ export function ClientServerUI(props: {
         type="text"
         value={clientState.currentText}
         onInput={(evt) =>
-          sendUserInput(props.trace, update, {
-            type: "enterText",
-            value: (evt.target as HTMLInputElement).value,
-          })
+          props.setTrace(
+            sendUserInput(props.trace, update, {
+              type: "enterText",
+              value: (evt.target as HTMLInputElement).value,
+            })
+          )
         }
       />
+      <button
+        onClick={() =>
+          props.setTrace(
+            sendUserInput(props.trace, update, { type: "submitTodo" })
+          )
+        }
+      >
+        Submit
+      </button>
       <ul>
         {mapObjToList(clientState.todos.value, (id, savingTodo) => (
           <li key={id}>
             <input
               type="checkbox"
               onInput={(evt) =>
-                sendUserInput(props.trace, update, {
-                  type: "toggleTodo",
-                  value: (evt.target as HTMLInputElement).value === "on",
-                  id,
-                })
+                props.setTrace(
+                  sendUserInput(props.trace, update, {
+                    type: "toggleTodo",
+                    value: (evt.target as HTMLInputElement).value === "on",
+                    id,
+                  })
+                )
               }
               value={savingTodo.thing.done ? "on" : "off"}
             />{" "}

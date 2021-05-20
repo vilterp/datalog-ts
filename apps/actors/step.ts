@@ -10,7 +10,6 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { update } from "./scenarios/todoMVC";
 import { mapObjToList } from "../../util/util";
 
 export function step<ActorState extends Json, Msg extends Json>(
@@ -179,7 +178,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
     })
   );
 
-  return step(newTrace, update, {
+  const newNewTrace = step(newTrace, update, {
     to,
     from,
     init: {
@@ -187,6 +186,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
       messageID: newMessageID.toString(),
     },
   });
+  return newNewTrace;
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(
