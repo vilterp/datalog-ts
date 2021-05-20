@@ -243,6 +243,9 @@ export function ClientServerUI(props: {
   setTrace: (t: CSTrace) => void;
 }) {
   const clientState = props.trace.latestStates.client as ClientState;
+  const updateWithUserInput = (input: UserInput) => {
+    props.setTrace(sendUserInput(props.trace, update, input));
+  };
   return (
     <>
       <h2>TodoMVC</h2>
@@ -251,27 +254,17 @@ export function ClientServerUI(props: {
         value={clientState.currentText}
         onKeyDown={(evt) => {
           if (evt.keyCode === 13) {
-            props.setTrace(
-              sendUserInput(props.trace, update, { type: "submitTodo" })
-            );
+            updateWithUserInput({ type: "submitTodo" });
           }
         }}
         onInput={(evt) =>
-          props.setTrace(
-            sendUserInput(props.trace, update, {
-              type: "enterText",
-              value: (evt.target as HTMLInputElement).value,
-            })
-          )
+          updateWithUserInput({
+            type: "enterText",
+            value: (evt.target as HTMLInputElement).value,
+          })
         }
       />
-      <button
-        onClick={() =>
-          props.setTrace(
-            sendUserInput(props.trace, update, { type: "submitTodo" })
-          )
-        }
-      >
+      <button onClick={() => updateWithUserInput({ type: "submitTodo" })}>
         Submit
       </button>
       <ul>
@@ -280,13 +273,11 @@ export function ClientServerUI(props: {
             <input
               type="checkbox"
               onChange={(evt) =>
-                props.setTrace(
-                  sendUserInput(props.trace, update, {
-                    type: "toggleTodo",
-                    value: (evt.target as HTMLInputElement).checked,
-                    id,
-                  })
-                )
+                updateWithUserInput({
+                  type: "toggleTodo",
+                  value: (evt.target as HTMLInputElement).checked,
+                  id,
+                })
               }
               value={savingTodo.thing.done ? "on" : "off"}
             />{" "}
