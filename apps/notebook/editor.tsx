@@ -3,7 +3,7 @@ import { MarkdownNode, parse } from "./markdown";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Program, Res } from "../../core/types";
 import { language } from "../../core/parser";
-import { IndependentTraceView } from "../../uiCommon/replViews";
+import { IndependentTraceView } from "../../uiCommon/dl/replViews";
 import {
   insertAtIdx,
   removeAtIdx,

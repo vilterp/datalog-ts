@@ -7,12 +7,12 @@ import {
   TreeView,
   emptyCollapseState,
 } from "../generic/treeView";
-import { RuleC } from "../rule";
+import { RuleC } from "../dl/rule";
 import { makeTermWithBindings } from "../../core/traceTree";
-import { TermView, noHighlight, HighlightProps } from "../term";
-import { TraceView } from "../trace";
+import { TermView, noHighlight, HighlightProps } from "../dl/term";
+import { TraceView } from "../dl/trace";
 import { canTreeViz, treeFromRecords } from "../visualizations/tree";
-import { BareTerm } from "../replViews";
+import { BareTerm } from "../dl/replViews";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;

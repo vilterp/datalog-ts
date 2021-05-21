@@ -5,10 +5,10 @@ import {
   scopePathEq,
   SituatedBinding,
   Term,
-} from "../core/types";
-import { intersperse, mapObjToList } from "../util/util";
-import { escapeString } from "../core/pretty";
-import { makeTermWithBindings } from "../core/traceTree";
+} from "../../core/types";
+import { intersperse, mapObjToList } from "../../util/util";
+import { escapeString } from "../../core/pretty";
+import { makeTermWithBindings } from "../../core/traceTree";
 
 export type Highlight =
   | { type: "Relation"; name: string }

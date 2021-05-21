@@ -2,7 +2,7 @@ import React from "react";
 import { Relation } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
 import { lastItem } from "../../util/util";
-import { HighlightProps, noHighlight } from "../term";
+import { HighlightProps, noHighlight } from "../dl/term";
 import { useBoolLocalStorage, useJSONLocalStorage } from "../generic/hooks";
 import {
   emptyCollapseState,

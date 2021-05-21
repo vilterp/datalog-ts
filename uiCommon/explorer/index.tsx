@@ -3,7 +3,7 @@ import useHashParam from "use-hash-param";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
 import { RelationTable, TableCollapseState } from "./relationTable";
-import { noHighlight, HighlightProps } from "../term";
+import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
