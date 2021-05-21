@@ -9,7 +9,7 @@ import {
   TreeCollapseState,
   TreeView,
 } from "../generic/treeView";
-import * as styles from "../styles";
+import * as styles from "./styles";
 
 export function RelationTree(props: {
   allRules: Relation[];
