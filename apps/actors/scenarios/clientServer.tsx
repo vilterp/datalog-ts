@@ -21,7 +21,7 @@ type ClientState = {
 
 type ServerState = { type: "ServerState"; value: number };
 
-type UserState = { type: "UserState"; step: number };
+type UserState = { type: "UserState" };
 
 // messages
 
@@ -44,7 +44,7 @@ const initialClientState = { type: "ClientState", value: 0, status: "steady" };
 export function getInitialState(): Trace<State, Msg> {
   return spawnInitialActors(update, {
     server: { type: "ServerState", value: 0 },
-    user: { type: "UserState", step: 0 },
+    user: { type: "UserState" },
   });
 }
 
@@ -157,4 +157,5 @@ export const scenario: Scenario<State, Msg> = {
   update,
   initialState: getInitialState(),
   initialClientState: initialClientState as State,
+  initialUserState: { type: "UserState" },
 };

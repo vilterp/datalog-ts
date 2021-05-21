@@ -294,4 +294,5 @@ export const scenario: Scenario<State, Msg> = {
   update,
   initialState: getInitialState(),
   initialClientState: initialClientState as State,
+  initialUserState: { type: "UserState" },
 };

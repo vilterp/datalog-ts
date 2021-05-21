@@ -122,14 +122,19 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
           setNextClientID(nextClientID + 1);
           setClientIDs([...clientIDs, nextClientID]);
           // TODO: spawn a new user?
-          props.setTrace(
-            spawn(
-              props.trace,
-              props.scenario.update,
-              `client${nextClientID}`,
-              props.scenario.initialClientState
-            )
+          const trace1 = spawn(
+            props.trace,
+            props.scenario.update,
+            `client${nextClientID}`,
+            props.scenario.initialClientState
           );
+          const trace2 = spawn(
+            trace1,
+            props.scenario.update,
+            `user${nextClientID}`,
+            props.scenario.initialUserState
+          );
+          props.setTrace(trace2);
         }}
       >
         Add Client

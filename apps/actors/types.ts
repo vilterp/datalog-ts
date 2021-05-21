@@ -97,11 +97,13 @@ export type UpdateFn<ActorState, Msg> = (
 export type Scenario<ActorState, Msg> = {
   name: string;
   id: string;
-  initialState: Trace<ActorState, Msg>;
-  initialClientState: ActorState;
-  update: UpdateFn<ActorState, Msg>;
   ui: (props: {
     state: ActorState;
     sendUserInput: (input: Msg) => void;
   }) => React.ReactElement;
+  update: UpdateFn<ActorState, Msg>;
+  // TODO: something about all these initial states
+  initialState: Trace<ActorState, Msg>;
+  initialClientState: ActorState;
+  initialUserState: ActorState;
 };
