@@ -10,6 +10,7 @@ import ReactJson from "react-json-view";
 import { sendUserInput } from "./step";
 import { updateList } from "../../util/util";
 import { Json } from "../../util/json";
+import { Tabs } from "../../uiCommon/tabs";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
@@ -26,11 +27,18 @@ function Main() {
     ScenarioAndState<any, any>[]
   >(initialScenarioAndStates);
 
+  const [curTabID, setTabID] = useHashParam(
+    "scenario",
+    scenarioAndStates[0].scenario.id
+  );
+
   return (
     <>
       <h1>Communicating Processes Viz</h1>
 
       <Tabs
+        setTabID={setTabID}
+        curTabID={curTabID}
         tabs={scenarioAndStates.map((scenarioAndState) => ({
           name: scenarioAndState.scenario.name,
           id: scenarioAndState.scenario.id,
@@ -66,33 +74,6 @@ function Main() {
         }))}
       />
     </>
-  );
-}
-
-// TODO: move to uiCommon
-function Tabs(props: {
-  tabs: { name: string; id: string; render: () => React.ReactElement }[];
-}) {
-  const [curTabID, setTabID] = useHashParam("scenario", props.tabs[0].id);
-
-  return (
-    <div>
-      <ul>
-        {props.tabs.map((tab) => (
-          <li
-            style={{
-              cursor: "pointer",
-              fontWeight: tab.id === curTabID ? "bold" : "normal",
-            }}
-            onClick={() => setTabID(tab.id)}
-            key={tab.id}
-          >
-            {tab.name}
-          </li>
-        ))}
-      </ul>
-      <div>{props.tabs.find((tab) => tab.id === curTabID).render()}</div>
-    </div>
   );
 }
 
