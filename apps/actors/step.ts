@@ -139,15 +139,15 @@ export function spawn<ActorState extends Json, Msg extends Json>(
 export function sendUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
-  clientActorID: string,
+  clientID: number,
   payload: Msg
 ): Trace<ActorState, Msg> {
   const newTrace = {
     ...trace,
   };
 
-  const from = "user";
-  const to = clientActorID;
+  const from = `user${clientID}`;
+  const to = `client${clientID}`;
 
   const newTickID = trace.nextID;
   newTrace.nextID++;

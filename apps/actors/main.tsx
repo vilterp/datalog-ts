@@ -89,8 +89,6 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
     <>
       <ul>
         {clientIDs.map((clientID) => {
-          const clientActorID = `client${clientID}`;
-
           return (
             <li key={clientID}>
               <button
@@ -107,7 +105,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                     sendUserInput(
                       props.trace,
                       props.scenario.update,
-                      clientActorID,
+                      clientID,
                       input
                     )
                   )
