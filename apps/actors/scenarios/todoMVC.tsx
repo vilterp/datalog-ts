@@ -19,7 +19,6 @@ export type State = ServerState | ClientState | UserState;
 type ClientState = {
   type: "ClientState";
   currentText: string;
-  nextTodoID: number; // TODO: use UUIDs??
   todos: Query<{ [id: string]: Saving<Todo> }>;
 };
 
@@ -88,16 +87,15 @@ export function getInitialState(): Trace<State, Msg> {
   return spawnInitialActors(update, {
     server: {
       type: "ServerState",
-      todos: { "-1": { id: -1, done: false, body: "yo" } },
+      todos: {},
       subscribers: [],
     },
   });
 }
 
-export const initialClientState = {
+export const initialClientState: ClientState = {
   type: "ClientState",
   currentText: "",
-  nextTodoID: 0,
   todos: { status: "loading", value: {} },
 };
 
@@ -170,7 +168,7 @@ export function client(
           return effects.updateState({ ...state, currentText: msg.value });
         case "submitTodo": {
           const newTodo: Todo = {
-            id: state.nextTodoID,
+            id: Math.random(),
             body: state.currentText,
             done: false,
           };
@@ -178,12 +176,11 @@ export function client(
             {
               ...state,
               currentText: "",
-              nextTodoID: state.nextTodoID + 1,
               todos: {
                 ...state.todos,
                 value: {
                   ...state.todos.value,
-                  [state.nextTodoID.toString()]: {
+                  [newTodo.id.toString()]: {
                     status: "saving",
                     thing: newTodo,
                   },
