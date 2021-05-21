@@ -40,11 +40,13 @@ export function step<ActorState extends Json, Msg extends Json>(
           initialState: jsonToDL(spawn.initialState),
         })
       );
-      continue;
     }
 
     const curActorID = nextInitiator.to;
-    const actorState = newTrace.latestStates[curActorID];
+    const actorState =
+      init.init.type === "spawned"
+        ? init.init.initialState
+        : newTrace.latestStates[curActorID];
     const actorResp = update(
       actorState,
       loadTickInitiator(newTrace, nextInitiator.init)
