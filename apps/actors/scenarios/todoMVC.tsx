@@ -17,7 +17,7 @@ import { mapObj, mapObjToList } from "../../../util/util";
 export type State = ServerState | ClientState | UserState;
 
 type ClientState = {
-  type: "ClientState";
+  type: "clientState";
   currentText: string;
   nextTodoID: number; // TODO: use UUIDs??
   todos: Query<{ [id: string]: Saving<Todo> }>;
@@ -113,7 +113,6 @@ export function server(
             todos: state.todos,
           });
         case "putTodo":
-          // TODO: push out to subscribers
           return {
             type: "continue",
             state: {
@@ -156,8 +155,8 @@ export function client(
   switch (init.type) {
     case "spawned":
       return effects.send(state, "server", [
-        { type: "getTodos" },
-        { type: "subscribe" },
+        // { type: "getTodos" },
+        // { type: "subscribe" },
       ]);
     case "messageReceived": {
       const msg = init.payload;

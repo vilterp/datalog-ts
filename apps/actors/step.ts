@@ -10,7 +10,6 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { mapObjToList } from "../../util/util";
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
