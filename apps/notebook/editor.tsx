@@ -12,7 +12,7 @@ import {
 } from "../../util/util";
 import TextAreaAutosize from "react-textarea-autosize";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Collapsible } from "../../uiCommon/collapsible";
+import { Collapsible } from "../../uiCommon/generic/collapsible";
 import Parsimmon, { Result } from "parsimmon";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 

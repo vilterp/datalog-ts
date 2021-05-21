@@ -4,14 +4,14 @@ import { parse, TraceTree } from "../parser";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { extractRuleTree, RuleTree } from "../ruleTree";
-import { Collapsible } from "../../../uiCommon/collapsible";
+import { Collapsible } from "../../../uiCommon/generic/collapsible";
 import {
   TreeView,
   TreeCollapseState,
   emptyCollapseState,
-} from "../../../uiCommon/treeView";
+} from "../../../uiCommon/generic/treeView";
 import { ruleTreeToTree, renderRuleNode } from "../pretty";
-import { useJSONLocalStorage } from "../../../uiCommon/hooks";
+import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 import { metaGrammar, extractGrammar } from "../meta";
 import { validateGrammar } from "../validate";
 

@@ -8,7 +8,7 @@ import {
   pathToScopePath,
 } from "../core/traceTree";
 import { mapObjToList, intersperse } from "../util/util";
-import { TreeView, TreeCollapseState } from "./treeView";
+import { TreeView, TreeCollapseState } from "./generic/treeView";
 
 export function TraceView(props: {
   result: Res;

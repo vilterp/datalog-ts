@@ -12,7 +12,7 @@ import familyDL from "../../core/testdata/family_rules.dl";
 import { uniqBy } from "../../util/util";
 import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
-import { Collapsible } from "../../uiCommon/collapsible";
+import { Collapsible } from "../../uiCommon/generic/collapsible";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 const lm = new LayoutManager({

@@ -10,7 +10,7 @@ import ReactJson from "react-json-view";
 import { sendUserInput } from "./step";
 import { updateList } from "../../util/util";
 import { Json } from "../../util/json";
-import { Tabs } from "../../uiCommon/tabs";
+import { Tabs } from "../../uiCommon/generic/tabs";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;

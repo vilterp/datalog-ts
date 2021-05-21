@@ -4,7 +4,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
 import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "../term";
-import { useJSONLocalStorage } from "../hooks";
+import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
 import { sortBy } from "../../util/util";

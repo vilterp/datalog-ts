@@ -5,7 +5,7 @@ import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { ppr } from "../core/pretty";
 import { RuleC } from "./rule";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";
-import { TreeCollapseState } from "./treeView";
+import { TreeCollapseState } from "./generic/treeView";
 import { TraceView } from "./trace";
 import { makeTermWithBindings } from "../core/traceTree";
 

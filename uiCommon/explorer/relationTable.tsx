@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { ppt } from "../../core/pretty";
 import { Rec, Res, Relation, rec } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { TreeCollapseState, TreeView, emptyCollapseState } from "../treeView";
+import {
+  TreeCollapseState,
+  TreeView,
+  emptyCollapseState,
+} from "../generic/treeView";
 import { RuleC } from "../rule";
 import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../term";

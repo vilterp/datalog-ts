@@ -4,9 +4,9 @@ import { language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
 import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
-import { Collapsible } from "../../../uiCommon/collapsible";
+import { Collapsible } from "../../../uiCommon/generic/collapsible";
 import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
-import { useJSONLocalStorage } from "../../../uiCommon/hooks";
+import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../../uiCommon/ide/types";
 // @ts-ignore
 import highlightCSS from "./highlight.css";
