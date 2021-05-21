@@ -7,7 +7,7 @@ import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
-import { sendUserInput } from "./step";
+import { sendUserInput, spawn } from "./step";
 import { updateList } from "../../util/util";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
@@ -121,14 +121,15 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
         onClick={() => {
           setNextClientID(nextClientID + 1);
           setClientIDs([...clientIDs, nextClientID]);
-          // TODO: more legit spawning
-          props.setTrace({
-            ...props.trace,
-            latestStates: {
-              ...props.trace.latestStates,
-              [`client${nextClientID}`]: props.scenario.initialClientState,
-            },
-          });
+          // TODO: spawn a new user?
+          props.setTrace(
+            spawn(
+              props.trace,
+              props.scenario.update,
+              `client${nextClientID}`,
+              props.scenario.initialClientState
+            )
+          );
         }}
       >
         Add Client

@@ -7,7 +7,7 @@ import {
   UpdateFn,
 } from "../types";
 import * as effects from "../effects";
-import { spawnActors } from "../step";
+import { spawnInitialActors } from "../step";
 import { mapObj, mapObjToList } from "../../../util/util";
 
 // states
@@ -70,7 +70,7 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 // initial state
 
 export function getInitialState(): Trace<State, Msg> {
-  return spawnActors(update, {
+  return spawnInitialActors(update, {
     user: { type: "UserState" },
     server: { type: "ServerState", todos: {} },
   });

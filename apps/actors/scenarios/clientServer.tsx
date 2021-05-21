@@ -7,7 +7,7 @@ import {
   UpdateFn,
 } from "../types";
 import * as effects from "../effects";
-import { spawnActors } from "../step";
+import { spawnInitialActors } from "../step";
 
 // states
 
@@ -42,7 +42,7 @@ type ServerResp = "ack";
 const initialClientState = { type: "ClientState", value: 0, status: "steady" };
 
 export function getInitialState(): Trace<State, Msg> {
-  return spawnActors(update, {
+  return spawnInitialActors(update, {
     server: { type: "ServerState", value: 0 },
     user: { type: "UserState", step: 0 },
   });
