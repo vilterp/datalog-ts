@@ -17,7 +17,7 @@ import { mapObj, mapObjToList } from "../../../util/util";
 export type State = ServerState | ClientState | UserState;
 
 type ClientState = {
-  type: "clientState";
+  type: "ClientState";
   currentText: string;
   nextTodoID: number; // TODO: use UUIDs??
   todos: Query<{ [id: string]: Saving<Todo> }>;
