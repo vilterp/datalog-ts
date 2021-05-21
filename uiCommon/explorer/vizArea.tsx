@@ -1,7 +1,7 @@
 import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit } from "../../core/types";
-import { VIZ_REGISTRY } from "../vizRegistry";
+import { VIZ_REGISTRY } from "../visualizations";
 
 export function VizArea(props: { interp: AbstractInterpreter }) {
   const interp = ensureVizTable(props.interp);
