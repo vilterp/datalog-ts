@@ -178,7 +178,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
     })
   );
 
-  const newNewTrace = step(newTrace, update, {
+  return step(newTrace, update, {
     to,
     from,
     init: {
@@ -186,7 +186,6 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
       messageID: newMessageID.toString(),
     },
   });
-  return newNewTrace;
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(

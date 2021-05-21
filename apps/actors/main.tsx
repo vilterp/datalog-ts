@@ -8,6 +8,8 @@ import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
 import { sendUserInput } from "./step";
+import { updateList } from "../../util/util";
+import { Json } from "../../util/json";
 
 type ScenarioAndState<St, Msg> = {
   scenario: Scenario<St, Msg>;
@@ -36,22 +38,22 @@ function Main() {
             const trace = scenarioAndState.trace;
             const scenario = scenarioAndState.scenario;
 
+            const setTrace = <St, Msg>(newTrace: Trace<St, Msg>) => {
+              setScenarioAndStates(
+                updateList(
+                  scenarioAndStates,
+                  (ss) => ss.scenario.name === scenario.name,
+                  (ss) => ({ ...ss, trace: newTrace })
+                )
+              );
+            };
+
             return (
               <>
-                {/*TODO: make it more clear you have to have an actor with id "client"??*/}
-                {/*I guess this will become more clear with multi-client*/}
-                <scenario.ui
-                  state={trace.latestStates.client}
-                  sendUserInput={(msg) => {
-                    const newTrace = sendUserInput(trace, scenario.update, msg);
-                    setScenarioAndStates(
-                      updateList(
-                        scenarioAndStates,
-                        (ss) => ss.scenario.name === scenario.name,
-                        (ss) => ({ ...ss, trace: newTrace })
-                      )
-                    );
-                  }}
+                <MultiClient
+                  trace={trace}
+                  setTrace={setTrace}
+                  scenario={scenario}
                 />
 
                 <h2>State</h2>
@@ -67,6 +69,7 @@ function Main() {
   );
 }
 
+// TODO: move to uiCommon
 function Tabs(props: {
   tabs: { name: string; id: string; render: () => React.ReactElement }[];
 }) {
@@ -93,13 +96,47 @@ function Tabs(props: {
   );
 }
 
-// TODO: how do I not have this as a util?
-function updateList<T>(
-  list: T[],
-  predicate: (t: T) => boolean,
-  update: (t: T) => T
-) {
-  return list.map((item) => (predicate(item) ? update(item) : item));
+function MultiClient<St extends Json, Msg extends Json>(props: {
+  trace: Trace<St, Msg>;
+  setTrace: (t: Trace<St, Msg>) => void;
+  scenario: Scenario<St, Msg>;
+}) {
+  const [nextClientID, setNextClientID] = useState(0);
+  const [clientIDs, setClientIDs] = useState<number[]>([]);
+
+  return (
+    <>
+      <ul>
+        {clientIDs.map((clientID) => (
+          <li key={clientID}>
+            <button
+              onClick={() => {
+                setClientIDs(clientIDs.filter((id) => id !== clientID));
+              }}
+            >
+              x
+            </button>
+            <props.scenario.ui
+              state={props.trace.latestStates[`client${clientID}`]}
+              sendUserInput={(input) =>
+                props.setTrace(
+                  sendUserInput(props.trace, props.scenario.update, input)
+                )
+              }
+            />
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={() => {
+          setNextClientID(nextClientID + 1);
+          setClientIDs([...clientIDs, nextClientID]);
+        }}
+      >
+        Add Client
+      </button>
+    </>
+  );
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
