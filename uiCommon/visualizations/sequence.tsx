@@ -2,7 +2,7 @@ import React from "react";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Res, StringLit } from "../../core/types";
-import { SimpleTermView } from "../term";
+import { SimpleTermView } from "../dl/term";
 import {
   AbsPos,
   Circle,

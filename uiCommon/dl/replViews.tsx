@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { language } from "../core/parser";
-import { Rec, Statement, Res, Term } from "../core/types";
-import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { ppr } from "../core/pretty";
+import { language } from "../../core/parser";
+import { Rec, Statement, Res, Term } from "../../core/types";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { ppr } from "../../core/pretty";
 import { RuleC } from "./rule";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";
-import { TreeCollapseState } from "./treeView";
+import { TreeCollapseState } from "../generic/treeView";
 import { TraceView } from "./trace";
-import { makeTermWithBindings } from "../core/traceTree";
+import { makeTermWithBindings } from "../../core/traceTree";
 
 // some views for making repl-like things
 export function Query(props: { query: string; interp: AbstractInterpreter }) {

@@ -107,45 +107,47 @@ export function step<ActorState extends Json, Msg extends Json>(
   return newTrace;
 }
 
-export function spawnActors<ActorState extends Json, Msg extends Json>(
+export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
   initialStates: { [actorID: string]: ActorState }
 ): Trace<ActorState, Msg> {
-  return initialSteps(
-    update,
-    mapObjToList(initialStates, (actorID, initialState) => ({
-      to: actorID,
-      from: "<god>", // lol
-      init: {
-        type: "spawned",
-        spawningTickID: "0",
-        initialState,
-      },
-    }))
-  );
-}
-
-export function initialSteps<ActorState extends Json, Msg extends Json>(
-  update: UpdateFn<ActorState, Msg>,
-  steps: AddressedTickInitiator<ActorState>[]
-): Trace<ActorState, Msg> {
-  return steps.reduce(
-    (st, init) => step(st, update, init),
+  return Object.entries(initialStates).reduce(
+    (trace, [actorID, actorState]) => spawn(trace, update, actorID, actorState),
     initialTrace<ActorState, Msg>()
   );
 }
 
+export function spawn<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState, Msg>,
+  update: UpdateFn<ActorState, Msg>,
+  id: string,
+  initialState: ActorState
+): Trace<ActorState, Msg> {
+  return step(trace, update, {
+    to: id,
+    from: "<god>", // lol
+    init: {
+      type: "spawned",
+      spawningTickID: "0",
+      initialState,
+    },
+  });
+}
+
+// creates a tick on the user
+// TODO: multiple user actors!
 export function sendUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
+  clientID: number,
   payload: Msg
 ): Trace<ActorState, Msg> {
   const newTrace = {
     ...trace,
   };
 
-  const from = "user";
-  const to = "client";
+  const from = `user${clientID}`;
+  const to = `client${clientID}`;
 
   const newTickID = trace.nextID;
   newTrace.nextID++;
@@ -178,7 +180,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
     })
   );
 
-  const newNewTrace = step(newTrace, update, {
+  return step(newTrace, update, {
     to,
     from,
     init: {
@@ -186,7 +188,6 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
       messageID: newMessageID.toString(),
     },
   });
-  return newNewTrace;
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(

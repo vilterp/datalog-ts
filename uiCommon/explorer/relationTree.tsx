@@ -2,10 +2,14 @@ import React from "react";
 import { Relation } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
 import { lastItem } from "../../util/util";
-import { HighlightProps, noHighlight } from "../term";
-import { useBoolLocalStorage, useJSONLocalStorage } from "../hooks";
-import { emptyCollapseState, TreeCollapseState, TreeView } from "../treeView";
-import * as styles from "../styles";
+import { HighlightProps, noHighlight } from "../dl/term";
+import { useBoolLocalStorage, useJSONLocalStorage } from "../generic/hooks";
+import {
+  emptyCollapseState,
+  TreeCollapseState,
+  TreeView,
+} from "../generic/treeView";
+import * as styles from "./styles";
 
 export function RelationTree(props: {
   allRules: Relation[];

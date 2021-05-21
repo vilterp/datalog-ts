@@ -301,3 +301,11 @@ export function setEq<T>(left: Set<T>, right: Set<T>): boolean {
   }
   return true;
 }
+
+export function updateList<T>(
+  list: T[],
+  predicate: (t: T) => boolean,
+  update: (t: T) => T
+) {
+  return list.map((item) => (predicate(item) ? update(item) : item));
+}

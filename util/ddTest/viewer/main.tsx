@@ -6,7 +6,7 @@ import { VISUALIZERS } from "../visualizers";
 import { lastItem, mapObjToList } from "../../util";
 import { Archive } from "../types";
 import { useFetch } from "use-http";
-import { Collapsible } from "../../../uiCommon/collapsible";
+import { Collapsible } from "../../../uiCommon/generic/collapsible";
 import Select from "react-select";
 
 function Main() {

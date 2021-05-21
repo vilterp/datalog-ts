@@ -83,8 +83,6 @@ export type ActorResp<ActorState, Message> =
   | { type: "sleep"; durationMS: number; state: ActorState }
   | { type: "exit" };
 
-export type IncomingMessage<T> = { msg: T; from: ActorID };
-
 export type OutgoingMessage<T> = { msg: T; to: ActorID };
 
 // TODO: latency
@@ -99,10 +97,13 @@ export type UpdateFn<ActorState, Msg> = (
 export type Scenario<ActorState, Msg> = {
   name: string;
   id: string;
-  initialState: Trace<ActorState, Msg>;
-  update: UpdateFn<ActorState, Msg>;
   ui: (props: {
     state: ActorState;
     sendUserInput: (input: Msg) => void;
   }) => React.ReactElement;
+  update: UpdateFn<ActorState, Msg>;
+  // TODO: something about all these initial states
+  initialState: Trace<ActorState, Msg>;
+  initialClientState: ActorState;
+  initialUserState: ActorState;
 };
