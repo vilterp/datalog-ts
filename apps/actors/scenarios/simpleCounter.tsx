@@ -91,13 +91,13 @@ export function client(
           return effects.send(
             { type: "ClientState", value: state.value + 1, status: "saving" },
             "server",
-            "increment"
+            ["increment"]
           );
         case "decrement":
           return effects.send(
             { type: "ClientState", value: state.value - 1, status: "saving" },
             "server",
-            "decrement"
+            ["decrement"]
           );
         // from server
         case "ack":

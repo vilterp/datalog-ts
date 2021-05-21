@@ -48,7 +48,6 @@ type Query<T> = { status: "loading" | "loaded"; value: T };
 
 // messages
 
-// TODO: we shouldn't really have to prefix everything like this
 export type Msg = MsgToUser | MsgToClient | MsgToServer;
 
 type MsgToUser = never;
@@ -156,7 +155,10 @@ export function client(
 ): ActorResp<ClientState, MsgToServer> {
   switch (init.type) {
     case "spawned":
-      return effects.send(state, "server", { type: "getTodos" });
+      return effects.send(state, "server", [
+        { type: "getTodos" },
+        { type: "subscribe" },
+      ]);
     case "messageReceived": {
       const msg = init.payload;
       switch (msg.type) {
