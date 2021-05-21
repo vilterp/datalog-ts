@@ -50,7 +50,9 @@ export function dlToJson(term: Term): Json {
         out[key] = dlToJson(term.attrs[key]);
       }
       // this also might not always be desired.
-      out.type = term.relation;
+      if (term.relation) {
+        out.type = term.relation;
+      }
       return out;
     case "Array":
       return term.items.map(dlToJson);

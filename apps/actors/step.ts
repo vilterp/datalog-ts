@@ -10,7 +10,6 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { mapObjToList } from "../../util/util";
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
@@ -40,7 +39,6 @@ export function step<ActorState extends Json, Msg extends Json>(
           initialState: jsonToDL(spawn.initialState),
         })
       );
-      continue;
     }
 
     const curActorID = nextInitiator.to;

@@ -42,12 +42,12 @@ export function sleep<State, Msg>(
 export function send<State, Msg>(
   newState: State,
   to: ActorID,
-  msg: Msg
+  msgs: Msg[]
 ): ActorResp<State, Msg> {
   return {
     type: "continue",
     state: newState,
-    messages: [{ to, msg }],
+    messages: msgs.map((msg) => ({ to, msg })),
   };
 }
 
