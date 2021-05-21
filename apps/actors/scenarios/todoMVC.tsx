@@ -1,7 +1,9 @@
 import React from "react";
 import {
+  ActorID,
   ActorResp,
   LoadedTickInitiator,
+  OutgoingMessage,
   Scenario,
   Trace,
   UpdateFn,
@@ -27,7 +29,11 @@ type Todo = {
   done: boolean;
 };
 
-type ServerState = { type: "ServerState"; todos: { [id: string]: Todo } };
+type ServerState = {
+  type: "ServerState";
+  todos: { [id: string]: Todo };
+  subscribers: ActorID[];
+};
 
 type UserState = { type: "UserState" };
 
@@ -54,15 +60,25 @@ type UserInput =
 
 type MsgToClient = UserInput | ServerResp;
 
-type MsgToServer = GetTodos | PutTodo;
+type MsgToServer = GetTodos | PutTodo | Subscribe;
 
-type ServerResp = getTodosResp | PutTodoResp;
+type ServerResp = GetTodosResp | PutTodoResp | SubscriptionUpdate;
 
 type GetTodos = { type: "getTodos" };
 
 type PutTodo = { type: "putTodo"; todo: Todo };
 
-type getTodosResp = { type: "getTodosResp"; todos: { [id: string]: Todo } };
+type GetTodosResp = { type: "getTodosResp"; todos: { [id: string]: Todo } };
+
+// currently just subscribes to all todos
+type Subscribe = { type: "subscribe" };
+
+type SubscriptionUpdate = {
+  type: "subscriptionUpdate";
+  payload: SubUpdatePayload;
+};
+
+type SubUpdatePayload = { type: "putTodo"; todo: Todo };
 
 // maybe could just return the ID here
 type PutTodoResp = { type: "putTodoResp"; todo: Todo };
@@ -71,7 +87,7 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 
 export function getInitialState(): Trace<State, Msg> {
   return spawnInitialActors(update, {
-    server: { type: "ServerState", todos: {} },
+    server: { type: "ServerState", todos: {}, subscribers: [] },
   });
 }
 
@@ -86,7 +102,7 @@ export const initialClientState = {
 
 export function server(
   state: ServerState,
-  init: LoadedTickInitiator<ServerState, Msg>
+  init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, ServerResp> {
   switch (init.type) {
     case "messageReceived": {
@@ -98,11 +114,33 @@ export function server(
             todos: state.todos,
           });
         case "putTodo":
-          return effects.reply(
-            init,
-            { ...state, todos: { ...state.todos, [msg.todo.id]: msg.todo } },
-            { type: "putTodoResp", todo: msg.todo }
-          );
+          // TODO: push out to subscribers
+          return {
+            type: "continue",
+            state: {
+              ...state,
+              todos: { ...state.todos, [msg.todo.id]: msg.todo },
+            },
+            messages: [
+              // reply
+              { to: init.from, msg: { type: "putTodoResp", todo: msg.todo } },
+              // push to subscribers
+              ...(state.subscribers
+                .filter((id) => id !== init.from)
+                .map((to) => ({
+                  to,
+                  msg: {
+                    type: "subscriptionUpdate",
+                    payload: { type: "putTodo", todo: msg.todo },
+                  },
+                })) as OutgoingMessage<ServerResp>[]),
+            ],
+          };
+        case "subscribe":
+          return effects.updateState({
+            ...state,
+            subscribers: [...state.subscribers, init.from],
+          });
         default:
           return effects.updateState(state);
       }
@@ -198,7 +236,20 @@ export function client(
               },
             },
           });
-        // TODO: handle updates from other clients
+        case "subscriptionUpdate":
+          return effects.updateState({
+            ...state,
+            todos: {
+              status: "loaded",
+              value: {
+                ...state.todos.value,
+                [msg.payload.todo.id]: {
+                  status: "stable",
+                  thing: msg.payload.todo,
+                },
+              },
+            },
+          });
         default:
           return effects.doNothing(state);
       }
