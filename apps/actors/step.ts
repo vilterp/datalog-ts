@@ -138,6 +138,7 @@ export function initialSteps<ActorState extends Json, Msg extends Json>(
 export function sendUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
+  clientActorID: string,
   payload: Msg
 ): Trace<ActorState, Msg> {
   const newTrace = {
@@ -145,7 +146,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
   };
 
   const from = "user";
-  const to = "client";
+  const to = clientActorID;
 
   const newTickID = trace.nextID;
   newTrace.nextID++;

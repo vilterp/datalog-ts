@@ -88,25 +88,34 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   return (
     <>
       <ul>
-        {clientIDs.map((clientID) => (
-          <li key={clientID}>
-            <button
-              onClick={() => {
-                setClientIDs(clientIDs.filter((id) => id !== clientID));
-              }}
-            >
-              x
-            </button>
-            <props.scenario.ui
-              state={props.trace.latestStates[`client${clientID}`]}
-              sendUserInput={(input) =>
-                props.setTrace(
-                  sendUserInput(props.trace, props.scenario.update, input)
-                )
-              }
-            />
-          </li>
-        ))}
+        {clientIDs.map((clientID) => {
+          const clientActorID = `client${clientID}`;
+
+          return (
+            <li key={clientID}>
+              <button
+                onClick={() => {
+                  setClientIDs(clientIDs.filter((id) => id !== clientID));
+                }}
+              >
+                x
+              </button>
+              <props.scenario.ui
+                state={props.trace.latestStates[`client${clientID}`]}
+                sendUserInput={(input) =>
+                  props.setTrace(
+                    sendUserInput(
+                      props.trace,
+                      props.scenario.update,
+                      clientActorID,
+                      input
+                    )
+                  )
+                }
+              />
+            </li>
+          );
+        })}
       </ul>
       <button
         onClick={() => {
@@ -117,7 +126,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
             ...props.trace,
             latestStates: {
               ...props.trace.latestStates,
-              [nextClientID]: props.scenario.initialClientState,
+              [`client${nextClientID}`]: props.scenario.initialClientState,
             },
           });
         }}
