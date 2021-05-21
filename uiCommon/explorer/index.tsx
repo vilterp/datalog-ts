@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useHashParam from "use-hash-param";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
-import { RelationTable, TableCollapseState } from "../relationTable";
+import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "../term";
 import { useJSONLocalStorage } from "../hooks";
 import { RelationTree } from "./relationTree";
