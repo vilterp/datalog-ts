@@ -86,7 +86,11 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 
 export function getInitialState(): Trace<State, Msg> {
   return spawnInitialActors(update, {
-    server: { type: "ServerState", todos: {}, subscribers: [] },
+    server: {
+      type: "ServerState",
+      todos: { "-1": { id: -1, done: false, body: "yo" } },
+      subscribers: [],
+    },
   });
 }
 
@@ -155,7 +159,7 @@ export function client(
   switch (init.type) {
     case "spawned":
       return effects.send(state, "server", [
-        // { type: "getTodos" },
+        { type: "getTodos" },
         // { type: "subscribe" },
       ]);
     case "messageReceived": {
