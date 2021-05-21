@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import * as ReactDOM from "react-dom";
-import { scenario as simpleClientServer } from "./scenarios/clientServer";
+import { scenario as simpleCounter } from "./scenarios/simpleCounter";
 import { scenario as todoMVC } from "./scenarios/todoMVC";
 import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
@@ -19,7 +19,7 @@ type ScenarioAndState<St, Msg> = {
 
 const initialScenarioAndStates: ScenarioAndState<any, any>[] = [
   todoMVC,
-  simpleClientServer,
+  simpleCounter,
 ].map((scenario) => ({ scenario, trace: scenario.initialState }));
 
 function Main() {
@@ -64,10 +64,10 @@ function Main() {
                   scenario={scenario}
                 />
 
+                <Explorer interp={trace.interp} showViz={true} />
+
                 <h2>State</h2>
                 <ReactJson src={trace.latestStates} />
-
-                <Explorer interp={trace.interp} showViz={true} />
               </>
             );
           },

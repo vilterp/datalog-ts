@@ -151,8 +151,8 @@ export function ClientServerUI(props: {
 // scenario
 
 export const scenario: Scenario<State, Msg> = {
-  name: "Simple Client/Server",
-  id: "simple-client-server",
+  name: "Counter",
+  id: "simple-counter",
   ui: ClientServerUI,
   update,
   initialState: getInitialState(),

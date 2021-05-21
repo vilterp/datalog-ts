@@ -1,4 +1,20 @@
-import { ActorID, ActorResp, LoadedMessageReceivedInitiator } from "./types";
+import {
+  ActorID,
+  ActorResp,
+  LoadedMessageReceivedInitiator,
+  OutgoingMessage,
+} from "./types";
+
+export function updateAndSend<ActorState, Msg>(
+  newState: ActorState,
+  messages: OutgoingMessage<Msg>[]
+): ActorResp<ActorState, Msg> {
+  return {
+    type: "continue",
+    state: newState,
+    messages,
+  };
+}
 
 export function reply<ServerState, Req, Resp>(
   init: LoadedMessageReceivedInitiator<Req>,

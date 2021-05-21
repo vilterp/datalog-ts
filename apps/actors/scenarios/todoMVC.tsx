@@ -131,9 +131,8 @@ export function client(
             body: state.currentText,
             done: false,
           };
-          return {
-            type: "continue",
-            state: {
+          return effects.updateAndSend(
+            {
               ...state,
               currentText: "",
               nextTodoID: state.nextTodoID + 1,
@@ -148,16 +147,13 @@ export function client(
                 },
               },
             },
-            messages: [
-              { to: "server", msg: { type: "putTodo", todo: newTodo } },
-            ],
-          };
+            [{ to: "server", msg: { type: "putTodo", todo: newTodo } }]
+          );
         }
         case "toggleTodo": {
           const currentTodo = state.todos.value[msg.id];
-          return {
-            type: "continue",
-            state: {
+          return effects.updateAndSend(
+            {
               ...state,
               todos: {
                 ...state.todos,
@@ -170,13 +166,13 @@ export function client(
                 },
               },
             },
-            messages: [
+            [
               {
                 to: "server",
                 msg: { type: "putTodo", todo: currentTodo.thing },
               },
-            ],
-          };
+            ]
+          );
         }
         // from server
         case "getTodosResp":
