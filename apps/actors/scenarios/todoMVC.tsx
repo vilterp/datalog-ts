@@ -160,7 +160,7 @@ export function client(
     case "spawned":
       return effects.send(state, "server", [
         { type: "getTodos" },
-        // { type: "subscribe" },
+        { type: "subscribe" },
       ]);
     case "messageReceived": {
       const msg = init.payload;
