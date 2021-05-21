@@ -7,7 +7,7 @@ import {
   UpdateFn,
 } from "../types";
 import * as effects from "../effects";
-import { sendUserInput, spawnActors } from "../step";
+import { spawnActors } from "../step";
 import { mapObj, mapObjToList } from "../../../util/util";
 
 // states
@@ -72,15 +72,16 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 export function getInitialState(): Trace<State, Msg> {
   return spawnActors(update, {
     user: { type: "UserState" },
-    client: {
-      type: "ClientState",
-      currentText: "",
-      nextTodoID: 0,
-      todos: { status: "loading", value: {} },
-    },
     server: { type: "ServerState", todos: {} },
   });
 }
+
+export const initialClientState = {
+  type: "ClientState",
+  currentText: "",
+  nextTodoID: 0,
+  todos: { status: "loading", value: {} },
+};
 
 // behaviors
 
@@ -292,4 +293,5 @@ export const scenario: Scenario<State, Msg> = {
   ui: ClientServerUI,
   update,
   initialState: getInitialState(),
+  initialClientState: initialClientState as State,
 };

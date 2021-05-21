@@ -83,8 +83,6 @@ export type ActorResp<ActorState, Message> =
   | { type: "sleep"; durationMS: number; state: ActorState }
   | { type: "exit" };
 
-export type IncomingMessage<T> = { msg: T; from: ActorID };
-
 export type OutgoingMessage<T> = { msg: T; to: ActorID };
 
 // TODO: latency
@@ -100,6 +98,7 @@ export type Scenario<ActorState, Msg> = {
   name: string;
   id: string;
   initialState: Trace<ActorState, Msg>;
+  initialClientState: ActorState;
   update: UpdateFn<ActorState, Msg>;
   ui: (props: {
     state: ActorState;

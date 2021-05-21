@@ -7,11 +7,11 @@ import {
   UpdateFn,
 } from "../types";
 import * as effects from "../effects";
-import { sendUserInput, spawnActors } from "../step";
+import { spawnActors } from "../step";
 
 // states
 
-export type ClientServerActorState = ServerState | ClientState | UserState;
+export type State = ServerState | ClientState | UserState;
 
 type ClientState = {
   type: "ClientState";
@@ -25,7 +25,7 @@ type UserState = { type: "UserState"; step: number };
 
 // messages
 
-export type ClientServerMsg = MsgToUser | MsgToClient | MsgToServer;
+export type Msg = MsgToUser | MsgToClient | MsgToServer;
 
 type MsgToUser = never;
 
@@ -39,12 +39,10 @@ type ServerResp = "ack";
 
 // initial state
 
-export function getInitialState(): Trace<
-  ClientServerActorState,
-  ClientServerMsg
-> {
+const initialClientState = { type: "ClientState", value: 0, status: "steady" };
+
+export function getInitialState(): Trace<State, Msg> {
   return spawnActors(update, {
-    client: { type: "ClientState", value: 0, status: "steady" },
     server: { type: "ServerState", value: 0 },
     user: { type: "UserState", step: 0 },
   });
@@ -115,10 +113,10 @@ export function client(
 
 // tying it all together
 
-export const update: UpdateFn<ClientServerActorState, ClientServerMsg> = (
+export const update: UpdateFn<State, Msg> = (
   state,
   init
-): ActorResp<ClientServerActorState, ClientServerMsg> => {
+): ActorResp<State, Msg> => {
   switch (state.type) {
     case "ClientState":
       return client(
@@ -152,10 +150,11 @@ export function ClientServerUI(props: {
 
 // scenario
 
-export const scenario: Scenario<ClientServerActorState, ClientServerMsg> = {
+export const scenario: Scenario<State, Msg> = {
   name: "Simple Client/Server",
   id: "simple-client-server",
   ui: ClientServerUI,
   update,
   initialState: getInitialState(),
+  initialClientState: initialClientState as State,
 };

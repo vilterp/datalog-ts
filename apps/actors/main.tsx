@@ -112,6 +112,14 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
         onClick={() => {
           setNextClientID(nextClientID + 1);
           setClientIDs([...clientIDs, nextClientID]);
+          // TODO: more legit spawning
+          props.setTrace({
+            ...props.trace,
+            latestStates: {
+              ...props.trace.latestStates,
+              [nextClientID]: props.scenario.initialClientState,
+            },
+          });
         }}
       >
         Add Client
