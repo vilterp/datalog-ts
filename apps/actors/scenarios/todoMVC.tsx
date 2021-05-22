@@ -17,7 +17,7 @@ import { mapObj, mapObjToList } from "../../../util/util";
 export type State = ServerState | ClientState | UserState;
 
 type ClientState = {
-  type: "ClientState";
+  type: "clientState";
   currentText: string;
   todos: Query<{ [id: string]: Saving<Todo> }>;
 };
@@ -29,12 +29,12 @@ type Todo = {
 };
 
 type ServerState = {
-  type: "ServerState";
+  type: "serverState";
   todos: { [id: string]: Todo };
   subscribers: ActorID[];
 };
 
-type UserState = { type: "UserState" };
+type UserState = { type: "userState" };
 
 // track client/server state
 
@@ -86,7 +86,7 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 export function getInitialState(): Trace<State, Msg> {
   return spawnInitialActors(update, {
     server: {
-      type: "ServerState",
+      type: "serverState",
       todos: {},
       subscribers: [],
     },
@@ -94,7 +94,7 @@ export function getInitialState(): Trace<State, Msg> {
 }
 
 export const initialClientState: ClientState = {
-  type: "ClientState",
+  type: "clientState",
   currentText: "",
   todos: { status: "loading", value: {} },
 };
@@ -268,17 +268,17 @@ export const update: UpdateFn<State, Msg> = (
   init
 ): ActorResp<State, Msg> => {
   switch (state.type) {
-    case "ClientState":
+    case "clientState":
       return client(
         state,
         init as LoadedTickInitiator<ClientState, MsgToClient>
       );
-    case "ServerState":
+    case "serverState":
       return server(
         state,
         init as LoadedTickInitiator<ServerState, MsgToServer>
       );
-    case "UserState":
+    case "userState":
       return effects.updateState(state);
   }
 };
@@ -342,5 +342,5 @@ export const scenario: Scenario<State, Msg> = {
   update,
   initialState: getInitialState(),
   initialClientState: initialClientState as State,
-  initialUserState: { type: "UserState" },
+  initialUserState: { type: "userState" },
 };
