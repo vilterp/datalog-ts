@@ -191,7 +191,8 @@ export function client(
           );
         }
         case "toggleTodo": {
-          const currentTodo = state.todos.value[msg.id];
+          const currentTodo = state.todos.value[msg.id].thing;
+          const newTodo: Todo = { ...currentTodo, done: msg.value };
           return effects.updateAndSend(
             {
               ...state,
@@ -201,7 +202,7 @@ export function client(
                   ...state.todos.value,
                   [msg.id]: {
                     status: "saving",
-                    thing: { ...currentTodo.thing, done: msg.value },
+                    thing: newTodo,
                   },
                 },
               },
@@ -209,7 +210,7 @@ export function client(
             [
               {
                 to: "server",
-                msg: { type: "putTodo", todo: currentTodo.thing },
+                msg: { type: "putTodo", todo: newTodo },
               },
             ]
           );
@@ -322,7 +323,7 @@ export function ClientServerUI(props: {
                   id,
                 })
               }
-              value={savingTodo.thing.done ? "on" : "off"}
+              checked={savingTodo.thing.done}
             />{" "}
             {savingTodo.thing.body}
             {/*  TODO: saving indicator*/}
