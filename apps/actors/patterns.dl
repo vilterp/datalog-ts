@@ -46,3 +46,8 @@ hop{
   message{id: MessageID, fromTickID: FromTickID, toActorID: ToActorID} &
   tick{id: FromTickID, actorID: FromActorID} &
   tick{id: ToTickID, initiator: messageReceived{messageID: MessageID}}.
+
+savePush{saveMessageID: SaveMsgID, todo: T, to: ToID} :-
+  message{id: SaveMsgID, payload: putTodo{todo: T}} &
+  tick{initiator: messageReceived{messageID: SaveMsgID}, id: PersistTick, actorID: "server"} &
+  message{fromTickID: PersistTick, toActorID: ToID, payload: subscriptionUpdate{todo: T}}.
