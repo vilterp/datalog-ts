@@ -35,17 +35,21 @@ export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
   queue: AddressedTickInitiator<ActorState>[],
   setTrace: (trace: Trace<ActorState, Msg>) => void
-) {
+): Promise<Trace<ActorState, Msg>> {
+  if (queue.length === 0) {
+    return trace;
+  }
+
   const { newMessages, newTrace } = step(trace, update, queue[0]);
   setTrace(newTrace);
 
   const newQueue = [...queue.slice(1), ...newMessages];
   if (newQueue.length === 0) {
-    return;
+    return newTrace;
   }
 
   await sleep(NETWORK_LATENCY);
-  await stepAllAsync(newTrace, update, newQueue, setTrace);
+  return await stepAllAsync(newTrace, update, newQueue, setTrace);
 }
 
 function step<ActorState extends Json, Msg extends Json>(
@@ -147,12 +151,34 @@ export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   initialStates: { [actorID: string]: ActorState }
 ): Trace<ActorState, Msg> {
   return Object.entries(initialStates).reduce(
-    (trace, [actorID, actorState]) => spawn(trace, update, actorID, actorState),
+    (trace, [actorID, actorState]) =>
+      spawnSync(trace, update, actorID, actorState),
     initialTrace<ActorState, Msg>()
   );
 }
 
 export function spawn<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState, Msg>,
+  update: UpdateFn<ActorState, Msg>,
+  id: string,
+  initialState: ActorState
+): {
+  newTrace: Trace<ActorState, Msg>;
+  newMessages: AddressedTickInitiator<ActorState>[];
+} {
+  return step(trace, update, {
+    to: id,
+    from: "<god>", // lol
+    init: {
+      type: "spawned",
+      spawningTickID: "0",
+      initialState,
+    },
+  });
+}
+
+// TODO: DRY up with Spawn
+export function spawnSync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
   id: string,

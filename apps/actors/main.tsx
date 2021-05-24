@@ -91,19 +91,21 @@ function useScenario<St extends Json, Msg extends Json>(
   };
 
   const spawn = (id: number) => {
-    const trace1 = Step.spawn(
+    const { newTrace: trace2, newMessages: nm1 } = Step.spawn(
       trace,
-      scenario.update,
-      `client${id}`,
-      scenario.initialClientState
-    );
-    const trace2 = Step.spawn(
-      trace1,
       scenario.update,
       `user${id}`,
       scenario.initialUserState
     );
-    setTrace(trace2);
+    stepAllAsync(trace2, scenario.update, nm1, setTrace).then((trace3) => {
+      const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
+        trace3,
+        scenario.update,
+        `client${id}`,
+        scenario.initialClientState
+      );
+      stepAllAsync(trace4, scenario.update, nm2, setTrace);
+    });
   };
 
   return { trace, sendInput, spawn };
@@ -122,6 +124,8 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
     <>
       <ul>
         {clientIDs.map((clientID) => {
+          const clientState = props.trace.latestStates[`client${clientID}`];
+
           return (
             <li key={clientID}>
               <button
@@ -131,10 +135,12 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               >
                 x
               </button>
-              <props.scenario.ui
-                state={props.trace.latestStates[`client${clientID}`]}
-                sendUserInput={(msg) => props.sendInput(clientID, msg)}
-              />
+              {clientState ? (
+                <props.scenario.ui
+                  state={clientState}
+                  sendUserInput={(msg) => props.sendInput(clientID, msg)}
+                />
+              ) : null}
             </li>
           );
         })}
