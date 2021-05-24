@@ -325,8 +325,13 @@ export function ClientServerUI(props: {
               }
               checked={savingTodo.thing.done}
             />{" "}
-            {savingTodo.thing.body}
-            {/*  TODO: saving indicator*/}
+            <span
+              style={{
+                color: savingTodo.status === "saving" ? "grey" : "inherit",
+              }}
+            >
+              {savingTodo.thing.body}
+            </span>
           </li>
         ))}
       </ul>
