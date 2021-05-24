@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { scenario as simpleCounter } from "./scenarios/simpleCounter";
 import { scenario as todoMVC } from "./scenarios/todoMVC";
@@ -7,7 +7,7 @@ import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
-import { sendUserInput, spawn } from "./step";
+import { sendUserInput, sendUserInputAsync, spawn } from "./step";
 import { updateList } from "../../util/util";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
@@ -101,14 +101,15 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               <props.scenario.ui
                 state={props.trace.latestStates[`client${clientID}`]}
                 sendUserInput={(input) =>
-                  props.setTrace(
-                    sendUserInput(
+                  useEffect(() => {
+                    sendUserInputAsync(
                       props.trace,
                       props.scenario.update,
                       clientID,
-                      input
-                    )
-                  )
+                      input,
+                      props.setTrace
+                    ).then(() => console.log("stepping is done"));
+                  })
                 }
               />
             </li>

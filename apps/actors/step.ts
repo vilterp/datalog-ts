@@ -10,6 +10,7 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
+import { sleep } from "../../util/util";
 
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
@@ -23,6 +24,27 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
     const { trace, queue } = step(curTrace, update, nextInit);
     curTrace = trace;
     curQueue = [...curQueue, ...queue];
+  }
+  return curTrace;
+}
+
+const NETWORK_LATENCY = 500;
+
+export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState, Msg>,
+  update: UpdateFn<ActorState, Msg>,
+  init: AddressedTickInitiator<ActorState>,
+  setTrace: (trace: Trace<ActorState, Msg>) => void
+): Promise<Trace<ActorState, Msg>> {
+  let curQueue: AddressedTickInitiator<ActorState>[] = [init];
+  let curTrace = trace;
+  while (curQueue.length > 0) {
+    const nextInit = curQueue.shift();
+    const { trace, queue } = step(curTrace, update, nextInit);
+    curTrace = trace;
+    setTrace(curTrace);
+    curQueue = [...curQueue, ...queue];
+    await sleep(NETWORK_LATENCY);
   }
   return curTrace;
 }
@@ -156,6 +178,66 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
   clientID: number,
   payload: Msg
 ): Trace<ActorState, Msg> {
+  const { newTrace, newMessageID } = insertUserInput(
+    trace,
+    update,
+    clientID,
+    payload
+  );
+
+  // TODO: dedup...
+  const from = `user${clientID}`;
+  const to = `client${clientID}`;
+
+  return stepAll(newTrace, update, {
+    to,
+    from,
+    init: {
+      type: "messageReceived",
+      messageID: newMessageID.toString(),
+    },
+  });
+}
+
+export async function sendUserInputAsync<
+  ActorState extends Json,
+  Msg extends Json
+>(
+  trace: Trace<ActorState, Msg>,
+  update: UpdateFn<ActorState, Msg>,
+  clientID: number,
+  payload: Msg,
+  setTrace: (trace: Trace<ActorState, Msg>) => void
+): Promise<Trace<ActorState, Msg>> {
+  const { newTrace, newMessageID } = insertUserInput(
+    trace,
+    update,
+    clientID,
+    payload
+  );
+
+  // TODO: dedup...
+  const from = `user${clientID}`;
+  const to = `client${clientID}`;
+
+  return await stepAllAsync(
+    newTrace,
+    update,
+    {
+      to,
+      from,
+      init: { type: "messageReceived", messageID: newMessageID.toString() },
+    },
+    setTrace
+  );
+}
+
+function insertUserInput<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState, Msg>,
+  update: UpdateFn<ActorState, Msg>,
+  clientID: number,
+  payload: Msg
+): { newTrace: Trace<ActorState, Msg>; newMessageID: number } {
   const newTrace = {
     ...trace,
   };
@@ -194,14 +276,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
     })
   );
 
-  return stepAll(newTrace, update, {
-    to,
-    from,
-    init: {
-      type: "messageReceived",
-      messageID: newMessageID.toString(),
-    },
-  });
+  return { newTrace, newMessageID };
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(
