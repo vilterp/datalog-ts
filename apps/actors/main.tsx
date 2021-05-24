@@ -1,14 +1,13 @@
 import * as React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import * as ReactDOM from "react-dom";
 import { scenario as simpleCounter } from "./scenarios/simpleCounter";
 import { scenario as todoMVC } from "./scenarios/todoMVC";
 import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
-import { Scenario, Trace, UpdateFn } from "./types";
+import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
 import * as Step from "./step";
-import { updateList } from "../../util/util";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
 import { insertUserInput, stepAllAsync } from "./step";

@@ -312,28 +312,30 @@ export function ClientServerUI(props: {
         Submit
       </button>
       <ul>
-        {mapObjToList(props.state.todos.value, (id, savingTodo) => (
-          <li key={id}>
-            <input
-              type="checkbox"
-              onChange={(evt) =>
-                props.sendUserInput({
-                  type: "toggleTodo",
-                  value: (evt.target as HTMLInputElement).checked,
-                  id,
-                })
-              }
-              checked={savingTodo.thing.done}
-            />{" "}
-            <span
-              style={{
-                color: savingTodo.status === "saving" ? "grey" : "inherit",
-              }}
-            >
-              {savingTodo.thing.body}
-            </span>
-          </li>
-        ))}
+        {props.state.todos.status === "loading"
+          ? "Loading..."
+          : mapObjToList(props.state.todos.value, (id, savingTodo) => (
+              <li key={id}>
+                <input
+                  type="checkbox"
+                  onChange={(evt) =>
+                    props.sendUserInput({
+                      type: "toggleTodo",
+                      value: (evt.target as HTMLInputElement).checked,
+                      id,
+                    })
+                  }
+                  checked={savingTodo.thing.done}
+                />{" "}
+                <span
+                  style={{
+                    color: savingTodo.status === "saving" ? "grey" : "inherit",
+                  }}
+                >
+                  {savingTodo.thing.body}
+                </span>
+              </li>
+            ))}
       </ul>
     </>
   );
