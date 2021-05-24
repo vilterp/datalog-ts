@@ -309,3 +309,9 @@ export function updateList<T>(
 ) {
   return list.map((item) => (predicate(item) ? update(item) : item));
 }
+
+export function sleep(durationMS: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), durationMS);
+  });
+}

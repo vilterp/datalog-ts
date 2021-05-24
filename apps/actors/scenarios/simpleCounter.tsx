@@ -44,7 +44,6 @@ const initialClientState = { type: "ClientState", value: 0, status: "steady" };
 export function getInitialState(): Trace<State, Msg> {
   return spawnInitialActors(update, {
     server: { type: "ServerState", value: 0 },
-    user: { type: "UserState" },
   });
 }
 

@@ -7,30 +7,15 @@ import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
 import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
-import { sendUserInput, spawn } from "./step";
-import { updateList } from "../../util/util";
+import * as Step from "./step";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
+import { insertUserInput, stepAllAsync } from "./step";
 
-type ScenarioAndState<St, Msg> = {
-  scenario: Scenario<St, Msg>;
-  trace: Trace<St, Msg>;
-};
-
-const initialScenarioAndStates: ScenarioAndState<any, any>[] = [
-  todoMVC,
-  simpleCounter,
-].map((scenario) => ({ scenario, trace: scenario.initialState }));
+const SCENARIOS: Scenario<any, any>[] = [todoMVC, simpleCounter];
 
 function Main() {
-  const [scenarioAndStates, setScenarioAndStates] = useState<
-    ScenarioAndState<any, any>[]
-  >(initialScenarioAndStates);
-
-  const [curTabID, setTabID] = useHashParam(
-    "scenario",
-    scenarioAndStates[0].scenario.id
-  );
+  const [curTabID, setTabID] = useHashParam("scenario", SCENARIOS[0].id);
 
   return (
     <>
@@ -39,37 +24,11 @@ function Main() {
       <Tabs
         setTabID={setTabID}
         curTabID={curTabID}
-        tabs={scenarioAndStates.map((scenarioAndState) => ({
-          name: scenarioAndState.scenario.name,
-          id: scenarioAndState.scenario.id,
+        tabs={SCENARIOS.map((scenario) => ({
+          name: scenario.name,
+          id: scenario.id,
           render: () => {
-            const trace = scenarioAndState.trace;
-            const scenario = scenarioAndState.scenario;
-
-            const setTrace = <St, Msg>(newTrace: Trace<St, Msg>) => {
-              setScenarioAndStates(
-                updateList(
-                  scenarioAndStates,
-                  (ss) => ss.scenario.name === scenario.name,
-                  (ss) => ({ ...ss, trace: newTrace })
-                )
-              );
-            };
-
-            return (
-              <>
-                <MultiClient
-                  trace={trace}
-                  setTrace={setTrace}
-                  scenario={scenario}
-                />
-
-                <Explorer interp={trace.interp} showViz={true} />
-
-                <h2>State</h2>
-                <ReactJson src={trace.latestStates} />
-              </>
-            );
+            return <Animated scenario={scenario} />;
           },
         }))}
       />
@@ -77,9 +36,84 @@ function Main() {
   );
 }
 
+function Animated<ActorState extends Json, Msg extends Json>(props: {
+  scenario: Scenario<ActorState, Msg>;
+}) {
+  const { trace, sendInput, spawn } = useScenario(props.scenario);
+
+  return (
+    <>
+      <MultiClient
+        trace={trace}
+        sendInput={sendInput}
+        spawn={spawn}
+        scenario={props.scenario}
+      />
+
+      <Explorer interp={trace.interp} showViz={true} />
+
+      <h2>State</h2>
+      <ReactJson src={trace.latestStates} />
+    </>
+  );
+}
+
+function useScenario<St extends Json, Msg extends Json>(
+  scenario: Scenario<St, Msg>
+): {
+  trace: Trace<St, Msg>;
+  sendInput: (fromUserID: number, input: Msg) => void;
+  spawn: (id: number) => void;
+} {
+  const [trace, setTrace] = useState(scenario.initialState);
+
+  const sendInput = (fromUserID: number, input: Msg) => {
+    const { newTrace, newMessageID } = insertUserInput(
+      trace,
+      scenario.update,
+      fromUserID,
+      input
+    );
+    setTrace(newTrace);
+    stepAllAsync(
+      newTrace,
+      scenario.update,
+      [
+        {
+          from: `user${fromUserID}`,
+          to: `client${fromUserID}`,
+          init: { type: "messageReceived", messageID: newMessageID.toString() },
+        },
+      ],
+      setTrace
+    );
+  };
+
+  const spawn = (id: number) => {
+    const { newTrace: trace2, newMessages: nm1 } = Step.spawn(
+      trace,
+      scenario.update,
+      `user${id}`,
+      scenario.initialUserState
+    );
+    stepAllAsync(trace2, scenario.update, nm1, setTrace).then((trace3) => {
+      const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
+        trace3,
+        scenario.update,
+        `client${id}`,
+        scenario.initialClientState
+      );
+      stepAllAsync(trace4, scenario.update, nm2, setTrace);
+    });
+  };
+
+  return { trace, sendInput, spawn };
+}
+
 function MultiClient<St extends Json, Msg extends Json>(props: {
   trace: Trace<St, Msg>;
-  setTrace: (t: Trace<St, Msg>) => void;
+  sendInput: (fromUserID: number, msg: Msg) => void;
+  spawn: (id: number) => void;
   scenario: Scenario<St, Msg>;
 }) {
   const [nextClientID, setNextClientID] = useState(0);
@@ -89,6 +123,8 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
     <>
       <ul>
         {clientIDs.map((clientID) => {
+          const clientState = props.trace.latestStates[`client${clientID}`];
+
           return (
             <li key={clientID}>
               <button
@@ -98,19 +134,12 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               >
                 x
               </button>
-              <props.scenario.ui
-                state={props.trace.latestStates[`client${clientID}`]}
-                sendUserInput={(input) =>
-                  props.setTrace(
-                    sendUserInput(
-                      props.trace,
-                      props.scenario.update,
-                      clientID,
-                      input
-                    )
-                  )
-                }
-              />
+              {clientState ? (
+                <props.scenario.ui
+                  state={clientState}
+                  sendUserInput={(msg) => props.sendInput(clientID, msg)}
+                />
+              ) : null}
             </li>
           );
         })}
@@ -119,20 +148,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
         onClick={() => {
           setNextClientID(nextClientID + 1);
           setClientIDs([...clientIDs, nextClientID]);
-          // TODO: spawn a new user?
-          const trace1 = spawn(
-            props.trace,
-            props.scenario.update,
-            `client${nextClientID}`,
-            props.scenario.initialClientState
-          );
-          const trace2 = spawn(
-            trace1,
-            props.scenario.update,
-            `user${nextClientID}`,
-            props.scenario.initialUserState
-          );
-          props.setTrace(trace2);
+          props.spawn(nextClientID);
         }}
       >
         Add Client
