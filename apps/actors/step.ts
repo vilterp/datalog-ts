@@ -30,6 +30,24 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 
 const NETWORK_LATENCY = 500;
 
+export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState, Msg>,
+  update: UpdateFn<ActorState, Msg>,
+  queue: AddressedTickInitiator<ActorState>[],
+  setTrace: (trace: Trace<ActorState, Msg>) => void
+) {
+  const { newMessages, newTrace } = step(trace, update, queue[0]);
+  setTrace(newTrace);
+
+  const newQueue = [...queue.slice(1), ...newMessages];
+  if (newQueue.length === 0) {
+    return;
+  }
+
+  await sleep(NETWORK_LATENCY);
+  await stepAllAsync(newTrace, update, newQueue, setTrace);
+}
+
 function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
@@ -180,7 +198,7 @@ export function sendUserInput<ActorState extends Json, Msg extends Json>(
   });
 }
 
-function insertUserInput<ActorState extends Json, Msg extends Json>(
+export function insertUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
   clientID: number,

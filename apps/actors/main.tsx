@@ -11,6 +11,7 @@ import * as Step from "./step";
 import { updateList } from "../../util/util";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
+import { insertUserInput, stepAllAsync } from "./step";
 
 const SCENARIOS: Scenario<any, any>[] = [todoMVC, simpleCounter];
 
@@ -68,7 +69,25 @@ function useScenario<St extends Json, Msg extends Json>(
   const [trace, setTrace] = useState(scenario.initialState);
 
   const sendInput = (fromUserID: number, input: Msg) => {
-    setTrace(Step.sendUserInput(trace, scenario.update, fromUserID, input));
+    const { newTrace, newMessageID } = insertUserInput(
+      trace,
+      scenario.update,
+      fromUserID,
+      input
+    );
+    setTrace(newTrace);
+    stepAllAsync(
+      newTrace,
+      scenario.update,
+      [
+        {
+          from: `user${fromUserID}`,
+          to: `client${fromUserID}`,
+          init: { type: "messageReceived", messageID: newMessageID.toString() },
+        },
+      ],
+      setTrace
+    );
   };
 
   const spawn = (id: number) => {
