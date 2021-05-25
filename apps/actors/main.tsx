@@ -7,7 +7,7 @@ import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer, ScenarioAction, ScenState } from "./reducers";
 import { SCENARIOS } from "./scenarios";
-import { sendUserInputAsync } from "./step";
+import { sendUserInputAsync, spawnAsync } from "./step";
 
 function Main() {
   const [state, dispatch] = useReducer(reducer, initialState(SCENARIOS));
@@ -101,7 +101,17 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
           );
         })}
       </ul>
-      <button onClick={() => props.dispatch({ type: "SpawnClient" })}>
+      <button
+        onClick={() => {
+          props.dispatch({ type: "BumpNextClientID" });
+          spawnAsync(
+            props.scenState.trace,
+            props.scenState.scenario,
+            props.scenState.nextClientID,
+            (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
+          );
+        }}
+      >
         Add Client
       </button>
     </>

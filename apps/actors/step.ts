@@ -6,6 +6,7 @@ import {
   AddressedTickInitiator,
   initialTrace,
   LoadedTickInitiator,
+  Scenario,
   TickInitiator,
   Trace,
   UpdateFn,
@@ -159,7 +160,29 @@ export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   );
 }
 
-export function spawn<ActorState extends Json, Msg extends Json>(
+export async function spawnAsync<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState>,
+  scenario: Scenario<ActorState, Msg>,
+  id: number,
+  updateTrace: (newTrace: Trace<ActorState>) => void
+) {
+  const { newTrace: trace2, newMessages: nm1 } = spawn(
+    trace,
+    scenario.update,
+    `user${id}`,
+    scenario.initialUserState
+  );
+  const trace3 = await stepAllAsync(trace2, scenario.update, updateTrace, nm1);
+  const { newTrace: trace4, newMessages: nm2 } = spawn(
+    trace3,
+    scenario.update,
+    `client${id}`,
+    scenario.initialClientState
+  );
+  await stepAllAsync(trace4, scenario.update, updateTrace, nm2);
+}
+
+function spawn<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   id: string,

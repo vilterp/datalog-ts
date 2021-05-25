@@ -63,7 +63,7 @@ export type ScenarioAction<St, Msg> =
       type: "UpdateTrace";
       newTrace: Trace<St>;
     }
-  | { type: "SpawnClient" }
+  | { type: "BumpNextClientID" }
   | { type: "ExitClient"; clientID: number };
 
 function scenarioReducer<St extends Json, Msg extends Json>(
@@ -71,40 +71,15 @@ function scenarioReducer<St extends Json, Msg extends Json>(
   action: ScenarioAction<St, Msg>
 ): ScenState<St, Msg> {
   switch (action.type) {
-    case "SpawnClient": {
-      const scenario = scenState.scenario;
-      const trace = scenState.trace;
-      const id = scenState.nextClientID;
-      const { newTrace: trace2, newMessages: nm1 } = Step.spawn(
-        trace,
-        scenario.update,
-        `user${id}`,
-        scenario.initialUserState
-      );
-      const trace3 = stepAll(trace2, scenario.update, nm1);
-
-      const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
-        trace3,
-        scenario.update,
-        `client${id}`,
-        scenario.initialClientState
-      );
-      const trace5 = stepAll(trace4, scenario.update, nm2);
-      return {
-        ...scenState,
-        trace: trace5,
-        clientIDs: [...scenState.clientIDs, scenState.nextClientID],
-        nextClientID: scenState.nextClientID + 1,
-      };
-    }
     case "ExitClient":
       // TODO: mark it as exited in the trace
       return {
         ...scenState,
         clientIDs: scenState.clientIDs.filter((id) => id !== action.clientID),
       };
-    case "UpdateTrace": {
+    case "UpdateTrace":
       return { ...scenState, trace: action.newTrace };
-    }
+    case "BumpNextClientID":
+      return { ...scenState, nextClientID: scenState.nextClientID + 1 };
   }
 }
