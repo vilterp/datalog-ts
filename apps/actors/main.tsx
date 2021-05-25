@@ -10,7 +10,7 @@ import ReactJson from "react-json-view";
 import * as Step from "./step";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
-import { insertUserInput, stepAllAsync } from "./step";
+import { insertUserInput, stepAll, stepAllAsync } from "./step";
 import { updateList } from "../../util/util";
 
 const SCENARIOS: Scenario<any, any>[] = [todoMVC, simpleCounter];
@@ -108,17 +108,19 @@ function useScenarios<St extends Json, Msg extends Json>(
   );
   const trace = scenState.trace;
   const scenario = scenState.scenario;
-  const setScenState = (newScenState: ScenState<any, any>) => {
+  const updateScenState = (
+    fn: (old: ScenState<St, Msg>) => ScenState<St, Msg>
+  ) => {
     setScenStates(
       updateList(
         scenStates,
         (scenState) => scenState.scenario.id === scenario.id,
-        (_) => newScenState
+        fn
       )
     );
   };
   const setTrace = (newTrace) => {
-    setScenState({ ...scenState, trace: newTrace });
+    updateScenState((old) => ({ ...old, trace: newTrace }));
   };
 
   const sendInput = (fromUserID: number, input: Msg) => {
@@ -145,11 +147,11 @@ function useScenarios<St extends Json, Msg extends Json>(
 
   const spawnClient = () => {
     const id = scenState.nextClientID;
-    setScenState({
-      ...scenState,
-      nextClientID: scenState.nextClientID + 1,
-      clientIDs: [...scenState.clientIDs, id],
-    });
+    updateScenState((old) => ({
+      ...old,
+      nextClientID: old.nextClientID + 1,
+      clientIDs: [...old.clientIDs, id],
+    }));
 
     const { newTrace: trace2, newMessages: nm1 } = Step.spawn(
       trace,
@@ -157,22 +159,25 @@ function useScenarios<St extends Json, Msg extends Json>(
       `user${id}`,
       scenario.initialUserState
     );
-    stepAllAsync(trace2, scenario.update, nm1, setTrace).then((trace3) => {
-      const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
-        trace3,
-        scenario.update,
-        `client${id}`,
-        scenario.initialClientState
-      );
-      stepAllAsync(trace4, scenario.update, nm2, setTrace);
-    });
+    const trace3 =
+      nm1.length > 0 ? stepAll(trace2, scenario.update, nm1[0]) : trace2;
+    setTrace(trace3);
+    const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
+      trace3,
+      scenario.update,
+      `client${id}`,
+      scenario.initialClientState
+    );
+    const trace5 =
+      nm2.length > 0 ? stepAll(trace4, scenario.update, nm2[0]) : trace4;
+    setTrace(trace5);
   };
 
   const exitClient = (id: number) => {
-    setScenState({
-      ...scenState,
-      clientIDs: scenState.clientIDs.filter((curID) => curID !== id),
-    });
+    updateScenState((old) => ({
+      ...old,
+      clientIDs: old.clientIDs.filter((curID) => curID !== id),
+    }));
   };
 
   return {
