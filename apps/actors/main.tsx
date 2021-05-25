@@ -44,9 +44,9 @@ function Animated<ActorState extends Json, Msg extends Json>(props: {
 }) {
   const { trace, sendInput, spawn } = useScenario(props.scenario);
 
-  console.log(
-    prettyPrintGraph(toGraphviz((trace.interp as IncrementalInterpreter).graph))
-  );
+  // console.log(
+  //   prettyPrintGraph(toGraphviz((trace.interp as IncrementalInterpreter).graph))
+  // );
 
   return (
     <>
