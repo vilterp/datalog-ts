@@ -49,6 +49,7 @@ export function getInitialState(): Trace<State> {
 
 // behaviors
 
+// TODO: push out updates to clients
 export function server(
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
@@ -140,7 +141,14 @@ export function ClientServerUI(props: {
 }) {
   return (
     <>
-      <h2>Client</h2>
+      <h2>Counter</h2>
+      <span
+        style={{
+          color: props.state.status === "saving" ? "lightgrey" : "",
+        }}
+      >
+        Value: {props.state.value}{" "}
+      </span>
       <button onClick={() => props.sendUserInput("decrement")}>-</button>
       <button onClick={() => props.sendUserInput("increment")}>+</button>
     </>
