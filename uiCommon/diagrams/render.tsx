@@ -5,7 +5,7 @@ export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
 }) {
-  console.log(props.diagram);
+  // console.log(props.diagram);
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
   return (

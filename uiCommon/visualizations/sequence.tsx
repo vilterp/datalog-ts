@@ -52,7 +52,7 @@ function SequenceDiagram(props: {
           diagram={sequenceDiagram(
             makeSequenceSpec(actors, messages, ticksByID)
           )}
-          onMouseOver={(term) => props.setHighlightedTerm(term)}
+          onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
       </div>
     </div>
