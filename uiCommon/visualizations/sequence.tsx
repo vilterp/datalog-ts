@@ -124,12 +124,18 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
               width: 1,
               stroke: "black",
               start: ORIGIN,
-              end: { x: 0, y: 200 },
+              end: { x: 0, y: 200 }, // TODO: find max length
             }),
             ...pointsForLocation(loc, seq.hops).map((tp) =>
               AbsPos(
                 { x: 0, y: yForTime(tp.time) },
-                Tag<Term>(tp.term, EMPTY_DIAGRAM)
+                Tag<Term>(
+                  tp.term,
+                  Circle({
+                    radius: 5,
+                    fill: "red",
+                  })
+                )
               )
             ),
           ]),
@@ -137,23 +143,19 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       )
     )
   );
-  const dots = ZLayout(
-    flatMap(seq.locations, (loc) =>
-      pointsForLocation(loc, seq.hops).map((pt) => {
-        const coords = getCoords(locationLines, pt.term);
-        if (coords === null) {
-          return EMPTY_DIAGRAM;
-        }
-        return AbsPos(
-          coords,
-          Circle({
-            radius: 5,
-            fill: "red",
-          })
-        );
-      })
-    )
-  );
+  // const dots = ZLayout(
+  //   flatMap(seq.locations, (loc) =>
+  //     pointsForLocation(loc, seq.hops).map((pt) => {
+  //       return AbsPos(
+  //         { x: 0, y: yForTime(pt.time) },
+  //         Circle({
+  //           radius: 5,
+  //           fill: "red",
+  //         })
+  //       );
+  //     })
+  //   )
+  // );
   const hops = ZLayout(
     seq.hops.map((hop) => {
       const fromCoords = getCoords(locationLines, hop.from.term);
@@ -172,7 +174,7 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       );
     })
   );
-  return ZLayout<Term>([locationLines, hops, dots]);
+  return ZLayout<Term>([locationLines, hops]);
 }
 
 function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {
