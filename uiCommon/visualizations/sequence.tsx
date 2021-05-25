@@ -66,7 +66,10 @@ function makeSequenceSpec(
   ticksByID: { [id: string]: Term }
 ): Sequence {
   return {
-    locations: actors.map((actor) => (actor.bindings.ID as StringLit).val),
+    locations: actors.map((actor) => ({
+      loc: (actor.bindings.ID as StringLit).val,
+      term: actor.term,
+    })),
     hops: messages.map((message) => ({
       term: message.term,
       from: {
@@ -87,7 +90,7 @@ export type Location = string;
 export type Time = number;
 
 export interface Sequence {
-  locations: Location[];
+  locations: { loc: Location; term: Term }[];
   hops: Hop[];
 }
 
@@ -117,32 +120,35 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
     { x: 40, y: 20 },
     HLayout(
       seq.locations.map((loc) =>
-        VLayout([
-          Text({
-            text: loc,
-            fontSize: 10,
-          }),
-          ZLayout([
-            Line({
-              width: 1,
-              stroke: "black",
-              start: ORIGIN,
-              end: { x: 0, y: yForTime(maxTime) + 20 },
+        Tag(
+          loc.term,
+          VLayout([
+            Text({
+              text: loc.loc,
+              fontSize: 10,
             }),
-            ...pointsForLocation(loc, seq.hops).map((tp) =>
-              AbsPos(
-                { x: 0, y: yForTime(tp.time) },
-                Tag(
-                  tp.term,
-                  Circle({
-                    radius: 5,
-                    fill: "red",
-                  })
+            ZLayout([
+              Line({
+                width: 1,
+                stroke: "black",
+                start: ORIGIN,
+                end: { x: 0, y: yForTime(maxTime) + 20 },
+              }),
+              ...pointsForLocation(loc.loc, seq.hops).map((tp) =>
+                AbsPos(
+                  { x: 0, y: yForTime(tp.time) },
+                  Tag(
+                    tp.term,
+                    Circle({
+                      radius: 5,
+                      fill: "red",
+                    })
+                  )
                 )
-              )
-            ),
-          ]),
-        ])
+              ),
+            ]),
+          ])
+        )
       )
     )
   );
