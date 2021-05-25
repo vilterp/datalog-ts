@@ -11,27 +11,38 @@ import * as Step from "./step";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
 import { insertUserInput, stepAllAsync } from "./step";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { toGraphviz } from "../../core/incremental/graphviz";
-import { prettyPrintGraph } from "../../util/graphviz";
+import { updateList } from "../../util/util";
 
 const SCENARIOS: Scenario<any, any>[] = [todoMVC, simpleCounter];
 
 function Main() {
-  const [curTabID, setTabID] = useHashParam("scenario", SCENARIOS[0].id);
+  const {
+    trace,
+    sendInput,
+    spawn,
+    selectedScenarioID,
+    setSelectedScenarioID,
+  } = useScenarios(SCENARIOS);
 
   return (
     <>
       <h1>Communicating Processes Viz</h1>
 
       <Tabs
-        setTabID={setTabID}
-        curTabID={curTabID}
+        setTabID={setSelectedScenarioID}
+        curTabID={selectedScenarioID}
         tabs={SCENARIOS.map((scenario) => ({
           name: scenario.name,
           id: scenario.id,
           render: () => {
-            return <Animated scenario={scenario} />;
+            return (
+              <Animated
+                scenario={scenario}
+                spawn={spawn}
+                sendInput={sendInput}
+                trace={trace}
+              />
+            );
           },
         }))}
       />
@@ -41,39 +52,59 @@ function Main() {
 
 function Animated<ActorState extends Json, Msg extends Json>(props: {
   scenario: Scenario<ActorState, Msg>;
+  trace: Trace<ActorState, Msg>;
+  sendInput: (fromUserID: number, input: Msg) => void;
+  spawn: (id: number) => void;
 }) {
-  const { trace, sendInput, spawn } = useScenario(props.scenario);
-
-  // TODO: show rule graph in the explorer???
-  // console.log(
-  //   prettyPrintGraph(toGraphviz((trace.interp as IncrementalInterpreter).graph))
-  // );
-
   return (
     <>
       <MultiClient
-        trace={trace}
-        sendInput={sendInput}
-        spawn={spawn}
+        trace={props.trace}
+        sendInput={props.sendInput}
+        spawn={props.spawn}
         scenario={props.scenario}
       />
 
-      <Explorer interp={trace.interp} showViz={true} />
+      <Explorer interp={props.trace.interp} showViz={true} />
 
       <h2>State</h2>
-      <ReactJson src={trace.latestStates} />
+      <ReactJson src={props.trace.latestStates} />
     </>
   );
 }
 
-function useScenario<St extends Json, Msg extends Json>(
-  scenario: Scenario<St, Msg>
+// TODO: does all of this have to be bundled into one hook?
+function useScenarios<St extends Json, Msg extends Json>(
+  scenarios: Scenario<St, Msg>[]
 ): {
   trace: Trace<St, Msg>;
   sendInput: (fromUserID: number, input: Msg) => void;
   spawn: (id: number) => void;
+  selectedScenarioID: string;
+  setSelectedScenarioID: (id: string) => void;
 } {
-  const [trace, setTrace] = useState(scenario.initialState);
+  const [traces, setTraces] = useState(
+    scenarios.map((scenario) => ({ scenario, trace: scenario.initialState }))
+  );
+  const [selectedScenarioID, setSelectedScenarioID] = useHashParam(
+    "scenario",
+    scenarios[0].id
+  );
+
+  const selected = traces.find(
+    (scenAndState) => scenAndState.scenario.id === selectedScenarioID
+  );
+  const trace = selected.trace;
+  const scenario = selected.scenario;
+  const setTrace = (newTrace) => {
+    setTraces(
+      updateList(
+        traces,
+        (scenState) => scenState.scenario.id === scenario.id,
+        (scenState) => ({ ...scenState, trace: newTrace })
+      )
+    );
+  };
 
   const sendInput = (fromUserID: number, input: Msg) => {
     const { newTrace, newMessageID } = insertUserInput(
@@ -115,7 +146,7 @@ function useScenario<St extends Json, Msg extends Json>(
     });
   };
 
-  return { trace, sendInput, spawn };
+  return { trace, sendInput, spawn, selectedScenarioID, setSelectedScenarioID };
 }
 
 function MultiClient<St extends Json, Msg extends Json>(props: {
