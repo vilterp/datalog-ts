@@ -5,7 +5,12 @@ import { Explorer } from "../../uiCommon/explorer";
 import ReactJson from "react-json-view";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
-import { initialState, reducer, ScenarioAction, ScenState } from "./reducers";
+import {
+  initialState,
+  reducer,
+  ScenarioAction,
+  SystemInstance,
+} from "./reducers";
 import { SCENARIOS } from "./scenarios";
 import { sendUserInputAsync, spawnAsync } from "./step";
 import useHashParam from "use-hash-param";
@@ -24,17 +29,17 @@ function Main() {
       <Tabs
         setTabID={setSelectedScenarioID}
         curTabID={selectedScenarioID}
-        tabs={state.scenStates.map((scenState) => ({
-          name: scenState.scenario.name,
-          id: scenState.scenario.id,
+        tabs={state.systemInstances.map((systemInstance) => ({
+          name: systemInstance.scenario.name,
+          id: systemInstance.scenario.id,
           render: () => {
             return (
               <Scenario
-                scenState={scenState}
+                systemInstance={systemInstance}
                 dispatch={(action) =>
                   dispatch({
                     type: "UpdateScenario",
-                    scenarioID: scenState.scenario.id,
+                    scenarioID: systemInstance.scenario.id,
                     action,
                   })
                 }
@@ -48,29 +53,32 @@ function Main() {
 }
 
 function Scenario<St extends Json, Msg extends Json>(props: {
-  scenState: ScenState<St, Msg>;
+  systemInstance: SystemInstance<St, Msg>;
   dispatch: (action: ScenarioAction<St, Msg>) => void;
 }) {
   return (
     <>
-      <MultiClient scenState={props.scenState} dispatch={props.dispatch} />
+      <MultiClient
+        systemInstance={props.systemInstance}
+        dispatch={props.dispatch}
+      />
 
-      <Explorer interp={props.scenState.trace.interp} showViz={true} />
+      <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
 
       <h2>State</h2>
-      <ReactJson src={props.scenState.trace.latestStates} />
+      <ReactJson src={props.systemInstance.trace.latestStates} />
     </>
   );
 }
 
 function MultiClient<St extends Json, Msg extends Json>(props: {
-  scenState: ScenState<St, Msg>;
+  systemInstance: SystemInstance<St, Msg>;
   dispatch: (action: ScenarioAction<St, Msg>) => void;
 }) {
   const sendInput = (clientID: number, input: Msg) => {
     sendUserInputAsync(
-      props.scenState.trace,
-      props.scenState.scenario.update,
+      props.systemInstance.trace,
+      props.systemInstance.scenario.update,
       clientID,
       input,
       (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
@@ -80,9 +88,9 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   return (
     <>
       <ul>
-        {props.scenState.clientIDs.map((clientID) => {
+        {props.systemInstance.clientIDs.map((clientID) => {
           const clientState =
-            props.scenState.trace.latestStates[`client${clientID}`];
+            props.systemInstance.trace.latestStates[`client${clientID}`];
 
           return (
             <li key={clientID}>
@@ -94,7 +102,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                 x
               </button>
               {clientState ? (
-                <props.scenState.scenario.ui
+                <props.systemInstance.scenario.ui
                   state={clientState}
                   sendUserInput={(input) => sendInput(clientID, input)}
                 />
@@ -107,9 +115,9 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
         onClick={() => {
           props.dispatch({ type: "AllocateClientID" });
           spawnAsync(
-            props.scenState.trace,
-            props.scenState.scenario,
-            props.scenState.nextClientID,
+            props.systemInstance.trace,
+            props.systemInstance.scenario,
+            props.systemInstance.nextClientID,
             (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
           );
         }}

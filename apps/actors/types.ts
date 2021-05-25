@@ -4,8 +4,22 @@ import { makeMemoryLoader } from "../../core/loaders";
 import patterns from "./patterns.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import React from "react";
+import { ScenarioAction, SystemInstance } from "./reducers";
 
-// === overall model ===
+// === overall ui model ===
+
+export type State<St, Msg> = {
+  systemInstances: SystemInstance<St, Msg>[];
+};
+
+// TODO: only one action... is this reducer even necessary?
+export type Action<St, Msg> = {
+  type: "UpdateScenario";
+  action: ScenarioAction<St, Msg>;
+  scenarioID: string;
+};
+
+// === trace model ===
 
 export type Trace<ActorState> = {
   nextID: number;
@@ -96,7 +110,7 @@ export type UpdateFn<ActorState, Msg> = (
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
 
-export type Scenario<ActorState, Msg> = {
+export type System<ActorState, Msg> = {
   name: string;
   id: string;
   ui: (props: {

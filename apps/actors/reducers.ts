@@ -1,23 +1,12 @@
 import { updateList } from "../../util/util";
-import { Scenario, Trace } from "./types";
+import { Action, System, State, Trace } from "./types";
 import { Json } from "../../util/json";
 
-type State<St, Msg> = {
-  scenStates: ScenState<St, Msg>[];
-};
-
-// TODO: only one action... is this reducer even necessary?
-type Action<St, Msg> = {
-  type: "UpdateScenario";
-  action: ScenarioAction<St, Msg>;
-  scenarioID: string;
-};
-
 export function initialState<St, Msg>(
-  scenarios: Scenario<St, Msg>[]
+  scenarios: System<St, Msg>[]
 ): State<St, Msg> {
   return {
-    scenStates: scenarios.map((scenario) => ({
+    systemInstances: scenarios.map((scenario) => ({
       scenario,
       trace: scenario.initialState,
       clientIDs: [],
@@ -34,17 +23,17 @@ export function reducer<St extends Json, Msg extends Json>(
     case "UpdateScenario":
       return {
         ...state,
-        scenStates: updateList(
-          state.scenStates,
-          (scenState) => scenState.scenario.id === action.scenarioID,
+        systemInstances: updateList(
+          state.systemInstances,
+          (systemInstance) => systemInstance.scenario.id === action.scenarioID,
           (old) => scenarioReducer(old, action.action)
         ),
       };
   }
 }
 
-export type ScenState<ActorState, Msg> = {
-  scenario: Scenario<ActorState, Msg>;
+export type SystemInstance<ActorState, Msg> = {
+  scenario: System<ActorState, Msg>;
   trace: Trace<ActorState>;
   clientIDs: number[];
   nextClientID: number;
@@ -59,23 +48,25 @@ export type ScenarioAction<St, Msg> =
   | { type: "ExitClient"; clientID: number };
 
 function scenarioReducer<St extends Json, Msg extends Json>(
-  scenState: ScenState<St, Msg>,
+  systemInstance: SystemInstance<St, Msg>,
   action: ScenarioAction<St, Msg>
-): ScenState<St, Msg> {
+): SystemInstance<St, Msg> {
   switch (action.type) {
     case "ExitClient":
       // TODO: mark it as exited in the trace
       return {
-        ...scenState,
-        clientIDs: scenState.clientIDs.filter((id) => id !== action.clientID),
+        ...systemInstance,
+        clientIDs: systemInstance.clientIDs.filter(
+          (id) => id !== action.clientID
+        ),
       };
     case "UpdateTrace":
-      return { ...scenState, trace: action.newTrace };
+      return { ...systemInstance, trace: action.newTrace };
     case "AllocateClientID":
       return {
-        ...scenState,
-        clientIDs: [...scenState.clientIDs, scenState.nextClientID],
-        nextClientID: scenState.nextClientID + 1,
+        ...systemInstance,
+        clientIDs: [...systemInstance.clientIDs, systemInstance.nextClientID],
+        nextClientID: systemInstance.nextClientID + 1,
       };
   }
 }

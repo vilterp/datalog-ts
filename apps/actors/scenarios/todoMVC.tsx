@@ -4,7 +4,7 @@ import {
   ActorResp,
   LoadedTickInitiator,
   OutgoingMessage,
-  Scenario,
+  System,
   Trace,
   UpdateFn,
 } from "../types";
@@ -343,7 +343,7 @@ export function ClientServerUI(props: {
 
 // scenario
 
-export const scenario: Scenario<State, Msg> = {
+export const scenario: System<State, Msg> = {
   name: "Todo List",
   id: "todo-mvc",
   ui: ClientServerUI,

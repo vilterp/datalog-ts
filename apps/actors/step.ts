@@ -6,7 +6,7 @@ import {
   AddressedTickInitiator,
   initialTrace,
   LoadedTickInitiator,
-  Scenario,
+  System,
   TickInitiator,
   Trace,
   UpdateFn,
@@ -15,10 +15,9 @@ import { sleep } from "../../util/util";
 
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
-  inQueue: AddressedTickInitiator<ActorState>[]
+  update: UpdateFn<ActorState, Msg>
 ): Trace<ActorState> {
-  let curTrace = { ...trace, queue: inQueue };
+  let curTrace = trace;
   while (curTrace.queue.length > 0) {
     curTrace = step(curTrace, update);
   }
@@ -36,7 +35,7 @@ export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   setTrace(newTrace);
 
   if (newTrace.queue.length === 0) {
-    return;
+    return newTrace;
   }
 
   await sleep(NETWORK_LATENCY);
@@ -150,7 +149,7 @@ export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
 
 export async function spawnAsync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  scenario: Scenario<ActorState, Msg>,
+  scenario: System<ActorState, Msg>,
   id: number,
   updateTrace: (newTrace: Trace<ActorState>) => void
 ) {
@@ -176,21 +175,15 @@ function spawn<ActorState extends Json, Msg extends Json>(
   id: string,
   initialState: ActorState
 ): Trace<ActorState> {
-  const newTrace: Trace<ActorState> = {
-    ...trace,
-    queue: [
-      ...trace.queue,
-      {
-        to: id,
-        from: "<god>", // lol
-        init: {
-          type: "spawned",
-          spawningTickID: "0",
-          initialState,
-        },
-      },
-    ],
-  };
+  const newTrace = pushTickInit(trace, {
+    to: id,
+    from: "<god>", // lol
+    init: {
+      type: "spawned",
+      spawningTickID: "0",
+      initialState,
+    },
+  });
   return step(newTrace, update);
 }
 
@@ -201,17 +194,16 @@ export function spawnSync<ActorState extends Json, Msg extends Json>(
   id: string,
   initialState: ActorState
 ): Trace<ActorState> {
-  return stepAll(trace, update, [
-    {
-      to: id,
-      from: "<god>", // lol
-      init: {
-        type: "spawned",
-        spawningTickID: "0",
-        initialState,
-      },
+  const newTrace = pushTickInit(trace, {
+    to: id,
+    from: "<god>", // lol
+    init: {
+      type: "spawned",
+      spawningTickID: "0",
+      initialState,
     },
-  ]);
+  });
+  return stepAll(newTrace, update);
 }
 
 export async function sendUserInputAsync<
@@ -230,22 +222,25 @@ export async function sendUserInputAsync<
     clientID,
     payload
   );
-  // TODO: factor out into XXXX
-  const trace3: Trace<ActorState> = {
-    ...trace,
-    queue: [
-      ...trace2.queue,
-      {
-        from: `user${clientID}`,
-        to: `client${clientID}`,
-        init: {
-          type: "messageReceived",
-          messageID: newMessageID.toString(),
-        },
-      },
-    ],
-  };
+  const trace3 = pushTickInit(trace2, {
+    from: `user${clientID}`,
+    to: `client${clientID}`,
+    init: {
+      type: "messageReceived",
+      messageID: newMessageID.toString(),
+    },
+  });
   await stepAllAsync(trace3, update, updateTrace);
+}
+
+function pushTickInit<ActorState, Msg>(
+  trace: Trace<ActorState>,
+  init: AddressedTickInitiator<ActorState>
+): Trace<ActorState> {
+  return {
+    ...trace,
+    queue: [...trace.queue, init],
+  };
 }
 
 function insertUserInput<ActorState extends Json, Msg extends Json>(
