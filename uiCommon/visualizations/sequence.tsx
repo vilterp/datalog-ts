@@ -120,35 +120,35 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
     { x: 40, y: 20 },
     HLayout(
       seq.locations.map((loc) =>
-        Tag(
-          loc.term,
-          VLayout([
+        VLayout([
+          Tag(
+            loc.term,
             Text({
               text: loc.loc,
               fontSize: 10,
+            })
+          ),
+          ZLayout([
+            Line({
+              width: 1,
+              stroke: "black",
+              start: ORIGIN,
+              end: { x: 0, y: yForTime(maxTime) + 20 },
             }),
-            ZLayout([
-              Line({
-                width: 1,
-                stroke: "black",
-                start: ORIGIN,
-                end: { x: 0, y: yForTime(maxTime) + 20 },
-              }),
-              ...pointsForLocation(loc.loc, seq.hops).map((tp) =>
-                AbsPos(
-                  { x: 0, y: yForTime(tp.time) },
-                  Tag(
-                    tp.term,
-                    Circle({
-                      radius: 5,
-                      fill: "red",
-                    })
-                  )
+            ...pointsForLocation(loc.loc, seq.hops).map((tp) =>
+              AbsPos(
+                { x: 0, y: yForTime(tp.time) },
+                Tag(
+                  tp.term,
+                  Circle({
+                    radius: 5,
+                    fill: "red",
+                  })
                 )
-              ),
-            ]),
-          ])
-        )
+              )
+            ),
+          ]),
+        ])
       )
     )
   );
