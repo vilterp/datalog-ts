@@ -1,5 +1,11 @@
 import { updateList } from "../../util/util";
-import { Action, System, State, Trace } from "./types";
+import {
+  Action,
+  System,
+  State,
+  SystemInstance,
+  SystemInstanceAction,
+} from "./types";
 import { Json } from "../../util/json";
 
 export function initialState<St, Msg>(
@@ -31,21 +37,6 @@ export function reducer<St extends Json, Msg extends Json>(
       };
   }
 }
-
-export type SystemInstance<ActorState, Msg> = {
-  system: System<ActorState, Msg>;
-  trace: Trace<ActorState>;
-  clientIDs: number[];
-  nextClientID: number;
-};
-
-export type SystemInstanceAction<St, Msg> =
-  | {
-      type: "UpdateTrace";
-      newTrace: Trace<St>;
-    }
-  | { type: "AllocateClientID" }
-  | { type: "ExitClient"; clientID: number };
 
 function systemInstanceReducer<St extends Json, Msg extends Json>(
   systemInstance: SystemInstance<St, Msg>,

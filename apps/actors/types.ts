@@ -4,7 +4,6 @@ import { makeMemoryLoader } from "../../core/loaders";
 import patterns from "./patterns.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import React from "react";
-import { SystemInstanceAction, SystemInstance } from "./reducers";
 
 // === overall ui model ===
 
@@ -18,6 +17,42 @@ export type Action<St, Msg> = {
   action: SystemInstanceAction<St, Msg>;
   instanceID: string;
 };
+
+// === system & system instance ===
+
+export type UpdateFn<ActorState, Msg> = (
+  state: ActorState,
+  msg: LoadedTickInitiator<ActorState, Msg>
+) => ActorResp<ActorState, Msg>;
+
+export type System<ActorState, Msg> = {
+  name: string;
+  id: string;
+  ui: (props: {
+    state: ActorState;
+    sendUserInput: (input: Msg) => void;
+  }) => React.ReactElement;
+  update: UpdateFn<ActorState, Msg>;
+  // TODO: something about all these initial states
+  initialState: Trace<ActorState>;
+  initialClientState: ActorState;
+  initialUserState: ActorState;
+};
+
+export type SystemInstance<ActorState, Msg> = {
+  system: System<ActorState, Msg>;
+  trace: Trace<ActorState>;
+  clientIDs: number[];
+  nextClientID: number;
+};
+
+export type SystemInstanceAction<St, Msg> =
+  | {
+      type: "UpdateTrace";
+      newTrace: Trace<St>;
+    }
+  | { type: "AllocateClientID" }
+  | { type: "ExitClient"; clientID: number };
 
 // === trace model ===
 
@@ -100,26 +135,3 @@ export type ActorResp<ActorState, Message> =
   | { type: "exit" };
 
 export type OutgoingMessage<T> = { msg: T; to: ActorID };
-
-// TODO: latency
-
-// === run the thing ===
-
-export type UpdateFn<ActorState, Msg> = (
-  state: ActorState,
-  msg: LoadedTickInitiator<ActorState, Msg>
-) => ActorResp<ActorState, Msg>;
-
-export type System<ActorState, Msg> = {
-  name: string;
-  id: string;
-  ui: (props: {
-    state: ActorState;
-    sendUserInput: (input: Msg) => void;
-  }) => React.ReactElement;
-  update: UpdateFn<ActorState, Msg>;
-  // TODO: something about all these initial states
-  initialState: Trace<ActorState>;
-  initialClientState: ActorState;
-  initialUserState: ActorState;
-};
