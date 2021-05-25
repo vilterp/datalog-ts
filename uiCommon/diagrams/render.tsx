@@ -1,9 +1,12 @@
 import * as React from "react";
 import { Diag } from "./types";
 
-export function Diagram<T>(props: { diagram: Diag<T> }) {
+export function Diagram<T>(props: {
+  diagram: Diag<T>;
+  onMouseOver?: (tag: T | null) => void;
+}) {
   const dims = dimensions(props.diagram);
-  const svgNode = render(props.diagram);
+  const svgNode = render(props.diagram, props.onMouseOver);
   return (
     <svg width={dims.width} height={dims.height}>
       {svgNode}
@@ -73,12 +76,15 @@ export function dimensions<T>(d: Diag<T>): Dimensions {
   }
 }
 
-function render<T>(d: Diag<T>): React.ReactNode {
+function render<T>(
+  d: Diag<T>,
+  onMouseOver: (t: T | null) => void
+): React.ReactNode {
   switch (d.type) {
     case "ABS_POS":
       return (
         <g transform={`translate(${d.point.x} ${d.point.y})`}>
-          {render(d.diag)}
+          {render(d.diag, onMouseOver)}
         </g>
       );
     case "HORIZ_LAYOUT": {
@@ -87,7 +93,7 @@ function render<T>(d: Diag<T>): React.ReactNode {
       d.children.forEach((child, idx) => {
         children.push(
           <g key={idx} transform={`translate(${x} 0)`}>
-            {render(child)}
+            {render(child, onMouseOver)}
           </g>
         );
         x += dimensions(child).width;
@@ -100,7 +106,7 @@ function render<T>(d: Diag<T>): React.ReactNode {
       d.children.forEach((child, idx) => {
         children.push(
           <g key={idx} transform={`translate(0 ${y})`}>
-            {render(child)}
+            {render(child, onMouseOver)}
           </g>
         );
         y += dimensions(child).height;
@@ -108,7 +114,7 @@ function render<T>(d: Diag<T>): React.ReactNode {
       return <g>{children}</g>;
     }
     case "Z_LAYOUT":
-      return <g>{d.children.map((child) => render(child))}</g>;
+      return <g>{d.children.map((child) => render(child, onMouseOver))}</g>;
     case "SPACER":
       return null;
     case "LINE":
@@ -125,13 +131,23 @@ function render<T>(d: Diag<T>): React.ReactNode {
     case "CIRCLE":
       return <circle r={d.radius} fill={d.fill} />;
     case "TEXT":
-      // TODO: how do I get these to align center?
       return (
-        <text style={{ fontSize: d.fontSize, fill: "black" }} x={-20}>
+        <text
+          style={{ fontSize: d.fontSize, fill: "black" }}
+          textAnchor="middle"
+        >
           {d.text}
         </text>
       );
     case "TAG":
-      return render(d.diag);
+      return (
+        <g
+          // TODO: full tag path, not just one tag
+          onMouseOver={() => onMouseOver(d.tag)}
+          onMouseOut={() => onMouseOver(null)}
+        >
+          {render(d.diag, onMouseOver)}
+        </g>
+      );
   }
 }
