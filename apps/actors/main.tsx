@@ -8,19 +8,22 @@ import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer, ScenarioAction, ScenState } from "./reducers";
 import { SCENARIOS } from "./scenarios";
 import { sendUserInputAsync, spawnAsync } from "./step";
+import useHashParam from "use-hash-param";
 
 function Main() {
   const [state, dispatch] = useReducer(reducer, initialState(SCENARIOS));
+  const [selectedScenarioID, setSelectedScenarioID] = useHashParam(
+    "scenario",
+    SCENARIOS[0].id
+  );
 
   return (
     <>
       <h1>Communicating Processes Viz</h1>
 
       <Tabs
-        setTabID={(scenarioID) =>
-          dispatch({ type: "SelectScenario", scenarioID })
-        }
-        curTabID={state.selectedScenarioID}
+        setTabID={setSelectedScenarioID}
+        curTabID={selectedScenarioID}
         tabs={state.scenStates.map((scenState) => ({
           name: scenState.scenario.name,
           id: scenState.scenario.id,

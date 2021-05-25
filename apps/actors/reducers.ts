@@ -3,17 +3,15 @@ import { Scenario, Trace } from "./types";
 import { Json } from "../../util/json";
 
 type State<St, Msg> = {
-  selectedScenarioID: string;
   scenStates: ScenState<St, Msg>[];
 };
 
-type Action<St, Msg> =
-  | {
-      type: "UpdateScenario";
-      action: ScenarioAction<St, Msg>;
-      scenarioID: string;
-    }
-  | { type: "SelectScenario"; scenarioID: string };
+// TODO: only one action... is this reducer even necessary?
+type Action<St, Msg> = {
+  type: "UpdateScenario";
+  action: ScenarioAction<St, Msg>;
+  scenarioID: string;
+};
 
 export function initialState<St, Msg>(
   scenarios: Scenario<St, Msg>[]
@@ -25,8 +23,6 @@ export function initialState<St, Msg>(
       clientIDs: [],
       nextClientID: 0,
     })),
-    // TODO: how do I connect this to good ol' useHashParam?
-    selectedScenarioID: scenarios[0].id,
   };
 }
 
@@ -35,8 +31,6 @@ export function reducer<St extends Json, Msg extends Json>(
   action: Action<St, Msg>
 ): State<St, Msg> {
   switch (action.type) {
-    case "SelectScenario":
-      return { ...state, selectedScenarioID: action.scenarioID };
     case "UpdateScenario":
       return {
         ...state,
