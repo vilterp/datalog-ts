@@ -8,11 +8,11 @@ import {
 } from "../../core/types";
 import { intersperse, mapObjToList } from "../../util/util";
 import { escapeString } from "../../core/pretty";
-import { makeTermWithBindings } from "../../core/traceTree";
 
 export type Highlight =
   | { type: "Relation"; name: string }
   | { type: "Binding"; binding: SituatedBinding } // TODO: need to scope this to a "rule path"
+  | { type: "Term"; term: Term }
   | { type: "None" };
 
 export const noHighlight: Highlight = { type: "None" };

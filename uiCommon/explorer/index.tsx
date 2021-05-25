@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useHashParam from "use-hash-param";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Relation } from "../../core/types";
+import { Relation, Term } from "../../core/types";
 import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
@@ -98,7 +98,15 @@ export function Explorer(props: {
       </div>
       {props.showViz ? (
         <div style={{ padding: 10, border: "1px solid black" }}>
-          <VizArea interp={props.interp} />
+          <VizArea
+            interp={props.interp}
+            setHighlightedTerm={(term: Term | null) => {
+              console.log("setHighlightedTerm", term);
+              term === null
+                ? setHighlight({ type: "None" })
+                : setHighlight({ type: "Term", term });
+            }}
+          />
         </div>
       ) : null}
     </div>
