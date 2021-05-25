@@ -127,8 +127,26 @@ export function termEq(left: Term, right: Term): boolean {
           }
           return Object.keys(left).length === Object.keys(right).length;
         default:
-          return null;
+          return false;
       }
+    case "Array":
+      switch (right.type) {
+        case "Array":
+          if (right.items.length !== left.items.length) {
+            return false;
+          }
+          for (let i = 0; i < left.items.length; i++) {
+            if (!termEq(left.items[i], right.items[i])) {
+              return false;
+            }
+          }
+          return true;
+        default:
+          return false;
+      }
+    default:
+      // TODO: pattern match exhaustivity assertion? sigh
+      throw new Error(`TODO: ${left.type}`);
   }
 }
 
