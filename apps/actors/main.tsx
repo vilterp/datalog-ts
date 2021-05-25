@@ -7,14 +7,7 @@ import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer } from "./reducers";
 import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
-import {
-  SystemInstance,
-  SystemInstanceAction,
-  Trace,
-  TraceAction,
-  UpdateFn,
-} from "./types";
-import { stepAllAsync } from "./step";
+import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 
 function Main() {
@@ -56,10 +49,7 @@ function Main() {
 
 function SystemInstanceView<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
-  dispatch: ThunkDispatch<
-    SystemInstance<St, Msg>,
-    SystemInstanceAction<St, Msg>
-  >;
+  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
   return (
     <>
@@ -79,22 +69,16 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
 function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
   // hoo that is a big type
-  dispatch: ThunkDispatch<
-    SystemInstance<St, Msg>,
-    SystemInstanceAction<St, Msg>
-  >;
+  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
   const sendInput = (clientID: number, input: Msg) => {
-    props.dispatch((dispatch, getState) => {
-      dispatch({
-        type: "UpdateTrace",
-        action: {
-          type: "SendUserInput",
-          clientID,
-          input,
-        },
-      });
-      dispatch(updateTrace(props.systemInstance.system.update));
+    props.dispatch({
+      type: "UpdateTrace",
+      action: {
+        type: "SendUserInput",
+        clientID,
+        input,
+      },
     });
   };
 
@@ -143,18 +127,6 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       </button>
     </>
   );
-}
-
-function updateTrace<St extends Json, Msg extends Json>(
-  update: UpdateFn<St, Msg>,
-  action: TraceAction<St, Msg>
-): Thunk<Trace<St>, TraceAction<St, Msg>> {
-  return (dispatch, getState) => {
-    dispatch(action);
-    const trace = getState();
-
-    stepAllAsync(trace, update, dispatch);
-  };
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

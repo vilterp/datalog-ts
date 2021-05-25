@@ -33,7 +33,9 @@ export function useEffectfulReducer<S, A>(
 ): [S, (a: A) => void] {
   const [state, setState] = useState(initialState);
   const dispatch = (action: A) => {
+    // TODO: this is broken cuz it's closing over the old state
     const [newState, promise] = reducer(state, action);
+    console.log(state, "==", action, "==>", newState, promise);
     setState(newState);
     if (promise) {
       promise.then((newAction) => dispatch(newAction));

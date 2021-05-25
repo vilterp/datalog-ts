@@ -47,7 +47,7 @@ export function reducer<St extends Json, Msg extends Json>(
             (old) => newInstance
           ),
         },
-        promise.then((action) => ({
+        promise?.then((action) => ({
           type: "UpdateSystemInstance",
           instanceID: instance.system.id,
           action,
@@ -83,7 +83,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
           ...systemInstance,
           trace: newTrace,
         },
-        promise.then((action) => ({ type: "UpdateTrace", action })),
+        promise?.then((action) => ({ type: "UpdateTrace", action })),
       ];
     }
     case "AllocateClientID":
