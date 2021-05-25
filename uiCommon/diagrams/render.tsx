@@ -2,11 +2,8 @@ import * as React from "react";
 import { Diag } from "./types";
 
 export function Diagram<T>(props: { diagram: Diag<T> }) {
-  console.log("diagram", props.diagram);
   const dims = dimensions(props.diagram);
-  console.log("dims", dims);
   const svgNode = render(props.diagram);
-  console.log("svg", svgNode);
   return (
     <svg width={dims.width} height={dims.height}>
       {svgNode}

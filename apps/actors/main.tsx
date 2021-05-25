@@ -11,6 +11,9 @@ import * as Step from "./step";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
 import { insertUserInput, stepAllAsync } from "./step";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { toGraphviz } from "../../core/incremental/graphviz";
+import { prettyPrintGraph } from "../../util/graphviz";
 
 const SCENARIOS: Scenario<any, any>[] = [todoMVC, simpleCounter];
 
@@ -40,6 +43,11 @@ function Animated<ActorState extends Json, Msg extends Json>(props: {
   scenario: Scenario<ActorState, Msg>;
 }) {
   const { trace, sendInput, spawn } = useScenario(props.scenario);
+
+  // TODO: show rule graph in the explorer???
+  // console.log(
+  //   prettyPrintGraph(toGraphviz((trace.interp as IncrementalInterpreter).graph))
+  // );
 
   return (
     <>
