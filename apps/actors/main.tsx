@@ -44,6 +44,7 @@ function Animated<ActorState extends Json, Msg extends Json>(props: {
 }) {
   const { trace, sendInput, spawn } = useScenario(props.scenario);
 
+  // TODO: show rule graph in the explorer???
   // console.log(
   //   prettyPrintGraph(toGraphviz((trace.interp as IncrementalInterpreter).graph))
   // );
