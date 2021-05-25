@@ -13,8 +13,8 @@ import { TermView, noHighlight, HighlightProps } from "../dl/term";
 import { TraceView } from "../dl/trace";
 import { canTreeViz, treeFromRecords } from "../visualizations/tree";
 import { BareTerm } from "../dl/replViews";
-import { termEq } from "../../core/unify";
 import * as styles from "./styles";
+import { jsonEq } from "../../util/json";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -92,7 +92,7 @@ export function RelationTable(props: {
               const isHighlighted =
                 highlight.type === "Term" &&
                 highlight.term.type === "Record" &&
-                termEq(result.term, highlight.term);
+                jsonEq(result.term, highlight.term);
               return (
                 <React.Fragment key={`${idx}-${key}`}>
                   <tr

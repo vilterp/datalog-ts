@@ -17,7 +17,7 @@ import {
 } from "./pretty";
 import { flatMap, getFirst, filterMap, mapObj } from "../util/util";
 import * as pp from "prettier-printer";
-import { termEq } from "./unify";
+import { jsonEq } from "../util/json";
 
 export function traceToTree(res: Res): Tree<Res> {
   const resStr = ppt(res.term);
@@ -223,7 +223,7 @@ export function makeTermWithBindings(
         relation: term.relation,
         attrs: mapObj(term.attrs, (_, val) => {
           const binding = Object.keys(bindings).find((b) => {
-            return bindings[b] && termEq(val, bindings[b]);
+            return bindings[b] && jsonEq(val, bindings[b]);
           });
           return {
             term: makeTermWithBindings(val, bindings),

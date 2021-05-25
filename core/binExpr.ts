@@ -1,18 +1,19 @@
 import { AndClause, Bindings, BinExpr, Rec } from "./types";
-import { substitute, termEq, termLT, termSameType } from "./unify";
+import { substitute, termLT, termSameType } from "./unify";
+import { jsonEq } from "../util/json";
 
 export function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
   const left = substitute(expr.left, scope);
   const right = substitute(expr.right, scope);
   switch (expr.op) {
     case "==":
-      return termEq(left, right);
+      return jsonEq(left, right);
     case "!=":
-      return !termEq(left, right);
+      return !jsonEq(left, right);
     case "<=":
       return (
         termSameType(left, right) &&
-        (termLT(left, right) || termEq(left, right))
+        (termLT(left, right) || jsonEq(left, right))
       );
     case ">=":
       return termSameType(left, right) && !termLT(left, right);

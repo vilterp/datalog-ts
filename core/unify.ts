@@ -98,58 +98,6 @@ export function termSameType(left: Term, right: Term): boolean {
   return left.type === right.type;
 }
 
-// could use some kind of existing JS deepEq
-export function termEq(left: Term, right: Term): boolean {
-  if (!left || !right) {
-    return false; // TODO: shouldn't get here
-  }
-  switch (left.type) {
-    case "StringLit":
-    case "IntLit":
-    case "Bool":
-      return left.type === right.type && left.val === right.val;
-    case "Var":
-      switch (right.type) {
-        case "Var":
-          return left.name === right.name;
-        default:
-          return false;
-      }
-    case "Record":
-      switch (right.type) {
-        case "Record":
-          for (const key of Object.keys(left.attrs)) {
-            const rightVal = right.attrs[key];
-            const leftVal = left.attrs[key];
-            if (!termEq(leftVal, rightVal)) {
-              return false;
-            }
-          }
-          return Object.keys(left).length === Object.keys(right).length;
-        default:
-          return false;
-      }
-    case "Array":
-      switch (right.type) {
-        case "Array":
-          if (right.items.length !== left.items.length) {
-            return false;
-          }
-          for (let i = 0; i < left.items.length; i++) {
-            if (!termEq(left.items[i], right.items[i])) {
-              return false;
-            }
-          }
-          return true;
-        default:
-          return false;
-      }
-    default:
-      // TODO: pattern match exhaustivity assertion? sigh
-      throw new Error(`TODO: ${left.type}`);
-  }
-}
-
 export function termLT(left: Term, right: Term): boolean {
   switch (left.type) {
     case "IntLit":
