@@ -16,8 +16,9 @@ export function VizArea(props: {
     <>
       <h3>Visualizations</h3>
 
-      {specs.map((result) => (
+      {specs.map((result, idx) => (
         <IndividualViz
+          key={idx}
           interp={props.interp}
           name={(result.bindings.Name as StringLit).val}
           spec={result.bindings.Spec as Rec}

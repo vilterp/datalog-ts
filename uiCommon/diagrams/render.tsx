@@ -81,6 +81,7 @@ function render<T>(
   d: Diag<T>,
   onMouseOver: (t: T | null) => void
 ): React.ReactNode {
+  // TODO: is all this `key=idx` bad?
   switch (d.type) {
     case "ABS_POS":
       return (
@@ -115,7 +116,13 @@ function render<T>(
       return <g>{children}</g>;
     }
     case "Z_LAYOUT":
-      return <g>{d.children.map((child) => render(child, onMouseOver))}</g>;
+      return (
+        <g>
+          {d.children.map((child, idx) => (
+            <g key={idx}>{render(child, onMouseOver)}</g>
+          ))}
+        </g>
+      );
     case "SPACER":
       return null;
     case "LINE":

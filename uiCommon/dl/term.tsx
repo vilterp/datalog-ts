@@ -93,8 +93,9 @@ export function TermView(props: {
           [
           {intersperse<React.ReactNode>(
             ", ",
-            term.items.map((item) => (
+            term.items.map((item, idx) => (
               <TermView
+                key={idx}
                 term={item}
                 highlight={props.highlight}
                 scopePath={props.scopePath}
