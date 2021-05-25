@@ -39,7 +39,9 @@ export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   setTrace: (trace: Trace<ActorState>) => void,
   queue: AddressedTickInitiator<ActorState>[]
 ): Promise<Trace<ActorState>> {
+  // TODO: get away with one if statement and one setTrace?
   if (queue.length === 0) {
+    setTrace(trace);
     return trace;
   }
 

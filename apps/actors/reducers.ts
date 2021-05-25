@@ -1,8 +1,6 @@
 import { updateList } from "../../util/util";
 import { Scenario, Trace } from "./types";
 import { Json } from "../../util/json";
-import * as Step from "./step";
-import { stepAll } from "./step";
 
 type State<St, Msg> = {
   selectedScenarioID: string;
@@ -63,7 +61,7 @@ export type ScenarioAction<St, Msg> =
       type: "UpdateTrace";
       newTrace: Trace<St>;
     }
-  | { type: "BumpNextClientID" }
+  | { type: "AllocateClientID" }
   | { type: "ExitClient"; clientID: number };
 
 function scenarioReducer<St extends Json, Msg extends Json>(
@@ -79,7 +77,11 @@ function scenarioReducer<St extends Json, Msg extends Json>(
       };
     case "UpdateTrace":
       return { ...scenState, trace: action.newTrace };
-    case "BumpNextClientID":
-      return { ...scenState, nextClientID: scenState.nextClientID + 1 };
+    case "AllocateClientID":
+      return {
+        ...scenState,
+        clientIDs: [...scenState.clientIDs, scenState.nextClientID],
+        nextClientID: scenState.nextClientID + 1,
+      };
   }
 }

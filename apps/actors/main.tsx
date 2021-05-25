@@ -64,7 +64,6 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   scenState: ScenState<St, Msg>;
   dispatch: (action: ScenarioAction<St, Msg>) => void;
 }) {
-  // TODO: extract into stepAllAsync
   const sendInput = (clientID: number, input: Msg) => {
     sendUserInputAsync(
       props.scenState.trace,
@@ -103,7 +102,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       </ul>
       <button
         onClick={() => {
-          props.dispatch({ type: "BumpNextClientID" });
+          props.dispatch({ type: "AllocateClientID" });
           spawnAsync(
             props.scenState.trace,
             props.scenState.scenario,
