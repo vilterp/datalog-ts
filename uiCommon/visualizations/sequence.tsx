@@ -143,19 +143,6 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       )
     )
   );
-  // const dots = ZLayout(
-  //   flatMap(seq.locations, (loc) =>
-  //     pointsForLocation(loc, seq.hops).map((pt) => {
-  //       return AbsPos(
-  //         { x: 0, y: yForTime(pt.time) },
-  //         Circle({
-  //           radius: 5,
-  //           fill: "red",
-  //         })
-  //       );
-  //     })
-  //   )
-  // );
   const hops = ZLayout(
     seq.hops.map((hop) => {
       const fromCoords = getCoords(locationLines, hop.from.term);
@@ -174,7 +161,7 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       );
     })
   );
-  return ZLayout<Term>([locationLines, hops]);
+  return ZLayout<Term>([hops, locationLines]);
 }
 
 function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {
