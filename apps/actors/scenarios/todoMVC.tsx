@@ -83,7 +83,7 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 
 // initial state
 
-export function getInitialState(): Trace<State, Msg> {
+export function getInitialState(): Trace<State> {
   return spawnInitialActors(update, {
     server: {
       type: "serverState",

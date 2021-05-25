@@ -41,7 +41,7 @@ type ServerResp = "ack";
 
 const initialClientState = { type: "ClientState", value: 0, status: "steady" };
 
-export function getInitialState(): Trace<State, Msg> {
+export function getInitialState(): Trace<State> {
   return spawnInitialActors(update, {
     server: { type: "ServerState", value: 0 },
   });

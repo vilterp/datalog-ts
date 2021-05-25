@@ -53,16 +53,15 @@ export function reducer<St extends Json, Msg extends Json>(
 
 export type ScenState<ActorState, Msg> = {
   scenario: Scenario<ActorState, Msg>;
-  trace: Trace<ActorState, Msg>;
+  trace: Trace<ActorState>;
   clientIDs: number[];
   nextClientID: number;
 };
 
 export type ScenarioAction<St, Msg> =
   | {
-      type: "SendInput";
-      input: Msg;
-      clientID: number;
+      type: "UpdateTrace";
+      newTrace: Trace<St>;
     }
   | { type: "SpawnClient" }
   | { type: "ExitClient"; clientID: number };
@@ -104,27 +103,8 @@ function scenarioReducer<St extends Json, Msg extends Json>(
         ...scenState,
         clientIDs: scenState.clientIDs.filter((id) => id !== action.clientID),
       };
-    case "SendInput": {
-      const trace = scenState.trace;
-      const scenario = scenState.scenario;
-      const { newTrace: trace2, newMessageID } = insertUserInput(
-        trace,
-        scenario.update,
-        action.clientID,
-        action.input
-      );
-      const trace3 = stepAll(trace2, scenario.update, [
-        {
-          from: `user${action.clientID}`,
-          to: `client${action.clientID}`,
-          init: {
-            type: "messageReceived",
-            messageID: newMessageID.toString(),
-          },
-        },
-      ]);
-
-      return { ...scenState, trace: trace3 };
+    case "UpdateTrace": {
+      return { ...scenState, trace: action.newTrace };
     }
   }
 }

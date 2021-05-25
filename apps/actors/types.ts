@@ -2,21 +2,18 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { makeMemoryLoader } from "../../core/loaders";
 // @ts-ignore
 import patterns from "./patterns.dl";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { toGraphviz } from "../../core/incremental/graphviz";
-import { prettyPrintGraph } from "../../util/graphviz";
 import React from "react";
 
 // === overall model ===
 
-export type Trace<ActorState, Msg> = {
+export type Trace<ActorState> = {
   latestStates: { [actorID: string]: ActorState }; // TODO: can we get this in the DB somehow?
   nextID: number;
   interp: AbstractInterpreter;
 };
 
-export function initialTrace<ActorState, Msg>(): Trace<ActorState, Msg> {
+export function initialTrace<ActorState>(): Trace<ActorState> {
   const interp = new IncrementalInterpreter(
     ".",
     makeMemoryLoader({
@@ -103,7 +100,7 @@ export type Scenario<ActorState, Msg> = {
   }) => React.ReactElement;
   update: UpdateFn<ActorState, Msg>;
   // TODO: something about all these initial states
-  initialState: Trace<ActorState, Msg>;
+  initialState: Trace<ActorState>;
   initialClientState: ActorState;
   initialUserState: ActorState;
 };

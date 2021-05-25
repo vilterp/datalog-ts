@@ -7,6 +7,7 @@ import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer, ScenarioAction, ScenState } from "./reducers";
 import { SCENARIOS } from "./scenarios";
+import { sendUserInputAsync } from "./step";
 
 function Main() {
   const [state, dispatch] = useReducer(reducer, initialState(SCENARIOS));
@@ -63,6 +64,17 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   scenState: ScenState<St, Msg>;
   dispatch: (action: ScenarioAction<St, Msg>) => void;
 }) {
+  // TODO: extract into stepAllAsync
+  const sendInput = (clientID: number, input: Msg) => {
+    sendUserInputAsync(
+      props.scenState.trace,
+      props.scenState.scenario.update,
+      clientID,
+      input,
+      (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
+    );
+  };
+
   return (
     <>
       <ul>
@@ -82,9 +94,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               {clientState ? (
                 <props.scenState.scenario.ui
                   state={clientState}
-                  sendUserInput={(input) =>
-                    props.dispatch({ type: "SendInput", clientID, input })
-                  }
+                  sendUserInput={(input) => sendInput(clientID, input)}
                 />
               ) : null}
             </li>

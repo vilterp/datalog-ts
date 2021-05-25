@@ -13,10 +13,10 @@ import {
 import { sleep } from "../../util/util";
 
 export function stepAll<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+  trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   inQueue: AddressedTickInitiator<ActorState>[]
-): Trace<ActorState, Msg> {
+): Trace<ActorState> {
   const queue = [...inQueue];
   let curTrace = trace;
   while (queue.length > 0) {
@@ -33,11 +33,11 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 const NETWORK_LATENCY = 500;
 
 export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+  trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
-  queue: AddressedTickInitiator<ActorState>[],
-  setTrace: (trace: Trace<ActorState, Msg>) => void
-): Promise<Trace<ActorState, Msg>> {
+  setTrace: (trace: Trace<ActorState>) => void,
+  queue: AddressedTickInitiator<ActorState>[]
+): Promise<Trace<ActorState>> {
   if (queue.length === 0) {
     return trace;
   }
@@ -51,18 +51,18 @@ export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   }
 
   await sleep(NETWORK_LATENCY);
-  return await stepAllAsync(newTrace, update, newQueue, setTrace);
+  return await stepAllAsync(newTrace, update, setTrace, newQueue);
 }
 
 function step<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+  trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   nextInitiator: AddressedTickInitiator<ActorState>
 ): {
-  newTrace: Trace<ActorState, Msg>;
+  newTrace: Trace<ActorState>;
   newMessages: AddressedTickInitiator<ActorState>[];
 } {
-  const newTrace: Trace<ActorState, Msg> = {
+  const newTrace: Trace<ActorState> = {
     nextID: trace.nextID,
     interp: trace.interp,
     latestStates: {
@@ -151,21 +151,21 @@ function step<ActorState extends Json, Msg extends Json>(
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
   initialStates: { [actorID: string]: ActorState }
-): Trace<ActorState, Msg> {
+): Trace<ActorState> {
   return Object.entries(initialStates).reduce(
     (trace, [actorID, actorState]) =>
       spawnSync(trace, update, actorID, actorState),
-    initialTrace<ActorState, Msg>()
+    initialTrace<ActorState>()
   );
 }
 
 export function spawn<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+  trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   id: string,
   initialState: ActorState
 ): {
-  newTrace: Trace<ActorState, Msg>;
+  newTrace: Trace<ActorState>;
   newMessages: AddressedTickInitiator<ActorState>[];
 } {
   return step(trace, update, {
@@ -181,11 +181,11 @@ export function spawn<ActorState extends Json, Msg extends Json>(
 
 // TODO: DRY up with Spawn
 export function spawnSync<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+  trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   id: string,
   initialState: ActorState
-): Trace<ActorState, Msg> {
+): Trace<ActorState> {
   return stepAll(trace, update, [
     {
       to: id,
@@ -199,12 +199,40 @@ export function spawnSync<ActorState extends Json, Msg extends Json>(
   ]);
 }
 
-export function insertUserInput<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+export async function sendUserInputAsync<
+  ActorState extends Json,
+  Msg extends Json
+>(
+  trace: Trace<ActorState>,
+  update: UpdateFn<ActorState, Msg>,
+  clientID: number,
+  payload: Msg,
+  updateTrace: (t: Trace<ActorState>) => void
+) {
+  const { newTrace: trace2, newMessageID } = insertUserInput(
+    trace,
+    update,
+    clientID,
+    payload
+  );
+  await stepAllAsync(trace2, update, updateTrace, [
+    {
+      from: `user${clientID}`,
+      to: `client${clientID}`,
+      init: {
+        type: "messageReceived",
+        messageID: newMessageID.toString(),
+      },
+    },
+  ]);
+}
+
+function insertUserInput<ActorState extends Json, Msg extends Json>(
+  trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   clientID: number,
   payload: Msg
-): { newTrace: Trace<ActorState, Msg>; newMessageID: number } {
+): { newTrace: Trace<ActorState>; newMessageID: number } {
   const newTrace = {
     ...trace,
   };
@@ -247,7 +275,7 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
+  trace: Trace<ActorState>,
   init: TickInitiator<ActorState>
 ): LoadedTickInitiator<ActorState, Msg> {
   switch (init.type) {
