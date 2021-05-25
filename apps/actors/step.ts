@@ -175,26 +175,25 @@ function spawn<ActorState extends Json, Msg extends Json>(
   id: string,
   initialState: ActorState
 ): Trace<ActorState> {
-  const newTrace = pushTickInit(trace, {
-    to: id,
-    from: "<god>", // lol
-    init: {
-      type: "spawned",
-      spawningTickID: "0",
-      initialState,
-    },
-  });
+  const newTrace = pushTickInit(trace, spawnInitiator(id, initialState));
   return step(newTrace, update);
 }
 
-// TODO: DRY up with Spawn
 export function spawnSync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   id: string,
   initialState: ActorState
 ): Trace<ActorState> {
-  const newTrace = pushTickInit(trace, {
+  const newTrace = pushTickInit(trace, spawnInitiator(id, initialState));
+  return stepAll(newTrace, update);
+}
+
+function spawnInitiator<St>(
+  id: string,
+  initialState: St
+): AddressedTickInitiator<St> {
+  return {
     to: id,
     from: "<god>", // lol
     init: {
@@ -202,8 +201,7 @@ export function spawnSync<ActorState extends Json, Msg extends Json>(
       spawningTickID: "0",
       initialState,
     },
-  });
-  return stepAll(newTrace, update);
+  };
 }
 
 export async function sendUserInputAsync<
