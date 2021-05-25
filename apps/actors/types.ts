@@ -8,9 +8,13 @@ import React from "react";
 // === overall model ===
 
 export type Trace<ActorState> = {
-  latestStates: { [actorID: string]: ActorState }; // TODO: can we get this in the DB somehow?
   nextID: number;
   interp: AbstractInterpreter;
+
+  // TODO: these two can be derived from the DB, which would be more elegant...
+  //  putting them here is easier for now.
+  latestStates: { [actorID: string]: ActorState };
+  queue: AddressedTickInitiator<ActorState>[];
 };
 
 export function initialTrace<ActorState>(): Trace<ActorState> {
@@ -23,6 +27,7 @@ export function initialTrace<ActorState>(): Trace<ActorState> {
   const interp2 = interp.doLoad("patterns.dl");
   return {
     latestStates: {},
+    queue: [],
     nextID: 0,
     interp: interp2,
   };

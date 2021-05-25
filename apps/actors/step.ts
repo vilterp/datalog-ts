@@ -18,15 +18,9 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
   inQueue: AddressedTickInitiator<ActorState>[]
 ): Trace<ActorState> {
-  const queue = [...inQueue];
-  let curTrace = trace;
-  while (queue.length > 0) {
-    const nextInit = queue.shift();
-    const { newTrace, newMessages } = step(curTrace, update, nextInit);
-    curTrace = newTrace;
-    newMessages.forEach((msg) => {
-      queue.push(msg);
-    });
+  let curTrace = { ...trace, queue: inQueue };
+  while (curTrace.queue.length > 0) {
+    curTrace = step(curTrace, update);
   }
   return curTrace;
 }
@@ -36,44 +30,36 @@ const NETWORK_LATENCY = 500;
 export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
-  setTrace: (trace: Trace<ActorState>) => void,
-  queue: AddressedTickInitiator<ActorState>[]
-): Promise<Trace<ActorState>> {
-  // TODO: get away with one if statement and one setTrace?
-  if (queue.length === 0) {
-    setTrace(trace);
-    return trace;
-  }
-
-  const { newMessages, newTrace } = step(trace, update, queue[0]);
+  setTrace: (trace: Trace<ActorState>) => void
+) {
+  const newTrace = step(trace, update);
   setTrace(newTrace);
 
-  const newQueue = [...queue.slice(1), ...newMessages];
-  if (newQueue.length === 0) {
-    return newTrace;
+  if (newTrace.queue.length === 0) {
+    return;
   }
 
   await sleep(NETWORK_LATENCY);
-  return await stepAllAsync(newTrace, update, setTrace, newQueue);
+  return await stepAllAsync(newTrace, update, setTrace);
 }
 
 function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
-  nextInitiator: AddressedTickInitiator<ActorState>
-): {
-  newTrace: Trace<ActorState>;
-  newMessages: AddressedTickInitiator<ActorState>[];
-} {
+  update: UpdateFn<ActorState, Msg>
+): Trace<ActorState> {
+  if (trace.queue.length === 0) {
+    return trace;
+  }
+
+  const nextInitiator = trace.queue[0];
   const newTrace: Trace<ActorState> = {
     nextID: trace.nextID,
     interp: trace.interp,
+    queue: trace.queue.slice(1),
     latestStates: {
       ...trace.latestStates,
     },
   };
-
-  const newMessages: AddressedTickInitiator<ActorState>[] = [];
 
   if (nextInitiator.init.type === "spawned") {
     const spawn = nextInitiator.init;
@@ -123,7 +109,7 @@ function step<ActorState extends Json, Msg extends Json>(
           })
         );
         // insert into queue so we can keep processing this step
-        newMessages.push({
+        newTrace.queue.push({
           to: outgoingMsg.to,
           from: curActorID,
           init: {
@@ -148,7 +134,7 @@ function step<ActorState extends Json, Msg extends Json>(
       );
   }
 
-  return { newTrace, newMessages };
+  return newTrace;
 }
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
@@ -168,20 +154,20 @@ export async function spawnAsync<ActorState extends Json, Msg extends Json>(
   id: number,
   updateTrace: (newTrace: Trace<ActorState>) => void
 ) {
-  const { newTrace: trace2, newMessages: nm1 } = spawn(
+  const trace2 = spawn(
     trace,
     scenario.update,
     `user${id}`,
     scenario.initialUserState
   );
-  const trace3 = await stepAllAsync(trace2, scenario.update, updateTrace, nm1);
-  const { newTrace: trace4, newMessages: nm2 } = spawn(
+  const trace3 = await stepAllAsync(trace2, scenario.update, updateTrace);
+  const trace4 = spawn(
     trace3,
     scenario.update,
     `client${id}`,
     scenario.initialClientState
   );
-  await stepAllAsync(trace4, scenario.update, updateTrace, nm2);
+  await stepAllAsync(trace4, scenario.update, updateTrace);
 }
 
 function spawn<ActorState extends Json, Msg extends Json>(
@@ -189,19 +175,23 @@ function spawn<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
   id: string,
   initialState: ActorState
-): {
-  newTrace: Trace<ActorState>;
-  newMessages: AddressedTickInitiator<ActorState>[];
-} {
-  return step(trace, update, {
-    to: id,
-    from: "<god>", // lol
-    init: {
-      type: "spawned",
-      spawningTickID: "0",
-      initialState,
-    },
-  });
+): Trace<ActorState> {
+  const newTrace: Trace<ActorState> = {
+    ...trace,
+    queue: [
+      ...trace.queue,
+      {
+        to: id,
+        from: "<god>", // lol
+        init: {
+          type: "spawned",
+          spawningTickID: "0",
+          initialState,
+        },
+      },
+    ],
+  };
+  return step(newTrace, update);
 }
 
 // TODO: DRY up with Spawn
@@ -240,16 +230,22 @@ export async function sendUserInputAsync<
     clientID,
     payload
   );
-  await stepAllAsync(trace2, update, updateTrace, [
-    {
-      from: `user${clientID}`,
-      to: `client${clientID}`,
-      init: {
-        type: "messageReceived",
-        messageID: newMessageID.toString(),
+  // TODO: factor out into XXXX
+  const trace3: Trace<ActorState> = {
+    ...trace,
+    queue: [
+      ...trace2.queue,
+      {
+        from: `user${clientID}`,
+        to: `client${clientID}`,
+        init: {
+          type: "messageReceived",
+          messageID: newMessageID.toString(),
+        },
       },
-    },
-  ]);
+    ],
+  };
+  await stepAllAsync(trace3, update, updateTrace);
 }
 
 function insertUserInput<ActorState extends Json, Msg extends Json>(
