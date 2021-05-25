@@ -64,7 +64,8 @@ export type TraceAction<ActorState, Msg> =
       initialUserState: ActorState;
       initialClientState: ActorState;
     }
-  | { type: "SendUserInput"; clientID: number; input: Msg };
+  | { type: "SendUserInput"; clientID: number; input: Msg }
+  | { type: "Step" };
 
 export type Trace<ActorState> = {
   nextID: number;

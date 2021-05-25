@@ -14,12 +14,11 @@ import {
   TraceAction,
   UpdateFn,
 } from "./types";
-import useThunkReducer, { Thunk } from "react-hook-thunk-reducer";
 import { stepAllAsync } from "./step";
-import { Dispatch } from "react";
+import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 
 function Main() {
-  const [state, dispatch] = useThunkReducer(reducer, initialState(SYSTEMS));
+  const [state, dispatch] = useEffectfulReducer(reducer, initialState(SYSTEMS));
   const [selectedSystemInstanceID, setSelectedSystemInstanceID] = useHashParam(
     "systemInstance",
     SYSTEMS[0].id
@@ -54,8 +53,6 @@ function Main() {
     </>
   );
 }
-
-type ThunkDispatch<S, A> = Dispatch<A | Thunk<S, A>>;
 
 function SystemInstanceView<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;

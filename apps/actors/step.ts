@@ -27,17 +27,17 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 const NETWORK_LATENCY = 500;
 
 export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState>,
+  getTrace: () => Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   dispatch: (trace: TraceAction<ActorState, Msg>) => void
 ) {
-  const newTrace = step(trace, update);
+  const newTrace = step(getTrace(), update);
   if (newTrace.queue.length === 0) {
     return;
   }
 
   await sleep(NETWORK_LATENCY);
-  await stepAllAsync(newTrace, update, dispatch);
+  await stepAllAsync(getTrace, update, dispatch);
 }
 
 export function step<ActorState extends Json, Msg extends Json>(
