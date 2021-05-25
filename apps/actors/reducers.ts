@@ -2,7 +2,7 @@ import { updateList } from "../../util/util";
 import { Scenario, Trace } from "./types";
 import { Json } from "../../util/json";
 import * as Step from "./step";
-import { insertUserInput, stepAll } from "./step";
+import { stepAll } from "./step";
 
 type State<St, Msg> = {
   selectedScenarioID: string;
