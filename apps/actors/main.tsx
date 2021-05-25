@@ -159,20 +159,16 @@ function useScenarios<St extends Json, Msg extends Json>(
       `user${id}`,
       scenario.initialUserState
     );
-    const trace3 =
-      nm1.length > 0 ? stepAll(trace2, scenario.update, nm1[0]) : trace2;
-    setTrace(trace3);
-    const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
-      trace3,
-      scenario.update,
-      `client${id}`,
-      scenario.initialClientState
-    );
-    const trace5 =
-      nm2.length > 0 ? stepAll(trace4, scenario.update, nm2[0]) : trace4;
-    setTrace(trace5);
+    stepAllAsync(trace2, scenario.update, nm1, setTrace).then((trace3) => {
+      const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
+        trace3,
+        scenario.update,
+        `client${id}`,
+        scenario.initialClientState
+      );
+      stepAllAsync(trace4, scenario.update, nm2, setTrace);
+    });
   };
-
   const exitClient = (id: number) => {
     updateScenState((old) => ({
       ...old,
