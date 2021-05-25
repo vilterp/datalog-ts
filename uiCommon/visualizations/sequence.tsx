@@ -36,7 +36,6 @@ function SequenceDiagram(props: {
   const messages = props.interp.queryStr(
     (props.spec.attrs.messages as StringLit).val
   );
-  // TODO: re-enable this... seems like we should know tick ids
   const ticks = props.interp.queryStr(
     (props.spec.attrs.ticks as StringLit).val
   );
@@ -109,6 +108,11 @@ function yForTime(t: Time): number {
 }
 
 export function sequenceDiagram(seq: Sequence): Diag<Term> {
+  const maxTime = seq.hops.reduce(
+    (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
+    0
+  );
+
   const locationLines: Diag<Term> = AbsPos(
     { x: 40, y: 20 },
     HLayout(
@@ -123,7 +127,7 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
               width: 1,
               stroke: "black",
               start: ORIGIN,
-              end: { x: 0, y: 200 }, // TODO: find max length
+              end: { x: 0, y: yForTime(maxTime) + 20 },
             }),
             ...pointsForLocation(loc, seq.hops).map((tp) =>
               AbsPos(
