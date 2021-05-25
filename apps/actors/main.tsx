@@ -7,7 +7,6 @@ import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer } from "./reducers";
 import { SYSTEMS } from "./systems";
-import { sendUserInputAsync, spawnAsync } from "./step";
 import useHashParam from "use-hash-param";
 import { SystemInstance, SystemInstanceAction } from "./types";
 
@@ -72,17 +71,10 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
   const sendInput = (clientID: number, input: Msg) => {
-    sendUserInputAsync(
-      props.systemInstance.trace,
-      props.systemInstance.system.update,
-      clientID,
-      input,
-      (action) =>
-        props.dispatch({
-          type: "UpdateTrace",
-          action,
-        })
-    );
+    props.dispatch({
+      type: "UpdateTrace",
+      action: { type: "SendUserInput", clientID, input },
+    });
   };
 
   return (
@@ -114,12 +106,16 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       <button
         onClick={() => {
           props.dispatch({ type: "AllocateClientID" });
-          spawnAsync(
-            props.systemInstance.trace,
-            props.systemInstance.system,
-            props.systemInstance.nextClientID,
-            (action) => props.dispatch({ type: "UpdateTrace", action })
-          );
+          props.dispatch({
+            type: "UpdateTrace",
+            action: {
+              type: "SpawnClient",
+              id: props.systemInstance.nextClientID,
+              initialUserState: props.systemInstance.system.initialUserState,
+              initialClientState:
+                props.systemInstance.system.initialClientState,
+            },
+          });
         }}
       >
         Add Client

@@ -6,10 +6,8 @@ import {
   AddressedTickInitiator,
   initialTrace,
   LoadedTickInitiator,
-  System,
   TickInitiator,
   Trace,
-  TraceAction,
   UpdateFn,
 } from "./types";
 import { sleep } from "../../util/util";
@@ -148,22 +146,6 @@ export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   );
 }
 
-export function spawnAsync<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState>,
-  system: System<ActorState, Msg>,
-  id: number,
-  dispatch: (action: TraceAction<ActorState>) => void
-) {
-  dispatch({
-    type: "SendInitiator",
-    init: spawnInitiator(`user${id}`, system.initialUserState),
-  });
-  dispatch({
-    type: "SendInitiator",
-    init: spawnInitiator(`client${id}`, system.initialClientState),
-  });
-}
-
 export function spawnSync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
@@ -174,7 +156,7 @@ export function spawnSync<ActorState extends Json, Msg extends Json>(
   return stepAll(newTrace, update);
 }
 
-function spawnInitiator<St>(
+export function spawnInitiator<St>(
   id: string,
   initialState: St
 ): AddressedTickInitiator<St> {
@@ -189,30 +171,6 @@ function spawnInitiator<St>(
   };
 }
 
-export async function sendUserInputAsync<
-  ActorState extends Json,
-  Msg extends Json
->(
-  trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
-  clientID: number,
-  payload: Msg,
-  dispatch: (action: TraceAction<ActorState>) => void
-) {
-  insertUserInput(trace, update, clientID, payload, dispatch);
-  dispatch({
-    type: "SendInitiator",
-    init: {
-      from: `user${clientID}`,
-      to: `client${clientID}`,
-      init: {
-        type: "messageReceived",
-        messageID: newMessageID.toString(),
-      },
-    },
-  });
-}
-
 export function pushTickInit<ActorState, Msg>(
   trace: Trace<ActorState>,
   init: AddressedTickInitiator<ActorState>
@@ -223,20 +181,23 @@ export function pushTickInit<ActorState, Msg>(
   };
 }
 
-// returns new message id
-function insertUserInput<ActorState extends Json, Msg extends Json>(
+export function insertUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   clientID: number,
-  payload: Msg,
-  dispatch: (action: TraceAction<ActorState>) => void
-): number {
+  payload: Msg
+): { newTrace: Trace<ActorState>; newMessageID: number } {
+  const newTrace = {
+    ...trace,
+  };
+
   const from = `user${clientID}`;
   const to = `client${clientID}`;
 
-  dispatch({
-    type: "InsertRecord",
-    rec: rec("tick", {
+  const newTickID = trace.nextID;
+  newTrace.nextID++;
+  newTrace.interp = trace.interp.insert(
+    rec("tick", {
       id: str(newTickID.toString()),
       actorID: str(from),
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
@@ -250,20 +211,21 @@ function insertUserInput<ActorState extends Json, Msg extends Json>(
           },
         ],
       } as ActorResp<ActorState, Msg>),
-    }),
-  });
+    })
+  );
 
-  dispatch({
-    type: "InsertRecord",
-    rec: rec("message", {
+  const newMessageID = trace.nextID;
+  newTrace.nextID++;
+  newTrace.interp = newTrace.interp.insert(
+    rec("message", {
       id: str(newMessageID.toString()),
       toActorID: str(to),
       payload: jsonToDL(payload),
       fromTickID: str(newTickID.toString()),
-    }),
-  });
+    })
+  );
 
-  return newMessageID;
+  return { newTrace, newMessageID };
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(

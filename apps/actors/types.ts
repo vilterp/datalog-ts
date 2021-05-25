@@ -4,7 +4,6 @@ import { makeMemoryLoader } from "../../core/loaders";
 import patterns from "./patterns.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import React from "react";
-import { Rec } from "../../core/types";
 
 // === overall ui model ===
 
@@ -50,19 +49,22 @@ export type SystemInstance<ActorState, Msg> = {
 export type SystemInstanceAction<St, Msg> =
   | {
       type: "UpdateTrace";
-      action: TraceAction<St>;
+      action: TraceAction<St, Msg>;
     }
   | { type: "AllocateClientID" }
   | { type: "ExitClient"; clientID: number };
 
 // === trace model ===
 
-export type TraceAction<ActorState> =
+export type TraceAction<ActorState, Msg> =
   | {
-      type: "SendInitiator";
-      init: AddressedTickInitiator<ActorState>;
+      type: "SpawnClient";
+      id: number;
+      // TODO: this is a bit awkward, since these both exist on System...
+      initialUserState: ActorState;
+      initialClientState: ActorState;
     }
-  | { type: "InsertRecord"; rec: Rec };
+  | { type: "SendUserInput"; clientID: number; input: Msg };
 
 export type Trace<ActorState> = {
   nextID: number;

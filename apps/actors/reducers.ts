@@ -1,16 +1,16 @@
 import { updateList } from "../../util/util";
 import {
   Action,
-  System,
   State,
+  System,
   SystemInstance,
   SystemInstanceAction,
-  TraceAction,
   Trace,
+  TraceAction,
   UpdateFn,
 } from "./types";
 import { Json } from "../../util/json";
-import { pushTickInit, step } from "./step";
+import { insertUserInput, pushTickInit, spawnInitiator } from "./step";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
@@ -73,20 +73,38 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
   }
 }
 
+// TODO: returns traces that still need to be stepped...
 function traceReducer<St extends Json, Msg extends Json>(
   trace: Trace<St>,
   update: UpdateFn<St, Msg>,
-  action: TraceAction<St>
+  action: TraceAction<St, Msg>
 ): Trace<St> {
   switch (action.type) {
-    case "SendInitiator":
-      return step(pushTickInit(trace, action.init), update);
-    case "InsertRecord": {
-      return {
-        ...trace,
-        nextID: trace.nextID + 1,
-        interp: trace.interp.insert(action.rec),
-      };
+    case "SendUserInput": {
+      const { newTrace, newMessageID } = insertUserInput(
+        trace,
+        update,
+        action.clientID,
+        action.input
+      );
+      return pushTickInit(newTrace, {
+        from: `user${action.clientID}`,
+        to: `client${action.clientID}`,
+        init: {
+          type: "messageReceived",
+          messageID: newMessageID.toString(),
+        },
+      });
+    }
+    case "SpawnClient": {
+      const trace2 = pushTickInit(
+        trace,
+        spawnInitiator(`user${action.id}`, action.initialUserState)
+      );
+      return pushTickInit(
+        trace2,
+        spawnInitiator(`client${action.id}`, action.initialClientState)
+      );
     }
   }
 }
