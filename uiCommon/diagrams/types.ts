@@ -45,7 +45,7 @@ interface LineProps {
   end: Point;
 }
 
-export function Line(p: LineProps): Diag<any> {
+export function Line<T>(p: LineProps): Diag<T> {
   return {
     type: "LINE",
     ...p,
@@ -63,7 +63,7 @@ interface CircleProps {
   fill: string;
 }
 
-export function Circle(p: CircleProps): Diag<any> {
+export function Circle<T>(p: CircleProps): Diag<T> {
   return {
     type: "CIRCLE",
     ...p,
@@ -160,25 +160,6 @@ export function ZLayout<T>(children: Diag<T>[]): Diag<T> {
     type: "Z_LAYOUT",
     children,
   };
-}
-
-// Flex layout
-
-// https://css-tricks.com/snippets/css/a-guide-to-flexbox/
-interface FlexLayout<T> {
-  type: "FLEX_LAYOUT";
-  direction: "Horiz" | "Vert";
-  children: FlexChild<T>[];
-  // TODO: flex-wrap: nowrap | wrap | wrap-reverse; // default; all try to fit on one line
-  // TODO: justify-content: flex-start | flex-end | center | space-between | space-around | space-evenly | start | end | left | right ... + safe | unsafe;
-  // TODO: align-items: stretch | flex-start | flex-end | center | baseline | first baseline | last baseline | start | end | self-start | self-end + ... safe | unsafe;
-  // TODO: align-content: flex-start | flex-end | center | space-between | space-around | space-evenly | stretch | start | end | baseline | first baseline | last baseline + ... safe | unsafe;
-}
-
-interface FlexChild<T> {
-  diag: Diag<T>;
-  // TODO: align-self: auto | flex-start | flex-end | center | baseline | stretch;
-  // TODO: flex-grow: number;
 }
 
 // Tag

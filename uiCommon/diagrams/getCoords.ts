@@ -8,7 +8,8 @@ export function getCoords<T>(d: Diag<T>, tag: T): Point | null {
 function recurse<T>(d: Diag<T>, tag: T, origin: Point): Point | null {
   switch (d.type) {
     case "TAG":
-      if (d.tag === tag) {
+      // TODO: better approach to deep equality
+      if (JSON.stringify(d.tag) === JSON.stringify(tag)) {
         return origin;
       }
       return recurse(d.diag, tag, origin);
