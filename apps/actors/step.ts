@@ -149,24 +149,24 @@ export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
 
 export async function spawnAsync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  scenario: System<ActorState, Msg>,
+  system: System<ActorState, Msg>,
   id: number,
   updateTrace: (newTrace: Trace<ActorState>) => void
 ) {
   const trace2 = spawn(
     trace,
-    scenario.update,
+    system.update,
     `user${id}`,
-    scenario.initialUserState
+    system.initialUserState
   );
-  const trace3 = await stepAllAsync(trace2, scenario.update, updateTrace);
+  const trace3 = await stepAllAsync(trace2, system.update, updateTrace);
   const trace4 = spawn(
     trace3,
-    scenario.update,
+    system.update,
     `client${id}`,
-    scenario.initialClientState
+    system.initialClientState
   );
-  await stepAllAsync(trace4, scenario.update, updateTrace);
+  await stepAllAsync(trace4, system.update, updateTrace);
 }
 
 function spawn<ActorState extends Json, Msg extends Json>(

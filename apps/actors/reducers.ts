@@ -3,12 +3,12 @@ import { Action, System, State, Trace } from "./types";
 import { Json } from "../../util/json";
 
 export function initialState<St, Msg>(
-  scenarios: System<St, Msg>[]
+  systems: System<St, Msg>[]
 ): State<St, Msg> {
   return {
-    systemInstances: scenarios.map((scenario) => ({
-      scenario,
-      trace: scenario.initialState,
+    systemInstances: systems.map((system) => ({
+      system,
+      trace: system.initialState,
       clientIDs: [],
       nextClientID: 0,
     })),
@@ -20,26 +20,26 @@ export function reducer<St extends Json, Msg extends Json>(
   action: Action<St, Msg>
 ): State<St, Msg> {
   switch (action.type) {
-    case "UpdateScenario":
+    case "UpdateSystemInstance":
       return {
         ...state,
         systemInstances: updateList(
           state.systemInstances,
-          (systemInstance) => systemInstance.scenario.id === action.scenarioID,
-          (old) => scenarioReducer(old, action.action)
+          (systemInstance) => systemInstance.system.id === action.instanceID,
+          (old) => systemInstanceReducer(old, action.action)
         ),
       };
   }
 }
 
 export type SystemInstance<ActorState, Msg> = {
-  scenario: System<ActorState, Msg>;
+  system: System<ActorState, Msg>;
   trace: Trace<ActorState>;
   clientIDs: number[];
   nextClientID: number;
 };
 
-export type ScenarioAction<St, Msg> =
+export type SystemInstanceAction<St, Msg> =
   | {
       type: "UpdateTrace";
       newTrace: Trace<St>;
@@ -47,9 +47,9 @@ export type ScenarioAction<St, Msg> =
   | { type: "AllocateClientID" }
   | { type: "ExitClient"; clientID: number };
 
-function scenarioReducer<St extends Json, Msg extends Json>(
+function systemInstanceReducer<St extends Json, Msg extends Json>(
   systemInstance: SystemInstance<St, Msg>,
-  action: ScenarioAction<St, Msg>
+  action: SystemInstanceAction<St, Msg>
 ): SystemInstance<St, Msg> {
   switch (action.type) {
     case "ExitClient":

@@ -341,9 +341,7 @@ export function ClientServerUI(props: {
   );
 }
 
-// scenario
-
-export const scenario: System<State, Msg> = {
+export const todoMVC: System<State, Msg> = {
   name: "Todo List",
   id: "todo-mvc",
   ui: ClientServerUI,

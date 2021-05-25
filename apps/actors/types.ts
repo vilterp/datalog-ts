@@ -4,7 +4,7 @@ import { makeMemoryLoader } from "../../core/loaders";
 import patterns from "./patterns.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import React from "react";
-import { ScenarioAction, SystemInstance } from "./reducers";
+import { SystemInstanceAction, SystemInstance } from "./reducers";
 
 // === overall ui model ===
 
@@ -14,9 +14,9 @@ export type State<St, Msg> = {
 
 // TODO: only one action... is this reducer even necessary?
 export type Action<St, Msg> = {
-  type: "UpdateScenario";
-  action: ScenarioAction<St, Msg>;
-  scenarioID: string;
+  type: "UpdateSystemInstance";
+  action: SystemInstanceAction<St, Msg>;
+  instanceID: string;
 };
 
 // === trace model ===

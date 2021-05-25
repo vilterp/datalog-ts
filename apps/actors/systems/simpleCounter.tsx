@@ -155,9 +155,7 @@ export function ClientServerUI(props: {
   );
 }
 
-// scenario
-
-export const scenario: System<State, Msg> = {
+export const simpleCounter: System<State, Msg> = {
   name: "Counter",
   id: "simple-counter",
   ui: ClientServerUI,
