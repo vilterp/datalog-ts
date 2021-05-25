@@ -1,7 +1,6 @@
 import { RuleGraph, NodeDesc } from "./types";
 import { Graph } from "../../util/graphviz";
 import { mapObjToList } from "../../util/util";
-import { ppr } from "../pretty";
 import { formatNodeWithIndexes } from "./pretty";
 
 export function toGraphviz(
@@ -19,13 +18,6 @@ export function toGraphviz(
             fillcolor: getNodeColor(node.desc) || "",
             style: "filled",
           },
-          comment:
-            node.cache.size > 0
-              ? `cache: [${node.cache
-                  .all()
-                  .map((res) => ppr(res))
-                  .join(", ")}]`
-              : "",
         };
       })
       .valueSeq()
