@@ -1,37 +1,45 @@
 import * as React from "react";
-import { useState } from "react";
+import { useReducer } from "react";
 import * as ReactDOM from "react-dom";
-import { scenario as simpleCounter } from "./scenarios/simpleCounter";
-import { scenario as todoMVC } from "./scenarios/todoMVC";
-import useHashParam from "use-hash-param";
 import { Explorer } from "../../uiCommon/explorer";
-import { Scenario, Trace } from "./types";
 import ReactJson from "react-json-view";
-import * as Step from "./step";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
-import { insertUserInput, stepAllAsync } from "./step";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { toGraphviz } from "../../core/incremental/graphviz";
-import { prettyPrintGraph } from "../../util/graphviz";
-
-const SCENARIOS: Scenario<any, any>[] = [todoMVC, simpleCounter];
+import { initialState, reducer, ScenarioAction, ScenState } from "./reducers";
+import { SCENARIOS } from "./scenarios";
+import { sendUserInputAsync, spawnAsync } from "./step";
+import useHashParam from "use-hash-param";
 
 function Main() {
-  const [curTabID, setTabID] = useHashParam("scenario", SCENARIOS[0].id);
+  const [state, dispatch] = useReducer(reducer, initialState(SCENARIOS));
+  const [selectedScenarioID, setSelectedScenarioID] = useHashParam(
+    "scenario",
+    SCENARIOS[0].id
+  );
 
   return (
     <>
       <h1>Communicating Processes Viz</h1>
 
       <Tabs
-        setTabID={setTabID}
-        curTabID={curTabID}
-        tabs={SCENARIOS.map((scenario) => ({
-          name: scenario.name,
-          id: scenario.id,
+        setTabID={setSelectedScenarioID}
+        curTabID={selectedScenarioID}
+        tabs={state.scenStates.map((scenState) => ({
+          name: scenState.scenario.name,
+          id: scenState.scenario.id,
           render: () => {
-            return <Animated scenario={scenario} />;
+            return (
+              <Scenario
+                scenState={scenState}
+                dispatch={(action) =>
+                  dispatch({
+                    type: "UpdateScenario",
+                    scenarioID: scenState.scenario.id,
+                    action,
+                  })
+                }
+              />
+            );
           },
         }))}
       />
@@ -39,113 +47,56 @@ function Main() {
   );
 }
 
-function Animated<ActorState extends Json, Msg extends Json>(props: {
-  scenario: Scenario<ActorState, Msg>;
+function Scenario<St extends Json, Msg extends Json>(props: {
+  scenState: ScenState<St, Msg>;
+  dispatch: (action: ScenarioAction<St, Msg>) => void;
 }) {
-  const { trace, sendInput, spawn } = useScenario(props.scenario);
-
-  // TODO: show rule graph in the explorer???
-  // console.log(
-  //   prettyPrintGraph(toGraphviz((trace.interp as IncrementalInterpreter).graph))
-  // );
-
   return (
     <>
-      <MultiClient
-        trace={trace}
-        sendInput={sendInput}
-        spawn={spawn}
-        scenario={props.scenario}
-      />
+      <MultiClient scenState={props.scenState} dispatch={props.dispatch} />
 
-      <Explorer interp={trace.interp} showViz={true} />
+      <Explorer interp={props.scenState.trace.interp} showViz={true} />
 
       <h2>State</h2>
-      <ReactJson src={trace.latestStates} />
+      <ReactJson src={props.scenState.trace.latestStates} />
     </>
   );
 }
 
-function useScenario<St extends Json, Msg extends Json>(
-  scenario: Scenario<St, Msg>
-): {
-  trace: Trace<St, Msg>;
-  sendInput: (fromUserID: number, input: Msg) => void;
-  spawn: (id: number) => void;
-} {
-  const [trace, setTrace] = useState(scenario.initialState);
-
-  const sendInput = (fromUserID: number, input: Msg) => {
-    const { newTrace, newMessageID } = insertUserInput(
-      trace,
-      scenario.update,
-      fromUserID,
-      input
-    );
-    setTrace(newTrace);
-    stepAllAsync(
-      newTrace,
-      scenario.update,
-      [
-        {
-          from: `user${fromUserID}`,
-          to: `client${fromUserID}`,
-          init: { type: "messageReceived", messageID: newMessageID.toString() },
-        },
-      ],
-      setTrace
-    );
-  };
-
-  const spawn = (id: number) => {
-    const { newTrace: trace2, newMessages: nm1 } = Step.spawn(
-      trace,
-      scenario.update,
-      `user${id}`,
-      scenario.initialUserState
-    );
-    stepAllAsync(trace2, scenario.update, nm1, setTrace).then((trace3) => {
-      const { newTrace: trace4, newMessages: nm2 } = Step.spawn(
-        trace3,
-        scenario.update,
-        `client${id}`,
-        scenario.initialClientState
-      );
-      stepAllAsync(trace4, scenario.update, nm2, setTrace);
-    });
-  };
-
-  return { trace, sendInput, spawn };
-}
-
 function MultiClient<St extends Json, Msg extends Json>(props: {
-  trace: Trace<St, Msg>;
-  sendInput: (fromUserID: number, msg: Msg) => void;
-  spawn: (id: number) => void;
-  scenario: Scenario<St, Msg>;
+  scenState: ScenState<St, Msg>;
+  dispatch: (action: ScenarioAction<St, Msg>) => void;
 }) {
-  const [nextClientID, setNextClientID] = useState(0);
-  const [clientIDs, setClientIDs] = useState<number[]>([]);
+  const sendInput = (clientID: number, input: Msg) => {
+    sendUserInputAsync(
+      props.scenState.trace,
+      props.scenState.scenario.update,
+      clientID,
+      input,
+      (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
+    );
+  };
 
   return (
     <>
       <ul>
-        {clientIDs.map((clientID) => {
-          const clientState = props.trace.latestStates[`client${clientID}`];
+        {props.scenState.clientIDs.map((clientID) => {
+          const clientState =
+            props.scenState.trace.latestStates[`client${clientID}`];
 
           return (
             <li key={clientID}>
               <button
                 onClick={() => {
-                  setClientIDs(clientIDs.filter((id) => id !== clientID));
+                  props.dispatch({ type: "ExitClient", clientID });
                 }}
               >
                 x
               </button>
               {clientState ? (
-                <props.scenario.ui
+                <props.scenState.scenario.ui
                   state={clientState}
-                  sendUserInput={(msg) => props.sendInput(clientID, msg)}
+                  sendUserInput={(input) => sendInput(clientID, input)}
                 />
               ) : null}
             </li>
@@ -154,9 +105,13 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       </ul>
       <button
         onClick={() => {
-          setNextClientID(nextClientID + 1);
-          setClientIDs([...clientIDs, nextClientID]);
-          props.spawn(nextClientID);
+          props.dispatch({ type: "AllocateClientID" });
+          spawnAsync(
+            props.scenState.trace,
+            props.scenState.scenario,
+            props.scenState.nextClientID,
+            (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
+          );
         }}
       >
         Add Client

@@ -41,7 +41,7 @@ type ServerResp = "ack";
 
 const initialClientState = { type: "ClientState", value: 0, status: "steady" };
 
-export function getInitialState(): Trace<State, Msg> {
+export function getInitialState(): Trace<State> {
   return spawnInitialActors(update, {
     server: { type: "ServerState", value: 0 },
   });
@@ -49,6 +49,7 @@ export function getInitialState(): Trace<State, Msg> {
 
 // behaviors
 
+// TODO: push out updates to clients
 export function server(
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
@@ -140,7 +141,14 @@ export function ClientServerUI(props: {
 }) {
   return (
     <>
-      <h2>Client</h2>
+      <h2>Counter</h2>
+      <span
+        style={{
+          color: props.state.status === "saving" ? "lightgrey" : "",
+        }}
+      >
+        Value: {props.state.value}{" "}
+      </span>
       <button onClick={() => props.sendUserInput("decrement")}>-</button>
       <button onClick={() => props.sendUserInput("increment")}>+</button>
     </>
