@@ -15,15 +15,17 @@ import { sleep } from "../../util/util";
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState, Msg>,
   update: UpdateFn<ActorState, Msg>,
-  init: AddressedTickInitiator<ActorState>
+  inQueue: AddressedTickInitiator<ActorState>[]
 ): Trace<ActorState, Msg> {
-  let curQueue: AddressedTickInitiator<ActorState>[] = [init];
+  const queue = [...inQueue];
   let curTrace = trace;
-  while (curQueue.length > 0) {
-    const nextInit = curQueue.shift();
+  while (queue.length > 0) {
+    const nextInit = queue.shift();
     const { newTrace, newMessages } = step(curTrace, update, nextInit);
     curTrace = newTrace;
-    curQueue = [...curQueue, ...newMessages];
+    newMessages.forEach((msg) => {
+      queue.push(msg);
+    });
   }
   return curTrace;
 }
@@ -184,44 +186,17 @@ export function spawnSync<ActorState extends Json, Msg extends Json>(
   id: string,
   initialState: ActorState
 ): Trace<ActorState, Msg> {
-  return stepAll(trace, update, {
-    to: id,
-    from: "<god>", // lol
-    init: {
-      type: "spawned",
-      spawningTickID: "0",
-      initialState,
+  return stepAll(trace, update, [
+    {
+      to: id,
+      from: "<god>", // lol
+      init: {
+        type: "spawned",
+        spawningTickID: "0",
+        initialState,
+      },
     },
-  });
-}
-
-// creates a tick on the user
-// TODO: multiple user actors!
-export function sendUserInput<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState, Msg>,
-  update: UpdateFn<ActorState, Msg>,
-  clientID: number,
-  payload: Msg
-): Trace<ActorState, Msg> {
-  const { newTrace, newMessageID } = insertUserInput(
-    trace,
-    update,
-    clientID,
-    payload
-  );
-
-  // TODO: dedup...
-  const from = `user${clientID}`;
-  const to = `client${clientID}`;
-
-  return stepAll(newTrace, update, {
-    to,
-    from,
-    init: {
-      type: "messageReceived",
-      messageID: newMessageID.toString(),
-    },
-  });
+  ]);
 }
 
 export function insertUserInput<ActorState extends Json, Msg extends Json>(
