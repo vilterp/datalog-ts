@@ -30,7 +30,7 @@ function Main() {
                 dispatch={(action) =>
                   dispatch({
                     type: "UpdateScenario",
-                    scenarioID: scenState.scenario.name,
+                    scenarioID: scenState.scenario.id,
                     action,
                   })
                 }
