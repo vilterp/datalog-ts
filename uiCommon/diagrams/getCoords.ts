@@ -1,14 +1,20 @@
 import { Diag, Point } from "./types";
 import { dimensions } from "./render";
+import { Json, jsonEq } from "../../util/json";
 
-export function getCoords<T>(d: Diag<T>, tag: T): Point | null {
+export function getCoords<T extends Json>(d: Diag<T>, tag: T): Point | null {
   return recurse(d, tag, { x: 0, y: 0 });
 }
 
-function recurse<T>(d: Diag<T>, tag: T, origin: Point): Point | null {
+function recurse<T extends Json>(
+  d: Diag<T>,
+  tag: T,
+  origin: Point
+): Point | null {
   switch (d.type) {
     case "TAG":
-      if (d.tag === tag) {
+      // TODO: better approach to deep equality
+      if (jsonEq(d.tag, tag)) {
         return origin;
       }
       return recurse(d.diag, tag, origin);

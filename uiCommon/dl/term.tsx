@@ -8,11 +8,11 @@ import {
 } from "../../core/types";
 import { intersperse, mapObjToList } from "../../util/util";
 import { escapeString } from "../../core/pretty";
-import { makeTermWithBindings } from "../../core/traceTree";
 
 export type Highlight =
   | { type: "Relation"; name: string }
   | { type: "Binding"; binding: SituatedBinding } // TODO: need to scope this to a "rule path"
+  | { type: "Term"; term: Term }
   | { type: "None" };
 
 export const noHighlight: Highlight = { type: "None" };
@@ -93,8 +93,9 @@ export function TermView(props: {
           [
           {intersperse<React.ReactNode>(
             ", ",
-            term.items.map((item) => (
+            term.items.map((item, idx) => (
               <TermView
+                key={idx}
                 term={item}
                 highlight={props.highlight}
                 scopePath={props.scopePath}
@@ -134,19 +135,6 @@ export function TermView(props: {
           return <span style={{ color: "darkorange" }}>{`${t.name}`}</span>;
       }
   }
-}
-
-export function SimpleTermView(props: { term: Term }) {
-  return (
-    // TODO: move this into TermView itself??
-    <div style={{ fontFamily: "monospace" }}>
-      <TermView
-        term={makeTermWithBindings(props.term, {})}
-        highlight={noHighlightProps}
-        scopePath={[]}
-      />
-    </div>
-  );
 }
 
 export function VarC(props: {

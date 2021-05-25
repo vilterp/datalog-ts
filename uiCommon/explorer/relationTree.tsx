@@ -62,16 +62,22 @@ export function RelationTree(props: {
               return <strong>{item.cat}</strong>;
             case "Namespace":
               return item.name;
-            case "Relation":
+            case "Relation": {
               const rel = item.relation;
+              const highlight = props.highlight.highlight;
+              const isHighlightedRelation =
+                highlight.type === "Relation" && highlight.name === rel.name;
+              const isRelationOfHighlightedTerm =
+                highlight.type === "Term" &&
+                highlight.term.type === "Record" &&
+                highlight.term.relation === rel.name;
               return (
                 <span
                   key={rel.name}
                   style={styles.tab({
                     selected: rel.name === props.curRelationName,
                     highlighted:
-                      props.highlight.highlight.type === "Relation" &&
-                      props.highlight.highlight.name === rel.name,
+                      isHighlightedRelation || isRelationOfHighlightedTerm,
                   })}
                   onClick={() => props.setCurRelationName(rel.name)}
                   // TODO: would be nice to factor out these handlers
@@ -86,6 +92,7 @@ export function RelationTree(props: {
                   {lastItem(rel.name.split("."))}
                 </span>
               );
+            }
           }
         }}
       />

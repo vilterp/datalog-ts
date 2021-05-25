@@ -1,8 +1,7 @@
 import React from "react";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Res, StringLit } from "../../core/types";
-import { SimpleTermView } from "../dl/term";
+import { Rec, Res, StringLit, Term } from "../../core/types";
 import {
   AbsPos,
   Circle,
@@ -26,7 +25,11 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
+function SequenceDiagram(props: {
+  interp: AbstractInterpreter;
+  spec: Rec;
+  setHighlightedTerm: (t: Term | null) => void;
+}) {
   const actors = props.interp.queryStr(
     (props.spec.attrs.actors as StringLit).val
   );
@@ -36,12 +39,19 @@ function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
   const ticks = props.interp.queryStr(
     (props.spec.attrs.ticks as StringLit).val
   );
+  const ticksByID: { [id: string]: Term } = {};
+  ticks.forEach((tick) => {
+    ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;
+  });
 
   return (
     <div>
       <div>
-        <Diagram
-          diagram={sequenceDiagram(makeSequenceSpec(actors, messages))}
+        <Diagram<Term>
+          diagram={sequenceDiagram(
+            makeSequenceSpec(actors, messages, ticksByID)
+          )}
+          onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
       </div>
     </div>
@@ -50,17 +60,24 @@ function SequenceDiagram(props: { interp: AbstractInterpreter; spec: Rec }) {
 
 // TODO: maybe integrate this into one of the above functions??
 //   or not
-function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
+function makeSequenceSpec(
+  actors: Res[],
+  messages: Res[],
+  ticksByID: { [id: string]: Term }
+): Sequence {
   return {
     locations: actors.map((actor) => (actor.bindings.ID as StringLit).val),
     hops: messages.map((message) => ({
+      term: message.term,
       from: {
         location: (message.bindings.FromActorID as StringLit).val,
         time: parseInt((message.bindings.FromTickID as StringLit).val),
+        term: ticksByID[(message.bindings.FromTickID as StringLit).val],
       },
       to: {
         location: (message.bindings.ToActorID as StringLit).val,
         time: parseInt((message.bindings.ToTickID as StringLit).val),
+        term: ticksByID[(message.bindings.ToTickID as StringLit).val],
       },
     })),
   };
@@ -75,6 +92,7 @@ export interface Sequence {
 }
 
 export interface Hop {
+  term: Term;
   from: TimeAndPlace;
   to: TimeAndPlace;
 }
@@ -82,33 +100,20 @@ export interface Hop {
 interface TimeAndPlace {
   location: Location;
   time: Time;
+  term: Term;
 }
 
 function yForTime(t: Time): number {
   return t * 10;
 }
 
-const TEST_SEQ: Sequence = {
-  locations: ["New York", "Dublin", "Stockholm", "London", "Munich"],
-  hops: [
-    {
-      from: { location: "New York", time: 0 },
-      to: { location: "Dublin", time: 10 },
-    },
-    // layover
-    {
-      from: { location: "Dublin", time: 10 },
-      to: { location: "Dublin", time: 16 },
-    },
-    {
-      from: { location: "Dublin", time: 16 },
-      to: { location: "Stockholm", time: 19 },
-    },
-  ],
-};
+export function sequenceDiagram(seq: Sequence): Diag<Term> {
+  const maxTime = seq.hops.reduce(
+    (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
+    0
+  );
 
-export function sequenceDiagram(seq: Sequence): Diag<TimeAndPlace> {
-  const locationLines = AbsPos(
+  const locationLines: Diag<Term> = AbsPos(
     { x: 40, y: 20 },
     HLayout(
       seq.locations.map((loc) =>
@@ -122,12 +127,18 @@ export function sequenceDiagram(seq: Sequence): Diag<TimeAndPlace> {
               width: 1,
               stroke: "black",
               start: ORIGIN,
-              end: { x: 0, y: 200 },
+              end: { x: 0, y: yForTime(maxTime) + 20 },
             }),
             ...pointsForLocation(loc, seq.hops).map((tp) =>
               AbsPos(
                 { x: 0, y: yForTime(tp.time) },
-                Tag<TimeAndPlace>(tp, EMPTY_DIAGRAM)
+                Tag(
+                  tp.term,
+                  Circle({
+                    radius: 5,
+                    fill: "red",
+                  })
+                )
               )
             ),
           ]),
@@ -135,39 +146,25 @@ export function sequenceDiagram(seq: Sequence): Diag<TimeAndPlace> {
       )
     )
   );
-  const dots = ZLayout(
-    flatMap(seq.locations, (loc) =>
-      pointsForLocation(loc, seq.hops).map((pt) => {
-        const coords = getCoords(locationLines, pt);
-        if (coords === null) {
-          return EMPTY_DIAGRAM;
-        }
-        return AbsPos(
-          coords,
-          Circle({
-            radius: 5,
-            fill: "red",
-          })
-        );
-      })
-    )
-  );
   const hops = ZLayout(
     seq.hops.map((hop) => {
-      const fromCoords = getCoords(locationLines, hop.from);
-      const toCoords = getCoords(locationLines, hop.to);
+      const fromCoords = getCoords(locationLines, hop.from.term);
+      const toCoords = getCoords(locationLines, hop.to.term);
       if (fromCoords === null || toCoords === null) {
         return EMPTY_DIAGRAM;
       }
-      return Line({
-        stroke: "blue",
-        width: 3,
-        start: fromCoords,
-        end: toCoords,
-      });
+      return Tag(
+        hop.term,
+        Line({
+          stroke: "blue",
+          width: 3,
+          start: fromCoords,
+          end: toCoords,
+        })
+      );
     })
   );
-  return ZLayout([locationLines, hops, dots]);
+  return ZLayout<Term>([hops, locationLines]);
 }
 
 function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {

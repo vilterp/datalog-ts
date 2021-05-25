@@ -13,6 +13,8 @@ import { TermView, noHighlight, HighlightProps } from "../dl/term";
 import { TraceView } from "../dl/trace";
 import { canTreeViz, treeFromRecords } from "../visualizations/tree";
 import { BareTerm } from "../dl/replViews";
+import * as styles from "./styles";
+import { jsonEq } from "../../util/json";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -86,11 +88,22 @@ export function RelationTable(props: {
                 });
               };
               const icon = rowCollapseState.collapsed ? ">" : "v";
+              const highlight = props.highlight.highlight;
+              const isHighlighted =
+                highlight.type === "Term" &&
+                highlight.term.type === "Record" &&
+                jsonEq(result.term, highlight.term);
               return (
                 <React.Fragment key={`${idx}-${key}`}>
                   <tr
                     onClick={toggleRowCollapsed}
-                    style={{ cursor: "pointer", fontFamily: "monospace" }}
+                    style={{
+                      cursor: "pointer",
+                      fontFamily: "monospace",
+                      backgroundColor: isHighlighted
+                        ? styles.highlightColor
+                        : "",
+                    }}
                   >
                     {props.relation.type === "Rule" && result.trace ? (
                       <td>{icon}</td>

@@ -1,5 +1,7 @@
 import { CSSProperties } from "react";
 
+export const highlightColor = "lightgrey";
+
 export function tab(props: {
   selected: boolean;
   highlighted: boolean;
@@ -9,6 +11,6 @@ export function tab(props: {
     color: "purple",
     fontFamily: "monospace",
     fontWeight: props.selected ? "bold" : "normal",
-    backgroundColor: props.highlighted ? "lightgrey" : "",
+    backgroundColor: props.highlighted ? highlightColor : "",
   };
 }
