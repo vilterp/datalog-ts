@@ -52,3 +52,6 @@ savePush{saveMessageID: SaveMsgID, todo: T, from: FromID, to: ToID} :-
   message{fromTickID: FromTick, id: SaveMsgID, payload: putTodo{todo: T}} &
   tick{initiator: messageReceived{messageID: SaveMsgID}, id: PersistTick, actorID: "server"} &
   message{fromTickID: PersistTick, toActorID: ToID, payload: subscriptionUpdate{todo: T}}.
+
+tickState{tickID: TickID, actorID: ActorID, state: State} :-
+  tick{id: TickID, actorID: ActorID, resp: continue{state: State}}.
