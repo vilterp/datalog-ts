@@ -100,12 +100,11 @@ export function Explorer(props: {
         <div style={{ padding: 10, border: "1px solid black" }}>
           <VizArea
             interp={props.interp}
-            setHighlightedTerm={(term: Term | null) => {
-              console.log("setHighlightedTerm", term);
+            setHighlightedTerm={(term: Term | null) =>
               term === null
                 ? setHighlight({ type: "None" })
-                : setHighlight({ type: "Term", term });
-            }}
+                : setHighlight({ type: "Term", term })
+            }
           />
         </div>
       ) : null}

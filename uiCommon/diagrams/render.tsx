@@ -151,10 +151,7 @@ function render<T>(
       return (
         <g
           // TODO: full tag path, not just one tag
-          onMouseOver={() => {
-            console.log("mouse over", d.tag);
-            onMouseOver(d.tag);
-          }}
+          onMouseOver={() => onMouseOver(d.tag)}
           onMouseOut={() => onMouseOver(null)}
         >
           {render(d.diag, onMouseOver)}
