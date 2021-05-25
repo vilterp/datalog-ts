@@ -109,7 +109,6 @@ function yForTime(t: Time): number {
 }
 
 export function sequenceDiagram(seq: Sequence): Diag<Term> {
-  // TODO: why do I have to put this annotation here?
   const locationLines: Diag<Term> = AbsPos(
     { x: 40, y: 20 },
     HLayout(
@@ -129,7 +128,7 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
             ...pointsForLocation(loc, seq.hops).map((tp) =>
               AbsPos(
                 { x: 0, y: yForTime(tp.time) },
-                Tag<Term>(
+                Tag(
                   tp.term,
                   Circle({
                     radius: 5,

@@ -81,7 +81,7 @@ interface TextProps {
   fontSize: number;
 }
 
-export function Text(p: TextProps): Diag<any> {
+export function Text<T>(p: TextProps): Diag<T> {
   return {
     type: "TEXT",
     ...p,
@@ -99,7 +99,7 @@ interface SpacerProps {
   height: number;
 }
 
-export function HSpace(width: number): Diag<any> {
+export function HSpace<T>(width: number): Diag<T> {
   return {
     type: "SPACER",
     width,
@@ -107,7 +107,7 @@ export function HSpace(width: number): Diag<any> {
   };
 }
 
-export function VSpace(height: number): Diag<any> {
+export function VSpace<T>(height: number): Diag<T> {
   return {
     type: "SPACER",
     height,
