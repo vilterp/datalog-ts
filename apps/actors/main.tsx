@@ -19,9 +19,9 @@ function Main() {
   const {
     trace,
     sendInput,
-    spawn,
     selectedScenarioID,
     setSelectedScenarioID,
+    multiClient,
   } = useScenarios(SCENARIOS);
 
   return (
@@ -38,7 +38,7 @@ function Main() {
             return (
               <Animated
                 scenario={scenario}
-                spawn={spawn}
+                multiClient={multiClient}
                 sendInput={sendInput}
                 trace={trace}
               />
@@ -54,15 +54,15 @@ function Animated<ActorState extends Json, Msg extends Json>(props: {
   scenario: Scenario<ActorState, Msg>;
   trace: Trace<ActorState, Msg>;
   sendInput: (fromUserID: number, input: Msg) => void;
-  spawn: (id: number) => void;
+  multiClient: MultiClientProps;
 }) {
   return (
     <>
       <MultiClient
         trace={props.trace}
         sendInput={props.sendInput}
-        spawn={props.spawn}
         scenario={props.scenario}
+        multiClient={props.multiClient}
       />
 
       <Explorer interp={props.trace.interp} showViz={true} />
@@ -73,37 +73,52 @@ function Animated<ActorState extends Json, Msg extends Json>(props: {
   );
 }
 
+type ScenState<ActorState, Msg> = {
+  scenario: Scenario<ActorState, Msg>;
+  trace: Trace<ActorState, Msg>;
+  clientIDs: number[];
+  nextClientID: number;
+};
+
 // TODO: does all of this have to be bundled into one hook?
 function useScenarios<St extends Json, Msg extends Json>(
   scenarios: Scenario<St, Msg>[]
 ): {
   trace: Trace<St, Msg>;
   sendInput: (fromUserID: number, input: Msg) => void;
-  spawn: (id: number) => void;
   selectedScenarioID: string;
   setSelectedScenarioID: (id: string) => void;
+  multiClient: MultiClientProps;
 } {
-  const [traces, setTraces] = useState(
-    scenarios.map((scenario) => ({ scenario, trace: scenario.initialState }))
+  const [scenStates, setScenStates] = useState<ScenState<any, any>[]>(
+    scenarios.map((scenario) => ({
+      scenario,
+      trace: scenario.initialState,
+      clientIDs: [],
+      nextClientID: 0,
+    }))
   );
   const [selectedScenarioID, setSelectedScenarioID] = useHashParam(
     "scenario",
     scenarios[0].id
   );
 
-  const selected = traces.find(
+  const scenState = scenStates.find(
     (scenAndState) => scenAndState.scenario.id === selectedScenarioID
   );
-  const trace = selected.trace;
-  const scenario = selected.scenario;
-  const setTrace = (newTrace) => {
-    setTraces(
+  const trace = scenState.trace;
+  const scenario = scenState.scenario;
+  const setScenState = (newScenState: ScenState<any, any>) => {
+    setScenStates(
       updateList(
-        traces,
+        scenStates,
         (scenState) => scenState.scenario.id === scenario.id,
-        (scenState) => ({ ...scenState, trace: newTrace })
+        (_) => newScenState
       )
     );
+  };
+  const setTrace = (newTrace) => {
+    setScenState({ ...scenState, trace: newTrace });
   };
 
   const sendInput = (fromUserID: number, input: Msg) => {
@@ -128,7 +143,14 @@ function useScenarios<St extends Json, Msg extends Json>(
     );
   };
 
-  const spawn = (id: number) => {
+  const spawnClient = () => {
+    const id = scenState.nextClientID;
+    setScenState({
+      ...scenState,
+      nextClientID: scenState.nextClientID + 1,
+      clientIDs: [...scenState.clientIDs, id],
+    });
+
     const { newTrace: trace2, newMessages: nm1 } = Step.spawn(
       trace,
       scenario.update,
@@ -146,29 +168,49 @@ function useScenarios<St extends Json, Msg extends Json>(
     });
   };
 
-  return { trace, sendInput, spawn, selectedScenarioID, setSelectedScenarioID };
+  const exitClient = (id: number) => {
+    setScenState({
+      ...scenState,
+      clientIDs: scenState.clientIDs.filter((curID) => curID !== id),
+    });
+  };
+
+  return {
+    trace,
+    sendInput,
+    selectedScenarioID,
+    setSelectedScenarioID,
+    multiClient: {
+      spawnClient,
+      exitClient,
+      clientIDs: scenState.clientIDs,
+    },
+  };
 }
+
+type MultiClientProps = {
+  clientIDs: number[];
+  spawnClient: () => void;
+  exitClient: (id: number) => void;
+};
 
 function MultiClient<St extends Json, Msg extends Json>(props: {
   trace: Trace<St, Msg>;
   sendInput: (fromUserID: number, msg: Msg) => void;
-  spawn: (id: number) => void;
   scenario: Scenario<St, Msg>;
+  multiClient: MultiClientProps;
 }) {
-  const [nextClientID, setNextClientID] = useState(0);
-  const [clientIDs, setClientIDs] = useState<number[]>([]);
-
   return (
     <>
       <ul>
-        {clientIDs.map((clientID) => {
+        {props.multiClient.clientIDs.map((clientID) => {
           const clientState = props.trace.latestStates[`client${clientID}`];
 
           return (
             <li key={clientID}>
               <button
                 onClick={() => {
-                  setClientIDs(clientIDs.filter((id) => id !== clientID));
+                  props.multiClient.exitClient(clientID);
                 }}
               >
                 x
@@ -183,15 +225,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
           );
         })}
       </ul>
-      <button
-        onClick={() => {
-          setNextClientID(nextClientID + 1);
-          setClientIDs([...clientIDs, nextClientID]);
-          props.spawn(nextClientID);
-        }}
-      >
-        Add Client
-      </button>
+      <button onClick={props.multiClient.spawnClient}>Add Client</button>
     </>
   );
 }
