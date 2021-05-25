@@ -5,15 +5,11 @@ import { Explorer } from "../../uiCommon/explorer";
 import ReactJson from "react-json-view";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
-import {
-  initialState,
-  reducer,
-  SystemInstanceAction,
-  SystemInstance,
-} from "./reducers";
+import { initialState, reducer } from "./reducers";
 import { SYSTEMS } from "./systems";
 import { sendUserInputAsync, spawnAsync } from "./step";
 import useHashParam from "use-hash-param";
+import { SystemInstance, SystemInstanceAction } from "./types";
 
 function Main() {
   const [state, dispatch] = useReducer(reducer, initialState(SYSTEMS));
@@ -81,7 +77,11 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       props.systemInstance.system.update,
       clientID,
       input,
-      (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
+      (action) =>
+        props.dispatch({
+          type: "UpdateTrace",
+          action,
+        })
     );
   };
 
@@ -118,7 +118,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
             props.systemInstance.trace,
             props.systemInstance.system,
             props.systemInstance.nextClientID,
-            (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
+            (action) => props.dispatch({ type: "UpdateTrace", action })
           );
         }}
       >

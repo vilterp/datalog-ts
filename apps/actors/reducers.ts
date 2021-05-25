@@ -5,8 +5,12 @@ import {
   State,
   SystemInstance,
   SystemInstanceAction,
+  TraceAction,
+  Trace,
+  UpdateFn,
 } from "./types";
 import { Json } from "../../util/json";
+import { pushTickInit, step } from "./step";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
@@ -52,12 +56,37 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         ),
       };
     case "UpdateTrace":
-      return { ...systemInstance, trace: action.newTrace };
+      return {
+        ...systemInstance,
+        trace: traceReducer(
+          systemInstance.trace,
+          systemInstance.system.update,
+          action.action
+        ),
+      };
     case "AllocateClientID":
       return {
         ...systemInstance,
         clientIDs: [...systemInstance.clientIDs, systemInstance.nextClientID],
         nextClientID: systemInstance.nextClientID + 1,
       };
+  }
+}
+
+function traceReducer<St extends Json, Msg extends Json>(
+  trace: Trace<St>,
+  update: UpdateFn<St, Msg>,
+  action: TraceAction<St>
+): Trace<St> {
+  switch (action.type) {
+    case "SendInitiator":
+      return step(pushTickInit(trace, action.init), update);
+    case "InsertRecord": {
+      return {
+        ...trace,
+        nextID: trace.nextID + 1,
+        interp: trace.interp.insert(action.rec),
+      };
+    }
   }
 }

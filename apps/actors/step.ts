@@ -9,6 +9,7 @@ import {
   System,
   TickInitiator,
   Trace,
+  TraceAction,
   UpdateFn,
 } from "./types";
 import { sleep } from "../../util/util";
@@ -42,7 +43,7 @@ export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   return await stepAllAsync(newTrace, update, setTrace);
 }
 
-function step<ActorState extends Json, Msg extends Json>(
+export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>
 ): Trace<ActorState> {
@@ -147,36 +148,20 @@ export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   );
 }
 
-export async function spawnAsync<ActorState extends Json, Msg extends Json>(
+export function spawnAsync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   system: System<ActorState, Msg>,
   id: number,
-  updateTrace: (newTrace: Trace<ActorState>) => void
+  dispatch: (action: TraceAction<ActorState>) => void
 ) {
-  const trace2 = spawn(
-    trace,
-    system.update,
-    `user${id}`,
-    system.initialUserState
-  );
-  const trace3 = await stepAllAsync(trace2, system.update, updateTrace);
-  const trace4 = spawn(
-    trace3,
-    system.update,
-    `client${id}`,
-    system.initialClientState
-  );
-  await stepAllAsync(trace4, system.update, updateTrace);
-}
-
-function spawn<ActorState extends Json, Msg extends Json>(
-  trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
-  id: string,
-  initialState: ActorState
-): Trace<ActorState> {
-  const newTrace = pushTickInit(trace, spawnInitiator(id, initialState));
-  return step(newTrace, update);
+  dispatch({
+    type: "SendInitiator",
+    init: spawnInitiator(`user${id}`, system.initialUserState),
+  });
+  dispatch({
+    type: "SendInitiator",
+    init: spawnInitiator(`client${id}`, system.initialClientState),
+  });
 }
 
 export function spawnSync<ActorState extends Json, Msg extends Json>(
@@ -212,26 +197,23 @@ export async function sendUserInputAsync<
   update: UpdateFn<ActorState, Msg>,
   clientID: number,
   payload: Msg,
-  updateTrace: (t: Trace<ActorState>) => void
+  dispatch: (action: TraceAction<ActorState>) => void
 ) {
-  const { newTrace: trace2, newMessageID } = insertUserInput(
-    trace,
-    update,
-    clientID,
-    payload
-  );
-  const trace3 = pushTickInit(trace2, {
-    from: `user${clientID}`,
-    to: `client${clientID}`,
+  insertUserInput(trace, update, clientID, payload, dispatch);
+  dispatch({
+    type: "SendInitiator",
     init: {
-      type: "messageReceived",
-      messageID: newMessageID.toString(),
+      from: `user${clientID}`,
+      to: `client${clientID}`,
+      init: {
+        type: "messageReceived",
+        messageID: newMessageID.toString(),
+      },
     },
   });
-  await stepAllAsync(trace3, update, updateTrace);
 }
 
-function pushTickInit<ActorState, Msg>(
+export function pushTickInit<ActorState, Msg>(
   trace: Trace<ActorState>,
   init: AddressedTickInitiator<ActorState>
 ): Trace<ActorState> {
@@ -241,23 +223,20 @@ function pushTickInit<ActorState, Msg>(
   };
 }
 
+// returns new message id
 function insertUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
   clientID: number,
-  payload: Msg
-): { newTrace: Trace<ActorState>; newMessageID: number } {
-  const newTrace = {
-    ...trace,
-  };
-
+  payload: Msg,
+  dispatch: (action: TraceAction<ActorState>) => void
+): number {
   const from = `user${clientID}`;
   const to = `client${clientID}`;
 
-  const newTickID = trace.nextID;
-  newTrace.nextID++;
-  newTrace.interp = trace.interp.insert(
-    rec("tick", {
+  dispatch({
+    type: "InsertRecord",
+    rec: rec("tick", {
       id: str(newTickID.toString()),
       actorID: str(from),
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
@@ -271,21 +250,20 @@ function insertUserInput<ActorState extends Json, Msg extends Json>(
           },
         ],
       } as ActorResp<ActorState, Msg>),
-    })
-  );
+    }),
+  });
 
-  const newMessageID = trace.nextID;
-  newTrace.nextID++;
-  newTrace.interp = newTrace.interp.insert(
-    rec("message", {
+  dispatch({
+    type: "InsertRecord",
+    rec: rec("message", {
       id: str(newMessageID.toString()),
       toActorID: str(to),
       payload: jsonToDL(payload),
       fromTickID: str(newTickID.toString()),
-    })
-  );
+    }),
+  });
 
-  return { newTrace, newMessageID };
+  return newMessageID;
 }
 
 function loadTickInitiator<ActorState, Msg extends Json>(
