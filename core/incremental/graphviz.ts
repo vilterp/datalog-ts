@@ -1,6 +1,6 @@
 import { RuleGraph, NodeDesc } from "./types";
 import { Graph } from "../../util/graphviz";
-import { mapObjToList } from "../../util/util";
+import { flatMap, mapObjToList } from "../../util/util";
 import { formatNodeWithIndexes } from "./pretty";
 
 export function toGraphviz(
@@ -22,19 +22,15 @@ export function toGraphviz(
       })
       .valueSeq()
       .toArray(),
-    edges: graph.edges
-      .flatMap((destinations, fromID) =>
-        destinations.map((dst) => [
-          fromID,
-          {
-            from: fromID,
-            to: dst,
-            attrs: {},
-          },
-        ])
-      )
-      .valueSeq()
-      .toArray(),
+    edges: flatMap(graph.edges.toArray(), ([fromID, destinations]) =>
+      destinations
+        .map((dst) => ({
+          from: fromID,
+          to: dst,
+          attrs: {},
+        }))
+        .toArray()
+    ),
     comments:
       Object.keys(graph.unmappedRules).length > 0
         ? mapObjToList(
