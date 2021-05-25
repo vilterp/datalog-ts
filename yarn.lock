@@ -1375,6 +1375,11 @@ react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
+react-hook-thunk-reducer@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/react-hook-thunk-reducer/-/react-hook-thunk-reducer-0.2.4.tgz#b10bc27157836750e5cbf513bcaf0be02412406c"
+  integrity sha512-cuK5GkdhDjSaBrDZMP17bp8YVClrxHf8U39j1OOjCQksi6LgN+M5cRuNfGsEqqn1lvkhl48p2O5X35+BIrf47Q==
+
 react-input-autosize@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-3.0.0.tgz#6b5898c790d4478d69420b55441fcc31d5c50a85"

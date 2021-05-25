@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useReducer } from "react";
 import * as ReactDOM from "react-dom";
 import { Explorer } from "../../uiCommon/explorer";
 import ReactJson from "react-json-view";
@@ -8,10 +7,19 @@ import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer } from "./reducers";
 import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
-import { SystemInstance, SystemInstanceAction } from "./types";
+import {
+  SystemInstance,
+  SystemInstanceAction,
+  Trace,
+  TraceAction,
+  UpdateFn,
+} from "./types";
+import useThunkReducer, { Thunk } from "react-hook-thunk-reducer";
+import { stepAllAsync } from "./step";
+import { Dispatch } from "react";
 
 function Main() {
-  const [state, dispatch] = useReducer(reducer, initialState(SYSTEMS));
+  const [state, dispatch] = useThunkReducer(reducer, initialState(SYSTEMS));
   const [selectedSystemInstanceID, setSelectedSystemInstanceID] = useHashParam(
     "systemInstance",
     SYSTEMS[0].id
@@ -47,9 +55,14 @@ function Main() {
   );
 }
 
+type ThunkDispatch<S, A> = Dispatch<A | Thunk<S, A>>;
+
 function SystemInstanceView<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
-  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
+  dispatch: ThunkDispatch<
+    SystemInstance<St, Msg>,
+    SystemInstanceAction<St, Msg>
+  >;
 }) {
   return (
     <>
@@ -68,12 +81,23 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
 
 function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
-  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
+  // hoo that is a big type
+  dispatch: ThunkDispatch<
+    SystemInstance<St, Msg>,
+    SystemInstanceAction<St, Msg>
+  >;
 }) {
   const sendInput = (clientID: number, input: Msg) => {
-    props.dispatch({
-      type: "UpdateTrace",
-      action: { type: "SendUserInput", clientID, input },
+    props.dispatch((dispatch, getState) => {
+      dispatch({
+        type: "UpdateTrace",
+        action: {
+          type: "SendUserInput",
+          clientID,
+          input,
+        },
+      });
+      dispatch(updateTrace(props.systemInstance.system.update));
     });
   };
 
@@ -122,6 +146,18 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       </button>
     </>
   );
+}
+
+function updateTrace<St extends Json, Msg extends Json>(
+  update: UpdateFn<St, Msg>,
+  action: TraceAction<St, Msg>
+): Thunk<Trace<St>, TraceAction<St, Msg>> {
+  return (dispatch, getState) => {
+    dispatch(action);
+    const trace = getState();
+
+    stepAllAsync(trace, update, dispatch);
+  };
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

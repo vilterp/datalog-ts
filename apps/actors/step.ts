@@ -8,6 +8,7 @@ import {
   LoadedTickInitiator,
   TickInitiator,
   Trace,
+  TraceAction,
   UpdateFn,
 } from "./types";
 import { sleep } from "../../util/util";
@@ -28,17 +29,15 @@ const NETWORK_LATENCY = 500;
 export async function stepAllAsync<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
-  setTrace: (trace: Trace<ActorState>) => void
+  dispatch: (trace: TraceAction<ActorState, Msg>) => void
 ) {
   const newTrace = step(trace, update);
-  setTrace(newTrace);
-
   if (newTrace.queue.length === 0) {
-    return newTrace;
+    return;
   }
 
   await sleep(NETWORK_LATENCY);
-  return await stepAllAsync(newTrace, update, setTrace);
+  await stepAllAsync(newTrace, update, dispatch);
 }
 
 export function step<ActorState extends Json, Msg extends Json>(
