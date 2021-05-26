@@ -1,6 +1,7 @@
 import { sleep, updateList } from "../../util/util";
 import {
   Action,
+  AddressedTickInitiator,
   State,
   System,
   SystemInstance,
@@ -128,7 +129,7 @@ function traceReducer<St extends Json, Msg extends Json>(
           messageID: newMessageID.toString(),
         },
       });
-      return [trace3, Promise.resolve({ type: "Step" })];
+      return stepAndThenEffect(trace3, update);
     }
     case "SpawnClient": {
       const trace2 = pushTickInit(
@@ -139,21 +140,38 @@ function traceReducer<St extends Json, Msg extends Json>(
         trace2,
         spawnInitiator(`client${action.id}`, action.initialClientState)
       );
-      return [trace3, Promise.resolve({ type: "Step" })];
+      return stepAndThenEffect(trace3, update);
     }
     case "Step": {
-      const newTrace = step(trace, update);
-      if (newTrace.queue.length === 0) {
-        return [newTrace, null];
-      }
-      const latency =
-        newTrace.queue[0].init.type === "messageReceived" ? NETWORK_LATENCY : 0;
-      return [
-        newTrace,
-        sleep(latency).then(() => ({
-          type: "Step",
-        })),
-      ];
+      return stepAndThenEffect(trace, update);
     }
   }
+}
+
+function stepAndThenEffect<St extends Json, Msg extends Json>(
+  trace: Trace<St>,
+  update: UpdateFn<St, Msg>
+): [Trace<St>, Promise<TraceAction<St, Msg>>] {
+  const newTrace = stepTilAsync(trace, update);
+  return [
+    newTrace,
+    newTrace.queue.length === 0
+      ? null
+      : sleep(NETWORK_LATENCY).then(() => ({ type: "Step" })),
+  ];
+}
+
+function stepTilAsync<St extends Json, Msg extends Json>(
+  trace: Trace<St>,
+  update: UpdateFn<St, Msg>
+): Trace<St> {
+  let curTrace = trace;
+  while (curTrace.queue.length > 0 && initIsSync(curTrace.queue[0])) {
+    curTrace = step(curTrace, update);
+  }
+  return curTrace;
+}
+
+function initIsSync<St>(init: AddressedTickInitiator<St>): boolean {
+  return init.init.type !== "messageReceived";
 }
