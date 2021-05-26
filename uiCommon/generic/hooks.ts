@@ -1,5 +1,5 @@
 import useLocalStorage from "react-use-localstorage";
-import { Dispatch, useReducer, useState } from "react";
+import { Dispatch, useEffect, useReducer, useState } from "react";
 
 export function useBoolLocalStorage(
   key: string,
@@ -31,15 +31,18 @@ export function useEffectfulReducer<S, A>(
   reducer: (state: S, action: A) => [S, Promise<A>],
   initialState: S
 ): [S, (a: A) => void] {
-  const [state, setState] = useState(initialState);
-  const dispatch = (action: A) => {
-    // TODO: this is broken cuz it's closing over the old state
-    const [newState, promise] = reducer(state, action);
-    console.log(state, "==", action, "==>", newState, promise);
-    setState(newState);
-    if (promise) {
-      promise.then((newAction) => dispatch(newAction));
-    }
+  const myReducer = (prevPair: [S, Promise<A>], action: A): [S, Promise<A>] => {
+    const [prevState, _] = prevPair;
+    return reducer(prevState, action);
   };
+  const [[state, effect], dispatch] = useReducer(myReducer, [
+    initialState,
+    null,
+  ]);
+  useEffect(() => {
+    if (effect) {
+      effect.then((action) => dispatch(action));
+    }
+  }, [effect]);
   return [state, dispatch];
 }
