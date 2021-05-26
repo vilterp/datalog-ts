@@ -123,7 +123,7 @@ function traceReducer<St extends Json, Msg extends Json>(
             messageID: newMessageID.toString(),
           },
         }),
-        sleep(NETWORK_LATENCY).then(() => ({ type: "Step" })),
+        Promise.resolve({ type: "Step" }),
       ];
     }
     case "SpawnClient": {
@@ -136,7 +136,7 @@ function traceReducer<St extends Json, Msg extends Json>(
           trace2,
           spawnInitiator(`client${action.id}`, action.initialClientState)
         ),
-        sleep(NETWORK_LATENCY).then(() => ({ type: "Step" })),
+        Promise.resolve({ type: "Step" }),
       ];
     }
     case "Step": {
