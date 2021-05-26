@@ -10,7 +10,13 @@ import {
   UpdateFn,
 } from "./types";
 import { Json } from "../../util/json";
-import { insertUserInput, pushTickInit, spawnInitiator, step } from "./step";
+import {
+  insertUserInput,
+  pushTickInit,
+  spawnInitiator,
+  step,
+  stepAll,
+} from "./step";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
@@ -108,36 +114,32 @@ function traceReducer<St extends Json, Msg extends Json>(
 ): [Trace<St>, Promise<TraceAction<St, Msg>> | null] {
   switch (action.type) {
     case "SendUserInput": {
-      const { newTrace, newMessageID } = insertUserInput(
+      const { newTrace: trace2, newMessageID } = insertUserInput(
         trace,
         update,
         action.clientID,
         action.input
       );
-      return [
-        pushTickInit(newTrace, {
-          from: `user${action.clientID}`,
-          to: `client${action.clientID}`,
-          init: {
-            type: "messageReceived",
-            messageID: newMessageID.toString(),
-          },
-        }),
-        Promise.resolve({ type: "Step" }),
-      ];
+      const trace3 = pushTickInit(trace2, {
+        from: `user${action.clientID}`,
+        to: `client${action.clientID}`,
+        init: {
+          type: "messageReceived",
+          messageID: newMessageID.toString(),
+        },
+      });
+      return [trace3, Promise.resolve({ type: "Step" })];
     }
     case "SpawnClient": {
       const trace2 = pushTickInit(
         trace,
         spawnInitiator(`user${action.id}`, action.initialUserState)
       );
-      return [
-        pushTickInit(
-          trace2,
-          spawnInitiator(`client${action.id}`, action.initialClientState)
-        ),
-        Promise.resolve({ type: "Step" }),
-      ];
+      const trace3 = pushTickInit(
+        trace2,
+        spawnInitiator(`client${action.id}`, action.initialClientState)
+      );
+      return [trace3, Promise.resolve({ type: "Step" })];
     }
     case "Step": {
       const newTrace = step(trace, update);
