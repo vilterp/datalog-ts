@@ -143,13 +143,16 @@ function traceReducer<St extends Json, Msg extends Json>(
     }
     case "Step": {
       const newTrace = step(trace, update);
+      if (newTrace.queue.length === 0) {
+        return [newTrace, null];
+      }
+      const latency =
+        newTrace.queue[0].init.type === "messageReceived" ? NETWORK_LATENCY : 0;
       return [
         newTrace,
-        newTrace.queue.length === 0
-          ? null
-          : sleep(NETWORK_LATENCY).then(() => ({
-              type: "Step",
-            })),
+        sleep(latency).then(() => ({
+          type: "Step",
+        })),
       ];
     }
   }
