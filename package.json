@@ -59,6 +59,7 @@
     "react-select": "^4.3.1",
     "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
     "react-textarea-autosize": "^8.3.2",
+    "react-use-elmish": "^1.0.0",
     "react-use-localstorage": "^3.4.1",
     "simple-markdown": "^0.7.3",
     "use-hash-param": "^0.2.3",

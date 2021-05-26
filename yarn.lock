@@ -1467,6 +1467,11 @@ react-transition-group@^4.3.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-use-elmish@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-use-elmish/-/react-use-elmish-1.0.0.tgz#1f4837940afddb729c09b294603ecf7afc84248b"
+  integrity sha512-ma8id1Uj1tYNZNl+xzsH2lsH4b+EgKxVx+wMZi/hOLqApbMPLkcDZkC2dhHCrXZ6rgA4QJGnCczzvhXD2+iIMQ==
+
 react-use-localstorage@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/react-use-localstorage/-/react-use-localstorage-3.4.1.tgz#29d802012c0c116bae687e3abc9b47b4eb700b02"

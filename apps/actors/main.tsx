@@ -8,10 +8,13 @@ import { initialState, reducer } from "./reducers";
 import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
 import { SystemInstance, SystemInstanceAction } from "./types";
-import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
+import useElmish, { Effects } from "react-use-elmish";
 
 function Main() {
-  const [state, dispatch] = useEffectfulReducer(reducer, initialState(SYSTEMS));
+  const [state, dispatch] = useElmish(
+    reducer,
+    Effects.none(initialState(SYSTEMS))
+  );
   const [selectedSystemInstanceID, setSelectedSystemInstanceID] = useHashParam(
     "systemInstance",
     SYSTEMS[0].id
