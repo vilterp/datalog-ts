@@ -328,3 +328,5 @@ export function partition<T>(arr: T[], pred: (t: T) => boolean): [T[], T[]] {
   }
   return [trues, falses];
 }
+
+export function arrMax(arr: number[]): number;

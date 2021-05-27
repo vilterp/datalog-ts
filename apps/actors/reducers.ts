@@ -152,24 +152,28 @@ function stepAndThenEffect<St extends Json, Msg extends Json>(
   trace: Trace<St>,
   update: UpdateFn<St, Msg>
 ): [Trace<St>, Promise<TraceAction<St, Msg>>] {
+  // TODO: this is probably wrong
+  const maxLatency = Math.max(...trace.queue.map(latency));
+  const allNewMessages: AddressedTickInitiator<St>[] = [];
   let curTrace = trace;
   while (curTrace.queue.length > 0) {
-    // TODO: should deliver asyncs concurrently, not in serial
-    const nextSyncIdx = curTrace.queue.findIndex(initIsSync);
-    const nextIsAsync = nextSyncIdx === -1;
-    const nextIdx = nextIsAsync ? 0 : nextSyncIdx;
-    const init = curTrace.queue[nextIdx];
-    curTrace = step(curTrace, update, nextIdx);
-    if (nextIsAsync) {
-      return [curTrace, sleep(latency(init)).then(() => ({ type: "Step" }))];
-    }
+    const { newTrace, newMessages } = step(curTrace, update);
+    curTrace = newTrace;
+    newMessages.forEach((msg) => allNewMessages.push(msg));
   }
-  return [curTrace, null];
+  const anyAsync = allNewMessages.some((msg) => !initIsSync(msg));
+  return [
+    { ...curTrace, queue: allNewMessages },
+    anyAsync ? sleep(maxLatency).then(() => ({ type: "Step" })) : null,
+  ];
 }
 
 // TODO: base on actor types, not substrings
 function latency<St>(init: AddressedTickInitiator<St>): number {
   if (init.from.startsWith("user") && init.to.startsWith("client")) {
+    return 0;
+  }
+  if (init.init.type === "spawned") {
     return 0;
   }
   return NETWORK_LATENCY;

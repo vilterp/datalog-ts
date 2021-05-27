@@ -18,25 +18,30 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 ): Trace<ActorState> {
   let curTrace = trace;
   while (curTrace.queue.length > 0) {
-    curTrace = step(curTrace, update, 0);
+    const { newTrace, newMessages } = step(curTrace, update);
+    curTrace = newTrace;
+    newMessages.forEach((msg) => curTrace.queue.push(msg));
   }
   return curTrace;
 }
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
-  initIndex: number
-): Trace<ActorState> {
-  const nextInitiator = trace.queue[initIndex];
+  update: UpdateFn<ActorState, Msg>
+): {
+  newTrace: Trace<ActorState>;
+  newMessages: AddressedTickInitiator<ActorState>[];
+} {
+  const nextInitiator = trace.queue[0];
   const newTrace: Trace<ActorState> = {
     nextID: trace.nextID,
     interp: trace.interp,
-    queue: removeAtIdx(trace.queue, initIndex),
+    queue: trace.queue.slice(1),
     latestStates: {
       ...trace.latestStates,
     },
   };
+  const newMessages: AddressedTickInitiator<ActorState>[] = [];
 
   if (nextInitiator.init.type === "spawned") {
     const spawn = nextInitiator.init;
@@ -86,7 +91,7 @@ export function step<ActorState extends Json, Msg extends Json>(
           })
         );
         // insert into queue so we can keep processing this step
-        newTrace.queue.push({
+        newMessages.push({
           to: outgoingMsg.to,
           from: curActorID,
           init: {
@@ -111,7 +116,7 @@ export function step<ActorState extends Json, Msg extends Json>(
       );
   }
 
-  return newTrace;
+  return { newTrace, newMessages };
 }
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
