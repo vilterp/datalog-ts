@@ -1,5 +1,5 @@
 import useLocalStorage from "react-use-localstorage";
-import { Dispatch, useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 
 export function useBoolLocalStorage(
   key: string,

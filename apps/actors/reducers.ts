@@ -11,7 +11,7 @@ import {
   UpdateFn,
 } from "./types";
 import { Json } from "../../util/json";
-import { insertUserInput, spawnInitiator, step, stepAll } from "./step";
+import { insertUserInput, spawnInitiator, step } from "./step";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
