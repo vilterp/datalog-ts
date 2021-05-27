@@ -152,24 +152,15 @@ function stepAndThenEffect<St extends Json, Msg extends Json>(
   trace: Trace<St>,
   update: UpdateFn<St, Msg>
 ): [Trace<St>, Promise<TraceAction<St, Msg>>] {
-  const newTrace = stepTilAsync(trace, update);
-  return [
-    newTrace,
-    newTrace.queue.length === 0
-      ? null
-      : sleep(NETWORK_LATENCY).then(() => ({ type: "Step" })),
-  ];
-}
-
-function stepTilAsync<St extends Json, Msg extends Json>(
-  trace: Trace<St>,
-  update: UpdateFn<St, Msg>
-): Trace<St> {
   let curTrace = trace;
-  while (curTrace.queue.length > 0 && initIsSync(curTrace.queue[0])) {
+  while (curTrace.queue.length > 0) {
+    const init = curTrace.queue[0];
     curTrace = step(curTrace, update);
+    if (!initIsSync(init)) {
+      return [curTrace, sleep(NETWORK_LATENCY).then(() => ({ type: "Step" }))];
+    }
   }
-  return curTrace;
+  return [curTrace, null];
 }
 
 function initIsSync<St>(init: AddressedTickInitiator<St>): boolean {
