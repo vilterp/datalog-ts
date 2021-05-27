@@ -20,7 +20,7 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 ): Trace<ActorState> {
   const queue: AddressedTickInitiator<ActorState>[] = [...inits];
   let curTrace = trace;
-  while (queue.length < 0) {
+  while (queue.length > 0) {
     const init = queue.shift();
     const { newTrace, newInits } = step(curTrace, update, init);
     curTrace = newTrace;
