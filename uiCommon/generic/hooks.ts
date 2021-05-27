@@ -1,4 +1,5 @@
 import useLocalStorage from "react-use-localstorage";
+import { Dispatch, useEffect, useReducer, useState } from "react";
 
 export function useBoolLocalStorage(
   key: string,
@@ -23,4 +24,26 @@ export function useIntLocalStorage(
 ): [number, (v: number) => void] {
   const [val, setVal] = useLocalStorage(key, `${initVal}`);
   return [parseInt(val), (v: number) => setVal(`${v}`)];
+}
+
+// inspired by the Elm architecture
+export function useEffectfulReducer<S, A>(
+  reducer: (state: S, action: A) => [S, Promise<A>[]],
+  initialState: S
+): [S, (a: A) => void] {
+  const myReducer = (
+    prevPair: [S, Promise<A>[]],
+    action: A
+  ): [S, Promise<A>[]] => {
+    const [prevState, _] = prevPair;
+    return reducer(prevState, action);
+  };
+  const [[state, effects], dispatch] = useReducer(myReducer, [
+    initialState,
+    [],
+  ]);
+  useEffect(() => {
+    effects.map((eff) => eff.then(dispatch));
+  }, [effects]);
+  return [state, dispatch];
 }

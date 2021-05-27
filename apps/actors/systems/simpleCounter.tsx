@@ -2,7 +2,7 @@ import React from "react";
 import {
   ActorResp,
   LoadedTickInitiator,
-  Scenario,
+  System,
   Trace,
   UpdateFn,
 } from "../types";
@@ -155,9 +155,7 @@ export function ClientServerUI(props: {
   );
 }
 
-// scenario
-
-export const scenario: Scenario<State, Msg> = {
+export const simpleCounter: System<State, Msg> = {
   name: "Counter",
   id: "simple-counter",
   ui: ClientServerUI,

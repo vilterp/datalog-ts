@@ -1,20 +1,20 @@
 import * as React from "react";
-import { useReducer } from "react";
 import * as ReactDOM from "react-dom";
 import { Explorer } from "../../uiCommon/explorer";
 import ReactJson from "react-json-view";
 import { Json } from "../../util/json";
 import { Tabs } from "../../uiCommon/generic/tabs";
-import { initialState, reducer, ScenarioAction, ScenState } from "./reducers";
-import { SCENARIOS } from "./scenarios";
-import { sendUserInputAsync, spawnAsync } from "./step";
+import { initialState, reducer } from "./reducers";
+import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
+import { SystemInstance, SystemInstanceAction } from "./types";
+import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 
 function Main() {
-  const [state, dispatch] = useReducer(reducer, initialState(SCENARIOS));
-  const [selectedScenarioID, setSelectedScenarioID] = useHashParam(
-    "scenario",
-    SCENARIOS[0].id
+  const [state, dispatch] = useEffectfulReducer(reducer, initialState(SYSTEMS));
+  const [selectedSystemInstanceID, setSelectedSystemInstanceID] = useHashParam(
+    "systemInstance",
+    SYSTEMS[0].id
   );
 
   return (
@@ -22,19 +22,19 @@ function Main() {
       <h1>Communicating Processes Viz</h1>
 
       <Tabs
-        setTabID={setSelectedScenarioID}
-        curTabID={selectedScenarioID}
-        tabs={state.scenStates.map((scenState) => ({
-          name: scenState.scenario.name,
-          id: scenState.scenario.id,
+        setTabID={setSelectedSystemInstanceID}
+        curTabID={selectedSystemInstanceID}
+        tabs={state.systemInstances.map((systemInstance) => ({
+          name: systemInstance.system.name,
+          id: systemInstance.system.id,
           render: () => {
             return (
-              <Scenario
-                scenState={scenState}
+              <SystemInstanceView
+                systemInstance={systemInstance}
                 dispatch={(action) =>
                   dispatch({
-                    type: "UpdateScenario",
-                    scenarioID: scenState.scenario.id,
+                    type: "UpdateSystemInstance",
+                    instanceID: systemInstance.system.id,
                     action,
                   })
                 }
@@ -47,42 +47,47 @@ function Main() {
   );
 }
 
-function Scenario<St extends Json, Msg extends Json>(props: {
-  scenState: ScenState<St, Msg>;
-  dispatch: (action: ScenarioAction<St, Msg>) => void;
+function SystemInstanceView<St extends Json, Msg extends Json>(props: {
+  systemInstance: SystemInstance<St, Msg>;
+  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
   return (
     <>
-      <MultiClient scenState={props.scenState} dispatch={props.dispatch} />
+      <MultiClient
+        systemInstance={props.systemInstance}
+        dispatch={props.dispatch}
+      />
 
-      <Explorer interp={props.scenState.trace.interp} showViz={true} />
+      <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
 
       <h2>State</h2>
-      <ReactJson src={props.scenState.trace.latestStates} />
+      <ReactJson src={props.systemInstance.trace.latestStates} />
     </>
   );
 }
 
 function MultiClient<St extends Json, Msg extends Json>(props: {
-  scenState: ScenState<St, Msg>;
-  dispatch: (action: ScenarioAction<St, Msg>) => void;
+  systemInstance: SystemInstance<St, Msg>;
+  // hoo that is a big type
+  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
   const sendInput = (clientID: number, input: Msg) => {
-    sendUserInputAsync(
-      props.scenState.trace,
-      props.scenState.scenario.update,
-      clientID,
-      input,
-      (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
-    );
+    props.dispatch({
+      type: "UpdateTrace",
+      action: {
+        type: "SendUserInput",
+        clientID,
+        input,
+      },
+    });
   };
 
   return (
     <>
       <ul>
-        {props.scenState.clientIDs.map((clientID) => {
+        {props.systemInstance.clientIDs.map((clientID) => {
           const clientState =
-            props.scenState.trace.latestStates[`client${clientID}`];
+            props.systemInstance.trace.latestStates[`client${clientID}`];
 
           return (
             <li key={clientID}>
@@ -94,7 +99,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                 x
               </button>
               {clientState ? (
-                <props.scenState.scenario.ui
+                <props.systemInstance.system.ui
                   state={clientState}
                   sendUserInput={(input) => sendInput(clientID, input)}
                 />
@@ -106,12 +111,16 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       <button
         onClick={() => {
           props.dispatch({ type: "AllocateClientID" });
-          spawnAsync(
-            props.scenState.trace,
-            props.scenState.scenario,
-            props.scenState.nextClientID,
-            (newTrace) => props.dispatch({ type: "UpdateTrace", newTrace })
-          );
+          props.dispatch({
+            type: "UpdateTrace",
+            action: {
+              type: "SpawnClient",
+              id: props.systemInstance.nextClientID,
+              initialUserState: props.systemInstance.system.initialUserState,
+              initialClientState:
+                props.systemInstance.system.initialClientState,
+            },
+          });
         }}
       >
         Add Client
