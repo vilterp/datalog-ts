@@ -1,4 +1,4 @@
-import { sleep, updateList } from "../../util/util";
+import { partition, sleep, updateList } from "../../util/util";
 import {
   Action,
   AddressedTickInitiator,
@@ -105,7 +105,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
   }
 }
 
-const NETWORK_LATENCY = 500;
+const NETWORK_LATENCY = 1000;
 
 // TODO: returns traces that still need to be stepped...
 function traceReducer<St extends Json, Msg extends Json>(
@@ -154,13 +154,25 @@ function stepAndThenEffect<St extends Json, Msg extends Json>(
 ): [Trace<St>, Promise<TraceAction<St, Msg>>] {
   let curTrace = trace;
   while (curTrace.queue.length > 0) {
-    const init = curTrace.queue[0];
-    curTrace = step(curTrace, update);
-    if (!initIsSync(init)) {
-      return [curTrace, sleep(NETWORK_LATENCY).then(() => ({ type: "Step" }))];
+    // TODO: should deliver asyncs concurrently, not in serial
+    const nextSyncIdx = curTrace.queue.findIndex(initIsSync);
+    const nextIsAsync = nextSyncIdx === -1;
+    const nextIdx = nextIsAsync ? 0 : nextSyncIdx;
+    const init = curTrace.queue[nextIdx];
+    curTrace = step(curTrace, update, nextIdx);
+    if (nextIsAsync) {
+      return [curTrace, sleep(latency(init)).then(() => ({ type: "Step" }))];
     }
   }
   return [curTrace, null];
+}
+
+// TODO: base on actor types, not substrings
+function latency<St>(init: AddressedTickInitiator<St>): number {
+  if (init.from.startsWith("user") && init.to.startsWith("client")) {
+    return 0;
+  }
+  return NETWORK_LATENCY;
 }
 
 function initIsSync<St>(init: AddressedTickInitiator<St>): boolean {

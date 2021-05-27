@@ -10,7 +10,7 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { sleep } from "../../util/util";
+import { removeAtIdx, sleep } from "../../util/util";
 
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
@@ -18,24 +18,21 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 ): Trace<ActorState> {
   let curTrace = trace;
   while (curTrace.queue.length > 0) {
-    curTrace = step(curTrace, update);
+    curTrace = step(curTrace, update, 0);
   }
   return curTrace;
 }
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>
+  update: UpdateFn<ActorState, Msg>,
+  initIndex: number
 ): Trace<ActorState> {
-  if (trace.queue.length === 0) {
-    return trace;
-  }
-
-  const nextInitiator = trace.queue[0];
+  const nextInitiator = trace.queue[initIndex];
   const newTrace: Trace<ActorState> = {
     nextID: trace.nextID,
     interp: trace.interp,
-    queue: trace.queue.slice(1),
+    queue: removeAtIdx(trace.queue, initIndex),
     latestStates: {
       ...trace.latestStates,
     },

@@ -315,3 +315,16 @@ export function sleep(durationMS: number): Promise<void> {
     setTimeout(() => resolve(), durationMS);
   });
 }
+
+export function partition<T>(arr: T[], pred: (t: T) => boolean): [T[], T[]] {
+  const trues: T[] = [];
+  const falses: T[] = [];
+  for (const item of arr) {
+    if (pred(item)) {
+      trues.push(item);
+    } else {
+      falses.push(item);
+    }
+  }
+  return [trues, falses];
+}
