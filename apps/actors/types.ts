@@ -65,7 +65,7 @@ export type TraceAction<ActorState, Msg> =
       initialClientState: ActorState;
     }
   | { type: "SendUserInput"; clientID: number; input: Msg }
-  | { type: "Step" };
+  | { type: "Step"; init: AddressedTickInitiator<ActorState> };
 
 export type Trace<ActorState> = {
   nextID: number;
@@ -74,7 +74,6 @@ export type Trace<ActorState> = {
   // TODO: these two can be derived from the DB, which would be more elegant...
   //  putting them here is easier for now.
   latestStates: { [actorID: string]: ActorState };
-  queue: AddressedTickInitiator<ActorState>[];
 };
 
 export function initialTrace<ActorState>(): Trace<ActorState> {
@@ -87,7 +86,6 @@ export function initialTrace<ActorState>(): Trace<ActorState> {
   const interp2 = interp.doLoad("patterns.dl");
   return {
     latestStates: {},
-    queue: [],
     nextID: 0,
     interp: interp2,
   };

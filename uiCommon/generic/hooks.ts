@@ -28,21 +28,22 @@ export function useIntLocalStorage(
 
 // inspired by the Elm architecture
 export function useEffectfulReducer<S, A>(
-  reducer: (state: S, action: A) => [S, Promise<A>],
+  reducer: (state: S, action: A) => [S, Promise<A>[]],
   initialState: S
 ): [S, (a: A) => void] {
-  const myReducer = (prevPair: [S, Promise<A>], action: A): [S, Promise<A>] => {
+  const myReducer = (
+    prevPair: [S, Promise<A>[]],
+    action: A
+  ): [S, Promise<A>[]] => {
     const [prevState, _] = prevPair;
     return reducer(prevState, action);
   };
-  const [[state, effect], dispatch] = useReducer(myReducer, [
+  const [[state, effects], dispatch] = useReducer(myReducer, [
     initialState,
-    null,
+    [],
   ]);
   useEffect(() => {
-    if (effect) {
-      effect.then((action) => dispatch(action));
-    }
-  }, [effect]);
+    effects.map((eff) => eff.then(dispatch));
+  }, [effects]);
   return [state, dispatch];
 }

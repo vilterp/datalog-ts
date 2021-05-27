@@ -1,4 +1,4 @@
-import { partition, sleep, updateList } from "../../util/util";
+import { sleep, updateList } from "../../util/util";
 import {
   Action,
   AddressedTickInitiator,
@@ -11,13 +11,7 @@ import {
   UpdateFn,
 } from "./types";
 import { Json } from "../../util/json";
-import {
-  insertUserInput,
-  pushTickInit,
-  spawnInitiator,
-  step,
-  stepAll,
-} from "./step";
+import { insertUserInput, spawnInitiator, step, stepAll } from "./step";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
@@ -35,13 +29,13 @@ export function initialState<St, Msg>(
 export function reducer<St extends Json, Msg extends Json>(
   state: State<St, Msg>,
   action: Action<St, Msg>
-): [State<St, Msg>, Promise<Action<St, Msg>>] {
+): [State<St, Msg>, Promise<Action<St, Msg>>[]] {
   switch (action.type) {
     case "UpdateSystemInstance":
       const instance = state.systemInstances.find(
         (inst) => inst.system.id === action.instanceID
       );
-      const [newInstance, promise] = systemInstanceReducer(
+      const [newInstance, promises] = systemInstanceReducer(
         instance,
         action.action
       );
@@ -54,11 +48,13 @@ export function reducer<St extends Json, Msg extends Json>(
             (old) => newInstance
           ),
         },
-        promise?.then((action) => ({
-          type: "UpdateSystemInstance",
-          instanceID: instance.system.id,
-          action,
-        })),
+        promises.map((p) =>
+          p.then((action) => ({
+            type: "UpdateSystemInstance",
+            instanceID: instance.system.id,
+            action,
+          }))
+        ),
       ];
   }
 }
@@ -66,7 +62,7 @@ export function reducer<St extends Json, Msg extends Json>(
 function systemInstanceReducer<St extends Json, Msg extends Json>(
   systemInstance: SystemInstance<St, Msg>,
   action: SystemInstanceAction<St, Msg>
-): [SystemInstance<St, Msg>, Promise<SystemInstanceAction<St, Msg>>] {
+): [SystemInstance<St, Msg>, Promise<SystemInstanceAction<St, Msg>>[]] {
   switch (action.type) {
     case "ExitClient":
       // TODO: mark it as exited in the trace
@@ -77,10 +73,10 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
             (id) => id !== action.clientID
           ),
         },
-        null,
+        [],
       ];
     case "UpdateTrace": {
-      const [newTrace, promise] = traceReducer(
+      const [newTrace, promises] = traceReducer(
         systemInstance.trace,
         systemInstance.system.update,
         action.action
@@ -90,7 +86,9 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
           ...systemInstance,
           trace: newTrace,
         },
-        promise?.then((action) => ({ type: "UpdateTrace", action })),
+        promises.map((p) =>
+          p.then((action) => ({ type: "UpdateTrace", action }))
+        ),
       ];
     }
     case "AllocateClientID":
@@ -100,7 +98,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
           clientIDs: [...systemInstance.clientIDs, systemInstance.nextClientID],
           nextClientID: systemInstance.nextClientID + 1,
         },
-        null,
+        [],
       ];
   }
 }
@@ -112,7 +110,7 @@ function traceReducer<St extends Json, Msg extends Json>(
   trace: Trace<St>,
   update: UpdateFn<St, Msg>,
   action: TraceAction<St, Msg>
-): [Trace<St>, Promise<TraceAction<St, Msg>> | null] {
+): [Trace<St>, Promise<TraceAction<St, Msg>>[]] {
   switch (action.type) {
     case "SendUserInput": {
       const { newTrace: trace2, newMessageID } = insertUserInput(
@@ -121,7 +119,7 @@ function traceReducer<St extends Json, Msg extends Json>(
         action.clientID,
         action.input
       );
-      const trace3 = pushTickInit(trace2, {
+      const { newTrace: trace3, newInits } = step(trace2, update, {
         from: `user${action.clientID}`,
         to: `client${action.clientID}`,
         init: {
@@ -129,43 +127,34 @@ function traceReducer<St extends Json, Msg extends Json>(
           messageID: newMessageID.toString(),
         },
       });
-      return stepAndThenEffect(trace3, update);
+      return [trace3, dispatchInits(newInits)];
     }
     case "SpawnClient": {
-      const trace2 = pushTickInit(
+      const { newTrace: trace2, newInits: newInits1 } = step(
         trace,
+        update,
         spawnInitiator(`user${action.id}`, action.initialUserState)
       );
-      const trace3 = pushTickInit(
+      const { newTrace: trace3, newInits: newInits2 } = step(
         trace2,
+        update,
         spawnInitiator(`client${action.id}`, action.initialClientState)
       );
-      return stepAndThenEffect(trace3, update);
+      return [trace3, dispatchInits([...newInits1, ...newInits2])];
     }
     case "Step": {
-      return stepAndThenEffect(trace, update);
+      const { newTrace, newInits } = step(trace, update, action.init);
+      return [newTrace, dispatchInits(newInits)];
     }
   }
 }
 
-function stepAndThenEffect<St extends Json, Msg extends Json>(
-  trace: Trace<St>,
-  update: UpdateFn<St, Msg>
-): [Trace<St>, Promise<TraceAction<St, Msg>>] {
-  // TODO: this is probably wrong
-  const maxLatency = Math.max(...trace.queue.map(latency));
-  const allNewMessages: AddressedTickInitiator<St>[] = [];
-  let curTrace = trace;
-  while (curTrace.queue.length > 0) {
-    const { newTrace, newMessages } = step(curTrace, update);
-    curTrace = newTrace;
-    newMessages.forEach((msg) => allNewMessages.push(msg));
-  }
-  const anyAsync = allNewMessages.some((msg) => !initIsSync(msg));
-  return [
-    { ...curTrace, queue: allNewMessages },
-    anyAsync ? sleep(maxLatency).then(() => ({ type: "Step" })) : null,
-  ];
+function dispatchInits<St, Msg>(
+  inits: AddressedTickInitiator<St>[]
+): Promise<TraceAction<St, Msg>>[] {
+  return inits.map((init) =>
+    sleep(latency(init)).then(() => ({ type: "Step", init }))
+  );
 }
 
 // TODO: base on actor types, not substrings
@@ -177,8 +166,4 @@ function latency<St>(init: AddressedTickInitiator<St>): number {
     return 0;
   }
   return NETWORK_LATENCY;
-}
-
-function initIsSync<St>(init: AddressedTickInitiator<St>): boolean {
-  return init.init.type !== "messageReceived";
 }

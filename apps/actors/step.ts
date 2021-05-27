@@ -10,33 +10,36 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { removeAtIdx, sleep } from "../../util/util";
+import { sleep } from "../../util/util";
 
+// TODO: get rid of this
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>
+  update: UpdateFn<ActorState, Msg>,
+  inits: AddressedTickInitiator<ActorState>[]
 ): Trace<ActorState> {
+  const queue: AddressedTickInitiator<ActorState>[] = [...inits];
   let curTrace = trace;
-  while (curTrace.queue.length > 0) {
-    const { newTrace, newMessages } = step(curTrace, update);
+  while (queue.length < 0) {
+    const init = queue.shift();
+    const { newTrace, newInits } = step(curTrace, update, init);
     curTrace = newTrace;
-    newMessages.forEach((msg) => curTrace.queue.push(msg));
+    newInits.forEach((init) => queue.push(init));
   }
   return curTrace;
 }
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>
+  update: UpdateFn<ActorState, Msg>,
+  nextInitiator: AddressedTickInitiator<ActorState>
 ): {
   newTrace: Trace<ActorState>;
-  newMessages: AddressedTickInitiator<ActorState>[];
+  newInits: AddressedTickInitiator<ActorState>[];
 } {
-  const nextInitiator = trace.queue[0];
   const newTrace: Trace<ActorState> = {
     nextID: trace.nextID,
     interp: trace.interp,
-    queue: trace.queue.slice(1),
     latestStates: {
       ...trace.latestStates,
     },
@@ -116,7 +119,7 @@ export function step<ActorState extends Json, Msg extends Json>(
       );
   }
 
-  return { newTrace, newMessages };
+  return { newTrace, newInits: newMessages };
 }
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
@@ -136,8 +139,7 @@ export function spawnSync<ActorState extends Json, Msg extends Json>(
   id: string,
   initialState: ActorState
 ): Trace<ActorState> {
-  const newTrace = pushTickInit(trace, spawnInitiator(id, initialState));
-  return stepAll(newTrace, update);
+  return stepAll(trace, update, [spawnInitiator(id, initialState)]);
 }
 
 export function spawnInitiator<St>(
@@ -152,16 +154,6 @@ export function spawnInitiator<St>(
       spawningTickID: "0",
       initialState,
     },
-  };
-}
-
-export function pushTickInit<ActorState, Msg>(
-  trace: Trace<ActorState>,
-  init: AddressedTickInitiator<ActorState>
-): Trace<ActorState> {
-  return {
-    ...trace,
-    queue: [...trace.queue, init],
   };
 }
 
