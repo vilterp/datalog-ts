@@ -142,7 +142,7 @@ export function insertFact(
 function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
   const queue: Insertion[] = [
     {
-      res: { term: rec, bindings: {} },
+      res: { term: rec, bindings: {}, trace: { type: "BaseFactTrace" } },
       origin: null,
       destination: rec.relation,
     },
@@ -248,6 +248,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         {
           term: ins.res.term,
           bindings: bindings,
+          trace: {
+            type: "MatchTrace",
+            fact: ins.res,
+            match: nodeDesc.rec,
+          },
         },
       ];
     }
@@ -262,6 +267,13 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
         {
           term: rec,
           bindings: ins.res.bindings,
+          trace: {
+            type: "RefTrace",
+            innerRes: ins.res,
+            invokeLoc: [], // TODO: ???
+            mappings: {}, // TODO: ???
+            refTerm: nodeDesc.rec,
+          },
         },
       ];
     case "BinExpr":
@@ -329,6 +341,10 @@ function doJoin(
       results.push({
         term: null,
         bindings: unifyRes,
+        trace: {
+          type: "AndTrace",
+          sources: [ins.res, possibleOtherMatch],
+        },
       });
     }
   }
@@ -349,7 +365,8 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
       if (bindings === null) {
         return null;
       }
-      return { term: res.term, bindings };
+      // TODO: should this be its own trace node??
+      return { term: res.term, bindings, trace: res.trace };
     })
     .filter((x) => x !== null)
     .toArray();
