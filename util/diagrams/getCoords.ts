@@ -1,6 +1,6 @@
 import { Diag, Point } from "./types";
 import { dimensions } from "./render";
-import { Json, jsonEq } from "../../util/json";
+import { Json, jsonEq } from "../json";
 
 export function getCoords<T extends Json>(d: Diag<T>, tag: T): Point | null {
   return recurse(d, tag, { x: 0, y: 0 });

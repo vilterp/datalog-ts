@@ -14,9 +14,9 @@ import {
   Text,
   VLayout,
   ZLayout,
-} from "../diagrams/types";
-import { Diagram } from "../diagrams/render";
-import { getCoords } from "../diagrams/getCoords";
+} from "../../util/diagrams/types";
+import { Diagram } from "../../util/diagrams/render";
+import { getCoords } from "../../util/diagrams/getCoords";
 import { flatMap } from "../../util/util";
 
 export const sequence: VizTypeSpec = {
