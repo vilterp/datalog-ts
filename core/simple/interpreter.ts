@@ -1,15 +1,12 @@
 import {
   DB,
-  Program,
   Rec,
   Res,
   Statement,
   rec,
   str,
-  Term,
   Rule,
 } from "../types";
-import { language as dlLanguage } from "../parser";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
