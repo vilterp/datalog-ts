@@ -8,6 +8,7 @@ export type Diag<T> =
   // primitives
   | Line
   | Circle
+  | Rect
   | Spacer
   | Text
   | Tag<T>;
@@ -66,6 +67,26 @@ interface CircleProps {
 export function Circle<T>(p: CircleProps): Diag<T> {
   return {
     type: "CIRCLE",
+    ...p,
+  };
+}
+
+// rect
+
+interface Rect extends RectProps {
+  type: "RECT";
+}
+
+interface RectProps {
+  topLeft: Point;
+  width: number;
+  height: number;
+  fill: string;
+}
+
+export function Rect<T>(p: RectProps): Diag<T> {
+  return {
+    type: "RECT",
     ...p,
   };
 }

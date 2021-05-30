@@ -15,6 +15,7 @@ import { canTreeViz, treeFromRecords } from "../visualizations/tree";
 import { BareTerm } from "../dl/replViews";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
+import { RuleDiagram } from "../ruleDiagram";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -52,7 +53,10 @@ export function RelationTable(props: {
   return (
     <>
       {props.relation.type === "Rule" ? (
-        <RuleC highlight={props.highlight} rule={props.relation.rule} />
+        <>
+          <RuleC highlight={props.highlight} rule={props.relation.rule} />
+          <RuleDiagram rule={props.relation.rule} />
+        </>
       ) : null}
       {results.length === 0 ? (
         error === "" ? (

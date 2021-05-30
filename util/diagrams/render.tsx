@@ -74,6 +74,8 @@ export function dimensions<T>(d: Diag<T>): Dimensions {
       return { height: d.fontSize, width: 50 };
     case "TAG":
       return dimensions(d.diag);
+    case "RECT":
+      return { width: d.width, height: d.height };
   }
 }
 
@@ -146,6 +148,16 @@ function render<T>(
         >
           {d.text}
         </text>
+      );
+    case "RECT":
+      return (
+        <rect
+          fill={d.fill}
+          width={d.width}
+          height={d.height}
+          x={d.topLeft.x}
+          y={d.topLeft.y}
+        />
       );
     case "TAG":
       return (
