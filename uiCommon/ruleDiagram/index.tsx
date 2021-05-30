@@ -1,7 +1,15 @@
 import React from "react";
-import { Diagram } from "../../util/diagrams/render";
-import { InvocationLocation, Rule } from "../../core/types";
-import { AbsPos, Diag, Rect, Text, ZLayout } from "../../util/diagrams/types";
+import { Diagram, dimensions } from "../../util/diagrams/render";
+import { InvocationLocation, Rec, Rule, Term } from "../../core/types";
+import {
+  AbsPos,
+  Diag,
+  Rect,
+  Text,
+  VLayout,
+  ZLayout,
+} from "../../util/diagrams/types";
+import { mapObjToList } from "../../util/util";
 
 export function RuleDiagram(props: { rule: Rule }) {
   const diag = diagramForRule(props.rule);
@@ -25,5 +33,24 @@ function diagramForRule(rule: Rule): Diag<InvocationLocation> {
       fill: "red",
     }),
     AbsPos({ x: 50, y: 50 }, Text({ text: "hello world", fontSize: 10 })),
+    recordDiagram(rule.defn.opts[0].clauses[0] as Rec),
   ]);
+}
+
+// TODO: why does this need so many type arguments??
+function recordDiagram(rec: Rec): Diag<InvocationLocation> {
+  return ZLayout<InvocationLocation>([
+    Rect({ topLeft: { x: 0, y: 0 }, width: 50, height: 50, fill: "blue" }),
+    VLayout<InvocationLocation>([
+      Text({ text: rec.relation, fontSize: 10 }),
+      ...mapObjToList<Term, Diag<InvocationLocation>>(rec.attrs, (key, value) =>
+        leftAlign(Text({ text: key, fontSize: 10 }))
+      ),
+    ]),
+  ]);
+}
+
+function leftAlign<T>(d: Diag<T>): Diag<T> {
+  const dims = dimensions(d);
+  return AbsPos({ x: dims.width / 2, y: 0 }, d);
 }
