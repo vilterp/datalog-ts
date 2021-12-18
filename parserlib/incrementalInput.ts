@@ -1,9 +1,5 @@
 import Denque from "denque";
 import { int, rec, Statement, str } from "../types";
-import { Interpreter } from "../incremental/interpreter";
-import { parseGrammar } from "./meta";
-import { grammarToDL } from "./genDatalog";
-import { nullLoader } from "../loaders";
 
 export type InputEvt =
   | { type: "Insert"; index: number; char: string }
