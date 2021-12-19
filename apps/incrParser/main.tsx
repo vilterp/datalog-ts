@@ -2,12 +2,12 @@ import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
 import * as diff from "diff";
-import { formatOutput, Output } from "../../incremental/interpreter";
-import { IncrementalInputManager, InputEvt } from "../incrementalInput";
+import { formatOutput, Output } from "../../core/incremental/interpreter";
+import { IncrementalInputManager, InputEvt } from "./incrementalInput";
 import { Change } from "diff";
 import { flatMap } from "../../util/util";
-import { initializeInterp } from "../genDatalog";
-import { ppRule } from "../../pretty";
+import { initializeInterp } from "./genDatalog";
+import { ppRule } from "../../core/pretty";
 
 const GRAMMAR_TEXT = `main :- expr.
 expr :- (intLit | funcCall).
@@ -17,12 +17,13 @@ ident :- "foo".
 `;
 
 // TODO: put these somewhere in React-land
-const { interp, rules } = initializeInterp(GRAMMAR_TEXT);
+const { interp: initialInterp, rules } = initializeInterp(GRAMMAR_TEXT);
 const inputManager = new IncrementalInputManager();
 
 function Main() {
   const [source, setSource] = useState("");
   const [log, setLog] = useState<{ input: InputEvt; outputs: Output[] }[]>([]);
+  const [interp, setInterp] = useState(initialInterp);
 
   // TODO: useCallback, useEffect
   const handleChange = (evt: ChangeEvent<HTMLTextAreaElement>) => {
@@ -35,14 +36,17 @@ function Main() {
       inputManager.processEvent(event)
     );
     const outputs: Output[] = [];
+    let curInterp = interp;
     for (let stmt of statements) {
-      const newOutput = interp.processStmt(stmt);
+      const { newInterp, output: newOutput } = curInterp.processStmt(stmt);
       outputs.push(newOutput);
+      curInterp = newInterp;
     }
     console.log("handleChange", { changes, statements, outputs });
 
     setLog([...log, ...events.map((input) => ({ input, outputs }))]);
     setSource(evt.target.value);
+    setInterp(curInterp);
   };
 
   return (
@@ -79,7 +83,7 @@ function Main() {
                 .map(
                   (output) =>
                     formatOutput(interp.graph, output, {
-                      propagationLogMode: "repl",
+                      emissionLogMode: "repl",
                       showBindings: false,
                     }).content
                 )

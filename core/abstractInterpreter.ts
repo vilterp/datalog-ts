@@ -14,9 +14,9 @@ export abstract class AbstractInterpreter {
     this.cwd = cwd;
   }
 
-  abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
+  abstract evalStmt(stmt: Statement): [Res[], this];
 
-  insert(record: Rec): AbstractInterpreter {
+  insert(record: Rec): this {
     const [_, newInterp] = this.evalStmt({ type: "Insert", record });
     return newInterp;
   }
@@ -32,15 +32,15 @@ export abstract class AbstractInterpreter {
     return res;
   }
 
-  evalStr(str: string): [Res[], AbstractInterpreter] {
+  evalStr(str: string): [Res[], this] {
     const stmt = dlLanguage.statement.tryParse(str);
     return this.evalStmt(stmt);
   }
 
-  doLoad(path: string): AbstractInterpreter {
+  doLoad(path: string): this {
     const contents = this.loader(this.cwd + "/" + path);
     const program: Program = dlLanguage.program.tryParse(contents);
-    let out: AbstractInterpreter = this;
+    let out: this = this;
     for (const stmt of program) {
       const [_, newInterp] = out.evalStmt(stmt);
       out = newInterp;

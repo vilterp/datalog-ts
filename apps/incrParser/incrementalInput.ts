@@ -1,5 +1,5 @@
 import Denque from "denque";
-import { int, rec, Statement, str } from "../types";
+import { int, rec, Statement, str } from "../../core/types";
 
 export type InputEvt =
   | { type: "Insert"; index: number; char: string }

@@ -328,3 +328,19 @@ export function partition<T>(arr: T[], pred: (t: T) => boolean): [T[], T[]] {
   }
   return [trues, falses];
 }
+
+export function stringToArray(str: string): string[] {
+  const out = [];
+  for (let i = 0; i < str.length; i++) {
+    out.push(str[i]);
+  }
+  return out;
+}
+
+export function range(length: number): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < length; i++) {
+    out.push(i);
+  }
+  return out;
+}

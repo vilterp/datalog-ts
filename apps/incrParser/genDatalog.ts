@@ -1,12 +1,12 @@
-import * as dl from "../types";
+import * as dl from "../../core/types";
 import {
   flatMap,
   flatMapObjToList,
   pairsToObj,
   range,
   stringToArray,
-} from "../util/util";
-import * as gram from "./grammar";
+} from "../../util/util";
+import * as gram from "../parserlib/grammar";
 import {
   BinExpr,
   binExpr,
@@ -17,19 +17,20 @@ import {
   str,
   Term,
   varr,
-} from "../types";
-import { Interpreter } from "../incremental/interpreter";
-import { parseGrammar } from "./meta";
-import { nullLoader } from "../loaders";
-import { CharRule, SingleCharRule } from "./grammar";
+} from "../../core/types";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { parseGrammar } from "../parserlib/meta";
+import { nullLoader } from "../../core/loaders";
+import { SingleCharRule } from "../parserlib/grammar";
 
-export function initializeInterp(
-  grammarText: string
-): { interp: Interpreter; rules: Rule[] } {
+export function initializeInterp(grammarText: string): {
+  interp: IncrementalInterpreter;
+  rules: Rule[];
+} {
   const grammarParsed = parseGrammar(grammarText);
   const rules = grammarToDL(grammarParsed);
 
-  const interp = new Interpreter(nullLoader);
+  const interp = new IncrementalInterpreter(".", nullLoader);
   interp.evalStr(".table source");
   interp.evalStr(".table next");
 

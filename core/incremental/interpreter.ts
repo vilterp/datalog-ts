@@ -6,20 +6,12 @@ import { hasVars } from "../simple/simpleEvaluate";
 import { ppr, ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
-import {
-  datalogOut,
-  graphvizOut,
-  jsonOut,
-  plainTextOut,
-  TestOutput,
-} from "../../util/ddTest/types";
+import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
 import { AbstractInterpreter } from "../abstractInterpreter";
 
-type Output =
+export type Output =
   | { type: "EmissionLog"; log: EmissionLog }
   | { type: "Trace"; logAndGraph: EmissionLogAndGraph }
-  | { type: "Graphviz"; dot: string }
-  | { type: "Json"; json: any }
   | { type: "QueryResults"; results: Res[] }
   | { type: "Acknowledge" };
 
@@ -35,14 +27,15 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     this.graph = graph;
   }
 
-  evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
+  evalStmt(stmt: Statement): [Res[], this] {
     const { output, newInterp } = this.processStmt(stmt);
     return [output.type === "QueryResults" ? output.results : [], newInterp];
   }
 
-  processStmt(
-    stmt: Statement
-  ): { newInterp: AbstractInterpreter; output: Output } {
+  processStmt(stmt: Statement): {
+    newInterp: this;
+    output: Output;
+  } {
     const interp = this;
     const graph = interp.graph;
     switch (stmt.type) {
@@ -97,22 +90,6 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
-      // case "RuleGraph":
-      //   return {
-      //     newInterp: interp,
-      //     output: { type: "Graphviz", dot: prettyPrintGraph(toGraphviz(graph)) },
-      //   };
-      // case "DumpCaches":
-      //   return {
-      //     newInterp: interp,
-      //     output: {
-      //       type: "Json",
-      //       json: interp.graph.nodes.map((node, nodeID) => ({
-      //         nodeID,
-      //         cache: node.cache.toJSON(),
-      //       })),
-      //     },
-      //   };
       case "Comment":
         return {
           newInterp: interp,
@@ -196,10 +173,6 @@ export function formatOutput(
             .join("\n")
         );
       }
-    case "Graphviz":
-      return graphvizOut(output.dot);
-    case "Json":
-      return jsonOut(JSON.stringify(output.json, null, 2));
     case "QueryResults":
       return datalogOut(
         output.results
