@@ -6,7 +6,7 @@ import {
   range,
   stringToArray,
 } from "../../util/util";
-import * as gram from "../parserlib/grammar";
+import * as gram from "../../parserlib/grammar";
 import {
   BinExpr,
   binExpr,
@@ -19,9 +19,9 @@ import {
   varr,
 } from "../../core/types";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { parseGrammar } from "../parserlib/meta";
+import { parseGrammar } from "../../parserlib/meta";
 import { nullLoader } from "../../core/loaders";
-import { SingleCharRule } from "../parserlib/grammar";
+import { SingleCharRule } from "../../parserlib/grammar";
 
 export function initializeInterp(grammarText: string): {
   interp: IncrementalInterpreter;

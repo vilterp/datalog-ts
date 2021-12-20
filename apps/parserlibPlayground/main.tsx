@@ -1,19 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { parse, TraceTree } from "../parser";
+import { parse, TraceTree } from "../../parserlib/parser";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
-import { extractRuleTree, RuleTree } from "../ruleTree";
-import { Collapsible } from "../../../uiCommon/generic/collapsible";
+import { extractRuleTree, RuleTree } from "../../parserlib/ruleTree";
+import { Collapsible } from "../../uiCommon/generic/collapsible";
 import {
   TreeView,
   TreeCollapseState,
   emptyCollapseState,
-} from "../../../uiCommon/generic/treeView";
-import { ruleTreeToTree, renderRuleNode } from "../pretty";
-import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
-import { metaGrammar, extractGrammar } from "../meta";
-import { validateGrammar } from "../validate";
+} from "../../uiCommon/generic/treeView";
+import { ruleTreeToTree, renderRuleNode } from "../../parserlib/pretty";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { metaGrammar, extractGrammar } from "../../parserlib/meta";
+import { validateGrammar } from "../../parserlib/validate";
 
 function Main() {
   return <Playground />;
@@ -45,9 +45,11 @@ function Playground(props: {}) {
   }
   // console.log({ grammar, source, tree, ruleTree, error });
 
-  const [ruleTreeCollapseState, setRuleTreeCollapseState] = useJSONLocalStorage<
-    TreeCollapseState
-  >("rule-tree-collapse-state", emptyCollapseState);
+  const [ruleTreeCollapseState, setRuleTreeCollapseState] =
+    useJSONLocalStorage<TreeCollapseState>(
+      "rule-tree-collapse-state",
+      emptyCollapseState
+    );
 
   return (
     <>
