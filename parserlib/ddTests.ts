@@ -1,5 +1,5 @@
-import { Suite } from "../../util/testing";
-import { Result, runDDTestAtPath } from "../../util/ddTest";
+import { Suite } from "../util/testing";
+import { Result, runDDTestAtPath } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
@@ -7,7 +7,7 @@ import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar } from "./meta";
-import { plainTextOut, TestOutput } from "../../util/ddTest/types";
+import { plainTextOut, TestOutput } from "../util/ddTest/types";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {

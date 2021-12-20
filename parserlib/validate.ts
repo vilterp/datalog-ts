@@ -1,5 +1,5 @@
 import { Grammar, Rule } from "./grammar";
-import { flatten, flatMapObjToList } from "../../util/util";
+import { flatten, flatMapObjToList } from "../util/util";
 
 export function validateGrammar(g: Grammar): string[] {
   return flatMapObjToList(g, (ruleName, rule) =>

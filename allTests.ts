@@ -7,7 +7,7 @@ import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
-import { parserlibTests } from "./apps/parserlib/ddTests";
+import { parserlibTests } from "./parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
 
 // TODO: use a real arg parser
