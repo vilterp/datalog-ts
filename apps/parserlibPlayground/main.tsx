@@ -56,7 +56,7 @@ function Playground(props: {}) {
     try {
       tree = parse(grammar, "main", source);
       ruleTree = extractRuleTree(tree);
-      flattened = flatten(ruleTree);
+      flattened = flatten(ruleTree, source);
     } catch (e) {
       error = e.toString();
       console.error(e);
