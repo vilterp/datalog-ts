@@ -26,11 +26,13 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
   const id = state.nextID;
   state.nextID++;
   const props: { [name: string]: Term } = {
+    id: int(id),
     span: rec("span", {
       from: int(tree.span.from),
       to: int(tree.span.to),
     }),
     parentID: int(parentID),
+    text: str(state.source.substring(tree.span.from, tree.span.to)),
   };
   tree.children.forEach((child) => {
     const childID = recur(state, child, id);
@@ -38,8 +40,6 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
       props[child.name] = int(childID);
     }
   });
-  props.id = int(id);
-  props.text = str(state.source.substring(tree.span.from, tree.span.to));
   state.records.push(rec(tree.name, props));
   return id;
 }
