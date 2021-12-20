@@ -26,6 +26,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { uniq } from "../../util/util";
 
 function Main() {
   return <Playground />;
@@ -33,7 +34,20 @@ function Main() {
 
 const initInterp = new SimpleInterpreter(".", nullLoader);
 
+function ErrorList(props: { errors: string[] }) {
+  return props.errors.length > 0 ? (
+    <ul>
+      {uniq(props.errors).map((err) => (
+        <li key={err} style={{ color: "red", fontFamily: "monospace" }}>
+          {err}
+        </li>
+      ))}
+    </ul>
+  ) : null;
+}
+
 function Playground() {
+  // state
   const [grammarSource, setGrammarSource] = useLocalStorage(
     "parserlib-playground-grammar-source",
     `main :- "foo".`
@@ -46,13 +60,17 @@ function Playground() {
     "parserlib-playground-dl-source",
     ""
   );
+  const [ruleTreeCollapseState, setRuleTreeCollapseState] =
+    useJSONLocalStorage<TreeCollapseState>(
+      "rule-tree-collapse-state",
+      emptyCollapseState
+    );
 
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
   const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
   const grammarErrors = validateGrammar(grammar);
-  // TODO: try/catch
   const [interpWithRules, dlErrors] = (() => {
     try {
       const result =
@@ -62,37 +80,28 @@ function Playground() {
       return [initInterp, [e.toString()]];
     }
   })();
-  const allErrors = [...grammarErrors, ...grammarParseErrors, ...dlErrors];
+  const allGrammarErrors = [...grammarErrors, ...grammarParseErrors];
 
   // initialize stuff that we'll fill in later, if parse succeeds
-  let tree: TraceTree = null;
+  let traceTree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let langParseError: string = null;
   let flattened: Rec[] = [];
-  let finalInterp: AbstractInterpreter = null;
+  let finalInterp: AbstractInterpreter = interpWithRules;
 
-  if (allErrors.length === 0) {
+  if (allGrammarErrors.length === 0) {
     try {
-      tree = parse(grammar, "main", langSource);
-      ruleTree = extractRuleTree(tree);
+      traceTree = parse(grammar, "main", langSource);
+      ruleTree = extractRuleTree(traceTree);
       flattened = flatten(ruleTree, langSource);
-      let curInterp = interpWithRules;
       flattened.forEach((rec) => {
-        curInterp = curInterp.insert(rec) as SimpleInterpreter;
+        finalInterp = finalInterp.insert(rec) as SimpleInterpreter;
       });
-      finalInterp = curInterp;
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
     }
   }
-  // console.log({ grammar, source, tree, ruleTree, error });
-
-  const [ruleTreeCollapseState, setRuleTreeCollapseState] =
-    useJSONLocalStorage<TreeCollapseState>(
-      "rule-tree-collapse-state",
-      emptyCollapseState
-    );
 
   return (
     <>
@@ -109,6 +118,7 @@ function Playground() {
                 rows={10}
                 cols={50}
               />
+              <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Language Source</h3>
@@ -118,6 +128,7 @@ function Playground() {
                 rows={10}
                 cols={50}
               />
+              <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
             <td>
               <h3>Datalog Source</h3>
@@ -127,67 +138,71 @@ function Playground() {
                 rows={10}
                 cols={50}
               />
+              <ErrorList errors={dlErrors} />
             </td>
           </tr>
         </tbody>
       </table>
 
-      {allErrors.length > 0 ? (
-        <ul style={{ color: "red", fontFamily: "monospace" }}>
-          {allErrors.map((ge) => (
-            <li key={ge}>{ge}</li>
-          ))}
-        </ul>
-      ) : (
-        <>
-          {langParseError ? (
-            <pre style={{ color: "red" }}>{langParseError}</pre>
-          ) : null}
-          <Explorer interp={finalInterp} />
-          <Collapsible
-            heading="Rule Tree"
-            content={
-              <>
+      <>
+        {langParseError ? (
+          <pre style={{ color: "red" }}>{langParseError}</pre>
+        ) : null}
+        <Explorer interp={finalInterp} />
+
+        {/* TODO: memoize some of these. they take non-trival time to render */}
+
+        <Collapsible
+          heading="Rule Tree"
+          content={
+            <>
+              {ruleTree ? (
                 <TreeView
                   tree={ruleTreeToTree(ruleTree, langSource)}
                   render={(n) => renderRuleNode(n.item, langSource)}
                   collapseState={ruleTreeCollapseState}
                   setCollapseState={setRuleTreeCollapseState}
                 />
-              </>
-            }
-          />
-          <Collapsible
-            heading="Flattened"
-            content={
-              <>
-                <ul>
-                  {flattened.map((record, idx) => (
-                    <li key={idx}>
-                      <BareTerm term={record} />
-                    </li>
-                  ))}
-                </ul>
-              </>
-            }
-          />
-          <Collapsible
-            heading="Trace Tree"
-            content={
-              <>
+              ) : (
+                <em>Grammar isn't valid</em>
+              )}
+            </>
+          }
+        />
+        <Collapsible
+          heading="Flattened"
+          content={
+            <>
+              <ul>
+                {flattened.map((record, idx) => (
+                  <li key={idx}>
+                    <BareTerm term={record} />
+                  </li>
+                ))}
+              </ul>
+            </>
+          }
+        />
+        <Collapsible
+          heading="Trace Tree"
+          content={
+            <>
+              {traceTree ? (
                 <ReactJson
                   name={null}
                   enableClipboard={false}
                   displayObjectSize={false}
                   displayDataTypes={false}
-                  src={tree}
+                  src={traceTree}
                   shouldCollapse={({ name }) => name === "span"}
                 />
-              </>
-            }
-          />
-        </>
-      )}
+              ) : (
+                <em>Grammar isn't valid</em>
+              )}
+            </>
+          }
+        />
+      </>
     </>
   );
 }
