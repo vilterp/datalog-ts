@@ -39,9 +39,7 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
     }
   });
   props.id = int(id);
-  if (tree.children.length === 0) {
-    props.text = str(state.source.substring(tree.span.from, tree.span.to));
-  }
+  props.text = str(state.source.substring(tree.span.from, tree.span.to));
   state.records.push(rec(tree.name, props));
   return id;
 }
