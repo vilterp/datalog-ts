@@ -9,6 +9,7 @@ import { flatMap } from "../../util/util";
 import { initializeInterp } from "./genDatalog";
 import { ppRule } from "../../core/pretty";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { Explorer } from "../../uiCommon/explorer";
 
 const GRAMMAR_TEXT = `main :- expr.
 expr :- (intLit | funcCall).
@@ -98,6 +99,8 @@ function Main() {
           </li>
         ))}
       </ul>
+
+      <Explorer interp={interp} />
     </>
   );
 }
