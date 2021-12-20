@@ -38,7 +38,7 @@ export function parse(
 ): TraceTree {
   const rule = grammar[startRule];
   if (!rule) {
-    throw new Error(`no such rule: ${startRule}`);
+    throw new Error(`no such rule: "${startRule}"`);
   }
   const res = doParse(grammar, rule, 0, input);
   return {

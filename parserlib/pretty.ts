@@ -32,7 +32,7 @@ export function prettyPrintRule(rule: Rule): string {
     case "Ref":
       return rule.name;
     case "RepSep":
-      return `RepSep(${prettyPrintRule(rule.rep)}, ${prettyPrintRule(
+      return `repSep(${prettyPrintRule(rule.rep)}, ${prettyPrintRule(
         rule.sep
       )})`;
   }

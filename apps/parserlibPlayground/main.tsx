@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { parse, TraceTree } from "../../parserlib/parser";
+import {
+  formatParseError,
+  getErrors,
+  parse,
+  TraceTree,
+} from "../../parserlib/parser";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { extractRuleTree, RuleTree } from "../../parserlib/ruleTree";
@@ -14,6 +19,9 @@ import { ruleTreeToTree, renderRuleNode } from "../../parserlib/pretty";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
+import { Rec } from "../../core/types";
+import { BareTerm } from "../../uiCommon/dl/replViews";
+import { flatten } from "../../parserlib/flatten";
 
 function Main() {
   return <Playground />;
@@ -28,7 +36,12 @@ function Playground(props: {}) {
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
+  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
   const grammarErrors = validateGrammar(grammar);
+
+  console.log({ grammarParseErrors, grammarTraceTree });
+
+  const allErrors = [...grammarErrors, ...grammarParseErrors];
 
   const [source, setSource] = useLocalStorage(
     "parserlib-playground-source",
@@ -37,11 +50,17 @@ function Playground(props: {}) {
   let tree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let error: string = null;
-  try {
-    tree = parse(grammar, "main", source);
-    ruleTree = extractRuleTree(tree);
-  } catch (e) {
-    error = e.toString();
+  let flattened: Rec[] = [];
+
+  if (allErrors.length === 0) {
+    try {
+      tree = parse(grammar, "main", source);
+      ruleTree = extractRuleTree(tree);
+      flattened = flatten(ruleTree, source);
+    } catch (e) {
+      error = e.toString();
+      console.error(e);
+    }
   }
   // console.log({ grammar, source, tree, ruleTree, error });
 
@@ -71,19 +90,43 @@ function Playground(props: {}) {
         cols={50}
       />
 
-      {/* TODO: validate grammar */}
-
-      {grammarErrors ? (
+      {allErrors.length > 0 ? (
         <ul style={{ color: "red" }}>
-          {grammarErrors.map((ge) => (
+          {allErrors.map((ge) => (
             <li key={ge}>{ge}</li>
           ))}
         </ul>
-      ) : null}
-      {error ? (
+      ) : error ? (
         <pre style={{ color: "red" }}>{error}</pre>
       ) : (
         <>
+          <Collapsible
+            heading="Rule Tree"
+            content={
+              <>
+                <TreeView
+                  tree={ruleTreeToTree(ruleTree)}
+                  render={(n) => renderRuleNode(n.item)}
+                  collapseState={ruleTreeCollapseState}
+                  setCollapseState={setRuleTreeCollapseState}
+                />
+              </>
+            }
+          />
+          <Collapsible
+            heading="Flattened"
+            content={
+              <>
+                <ul>
+                  {flattened.map((record, idx) => (
+                    <li key={idx}>
+                      <BareTerm term={record} />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            }
+          />
           <Collapsible
             heading="Trace Tree"
             content={
@@ -95,20 +138,6 @@ function Playground(props: {}) {
                   displayDataTypes={false}
                   src={tree}
                   shouldCollapse={({ name }) => name === "span"}
-                />
-              </>
-            }
-          />
-
-          <Collapsible
-            heading="Rule Tree"
-            content={
-              <>
-                <TreeView
-                  tree={ruleTreeToTree(ruleTree)}
-                  render={(n) => renderRuleNode(n.item)}
-                  collapseState={ruleTreeCollapseState}
-                  setCollapseState={setRuleTreeCollapseState}
                 />
               </>
             }

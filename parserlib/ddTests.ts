@@ -7,7 +7,9 @@ import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar } from "./meta";
-import { plainTextOut, TestOutput } from "../util/ddTest/types";
+import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
+import { flatten } from "./flatten";
+import { ppt } from "../core/pretty";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -51,6 +53,16 @@ export function parserlibTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "flatten",
+      test() {
+        runDDTestAtPath(
+          "parserlib/testdata/flatten.dd.txt",
+          flattenTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -71,6 +83,15 @@ function metaTest(test: string[]): TestOutput[] {
     return plainTextOut(
       prettyPrintRuleTree(ruleTree) + "\n" + JSON.stringify(grammar, null, 2)
     );
+  });
+}
+
+function flattenTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const traceTree = parse(jsonGrammar, "value", input);
+    const ruleTree = extractRuleTree(traceTree);
+    const flattened = flatten(ruleTree, input);
+    return datalogOut(flattened.map(ppt).join("\n"));
   });
 }
 
