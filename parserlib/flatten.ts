@@ -8,7 +8,12 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
 }
 
 function recur(records: Rec[], tree: RuleTree, source: string): number {
-  const props: { [name: string]: Term } = {};
+  const props: { [name: string]: Term } = {
+    span: rec("span", {
+      from: int(tree.span.from),
+      to: int(tree.span.to),
+    }),
+  };
   tree.children.forEach((child) => {
     const childID = recur(records, child, source);
     props[child.name] = int(childID);
