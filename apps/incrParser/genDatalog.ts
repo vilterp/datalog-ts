@@ -31,13 +31,15 @@ export function initializeInterp(grammarText: string): {
   const rules = grammarToDL(grammarParsed);
 
   const interp = new IncrementalInterpreter(".", nullLoader);
-  interp.evalStr(".table source");
-  interp.evalStr(".table next");
+  const [_1, interp2] = interp.evalStr(".table source");
+  const [_2, interp3] = interp2.evalStr(".table next");
 
+  let curInterp = interp3;
   for (let rule of rules) {
-    interp.processStmt({ type: "Rule", rule });
+    let [_3, newInterp] = curInterp.evalStmt({ type: "Rule", rule });
+    curInterp = newInterp;
   }
-  return { interp, rules };
+  return { interp: curInterp as IncrementalInterpreter, rules };
 }
 
 // generate datalog rules that implement a parser for this grammar
