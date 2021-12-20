@@ -105,8 +105,8 @@ function Playground(props: {}) {
             content={
               <>
                 <TreeView
-                  tree={ruleTreeToTree(ruleTree)}
-                  render={(n) => renderRuleNode(n.item)}
+                  tree={ruleTreeToTree(ruleTree, source)}
+                  render={(n) => renderRuleNode(n.item, source)}
                   collapseState={ruleTreeCollapseState}
                   setCollapseState={setRuleTreeCollapseState}
                 />

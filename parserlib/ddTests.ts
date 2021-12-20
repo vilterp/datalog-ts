@@ -70,8 +70,9 @@ export function parserlibTests(writeResults: boolean): Suite {
 function parserTest(grammar: Grammar, test: string[]): TestOutput[] {
   return test.map((input) => {
     const lines = input.split("\n");
-    const tree = parse(grammar, lines[0], lines.slice(1).join("\n"));
-    return handleResults(tree);
+    const parserInput = lines.slice(1).join("\n");
+    const tree = parse(grammar, lines[0], parserInput);
+    return handleResults(tree, parserInput);
   });
 }
 
@@ -81,7 +82,9 @@ function metaTest(test: string[]): TestOutput[] {
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(input, ruleTree);
     return plainTextOut(
-      prettyPrintRuleTree(ruleTree) + "\n" + JSON.stringify(grammar, null, 2)
+      prettyPrintRuleTree(ruleTree, input) +
+        "\n" +
+        JSON.stringify(grammar, null, 2)
     );
   });
 }
@@ -102,11 +105,11 @@ function parserTestFixedStartRule(
 ): TestOutput[] {
   return test.map((input) => {
     const tree = parse(grammar, startRule, input);
-    return handleResults(tree);
+    return handleResults(tree, input);
   });
 }
 
-function handleResults(tree: TraceTree): TestOutput {
+function handleResults(tree: TraceTree, source: string): TestOutput {
   const ruleTree = extractRuleTree(tree);
-  return plainTextOut(prettyPrintRuleTree(ruleTree));
+  return plainTextOut(prettyPrintRuleTree(ruleTree, source));
 }

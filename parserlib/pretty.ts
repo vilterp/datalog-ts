@@ -38,22 +38,28 @@ export function prettyPrintRule(rule: Rule): string {
   }
 }
 
-export function ruleTreeToTree(tree: RuleTree): Tree<RuleTree> {
+export function ruleTreeToTree(tree: RuleTree, source: string): Tree<RuleTree> {
   return {
-    key: renderRuleNode(tree),
+    key: renderRuleNode(tree, source),
     item: tree, // weird that the children are in here too, but oh well
-    children: tree.children.map(ruleTreeToTree),
+    children: tree.children.map((c) => ruleTreeToTree(c, source)),
   };
 }
 
-export function renderRuleNode(n: RuleTree): string {
-  return `${n.name} ${spanToString(n.span)}`;
+export function renderRuleNode(n: RuleTree, source: string): string {
+  return `${n.name}${
+    n.children.length === 0
+      ? `: ${JSON.stringify(source.substring(n.span.from, n.span.to))}`
+      : ""
+  } ${spanToString(n.span)}`;
 }
 
 function spanToString(span: Span): string {
   return `[${span.from}-${span.to}]`;
 }
 
-export function prettyPrintRuleTree(rt: RuleTree): string {
-  return prettyPrintTree(ruleTreeToTree(rt), (n) => renderRuleNode(n.item));
+export function prettyPrintRuleTree(rt: RuleTree, source: string): string {
+  return prettyPrintTree(ruleTreeToTree(rt, source), (n) =>
+    renderRuleNode(n.item, source)
+  );
 }
