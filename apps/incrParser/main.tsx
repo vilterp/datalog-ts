@@ -8,6 +8,7 @@ import { Change } from "diff";
 import { flatMap } from "../../util/util";
 import { initializeInterp } from "./genDatalog";
 import { ppRule } from "../../core/pretty";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 const GRAMMAR_TEXT = `main :- expr.
 expr :- (intLit | funcCall).
@@ -40,7 +41,7 @@ function Main() {
     for (let stmt of statements) {
       const { newInterp, output: newOutput } = curInterp.processStmt(stmt);
       outputs.push(newOutput);
-      curInterp = newInterp;
+      curInterp = newInterp as IncrementalInterpreter;
     }
     console.log("handleChange", { changes, statements, outputs });
 

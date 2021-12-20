@@ -27,13 +27,13 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     this.graph = graph;
   }
 
-  evalStmt(stmt: Statement): [Res[], this] {
+  evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
     const { output, newInterp } = this.processStmt(stmt);
     return [output.type === "QueryResults" ? output.results : [], newInterp];
   }
 
   processStmt(stmt: Statement): {
-    newInterp: this;
+    newInterp: AbstractInterpreter;
     output: Output;
   } {
     const interp = this;

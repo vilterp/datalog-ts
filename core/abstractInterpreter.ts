@@ -1,7 +1,6 @@
 import { Program, Rec, Res, Rule, Statement } from "./types";
 import { language as dlLanguage } from "./parser";
 import { Loader } from "./loaders";
-import { initialTrace } from "../apps/actors/types";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -14,9 +13,9 @@ export abstract class AbstractInterpreter {
     this.cwd = cwd;
   }
 
-  abstract evalStmt(stmt: Statement): [Res[], this];
+  abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
 
-  insert(record: Rec): this {
+  insert(record: Rec): AbstractInterpreter {
     const [_, newInterp] = this.evalStmt({ type: "Insert", record });
     return newInterp;
   }
@@ -32,15 +31,15 @@ export abstract class AbstractInterpreter {
     return res;
   }
 
-  evalStr(str: string): [Res[], this] {
+  evalStr(str: string): [Res[], AbstractInterpreter] {
     const stmt = dlLanguage.statement.tryParse(str);
     return this.evalStmt(stmt);
   }
 
-  doLoad(path: string): this {
+  doLoad(path: string): AbstractInterpreter {
     const contents = this.loader(this.cwd + "/" + path);
     const program: Program = dlLanguage.program.tryParse(contents);
-    let out: this = this;
+    let out: AbstractInterpreter = this;
     for (const stmt of program) {
       const [_, newInterp] = out.evalStmt(stmt);
       out = newInterp;
