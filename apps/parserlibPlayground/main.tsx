@@ -71,7 +71,8 @@ function Playground() {
       flattened.forEach((rec) => {
         curInterp = curInterp.insert(rec) as SimpleInterpreter;
       });
-      finalInterp = curInterp.evalStr(dlSource)[1];
+      finalInterp =
+        dlSource.length > 0 ? curInterp.evalStr(dlSource)[1] : curInterp;
     } catch (e) {
       error = e.toString();
       console.error(e);
