@@ -19,6 +19,9 @@ import { ruleTreeToTree, renderRuleNode } from "../../parserlib/pretty";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
+import { Rec } from "../../core/types";
+import { BareTerm } from "../../uiCommon/dl/replViews";
+import { flatten } from "../../parserlib/flatten";
 
 function Main() {
   return <Playground />;
@@ -47,11 +50,13 @@ function Playground(props: {}) {
   let tree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let error: string = null;
+  let flattened: Rec[] = [];
 
   if (allErrors.length === 0) {
     try {
       tree = parse(grammar, "main", source);
       ruleTree = extractRuleTree(tree);
+      flattened = flatten(ruleTree);
     } catch (e) {
       error = e.toString();
       console.error(e);
@@ -105,6 +110,20 @@ function Playground(props: {}) {
                   collapseState={ruleTreeCollapseState}
                   setCollapseState={setRuleTreeCollapseState}
                 />
+              </>
+            }
+          />
+          <Collapsible
+            heading="Flattened"
+            content={
+              <>
+                <ul>
+                  {flattened.map((record, idx) => (
+                    <li key={idx}>
+                      <BareTerm term={record} />
+                    </li>
+                  ))}
+                </ul>
               </>
             }
           />
