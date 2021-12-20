@@ -1,4 +1,5 @@
 import { rec, int, Rec, Term, str } from "../core/types";
+import { groupBy } from "../util/util";
 import { RuleTree } from "./ruleTree";
 
 type State = {
@@ -18,6 +19,10 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
 }
 
 function recur(state: State, tree: RuleTree, parentID: number): number {
+  const childrenByName = groupBy(
+    tree.children.map((child) => [child.name, child])
+  );
+
   const id = state.nextID;
   state.nextID++;
   const props: { [name: string]: Term } = {
@@ -29,7 +34,9 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
   };
   tree.children.forEach((child) => {
     const childID = recur(state, child, id);
-    props[child.name] = int(childID);
+    if (childrenByName[child.name].length === 1) {
+      props[child.name] = int(childID);
+    }
   });
   props.id = int(id);
   if (tree.children.length === 0) {

@@ -19,5 +19,5 @@ key{id: 7, parentID: 6, span: span{from: 9, to: 14}, text: "\"bar\""}
 number{id: 9, parentID: 8, span: span{from: 15, to: 16}, text: "3"}
 value{id: 8, number: 9, parentID: 6, span: span{from: 15, to: 16}}
 keyValue{id: 6, key: 7, parentID: 1, span: span{from: 9, to: 16}, value: 8}
-object{id: 1, keyValue: 6, parentID: 0, span: span{from: 0, to: 17}}
+object{id: 1, parentID: 0, span: span{from: 0, to: 17}}
 value{id: 0, object: 1, parentID: -1, span: span{from: 0, to: 17}}
