@@ -326,3 +326,7 @@ export function prettyPrintBinExpr(term: BinExpr): string {
 export function ppBE(term: BinExpr): string {
   return pp.render(100, prettyPrintBinExpr(term));
 }
+
+export function ppRule(rule: Rule): string {
+  return pp.render(100, prettyPrintRule(rule));
+}

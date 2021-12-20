@@ -23,7 +23,25 @@ import {
   spaceAround,
   whitespace,
 } from "./stdlib";
-import { RuleTree, childByName, textForSpan } from "./ruleTree";
+import {
+  RuleTree,
+  childByName,
+  textForSpan,
+  extractRuleTree,
+} from "./ruleTree";
+import { parse, getErrors, formatParseError } from "./parser";
+
+export function parseGrammar(input: string): Grammar {
+  const traceTree = parse(metaGrammar, "grammar", input);
+  const errors = getErrors(traceTree);
+  if (errors.length > 0) {
+    throw new Error(`parse errors: ${errors.map(formatParseError).join(", ")}`);
+  }
+  const ruleTree = extractRuleTree(traceTree);
+  const grammar = extractGrammar(input, ruleTree);
+  // console.log("parseGrammar", { traceTree, errors, grammar });
+  return grammar;
+}
 
 // hardcoded grammar for parsing grammar rules
 export const metaGrammar: Grammar = {

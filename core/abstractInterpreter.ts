@@ -1,7 +1,6 @@
 import { Program, Rec, Res, Rule, Statement } from "./types";
 import { language as dlLanguage } from "./parser";
 import { Loader } from "./loaders";
-import { initialTrace } from "../apps/actors/types";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
