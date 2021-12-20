@@ -40,6 +40,6 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
       props[child.name] = int(childID);
     }
   });
-  state.records.push(rec(tree.name, props));
+  state.records.push(rec(`ast.${tree.name}`, props));
   return id;
 }
