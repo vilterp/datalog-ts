@@ -68,12 +68,10 @@ function Main() {
             <td>
               <pre>{GRAMMAR_TEXT}</pre>
             </td>
-            <td>
-              <pre>{rules.map(ppRule).join("\n")}</pre>
-            </td>
           </tr>
         </tbody>
       </table>
+      <Explorer interp={interp} />
       <h3>Log</h3>
       <ul>
         {log.map((inputOutput, idx) => (
@@ -99,8 +97,6 @@ function Main() {
           </li>
         ))}
       </ul>
-
-      <Explorer interp={interp} />
     </>
   );
 }
