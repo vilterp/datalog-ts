@@ -22,12 +22,17 @@ import { validateGrammar } from "../../parserlib/validate";
 import { Rec } from "../../core/types";
 import { BareTerm } from "../../uiCommon/dl/replViews";
 import { flatten } from "../../parserlib/flatten";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { nullLoader } from "../../core/loaders";
+import { Explorer } from "../../uiCommon/explorer";
 
 function Main() {
   return <Playground />;
 }
 
-function Playground(props: {}) {
+const initInterp = new SimpleInterpreter(".", nullLoader);
+
+function Playground() {
   const [grammarSource, setGrammarSource] = useLocalStorage(
     "parserlib-playground-grammar-source",
     `main :- "foo".`
@@ -39,8 +44,6 @@ function Playground(props: {}) {
   const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
   const grammarErrors = validateGrammar(grammar);
 
-  console.log({ grammar });
-
   const allErrors = [...grammarErrors, ...grammarParseErrors];
 
   const [source, setSource] = useLocalStorage(
@@ -51,12 +54,17 @@ function Playground(props: {}) {
   let ruleTree: RuleTree = null;
   let error: string = null;
   let flattened: Rec[] = [];
+  let curInterp: SimpleInterpreter = null;
 
   if (allErrors.length === 0) {
     try {
       tree = parse(grammar, "main", source);
       ruleTree = extractRuleTree(tree);
       flattened = flatten(ruleTree, source);
+      curInterp = initInterp;
+      flattened.forEach((rec) => {
+        curInterp = curInterp.insert(rec) as SimpleInterpreter;
+      });
     } catch (e) {
       error = e.toString();
       console.error(e);
@@ -100,6 +108,7 @@ function Playground(props: {}) {
         <pre style={{ color: "red" }}>{error}</pre>
       ) : (
         <>
+          <Explorer interp={curInterp} />
           <Collapsible
             heading="Rule Tree"
             content={
