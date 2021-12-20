@@ -20,7 +20,7 @@ function validateRule(g: Grammar, r: Rule, scope: string): string[] {
       ];
     case "Ref":
       const referenced = g[r.name];
-      return referenced ? [] : [`no such rule: ${r.name} (in ${scope})`];
+      return referenced ? [] : [`no such rule: "${r.name}" (in ${scope})`];
     default:
       return [];
   }

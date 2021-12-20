@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { parse, TraceTree } from "../../parserlib/parser";
+import {
+  formatParseError,
+  getErrors,
+  parse,
+  TraceTree,
+} from "../../parserlib/parser";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { extractRuleTree, RuleTree } from "../../parserlib/ruleTree";
@@ -28,7 +33,12 @@ function Playground(props: {}) {
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
+  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
   const grammarErrors = validateGrammar(grammar);
+
+  console.log({ grammarParseErrors, grammarTraceTree });
+
+  const allErrors = [...grammarErrors, ...grammarParseErrors];
 
   const [source, setSource] = useLocalStorage(
     "parserlib-playground-source",
@@ -37,11 +47,15 @@ function Playground(props: {}) {
   let tree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let error: string = null;
-  try {
-    tree = parse(grammar, "main", source);
-    ruleTree = extractRuleTree(tree);
-  } catch (e) {
-    error = e.toString();
+
+  if (allErrors.length === 0) {
+    try {
+      tree = parse(grammar, "main", source);
+      ruleTree = extractRuleTree(tree);
+    } catch (e) {
+      error = e.toString();
+      console.error(e);
+    }
   }
   // console.log({ grammar, source, tree, ruleTree, error });
 
@@ -71,16 +85,13 @@ function Playground(props: {}) {
         cols={50}
       />
 
-      {/* TODO: validate grammar */}
-
-      {grammarErrors ? (
+      {allErrors.length > 0 ? (
         <ul style={{ color: "red" }}>
-          {grammarErrors.map((ge) => (
+          {allErrors.map((ge) => (
             <li key={ge}>{ge}</li>
           ))}
         </ul>
-      ) : null}
-      {error ? (
+      ) : error ? (
         <pre style={{ color: "red" }}>{error}</pre>
       ) : (
         <>
