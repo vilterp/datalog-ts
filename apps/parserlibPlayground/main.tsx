@@ -85,6 +85,19 @@ function Playground(props: {}) {
       ) : (
         <>
           <Collapsible
+            heading="Rule Tree"
+            content={
+              <>
+                <TreeView
+                  tree={ruleTreeToTree(ruleTree)}
+                  render={(n) => renderRuleNode(n.item)}
+                  collapseState={ruleTreeCollapseState}
+                  setCollapseState={setRuleTreeCollapseState}
+                />
+              </>
+            }
+          />
+          <Collapsible
             heading="Trace Tree"
             content={
               <>
@@ -95,20 +108,6 @@ function Playground(props: {}) {
                   displayDataTypes={false}
                   src={tree}
                   shouldCollapse={({ name }) => name === "span"}
-                />
-              </>
-            }
-          />
-
-          <Collapsible
-            heading="Rule Tree"
-            content={
-              <>
-                <TreeView
-                  tree={ruleTreeToTree(ruleTree)}
-                  render={(n) => renderRuleNode(n.item)}
-                  collapseState={ruleTreeCollapseState}
-                  setCollapseState={setRuleTreeCollapseState}
                 />
               </>
             }

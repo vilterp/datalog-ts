@@ -7,7 +7,6 @@ import { IncrementalInputManager, InputEvt } from "./incrementalInput";
 import { Change } from "diff";
 import { flatMap } from "../../util/util";
 import { initializeInterp } from "./genDatalog";
-import { ppRule } from "../../core/pretty";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 
@@ -53,6 +52,7 @@ function Main() {
 
   return (
     <>
+      <h1>Incremental Datalog Parser</h1>
       <table>
         <tbody>
           <tr>
