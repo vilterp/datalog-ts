@@ -1,28 +1,40 @@
 import { rec, int, Rec, Term, str } from "../core/types";
 import { RuleTree } from "./ruleTree";
 
+type State = {
+  records: Rec[];
+  nextID: number;
+  source: string;
+};
+
 export function flatten(tree: RuleTree, source: string): Rec[] {
-  const records: Rec[] = [];
-  recur(records, tree, source);
-  return records;
+  const state: State = {
+    records: [],
+    nextID: 0,
+    source,
+  };
+  recur(state, tree, -1);
+  return state.records;
 }
 
-function recur(records: Rec[], tree: RuleTree, source: string): number {
+function recur(state: State, tree: RuleTree, parentID: number): number {
+  const id = state.nextID;
+  state.nextID++;
   const props: { [name: string]: Term } = {
     span: rec("span", {
       from: int(tree.span.from),
       to: int(tree.span.to),
     }),
+    parentID: int(parentID),
   };
   tree.children.forEach((child) => {
-    const childID = recur(records, child, source);
+    const childID = recur(state, child, id);
     props[child.name] = int(childID);
   });
-  const id = records.length;
   props.id = int(id);
   if (tree.children.length === 0) {
-    props.text = str(source.substring(tree.span.from, tree.span.to));
+    props.text = str(state.source.substring(tree.span.from, tree.span.to));
   }
-  records.push(rec(tree.name, props));
+  state.records.push(rec(tree.name, props));
   return id;
 }
