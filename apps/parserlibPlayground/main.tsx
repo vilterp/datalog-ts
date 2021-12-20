@@ -38,14 +38,6 @@ function Playground() {
     "parserlib-playground-grammar-source",
     `main :- "foo".`
   );
-
-  const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
-  const grammarRuleTree = extractRuleTree(grammarTraceTree);
-  const grammar = extractGrammar(grammarSource, grammarRuleTree);
-  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
-  const grammarErrors = validateGrammar(grammar);
-  const allErrors = [...grammarErrors, ...grammarParseErrors];
-
   const [langSource, setLangSource] = useLocalStorage(
     "parserlib-playground-source",
     ""
@@ -55,10 +47,27 @@ function Playground() {
     ""
   );
 
+  const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
+  const grammarRuleTree = extractRuleTree(grammarTraceTree);
+  const grammar = extractGrammar(grammarSource, grammarRuleTree);
+  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
+  const grammarErrors = validateGrammar(grammar);
+  // TODO: try/catch
+  const [interpWithRules, dlErrors] = (() => {
+    try {
+      const result =
+        dlSource.length > 0 ? initInterp.evalStr(dlSource)[1] : initInterp;
+      return [result, []];
+    } catch (e) {
+      return [initInterp, [e.toString()]];
+    }
+  })();
+  const allErrors = [...grammarErrors, ...grammarParseErrors, ...dlErrors];
+
   // initialize stuff that we'll fill in later, if parse succeeds
   let tree: TraceTree = null;
   let ruleTree: RuleTree = null;
-  let error: string = null;
+  let langParseError: string = null;
   let flattened: Rec[] = [];
   let finalInterp: AbstractInterpreter = null;
 
@@ -67,14 +76,13 @@ function Playground() {
       tree = parse(grammar, "main", langSource);
       ruleTree = extractRuleTree(tree);
       flattened = flatten(ruleTree, langSource);
-      let curInterp = initInterp;
+      let curInterp = interpWithRules;
       flattened.forEach((rec) => {
         curInterp = curInterp.insert(rec) as SimpleInterpreter;
       });
-      finalInterp =
-        dlSource.length > 0 ? curInterp.evalStr(dlSource)[1] : curInterp;
+      finalInterp = curInterp;
     } catch (e) {
-      error = e.toString();
+      langParseError = e.toString();
       console.error(e);
     }
   }
@@ -91,47 +99,50 @@ function Playground() {
       <h1>Parserlib Playground</h1>
 
       <table>
-        <tr>
-          <td>
-            <h3>Grammar Source</h3>
-            <textarea
-              value={grammarSource}
-              onChange={(evt) => setGrammarSource(evt.target.value)}
-              rows={10}
-              cols={50}
-            />
-          </td>
-          <td>
-            <h3>Language Source</h3>
-            <textarea
-              value={langSource}
-              onChange={(evt) => setLangSource(evt.target.value)}
-              rows={10}
-              cols={50}
-            />
-          </td>
-          <td>
-            <h3>Datalog Source</h3>
-            <textarea
-              value={dlSource}
-              onChange={(evt) => setDLSource(evt.target.value)}
-              rows={10}
-              cols={50}
-            />
-          </td>
-        </tr>
+        <tbody>
+          <tr>
+            <td>
+              <h3>Grammar Source</h3>
+              <textarea
+                value={grammarSource}
+                onChange={(evt) => setGrammarSource(evt.target.value)}
+                rows={10}
+                cols={50}
+              />
+            </td>
+            <td>
+              <h3>Language Source</h3>
+              <textarea
+                value={langSource}
+                onChange={(evt) => setLangSource(evt.target.value)}
+                rows={10}
+                cols={50}
+              />
+            </td>
+            <td>
+              <h3>Datalog Source</h3>
+              <textarea
+                value={dlSource}
+                onChange={(evt) => setDLSource(evt.target.value)}
+                rows={10}
+                cols={50}
+              />
+            </td>
+          </tr>
+        </tbody>
       </table>
 
       {allErrors.length > 0 ? (
-        <ul style={{ color: "red" }}>
+        <ul style={{ color: "red", fontFamily: "monospace" }}>
           {allErrors.map((ge) => (
             <li key={ge}>{ge}</li>
           ))}
         </ul>
-      ) : error ? (
-        <pre style={{ color: "red" }}>{error}</pre>
       ) : (
         <>
+          {langParseError ? (
+            <pre style={{ color: "red" }}>{langParseError}</pre>
+          ) : null}
           <Explorer interp={finalInterp} />
           <Collapsible
             heading="Rule Tree"
