@@ -117,9 +117,13 @@ function extractRule(input: string, rt: RuleTree): Rule {
     case "ref":
       return ref(textForSpan(input, rt.span));
     case "text":
-      return text(
-        textForSpan(input, { from: rt.span.from + 1, to: rt.span.to - 1 })
+      const theText = text(
+        textForSpan(input, {
+          from: rt.span.from + 1,
+          to: rt.span.to - 1,
+        }).replace(/\\n/, "\n")
       );
+      return theText;
     case "charRule":
       return charRule(extractCharRule(input, rt.children[0]));
     case "repSep":

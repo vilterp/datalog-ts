@@ -39,7 +39,7 @@ function Playground(props: {}) {
   const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
   const grammarErrors = validateGrammar(grammar);
 
-  console.log({ grammarParseErrors, grammarTraceTree });
+  console.log({ grammar });
 
   const allErrors = [...grammarErrors, ...grammarParseErrors];
 
