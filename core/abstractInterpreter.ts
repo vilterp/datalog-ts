@@ -32,8 +32,15 @@ export abstract class AbstractInterpreter {
   }
 
   evalStr(str: string): [Res[], AbstractInterpreter] {
-    const stmt = dlLanguage.statement.tryParse(str);
-    return this.evalStmt(stmt);
+    const results: Res[] = [];
+    const stmts = dlLanguage.program.tryParse(str);
+    let curInterp: AbstractInterpreter = this;
+    stmts.forEach((stmt) => {
+      const [newResults, nextInterp] = curInterp.evalStmt(stmt);
+      curInterp = nextInterp;
+      newResults.forEach((res) => results.push(res));
+    })
+    return [results, curInterp];
   }
 
   doLoad(path: string): AbstractInterpreter {

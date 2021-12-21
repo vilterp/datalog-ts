@@ -1,0 +1,5 @@
+hl.Segment{type: T, span: S, highlight: H} :-
+  hl.ident{type: T, span: S, highlight: H}.
+
+hl.ident{type: "ident", span: S, highlight: false} :-
+  ast.ident{span: S}.
