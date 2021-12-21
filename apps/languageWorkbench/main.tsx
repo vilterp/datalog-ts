@@ -65,6 +65,10 @@ function Playground() {
     "language-workbench-dl-source",
     ""
   );
+  const [themeSource, setThemeSource] = useLocalStorage(
+    "language-workbench-theme-source",
+    ""
+  );
   const [ruleTreeCollapseState, setRuleTreeCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
       "language-workbench-rule-tree-collapse-state",
@@ -153,6 +157,17 @@ function Playground() {
                 spellCheck={false}
               />
               <ErrorList errors={dlErrors} />
+            </td>
+            <td>
+              <h3>Theme Source</h3>
+              <textarea
+                value={themeSource}
+                onChange={(evt) => setThemeSource(evt.target.value)}
+                rows={10}
+                cols={50}
+                spellCheck={false}
+              />
+              <style>{themeSource}</style>
             </td>
           </tr>
         </tbody>

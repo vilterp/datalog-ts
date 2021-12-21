@@ -36,21 +36,6 @@ export function CodeEditor(props: {
           props.onCursorPosChange(evt.currentTarget.selectionStart)
         }
       />
-      {/* TODO: make this editable at runtime */}
-      <style>{`
-          .segment-ident {
-              color: purple;
-          }
-          .segment-var {
-              color: orange;
-          }
-          .segment-int {
-              color: blue;
-          }
-          .segment-string {
-              color: green;
-          }
-      `}</style>
     </>
   );
 }
