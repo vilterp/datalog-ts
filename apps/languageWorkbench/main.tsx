@@ -49,20 +49,20 @@ function ErrorList(props: { errors: string[] }) {
 function Playground() {
   // state
   const [grammarSource, setGrammarSource] = useLocalStorage(
-    "parserlib-playground-grammar-source",
+    "language-workbench-grammar-source",
     `main :- "foo".`
   );
   const [langSource, setLangSource] = useLocalStorage(
-    "parserlib-playground-source",
+    "language-workbench-source",
     ""
   );
   const [dlSource, setDLSource] = useLocalStorage(
-    "parserlib-playground-dl-source",
+    "language-workbench-dl-source",
     ""
   );
   const [ruleTreeCollapseState, setRuleTreeCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
-      "rule-tree-collapse-state",
+      "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
     );
 
