@@ -9,6 +9,7 @@ export function CodeEditor(props: {
   cursorPos: number;
   onCursorPosChange: (n: number) => void;
   interp: AbstractInterpreter;
+  validGrammar: boolean;
 }) {
   return (
     <>
@@ -22,7 +23,11 @@ export function CodeEditor(props: {
         padding={5}
         value={props.source}
         onValueChange={(source) => props.onSourceChange(source)}
-        highlight={(_) => highlight(props.interp, props.source, 0, [])}
+        highlight={(_) =>
+          props.validGrammar
+            ? highlight(props.interp, props.source, 0, [])
+            : props.source
+        }
         cursorPos={props.cursorPos}
         onKeyUp={(evt) =>
           props.onCursorPosChange(evt.currentTarget.selectionStart)
@@ -40,6 +45,9 @@ export function CodeEditor(props: {
           }
           .segment-int {
               color: blue;
+          }
+          .segment-string {
+              color: green;
           }
       `}</style>
     </>

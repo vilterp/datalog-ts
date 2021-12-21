@@ -139,6 +139,7 @@ function Playground() {
                 cursorPos={parseInt(cursorPos)}
                 onCursorPosChange={(pos) => setCursorPos(pos.toString())}
                 interp={finalInterp}
+                validGrammar={grammarErrors.length === 0}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -158,7 +159,12 @@ function Playground() {
       </table>
 
       <>
-        <Explorer interp={finalInterp} />
+        {/* we run into errors querying highlight rules if the grammar isn't valid */}
+        {grammarErrors.length === 0 ? (
+          <Explorer interp={finalInterp} />
+        ) : (
+          <em>Grammar isn't valid</em>
+        )}
 
         {/* TODO: memoize some of these. they take non-trival time to render */}
 
