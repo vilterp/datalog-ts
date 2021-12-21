@@ -105,7 +105,7 @@ function Playground() {
 
   return (
     <>
-      <h1>Parserlib Playground</h1>
+      <h1>Language Workbench</h1>
 
       <table>
         <tbody>
