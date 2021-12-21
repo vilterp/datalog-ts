@@ -1,7 +1,8 @@
-main :- record.
+main :- repSep((stmt | comment), ws).
 stmt :- [rule, "."].
+comment :- ["#", repSep(([a-z]|[A-Z]|" "), "")].
 
-rule :- [record, ws, ":-", "ws", repSep(disjunct, [ws, "|", ws])].
+rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws])].
 disjunct :- repSep(record, [ws, "&", ws]).
 
 term :- (record | int | var).

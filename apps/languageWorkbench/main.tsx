@@ -38,7 +38,7 @@ function ErrorList(props: { errors: string[] }) {
   return props.errors.length > 0 ? (
     <ul>
       {uniq(props.errors).map((err) => (
-        <li key={err} style={{ color: "red", fontFamily: "monospace" }}>
+        <li key={err} style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}>
           {err}
         </li>
       ))}
@@ -117,6 +117,7 @@ function Playground() {
                 onChange={(evt) => setGrammarSource(evt.target.value)}
                 rows={10}
                 cols={50}
+                spellCheck={false}
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
@@ -127,6 +128,7 @@ function Playground() {
                 onChange={(evt) => setLangSource(evt.target.value)}
                 rows={10}
                 cols={50}
+                spellCheck={false}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -137,6 +139,7 @@ function Playground() {
                 onChange={(evt) => setDLSource(evt.target.value)}
                 rows={10}
                 cols={50}
+                spellCheck={false}
               />
               <ErrorList errors={dlErrors} />
             </td>
