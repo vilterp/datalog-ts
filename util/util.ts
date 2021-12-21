@@ -171,6 +171,10 @@ export function pairsToObj<T>(
   return out;
 }
 
+export function objToPairs<T>(obj: { [key: string]: T }): [string, T][] {
+  return mapObjToList(obj, (k, v) => [k, v]);
+}
+
 export function clamp(n: number, range: [number, number]): number {
   const [min, max] = range;
   if (n < min) {

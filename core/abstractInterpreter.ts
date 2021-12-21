@@ -15,9 +15,24 @@ export abstract class AbstractInterpreter {
 
   abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
 
+  evalStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
+    const results: Res[] = [];
+    let interp: AbstractInterpreter = this;
+    stmts.forEach((stmt) => {
+      const [newResults, newInterp] = interp.evalStmt(stmt);
+      newResults.forEach((res) => results.push(res));
+      interp = newInterp;
+    });
+    return [results, interp];
+  }
+
   insert(record: Rec): AbstractInterpreter {
     const [_, newInterp] = this.evalStmt({ type: "Insert", record });
     return newInterp;
+  }
+
+  insertAll(records: Rec[]): AbstractInterpreter {
+    return records.reduce((interp, rec) => interp.insert(rec), this);
   }
 
   queryStr(str: string): Res[] {
@@ -32,8 +47,8 @@ export abstract class AbstractInterpreter {
   }
 
   evalStr(str: string): [Res[], AbstractInterpreter] {
-    const stmt = dlLanguage.statement.tryParse(str);
-    return this.evalStmt(stmt);
+    const stmts = dlLanguage.program.tryParse(str);
+    return this.evalStmts(stmts);
   }
 
   doLoad(path: string): AbstractInterpreter {

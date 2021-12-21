@@ -21,12 +21,14 @@ import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
 import { Rec } from "../../core/types";
 import { BareTerm } from "../../uiCommon/dl/replViews";
-import { flatten } from "../../parserlib/flatten";
+import { declareTables, flatten } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { uniq } from "../../util/util";
+import { CodeEditor } from "./codeEditor";
+import { ensureHighlightSegmentTable } from "./util";
 
 function Main() {
   return <Playground />;
@@ -38,7 +40,10 @@ function ErrorList(props: { errors: string[] }) {
   return props.errors.length > 0 ? (
     <ul>
       {uniq(props.errors).map((err) => (
-        <li key={err} style={{ color: "red", fontFamily: "monospace" }}>
+        <li
+          key={err}
+          style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}
+        >
           {err}
         </li>
       ))}
@@ -60,11 +65,20 @@ function Playground() {
     "language-workbench-dl-source",
     ""
   );
+  const [themeSource, setThemeSource] = useLocalStorage(
+    "language-workbench-theme-source",
+    ""
+  );
   const [ruleTreeCollapseState, setRuleTreeCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
       "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
     );
+  // TODO: make this not require a string as its value
+  const [cursorPos, setCursorPos] = useLocalStorage(
+    "language-workbench-cursor-pos",
+    "0"
+  );
 
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
@@ -94,9 +108,9 @@ function Playground() {
       traceTree = parse(grammar, "main", langSource);
       ruleTree = extractRuleTree(traceTree);
       flattened = flatten(ruleTree, langSource);
-      flattened.forEach((rec) => {
-        finalInterp = finalInterp.insert(rec) as SimpleInterpreter;
-      });
+      finalInterp = finalInterp.evalStmts(declareTables(grammar))[1];
+      finalInterp = finalInterp.insertAll(flattened);
+      finalInterp = ensureHighlightSegmentTable(finalInterp);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
@@ -117,16 +131,19 @@ function Playground() {
                 onChange={(evt) => setGrammarSource(evt.target.value)}
                 rows={10}
                 cols={50}
+                spellCheck={false}
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Language Source</h3>
-              <textarea
-                value={langSource}
-                onChange={(evt) => setLangSource(evt.target.value)}
-                rows={10}
-                cols={50}
+              <CodeEditor
+                source={langSource}
+                onSourceChange={setLangSource}
+                cursorPos={parseInt(cursorPos)}
+                onCursorPosChange={(pos) => setCursorPos(pos.toString())}
+                interp={finalInterp}
+                validGrammar={grammarErrors.length === 0}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -137,18 +154,32 @@ function Playground() {
                 onChange={(evt) => setDLSource(evt.target.value)}
                 rows={10}
                 cols={50}
+                spellCheck={false}
               />
               <ErrorList errors={dlErrors} />
+            </td>
+            <td>
+              <h3>Theme Source</h3>
+              <textarea
+                value={themeSource}
+                onChange={(evt) => setThemeSource(evt.target.value)}
+                rows={10}
+                cols={50}
+                spellCheck={false}
+              />
+              <style>{themeSource}</style>
             </td>
           </tr>
         </tbody>
       </table>
 
       <>
-        {langParseError ? (
-          <pre style={{ color: "red" }}>{langParseError}</pre>
-        ) : null}
-        <Explorer interp={finalInterp} />
+        {/* we run into errors querying highlight rules if the grammar isn't valid */}
+        {grammarErrors.length === 0 ? (
+          <Explorer interp={finalInterp} />
+        ) : (
+          <em>Grammar isn't valid</em>
+        )}
 
         {/* TODO: memoize some of these. they take non-trival time to render */}
 
