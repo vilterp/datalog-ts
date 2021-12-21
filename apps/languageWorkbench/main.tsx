@@ -27,6 +27,7 @@ import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { uniq } from "../../util/util";
+import { CodeEditor } from "./codeEditor";
 
 function Main() {
   return <Playground />;
@@ -38,7 +39,10 @@ function ErrorList(props: { errors: string[] }) {
   return props.errors.length > 0 ? (
     <ul>
       {uniq(props.errors).map((err) => (
-        <li key={err} style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}>
+        <li
+          key={err}
+          style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}
+        >
           {err}
         </li>
       ))}
@@ -65,6 +69,11 @@ function Playground() {
       "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
     );
+  // TODO: make this not require a string as its value
+  const [cursorPos, setCursorPos] = useLocalStorage(
+    "language-workbench-cursor-pos",
+    "0"
+  );
 
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
@@ -123,12 +132,12 @@ function Playground() {
             </td>
             <td>
               <h3>Language Source</h3>
-              <textarea
-                value={langSource}
-                onChange={(evt) => setLangSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
+              <CodeEditor
+                source={langSource}
+                onSourceChange={setLangSource}
+                cursorPos={parseInt(cursorPos)}
+                onCursorPosChange={(pos) => setCursorPos(pos.toString())}
+                interp={finalInterp}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -148,9 +157,6 @@ function Playground() {
       </table>
 
       <>
-        {langParseError ? (
-          <pre style={{ color: "red" }}>{langParseError}</pre>
-        ) : null}
         <Explorer interp={finalInterp} />
 
         {/* TODO: memoize some of these. they take non-trival time to render */}
