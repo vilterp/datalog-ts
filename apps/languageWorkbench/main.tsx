@@ -28,6 +28,7 @@ import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { uniq } from "../../util/util";
 import { CodeEditor } from "./codeEditor";
+import { ensureHighlightSegmentTable } from "./util";
 
 function Main() {
   return <Playground />;
@@ -105,6 +106,7 @@ function Playground() {
       flattened = flatten(ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(declareTables(grammar))[1];
       finalInterp = finalInterp.insertAll(flattened);
+      finalInterp = ensureHighlightSegmentTable(finalInterp);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
