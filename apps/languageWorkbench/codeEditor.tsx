@@ -17,7 +17,7 @@ export function CodeEditor(props: {
         style={{
           fontFamily: "monospace",
           width: 300,
-          height: 150,
+          height: 200,
           border: "1px solid black",
         }}
         padding={5}
