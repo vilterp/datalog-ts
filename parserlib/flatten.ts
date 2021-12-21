@@ -1,5 +1,6 @@
-import { rec, int, Rec, Term, str } from "../core/types";
+import { rec, int, Rec, Term, str, Statement } from "../core/types";
 import { groupBy } from "../util/util";
+import { Grammar } from "./grammar";
 import { RuleTree } from "./ruleTree";
 
 type State = {
@@ -7,6 +8,14 @@ type State = {
   nextID: number;
   source: string;
 };
+
+export function declareTables(grammar: Grammar): Statement[] {
+  const stmts: Statement[] = [];
+  Object.keys(grammar).forEach((ruleName) => {
+    stmts.push({ type: "TableDecl", name: `ast.${ruleName}` });
+  });
+  return stmts;
+}
 
 export function flatten(tree: RuleTree, source: string): Rec[] {
   const state: State = {

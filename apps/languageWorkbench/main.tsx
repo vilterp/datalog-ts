@@ -21,7 +21,7 @@ import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
 import { Rec } from "../../core/types";
 import { BareTerm } from "../../uiCommon/dl/replViews";
-import { flatten } from "../../parserlib/flatten";
+import { declareTables, flatten } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
@@ -103,9 +103,8 @@ function Playground() {
       traceTree = parse(grammar, "main", langSource);
       ruleTree = extractRuleTree(traceTree);
       flattened = flatten(ruleTree, langSource);
-      flattened.forEach((rec) => {
-        finalInterp = finalInterp.insert(rec) as SimpleInterpreter;
-      });
+      finalInterp = finalInterp.evalStmts(declareTables(grammar))[1];
+      finalInterp = finalInterp.insertAll(flattened);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
