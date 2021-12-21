@@ -1,12 +1,12 @@
-main :- repSep(stmt, [".", "\n"]).
-stmt :- rule.
+main :- record.
+stmt :- [rule, "."].
 
 rule :- [record, ws, ":-", "ws", repSep(disjunct, [ws, "|", ws])].
 disjunct :- repSep(record, [ws, "&", ws]).
 
 term :- (record | int | var).
-var :- [[A-Z], repSep([a-z], "")].
-record :- [ident, "{", repSep(keyValue, ","), "}"].
+var :- [[A-Z], repSep([A-Z], "")].
+record :- [ident, "{", repSep(keyValue, [",", ws]), "}"].
 keyValue :- [ident, ":", ws, term].
 int :- [num, repSep(num, "")].
 
