@@ -11,6 +11,16 @@ export function CodeEditor(props: {
   interp: AbstractInterpreter;
   validGrammar: boolean;
 }) {
+  let highlighted: React.ReactNode = <>{props.source}</>;
+  let error = null;
+  if (props.validGrammar) {
+    try {
+      highlighted = highlight(props.interp, props.source, 0, []);
+    } catch (e) {
+      error = e.toString();
+    }
+  }
+
   return (
     <>
       <Editor
@@ -23,11 +33,7 @@ export function CodeEditor(props: {
         padding={5}
         value={props.source}
         onValueChange={(source) => props.onSourceChange(source)}
-        highlight={(_) =>
-          props.validGrammar
-            ? highlight(props.interp, props.source, 0, [])
-            : props.source
-        }
+        highlight={(_) => highlighted}
         cursorPos={props.cursorPos}
         onKeyUp={(evt) =>
           props.onCursorPosChange(evt.currentTarget.selectionStart)
@@ -36,6 +42,9 @@ export function CodeEditor(props: {
           props.onCursorPosChange(evt.currentTarget.selectionStart)
         }
       />
+      {error ? (
+        <pre style={{ color: "red", fontFamily: "monospace" }}>{error}</pre>
+      ) : null}
     </>
   );
 }
