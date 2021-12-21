@@ -38,6 +38,9 @@ export function CodeEditor(props: {
           .segment-var {
               color: orange;
           }
+          .segment-int {
+              color: blue;
+          }
       `}</style>
     </>
   );
