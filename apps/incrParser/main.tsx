@@ -10,16 +10,13 @@ import { initializeInterp } from "../../parserlib/datalog/genDatalog";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
+import { Collapsible } from "../../uiCommon/generic/collapsible";
 
-const GRAMMAR_TEXT = `main :- expr.
-expr :- (intLit | funcCall).
-intLit :- [0-9].
-funcCall :- [ident, "(", expr, ")"].
-ident :- "foo".
-`;
+const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
 const emptyInterp = new IncrementalInterpreter(".", nullLoader);
-const initialInterp = initializeInterp(emptyInterp, GRAMMAR_TEXT).interp as IncrementalInterpreter;
+const initialInterp = initializeInterp(emptyInterp, GRAMMAR_TEXT)
+  .interp as IncrementalInterpreter;
 // TODO: put this somewhere in React-land?
 const inputManager = new IncrementalInputManager();
 
@@ -74,31 +71,35 @@ function Main() {
         </tbody>
       </table>
       <Explorer interp={interp} />
-      <h3>Log</h3>
-      <ul>
-        {log.map((inputOutput, idx) => (
-          <li key={idx}>
-            {JSON.stringify(inputOutput.input)}
-            <br />
-            <ul>
-              {inputOutput.outputs
-                .map(
-                  (output) =>
-                    formatOutput(interp.graph, output, {
-                      emissionLogMode: "repl",
-                      showBindings: false,
-                    }).content
-                )
-                .filter((output) => output.length > 0)
-                .map((output, idx2) => (
-                  <li key={idx2}>
-                    <pre>{output}</pre>
-                  </li>
-                ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      <Collapsible
+        heading="Log"
+        content={
+          <ul>
+            {log.map((inputOutput, idx) => (
+              <li key={idx}>
+                {JSON.stringify(inputOutput.input)}
+                <br />
+                <ul>
+                  {inputOutput.outputs
+                    .map(
+                      (output) =>
+                        formatOutput(interp.graph, output, {
+                          emissionLogMode: "repl",
+                          showBindings: false,
+                        }).content
+                    )
+                    .filter((output) => output.length > 0)
+                    .map((output, idx2) => (
+                      <li key={idx2}>
+                        <pre>{output}</pre>
+                      </li>
+                    ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        }
+      />
     </>
   );
 }
