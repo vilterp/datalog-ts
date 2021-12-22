@@ -94,7 +94,12 @@ function Playground() {
       return [initInterp, [e.toString()]];
     }
   })();
-  const allGrammarErrors = [...grammarErrors, ...grammarParseErrors];
+  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
+  const allGrammarErrors = [
+    ...grammarErrors,
+    ...grammarParseErrors,
+    ...noMainError,
+  ];
 
   // initialize stuff that we'll fill in later, if parse succeeds
   let traceTree: TraceTree = null;
