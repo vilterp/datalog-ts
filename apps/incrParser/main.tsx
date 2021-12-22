@@ -12,7 +12,12 @@ import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
 import { Collapsible } from "../../uiCommon/generic/collapsible";
 
-const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
+const GRAMMAR_TEXT = `main :- repSep(block,ws).
+block :- [label, ":", ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
+label :- ident.
+ident :- [[a-z], repSep([a-z], "")].
+instr :- ident.
+ws :- repSep((" "|"\n"), "").`;
 
 const emptyInterp = new IncrementalInterpreter(".", nullLoader);
 const initialInterp = initializeInterp(emptyInterp, GRAMMAR_TEXT)

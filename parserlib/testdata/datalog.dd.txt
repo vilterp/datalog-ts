@@ -40,3 +40,87 @@ main_sep{span: span{from: P1, to: P3}} :-
   source{char: "r", id: P3} &
   next{left: P1, right: P2} &
   next{left: P2, right: P3}
+
+main :- repSep(block,ws).
+block :- [label, ":", ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
+label :- ident.
+ident :- [[a-z], repSep([a-z], "")].
+instr :- ident.
+ws :- repSep((" "|"\n"), "").
+----
+application/datalog
+block{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, seq_3: span{from: P7, to: P8}, seq_4: span{from: P9, to: P10}, seq_5: span{from: P11, to: P12}, seq_6: span{from: P13, to: P14}, seq_7: span{from: P15, to: P16}, span: span{from: P1, to: P16}} :- 
+  block_seq_0{span: span{from: P1, to: P2}} &
+  block_seq_1{span: span{from: P3, to: P4}} &
+  block_seq_2{span: span{from: P5, to: P6}} &
+  block_seq_3{span: span{from: P7, to: P8}} &
+  block_seq_4{span: span{from: P9, to: P10}} &
+  block_seq_5{span: span{from: P11, to: P12}} &
+  block_seq_6{span: span{from: P13, to: P14}} &
+  block_seq_7{span: span{from: P15, to: P16}} &
+  next{left: P2, right: P3} &
+  next{left: P4, right: P5} &
+  next{left: P6, right: P7} &
+  next{left: P8, right: P9} &
+  next{left: P10, right: P11} &
+  next{left: P12, right: P13} &
+  next{left: P14, right: P15}
+block_seq_0{span: span{from: P1, to: P2}} :- label{span: span{from: P1, to: P2}}
+block_seq_1{span: span{from: P1, to: P1}} :- source{char: ":", id: P1}
+block_seq_2{span: span{from: P1, to: P2}} :- ws{span: span{from: P1, to: P2}}
+block_seq_3{span: span{from: P1, to: P1}} :- source{char: "{", id: P1}
+block_seq_4{span: span{from: P1, to: P2}} :- ws{span: span{from: P1, to: P2}}
+block_seq_5{span: span{from: P1, to: P6}} :- 
+  block_seq_5_rep{span: span{from: P1, to: P6}} |
+  block_seq_5_rep{span: span{from: P1, to: P2}} &
+  next{left: P2, right: P3} &
+  block_seq_5_sep{span: span{from: P3, to: P4}} &
+  next{left: P4, right: P5} &
+  block_seq_5{span: span{from: P5, to: P6}}
+block_seq_5_rep{span: span{from: P1, to: P2}} :- instr{span: span{from: P1, to: P2}}
+block_seq_5_sep{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{from: P1, to: P4}} :- 
+  block_seq_5_sep_seq_0{span: span{from: P1, to: P2}} &
+  block_seq_5_sep_seq_1{span: span{from: P3, to: P4}} &
+  next{left: P2, right: P3}
+block_seq_5_sep_seq_0{span: span{from: P1, to: P1}} :- source{char: ";", id: P1}
+block_seq_5_sep_seq_1{span: span{from: P1, to: P2}} :- ws{span: span{from: P1, to: P2}}
+block_seq_6{span: span{from: P1, to: P2}} :- ws{span: span{from: P1, to: P2}}
+block_seq_7{span: span{from: P1, to: P1}} :- source{char: "}", id: P1}
+ident{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{from: P1, to: P4}} :- 
+  ident_seq_0{span: span{from: P1, to: P2}} &
+  ident_seq_1{span: span{from: P3, to: P4}} &
+  next{left: P2, right: P3}
+ident_seq_0{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "a" <= C & C <= "z"
+ident_seq_1{span: span{from: P1, to: P6}} :- 
+  ident_seq_1_rep{span: span{from: P1, to: P6}} |
+  ident_seq_1_rep{span: span{from: P1, to: P2}} &
+  next{left: P2, right: P3} &
+  ident_seq_1_sep{span: span{from: P3, to: P4}} &
+  next{left: P4, right: P5} &
+  ident_seq_1{span: span{from: P5, to: P6}}
+ident_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "a" <= C & C <= "z"
+ident_seq_1_sep{span: span{from: P1, to: P0}} :- 
+instr{span: span{from: P1, to: P2}} :- ident{span: span{from: P1, to: P2}}
+label{span: span{from: P1, to: P2}} :- ident{span: span{from: P1, to: P2}}
+main{span: span{from: P1, to: P6}} :- 
+  main_rep{span: span{from: P1, to: P6}} |
+  main_rep{span: span{from: P1, to: P2}} &
+  next{left: P2, right: P3} &
+  main_sep{span: span{from: P3, to: P4}} &
+  next{left: P4, right: P5} &
+  main{span: span{from: P5, to: P6}}
+main_rep{span: span{from: P1, to: P2}} :- block{span: span{from: P1, to: P2}}
+main_sep{span: span{from: P1, to: P2}} :- ws{span: span{from: P1, to: P2}}
+ws{span: span{from: P1, to: P6}} :- 
+  ws_rep{span: span{from: P1, to: P6}} |
+  ws_rep{span: span{from: P1, to: P2}} &
+  next{left: P2, right: P3} &
+  ws_sep{span: span{from: P3, to: P4}} &
+  next{left: P4, right: P5} &
+  ws{span: span{from: P5, to: P6}}
+ws_rep{span: span{from: P1, to: P2}} :- 
+  ws_rep_choice_0{span: span{from: P1, to: P2}} |
+  ws_rep_choice_1{span: span{from: P1, to: P2}}
+ws_rep_choice_0{span: span{from: P1, to: P1}} :- source{char: " ", id: P1}
+ws_rep_choice_1{span: span{from: P1, to: P1}} :- source{char: "\n", id: P1}
+ws_sep{span: span{from: P1, to: P0}} :- 
