@@ -11,6 +11,7 @@ import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
 import { Collapsible } from "../../uiCommon/generic/collapsible";
+import useLocalStorage from "react-use-localstorage";
 
 const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
@@ -21,7 +22,14 @@ const initialInterp = initializeInterp(emptyInterp, GRAMMAR_TEXT)
 const inputManager = new IncrementalInputManager();
 
 function Main() {
-  const [source, setSource] = useState("");
+  const [source, setSource] = useLocalStorage(
+    "incr-parser-playground-source",
+    ""
+  );
+  const [gramSource, setGramSource] = useLocalStorage(
+    "incr-parser-playground-gram-source",
+    ""
+  );
   const [log, setLog] = useState<{ input: InputEvt; outputs: Output[] }[]>([]);
   const [interp, setInterp] = useState(initialInterp);
 
@@ -65,7 +73,12 @@ function Main() {
               />
             </td>
             <td>
-              <pre>{GRAMMAR_TEXT}</pre>
+              <textarea
+                rows={10}
+                cols={80}
+                onChange={(evt) => setGramSource(evt.target.value)}
+                value={gramSource}
+              />
             </td>
           </tr>
         </tbody>
