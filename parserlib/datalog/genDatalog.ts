@@ -6,7 +6,7 @@ import {
   range,
   stringToArray,
 } from "../../util/util";
-import * as gram from "../../parserlib/grammar";
+import * as gram from "../grammar";
 import {
   BinExpr,
   binExpr,
@@ -18,28 +18,27 @@ import {
   Term,
   varr,
 } from "../../core/types";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { parseGrammar } from "../../parserlib/meta";
-import { nullLoader } from "../../core/loaders";
-import { SingleCharRule } from "../../parserlib/grammar";
+import { parseGrammar } from "../meta";
+import { SingleCharRule } from "../grammar";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
-export function initializeInterp(grammarText: string): {
-  interp: IncrementalInterpreter;
+export function initializeInterp(
+  interp: AbstractInterpreter,
+  grammarText: string
+): {
+  interp: AbstractInterpreter;
   rules: Rule[];
 } {
   const grammarParsed = parseGrammar(grammarText);
   const rules = grammarToDL(grammarParsed);
 
-  const interp = new IncrementalInterpreter(".", nullLoader);
   const [_1, interp2] = interp.evalStr(".table source");
   const [_2, interp3] = interp2.evalStr(".table next");
 
-  let curInterp = interp3;
-  for (let rule of rules) {
-    let [_3, newInterp] = curInterp.evalStmt({ type: "Rule", rule });
-    curInterp = newInterp;
-  }
-  return { interp: curInterp as IncrementalInterpreter, rules };
+  const [_3, interp4] = interp3.evalStmts(
+    rules.map((rule) => ({ type: "Rule", rule }))
+  );
+  return { interp: interp4, rules };
 }
 
 // generate datalog rules that implement a parser for this grammar
@@ -49,6 +48,8 @@ export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
   });
 }
 
+// TODO: write these as strings, or at least make helper functions.
+//   building the raw AST is so verbose.
 function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
   switch (rule.type) {
     case "Text":
@@ -211,7 +212,50 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         },
       ];
     case "RepSep":
-      throw new Error("todo");
+      return [
+        {
+          head: rec(name, {
+            span: rec("span", { from: varr("P1"), to: varr("P6") }),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec(`${name}_rep`, {
+                    span: rec("span", { from: varr("P1"), to: varr("P6") }),
+                  }),
+                ],
+              },
+              {
+                type: "And",
+                clauses: [
+                  rec(`${name}_rep`, {
+                    span: rec("span", { from: varr("P1"), to: varr("P2") }),
+                  }),
+                  rec("next", {
+                    left: varr(`P2`),
+                    right: varr(`P3`),
+                  }),
+                  rec(`${name}_sep`, {
+                    span: rec("span", { from: varr("P3"), to: varr("P4") }),
+                  }),
+                  rec("next", {
+                    left: varr(`P4`),
+                    right: varr(`P5`),
+                  }),
+                  rec(name, {
+                    span: rec("span", { from: varr("P5"), to: varr("P6") }),
+                  }),
+                ],
+              },
+            ],
+          },
+        },
+        ...ruleToDL(`${name}_rep`, rule.rep),
+        ...ruleToDL(`${name}_sep`, rule.sep),
+      ];
     case "Succeed":
       throw new Error("todo");
   }
