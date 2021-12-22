@@ -48,6 +48,8 @@ export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
   });
 }
 
+// TODO: write these as strings, or at least make helper functions.
+//   building the raw AST is so verbose.
 function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
   switch (rule.type) {
     case "Text":
@@ -210,7 +212,80 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         },
       ];
     case "RepSep":
-      throw new Error("todo");
+      return [
+        {
+          head: rec(name, {
+            span: rec("span", { from: varr("P1"), to: varr("P4") }),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec(`${name}_rep`, {
+                    span: rec("span", { from: varr("P1"), to: varr("P4") }),
+                  }),
+                ],
+              },
+              {
+                type: "And",
+                clauses: [
+                  rec(`${name}_rep`, {
+                    span: rec("span", { from: varr("P1"), to: varr("P2") }),
+                  }),
+                  rec(`${name}_sep`, {
+                    span: rec("span", { from: varr("P2"), to: varr("P3") }),
+                  }),
+                  rec(name, {
+                    span: rec("span", { from: varr("P3"), to: varr("P4") }),
+                  }),
+                ],
+              },
+            ],
+          },
+        },
+        // generate for rep
+        {
+          head: rec(`${name}_rep`, {
+            span: rec("span", { from: varr("P1"), to: varr("P2") }),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec("source", {
+                    id: varr("P1"),
+                    char: varr("C"),
+                  }),
+                ],
+              },
+            ],
+          },
+        },
+        // generate for sep
+        {
+          head: rec(`${name}_sep`, {
+            span: rec("span", { from: varr("P1"), to: varr("P2") }),
+          }),
+          defn: {
+            type: "Or",
+            opts: [
+              {
+                type: "And",
+                clauses: [
+                  rec("source", {
+                    id: varr("P1"),
+                    char: varr("C"),
+                  }),
+                ],
+              },
+            ],
+          },
+        },
+      ];
     case "Succeed":
       throw new Error("todo");
   }

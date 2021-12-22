@@ -9,7 +9,6 @@ import { flatMap } from "../../util/util";
 import { initializeInterp } from "../../parserlib/datalog/genDatalog";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 
 const GRAMMAR_TEXT = `main :- expr.
