@@ -215,7 +215,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         {
           head: rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P4") }),
+            span: rec("span", { from: varr("P1"), to: varr("P6") }),
           }),
           defn: {
             type: "Or",
@@ -224,7 +224,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                 type: "And",
                 clauses: [
                   rec(`${name}_rep`, {
-                    span: rec("span", { from: varr("P1"), to: varr("P4") }),
+                    span: rec("span", { from: varr("P1"), to: varr("P6") }),
                   }),
                 ],
               },
@@ -234,11 +234,19 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                   rec(`${name}_rep`, {
                     span: rec("span", { from: varr("P1"), to: varr("P2") }),
                   }),
+                  rec("next", {
+                    left: varr(`P2`),
+                    right: varr(`P3`),
+                  }),
                   rec(`${name}_sep`, {
-                    span: rec("span", { from: varr("P2"), to: varr("P3") }),
+                    span: rec("span", { from: varr("P3"), to: varr("P4") }),
+                  }),
+                  rec("next", {
+                    left: varr(`P4`),
+                    right: varr(`P5`),
                   }),
                   rec(name, {
-                    span: rec("span", { from: varr("P3"), to: varr("P4") }),
+                    span: rec("span", { from: varr("P5"), to: varr("P6") }),
                   }),
                 ],
               },
