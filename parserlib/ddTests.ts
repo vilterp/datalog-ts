@@ -1,15 +1,16 @@
 import { Suite } from "../util/testing";
-import { Result, runDDTestAtPath } from "../util/ddTest";
+import { runDDTestAtPath } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
 import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
-import { metaGrammar, extractGrammar } from "./meta";
+import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { flatten } from "./flatten";
-import { ppt } from "../core/pretty";
+import { ppRule, ppt } from "../core/pretty";
+import { grammarToDL } from "./datalog/genDatalog";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -63,6 +64,16 @@ export function parserlibTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "datalog",
+      test() {
+        runDDTestAtPath(
+          "parserlib/testdata/datalog.dd.txt",
+          datalogTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -95,6 +106,14 @@ function flattenTest(test: string[]): TestOutput[] {
     const ruleTree = extractRuleTree(traceTree);
     const flattened = flatten(ruleTree, input);
     return datalogOut(flattened.map(ppt).join("\n"));
+  });
+}
+
+function datalogTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const grammarParsed = parseGrammar(input);
+    const rules = grammarToDL(grammarParsed);
+    return datalogOut(rules.map(ppRule).join("\n"));
   });
 }
 

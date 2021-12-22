@@ -6,7 +6,7 @@ import {
   range,
   stringToArray,
 } from "../../util/util";
-import * as gram from "../../parserlib/grammar";
+import * as gram from "../grammar";
 import {
   BinExpr,
   binExpr,
@@ -18,28 +18,27 @@ import {
   Term,
   varr,
 } from "../../core/types";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { parseGrammar } from "../../parserlib/meta";
-import { nullLoader } from "../../core/loaders";
-import { SingleCharRule } from "../../parserlib/grammar";
+import { parseGrammar } from "../meta";
+import { SingleCharRule } from "../grammar";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
-export function initializeInterp(grammarText: string): {
-  interp: IncrementalInterpreter;
+export function initializeInterp(
+  interp: AbstractInterpreter,
+  grammarText: string
+): {
+  interp: AbstractInterpreter;
   rules: Rule[];
 } {
   const grammarParsed = parseGrammar(grammarText);
   const rules = grammarToDL(grammarParsed);
 
-  const interp = new IncrementalInterpreter(".", nullLoader);
   const [_1, interp2] = interp.evalStr(".table source");
   const [_2, interp3] = interp2.evalStr(".table next");
 
-  let curInterp = interp3;
-  for (let rule of rules) {
-    let [_3, newInterp] = curInterp.evalStmt({ type: "Rule", rule });
-    curInterp = newInterp;
-  }
-  return { interp: curInterp as IncrementalInterpreter, rules };
+  const [_3, interp4] = interp3.evalStmts(
+    rules.map((rule) => ({ type: "Rule", rule }))
+  );
+  return { interp: interp4, rules };
 }
 
 // generate datalog rules that implement a parser for this grammar
