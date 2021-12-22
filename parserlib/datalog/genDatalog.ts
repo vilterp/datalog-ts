@@ -253,46 +253,8 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
             ],
           },
         },
-        // generate for rep
-        {
-          head: rec(`${name}_rep`, {
-            span: rec("span", { from: varr("P1"), to: varr("P2") }),
-          }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec("source", {
-                    id: varr("P1"),
-                    char: varr("C"),
-                  }),
-                ],
-              },
-            ],
-          },
-        },
-        // generate for sep
-        {
-          head: rec(`${name}_sep`, {
-            span: rec("span", { from: varr("P1"), to: varr("P2") }),
-          }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec("source", {
-                    id: varr("P1"),
-                    char: varr("C"),
-                  }),
-                ],
-              },
-            ],
-          },
-        },
+        ...ruleToDL(`${name}_rep`, rule.rep),
+        ...ruleToDL(`${name}_sep`, rule.sep),
       ];
     case "Succeed":
       throw new Error("todo");
