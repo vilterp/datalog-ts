@@ -13,33 +13,13 @@ import {
   int,
   Rec,
   rec,
-  Rule,
   str,
   Term,
   varr,
+  or,
+  and,
 } from "../../core/types";
-import { parseGrammar } from "../meta";
 import { SingleCharRule } from "../grammar";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-
-export function initializeInterp(
-  interp: AbstractInterpreter,
-  grammarText: string
-): {
-  interp: AbstractInterpreter;
-  rules: Rule[];
-} {
-  const grammarParsed = parseGrammar(grammarText);
-  const rules = grammarToDL(grammarParsed);
-
-  const [_1, interp2] = interp.evalStr(".table source");
-  const [_2, interp3] = interp2.evalStr(".table next");
-
-  const [_3, interp4] = interp3.evalStmts(
-    rules.map((rule) => ({ type: "Rule", rule }))
-  );
-  return { interp: interp4, rules };
-}
 
 // generate datalog rules that implement a parser for this grammar
 export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
@@ -53,62 +33,57 @@ export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
 function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
   switch (rule.type) {
     case "Text":
+      if (rule.value === "") {
+        return [succeedRule(name)];
+      }
       return [
-        {
-          head: rec(name, {
+        dl.rule(
+          rec(name, {
             span: rec("span", {
               from: varr("P1"),
               to: varr(`P${rule.value.length}`),
             }),
           }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  ...stringToArray(rule.value).map((char, idx) =>
-                    rec("source", {
-                      id: varr(`P${idx + 1}`),
-                      char: str(char),
-                    })
-                  ),
-                  ...range(rule.value.length - 1).map((idx) =>
-                    rec("next", {
-                      left: varr(`P${idx + 1}`),
-                      right: varr(`P${idx + 2}`),
-                    })
-                  ),
-                ],
-              },
-            ],
-          },
-        },
+          or([
+            and([
+              ...stringToArray(rule.value).map((char, idx) =>
+                rec("source", {
+                  id: varr(`P${idx + 1}`),
+                  char: str(char),
+                })
+              ),
+              ...range(rule.value.length - 1).map((idx) =>
+                rec("next", {
+                  left: varr(`P${idx + 1}`),
+                  right: varr(`P${idx + 2}`),
+                })
+              ),
+            ]),
+          ])
+        ),
       ];
     case "Choice":
       return [
-        {
-          head: rec(name, {
+        dl.rule(
+          rec(name, {
             span: rec("span", {
               from: varr("P1"),
               to: varr(`P2`),
             }),
           }),
-          defn: {
-            type: "Or",
-            opts: rule.choices.map((choice, idx) => ({
-              type: "And",
-              clauses: [
+          or(
+            rule.choices.map((choice, idx) =>
+              and([
                 rec(choiceName(name, idx), {
                   span: rec("span", {
                     from: varr("P1"),
                     to: varr("P2"),
                   }),
                 }),
-              ],
-            })),
-          },
-        },
+              ])
+            )
+          )
+        ),
         ...flatMap(rule.choices, (subRule, idx) =>
           ruleToDL(choiceName(name, idx), subRule)
         ),
@@ -124,39 +99,33 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         }))
       );
       return [
-        {
-          head: rec(name, {
+        dl.rule(
+          rec(name, {
             span: rec("span", {
               from: varr("P1"),
               to: varr(`P${rule.items.length * 2}`),
             }),
             ...headVars,
           }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  ...rule.items.map((char, idx) =>
-                    rec(seqItemName(name, idx), {
-                      span: rec("span", {
-                        from: varr(`P${idx * 2 + 1}`),
-                        to: varr(`P${idx * 2 + 2}`),
-                      }),
-                    })
-                  ),
-                  ...range(rule.items.length - 1).map((idx) =>
-                    rec("next", {
-                      left: varr(`P${idx * 2 + 2}`),
-                      right: varr(`P${idx * 2 + 3}`),
-                    })
-                  ),
-                ],
-              },
-            ],
-          },
-        },
+          or([
+            and([
+              ...rule.items.map((char, idx) =>
+                rec(seqItemName(name, idx), {
+                  span: rec("span", {
+                    from: varr(`P${idx * 2 + 1}`),
+                    to: varr(`P${idx * 2 + 2}`),
+                  }),
+                })
+              ),
+              ...range(rule.items.length - 1).map((idx) =>
+                rec("next", {
+                  left: varr(`P${idx * 2 + 2}`),
+                  right: varr(`P${idx * 2 + 3}`),
+                })
+              ),
+            ]),
+          ])
+        ),
         ...flatMap(rule.items, (subRule, idx) =>
           ruleToDL(seqItemName(name, idx), subRule)
         ),
@@ -166,99 +135,95 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       // TODO: this one seems a bit unnecessary...
       //   these should be collapsed out somehow
       return [
-        {
-          head: rec(name, {
+        dl.rule(
+          rec(name, {
             span: rec("span", {
               from: varr("P1"),
               to: varr(`P2`),
             }),
           }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec(rule.name, {
-                    span: rec("span", { from: varr("P1"), to: varr("P2") }),
-                  }),
-                ],
-              },
-            ],
-          },
-        },
+          or([
+            and([
+              rec(rule.name, {
+                span: rec("span", { from: varr("P1"), to: varr("P2") }),
+              }),
+            ]),
+          ])
+        ),
       ];
     case "Char":
       return [
-        {
-          head: rec(name, {
+        dl.rule(
+          rec(name, {
             span: rec("span", { from: varr("P1"), to: varr("P1") }),
           }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec("source", {
-                    id: varr("P1"),
-                    char: varr("C"),
-                  }),
-                  ...exprsForCharRule(rule.rule),
-                ],
-              },
-            ],
-          },
-        },
+          or([
+            and([
+              rec("source", {
+                id: varr("P1"),
+                char: varr("C"),
+              }),
+              ...exprsForCharRule(rule.rule),
+            ]),
+          ])
+        ),
       ];
     case "RepSep":
       return [
-        {
-          head: rec(name, {
+        dl.rule(
+          rec(name, {
             span: rec("span", { from: varr("P1"), to: varr("P6") }),
           }),
-          defn: {
-            type: "Or",
-            opts: [
-              {
-                type: "And",
-                clauses: [
-                  rec(`${name}_rep`, {
-                    span: rec("span", { from: varr("P1"), to: varr("P6") }),
-                  }),
-                ],
-              },
-              {
-                type: "And",
-                clauses: [
-                  rec(`${name}_rep`, {
-                    span: rec("span", { from: varr("P1"), to: varr("P2") }),
-                  }),
-                  rec("next", {
-                    left: varr(`P2`),
-                    right: varr(`P3`),
-                  }),
-                  rec(`${name}_sep`, {
-                    span: rec("span", { from: varr("P3"), to: varr("P4") }),
-                  }),
-                  rec("next", {
-                    left: varr(`P4`),
-                    right: varr(`P5`),
-                  }),
-                  rec(name, {
-                    span: rec("span", { from: varr("P5"), to: varr("P6") }),
-                  }),
-                ],
-              },
-            ],
-          },
-        },
+          or([
+            and([
+              rec(`${name}_rep`, {
+                span: rec("span", { from: varr("P1"), to: varr("P6") }),
+              }),
+            ]),
+            and([
+              rec(`${name}_rep`, {
+                span: rec("span", { from: varr("P1"), to: varr("P2") }),
+              }),
+              rec("next", {
+                left: varr(`P2`),
+                right: varr(`P3`),
+              }),
+              rec(`${name}_sep`, {
+                span: rec("span", { from: varr("P3"), to: varr("P4") }),
+              }),
+              rec("next", {
+                left: varr(`P4`),
+                right: varr(`P5`),
+              }),
+              rec(name, {
+                span: rec("span", { from: varr("P5"), to: varr("P6") }),
+              }),
+            ]),
+          ])
+        ),
         ...ruleToDL(`${name}_rep`, rule.rep),
+        // TODO: handle case where this is empty
         ...ruleToDL(`${name}_sep`, rule.sep),
       ];
-    case "Succeed":
-      throw new Error("todo");
   }
+}
+
+function succeedRule(name: string): dl.Rule {
+  return dl.rule(
+    rec(name, {
+      span: rec("span", { from: varr("P1"), to: varr("P2") }),
+    }),
+    or([
+      and([
+        {
+          type: "BinExpr",
+          left: varr("P1"),
+          op: "==",
+          right: varr("P2"),
+        },
+      ]),
+    ])
+  );
 }
 
 function exprsForCharRule(charRule: SingleCharRule): BinExpr[] {

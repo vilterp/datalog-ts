@@ -107,6 +107,20 @@ export type Array = { type: "Array"; items: Term[] };
 // TODO: moar, argument types, etc.
 export type Operator = "==" | "!=" | ">=" | "<=";
 
+// rule helpers
+
+export function rule(head: Rec, defn: OrExpr): Rule {
+  return { head, defn };
+}
+
+export function or(opts: AndExpr[]): OrExpr {
+  return { type: "Or", opts };
+}
+
+export function and(clauses: AndClause[]): AndExpr {
+  return { type: "And", clauses };
+}
+
 // term helpers
 
 export function str(val: string): StringLit {

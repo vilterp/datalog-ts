@@ -334,11 +334,7 @@ export function partition<T>(arr: T[], pred: (t: T) => boolean): [T[], T[]] {
 }
 
 export function stringToArray(str: string): string[] {
-  const out = [];
-  for (let i = 0; i < str.length; i++) {
-    out.push(str[i]);
-  }
-  return out;
+  return str.split("");
 }
 
 export function range(length: number): number[] {

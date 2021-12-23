@@ -8,7 +8,7 @@ digit :- [0-9].
 stringLit :- ["'", repSep([a-z], <succeed>), "'"].
 ----
 text/plain
-grammar [0-289]
+grammar [0-146]
   ruleDefn [0-14]
     ruleName: "main" [0-4]
     rule [8-13]
@@ -49,52 +49,6 @@ grammar [0-289]
           text: "\": \"" [132-136]
         rule [138-143]
           ref: "value" [138-143]
-  ruleDefn [146-181]
-    ruleName: "intLit" [146-152]
-    rule [156-180]
-      repSep [156-180]
-        rule [163-168]
-          ref: "digit" [163-168]
-        rule [170-179]
-          succeed: "<succeed>" [170-179]
-  ruleDefn [182-222]
-    ruleName: "array" [182-187]
-    rule [191-221]
-      seq [191-221]
-        rule [192-195]
-          text: "\"[\"" [192-195]
-        rule [197-215]
-          repSep [197-215]
-            rule [204-209]
-              ref: "value" [204-209]
-            rule [211-214]
-              text: "\",\"" [211-214]
-        rule [217-220]
-          text: "\"]\"" [217-220]
-  ruleDefn [223-238]
-    ruleName: "digit" [223-228]
-    rule [232-237]
-      charRule [232-237]
-        crRange [232-237]
-          singleChar: "0" [233-234]
-          singleChar: "9" [235-236]
-  ruleDefn [239-289]
-    ruleName: "stringLit" [239-248]
-    rule [252-288]
-      seq [252-288]
-        rule [253-256]
-          text: "\"'\"" [253-256]
-        rule [258-282]
-          repSep [258-282]
-            rule [265-270]
-              charRule [265-270]
-                crRange [265-270]
-                  singleChar: "a" [266-267]
-                  singleChar: "z" [268-269]
-            rule [272-281]
-              succeed: "<succeed>" [272-281]
-        rule [284-287]
-          text: "\"'\"" [284-287]
 {
   "main": {
     "type": "Ref",
@@ -159,75 +113,6 @@ grammar [0-289]
       {
         "type": "Ref",
         "name": "value"
-      }
-    ]
-  },
-  "intLit": {
-    "type": "RepSep",
-    "rep": {
-      "type": "Ref",
-      "name": "digit"
-    },
-    "sep": {
-      "type": "Succeed"
-    }
-  },
-  "array": {
-    "type": "Sequence",
-    "items": [
-      {
-        "type": "Text",
-        "value": "["
-      },
-      {
-        "type": "RepSep",
-        "rep": {
-          "type": "Ref",
-          "name": "value"
-        },
-        "sep": {
-          "type": "Text",
-          "value": ","
-        }
-      },
-      {
-        "type": "Text",
-        "value": "]"
-      }
-    ]
-  },
-  "digit": {
-    "type": "Char",
-    "rule": {
-      "type": "Range",
-      "from": "0",
-      "to": "9"
-    }
-  },
-  "stringLit": {
-    "type": "Sequence",
-    "items": [
-      {
-        "type": "Text",
-        "value": "'"
-      },
-      {
-        "type": "RepSep",
-        "rep": {
-          "type": "Char",
-          "rule": {
-            "type": "Range",
-            "from": "a",
-            "to": "z"
-          }
-        },
-        "sep": {
-          "type": "Succeed"
-        }
-      },
-      {
-        "type": "Text",
-        "value": "'"
       }
     ]
   }

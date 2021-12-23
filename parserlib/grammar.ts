@@ -4,8 +4,7 @@ export type Rule =
   | ChoiceRule
   | SequenceRule
   | RepSepRule
-  | RefRule
-  | SucceedRule;
+  | RefRule;
 
 export type TextRule = { type: "Text"; value: string };
 export type CharRule = { type: "Char"; rule: SingleCharRule };
@@ -13,7 +12,6 @@ export type ChoiceRule = { type: "Choice"; choices: Rule[] };
 export type SequenceRule = { type: "Sequence"; items: Rule[] };
 export type RepSepRule = { type: "RepSep"; rep: Rule; sep: Rule };
 export type RefRule = { type: "Ref"; name: string };
-export type SucceedRule = { type: "Succeed" };
 
 export function text(value: string): Rule {
   return { type: "Text", value };
@@ -38,8 +36,6 @@ export function repSep(rep: Rule, sep: Rule): Rule {
 export function ref(name: string): Rule {
   return { type: "Ref", name };
 }
-
-export const succeed: Rule = { type: "Succeed" };
 
 export type Grammar = { [name: string]: Rule };
 
