@@ -6,7 +6,6 @@ import {
   charRule,
   range,
   Rule,
-  succeed,
   notChar,
   literalChar,
 } from "./grammar";
@@ -45,7 +44,7 @@ export function spaceAround(rule: Rule): Rule {
 }
 
 export function opt(rule: Rule): Rule {
-  return choice([rule, succeed]);
+  return choice([rule, text("")]);
 }
 
 // TODO: this is pretty cumbersome compared to writing a regex
@@ -61,8 +60,7 @@ export const stringLit = seq([
 ]);
 
 export function rep(rule: Rule): Rule {
-  // TODO: this is bad...
-  return repSep(rule, succeed);
+  return repSep(rule, text(""));
 }
 
 export function rep1(rule: Rule): Rule {

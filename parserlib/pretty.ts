@@ -27,8 +27,6 @@ export function prettyPrintRule(rule: Rule): string {
       return rule.items.map(prettyPrintRule).join(", ");
     case "Text":
       return `"${rule.value.split(`"`).join(`\\"`)}"`;
-    case "Succeed":
-      return "Succeed";
     case "Ref":
       return rule.name;
     case "RepSep":

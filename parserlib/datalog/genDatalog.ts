@@ -205,8 +205,6 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         // TODO: handle case where this is empty
         ...ruleToDL(`${name}_sep`, rule.sep),
       ];
-    case "Succeed":
-      return [succeedRule(name)];
   }
 }
 

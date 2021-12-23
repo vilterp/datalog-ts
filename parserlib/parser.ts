@@ -203,13 +203,6 @@ function doParse(
           curIdx = res.span.to;
         }
       }
-    case "Succeed":
-      return {
-        type: "SucceedTrace",
-        // rule,
-        error: null,
-        span: { from: startIdx, to: startIdx },
-      };
   }
 }
 
