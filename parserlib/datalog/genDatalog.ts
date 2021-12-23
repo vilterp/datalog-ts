@@ -40,22 +40,23 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         dl.rule(
           rec(name, {
             span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P${rule.value.length}`),
+              from: varr("P0"),
+              to: varr(`P${(rule.value.length - 1) * 2 + 1}`),
             }),
           }),
           or([
             and([
               ...stringToArray(rule.value).map((char, idx) =>
                 rec("source", {
-                  id: varr(`P${idx + 1}`),
                   char: str(char),
+                  left: varr(`P${idx * 2}`),
+                  right: varr(`P${idx * 2 + 1}`),
                 })
               ),
               ...range(rule.value.length - 1).map((idx) =>
-                rec("next", {
-                  left: varr(`P${idx + 1}`),
-                  right: varr(`P${idx + 2}`),
+                rec("connected", {
+                  left: varr(`P${idx * 2 + 1}`),
+                  right: varr(`P${idx * 2 + 2}`),
                 })
               ),
             ]),
