@@ -113,7 +113,7 @@ function datalogTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const grammarParsed = parseGrammar(input);
     const rules = grammarToDL(grammarParsed);
-    return datalogOut(rules.map(ppRule).join("\n"));
+    return datalogOut(rules.map(ppRule).join(".\n") + ".");
   });
 }
 
