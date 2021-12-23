@@ -9,8 +9,12 @@ import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { flatten } from "./flatten";
-import { ppRule, ppt } from "../core/pretty";
-import { grammarToDL } from "./datalog/genDatalog";
+import { ppr, ppRule, ppt } from "../core/pretty";
+import { grammarToDL, inputToDL } from "./datalog/genDatalog";
+import { SimpleInterpreter } from "../core/simple/interpreter";
+import { nullLoader } from "../core/loaders";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { Rule } from "../core/types";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -110,10 +114,31 @@ function flattenTest(test: string[]): TestOutput[] {
 }
 
 function datalogTest(test: string[]): TestOutput[] {
+  let rules: Rule[] = [];
   return test.map((input) => {
-    const grammarParsed = parseGrammar(input);
-    const rules = grammarToDL(grammarParsed);
-    return datalogOut(rules.map(ppRule).join(".\n") + ".");
+    const lines = input.split("\n");
+    const firstLine = lines[0];
+    const restOfInput = lines.slice(1).join("\n");
+    if (firstLine === "gram") {
+      const grammarParsed = parseGrammar(restOfInput);
+      rules = grammarToDL(grammarParsed);
+      return datalogOut(rules.map(ppRule).join(".\n") + ".");
+    } else if (firstLine === "input") {
+      let interp = new SimpleInterpreter(
+        ".",
+        nullLoader
+      ) as AbstractInterpreter;
+      // insert rules
+      interp = interp.evalStmts(
+        rules.map((rule) => ({ type: "Rule", rule }))
+      )[1];
+      // insert input
+      interp = interp.insertAll(inputToDL(restOfInput));
+      const results = interp.queryStr("main{span: span{from: F, to: T}}");
+      return datalogOut(results.map(ppr).join("\n"));
+    } else {
+      throw new Error(`expected 'gram' or 'input'; got ${firstLine}`);
+    }
   });
 }
 

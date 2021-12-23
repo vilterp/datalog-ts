@@ -1,3 +1,4 @@
+gram
 main :- ["foo", "bar"].
 ----
 application/datalog
@@ -18,6 +19,24 @@ main_seq_1{span: span{from: P1, to: P3}} :-
   next{left: P1, right: P2} &
   next{left: P2, right: P3}.
 
+input
+foo
+----
+application/datalog
+
+input
+foobar
+----
+application/datalog
+main{seq_0: span{from: 0, to: 2}, seq_1: span{from: 3, to: 5}, span: span{from: 0, to: 5}}; {F: 0, T: 5}
+
+input
+foobarfoo
+----
+application/datalog
+main{seq_0: span{from: 0, to: 2}, seq_1: span{from: 3, to: 5}, span: span{from: 0, to: 5}}; {F: 0, T: 5}
+
+gram
 main :- repSep("foo", "bar").
 ----
 application/datalog
@@ -41,6 +60,7 @@ main_sep{span: span{from: P1, to: P3}} :-
   next{left: P1, right: P2} &
   next{left: P2, right: P3}.
 
+gram
 main :- value.
 value :- (object | array | int | string | null).
 int :- [[0-9], repSep([0-9], "")].
