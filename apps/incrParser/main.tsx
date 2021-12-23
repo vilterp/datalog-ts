@@ -6,18 +6,43 @@ import { formatOutput, Output } from "../../core/incremental/interpreter";
 import { IncrementalInputManager, InputEvt } from "./incrementalInput";
 import { Change } from "diff";
 import { flatMap } from "../../util/util";
-import { initializeInterp } from "../../parserlib/datalog/genDatalog";
+import { grammarToDL } from "../../parserlib/datalog/genDatalog";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
 import { Collapsible } from "../../uiCommon/generic/collapsible";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { parseGrammar } from "../../parserlib/meta";
+import { Rule } from "../../core/types";
 
-const GRAMMAR_TEXT = `main :- repSep(block,ws).
-block :- [label, ":", ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
-label :- ident.
-ident :- [[a-z], repSep([a-z], "")].
-instr :- ident.
-ws :- repSep((" "|"\n"), "").`;
+const GRAMMAR_TEXT = `main :- value.
+value :- (object | array | int | string | null).
+int :- [[0-9], repSep([0-9], "")].
+object :- ["{", keyValue, "}"].
+keyValue :- [string, ":", value].
+string :- ["'", repSep([a-z], ""), "'"].
+array :- ["[", repSep(value, ","), "]"].
+null :- "null".
+`;
+
+export function initializeInterp(
+  interp: AbstractInterpreter,
+  grammarText: string
+): {
+  interp: AbstractInterpreter;
+  rules: Rule[];
+} {
+  const grammarParsed = parseGrammar(grammarText);
+  const rules = grammarToDL(grammarParsed);
+
+  const [_1, interp2] = interp.evalStr(".table source");
+  const [_2, interp3] = interp2.evalStr(".table next");
+
+  const [_3, interp4] = interp3.evalStmts(
+    rules.map((rule) => ({ type: "Rule", rule }))
+  );
+  return { interp: interp4, rules };
+}
 
 const emptyInterp = new IncrementalInterpreter(".", nullLoader);
 const initialInterp = initializeInterp(emptyInterp, GRAMMAR_TEXT)

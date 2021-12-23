@@ -18,28 +18,7 @@ import {
   Term,
   varr,
 } from "../../core/types";
-import { parseGrammar } from "../meta";
 import { SingleCharRule } from "../grammar";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-
-export function initializeInterp(
-  interp: AbstractInterpreter,
-  grammarText: string
-): {
-  interp: AbstractInterpreter;
-  rules: Rule[];
-} {
-  const grammarParsed = parseGrammar(grammarText);
-  const rules = grammarToDL(grammarParsed);
-
-  const [_1, interp2] = interp.evalStr(".table source");
-  const [_2, interp3] = interp2.evalStr(".table next");
-
-  const [_3, interp4] = interp3.evalStmts(
-    rules.map((rule) => ({ type: "Rule", rule }))
-  );
-  return { interp: interp4, rules };
-}
 
 // generate datalog rules that implement a parser for this grammar
 export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
@@ -254,6 +233,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           },
         },
         ...ruleToDL(`${name}_rep`, rule.rep),
+        // TODO: handle case where this is empty
         ...ruleToDL(`${name}_sep`, rule.sep),
       ];
     case "Succeed":
