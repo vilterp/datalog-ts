@@ -33,6 +33,9 @@ export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
 function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
   switch (rule.type) {
     case "Text":
+      if (rule.value === "") {
+        return [succeedRule(name)];
+      }
       return [
         dl.rule(
           rec(name, {
@@ -203,8 +206,26 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         ...ruleToDL(`${name}_sep`, rule.sep),
       ];
     case "Succeed":
-      throw new Error("todo");
+      return [succeedRule(name)];
   }
+}
+
+function succeedRule(name: string): dl.Rule {
+  return dl.rule(
+    rec(name, {
+      span: rec("span", { from: varr("P1"), to: varr("P2") }),
+    }),
+    or([
+      and([
+        {
+          type: "BinExpr",
+          left: varr("P1"),
+          op: "==",
+          right: varr("P2"),
+        },
+      ]),
+    ])
+  );
 }
 
 function exprsForCharRule(charRule: SingleCharRule): BinExpr[] {
