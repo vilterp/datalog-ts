@@ -1,29 +1,19 @@
 import * as React from "react";
-import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
-import * as diff from "diff";
-import { formatOutput, Output } from "../../core/incremental/interpreter";
-import { IncrementalInputManager, InputEvt } from "./incrementalInput";
-import { Change } from "diff";
-import { flatMap } from "../../util/util";
-import { grammarToDL } from "../../parserlib/datalog/genDatalog";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { grammarToDL, inputToDL } from "../../parserlib/datalog/genDatalog";
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
-import { Collapsible } from "../../uiCommon/generic/collapsible";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { parseGrammar } from "../../parserlib/meta";
-import { Rule } from "../../core/types";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import useLocalStorage from "react-use-localstorage";
 
 const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
 export function initializeInterp(
   interp: AbstractInterpreter,
   grammarText: string
-): {
-  interp: AbstractInterpreter;
-  rules: Rule[];
-} {
+): AbstractInterpreter {
   const grammarParsed = parseGrammar(grammarText);
   const rules = grammarToDL(grammarParsed);
 
@@ -33,118 +23,52 @@ export function initializeInterp(
   const [_3, interp4] = interp3.evalStmts(
     rules.map((rule) => ({ type: "Rule", rule }))
   );
-  return { interp: interp4, rules };
+  return interp4;
 }
 
-const emptyInterp = new IncrementalInterpreter(".", nullLoader);
-const initialInterp = initializeInterp(emptyInterp, GRAMMAR_TEXT)
-  .interp as IncrementalInterpreter;
-// TODO: put this somewhere in React-land?
-const inputManager = new IncrementalInputManager();
-
 function Main() {
-  const [source, setSource] = useState("");
-  const [log, setLog] = useState<{ input: InputEvt; outputs: Output[] }[]>([]);
-  const [interp, setInterp] = useState(initialInterp);
+  const [source, setSource] = useLocalStorage("dl-parser-playground-source");
+  const [grammarSource, setGrammarSource] = useLocalStorage(
+    "dl-parser-playground-grammar-source",
+    GRAMMAR_TEXT
+  );
 
-  // TODO: useCallback, useEffect
-  const handleChange = (evt: ChangeEvent<HTMLTextAreaElement>) => {
-    // TODO: there may be some way to get input events directly from DOM events,
-    //   without having to diff the entire string
-    const changes = diff.diffChars(source, evt.target.value);
-    const events = changesToEvents(changes);
-
-    const statements = flatMap(events, (event) =>
-      inputManager.processEvent(event)
-    );
-    const outputs: Output[] = [];
-    let curInterp = interp;
-    for (let stmt of statements) {
-      const { newInterp, output: newOutput } = curInterp.processStmt(stmt);
-      outputs.push(newOutput);
-      curInterp = newInterp as IncrementalInterpreter;
-    }
-    console.log("handleChange", { changes, statements, outputs });
-
-    setLog([...log, ...events.map((input) => ({ input, outputs }))]);
-    setSource(evt.target.value);
-    setInterp(curInterp);
-  };
+  let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
+  interp = initializeInterp(interp, grammarSource);
+  interp = interp.insertAll(inputToDL(source));
 
   return (
     <>
-      <h1>Incremental Datalog Parser</h1>
+      <h1>Datalog Parser</h1>
       <table>
         <tbody>
           <tr>
             <td>
+              <h3>Source</h3>
               <textarea
                 autoFocus={true}
                 rows={10}
                 cols={80}
-                onChange={handleChange}
+                onChange={(evt) => setSource(evt.target.value)}
                 value={source}
               />
             </td>
             <td>
-              <pre>{GRAMMAR_TEXT}</pre>
+              <h3>Grammar Source</h3>
+              <textarea
+                autoFocus={true}
+                rows={10}
+                cols={80}
+                onChange={(evt) => setGrammarSource(evt.target.value)}
+                value={grammarSource}
+              />
             </td>
           </tr>
         </tbody>
       </table>
       <Explorer interp={interp} />
-      <Collapsible
-        heading="Log"
-        content={
-          <ul>
-            {log.map((inputOutput, idx) => (
-              <li key={idx}>
-                {JSON.stringify(inputOutput.input)}
-                <br />
-                <ul>
-                  {inputOutput.outputs
-                    .map(
-                      (output) =>
-                        formatOutput(interp.graph, output, {
-                          emissionLogMode: "repl",
-                          showBindings: false,
-                        }).content
-                    )
-                    .filter((output) => output.length > 0)
-                    .map((output, idx2) => (
-                      <li key={idx2}>
-                        <pre>{output}</pre>
-                      </li>
-                    ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        }
-      />
     </>
   );
-}
-
-function changesToEvents(changes: Change[]): InputEvt[] {
-  const out: InputEvt[] = [];
-  let index = 0;
-  for (let change of changes) {
-    if (change.added) {
-      for (let i = 0; i < change.value.length; i++) {
-        out.push({ type: "Insert", index, char: change.value[i] });
-        index++;
-      }
-    } else if (change.removed) {
-      for (let i = 0; i < change.value.length; i++) {
-        out.push({ type: "Delete", index });
-        index++;
-      }
-    } else {
-      index += change.value.length;
-    }
-  }
-  return out;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
