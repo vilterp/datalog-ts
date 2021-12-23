@@ -1,24 +1,24 @@
 hello there
 ----
 application/datalog
-source{char: "h", id: 0}.
-source{char: "e", id: 1}.
-source{char: "l", id: 2}.
-source{char: "l", id: 3}.
-source{char: "o", id: 4}.
-source{char: " ", id: 5}.
-source{char: "t", id: 6}.
-source{char: "h", id: 7}.
-source{char: "e", id: 8}.
-source{char: "r", id: 9}.
-source{char: "e", id: 10}.
-next{left: 0, right: 1}.
-next{left: 1, right: 2}.
-next{left: 2, right: 3}.
-next{left: 3, right: 4}.
-next{left: 4, right: 5}.
-next{left: 5, right: 6}.
-next{left: 6, right: 7}.
-next{left: 7, right: 8}.
-next{left: 8, right: 9}.
-next{left: 9, right: 10}.
+source{char: "h", left: 0, right: 1}.
+source{char: "e", left: 2, right: 3}.
+source{char: "l", left: 4, right: 5}.
+source{char: "l", left: 6, right: 7}.
+source{char: "o", left: 8, right: 9}.
+source{char: " ", left: 10, right: 11}.
+source{char: "t", left: 12, right: 13}.
+source{char: "h", left: 14, right: 15}.
+source{char: "e", left: 16, right: 17}.
+source{char: "r", left: 18, right: 19}.
+source{char: "e", left: 20, right: 21}.
+connected{left: 1, right: 2}.
+connected{left: 3, right: 4}.
+connected{left: 5, right: 6}.
+connected{left: 7, right: 8}.
+connected{left: 9, right: 10}.
+connected{left: 11, right: 12}.
+connected{left: 13, right: 14}.
+connected{left: 15, right: 16}.
+connected{left: 17, right: 18}.
+connected{left: 19, right: 20}.

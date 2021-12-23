@@ -251,13 +251,18 @@ function choiceName(name: string, idx: number): string {
   return `${name}_choice_${idx}`;
 }
 
-// TODO: input to DL
 export function inputToDL(input: string): Rec[] {
   return stringToArray(input)
-    .map((char, idx) => rec("source", { char: str(char), id: int(idx) }))
+    .map((char, idx) =>
+      rec("source", {
+        char: str(char),
+        left: int(idx * 2),
+        right: int(idx * 2 + 1),
+      })
+    )
     .concat(
       range(input.length - 1).map((idx) =>
-        rec("next", { left: int(idx), right: int(idx + 1) })
+        rec("connected", { left: int(idx * 2 + 1), right: int(idx * 2 + 2) })
       )
     );
 }

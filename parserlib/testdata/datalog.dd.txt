@@ -26,21 +26,16 @@ input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
 
 input
 foobar
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
 
 input
 foobarfoo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
-main{span: span{from: 6, to: 8}}.
-main{span: span{from: 0, to: 8}}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -73,13 +68,11 @@ input
 [a]
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 0}, seq_1: span{from: 1, to: 1}, seq_2: span{from: 2, to: 2}, span: span{from: 0, to: 2}}.
 
 input
 [a,b,c]
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 0}, seq_1: span{from: 1, to: 5}, seq_2: span{from: 6, to: 6}, span: span{from: 0, to: 6}}.
 
 gram
 main :- repSep([0-9], "").
@@ -99,16 +92,16 @@ input
 1
 ----
 application/datalog
-main{span: span{from: 0, to: 0}}.
+main{span: span{from: P1, to: P1}}.
 
 input
 1234
 ----
 application/datalog
-main{span: span{from: 0, to: 0}}.
-main{span: span{from: 1, to: 1}}.
-main{span: span{from: 2, to: 2}}.
-main{span: span{from: 3, to: 3}}.
+main{span: span{from: P1, to: P1}}.
+main{span: span{from: P1, to: P1}}.
+main{span: span{from: P1, to: P1}}.
+main{span: span{from: P1, to: P1}}.
 
 gram
 main :- value.
