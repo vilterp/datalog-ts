@@ -124,18 +124,25 @@ function datalogTest(test: string[]): TestOutput[] {
       rules = grammarToDL(grammarParsed);
       return datalogOut(rules.map(ppRule).join(".\n") + ".");
     } else if (firstLine === "input") {
+      // TODO: bring back `initializeInterp` into this package; use here?
       let interp = new SimpleInterpreter(
         ".",
         nullLoader
       ) as AbstractInterpreter;
-      // insert rules
+      // insert rules and tables
       interp = interp.evalStmts(
         rules.map((rule) => ({ type: "Rule", rule }))
       )[1];
+      interp = interp.evalStmt({ type: "TableDecl", name: "next" })[1];
+      interp = interp.evalStmt({ type: "TableDecl", name: "source" })[1];
       // insert input
       interp = interp.insertAll(inputToDL(restOfInput));
-      const results = interp.queryStr("main{span: span{from: F, to: T}}");
-      return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
+      try {
+        const results = interp.queryStr("main{span: span{from: F, to: T}}");
+        return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
+      } catch (e) {
+        throw new Error(`error on input "${restOfInput}": ${e}`);
+      }
     } else {
       throw new Error(`expected 'gram' or 'input'; got ${firstLine}`);
     }
