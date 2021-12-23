@@ -78,6 +78,16 @@ export function parserlibTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "datalogInput",
+      test() {
+        runDDTestAtPath(
+          "parserlib/testdata/datalogInput.dd.txt",
+          datalogInputTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -146,6 +156,16 @@ function datalogTest(test: string[]): TestOutput[] {
     } else {
       throw new Error(`expected 'gram' or 'input'; got ${firstLine}`);
     }
+  });
+}
+
+function datalogInputTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    return datalogOut(
+      inputToDL(input)
+        .map((rec) => ppt(rec) + ".")
+        .join("\n")
+    );
   });
 }
 

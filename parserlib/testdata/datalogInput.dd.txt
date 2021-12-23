@@ -1,0 +1,24 @@
+hello there
+----
+application/datalog
+source{char: "h", id: 0}.
+source{char: "e", id: 1}.
+source{char: "l", id: 2}.
+source{char: "l", id: 3}.
+source{char: "o", id: 4}.
+source{char: " ", id: 5}.
+source{char: "t", id: 6}.
+source{char: "h", id: 7}.
+source{char: "e", id: 8}.
+source{char: "r", id: 9}.
+source{char: "e", id: 10}.
+next{left: 0, right: 1}.
+next{left: 1, right: 2}.
+next{left: 2, right: 3}.
+next{left: 3, right: 4}.
+next{left: 4, right: 5}.
+next{left: 5, right: 6}.
+next{left: 6, right: 7}.
+next{left: 7, right: 8}.
+next{left: 8, right: 9}.
+next{left: 9, right: 10}.
