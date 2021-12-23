@@ -1,18 +1,21 @@
 gram
-main :- ["foo", "bar"].
+main :- repSep("foo", "bar").
 ----
 application/datalog
-main{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{from: P1, to: P4}} :- 
-  main_seq_0{span: span{from: P1, to: P2}} &
-  main_seq_1{span: span{from: P3, to: P4}} &
-  next{left: P2, right: P3}.
-main_seq_0{span: span{from: P1, to: P3}} :- 
+main{span: span{from: P1, to: P6}} :- 
+  main_rep{span: span{from: P1, to: P6}} |
+  main_rep{span: span{from: P1, to: P2}} &
+  next{left: P2, right: P3} &
+  main_sep{span: span{from: P3, to: P4}} &
+  next{left: P4, right: P5} &
+  main{span: span{from: P5, to: P6}}.
+main_rep{span: span{from: P1, to: P3}} :- 
   source{char: "f", id: P1} &
   source{char: "o", id: P2} &
   source{char: "o", id: P3} &
   next{left: P1, right: P2} &
   next{left: P2, right: P3}.
-main_seq_1{span: span{from: P1, to: P3}} :- 
+main_sep{span: span{from: P1, to: P3}} :- 
   source{char: "b", id: P1} &
   source{char: "a", id: P2} &
   source{char: "r", id: P3} &
@@ -23,18 +26,21 @@ input
 foo
 ----
 application/datalog
+main{span: span{from: 0, to: 2}}.
 
 input
 foobar
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 2}, seq_1: span{from: 3, to: 5}, span: span{from: 0, to: 5}}; {F: 0, T: 5}
+main{span: span{from: 0, to: 2}}.
 
 input
 foobarfoo
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 2}, seq_1: span{from: 3, to: 5}, span: span{from: 0, to: 5}}; {F: 0, T: 5}
+main{span: span{from: 0, to: 2}}.
+main{span: span{from: 6, to: 8}}.
+main{span: span{from: 0, to: 8}}.
 
 gram
 main :- repSep("foo", "bar").

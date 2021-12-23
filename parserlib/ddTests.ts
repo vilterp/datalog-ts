@@ -135,7 +135,7 @@ function datalogTest(test: string[]): TestOutput[] {
       // insert input
       interp = interp.insertAll(inputToDL(restOfInput));
       const results = interp.queryStr("main{span: span{from: F, to: T}}");
-      return datalogOut(results.map(ppr).join("\n"));
+      return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
     } else {
       throw new Error(`expected 'gram' or 'input'; got ${firstLine}`);
     }
