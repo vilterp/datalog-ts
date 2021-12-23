@@ -15,15 +15,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { parseGrammar } from "../../parserlib/meta";
 import { Rule } from "../../core/types";
 
-const GRAMMAR_TEXT = `main :- value.
-value :- (object | array | int | string | null).
-int :- [[0-9], repSep([0-9], "")].
-object :- ["{", keyValue, "}"].
-keyValue :- [string, ":", value].
-string :- ["'", repSep([a-z], ""), "'"].
-array :- ["[", repSep(value, ","), "]"].
-null :- "null".
-`;
+const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
 export function initializeInterp(
   interp: AbstractInterpreter,
