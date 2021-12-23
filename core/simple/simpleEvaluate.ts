@@ -35,6 +35,9 @@ function doJoin(
   scope: Bindings,
   clauses: AndClause[]
 ): Res[] {
+  if (clauses.length === 0) {
+    return [];
+  }
   // console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
   if (clauses.length === 1) {
     // console.log("doJoin: evaluating only clause", ppt(clauses[0]));
