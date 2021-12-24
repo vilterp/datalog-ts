@@ -344,3 +344,9 @@ export function range(length: number): number[] {
   }
   return out;
 }
+
+export function pushAll<T>(arr: T[], items: T[]) {
+  items.forEach((item) => {
+    arr.push(item);
+  });
+}
