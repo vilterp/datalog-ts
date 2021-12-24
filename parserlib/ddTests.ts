@@ -14,7 +14,7 @@ import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { nullLoader } from "../core/loaders";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { Rule } from "../core/types";
+import { Rec, Rule } from "../core/types";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -114,32 +114,32 @@ function flattenTest(test: string[]): TestOutput[] {
 }
 
 function datalogTest(test: string[]): TestOutput[] {
-  let rules: Rule[] = [];
+  let grammarRecords: Rec[] = [];
   return test.map((input) => {
     const lines = input.split("\n");
     const firstLine = lines[0];
     const restOfInput = lines.slice(1).join("\n");
     if (firstLine === "gram") {
       const grammarParsed = parseGrammar(restOfInput);
-      rules = grammarToDL(grammarParsed);
-      return datalogOut(rules.map(ppRule).join(".\n") + ".");
+      grammarRecords = grammarToDL(grammarParsed);
+      return datalogOut(grammarRecords.map(ppt).join(".\n") + ".");
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
       let interp = new SimpleInterpreter(
         ".",
         nullLoader
       ) as AbstractInterpreter;
-      // insert rules and tables
-      interp = interp.evalStmts(
-        rules.map((rule) => ({ type: "Rule", rule }))
-      )[1];
+      // insert grammar as data
+      interp = interp.insertAll(grammarRecords);
+      // insert input as data
       interp = interp.evalStmt({ type: "TableDecl", name: "next" })[1];
       interp = interp.evalStmt({ type: "TableDecl", name: "source" })[1];
-      // insert input
       interp = interp.insertAll(inputToDL(restOfInput));
+      // TODO: insert grammar interpreter
       try {
-        const results = interp.queryStr("main{span: span{from: F, to: T}}");
-        return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
+        // const results = interp.queryStr("main{span: span{from: F, to: T}}");
+        // return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
+        return plainTextOut("TODO");
       } catch (e) {
         throw new Error(`error on input "${restOfInput}": ${e}`);
       }
