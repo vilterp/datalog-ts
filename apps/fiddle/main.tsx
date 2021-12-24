@@ -2,8 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
+<<<<<<< HEAD
 import { Program } from "../../core/types";
 import { language } from "../../core/parser";
+=======
+import { LayoutManager } from "@jaegertracing/plexus";
+>>>>>>> 623ceb4 (comment out graph thing)
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
@@ -17,11 +21,7 @@ function Main() {
 
   let interp = new SimpleInterpreter(".", nullLoader);
   try {
-    const program = language.program.tryParse(source) as Program;
-    interp = program.reduce<AbstractInterpreter>(
-      (interp, stmt) => interp.evalStmt(stmt)[1],
-      interp
-    ) as SimpleInterpreter;
+    interp = interp.evalStr(source)[1];
   } catch (e) {
     error = e.toString();
   }
