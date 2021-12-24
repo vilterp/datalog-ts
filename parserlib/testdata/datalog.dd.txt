@@ -2,49 +2,49 @@ gram
 main :- "foo".
 ----
 application/datalog
-node{id: 0}.
-node{id: 1}.
-ruleMarker{endID: 1, name: "main", startID: 0}.
-node{id: 2}.
-edge{from: 0, label: "f", to: 2}.
-node{id: 3}.
-edge{from: 2, label: "o", to: 3}.
-node{id: 4}.
-edge{from: 3, label: "o", to: 4}.
-unlabeledEdge{from: 4, to: 1}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.edge{from: 0, label: "f", to: 2}.
+grammar.node{id: 3}.
+grammar.edge{from: 2, label: "o", to: 3}.
+grammar.node{id: 4}.
+grammar.edge{from: 3, label: "o", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 1}.
 
 gram
 main :- repSep("foo", "bar").
 ----
 application/datalog
-node{id: 0}.
-node{id: 1}.
-ruleMarker{endID: 1, name: "main", startID: 0}.
-node{id: 2}.
-node{id: 3}.
-ruleMarker{endID: 3, name: "main_rep", startID: 2}.
-node{id: 4}.
-edge{from: 2, label: "f", to: 4}.
-node{id: 5}.
-edge{from: 4, label: "o", to: 5}.
-node{id: 6}.
-edge{from: 5, label: "o", to: 6}.
-unlabeledEdge{from: 6, to: 3}.
-node{id: 7}.
-node{id: 8}.
-ruleMarker{endID: 8, name: "main_rep", startID: 7}.
-node{id: 9}.
-edge{from: 7, label: "b", to: 9}.
-node{id: 10}.
-edge{from: 9, label: "a", to: 10}.
-node{id: 11}.
-edge{from: 10, label: "r", to: 11}.
-unlabeledEdge{from: 11, to: 8}.
-unlabeledEdge{from: 0, to: 2}.
-unlabeledEdge{from: 3, to: 1}.
-unlabeledEdge{from: 1, to: 7}.
-unlabeledEdge{from: 8, to: 0}.
-unlabeledEdge{from: 0, to: 1}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "main_rep", startID: 2}.
+grammar.node{id: 4}.
+grammar.edge{from: 2, label: "f", to: 4}.
+grammar.node{id: 5}.
+grammar.edge{from: 4, label: "o", to: 5}.
+grammar.node{id: 6}.
+grammar.edge{from: 5, label: "o", to: 6}.
+grammar.unlabeledEdge{from: 6, to: 3}.
+grammar.node{id: 7}.
+grammar.node{id: 8}.
+grammar.ruleMarker{endID: 8, name: "main_rep", startID: 7}.
+grammar.node{id: 9}.
+grammar.edge{from: 7, label: "b", to: 9}.
+grammar.node{id: 10}.
+grammar.edge{from: 9, label: "a", to: 10}.
+grammar.node{id: 11}.
+grammar.edge{from: 10, label: "r", to: 11}.
+grammar.unlabeledEdge{from: 11, to: 8}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.unlabeledEdge{from: 3, to: 1}.
+grammar.unlabeledEdge{from: 1, to: 7}.
+grammar.unlabeledEdge{from: 8, to: 0}.
+grammar.unlabeledEdge{from: 0, to: 1}.
 
 input
 foo
@@ -68,43 +68,43 @@ gram
 main :- ["[", repSep([a-z], ","), "]"].
 ----
 application/datalog
-node{id: 0}.
-node{id: 1}.
-ruleMarker{endID: 1, name: "main", startID: 0}.
-node{id: 2}.
-node{id: 3}.
-ruleMarker{endID: 3, name: "main_seq_0", startID: 2}.
-node{id: 4}.
-edge{from: 2, label: "[", to: 4}.
-unlabeledEdge{from: 4, to: 3}.
-unlabeledEdge{from: 0, to: 2}.
-node{id: 5}.
-node{id: 6}.
-ruleMarker{endID: 6, name: "main_seq_1", startID: 5}.
-node{id: 7}.
-node{id: 8}.
-ruleMarker{endID: 8, name: "main_seq_1_rep", startID: 7}.
-edge{from: 7, fromChar: "a", to: 8, toChar: "z"}.
-node{id: 9}.
-node{id: 10}.
-ruleMarker{endID: 10, name: "main_seq_1_rep", startID: 9}.
-node{id: 11}.
-edge{from: 9, label: ",", to: 11}.
-unlabeledEdge{from: 11, to: 10}.
-unlabeledEdge{from: 5, to: 7}.
-unlabeledEdge{from: 8, to: 6}.
-unlabeledEdge{from: 6, to: 9}.
-unlabeledEdge{from: 10, to: 5}.
-unlabeledEdge{from: 5, to: 6}.
-unlabeledEdge{from: 3, to: 5}.
-node{id: 12}.
-node{id: 13}.
-ruleMarker{endID: 13, name: "main_seq_2", startID: 12}.
-node{id: 14}.
-edge{from: 12, label: "]", to: 14}.
-unlabeledEdge{from: 14, to: 13}.
-unlabeledEdge{from: 6, to: 12}.
-unlabeledEdge{from: 13, to: 1}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "main_seq_0", startID: 2}.
+grammar.node{id: 4}.
+grammar.edge{from: 2, label: "[", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 3}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.node{id: 5}.
+grammar.node{id: 6}.
+grammar.ruleMarker{endID: 6, name: "main_seq_1", startID: 5}.
+grammar.node{id: 7}.
+grammar.node{id: 8}.
+grammar.ruleMarker{endID: 8, name: "main_seq_1_rep", startID: 7}.
+grammar.edge{from: 7, fromChar: "a", to: 8, toChar: "z"}.
+grammar.node{id: 9}.
+grammar.node{id: 10}.
+grammar.ruleMarker{endID: 10, name: "main_seq_1_rep", startID: 9}.
+grammar.node{id: 11}.
+grammar.edge{from: 9, label: ",", to: 11}.
+grammar.unlabeledEdge{from: 11, to: 10}.
+grammar.unlabeledEdge{from: 5, to: 7}.
+grammar.unlabeledEdge{from: 8, to: 6}.
+grammar.unlabeledEdge{from: 6, to: 9}.
+grammar.unlabeledEdge{from: 10, to: 5}.
+grammar.unlabeledEdge{from: 5, to: 6}.
+grammar.unlabeledEdge{from: 3, to: 5}.
+grammar.node{id: 12}.
+grammar.node{id: 13}.
+grammar.ruleMarker{endID: 13, name: "main_seq_2", startID: 12}.
+grammar.node{id: 14}.
+grammar.edge{from: 12, label: "]", to: 14}.
+grammar.unlabeledEdge{from: 14, to: 13}.
+grammar.unlabeledEdge{from: 6, to: 12}.
+grammar.unlabeledEdge{from: 13, to: 1}.
 
 input
 []
@@ -128,22 +128,22 @@ gram
 main :- repSep([0-9], "").
 ----
 application/datalog
-node{id: 0}.
-node{id: 1}.
-ruleMarker{endID: 1, name: "main", startID: 0}.
-node{id: 2}.
-node{id: 3}.
-ruleMarker{endID: 3, name: "main_rep", startID: 2}.
-edge{from: 2, fromChar: "0", to: 3, toChar: "9"}.
-node{id: 4}.
-node{id: 5}.
-ruleMarker{endID: 5, name: "main_rep", startID: 4}.
-unlabeledEdge{from: 4, to: 5}.
-unlabeledEdge{from: 0, to: 2}.
-unlabeledEdge{from: 3, to: 1}.
-unlabeledEdge{from: 1, to: 4}.
-unlabeledEdge{from: 5, to: 0}.
-unlabeledEdge{from: 0, to: 1}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "main_rep", startID: 2}.
+grammar.edge{from: 2, fromChar: "0", to: 3, toChar: "9"}.
+grammar.node{id: 4}.
+grammar.node{id: 5}.
+grammar.ruleMarker{endID: 5, name: "main_rep", startID: 4}.
+grammar.unlabeledEdge{from: 4, to: 5}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.unlabeledEdge{from: 3, to: 1}.
+grammar.unlabeledEdge{from: 1, to: 4}.
+grammar.unlabeledEdge{from: 5, to: 0}.
+grammar.unlabeledEdge{from: 0, to: 1}.
 
 input
 1
@@ -168,214 +168,214 @@ array :- ["[", repSep(value, ","), "]"].
 null :- "null".
 ----
 application/datalog
-node{id: 0}.
-node{id: 1}.
-ruleMarker{endID: 1, name: "array", startID: 0}.
-node{id: 2}.
-node{id: 3}.
-ruleMarker{endID: 3, name: "array_seq_0", startID: 2}.
-node{id: 4}.
-edge{from: 2, label: "[", to: 4}.
-unlabeledEdge{from: 4, to: 3}.
-unlabeledEdge{from: 0, to: 2}.
-node{id: 5}.
-node{id: 6}.
-ruleMarker{endID: 6, name: "array_seq_1", startID: 5}.
-node{id: 7}.
-node{id: 8}.
-ruleMarker{endID: 8, name: "array_seq_1_rep", startID: 7}.
-refNode{id: 9, ref: "value"}.
-unlabeledEdge{from: 7, to: 9}.
-unlabeledEdge{from: 9, to: 8}.
-node{id: 10}.
-node{id: 11}.
-ruleMarker{endID: 11, name: "array_seq_1_rep", startID: 10}.
-node{id: 12}.
-edge{from: 10, label: ",", to: 12}.
-unlabeledEdge{from: 12, to: 11}.
-unlabeledEdge{from: 5, to: 7}.
-unlabeledEdge{from: 8, to: 6}.
-unlabeledEdge{from: 6, to: 10}.
-unlabeledEdge{from: 11, to: 5}.
-unlabeledEdge{from: 5, to: 6}.
-unlabeledEdge{from: 3, to: 5}.
-node{id: 13}.
-node{id: 14}.
-ruleMarker{endID: 14, name: "array_seq_2", startID: 13}.
-node{id: 15}.
-edge{from: 13, label: "]", to: 15}.
-unlabeledEdge{from: 15, to: 14}.
-unlabeledEdge{from: 6, to: 13}.
-unlabeledEdge{from: 14, to: 1}.
-node{id: 16}.
-node{id: 17}.
-ruleMarker{endID: 17, name: "int", startID: 16}.
-node{id: 18}.
-node{id: 19}.
-ruleMarker{endID: 19, name: "int_seq_0", startID: 18}.
-edge{from: 18, fromChar: "0", to: 19, toChar: "9"}.
-unlabeledEdge{from: 16, to: 18}.
-node{id: 20}.
-node{id: 21}.
-ruleMarker{endID: 21, name: "int_seq_1", startID: 20}.
-node{id: 22}.
-node{id: 23}.
-ruleMarker{endID: 23, name: "int_seq_1_rep", startID: 22}.
-edge{from: 22, fromChar: "0", to: 23, toChar: "9"}.
-node{id: 24}.
-node{id: 25}.
-ruleMarker{endID: 25, name: "int_seq_1_rep", startID: 24}.
-unlabeledEdge{from: 24, to: 25}.
-unlabeledEdge{from: 20, to: 22}.
-unlabeledEdge{from: 23, to: 21}.
-unlabeledEdge{from: 21, to: 24}.
-unlabeledEdge{from: 25, to: 20}.
-unlabeledEdge{from: 20, to: 21}.
-unlabeledEdge{from: 19, to: 20}.
-unlabeledEdge{from: 21, to: 17}.
-node{id: 26}.
-node{id: 27}.
-ruleMarker{endID: 27, name: "keyValue", startID: 26}.
-node{id: 28}.
-node{id: 29}.
-ruleMarker{endID: 29, name: "keyValue_seq_0", startID: 28}.
-refNode{id: 30, ref: "string"}.
-unlabeledEdge{from: 28, to: 30}.
-unlabeledEdge{from: 30, to: 29}.
-unlabeledEdge{from: 26, to: 28}.
-node{id: 31}.
-node{id: 32}.
-ruleMarker{endID: 32, name: "keyValue_seq_1", startID: 31}.
-node{id: 33}.
-edge{from: 31, label: ":", to: 33}.
-unlabeledEdge{from: 33, to: 32}.
-unlabeledEdge{from: 29, to: 31}.
-node{id: 34}.
-node{id: 35}.
-ruleMarker{endID: 35, name: "keyValue_seq_2", startID: 34}.
-refNode{id: 36, ref: "value"}.
-unlabeledEdge{from: 34, to: 36}.
-unlabeledEdge{from: 36, to: 35}.
-unlabeledEdge{from: 32, to: 34}.
-unlabeledEdge{from: 35, to: 27}.
-node{id: 37}.
-node{id: 38}.
-ruleMarker{endID: 38, name: "main", startID: 37}.
-refNode{id: 39, ref: "value"}.
-unlabeledEdge{from: 37, to: 39}.
-unlabeledEdge{from: 39, to: 38}.
-node{id: 40}.
-node{id: 41}.
-ruleMarker{endID: 41, name: "null", startID: 40}.
-node{id: 42}.
-edge{from: 40, label: "n", to: 42}.
-node{id: 43}.
-edge{from: 42, label: "u", to: 43}.
-node{id: 44}.
-edge{from: 43, label: "l", to: 44}.
-node{id: 45}.
-edge{from: 44, label: "l", to: 45}.
-unlabeledEdge{from: 45, to: 41}.
-node{id: 46}.
-node{id: 47}.
-ruleMarker{endID: 47, name: "object", startID: 46}.
-node{id: 48}.
-node{id: 49}.
-ruleMarker{endID: 49, name: "object_seq_0", startID: 48}.
-node{id: 50}.
-edge{from: 48, label: "{", to: 50}.
-unlabeledEdge{from: 50, to: 49}.
-unlabeledEdge{from: 46, to: 48}.
-node{id: 51}.
-node{id: 52}.
-ruleMarker{endID: 52, name: "object_seq_1", startID: 51}.
-refNode{id: 53, ref: "keyValue"}.
-unlabeledEdge{from: 51, to: 53}.
-unlabeledEdge{from: 53, to: 52}.
-unlabeledEdge{from: 49, to: 51}.
-node{id: 54}.
-node{id: 55}.
-ruleMarker{endID: 55, name: "object_seq_2", startID: 54}.
-node{id: 56}.
-edge{from: 54, label: "}", to: 56}.
-unlabeledEdge{from: 56, to: 55}.
-unlabeledEdge{from: 52, to: 54}.
-unlabeledEdge{from: 55, to: 47}.
-node{id: 57}.
-node{id: 58}.
-ruleMarker{endID: 58, name: "string", startID: 57}.
-node{id: 59}.
-node{id: 60}.
-ruleMarker{endID: 60, name: "string_seq_0", startID: 59}.
-node{id: 61}.
-edge{from: 59, label: "'", to: 61}.
-unlabeledEdge{from: 61, to: 60}.
-unlabeledEdge{from: 57, to: 59}.
-node{id: 62}.
-node{id: 63}.
-ruleMarker{endID: 63, name: "string_seq_1", startID: 62}.
-node{id: 64}.
-node{id: 65}.
-ruleMarker{endID: 65, name: "string_seq_1_rep", startID: 64}.
-edge{from: 64, fromChar: "a", to: 65, toChar: "z"}.
-node{id: 66}.
-node{id: 67}.
-ruleMarker{endID: 67, name: "string_seq_1_rep", startID: 66}.
-unlabeledEdge{from: 66, to: 67}.
-unlabeledEdge{from: 62, to: 64}.
-unlabeledEdge{from: 65, to: 63}.
-unlabeledEdge{from: 63, to: 66}.
-unlabeledEdge{from: 67, to: 62}.
-unlabeledEdge{from: 62, to: 63}.
-unlabeledEdge{from: 60, to: 62}.
-node{id: 68}.
-node{id: 69}.
-ruleMarker{endID: 69, name: "string_seq_2", startID: 68}.
-node{id: 70}.
-edge{from: 68, label: "'", to: 70}.
-unlabeledEdge{from: 70, to: 69}.
-unlabeledEdge{from: 63, to: 68}.
-unlabeledEdge{from: 69, to: 58}.
-node{id: 71}.
-node{id: 72}.
-ruleMarker{endID: 72, name: "value", startID: 71}.
-node{id: 73}.
-node{id: 74}.
-ruleMarker{endID: 74, name: "value_choice_0", startID: 73}.
-refNode{id: 75, ref: "object"}.
-unlabeledEdge{from: 73, to: 75}.
-unlabeledEdge{from: 75, to: 74}.
-unlabeledEdge{from: 71, to: 73}.
-unlabeledEdge{from: 74, to: 72}.
-node{id: 76}.
-node{id: 77}.
-ruleMarker{endID: 77, name: "value_choice_1", startID: 76}.
-refNode{id: 78, ref: "array"}.
-unlabeledEdge{from: 76, to: 78}.
-unlabeledEdge{from: 78, to: 77}.
-unlabeledEdge{from: 71, to: 76}.
-unlabeledEdge{from: 77, to: 72}.
-node{id: 79}.
-node{id: 80}.
-ruleMarker{endID: 80, name: "value_choice_2", startID: 79}.
-refNode{id: 81, ref: "int"}.
-unlabeledEdge{from: 79, to: 81}.
-unlabeledEdge{from: 81, to: 80}.
-unlabeledEdge{from: 71, to: 79}.
-unlabeledEdge{from: 80, to: 72}.
-node{id: 82}.
-node{id: 83}.
-ruleMarker{endID: 83, name: "value_choice_3", startID: 82}.
-refNode{id: 84, ref: "string"}.
-unlabeledEdge{from: 82, to: 84}.
-unlabeledEdge{from: 84, to: 83}.
-unlabeledEdge{from: 71, to: 82}.
-unlabeledEdge{from: 83, to: 72}.
-node{id: 85}.
-node{id: 86}.
-ruleMarker{endID: 86, name: "value_choice_4", startID: 85}.
-refNode{id: 87, ref: "null"}.
-unlabeledEdge{from: 85, to: 87}.
-unlabeledEdge{from: 87, to: 86}.
-unlabeledEdge{from: 71, to: 85}.
-unlabeledEdge{from: 86, to: 72}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "array", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "array_seq_0", startID: 2}.
+grammar.node{id: 4}.
+grammar.edge{from: 2, label: "[", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 3}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.node{id: 5}.
+grammar.node{id: 6}.
+grammar.ruleMarker{endID: 6, name: "array_seq_1", startID: 5}.
+grammar.node{id: 7}.
+grammar.node{id: 8}.
+grammar.ruleMarker{endID: 8, name: "array_seq_1_rep", startID: 7}.
+grammar.refNode{id: 9, ref: "value"}.
+grammar.unlabeledEdge{from: 7, to: 9}.
+grammar.unlabeledEdge{from: 9, to: 8}.
+grammar.node{id: 10}.
+grammar.node{id: 11}.
+grammar.ruleMarker{endID: 11, name: "array_seq_1_rep", startID: 10}.
+grammar.node{id: 12}.
+grammar.edge{from: 10, label: ",", to: 12}.
+grammar.unlabeledEdge{from: 12, to: 11}.
+grammar.unlabeledEdge{from: 5, to: 7}.
+grammar.unlabeledEdge{from: 8, to: 6}.
+grammar.unlabeledEdge{from: 6, to: 10}.
+grammar.unlabeledEdge{from: 11, to: 5}.
+grammar.unlabeledEdge{from: 5, to: 6}.
+grammar.unlabeledEdge{from: 3, to: 5}.
+grammar.node{id: 13}.
+grammar.node{id: 14}.
+grammar.ruleMarker{endID: 14, name: "array_seq_2", startID: 13}.
+grammar.node{id: 15}.
+grammar.edge{from: 13, label: "]", to: 15}.
+grammar.unlabeledEdge{from: 15, to: 14}.
+grammar.unlabeledEdge{from: 6, to: 13}.
+grammar.unlabeledEdge{from: 14, to: 1}.
+grammar.node{id: 16}.
+grammar.node{id: 17}.
+grammar.ruleMarker{endID: 17, name: "int", startID: 16}.
+grammar.node{id: 18}.
+grammar.node{id: 19}.
+grammar.ruleMarker{endID: 19, name: "int_seq_0", startID: 18}.
+grammar.edge{from: 18, fromChar: "0", to: 19, toChar: "9"}.
+grammar.unlabeledEdge{from: 16, to: 18}.
+grammar.node{id: 20}.
+grammar.node{id: 21}.
+grammar.ruleMarker{endID: 21, name: "int_seq_1", startID: 20}.
+grammar.node{id: 22}.
+grammar.node{id: 23}.
+grammar.ruleMarker{endID: 23, name: "int_seq_1_rep", startID: 22}.
+grammar.edge{from: 22, fromChar: "0", to: 23, toChar: "9"}.
+grammar.node{id: 24}.
+grammar.node{id: 25}.
+grammar.ruleMarker{endID: 25, name: "int_seq_1_rep", startID: 24}.
+grammar.unlabeledEdge{from: 24, to: 25}.
+grammar.unlabeledEdge{from: 20, to: 22}.
+grammar.unlabeledEdge{from: 23, to: 21}.
+grammar.unlabeledEdge{from: 21, to: 24}.
+grammar.unlabeledEdge{from: 25, to: 20}.
+grammar.unlabeledEdge{from: 20, to: 21}.
+grammar.unlabeledEdge{from: 19, to: 20}.
+grammar.unlabeledEdge{from: 21, to: 17}.
+grammar.node{id: 26}.
+grammar.node{id: 27}.
+grammar.ruleMarker{endID: 27, name: "keyValue", startID: 26}.
+grammar.node{id: 28}.
+grammar.node{id: 29}.
+grammar.ruleMarker{endID: 29, name: "keyValue_seq_0", startID: 28}.
+grammar.refNode{id: 30, ref: "string"}.
+grammar.unlabeledEdge{from: 28, to: 30}.
+grammar.unlabeledEdge{from: 30, to: 29}.
+grammar.unlabeledEdge{from: 26, to: 28}.
+grammar.node{id: 31}.
+grammar.node{id: 32}.
+grammar.ruleMarker{endID: 32, name: "keyValue_seq_1", startID: 31}.
+grammar.node{id: 33}.
+grammar.edge{from: 31, label: ":", to: 33}.
+grammar.unlabeledEdge{from: 33, to: 32}.
+grammar.unlabeledEdge{from: 29, to: 31}.
+grammar.node{id: 34}.
+grammar.node{id: 35}.
+grammar.ruleMarker{endID: 35, name: "keyValue_seq_2", startID: 34}.
+grammar.refNode{id: 36, ref: "value"}.
+grammar.unlabeledEdge{from: 34, to: 36}.
+grammar.unlabeledEdge{from: 36, to: 35}.
+grammar.unlabeledEdge{from: 32, to: 34}.
+grammar.unlabeledEdge{from: 35, to: 27}.
+grammar.node{id: 37}.
+grammar.node{id: 38}.
+grammar.ruleMarker{endID: 38, name: "main", startID: 37}.
+grammar.refNode{id: 39, ref: "value"}.
+grammar.unlabeledEdge{from: 37, to: 39}.
+grammar.unlabeledEdge{from: 39, to: 38}.
+grammar.node{id: 40}.
+grammar.node{id: 41}.
+grammar.ruleMarker{endID: 41, name: "null", startID: 40}.
+grammar.node{id: 42}.
+grammar.edge{from: 40, label: "n", to: 42}.
+grammar.node{id: 43}.
+grammar.edge{from: 42, label: "u", to: 43}.
+grammar.node{id: 44}.
+grammar.edge{from: 43, label: "l", to: 44}.
+grammar.node{id: 45}.
+grammar.edge{from: 44, label: "l", to: 45}.
+grammar.unlabeledEdge{from: 45, to: 41}.
+grammar.node{id: 46}.
+grammar.node{id: 47}.
+grammar.ruleMarker{endID: 47, name: "object", startID: 46}.
+grammar.node{id: 48}.
+grammar.node{id: 49}.
+grammar.ruleMarker{endID: 49, name: "object_seq_0", startID: 48}.
+grammar.node{id: 50}.
+grammar.edge{from: 48, label: "{", to: 50}.
+grammar.unlabeledEdge{from: 50, to: 49}.
+grammar.unlabeledEdge{from: 46, to: 48}.
+grammar.node{id: 51}.
+grammar.node{id: 52}.
+grammar.ruleMarker{endID: 52, name: "object_seq_1", startID: 51}.
+grammar.refNode{id: 53, ref: "keyValue"}.
+grammar.unlabeledEdge{from: 51, to: 53}.
+grammar.unlabeledEdge{from: 53, to: 52}.
+grammar.unlabeledEdge{from: 49, to: 51}.
+grammar.node{id: 54}.
+grammar.node{id: 55}.
+grammar.ruleMarker{endID: 55, name: "object_seq_2", startID: 54}.
+grammar.node{id: 56}.
+grammar.edge{from: 54, label: "}", to: 56}.
+grammar.unlabeledEdge{from: 56, to: 55}.
+grammar.unlabeledEdge{from: 52, to: 54}.
+grammar.unlabeledEdge{from: 55, to: 47}.
+grammar.node{id: 57}.
+grammar.node{id: 58}.
+grammar.ruleMarker{endID: 58, name: "string", startID: 57}.
+grammar.node{id: 59}.
+grammar.node{id: 60}.
+grammar.ruleMarker{endID: 60, name: "string_seq_0", startID: 59}.
+grammar.node{id: 61}.
+grammar.edge{from: 59, label: "'", to: 61}.
+grammar.unlabeledEdge{from: 61, to: 60}.
+grammar.unlabeledEdge{from: 57, to: 59}.
+grammar.node{id: 62}.
+grammar.node{id: 63}.
+grammar.ruleMarker{endID: 63, name: "string_seq_1", startID: 62}.
+grammar.node{id: 64}.
+grammar.node{id: 65}.
+grammar.ruleMarker{endID: 65, name: "string_seq_1_rep", startID: 64}.
+grammar.edge{from: 64, fromChar: "a", to: 65, toChar: "z"}.
+grammar.node{id: 66}.
+grammar.node{id: 67}.
+grammar.ruleMarker{endID: 67, name: "string_seq_1_rep", startID: 66}.
+grammar.unlabeledEdge{from: 66, to: 67}.
+grammar.unlabeledEdge{from: 62, to: 64}.
+grammar.unlabeledEdge{from: 65, to: 63}.
+grammar.unlabeledEdge{from: 63, to: 66}.
+grammar.unlabeledEdge{from: 67, to: 62}.
+grammar.unlabeledEdge{from: 62, to: 63}.
+grammar.unlabeledEdge{from: 60, to: 62}.
+grammar.node{id: 68}.
+grammar.node{id: 69}.
+grammar.ruleMarker{endID: 69, name: "string_seq_2", startID: 68}.
+grammar.node{id: 70}.
+grammar.edge{from: 68, label: "'", to: 70}.
+grammar.unlabeledEdge{from: 70, to: 69}.
+grammar.unlabeledEdge{from: 63, to: 68}.
+grammar.unlabeledEdge{from: 69, to: 58}.
+grammar.node{id: 71}.
+grammar.node{id: 72}.
+grammar.ruleMarker{endID: 72, name: "value", startID: 71}.
+grammar.node{id: 73}.
+grammar.node{id: 74}.
+grammar.ruleMarker{endID: 74, name: "value_choice_0", startID: 73}.
+grammar.refNode{id: 75, ref: "object"}.
+grammar.unlabeledEdge{from: 73, to: 75}.
+grammar.unlabeledEdge{from: 75, to: 74}.
+grammar.unlabeledEdge{from: 71, to: 73}.
+grammar.unlabeledEdge{from: 74, to: 72}.
+grammar.node{id: 76}.
+grammar.node{id: 77}.
+grammar.ruleMarker{endID: 77, name: "value_choice_1", startID: 76}.
+grammar.refNode{id: 78, ref: "array"}.
+grammar.unlabeledEdge{from: 76, to: 78}.
+grammar.unlabeledEdge{from: 78, to: 77}.
+grammar.unlabeledEdge{from: 71, to: 76}.
+grammar.unlabeledEdge{from: 77, to: 72}.
+grammar.node{id: 79}.
+grammar.node{id: 80}.
+grammar.ruleMarker{endID: 80, name: "value_choice_2", startID: 79}.
+grammar.refNode{id: 81, ref: "int"}.
+grammar.unlabeledEdge{from: 79, to: 81}.
+grammar.unlabeledEdge{from: 81, to: 80}.
+grammar.unlabeledEdge{from: 71, to: 79}.
+grammar.unlabeledEdge{from: 80, to: 72}.
+grammar.node{id: 82}.
+grammar.node{id: 83}.
+grammar.ruleMarker{endID: 83, name: "value_choice_3", startID: 82}.
+grammar.refNode{id: 84, ref: "string"}.
+grammar.unlabeledEdge{from: 82, to: 84}.
+grammar.unlabeledEdge{from: 84, to: 83}.
+grammar.unlabeledEdge{from: 71, to: 82}.
+grammar.unlabeledEdge{from: 83, to: 72}.
+grammar.node{id: 85}.
+grammar.node{id: 86}.
+grammar.ruleMarker{endID: 86, name: "value_choice_4", startID: 85}.
+grammar.refNode{id: 87, ref: "null"}.
+grammar.unlabeledEdge{from: 85, to: 87}.
+grammar.unlabeledEdge{from: 87, to: 86}.
+grammar.unlabeledEdge{from: 71, to: 85}.
+grammar.unlabeledEdge{from: 86, to: 72}.

@@ -117,14 +117,14 @@ function choiceName(name: string, idx: number): string {
 function pushNode(state: GeneratorState): number {
   const id = state.nextID;
   state.nextID++;
-  state.records.push(rec("node", { id: int(id) }));
+  state.records.push(rec("grammar.node", { id: int(id) }));
   return id;
 }
 
 function pushRefNode(state: GeneratorState, ref: string): number {
   const id = state.nextID;
   state.nextID++;
-  state.records.push(rec("refNode", { id: int(id), ref: str(ref) }));
+  state.records.push(rec("grammar.refNode", { id: int(id), ref: str(ref) }));
   return id;
 }
 
@@ -135,7 +135,7 @@ function pushRuleMarker(
   endID: number
 ) {
   state.records.push(
-    rec("ruleMarker", {
+    rec("grammar.ruleMarker", {
       name: str(ruleName),
       startID: int(startID),
       endID: int(endID),
@@ -150,7 +150,7 @@ function pushEdge(
   label: string
 ) {
   state.records.push(
-    rec("edge", {
+    rec("grammar.edge", {
       from: int(from),
       to: int(to),
       label: str(label),
@@ -166,7 +166,7 @@ function pushCharRangeEdge(
   toChar: string
 ) {
   state.records.push(
-    rec("edge", {
+    rec("grammar.edge", {
       from: int(from),
       to: int(to),
       fromChar: str(fromChar),
@@ -177,20 +177,19 @@ function pushCharRangeEdge(
 
 function pushUnlabeledEdge(state: GeneratorState, from: number, to: number) {
   state.records.push(
-    rec("unlabeledEdge", {
+    rec("grammar.unlabeledEdge", {
       from: int(from),
       to: int(to),
     })
   );
 }
 
-// TODO: input to DL
 export function inputToDL(input: string): Rec[] {
   return stringToArray(input)
-    .map((char, idx) => rec("source", { char: str(char), id: int(idx) }))
+    .map((char, idx) => rec("input.source", { char: str(char), id: int(idx) }))
     .concat(
       range(input.length - 1).map((idx) =>
-        rec("next", { left: int(idx), right: int(idx + 1) })
+        rec("input.next", { left: int(idx), right: int(idx + 1) })
       )
     );
 }

@@ -18,8 +18,8 @@ export function initializeInterp(
   const grammarParsed = parseGrammar(grammarText);
   const records = grammarToDL(grammarParsed);
 
-  interp = interp.evalStr(".table source")[1];
-  interp = interp.evalStr(".table next")[1];
+  interp = interp.evalStr(".table input.source")[1];
+  interp = interp.evalStr(".table input.next")[1];
   interp = interp.insertAll(records);
   return interp;
 }
