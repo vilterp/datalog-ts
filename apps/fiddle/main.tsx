@@ -28,16 +28,11 @@ function Main() {
   let nodes = [];
   let edges = [];
 
-  const interp = new SimpleInterpreter(".", nullLoader);
-  let interp2: AbstractInterpreter = null;
+  let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
   try {
-    const program = language.program.tryParse(source) as Program;
-    interp2 = program.reduce<AbstractInterpreter>(
-      (interp, stmt) => interp.evalStmt(stmt)[1],
-      interp
-    );
+    interp = interp.evalStr(source)[1];
     edges = uniqBy(
-      interp2.queryStr("edge{from: F, to: T, label: L}").map((res) => ({
+      interp.queryStr("edge{from: F, to: T, label: L}").map((res) => ({
         from: ((res.term as Rec).attrs.from as StringLit).val,
         to: ((res.term as Rec).attrs.to as StringLit).val,
         label: ((res.term as Rec).attrs.label as StringLit).val,
@@ -45,7 +40,7 @@ function Main() {
       (e) => `${e.from}-${e.to}`
     );
     nodes = uniqBy(
-      interp2.queryStr("node{id: I, label: L}").map((res) => ({
+      interp.queryStr("node{id: I, label: L}").map((res) => ({
         key: ((res.term as Rec).attrs.id as StringLit).val,
         label: ((res.term as Rec).attrs.label as StringLit).val,
       })),
@@ -73,7 +68,7 @@ function Main() {
         </>
       ) : null}
       <h3>Explore</h3>
-      <Explorer interp={interp2} />
+      <Explorer interp={interp} />
       <Collapsible
         heading="Graph"
         initiallyCollapsed={true}
