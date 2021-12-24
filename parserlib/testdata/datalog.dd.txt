@@ -1,4 +1,19 @@
 gram
+main :- "foo".
+----
+application/datalog
+node{id: 0}.
+node{id: 1}.
+ruleMarker{endID: 1, name: "main", startID: 0}.
+node{id: 2}.
+edge{from: 0, label: "f", to: 2}.
+node{id: 3}.
+edge{from: 2, label: "o", to: 3}.
+node{id: 4}.
+edge{from: 3, label: "o", to: 4}.
+unlabeledEdge{from: 4, to: 1}.
+
+gram
 main :- repSep("foo", "bar").
 ----
 application/datalog
