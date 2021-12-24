@@ -1,8 +1,15 @@
-path{from: N1, to: N3} :-
-  grammar.edge{from: N1, to: N3} |
-  grammar.unlabeledEdge{from: N1, to: N3} |
-  grammar.edge{from: N1, to: N2} & path{from: N2, to: N3}.
+# TODO: actually match input
 
-rulePath{ruleName: R} :-
-  path{from: N1, to: N2} &
+parse.path{from: N1, to: N3, startChar: C1, endChar: C2} :-
+  parse.charMatch{from: N1, to: N3, startChar: C1, endChar: C2} |
+  grammar.unlabeledEdge{from: N1, to: N3} |
+  grammar.edge{from: N1, to: N2} &
+  parse.path{from: N2, to: N3}.
+
+parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C1} :-
+  grammar.edge{from: N1, to: N2, label: C} &
+  input.char{id: C1, char: C}.
+
+parse.rulePath{ruleName: R} :-
+  parse.path{from: N1, to: N2} &
   grammar.ruleMarker{name: R, startID: N1, endID: N2}.
