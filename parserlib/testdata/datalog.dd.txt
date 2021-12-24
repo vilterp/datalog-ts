@@ -13,14 +13,14 @@ main_rep{span: span{from: P0, to: P5}} :-
   source{char: "f", left: P0, right: P1} &
   source{char: "o", left: P2, right: P3} &
   source{char: "o", left: P4, right: P5} &
-  connected{left: P1, right: P2} &
-  connected{left: P3, right: P4}.
+  next{left: P1, right: P2} &
+  next{left: P3, right: P4}.
 main_sep{span: span{from: P0, to: P5}} :- 
   source{char: "b", left: P0, right: P1} &
   source{char: "a", left: P2, right: P3} &
   source{char: "r", left: P4, right: P5} &
-  connected{left: P1, right: P2} &
-  connected{left: P3, right: P4}.
+  next{left: P1, right: P2} &
+  next{left: P3, right: P4}.
 
 input
 foo
@@ -40,6 +40,7 @@ foobarfoo
 application/datalog
 main{span: span{from: 0, to: 5}}.
 main{span: span{from: 12, to: 17}}.
+main{span: span{from: 0, to: 17}}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -59,7 +60,10 @@ main_seq_1{span: span{from: P1, to: P6}} :-
   main_seq_1_sep{span: span{from: P3, to: P4}} &
   next{left: P4, right: P5} &
   main_seq_1{span: span{from: P5, to: P6}}.
-main_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "a" <= C & C <= "z".
+main_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  source{char: C, left: P1, right: P2} &
+  "a" <= C &
+  C <= "z".
 main_seq_1_sep{span: span{from: P0, to: P1}} :- source{char: ",", left: P0, right: P1}.
 main_seq_2{span: span{from: P0, to: P1}} :- source{char: "]", left: P0, right: P1}.
 
@@ -72,11 +76,13 @@ input
 [a]
 ----
 application/datalog
+main{seq_0: span{from: 0, to: 1}, seq_1: span{from: 2, to: 3}, seq_2: span{from: 4, to: 5}, span: span{from: 0, to: 5}}.
 
 input
 [a,b,c]
 ----
 application/datalog
+main{seq_0: span{from: 0, to: 1}, seq_1: span{from: 2, to: 11}, seq_2: span{from: 12, to: 13}, span: span{from: 0, to: 13}}.
 
 gram
 main :- repSep([0-9], "").
@@ -89,23 +95,58 @@ main{span: span{from: P1, to: P6}} :-
   main_sep{span: span{from: P3, to: P4}} &
   next{left: P4, right: P5} &
   main{span: span{from: P5, to: P6}}.
-main_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "0" <= C & C <= "9".
+main_rep{span: span{from: P1, to: P2}} :- source{char: C, left: P1, right: P2} & "0" <= C & C <= "9".
 main_sep{span: span{from: P1, to: P2}} :- source{id: P1} & P1 == P2.
 
 input
 1
 ----
 application/datalog
-main{span: span{from: P1, to: P1}}.
+main{span: span{from: 0, to: 1}}.
 
 input
 1234
 ----
 application/datalog
-main{span: span{from: P1, to: P1}}.
-main{span: span{from: P1, to: P1}}.
-main{span: span{from: P1, to: P1}}.
-main{span: span{from: P1, to: P1}}.
+main{span: span{from: 0, to: 1}}.
+main{span: span{from: 2, to: 3}}.
+main{span: span{from: 4, to: 5}}.
+main{span: span{from: 6, to: 7}}.
+
+gram
+main :- ["foo", "bar", "baz"].
+----
+application/datalog
+main{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
+  main_seq_0{span: span{from: P1, to: P2}} &
+  main_seq_1{span: span{from: P3, to: P4}} &
+  main_seq_2{span: span{from: P5, to: P6}} &
+  next{left: P2, right: P3} &
+  next{left: P4, right: P5}.
+main_seq_0{span: span{from: P0, to: P5}} :- 
+  source{char: "f", left: P0, right: P1} &
+  source{char: "o", left: P2, right: P3} &
+  source{char: "o", left: P4, right: P5} &
+  next{left: P1, right: P2} &
+  next{left: P3, right: P4}.
+main_seq_1{span: span{from: P0, to: P5}} :- 
+  source{char: "b", left: P0, right: P1} &
+  source{char: "a", left: P2, right: P3} &
+  source{char: "r", left: P4, right: P5} &
+  next{left: P1, right: P2} &
+  next{left: P3, right: P4}.
+main_seq_2{span: span{from: P0, to: P5}} :- 
+  source{char: "b", left: P0, right: P1} &
+  source{char: "a", left: P2, right: P3} &
+  source{char: "z", left: P4, right: P5} &
+  next{left: P1, right: P2} &
+  next{left: P3, right: P4}.
+
+input
+foobarbaz
+----
+application/datalog
+main{seq_0: span{from: 0, to: 5}, seq_1: span{from: 6, to: 11}, seq_2: span{from: 12, to: 17}, span: span{from: 0, to: 17}}.
 
 gram
 main :- value.
@@ -139,7 +180,10 @@ int{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{fro
   int_seq_0{span: span{from: P1, to: P2}} &
   int_seq_1{span: span{from: P3, to: P4}} &
   next{left: P2, right: P3}.
-int_seq_0{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "0" <= C & C <= "9".
+int_seq_0{span: span{from: P1, to: P2}} :- 
+  source{char: C, left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
 int_seq_1{span: span{from: P1, to: P6}} :- 
   int_seq_1_rep{span: span{from: P1, to: P6}} |
   int_seq_1_rep{span: span{from: P1, to: P2}} &
@@ -147,7 +191,10 @@ int_seq_1{span: span{from: P1, to: P6}} :-
   int_seq_1_sep{span: span{from: P3, to: P4}} &
   next{left: P4, right: P5} &
   int_seq_1{span: span{from: P5, to: P6}}.
-int_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "0" <= C & C <= "9".
+int_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  source{char: C, left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
 int_seq_1_sep{span: span{from: P1, to: P2}} :- source{id: P1} & P1 == P2.
 keyValue{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
   keyValue_seq_0{span: span{from: P1, to: P2}} &
@@ -164,9 +211,9 @@ null{span: span{from: P0, to: P7}} :-
   source{char: "u", left: P2, right: P3} &
   source{char: "l", left: P4, right: P5} &
   source{char: "l", left: P6, right: P7} &
-  connected{left: P1, right: P2} &
-  connected{left: P3, right: P4} &
-  connected{left: P5, right: P6}.
+  next{left: P1, right: P2} &
+  next{left: P3, right: P4} &
+  next{left: P5, right: P6}.
 object{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
   object_seq_0{span: span{from: P1, to: P2}} &
   object_seq_1{span: span{from: P3, to: P4}} &
@@ -190,7 +237,10 @@ string_seq_1{span: span{from: P1, to: P6}} :-
   string_seq_1_sep{span: span{from: P3, to: P4}} &
   next{left: P4, right: P5} &
   string_seq_1{span: span{from: P5, to: P6}}.
-string_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "a" <= C & C <= "z".
+string_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  source{char: C, left: P1, right: P2} &
+  "a" <= C &
+  C <= "z".
 string_seq_1_sep{span: span{from: P1, to: P2}} :- source{id: P1} & P1 == P2.
 string_seq_2{span: span{from: P0, to: P1}} :- source{char: "'", left: P0, right: P1}.
 value{span: span{from: P1, to: P2}} :- 

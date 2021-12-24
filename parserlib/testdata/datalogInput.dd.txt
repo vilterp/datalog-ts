@@ -12,13 +12,13 @@ source{char: "h", left: 14, right: 15}.
 source{char: "e", left: 16, right: 17}.
 source{char: "r", left: 18, right: 19}.
 source{char: "e", left: 20, right: 21}.
-connected{left: 1, right: 2}.
-connected{left: 3, right: 4}.
-connected{left: 5, right: 6}.
-connected{left: 7, right: 8}.
-connected{left: 9, right: 10}.
-connected{left: 11, right: 12}.
-connected{left: 13, right: 14}.
-connected{left: 15, right: 16}.
-connected{left: 17, right: 18}.
-connected{left: 19, right: 20}.
+next{left: 1, right: 2}.
+next{left: 3, right: 4}.
+next{left: 5, right: 6}.
+next{left: 7, right: 8}.
+next{left: 9, right: 10}.
+next{left: 11, right: 12}.
+next{left: 13, right: 14}.
+next{left: 15, right: 16}.
+next{left: 17, right: 18}.
+next{left: 19, right: 20}.

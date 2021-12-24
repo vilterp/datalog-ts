@@ -54,7 +54,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                 })
               ),
               ...range(rule.value.length - 1).map((idx) =>
-                rec("connected", {
+                rec("next", {
                   left: varr(`P${idx * 2 + 1}`),
                   right: varr(`P${idx * 2 + 2}`),
                 })
@@ -156,13 +156,14 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         dl.rule(
           rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P1") }),
+            span: rec("span", { from: varr("P1"), to: varr("P2") }),
           }),
           or([
             and([
               rec("source", {
-                id: varr("P1"),
                 char: varr("C"),
+                left: varr("P1"),
+                right: varr("P2"),
               }),
               ...exprsForCharRule(rule.rule),
             ]),
@@ -263,7 +264,7 @@ export function inputToDL(input: string): Rec[] {
     )
     .concat(
       range(input.length - 1).map((idx) =>
-        rec("connected", { left: int(idx * 2 + 1), right: int(idx * 2 + 2) })
+        rec("next", { left: int(idx * 2 + 1), right: int(idx * 2 + 2) })
       )
     );
 }
