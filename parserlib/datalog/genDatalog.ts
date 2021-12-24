@@ -216,15 +216,7 @@ function succeedRule(name: string): dl.Rule {
       span: rec("span", { from: varr("P1"), to: varr("P2") }),
     }),
     or([
-      and([
-        rec("source", { id: varr("P1") }),
-        {
-          type: "BinExpr",
-          left: varr("P1"),
-          op: "==",
-          right: varr("P2"),
-        },
-      ]),
+      and([{ type: "BinExpr", op: "==", left: varr("P1"), right: varr("P2") }]),
     ])
   );
 }
