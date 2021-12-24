@@ -215,6 +215,7 @@ function succeedRule(name: string): dl.Rule {
     }),
     or([
       and([
+        rec("source", { id: varr("P1") }),
         {
           type: "BinExpr",
           left: varr("P1"),
