@@ -1,0 +1,8 @@
+path{from: N1, to: N3} :-
+  grammar.edge{from: N1, to: N3} |
+  grammar.unlabeledEdge{from: N1, to: N3} |
+  grammar.edge{from: N1, to: N2} & path{from: N2, to: N3}.
+
+rulePath{ruleName: R} :-
+  path{from: N1, to: N2} &
+  grammar.ruleMarker{name: R, startID: N1, endID: N2}.
