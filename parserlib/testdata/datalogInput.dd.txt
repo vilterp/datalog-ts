@@ -1,24 +1,8 @@
-hello there
+foo
 ----
 application/datalog
-input.source{char: "h", id: 0}.
-input.source{char: "e", id: 1}.
-input.source{char: "l", id: 2}.
-input.source{char: "l", id: 3}.
-input.source{char: "o", id: 4}.
-input.source{char: " ", id: 5}.
-input.source{char: "t", id: 6}.
-input.source{char: "h", id: 7}.
-input.source{char: "e", id: 8}.
-input.source{char: "r", id: 9}.
-input.source{char: "e", id: 10}.
+input.source{char: "f", id: 0}.
+input.source{char: "o", id: 1}.
+input.source{char: "o", id: 2}.
 input.next{left: 0, right: 1}.
 input.next{left: 1, right: 2}.
-input.next{left: 2, right: 3}.
-input.next{left: 3, right: 4}.
-input.next{left: 4, right: 5}.
-input.next{left: 5, right: 6}.
-input.next{left: 6, right: 7}.
-input.next{left: 7, right: 8}.
-input.next{left: 8, right: 9}.
-input.next{left: 9, right: 10}.
