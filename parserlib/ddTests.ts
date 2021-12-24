@@ -9,12 +9,12 @@ import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { flatten } from "./flatten";
-import { ppr, ppRule, ppt } from "../core/pretty";
+import { ppt } from "../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { nullLoader } from "../core/loaders";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { Rec, Rule } from "../core/types";
+import { Rec } from "../core/types";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
