@@ -1,8 +1,8 @@
 foo
 ----
 application/datalog
-input.source{char: "f", id: 0}.
-input.source{char: "o", id: 1}.
-input.source{char: "o", id: 2}.
+input.char{char: "f", id: 0}.
+input.char{char: "o", id: 1}.
+input.char{char: "o", id: 2}.
 input.next{left: 0, right: 1}.
 input.next{left: 1, right: 2}.
