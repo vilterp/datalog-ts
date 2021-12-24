@@ -11,19 +11,17 @@ import useLocalStorage from "react-use-localstorage";
 const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
 export function initializeInterp(
-  interp: AbstractInterpreter,
+  inputInterp: AbstractInterpreter,
   grammarText: string
 ): AbstractInterpreter {
+  let interp = inputInterp;
   const grammarParsed = parseGrammar(grammarText);
-  const rules = grammarToDL(grammarParsed);
+  const records = grammarToDL(grammarParsed);
 
-  const [_1, interp2] = interp.evalStr(".table source");
-  const [_2, interp3] = interp2.evalStr(".table next");
-
-  const [_3, interp4] = interp3.evalStmts(
-    rules.map((rule) => ({ type: "Rule", rule }))
-  );
-  return interp4;
+  interp = interp.evalStr(".table source")[1];
+  interp = interp.evalStr(".table next")[1];
+  interp = interp.insertAll(records);
+  return interp;
 }
 
 function Main() {
