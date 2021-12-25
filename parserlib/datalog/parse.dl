@@ -12,6 +12,6 @@ parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C1} :-
   grammar.edge{from: N1, to: N2, label: C} &
   input.char{id: C1, char: C}.
 
-parse.rulePath{ruleName: R} :-
-  parse.path{fromNode: N1, toNode: N2} &
+parse.rulePath{ruleName: R, startChar: C1, endChar: C2} :-
+  parse.path{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} &
   grammar.ruleMarker{name: R, startID: N1, endID: N2}.

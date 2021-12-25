@@ -15,6 +15,7 @@ import { SimpleInterpreter } from "../core/simple/interpreter";
 import { nullLoader } from "../core/loaders";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { Rec } from "../core/types";
+import { fsLoader } from "../core/fsLoader";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -135,23 +136,23 @@ function datalogTest(test: string[]): TestOutput[] {
       return datalogOut(grammarRecords.map(ppt).join(".\n") + ".");
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
-      let interp = new SimpleInterpreter(
-        ".",
-        nullLoader
-      ) as AbstractInterpreter;
+      let interp = new SimpleInterpreter(".", fsLoader) as AbstractInterpreter;
+      // load parsing rules
+      interp = interp.doLoad("parserlib/datalog/parse.dl");
       // insert grammar as data
       interp = interp.insertAll(grammarRecords);
       // insert input as data
-      interp = interp.evalStmt({ type: "TableDecl", name: "next" })[1];
-      interp = interp.evalStmt({ type: "TableDecl", name: "source" })[1];
+      interp = interp.evalStr(".table input.char")[1];
+      interp = interp.evalStr(".table input.next")[1];
       interp = interp.insertAll(inputToDL(restOfInput));
       // TODO: insert grammar interpreter
       try {
-        // const results = interp.queryStr("main{span: span{from: F, to: T}}");
-        // return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
-        return plainTextOut("TODO");
+        const results = interp.queryStr(
+          `parse.rulePath{ruleName: "main", startChar: S, endChar: E}`
+        );
+        return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
       } catch (e) {
-        throw new Error(`error on input "${restOfInput}": ${e}`);
+        return plainTextOut(`${e}`);
       }
     } else {
       throw new Error(`expected 'gram' or 'input'; got ${firstLine}`);

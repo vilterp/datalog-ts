@@ -49,20 +49,17 @@ grammar.unlabeledEdge{from: 0, to: 1}.
 input
 foo
 ----
-text/plain
-TODO
+application/datalog
 
 input
 foobar
 ----
-text/plain
-TODO
+application/datalog
 
 input
 foobarfoo
 ----
-text/plain
-TODO
+application/datalog
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -109,20 +106,17 @@ grammar.unlabeledEdge{from: 13, to: 1}.
 input
 []
 ----
-text/plain
-TODO
+application/datalog
 
 input
 [a]
 ----
-text/plain
-TODO
+application/datalog
 
 input
 [a,b,c]
 ----
-text/plain
-TODO
+application/datalog
 
 gram
 main :- repSep([0-9], "").
@@ -149,13 +143,13 @@ input
 1
 ----
 text/plain
-TODO
+RangeError: Maximum call stack size exceeded
 
 input
 1234
 ----
 text/plain
-TODO
+RangeError: Maximum call stack size exceeded
 
 gram
 main :- value.
