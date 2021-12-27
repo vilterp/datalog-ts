@@ -1,7 +1,7 @@
 import React from "react";
 import { useBoolLocalStorage } from "./hooks";
 
-export function Collapsible(props: {
+export function CollapsibleWithHeading(props: {
   heading: string;
   initiallyCollapsed?: boolean;
   content: React.ReactNode;

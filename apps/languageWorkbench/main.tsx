@@ -9,7 +9,7 @@ import {
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
 import { extractRuleTree, RuleTree } from "../../parserlib/ruleTree";
-import { Collapsible } from "../../uiCommon/generic/collapsible";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import {
   TreeView,
   TreeCollapseState,
@@ -188,7 +188,7 @@ function Playground() {
 
         {/* TODO: memoize some of these. they take non-trival time to render */}
 
-        <Collapsible
+        <CollapsibleWithHeading
           heading="Rule Tree"
           content={
             <>
@@ -205,7 +205,7 @@ function Playground() {
             </>
           }
         />
-        <Collapsible
+        <CollapsibleWithHeading
           heading="Flattened"
           content={
             <>
@@ -219,7 +219,7 @@ function Playground() {
             </>
           }
         />
-        <Collapsible
+        <CollapsibleWithHeading
           heading="Trace Tree"
           content={
             <>
