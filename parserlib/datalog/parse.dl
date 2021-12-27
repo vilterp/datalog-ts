@@ -3,6 +3,7 @@
 .table grammar.edge
 .table grammar.unlabeledEdge
 .table grammar.refEdge
+.table grammar.charRangeEdge
 .table grammar.node
 .table grammar.ruleMarker
 
@@ -23,18 +24,32 @@ parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C1} :-
   input.char{id: C1, char: C}.
 
 parse.ruleMatch{fromNode: N1, toNode: N4, startChar: C1, endChar: C4} :-
-    grammar.refEdge{fromID: N1, toID: N4, ruleName: R} &
-    parse.rulePath{ruleName: R, startChar: C1, endChar: C4}.
+  grammar.refEdge{fromID: N1, toID: N4, ruleName: R} &
+  parse.rulePath{ruleName: R, startChar: C1, endChar: C4}.
 
 parse.rulePath{ruleName: R, startChar: CS, endChar: CE} :-
   grammar.ruleMarker{name: R, startID: NS, endID: NE} &
   parse.path{fromNode: NS, toNode: NE, startChar: CS, endChar: CE}.
 
 # viz
+
+grammarViz.edge{from: F, to: T, label: L} :-
+  grammarViz.normalEdge{from: F, to: T, label: L} |
+  grammarViz.unlabeledEdge{from: F, to: T, label: L} |
+  grammarViz.refEdge{from: F, to: T, label: L}.
+
+grammarViz.normalEdge{from: F, to: T, label: L} :-
+  grammar.edge{from: F, to: T, label: L}.
+grammarViz.unlabeledEdge{from: F, to: T, label: ""} :-
+  grammar.unlabeledEdge{from: F, to: T}.
+grammarViz.refEdge{from: F, to: T, label: L} :-
+  grammar.refEdge{fromID: F, toID: T, ruleName: L}.
+# TODO: char range edge
+
 internal.visualization{
   name: "graphviz",
   spec: graphviz{
     nodes: "grammar.node{id: ID}",
-    edges: "grammar.edge{from: From, to: To}"
+    edges: "grammarViz.edge{from: From, to: To, label: Label}"
   }
 }.
