@@ -1,70 +1,32 @@
 import { Graph, records, RecordTree } from "../util/graphviz";
+import { Tree } from "../util/tree";
 import { objToPairs } from "../util/util";
-import { defaultTracePrintOpts, ppt, ppVM } from "./pretty";
-import { collapseAndSources, printTermWithBindings } from "./traceTree";
+import { defaultTracePrintOpts, ppt } from "./pretty";
+import { printTermWithBindings, traceToTree } from "./traceTree";
 import { Rec, Res } from "./types";
-import { termLT } from "./unify";
 
 export function traceToGraph(res: Res): Graph {
+  const tree = traceToTree(res);
   const graph: Graph = { edges: [], nodes: [] };
-  recur(graph, res);
+  treeToGraph(graph, tree);
   return graph;
 }
 
-const NODE_ATTRS = { shape: "record" };
-
-function recur(graph: Graph, res: Res) {
-  // TODO: add binding edges
-  switch (res.trace.type) {
-    case "AndTrace": {
-      collapseAndSources(res.trace.sources).forEach((source) => {
-        recur(graph, source);
-      });
-      break;
-    }
-    case "MatchTrace": {
-      const id = printTermWithBindings(res, [], defaultTracePrintOpts);
-      const rec = res.term as Rec;
-      graph.nodes.push({
-        id,
-        attrs: {
-          label: records(recToGraphvizRec(rec)),
-          ...NODE_ATTRS,
-        },
-      });
-      break;
-    }
-    case "RefTrace": {
-      const id = printTermWithBindings(res, [], {
-        showScopePath: false,
-      });
-      const rec = res.term as Rec;
-      graph.nodes.push({
-        id,
-        attrs: {
-          label: records(recToGraphvizRec(rec)),
-          ...NODE_ATTRS,
-        },
-      });
-      recur(graph, res.trace.innerRes);
-      const innerRes = res.trace.innerRes;
-      const edges =
-        innerRes.trace.type === "AndTrace"
-          ? collapseAndSources(innerRes.trace.sources)
-          : [innerRes];
-      const mappings = res.trace.mappings;
-      edges.forEach((edge) => {
-        graph.edges.push({
-          from: id,
-          to: printTermWithBindings(edge, [], defaultTracePrintOpts),
-          attrs: { label: `ref: ${ppVM(mappings, [], defaultTracePrintOpts)}` },
-        });
-      });
-      break;
-    }
-    default:
-      throw new Error(`traces of type ${res.trace.type} shouldn't be reached`);
-  }
+function treeToGraph(graph: Graph, tree: Tree<Res>) {
+  const rec = tree.item.term as Rec;
+  const id = printTermWithBindings(tree.item, [], defaultTracePrintOpts);
+  graph.nodes.push({
+    id,
+    attrs: { shape: "record", label: records(recToGraphvizRec(rec)) },
+  });
+  tree.children.forEach((child) => {
+    treeToGraph(graph, child);
+    graph.edges.push({
+      from: id,
+      to: printTermWithBindings(child.item, [], defaultTracePrintOpts),
+      attrs: {},
+    });
+  });
 }
 
 function recToGraphvizRec(rec: Rec): RecordTree {
