@@ -47,10 +47,7 @@ function GraphvizWrapper(props: {
 
     return (
       <div>
-        <Graphviz
-          dot={dot}
-          options={{ width: 500, height: 500, fit: true, zoom: false }}
-        />
+        <MemoizedGraphviz dot={dot} options={OPTIONS} />
       </div>
     );
   } catch (e) {
@@ -63,6 +60,8 @@ function GraphvizWrapper(props: {
   }
 }
 
+const MemoizedGraphviz = React.memo(Graphviz);
+
 function stringifyNodeID(term: Term): string {
   if (term.type === "StringLit") {
     return term.val;
@@ -72,3 +71,7 @@ function stringifyNodeID(term: Term): string {
   }
   throw new Error(`expected int or string, got "${JSON.stringify(term)}"`);
 }
+
+// pull out this object to avoid creating it each time,
+// which defeats React.memo (and allocates unnecessarily...)
+const OPTIONS = { width: 500, height: 500, fit: true, zoom: false };
