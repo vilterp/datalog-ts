@@ -6,7 +6,7 @@ import { VISUALIZERS } from "../visualizers";
 import { lastItem, mapObjToList } from "../../util";
 import { Archive } from "../types";
 import { useFetch } from "use-http";
-import { CollapsibleWithHeading } from "../../../uiCommon/generic/collapsible";
+import { Collapsible } from "../../../uiCommon/generic/collapsible";
 import Select from "react-select";
 
 function Main() {
@@ -48,11 +48,33 @@ function TestViewer(props: { archive: Archive }) {
       <h3>Viewer</h3>
       {(testArchive[currentTest] || []).map((pair, idx) => (
         <div key={idx}>
-          <CollapsibleWithHeading
-            heading={pair.input}
-            content={(
-              VISUALIZERS[pair.output.mimeType] || VISUALIZERS["text/plain"]
-            )(pair.output.content)}
+          <Collapsible
+            id={pair.input}
+            renderLabel={(collapsed) => (
+              <div style={{ display: "flex" }}>
+                <div style={{ fontFamily: "monospace" }}>
+                  {collapsed ? ">" : "v"}
+                </div>
+                <pre
+                  style={{
+                    whiteSpace: "pre",
+                    marginTop: 0,
+                    marginBottom: 0,
+                    paddingLeft: 10,
+                  }}
+                >
+                  {pair.input}
+                </pre>
+              </div>
+            )}
+            content={
+              <div style={{ paddingLeft: 17, marginBottom: 10 }}>
+                <pre style={{ margin: 0 }}>----</pre>
+                {(
+                  VISUALIZERS[pair.output.mimeType] || VISUALIZERS["text/plain"]
+                )(pair.output.content)}
+              </div>
+            }
           />
         </div>
       ))}
