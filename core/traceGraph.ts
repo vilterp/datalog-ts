@@ -1,9 +1,18 @@
-import { Graph, records, RecordTree } from "../util/graphviz";
+import { Graph, recordLeaf, recordNode, RecordTree } from "../util/graphviz";
 import { Tree } from "../util/tree";
 import { objToPairs } from "../util/util";
-import { defaultTracePrintOpts, ppt } from "./pretty";
-import { printTermWithBindings, traceToTree } from "./traceTree";
-import { Rec, Res } from "./types";
+import {
+  defaultTracePrintOpts,
+  ppt,
+  prettyPrintTermWithBindings,
+} from "./pretty";
+import {
+  makeTermWithBindings,
+  printTermWithBindings,
+  traceToTree,
+} from "./traceTree";
+import { Rec, Res, TermWithBindings } from "./types";
+import * as pp from "prettier-printer";
 
 export function traceToGraph(res: Res): Graph {
   const tree = traceToTree(res);
@@ -13,11 +22,22 @@ export function traceToGraph(res: Res): Graph {
 }
 
 function treeToGraph(graph: Graph, tree: Tree<Res>) {
-  const rec = tree.item.term as Rec;
-  const id = printTermWithBindings(tree.item, [], defaultTracePrintOpts);
+  const termWithBindings = makeTermWithBindings(
+    tree.item.term,
+    tree.item.bindings
+  );
+  const idDoc = prettyPrintTermWithBindings(
+    termWithBindings,
+    [],
+    defaultTracePrintOpts
+  );
+  const id = pp.render(100, idDoc);
   graph.nodes.push({
     id,
-    attrs: { shape: "record", label: records(recToGraphvizRec(rec)) },
+    attrs: {
+      shape: "record",
+      label: termToGraphvizRec(termWithBindings),
+    },
   });
   tree.children.forEach((child) => {
     treeToGraph(graph, child);
@@ -29,12 +49,20 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
   });
 }
 
-function recToGraphvizRec(rec: Rec): RecordTree {
-  return [
-    { id: "rec", content: rec.relation },
-    objToPairs(rec.attrs).map(([key, value]) => ({
-      id: key,
-      content: `${key}: ${ppt(value)}`,
-    })),
-  ];
+function termToGraphvizRec(term: TermWithBindings): RecordTree {
+  switch (term.type) {
+    case "RecordWithBindings":
+      return recordNode([
+        recordLeaf("rec", term.relation),
+        recordNode(
+          objToPairs(term.attrs).map(([key, value]) =>
+            recordNode([recordLeaf("key", key), termToGraphvizRec(value.term)])
+          )
+        ),
+      ]);
+    case "Atom":
+      return recordLeaf("atom", ppt(term.term));
+    default:
+      throw new Error(`todo: ${term.type}`);
+  }
 }

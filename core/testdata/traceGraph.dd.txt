@@ -2,13 +2,13 @@ sibling{left: "Pete", right: R}
 ----
 application/graphviz
 digraph G {
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="<rec> sibling|{<left> left: \"Pete\"|<right> right: \"Carolyn\"}" shape="record"];
-  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="<rec> parents|{<child> child: \"Pete\"|<father> father: \"Paul\"|<mother> mother: \"Mary\"}" shape="record"];
-  "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="<rec> mother|{<child> child: \"Pete\"|<mother> mother: \"Mary\"}" shape="record"];
-  "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="<rec> father|{<child> child: \"Pete\"|<father> father: \"Paul\"}" shape="record"];
-  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="<rec> parents|{<child> child: \"Carolyn\"|<father> father: \"Paul\"|<mother> mother: \"Mary\"}" shape="record"];
-  "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="<rec> mother|{<child> child: \"Carolyn\"|<mother> mother: \"Mary\"}" shape="record"];
-  "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="<rec> father|{<child> child: \"Carolyn\"|<father> father: \"Paul\"}" shape="record"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="<rec> sibling|<key> left|<atom> \"Pete\"|<key> right|<atom> \"Carolyn\"" shape="record"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="<rec> parents|<key> child|<atom> \"Pete\"|<key> father|<atom> \"Paul\"|<key> mother|<atom> \"Mary\"" shape="record"];
+  "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="<rec> mother|<key> child|<atom> \"Pete\"|<key> mother|<atom> \"Mary\"" shape="record"];
+  "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="<rec> father|<key> child|<atom> \"Pete\"|<key> father|<atom> \"Paul\"" shape="record"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="<rec> parents|<key> child|<atom> \"Carolyn\"|<key> father|<atom> \"Paul\"|<key> mother|<atom> \"Mary\"" shape="record"];
+  "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="<rec> mother|<key> child|<atom> \"Carolyn\"|<key> mother|<atom> \"Mary\"" shape="record"];
+  "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="<rec> father|<key> child|<atom> \"Carolyn\"|<key> father|<atom> \"Paul\"" shape="record"];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [];
   "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [];

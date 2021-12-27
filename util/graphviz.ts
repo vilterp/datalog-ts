@@ -9,7 +9,7 @@ export interface Graph {
 
 interface Node {
   id: string;
-  attrs: { [key: string]: string };
+  attrs: { [key: string]: string | RecordTree };
   comment?: string;
 }
 
@@ -44,7 +44,11 @@ export function prettyPrintGraph(g: Graph): string {
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(node.attrs, (k, v) => [k, "=", `"${escapeStr(v)}"`])
+            mapObjToList(node.attrs, (attr, attrValue) => [
+              attr,
+              "=",
+              stringifyNodeAttrValue(attrValue),
+            ])
           ),
           "];",
           node.comment ? ` // ${node.comment}` : "",
@@ -56,7 +60,11 @@ export function prettyPrintGraph(g: Graph): string {
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(edge.attrs, (k, v) => [k, "=", `"${escapeStr(v)}"`])
+            mapObjToList(edge.attrs, (attr, attrValue) => [
+              attr,
+              "=",
+              `"${escapeStr(attrValue)}"`,
+            ])
           ),
           "];",
         ]),
@@ -66,7 +74,7 @@ export function prettyPrintGraph(g: Graph): string {
   ]);
 }
 
-// pretty util
+// pretty utils
 
 function stringifyEdgeID(id: EdgeID) {
   if (typeof id === "string") {
@@ -79,6 +87,15 @@ function stringifyEdgeID(id: EdgeID) {
 function escapeStr(str: string): string {
   return str.split('"').join('\\"');
 }
+
+function stringifyNodeAttrValue(value: string | RecordTree): string {
+  if (typeof value === "string") {
+    return `"${escapeStr(value)}"`;
+  }
+  return `"${escapeStr(stringifyRecordTree(value))}"`;
+}
+
+// constructor utils
 
 interface BlockOpts {
   sep: string;
@@ -104,22 +121,42 @@ export function blockInner(docs: pp.IDoc[], opts?: BlockOpts): pp.IDoc {
   ]);
 }
 
+// record format
+
 // e.g. https://graphviz.org/Gallery/directed/datastruct.html
 // note: have to use with `shape: record`
 // TODO: these can be nested, so they're really a tree
 
+export function recordNode(children: RecordTree[]): RecordTree {
+  return {
+    type: "Node",
+    children,
+  };
+}
+
+export function recordLeaf(id: string, content: string): RecordTree {
+  return {
+    type: "Leaf",
+    id,
+    content,
+  };
+}
+
 export type RecordTree =
   | {
+      type: "Leaf";
       id: string;
       content: string;
     }
-  | RecordTree[];
+  | { type: "Node"; children: RecordTree[] };
 
-export function records(node: RecordTree) {
-  if (Array.isArray(node)) {
-    return node
+function stringifyRecordTree(node: RecordTree): string {
+  if (node.type === "Node") {
+    return node.children
       .map((child) =>
-        Array.isArray(child) ? `{${records(child)}}` : records(child)
+        Array.isArray(child)
+          ? `{${stringifyRecordTree(child)}}`
+          : stringifyRecordTree(child)
       )
       .join("|");
   }
