@@ -1,5 +1,15 @@
+.table input.char
+.table input.next
+.table grammar.edge
+.table grammar.unlabeledEdge
+.table grammar.refEdge
+.table grammar.node
+.table grammar.ruleMarker
+
 parse.path{fromNode: N1, toNode: N3, startChar: C1, endChar: C4} :-
   parse.charMatch{from: N1, to: N3, startChar: C1, endChar: C4}
+  |
+  parse.ruleMatch{fromNode: N1, toNode: N3, startChar: C1, endChar: C4}
   |
   grammar.unlabeledEdge{from: N2, to: N3} &
   parse.path{fromNode: N1, toNode: N2, startChar: C1, endChar: C4}
@@ -12,6 +22,10 @@ parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C1} :-
   grammar.edge{from: N1, to: N2, label: C} &
   input.char{id: C1, char: C}.
 
-parse.rulePath{ruleName: R, startChar: C1, endChar: C2} :-
-  parse.path{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} &
-  grammar.ruleMarker{name: R, startID: N1, endID: N2}.
+parse.ruleMatch{fromNode: N1, toNode: N4, startChar: C1, endChar: C4} :-
+    grammar.refEdge{fromID: N1, toID: N4, ruleName: R} &
+    parse.rulePath{ruleName: R, startChar: C1, endChar: C4}.
+
+parse.rulePath{ruleName: R, startChar: CS, endChar: CE} :-
+  grammar.ruleMarker{name: R, startID: NS, endID: NE} &
+  parse.path{fromNode: NS, toNode: NE, startChar: CS, endChar: CE}.
