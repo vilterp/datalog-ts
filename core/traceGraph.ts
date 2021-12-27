@@ -1,4 +1,4 @@
-import { Graph, records } from "../util/graphviz";
+import { Graph, records, RecordTree } from "../util/graphviz";
 import { objToPairs } from "../util/util";
 import { defaultTracePrintOpts, ppt, ppVM } from "./pretty";
 import { collapseAndSources, printTermWithBindings } from "./traceTree";
@@ -24,9 +24,13 @@ function recur(graph: Graph, res: Res) {
     }
     case "MatchTrace": {
       const id = printTermWithBindings(res, [], defaultTracePrintOpts);
+      const rec = res.term as Rec;
       graph.nodes.push({
         id,
-        attrs: { ...NODE_ATTRS },
+        attrs: {
+          label: records(recToGraphvizRec(rec)),
+          ...NODE_ATTRS,
+        },
       });
       break;
     }
@@ -38,13 +42,7 @@ function recur(graph: Graph, res: Res) {
       graph.nodes.push({
         id,
         attrs: {
-          label: records([
-            { id: "rec", content: rec.relation },
-            objToPairs(rec.attrs).map(([key, value]) => ({
-              id: key,
-              content: `${key}: ${ppt(value)}`,
-            })),
-          ]),
+          label: records(recToGraphvizRec(rec)),
           ...NODE_ATTRS,
         },
       });
@@ -67,4 +65,14 @@ function recur(graph: Graph, res: Res) {
     default:
       throw new Error(`traces of type ${res.trace.type} shouldn't be reached`);
   }
+}
+
+function recToGraphvizRec(rec: Rec): RecordTree {
+  return [
+    { id: "rec", content: rec.relation },
+    objToPairs(rec.attrs).map(([key, value]) => ({
+      id: key,
+      content: `${key}: ${ppt(value)}`,
+    })),
+  ];
 }
