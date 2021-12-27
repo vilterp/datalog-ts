@@ -12,7 +12,7 @@ export type SuiteSpec = {
 };
 
 function GraphvizVisualizer(props: { dot: string }) {
-  const width = useWindowWidth();
+  const width = useWindowWidth() - 300;
   return (
     <Graphviz
       dot={props.dot}
