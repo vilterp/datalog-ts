@@ -58,8 +58,6 @@
     "react-dom": "^17.0.2",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^5.2.0",
-    "react-select": "^4.3.1",
-    "react-simple-code-editor": "https://github.com/vilterp/react-simple-code-editor#a1f205b84348964fba02163d1e52e908613d484b",
     "react-textarea-autosize": "^8.3.2",
     "react-use-localstorage": "^3.4.1",
     "simple-markdown": "^0.7.3",
