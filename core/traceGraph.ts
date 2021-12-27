@@ -4,7 +4,6 @@ import { collapseAndSources } from "./traceTree";
 import { Res } from "./types";
 
 export function traceToGraph(res: Res): Graph {
-  console.log({ res });
   const graph: Graph = { edges: [], nodes: [] };
   recur(graph, res);
   return graph;
