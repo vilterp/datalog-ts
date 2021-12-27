@@ -73,19 +73,7 @@ function Main() {
         </>
       ) : null}
       <h3>Explore</h3>
-      <Explorer interp={interp2} />
-      <Collapsible
-        heading="Graph"
-        initiallyCollapsed={true}
-        content={
-          <Digraph
-            zoom={true}
-            edges={edges}
-            vertices={nodes}
-            layoutManager={lm}
-          />
-        }
-      />
+      <Explorer interp={interp} showViz />
     </div>
   );
 }
