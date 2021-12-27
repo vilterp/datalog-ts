@@ -23,6 +23,8 @@ function GraphvizVisualizer(props: { dot: string }) {
 
 export const VISUALIZERS = {
   "text/plain": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
+  // TODO: syntax highlight using TermView?
+  "application/datalog": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
   "application/graphviz": (text) => <GraphvizVisualizer dot={text} />,
   "application/json": (text) => (
     <ReactJson
@@ -33,6 +35,4 @@ export const VISUALIZERS = {
       src={JSON.parse(text)}
     />
   ),
-  // TODO: syntax highlight using TermView?
-  "application/datalog": (text) => <pre>{text}</pre>,
 };
