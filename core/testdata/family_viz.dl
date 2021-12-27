@@ -1,0 +1,17 @@
+familyViz.node{id: ID} :-
+  mother{child: ID} |
+  mother{mother: ID} |
+  father{child: ID} |
+  father{father: ID}.
+
+familyViz.edge{from: F, to: T, label: ""} :-
+  mother{child: F, mother: T} |
+  father{child: F, father: T}.
+
+internal.visualization{
+  name: "graphviz",
+  spec: graphviz{
+    nodes: "familyViz.node{id: ID}",
+    edges: "familyViz.edge{from: From, to: To, label: Label}"
+  }
+}.

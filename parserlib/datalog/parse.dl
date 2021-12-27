@@ -50,7 +50,7 @@ grammarViz.refEdge{from: F, to: T, label: L} :-
 # TODO: char range edge
 
 internal.visualization{
-  name: "graphviz",
+  name: "Grammar",
   spec: graphviz{
     nodes: "grammar.node{id: ID}",
     edges: "grammarViz.edge{from: From, to: To, label: Label}"
