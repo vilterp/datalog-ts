@@ -22,26 +22,11 @@ function recur(graph: Graph, res: Res) {
       });
       collapseAndSources(res.trace.sources).forEach((source) => {
         recur(graph, source);
-        // graph.edges.push({
-        //   from: id,
-        //   to: ppt(source.term),
-        //   attrs: { label: "and" },
-        // });
       });
       break;
     }
     case "MatchTrace": {
-      const id = ppt(res.term);
-      graph.nodes.push({
-        id,
-        attrs: { label: `Match: ${id}`, ...NODE_ATTRS },
-      });
-      // recur(graph, res.trace.fact);
-      // graph.edges.push({
-      //   from: id,
-      //   to: ppt(res.trace.fact.term),
-      //   attrs: { label: "match" },
-      // });
+      recur(graph, res.trace.fact);
       break;
     }
     case "RefTrace": {
