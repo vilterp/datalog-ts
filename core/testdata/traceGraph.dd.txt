@@ -9,10 +9,10 @@ digraph G {
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="Ref: parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" shape="box"];
   "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [shape="box"];
   "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [shape="box"];
-  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="ref"];
-  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="ref"];
-  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="ref"];
-  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="ref"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="ref"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="ref"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="ref: {C: L, F: F, M: M}"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="ref: {C: L, F: F, M: M}"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="ref: {C: R, F: F, M: M}"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="ref: {C: R, F: F, M: M}"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="ref: {R: R}"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="ref: {R: R}"];
 }

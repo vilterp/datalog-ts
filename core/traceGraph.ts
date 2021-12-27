@@ -1,5 +1,5 @@
 import { Graph } from "../util/graphviz";
-import { ppt } from "./pretty";
+import { defaultTracePrintOpts, ppt, ppVM } from "./pretty";
 import { collapseAndSources, printTermWithBindings } from "./traceTree";
 import { Res } from "./types";
 
@@ -20,7 +20,7 @@ function recur(graph: Graph, res: Res) {
       break;
     }
     case "MatchTrace": {
-      const id = printTermWithBindings(res, [], { showScopePath: false });
+      const id = printTermWithBindings(res, [], defaultTracePrintOpts);
       graph.nodes.push({
         id,
         attrs: { ...NODE_ATTRS },
@@ -41,11 +41,12 @@ function recur(graph: Graph, res: Res) {
         innerRes.trace.type === "AndTrace"
           ? collapseAndSources(innerRes.trace.sources)
           : [innerRes];
+      const mappings = res.trace.mappings;
       edges.forEach((edge) => {
         graph.edges.push({
           from: id,
-          to: printTermWithBindings(edge, [], { showScopePath: false }),
-          attrs: { label: "ref" },
+          to: printTermWithBindings(edge, [], defaultTracePrintOpts),
+          attrs: { label: `ref: ${ppVM(mappings, [], defaultTracePrintOpts)}` },
         });
       });
       break;
