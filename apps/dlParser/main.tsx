@@ -7,30 +7,29 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { parseGrammar } from "../../parserlib/meta";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import useLocalStorage from "react-use-localstorage";
+// @ts-ignore
+import parseDL from "../../parserlib/datalog/parse.dl";
 
-const GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
+const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
 export function initializeInterp(
-  interp: AbstractInterpreter,
+  inputInterp: AbstractInterpreter,
   grammarText: string
 ): AbstractInterpreter {
+  let interp = inputInterp;
   const grammarParsed = parseGrammar(grammarText);
-  const rules = grammarToDL(grammarParsed);
+  const records = grammarToDL(grammarParsed);
 
-  const [_1, interp2] = interp.evalStr(".table source");
-  const [_2, interp3] = interp2.evalStr(".table next");
-
-  const [_3, interp4] = interp3.evalStmts(
-    rules.map((rule) => ({ type: "Rule", rule }))
-  );
-  return interp4;
+  interp = interp.evalStr(parseDL)[1];
+  interp = interp.insertAll(records);
+  return interp;
 }
 
 function Main() {
   const [source, setSource] = useLocalStorage("dl-parser-playground-source");
   const [grammarSource, setGrammarSource] = useLocalStorage(
     "dl-parser-playground-grammar-source",
-    GRAMMAR_TEXT
+    INITIAL_GRAMMAR_TEXT
   );
 
   let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
@@ -66,7 +65,7 @@ function Main() {
           </tr>
         </tbody>
       </table>
-      <Explorer interp={interp} />
+      <Explorer interp={interp} showViz />
     </>
   );
 }

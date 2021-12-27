@@ -1,114 +1,988 @@
 gram
+main :- "foo".
+----
+application/datalog
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.edge{from: 0, label: "f", to: 2}.
+grammar.node{id: 3}.
+grammar.edge{from: 2, label: "o", to: 3}.
+grammar.node{id: 4}.
+grammar.edge{from: 3, label: "o", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 1}.
+
+gram
 main :- repSep("foo", "bar").
 ----
 application/datalog
-main{span: span{from: P1, to: P6}} :- 
-  main_rep{span: span{from: P1, to: P6}} |
-  main_rep{span: span{from: P1, to: P2}} &
-  next{left: P2, right: P3} &
-  main_sep{span: span{from: P3, to: P4}} &
-  next{left: P4, right: P5} &
-  main{span: span{from: P5, to: P6}}.
-main_rep{span: span{from: P1, to: P3}} :- 
-  source{char: "f", id: P1} &
-  source{char: "o", id: P2} &
-  source{char: "o", id: P3} &
-  next{left: P1, right: P2} &
-  next{left: P2, right: P3}.
-main_sep{span: span{from: P1, to: P3}} :- 
-  source{char: "b", id: P1} &
-  source{char: "a", id: P2} &
-  source{char: "r", id: P3} &
-  next{left: P1, right: P2} &
-  next{left: P2, right: P3}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "main_rep", startID: 2}.
+grammar.node{id: 4}.
+grammar.edge{from: 2, label: "f", to: 4}.
+grammar.node{id: 5}.
+grammar.edge{from: 4, label: "o", to: 5}.
+grammar.node{id: 6}.
+grammar.edge{from: 5, label: "o", to: 6}.
+grammar.unlabeledEdge{from: 6, to: 3}.
+grammar.node{id: 7}.
+grammar.node{id: 8}.
+grammar.ruleMarker{endID: 8, name: "main_rep", startID: 7}.
+grammar.node{id: 9}.
+grammar.edge{from: 7, label: "b", to: 9}.
+grammar.node{id: 10}.
+grammar.edge{from: 9, label: "a", to: 10}.
+grammar.node{id: 11}.
+grammar.edge{from: 10, label: "r", to: 11}.
+grammar.unlabeledEdge{from: 11, to: 8}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.unlabeledEdge{from: 3, to: 1}.
+grammar.unlabeledEdge{from: 1, to: 7}.
+grammar.unlabeledEdge{from: 8, to: 0}.
+grammar.unlabeledEdge{from: 0, to: 1}.
 
 input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
 
 input
 foobar
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
 
 input
 foobarfoo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
-main{span: span{from: 6, to: 8}}.
-main{span: span{from: 0, to: 8}}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
 ----
 application/datalog
-main{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
-  main_seq_0{span: span{from: P1, to: P2}} &
-  main_seq_1{span: span{from: P3, to: P4}} &
-  main_seq_2{span: span{from: P5, to: P6}} &
-  next{left: P2, right: P3} &
-  next{left: P4, right: P5}.
-main_seq_0{span: span{from: P1, to: P1}} :- source{char: "[", id: P1}.
-main_seq_1{span: span{from: P1, to: P6}} :- 
-  main_seq_1_rep{span: span{from: P1, to: P6}} |
-  main_seq_1_rep{span: span{from: P1, to: P2}} &
-  next{left: P2, right: P3} &
-  main_seq_1_sep{span: span{from: P3, to: P4}} &
-  next{left: P4, right: P5} &
-  main_seq_1{span: span{from: P5, to: P6}}.
-main_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "a" <= C & C <= "z".
-main_seq_1_sep{span: span{from: P1, to: P1}} :- source{char: ",", id: P1}.
-main_seq_2{span: span{from: P1, to: P1}} :- source{char: "]", id: P1}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "main_seq_0", startID: 2}.
+grammar.node{id: 4}.
+grammar.edge{from: 2, label: "[", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 3}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.node{id: 5}.
+grammar.node{id: 6}.
+grammar.ruleMarker{endID: 6, name: "main_seq_1", startID: 5}.
+grammar.node{id: 7}.
+grammar.node{id: 8}.
+grammar.ruleMarker{endID: 8, name: "main_seq_1_rep", startID: 7}.
+grammar.charRangeEdge{from: 7, fromChar: "a", to: 8, toChar: "z"}.
+grammar.node{id: 9}.
+grammar.node{id: 10}.
+grammar.ruleMarker{endID: 10, name: "main_seq_1_rep", startID: 9}.
+grammar.node{id: 11}.
+grammar.edge{from: 9, label: ",", to: 11}.
+grammar.unlabeledEdge{from: 11, to: 10}.
+grammar.unlabeledEdge{from: 5, to: 7}.
+grammar.unlabeledEdge{from: 8, to: 6}.
+grammar.unlabeledEdge{from: 6, to: 9}.
+grammar.unlabeledEdge{from: 10, to: 5}.
+grammar.unlabeledEdge{from: 5, to: 6}.
+grammar.unlabeledEdge{from: 3, to: 5}.
+grammar.node{id: 12}.
+grammar.node{id: 13}.
+grammar.ruleMarker{endID: 13, name: "main_seq_2", startID: 12}.
+grammar.node{id: 14}.
+grammar.edge{from: 12, label: "]", to: 14}.
+grammar.unlabeledEdge{from: 14, to: 13}.
+grammar.unlabeledEdge{from: 6, to: 12}.
+grammar.unlabeledEdge{from: 13, to: 1}.
 
 input
 []
 ----
 application/datalog
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
 
 input
 [a]
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 0}, seq_1: span{from: 1, to: 1}, seq_2: span{from: 2, to: 2}, span: span{from: 0, to: 2}}.
 
 input
 [a,b,c]
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 0}, seq_1: span{from: 1, to: 5}, seq_2: span{from: 6, to: 6}, span: span{from: 0, to: 6}}.
+
+gram
+main :- (foo | bar).
+foo :- "foo".
+bar :- "bar".
+----
+application/datalog
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "bar", startID: 0}.
+grammar.node{id: 2}.
+grammar.edge{from: 0, label: "b", to: 2}.
+grammar.node{id: 3}.
+grammar.edge{from: 2, label: "a", to: 3}.
+grammar.node{id: 4}.
+grammar.edge{from: 3, label: "r", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 1}.
+grammar.node{id: 5}.
+grammar.node{id: 6}.
+grammar.ruleMarker{endID: 6, name: "foo", startID: 5}.
+grammar.node{id: 7}.
+grammar.edge{from: 5, label: "f", to: 7}.
+grammar.node{id: 8}.
+grammar.edge{from: 7, label: "o", to: 8}.
+grammar.node{id: 9}.
+grammar.edge{from: 8, label: "o", to: 9}.
+grammar.unlabeledEdge{from: 9, to: 6}.
+grammar.node{id: 10}.
+grammar.node{id: 11}.
+grammar.ruleMarker{endID: 11, name: "main", startID: 10}.
+grammar.node{id: 12}.
+grammar.node{id: 13}.
+grammar.ruleMarker{endID: 13, name: "main_choice_0", startID: 12}.
+grammar.refEdge{fromID: 12, ruleName: "foo", toID: 13}.
+grammar.unlabeledEdge{from: 10, to: 12}.
+grammar.unlabeledEdge{from: 13, to: 11}.
+grammar.node{id: 14}.
+grammar.node{id: 15}.
+grammar.ruleMarker{endID: 15, name: "main_choice_1", startID: 14}.
+grammar.refEdge{fromID: 14, ruleName: "bar", toID: 15}.
+grammar.unlabeledEdge{from: 10, to: 14}.
+grammar.unlabeledEdge{from: 15, to: 11}.
+
+input
+foo
+----
+application/datalog
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
 
 gram
 main :- repSep([0-9], "").
 ----
 application/datalog
-main{span: span{from: P1, to: P6}} :- 
-  main_rep{span: span{from: P1, to: P6}} |
-  main_rep{span: span{from: P1, to: P2}} &
-  next{left: P2, right: P3} &
-  main_sep{span: span{from: P3, to: P4}} &
-  next{left: P4, right: P5} &
-  main{span: span{from: P5, to: P6}}.
-main_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "0" <= C & C <= "9".
-main_sep{span: span{from: P1, to: P2}} :- source{id: P1} & P1 == P2.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "main", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "main_rep", startID: 2}.
+grammar.charRangeEdge{from: 2, fromChar: "0", to: 3, toChar: "9"}.
+grammar.node{id: 4}.
+grammar.node{id: 5}.
+grammar.ruleMarker{endID: 5, name: "main_rep", startID: 4}.
+grammar.unlabeledEdge{from: 4, to: 5}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.unlabeledEdge{from: 3, to: 1}.
+grammar.unlabeledEdge{from: 1, to: 4}.
+grammar.unlabeledEdge{from: 5, to: 0}.
+grammar.unlabeledEdge{from: 0, to: 1}.
 
 input
 1
 ----
-application/datalog
-main{span: span{from: 0, to: 0}}.
+text/plain
+RangeError: Maximum call stack size exceeded
 
 input
 1234
 ----
-application/datalog
-main{span: span{from: 0, to: 0}}.
-main{span: span{from: 1, to: 1}}.
-main{span: span{from: 2, to: 2}}.
-main{span: span{from: 3, to: 3}}.
+text/plain
+RangeError: Maximum call stack size exceeded
 
 gram
 main :- value.
@@ -121,89 +995,194 @@ array :- ["[", repSep(value, ","), "]"].
 null :- "null".
 ----
 application/datalog
-array{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
-  array_seq_0{span: span{from: P1, to: P2}} &
-  array_seq_1{span: span{from: P3, to: P4}} &
-  array_seq_2{span: span{from: P5, to: P6}} &
-  next{left: P2, right: P3} &
-  next{left: P4, right: P5}.
-array_seq_0{span: span{from: P1, to: P1}} :- source{char: "[", id: P1}.
-array_seq_1{span: span{from: P1, to: P6}} :- 
-  array_seq_1_rep{span: span{from: P1, to: P6}} |
-  array_seq_1_rep{span: span{from: P1, to: P2}} &
-  next{left: P2, right: P3} &
-  array_seq_1_sep{span: span{from: P3, to: P4}} &
-  next{left: P4, right: P5} &
-  array_seq_1{span: span{from: P5, to: P6}}.
-array_seq_1_rep{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-array_seq_1_sep{span: span{from: P1, to: P1}} :- source{char: ",", id: P1}.
-array_seq_2{span: span{from: P1, to: P1}} :- source{char: "]", id: P1}.
-int{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{from: P1, to: P4}} :- 
-  int_seq_0{span: span{from: P1, to: P2}} &
-  int_seq_1{span: span{from: P3, to: P4}} &
-  next{left: P2, right: P3}.
-int_seq_0{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "0" <= C & C <= "9".
-int_seq_1{span: span{from: P1, to: P6}} :- 
-  int_seq_1_rep{span: span{from: P1, to: P6}} |
-  int_seq_1_rep{span: span{from: P1, to: P2}} &
-  next{left: P2, right: P3} &
-  int_seq_1_sep{span: span{from: P3, to: P4}} &
-  next{left: P4, right: P5} &
-  int_seq_1{span: span{from: P5, to: P6}}.
-int_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "0" <= C & C <= "9".
-int_seq_1_sep{span: span{from: P1, to: P2}} :- source{id: P1} & P1 == P2.
-keyValue{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
-  keyValue_seq_0{span: span{from: P1, to: P2}} &
-  keyValue_seq_1{span: span{from: P3, to: P4}} &
-  keyValue_seq_2{span: span{from: P5, to: P6}} &
-  next{left: P2, right: P3} &
-  next{left: P4, right: P5}.
-keyValue_seq_0{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
-keyValue_seq_1{span: span{from: P1, to: P1}} :- source{char: ":", id: P1}.
-keyValue_seq_2{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-main{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-null{span: span{from: P1, to: P4}} :- 
-  source{char: "n", id: P1} &
-  source{char: "u", id: P2} &
-  source{char: "l", id: P3} &
-  source{char: "l", id: P4} &
-  next{left: P1, right: P2} &
-  next{left: P2, right: P3} &
-  next{left: P3, right: P4}.
-object{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
-  object_seq_0{span: span{from: P1, to: P2}} &
-  object_seq_1{span: span{from: P3, to: P4}} &
-  object_seq_2{span: span{from: P5, to: P6}} &
-  next{left: P2, right: P3} &
-  next{left: P4, right: P5}.
-object_seq_0{span: span{from: P1, to: P1}} :- source{char: "{", id: P1}.
-object_seq_1{span: span{from: P1, to: P2}} :- keyValue{span: span{from: P1, to: P2}}.
-object_seq_2{span: span{from: P1, to: P1}} :- source{char: "}", id: P1}.
-string{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
-  string_seq_0{span: span{from: P1, to: P2}} &
-  string_seq_1{span: span{from: P3, to: P4}} &
-  string_seq_2{span: span{from: P5, to: P6}} &
-  next{left: P2, right: P3} &
-  next{left: P4, right: P5}.
-string_seq_0{span: span{from: P1, to: P1}} :- source{char: "'", id: P1}.
-string_seq_1{span: span{from: P1, to: P6}} :- 
-  string_seq_1_rep{span: span{from: P1, to: P6}} |
-  string_seq_1_rep{span: span{from: P1, to: P2}} &
-  next{left: P2, right: P3} &
-  string_seq_1_sep{span: span{from: P3, to: P4}} &
-  next{left: P4, right: P5} &
-  string_seq_1{span: span{from: P5, to: P6}}.
-string_seq_1_rep{span: span{from: P1, to: P1}} :- source{char: C, id: P1} & "a" <= C & C <= "z".
-string_seq_1_sep{span: span{from: P1, to: P2}} :- source{id: P1} & P1 == P2.
-string_seq_2{span: span{from: P1, to: P1}} :- source{char: "'", id: P1}.
-value{span: span{from: P1, to: P2}} :- 
-  value_choice_0{span: span{from: P1, to: P2}} |
-  value_choice_1{span: span{from: P1, to: P2}} |
-  value_choice_2{span: span{from: P1, to: P2}} |
-  value_choice_3{span: span{from: P1, to: P2}} |
-  value_choice_4{span: span{from: P1, to: P2}}.
-value_choice_0{span: span{from: P1, to: P2}} :- object{span: span{from: P1, to: P2}}.
-value_choice_1{span: span{from: P1, to: P2}} :- array{span: span{from: P1, to: P2}}.
-value_choice_2{span: span{from: P1, to: P2}} :- int{span: span{from: P1, to: P2}}.
-value_choice_3{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
-value_choice_4{span: span{from: P1, to: P2}} :- null{span: span{from: P1, to: P2}}.
+grammar.node{id: 0}.
+grammar.node{id: 1}.
+grammar.ruleMarker{endID: 1, name: "array", startID: 0}.
+grammar.node{id: 2}.
+grammar.node{id: 3}.
+grammar.ruleMarker{endID: 3, name: "array_seq_0", startID: 2}.
+grammar.node{id: 4}.
+grammar.edge{from: 2, label: "[", to: 4}.
+grammar.unlabeledEdge{from: 4, to: 3}.
+grammar.unlabeledEdge{from: 0, to: 2}.
+grammar.node{id: 5}.
+grammar.node{id: 6}.
+grammar.ruleMarker{endID: 6, name: "array_seq_1", startID: 5}.
+grammar.node{id: 7}.
+grammar.node{id: 8}.
+grammar.ruleMarker{endID: 8, name: "array_seq_1_rep", startID: 7}.
+grammar.refEdge{fromID: 7, ruleName: "value", toID: 8}.
+grammar.node{id: 9}.
+grammar.node{id: 10}.
+grammar.ruleMarker{endID: 10, name: "array_seq_1_rep", startID: 9}.
+grammar.node{id: 11}.
+grammar.edge{from: 9, label: ",", to: 11}.
+grammar.unlabeledEdge{from: 11, to: 10}.
+grammar.unlabeledEdge{from: 5, to: 7}.
+grammar.unlabeledEdge{from: 8, to: 6}.
+grammar.unlabeledEdge{from: 6, to: 9}.
+grammar.unlabeledEdge{from: 10, to: 5}.
+grammar.unlabeledEdge{from: 5, to: 6}.
+grammar.unlabeledEdge{from: 3, to: 5}.
+grammar.node{id: 12}.
+grammar.node{id: 13}.
+grammar.ruleMarker{endID: 13, name: "array_seq_2", startID: 12}.
+grammar.node{id: 14}.
+grammar.edge{from: 12, label: "]", to: 14}.
+grammar.unlabeledEdge{from: 14, to: 13}.
+grammar.unlabeledEdge{from: 6, to: 12}.
+grammar.unlabeledEdge{from: 13, to: 1}.
+grammar.node{id: 15}.
+grammar.node{id: 16}.
+grammar.ruleMarker{endID: 16, name: "int", startID: 15}.
+grammar.node{id: 17}.
+grammar.node{id: 18}.
+grammar.ruleMarker{endID: 18, name: "int_seq_0", startID: 17}.
+grammar.charRangeEdge{from: 17, fromChar: "0", to: 18, toChar: "9"}.
+grammar.unlabeledEdge{from: 15, to: 17}.
+grammar.node{id: 19}.
+grammar.node{id: 20}.
+grammar.ruleMarker{endID: 20, name: "int_seq_1", startID: 19}.
+grammar.node{id: 21}.
+grammar.node{id: 22}.
+grammar.ruleMarker{endID: 22, name: "int_seq_1_rep", startID: 21}.
+grammar.charRangeEdge{from: 21, fromChar: "0", to: 22, toChar: "9"}.
+grammar.node{id: 23}.
+grammar.node{id: 24}.
+grammar.ruleMarker{endID: 24, name: "int_seq_1_rep", startID: 23}.
+grammar.unlabeledEdge{from: 23, to: 24}.
+grammar.unlabeledEdge{from: 19, to: 21}.
+grammar.unlabeledEdge{from: 22, to: 20}.
+grammar.unlabeledEdge{from: 20, to: 23}.
+grammar.unlabeledEdge{from: 24, to: 19}.
+grammar.unlabeledEdge{from: 19, to: 20}.
+grammar.unlabeledEdge{from: 18, to: 19}.
+grammar.unlabeledEdge{from: 20, to: 16}.
+grammar.node{id: 25}.
+grammar.node{id: 26}.
+grammar.ruleMarker{endID: 26, name: "keyValue", startID: 25}.
+grammar.node{id: 27}.
+grammar.node{id: 28}.
+grammar.ruleMarker{endID: 28, name: "keyValue_seq_0", startID: 27}.
+grammar.refEdge{fromID: 27, ruleName: "string", toID: 28}.
+grammar.unlabeledEdge{from: 25, to: 27}.
+grammar.node{id: 29}.
+grammar.node{id: 30}.
+grammar.ruleMarker{endID: 30, name: "keyValue_seq_1", startID: 29}.
+grammar.node{id: 31}.
+grammar.edge{from: 29, label: ":", to: 31}.
+grammar.unlabeledEdge{from: 31, to: 30}.
+grammar.unlabeledEdge{from: 28, to: 29}.
+grammar.node{id: 32}.
+grammar.node{id: 33}.
+grammar.ruleMarker{endID: 33, name: "keyValue_seq_2", startID: 32}.
+grammar.refEdge{fromID: 32, ruleName: "value", toID: 33}.
+grammar.unlabeledEdge{from: 30, to: 32}.
+grammar.unlabeledEdge{from: 33, to: 26}.
+grammar.node{id: 34}.
+grammar.node{id: 35}.
+grammar.ruleMarker{endID: 35, name: "main", startID: 34}.
+grammar.refEdge{fromID: 34, ruleName: "value", toID: 35}.
+grammar.node{id: 36}.
+grammar.node{id: 37}.
+grammar.ruleMarker{endID: 37, name: "null", startID: 36}.
+grammar.node{id: 38}.
+grammar.edge{from: 36, label: "n", to: 38}.
+grammar.node{id: 39}.
+grammar.edge{from: 38, label: "u", to: 39}.
+grammar.node{id: 40}.
+grammar.edge{from: 39, label: "l", to: 40}.
+grammar.node{id: 41}.
+grammar.edge{from: 40, label: "l", to: 41}.
+grammar.unlabeledEdge{from: 41, to: 37}.
+grammar.node{id: 42}.
+grammar.node{id: 43}.
+grammar.ruleMarker{endID: 43, name: "object", startID: 42}.
+grammar.node{id: 44}.
+grammar.node{id: 45}.
+grammar.ruleMarker{endID: 45, name: "object_seq_0", startID: 44}.
+grammar.node{id: 46}.
+grammar.edge{from: 44, label: "{", to: 46}.
+grammar.unlabeledEdge{from: 46, to: 45}.
+grammar.unlabeledEdge{from: 42, to: 44}.
+grammar.node{id: 47}.
+grammar.node{id: 48}.
+grammar.ruleMarker{endID: 48, name: "object_seq_1", startID: 47}.
+grammar.refEdge{fromID: 47, ruleName: "keyValue", toID: 48}.
+grammar.unlabeledEdge{from: 45, to: 47}.
+grammar.node{id: 49}.
+grammar.node{id: 50}.
+grammar.ruleMarker{endID: 50, name: "object_seq_2", startID: 49}.
+grammar.node{id: 51}.
+grammar.edge{from: 49, label: "}", to: 51}.
+grammar.unlabeledEdge{from: 51, to: 50}.
+grammar.unlabeledEdge{from: 48, to: 49}.
+grammar.unlabeledEdge{from: 50, to: 43}.
+grammar.node{id: 52}.
+grammar.node{id: 53}.
+grammar.ruleMarker{endID: 53, name: "string", startID: 52}.
+grammar.node{id: 54}.
+grammar.node{id: 55}.
+grammar.ruleMarker{endID: 55, name: "string_seq_0", startID: 54}.
+grammar.node{id: 56}.
+grammar.edge{from: 54, label: "'", to: 56}.
+grammar.unlabeledEdge{from: 56, to: 55}.
+grammar.unlabeledEdge{from: 52, to: 54}.
+grammar.node{id: 57}.
+grammar.node{id: 58}.
+grammar.ruleMarker{endID: 58, name: "string_seq_1", startID: 57}.
+grammar.node{id: 59}.
+grammar.node{id: 60}.
+grammar.ruleMarker{endID: 60, name: "string_seq_1_rep", startID: 59}.
+grammar.charRangeEdge{from: 59, fromChar: "a", to: 60, toChar: "z"}.
+grammar.node{id: 61}.
+grammar.node{id: 62}.
+grammar.ruleMarker{endID: 62, name: "string_seq_1_rep", startID: 61}.
+grammar.unlabeledEdge{from: 61, to: 62}.
+grammar.unlabeledEdge{from: 57, to: 59}.
+grammar.unlabeledEdge{from: 60, to: 58}.
+grammar.unlabeledEdge{from: 58, to: 61}.
+grammar.unlabeledEdge{from: 62, to: 57}.
+grammar.unlabeledEdge{from: 57, to: 58}.
+grammar.unlabeledEdge{from: 55, to: 57}.
+grammar.node{id: 63}.
+grammar.node{id: 64}.
+grammar.ruleMarker{endID: 64, name: "string_seq_2", startID: 63}.
+grammar.node{id: 65}.
+grammar.edge{from: 63, label: "'", to: 65}.
+grammar.unlabeledEdge{from: 65, to: 64}.
+grammar.unlabeledEdge{from: 58, to: 63}.
+grammar.unlabeledEdge{from: 64, to: 53}.
+grammar.node{id: 66}.
+grammar.node{id: 67}.
+grammar.ruleMarker{endID: 67, name: "value", startID: 66}.
+grammar.node{id: 68}.
+grammar.node{id: 69}.
+grammar.ruleMarker{endID: 69, name: "value_choice_0", startID: 68}.
+grammar.refEdge{fromID: 68, ruleName: "object", toID: 69}.
+grammar.unlabeledEdge{from: 66, to: 68}.
+grammar.unlabeledEdge{from: 69, to: 67}.
+grammar.node{id: 70}.
+grammar.node{id: 71}.
+grammar.ruleMarker{endID: 71, name: "value_choice_1", startID: 70}.
+grammar.refEdge{fromID: 70, ruleName: "array", toID: 71}.
+grammar.unlabeledEdge{from: 66, to: 70}.
+grammar.unlabeledEdge{from: 71, to: 67}.
+grammar.node{id: 72}.
+grammar.node{id: 73}.
+grammar.ruleMarker{endID: 73, name: "value_choice_2", startID: 72}.
+grammar.refEdge{fromID: 72, ruleName: "int", toID: 73}.
+grammar.unlabeledEdge{from: 66, to: 72}.
+grammar.unlabeledEdge{from: 73, to: 67}.
+grammar.node{id: 74}.
+grammar.node{id: 75}.
+grammar.ruleMarker{endID: 75, name: "value_choice_3", startID: 74}.
+grammar.refEdge{fromID: 74, ruleName: "string", toID: 75}.
+grammar.unlabeledEdge{from: 66, to: 74}.
+grammar.unlabeledEdge{from: 75, to: 67}.
+grammar.node{id: 76}.
+grammar.node{id: 77}.
+grammar.ruleMarker{endID: 77, name: "value_choice_4", startID: 76}.
+grammar.refEdge{fromID: 76, ruleName: "null", toID: 77}.
+grammar.unlabeledEdge{from: 66, to: 76}.
+grammar.unlabeledEdge{from: 77, to: 67}.

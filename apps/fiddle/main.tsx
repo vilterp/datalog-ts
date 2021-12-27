@@ -1,27 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
-import { Program } from "../../core/types";
-import { language } from "../../core/parser";
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 function Main() {
   const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
 
   let error = null;
 
-  let interp = new SimpleInterpreter(".", nullLoader);
+  let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
   try {
-    const program = language.program.tryParse(source) as Program;
-    interp = program.reduce<AbstractInterpreter>(
-      (interp, stmt) => interp.evalStmt(stmt)[1],
-      interp
-    ) as SimpleInterpreter;
+    interp = interp.evalStr(source)[1];
   } catch (e) {
     error = e.toString();
   }

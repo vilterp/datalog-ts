@@ -9,12 +9,13 @@ import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { flatten } from "./flatten";
-import { ppr, ppRule, ppt } from "../core/pretty";
+import { ppt } from "../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { nullLoader } from "../core/loaders";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { Rule } from "../core/types";
+import { Rec } from "../core/types";
+import { fsLoader } from "../core/fsLoader";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -78,6 +79,16 @@ export function parserlibTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "datalogInput",
+      test() {
+        runDDTestAtPath(
+          "parserlib/testdata/datalogInput.dd.txt",
+          datalogInputTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -114,38 +125,48 @@ function flattenTest(test: string[]): TestOutput[] {
 }
 
 function datalogTest(test: string[]): TestOutput[] {
-  let rules: Rule[] = [];
+  let grammarRecords: Rec[] = [];
   return test.map((input) => {
     const lines = input.split("\n");
     const firstLine = lines[0];
     const restOfInput = lines.slice(1).join("\n");
     if (firstLine === "gram") {
       const grammarParsed = parseGrammar(restOfInput);
-      rules = grammarToDL(grammarParsed);
-      return datalogOut(rules.map(ppRule).join(".\n") + ".");
+      grammarRecords = grammarToDL(grammarParsed);
+      return datalogOut(grammarRecords.map(ppt).join(".\n") + ".");
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
-      let interp = new SimpleInterpreter(
-        ".",
-        nullLoader
-      ) as AbstractInterpreter;
-      // insert rules and tables
-      interp = interp.evalStmts(
-        rules.map((rule) => ({ type: "Rule", rule }))
-      )[1];
-      interp = interp.evalStmt({ type: "TableDecl", name: "next" })[1];
-      interp = interp.evalStmt({ type: "TableDecl", name: "source" })[1];
-      // insert input
+      let interp = new SimpleInterpreter(".", fsLoader) as AbstractInterpreter;
+      // load parsing rules
+      interp = interp.doLoad("parserlib/datalog/parse.dl");
+      // insert grammar as data
+      interp = interp.insertAll(grammarRecords);
+      // insert input as data
+      interp = interp.evalStr(".table input.char")[1];
+      interp = interp.evalStr(".table input.next")[1];
       interp = interp.insertAll(inputToDL(restOfInput));
+      // TODO: insert grammar interpreter
       try {
-        const results = interp.queryStr("main{span: span{from: F, to: T}}");
+        const results = interp.queryStr(
+          `parse.rulePath{ruleName: "main", startChar: S, endChar: E}`
+        );
         return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
       } catch (e) {
-        throw new Error(`error on input "${restOfInput}": ${e}`);
+        return plainTextOut(`${e}`);
       }
     } else {
       throw new Error(`expected 'gram' or 'input'; got ${firstLine}`);
     }
+  });
+}
+
+function datalogInputTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    return datalogOut(
+      inputToDL(input)
+        .map((rec) => ppt(rec) + ".")
+        .join("\n")
+    );
   });
 }
 
