@@ -172,7 +172,7 @@ function pushCharRangeEdge(
   toChar: string
 ) {
   state.records.push(
-    rec("grammar.edge", {
+    rec("grammar.charRangeEdge", {
       from: int(from),
       to: int(to),
       fromChar: str(fromChar),
