@@ -40,7 +40,7 @@ function recur(graph: Graph, res: Res) {
         attrs: {
           label: records([
             { id: "rec", content: rec.relation },
-            ...objToPairs(rec.attrs).map(([key, value]) => ({
+            objToPairs(rec.attrs).map(([key, value]) => ({
               id: key,
               content: `${key}: ${ppt(value)}`,
             })),
