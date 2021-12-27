@@ -20,7 +20,7 @@ function recur(graph: Graph, res: Res) {
         id,
         attrs: { label: `And: ${id}`, ...NODE_ATTRS },
       });
-      res.trace.sources.forEach((source) => {
+      collapseAndSources(res.trace.sources).forEach((source) => {
         recur(graph, source);
         graph.edges.push({
           from: id,
@@ -51,11 +51,17 @@ function recur(graph: Graph, res: Res) {
         attrs: { label: `Ref: ${id}`, ...NODE_ATTRS },
       });
       recur(graph, res.trace.innerRes);
-      // TODO: collapse and sources
-      graph.edges.push({
-        from: id,
-        to: ppt(res.trace.innerRes.term),
-        attrs: { label: "ref" },
+      const innerRes = res.trace.innerRes;
+      const edges =
+        innerRes.trace.type === "AndTrace"
+          ? collapseAndSources(innerRes.trace.sources)
+          : [innerRes];
+      edges.forEach((edge) => {
+        graph.edges.push({
+          from: id,
+          to: ppt(edge.term),
+          attrs: { label: "ref" },
+        });
       });
       break;
     }
