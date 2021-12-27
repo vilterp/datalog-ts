@@ -69,9 +69,7 @@ function ruleToDL(
     case "Ref": {
       // TODO: this one seems a bit unnecessary...
       //   these should be collapsed out somehow
-      const id = pushRefNode(state, rule.name);
-      pushUnlabeledEdge(state, startID, id);
-      pushUnlabeledEdge(state, id, endID);
+      pushRefEdge(state, startID, endID, rule.name);
       return { startID, endID };
     }
     case "Char": {
@@ -121,11 +119,19 @@ function pushNode(state: GeneratorState): number {
   return id;
 }
 
-function pushRefNode(state: GeneratorState, ref: string): number {
-  const id = state.nextID;
-  state.nextID++;
-  state.records.push(rec("grammar.refNode", { id: int(id), ref: str(ref) }));
-  return id;
+function pushRefEdge(
+  state: GeneratorState,
+  fromID: number,
+  toID: number,
+  ruleName: string
+) {
+  state.records.push(
+    rec("grammar.refEdge", {
+      fromID: int(fromID),
+      toID: int(toID),
+      ruleName: str(ruleName),
+    })
+  );
 }
 
 function pushRuleMarker(
