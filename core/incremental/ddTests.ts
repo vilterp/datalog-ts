@@ -1,11 +1,8 @@
 import { Suite } from "../../util/testing";
 import { language } from "../parser";
-import { prettyPrintGraph } from "../../util/graphviz";
-import { toGraphviz } from "./graphviz";
 import { Rec, Statement } from "../types";
 import { formatOutput, IncrementalInterpreter } from "./interpreter";
-import { graphvizOut, jsonOut, TestOutput } from "../../util/ddTest/types";
-import { getJoinInfo } from "./build";
+import { TestOutput } from "../../util/ddTest/types";
 import { suiteFromDDTestsInDir } from "../../util/ddTest/runner";
 import { fsLoader } from "../fsLoader";
 
