@@ -14,26 +14,29 @@ function recur(graph: Graph, tree: Res) {
       const id = ppt(tree.term);
       graph.nodes.push({
         id,
-        attrs: {},
+        attrs: { label: `And: ${id}` },
       });
       tree.trace.sources.forEach((source) => {
         recur(graph, source);
         graph.edges.push({
           from: id,
           to: ppt(source.term),
-          attrs: {},
+          attrs: { label: "and" },
         });
       });
       break;
     }
     case "MatchTrace": {
       const id = ppt(tree.trace.match);
-      graph.nodes.push({ id, attrs: {} });
+      graph.nodes.push({
+        id,
+        attrs: { label: `Match: ${id}` },
+      });
       recur(graph, tree.trace.fact);
       graph.edges.push({
         from: id,
         to: ppt(tree.trace.fact.term),
-        attrs: {},
+        attrs: { label: "match" },
       });
       break;
     }
@@ -41,20 +44,21 @@ function recur(graph: Graph, tree: Res) {
       const id = ppt(tree.trace.refTerm);
       graph.nodes.push({
         id,
-        attrs: {},
+        attrs: { label: `Ref: ${id}` },
       });
       recur(graph, tree.trace.innerRes);
       graph.edges.push({
         from: id,
         to: ppt(tree.trace.innerRes.term),
-        attrs: {},
+        attrs: { label: "ref" },
       });
       break;
     }
     case "BaseFactTrace": {
+      const id = ppt(tree.term);
       graph.nodes.push({
-        id: ppt(tree.term),
-        attrs: {},
+        id,
+        attrs: { label: `BaseFact: ${id}` },
       });
       break;
     }
