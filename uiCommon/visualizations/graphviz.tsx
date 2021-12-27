@@ -2,22 +2,16 @@ import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
-import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
-import { LayoutManager } from "@jaegertracing/plexus";
+import { Graphviz } from "graphviz-react";
+import { prettyPrintGraph } from "../../util/graphviz";
 
 export const graphviz: VizTypeSpec = {
   name: "Graphviz",
   description: "visualize directed graphs",
-  component: Graphviz,
+  component: GraphvizWrapper,
 };
 
-const lm = new LayoutManager({
-  useDotEdges: true,
-  rankdir: "TB",
-  ranksep: 1.1,
-});
-
-function Graphviz(props: {
+function GraphvizWrapper(props: {
   interp: AbstractInterpreter;
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
@@ -26,33 +20,36 @@ function Graphviz(props: {
     // TODO: better error messages when bindings are missing
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
     const nodesRes = props.interp.queryStr(nodesQuery);
-    console.log({ nodesRes });
     const nodes = nodesRes.map((res) => {
       const id = stringifyNodeID(res.bindings.ID);
       const label = res.bindings.Label
         ? stringifyNodeID(res.bindings.Label)
         : id;
       return {
-        key: id,
-        label: label,
+        id,
+        attrs: { label },
       };
     });
     const edgesQuery = (props.spec.attrs.edges as StringLit).val;
     const edgesRes = props.interp.queryStr(edgesQuery);
-    console.log({ edgesRes });
     const edges = edgesRes.map((res) => ({
       to: stringifyNodeID(res.bindings.To),
       from: stringifyNodeID(res.bindings.From),
-      label: res.bindings.Label ? stringifyNodeID(res.bindings.Label) : "",
+      attrs: {
+        label: res.bindings.Label ? stringifyNodeID(res.bindings.Label) : "",
+      },
     }));
+
+    const dot = prettyPrintGraph({
+      nodes,
+      edges,
+    });
 
     return (
       <div>
-        <Digraph
-          zoom={true}
-          edges={edges}
-          vertices={nodes}
-          layoutManager={lm}
+        <Graphviz
+          dot={dot}
+          options={{ width: 500, height: 500, fit: true, zoom: false }}
         />
       </div>
     );

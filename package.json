@@ -14,7 +14,7 @@
     "build-interp-bundle": "esbuild --bundle --outfile=dist/index.mjs --format=esm --target=es6 core/simple/interpreter.ts",
     "build-fp-ui": "esbuild apps/fp/ui/main.tsx --bundle --outfile=apps/fp/ui/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --loader:.css=text --sourcemap",
     "serve-fp-ui": "cd apps/fp/ui/public && http-server -c-1",
-    "build-fiddle": "esbuild apps/fiddle/main.tsx --bundle --outfile=apps/fiddle/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap",
+    "build-fiddle": "esbuild apps/fiddle/main.tsx --bundle --outfile=apps/fiddle/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap --external:path --external:fs --external:crypto",
     "serve-fiddle": "cd apps/fiddle/public && http-server -c-1",
     "build-notebook-ui": "esbuild apps/notebook/main.tsx --bundle --outfile=apps/notebook/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap",
     "serve-notebook-ui": "cd apps/notebook/public && http-server -c-1",
