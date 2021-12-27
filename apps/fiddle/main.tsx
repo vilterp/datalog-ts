@@ -1,25 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
-<<<<<<< HEAD
-import { Program } from "../../core/types";
-import { language } from "../../core/parser";
-=======
-import { LayoutManager } from "@jaegertracing/plexus";
->>>>>>> 623ceb4 (comment out graph thing)
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 function Main() {
   const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
 
   let error = null;
 
-  let interp = new SimpleInterpreter(".", nullLoader);
+  let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
   try {
     interp = interp.evalStr(source)[1];
   } catch (e) {
