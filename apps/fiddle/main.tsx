@@ -64,6 +64,7 @@ function Main() {
         style={{ fontFamily: "monospace" }}
         cols={50}
         rows={10}
+        spellCheck={false}
       />
       <br />
       {error ? (
