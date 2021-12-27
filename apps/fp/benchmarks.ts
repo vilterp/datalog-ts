@@ -1,10 +1,10 @@
 import { BenchmarkResult, BenchmarkSpec } from "../../util/benchmark";
 import { language } from "./parser";
 import { flatten } from "./flatten";
-// import v8profiler from "v8-profiler-node8";
+import v8profiler from "v8-profiler-node8";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Performance } from "w3c-hr-time";
-// import * as fs from "fs";
+import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";
 import { ppt } from "../../core/pretty";
 import { assertStringEqual } from "../../util/testing";
@@ -41,7 +41,7 @@ function fpTest(repetitions: number, input): BenchmarkResult {
 
   const before = performance.now();
 
-  // v8profiler.startProfiling();
+  v8profiler.startProfiling();
   for (let i = 0; i < repetitions; i++) {
     let interp = originalInterp;
     if (i % 10 === 0) {
@@ -58,20 +58,20 @@ function fpTest(repetitions: number, input): BenchmarkResult {
   }
 
   const after = performance.now();
-  // const profile = v8profiler.stopProfiling();
-  // v8profiler.deleteAllProfiles();
-  // const profilePath = `profile-${Math.random()}.cpuprofile`;
-  // const file = fs.createWriteStream(profilePath);
-  // profile
-  //   .export()
-  //   .pipe(file)
-  //   .on("finish", () => {
-  //     console.log("wrote profile to", profilePath);
-  //   });
+  const profile = v8profiler.stopProfiling();
+  v8profiler.deleteAllProfiles();
+  const profilePath = `profile-${Math.random()}.cpuprofile`;
+  const file = fs.createWriteStream(profilePath);
+  profile
+    .export()
+    .pipe(file)
+    .on("finish", () => {
+      console.log("wrote profile to", profilePath);
+    });
 
   return {
     repetitions,
     totalTimeMS: after - before,
-    profilePath: null,
+    profilePath,
   };
 }

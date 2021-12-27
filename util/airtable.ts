@@ -8,7 +8,6 @@ export async function uploadResultToAirtable(
   name: string,
   result: BenchmarkResult
 ) {
-  // TODO: upload profile
   const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
     process.env.AIRTABLE_BASE_ID
   );
