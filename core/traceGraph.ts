@@ -53,15 +53,15 @@ function termToGraphvizRec(term: TermWithBindings): RecordTree {
   switch (term.type) {
     case "RecordWithBindings":
       return recordNode([
-        recordLeaf("rec", term.relation),
+        recordLeaf(null, term.relation),
         recordNode(
           objToPairs(term.attrs).map(([key, value]) =>
-            recordNode([recordLeaf("key", key), termToGraphvizRec(value.term)])
+            recordNode([recordLeaf(null, key), termToGraphvizRec(value.term)])
           )
         ),
       ]);
     case "Atom":
-      return recordLeaf("atom", ppt(term.term));
+      return recordLeaf(null, ppt(term.term));
     default:
       throw new Error(`todo: ${term.type}`);
   }

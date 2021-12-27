@@ -145,7 +145,7 @@ export function recordLeaf(id: string, content: string): RecordTree {
 export type RecordTree =
   | {
       type: "Leaf";
-      id: string;
+      id: string | null;
       content: string;
     }
   | { type: "Node"; children: RecordTree[] };
@@ -154,11 +154,11 @@ function stringifyRecordTree(node: RecordTree): string {
   if (node.type === "Node") {
     return node.children
       .map((child) =>
-        Array.isArray(child)
+        child.type === "Node"
           ? `{${stringifyRecordTree(child)}}`
           : stringifyRecordTree(child)
       )
       .join("|");
   }
-  return `<${node.id}> ${node.content}`;
+  return node.id ? `<${node.id}> ${node.content}` : node.content;
 }
