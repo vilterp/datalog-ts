@@ -2,55 +2,26 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
-import { Program, Rec, StringLit } from "../../core/types";
+import { Program } from "../../core/types";
 import { language } from "../../core/parser";
-import { LayoutManager } from "@jaegertracing/plexus";
-// TODO(joe): Update import after killing `DirectedGraph`
-import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
-import { uniqBy } from "../../util/util";
 import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
-import { Collapsible } from "../../uiCommon/generic/collapsible";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-
-const lm = new LayoutManager({
-  useDotEdges: true,
-  rankdir: "TB",
-  ranksep: 1.1,
-});
 
 function Main() {
   const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
 
   let error = null;
-  let nodes = [];
-  let edges = [];
 
-  const interp = new SimpleInterpreter(".", nullLoader);
-  let interp2: AbstractInterpreter = null;
+  let interp = new SimpleInterpreter(".", nullLoader);
   try {
     const program = language.program.tryParse(source) as Program;
-    interp2 = program.reduce<AbstractInterpreter>(
+    interp = program.reduce<AbstractInterpreter>(
       (interp, stmt) => interp.evalStmt(stmt)[1],
       interp
-    );
-    edges = uniqBy(
-      interp2.queryStr("edge{from: F, to: T, label: L}").map((res) => ({
-        from: ((res.term as Rec).attrs.from as StringLit).val,
-        to: ((res.term as Rec).attrs.to as StringLit).val,
-        label: ((res.term as Rec).attrs.label as StringLit).val,
-      })),
-      (e) => `${e.from}-${e.to}`
-    );
-    nodes = uniqBy(
-      interp2.queryStr("node{id: I, label: L}").map((res) => ({
-        key: ((res.term as Rec).attrs.id as StringLit).val,
-        label: ((res.term as Rec).attrs.label as StringLit).val,
-      })),
-      (n) => n.key
-    );
+    ) as SimpleInterpreter;
   } catch (e) {
     error = e.toString();
   }
@@ -64,28 +35,17 @@ function Main() {
         style={{ fontFamily: "monospace" }}
         cols={50}
         rows={10}
+        spellCheck={false}
       />
       <br />
       {error ? (
         <>
           <h3>Error</h3>
-          <pre>{error}</pre>
+          <pre style={{ fontFamily: "monospace", color: "red" }}>{error}</pre>
         </>
       ) : null}
       <h3>Explore</h3>
-      <Explorer interp={interp2} />
-      <Collapsible
-        heading="Graph"
-        initiallyCollapsed={true}
-        content={
-          <Digraph
-            zoom={true}
-            edges={edges}
-            vertices={nodes}
-            layoutManager={lm}
-          />
-        }
-      />
+      <Explorer interp={interp} showViz />
     </div>
   );
 }

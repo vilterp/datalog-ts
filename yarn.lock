@@ -86,15 +86,6 @@
   resolved "https://registry.yarnpkg.com/@hookeasy/use-title/-/use-title-1.0.2.tgz#bfd31af75e489cc107226c28a7293967a7b55f55"
   integrity sha512-5pkwqdPTILZFG+X0r9QVf/Disjns9GwGEd3vNy6ccNM/vZHZBXUj/9G8x++rnO2QDGEq/F+N3QdJidWW7QGynQ==
 
-"@jaegertracing/plexus@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@jaegertracing/plexus/-/plexus-0.1.0.tgz#afd73833ae34574d4bb4d0906878b2136c3c34c1"
-  integrity sha512-W3dFbvrtWsHj2huyoT8t+agZIdEPnys/pj33vrsOOXyNPz+zUr4QXCFv6N1iRbgmcYNck32KECIMN1l4tEpmXQ==
-  dependencies:
-    d3-selection "^1.3.0"
-    d3-zoom "^1.7.1"
-    viz.js "1.8.1"
-
 "@react-hook/debounce@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@react-hook/debounce/-/debounce-3.0.0.tgz#9eea8b5d81d4cb67cd72dd8657b3ff724afc7cad"
@@ -501,7 +492,7 @@ d3-path@^1.0.5:
   resolved "https://registry.yarnpkg.com/d3-path/-/d3-path-1.0.9.tgz#48c050bb1fe8c262493a8caf5524e3e9591701cf"
   integrity sha512-VLaYcn81dtHVTjEHd8B+pbe9yHWpXKZUC87PzoFmsFrJqgFwDe/qxfp5MlfsfM1V5E/iVt0MmEbWQ7FVIXh/bg==
 
-d3-selection@1, d3-selection@^1.1.0, d3-selection@^1.3.0:
+d3-selection@1, d3-selection@^1.1.0:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.4.1.tgz#98eedbbe085fbda5bafa2f9e3f3a2f4d7d622a98"
   integrity sha512-BTIbRjv/m5rcVTfBs4AMBLKs4x8XaaLkwm28KWu9S2vKNqXkXt2AH2Qf0sdPZHjFxcWg/YL53zcqAz+3g4/7PA==
@@ -523,7 +514,7 @@ d3-transition@1, d3-transition@^1.1.1:
     d3-selection "^1.1.0"
     d3-timer "1"
 
-d3-zoom@^1.5.0, d3-zoom@^1.7.1:
+d3-zoom@^1.5.0:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/d3-zoom/-/d3-zoom-1.8.3.tgz#b6a3dbe738c7763121cd05b8a7795ffe17f4fc0a"
   integrity sha512-VoLXTK4wvy1a0JpH2Il+F2CiOhVu7VRXWF5M/LroMIh3/zBAC3WAt7QoIvPibOavVo20hN6/37vwAsdBejLyKQ==
@@ -1896,11 +1887,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-viz.js@1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/viz.js/-/viz.js-1.8.1.tgz#277ab3cf4367c608a95b281a7472083c3e2ee6cf"
-  integrity sha512-KrSNgnIxec+JCAqDPliO6xYA69ToH2WTYB2Kbt8Bp/XRUvm23rTyfffFi4rvQLFkIRNUz/xCnnqhh/gChhsgGA==
 
 viz.js@^1.8.2:
   version "1.8.2"
