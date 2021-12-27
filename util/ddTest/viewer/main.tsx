@@ -12,6 +12,7 @@ import {
   emptyCollapseState,
   TreeView,
 } from "../../../uiCommon/generic/treeView";
+import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 
 function Main() {
   const [archiveURL] = useHashParam(
@@ -35,6 +36,11 @@ function TestViewer(props: { archive: Archive }) {
     "testPath",
     Object.keys(testArchive).sort()[0]
   );
+  console.log({ currentTest });
+  const [collapseState, setCollapseState] = useJSONLocalStorage(
+    "ddtest-viewer-collapse-state",
+    emptyCollapseState
+  );
 
   useTitle(`${lastItem((currentTest || "").split("/"))} | DDTest Viewer`);
 
@@ -49,12 +55,25 @@ function TestViewer(props: { archive: Archive }) {
         <div style={{ borderRight: "1px solid black", paddingRight: 10 }}>
           <TreeView<string>
             tree={tree}
-            render={({ item, key, path }) => {
-              console.log({ path });
-              return path.length === 0 ? "/" : item;
+            render={({ item, key, path, isLeaf }) => {
+              if (key.length === 0) {
+                return "/";
+              }
+              if (isLeaf) {
+                return (
+                  <a
+                    href={`/#?testPath=${encodeURIComponent(
+                      path.join("/").slice(1)
+                    )}`}
+                  >
+                    {item}
+                  </a>
+                );
+              }
+              return key.length === 0 ? "/" : item;
             }}
-            collapseState={emptyCollapseState}
-            setCollapseState={() => {}}
+            collapseState={collapseState}
+            setCollapseState={setCollapseState}
           />
         </div>
         <div style={{ paddingLeft: 10 }}>

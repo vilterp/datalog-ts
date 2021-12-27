@@ -27,9 +27,16 @@ export function makeCollapseStateAllCollapsed<T>(
   };
 }
 
+type NodeRenderProps<T> = {
+  item: T;
+  key: string;
+  path: T[];
+  isLeaf: boolean;
+};
+
 export function TreeView<T>(props: {
   tree: Tree<T>;
-  render: (props: { item: T; key: string; path: T[] }) => React.ReactNode;
+  render: (props: NodeRenderProps<T>) => React.ReactNode;
   collapseState: TreeCollapseState;
   setCollapseState: (c: TreeCollapseState) => void;
   hideRoot?: boolean;
@@ -51,7 +58,7 @@ function NodeView<T>(props: {
   showNode: boolean;
   tree: Tree<T>;
   path: T[];
-  render: (props: { item: T; key: string; path: T[] }) => React.ReactNode;
+  render: (props: NodeRenderProps<T>) => React.ReactNode;
   collapseState: TreeCollapseState | undefined;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
@@ -107,6 +114,7 @@ function NodeView<T>(props: {
           key: props.tree.key,
           item: props.tree.item,
           path: props.path,
+          isLeaf: props.tree.children.length === 0,
         })}
       </span>
       {children}
