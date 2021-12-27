@@ -4,22 +4,12 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
 import { Program, Rec, StringLit } from "../../core/types";
 import { language } from "../../core/parser";
-import { LayoutManager } from "@jaegertracing/plexus";
-// TODO(joe): Update import after killing `DirectedGraph`
-import Digraph from "@jaegertracing/plexus/lib/DirectedGraph";
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
 import { uniqBy } from "../../util/util";
 import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
-import { Collapsible } from "../../uiCommon/generic/collapsible";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-
-const lm = new LayoutManager({
-  useDotEdges: true,
-  rankdir: "TB",
-  ranksep: 1.1,
-});
 
 function Main() {
   const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
