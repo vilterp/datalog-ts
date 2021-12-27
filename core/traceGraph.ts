@@ -22,11 +22,11 @@ function recur(graph: Graph, res: Res) {
       });
       collapseAndSources(res.trace.sources).forEach((source) => {
         recur(graph, source);
-        graph.edges.push({
-          from: id,
-          to: ppt(source.term),
-          attrs: { label: "and" },
-        });
+        // graph.edges.push({
+        //   from: id,
+        //   to: ppt(source.term),
+        //   attrs: { label: "and" },
+        // });
       });
       break;
     }
@@ -36,12 +36,12 @@ function recur(graph: Graph, res: Res) {
         id,
         attrs: { label: `Match: ${id}`, ...NODE_ATTRS },
       });
-      recur(graph, res.trace.fact);
-      graph.edges.push({
-        from: id,
-        to: ppt(res.trace.fact.term),
-        attrs: { label: "match" },
-      });
+      // recur(graph, res.trace.fact);
+      // graph.edges.push({
+      //   from: id,
+      //   to: ppt(res.trace.fact.term),
+      //   attrs: { label: "match" },
+      // });
       break;
     }
     case "RefTrace": {
