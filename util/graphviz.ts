@@ -106,6 +106,22 @@ export function blockInner(docs: pp.IDoc[], opts?: BlockOpts): pp.IDoc {
 
 // e.g. https://graphviz.org/Gallery/directed/datastruct.html
 // note: have to use with `shape: record`
-export function records(rows: { id: string; content: string }[]) {
-  return rows.map((row) => `<${row.id}> ${row.content}`).join("|");
+// TODO: these can be nested, so they're really a tree
+
+export type RecordTree =
+  | {
+      id: string;
+      content: string;
+    }
+  | RecordTree[];
+
+export function records(node: RecordTree) {
+  if (Array.isArray(node)) {
+    return node
+      .map((child) =>
+        Array.isArray(child) ? `{${records(child)}}` : records(child)
+      )
+      .join("|");
+  }
+  return `<${node.id}> ${node.content}`;
 }
