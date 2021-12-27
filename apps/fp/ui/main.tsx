@@ -4,7 +4,7 @@ import { language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
 import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
-import { Collapsible } from "../../../uiCommon/generic/collapsible";
+import { CollapsibleWithHeading } from "../../../uiCommon/generic/collapsible";
 import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
 import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../../uiCommon/ide/types";
@@ -39,7 +39,7 @@ function Main() {
       <h2>Source</h2>
       {editor}
 
-      <Collapsible
+      <CollapsibleWithHeading
         heading="Facts &amp; Rules"
         content={<Explorer interp={interp3} />}
       />

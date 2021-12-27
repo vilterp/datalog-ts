@@ -49,10 +49,32 @@ function TestViewer(props: { archive: Archive }) {
       {(testArchive[currentTest] || []).map((pair, idx) => (
         <div key={idx}>
           <Collapsible
-            heading={pair.input}
-            content={(
-              VISUALIZERS[pair.output.mimeType] || VISUALIZERS["text/plain"]
-            )(pair.output.content)}
+            id={pair.input}
+            renderLabel={(collapsed) => (
+              <div style={{ display: "flex" }}>
+                <div style={{ fontFamily: "monospace" }}>
+                  {collapsed ? ">" : "v"}
+                </div>
+                <pre
+                  style={{
+                    whiteSpace: "pre",
+                    marginTop: 0,
+                    marginBottom: 0,
+                    paddingLeft: 10,
+                  }}
+                >
+                  {pair.input}
+                </pre>
+              </div>
+            )}
+            content={
+              <div style={{ paddingLeft: 17, marginBottom: 10 }}>
+                <pre style={{ margin: 0 }}>----</pre>
+                {(
+                  VISUALIZERS[pair.output.mimeType] || VISUALIZERS["text/plain"]
+                )(pair.output.content)}
+              </div>
+            }
           />
         </div>
       ))}

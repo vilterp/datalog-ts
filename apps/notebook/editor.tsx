@@ -12,7 +12,7 @@ import {
 } from "../../util/util";
 import TextAreaAutosize from "react-textarea-autosize";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Collapsible } from "../../uiCommon/generic/collapsible";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import Parsimmon, { Result } from "parsimmon";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 
@@ -33,7 +33,7 @@ export function Editor(props: { doc: Doc; viewMode: boolean }) {
       {/* TODO: debug this one */}
       {/* <AddCellButton doc={props.doc} setDoc={setDoc} insertAt={0} /> */}
       <Blocks doc={doc} setDoc={setDoc} viewMode={props.viewMode} />
-      <Collapsible
+      <CollapsibleWithHeading
         initiallyCollapsed={true}
         heading="Markdown Export"
         content={<MdExport doc={doc} />}
