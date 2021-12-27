@@ -4,3 +4,4 @@ secret-testdata
 dist
 .env
 .vscode
+*.cpuprofile
