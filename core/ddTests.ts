@@ -3,9 +3,11 @@ import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
-import { datalogOut } from "../util/ddTest/types";
+import { datalogOut, plainTextOut } from "../util/ddTest/types";
 import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
+import { traceToGraph } from "./traceGraph";
+import { prettyPrintGraph } from "../util/graphviz";
 
 export function coreTestsSimple(writeResults: boolean): Suite {
   return coreTests(writeResults, () => new SimpleInterpreter(".", fsLoader));
@@ -34,6 +36,21 @@ function coreTests(
   }));
 }
 
+export function coreTestsCommon(writeResults: boolean): Suite {
+  return [
+    {
+      name: "traceGraph",
+      test() {
+        runDDTestAtPath(
+          "core/testdata/traceGraph.dd.txt",
+          traceGraphTest,
+          writeResults
+        );
+      },
+    },
+  ];
+}
+
 export function putThroughInterp(
   test: string[],
   getInterp: () => AbstractInterpreter
@@ -57,4 +74,21 @@ export function putThroughInterp(
   }
 
   return results;
+}
+
+function traceGraphTest(test: string[]): TestOutput[] {
+  let interp: AbstractInterpreter = new SimpleInterpreter(".", fsLoader);
+  interp = interp.doLoad("core/testdata/family_facts.dl");
+  interp = interp.doLoad("core/testdata/family_rules.dl");
+  return test.map((input) => {
+    const results = interp.queryStr(input);
+    return plainTextOut(
+      results
+        .map((res) => {
+          const graph = traceToGraph(res);
+          return prettyPrintGraph(graph);
+        })
+        .join("\n")
+    );
+  });
 }
