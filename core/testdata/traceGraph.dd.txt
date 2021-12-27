@@ -2,20 +2,17 @@ sibling{left: "Pete", right: R}
 ----
 text/plain
 digraph G {
-  "sibling{left: \"Pete\", right: \"Carolyn\"}" [label="Ref: sibling{left: \"Pete\", right: \"Carolyn\"}" shape="box"];
-  "parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" [label="And: parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" shape="box"];
-  "parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" [label="Ref: parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" shape="box"];
-  "mother{child: \"Pete\", mother: \"Mary\"}" [label="And: mother{child: \"Pete\", mother: \"Mary\"}" shape="box"];
-  "mother{child: \"Pete\", mother: \"Mary\"}" [label="BaseFact: mother{child: \"Pete\", mother: \"Mary\"}" shape="box"];
-  "father{child: \"Pete\", father: \"Paul\"}" [label="BaseFact: father{child: \"Pete\", father: \"Paul\"}" shape="box"];
-  "parents{child: \"Carolyn\", father: \"Paul\", mother: \"Mary\"}" [label="Ref: parents{child: \"Carolyn\", father: \"Paul\", mother: \"Mary\"}" shape="box"];
-  "mother{child: \"Carolyn\", mother: \"Mary\"}" [label="And: mother{child: \"Carolyn\", mother: \"Mary\"}" shape="box"];
-  "mother{child: \"Carolyn\", mother: \"Mary\"}" [label="BaseFact: mother{child: \"Carolyn\", mother: \"Mary\"}" shape="box"];
-  "father{child: \"Carolyn\", father: \"Paul\"}" [label="BaseFact: father{child: \"Carolyn\", father: \"Paul\"}" shape="box"];
-  "parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" -> "mother{child: \"Pete\", mother: \"Mary\"}" [label="ref"];
-  "parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" -> "father{child: \"Pete\", father: \"Paul\"}" [label="ref"];
-  "parents{child: \"Carolyn\", father: \"Paul\", mother: \"Mary\"}" -> "mother{child: \"Carolyn\", mother: \"Mary\"}" [label="ref"];
-  "parents{child: \"Carolyn\", father: \"Paul\", mother: \"Mary\"}" -> "father{child: \"Carolyn\", father: \"Paul\"}" [label="ref"];
-  "sibling{left: \"Pete\", right: \"Carolyn\"}" -> "parents{child: \"Pete\", father: \"Paul\", mother: \"Mary\"}" [label="ref"];
-  "sibling{left: \"Pete\", right: \"Carolyn\"}" -> "parents{child: \"Carolyn\", father: \"Paul\", mother: \"Mary\"}" [label="ref"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="Ref: sibling{left: \"Pete\", right: R@\"Carolyn\"}" shape="box"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="Ref: parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" shape="box"];
+  "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [shape="box"];
+  "father{child: C@\"Pete\", father: F@\"Paul\"}" [shape="box"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="Ref: parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" shape="box"];
+  "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [shape="box"];
+  "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [shape="box"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="ref"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="ref"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="ref"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="ref"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="ref"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="ref"];
 }

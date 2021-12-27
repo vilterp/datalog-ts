@@ -1,6 +1,6 @@
 import { Graph } from "../util/graphviz";
 import { ppt } from "./pretty";
-import { collapseAndSources } from "./traceTree";
+import { collapseAndSources, printTermWithBindings } from "./traceTree";
 import { Res } from "./types";
 
 export function traceToGraph(res: Res): Graph {
@@ -14,22 +14,23 @@ const NODE_ATTRS = { shape: "box" };
 function recur(graph: Graph, res: Res) {
   switch (res.trace.type) {
     case "AndTrace": {
-      const id = ppt(res.term);
-      graph.nodes.push({
-        id,
-        attrs: { label: `And: ${id}`, ...NODE_ATTRS },
-      });
       collapseAndSources(res.trace.sources).forEach((source) => {
         recur(graph, source);
       });
       break;
     }
     case "MatchTrace": {
-      recur(graph, res.trace.fact);
+      const id = printTermWithBindings(res, [], { showScopePath: false });
+      graph.nodes.push({
+        id,
+        attrs: { ...NODE_ATTRS },
+      });
       break;
     }
     case "RefTrace": {
-      const id = ppt(res.term);
+      const id = printTermWithBindings(res, [], {
+        showScopePath: false,
+      });
       graph.nodes.push({
         id,
         attrs: { label: `Ref: ${id}`, ...NODE_ATTRS },
@@ -43,40 +44,13 @@ function recur(graph: Graph, res: Res) {
       edges.forEach((edge) => {
         graph.edges.push({
           from: id,
-          to: ppt(edge.term),
+          to: printTermWithBindings(edge, [], { showScopePath: false }),
           attrs: { label: "ref" },
         });
       });
       break;
     }
-    case "BaseFactTrace": {
-      const id = ppt(res.term);
-      graph.nodes.push({
-        id,
-        attrs: { label: `BaseFact: ${id}`, ...NODE_ATTRS },
-      });
-      break;
-    }
-    case "VarTrace": {
-      graph.nodes.push({
-        id: ppt(res.term),
-        attrs: NODE_ATTRS,
-      });
-      break;
-    }
-    case "BinExprTrace": {
-      graph.nodes.push({
-        id: ppt(res.term),
-        attrs: NODE_ATTRS,
-      });
-      break;
-    }
-    case "LiteralTrace": {
-      graph.nodes.push({
-        id: ppt(res.term),
-        attrs: NODE_ATTRS,
-      });
-      break;
-    }
+    default:
+      throw new Error(`traces of type ${res.trace.type} shouldn't be reached`);
   }
 }

@@ -59,6 +59,8 @@ export function traceToTree(res: Res): Tree<Res> {
   }
 }
 
+// TODO: make a function that does this to the whole tree
+// so we don't have to thread it through both traceToTree and traceToGraph
 export function collapseAndSources(sources: Res[]): Res[] {
   if (sources.length === 2 && sources[1].trace.type === "AndTrace") {
     return [sources[0], ...collapseAndSources(sources[1].trace.sources)];
@@ -66,7 +68,7 @@ export function collapseAndSources(sources: Res[]): Res[] {
   return sources;
 }
 
-function printTermWithBindings(
+export function printTermWithBindings(
   res: Res,
   scopePath: ScopePath,
   opts: TracePrintOpts
