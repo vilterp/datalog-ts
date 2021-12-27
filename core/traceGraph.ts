@@ -4,10 +4,13 @@ import { collapseAndSources } from "./traceTree";
 import { Res } from "./types";
 
 export function traceToGraph(res: Res): Graph {
+  console.log({ res });
   const graph: Graph = { edges: [], nodes: [] };
   recur(graph, res);
   return graph;
 }
+
+const NODE_ATTRS = { shape: "box" };
 
 function recur(graph: Graph, res: Res) {
   switch (res.trace.type) {
@@ -15,9 +18,9 @@ function recur(graph: Graph, res: Res) {
       const id = ppt(res.term);
       graph.nodes.push({
         id,
-        attrs: { label: `And: ${id}` },
+        attrs: { label: `And: ${id}`, ...NODE_ATTRS },
       });
-      collapseAndSources(res.trace.sources).forEach((source) => {
+      res.trace.sources.forEach((source) => {
         recur(graph, source);
         graph.edges.push({
           from: id,
@@ -28,10 +31,10 @@ function recur(graph: Graph, res: Res) {
       break;
     }
     case "MatchTrace": {
-      const id = ppt(res.trace.match);
+      const id = ppt(res.term);
       graph.nodes.push({
         id,
-        attrs: { label: `Match: ${id}` },
+        attrs: { label: `Match: ${id}`, ...NODE_ATTRS },
       });
       recur(graph, res.trace.fact);
       graph.edges.push({
@@ -42,10 +45,10 @@ function recur(graph: Graph, res: Res) {
       break;
     }
     case "RefTrace": {
-      const id = ppt(res.trace.refTerm);
+      const id = ppt(res.term);
       graph.nodes.push({
         id,
-        attrs: { label: `Ref: ${id}` },
+        attrs: { label: `Ref: ${id}`, ...NODE_ATTRS },
       });
       recur(graph, res.trace.innerRes);
       // TODO: collapse and sources
@@ -60,28 +63,28 @@ function recur(graph: Graph, res: Res) {
       const id = ppt(res.term);
       graph.nodes.push({
         id,
-        attrs: { label: `BaseFact: ${id}` },
+        attrs: { label: `BaseFact: ${id}`, ...NODE_ATTRS },
       });
       break;
     }
     case "VarTrace": {
       graph.nodes.push({
         id: ppt(res.term),
-        attrs: {},
+        attrs: NODE_ATTRS,
       });
       break;
     }
     case "BinExprTrace": {
       graph.nodes.push({
         id: ppt(res.term),
-        attrs: {},
+        attrs: NODE_ATTRS,
       });
       break;
     }
     case "LiteralTrace": {
       graph.nodes.push({
         id: ppt(res.term),
-        attrs: {},
+        attrs: NODE_ATTRS,
       });
       break;
     }
