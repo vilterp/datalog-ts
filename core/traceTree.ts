@@ -59,7 +59,7 @@ export function traceToTree(res: Res): Tree<Res> {
   }
 }
 
-function collapseAndSources(sources: Res[]): Res[] {
+export function collapseAndSources(sources: Res[]): Res[] {
   if (sources.length === 2 && sources[1].trace.type === "AndTrace") {
     return [sources[0], ...collapseAndSources(sources[1].trace.sources)];
   }
