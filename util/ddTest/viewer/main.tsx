@@ -36,7 +36,6 @@ function TestViewer(props: { archive: Archive }) {
     "testPath",
     Object.keys(testArchive).sort()[0]
   );
-  console.log({ currentTest });
   const [collapseState, setCollapseState] = useJSONLocalStorage(
     "ddtest-viewer-collapse-state",
     emptyCollapseState
@@ -60,11 +59,12 @@ function TestViewer(props: { archive: Archive }) {
                 return "/";
               }
               if (isLeaf) {
+                const pathStr = path.join("/").slice(1);
+                const isSelected = pathStr === currentTest;
                 return (
                   <a
-                    href={`/#?testPath=${encodeURIComponent(
-                      path.join("/").slice(1)
-                    )}`}
+                    href={`/#?testPath=${encodeURIComponent(pathStr)}`}
+                    style={{ fontWeight: isSelected ? "bold" : "normal" }}
                   >
                     {item}
                   </a>
