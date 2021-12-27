@@ -13,9 +13,11 @@ interface Node {
   comment?: string;
 }
 
+type EdgeID = string | { nodeID: string; rowID: string };
+
 interface Edge {
-  from: string;
-  to: string;
+  from: EdgeID;
+  to: EdgeID;
   attrs: { [key: string]: string };
 }
 
@@ -48,9 +50,9 @@ export function prettyPrintGraph(g: Graph): string {
           node.comment ? ` // ${node.comment}` : "",
         ]),
         ...g.edges.map((edge) => [
-          `"${escapeStr(edge.from)}"`,
+          stringifyEdgeID(edge.from),
           " -> ",
-          `"${escapeStr(edge.to)}"`,
+          stringifyEdgeID(edge.to),
           " [",
           pp.intersperse(
             " ",
@@ -65,6 +67,14 @@ export function prettyPrintGraph(g: Graph): string {
 }
 
 // pretty util
+
+function stringifyEdgeID(id: EdgeID) {
+  if (typeof id === "string") {
+    return `"${escapeStr(id)}"`;
+  }
+  // TODO: can we quote and escape rowID too?
+  return `"${escapeStr(id.nodeID)}":${id.rowID}`;
+}
 
 function escapeStr(str: string): string {
   return str.split('"').join('\\"');
@@ -92,4 +102,10 @@ export function blockInner(docs: pp.IDoc[], opts?: BlockOpts): pp.IDoc {
     pp.indent(2, pp.intersperse([sep, pp.lineBreak])(docs)),
     pp.lineBreak,
   ]);
+}
+
+// e.g. https://graphviz.org/Gallery/directed/datastruct.html
+// note: have to use with `shape: record`
+export function records(rows: { id: string; content: string }[]) {
+  return rows.map((row) => `<${row.id}> ${row.content}`).join("|");
 }

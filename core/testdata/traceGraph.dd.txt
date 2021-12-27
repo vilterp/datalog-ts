@@ -2,13 +2,13 @@ sibling{left: "Pete", right: R}
 ----
 application/graphviz
 digraph G {
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="Ref: sibling{left: \"Pete\", right: R@\"Carolyn\"}" shape="box"];
-  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="Ref: parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" shape="box"];
-  "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [shape="box"];
-  "father{child: C@\"Pete\", father: F@\"Paul\"}" [shape="box"];
-  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="Ref: parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" shape="box"];
-  "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [shape="box"];
-  "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [shape="box"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="<rec> sibling|<left> left: \"Pete\"|<right> right: \"Carolyn\"" shape="record"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="<rec> parents|<child> child: \"Pete\"|<father> father: \"Paul\"|<mother> mother: \"Mary\"" shape="record"];
+  "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [shape="record"];
+  "father{child: C@\"Pete\", father: F@\"Paul\"}" [shape="record"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="<rec> parents|<child> child: \"Carolyn\"|<father> father: \"Paul\"|<mother> mother: \"Mary\"" shape="record"];
+  "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [shape="record"];
+  "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [shape="record"];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="ref: {C: L, F: F, M: M}"];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="ref: {C: L, F: F, M: M}"];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="ref: {C: R, F: F, M: M}"];
