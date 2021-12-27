@@ -29,3 +29,12 @@ parse.ruleMatch{fromNode: N1, toNode: N4, startChar: C1, endChar: C4} :-
 parse.rulePath{ruleName: R, startChar: CS, endChar: CE} :-
   grammar.ruleMarker{name: R, startID: NS, endID: NE} &
   parse.path{fromNode: NS, toNode: NE, startChar: CS, endChar: CE}.
+
+# viz
+internal.visualization{
+  name: "graphviz",
+  spec: graphviz{
+    nodes: "grammar.node{id: ID}",
+    edges: "grammar.edge{from: From, to: To}"
+  }
+}.
