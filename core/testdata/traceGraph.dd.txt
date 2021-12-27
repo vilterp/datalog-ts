@@ -1,6 +1,6 @@
 sibling{left: "Pete", right: R}
 ----
-text/plain
+application/graphviz
 digraph G {
   "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="Ref: sibling{left: \"Pete\", right: R@\"Carolyn\"}" shape="box"];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="Ref: parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" shape="box"];

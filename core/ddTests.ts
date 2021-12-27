@@ -3,7 +3,7 @@ import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
-import { datalogOut, plainTextOut } from "../util/ddTest/types";
+import { datalogOut, graphvizOut, plainTextOut } from "../util/ddTest/types";
 import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
 import { traceToGraph } from "./traceGraph";
@@ -82,7 +82,9 @@ function traceGraphTest(test: string[]): TestOutput[] {
   interp = interp.doLoad("core/testdata/family_rules.dl");
   return test.map((input) => {
     const results = interp.queryStr(input);
-    return plainTextOut(
+    // TODO: graphvizOut won't really work if there are multiple results...
+    //   oh well, just try to restrict test queries to one result.
+    return graphvizOut(
       results
         .map((res) => {
           const graph = traceToGraph(res);
