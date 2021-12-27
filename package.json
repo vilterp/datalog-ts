@@ -28,7 +28,6 @@
     "serve-ddtest-viewer": "cd util/ddTest/viewer && http-server -c-1"
   },
   "devDependencies": {
-    "@jaegertracing/plexus": "^0.1.0",
     "@types/diff": "^4.0.2",
     "@types/node": "^15.0.3",
     "@types/parsimmon": "^1.10.1",
