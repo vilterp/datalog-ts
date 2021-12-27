@@ -38,7 +38,7 @@ export function prettyPrintGraph(g: Graph): string {
       [
         ...(g.comments || []).map((comment) => `// ${comment}`),
         ...g.nodes.map((node) => [
-          `"${node.id}"`,
+          `"${escapeStr(node.id)}"`,
           " [",
           pp.intersperse(
             " ",
@@ -48,9 +48,9 @@ export function prettyPrintGraph(g: Graph): string {
           node.comment ? ` // ${node.comment}` : "",
         ]),
         ...g.edges.map((edge) => [
-          `"${edge.from}"`,
+          `"${escapeStr(edge.from)}"`,
           " -> ",
-          `"${edge.to}"`,
+          `"${escapeStr(edge.to)}"`,
           " [",
           pp.intersperse(
             " ",
