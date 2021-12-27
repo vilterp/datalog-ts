@@ -6,19 +6,39 @@ export function CollapsibleWithHeading(props: {
   initiallyCollapsed?: boolean;
   content: React.ReactNode;
 }) {
+  return (
+    <Collapsible
+      id={props.heading}
+      renderLabel={(collapsed) => (
+        <h3>
+          `${collapsed ? ">" : "v"} ${props.heading}`
+        </h3>
+      )}
+      initiallyCollapsed={props.initiallyCollapsed}
+      content={props.content}
+    />
+  );
+}
+
+export function Collapsible(props: {
+  renderLabel: (collapsed: boolean) => React.ReactNode;
+  id: string;
+  initiallyCollapsed?: boolean;
+  content: React.ReactNode;
+}) {
   const [collapsed, setCollapsed] = useBoolLocalStorage(
-    `collapsed-${props.heading}`,
+    `collapsed-${props.id}`,
     !!props.initiallyCollapsed
   );
 
   return (
     <>
-      <h3
+      <div
         style={{ cursor: "pointer" }}
         onClick={() => setCollapsed(!collapsed)}
       >
-        {`${collapsed ? ">" : "v"} ${props.heading}`}
-      </h3>
+        {props.renderLabel(collapsed)}
+      </div>
       {collapsed ? null : props.content}
     </>
   );
