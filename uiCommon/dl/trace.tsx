@@ -9,8 +9,20 @@ import {
 } from "../../core/traceTree";
 import { mapObjToList, intersperse } from "../../util/util";
 import { TreeView, TreeCollapseState } from "../generic/treeView";
+import Graphviz from "graphviz-react";
+import { prettyPrintGraph } from "../../util/graphviz";
+import { traceToGraph } from "../../core/traceGraph";
 
-export function TraceView(props: {
+const MemoizedGraphviz = React.memo(Graphviz);
+
+const GRAPHVIZ_OPTIONS = { width: 1000, height: 500, fit: true, zoom: false };
+
+export function TraceGraphView(props: { result: Res }) {
+  const dot = prettyPrintGraph(traceToGraph(props.result));
+  return <MemoizedGraphviz dot={dot} options={GRAPHVIZ_OPTIONS} />;
+}
+
+export function TraceTreeView(props: {
   result: Res;
   highlight: HighlightProps;
   collapseState: TreeCollapseState;

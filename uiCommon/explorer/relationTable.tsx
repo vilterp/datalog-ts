@@ -10,7 +10,7 @@ import {
 import { RuleC } from "../dl/rule";
 import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../dl/term";
-import { TraceView } from "../dl/trace";
+import { TraceGraphView } from "../dl/trace";
 import { canTreeViz, treeFromRecords } from "../visualizations/tree";
 import { BareTerm } from "../dl/replViews";
 import * as styles from "./styles";
@@ -139,7 +139,7 @@ export function RelationTable(props: {
                   {rowCollapseState.collapsed || !result.trace ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
-                        <TraceView
+                        {/* <TraceView
                           result={result}
                           highlight={props.highlight}
                           collapseState={rowCollapseState}
@@ -149,7 +149,8 @@ export function RelationTable(props: {
                               [key]: st,
                             })
                           }
-                        />
+                        /> */}
+                        <TraceGraphView result={result} />
                       </td>
                     </tr>
                   )}
