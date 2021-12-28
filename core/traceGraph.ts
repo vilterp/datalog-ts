@@ -96,12 +96,16 @@ function termToGraphvizRec(term: TermWithBindings): RecordTree {
   switch (inner.type) {
     case "RecordWithBindings":
       return recordNode([
-        recordLeaf(bindingLabel, inner.relation),
-        recordNode(
-          objToPairs(inner.attrs).map(([key, value]) =>
-            recordNode([recordLeaf(null, key), termToGraphvizRec(value)])
-          )
-        ),
+        recordNode([
+          recordLeaf(bindingLabel, inner.relation),
+          recordNode([
+            recordNode(
+              objToPairs(inner.attrs).map(([key, value]) =>
+                recordNode([recordLeaf(null, key), termToGraphvizRec(value)])
+              )
+            ),
+          ]),
+        ]),
       ]);
     case "Atom":
       return recordLeaf(bindingLabel, ppt(inner.term));
