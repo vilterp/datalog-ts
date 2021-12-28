@@ -122,6 +122,8 @@ function Playground() {
     }
   }
 
+  finalInterp = finalInterp.evalStr(`ide.cursorPos{idx: ${cursorPos}}.`)[1];
+
   return (
     <>
       <h1>Language Workbench</h1>
