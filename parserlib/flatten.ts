@@ -28,8 +28,6 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
 }
 
 function recur(state: State, tree: RuleTree, parentID: number): number {
-  const childrenByName = groupBy(tree.children, (child) => child.name);
-
   const id = state.nextID;
   state.nextID++;
   const props: { [name: string]: Term } = {
@@ -42,10 +40,7 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
     text: str(state.source.substring(tree.span.from, tree.span.to)),
   };
   tree.children.forEach((child) => {
-    const childID = recur(state, child, id);
-    if (childrenByName[child.name].length === 1) {
-      props[child.name] = int(childID);
-    }
+    recur(state, child, id);
   });
   state.records.push(rec(`ast.${tree.name}`, props));
   return id;
