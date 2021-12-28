@@ -9,14 +9,17 @@ digraph G {
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="{parents|{{{child|<R> \"Carolyn\"}|{father|<F> \"Paul\"}|{mother|<M> \"Mary\"}}}}" shape="record"];
   "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="{mother|{{{child|<C> \"Carolyn\"}|{mother|<M> \"Mary\"}}}}" shape="record"];
   "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="{father|{{{child|<C> \"Carolyn\"}|{father|<F> \"Paul\"}}}}" shape="record"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":C -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}":L [label="C:L"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":C -> "father{child: C@\"Pete\", father: F@\"Paul\"}":L [label="C:L"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":F -> "father{child: C@\"Pete\", father: F@\"Paul\"}":F [label="F:F"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":M -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}":M [label="M:M"];
   "father{child: C@\"Pete\", father: F@\"Paul\"}":C -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}":C [dir="none" label="C"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":C -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":L [label="C:L"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":F -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":F [label="F:F"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":M -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":M [label="M:M"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":C -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}":R [label="C:R"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":C -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}":R [label="C:R"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":F -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}":F [label="F:F"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":M -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}":M [label="M:M"];
   "father{child: C@\"Carolyn\", father: F@\"Paul\"}":C -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}":C [dir="none" label="C"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":C -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":R [label="C:R"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":F -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":F [label="F:F"];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":M -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":M [label="M:M"];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}":R -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":R [label="R:R"];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":F -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":F [dir="none" label="F"];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":M -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":M [dir="none" label="M"];
 }

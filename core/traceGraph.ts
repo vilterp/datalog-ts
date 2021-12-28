@@ -50,11 +50,6 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
   Object.keys(tree.item.bindings).forEach;
   tree.children.forEach((child, childIdx) => {
     treeToGraph(graph, child);
-    const childID = printTermWithBindings(
-      child.item,
-      [],
-      defaultTracePrintOpts
-    );
     // add edges between children for joins
     forEachPair(child.item.bindings, (varName) => {
       if (!joinEdges[varName]) {
@@ -62,19 +57,44 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
       }
       joinEdges[varName].push(childIdx);
     });
-    // add edges for mappings
-    if (child.item.trace.type === "RefTrace") {
-      const mappings = child.item.trace.mappings;
-      forEachPair(mappings, (fromVar, toVar) => {
-        console.log({ fromVar, toVar });
+  });
+  // add edges for mappings
+  // TODO: DRY these up
+  const trace = tree.item.trace;
+  if (trace.type === "RefTrace") {
+    const mappings = trace.mappings;
+    forEachPair(mappings, (fromVar, toVar) => {
+      joinEdges[fromVar].forEach((childIdx) => {
+        const child = tree.children[childIdx];
+        const childID = printTermWithBindings(
+          child.item,
+          [],
+          defaultTracePrintOpts
+        );
         graph.edges.push({
           from: { nodeID: id, port: fromVar },
           to: { nodeID: childID, port: toVar },
           attrs: { label: `${fromVar}:${toVar}` },
         });
       });
-    }
-  });
+    });
+  } else if (trace.type === "MatchTrace") {
+    forEachPair(trace.fact.bindings, (varName) => {
+      joinEdges[varName].forEach((childIdx) => {
+        const child = tree.children[childIdx];
+        const childID = printTermWithBindings(
+          child.item,
+          [],
+          defaultTracePrintOpts
+        );
+        graph.edges.push({
+          from: { nodeID: id, port: varName },
+          to: { nodeID: childID, port: varName },
+          attrs: { label: varName },
+        });
+      });
+    });
+  }
   forEachPair(joinEdges, (varName, childIndices) => {
     allPairs(childIndices).forEach(([fromIdx, toIdx]) => {
       const fromChild = tree.children[fromIdx].item;
