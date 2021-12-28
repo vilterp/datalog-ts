@@ -28,9 +28,7 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
 }
 
 function recur(state: State, tree: RuleTree, parentID: number): number {
-  const childrenByName = groupBy(
-    tree.children.map((child) => [child.name, child])
-  );
+  const childrenByName = groupBy(tree.children, (child) => child.name);
 
   const id = state.nextID;
   state.nextID++;
