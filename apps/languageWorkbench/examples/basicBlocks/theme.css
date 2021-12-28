@@ -1,0 +1,15 @@
+.segment-ident {
+  color: purple;
+}
+.segment-var {
+  color: orange;
+}
+.segment-int {
+  color: blue;
+}
+.segment-string {
+  color: green;
+}
+.segment-keyword {
+  color: orange;
+}

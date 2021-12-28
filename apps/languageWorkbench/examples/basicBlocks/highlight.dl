@@ -1,0 +1,18 @@
+hl.Segment{type: T, span: S, highlight: H} :-
+  hl.ident{type: T, span: S, highlight: H} |
+  hl.keyword{type: T, span: S, highlight: H}.
+
+hl.ident{type: "ident", span: S, highlight: false} :-
+  ast.ident{span: S}.
+
+hl.keyword{type: "keyword", span: S, highlight: false} :-
+  ast.gotoKW{span: S}.
+
+# TODO: factor this out a bit
+ide.jump{from: BF, to: BT} :-
+  ast.ident{id: I, text: BT, parentID: GotoInstrID} &
+  ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
+  ast.instr{id: InstrID, parentID: BlockID} &
+  ast.block{id: BlockID} &
+  ast.label{id: LabelID, parentID: BlockID} &
+  ast.ident{parentID: LabelID, text: BF}.

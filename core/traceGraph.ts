@@ -11,7 +11,7 @@ import {
   printTermWithBindings,
   traceToTree,
 } from "./traceTree";
-import { Rec, Res, TermWithBindings } from "./types";
+import { Res, TermWithBindings } from "./types";
 import * as pp from "prettier-printer";
 
 export function traceToGraph(res: Res): Graph {

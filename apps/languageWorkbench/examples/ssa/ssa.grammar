@@ -1,6 +1,0 @@
-main :- repSep(block,ws).
-block :- [label, ":", ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
-label :- ident.
-ident :- [[a-z], repSep([a-z], "")].
-instr :- ident.
-ws :- repSep((" "|"\n"), "").

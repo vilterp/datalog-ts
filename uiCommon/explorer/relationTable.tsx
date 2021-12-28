@@ -50,6 +50,8 @@ export function RelationTable(props: {
           ? Object.keys(props.relation.rule.head.attrs)
           : Object.keys((results[0].term as Rec).attrs)
         ).sort((a, b) => fieldComparator(a).localeCompare(fieldComparator(b)));
+  // TODO: make this more resilient in the face of records that don't
+  //   all have the same fields.
   return (
     <>
       {props.relation.type === "Rule" ? (

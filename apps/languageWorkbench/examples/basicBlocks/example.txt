@@ -1,0 +1,9 @@
+foo {
+  y = zoop;
+  x = boop(y);
+}
+
+bar {
+  y = boop;
+  goto foo;
+}
