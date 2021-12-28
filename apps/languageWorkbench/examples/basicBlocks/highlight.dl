@@ -8,16 +8,18 @@ hl.ident{type: "ident", span: S, highlight: false} :-
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
 
+defn.goto{blockID: BlockID, instrID: InstrID, to: ToName} :-
+  ast.ident{text: ToName, parentID: GotoInstrID} &
+  ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
+  ast.instr{id: InstrID, parentID: BlockID}.
+
 defn.block{id: BlockID, name: N} :-
   ast.block{id: BlockID} &
   ast.label{id: LabelID, parentID: BlockID} &
   ast.ident{parentID: LabelID, text: N}.
 
-# TODO: factor this out a bit
 ide.jump{from: BF, to: BT} :-
-  ast.ident{id: I, text: BT, parentID: GotoInstrID} &
-  ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
-  ast.instr{id: InstrID, parentID: BlockID} &
+  defn.goto{blockID: BlockID, to: BT} &
   defn.block{id: BlockID, name: BF}.
 
 internal.visualization{
