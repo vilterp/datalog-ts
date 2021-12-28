@@ -101,7 +101,7 @@ function ruleToDL(
         pushUnlabeledEdge(state, startID, repStartID);
         // sep
         pushUnlabeledEdge(state, repEndID, sepStartID);
-        pushUnlabeledEdge(state, sepEndID, startID);
+        pushUnlabeledEdge(state, sepEndID, repStartID);
         // not matching either rep or sep is also valid path
         pushUnlabeledEdge(state, startID, repEndID);
         return repEndID;
