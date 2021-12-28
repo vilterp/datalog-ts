@@ -145,9 +145,13 @@ export function lastItem<T>(arr: T[]): T {
   return arr[arr.length - 1];
 }
 
-export function groupBy<T>(arr: [string, T][]): { [key: string]: T[] } {
+export function groupBy<T>(
+  arr: T[],
+  f: (item: T) => string
+): { [key: string]: T[] } {
   const out: { [key: string]: T[] } = {};
-  arr.forEach(([key, item]) => {
+  arr.forEach((item) => {
+    const key = f(item);
     let items = out[key];
     if (!items) {
       items = [];

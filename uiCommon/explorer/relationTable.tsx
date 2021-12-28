@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ppt } from "../../core/pretty";
+import { ppr, ppt } from "../../core/pretty";
 import { Rec, Res, Relation, rec } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import {
@@ -10,11 +10,12 @@ import {
 import { RuleC } from "../dl/rule";
 import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../dl/term";
-import { TraceTreeView, TraceGraphView } from "../dl/trace";
+import { TraceGraphView } from "../dl/trace";
 import { canTreeViz, treeFromRecords } from "../visualizations/tree";
 import { BareTerm } from "../dl/replViews";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
+import { groupBy, objToPairs, uniqBy } from "../../util/util";
 
 export type TableCollapseState = {
   [key: string]: TreeCollapseState;
@@ -64,16 +65,20 @@ export function RelationTable(props: {
         <table style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid black" }}>
-              <th />
+              <th /> {/* expander */}
               {fields.map((name) => (
                 <th key={name} style={{ paddingLeft: 5, paddingRight: 5 }}>
                   <code>{name}</code>
                 </th>
               ))}
+              <th /> {/* count */}
             </tr>
           </thead>
           <tbody>
-            {results.map((result, idx) => {
+            {/* TODO: preserve order? */}
+            {objToPairs(groupBy(results, ppr)).map(([_, results], idx) => {
+              const result = results[0];
+              const sameResultCount = results.length;
               const key = ppt(result.term);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
@@ -135,21 +140,13 @@ export function RelationTable(props: {
                         />
                       </td>
                     ))}
+                    <td>
+                      {sameResultCount > 1 ? `(${sameResultCount})` : null}
+                    </td>
                   </tr>
                   {rowCollapseState.collapsed || !result.trace ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
-                        <TraceTreeView
-                          result={result}
-                          highlight={props.highlight}
-                          collapseState={rowCollapseState}
-                          setCollapseState={(st) =>
-                            props.setCollapseState({
-                              ...props.collapseState,
-                              [key]: st,
-                            })
-                          }
-                        />
                         <TraceGraphView result={result} />
                       </td>
                     </tr>
