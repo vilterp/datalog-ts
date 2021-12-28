@@ -84,6 +84,7 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
           port: varName,
         },
         attrs: { label: varName },
+        mode: "undirected",
       });
     });
   });

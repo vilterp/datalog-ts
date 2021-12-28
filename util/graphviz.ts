@@ -56,12 +56,12 @@ export function prettyPrintGraph(g: Graph): string {
         ]),
         ...g.edges.map((edge) => [
           stringifyEdgeID(edge.from),
-          edge.mode && edge.mode === "undirected" ? " -- " : " -> ",
+          " -> ",
           stringifyEdgeID(edge.to),
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(edge.attrs, (attr, attrValue) => [
+            mapObjToList(maybeMarkUndirected(edge).attrs, (attr, attrValue) => [
               attr,
               "=",
               `"${escapeStr(attrValue)}"`,
@@ -73,6 +73,13 @@ export function prettyPrintGraph(g: Graph): string {
       { sep: "" }
     ),
   ]);
+}
+
+function maybeMarkUndirected(edge: Edge): Edge {
+  if (edge.mode && edge.mode === "undirected") {
+    return { ...edge, attrs: { ...edge.attrs, dir: "none" } };
+  }
+  return edge;
 }
 
 // pretty utils

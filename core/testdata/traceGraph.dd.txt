@@ -11,12 +11,12 @@ digraph G {
   "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="father|{{child|<C> \"Carolyn\"}|{father|<F> \"Paul\"}}" shape="record"];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [];
-  "father{child: C@\"Pete\", father: F@\"Paul\"}":C -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}":C [label="C"];
+  "father{child: C@\"Pete\", father: F@\"Paul\"}":C -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}":C [dir="none" label="C"];
   "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [];
-  "father{child: C@\"Carolyn\", father: F@\"Paul\"}":C -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}":C [label="C"];
+  "father{child: C@\"Carolyn\", father: F@\"Paul\"}":C -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}":C [dir="none" label="C"];
   "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [];
-  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":F -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":F [label="F"];
-  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":M -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":M [label="M"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":F -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":F [dir="none" label="F"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}":M -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}":M [dir="none" label="M"];
 }
