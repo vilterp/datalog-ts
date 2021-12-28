@@ -50,24 +50,21 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
 }
 
 function termToGraphvizRec(term: TermWithBindings): RecordTree {
-  // TODO: show binding
-  return innerTermWithBindingsToGraphvizRec(term.term);
-}
-
-function innerTermWithBindingsToGraphvizRec(term: InnerTermWithBindings) {
-  switch (term.type) {
+  const inner = term.term;
+  const bindingLabel = term.binding ? term.binding : "";
+  switch (inner.type) {
     case "RecordWithBindings":
       return recordNode([
-        recordLeaf(null, term.relation),
+        recordLeaf(bindingLabel, inner.relation),
         recordNode(
-          objToPairs(term.attrs).map(([key, value]) =>
+          objToPairs(inner.attrs).map(([key, value]) =>
             recordNode([recordLeaf(null, key), termToGraphvizRec(value)])
           )
         ),
       ]);
     case "Atom":
-      return recordLeaf(null, ppt(term.term));
+      return recordLeaf(bindingLabel, ppt(inner.term));
     default:
-      throw new Error(`todo: ${term.type}`);
+      throw new Error(`todo: ${inner.type}`);
   }
 }
