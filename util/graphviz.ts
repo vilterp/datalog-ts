@@ -160,5 +160,7 @@ function stringifyRecordTree(node: RecordTree): string {
       )
       .join("|");
   }
-  return node.id ? `<${node.id}> ${node.content}` : node.content;
+  return node.id
+    ? `<${node.id}> ${escapeStr(node.content)}`
+    : escapeStr(node.content);
 }
