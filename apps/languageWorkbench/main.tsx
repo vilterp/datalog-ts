@@ -181,7 +181,7 @@ function Playground() {
       <>
         {/* we run into errors querying highlight rules if the grammar isn't valid */}
         {grammarErrors.length === 0 ? (
-          <Explorer interp={finalInterp} />
+          <Explorer interp={finalInterp} showViz />
         ) : (
           <em>Grammar isn't valid</em>
         )}
