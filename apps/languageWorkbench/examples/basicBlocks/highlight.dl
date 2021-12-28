@@ -9,7 +9,8 @@ hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
 
 defn.goto{blockID: BlockID, instrID: InstrID, to: ToName} :-
-  ast.ident{text: ToName, parentID: GotoInstrID} &
+  ast.ident{text: ToName, parentID: LabelID} &
+  ast.label{id: LabelID, parentID: GotoInstrID} &
   ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
   ast.instr{id: InstrID, parentID: BlockID}.
 
@@ -29,3 +30,8 @@ internal.visualization{
     edges: "ide.jump{from: From, to: To}"
   }
 }.
+
+hl.labelHighlighted{name: N} :-
+  ide.Cursor{idx: CIdx} &
+  ast.label{text: N, span: span{from: FIdx, to: TIdx}} &
+  FIdx <= CIdx & CIdx <= TIdx.
