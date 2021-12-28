@@ -1,6 +1,7 @@
 .table internal.visualization
 .table input.char
 .table input.next
+.table input.bounds
 .table grammar.edge
 .table grammar.unlabeledEdge
 .table grammar.refEdge
@@ -25,15 +26,23 @@ parse.path{fromNode: N1, toNode: N3, startChar: C1, endChar: C4} :-
 
 parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C1} :-
   grammar.edge{from: N1, to: N2, label: C} &
-  input.char{id: C1, char: C}.
+  input.char{id: C1, char: C} |
+  grammar.charRangeEdge{fromChar: FC, toChar: TC, from: N1, to: N2} &
+  input.char{id: C1, char: C} &
+  FC <= C &
+  C <= TC.
 
-parse.ruleMatch{fromNode: N1, toNode: N4, startChar: C1, endChar: C4} :-
+parse.ruleMatch{fromNode: N1, toNode: N4, startChar: C1, endChar: C4, ruleName: R} :-
   grammar.refEdge{fromID: N1, toID: N4, ruleName: R} &
   parse.rulePath{ruleName: R, startChar: C1, endChar: C4}.
 
 parse.rulePath{ruleName: R, startChar: CS, endChar: CE} :-
   grammar.ruleMarker{name: R, startID: NS, endID: NE} &
   parse.path{fromNode: NS, toNode: NE, startChar: CS, endChar: CE}.
+
+parse.fullMatch{} :-
+  parse.rulePath{ruleName: "main", startChar: CS, endChar: CE} &
+  input.bounds{from: CS, to: CE}.
 
 # viz
 

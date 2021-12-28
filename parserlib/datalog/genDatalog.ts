@@ -27,81 +27,89 @@ function ruleToDL(
   rule: gram.Rule
 ): { startID: number; endID: number } {
   const startID = pushNode(state);
-  const endID = pushNode(state);
-  pushRuleMarker(state, name, startID, endID);
-  switch (rule.type) {
-    case "Text": {
-      let curID = startID;
-      stringToArray(rule.value).forEach((char) => {
-        const newID = pushNode(state);
-        pushEdge(state, curID, newID, char);
-        curID = newID;
-      });
-      pushUnlabeledEdge(state, curID, endID);
-      return { startID, endID };
-    }
-    case "Choice": {
-      rule.choices.forEach((rule, idx) => {
-        const { startID: choiceStartID, endID: choiceEndID } = ruleToDL(
-          state,
-          choiceName(name, idx),
-          rule
-        );
-        pushUnlabeledEdge(state, startID, choiceStartID);
-        pushUnlabeledEdge(state, choiceEndID, endID);
-      });
-      return { startID, endID };
-    }
-    case "Sequence": {
-      let curID = startID;
-      rule.items.forEach((item, idx) => {
-        const { startID: itemStartID, endID: itemEndID } = ruleToDL(
-          state,
-          seqItemName(name, idx),
-          item
-        );
-        pushUnlabeledEdge(state, curID, itemStartID);
-        curID = itemEndID;
-      });
-      pushUnlabeledEdge(state, curID, endID);
-      return { startID, endID };
-    }
-    case "Ref": {
-      // TODO: this one seems a bit unnecessary...
-      //   these should be collapsed out somehow
-      pushRefEdge(state, startID, endID, rule.name);
-      return { startID, endID };
-    }
-    case "Char": {
-      if (rule.rule.type === "Range") {
-        pushCharRangeEdge(state, startID, endID, rule.rule.from, rule.rule.to);
-      } else {
-        throw new Error("TODO: other types of char rule");
+  const outerEndID = ((): number => {
+    switch (rule.type) {
+      case "Text": {
+        let curID = startID;
+        stringToArray(rule.value).forEach((char) => {
+          const newID = pushNode(state);
+          pushEdge(state, curID, newID, char);
+          curID = newID;
+        });
+        return curID;
       }
-      return { startID, endID };
+      case "Choice": {
+        const endID = pushNode(state);
+        rule.choices.forEach((rule, idx) => {
+          const { startID: choiceStartID, endID: choiceEndID } = ruleToDL(
+            state,
+            choiceName(name, idx),
+            rule
+          );
+          pushUnlabeledEdge(state, startID, choiceStartID);
+          pushUnlabeledEdge(state, choiceEndID, endID);
+        });
+        return endID;
+      }
+      case "Sequence": {
+        let curID = startID;
+        rule.items.forEach((item, idx) => {
+          const { startID: itemStartID, endID: itemEndID } = ruleToDL(
+            state,
+            seqItemName(name, idx),
+            item
+          );
+          pushUnlabeledEdge(state, curID, itemStartID);
+          curID = itemEndID;
+        });
+        return curID;
+      }
+      case "Ref": {
+        // TODO: this one seems a bit unnecessary...
+        //   these should be collapsed out somehow
+        const endID = pushNode(state);
+        pushRefEdge(state, startID, endID, rule.name);
+        return endID;
+      }
+      case "Char": {
+        const endID = pushNode(state);
+        if (rule.rule.type === "Range") {
+          pushCharRangeEdge(
+            state,
+            startID,
+            endID,
+            rule.rule.from,
+            rule.rule.to
+          );
+        } else {
+          throw new Error("TODO: other types of char rule");
+        }
+        return endID;
+      }
+      case "RepSep": {
+        const { startID: repStartID, endID: repEndID } = ruleToDL(
+          state,
+          `${name}_rep`,
+          rule.rep
+        );
+        const { startID: sepStartID, endID: sepEndID } = ruleToDL(
+          state,
+          `${name}_rep`,
+          rule.sep
+        );
+        // rep
+        pushUnlabeledEdge(state, startID, repStartID);
+        // sep
+        pushUnlabeledEdge(state, repEndID, sepStartID);
+        pushUnlabeledEdge(state, sepEndID, repStartID);
+        // not matching either rep or sep is also valid path
+        pushUnlabeledEdge(state, startID, repEndID);
+        return repEndID;
+      }
     }
-    case "RepSep": {
-      const { startID: repStartID, endID: repEndID } = ruleToDL(
-        state,
-        `${name}_rep`,
-        rule.rep
-      );
-      const { startID: sepStartID, endID: sepEndID } = ruleToDL(
-        state,
-        `${name}_rep`,
-        rule.sep
-      );
-      // rep
-      pushUnlabeledEdge(state, startID, repStartID);
-      pushUnlabeledEdge(state, repEndID, endID);
-      // sep
-      pushUnlabeledEdge(state, endID, sepStartID);
-      pushUnlabeledEdge(state, sepEndID, startID);
-      // not matching either rep or sep is also valid path
-      pushUnlabeledEdge(state, startID, endID);
-      return { startID, endID };
-    }
-  }
+  })();
+  pushRuleMarker(state, name, startID, outerEndID);
+  return { startID, endID: outerEndID };
 }
 
 function seqItemName(name: string, idx: number): string {
@@ -191,11 +199,14 @@ function pushUnlabeledEdge(state: GeneratorState, from: number, to: number) {
 }
 
 export function inputToDL(input: string): Rec[] {
-  return stringToArray(input)
-    .map((char, idx) => rec("input.char", { char: str(char), id: int(idx) }))
-    .concat(
-      range(input.length - 1).map((idx) =>
-        rec("input.next", { left: int(idx), right: int(idx + 1) })
-      )
-    );
+  return [
+    ...stringToArray(input)
+      .map((char, idx) => rec("input.char", { char: str(char), id: int(idx) }))
+      .concat(
+        range(input.length - 1).map((idx) =>
+          rec("input.next", { left: int(idx), right: int(idx + 1) })
+        )
+      ),
+    rec("input.bounds", { from: int(0), to: int(input.length - 1) }),
+  ];
 }

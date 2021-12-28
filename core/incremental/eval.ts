@@ -12,6 +12,7 @@ import {
   getIndexName,
   resolveUnmappedRule,
 } from "./build";
+import Denque from "denque";
 
 export type Insertion = {
   res: Res;
@@ -29,11 +30,11 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(
-    graph,
-    rule.head.relation,
-    rule.defn
-  );
+  const {
+    newGraph: withOr,
+    tipID: orID,
+    newNodeIDs,
+  } = addOr(graph, rule.head.relation, rule.defn);
   const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
@@ -147,7 +148,7 @@ function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
       destination: rec.relation,
     },
   ];
-  return { graph, queue, mode: { type: "Playing" } };
+  return { graph, queue: new Denque(queue), mode: { type: "Playing" } };
 }
 
 function getReplayIterator(
@@ -157,16 +158,18 @@ function getReplayIterator(
 ): InsertionIterator {
   return {
     graph,
-    queue,
+    queue: new Denque(queue),
     mode: { type: "Replaying", newNodeIDs },
   };
 }
 
 type InsertionIterator = {
   graph: RuleGraph;
-  queue: Insertion[];
+  queue: Denque<Insertion>;
   mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
+
+const MAX_QUEUE_SIZE = 10000;
 
 function stepIteratorAll(
   graph: RuleGraph,
@@ -175,21 +178,20 @@ function stepIteratorAll(
   const emissionLog: EmissionLog = [];
   let newGraph = graph;
   while (iter.queue.length > 0) {
-    const [emissions, nextIter] = stepIterator(iter);
+    if (iter.queue.length > MAX_QUEUE_SIZE) {
+      throw new Error("max queue size exceeded");
+    }
+    const emissions = stepIterator(iter);
     emissionLog.push(emissions);
-    newGraph = nextIter.graph;
-    iter = nextIter;
+    newGraph = iter.graph;
   }
   return { newGraph, emissionLog };
 }
 
-function stepIterator(
-  iter: InsertionIterator
-): [EmissionBatch, InsertionIterator] {
+function stepIterator(iter: InsertionIterator): EmissionBatch {
   // console.log("stepIterator", iter.queue);
-  const newQueue = iter.queue.slice(1);
   let newGraph = iter.graph;
-  const insertingNow = iter.queue[0];
+  const insertingNow = iter.queue.shift();
   const curNodeID = insertingNow.destination;
   const results = processInsertion(iter.graph, insertingNow);
   for (let result of results) {
@@ -197,15 +199,15 @@ function stepIterator(
       newGraph = addToCache(newGraph, curNodeID, result);
     }
     for (let destination of newGraph.edges.get(curNodeID) || []) {
-      newQueue.push({
+      iter.queue.push({
         destination,
         origin: curNodeID,
         res: result,
       });
     }
   }
-  const newIter = { ...iter, graph: newGraph, queue: newQueue };
-  return [{ fromID: curNodeID, output: results }, newIter];
+  iter.graph = newGraph;
+  return { fromID: curNodeID, output: results };
 }
 
 // caller adds resulting facts
