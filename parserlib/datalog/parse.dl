@@ -1,3 +1,4 @@
+.table internal.visualization
 .table input.char
 .table input.next
 .table grammar.edge
