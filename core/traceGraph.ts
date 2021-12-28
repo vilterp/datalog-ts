@@ -6,7 +6,7 @@ import {
   RecordTree,
 } from "../util/graphviz";
 import { Tree } from "../util/tree";
-import { allPairs, forEachPair, mapObj, objToPairs } from "../util/util";
+import { allPairs, forEachPair, objToPairs } from "../util/util";
 import {
   defaultTracePrintOpts,
   ppt,
@@ -56,24 +56,30 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
       defaultTracePrintOpts
     );
     // add edges between children for joins
-    forEachPair(child.item.bindings, ([varName]) => {
+    forEachPair(child.item.bindings, (varName) => {
       if (!joinEdges[varName]) {
         joinEdges[varName] = [];
       }
       joinEdges[varName].push(childIdx);
     });
-    // add edges for conjuncts
-    // TODO: just for mappings
-    graph.edges.push({
-      from: id,
-      to: childID,
-      attrs: {},
-    });
+    // add edges for mappings
+    if (child.item.trace.type === "RefTrace") {
+      const mappings = child.item.trace.mappings;
+      forEachPair(mappings, (fromVar, toVar) => {
+        console.log({ fromVar, toVar });
+        graph.edges.push({
+          from: { nodeID: id, port: fromVar },
+          to: { nodeID: childID, port: toVar },
+          attrs: { label: `${fromVar}:${toVar}` },
+        });
+      });
+    }
   });
-  objToPairs(joinEdges).forEach(([varName, childIndices]) => {
+  forEachPair(joinEdges, (varName, childIndices) => {
     allPairs(childIndices).forEach(([fromIdx, toIdx]) => {
       const fromChild = tree.children[fromIdx].item;
       const toChild = tree.children[toIdx].item;
+      // TODO: less duplicate printing of children...
       graph.edges.push({
         from: {
           nodeID: printTermWithBindings(fromChild, [], defaultTracePrintOpts),
