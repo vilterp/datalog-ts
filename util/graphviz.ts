@@ -161,6 +161,10 @@ function stringifyRecordTree(node: RecordTree): string {
       .join("|");
   }
   return node.id
-    ? `<${node.id}> ${escapeStr(node.content)}`
-    : escapeStr(node.content);
+    ? `<${node.id}> ${escapeRecordSyntax(node.content)}`
+    : escapeRecordSyntax(node.content);
+}
+
+function escapeRecordSyntax(str: string) {
+  return str.split("{").join("\\{").split("}").join("\\}");
 }
