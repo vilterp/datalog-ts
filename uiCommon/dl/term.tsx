@@ -36,105 +36,113 @@ export function TermView(props: {
   highlight: HighlightProps;
   scopePath: ScopePath;
 }) {
-  const term = props.term;
-  switch (term.type) {
-    case "RecordWithBindings": {
-      const hl = props.highlight.highlight;
-      const isHighlighted = hl.type === "Relation" && hl.name === term.relation;
-      return (
-        <>
-          <span
-            className="relation-name"
-            style={{
-              color: "purple",
-              backgroundColor: isHighlighted ? "lightgrey" : "",
-            }}
-            onMouseOver={() =>
-              props.highlight.setHighlight({
-                type: "Relation",
-                name: term.relation,
-              })
-            }
-            onMouseOut={() => props.highlight.setHighlight(noHighlight)}
-          >
-            {term.relation}
-          </span>
-          {"{"}
-          {intersperse<React.ReactNode>(
-            ", ",
-            mapObjToList(term.attrs, (key, valueWithBinding) => (
-              <React.Fragment key={key}>
-                {key}:{" "}
-                {valueWithBinding.binding ? (
-                  <>
-                    <VarC
-                      name={valueWithBinding.binding}
-                      highlight={props.highlight}
-                      scopePath={props.scopePath}
-                    />
-                    @
-                  </>
-                ) : null}
+  const inner = props.term.term;
+  const innerView = (() => {
+    switch (inner.type) {
+      case "RecordWithBindings": {
+        const hl = props.highlight.highlight;
+        const isHighlighted =
+          hl.type === "Relation" && hl.name === inner.relation;
+        return (
+          <>
+            <span
+              className="relation-name"
+              style={{
+                color: "purple",
+                backgroundColor: isHighlighted ? "lightgrey" : "",
+              }}
+              onMouseOver={() =>
+                props.highlight.setHighlight({
+                  type: "Relation",
+                  name: inner.relation,
+                })
+              }
+              onMouseOut={() => props.highlight.setHighlight(noHighlight)}
+            >
+              {inner.relation}
+            </span>
+            {"{"}
+            {intersperse<React.ReactNode>(
+              ", ",
+              mapObjToList(inner.attrs, (key, valueWithBinding) => (
+                <React.Fragment key={key}>
+                  {key}:{" "}
+                  <TermView
+                    term={valueWithBinding}
+                    highlight={props.highlight}
+                    scopePath={props.scopePath}
+                  />
+                </React.Fragment>
+              ))
+            )}
+            {"}"}
+          </>
+        );
+      }
+      case "ArrayWithBindings":
+        return (
+          <>
+            [
+            {intersperse<React.ReactNode>(
+              ", ",
+              inner.items.map((item, idx) => (
                 <TermView
-                  term={valueWithBinding.term}
+                  key={idx}
+                  term={item}
                   highlight={props.highlight}
                   scopePath={props.scopePath}
                 />
-              </React.Fragment>
-            ))
-          )}
-          {"}"}
-        </>
-      );
+              ))
+            )}
+            ]
+          </>
+        );
+      case "BinExprWithBindings":
+        return (
+          <>
+            <TermView
+              term={inner.left}
+              highlight={props.highlight}
+              scopePath={props.scopePath}
+            />{" "}
+            {inner.op}{" "}
+            <TermView
+              term={inner.right}
+              highlight={props.highlight}
+              scopePath={props.scopePath}
+            />
+          </>
+        );
+      case "Atom":
+        const t = inner.term;
+        switch (t.type) {
+          case "Bool":
+          case "IntLit":
+            return <span style={{ color: "blue" }}>{`${t.val}`}</span>;
+          case "StringLit":
+            return (
+              <span style={{ color: "green" }}>"{escapeString(t.val)}"</span>
+            );
+          case "Var":
+            return <span style={{ color: "darkorange" }}>{`${t.name}`}</span>;
+        }
     }
-    case "ArrayWithBindings":
-      return (
+  })();
+  return (
+    <>
+      {props.term.binding ? (
         <>
-          [
-          {intersperse<React.ReactNode>(
-            ", ",
-            term.items.map((item, idx) => (
-              <TermView
-                key={idx}
-                term={item}
-                highlight={props.highlight}
-                scopePath={props.scopePath}
-              />
-            ))
-          )}
-          ]
-        </>
-      );
-    case "BinExprWithBindings":
-      return (
-        <>
-          <TermView
-            term={term.left}
-            highlight={props.highlight}
-            scopePath={props.scopePath}
-          />{" "}
-          {term.op}{" "}
-          <TermView
-            term={term.right}
+          <VarC
+            name={props.term.binding}
             highlight={props.highlight}
             scopePath={props.scopePath}
           />
+          @
         </>
-      );
-    case "Atom":
-      const t = term.term;
-      switch (t.type) {
-        case "Bool":
-        case "IntLit":
-          return <span style={{ color: "blue" }}>{`${t.val}`}</span>;
-        case "StringLit":
-          return (
-            <span style={{ color: "green" }}>"{escapeString(t.val)}"</span>
-          );
-        case "Var":
-          return <span style={{ color: "darkorange" }}>{`${t.name}`}</span>;
-      }
-  }
+      ) : null}
+      {innerView}
+    </>
+  );
 }
 
 export function VarC(props: {
@@ -164,9 +172,10 @@ export function VarC(props: {
   );
 }
 
-function colorForStatus(
-  s: HighlightStatus
-): { background: string; letter: string } {
+function colorForStatus(s: HighlightStatus): {
+  background: string;
+  letter: string;
+} {
   switch (s) {
     case "parent":
       return { background: "plum", letter: "white" };
