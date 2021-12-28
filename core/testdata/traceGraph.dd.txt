@@ -1,0 +1,18 @@
+sibling{left: "Pete", right: R}
+----
+application/graphviz
+digraph G {
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" [label="sibling|{{left|\"Pete\"}|{right|\"Carolyn\"}}" shape="record"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="parents|{{child|\"Pete\"}|{father|\"Paul\"}|{mother|\"Mary\"}}" shape="record"];
+  "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [label="mother|{{child|\"Pete\"}|{mother|\"Mary\"}}" shape="record"];
+  "father{child: C@\"Pete\", father: F@\"Paul\"}" [label="father|{{child|\"Pete\"}|{father|\"Paul\"}}" shape="record"];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="parents|{{child|\"Carolyn\"}|{father|\"Paul\"}|{mother|\"Mary\"}}" shape="record"];
+  "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [label="mother|{{child|\"Carolyn\"}|{mother|\"Mary\"}}" shape="record"];
+  "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [label="father|{{child|\"Carolyn\"}|{father|\"Paul\"}}" shape="record"];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Pete\", mother: M@\"Mary\"}" [];
+  "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Pete\", father: F@\"Paul\"}" [];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: C@\"Carolyn\", mother: M@\"Mary\"}" [];
+  "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: C@\"Carolyn\", father: F@\"Paul\"}" [];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [];
+}

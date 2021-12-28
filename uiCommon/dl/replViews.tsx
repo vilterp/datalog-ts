@@ -6,7 +6,7 @@ import { ppr } from "../../core/pretty";
 import { RuleC } from "./rule";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";
 import { TreeCollapseState } from "../generic/treeView";
-import { TraceView } from "./trace";
+import { TraceTreeView } from "./trace";
 import { makeTermWithBindings } from "../../core/traceTree";
 
 // some views for making repl-like things
@@ -57,7 +57,7 @@ export function IndependentTraceView(props: { res: Res }) {
     parentPaths: [],
   };
   return (
-    <TraceView
+    <TraceTreeView
       collapseState={collapseState}
       setCollapseState={setCollapseState}
       highlight={hlProps}

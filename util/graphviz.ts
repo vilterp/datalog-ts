@@ -9,13 +9,15 @@ export interface Graph {
 
 interface Node {
   id: string;
-  attrs: { [key: string]: string };
+  attrs: { [key: string]: string | RecordTree };
   comment?: string;
 }
 
+type EdgeID = string | { nodeID: string; rowID: string };
+
 interface Edge {
-  from: string;
-  to: string;
+  from: EdgeID;
+  to: EdgeID;
   attrs: { [key: string]: string };
 }
 
@@ -38,23 +40,31 @@ export function prettyPrintGraph(g: Graph): string {
       [
         ...(g.comments || []).map((comment) => `// ${comment}`),
         ...g.nodes.map((node) => [
-          `"${node.id}"`,
+          `"${escapeStr(node.id)}"`,
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(node.attrs, (k, v) => [k, "=", `"${escapeStr(v)}"`])
+            mapObjToList(node.attrs, (attr, attrValue) => [
+              attr,
+              "=",
+              stringifyNodeAttrValue(attrValue),
+            ])
           ),
           "];",
           node.comment ? ` // ${node.comment}` : "",
         ]),
         ...g.edges.map((edge) => [
-          `"${edge.from}"`,
+          stringifyEdgeID(edge.from),
           " -> ",
-          `"${edge.to}"`,
+          stringifyEdgeID(edge.to),
           " [",
           pp.intersperse(
             " ",
-            mapObjToList(edge.attrs, (k, v) => [k, "=", `"${escapeStr(v)}"`])
+            mapObjToList(edge.attrs, (attr, attrValue) => [
+              attr,
+              "=",
+              `"${escapeStr(attrValue)}"`,
+            ])
           ),
           "];",
         ]),
@@ -64,11 +74,28 @@ export function prettyPrintGraph(g: Graph): string {
   ]);
 }
 
-// pretty util
+// pretty utils
+
+function stringifyEdgeID(id: EdgeID) {
+  if (typeof id === "string") {
+    return `"${escapeStr(id)}"`;
+  }
+  // TODO: can we quote and escape rowID too?
+  return `"${escapeStr(id.nodeID)}":${id.rowID}`;
+}
 
 function escapeStr(str: string): string {
   return str.split('"').join('\\"');
 }
+
+function stringifyNodeAttrValue(value: string | RecordTree): string {
+  if (typeof value === "string") {
+    return `"${escapeStr(value)}"`;
+  }
+  return `"${escapeStr(stringifyRecordTree(value))}"`;
+}
+
+// constructor utils
 
 interface BlockOpts {
   sep: string;
@@ -92,4 +119,46 @@ export function blockInner(docs: pp.IDoc[], opts?: BlockOpts): pp.IDoc {
     pp.indent(2, pp.intersperse([sep, pp.lineBreak])(docs)),
     pp.lineBreak,
   ]);
+}
+
+// record format
+
+// e.g. https://graphviz.org/Gallery/directed/datastruct.html
+// note: have to use with `shape: record`
+// TODO: these can be nested, so they're really a tree
+
+export function recordNode(children: RecordTree[]): RecordTree {
+  return {
+    type: "Node",
+    children,
+  };
+}
+
+export function recordLeaf(id: string, content: string): RecordTree {
+  return {
+    type: "Leaf",
+    id,
+    content,
+  };
+}
+
+export type RecordTree =
+  | {
+      type: "Leaf";
+      id: string | null;
+      content: string;
+    }
+  | { type: "Node"; children: RecordTree[] };
+
+function stringifyRecordTree(node: RecordTree): string {
+  if (node.type === "Node") {
+    return node.children
+      .map((child) =>
+        child.type === "Node"
+          ? `{${stringifyRecordTree(child)}}`
+          : stringifyRecordTree(child)
+      )
+      .join("|");
+  }
+  return node.id ? `<${node.id}> ${node.content}` : node.content;
 }

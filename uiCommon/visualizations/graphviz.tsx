@@ -47,7 +47,7 @@ function GraphvizWrapper(props: {
 
     return (
       <div>
-        <MemoizedGraphviz dot={dot} options={OPTIONS} />
+        <MemoizedGraphviz dot={dot} options={GRAPHVIZ_OPTIONS} />
       </div>
     );
   } catch (e) {
@@ -74,4 +74,4 @@ function stringifyNodeID(term: Term): string {
 
 // pull out this object to avoid creating it each time,
 // which defeats React.memo (and allocates unnecessarily...)
-const OPTIONS = { width: 500, height: 500, fit: true, zoom: false };
+const GRAPHVIZ_OPTIONS = { width: 500, height: 500, fit: true, zoom: false };
