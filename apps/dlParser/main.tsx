@@ -13,19 +13,6 @@ import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
-export function initializeInterp(
-  inputInterp: AbstractInterpreter,
-  grammarText: string
-): AbstractInterpreter {
-  let interp = inputInterp;
-  const grammarParsed = parseGrammar(grammarText);
-  const records = grammarToDL(grammarParsed);
-
-  interp = interp.evalStr(parseDL)[1];
-  interp = interp.insertAll(records);
-  return interp;
-}
-
 function Main() {
   const [source, setSource] = useLocalStorage("dl-parser-playground-source");
   const [grammarSource, setGrammarSource] = useLocalStorage(
@@ -37,8 +24,16 @@ function Main() {
     ".",
     nullLoader
   ) as AbstractInterpreter;
-  interp = initializeInterp(interp, grammarSource);
-  interp = interp.insertAll(inputToDL(source));
+  interp = interp.evalStr(parseDL)[1];
+  const grammarParsed = parseGrammar(grammarSource);
+  const records = grammarToDL(grammarParsed);
+  interp = interp.insertAll(records);
+  let error: Error = null;
+  try {
+    interp = interp.insertAll(inputToDL(source));
+  } catch (e) {
+    error = e;
+  }
 
   return (
     <>
@@ -69,6 +64,7 @@ function Main() {
           </tr>
         </tbody>
       </table>
+      {error ? <pre style={{ color: "red" }}>{error.toString()}</pre> : null}
       <Explorer interp={interp} showViz />
     </>
   );
