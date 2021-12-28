@@ -11,7 +11,7 @@ import {
   printTermWithBindings,
   traceToTree,
 } from "./traceTree";
-import { Rec, Res, TermWithBindings } from "./types";
+import { InnerTermWithBindings, Res, TermWithBindings } from "./types";
 import * as pp from "prettier-printer";
 
 export function traceToGraph(res: Res): Graph {
@@ -50,13 +50,18 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
 }
 
 function termToGraphvizRec(term: TermWithBindings): RecordTree {
+  // TODO: show binding
+  return innerTermWithBindingsToGraphvizRec(term.term);
+}
+
+function innerTermWithBindingsToGraphvizRec(term: InnerTermWithBindings) {
   switch (term.type) {
     case "RecordWithBindings":
       return recordNode([
         recordLeaf(null, term.relation),
         recordNode(
           objToPairs(term.attrs).map(([key, value]) =>
-            recordNode([recordLeaf(null, key), termToGraphvizRec(value.term)])
+            recordNode([recordLeaf(null, key), termToGraphvizRec(value)])
           )
         ),
       ]);

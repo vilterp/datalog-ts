@@ -122,6 +122,7 @@ export function blockInner(docs: pp.IDoc[], opts?: BlockOpts): pp.IDoc {
 }
 
 // record format
+// TODO: use tables instead of records
 
 // e.g. https://graphviz.org/Gallery/directed/datastruct.html
 // note: have to use with `shape: record`

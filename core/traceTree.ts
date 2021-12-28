@@ -7,6 +7,7 @@ import {
   Term,
   Bindings,
   TermWithBindings,
+  InnerTermWithBindings,
 } from "./types";
 import {
   ppt,
@@ -218,20 +219,25 @@ export function makeTermWithBindings(
   term: Term,
   bindings: Bindings
 ): TermWithBindings {
+  const binding = Object.keys(bindings).find((b) => {
+    return bindings[b] && jsonEq(term, bindings[b]);
+  });
+  const inner = makeInnerTermWithBindings(term, bindings);
+  return { term: inner, binding };
+}
+
+function makeInnerTermWithBindings(
+  term: Term,
+  bindings: Bindings
+): InnerTermWithBindings {
   switch (term.type) {
     case "Record":
       return {
         type: "RecordWithBindings",
         relation: term.relation,
-        attrs: mapObj(term.attrs, (_, val) => {
-          const binding = Object.keys(bindings).find((b) => {
-            return bindings[b] && jsonEq(val, bindings[b]);
-          });
-          return {
-            term: makeTermWithBindings(val, bindings),
-            binding: binding,
-          };
-        }),
+        attrs: mapObj(term.attrs, (_, val) =>
+          makeTermWithBindings(val, bindings)
+        ),
       };
     case "Array":
       return {

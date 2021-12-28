@@ -10,6 +10,7 @@ import {
   InvocationLocation,
   SituatedBinding,
   BinExpr,
+  InnerTermWithBindings,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList, repeat, flatMap } from "../util/util";
@@ -150,6 +151,17 @@ export function prettyPrintTermWithBindings(
   scopePath: ScopePath,
   opts: TracePrintOpts
 ): pp.IDoc {
+  const inner = prettyPrintInnerTermWithBindings(term.term, scopePath, opts);
+  return term.binding
+    ? [prettyPrintVar(term.binding, scopePath, opts), "@", inner]
+    : inner;
+}
+
+function prettyPrintInnerTermWithBindings(
+  term: InnerTermWithBindings,
+  scopePath: ScopePath,
+  opts: TracePrintOpts
+) {
   switch (term.type) {
     case "RecordWithBindings":
       return [
@@ -159,8 +171,7 @@ export function prettyPrintTermWithBindings(
           mapObjToList(term.attrs, (k, v) => [
             k,
             ": ",
-            v.binding ? [prettyPrintVar(v.binding, scopePath, opts), "@"] : "",
-            prettyPrintTermWithBindings(v.term, scopePath, opts),
+            prettyPrintTermWithBindings(v, scopePath, opts),
           ])
         ),
       ];
