@@ -199,11 +199,14 @@ function pushUnlabeledEdge(state: GeneratorState, from: number, to: number) {
 }
 
 export function inputToDL(input: string): Rec[] {
-  return stringToArray(input)
-    .map((char, idx) => rec("input.char", { char: str(char), id: int(idx) }))
-    .concat(
-      range(input.length - 1).map((idx) =>
-        rec("input.next", { left: int(idx), right: int(idx + 1) })
-      )
-    );
+  return [
+    ...stringToArray(input)
+      .map((char, idx) => rec("input.char", { char: str(char), id: int(idx) }))
+      .concat(
+        range(input.length - 1).map((idx) =>
+          rec("input.next", { left: int(idx), right: int(idx + 1) })
+        )
+      ),
+    rec("input.bounds", { from: int(0), to: int(input.length - 1) }),
+  ];
 }

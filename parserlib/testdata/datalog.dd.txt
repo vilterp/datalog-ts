@@ -34,7 +34,7 @@ grammar.edge{from: 7, label: "r", to: 8}.
 grammar.ruleMarker{endID: 8, name: "main_rep", startID: 5}.
 grammar.unlabeledEdge{from: 0, to: 1}.
 grammar.unlabeledEdge{from: 4, to: 5}.
-grammar.unlabeledEdge{from: 8, to: 0}.
+grammar.unlabeledEdge{from: 8, to: 1}.
 grammar.unlabeledEdge{from: 0, to: 4}.
 grammar.ruleMarker{endID: 4, name: "main", startID: 0}.
 
@@ -48,117 +48,15 @@ input
 foobar
 ----
 application/datalog
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
 parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
 
 input
 foobarfoo
 ----
 application/datalog
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
 parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 0}.
 parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
 parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 5, ruleName: "main", startChar: 3}.
 parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
 
 gram
@@ -182,7 +80,7 @@ grammar.edge{from: 6, label: ",", to: 7}.
 grammar.ruleMarker{endID: 7, name: "main_seq_1_rep", startID: 6}.
 grammar.unlabeledEdge{from: 3, to: 4}.
 grammar.unlabeledEdge{from: 5, to: 6}.
-grammar.unlabeledEdge{from: 7, to: 3}.
+grammar.unlabeledEdge{from: 7, to: 4}.
 grammar.unlabeledEdge{from: 3, to: 5}.
 grammar.ruleMarker{endID: 5, name: "main_seq_1", startID: 3}.
 grammar.unlabeledEdge{from: 2, to: 3}.
@@ -203,11 +101,13 @@ input
 [a]
 ----
 application/datalog
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
 
 input
 [a,b,c]
 ----
 application/datalog
+parse.rulePath{endChar: 6, ruleName: "main", startChar: 0}.
 
 gram
 main :- (foo | bar).
@@ -267,21 +167,41 @@ grammar.node{id: 3}.
 grammar.ruleMarker{endID: 3, name: "main_rep", startID: 3}.
 grammar.unlabeledEdge{from: 0, to: 1}.
 grammar.unlabeledEdge{from: 2, to: 3}.
-grammar.unlabeledEdge{from: 3, to: 0}.
+grammar.unlabeledEdge{from: 3, to: 1}.
 grammar.unlabeledEdge{from: 0, to: 2}.
 grammar.ruleMarker{endID: 2, name: "main", startID: 0}.
 
 input
 1
 ----
-text/plain
-RangeError: Maximum call stack size exceeded
+application/datalog
+parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
 
 input
 1234
 ----
-text/plain
-RangeError: Maximum call stack size exceeded
+application/datalog
+parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 1}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 2}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 1}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 1}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 2}.
+parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 1}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 2}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 3}.
+parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 2, ruleName: "main", startChar: 1}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 1}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 2}.
 
 gram
 main :- value.
@@ -311,7 +231,7 @@ grammar.edge{from: 6, label: ",", to: 7}.
 grammar.ruleMarker{endID: 7, name: "array_seq_1_rep", startID: 6}.
 grammar.unlabeledEdge{from: 3, to: 4}.
 grammar.unlabeledEdge{from: 5, to: 6}.
-grammar.unlabeledEdge{from: 7, to: 3}.
+grammar.unlabeledEdge{from: 7, to: 4}.
 grammar.unlabeledEdge{from: 3, to: 5}.
 grammar.ruleMarker{endID: 5, name: "array_seq_1", startID: 3}.
 grammar.unlabeledEdge{from: 2, to: 3}.
@@ -336,7 +256,7 @@ grammar.node{id: 16}.
 grammar.ruleMarker{endID: 16, name: "int_seq_1_rep", startID: 16}.
 grammar.unlabeledEdge{from: 13, to: 14}.
 grammar.unlabeledEdge{from: 15, to: 16}.
-grammar.unlabeledEdge{from: 16, to: 13}.
+grammar.unlabeledEdge{from: 16, to: 14}.
 grammar.unlabeledEdge{from: 13, to: 15}.
 grammar.ruleMarker{endID: 15, name: "int_seq_1", startID: 13}.
 grammar.unlabeledEdge{from: 12, to: 13}.
@@ -389,7 +309,7 @@ grammar.edge{from: 37, label: ",", to: 38}.
 grammar.ruleMarker{endID: 38, name: "object_seq_1_rep", startID: 37}.
 grammar.unlabeledEdge{from: 34, to: 35}.
 grammar.unlabeledEdge{from: 36, to: 37}.
-grammar.unlabeledEdge{from: 38, to: 34}.
+grammar.unlabeledEdge{from: 38, to: 35}.
 grammar.unlabeledEdge{from: 34, to: 36}.
 grammar.ruleMarker{endID: 36, name: "object_seq_1", startID: 34}.
 grammar.unlabeledEdge{from: 33, to: 34}.
@@ -414,7 +334,7 @@ grammar.node{id: 47}.
 grammar.ruleMarker{endID: 47, name: "string_seq_1_rep", startID: 47}.
 grammar.unlabeledEdge{from: 44, to: 45}.
 grammar.unlabeledEdge{from: 46, to: 47}.
-grammar.unlabeledEdge{from: 47, to: 44}.
+grammar.unlabeledEdge{from: 47, to: 45}.
 grammar.unlabeledEdge{from: 44, to: 46}.
 grammar.ruleMarker{endID: 46, name: "string_seq_1", startID: 44}.
 grammar.unlabeledEdge{from: 43, to: 44}.
