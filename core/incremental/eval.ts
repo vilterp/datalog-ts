@@ -29,11 +29,11 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(
-    graph,
-    rule.head.relation,
-    rule.defn
-  );
+  const {
+    newGraph: withOr,
+    tipID: orID,
+    newNodeIDs,
+  } = addOr(graph, rule.head.relation, rule.defn);
   const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
@@ -164,9 +164,11 @@ function getReplayIterator(
 
 type InsertionIterator = {
   graph: RuleGraph;
-  queue: Insertion[];
+  queue: Insertion[]; // TODO: use real queue library
   mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
+
+const MAX_QUEUE_SIZE = 10000;
 
 function stepIteratorAll(
   graph: RuleGraph,
@@ -175,6 +177,9 @@ function stepIteratorAll(
   const emissionLog: EmissionLog = [];
   let newGraph = graph;
   while (iter.queue.length > 0) {
+    if (iter.queue.length > MAX_QUEUE_SIZE) {
+      throw new Error("max queue size exceeded");
+    }
     const [emissions, nextIter] = stepIterator(iter);
     emissionLog.push(emissions);
     newGraph = nextIter.graph;
