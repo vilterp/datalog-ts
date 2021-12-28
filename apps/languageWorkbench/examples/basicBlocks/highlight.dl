@@ -1,12 +1,23 @@
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.ident{type: T, span: S, highlight: H} |
-  hl.keyword{type: T, span: S, highlight: H}.
+  hl.keyword{type: T, span: S, highlight: H} |
+  hl.labelHighlighted{type: T, span: S, highlight: H}.
 
 hl.ident{type: "ident", span: S, highlight: false} :-
   ast.ident{span: S}.
 
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
+
+hl.labelHighlighted{
+  type: "ident",
+  name: N,
+  span: span{from: FIdx, to: TIdx},
+  highlight: true
+} :-
+  ide.Cursor{idx: CIdx} &
+  ast.label{text: N, span: span{from: FIdx, to: TIdx}} &
+  FIdx <= CIdx & CIdx <= TIdx.
 
 defn.goto{blockID: BlockID, instrID: InstrID, to: ToName} :-
   ast.ident{text: ToName, parentID: LabelID} &
@@ -30,8 +41,3 @@ internal.visualization{
     edges: "ide.jump{from: From, to: To}"
   }
 }.
-
-hl.labelHighlighted{name: N} :-
-  ide.Cursor{idx: CIdx} &
-  ast.label{text: N, span: span{from: FIdx, to: TIdx}} &
-  FIdx <= CIdx & CIdx <= TIdx.

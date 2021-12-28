@@ -13,3 +13,9 @@
 .segment-keyword {
   color: orange;
 }
+.segment-defn__highlighted {
+  background-color: rgba(255, 108, 134, 0.3);
+}
+.segment-ident__highlighted {
+  background-color: rgba(168, 168, 168, 0.37);
+}
