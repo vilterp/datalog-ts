@@ -65,13 +65,15 @@ export function RelationTable(props: {
         <table style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid black" }}>
-              <th /> {/* expander */}
+              {/* expander */}
+              <th />
               {fields.map((name) => (
                 <th key={name} style={{ paddingLeft: 5, paddingRight: 5 }}>
                   <code>{name}</code>
                 </th>
               ))}
-              <th /> {/* count */}
+              {/* count */}
+              <th />
             </tr>
           </thead>
           <tbody>
