@@ -175,6 +175,13 @@ export function objToPairs<T>(obj: { [key: string]: T }): [string, T][] {
   return mapObjToList(obj, (k, v) => [k, v]);
 }
 
+export function forEachPair<T>(
+  obj: { [key: string]: T },
+  f: (key: string, val: T) => void
+) {
+  objToPairs(obj).forEach(([k, v]) => f(k, v));
+}
+
 export function clamp(n: number, range: [number, number]): number {
   const [min, max] = range;
   if (n < min) {
@@ -349,4 +356,16 @@ export function pushAll<T>(arr: T[], items: T[]) {
   items.forEach((item) => {
     arr.push(item);
   });
+}
+
+export function allPairs<T>(items: T[]): [T, T][] {
+  const pairs: [T, T][] = [];
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i; i < items.length; i++) {
+      if (i !== j) {
+        pairs.push([items[i], items[j]]);
+      }
+    }
+  }
+  return pairs;
 }

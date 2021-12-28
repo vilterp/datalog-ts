@@ -1,6 +1,12 @@
-import { Graph, recordLeaf, recordNode, RecordTree } from "../util/graphviz";
+import {
+  Edge,
+  Graph,
+  recordLeaf,
+  recordNode,
+  RecordTree,
+} from "../util/graphviz";
 import { Tree } from "../util/tree";
-import { objToPairs } from "../util/util";
+import { allPairs, forEachPair, mapObj, objToPairs } from "../util/util";
 import {
   defaultTracePrintOpts,
   ppt,
@@ -11,7 +17,7 @@ import {
   printTermWithBindings,
   traceToTree,
 } from "./traceTree";
-import { InnerTermWithBindings, Res, TermWithBindings } from "./types";
+import { Res, TermWithBindings } from "./types";
 import * as pp from "prettier-printer";
 
 export function traceToGraph(res: Res): Graph {
@@ -39,12 +45,46 @@ function treeToGraph(graph: Graph, tree: Tree<Res>) {
       label: termToGraphvizRec(termWithBindings),
     },
   });
-  tree.children.forEach((child) => {
+  // indices of terms that var shows up in
+  const joinEdges: { [binding: string]: number[] } = {};
+  Object.keys(tree.item.bindings).forEach;
+  tree.children.forEach((child, childIdx) => {
     treeToGraph(graph, child);
+    const childID = printTermWithBindings(
+      child.item,
+      [],
+      defaultTracePrintOpts
+    );
+    // add edges between children for joins
+    forEachPair(child.item.bindings, ([varName]) => {
+      if (!joinEdges[varName]) {
+        joinEdges[varName] = [];
+      }
+      joinEdges[varName].push(childIdx);
+    });
+    // add edges for conjuncts
+    // TODO: just for mappings
     graph.edges.push({
       from: id,
-      to: printTermWithBindings(child.item, [], defaultTracePrintOpts),
+      to: childID,
       attrs: {},
+    });
+  });
+  objToPairs(joinEdges).forEach(([varName, childIndices]) => {
+    allPairs(childIndices).forEach(([fromIdx, toIdx]) => {
+      const fromChild = tree.children[fromIdx].item;
+      const toChild = tree.children[toIdx].item;
+      graph.edges.push({
+        from: {
+          nodeID: printTermWithBindings(fromChild, [], defaultTracePrintOpts),
+          port: varName,
+        },
+        to: {
+          nodeID: printTermWithBindings(toChild, [], defaultTracePrintOpts),
+          port: varName,
+        },
+        attrs: { label: varName },
+      });
     });
   });
 }

@@ -7,18 +7,19 @@ export interface Graph {
   comments?: string[];
 }
 
-interface Node {
+export interface Node {
   id: string;
   attrs: { [key: string]: string | RecordTree };
   comment?: string;
 }
 
-type EdgeID = string | { nodeID: string; rowID: string };
+type EdgeID = string | { nodeID: string; port: string };
 
-interface Edge {
+export interface Edge {
   from: EdgeID;
   to: EdgeID;
   attrs: { [key: string]: string };
+  mode?: "directed" | "undirected";
 }
 
 function hasEdgesToOrFrom(g: Graph, id: string) {
@@ -55,7 +56,7 @@ export function prettyPrintGraph(g: Graph): string {
         ]),
         ...g.edges.map((edge) => [
           stringifyEdgeID(edge.from),
-          " -> ",
+          edge.mode && edge.mode === "undirected" ? " -- " : " -> ",
           stringifyEdgeID(edge.to),
           " [",
           pp.intersperse(
@@ -81,7 +82,7 @@ function stringifyEdgeID(id: EdgeID) {
     return `"${escapeStr(id)}"`;
   }
   // TODO: can we quote and escape rowID too?
-  return `"${escapeStr(id.nodeID)}":${id.rowID}`;
+  return `"${escapeStr(id.nodeID)}":${id.port}`;
 }
 
 function escapeStr(str: string): string {
