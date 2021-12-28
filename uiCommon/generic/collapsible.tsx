@@ -10,9 +10,7 @@ export function CollapsibleWithHeading(props: {
     <Collapsible
       id={props.heading}
       renderLabel={(collapsed) => (
-        <h3>
-          `${collapsed ? ">" : "v"} ${props.heading}`
-        </h3>
+        <h3>{`${collapsed ? ">" : "v"} ${props.heading}`}</h3>
       )}
       initiallyCollapsed={props.initiallyCollapsed}
       content={props.content}
