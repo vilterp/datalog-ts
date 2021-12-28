@@ -287,7 +287,7 @@ gram
 main :- value.
 value :- (object | array | int | string | null).
 int :- [[0-9], repSep([0-9], "")].
-object :- ["{", keyValue, "}"].
+object :- ["{", repSep(keyValue, ","), "}"].
 keyValue :- [string, ":", value].
 string :- ["'", repSep([a-z], ""), "'"].
 array :- ["[", repSep(value, ","), "]"].
@@ -380,70 +380,80 @@ grammar.ruleMarker{endID: 33, name: "object_seq_0", startID: 32}.
 grammar.unlabeledEdge{from: 31, to: 32}.
 grammar.node{id: 34}.
 grammar.node{id: 35}.
-grammar.refEdge{fromID: 34, ruleName: "keyValue", toID: 35}.
-grammar.ruleMarker{endID: 35, name: "object_seq_1", startID: 34}.
-grammar.unlabeledEdge{from: 33, to: 34}.
 grammar.node{id: 36}.
+grammar.refEdge{fromID: 35, ruleName: "keyValue", toID: 36}.
+grammar.ruleMarker{endID: 36, name: "object_seq_1_rep", startID: 35}.
 grammar.node{id: 37}.
-grammar.edge{from: 36, label: "}", to: 37}.
-grammar.ruleMarker{endID: 37, name: "object_seq_2", startID: 36}.
-grammar.unlabeledEdge{from: 35, to: 36}.
-grammar.ruleMarker{endID: 37, name: "object", startID: 31}.
 grammar.node{id: 38}.
+grammar.edge{from: 37, label: ",", to: 38}.
+grammar.ruleMarker{endID: 38, name: "object_seq_1_rep", startID: 37}.
+grammar.unlabeledEdge{from: 34, to: 35}.
+grammar.unlabeledEdge{from: 36, to: 37}.
+grammar.unlabeledEdge{from: 38, to: 34}.
+grammar.unlabeledEdge{from: 34, to: 36}.
+grammar.ruleMarker{endID: 36, name: "object_seq_1", startID: 34}.
+grammar.unlabeledEdge{from: 33, to: 34}.
 grammar.node{id: 39}.
 grammar.node{id: 40}.
-grammar.edge{from: 39, label: "'", to: 40}.
-grammar.ruleMarker{endID: 40, name: "string_seq_0", startID: 39}.
-grammar.unlabeledEdge{from: 38, to: 39}.
+grammar.edge{from: 39, label: "}", to: 40}.
+grammar.ruleMarker{endID: 40, name: "object_seq_2", startID: 39}.
+grammar.unlabeledEdge{from: 36, to: 39}.
+grammar.ruleMarker{endID: 40, name: "object", startID: 31}.
 grammar.node{id: 41}.
 grammar.node{id: 42}.
 grammar.node{id: 43}.
-grammar.charRangeEdge{from: 42, fromChar: "a", to: 43, toChar: "z"}.
-grammar.ruleMarker{endID: 43, name: "string_seq_1_rep", startID: 42}.
-grammar.node{id: 44}.
-grammar.ruleMarker{endID: 44, name: "string_seq_1_rep", startID: 44}.
+grammar.edge{from: 42, label: "'", to: 43}.
+grammar.ruleMarker{endID: 43, name: "string_seq_0", startID: 42}.
 grammar.unlabeledEdge{from: 41, to: 42}.
-grammar.unlabeledEdge{from: 43, to: 44}.
-grammar.unlabeledEdge{from: 44, to: 41}.
-grammar.unlabeledEdge{from: 41, to: 43}.
-grammar.ruleMarker{endID: 43, name: "string_seq_1", startID: 41}.
-grammar.unlabeledEdge{from: 40, to: 41}.
+grammar.node{id: 44}.
 grammar.node{id: 45}.
 grammar.node{id: 46}.
-grammar.edge{from: 45, label: "'", to: 46}.
-grammar.ruleMarker{endID: 46, name: "string_seq_2", startID: 45}.
-grammar.unlabeledEdge{from: 43, to: 45}.
-grammar.ruleMarker{endID: 46, name: "string", startID: 38}.
+grammar.charRangeEdge{from: 45, fromChar: "a", to: 46, toChar: "z"}.
+grammar.ruleMarker{endID: 46, name: "string_seq_1_rep", startID: 45}.
 grammar.node{id: 47}.
+grammar.ruleMarker{endID: 47, name: "string_seq_1_rep", startID: 47}.
+grammar.unlabeledEdge{from: 44, to: 45}.
+grammar.unlabeledEdge{from: 46, to: 47}.
+grammar.unlabeledEdge{from: 47, to: 44}.
+grammar.unlabeledEdge{from: 44, to: 46}.
+grammar.ruleMarker{endID: 46, name: "string_seq_1", startID: 44}.
+grammar.unlabeledEdge{from: 43, to: 44}.
 grammar.node{id: 48}.
 grammar.node{id: 49}.
+grammar.edge{from: 48, label: "'", to: 49}.
+grammar.ruleMarker{endID: 49, name: "string_seq_2", startID: 48}.
+grammar.unlabeledEdge{from: 46, to: 48}.
+grammar.ruleMarker{endID: 49, name: "string", startID: 41}.
 grammar.node{id: 50}.
-grammar.refEdge{fromID: 49, ruleName: "object", toID: 50}.
-grammar.ruleMarker{endID: 50, name: "value_choice_0", startID: 49}.
-grammar.unlabeledEdge{from: 47, to: 49}.
-grammar.unlabeledEdge{from: 50, to: 48}.
 grammar.node{id: 51}.
 grammar.node{id: 52}.
-grammar.refEdge{fromID: 51, ruleName: "array", toID: 52}.
-grammar.ruleMarker{endID: 52, name: "value_choice_1", startID: 51}.
-grammar.unlabeledEdge{from: 47, to: 51}.
-grammar.unlabeledEdge{from: 52, to: 48}.
 grammar.node{id: 53}.
+grammar.refEdge{fromID: 52, ruleName: "object", toID: 53}.
+grammar.ruleMarker{endID: 53, name: "value_choice_0", startID: 52}.
+grammar.unlabeledEdge{from: 50, to: 52}.
+grammar.unlabeledEdge{from: 53, to: 51}.
 grammar.node{id: 54}.
-grammar.refEdge{fromID: 53, ruleName: "int", toID: 54}.
-grammar.ruleMarker{endID: 54, name: "value_choice_2", startID: 53}.
-grammar.unlabeledEdge{from: 47, to: 53}.
-grammar.unlabeledEdge{from: 54, to: 48}.
 grammar.node{id: 55}.
+grammar.refEdge{fromID: 54, ruleName: "array", toID: 55}.
+grammar.ruleMarker{endID: 55, name: "value_choice_1", startID: 54}.
+grammar.unlabeledEdge{from: 50, to: 54}.
+grammar.unlabeledEdge{from: 55, to: 51}.
 grammar.node{id: 56}.
-grammar.refEdge{fromID: 55, ruleName: "string", toID: 56}.
-grammar.ruleMarker{endID: 56, name: "value_choice_3", startID: 55}.
-grammar.unlabeledEdge{from: 47, to: 55}.
-grammar.unlabeledEdge{from: 56, to: 48}.
 grammar.node{id: 57}.
+grammar.refEdge{fromID: 56, ruleName: "int", toID: 57}.
+grammar.ruleMarker{endID: 57, name: "value_choice_2", startID: 56}.
+grammar.unlabeledEdge{from: 50, to: 56}.
+grammar.unlabeledEdge{from: 57, to: 51}.
 grammar.node{id: 58}.
-grammar.refEdge{fromID: 57, ruleName: "null", toID: 58}.
-grammar.ruleMarker{endID: 58, name: "value_choice_4", startID: 57}.
-grammar.unlabeledEdge{from: 47, to: 57}.
-grammar.unlabeledEdge{from: 58, to: 48}.
-grammar.ruleMarker{endID: 48, name: "value", startID: 47}.
+grammar.node{id: 59}.
+grammar.refEdge{fromID: 58, ruleName: "string", toID: 59}.
+grammar.ruleMarker{endID: 59, name: "value_choice_3", startID: 58}.
+grammar.unlabeledEdge{from: 50, to: 58}.
+grammar.unlabeledEdge{from: 59, to: 51}.
+grammar.node{id: 60}.
+grammar.node{id: 61}.
+grammar.refEdge{fromID: 60, ruleName: "null", toID: 61}.
+grammar.ruleMarker{endID: 61, name: "value_choice_4", startID: 60}.
+grammar.unlabeledEdge{from: 50, to: 60}.
+grammar.unlabeledEdge{from: 61, to: 51}.
+grammar.ruleMarker{endID: 51, name: "value", startID: 50}.
