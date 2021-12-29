@@ -3,7 +3,7 @@ import { Rec, Res, Rule, Statement } from "../types";
 import { declareTable } from "./build";
 import { addRule, doQuery, EmissionLog, insertFact } from "./eval";
 import { hasVars } from "../simple/simpleEvaluate";
-import { ppr, ppt } from "../pretty";
+import { ppb, ppr, ppt } from "../pretty";
 import { Loader } from "../loaders";
 import { language as dlLanguage } from "../parser";
 import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
@@ -154,7 +154,9 @@ export function formatOutput(
           output.log
             .map(
               ({ fromID, output }) =>
-                `${fromID}: [${output.map((res) => `${ppr(res)}`).join(", ")}]`
+                `${fromID}: [${output
+                  .map((res) => (res.term ? ppr(res) : ppb(res.bindings)))
+                  .join(", ")}]`
             )
             .join("\n")
         );

@@ -13,7 +13,7 @@ export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
     ["build", buildTest],
     ["buildBinExpr", buildTest],
-    // ["eval", evalTest],
+    ["eval", evalTest],
     // ["eval2", evalTest],
     // ["eval3", evalTest],
     ["family", evalTest],
