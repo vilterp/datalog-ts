@@ -1,0 +1,6 @@
+internal.visualization{
+  name: "Rule Tree",
+  spec: tree{
+    nodes: "ast_internal.node{span: S}"
+  }
+}.

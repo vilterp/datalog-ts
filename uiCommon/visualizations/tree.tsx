@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tree } from "../../util/tree";
-import { Rec, StringLit, Term } from "../../core/types";
+import { Int, Rec, StringLit, Term } from "../../core/types";
 import { ppt } from "../../core/pretty";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -24,16 +24,20 @@ function TreeViz(props: {
     const nodesRes = props.interp
       .queryStr(nodesQuery)
       .map((res) => res.term) as Rec[];
-    const tree = treeFromRecords(nodesRes, "");
+    const tree = treeFromRecords(nodesRes, -1);
+    console.log({ tree });
     return (
       <TreeView
         collapseState={collapseState}
         setCollapseState={setCollapseState}
+        hideRoot={true}
         tree={tree}
         render={({ item }) => <BareTerm term={item} />}
       />
     );
   } catch (e) {
+    // TODO: use error boundary in VizArea instead of duplicating this
+    console.error(e);
     return <pre style={{ color: "red" }}>{e.toString()}</pre>;
   }
 }
@@ -50,10 +54,10 @@ export function canTreeViz(rec: Rec): boolean {
 // query: something{id: C, parent: P}.
 // TODO: maybe specify a variable, and grab that binding?
 //   showing whole record is a bit noisy
-export function treeFromRecords(records: Rec[], rootTerm: string): Tree<Rec> {
+export function treeFromRecords(records: Rec[], rootTerm: number): Tree<Rec> {
   const graph: TermGraph = {};
   records.forEach((rec) => {
-    const parentID = (rec.attrs.parent as StringLit).val;
+    const parentID = (rec.attrs.parentID as Int).val;
     const newChildren = [...(graph[parentID] || []), rec];
     graph[parentID] = newChildren;
   });
@@ -62,14 +66,14 @@ export function treeFromRecords(records: Rec[], rootTerm: string): Tree<Rec> {
 
 function mkTree(
   termGraph: TermGraph,
-  curID: string,
+  curID: number,
   curRec: Rec | null
 ): Tree<Rec> {
   return {
-    key: curID,
+    key: curID.toString(),
     item: curRec,
     children: (termGraph[curID] || []).map((child) =>
-      mkTree(termGraph, ppt(child.attrs.id), child)
+      mkTree(termGraph, (child.attrs.id as Int).val, child)
     ),
   };
 }
