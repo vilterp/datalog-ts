@@ -1,4 +1,4 @@
-import { Program, Rec, Res, Rule, Statement } from "./types";
+import { Program, Rec, Relation, Res, Rule, Statement } from "./types";
 import { language as dlLanguage } from "./parser";
 import { Loader } from "./loaders";
 
@@ -60,6 +60,18 @@ export abstract class AbstractInterpreter {
       out = newInterp;
     }
     return out;
+  }
+
+  getRelation(name: string): Relation | null {
+    const table = this.getTables().find((t) => t === name);
+    if (table) {
+      return { type: "Table", name: table };
+    }
+    const rule = this.getRules().find((r) => r.head.relation === name);
+    if (rule) {
+      return { type: "Rule", name, rule };
+    }
+    return null;
   }
 
   // TODO: do these two with queries to virtual tables

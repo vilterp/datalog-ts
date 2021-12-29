@@ -121,6 +121,7 @@ function Playground() {
       console.error(e);
     }
   }
+  finalInterp = finalInterp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
 
   return (
     <>

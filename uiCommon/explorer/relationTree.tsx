@@ -1,7 +1,7 @@
 import React from "react";
 import { Relation } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
-import { lastItem } from "../../util/util";
+import { contains, lastItem, remove, toggle } from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
 import { useBoolLocalStorage, useJSONLocalStorage } from "../generic/hooks";
 import {
@@ -14,13 +14,15 @@ import * as styles from "./styles";
 export function RelationTree(props: {
   allRules: Relation[];
   allTables: Relation[];
-  curRelationName: string;
-  setCurRelationName: (s: string) => void;
   highlight: HighlightProps;
+  openRelations: string[];
+  setOpenRelations: (p: string[]) => void;
 }) {
-  const [relTreeCollapseState, setRelTreeCollapseState] = useJSONLocalStorage<
-    TreeCollapseState
-  >("rel-tree-collapse-state", emptyCollapseState);
+  const [relTreeCollapseState, setRelTreeCollapseState] =
+    useJSONLocalStorage<TreeCollapseState>(
+      "rel-tree-collapse-state",
+      emptyCollapseState
+    );
 
   const [justPublic, setJustPublic] = useBoolLocalStorage("just-public", false);
 
@@ -71,26 +73,36 @@ export function RelationTree(props: {
                 highlight.type === "Term" &&
                 highlight.term.type === "Record" &&
                 highlight.term.relation === rel.name;
+              const isPinned = contains(
+                props.openRelations,
+                item.relation.name
+              );
               return (
-                <span
-                  key={rel.name}
-                  style={styles.tab({
-                    selected: rel.name === props.curRelationName,
-                    highlighted:
-                      isHighlightedRelation || isRelationOfHighlightedTerm,
-                  })}
-                  onClick={() => props.setCurRelationName(rel.name)}
-                  // TODO: would be nice to factor out these handlers
-                  onMouseOver={() =>
-                    props.highlight.setHighlight({
-                      type: "Relation",
-                      name: rel.name,
-                    })
-                  }
-                  onMouseOut={() => props.highlight.setHighlight(noHighlight)}
-                >
-                  {lastItem(rel.name.split("."))}
-                </span>
+                <>
+                  <span
+                    key={rel.name}
+                    style={styles.tab({
+                      selected: isPinned,
+                      highlighted:
+                        isHighlightedRelation || isRelationOfHighlightedTerm,
+                    })}
+                    onClick={() =>
+                      props.setOpenRelations(
+                        toggle(props.openRelations, rel.name)
+                      )
+                    }
+                    // TODO: would be nice to factor out these handlers
+                    onMouseOver={() =>
+                      props.highlight.setHighlight({
+                        type: "Relation",
+                        name: rel.name,
+                      })
+                    }
+                    onMouseOut={() => props.highlight.setHighlight(noHighlight)}
+                  >
+                    {lastItem(rel.name.split("."))}
+                  </span>
+                </>
               );
             }
           }

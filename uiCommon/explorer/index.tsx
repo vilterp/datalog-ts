@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import useHashParam from "use-hash-param";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation, Term } from "../../core/types";
-import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
-import { sortBy } from "../../util/util";
-
-type RelationCollapseStates = { [key: string]: TableCollapseState };
+import { sortBy, toggle } from "../../util/util";
+import { RelationTableContainer } from "./relationTableContainer";
+import { RelationCollapseStates } from "./types";
 
 export function Explorer(props: {
   interp: AbstractInterpreter;
@@ -35,29 +33,27 @@ export function Explorer(props: {
       ),
     // TODO: virtual tables
   ];
-  const allRelations: Relation[] = [...allTables, ...allRules];
 
   const [highlight, setHighlight] = useState(noHighlight);
+
+  const [relationCollapseStates, setRelationCollapseStates] =
+    useJSONLocalStorage<RelationCollapseStates>(
+      "explorer-relation-table-collapse-state",
+      {}
+    );
+  const [openRelations, setOpenRelations] = useJSONLocalStorage<string[]>(
+    "explorer-open-relations",
+    []
+  );
+
   const highlightProps: HighlightProps = {
     highlight,
     setHighlight,
     parentPaths: [],
     childPaths: [],
+    onClickRelation: (name: string) =>
+      setOpenRelations(toggle(openRelations, name)),
   };
-
-  const [curRelationName, setCurRelationName]: [
-    string,
-    (v: string) => void
-  ] = useHashParam(
-    "relation",
-    allRelations.length === 0 ? null : allRelations[0].name
-  );
-  const [
-    relationCollapseStates,
-    setRelationCollapseStates,
-  ] = useJSONLocalStorage<RelationCollapseStates>("collapse-state", {});
-
-  const curRelation = allRelations.find((r) => r.name === curRelationName);
 
   return (
     <div style={{ display: "flex" }}>
@@ -74,27 +70,19 @@ export function Explorer(props: {
           allRules={allRules}
           allTables={allTables}
           highlight={highlightProps}
-          curRelationName={curRelationName}
-          setCurRelationName={setCurRelationName}
+          openRelations={openRelations}
+          setOpenRelations={setOpenRelations}
         />
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
-        {curRelation ? (
-          <RelationTable
-            relation={curRelation}
-            interp={props.interp}
-            highlight={highlightProps}
-            collapseState={relationCollapseStates[curRelationName] || {}}
-            setCollapseState={(st) =>
-              setRelationCollapseStates({
-                ...relationCollapseStates,
-                [curRelationName]: st,
-              })
-            }
-          />
-        ) : (
-          <em>No relations</em>
-        )}
+        <RelationTableContainer
+          interp={props.interp}
+          highlight={highlightProps}
+          collapseStates={relationCollapseStates}
+          setCollapseStates={setRelationCollapseStates}
+          pinned={openRelations}
+          setPinned={setOpenRelations}
+        />
       </div>
       {props.showViz ? (
         <div style={{ padding: 10, border: "1px solid black" }}>
