@@ -377,3 +377,10 @@ grammar.ruleMarker{endID: 61, name: "value_choice_4", startID: 60}.
 grammar.unlabeledEdge{from: 50, to: 60}.
 grammar.unlabeledEdge{from: 61, to: 51}.
 grammar.ruleMarker{endID: 51, name: "value", startID: 50}.
+
+input
+null
+----
+application/datalog
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
+parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
