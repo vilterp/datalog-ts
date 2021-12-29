@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Tree } from "../../util/tree";
 import { Int, Rec, StringLit, Term } from "../../core/types";
-import { ppt } from "../../core/pretty";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { emptyCollapseState, TreeView } from "../generic/treeView";
