@@ -16,7 +16,7 @@ export type BenchmarkResult = {
   profilePath?: string;
 };
 
-function doBenchmark<T>(repetitions: number, op: () => void): BenchmarkResult {
+function doBenchmark(repetitions: number, op: () => void): BenchmarkResult {
   const before = performance.now();
   for (let i = 0; i < repetitions; i++) {
     op();
