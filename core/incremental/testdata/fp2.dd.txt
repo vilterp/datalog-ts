@@ -1,7 +1,7 @@
 .load apps/fp/dl/ast.dl
 ----
-text/plain
+application/datalog
 
 .load apps/fp/dl/typecheck.dl
 ----
-text/plain
+application/datalog

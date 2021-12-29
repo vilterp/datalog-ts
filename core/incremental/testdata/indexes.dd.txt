@@ -1,14 +1,14 @@
 .table need
 ----
-text/plain
+application/datalog
 
 .table worker
 ----
-text/plain
+application/datalog
 
 .table fundingSource
 ----
-text/plain
+application/datalog
 
 opportunity{worker: N, capability: C, objective: O, fundingSource: S} :-
   need{capability: C, objective: O} &
@@ -21,18 +21,21 @@ need{capability: "write HTML", objective: "make website"}.
 ----
 text/plain
 need: [need{capability: "write HTML", objective: "make website"}; {}]
-0: []
+1: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
+2: []
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
 text/plain
 worker: [worker{capability: "write HTML", name: "Pete"}; {}]
-0: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
-1: []
+0: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
+2: [{C: "write HTML", N: "Pete", O: "make website"}]
+4: []
 
 fundingSource{objective: "make website", source: "some company"}.
 ----
 text/plain
 fundingSource: [fundingSource{objective: "make website", source: "some company"}; {}]
-1: [opportunity{objective: "make website", source: "some company"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+3: [fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}]
+4: [{C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
 opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
