@@ -1,10 +1,10 @@
 .table mother
 ----
-text/plain
+application/datalog
 
 .table father
 ----
-text/plain
+application/datalog
 
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
@@ -15,5 +15,6 @@ father{child: "Pete", father: "Paul"}.
 ----
 text/plain
 father: [father{child: "Pete", father: "Paul"}; {}]
-0: [father{child: "Pete", father: "Paul"}; {}]
-parent: [parent{child: C, parent: P}; {}]
+2: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
+0: [father{child: "Pete", father: "Paul"}; {C: "Pete", P: "Paul"}]
+parent: [parent{child: "Pete", parent: "Paul"}; {C: "Pete", P: "Paul"}]
