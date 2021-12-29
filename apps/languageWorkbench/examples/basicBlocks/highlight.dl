@@ -3,7 +3,9 @@
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.keyword{type: T, span: S, highlight: H} |
   hl.segmentDefn{type: T, span: S, highlight: H} |
-  hl.segmentDefnHL{type: T, span: S, highlight: H}.
+  hl.segmentDefnHL{type: T, span: S, highlight: H} |
+  hl.segmentUsage{type: T, span: S, highlight: H} |
+  hl.segmentUsageHL{type: T, span: S, highlight: H}.
 
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
