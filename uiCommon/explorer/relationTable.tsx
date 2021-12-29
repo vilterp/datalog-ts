@@ -140,6 +140,7 @@ export function RelationTable(props: {
                             setHighlight: () => {},
                             childPaths: [],
                             parentPaths: [],
+                            onClickRelation: () => {},
                           }}
                           scopePath={[]}
                         />

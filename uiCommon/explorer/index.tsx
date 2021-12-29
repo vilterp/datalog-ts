@@ -6,7 +6,7 @@ import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
-import { sortBy } from "../../util/util";
+import { sortBy, toggle } from "../../util/util";
 import { RelationTableContainer } from "./relationTableContainer";
 import { TableCollapseState } from "./types";
 
@@ -39,12 +39,6 @@ export function Explorer(props: {
   const allRelations: Relation[] = [...allTables, ...allRules];
 
   const [highlight, setHighlight] = useState(noHighlight);
-  const highlightProps: HighlightProps = {
-    highlight,
-    setHighlight,
-    parentPaths: [],
-    childPaths: [],
-  };
 
   const [curRelationName, setCurRelationName]: [string, (v: string) => void] =
     useHashParam(
@@ -60,6 +54,14 @@ export function Explorer(props: {
     "explorer-pinned-state",
     []
   );
+
+  const highlightProps: HighlightProps = {
+    highlight,
+    setHighlight,
+    parentPaths: [],
+    childPaths: [],
+    onClickRelation: (name: string) => setPinned(toggle(pinned, name)),
+  };
 
   return (
     <div style={{ display: "flex" }}>

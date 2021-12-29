@@ -22,6 +22,7 @@ export const noHighlightProps: HighlightProps = {
   setHighlight: () => {},
   parentPaths: [],
   childPaths: [],
+  onClickRelation: () => {},
 };
 
 export type HighlightProps = {
@@ -29,6 +30,7 @@ export type HighlightProps = {
   setHighlight: (h: Highlight) => void;
   childPaths: SituatedBinding[];
   parentPaths: SituatedBinding[];
+  onClickRelation: (name: string) => void;
 };
 
 export function TermView(props: {
@@ -56,6 +58,7 @@ export function TermView(props: {
               })
             }
             onMouseOut={() => props.highlight.setHighlight(noHighlight)}
+            onClick={() => props.highlight.onClickRelation(term.relation)}
           >
             {term.relation}
           </span>
@@ -164,9 +167,10 @@ export function VarC(props: {
   );
 }
 
-function colorForStatus(
-  s: HighlightStatus
-): { background: string; letter: string } {
+function colorForStatus(s: HighlightStatus): {
+  background: string;
+  letter: string;
+} {
   switch (s) {
     case "parent":
       return { background: "plum", letter: "white" };

@@ -128,6 +128,10 @@ export function remove<T>(arr: T[], item: T): T[] {
   return arr.filter((thing) => item !== thing);
 }
 
+export function toggle<T>(arr: T[], item: T): T[] {
+  return contains(arr, item) ? remove(arr, item) : [...arr, item];
+}
+
 export function arrayEq<T>(
   a: T[],
   b: T[],
