@@ -1,0 +1,2407 @@
+.load fp/dl/ast.dl
+----
+text/plain
+
+.load fp/dl/typecheck.dl
+----
+text/plain
+
+lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}.
+----
+text/plain
+lang.Builtin: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
+59: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+60: []
+
+.rulegraph
+----
+application/graphviz
+digraph G {
+  "0" [color="black" label="0: Union []" shape="box"];
+  "1" [color="black" label="1: Match(ast.StringLit{id: I, location: S}; {}) []" shape="box"];
+  "2" [color="black" label="2: Match(ast.IntLit{id: I, location: S}; {}) []" shape="box"];
+  "3" [color="black" label="3: Match(ast.Var{id: I, location: S}; {}) []" shape="box"];
+  "4" [color="black" label="4: Match(ast.LetExpr{id: I, location: S}; {}) []" shape="box"];
+  "5" [color="black" label="5: Match(ast.FuncCall{id: I, location: S}; {}) []" shape="box"];
+  "6" [color="black" label="6: Match(ast.Lambda{id: I, location: S}; {}) []" shape="box"];
+  "7" [color="black" label="7: Match(ast.Placeholder{id: I, location: S}; {}) []" shape="box"];
+  "8" [color="black" label="8: Union []" shape="box"];
+  "9" [color="black" label="9: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "10" [color="black" label="10: Match(ast.LetExpr{bodyID: I, id: P}; {}) [bodyID]" shape="box"];
+  "11" [color="black" label="11: Join(10 & 9): ast.ParentExpr []" shape="box"];
+  "12" [color="black" label="12: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "13" [color="black" label="13: Match(ast.LetExpr{bindingID: I, id: P}; {}) [bindingID]" shape="box"];
+  "14" [color="black" label="14: Join(13 & 12): ast.ParentExpr []" shape="box"];
+  "15" [color="black" label="15: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "16" [color="black" label="16: Match(ast.FuncCall{funcID: I, id: P}; {}) [funcID]" shape="box"];
+  "17" [color="black" label="17: Join(16 & 15): ast.ParentExpr []" shape="box"];
+  "18" [color="black" label="18: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "19" [color="black" label="19: Match(ast.FuncCall{argID: I, id: P}; {}) [argID]" shape="box"];
+  "20" [color="black" label="20: Join(19 & 18): ast.ParentExpr []" shape="box"];
+  "21" [color="black" label="21: Match(ast.Expr{id: I, location: S}; {I: I, S: S}) [id]" shape="box"];
+  "22" [color="black" label="22: Match(ast.Lambda{body: I, id: P}; {}) [body]" shape="box"];
+  "23" [color="black" label="23: Join(22 & 21): ast.ParentExpr []" shape="box"];
+  "24" [color="black" label="24: Union []" shape="box"];
+  "25" [color="black" label="25: Match(tc.typeS{id: I, type: T}; {I: I}) []" shape="box"];
+  "26" [color="black" label="26: Match(tc.typeI{id: I, type: T}; {I: I}) []" shape="box"];
+  "27" [color="black" label="27: Match(tc.typeLambda{id: I, type: T}; {I: I}) []" shape="box"];
+  "28" [color="black" label="28: Match(tc.typeFC{id: I, type: T}; {I: I, T: T}) []" shape="box"];
+  "29" [color="black" label="29: Match(tc.typeLet{id: I, type: T}; {I: I, T: T}) []" shape="box"];
+  "30" [color="black" label="30: Match(tc.typeVar{id: I, type: T}; {I: I, T: T}) []" shape="box"];
+  "31" [color="black" label="31: Match(tc.typePlaceholder{id: I, type: T}; {I: I}) []" shape="box"];
+  "32" [color="black" label="32: Match(ast.StringLit{id: I}; {}) []" shape="box"];
+  "33" [color="black" label="33: Match(ast.IntLit{id: I}; {}) []" shape="box"];
+  "34" [color="black" label="34: Match(ast.FuncCall{argID: AID, funcID: FID, id: I}; {}) [funcID]" shape="box"];
+  "35" [color="black" label="35: Match(tc.Type{id: FID, type: tapp{from: F, to: T}}; {I: FID}) [id]" shape="box"];
+  "36" [color="black" label="36: Join(35 & 34): tc.typeFC [type/from]" shape="box"];
+  "37" [color="black" label="37: Match(tc.Type{id: AID, type: F}; {I: AID, T: F}) [type]" shape="box"];
+  "38" [color="black" label="38: Join(37 & 36): tc.typeFC []" shape="box"];
+  "39" [color="black" label="39: Match(ast.LetExpr{bodyID: BID, id: I}; {}) [bodyID]" shape="box"];
+  "40" [color="black" label="40: Match(tc.Type{id: BID, type: T}; {I: BID, T: T}) [id]" shape="box"];
+  "41" [color="black" label="41: Join(40 & 39): tc.typeLet []" shape="box"];
+  "42" [color="black" label="42: Match(ast.Var{id: I, name: N}; {}) [id-name]" shape="box"];
+  "43" [color="black" label="43: Match(tc.ScopeItem{id: I, name: N, type: T}; {I: I, N: N, T: T}) [id-name]" shape="box"];
+  "44" [color="black" label="44: Join(43 & 42): tc.typeVar []" shape="box"];
+  "45" [color="black" label="45: Match(ast.LambdaParam{lambdaID: I, ty: F}; {}) [lambdaID]" shape="box"];
+  "46" [color="black" label="46: Match(ast.Lambda{body: B, id: I, retType: R}; {}) [id]" shape="box"];
+  "47" [color="black" label="47: Join(46 & 45): tc.typeLambda [body-retType]" shape="box"];
+  "48" [color="black" label="48: Match(tc.Type{id: B, type: R}; {I: B, T: R}) [id-type]" shape="box"];
+  "49" [color="black" label="49: Join(48 & 47): tc.typeLambda []" shape="box"];
+  "50" [color="black" label="50: Match(ast.Placeholder{id: I}; {}) []" shape="box"];
+  "51" [color="black" label="51: Union []" shape="box"];
+  "52" [color="black" label="52: Match(tc.scopeBuiltin{id: I, location: L, name: N, type: T}; {I: I, N: N, T: T}) []" shape="box"];
+  "53" [color="black" label="53: Match(tc.scopeLet{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box"];
+  "54" [color="black" label="54: Match(tc.scopeLambda{id: I, location: L, name: N, type: T}; {I: I, L: L, N: N, T: T}) []" shape="box"];
+  "55" [color="black" label="55: Match(tc.parentScope{id: I, parentID: P}; {I: I, P: P}) [parentID]" shape="box"];
+  "56" [color="black" label="56: Match(tc.ScopeItem{id: P, location: L, name: N, type: T}; {I: P, L: L, N: N, T: T}) [id]" shape="box"];
+  "57" [color="black" label="57: Join(56 & 55): tc.ScopeItem []" shape="box"];
+  "58" [color="black" label="58: Match(ast.RootExpr{id: I}; {}) []" shape="box"];
+  "59" [color="black" label="59: Match(lang.Builtin{name: N, type: T}; {}) []" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {N: "intToString", T: tapp{from: "int", to: "string"}}]
+  "60" [color="black" label="60: Join(59 & 58): tc.scopeBuiltin []" shape="box"];
+  "61" [color="black" label="61: Match(ast.LetExpr{bindingID: B, bodyID: I, varLoc: L, varName: N}; {}) [bindingID]" shape="box"];
+  "62" [color="black" label="62: Match(tc.Type{id: B, type: T}; {I: B, T: T}) [id]" shape="box"];
+  "63" [color="black" label="63: Join(62 & 61): tc.scopeLet []" shape="box"];
+  "64" [color="black" label="64: Match(ast.Lambda{body: I, id: LID}; {}) [id]" shape="box"];
+  "65" [color="black" label="65: Match(ast.LambdaParam{lambdaID: LID, location: L, name: N, ty: T}; {}) [lambdaID]" shape="box"];
+  "66" [color="black" label="66: Join(65 & 64): tc.scopeLambda []" shape="box"];
+  "67" [color="black" label="67: Union []" shape="box"];
+  "68" [color="black" label="68: Match(ast.LetExpr{bodyID: I, id: P}; {}) []" shape="box"];
+  "69" [color="black" label="69: Match(ast.LetExpr{bindingID: I, id: P}; {}) []" shape="box"];
+  "70" [color="black" label="70: Match(ast.FuncCall{argID: I, id: P}; {}) []" shape="box"];
+  "71" [color="black" label="71: Match(ast.FuncCall{funcID: I, id: P}; {}) []" shape="box"];
+  "72" [color="black" label="72: Match(ast.Lambda{body: I, id: P}; {}) []" shape="box"];
+  "ast.RootExpr" [color="black" label="ast.RootExpr: Base []" shape="box"];
+  "ast.StringLit" [color="black" label="ast.StringLit: Base []" shape="box"];
+  "ast.IntLit" [color="black" label="ast.IntLit: Base []" shape="box"];
+  "ast.LetExpr" [color="black" label="ast.LetExpr: Base []" shape="box"];
+  "ast.Lambda" [color="black" label="ast.Lambda: Base []" shape="box"];
+  "ast.LambdaParam" [color="black" label="ast.LambdaParam: Base []" shape="box"];
+  "ast.FuncCall" [color="black" label="ast.FuncCall: Base []" shape="box"];
+  "ast.Var" [color="black" label="ast.Var: Base []" shape="box"];
+  "ast.Placeholder" [color="black" label="ast.Placeholder: Base []" shape="box"];
+  "ast.Expr" [color="black" label="ast.Expr: Subst(ast.Expr{id: I, location: S}) []" shape="box"];
+  "ast.ParentExpr" [color="black" label="ast.ParentExpr: Subst(ast.ParentExpr{id: I, parent: P, span: S}) []" shape="box"];
+  "lang.Builtin" [color="black" label="lang.Builtin: Base []" shape="box"]; // cache: [lang.Builtin{name: "intToString", type: tapp{from: "int", to: "string"}}; {}]
+  "tc.Type" [color="black" label="tc.Type: Subst(tc.Type{id: I, type: T}) []" shape="box"];
+  "tc.typeS" [color="black" label="tc.typeS: Subst(tc.typeS{id: I, type: \"string\"}) []" shape="box"];
+  "tc.typeI" [color="black" label="tc.typeI: Subst(tc.typeI{id: I, type: \"int\"}) []" shape="box"];
+  "tc.typeFC" [color="black" label="tc.typeFC: Subst(tc.typeFC{id: I, type: T}) []" shape="box"];
+  "tc.typeLet" [color="black" label="tc.typeLet: Subst(tc.typeLet{id: I, type: T}) []" shape="box"];
+  "tc.typeVar" [color="black" label="tc.typeVar: Subst(tc.typeVar{id: I, type: T}) []" shape="box"];
+  "tc.typeLambda" [color="black" label="tc.typeLambda: Subst(tc.typeLambda{id: I, type: tapp{from: F, to: R}}) []" shape="box"];
+  "tc.typePlaceholder" [color="black" label="tc.typePlaceholder: Subst(tc.typePlaceholder{id: I, type: \"unknown\"}) []" shape="box"];
+  "tc.ScopeItem" [color="black" label="tc.ScopeItem: Subst(tc.ScopeItem{id: I, location: L, name: N, type: T}) []" shape="box"];
+  "tc.scopeBuiltin" [color="black" label="tc.scopeBuiltin: Subst(tc.scopeBuiltin{id: I, location: \"builtin\", name: N, type: T}) []" shape="box"];
+  "tc.scopeLet" [color="black" label="tc.scopeLet: Subst(tc.scopeLet{id: I, location: L, name: N, type: T}) []" shape="box"];
+  "tc.scopeLambda" [color="black" label="tc.scopeLambda: Subst(tc.scopeLambda{id: I, location: L, name: N, type: T}) []" shape="box"];
+  "tc.parentScope" [color="black" label="tc.parentScope: Subst(tc.parentScope{id: I, parentID: P}) []" shape="box"];
+  "0" -> "ast.Expr" [];
+  "1" -> "0" [];
+  "10" -> "11" [];
+  "11" -> "8" [];
+  "12" -> "14" [];
+  "13" -> "14" [];
+  "14" -> "8" [];
+  "15" -> "17" [];
+  "16" -> "17" [];
+  "17" -> "8" [];
+  "18" -> "20" [];
+  "19" -> "20" [];
+  "2" -> "0" [];
+  "20" -> "8" [];
+  "21" -> "23" [];
+  "22" -> "23" [];
+  "23" -> "8" [];
+  "24" -> "tc.Type" [];
+  "25" -> "24" [];
+  "26" -> "24" [];
+  "27" -> "24" [];
+  "28" -> "24" [];
+  "29" -> "24" [];
+  "3" -> "0" [];
+  "30" -> "24" [];
+  "31" -> "24" [];
+  "32" -> "tc.typeS" [];
+  "33" -> "tc.typeI" [];
+  "34" -> "36" [];
+  "35" -> "36" [];
+  "36" -> "38" [];
+  "37" -> "38" [];
+  "38" -> "tc.typeFC" [];
+  "39" -> "41" [];
+  "4" -> "0" [];
+  "40" -> "41" [];
+  "41" -> "tc.typeLet" [];
+  "42" -> "44" [];
+  "43" -> "44" [];
+  "44" -> "tc.typeVar" [];
+  "45" -> "47" [];
+  "46" -> "47" [];
+  "47" -> "49" [];
+  "48" -> "49" [];
+  "49" -> "tc.typeLambda" [];
+  "5" -> "0" [];
+  "50" -> "tc.typePlaceholder" [];
+  "51" -> "tc.ScopeItem" [];
+  "52" -> "51" [];
+  "53" -> "51" [];
+  "54" -> "51" [];
+  "55" -> "57" [];
+  "56" -> "57" [];
+  "57" -> "51" [];
+  "58" -> "60" [];
+  "59" -> "60" [];
+  "6" -> "0" [];
+  "60" -> "tc.scopeBuiltin" [];
+  "61" -> "63" [];
+  "62" -> "63" [];
+  "63" -> "tc.scopeLet" [];
+  "64" -> "66" [];
+  "65" -> "66" [];
+  "66" -> "tc.scopeLambda" [];
+  "67" -> "tc.parentScope" [];
+  "68" -> "67" [];
+  "69" -> "67" [];
+  "7" -> "0" [];
+  "70" -> "67" [];
+  "71" -> "67" [];
+  "72" -> "67" [];
+  "8" -> "ast.ParentExpr" [];
+  "9" -> "11" [];
+  "ast.Expr" -> "9" [];
+  "ast.Expr" -> "12" [];
+  "ast.Expr" -> "15" [];
+  "ast.Expr" -> "18" [];
+  "ast.Expr" -> "21" [];
+  "ast.FuncCall" -> "5" [];
+  "ast.FuncCall" -> "16" [];
+  "ast.FuncCall" -> "19" [];
+  "ast.FuncCall" -> "34" [];
+  "ast.FuncCall" -> "70" [];
+  "ast.FuncCall" -> "71" [];
+  "ast.IntLit" -> "2" [];
+  "ast.IntLit" -> "33" [];
+  "ast.Lambda" -> "6" [];
+  "ast.Lambda" -> "22" [];
+  "ast.Lambda" -> "46" [];
+  "ast.Lambda" -> "64" [];
+  "ast.Lambda" -> "72" [];
+  "ast.LambdaParam" -> "45" [];
+  "ast.LambdaParam" -> "65" [];
+  "ast.LetExpr" -> "4" [];
+  "ast.LetExpr" -> "10" [];
+  "ast.LetExpr" -> "13" [];
+  "ast.LetExpr" -> "39" [];
+  "ast.LetExpr" -> "61" [];
+  "ast.LetExpr" -> "68" [];
+  "ast.LetExpr" -> "69" [];
+  "ast.Placeholder" -> "7" [];
+  "ast.Placeholder" -> "50" [];
+  "ast.RootExpr" -> "58" [];
+  "ast.StringLit" -> "1" [];
+  "ast.StringLit" -> "32" [];
+  "ast.Var" -> "3" [];
+  "ast.Var" -> "42" [];
+  "lang.Builtin" -> "59" [];
+  "tc.ScopeItem" -> "43" [];
+  "tc.ScopeItem" -> "56" [];
+  "tc.Type" -> "35" [];
+  "tc.Type" -> "37" [];
+  "tc.Type" -> "40" [];
+  "tc.Type" -> "48" [];
+  "tc.Type" -> "62" [];
+  "tc.parentScope" -> "55" [];
+  "tc.scopeBuiltin" -> "52" [];
+  "tc.scopeLambda" -> "54" [];
+  "tc.scopeLet" -> "53" [];
+  "tc.typeFC" -> "28" [];
+  "tc.typeI" -> "26" [];
+  "tc.typeLambda" -> "27" [];
+  "tc.typeLet" -> "29" [];
+  "tc.typePlaceholder" -> "31" [];
+  "tc.typeS" -> "25" [];
+  "tc.typeVar" -> "30" [];
+}
+
+ast.RootExpr{id: 0}.
+----
+text/plain
+ast.RootExpr: [ast.RootExpr{id: 0}; {}]
+58: [ast.RootExpr{id: 0}; {I: 0}]
+60: [tc.scopeBuiltin{id: 0}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+tc.scopeBuiltin: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+52: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+51: [tc.scopeBuiltin{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, L: "builtin", N: "intToString", T: tapp{from: "int", to: "string"}}]
+43: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 0, N: "intToString", T: tapp{from: "int", to: "string"}}]
+56: [tc.ScopeItem{id: 0, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+44: []
+57: []
+
+ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}.
+----
+text/plain
+ast.FuncCall: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {}]
+5: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+16: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
+19: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
+34: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {AID: 2, FID: 1, I: 0}]
+70: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
+71: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
+0: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+17: []
+20: []
+36: []
+67: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 2, P: 0}]
+67: [ast.FuncCall{argID: 2, funcID: 1, id: 0, location: span{from: 0, to: 13}}; {I: 1, P: 0}]
+ast.Expr: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+tc.parentScope: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
+tc.parentScope: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
+9: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+12: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+15: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+18: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+21: [ast.Expr{id: 0, location: span{from: 0, to: 13}}; {I: 0, S: span{from: 0, to: 13}}]
+55: [tc.parentScope{id: 2, parentID: 0}; {I: 2, P: 0}]
+55: [tc.parentScope{id: 1, parentID: 0}; {I: 1, P: 0}]
+11: []
+14: []
+17: []
+20: []
+23: []
+57: [tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+57: [tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+51: [tc.ScopeItem{id: 2, parentID: 0}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+51: [tc.ScopeItem{id: 1, parentID: 0}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+tc.ScopeItem: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, L: "builtin", N: "intToString", P: 0, T: tapp{from: "int", to: "string"}}]
+43: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 2, N: "intToString", T: tapp{from: "int", to: "string"}}]
+56: [tc.ScopeItem{id: 2, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 2, T: tapp{from: "int", to: "string"}}]
+43: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {I: 1, N: "intToString", T: tapp{from: "int", to: "string"}}]
+56: [tc.ScopeItem{id: 1, location: "builtin", name: "intToString", type: tapp{from: "int", to: "string"}}; {L: "builtin", N: "intToString", P: 1, T: tapp{from: "int", to: "string"}}]
+44: []
+57: []
+44: []
+57: []
+
+ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}.
+----
+text/plain
+ast.Var: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {}]
+3: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
+42: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, N: "int2string"}]
+0: [ast.Var{id: 1, location: span{from: 0, to: 10}, name: "int2string"}; {I: 1, S: span{from: 0, to: 10}}]
+44: []
+ast.Expr: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+9: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+12: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+15: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+18: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+21: [ast.Expr{id: 1, location: span{from: 0, to: 10}}; {I: 1, S: span{from: 0, to: 10}}]
+11: []
+14: []
+17: [ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
+20: []
+23: []
+8: [ast.ParentExpr{id: 1, location: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
+ast.ParentExpr: [ast.ParentExpr{id: 1, parent: 0, span: span{from: 0, to: 10}}; {I: 1, P: 0, S: span{from: 0, to: 10}}]
+
+ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}.
+----
+text/plain
+ast.IntLit: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {}]
+2: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
+33: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2}]
+0: [ast.IntLit{id: 2, location: span{from: 11, to: 12}, val: 2}; {I: 2, S: span{from: 11, to: 12}}]
+tc.typeI: [tc.typeI{id: 2, type: "int"}; {I: 2}]
+ast.Expr: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+26: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
+9: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+12: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+15: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+18: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+21: [ast.Expr{id: 2, location: span{from: 11, to: 12}}; {I: 2, S: span{from: 11, to: 12}}]
+24: [tc.typeI{id: 2, type: "int"}; {I: 2, T: "int"}]
+11: []
+14: []
+17: []
+20: [ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
+23: []
+tc.Type: [tc.Type{id: 2, type: "int"}; {I: 2, T: "int"}]
+8: [ast.ParentExpr{id: 2, location: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
+35: []
+37: [tc.Type{id: 2, type: "int"}; {AID: 2, F: "int"}]
+40: [tc.Type{id: 2, type: "int"}; {BID: 2, T: "int"}]
+48: [tc.Type{id: 2, type: "int"}; {B: 2, R: "int"}]
+62: [tc.Type{id: 2, type: "int"}; {B: 2, T: "int"}]
+ast.ParentExpr: [ast.ParentExpr{id: 2, parent: 0, span: span{from: 11, to: 12}}; {I: 2, P: 0, S: span{from: 11, to: 12}}]
+38: []
+41: []
+49: []
+63: []
+
+.dumpcaches
+----
+application/json
+{
+  "0": {
+    "nodeID": "0",
+    "cache": {}
+  },
+  "1": {
+    "nodeID": "1",
+    "cache": {}
+  },
+  "2": {
+    "nodeID": "2",
+    "cache": {}
+  },
+  "3": {
+    "nodeID": "3",
+    "cache": {}
+  },
+  "4": {
+    "nodeID": "4",
+    "cache": {}
+  },
+  "5": {
+    "nodeID": "5",
+    "cache": {}
+  },
+  "6": {
+    "nodeID": "6",
+    "cache": {}
+  },
+  "7": {
+    "nodeID": "7",
+    "cache": {}
+  },
+  "8": {
+    "nodeID": "8",
+    "cache": {}
+  },
+  "9": {
+    "nodeID": "9",
+    "cache": {
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 13
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 10
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 11
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 12
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 11
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 12
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "10": {
+    "nodeID": "10",
+    "cache": {
+      "bodyID": {
+        "items": {}
+      }
+    }
+  },
+  "11": {
+    "nodeID": "11",
+    "cache": {}
+  },
+  "12": {
+    "nodeID": "12",
+    "cache": {
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 13
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 10
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 11
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 12
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 11
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 12
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "13": {
+    "nodeID": "13",
+    "cache": {
+      "bindingID": {
+        "items": {}
+      }
+    }
+  },
+  "14": {
+    "nodeID": "14",
+    "cache": {}
+  },
+  "15": {
+    "nodeID": "15",
+    "cache": {
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 13
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 10
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 11
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 12
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 11
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 12
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "16": {
+    "nodeID": "16",
+    "cache": {
+      "funcID": {
+        "items": {
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.FuncCall",
+                "attrs": {
+                  "argID": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "funcID": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "17": {
+    "nodeID": "17",
+    "cache": {}
+  },
+  "18": {
+    "nodeID": "18",
+    "cache": {
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 13
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 10
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 11
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 12
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 11
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 12
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "19": {
+    "nodeID": "19",
+    "cache": {
+      "argID": {
+        "items": {
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.FuncCall",
+                "attrs": {
+                  "argID": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "funcID": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "20": {
+    "nodeID": "20",
+    "cache": {}
+  },
+  "21": {
+    "nodeID": "21",
+    "cache": {
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 13
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 0
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 10
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Expr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 11
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 12
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "S": {
+                  "type": "Record",
+                  "relation": "span",
+                  "attrs": {
+                    "from": {
+                      "type": "IntLit",
+                      "val": 11
+                    },
+                    "to": {
+                      "type": "IntLit",
+                      "val": 12
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "22": {
+    "nodeID": "22",
+    "cache": {
+      "body": {
+        "items": {}
+      }
+    }
+  },
+  "23": {
+    "nodeID": "23",
+    "cache": {}
+  },
+  "24": {
+    "nodeID": "24",
+    "cache": {}
+  },
+  "25": {
+    "nodeID": "25",
+    "cache": {}
+  },
+  "26": {
+    "nodeID": "26",
+    "cache": {}
+  },
+  "27": {
+    "nodeID": "27",
+    "cache": {}
+  },
+  "28": {
+    "nodeID": "28",
+    "cache": {}
+  },
+  "29": {
+    "nodeID": "29",
+    "cache": {}
+  },
+  "30": {
+    "nodeID": "30",
+    "cache": {}
+  },
+  "31": {
+    "nodeID": "31",
+    "cache": {}
+  },
+  "32": {
+    "nodeID": "32",
+    "cache": {}
+  },
+  "33": {
+    "nodeID": "33",
+    "cache": {}
+  },
+  "34": {
+    "nodeID": "34",
+    "cache": {
+      "funcID": {
+        "items": {
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.FuncCall",
+                "attrs": {
+                  "argID": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "funcID": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "FID": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "AID": {
+                  "type": "IntLit",
+                  "val": 2
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "35": {
+    "nodeID": "35",
+    "cache": {
+      "id": {
+        "items": {}
+      }
+    }
+  },
+  "36": {
+    "nodeID": "36",
+    "cache": {
+      "type/from": {
+        "items": {}
+      }
+    }
+  },
+  "37": {
+    "nodeID": "37",
+    "cache": {
+      "type": {
+        "items": {
+          "\"int\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.Type",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "type": {
+                    "type": "StringLit",
+                    "val": "int"
+                  }
+                }
+              },
+              "bindings": {
+                "AID": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "F": {
+                  "type": "StringLit",
+                  "val": "int"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "38": {
+    "nodeID": "38",
+    "cache": {}
+  },
+  "39": {
+    "nodeID": "39",
+    "cache": {
+      "bodyID": {
+        "items": {}
+      }
+    }
+  },
+  "40": {
+    "nodeID": "40",
+    "cache": {
+      "id": {
+        "items": {
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.Type",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "type": {
+                    "type": "StringLit",
+                    "val": "int"
+                  }
+                }
+              },
+              "bindings": {
+                "BID": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "T": {
+                  "type": "StringLit",
+                  "val": "int"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "41": {
+    "nodeID": "41",
+    "cache": {}
+  },
+  "42": {
+    "nodeID": "42",
+    "cache": {
+      "id-name": {
+        "items": {
+          "1-\"int2string\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.Var",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "location": {
+                    "type": "Record",
+                    "relation": "span",
+                    "attrs": {
+                      "from": {
+                        "type": "IntLit",
+                        "val": 0
+                      },
+                      "to": {
+                        "type": "IntLit",
+                        "val": 10
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "int2string"
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "int2string"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "43": {
+    "nodeID": "43",
+    "cache": {
+      "id-name": {
+        "items": {
+          "0-\"intToString\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "2-\"intToString\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "1-\"intToString\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "44": {
+    "nodeID": "44",
+    "cache": {}
+  },
+  "45": {
+    "nodeID": "45",
+    "cache": {
+      "lambdaID": {
+        "items": {}
+      }
+    }
+  },
+  "46": {
+    "nodeID": "46",
+    "cache": {
+      "id": {
+        "items": {}
+      }
+    }
+  },
+  "47": {
+    "nodeID": "47",
+    "cache": {
+      "body-retType": {
+        "items": {}
+      }
+    }
+  },
+  "48": {
+    "nodeID": "48",
+    "cache": {
+      "id-type": {
+        "items": {
+          "2-\"int\"": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.Type",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "type": {
+                    "type": "StringLit",
+                    "val": "int"
+                  }
+                }
+              },
+              "bindings": {
+                "B": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "R": {
+                  "type": "StringLit",
+                  "val": "int"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "49": {
+    "nodeID": "49",
+    "cache": {}
+  },
+  "50": {
+    "nodeID": "50",
+    "cache": {}
+  },
+  "51": {
+    "nodeID": "51",
+    "cache": {}
+  },
+  "52": {
+    "nodeID": "52",
+    "cache": {}
+  },
+  "53": {
+    "nodeID": "53",
+    "cache": {}
+  },
+  "54": {
+    "nodeID": "54",
+    "cache": {}
+  },
+  "55": {
+    "nodeID": "55",
+    "cache": {
+      "parentID": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.parentScope",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "parentID": {
+                    "type": "IntLit",
+                    "val": 0
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                }
+              }
+            },
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.parentScope",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "parentID": {
+                    "type": "IntLit",
+                    "val": 0
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "56": {
+    "nodeID": "56",
+    "cache": {
+      "id": {
+        "items": {
+          "0": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "P": {
+                  "type": "IntLit",
+                  "val": 0
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                },
+                "L": {
+                  "type": "StringLit",
+                  "val": "builtin"
+                }
+              }
+            }
+          ],
+          "1": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 1
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "P": {
+                  "type": "IntLit",
+                  "val": 1
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                },
+                "L": {
+                  "type": "StringLit",
+                  "val": "builtin"
+                }
+              }
+            }
+          ],
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.ScopeItem",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  },
+                  "location": {
+                    "type": "StringLit",
+                    "val": "builtin"
+                  }
+                }
+              },
+              "bindings": {
+                "P": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                },
+                "L": {
+                  "type": "StringLit",
+                  "val": "builtin"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "57": {
+    "nodeID": "57",
+    "cache": {}
+  },
+  "58": {
+    "nodeID": "58",
+    "cache": {
+      "": {
+        "items": {
+          "": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "ast.RootExpr",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 0
+                  }
+                }
+              },
+              "bindings": {
+                "I": {
+                  "type": "IntLit",
+                  "val": 0
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "59": {
+    "nodeID": "59",
+    "cache": {
+      "": {
+        "items": {
+          "": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "lang.Builtin",
+                "attrs": {
+                  "name": {
+                    "type": "StringLit",
+                    "val": "intToString"
+                  },
+                  "type": {
+                    "type": "Record",
+                    "relation": "tapp",
+                    "attrs": {
+                      "from": {
+                        "type": "StringLit",
+                        "val": "int"
+                      },
+                      "to": {
+                        "type": "StringLit",
+                        "val": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "bindings": {
+                "N": {
+                  "type": "StringLit",
+                  "val": "intToString"
+                },
+                "T": {
+                  "type": "Record",
+                  "relation": "tapp",
+                  "attrs": {
+                    "from": {
+                      "type": "StringLit",
+                      "val": "int"
+                    },
+                    "to": {
+                      "type": "StringLit",
+                      "val": "string"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "60": {
+    "nodeID": "60",
+    "cache": {}
+  },
+  "61": {
+    "nodeID": "61",
+    "cache": {
+      "bindingID": {
+        "items": {}
+      }
+    }
+  },
+  "62": {
+    "nodeID": "62",
+    "cache": {
+      "id": {
+        "items": {
+          "2": [
+            {
+              "term": {
+                "type": "Record",
+                "relation": "tc.Type",
+                "attrs": {
+                  "id": {
+                    "type": "IntLit",
+                    "val": 2
+                  },
+                  "type": {
+                    "type": "StringLit",
+                    "val": "int"
+                  }
+                }
+              },
+              "bindings": {
+                "B": {
+                  "type": "IntLit",
+                  "val": 2
+                },
+                "T": {
+                  "type": "StringLit",
+                  "val": "int"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "63": {
+    "nodeID": "63",
+    "cache": {}
+  },
+  "64": {
+    "nodeID": "64",
+    "cache": {
+      "id": {
+        "items": {}
+      }
+    }
+  },
+  "65": {
+    "nodeID": "65",
+    "cache": {
+      "lambdaID": {
+        "items": {}
+      }
+    }
+  },
+  "66": {
+    "nodeID": "66",
+    "cache": {}
+  },
+  "67": {
+    "nodeID": "67",
+    "cache": {}
+  },
+  "68": {
+    "nodeID": "68",
+    "cache": {}
+  },
+  "69": {
+    "nodeID": "69",
+    "cache": {}
+  },
+  "70": {
+    "nodeID": "70",
+    "cache": {}
+  },
+  "71": {
+    "nodeID": "71",
+    "cache": {}
+  },
+  "72": {
+    "nodeID": "72",
+    "cache": {}
+  },
+  "ast.RootExpr": {
+    "nodeID": "ast.RootExpr",
+    "cache": {}
+  },
+  "ast.StringLit": {
+    "nodeID": "ast.StringLit",
+    "cache": {}
+  },
+  "ast.IntLit": {
+    "nodeID": "ast.IntLit",
+    "cache": {}
+  },
+  "ast.LetExpr": {
+    "nodeID": "ast.LetExpr",
+    "cache": {}
+  },
+  "ast.Lambda": {
+    "nodeID": "ast.Lambda",
+    "cache": {}
+  },
+  "ast.LambdaParam": {
+    "nodeID": "ast.LambdaParam",
+    "cache": {}
+  },
+  "ast.FuncCall": {
+    "nodeID": "ast.FuncCall",
+    "cache": {}
+  },
+  "ast.Var": {
+    "nodeID": "ast.Var",
+    "cache": {}
+  },
+  "ast.Placeholder": {
+    "nodeID": "ast.Placeholder",
+    "cache": {}
+  },
+  "ast.Expr": {
+    "nodeID": "ast.Expr",
+    "cache": {}
+  },
+  "ast.ParentExpr": {
+    "nodeID": "ast.ParentExpr",
+    "cache": {}
+  },
+  "lang.Builtin": {
+    "nodeID": "lang.Builtin",
+    "cache": {}
+  },
+  "tc.Type": {
+    "nodeID": "tc.Type",
+    "cache": {}
+  },
+  "tc.typeS": {
+    "nodeID": "tc.typeS",
+    "cache": {}
+  },
+  "tc.typeI": {
+    "nodeID": "tc.typeI",
+    "cache": {}
+  },
+  "tc.typeFC": {
+    "nodeID": "tc.typeFC",
+    "cache": {}
+  },
+  "tc.typeLet": {
+    "nodeID": "tc.typeLet",
+    "cache": {}
+  },
+  "tc.typeVar": {
+    "nodeID": "tc.typeVar",
+    "cache": {}
+  },
+  "tc.typeLambda": {
+    "nodeID": "tc.typeLambda",
+    "cache": {}
+  },
+  "tc.typePlaceholder": {
+    "nodeID": "tc.typePlaceholder",
+    "cache": {}
+  },
+  "tc.ScopeItem": {
+    "nodeID": "tc.ScopeItem",
+    "cache": {}
+  },
+  "tc.scopeBuiltin": {
+    "nodeID": "tc.scopeBuiltin",
+    "cache": {}
+  },
+  "tc.scopeLet": {
+    "nodeID": "tc.scopeLet",
+    "cache": {}
+  },
+  "tc.scopeLambda": {
+    "nodeID": "tc.scopeLambda",
+    "cache": {}
+  },
+  "tc.parentScope": {
+    "nodeID": "tc.parentScope",
+    "cache": {}
+  }
+}

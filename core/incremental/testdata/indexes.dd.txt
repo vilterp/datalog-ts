@@ -1,0 +1,55 @@
+.table need
+----
+text/plain
+
+.table worker
+----
+text/plain
+
+.table fundingSource
+----
+text/plain
+
+opportunity{worker: N, capability: C, objective: O, fundingSource: S} :-
+  need{capability: C, objective: O} &
+  worker{name: N, capability: C} &
+  fundingSource{objective: O, source: S}.
+----
+text/plain
+
+.rulegraph
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="thistle" label="0: opportunity: Join(C: worker.capability = need.capability) []" shape="box" style="filled"];
+  "1" [fillcolor="thistle" label="1: opportunity: Join() []" shape="box" style="filled"];
+  "need" [fillcolor="darksalmon" label="need:  [capability]" shape="box" style="filled"];
+  "worker" [fillcolor="darksalmon" label="worker:  [capability]" shape="box" style="filled"];
+  "fundingSource" [fillcolor="darksalmon" label="fundingSource:  []" shape="box" style="filled"];
+  "opportunity" [fillcolor="lightblue" label="opportunity: Subst({capability: C, fundingSource: S, objective: O, worker: N}) []" shape="box" style="filled"];
+  "0" -> "1" [];
+  "1" -> "opportunity" [];
+  "fundingSource" -> "1" [];
+  "need" -> "0" [];
+  "worker" -> "0" [];
+}
+
+need{capability: "write HTML", objective: "make website"}.
+----
+text/plain
+need: [need{capability: "write HTML", objective: "make website"}; {}]
+0: []
+
+worker{name: "Pete", capability: "write HTML"}.
+----
+text/plain
+worker: [worker{capability: "write HTML", name: "Pete"}; {}]
+0: [opportunity{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete", O: "make website"}]
+1: []
+
+fundingSource{objective: "make website", source: "some company"}.
+----
+text/plain
+fundingSource: [fundingSource{objective: "make website", source: "some company"}; {}]
+1: [opportunity{objective: "make website", source: "some company"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]

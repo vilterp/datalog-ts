@@ -1,0 +1,75 @@
+.table mother;
+.table father;
+matGramp{child: A, grandfather: C} :-
+  mother{child: A, mother: B} & father{child: B, father: C}.
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="thistle" label="0: matGramp: Join(B: father.child = mother.mother) []" shape="box" style="filled"];
+  "mother" [fillcolor="darksalmon" label="mother:  [mother]" shape="box" style="filled"];
+  "father" [fillcolor="darksalmon" label="father:  [child]" shape="box" style="filled"];
+  "matGramp" [fillcolor="lightblue" label="matGramp: Subst({child: A, grandfather: C}) []" shape="box" style="filled"];
+  "0" -> "matGramp" [];
+  "father" -> "0" [];
+  "mother" -> "0" [];
+}
+
+.table a;
+.table b;
+.table c;
+d{} :- a{} & b{} & c{}.
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="thistle" label="0: d: Join() []" shape="box" style="filled"];
+  "1" [fillcolor="thistle" label="1: d: Join() []" shape="box" style="filled"];
+  "a" [fillcolor="darksalmon" label="a:  []" shape="box" style="filled"];
+  "b" [fillcolor="darksalmon" label="b:  []" shape="box" style="filled"];
+  "c" [fillcolor="darksalmon" label="c:  []" shape="box" style="filled"];
+  "d" [fillcolor="lightblue" label="d: Subst({}) []" shape="box" style="filled"];
+  "0" -> "1" [];
+  "1" -> "d" [];
+  "a" -> "0" [];
+  "b" -> "0" [];
+  "c" -> "1" [];
+}
+
+.table mother;
+.table father;
+parent{child: C, parent: P} :-
+  mother{child: C, mother: P} | father{child: C, father: P}.
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
+  "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
+  "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
+  "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) []" shape="box" style="filled"];
+  "0" -> "parent" [];
+  "father" -> "0" [];
+  "mother" -> "0" [];
+}
+
+.table mother;
+.table father;
+parent{child: C, parent: P} :-
+  mother{child: C, mother: P} | father{child: C, father: P}.;
+grandparent{grandchild: A, grandparent: C} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C}.
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
+  "1" [fillcolor="thistle" label="1: grandparent: Join(B: parent.child = parent.parent) []" shape="box" style="filled"];
+  "mother" [fillcolor="darksalmon" label="mother:  []" shape="box" style="filled"];
+  "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
+  "parent" [fillcolor="lightblue" label="parent: Subst({child: C, parent: P}) [child, parent]" shape="box" style="filled"];
+  "grandparent" [fillcolor="lightblue" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box" style="filled"];
+  "0" -> "parent" [];
+  "1" -> "grandparent" [];
+  "father" -> "0" [];
+  "mother" -> "0" [];
+  "parent" -> "1" [];
+  "parent" -> "1" [];
+}

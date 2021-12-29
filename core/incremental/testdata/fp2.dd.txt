@@ -1,0 +1,131 @@
+.load fp/dl/ast.dl
+----
+text/plain
+
+.load fp/dl/typecheck.dl
+----
+text/plain
+
+.rulegraph
+----
+application/graphviz
+digraph G {
+  "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
+  "1" [fillcolor="moccasin" label="1: Union []" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: ast.ParentExpr: Join(I: ast.LetExpr.bodyID = ast.Expr.id) []" shape="box" style="filled"];
+  "3" [fillcolor="thistle" label="3: ast.ParentExpr: Join(I: ast.LetExpr.bindingID = ast.Expr.id) []" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: ast.ParentExpr: Join(I: ast.FuncCall.funcID = ast.Expr.id) []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: ast.ParentExpr: Join(I: ast.FuncCall.argID = ast.Expr.id) []" shape="box" style="filled"];
+  "6" [fillcolor="thistle" label="6: ast.ParentExpr: Join(I: ast.Lambda.body = ast.Expr.id) []" shape="box" style="filled"];
+  "7" [fillcolor="moccasin" label="7: Union []" shape="box" style="filled"];
+  "8" [fillcolor="thistle" label="8: tc.typeFC: Join(FID: tc.Type.id = ast.FuncCall.funcID) [type/from]" shape="box" style="filled"];
+  "9" [fillcolor="thistle" label="9: tc.typeFC: Join(F: tc.Type.type = 8.type.from) []" shape="box" style="filled"];
+  "10" [fillcolor="thistle" label="10: tc.typeLet: Join(BID: tc.Type.id = ast.LetExpr.bodyID) []" shape="box" style="filled"];
+  "11" [fillcolor="thistle" label="11: tc.typeVar: Join(I: tc.ScopeItem.id = ast.Var.id & N: tc.ScopeItem.name = ast.Var.name) []" shape="box" style="filled"];
+  "12" [fillcolor="thistle" label="12: tc.typeLambda: Join(I: ast.LambdaParam.lambdaID = ast.Lambda.id) []" shape="box" style="filled"];
+  "13" [fillcolor="thistle" label="13: tc.typeLambda: Join() []" shape="box" style="filled"];
+  "14" [fillcolor="moccasin" label="14: Union []" shape="box" style="filled"];
+  "15" [fillcolor="thistle" label="15: tc.ScopeItem: Join(P: tc.ScopeItem.id = tc.parentScope.parentID) []" shape="box" style="filled"];
+  "16" [fillcolor="thistle" label="16: tc.scopeBuiltin: Join() []" shape="box" style="filled"];
+  "17" [fillcolor="thistle" label="17: tc.scopeLet: Join(B: tc.Type.id = ast.LetExpr.bindingID) []" shape="box" style="filled"];
+  "18" [fillcolor="thistle" label="18: tc.scopeLambda: Join(LID: ast.LambdaParam.lambdaID = ast.Lambda.id) []" shape="box" style="filled"];
+  "19" [fillcolor="moccasin" label="19: Union []" shape="box" style="filled"];
+  "ast.RootExpr" [fillcolor="darksalmon" label="ast.RootExpr:  []" shape="box" style="filled"];
+  "ast.StringLit" [fillcolor="darksalmon" label="ast.StringLit:  []" shape="box" style="filled"];
+  "ast.IntLit" [fillcolor="darksalmon" label="ast.IntLit:  []" shape="box" style="filled"];
+  "ast.LetExpr" [fillcolor="darksalmon" label="ast.LetExpr:  [bodyID, bindingID]" shape="box" style="filled"];
+  "ast.Lambda" [fillcolor="darksalmon" label="ast.Lambda:  [body, id]" shape="box" style="filled"];
+  "ast.LambdaParam" [fillcolor="darksalmon" label="ast.LambdaParam:  [lambdaID]" shape="box" style="filled"];
+  "ast.FuncCall" [fillcolor="darksalmon" label="ast.FuncCall:  [funcID, argID]" shape="box" style="filled"];
+  "ast.Var" [fillcolor="darksalmon" label="ast.Var:  [id-name]" shape="box" style="filled"];
+  "ast.Placeholder" [fillcolor="darksalmon" label="ast.Placeholder:  []" shape="box" style="filled"];
+  "ast.Expr" [fillcolor="lightblue" label="ast.Expr: Subst({id: I, location: S}) [id]" shape="box" style="filled"];
+  "ast.ParentExpr" [fillcolor="lightblue" label="ast.ParentExpr: Subst({id: I, parent: P, span: S}) []" shape="box" style="filled"];
+  "lang.Builtin" [fillcolor="darksalmon" label="lang.Builtin:  []" shape="box" style="filled"];
+  "tc.Type" [fillcolor="lightblue" label="tc.Type: Subst({id: I, type: T}) [id, type, ]" shape="box" style="filled"];
+  "tc.typeS" [fillcolor="lightblue" label="tc.typeS: Subst({id: I, type: \"string\"}) []" shape="box" style="filled"];
+  "tc.typeI" [fillcolor="lightblue" label="tc.typeI: Subst({id: I, type: \"int\"}) []" shape="box" style="filled"];
+  "tc.typeFC" [fillcolor="lightblue" label="tc.typeFC: Subst({id: I, type: T}) []" shape="box" style="filled"];
+  "tc.typeLet" [fillcolor="lightblue" label="tc.typeLet: Subst({id: I, type: T}) []" shape="box" style="filled"];
+  "tc.typeVar" [fillcolor="lightblue" label="tc.typeVar: Subst({id: I, type: T}) []" shape="box" style="filled"];
+  "tc.typeLambda" [fillcolor="lightblue" label="tc.typeLambda: Subst({id: I, type: tapp{from: F, to: R}}) []" shape="box" style="filled"];
+  "tc.typePlaceholder" [fillcolor="lightblue" label="tc.typePlaceholder: Subst({id: I, type: \"unknown\"}) []" shape="box" style="filled"];
+  "tc.ScopeItem" [fillcolor="lightblue" label="tc.ScopeItem: Subst({id: I, location: L, name: N, type: T}) [id-name, id]" shape="box" style="filled"];
+  "tc.scopeBuiltin" [fillcolor="lightblue" label="tc.scopeBuiltin: Subst({id: I, location: \"builtin\", name: N, type: T}) []" shape="box" style="filled"];
+  "tc.scopeLet" [fillcolor="lightblue" label="tc.scopeLet: Subst({id: I, location: L, name: N, type: T}) []" shape="box" style="filled"];
+  "tc.scopeLambda" [fillcolor="lightblue" label="tc.scopeLambda: Subst({id: I, location: L, name: N, type: T}) []" shape="box" style="filled"];
+  "tc.parentScope" [fillcolor="lightblue" label="tc.parentScope: Subst({id: I, parentID: P}) [parentID]" shape="box" style="filled"];
+  "0" -> "ast.Expr" [];
+  "1" -> "ast.ParentExpr" [];
+  "10" -> "tc.typeLet" [];
+  "11" -> "tc.typeVar" [];
+  "12" -> "13" [];
+  "13" -> "tc.typeLambda" [];
+  "14" -> "tc.ScopeItem" [];
+  "15" -> "14" [];
+  "16" -> "tc.scopeBuiltin" [];
+  "17" -> "tc.scopeLet" [];
+  "18" -> "tc.scopeLambda" [];
+  "19" -> "tc.parentScope" [];
+  "2" -> "1" [];
+  "3" -> "1" [];
+  "4" -> "1" [];
+  "5" -> "1" [];
+  "6" -> "1" [];
+  "7" -> "tc.Type" [];
+  "8" -> "9" [];
+  "9" -> "tc.typeFC" [];
+  "ast.Expr" -> "2" [];
+  "ast.Expr" -> "3" [];
+  "ast.Expr" -> "4" [];
+  "ast.Expr" -> "5" [];
+  "ast.Expr" -> "6" [];
+  "ast.FuncCall" -> "0" [];
+  "ast.FuncCall" -> "4" [];
+  "ast.FuncCall" -> "5" [];
+  "ast.FuncCall" -> "8" [];
+  "ast.FuncCall" -> "19" [];
+  "ast.FuncCall" -> "19" [];
+  "ast.IntLit" -> "0" [];
+  "ast.IntLit" -> "tc.typeI" [];
+  "ast.Lambda" -> "0" [];
+  "ast.Lambda" -> "6" [];
+  "ast.Lambda" -> "12" [];
+  "ast.Lambda" -> "18" [];
+  "ast.Lambda" -> "19" [];
+  "ast.LambdaParam" -> "12" [];
+  "ast.LambdaParam" -> "18" [];
+  "ast.LetExpr" -> "0" [];
+  "ast.LetExpr" -> "2" [];
+  "ast.LetExpr" -> "3" [];
+  "ast.LetExpr" -> "10" [];
+  "ast.LetExpr" -> "17" [];
+  "ast.LetExpr" -> "19" [];
+  "ast.LetExpr" -> "19" [];
+  "ast.Placeholder" -> "0" [];
+  "ast.Placeholder" -> "tc.typePlaceholder" [];
+  "ast.RootExpr" -> "16" [];
+  "ast.StringLit" -> "0" [];
+  "ast.StringLit" -> "tc.typeS" [];
+  "ast.Var" -> "0" [];
+  "ast.Var" -> "11" [];
+  "lang.Builtin" -> "16" [];
+  "tc.ScopeItem" -> "11" [];
+  "tc.ScopeItem" -> "15" [];
+  "tc.Type" -> "8" [];
+  "tc.Type" -> "9" [];
+  "tc.Type" -> "10" [];
+  "tc.Type" -> "13" [];
+  "tc.Type" -> "17" [];
+  "tc.parentScope" -> "15" [];
+  "tc.scopeBuiltin" -> "14" [];
+  "tc.scopeLambda" -> "14" [];
+  "tc.scopeLet" -> "14" [];
+  "tc.typeFC" -> "7" [];
+  "tc.typeI" -> "7" [];
+  "tc.typeLambda" -> "7" [];
+  "tc.typeLet" -> "7" [];
+  "tc.typePlaceholder" -> "7" [];
+  "tc.typeS" -> "7" [];
+  "tc.typeVar" -> "7" [];
+}
