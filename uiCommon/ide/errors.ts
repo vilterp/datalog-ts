@@ -1,8 +1,8 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Int } from "../../core/types";
+import { Rec, Int, int } from "../../core/types";
 import { Span, dlToSpan } from "./types";
-import { treeFromRecords } from "../visualizations/tree";
 import { mapTree, filterTree, getLeaves } from "../../util/tree";
+import { treeFromRecords } from "../generic/treeFromRecords";
 
 // just `TypeError` is a builtin
 export type DLTypeError = {
@@ -11,19 +11,21 @@ export type DLTypeError = {
 };
 
 export function getTypeErrors(interp: AbstractInterpreter): DLTypeError[] {
-  const exprTreeRecs = interp
-    .queryStr("ast.ParentExpr{child: C, parent: P}")
-    .map((res) => res.term as Rec);
-  const exprTree = treeFromRecords(exprTreeRecs, "0");
+  const exprTreeRecs = interp.queryStr(
+    "ast.ParentExpr{id: ID, parent: ParentID}"
+  );
+  // TODO: move treeFromRecords somewhere common, not visualizations...
+  const exprTree = treeFromRecords(exprTreeRecs, int(0));
   const exprIDsWithTypes = new Set(
     interp
       .queryStr("tc.Type{id: I}")
       .map((res) => ((res.term as Rec).attrs.id as Int).val)
   );
-  const exprErrorTree = mapTree(exprTree, (rec) => {
-    if (!rec) {
+  const exprErrorTree = mapTree(exprTree, (res) => {
+    if (!res) {
       return null;
     }
+    const rec = res.term as Rec;
     const exprID = (rec.attrs.id as Int).val;
     return {
       exprID,
