@@ -57,11 +57,6 @@ hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
   hl.varDefn{span: S}.
 hl.segmentUsage{type: "usage", span: S, highlight: false} :-
   ide.Usage{usageLoc: S}.
-# TODO: this is a hack.
-# it's not that it's undefined, it's just that it'll only be seen
-# if the usage rule doesn't match.
-hl.segmentUndefinedVar{type: "undefined-var", span: S, highlight: false} :-
-  ast.Var{location: S}.
 hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S}.
 
