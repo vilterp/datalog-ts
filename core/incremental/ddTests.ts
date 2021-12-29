@@ -31,7 +31,7 @@ export function incrTests(writeResults: boolean): Suite {
     name,
     test() {
       runDDTestAtPath(
-        `incremental/testdata/${name}.dd.txt`,
+        `core/incremental/testdata/${name}.dd.txt`,
         func,
         writeResults
       );

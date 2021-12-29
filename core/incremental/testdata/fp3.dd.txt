@@ -1,4 +1,4 @@
-.load fp/dl/main.dl
+.load apps/fp/dl/main.dl
 ----
 text/plain
 

@@ -1,8 +1,8 @@
-.load fp/dl/ast.dl
+.load apps/fp/dl/ast.dl
 ----
 text/plain
 
-.load fp/dl/typecheck.dl
+.load apps/fp/dl/typecheck.dl
 ----
 text/plain
 
