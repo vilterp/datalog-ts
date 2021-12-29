@@ -1,37 +1,12 @@
 # === highlight ===
 
 hl.Segment{type: T, span: S, highlight: H} :-
-  hl.ident{type: T, span: S, highlight: H} |
   hl.keyword{type: T, span: S, highlight: H} |
-  hl.gotoLabelHighlighted{type: T, span: S, highlight: H} |
-  hl.labelDefnHighlighted{type: T, span: S, highlight: H}.
-
-hl.ident{type: "ident", span: S, highlight: false} :-
-  ast.ident{span: S}.
+  hl.segmentDefn{type: T, span: S, highlight: H} |
+  hl.segmentDefnHL{type: T, span: S, highlight: H}.
 
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
-
-hl.labelDefnHighlighted{
-  type: "ident",
-  span: span{from: FIdx, to: TIdx},
-  highlight: true
-} :-
-  ide.Cursor{idx: CIdx} &
-  ast.label{parentID: BlockID, span: span{from: FIdx, to: TIdx}} &
-  ast.block{id: BlockID} &
-  FIdx <= CIdx & CIdx <= TIdx.
-
-hl.gotoLabelHighlighted{
-  type: "ident",
-  name: N,
-  span: span{from: FIdx, to: TIdx},
-  highlight: true
-} :-
-  ide.Cursor{idx: CIdx} &
-  ast.label{text: N, span: span{from: FIdx, to: TIdx}, parentID: GotoID} &
-  ast.gotoInstr{id: GotoID} &
-  FIdx <= CIdx & CIdx <= TIdx.
 
 # === defn ===
 
@@ -41,7 +16,7 @@ defn.goto{blockID: BlockID, instrID: InstrID, to: ToName, labelSpan: S} :-
   ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
   ast.instr{id: InstrID, parentID: BlockID}.
 
-defn.block{id: BlockID, name: N, span: S} :-
+defn.block{id: BlockID, name: N, labelSpan: S} :-
   ast.block{id: BlockID} &
   ast.label{id: LabelID, parentID: BlockID} &
   ast.ident{parentID: LabelID, text: N, span: S}.
@@ -49,7 +24,7 @@ defn.block{id: BlockID, name: N, span: S} :-
 # === IDE ===
 
 ide.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  defn.block{span: DL, name: N} &
+  defn.block{labelSpan: DL, name: N} &
   defn.goto{labelSpan: UL, to: N}.
 
 ide.jump{from: BF, to: BT} :-
@@ -65,3 +40,44 @@ internal.visualization{
     edges: "ide.jump{from: From, to: To}"
   }
 }.
+
+hl.varDefn{span: S} :-
+  defn.block{labelSpan: S}.
+
+# copy/pasted from FP
+# TODO: DRY
+
+hl.segmentDefn{type: "defn", span: S, highlight: false} :-
+  hl.varDefn{span: S} &
+  ide.Usage{definitionLoc: S}.
+hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
+  ide.CurrentUsage{defnLoc: S} &
+  hl.varDefn{span: S}.
+hl.segmentUsage{type: "usage", span: S, highlight: false} :-
+  ide.Usage{usageLoc: S}.
+# TODO: this is a hack.
+# it's not that it's undefined, it's just that it'll only be seen
+# if the usage rule doesn't match.
+hl.segmentUndefinedVar{type: "undefined-var", span: S, highlight: false} :-
+  ast.Var{location: S}.
+hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
+  ide.CurrentUsage{usageLoc: S}.
+
+
+# all usages of the var the cursor is currently on,
+# with definition location.
+ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
+  ide.CurrentUsageDefn{defnLoc: DL, usageLoc: UL} |
+  ide.CurrentUsageUsage{defnLoc: DL, usageLoc: UL} |
+  ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
+ide.CurrentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
+  ide.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+ide.CurrentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
+  ide.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
+  ide.CurrentUsageUsage{defnLoc: DL} &
+  ide.Usage{definitionLoc: DL, usageLoc: UL}.
