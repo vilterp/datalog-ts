@@ -1,0 +1,7 @@
+internal.visualization{
+  name: "Rule Tree",
+  spec: tree{
+    nodes: "ast_internal.node{id: ID, parentID: ParentID}",
+    rootTerm: -1
+  }
+}.

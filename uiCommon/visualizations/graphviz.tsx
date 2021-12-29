@@ -52,11 +52,7 @@ function GraphvizWrapper(props: {
     );
   } catch (e) {
     console.error(e);
-    return (
-      <pre style={{ fontFamily: "monospace", color: "red" }}>
-        {e.toString()}
-      </pre>
-    );
+    return <pre style={{ color: "red" }}>{e.toString()}</pre>;
   }
 }
 
