@@ -42,22 +42,18 @@ input
 foo
 ----
 application/datalog
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.fullMatch{}.
 
 input
 foobar
 ----
 application/datalog
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
 
 input
 foobarfoo
 ----
 application/datalog
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 8, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 8, ruleName: "main", startChar: 6}.
-parse.rulePath{endChar: 8, ruleName: "main", startChar: 3}.
+parse.fullMatch{}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -95,19 +91,19 @@ input
 []
 ----
 application/datalog
-parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
+parse.fullMatch{}.
 
 input
 [a]
 ----
 application/datalog
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.fullMatch{}.
 
 input
 [a,b,c]
 ----
 application/datalog
-parse.rulePath{endChar: 6, ruleName: "main", startChar: 0}.
+parse.fullMatch{}.
 
 gram
 main :- (foo | bar).
@@ -151,8 +147,8 @@ input
 foo
 ----
 application/datalog
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
+parse.fullMatch{}.
+parse.fullMatch{}.
 
 gram
 main :- repSep([0-9], "").
@@ -175,33 +171,15 @@ input
 1
 ----
 application/datalog
-parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
+parse.fullMatch{}.
+parse.fullMatch{}.
 
 input
 1234
 ----
 application/datalog
-parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 1, ruleName: "main", startChar: 1}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 2}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 1}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 1}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 2}.
-parse.rulePath{endChar: 0, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 1, ruleName: "main", startChar: 1}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 2}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 3}.
-parse.rulePath{endChar: 1, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 2, ruleName: "main", startChar: 1}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 1}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 2}.
+parse.fullMatch{}.
+parse.fullMatch{}.
 
 gram
 main :- value.
@@ -379,8 +357,6 @@ grammar.unlabeledEdge{from: 61, to: 51}.
 grammar.ruleMarker{endID: 51, name: "value", startID: 50}.
 
 input
-null
+[1,2]
 ----
 application/datalog
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
-parse.rulePath{endChar: 3, ruleName: "main", startChar: 0}.
