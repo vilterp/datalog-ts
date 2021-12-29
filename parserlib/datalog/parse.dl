@@ -53,7 +53,8 @@ parse.fullMatch{} :-
 grammarViz.edge{from: F, to: T, label: L} :-
   grammarViz.normalEdge{from: F, to: T, label: L} |
   grammarViz.unlabeledEdge{from: F, to: T, label: L} |
-  grammarViz.refEdge{from: F, to: T, label: L}.
+  grammarViz.refEdge{from: F, to: T, label: L} |
+  grammarViz.charRangeEdge{from: F, to: T, label: L}.
 
 grammarViz.normalEdge{from: F, to: T, label: L} :-
   grammar.edge{from: F, to: T, label: L}.
@@ -61,7 +62,9 @@ grammarViz.unlabeledEdge{from: F, to: T, label: ""} :-
   grammar.unlabeledEdge{from: F, to: T}.
 grammarViz.refEdge{from: F, to: T, label: L} :-
   grammar.refEdge{fromID: F, toID: T, ruleName: L}.
-# TODO: char range edge
+# TODO: Label = concat(FC, ":", TC)
+grammarViz.charRangeEdge{from: F, to: T, label: FC} :-
+  grammar.charRangeEdge{from: F, to: T, fromChar: FC, toChar: TC}.
 
 internal.visualization{
   name: "Grammar",
