@@ -33,7 +33,7 @@ function TreeViz(props: {
           item.bindings.Display ? (
             <BareTerm term={item.bindings.Display} />
           ) : (
-            "(missing Display)"
+            <BareTerm term={item.term} />
           )
         }
       />
