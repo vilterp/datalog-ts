@@ -5,6 +5,7 @@ import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { emptyCollapseState, TreeView } from "../generic/treeView";
 import { BareTerm } from "../dl/replViews";
+import { ppt } from "../../core/pretty";
 
 export const tree: VizTypeSpec = {
   name: "Tree",
@@ -21,7 +22,8 @@ function TreeViz(props: {
   try {
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
     const nodesRes = props.interp.queryStr(nodesQuery);
-    const tree = treeFromRecords(nodesRes, -1);
+    const rootTerm = props.spec.attrs.rootTerm;
+    const tree = treeFromRecords(nodesRes, rootTerm);
     console.log({ tree });
     return (
       <TreeView
@@ -57,7 +59,7 @@ export function canTreeViz(rec: Rec): boolean {
 // query: something{id: C, parent: P}.
 // TODO: maybe specify a variable, and grab that binding?
 //   showing whole record is a bit noisy
-export function treeFromRecords(records: Res[], rootTerm: number): Tree<Res> {
+export function treeFromRecords(records: Res[], rootTerm: Term): Tree<Res> {
   const graph: TermGraph = {};
   records.forEach((res) => {
     const parentID = (res.bindings.ParentID as Int).val;
@@ -69,14 +71,14 @@ export function treeFromRecords(records: Res[], rootTerm: number): Tree<Res> {
 
 function mkTree(
   termGraph: TermGraph,
-  curID: number,
+  curID: Term,
   curRes: Res | null
 ): Tree<Res> {
   return {
     key: curID.toString(),
     item: curRes,
-    children: (termGraph[curID] || []).map((child) =>
-      mkTree(termGraph, (child.bindings.ID as Int).val, child)
+    children: (termGraph[ppt(curID)] || []).map((child) =>
+      mkTree(termGraph, child.bindings.ID, child)
     ),
   };
 }
