@@ -30,7 +30,7 @@ export type HighlightProps = {
   setHighlight: (h: Highlight) => void;
   childPaths: SituatedBinding[];
   parentPaths: SituatedBinding[];
-  onClickRelation: (name: string) => void;
+  onClickRelation?: (name: string) => void;
 };
 
 export function TermView(props: {
@@ -50,6 +50,7 @@ export function TermView(props: {
             style={{
               color: "purple",
               backgroundColor: isHighlighted ? "lightgrey" : "",
+              cursor: props.highlight.onClickRelation ? "pointer" : "inherit",
             }}
             onMouseOver={() =>
               props.highlight.setHighlight({
@@ -58,7 +59,11 @@ export function TermView(props: {
               })
             }
             onMouseOut={() => props.highlight.setHighlight(noHighlight)}
-            onClick={() => props.highlight.onClickRelation(term.relation)}
+            onClick={() =>
+              props.highlight.onClickRelation
+                ? props.highlight.onClickRelation(term.relation)
+                : null
+            }
           >
             {term.relation}
           </span>
