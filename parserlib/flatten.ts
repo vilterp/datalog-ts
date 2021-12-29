@@ -1,5 +1,16 @@
-import { rec, int, Rec, Term, str, Statement } from "../core/types";
-import { groupBy } from "../util/util";
+import {
+  rec,
+  int,
+  Rec,
+  Term,
+  str,
+  Statement,
+  Rule,
+  rule,
+  varr,
+  or,
+  and,
+} from "../core/types";
 import { Grammar } from "./grammar";
 import { RuleTree } from "./ruleTree";
 
@@ -8,6 +19,20 @@ type State = {
   nextID: number;
   source: string;
 };
+
+export function getAllStatements(
+  grammar: Grammar,
+  tree: RuleTree,
+  source: string
+): Statement[] {
+  return [
+    ...declareTables(grammar),
+    ...flatten(tree, source).map(
+      (record): Statement => ({ type: "Insert", record })
+    ),
+    { type: "Rule", rule: getUnionRule(grammar) },
+  ];
+}
 
 export function declareTables(grammar: Grammar): Statement[] {
   const stmts: Statement[] = [];
@@ -25,6 +50,29 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
   };
   recur(state, tree, -1);
   return state.records;
+}
+
+export function getUnionRule(g: Grammar): Rule {
+  return rule(
+    rec("ast_internal.node", {
+      id: varr("ID"),
+      parentID: varr("ParentID"),
+      span: varr("S"),
+      text: varr("T"),
+    }),
+    or(
+      Object.keys(g).map((ruleName) =>
+        and([
+          rec(`ast.${ruleName}`, {
+            id: varr("ID"),
+            parentID: varr("ParentID"),
+            span: varr("S"),
+            text: varr("T"),
+          }),
+        ])
+      )
+    )
+  );
 }
 
 function recur(state: State, tree: RuleTree, parentID: number): number {

@@ -21,7 +21,7 @@ import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
 import { Rec } from "../../core/types";
 import { BareTerm } from "../../uiCommon/dl/replViews";
-import { declareTables, flatten } from "../../parserlib/flatten";
+import { getAllStatements } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
@@ -112,9 +112,8 @@ function Playground() {
     try {
       traceTree = parse(grammar, "main", langSource);
       ruleTree = extractRuleTree(traceTree);
-      flattened = flatten(ruleTree, langSource);
-      finalInterp = finalInterp.evalStmts(declareTables(grammar))[1];
-      finalInterp = finalInterp.insertAll(flattened);
+      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
+      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
       finalInterp = ensureHighlightSegmentTable(finalInterp);
     } catch (e) {
       langParseError = e.toString();
