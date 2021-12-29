@@ -1,3 +1,5 @@
+# === highlight ===
+
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.ident{type: T, span: S, highlight: H} |
   hl.keyword{type: T, span: S, highlight: H} |
@@ -31,20 +33,30 @@ hl.gotoLabelHighlighted{
   ast.gotoInstr{id: GotoID} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-defn.goto{blockID: BlockID, instrID: InstrID, to: ToName} :-
+# === defn ===
+
+defn.goto{blockID: BlockID, instrID: InstrID, to: ToName, labelSpan: S} :-
   ast.ident{text: ToName, parentID: LabelID} &
-  ast.label{id: LabelID, parentID: GotoInstrID} &
+  ast.label{id: LabelID, parentID: GotoInstrID, span: S} &
   ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
   ast.instr{id: InstrID, parentID: BlockID}.
 
-defn.block{id: BlockID, name: N} :-
+defn.block{id: BlockID, name: N, span: S} :-
   ast.block{id: BlockID} &
   ast.label{id: LabelID, parentID: BlockID} &
-  ast.ident{parentID: LabelID, text: N}.
+  ast.ident{parentID: LabelID, text: N, span: S}.
+
+# === IDE ===
+
+ide.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
+  defn.block{span: DL, name: N} &
+  defn.goto{labelSpan: UL, to: N}.
 
 ide.jump{from: BF, to: BT} :-
   defn.goto{blockID: BlockID, to: BT} &
   defn.block{id: BlockID, name: BF}.
+
+# === viz ===
 
 internal.visualization{
   name: "Jumps",
