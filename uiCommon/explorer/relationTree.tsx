@@ -81,11 +81,17 @@ export function RelationTree(props: {
                   <span
                     key={rel.name}
                     style={styles.tab({
-                      selected: rel.name === props.curRelationName,
+                      selected: isPinned,
                       highlighted:
                         isHighlightedRelation || isRelationOfHighlightedTerm,
                     })}
-                    onClick={() => props.setCurRelationName(rel.name)}
+                    onClick={() =>
+                      props.setPinned(
+                        isPinned
+                          ? remove(props.pinned, rel.name)
+                          : [...props.pinned, rel.name]
+                      )
+                    }
                     // TODO: would be nice to factor out these handlers
                     onMouseOver={() =>
                       props.highlight.setHighlight({
@@ -97,17 +103,6 @@ export function RelationTree(props: {
                   >
                     {lastItem(rel.name.split("."))}
                   </span>
-                  <button
-                    onClick={() =>
-                      props.setPinned(
-                        isPinned
-                          ? remove(props.pinned, rel.name)
-                          : [...props.pinned, rel.name]
-                      )
-                    }
-                  >
-                    pin
-                  </button>
                 </>
               );
             }

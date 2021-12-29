@@ -16,14 +16,16 @@ export function RelationTableContainer(props: {
 }) {
   return (
     <>
-      <h3>Pinned</h3>
+      {props.pinned.length === 0 ? (
+        <em>Click a relation on the left to open it.</em>
+      ) : null}
       {props.pinned.map((name) => (
         <div key={name}>
           <h4>
-            {name}{" "}
             <button onClick={() => props.setPinned(remove(props.pinned, name))}>
-              unpin
-            </button>
+              x
+            </button>{" "}
+            {name}
           </h4>
           <RelationTable
             relation={name}
@@ -34,15 +36,6 @@ export function RelationTableContainer(props: {
           />
         </div>
       ))}
-      <h3>Main</h3>
-      <h4>{props.relation}</h4>
-      <RelationTable
-        relation={props.relation}
-        collapseState={props.collapseState}
-        setCollapseState={props.setCollapseState}
-        highlight={props.highlight}
-        interp={props.interp}
-      />
     </>
   );
 }

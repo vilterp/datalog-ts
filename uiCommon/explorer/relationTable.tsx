@@ -26,6 +26,9 @@ export function RelationTable(props: {
   highlight: HighlightProps;
 }) {
   const relation = props.interp.getRelation(props.relation);
+  if (relation === null) {
+    return <em>{props.relation} not found.</em>;
+  }
   let error: string = "";
   let results: Res[] = [];
   try {
