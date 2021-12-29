@@ -19,8 +19,6 @@ import { ruleTreeToTree, renderRuleNode } from "../../parserlib/pretty";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
-import { Rec } from "../../core/types";
-import { BareTerm } from "../../uiCommon/dl/replViews";
 import { getAllStatements } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
@@ -105,7 +103,6 @@ function Playground() {
   let traceTree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let langParseError: string = null;
-  let flattened: Rec[] = [];
   let finalInterp: AbstractInterpreter = interpWithRules;
 
   if (allGrammarErrors.length === 0) {
