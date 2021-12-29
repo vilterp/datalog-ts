@@ -6,7 +6,7 @@ import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
 import { sortBy, toggle } from "../../util/util";
-import { RelationTableContainer } from "./relationTableContainer";
+import { OpenRelationsContainer } from "./openRelationsContainer";
 import { RelationCollapseStates } from "./types";
 
 export function Explorer(props: {
@@ -75,13 +75,13 @@ export function Explorer(props: {
         />
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
-        <RelationTableContainer
+        <OpenRelationsContainer
           interp={props.interp}
           highlight={highlightProps}
           collapseStates={relationCollapseStates}
           setCollapseStates={setRelationCollapseStates}
-          pinned={openRelations}
-          setPinned={setOpenRelations}
+          open={openRelations}
+          setOpen={setOpenRelations}
         />
       </div>
       {props.showViz ? (

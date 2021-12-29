@@ -5,23 +5,23 @@ import { HighlightProps } from "../dl/term";
 import { RelationTable } from "./relationTable";
 import { RelationCollapseStates, TableCollapseState } from "./types";
 
-export function RelationTableContainer(props: {
+export function OpenRelationsContainer(props: {
   interp: AbstractInterpreter;
   collapseStates: RelationCollapseStates;
   setCollapseStates: (c: RelationCollapseStates) => void;
   highlight: HighlightProps;
-  pinned: string[];
-  setPinned: (p: string[]) => void;
+  open: string[];
+  setOpen: (p: string[]) => void;
 }) {
   return (
     <>
-      {props.pinned.length === 0 ? (
+      {props.open.length === 0 ? (
         <em>Click a relation on the left to open it.</em>
       ) : null}
-      {props.pinned.map((name) => (
+      {props.open.map((name) => (
         <div key={name}>
           <h4 style={{ fontFamily: "monospace" }}>
-            <button onClick={() => props.setPinned(remove(props.pinned, name))}>
+            <button onClick={() => props.setOpen(remove(props.open, name))}>
               x
             </button>{" "}
             {/* TODO: only show name for tables */}

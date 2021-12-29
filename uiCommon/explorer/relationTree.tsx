@@ -73,16 +73,13 @@ export function RelationTree(props: {
                 highlight.type === "Term" &&
                 highlight.term.type === "Record" &&
                 highlight.term.relation === rel.name;
-              const isPinned = contains(
-                props.openRelations,
-                item.relation.name
-              );
+              const isOpen = contains(props.openRelations, item.relation.name);
               return (
                 <>
                   <span
                     key={rel.name}
                     style={styles.tab({
-                      selected: isPinned,
+                      selected: isOpen,
                       highlighted:
                         isHighlightedRelation || isRelationOfHighlightedTerm,
                     })}
