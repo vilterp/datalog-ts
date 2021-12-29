@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useMemo } from "react";
 import * as ReactDOM from "react-dom";
 import { grammarToDL, inputToDL } from "../../parserlib/datalog/genDatalog";
 import { Explorer } from "../../uiCommon/explorer";
@@ -19,17 +19,10 @@ function Main() {
     INITIAL_GRAMMAR_TEXT
   );
 
-  let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
-  interp = interp.evalStr(parseDL)[1];
-  const grammarParsed = parseGrammar(grammarSource);
-  const records = grammarToDL(grammarParsed);
-  interp = interp.insertAll(records);
-  let error: Error = null;
-  try {
-    interp = interp.insertAll(inputToDL(source));
-  } catch (e) {
-    error = e;
-  }
+  const { interp, error } = useMemo(
+    () => constructInterp({ grammarSource, source }),
+    [grammarSource, source]
+  );
 
   return (
     <>
@@ -64,6 +57,27 @@ function Main() {
       <Explorer interp={interp} showViz />
     </>
   );
+}
+
+function constructInterp({
+  grammarSource,
+  source,
+}: {
+  grammarSource: string;
+  source: string;
+}) {
+  let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
+  interp = interp.evalStr(parseDL)[1];
+  const grammarParsed = parseGrammar(grammarSource);
+  const records = grammarToDL(grammarParsed);
+  interp = interp.insertAll(records);
+  let error: Error = null;
+  try {
+    interp = interp.insertAll(inputToDL(source));
+  } catch (e) {
+    error = e;
+  }
+  return { interp, error };
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
