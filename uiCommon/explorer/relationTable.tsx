@@ -16,29 +16,27 @@ import { BareTerm } from "../dl/replViews";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs, uniqBy } from "../../util/util";
-
-export type TableCollapseState = {
-  [key: string]: TreeCollapseState;
-};
+import { TableCollapseState } from "./types";
 
 export function RelationTable(props: {
-  relation: Relation;
+  relation: string;
   interp: AbstractInterpreter;
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
 }) {
+  const relation = props.interp.getRelation(props.relation);
   let error: string = "";
   let results: Res[] = [];
   try {
     results =
-      props.relation.type === "Table"
-        ? props.interp.queryRec(rec(props.relation.name, {})).map((res) => ({
+      relation.type === "Table"
+        ? props.interp.queryRec(rec(relation.name, {})).map((res) => ({
             term: res.term,
             bindings: {},
             trace: { type: "BaseFactTrace", fact: res.term },
           }))
-        : props.interp.queryRec(props.relation.rule.head);
+        : props.interp.queryRec(relation.rule.head);
   } catch (e) {
     error = e.toString();
     console.error(e);
@@ -46,16 +44,16 @@ export function RelationTable(props: {
   const fields =
     results.length === 0
       ? []
-      : (props.relation.type === "Rule"
-          ? Object.keys(props.relation.rule.head.attrs)
+      : (relation.type === "Rule"
+          ? Object.keys(relation.rule.head.attrs)
           : Object.keys((results[0].term as Rec).attrs)
         ).sort((a, b) => fieldComparator(a).localeCompare(fieldComparator(b)));
   // TODO: make this more resilient in the face of records that don't
   //   all have the same fields.
   return (
     <>
-      {props.relation.type === "Rule" ? (
-        <RuleC highlight={props.highlight} rule={props.relation.rule} />
+      {relation.type === "Rule" ? (
+        <RuleC highlight={props.highlight} rule={relation.rule} />
       ) : null}
       {results.length === 0 ? (
         error === "" ? (
@@ -114,7 +112,7 @@ export function RelationTable(props: {
                         : "",
                     }}
                   >
-                    {props.relation.type === "Rule" && result.trace ? (
+                    {relation.type === "Rule" && result.trace ? (
                       <td>{icon}</td>
                     ) : (
                       <td />

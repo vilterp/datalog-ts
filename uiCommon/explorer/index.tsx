@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import useHashParam from "use-hash-param";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation, Term } from "../../core/types";
-import { RelationTable, TableCollapseState } from "./relationTable";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
 import { sortBy } from "../../util/util";
+import { RelationTableContainer } from "./relationTableContainer";
+import { TableCollapseState } from "./types";
 
 type RelationCollapseStates = { [key: string]: TableCollapseState };
 
@@ -45,19 +46,20 @@ export function Explorer(props: {
     childPaths: [],
   };
 
-  const [curRelationName, setCurRelationName]: [
-    string,
-    (v: string) => void
-  ] = useHashParam(
-    "relation",
-    allRelations.length === 0 ? null : allRelations[0].name
+  const [curRelationName, setCurRelationName]: [string, (v: string) => void] =
+    useHashParam(
+      "relation",
+      allRelations.length === 0 ? null : allRelations[0].name
+    );
+  const [relationCollapseStates, setRelationCollapseStates] =
+    useJSONLocalStorage<RelationCollapseStates>(
+      "explorer-relation-table-collapse-state",
+      {}
+    );
+  const [pinned, setPinned] = useJSONLocalStorage<string[]>(
+    "explorer-pinned-state",
+    []
   );
-  const [
-    relationCollapseStates,
-    setRelationCollapseStates,
-  ] = useJSONLocalStorage<RelationCollapseStates>("collapse-state", {});
-
-  const curRelation = allRelations.find((r) => r.name === curRelationName);
 
   return (
     <div style={{ display: "flex" }}>
@@ -76,12 +78,14 @@ export function Explorer(props: {
           highlight={highlightProps}
           curRelationName={curRelationName}
           setCurRelationName={setCurRelationName}
+          pinned={pinned}
+          setPinned={setPinned}
         />
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
-        {curRelation ? (
-          <RelationTable
-            relation={curRelation}
+        {curRelationName ? (
+          <RelationTableContainer
+            relation={curRelationName}
             interp={props.interp}
             highlight={highlightProps}
             collapseState={relationCollapseStates[curRelationName] || {}}
@@ -91,6 +95,8 @@ export function Explorer(props: {
                 [curRelationName]: st,
               })
             }
+            pinned={pinned}
+            setPinned={setPinned}
           />
         ) : (
           <em>No relations</em>
