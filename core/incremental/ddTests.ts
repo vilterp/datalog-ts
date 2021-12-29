@@ -15,7 +15,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["buildBinExpr", buildTest],
     ["eval", evalTest],
     ["eval2", evalTest],
-    // ["eval3", evalTest],
+    ["eval3", evalTest],
     ["family", evalTest],
     // ["indexes", evalTest],
     // ["siblings", evalTest],
