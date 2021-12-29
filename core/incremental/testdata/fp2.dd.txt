@@ -1,0 +1,7 @@
+.load apps/fp/dl/ast.dl
+----
+application/datalog
+
+.load apps/fp/dl/typecheck.dl
+----
+application/datalog

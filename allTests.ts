@@ -41,7 +41,7 @@ try {
   console.error(e.message);
   if (!stayAlive) {
     console.log("exiting");
-    process.exit(-1);
+    process.exit(1);
   }
 }
 

@@ -1,7 +1,38 @@
-.load ../../testdata/family_rules.dl
+.load core/testdata/family_rules.dl
 ----
 application/datalog
 
-.load ../../testdata/family_facts.dl
+mother{child: "Pete", mother: "Mary"}.
 ----
-application/datalog
+text/plain
+mother: [mother{child: "Pete", mother: "Mary"}; {}]
+4: [mother{child: "Pete", mother: "Mary"}; {B: "Pete", C: "Mary"}]
+10: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+12: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}]
+5: []
+9: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
+14: []
+parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
+0: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
+3: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
+6: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
+7: [parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}]
+19: [parent{child: "Pete", parent: "Mary"}; {L: "Pete", P1: "Mary"}]
+22: [parent{child: "Pete", parent: "Mary"}; {P2: "Mary", R: "Pete"}]
+24: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
+27: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
+37: [parent{child: "Pete", parent: "Mary"}; {X: "Pete", Z: "Mary"}]
+38: [parent{child: "Pete", parent: "Mary"}; {X: "Pete", Y: "Mary"}]
+2: []
+5: []
+8: []
+8: []
+21: []
+23: []
+26: []
+29: []
+36: [parent{child: "Pete", parent: "Mary"}; {X: "Pete", Z: "Mary"}]
+40: []
+ancestor: [ancestor{an: "Mary", desc: "Pete"}; {X: "Pete", Z: "Mary"}]
+39: [ancestor{an: "Mary", desc: "Pete"}; {Y: "Pete", Z: "Mary"}]
+40: []

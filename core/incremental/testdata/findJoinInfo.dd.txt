@@ -1,0 +1,73 @@
+father{child: A, father: B}
+father{child: B, father: C}
+----
+application/json
+{
+  "leftVars": {
+    "A": [
+      "child"
+    ],
+    "B": [
+      "father"
+    ]
+  },
+  "rightVars": {
+    "B": [
+      "child"
+    ],
+    "C": [
+      "father"
+    ]
+  },
+  "join": {
+    "B": {
+      "varName": "B",
+      "leftAttr": [
+        "father"
+      ],
+      "rightAttr": [
+        "child"
+      ]
+    }
+  }
+}
+
+tc.Type{id: FID, type: tapp{from: F, to: T}}
+tc.Type{id: AID, type: F}
+----
+application/json
+{
+  "leftVars": {
+    "FID": [
+      "id"
+    ],
+    "F": [
+      "type",
+      "from"
+    ],
+    "T": [
+      "type",
+      "to"
+    ]
+  },
+  "rightVars": {
+    "AID": [
+      "id"
+    ],
+    "F": [
+      "type"
+    ]
+  },
+  "join": {
+    "F": {
+      "varName": "F",
+      "leftAttr": [
+        "type",
+        "from"
+      ],
+      "rightAttr": [
+        "type"
+      ]
+    }
+  }
+}
