@@ -74,7 +74,6 @@ export function BareTerm(props: { term: Term }) {
         highlight={noHighlightProps}
         term={makeTermWithBindings(props.term, {})}
       />
-      .
     </span>
   );
 }

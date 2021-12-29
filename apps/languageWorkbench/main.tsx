@@ -206,20 +206,6 @@ function Playground() {
           }
         />
         <CollapsibleWithHeading
-          heading="Flattened"
-          content={
-            <>
-              <ul>
-                {flattened.map((record, idx) => (
-                  <li key={idx}>
-                    <BareTerm term={record} />
-                  </li>
-                ))}
-              </ul>
-            </>
-          }
-        />
-        <CollapsibleWithHeading
           heading="Trace Tree"
           content={
             <>

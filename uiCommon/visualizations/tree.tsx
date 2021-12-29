@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tree } from "../../util/tree";
-import { Int, Rec, StringLit, Term } from "../../core/types";
+import { Int, Rec, Res, StringLit, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { emptyCollapseState, TreeView } from "../generic/treeView";
@@ -20,9 +20,7 @@ function TreeViz(props: {
   const [collapseState, setCollapseState] = useState(emptyCollapseState);
   try {
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
-    const nodesRes = props.interp
-      .queryStr(nodesQuery)
-      .map((res) => res.term) as Rec[];
+    const nodesRes = props.interp.queryStr(nodesQuery);
     const tree = treeFromRecords(nodesRes, -1);
     console.log({ tree });
     return (
@@ -31,7 +29,13 @@ function TreeViz(props: {
         setCollapseState={setCollapseState}
         hideRoot={true}
         tree={tree}
-        render={({ item }) => <BareTerm term={item} />}
+        render={({ item }) =>
+          item.bindings.Display ? (
+            <BareTerm term={item.bindings.Display} />
+          ) : (
+            "(missing Display)"
+          )
+        }
       />
     );
   } catch (e) {
@@ -41,7 +45,7 @@ function TreeViz(props: {
   }
 }
 
-type TermGraph = { [parentTerm: string]: Rec[] };
+type TermGraph = { [parentTerm: string]: Res[] };
 
 // currently dead
 // TODO: use this for "viz suggestions"
@@ -53,11 +57,11 @@ export function canTreeViz(rec: Rec): boolean {
 // query: something{id: C, parent: P}.
 // TODO: maybe specify a variable, and grab that binding?
 //   showing whole record is a bit noisy
-export function treeFromRecords(records: Rec[], rootTerm: number): Tree<Rec> {
+export function treeFromRecords(records: Res[], rootTerm: number): Tree<Res> {
   const graph: TermGraph = {};
-  records.forEach((rec) => {
-    const parentID = (rec.attrs.parentID as Int).val;
-    const newChildren = [...(graph[parentID] || []), rec];
+  records.forEach((res) => {
+    const parentID = (res.bindings.ParentID as Int).val;
+    const newChildren = [...(graph[parentID] || []), res];
     graph[parentID] = newChildren;
   });
   return mkTree(graph, rootTerm, null);
@@ -66,13 +70,13 @@ export function treeFromRecords(records: Rec[], rootTerm: number): Tree<Rec> {
 function mkTree(
   termGraph: TermGraph,
   curID: number,
-  curRec: Rec | null
-): Tree<Rec> {
+  curRes: Res | null
+): Tree<Res> {
   return {
     key: curID.toString(),
-    item: curRec,
+    item: curRes,
     children: (termGraph[curID] || []).map((child) =>
-      mkTree(termGraph, (child.attrs.id as Int).val, child)
+      mkTree(termGraph, (child.bindings.ID as Int).val, child)
     ),
   };
 }
