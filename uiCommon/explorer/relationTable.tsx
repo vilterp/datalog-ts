@@ -1,18 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { ppr, ppt } from "../../core/pretty";
-import { Rec, Res, Relation, rec } from "../../core/types";
+import { Rec, Res, rec } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import {
-  TreeCollapseState,
-  TreeView,
-  emptyCollapseState,
-} from "../generic/treeView";
+import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
 import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../dl/term";
 import { TraceGraphView } from "../dl/trace";
-import { canTreeViz, treeFromRecords } from "../visualizations/tree";
-import { BareTerm } from "../dl/replViews";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs, uniqBy } from "../../util/util";
@@ -162,37 +156,8 @@ export function RelationTable(props: {
           </tbody>
         </table>
       )}
-      <PossibleTreeViz results={results} />
     </>
   );
-}
-
-// TODO: phase out in favor of explorer's viz capabilities
-function PossibleTreeViz(props: { results: Res[] }) {
-  if (props.results.length === 0) {
-    return null;
-  }
-  if (!canTreeViz(props.results[0].term as Rec)) {
-    return null;
-  }
-  const tree = treeFromRecords(
-    props.results.map((res) => res.term as Rec),
-    "0" // TODO: configurable root node
-  );
-  const [collapseState, setCollapseState] = useState(emptyCollapseState);
-  return canTreeViz(props.results[0].term as Rec) ? (
-    <div style={{ marginTop: 15 }}>
-      Data as tree:
-      <TreeView
-        tree={tree}
-        render={(node) =>
-          node.item ? <BareTerm term={node.item} /> : "<root>"
-        }
-        collapseState={collapseState}
-        setCollapseState={setCollapseState}
-      />
-    </div>
-  ) : null;
 }
 
 function fieldComparator(field: string): string {
