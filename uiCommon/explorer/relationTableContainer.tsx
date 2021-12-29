@@ -21,10 +21,11 @@ export function RelationTableContainer(props: {
       ) : null}
       {props.pinned.map((name) => (
         <div key={name}>
-          <h4>
+          <h4 style={{ fontFamily: "monospace" }}>
             <button onClick={() => props.setPinned(remove(props.pinned, name))}>
               x
             </button>{" "}
+            {/* TODO: only show name for tables */}
             {name}
           </h4>
           <RelationTable
