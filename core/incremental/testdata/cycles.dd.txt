@@ -8,21 +8,6 @@ edge{from: F, to: T} :-
 ----
 text/plain
 
-.rulegraph
-----
-application/graphviz
-digraph G {
-  "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
-  "1" [fillcolor="thistle" label="1: edge: Join(I: edge.from = baseEdge.to) []" shape="box" style="filled"];
-  "baseEdge" [fillcolor="darksalmon" label="baseEdge:  [to]" shape="box" style="filled"];
-  "edge" [fillcolor="lightblue" label="edge: Subst({from: F, to: T}) [from]" shape="box" style="filled"];
-  "0" -> "edge" [];
-  "1" -> "0" [];
-  "baseEdge" -> "0" [];
-  "baseEdge" -> "1" [];
-  "edge" -> "1" [];
-}
-
 baseEdge{from: "A", to: "B"}.
 ----
 text/plain
