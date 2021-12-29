@@ -25,7 +25,7 @@ export function incrTests(writeResults: boolean): Suite {
     // ["fp", evalTest],
     // ["fp2", evalTest],
     // ["fp3", evalTest],
-    // ["findJoinInfo", joinInfoTest],
+    ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
     name,
@@ -45,7 +45,7 @@ function joinInfoTest(test: string[]): TestOutput[] {
     const leftStmt = parseRecord(left);
     const rightStmt = parseRecord(right);
     const res = getJoinInfo(leftStmt, rightStmt);
-    return jsonOut(JSON.stringify(res, null, 2));
+    return jsonOut(res);
   });
 }
 
