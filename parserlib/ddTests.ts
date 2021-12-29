@@ -16,6 +16,7 @@ import { nullLoader } from "../core/loaders";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { Rec } from "../core/types";
 import { fsLoader } from "../core/fsLoader";
+import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -136,7 +137,10 @@ function datalogTest(test: string[]): TestOutput[] {
       return datalogOut(grammarRecords.map(ppt).join(".\n") + ".");
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
-      let interp = new SimpleInterpreter(".", fsLoader) as AbstractInterpreter;
+      let interp = new IncrementalInterpreter(
+        ".",
+        fsLoader
+      ) as AbstractInterpreter;
       // load parsing rules
       interp = interp.doLoad("parserlib/datalog/parse.dl");
       // insert grammar as data
