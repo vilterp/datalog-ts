@@ -1,15 +1,14 @@
-import React from "react";
-import { ppr, ppt } from "../../core/pretty";
-import { Rec, Res, rec } from "../../core/types";
+import React, { useMemo } from "react";
+import { Rec, rec } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
 import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../dl/term";
-import { TraceGraphView, TraceTreeView } from "../dl/trace";
+import { TraceTreeView } from "../dl/trace";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
-import { groupBy, objToPairs, uniqBy } from "../../util/util";
+import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
 
 export function RelationTable(props: {
@@ -23,21 +22,21 @@ export function RelationTable(props: {
   if (relation === null) {
     return <em>{props.relation} not found.</em>;
   }
-  let error: string = "";
-  let results: Res[] = [];
-  try {
-    results =
-      relation.type === "Table"
-        ? props.interp.queryRec(rec(relation.name, {})).map((res) => ({
-            term: res.term,
-            bindings: {},
-            trace: { type: "BaseFactTrace", fact: res.term },
-          }))
-        : props.interp.queryRec(relation.rule.head);
-  } catch (e) {
-    error = e.toString();
-    console.error(e);
-  }
+  const [results, error] = useMemo(() => {
+    try {
+      const results =
+        relation.type === "Table"
+          ? props.interp.queryRec(rec(relation.name, {})).map((res) => ({
+              term: res.term,
+              bindings: {},
+              trace: { type: "BaseFactTrace", fact: res.term },
+            }))
+          : props.interp.queryRec(relation.rule.head);
+      return [results, ""];
+    } catch (e) {
+      return [[], e.toString()];
+    }
+  }, [props.interp, props.relation]);
   const fields =
     results.length === 0
       ? []
