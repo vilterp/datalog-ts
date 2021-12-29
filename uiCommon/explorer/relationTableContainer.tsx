@@ -3,13 +3,12 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { remove } from "../../util/util";
 import { HighlightProps } from "../dl/term";
 import { RelationTable } from "./relationTable";
-import { TableCollapseState } from "./types";
+import { RelationCollapseStates, TableCollapseState } from "./types";
 
 export function RelationTableContainer(props: {
-  relation: string;
   interp: AbstractInterpreter;
-  collapseState: TableCollapseState;
-  setCollapseState: (c: TableCollapseState) => void;
+  collapseStates: RelationCollapseStates;
+  setCollapseStates: (c: RelationCollapseStates) => void;
   highlight: HighlightProps;
   pinned: string[];
   setPinned: (p: string[]) => void;
@@ -30,8 +29,10 @@ export function RelationTableContainer(props: {
           </h4>
           <RelationTable
             relation={name}
-            collapseState={props.collapseState}
-            setCollapseState={props.setCollapseState}
+            collapseState={props.collapseStates[name] || {}}
+            setCollapseState={(st: TableCollapseState) =>
+              props.setCollapseStates({ ...props.collapseStates, [name]: st })
+            }
             highlight={props.highlight}
             interp={props.interp}
           />

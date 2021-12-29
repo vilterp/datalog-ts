@@ -14,11 +14,9 @@ import * as styles from "./styles";
 export function RelationTree(props: {
   allRules: Relation[];
   allTables: Relation[];
-  curRelationName: string;
-  setCurRelationName: (s: string) => void;
   highlight: HighlightProps;
-  pinned: string[];
-  setPinned: (p: string[]) => void;
+  openRelations: string[];
+  setOpenRelations: (p: string[]) => void;
 }) {
   const [relTreeCollapseState, setRelTreeCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
@@ -75,7 +73,10 @@ export function RelationTree(props: {
                 highlight.type === "Term" &&
                 highlight.term.type === "Record" &&
                 highlight.term.relation === rel.name;
-              const isPinned = contains(props.pinned, item.relation.name);
+              const isPinned = contains(
+                props.openRelations,
+                item.relation.name
+              );
               return (
                 <>
                   <span
@@ -86,7 +87,9 @@ export function RelationTree(props: {
                         isHighlightedRelation || isRelationOfHighlightedTerm,
                     })}
                     onClick={() =>
-                      props.setPinned(toggle(props.pinned, rel.name))
+                      props.setOpenRelations(
+                        toggle(props.openRelations, rel.name)
+                      )
                     }
                     // TODO: would be nice to factor out these handlers
                     onMouseOver={() =>
