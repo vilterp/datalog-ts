@@ -74,94 +74,96 @@ export function RelationTable(props: {
           </thead>
           <tbody>
             {/* TODO: preserve order? */}
-            {objToPairs(groupBy(results, ppr)).map(([_, results], idx) => {
-              const result = results[0];
-              const sameResultCount = results.length;
-              const key = ppt(result.term);
-              const rowCollapseState: TreeCollapseState = props.collapseState[
-                key
-              ] || { collapsed: true, childStates: {} };
-              const toggleRowCollapsed = () => {
-                props.setCollapseState({
-                  ...props.collapseState,
-                  [key]: {
-                    ...rowCollapseState,
-                    collapsed: !rowCollapseState.collapsed,
-                  },
-                });
-              };
-              const icon = rowCollapseState.collapsed ? ">" : "v";
-              const highlight = props.highlight.highlight;
-              const isHighlighted =
-                highlight.type === "Term" &&
-                highlight.term.type === "Record" &&
-                jsonEq(result.term, highlight.term);
-              return (
-                <React.Fragment key={`${idx}-${key}`}>
-                  <tr
-                    onClick={toggleRowCollapsed}
-                    style={{
-                      cursor: "pointer",
-                      fontFamily: "monospace",
-                      backgroundColor: isHighlighted
-                        ? styles.highlightColor
-                        : "",
-                    }}
-                  >
-                    {relation.type === "Rule" && result.trace ? (
-                      <td>{icon}</td>
-                    ) : (
-                      <td />
-                    )}
-                    {fields.map((field) => (
-                      <td
-                        key={field}
-                        style={{
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                          borderLeft: "1px solid lightgrey",
-                          borderRight: "1px solid lightgrey",
-                        }}
-                      >
-                        <TermView
-                          term={makeTermWithBindings(
-                            (result.term as Rec).attrs[field],
-                            {}
-                          )}
-                          highlight={{
-                            highlight: noHighlight,
-                            setHighlight: () => {},
-                            childPaths: [],
-                            parentPaths: [],
+            {objToPairs(groupBy(results, JSON.stringify)).map(
+              ([_, results], idx) => {
+                const result = results[0];
+                const sameResultCount = results.length;
+                const key = JSON.stringify(result);
+                const rowCollapseState: TreeCollapseState = props.collapseState[
+                  key
+                ] || { collapsed: true, childStates: {} };
+                const toggleRowCollapsed = () => {
+                  props.setCollapseState({
+                    ...props.collapseState,
+                    [key]: {
+                      ...rowCollapseState,
+                      collapsed: !rowCollapseState.collapsed,
+                    },
+                  });
+                };
+                const icon = rowCollapseState.collapsed ? ">" : "v";
+                const highlight = props.highlight.highlight;
+                const isHighlighted =
+                  highlight.type === "Term" &&
+                  highlight.term.type === "Record" &&
+                  jsonEq(result.term, highlight.term);
+                return (
+                  <React.Fragment key={`${idx}-${key}`}>
+                    <tr
+                      onClick={toggleRowCollapsed}
+                      style={{
+                        cursor: "pointer",
+                        fontFamily: "monospace",
+                        backgroundColor: isHighlighted
+                          ? styles.highlightColor
+                          : "",
+                      }}
+                    >
+                      {relation.type === "Rule" && result.trace ? (
+                        <td>{icon}</td>
+                      ) : (
+                        <td />
+                      )}
+                      {fields.map((field) => (
+                        <td
+                          key={field}
+                          style={{
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                            borderLeft: "1px solid lightgrey",
+                            borderRight: "1px solid lightgrey",
                           }}
-                          scopePath={[]}
-                        />
-                      </td>
-                    ))}
-                    <td>
-                      {sameResultCount > 1 ? `(${sameResultCount})` : null}
-                    </td>
-                  </tr>
-                  {rowCollapseState.collapsed || !result.trace ? null : (
-                    <tr>
-                      <td colSpan={fields.length + 1}>
-                        <TraceTreeView
-                          result={result}
-                          highlight={props.highlight}
-                          collapseState={rowCollapseState}
-                          setCollapseState={(st) =>
-                            props.setCollapseState({
-                              ...props.collapseState,
-                              [key]: st,
-                            })
-                          }
-                        />
+                        >
+                          <TermView
+                            term={makeTermWithBindings(
+                              (result.term as Rec).attrs[field],
+                              {}
+                            )}
+                            highlight={{
+                              highlight: noHighlight,
+                              setHighlight: () => {},
+                              childPaths: [],
+                              parentPaths: [],
+                            }}
+                            scopePath={[]}
+                          />
+                        </td>
+                      ))}
+                      <td>
+                        {sameResultCount > 1 ? `(${sameResultCount})` : null}
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
+                    {rowCollapseState.collapsed || !result.trace ? null : (
+                      <tr>
+                        <td colSpan={fields.length + 1}>
+                          <TraceTreeView
+                            result={result}
+                            highlight={props.highlight}
+                            collapseState={rowCollapseState}
+                            setCollapseState={(st) =>
+                              props.setCollapseState({
+                                ...props.collapseState,
+                                [key]: st,
+                              })
+                            }
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              }
+            )}
           </tbody>
         </table>
       )}
