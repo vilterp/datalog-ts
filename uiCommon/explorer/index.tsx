@@ -5,7 +5,7 @@ import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
-import { sortBy, toggle } from "../../util/util";
+import { contains, ensurePresent, sortBy, toggle } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
 import { RelationCollapseStates } from "./types";
 
@@ -52,7 +52,7 @@ export function Explorer(props: {
     parentPaths: [],
     childPaths: [],
     onClickRelation: (name: string) =>
-      setOpenRelations(toggle(openRelations, name)),
+      setOpenRelations(ensurePresent(openRelations, name)),
   };
 
   return (

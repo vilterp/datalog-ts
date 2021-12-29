@@ -120,6 +120,9 @@ export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
   return out;
 }
 
+// list-as-set ops
+// TODO: maybe use a set instead? have to serialize to JSON...
+
 export function contains<T>(arr: T[], item: T): boolean {
   return arr.some((thing) => thing === item);
 }
@@ -131,6 +134,15 @@ export function remove<T>(arr: T[], item: T): T[] {
 export function toggle<T>(arr: T[], item: T): T[] {
   return contains(arr, item) ? remove(arr, item) : [...arr, item];
 }
+
+export function ensurePresent<T>(arr: T[], item: T): T[] {
+  if (contains(arr, item)) {
+    return arr;
+  }
+  return [...arr, item];
+}
+
+// end list-as-set ops
 
 export function arrayEq<T>(
   a: T[],

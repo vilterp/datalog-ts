@@ -1,7 +1,13 @@
 import React from "react";
 import { Relation } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
-import { contains, lastItem, remove, toggle } from "../../util/util";
+import {
+  contains,
+  ensurePresent,
+  lastItem,
+  remove,
+  toggle,
+} from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
 import { useBoolLocalStorage, useJSONLocalStorage } from "../generic/hooks";
 import {
@@ -85,7 +91,7 @@ export function RelationTree(props: {
                     })}
                     onClick={() =>
                       props.setOpenRelations(
-                        toggle(props.openRelations, rel.name)
+                        ensurePresent(props.openRelations, rel.name)
                       )
                     }
                     // TODO: would be nice to factor out these handlers

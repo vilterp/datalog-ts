@@ -1,6 +1,7 @@
 import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit, Term } from "../../core/types";
+import { CollapsibleWithHeading } from "../generic/collapsible";
 import { VIZ_REGISTRY } from "../visualizations";
 
 export function VizArea(props: {
@@ -37,18 +38,20 @@ function IndividualViz(props: {
 }) {
   const viz = VIZ_REGISTRY[props.spec.relation];
   return (
-    <>
-      <h4>{props.name}</h4>
-      {viz ? (
-        <viz.component
-          interp={props.interp}
-          spec={props.spec}
-          setHighlightedTerm={props.setHighlightedTerm}
-        />
-      ) : (
-        <pre>viz {props.spec.relation} not found</pre>
-      )}
-    </>
+    <CollapsibleWithHeading
+      heading={props.name}
+      content={
+        viz ? (
+          <viz.component
+            interp={props.interp}
+            spec={props.spec}
+            setHighlightedTerm={props.setHighlightedTerm}
+          />
+        ) : (
+          <pre>viz {props.spec.relation} not found</pre>
+        )
+      }
+    />
   );
 }
 
