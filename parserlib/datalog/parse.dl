@@ -18,17 +18,9 @@ parse.edgeMatch{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} :-
   parse.ruleMatch{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} |
   parse.unlabelledEdgeMatch{fromNode: N1, toNode: N2, startChar: C1, endChar: C2}.
 
-parse.unlabelledEdgeMatch{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} :-
-  parse.unlabeledEdgeMatch1{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} |
-  parse.unlabeledEdgeMatch2{fromNode: N1, toNode: N2, startChar: C1, endChar: C2}.
-
-parse.unlabeledEdgeMatch1{fromNode: N1, toNode: N2, startChar: C1, endChar: C1} :-
+parse.unlabelledEdgeMatch{fromNode: N1, toNode: N2, startChar: C1, endChar: C1} :-
   grammar.unlabeledEdge{from: N1, to: N2} &
-  parse.path{fromNode: N2, toNode: N3, startChar: C1, endChar: C2}.
-
-parse.unlabeledEdgeMatch2{fromNode: N2, toNode: N3, startChar: C2, endChar: C2} :-
-  grammar.unlabeledEdge{from: N2, to: N3} &
-  parse.path{fromNode: N1, toNode: N2, startChar: C1, endChar: C2}.
+  input.char{id: C1}.
 
 parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C2} :-
   grammar.edge{from: N1, to: N2, label: C} &

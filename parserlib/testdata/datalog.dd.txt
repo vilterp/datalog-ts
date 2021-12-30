@@ -42,6 +42,7 @@ input
 foo
 ----
 application/datalog
+parse.fullMatch{}.
 
 input
 foobar
@@ -52,6 +53,7 @@ input
 foobarfoo
 ----
 application/datalog
+parse.fullMatch{}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -89,16 +91,19 @@ input
 []
 ----
 application/datalog
+parse.fullMatch{}.
 
 input
 [a]
 ----
 application/datalog
+parse.fullMatch{}.
 
 input
 [a,b,c]
 ----
 application/datalog
+parse.fullMatch{}.
 
 gram
 main :- (foo | bar).
@@ -142,6 +147,7 @@ input
 foo
 ----
 application/datalog
+parse.fullMatch{}.
 
 gram
 main :- repSep([0-9], "").
@@ -164,11 +170,15 @@ input
 1
 ----
 application/datalog
+parse.fullMatch{}.
+parse.fullMatch{}.
 
 input
 1234
 ----
 application/datalog
+parse.fullMatch{}.
+parse.fullMatch{}.
 
 gram
 main :- value.
@@ -349,8 +359,11 @@ input
 [1,2]
 ----
 application/datalog
+parse.fullMatch{}.
 
 input
 {'a':[1,2]}
 ----
 application/datalog
+parse.fullMatch{}.
+parse.fullMatch{}.

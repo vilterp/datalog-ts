@@ -70,16 +70,16 @@ export function parserlibTests(writeResults: boolean): Suite {
         );
       },
     },
-    // {
-    //   name: "datalog",
-    //   test() {
-    //     runDDTestAtPath(
-    //       "parserlib/testdata/datalog.dd.txt",
-    //       datalogTest,
-    //       writeResults
-    //     );
-    //   },
-    // },
+    {
+      name: "datalog",
+      test() {
+        runDDTestAtPath(
+          "parserlib/testdata/datalog.dd.txt",
+          datalogTest,
+          writeResults
+        );
+      },
+    },
     {
       name: "datalogInput",
       test() {
