@@ -34,13 +34,16 @@ parse.unlabeledEdgeMatch2{fromNode: N2, toNode: N3, startChar: C2, endChar: C2} 
   grammar.unlabeledEdge{from: N2, to: N3} &
   parse.path{fromNode: N1, toNode: N2, startChar: C1, endChar: C2}.
 
-parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C1} :-
+parse.charMatch{from: N1, to: N2, startChar: C1, endChar: C2} :-
   grammar.edge{from: N1, to: N2, label: C} &
-  input.char{id: C1, char: C} |
+  input.char{id: C1, char: C} &
+  input.next{left: C1, right: C2}
+  |
   grammar.charRangeEdge{fromChar: FC, toChar: TC, from: N1, to: N2} &
   input.char{id: C1, char: C} &
   FC <= C &
-  C <= TC.
+  C <= TC &
+  input.next{left: C1, right: C2}.
 
 parse.ruleMatch{fromNode: N1, toNode: N4, startChar: C1, endChar: C4, ruleName: R} :-
   grammar.refEdge{fromID: N1, toID: N4, ruleName: R} &
