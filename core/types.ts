@@ -64,7 +64,6 @@ export type Statement =
   | { type: "Insert"; record: Rec }
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string }
-  | { type: "TraceStmt"; record: Rec }
   | { type: "Comment"; comment: string };
 
 export interface Rule {
