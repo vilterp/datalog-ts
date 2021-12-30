@@ -367,3 +367,16 @@ input
 application/datalog
 parse.fullMatch{}.
 parse.fullMatch{}.
+
+input
+{'a':[2,3],'b':{'z':null}}
+----
+application/datalog
+parse.fullMatch{}.
+parse.fullMatch{}.
+parse.fullMatch{}.
+parse.fullMatch{}.
+parse.fullMatch{}.
+parse.fullMatch{}.
+parse.fullMatch{}.
+parse.fullMatch{}.
