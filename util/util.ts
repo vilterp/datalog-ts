@@ -66,6 +66,13 @@ export function mapObjToList<T, V>(
     .map((k) => f(k, obj[k]));
 }
 
+export function mapObjToListUnordered<T, V>(
+  obj: { [key: string]: T },
+  f: (key: string, val: T) => V
+): V[] {
+  return Object.keys(obj).map((k) => f(k, obj[k]));
+}
+
 export function flatMapObjToList<T, V>(
   obj: { [key: string]: T },
   f: (key: string, val: T) => V[]

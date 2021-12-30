@@ -7,11 +7,12 @@ import {
   getRelatedPaths,
   pathToScopePath,
 } from "../../core/traceTree";
-import { mapObjToList, intersperse } from "../../util/util";
+import { intersperse, mapObjToListUnordered } from "../../util/util";
 import { TreeView, TreeCollapseState } from "../generic/treeView";
 import Graphviz from "graphviz-react";
 import { prettyPrintGraph } from "../../util/graphviz";
 import { traceToGraph } from "../../core/traceGraph";
+import { BareTerm } from "./replViews";
 
 const MemoizedGraphviz = React.memo(Graphviz);
 
@@ -61,33 +62,10 @@ export function TraceNode(props: {
 }) {
   const res = props.res;
 
-  const term = (
-    <TermView
-      term={makeTermWithBindings(res.term, res.bindings)}
-      highlight={props.highlight}
-      scopePath={props.scopePath}
-    />
-  );
+  const term = <BareTerm term={res.term} />;
   switch (res.trace.type) {
     case "AndTrace":
       return <>And</>;
-    case "MatchTrace":
-      return <>{term}</>;
-    case "RefTrace":
-      return (
-        <>
-          <TermView
-            term={makeTermWithBindings(res.term, res.bindings)}
-            highlight={props.highlight}
-            scopePath={props.scopePath.slice(0, props.scopePath.length - 1)}
-          />{" "}
-          <VarMappingsView
-            mappings={res.trace.mappings}
-            highlight={props.highlight}
-            innerScopePath={props.scopePath}
-          />
-        </>
-      );
     default:
       return term;
   }
@@ -108,7 +86,7 @@ export function VarMappingsView(props: {
       {"{"}
       {intersperse<React.ReactNode>(
         ", ",
-        mapObjToList(props.mappings, (key, value) => (
+        mapObjToListUnordered(props.mappings, (key, value) => (
           <React.Fragment key={key}>
             <VarC
               name={key}

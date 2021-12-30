@@ -6,7 +6,7 @@ import {
   SituatedBinding,
   Term,
 } from "../../core/types";
-import { intersperse, mapObjToList } from "../../util/util";
+import { intersperse, mapObjToListUnordered } from "../../util/util";
 import { escapeString } from "../../core/pretty";
 
 export type Highlight =
@@ -70,7 +70,7 @@ export function TermView(props: {
           {"{"}
           {intersperse<React.ReactNode>(
             ", ",
-            mapObjToList(term.attrs, (key, valueWithBinding) => (
+            mapObjToListUnordered(term.attrs, (key, valueWithBinding) => (
               <React.Fragment key={key}>
                 {key}:{" "}
                 {valueWithBinding.binding ? (
