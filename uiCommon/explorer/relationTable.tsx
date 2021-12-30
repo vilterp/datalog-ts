@@ -1,16 +1,16 @@
-import React from "react";
-import { ppr, ppt } from "../../core/pretty";
-import { Rec, Res, rec } from "../../core/types";
+import React, { useMemo } from "react";
+import { Rec, rec } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
 import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../dl/term";
-import { TraceGraphView } from "../dl/trace";
+import { TraceTreeView } from "../dl/trace";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
-import { groupBy, objToPairs, uniqBy } from "../../util/util";
+import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
+import { ppr } from "../../core/pretty";
 
 export function RelationTable(props: {
   relation: string;
@@ -23,28 +23,27 @@ export function RelationTable(props: {
   if (relation === null) {
     return <em>{props.relation} not found.</em>;
   }
-  let error: string = "";
-  let results: Res[] = [];
-  try {
-    results =
-      relation.type === "Table"
-        ? props.interp.queryRec(rec(relation.name, {})).map((res) => ({
-            term: res.term,
-            bindings: {},
-            trace: { type: "BaseFactTrace", fact: res.term },
-          }))
-        : props.interp.queryRec(relation.rule.head);
-  } catch (e) {
-    error = e.toString();
-    console.error(e);
-  }
+  const [results, error] = useMemo(() => {
+    try {
+      const results =
+        relation.type === "Table"
+          ? props.interp.queryRec(rec(relation.name, {})).map((res) => ({
+              term: res.term,
+              bindings: {},
+              trace: { type: "BaseFactTrace", fact: res.term },
+            }))
+          : props.interp.queryRec(relation.rule.head);
+      return [results, ""];
+    } catch (e) {
+      return [[], e.toString()];
+    }
+  }, [props.interp, props.relation]);
   const fields =
     results.length === 0
       ? []
-      : (relation.type === "Rule"
-          ? Object.keys(relation.rule.head.attrs)
-          : Object.keys((results[0].term as Rec).attrs)
-        ).sort((a, b) => fieldComparator(a).localeCompare(fieldComparator(b)));
+      : relation.type === "Rule"
+      ? Object.keys(relation.rule.head.attrs)
+      : Object.keys((results[0].term as Rec).attrs);
   // TODO: make this more resilient in the face of records that don't
   //   all have the same fields.
   return (
@@ -78,7 +77,7 @@ export function RelationTable(props: {
             {objToPairs(groupBy(results, ppr)).map(([_, results], idx) => {
               const result = results[0];
               const sameResultCount = results.length;
-              const key = ppt(result.term);
+              const key = JSON.stringify(result);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
               ] || { collapsed: true, childStates: {} };
@@ -146,7 +145,17 @@ export function RelationTable(props: {
                   {rowCollapseState.collapsed || !result.trace ? null : (
                     <tr>
                       <td colSpan={fields.length + 1}>
-                        <TraceGraphView result={result} />
+                        <TraceTreeView
+                          result={result}
+                          highlight={props.highlight}
+                          collapseState={rowCollapseState}
+                          setCollapseState={(st) =>
+                            props.setCollapseState({
+                              ...props.collapseState,
+                              [key]: st,
+                            })
+                          }
+                        />
                       </td>
                     </tr>
                   )}
@@ -158,15 +167,4 @@ export function RelationTable(props: {
       )}
     </>
   );
-}
-
-function fieldComparator(field: string): string {
-  switch (field) {
-    case "id":
-      return "aaaaaa_id";
-    case "location":
-      return "zzzzzz_location";
-    default:
-      return field;
-  }
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import ReactDOM from "react-dom";
 import {
   formatParseError,
@@ -34,21 +34,6 @@ function Main() {
 
 const initInterp = new SimpleInterpreter(".", nullLoader);
 
-function ErrorList(props: { errors: string[] }) {
-  return props.errors.length > 0 ? (
-    <ul>
-      {uniq(props.errors).map((err) => (
-        <li
-          key={err}
-          style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}
-        >
-          {err}
-        </li>
-      ))}
-    </ul>
-  ) : null;
-}
-
 function Playground() {
   // state
   const [grammarSource, setGrammarSource] = useLocalStorage(
@@ -73,51 +58,28 @@ function Playground() {
       emptyCollapseState
     );
   // TODO: make this not require a string as its value
-  const [cursorPos, setCursorPos] = useLocalStorage(
+  const [cursorPos, setCursorPos] = useJSONLocalStorage(
     "language-workbench-cursor-pos",
-    "0"
+    0
   );
 
-  const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
-  const grammarRuleTree = extractRuleTree(grammarTraceTree);
-  const grammar = extractGrammar(grammarSource, grammarRuleTree);
-  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
-  const grammarErrors = validateGrammar(grammar);
-  const [interpWithRules, dlErrors] = (() => {
-    try {
-      const result =
-        dlSource.length > 0 ? initInterp.evalStr(dlSource)[1] : initInterp;
-      return [result, []];
-    } catch (e) {
-      return [initInterp, [e.toString()]];
-    }
-  })();
-  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
-  const allGrammarErrors = [
-    ...grammarErrors,
-    ...grammarParseErrors,
-    ...noMainError,
-  ];
-
-  // initialize stuff that we'll fill in later, if parse succeeds
-  let traceTree: TraceTree = null;
-  let ruleTree: RuleTree = null;
-  let langParseError: string = null;
-  let finalInterp: AbstractInterpreter = interpWithRules;
-
-  if (allGrammarErrors.length === 0) {
-    try {
-      traceTree = parse(grammar, "main", langSource);
-      ruleTree = extractRuleTree(traceTree);
-      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
-      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = ensureHighlightSegmentTable(finalInterp);
-    } catch (e) {
-      langParseError = e.toString();
-      console.error(e);
-    }
-  }
-  finalInterp = finalInterp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
+  const {
+    finalInterp,
+    allGrammarErrors,
+    langParseError,
+    dlErrors,
+    ruleTree,
+    traceTree,
+  } = useMemo(
+    () =>
+      constructInterp({
+        cursorPos,
+        dlSource,
+        grammarSource,
+        langSource,
+      }),
+    [cursorPos, dlSource, grammarSource, langSource]
+  );
 
   return (
     <>
@@ -145,7 +107,7 @@ function Playground() {
                 cursorPos={parseInt(cursorPos)}
                 onCursorPosChange={(pos) => setCursorPos(pos.toString())}
                 interp={finalInterp}
-                validGrammar={grammarErrors.length === 0}
+                validGrammar={allGrammarErrors.length === 0}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -177,7 +139,7 @@ function Playground() {
 
       <>
         {/* we run into errors querying highlight rules if the grammar isn't valid */}
-        {grammarErrors.length === 0 ? (
+        {allGrammarErrors.length === 0 ? (
           <Explorer interp={finalInterp} showViz />
         ) : (
           <em>Grammar isn't valid</em>
@@ -224,6 +186,83 @@ function Playground() {
       </>
     </>
   );
+}
+
+function constructInterp({
+  dlSource,
+  grammarSource,
+  langSource,
+  cursorPos,
+}: {
+  dlSource: string;
+  grammarSource: string;
+  langSource: string;
+  cursorPos: number;
+}) {
+  const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
+  const grammarRuleTree = extractRuleTree(grammarTraceTree);
+  const grammar = extractGrammar(grammarSource, grammarRuleTree);
+  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
+  const grammarErrors = validateGrammar(grammar);
+  const [interpWithRules, dlErrors] = (() => {
+    try {
+      const result =
+        dlSource.length > 0 ? initInterp.evalStr(dlSource)[1] : initInterp;
+      return [result, []];
+    } catch (e) {
+      return [initInterp, [e.toString()]];
+    }
+  })();
+  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
+  const allGrammarErrors = [
+    ...grammarErrors,
+    ...grammarParseErrors,
+    ...noMainError,
+  ];
+
+  // initialize stuff that we'll fill in later, if parse succeeds
+  let traceTree: TraceTree = null;
+  let ruleTree: RuleTree = null;
+  let langParseError: string = null;
+  let finalInterp: AbstractInterpreter = interpWithRules;
+
+  if (allGrammarErrors.length === 0) {
+    try {
+      traceTree = parse(grammar, "main", langSource);
+      ruleTree = extractRuleTree(traceTree);
+      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
+      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
+      finalInterp = ensureHighlightSegmentTable(finalInterp);
+    } catch (e) {
+      langParseError = e.toString();
+      console.error(e);
+    }
+  }
+  finalInterp = finalInterp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
+
+  return {
+    finalInterp,
+    allGrammarErrors,
+    langParseError,
+    dlErrors,
+    ruleTree,
+    traceTree,
+  };
+}
+
+function ErrorList(props: { errors: string[] }) {
+  return props.errors.length > 0 ? (
+    <ul>
+      {uniq(props.errors).map((err) => (
+        <li
+          key={err}
+          style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}
+        >
+          {err}
+        </li>
+      ))}
+    </ul>
+  ) : null;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
