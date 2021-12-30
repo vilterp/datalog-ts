@@ -80,7 +80,11 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             },
           };
         }
-        const { newGraph, emissionLog } = insertFact(graph, stmt.record);
+        const { newGraph, emissionLog } = insertFact(graph, {
+          term: stmt.record,
+          trace: { type: "BaseFactTrace" },
+          bindings: {},
+        });
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
@@ -100,22 +104,6 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           newInterp: this.doLoad(stmt.path),
           output: ack,
         };
-      case "TraceStmt": {
-        const { newGraph, emissionLog } = insertFact(graph, stmt.record);
-        return {
-          newInterp: {
-            ...interp,
-            graph: newGraph,
-          },
-          output: {
-            type: "Trace",
-            logAndGraph: {
-              graph: newGraph,
-              log: emissionLog,
-            },
-          },
-        };
-      }
     }
   }
 

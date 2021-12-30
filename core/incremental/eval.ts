@@ -120,7 +120,7 @@ function getRoots(rule: Rule): NodeID[] {
 
 export function insertFact(
   graph: RuleGraph,
-  rec: Rec
+  res: Res
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   if (Object.keys(graph.unmappedRules).length > 0) {
     throw new Error(
@@ -131,21 +131,21 @@ export function insertFact(
     );
   }
 
-  const iter = getInsertionIterator(graph, rec);
-  const res = stepIteratorAll(graph, iter);
+  const iter = getInsertionIterator(graph, res);
+  const result = stepIteratorAll(graph, iter);
 
   // console.log("insertFact", { joinStats: getJoinStats() });
   // clearJoinStats();
 
-  return res;
+  return result;
 }
 
-function getInsertionIterator(graph: RuleGraph, rec: Rec): InsertionIterator {
+function getInsertionIterator(graph: RuleGraph, res: Res): InsertionIterator {
   const queue: Insertion[] = [
     {
-      res: { term: rec, bindings: {}, trace: { type: "BaseFactTrace" } },
+      res,
       origin: null,
-      destination: rec.relation,
+      destination: (res.term as Rec).relation,
     },
   ];
   return { graph, queue: new Denque(queue), mode: { type: "Playing" } };
@@ -169,7 +169,7 @@ type InsertionIterator = {
   mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
 
-const MAX_QUEUE_SIZE = 1000;
+const MAX_QUEUE_SIZE = 10000;
 
 function stepIteratorAll(
   graph: RuleGraph,
