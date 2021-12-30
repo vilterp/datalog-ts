@@ -207,6 +207,9 @@ export function inputToDL(input: string): Rec[] {
           rec("input.next", { left: int(idx), right: int(idx + 1) })
         )
       ),
-    rec("input.bounds", { from: int(0), to: int(input.length - 1) }),
+    rec("input.char", { char: str("START"), id: int(-1) }),
+    rec("input.char", { char: str("END"), id: int(-2) }),
+    rec("input.next", { left: int(-1), right: int(0) }),
+    rec("input.next", { left: int(input.length - 1), right: int(-2) }),
   ];
 }
