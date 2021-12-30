@@ -29,8 +29,10 @@ export function traceToTree(res: Res): Tree<Res> {
         collapseAndSources(res.trace.sources).map((s) => traceToTree(s))
       );
     case "MatchTrace":
-      // TODO: might be good to pass actual scope path here
-      // but it is just the key so we don't really need it
+      // TODO: unbreak variable bindings in simple interpreter
+      //   it worked when this line was
+      //     return leaf(printTermWithBindings(res, [], defaultTracePrintOpts), res);
+      //   ...not sure why. Changed to make traces work in incremental interpreter.
       return traceToTree(res.trace.fact);
     case "RefTrace": {
       const innerRes = res.trace.innerRes;
