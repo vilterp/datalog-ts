@@ -169,7 +169,7 @@ type InsertionIterator = {
   mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
 
-const MAX_QUEUE_SIZE = 10000;
+const MAX_QUEUE_SIZE = 100000;
 
 function stepIteratorAll(
   graph: RuleGraph,
