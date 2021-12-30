@@ -67,7 +67,10 @@ function constructInterp({
   grammarSource: string;
   source: string;
 }) {
-  let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
+  let interp = new IncrementalInterpreter(
+    ".",
+    nullLoader
+  ) as AbstractInterpreter;
   interp = interp.evalStr(parseDL)[1];
   const grammarParsed = parseGrammar(grammarSource);
   const records = grammarToDL(grammarParsed);
