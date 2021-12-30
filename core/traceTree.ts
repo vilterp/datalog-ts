@@ -31,7 +31,7 @@ export function traceToTree(res: Res): Tree<Res> {
     case "MatchTrace":
       // TODO: might be good to pass actual scope path here
       // but it is just the key so we don't really need it
-      return leaf(printTermWithBindings(res, [], defaultTracePrintOpts), res);
+      return traceToTree(res.trace.fact);
     case "RefTrace": {
       const innerRes = res.trace.innerRes;
       return node(

@@ -29,9 +29,11 @@ export function TraceTreeView(props: {
   collapseState: TreeCollapseState;
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
+  const tree = traceToTree(props.result);
+  console.log("tree", tree);
   return (
     <TreeView<Res>
-      tree={traceToTree(props.result)}
+      tree={tree}
       render={({ item, path }) => {
         const { children, parents } =
           props.highlight.highlight.type === "Binding"

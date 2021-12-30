@@ -175,6 +175,7 @@ function stepIteratorAll(
   graph: RuleGraph,
   iter: InsertionIterator
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+  // console.log("============");
   const emissionLog: EmissionLog = [];
   let newGraph = graph;
   while (iter.queue.length > 0) {
@@ -194,6 +195,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
   const insertingNow = iter.queue.shift();
   const curNodeID = insertingNow.destination;
   const results = processInsertion(iter.graph, insertingNow);
+  // console.log("push", results);
   for (let result of results) {
     if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
       newGraph = addToCache(newGraph, curNodeID, result);
