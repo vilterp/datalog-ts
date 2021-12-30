@@ -9,6 +9,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import useLocalStorage from "react-use-localstorage";
 // @ts-ignore
 import parseDL from "../../parserlib/datalog/parse.dl";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
@@ -66,7 +67,10 @@ function constructInterp({
   grammarSource: string;
   source: string;
 }) {
-  let interp = new SimpleInterpreter(".", nullLoader) as AbstractInterpreter;
+  let interp = new IncrementalInterpreter(
+    ".",
+    nullLoader
+  ) as AbstractInterpreter;
   interp = interp.evalStr(parseDL)[1];
   const grammarParsed = parseGrammar(grammarSource);
   const records = grammarToDL(grammarParsed);
