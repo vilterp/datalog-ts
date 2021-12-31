@@ -14,7 +14,7 @@ input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+parse.fullMatch{}.
 
 gram
 main :- repSep("foo", "bar").
@@ -44,21 +44,18 @@ input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+parse.fullMatch{}.
 
 input
 foobar
 ----
 application/datalog
-main{span: span{from: 0, to: 3}}.
 
 input
 foobarfoo
 ----
 application/datalog
-main{span: span{from: 0, to: 3}}.
-main{span: span{from: 6, to: -2}}.
-main{span: span{from: 0, to: -2}}.
+parse.fullMatch{}.
 
 gram
 main :- ["a", "b", "c"].
@@ -82,7 +79,7 @@ input
 abc
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+parse.fullMatch{}.
 
 gram
 main :- (foo | bar).
@@ -114,13 +111,13 @@ input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+parse.fullMatch{}.
 
 input
 bar
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+parse.fullMatch{}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
