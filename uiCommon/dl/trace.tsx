@@ -30,7 +30,6 @@ export function TraceTreeView(props: {
   setCollapseState: (c: TreeCollapseState) => void;
 }) {
   const tree = traceToTree(props.result);
-  console.log("tree", tree);
   return (
     <TreeView<Res>
       tree={tree}
