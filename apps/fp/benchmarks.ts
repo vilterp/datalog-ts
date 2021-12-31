@@ -21,7 +21,7 @@ export const fpBenchmarks: BenchmarkSpec[] = [
         "apps/fp/dl",
         fsLoader
       );
-      return fpBench(originalInterp, 1000, INPUT);
+      return fpBench(originalInterp, 200, INPUT);
     },
   },
   {
@@ -31,7 +31,7 @@ export const fpBenchmarks: BenchmarkSpec[] = [
         "apps/fp/dl",
         fsLoader
       );
-      return fpBench(originalInterp, 1000, INPUT);
+      return fpBench(originalInterp, 200, INPUT);
     },
   },
 ];
