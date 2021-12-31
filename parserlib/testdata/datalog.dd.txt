@@ -17,47 +17,6 @@ application/datalog
 parse.fullMatch{}.
 
 gram
-main :- repSep("foo", "bar").
-----
-application/datalog
-main{span: span{from: P1, to: P4}} :- 
-  main_rep{span: span{from: P1, to: P4}} |
-  main_rep{span: span{from: P1, to: P2}} &
-  main_sep{span: span{from: P2, to: P3}} &
-  main{span: span{from: P3, to: P4}}.
-main_rep{span: span{from: P1, to: P4}} :- 
-  input.char{char: "f", id: P1} &
-  input.char{char: "o", id: P2} &
-  input.char{char: "o", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
-main_sep{span: span{from: P1, to: P4}} :- 
-  input.char{char: "b", id: P1} &
-  input.char{char: "a", id: P2} &
-  input.char{char: "r", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
-
-input
-foo
-----
-application/datalog
-parse.fullMatch{}.
-
-input
-foobar
-----
-application/datalog
-
-input
-foobarfoo
-----
-application/datalog
-parse.fullMatch{}.
-
-gram
 main :- ["a", "b", "c"].
 ----
 application/datalog
@@ -115,6 +74,47 @@ parse.fullMatch{}.
 
 input
 bar
+----
+application/datalog
+parse.fullMatch{}.
+
+gram
+main :- repSep("foo", "bar").
+----
+application/datalog
+main{span: span{from: P1, to: P4}} :- 
+  main_rep{span: span{from: P1, to: P4}} |
+  main_rep{span: span{from: P1, to: P2}} &
+  main_sep{span: span{from: P2, to: P3}} &
+  main{span: span{from: P3, to: P4}}.
+main_rep{span: span{from: P1, to: P4}} :- 
+  input.char{char: "f", id: P1} &
+  input.char{char: "o", id: P2} &
+  input.char{char: "o", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+main_sep{span: span{from: P1, to: P4}} :- 
+  input.char{char: "b", id: P1} &
+  input.char{char: "a", id: P2} &
+  input.char{char: "r", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+
+input
+foo
+----
+application/datalog
+parse.fullMatch{}.
+
+input
+foobar
+----
+application/datalog
+
+input
+foobarfoo
 ----
 application/datalog
 parse.fullMatch{}.
