@@ -6,12 +6,12 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Performance } from "w3c-hr-time";
 import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";
-import { ppt } from "../../core/pretty";
-import { assertStringEqual } from "../../util/testing";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 const performance = new Performance();
+
+const INPUT = `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`;
 
 export const fpBenchmarks: BenchmarkSpec[] = [
   {
@@ -21,11 +21,7 @@ export const fpBenchmarks: BenchmarkSpec[] = [
         "apps/fp/dl",
         fsLoader
       );
-      return fpTest(
-        originalInterp,
-        1000,
-        `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`
-      );
+      return fpTest(originalInterp, 1000, INPUT);
     },
   },
   {
@@ -35,11 +31,7 @@ export const fpBenchmarks: BenchmarkSpec[] = [
         "apps/fp/dl",
         fsLoader
       );
-      return fpTest(
-        originalInterp,
-        1000,
-        `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`
-      );
+      return fpTest(originalInterp, 1000, INPUT);
     },
   },
 ];
@@ -71,10 +63,8 @@ function fpTest(
     }
     interp.queryStr("tc.Type{}");
     interp.queryStr("hl.Segment{}");
-    // assertStringEqual(
-    //   'tc.Type{id: 0, type: "string"}',
-    //   res.map((res) => ppt(res.term)).join(".\n")
-    // );
+    interp.queryStr("ide.Suggestion{}");
+    interp.queryStr("ide.RenameCandidate{}");
   }
 
   const after = performance.now();
