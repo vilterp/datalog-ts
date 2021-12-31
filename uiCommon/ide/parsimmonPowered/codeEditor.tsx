@@ -16,7 +16,7 @@ import {
   KEY_A,
   KEY_Z,
 } from "../keymap";
-import { KeyBindingsTable } from "../editorCommon";
+import { KeyBindingsTable, SuggestionsList } from "../editorCommon";
 
 type EvalError =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -96,22 +96,16 @@ export function CodeEditor(props: {
 
   const haveSuggestions = suggestions.length > 0;
   const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
-  const applyAction = (action: EditorAction, modifiedState?: EditorState) => {
-    const ctx: ActionContext = {
-      interp: props.interp,
-      state: modifiedState ? modifiedState : st,
-      suggestions,
-      errors: locatedErrors,
-    };
-    if (action.available(ctx)) {
-      props.setState(action.apply(ctx));
-    }
-  };
   const actionCtx = {
     interp: props.interp,
     state: st,
     suggestions,
     errors: locatedErrors,
+  };
+  const applyAction = (action: EditorAction) => {
+    if (action.available(actionCtx)) {
+      props.setState(action.apply(actionCtx));
+    }
   };
   const errorsToDisplay = [evalError, props.loadError].filter(
     (x) => x !== null
@@ -190,29 +184,11 @@ export function CodeEditor(props: {
         />
         <KeyBindingsTable actionCtx={actionCtx} />
         <div>
-          {suggestions ? (
-            <ul style={{ fontFamily: "monospace" }}>
-              {suggestions.map((sugg, idx) => (
-                <li
-                  key={JSON.stringify(sugg)}
-                  style={{
-                    cursor: "pointer",
-                    fontWeight: sugg.bold ? "bold" : "normal",
-                    textDecoration:
-                      st.selectedSuggIdx === idx ? "underline" : "none",
-                  }}
-                  onClick={() => {
-                    applyAction(insertSuggestionAction, {
-                      ...st,
-                      selectedSuggIdx: idx,
-                    });
-                  }}
-                >
-                  {sugg.display ? sugg.display : sugg.textToInsert}: {sugg.kind}
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <SuggestionsList
+            suggestions={suggestions}
+            applyAction={applyAction}
+            editorState={st}
+          />
         </div>
       </div>
       <div style={{ fontFamily: "monospace", color: "red" }}>
