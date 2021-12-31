@@ -41,7 +41,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           rec(name, {
             span: rec("span", {
               from: varr("P1"),
-              to: varr(`P${rule.value.length}`),
+              to: varr(`P${rule.value.length + 1}`),
             }),
           }),
           or([
@@ -52,7 +52,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                   char: str(char),
                 })
               ),
-              ...range(rule.value.length - 1).map((idx) =>
+              ...range(rule.value.length).map((idx) =>
                 rec("input.next", {
                   left: varr(`P${idx + 1}`),
                   right: varr(`P${idx + 2}`),
@@ -117,12 +117,6 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
                   }),
                 })
               ),
-              ...range(rule.items.length - 1).map((idx) =>
-                rec("input.next", {
-                  left: varr(`P${idx * 2 + 2}`),
-                  right: varr(`P${idx * 2 + 3}`),
-                })
-              ),
             ]),
           ])
         ),
@@ -172,31 +166,23 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         dl.rule(
           rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P6") }),
+            span: rec("span", { from: varr("P1"), to: varr("P4") }),
           }),
           or([
             and([
               rec(`${name}_rep`, {
-                span: rec("span", { from: varr("P1"), to: varr("P6") }),
+                span: rec("span", { from: varr("P1"), to: varr("P4") }),
               }),
             ]),
             and([
               rec(`${name}_rep`, {
                 span: rec("span", { from: varr("P1"), to: varr("P2") }),
               }),
-              rec("input.next", {
-                left: varr(`P2`),
-                right: varr(`P3`),
-              }),
               rec(`${name}_sep`, {
-                span: rec("span", { from: varr("P3"), to: varr("P4") }),
-              }),
-              rec("input.next", {
-                left: varr(`P4`),
-                right: varr(`P5`),
+                span: rec("span", { from: varr("P2"), to: varr("P3") }),
               }),
               rec(name, {
-                span: rec("span", { from: varr("P5"), to: varr("P6") }),
+                span: rec("span", { from: varr("P3"), to: varr("P4") }),
               }),
             ]),
           ])

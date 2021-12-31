@@ -2,56 +2,88 @@ gram
 main :- "foo".
 ----
 application/datalog
-main{span: span{from: P1, to: P3}} :- 
+main{span: span{from: P1, to: P4}} :- 
   input.char{char: "f", id: P1} &
   input.char{char: "o", id: P2} &
   input.char{char: "o", id: P3} &
   input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3}.
-
-gram
-main :- repSep("foo", "bar").
-----
-application/datalog
-main{span: span{from: P1, to: P6}} :- 
-  main_rep{span: span{from: P1, to: P6}} |
-  main_rep{span: span{from: P1, to: P2}} &
   input.next{left: P2, right: P3} &
-  main_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  main{span: span{from: P5, to: P6}}.
-main_rep{span: span{from: P1, to: P3}} :- 
-  input.char{char: "f", id: P1} &
-  input.char{char: "o", id: P2} &
-  input.char{char: "o", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3}.
-main_sep{span: span{from: P1, to: P3}} :- 
-  input.char{char: "b", id: P1} &
-  input.char{char: "a", id: P2} &
-  input.char{char: "r", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3}.
+  input.next{left: P3, right: P4}.
 
 input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
+main{span: span{from: 0, to: -2}}.
+
+gram
+main :- repSep("foo", "bar").
+----
+application/datalog
+main{span: span{from: P1, to: P4}} :- 
+  main_rep{span: span{from: P1, to: P4}} |
+  main_rep{span: span{from: P1, to: P2}} &
+  main_sep{span: span{from: P2, to: P3}} &
+  main{span: span{from: P3, to: P4}}.
+main_rep{span: span{from: P1, to: P4}} :- 
+  input.char{char: "f", id: P1} &
+  input.char{char: "o", id: P2} &
+  input.char{char: "o", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+main_sep{span: span{from: P1, to: P4}} :- 
+  input.char{char: "b", id: P1} &
+  input.char{char: "a", id: P2} &
+  input.char{char: "r", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+
+input
+foo
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
 
 input
 foobar
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
+main{span: span{from: 0, to: 3}}.
 
 input
 foobarfoo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
-main{span: span{from: 6, to: 8}}.
-main{span: span{from: 0, to: 8}}.
+main{span: span{from: 0, to: 3}}.
+main{span: span{from: 6, to: -2}}.
+main{span: span{from: 0, to: -2}}.
+
+gram
+main :- ["a", "b", "c"].
+----
+application/datalog
+main{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
+  main_seq_0{span: span{from: P1, to: P2}} &
+  main_seq_1{span: span{from: P3, to: P4}} &
+  main_seq_2{span: span{from: P5, to: P6}} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P4, right: P5}.
+main_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "a", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_1{span: span{from: P1, to: P2}} :- 
+  input.char{char: "b", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "c", id: P1} &
+  input.next{left: P1, right: P2}.
+
+input
+abc
+----
+application/datalog
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -63,17 +95,21 @@ main{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{f
   main_seq_2{span: span{from: P5, to: P6}} &
   input.next{left: P2, right: P3} &
   input.next{left: P4, right: P5}.
-main_seq_0{span: span{from: P1, to: P1}} :- input.char{char: "[", id: P1}.
-main_seq_1{span: span{from: P1, to: P6}} :- 
-  main_seq_1_rep{span: span{from: P1, to: P6}} |
+main_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "[", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_1{span: span{from: P1, to: P4}} :- 
+  main_seq_1_rep{span: span{from: P1, to: P4}} |
   main_seq_1_rep{span: span{from: P1, to: P2}} &
-  input.next{left: P2, right: P3} &
-  main_seq_1_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  main_seq_1{span: span{from: P5, to: P6}}.
+  main_seq_1_sep{span: span{from: P2, to: P3}} &
+  main_seq_1{span: span{from: P3, to: P4}}.
 main_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "a" <= C & C <= "z".
-main_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{char: ",", id: P1}.
-main_seq_2{span: span{from: P1, to: P1}} :- input.char{char: "]", id: P1}.
+main_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "]", id: P1} &
+  input.next{left: P1, right: P2}.
 
 input
 []
@@ -84,13 +120,11 @@ input
 [a]
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 0}, seq_1: span{from: 1, to: 1}, seq_2: span{from: 2, to: 2}, span: span{from: 0, to: 2}}.
 
 input
 [a,b,c]
 ----
 application/datalog
-main{seq_0: span{from: 0, to: 0}, seq_1: span{from: 1, to: 5}, seq_2: span{from: 6, to: 6}, span: span{from: 0, to: 6}}.
 
 gram
 main :- (foo | bar).
@@ -98,18 +132,20 @@ foo :- "foo".
 bar :- "bar".
 ----
 application/datalog
-bar{span: span{from: P1, to: P3}} :- 
+bar{span: span{from: P1, to: P4}} :- 
   input.char{char: "b", id: P1} &
   input.char{char: "a", id: P2} &
   input.char{char: "r", id: P3} &
   input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3}.
-foo{span: span{from: P1, to: P3}} :- 
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+foo{span: span{from: P1, to: P4}} :- 
   input.char{char: "f", id: P1} &
   input.char{char: "o", id: P2} &
   input.char{char: "o", id: P3} &
   input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3}.
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
 main{span: span{from: P1, to: P2}} :- 
   main_choice_0{span: span{from: P1, to: P2}} |
   main_choice_1{span: span{from: P1, to: P2}}.
@@ -120,19 +156,17 @@ input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: 2}}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- repSep([0-9], "").
 ----
 application/datalog
-main{span: span{from: P1, to: P6}} :- 
-  main_rep{span: span{from: P1, to: P6}} |
+main{span: span{from: P1, to: P4}} :- 
+  main_rep{span: span{from: P1, to: P4}} |
   main_rep{span: span{from: P1, to: P2}} &
-  input.next{left: P2, right: P3} &
-  main_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  main{span: span{from: P5, to: P6}}.
+  main_sep{span: span{from: P2, to: P3}} &
+  main{span: span{from: P3, to: P4}}.
 main_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "0" <= C & C <= "9".
 main_sep{span: span{from: P1, to: P2}} :- input.char{id: P1} & P1 == P2.
 
@@ -168,29 +202,31 @@ array{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{
   array_seq_2{span: span{from: P5, to: P6}} &
   input.next{left: P2, right: P3} &
   input.next{left: P4, right: P5}.
-array_seq_0{span: span{from: P1, to: P1}} :- input.char{char: "[", id: P1}.
-array_seq_1{span: span{from: P1, to: P6}} :- 
-  array_seq_1_rep{span: span{from: P1, to: P6}} |
+array_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "[", id: P1} &
+  input.next{left: P1, right: P2}.
+array_seq_1{span: span{from: P1, to: P4}} :- 
+  array_seq_1_rep{span: span{from: P1, to: P4}} |
   array_seq_1_rep{span: span{from: P1, to: P2}} &
-  input.next{left: P2, right: P3} &
-  array_seq_1_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  array_seq_1{span: span{from: P5, to: P6}}.
+  array_seq_1_sep{span: span{from: P2, to: P3}} &
+  array_seq_1{span: span{from: P3, to: P4}}.
 array_seq_1_rep{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-array_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{char: ",", id: P1}.
-array_seq_2{span: span{from: P1, to: P1}} :- input.char{char: "]", id: P1}.
+array_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+array_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "]", id: P1} &
+  input.next{left: P1, right: P2}.
 int{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, span: span{from: P1, to: P4}} :- 
   int_seq_0{span: span{from: P1, to: P2}} &
   int_seq_1{span: span{from: P3, to: P4}} &
   input.next{left: P2, right: P3}.
 int_seq_0{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "0" <= C & C <= "9".
-int_seq_1{span: span{from: P1, to: P6}} :- 
-  int_seq_1_rep{span: span{from: P1, to: P6}} |
+int_seq_1{span: span{from: P1, to: P4}} :- 
+  int_seq_1_rep{span: span{from: P1, to: P4}} |
   int_seq_1_rep{span: span{from: P1, to: P2}} &
-  input.next{left: P2, right: P3} &
-  int_seq_1_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  int_seq_1{span: span{from: P5, to: P6}}.
+  int_seq_1_sep{span: span{from: P2, to: P3}} &
+  int_seq_1{span: span{from: P3, to: P4}}.
 int_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "0" <= C & C <= "9".
 int_seq_1_sep{span: span{from: P1, to: P2}} :- input.char{id: P1} & P1 == P2.
 keyValue{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
@@ -200,51 +236,60 @@ keyValue{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: sp
   input.next{left: P2, right: P3} &
   input.next{left: P4, right: P5}.
 keyValue_seq_0{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
-keyValue_seq_1{span: span{from: P1, to: P1}} :- input.char{char: ":", id: P1}.
+keyValue_seq_1{span: span{from: P1, to: P2}} :- 
+  input.char{char: ":", id: P1} &
+  input.next{left: P1, right: P2}.
 keyValue_seq_2{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
 main{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-null{span: span{from: P1, to: P4}} :- 
+null{span: span{from: P1, to: P5}} :- 
   input.char{char: "n", id: P1} &
   input.char{char: "u", id: P2} &
   input.char{char: "l", id: P3} &
   input.char{char: "l", id: P4} &
   input.next{left: P1, right: P2} &
   input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
+  input.next{left: P3, right: P4} &
+  input.next{left: P4, right: P5}.
 object{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
   object_seq_0{span: span{from: P1, to: P2}} &
   object_seq_1{span: span{from: P3, to: P4}} &
   object_seq_2{span: span{from: P5, to: P6}} &
   input.next{left: P2, right: P3} &
   input.next{left: P4, right: P5}.
-object_seq_0{span: span{from: P1, to: P1}} :- input.char{char: "{", id: P1}.
-object_seq_1{span: span{from: P1, to: P6}} :- 
-  object_seq_1_rep{span: span{from: P1, to: P6}} |
+object_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "{", id: P1} &
+  input.next{left: P1, right: P2}.
+object_seq_1{span: span{from: P1, to: P4}} :- 
+  object_seq_1_rep{span: span{from: P1, to: P4}} |
   object_seq_1_rep{span: span{from: P1, to: P2}} &
-  input.next{left: P2, right: P3} &
-  object_seq_1_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  object_seq_1{span: span{from: P5, to: P6}}.
+  object_seq_1_sep{span: span{from: P2, to: P3}} &
+  object_seq_1{span: span{from: P3, to: P4}}.
 object_seq_1_rep{span: span{from: P1, to: P2}} :- keyValue{span: span{from: P1, to: P2}}.
-object_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{char: ",", id: P1}.
-object_seq_2{span: span{from: P1, to: P1}} :- input.char{char: "}", id: P1}.
+object_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+object_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "}", id: P1} &
+  input.next{left: P1, right: P2}.
 string{seq_0: span{from: P1, to: P2}, seq_1: span{from: P3, to: P4}, seq_2: span{from: P5, to: P6}, span: span{from: P1, to: P6}} :- 
   string_seq_0{span: span{from: P1, to: P2}} &
   string_seq_1{span: span{from: P3, to: P4}} &
   string_seq_2{span: span{from: P5, to: P6}} &
   input.next{left: P2, right: P3} &
   input.next{left: P4, right: P5}.
-string_seq_0{span: span{from: P1, to: P1}} :- input.char{char: "'", id: P1}.
-string_seq_1{span: span{from: P1, to: P6}} :- 
-  string_seq_1_rep{span: span{from: P1, to: P6}} |
+string_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "'", id: P1} &
+  input.next{left: P1, right: P2}.
+string_seq_1{span: span{from: P1, to: P4}} :- 
+  string_seq_1_rep{span: span{from: P1, to: P4}} |
   string_seq_1_rep{span: span{from: P1, to: P2}} &
-  input.next{left: P2, right: P3} &
-  string_seq_1_sep{span: span{from: P3, to: P4}} &
-  input.next{left: P4, right: P5} &
-  string_seq_1{span: span{from: P5, to: P6}}.
+  string_seq_1_sep{span: span{from: P2, to: P3}} &
+  string_seq_1{span: span{from: P3, to: P4}}.
 string_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "a" <= C & C <= "z".
 string_seq_1_sep{span: span{from: P1, to: P2}} :- input.char{id: P1} & P1 == P2.
-string_seq_2{span: span{from: P1, to: P1}} :- input.char{char: "'", id: P1}.
+string_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "'", id: P1} &
+  input.next{left: P1, right: P2}.
 value{span: span{from: P1, to: P2}} :- 
   value_choice_0{span: span{from: P1, to: P2}} |
   value_choice_1{span: span{from: P1, to: P2}} |
@@ -266,14 +311,9 @@ input
 {'a':[1,2]}
 ----
 application/datalog
-main{span: span{from: 1, to: 3}}.
 
 input
 {'a':[2,3],'b':{'z':null}}
 ----
 application/datalog
-main{span: span{from: 1, to: 3}}.
-main{span: span{from: 11, to: 13}}.
-main{span: span{from: 16, to: 18}}.
-main{span: span{from: 20, to: 23}}.
-main{span: span{from: 15, to: 24}}.
+main{span: span{from: 20, to: 24}}.
