@@ -39,6 +39,7 @@ function Main() {
                 cols={80}
                 onChange={(evt) => setSource(evt.target.value)}
                 value={source}
+                spellCheck={false}
               />
             </td>
             <td>
@@ -49,6 +50,7 @@ function Main() {
                 cols={80}
                 onChange={(evt) => setGrammarSource(evt.target.value)}
                 value={grammarSource}
+                spellCheck={false}
               />
             </td>
           </tr>
@@ -73,8 +75,8 @@ function constructInterp({
   ) as AbstractInterpreter;
   interp = interp.evalStr(parseDL)[1];
   const grammarParsed = parseGrammar(grammarSource);
-  const records = grammarToDL(grammarParsed);
-  interp = interp.insertAll(records);
+  const rules = grammarToDL(grammarParsed);
+  interp = interp.evalStmts(rules.map((rule) => ({ type: "Rule", rule })))[1];
   let error: Error = null;
   try {
     interp = interp.insertAll(inputToDL(source));

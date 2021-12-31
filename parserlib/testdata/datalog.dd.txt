@@ -14,7 +14,7 @@ input
 foo
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- ["a", "b", "c"].
@@ -38,7 +38,7 @@ input
 abc
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- (foo | bar).
@@ -70,13 +70,13 @@ input
 foo
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 input
 bar
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- repSep("foo", "bar").
@@ -106,7 +106,7 @@ input
 foo
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 input
 foobar
@@ -117,7 +117,7 @@ input
 foobarfoo
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -135,13 +135,23 @@ main_seq_1{span: span{from: P1, to: P4}} :-
   main_seq_1_rep{span: span{from: P1, to: P2}} &
   main_seq_1_sep{span: span{from: P2, to: P3}} &
   main_seq_1{span: span{from: P3, to: P4}}.
-main_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "a" <= C & C <= "z".
+main_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "a" <= C &
+  C <= "z".
 main_seq_1_sep{span: span{from: P1, to: P2}} :- 
   input.char{char: ",", id: P1} &
   input.next{left: P1, right: P2}.
 main_seq_2{span: span{from: P1, to: P2}} :- 
   input.char{char: "]", id: P1} &
   input.next{left: P1, right: P2}.
+
+input
+[a,b,c]
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- repSep([0-9], "").
@@ -152,7 +162,11 @@ main{span: span{from: P1, to: P4}} :-
   main_rep{span: span{from: P1, to: P2}} &
   main_sep{span: span{from: P2, to: P3}} &
   main{span: span{from: P3, to: P4}}.
-main_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "0" <= C & C <= "9".
+main_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
 main_sep{span: span{from: P1, to: P2}} :- input.char{id: P1} & P1 == P2.
 
 gram
@@ -188,13 +202,21 @@ array_seq_2{span: span{from: P1, to: P2}} :-
 int{span: span{from: P1, to: P3}} :- 
   int_seq_0{span: span{from: P1, to: P2}} &
   int_seq_1{span: span{from: P2, to: P3}}.
-int_seq_0{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "0" <= C & C <= "9".
+int_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
 int_seq_1{span: span{from: P1, to: P4}} :- 
   int_seq_1_rep{span: span{from: P1, to: P4}} |
   int_seq_1_rep{span: span{from: P1, to: P2}} &
   int_seq_1_sep{span: span{from: P2, to: P3}} &
   int_seq_1{span: span{from: P3, to: P4}}.
-int_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "0" <= C & C <= "9".
+int_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
 int_seq_1_sep{span: span{from: P1, to: P2}} :- input.char{id: P1} & P1 == P2.
 keyValue{span: span{from: P1, to: P4}} :- 
   keyValue_seq_0{span: span{from: P1, to: P2}} &
@@ -246,7 +268,11 @@ string_seq_1{span: span{from: P1, to: P4}} :-
   string_seq_1_rep{span: span{from: P1, to: P2}} &
   string_seq_1_sep{span: span{from: P2, to: P3}} &
   string_seq_1{span: span{from: P3, to: P4}}.
-string_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "a" <= C & C <= "z".
+string_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "a" <= C &
+  C <= "z".
 string_seq_1_sep{span: span{from: P1, to: P2}} :- input.char{id: P1} & P1 == P2.
 string_seq_2{span: span{from: P1, to: P2}} :- 
   input.char{char: "'", id: P1} &

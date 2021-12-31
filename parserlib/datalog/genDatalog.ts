@@ -139,13 +139,17 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
       return [
         dl.rule(
           rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P1") }),
+            span: rec("span", { from: varr("P1"), to: varr("P2") }),
           }),
           or([
             and([
               rec("input.char", {
                 id: varr("P1"),
                 char: varr("C"),
+              }),
+              rec("input.next", {
+                left: varr("P1"),
+                right: varr("P2"),
               }),
               ...exprsForCharRule(rule.rule),
             ]),
