@@ -1,50 +1,46 @@
 import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import Editor from "../editor";
+import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
+import { Suggestion } from "../suggestions";
+import { ActionContext, EditorState } from "../types";
 
 export function CodeEditor(props: {
-  source: string;
-  onSourceChange: (s: string) => void;
-  cursorPos: number;
-  onCursorPosChange: (n: number) => void;
+  editorState: EditorState;
+  setEditorState: (st: EditorState) => void;
   interp: AbstractInterpreter;
   validGrammar: boolean;
+  highlightCSS: string;
+  suggestions: Suggestion[];
+  locatedErrors: { offset: number }[];
 }) {
-  let highlighted: React.ReactNode = <>{props.source}</>;
+  let highlighted: React.ReactNode = <>{props.editorState.source}</>;
   let error = null;
   if (props.validGrammar) {
     try {
-      highlighted = highlight(props.interp, props.source, 0, []);
+      highlighted = highlight(props.interp, props.editorState.source, 0, []);
     } catch (e) {
       error = e.toString();
     }
   }
 
+  const actionCtx: ActionContext = {
+    interp: props.interp,
+    state: props.editorState,
+    suggestions: props.suggestions,
+    errors: props.locatedErrors,
+  };
+
   return (
-    <>
-      <Editor
-        style={{
-          fontFamily: "monospace",
-          width: 300,
-          height: 200,
-          border: "1px solid black",
-        }}
-        padding={5}
-        value={props.source}
-        onValueChange={(source) => props.onSourceChange(source)}
-        highlight={(_) => highlighted}
-        cursorPos={props.cursorPos}
-        onKeyUp={(evt) =>
-          props.onCursorPosChange(evt.currentTarget.selectionStart)
-        }
-        onClick={(evt) =>
-          props.onCursorPosChange(evt.currentTarget.selectionStart)
-        }
-      />
-      {error ? (
-        <pre style={{ color: "red", fontFamily: "monospace" }}>{error}</pre>
-      ) : null}
-    </>
+    <EditorBox
+      highlightCSS={props.highlightCSS}
+      actionCtx={actionCtx}
+      editorState={props.editorState}
+      setEditorState={props.setEditorState}
+      errorsToDisplay={[]} // TODO: pass through errors
+      highlighted={highlighted}
+      suggestions={props.suggestions}
+    />
   );
 }

@@ -27,6 +27,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { uniq } from "../../util/util";
 import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
+import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 
 function Main() {
   return <Playground />;
@@ -39,10 +40,6 @@ function Playground() {
   const [grammarSource, setGrammarSource] = useLocalStorage(
     "language-workbench-grammar-source",
     `main :- "foo".`
-  );
-  const [langSource, setLangSource] = useLocalStorage(
-    "language-workbench-source",
-    ""
   );
   const [dlSource, setDLSource] = useLocalStorage(
     "language-workbench-dl-source",
@@ -57,11 +54,13 @@ function Playground() {
       "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
     );
-  // TODO: make this not require a string as its value
-  const [cursorPos, setCursorPos] = useJSONLocalStorage(
-    "language-workbench-cursor-pos",
-    0
-  );
+  const [langEditorState, setLangEditorState] =
+    useJSONLocalStorage<EditorState>(
+      "editor-state",
+      initialEditorState("let x = 2 in intToString(x)")
+    );
+  const cursorPos = langEditorState.cursorPos;
+  const langSource = langEditorState.source;
 
   const {
     finalInterp,
@@ -102,12 +101,13 @@ function Playground() {
             <td>
               <h3>Language Source</h3>
               <CodeEditor
-                source={langSource}
-                onSourceChange={setLangSource}
-                cursorPos={parseInt(cursorPos)}
-                onCursorPosChange={(pos) => setCursorPos(pos.toString())}
+                editorState={langEditorState}
+                setEditorState={setLangEditorState}
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
+                highlightCSS={themeSource}
+                locatedErrors={[]} // TODO: parse errors
+                suggestions={[]} // TODO: get suggestions
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -131,7 +131,6 @@ function Playground() {
                 cols={50}
                 spellCheck={false}
               />
-              <style>{themeSource}</style>
             </td>
           </tr>
         </tbody>
