@@ -15,7 +15,7 @@ async function runAll() {
     for (let entry of suite) {
       console.log(`  ${entry.name}`);
       const res = entry.run();
-      console.log("  ", res);
+      console.log(res);
       const recordName = `${suiteName}/${entry.name}`;
       const airtableRecords = await postResultToAirtable(recordName, res);
       console.log(
