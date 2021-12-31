@@ -16,7 +16,11 @@ import {
   KEY_A,
   KEY_Z,
 } from "../keymap";
-import { KeyBindingsTable, SuggestionsList } from "../editorCommon";
+import {
+  handleKeyDown,
+  KeyBindingsTable,
+  SuggestionsList,
+} from "../editorCommon";
 
 type EvalError =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -94,8 +98,6 @@ export function CodeEditor(props: {
       : []),
   ];
 
-  const haveSuggestions = suggestions.length > 0;
-  const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
   const actionCtx = {
     interp: props.interp,
     state: st,
@@ -141,43 +143,13 @@ export function CodeEditor(props: {
             )
           }
           onKeyDown={(evt) => {
-            if (haveSuggestions) {
-              switch (evt.keyCode) {
-                case KEY_DOWN_ARROW:
-                  evt.preventDefault();
-                  props.setState({
-                    ...props.state,
-                    selectedSuggIdx: clampSuggIdx(
-                      props.state.selectedSuggIdx + 1
-                    ),
-                  });
-                  return;
-                case KEY_UP_ARROW:
-                  if (st.selectedSuggIdx > 0) {
-                    evt.preventDefault();
-                    props.setState({
-                      ...st,
-                      selectedSuggIdx: clampSuggIdx(st.selectedSuggIdx - 1),
-                    });
-                    return;
-                  }
-                  return;
-                case KEY_ENTER:
-                  evt.preventDefault();
-                  applyAction(insertSuggestionAction);
-                  return;
-              }
-            }
-            if (evt.metaKey) {
-              if (KEY_A <= evt.keyCode && evt.keyCode <= KEY_Z) {
-                const action = keyMap[evt.key];
-                if (!action) {
-                  return;
-                }
-                applyAction(action);
-                return;
-              }
-            }
+            handleKeyDown(
+              evt,
+              suggestions,
+              props.state,
+              props.setState,
+              applyAction
+            );
           }}
           onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
           onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
