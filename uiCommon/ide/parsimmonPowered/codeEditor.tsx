@@ -22,19 +22,47 @@ type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
   | { type: "EvalError"; err: Error };
 
+export function loadInterpreter<AST>(
+  initialInterp: AbstractInterpreter,
+  state: EditorState,
+  parse: Parsimmon.Parser<AST>,
+  flatten: (t: AST) => Term[]
+): AbstractInterpreter {
+  let interp = initialInterp;
+  let error: Error | null = null;
+
+  interp = interp.evalStr(`ide.Cursor{idx: ${state.cursorPos}}.`)[1];
+
+  const parseRes = parse.parse(state.source);
+  if (parseRes.status === false) {
+    error = {
+      type: "ParseError",
+      expected: parseRes.expected,
+      offset: parseRes.index.offset,
+    };
+  } else {
+    try {
+      const flattened = flatten(parseRes.value);
+      interp = flattened.reduce<AbstractInterpreter>(
+        (curInterp, rec) => curInterp.insert(rec as Rec),
+        interp
+      );
+    } catch (e) {
+      error = { type: "EvalError", err: e };
+      console.error("eval error", error.err);
+    }
+  }
+
+  return interp;
+}
+
 export function CodeEditor<AST>(props: {
-  parse: Parsimmon.Parser<AST>;
-  flatten: (t: AST) => Term[];
   interp: AbstractInterpreter;
   getSuggestions: (interp: AbstractInterpreter) => Suggestion[];
   highlightCSS: string;
   state: EditorState;
   setState: (st: EditorState) => void;
-}): [AbstractInterpreter, React.ReactNode] {
-  const [_, interp2] = props.interp.evalStr(
-    `ide.Cursor{idx: ${props.state.cursorPos}}.`
-  );
-
+}) {
   const st = props.state;
   const setCursorPos = (pos: number) => {
     return props.setState({
@@ -46,30 +74,13 @@ export function CodeEditor<AST>(props: {
   let error: Error | null = null;
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
-  const parseRes = props.parse.parse(st.source);
-  let interp3: AbstractInterpreter = null;
-  if (parseRes.status === false) {
-    error = {
-      type: "ParseError",
-      expected: parseRes.expected,
-      offset: parseRes.index.offset,
-    };
-    interp3 = interp2;
-  } else {
-    try {
-      const flattened = props.flatten(parseRes.value);
-      interp3 = flattened.reduce<AbstractInterpreter>(
-        (interp, rec) => interp.insert(rec as Rec),
-        interp2
-      );
-
-      // get suggestions
-      suggestions = props.getSuggestions(interp3);
-      typeErrors = getTypeErrors(interp3);
-    } catch (e) {
-      error = { type: "EvalError", err: e };
-      console.error("eval error", error.err);
-    }
+  try {
+    // get suggestions
+    suggestions = props.getSuggestions(props.interp);
+    typeErrors = getTypeErrors(props.interp);
+  } catch (e) {
+    error = { type: "EvalError", err: e };
+    console.error("eval error", error.err);
   }
 
   if (typeErrors.length > 0) {
@@ -84,7 +95,7 @@ export function CodeEditor<AST>(props: {
   const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
   const applyAction = (action: EditorAction, modifiedState?: EditorState) => {
     const ctx: ActionContext = {
-      interp: interp3,
+      interp: props.interp,
       state: modifiedState ? modifiedState : st,
       suggestions,
       errors,
@@ -94,14 +105,13 @@ export function CodeEditor<AST>(props: {
     }
   };
   const actionCtx = {
-    interp: interp3,
+    interp: props.interp,
     state: st,
     suggestions,
     errors,
   };
 
-  return [
-    interp3,
+  return (
     <div>
       <style
         dangerouslySetInnerHTML={{
@@ -126,7 +136,7 @@ export function CodeEditor<AST>(props: {
           cursorPos={st.cursorPos} // would be nice if we could have an onCursorPos
           highlight={(_) =>
             highlight(
-              interp3,
+              props.interp,
               props.state.source,
               error && error.type === "ParseError" ? error.offset : null,
               typeErrors
@@ -210,6 +220,6 @@ export function CodeEditor<AST>(props: {
           `Eval error: ${error.err}`
         )}
       </div>
-    </div>,
-  ];
+    </div>
+  );
 }
