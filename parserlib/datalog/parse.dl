@@ -8,9 +8,12 @@
 .table grammar.node
 .table grammar.ruleMarker
 
-parse.path{fromNode: N1, toNode: N3, startChar: C1, endChar: C3} :-
-  parse.edgeMatch{fromNode: N1, toNode: N3, startChar: C1, endChar: C3} |
-  parse.path{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} &
+parse.path{pathStart: CS, fromNode: N1, toNode: N3, startChar: C1, endChar: C3} :-
+  parse.edgeMatch{fromNode: N1, toNode: N3, startChar: C1, endChar: C3} &
+  input.char{id: CS} &
+  CS == C1
+  |
+  parse.path{pathStart: CS, fromNode: N1, toNode: N2, startChar: C1, endChar: C2} &
   parse.edgeMatch{fromNode: N2, toNode: N3, startChar: C2, endChar: C3}.
 
 parse.edgeMatch{fromNode: N1, toNode: N2, startChar: C1, endChar: C2} :-
