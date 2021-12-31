@@ -94,7 +94,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           rec(name, {
             span: rec("span", {
               from: varr("P1"),
-              to: varr(`P${rule.items.length * 2}`),
+              to: varr(`P${rule.items.length + 1}`),
             }),
           }),
           or([
