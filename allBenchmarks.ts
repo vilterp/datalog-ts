@@ -1,6 +1,6 @@
 import { BenchmarkSpec } from "./util/benchmark";
 import { fpBenchmarks } from "./apps/fp/benchmarks";
-import { uploadResultToAirtable } from "./util/airtable";
+import { uploadResultToAirtable as postResultToAirtable } from "./util/airtable";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
   fpBenchmarks,
@@ -14,7 +14,9 @@ async function runAll() {
       console.log(`  ${entry.name}`);
       const res = entry.run();
       console.log("  ", res);
-      await uploadResultToAirtable(`${suiteName}/${entry.name}`, res);
+      const recordName = `${suiteName}/${entry.name}`;
+      await postResultToAirtable(recordName, res);
+      console.log(`posted to airtable: ${recordName}`);
     }
   }
 }
