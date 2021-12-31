@@ -116,11 +116,7 @@ export function CodeEditor(props: {
 
   return (
     <div>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: props.highlightCSS,
-        }}
-      />
+      <style>{props.highlightCSS}</style>
       <div style={{ display: "flex" }}>
         <Editor
           name="wut" // type error without this, even tho optional
