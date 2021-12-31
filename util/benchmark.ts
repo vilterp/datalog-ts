@@ -2,6 +2,8 @@ import { ProcessFn } from "./ddTest";
 import fs from "fs";
 import { parseDDTest } from "./ddTest/parser";
 import { Performance } from "w3c-hr-time";
+import v8profiler from "v8-profiler-node8";
+import tmp from "tmp";
 
 const performance = new Performance();
 
@@ -19,20 +21,42 @@ export type BenchmarkResult =
     }
   | { type: "Errored"; error: Error };
 
-function doBenchmark(repetitions: number, op: () => void): BenchmarkResult {
-  const before = performance.now();
-  for (let i = 0; i < repetitions; i++) {
-    op();
-    if (i % 10 === 0) {
-      console.log(i);
+export function doBenchmark(
+  repetitions: number,
+  op: () => void
+): BenchmarkResult {
+  try {
+    v8profiler.startProfiling();
+    const before = performance.now();
+    for (let i = 0; i < repetitions; i++) {
+      op();
+      if (i % 10 === 0) {
+        console.log(i);
+      }
     }
+    const after = performance.now();
+    const profile = v8profiler.stopProfiling();
+    v8profiler.deleteAllProfiles();
+    const profileName = `profile-${Math.random()}.cpuprofile`;
+    const tmpFile = tmp.tmpNameSync({ name: profileName });
+    console.log(tmpFile);
+
+    const file = fs.createWriteStream(tmpFile);
+    profile
+      .export()
+      .pipe(file)
+      .on("finish", () => {
+        console.log("wrote profile to", tmpFile);
+      });
+    return {
+      type: "Finished",
+      repetitions,
+      totalTimeMS: after - before,
+      profilePath: tmpFile,
+    };
+  } catch (error) {
+    return { type: "Errored", error };
   }
-  const after = performance.now();
-  return {
-    type: "Finished",
-    repetitions,
-    totalTimeMS: after - before,
-  };
 }
 
 export function runDDBenchmark(
