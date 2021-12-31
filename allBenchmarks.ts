@@ -15,8 +15,11 @@ async function runAll() {
       const res = entry.run();
       console.log("  ", res);
       const recordName = `${suiteName}/${entry.name}`;
-      await postResultToAirtable(recordName, res);
-      console.log(`posted to airtable: ${recordName}`);
+      const airtableRecords = await postResultToAirtable(recordName, res);
+      console.log(
+        "posted to airtable:",
+        airtableRecords.map((r) => r.id)
+      );
     }
   }
 }

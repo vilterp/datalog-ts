@@ -11,7 +11,8 @@ export async function uploadResultToAirtable(
   const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
     process.env.AIRTABLE_BASE_ID
   );
-  await base("Benchmark Runs").create([
+  const profileURL = await uploadProfileToS3(result.profilePath);
+  return await base("Benchmark Runs").create([
     {
       fields: {
         "benchmark name": name,
@@ -21,9 +22,7 @@ export async function uploadResultToAirtable(
         "git branch": process.env.GIT_BRANCH || process.env.GITHUB_REF,
         environment: process.env.BENCHMARK_ENV,
         profiling: !!result.profilePath,
-        "profile URL": result.profilePath
-          ? await uploadProfileToS3(result.profilePath)
-          : null,
+        "profile URL": result.profilePath ? profileURL : null,
       },
     },
   ]);
