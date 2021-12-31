@@ -27,7 +27,15 @@ function Main() {
   );
 
   interp = interp.doLoad("main.dl");
-  interp = loadInterpreter(interp, editorState, fpLanguage.expr, flatten);
+  const { interp: newInterp, error } = loadInterpreter(
+    interp,
+    editorState,
+    fpLanguage.expr,
+    flatten
+  );
+  interp = newInterp;
+
+  console.log(error);
 
   return (
     <div>
@@ -39,6 +47,7 @@ function Main() {
         highlightCSS={highlightCSS}
         state={editorState}
         setState={setEditorState}
+        loadError={error}
       />
       <CollapsibleWithHeading
         heading="Facts &amp; Rules"

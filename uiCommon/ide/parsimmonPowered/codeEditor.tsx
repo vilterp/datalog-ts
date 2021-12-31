@@ -18,18 +18,18 @@ import {
 } from "../keymap";
 import { KeyBindingsTable } from "../editorCommon";
 
-type Error =
+type EvalError =
   | { type: "ParseError"; expected: string[]; offset: number }
-  | { type: "EvalError"; err: Error };
+  | { type: "EvalError"; err: EvalError };
 
 export function loadInterpreter<AST>(
   initialInterp: AbstractInterpreter,
   state: EditorState,
   parse: Parsimmon.Parser<AST>,
   flatten: (t: AST) => Term[]
-): AbstractInterpreter {
+): { interp: AbstractInterpreter; error: EvalError | null } {
   let interp = initialInterp;
-  let error: Error | null = null;
+  let error: EvalError | null = null;
 
   interp = interp.evalStr(`ide.Cursor{idx: ${state.cursorPos}}.`)[1];
 
@@ -53,15 +53,16 @@ export function loadInterpreter<AST>(
     }
   }
 
-  return interp;
+  return { interp, error };
 }
 
-export function CodeEditor<AST>(props: {
+export function CodeEditor(props: {
   interp: AbstractInterpreter;
   getSuggestions: (interp: AbstractInterpreter) => Suggestion[];
   highlightCSS: string;
   state: EditorState;
   setState: (st: EditorState) => void;
+  loadError: EvalError | null;
 }) {
   const st = props.state;
   const setCursorPos = (pos: number) => {
@@ -71,7 +72,7 @@ export function CodeEditor<AST>(props: {
     });
   };
 
-  let error: Error | null = null;
+  let evalError: EvalError | null = null;
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
   try {
@@ -79,8 +80,8 @@ export function CodeEditor<AST>(props: {
     suggestions = props.getSuggestions(props.interp);
     typeErrors = getTypeErrors(props.interp);
   } catch (e) {
-    error = { type: "EvalError", err: e };
-    console.error("eval error", error.err);
+    evalError = { type: "EvalError", err: e };
+    console.error("eval error", evalError.err);
   }
 
   if (typeErrors.length > 0) {
@@ -88,7 +89,9 @@ export function CodeEditor<AST>(props: {
   }
   const errors: { offset: number }[] = [
     ...typeErrors.map((e) => ({ offset: e.span.from })),
-    ...(error && error.type === "ParseError" ? [{ offset: error.offset }] : []),
+    ...(props.loadError && props.loadError.type === "ParseError"
+      ? [{ offset: props.loadError.offset }]
+      : []),
   ];
 
   const haveSuggestions = suggestions.length > 0;
@@ -138,7 +141,9 @@ export function CodeEditor<AST>(props: {
             highlight(
               props.interp,
               props.state.source,
-              error && error.type === "ParseError" ? error.offset : null,
+              props.loadError && props.loadError.type === "ParseError"
+                ? props.loadError.offset
+                : null,
               typeErrors
             )
           }
@@ -212,12 +217,12 @@ export function CodeEditor<AST>(props: {
         </div>
       </div>
       <div style={{ fontFamily: "monospace", color: "red" }}>
-        {!error ? (
+        {!evalError ? (
           <>&nbsp;</>
-        ) : error.type === "ParseError" ? (
-          `Parse error: expected ${error.expected.join(" or ")}`
+        ) : evalError.type === "ParseError" ? (
+          `Parse error: expected ${evalError.expected.join(" or ")}`
         ) : (
-          `Eval error: ${error.err}`
+          `Eval error: ${evalError.err}`
         )}
       </div>
     </div>
