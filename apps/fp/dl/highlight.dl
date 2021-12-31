@@ -4,7 +4,6 @@ hl.Segment{type: T, span: S, highlight: H} :-
   hl.segmentDefn{type: T, span: S, highlight: H} |
   hl.segmentDefnHL{type: T, span: S, highlight: H} |
   hl.segmentUsage{type: T, span: S, highlight: H} |
-  hl.segmentUndefinedVar{type: T, span: S, highlight: H} |
   hl.segmentUsageHL{type: T, span: S, highlight: H} |
   hl.segmentStr{type: T, span: S, highlight: H} |
   hl.segmentInt{type: T, span: S, highlight: H} |
@@ -27,8 +26,8 @@ hl.segmentUsage{type: "usage", span: S, highlight: false} :-
 # TODO: this is a hack.
 # it's not that it's undefined, it's just that it'll only be seen
 # if the usage rule doesn't match.
-hl.segmentUndefinedVar{type: "undefined-var", span: S, highlight: false} :-
-  ast.Var{location: S}.
+# hl.segmentUndefinedVar{type: "undefined-var", span: S, highlight: false} :-
+#   ast.Var{location: S}.
 hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S} &
   ast.Var{location: S}.

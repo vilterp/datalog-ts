@@ -6,72 +6,87 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Performance } from "w3c-hr-time";
 import * as fs from "fs";
 import { fsLoader } from "../../core/fsLoader";
-import { ppt } from "../../core/pretty";
-import { assertStringEqual } from "../../util/testing";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 const performance = new Performance();
 
+const INPUT = `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`;
+
 export const fpBenchmarks: BenchmarkSpec[] = [
   {
-    name: "typeQuery1",
+    name: "typeQuery1-simple",
     run(): BenchmarkResult {
-      return fpTest(
-        1000,
-        `let x = 2 in let y = 3 in let z = "hello world " in concat(z, intToString(plus(x, 3)))`
+      const originalInterp: AbstractInterpreter = new SimpleInterpreter(
+        "apps/fp/dl",
+        fsLoader
       );
+      return fpBench(originalInterp, 1000, INPUT);
+    },
+  },
+  {
+    name: "typeQuery1-incr",
+    run(): BenchmarkResult {
+      const originalInterp: AbstractInterpreter = new IncrementalInterpreter(
+        "apps/fp/dl",
+        fsLoader
+      );
+      return fpBench(originalInterp, 1000, INPUT);
     },
   },
 ];
 
-function fpTest(repetitions: number, input): BenchmarkResult {
-  let originalInterp: AbstractInterpreter = new SimpleInterpreter(
-    "apps/fp/dl",
-    fsLoader
-  ); // hmmm
-  const [_, newInterp] = originalInterp.evalStmt({
-    type: "LoadStmt",
-    path: "main.dl",
-  });
-  originalInterp = newInterp;
+function fpBench(
+  emptyInterp: AbstractInterpreter,
+  repetitions: number,
+  input: string
+): BenchmarkResult {
+  try {
+    let loadedInterp = emptyInterp.evalStmt({
+      type: "LoadStmt",
+      path: "main.dl",
+    })[1];
 
-  // TODO: get these from a DD file
-  const parsed = language.expr.tryParse(input);
-  const flattened = flatten(parsed);
+    // TODO: get these from a DD file
+    const parsed = language.expr.tryParse(input);
+    const flattened = flatten(parsed);
 
-  const before = performance.now();
+    const before = performance.now();
 
-  v8profiler.startProfiling();
-  for (let i = 0; i < repetitions; i++) {
-    let interp = originalInterp;
-    if (i % 10 === 0) {
-      console.log("  ", i);
+    v8profiler.startProfiling();
+    for (let i = 0; i < repetitions; i++) {
+      let interp = loadedInterp;
+      if (i % 10 === 0) {
+        console.log("  ", i);
+      }
+      for (let record of flattened) {
+        interp = interp.insert(record);
+      }
+      interp.queryStr("tc.Type{}");
+      interp.queryStr("hl.Segment{}");
+      interp.queryStr("ide.Suggestion{}");
+      interp.queryStr("ide.RenameCandidate{}");
     }
-    for (let record of flattened) {
-      interp = interp.insert(record);
-    }
-    const res = interp.queryStr("tc.Type{id: 0, type: T}");
-    assertStringEqual(
-      'tc.Type{id: 0, type: "string"}',
-      res.map((res) => ppt(res.term)).join(".\n")
-    );
+
+    const after = performance.now();
+    const profile = v8profiler.stopProfiling();
+    v8profiler.deleteAllProfiles();
+    const profilePath = `profile-${Math.random()}.cpuprofile`;
+    const file = fs.createWriteStream(profilePath);
+    profile
+      .export()
+      .pipe(file)
+      .on("finish", () => {
+        console.log("wrote profile to", profilePath);
+      });
+
+    return {
+      type: "Finished",
+      repetitions,
+      totalTimeMS: after - before,
+      profilePath,
+    };
+  } catch (error) {
+    return { type: "Errored", error };
   }
-
-  const after = performance.now();
-  const profile = v8profiler.stopProfiling();
-  v8profiler.deleteAllProfiles();
-  const profilePath = `profile-${Math.random()}.cpuprofile`;
-  const file = fs.createWriteStream(profilePath);
-  profile
-    .export()
-    .pipe(file)
-    .on("finish", () => {
-      console.log("wrote profile to", profilePath);
-    });
-
-  return {
-    repetitions,
-    totalTimeMS: after - before,
-    profilePath,
-  };
 }

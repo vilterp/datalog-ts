@@ -12,9 +12,10 @@ import { initialEditorState } from "../../../uiCommon/ide/types";
 import highlightCSS from "./highlight.css";
 import { loader } from "../dl";
 import { getSuggestions } from "./suggestions";
+import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 
 function Main() {
-  const interp = new SimpleInterpreter(".", loader);
+  const interp = new IncrementalInterpreter(".", loader);
 
   const [editorState, setEditorState] = useJSONLocalStorage(
     "editor-state",
