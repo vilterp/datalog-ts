@@ -1,4 +1,5 @@
 import React from "react";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
 import { contains, lastItem, toggle } from "../../util/util";
@@ -12,6 +13,7 @@ import {
 import * as styles from "./styles";
 
 export function RelationTree(props: {
+  interp: AbstractInterpreter;
   allRules: Relation[];
   allTables: Relation[];
   highlight: HighlightProps;
@@ -74,12 +76,14 @@ export function RelationTree(props: {
                 highlight.term.type === "Record" &&
                 highlight.term.relation === rel.name;
               const isOpen = contains(props.openRelations, item.relation.name);
+              const count = props.interp.queryStr(`${rel.name}{}`).length;
               return (
                 <>
                   <span
                     key={rel.name}
                     style={styles.tab({
                       selected: isOpen,
+                      nonempty: count > 0,
                       highlighted:
                         isHighlightedRelation || isRelationOfHighlightedTerm,
                     })}
@@ -99,6 +103,20 @@ export function RelationTree(props: {
                   >
                     {lastItem(rel.name.split("."))}
                   </span>
+                  {isOpen ? (
+                    <>
+                      {" "}
+                      <span
+                        onClick={() =>
+                          props.setOpenRelations(
+                            toggle(props.openRelations, rel.name)
+                          )
+                        }
+                      >
+                        (x)
+                      </span>
+                    </>
+                  ) : null}
                 </>
               );
             }

@@ -67,6 +67,7 @@ export function Explorer(props: {
         }}
       >
         <RelationTree
+          interp={props.interp}
           allRules={allRules}
           allTables={allTables}
           highlight={highlightProps}
