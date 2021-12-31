@@ -4,8 +4,8 @@ import { uploadResultToAirtable as postResultToAirtable } from "./util/airtable"
 import { parserBenchmarks } from "./parserlib/benchmarks";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
-  fpBenchmarks,
   parserBenchmarks,
+  fpBenchmarks,
 };
 
 async function runAll() {

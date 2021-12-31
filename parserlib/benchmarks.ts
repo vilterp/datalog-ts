@@ -8,6 +8,7 @@ import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { parseGrammar } from "./meta";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
+import { parse } from "./parser";
 
 const performance = new Performance();
 
@@ -28,7 +29,7 @@ export const parserBenchmarks: BenchmarkSpec[] = [
     name: "parse-json-simple",
     run(): BenchmarkResult {
       const interp: AbstractInterpreter = new SimpleInterpreter(".", fsLoader);
-      return parserTest(interp, 10, GRAMMAR, INPUT);
+      return parserTestDatalog(interp, 10, GRAMMAR, INPUT);
     },
   },
   {
@@ -38,12 +39,18 @@ export const parserBenchmarks: BenchmarkSpec[] = [
         ".",
         fsLoader
       );
-      return parserTest(interp, 10, GRAMMAR, INPUT);
+      return parserTestDatalog(interp, 10, GRAMMAR, INPUT);
+    },
+  },
+  {
+    name: "parse-json-native",
+    run(): BenchmarkResult {
+      return parserTestNativeJS(10000, GRAMMAR, INPUT);
     },
   },
 ];
 
-function parserTest(
+function parserTestDatalog(
   emptyInterp: AbstractInterpreter,
   repetitions: number,
   grammarSource: string,
@@ -69,6 +76,48 @@ function parserTest(
       interp = interp.insertAll(inputDL);
 
       interp.queryStr("parse.fullMatch{}");
+    }
+
+    const after = performance.now();
+    const profile = v8profiler.stopProfiling();
+    v8profiler.deleteAllProfiles();
+    const profilePath = `profile-${Math.random()}.cpuprofile`;
+    const file = fs.createWriteStream(profilePath);
+    profile
+      .export()
+      .pipe(file)
+      .on("finish", () => {
+        console.log("wrote profile to", profilePath);
+      });
+
+    return {
+      type: "Finished",
+      repetitions,
+      totalTimeMS: after - before,
+      profilePath,
+    };
+  } catch (error) {
+    return { type: "Errored", error };
+  }
+}
+
+function parserTestNativeJS(
+  repetitions: number,
+  grammarSource: string,
+  input: string
+): BenchmarkResult {
+  try {
+    const grammarParsed = parseGrammar(grammarSource);
+
+    const before = performance.now();
+
+    v8profiler.startProfiling();
+    for (let i = 0; i < repetitions; i++) {
+      if (i % 10 === 0) {
+        console.log("  ", i);
+      }
+
+      parse(grammarParsed, "main", input);
     }
 
     const after = performance.now();
