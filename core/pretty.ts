@@ -10,11 +10,29 @@ import {
   InvocationLocation,
   SituatedBinding,
   BinExpr,
+  Statement,
 } from "./types";
 import * as pp from "prettier-printer";
 import { flatMapObjToList, mapObjToList, repeat, flatMap } from "../util/util";
 import { Tree } from "../util/tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
+
+export function prettyPrintStatement(stmt: Statement): pp.IDoc {
+  switch (stmt.type) {
+    case "Comment":
+      return ["#", stmt.comment];
+    case "Insert":
+      return [prettyPrintTerm(stmt.record), "."];
+    case "Query":
+      return [prettyPrintTerm(stmt.record), "."];
+    case "Rule":
+      return [prettyPrintRule(stmt.rule)];
+    case "TableDecl":
+      return [".table ", stmt.name];
+    case "LoadStmt":
+      return [".load ", stmt.path];
+  }
+}
 
 export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
@@ -329,4 +347,8 @@ export function ppBE(term: BinExpr): string {
 
 export function ppRule(rule: Rule): string {
   return pp.render(100, prettyPrintRule(rule));
+}
+
+export function pps(stmt: Statement): string {
+  return pp.render(100, prettyPrintStatement(stmt));
 }

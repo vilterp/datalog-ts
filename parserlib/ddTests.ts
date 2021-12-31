@@ -12,7 +12,7 @@ import { flatten } from "./flatten";
 import { ppRule, ppt } from "../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { Rec, Rule } from "../core/types";
+import { Rule } from "../core/types";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 

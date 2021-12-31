@@ -190,20 +190,8 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
 
 function succeedRule(name: string): dl.Rule {
   return dl.rule(
-    rec(name, {
-      span: rec("span", { from: varr("P1"), to: varr("P2") }),
-    }),
-    or([
-      and([
-        rec("input.char", { id: varr("P1") }),
-        {
-          type: "BinExpr",
-          left: varr("P1"),
-          op: "==",
-          right: varr("P2"),
-        },
-      ]),
-    ])
+    rec(name, { span: rec("span", { from: varr("P1"), to: varr("P1") }) }),
+    or([and([rec("input.char", { id: varr("P1") })])])
   );
 }
 
