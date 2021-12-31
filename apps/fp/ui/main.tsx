@@ -35,8 +35,6 @@ function Main() {
   );
   interp = newInterp;
 
-  console.log(error);
-
   return (
     <div>
       <h1>Datalog Typechecker</h1>

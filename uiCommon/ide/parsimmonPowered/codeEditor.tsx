@@ -87,7 +87,7 @@ export function CodeEditor(props: {
   if (typeErrors.length > 0) {
     console.log("type errors", typeErrors);
   }
-  const errors: { offset: number }[] = [
+  const locatedErrors: { offset: number }[] = [
     ...typeErrors.map((e) => ({ offset: e.span.from })),
     ...(props.loadError && props.loadError.type === "ParseError"
       ? [{ offset: props.loadError.offset }]
@@ -101,7 +101,7 @@ export function CodeEditor(props: {
       interp: props.interp,
       state: modifiedState ? modifiedState : st,
       suggestions,
-      errors,
+      errors: locatedErrors,
     };
     if (action.available(ctx)) {
       props.setState(action.apply(ctx));
@@ -111,8 +111,11 @@ export function CodeEditor(props: {
     interp: props.interp,
     state: st,
     suggestions,
-    errors,
+    errors: locatedErrors,
   };
+  const errorsToDisplay = [evalError, props.loadError].filter(
+    (x) => x !== null
+  );
 
   return (
     <div>
@@ -213,13 +216,15 @@ export function CodeEditor(props: {
         </div>
       </div>
       <div style={{ fontFamily: "monospace", color: "red" }}>
-        {!evalError ? (
-          <>&nbsp;</>
-        ) : evalError.type === "ParseError" ? (
-          `Parse error: expected ${evalError.expected.join(" or ")}`
-        ) : (
-          `Eval error: ${evalError.err}`
-        )}
+        <ul>
+          {errorsToDisplay.map((err, idx) => (
+            <li key={idx}>
+              {err.type === "ParseError"
+                ? `Parse error: expected ${err.expected.join(" or ")}`
+                : `Eval error: ${err.err}`}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
