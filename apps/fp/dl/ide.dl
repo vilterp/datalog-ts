@@ -67,19 +67,19 @@ ide.UsageForCursor{usageLoc: UL} :-
 # all usages of the var the cursor is currently on,
 # with definition location.
 ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
-  ide.CurrentUsageDefn{defnLoc: DL, usageLoc: UL} |
-  ide.CurrentUsageUsage{defnLoc: DL, usageLoc: UL} |
-  ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
-ide.CurrentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
+  ide.currentUsageDefn{defnLoc: DL, usageLoc: UL} |
+  ide.currentUsageUsage{defnLoc: DL, usageLoc: UL} |
+  ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
+ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
   ide.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
-ide.CurrentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
+ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
   ide.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
-ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
-  ide.CurrentUsageUsage{defnLoc: DL} &
+ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
+  ide.currentUsageUsage{defnLoc: DL} &
   ide.Usage{definitionLoc: DL, usageLoc: UL}.
 
 ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
