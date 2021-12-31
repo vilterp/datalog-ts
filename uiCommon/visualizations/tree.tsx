@@ -23,7 +23,6 @@ function TreeViz(props: {
     const nodesRes = props.interp.queryStr(nodesQuery);
     const rootTerm = props.spec.attrs.rootTerm;
     const tree = treeFromRecords(nodesRes, rootTerm);
-    console.log({ tree });
     return (
       <TreeView
         collapseState={collapseState}

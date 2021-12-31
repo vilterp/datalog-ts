@@ -20,7 +20,7 @@ function mkTree(
   curRes: Res | null
 ): Tree<Res> {
   return {
-    key: curID.toString(),
+    key: ppt(curID),
     item: curRes,
     children: (termGraph[ppt(curID)] || []).map((child) =>
       mkTree(termGraph, child.bindings.ID, child)
