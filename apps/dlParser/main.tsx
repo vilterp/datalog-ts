@@ -20,9 +20,14 @@ function Main() {
     INITIAL_GRAMMAR_TEXT
   );
 
-  const { interp, error } = useMemo(
-    () => constructInterp({ grammarSource, source }),
-    [grammarSource, source]
+  const interp1 = useMemo(
+    () => constructInterp(grammarSource),
+    [grammarSource]
+  );
+
+  const { interp: interp2, error } = useMemo(
+    () => insertInput(interp1, source),
+    [source, interp1]
   );
 
   return (
@@ -57,18 +62,12 @@ function Main() {
         </tbody>
       </table>
       {error ? <pre style={{ color: "red" }}>{error.toString()}</pre> : null}
-      <Explorer interp={interp} showViz />
+      <Explorer interp={interp2} showViz />
     </>
   );
 }
 
-function constructInterp({
-  grammarSource,
-  source,
-}: {
-  grammarSource: string;
-  source: string;
-}) {
+function constructInterp(grammarSource: string) {
   let interp = new IncrementalInterpreter(
     ".",
     nullLoader
@@ -77,6 +76,10 @@ function constructInterp({
   const grammarParsed = parseGrammar(grammarSource);
   const rules = grammarToDL(grammarParsed);
   interp = interp.evalStmts(rules.map((rule) => ({ type: "Rule", rule })))[1];
+  return interp;
+}
+
+function insertInput(interp: AbstractInterpreter, source: string) {
   let error: Error = null;
   try {
     interp = interp.insertAll(inputToDL(source));
