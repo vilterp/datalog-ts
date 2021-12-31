@@ -85,30 +85,6 @@ application/datalog
 main{span: span{from: 0, to: P6}}.
 
 gram
-main :- ["[", repSep([a-z], ","), "]"].
-----
-application/datalog
-main{span: span{from: P1, to: P6}} :- 
-  main_seq_0{span: span{from: P1, to: P2}} &
-  main_seq_1{span: span{from: P2, to: P3}} &
-  main_seq_2{span: span{from: P3, to: P4}}.
-main_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: "[", id: P1} &
-  input.next{left: P1, right: P2}.
-main_seq_1{span: span{from: P1, to: P4}} :- 
-  main_seq_1_rep{span: span{from: P1, to: P4}} |
-  main_seq_1_rep{span: span{from: P1, to: P2}} &
-  main_seq_1_sep{span: span{from: P2, to: P3}} &
-  main_seq_1{span: span{from: P3, to: P4}}.
-main_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "a" <= C & C <= "z".
-main_seq_1_sep{span: span{from: P1, to: P2}} :- 
-  input.char{char: ",", id: P1} &
-  input.next{left: P1, right: P2}.
-main_seq_2{span: span{from: P1, to: P2}} :- 
-  input.char{char: "]", id: P1} &
-  input.next{left: P1, right: P2}.
-
-gram
 main :- (foo | bar).
 foo :- "foo".
 bar :- "bar".
@@ -133,6 +109,42 @@ main{span: span{from: P1, to: P2}} :-
   main_choice_1{span: span{from: P1, to: P2}}.
 main_choice_0{span: span{from: P1, to: P2}} :- foo{span: span{from: P1, to: P2}}.
 main_choice_1{span: span{from: P1, to: P2}} :- bar{span: span{from: P1, to: P2}}.
+
+input
+foo
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+input
+bar
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+gram
+main :- ["[", repSep([a-z], ","), "]"].
+----
+application/datalog
+main{span: span{from: P1, to: P6}} :- 
+  main_seq_0{span: span{from: P1, to: P2}} &
+  main_seq_1{span: span{from: P2, to: P3}} &
+  main_seq_2{span: span{from: P3, to: P4}}.
+main_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "[", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_1{span: span{from: P1, to: P4}} :- 
+  main_seq_1_rep{span: span{from: P1, to: P4}} |
+  main_seq_1_rep{span: span{from: P1, to: P2}} &
+  main_seq_1_sep{span: span{from: P2, to: P3}} &
+  main_seq_1{span: span{from: P3, to: P4}}.
+main_seq_1_rep{span: span{from: P1, to: P1}} :- input.char{char: C, id: P1} & "a" <= C & C <= "z".
+main_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "]", id: P1} &
+  input.next{left: P1, right: P2}.
 
 gram
 main :- repSep([0-9], "").
