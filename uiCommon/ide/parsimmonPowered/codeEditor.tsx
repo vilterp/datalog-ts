@@ -1,13 +1,13 @@
 import React from "react";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import Editor from "./editor";
-import { highlight } from "./highlight";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import Editor from "../editor";
+import { highlight } from "../highlight";
 import Parsimmon from "parsimmon";
-import { insertSuggestionAction, Suggestion } from "./suggestions";
-import { Rec, Term } from "../../core/types";
-import { clamp, mapObjToList } from "../../util/util";
-import { getTypeErrors, DLTypeError } from "./errors";
-import { EditorState, EditorAction, ActionContext } from "./types";
+import { insertSuggestionAction, Suggestion } from "../suggestions";
+import { Rec, Term } from "../../../core/types";
+import { clamp, mapObjToList } from "../../../util/util";
+import { getTypeErrors, DLTypeError } from "../errors";
+import { EditorState, EditorAction, ActionContext } from "../types";
 import {
   keyMap,
   KEY_DOWN_ARROW,
@@ -15,7 +15,8 @@ import {
   KEY_ENTER,
   KEY_A,
   KEY_Z,
-} from "./keymap";
+} from "../keymap";
+import { KeyBindingsTable } from "../editorCommon";
 
 type Error =
   | { type: "ParseError"; expected: string[]; offset: number }
@@ -173,21 +174,7 @@ export function CodeEditor<AST>(props: {
           onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
           onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
         />
-        <table>
-          <tbody>
-            {mapObjToList(keyMap, (key, action) => (
-              <tr
-                key={action.name}
-                style={{
-                  color: action.available(actionCtx) ? "black" : "lightgrey",
-                }}
-              >
-                <td>⌘{key.toUpperCase()}</td>
-                <td>{action.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <KeyBindingsTable actionCtx={actionCtx} />
         <div>
           {suggestions ? (
             <ul style={{ fontFamily: "monospace" }}>

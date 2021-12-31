@@ -5,7 +5,7 @@ import { flatten } from "../flatten";
 import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
 import { CollapsibleWithHeading } from "../../../uiCommon/generic/collapsible";
-import { CodeEditor } from "../../../uiCommon/ide/codeEditor";
+import { CodeEditor } from "../../../uiCommon/ide/parsimmonPowered/codeEditor";
 import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../../uiCommon/ide/types";
 // @ts-ignore

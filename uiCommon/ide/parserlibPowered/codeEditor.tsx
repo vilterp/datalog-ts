@@ -1,7 +1,8 @@
 import React from "react";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import Editor from "../../uiCommon/ide/editor";
-import { highlight } from "../../uiCommon/ide/highlight";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import Editor from "../editor";
+import { KeyBindingsTable } from "../editorCommon";
+import { highlight } from "../highlight";
 
 export function CodeEditor(props: {
   source: string;

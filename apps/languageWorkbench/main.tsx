@@ -25,7 +25,7 @@ import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { uniq } from "../../util/util";
-import { CodeEditor } from "./codeEditor";
+import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
 
 function Main() {
