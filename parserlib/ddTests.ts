@@ -9,10 +9,10 @@ import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { flatten } from "./flatten";
-import { ppt } from "../core/pretty";
+import { ppRule, ppt } from "../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { Rec } from "../core/types";
+import { Rec, Rule } from "../core/types";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
@@ -128,15 +128,15 @@ function flattenTest(test: string[]): TestOutput[] {
 }
 
 function datalogTest(test: string[]): TestOutput[] {
-  let grammarRecords: Rec[] = [];
+  let grammarRules: Rule[] = [];
   return test.map((input) => {
     const lines = input.split("\n");
     const firstLine = lines[0];
     const restOfInput = lines.slice(1).join("\n");
     if (firstLine === "gram") {
       const grammarParsed = parseGrammar(restOfInput);
-      grammarRecords = grammarToDL(grammarParsed);
-      return datalogOut(grammarRecords.map(ppt).join(".\n") + ".");
+      grammarRules = grammarToDL(grammarParsed);
+      return datalogOut(grammarRules.map(ppRule).join(".\n") + ".");
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
       let interp = new IncrementalInterpreter(
@@ -146,7 +146,9 @@ function datalogTest(test: string[]): TestOutput[] {
       // load parsing rules
       interp = interp.doLoad("parserlib/datalog/parse.dl");
       // insert grammar as data
-      interp = interp.insertAll(grammarRecords);
+      interp = interp.evalStmts(
+        grammarRules.map((rule) => ({ type: "Rule", rule }))
+      )[1];
       // insert input as data
       interp = interp.evalStr(".table input.char")[1];
       interp = interp.evalStr(".table input.next")[1];
