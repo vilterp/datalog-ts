@@ -155,7 +155,7 @@ function datalogTest(test: string[]): TestOutput[] {
       interp = interp.insertAll(inputToDL(restOfInput));
       // TODO: insert grammar interpreter
       try {
-        const results = interp.queryStr(`parse.fullMatch{}`);
+        const results = interp.queryStr(`main{}`);
         return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
       } catch (e) {
         return plainTextOut(`${e}`);
