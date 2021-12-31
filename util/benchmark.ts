@@ -3,6 +3,7 @@ import fs from "fs";
 import { parseDDTest } from "./ddTest/parser";
 import { Performance } from "w3c-hr-time";
 import v8profiler from "v8-profiler-node8";
+import tmp from "tmp";
 
 const performance = new Performance();
 
@@ -36,19 +37,22 @@ export function doBenchmark(
     const after = performance.now();
     const profile = v8profiler.stopProfiling();
     v8profiler.deleteAllProfiles();
-    const profilePath = `profile-${Math.random()}.cpuprofile`;
-    const file = fs.createWriteStream(profilePath);
+    const profileName = `profile-${Math.random()}.cpuprofile`;
+    const tmpFile = tmp.tmpNameSync({ name: profileName });
+    console.log(tmpFile);
+
+    const file = fs.createWriteStream(tmpFile);
     profile
       .export()
       .pipe(file)
       .on("finish", () => {
-        console.log("wrote profile to", profilePath);
+        console.log("wrote profile to", tmpFile);
       });
     return {
       type: "Finished",
       repetitions,
       totalTimeMS: after - before,
-      profilePath,
+      profilePath: tmpFile,
     };
   } catch (error) {
     return { type: "Errored", error };

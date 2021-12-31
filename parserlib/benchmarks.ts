@@ -1,6 +1,3 @@
-import v8profiler from "v8-profiler-node8";
-import { Performance } from "w3c-hr-time";
-import * as fs from "fs";
 import { BenchmarkResult, BenchmarkSpec, doBenchmark } from "../util/benchmark";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { SimpleInterpreter } from "../core/simple/interpreter";
@@ -9,8 +6,6 @@ import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { parseGrammar } from "./meta";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { parse } from "./parser";
-
-const performance = new Performance();
 
 const GRAMMAR = `main :- value.
 value :- (object | array | int | string | null).
