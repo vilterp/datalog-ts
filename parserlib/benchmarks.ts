@@ -67,10 +67,17 @@ async function parserTestDatalog(
 
   return doBenchmark(repetitions, () => {
     let interp = loadedInterp;
-    interp = interp.insertAll(grammarDL);
+    interp = interp.evalStmts(
+      grammarDL.map((rule) => ({ type: "Rule", rule }))
+    )[1];
     interp = interp.insertAll(inputDL);
 
-    interp.queryStr("parse.fullMatch{}");
+    interp = interp.evalStmts(
+      grammarDL.map((rule) => ({ type: "Rule", rule }))
+    )[1];
+    interp = interp.insertAll(inputDL);
+
+    interp.queryStr("main{span: span{from: 0, to: -2}}");
   });
 }
 
