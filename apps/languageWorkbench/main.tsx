@@ -56,7 +56,7 @@ function Playground() {
     );
   const [langEditorState, setLangEditorState] =
     useJSONLocalStorage<EditorState>(
-      "editor-state",
+      "language-workbench-editor-state",
       initialEditorState("let x = 2 in intToString(x)")
     );
   const cursorPos = langEditorState.cursorPos;

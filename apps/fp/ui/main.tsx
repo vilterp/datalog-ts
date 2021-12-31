@@ -22,7 +22,7 @@ function Main() {
   let interp = new IncrementalInterpreter(".", loader) as AbstractInterpreter;
 
   const [editorState, setEditorState] = useJSONLocalStorage(
-    "editor-state",
+    "fp-editor-state",
     initialEditorState("let x = 2 in intToString(x)")
   );
 

@@ -93,6 +93,18 @@ export function EditorBox(props: {
 }
 
 function KeyBindingsTable(props: { actionCtx: ActionContext }) {
+  const actionAvailable = (action: EditorAction): boolean => {
+    try {
+      return action.available(props.actionCtx);
+    } catch (e) {
+      console.warn(
+        `error while checking availability of action "${action.name}":`,
+        e.message
+      );
+      return false;
+    }
+  };
+
   return (
     <table>
       <tbody>
@@ -100,7 +112,7 @@ function KeyBindingsTable(props: { actionCtx: ActionContext }) {
           <tr
             key={action.name}
             style={{
-              color: action.available(props.actionCtx) ? "black" : "lightgrey",
+              color: actionAvailable(action) ? "black" : "lightgrey",
             }}
           >
             <td>⌘{key.toUpperCase()}</td>

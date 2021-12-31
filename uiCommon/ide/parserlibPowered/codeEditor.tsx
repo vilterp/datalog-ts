@@ -1,6 +1,5 @@
 import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import Editor from "../editor";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
 import { Suggestion } from "../suggestions";
