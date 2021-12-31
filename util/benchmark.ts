@@ -10,11 +10,14 @@ export type BenchmarkSpec = {
   run: () => BenchmarkResult;
 };
 
-export type BenchmarkResult = {
-  repetitions: number;
-  totalTimeMS: number;
-  profilePath?: string;
-};
+export type BenchmarkResult =
+  | {
+      type: "Finished";
+      repetitions: number;
+      totalTimeMS: number;
+      profilePath?: string;
+    }
+  | { type: "Errored"; error: Error };
 
 function doBenchmark(repetitions: number, op: () => void): BenchmarkResult {
   const before = performance.now();
@@ -26,6 +29,7 @@ function doBenchmark(repetitions: number, op: () => void): BenchmarkResult {
   }
   const after = performance.now();
   return {
+    type: "Finished",
     repetitions,
     totalTimeMS: after - before,
   };

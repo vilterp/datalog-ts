@@ -1,9 +1,11 @@
 import { BenchmarkSpec } from "./util/benchmark";
 import { fpBenchmarks } from "./apps/fp/benchmarks";
 import { uploadResultToAirtable as postResultToAirtable } from "./util/airtable";
+import { parserBenchmarks } from "./parserlib/benchmarks";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
   fpBenchmarks,
+  parserBenchmarks,
 };
 
 async function runAll() {

@@ -11,21 +11,31 @@ export async function uploadResultToAirtable(
   const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
     process.env.AIRTABLE_BASE_ID
   );
+  const record = await getRecord(name, result);
+  return await base("Benchmark Runs").create([{ fields: record }]);
+}
+
+async function getRecord(name: string, result: BenchmarkResult) {
+  const common = {
+    "benchmark name": name,
+    "commit sha": process.env.GIT_SHA || process.env.GITHUB_SHA,
+    "git branch": process.env.GIT_BRANCH || process.env.GITHUB_REF,
+    environment: process.env.BENCHMARK_ENV,
+  };
+  if (result.type === "Errored") {
+    return Promise.resolve({
+      ...common,
+      error: result.error.toString(),
+    });
+  }
   const profileURL = await uploadProfileToS3(result.profilePath);
-  return await base("Benchmark Runs").create([
-    {
-      fields: {
-        "benchmark name": name,
-        repetitions: result.repetitions,
-        "total time ms": result.totalTimeMS,
-        "commit sha": process.env.GIT_SHA || process.env.GITHUB_SHA,
-        "git branch": process.env.GIT_BRANCH || process.env.GITHUB_REF,
-        environment: process.env.BENCHMARK_ENV,
-        profiling: !!result.profilePath,
-        "profile URL": result.profilePath ? profileURL : null,
-      },
-    },
-  ]);
+  return {
+    ...common,
+    repetitions: result.repetitions,
+    "total time ms": result.totalTimeMS,
+    profiling: !!result.profilePath,
+    "profile URL": result.profilePath ? profileURL : null,
+  };
 }
 
 // gievn FS path, return S3 path

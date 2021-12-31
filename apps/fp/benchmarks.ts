@@ -21,7 +21,7 @@ export const fpBenchmarks: BenchmarkSpec[] = [
         "apps/fp/dl",
         fsLoader
       );
-      return fpTest(originalInterp, 1000, INPUT);
+      return fpBench(originalInterp, 1000, INPUT);
     },
   },
   {
@@ -31,57 +31,62 @@ export const fpBenchmarks: BenchmarkSpec[] = [
         "apps/fp/dl",
         fsLoader
       );
-      return fpTest(originalInterp, 1000, INPUT);
+      return fpBench(originalInterp, 1000, INPUT);
     },
   },
 ];
 
-function fpTest(
+function fpBench(
   emptyInterp: AbstractInterpreter,
   repetitions: number,
-  input
+  input: string
 ): BenchmarkResult {
-  let loadedInterp = emptyInterp.evalStmt({
-    type: "LoadStmt",
-    path: "main.dl",
-  })[1];
+  try {
+    let loadedInterp = emptyInterp.evalStmt({
+      type: "LoadStmt",
+      path: "main.dl",
+    })[1];
 
-  // TODO: get these from a DD file
-  const parsed = language.expr.tryParse(input);
-  const flattened = flatten(parsed);
+    // TODO: get these from a DD file
+    const parsed = language.expr.tryParse(input);
+    const flattened = flatten(parsed);
 
-  const before = performance.now();
+    const before = performance.now();
 
-  v8profiler.startProfiling();
-  for (let i = 0; i < repetitions; i++) {
-    let interp = loadedInterp;
-    if (i % 10 === 0) {
-      console.log("  ", i);
+    v8profiler.startProfiling();
+    for (let i = 0; i < repetitions; i++) {
+      let interp = loadedInterp;
+      if (i % 10 === 0) {
+        console.log("  ", i);
+      }
+      for (let record of flattened) {
+        interp = interp.insert(record);
+      }
+      interp.queryStr("tc.Type{}");
+      interp.queryStr("hl.Segment{}");
+      interp.queryStr("ide.Suggestion{}");
+      interp.queryStr("ide.RenameCandidate{}");
     }
-    for (let record of flattened) {
-      interp = interp.insert(record);
-    }
-    interp.queryStr("tc.Type{}");
-    interp.queryStr("hl.Segment{}");
-    interp.queryStr("ide.Suggestion{}");
-    interp.queryStr("ide.RenameCandidate{}");
+
+    const after = performance.now();
+    const profile = v8profiler.stopProfiling();
+    v8profiler.deleteAllProfiles();
+    const profilePath = `profile-${Math.random()}.cpuprofile`;
+    const file = fs.createWriteStream(profilePath);
+    profile
+      .export()
+      .pipe(file)
+      .on("finish", () => {
+        console.log("wrote profile to", profilePath);
+      });
+
+    return {
+      type: "Finished",
+      repetitions,
+      totalTimeMS: after - before,
+      profilePath,
+    };
+  } catch (error) {
+    return { type: "Errored", error };
   }
-
-  const after = performance.now();
-  const profile = v8profiler.stopProfiling();
-  v8profiler.deleteAllProfiles();
-  const profilePath = `profile-${Math.random()}.cpuprofile`;
-  const file = fs.createWriteStream(profilePath);
-  profile
-    .export()
-    .pipe(file)
-    .on("finish", () => {
-      console.log("wrote profile to", profilePath);
-    });
-
-  return {
-    repetitions,
-    totalTimeMS: after - before,
-    profilePath,
-  };
 }
