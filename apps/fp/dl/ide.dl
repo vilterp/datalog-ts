@@ -1,3 +1,5 @@
+.table ide.Cursor
+
 # type-directed autocomplete suggestions
 ide.Suggestion{id: I, name: N, type: T, typeMatch: M} :-
   ide.suggestionVar{id: I, name: N, type: T, typeMatch: M} |

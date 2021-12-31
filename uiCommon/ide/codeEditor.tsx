@@ -188,6 +188,31 @@ export function CodeEditor<AST>(props: {
             ))}
           </tbody>
         </table>
+        <div>
+          {suggestions ? (
+            <ul style={{ fontFamily: "monospace" }}>
+              {suggestions.map((sugg, idx) => (
+                <li
+                  key={JSON.stringify(sugg)}
+                  style={{
+                    cursor: "pointer",
+                    fontWeight: sugg.bold ? "bold" : "normal",
+                    textDecoration:
+                      st.selectedSuggIdx === idx ? "underline" : "none",
+                  }}
+                  onClick={() => {
+                    applyAction(insertSuggestionAction, {
+                      ...st,
+                      selectedSuggIdx: idx,
+                    });
+                  }}
+                >
+                  {sugg.display ? sugg.display : sugg.textToInsert}: {sugg.kind}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
       </div>
       <div style={{ fontFamily: "monospace", color: "red" }}>
         {!error ? (
@@ -198,29 +223,6 @@ export function CodeEditor<AST>(props: {
           `Eval error: ${error.err}`
         )}
       </div>
-      {suggestions ? (
-        <ul style={{ fontFamily: "monospace" }}>
-          {suggestions.map((sugg, idx) => (
-            <li
-              key={JSON.stringify(sugg)}
-              style={{
-                cursor: "pointer",
-                fontWeight: sugg.bold ? "bold" : "normal",
-                textDecoration:
-                  st.selectedSuggIdx === idx ? "underline" : "none",
-              }}
-              onClick={() => {
-                applyAction(insertSuggestionAction, {
-                  ...st,
-                  selectedSuggIdx: idx,
-                });
-              }}
-            >
-              {sugg.display ? sugg.display : sugg.textToInsert}: {sugg.kind}
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>,
   ];
 }
