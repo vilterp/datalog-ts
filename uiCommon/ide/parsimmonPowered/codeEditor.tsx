@@ -1,30 +1,12 @@
 import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import Editor from "../editor";
 import { highlight } from "../highlight";
 import Parsimmon from "parsimmon";
-import { insertSuggestionAction, Suggestion } from "../suggestions";
+import { Suggestion } from "../suggestions";
 import { Rec, Term } from "../../../core/types";
-import { clamp, mapObjToList } from "../../../util/util";
 import { getTypeErrors, DLTypeError } from "../errors";
-import { EditorState, EditorAction, ActionContext } from "../types";
-import {
-  keyMap,
-  KEY_DOWN_ARROW,
-  KEY_UP_ARROW,
-  KEY_ENTER,
-  KEY_A,
-  KEY_Z,
-} from "../keymap";
-import {
-  handleKeyDown,
-  KeyBindingsTable,
-  SuggestionsList,
-} from "../editorCommon";
-
-type EvalError =
-  | { type: "ParseError"; expected: string[]; offset: number }
-  | { type: "EvalError"; err: EvalError };
+import { EditorState, EvalError, ActionContext } from "../types";
+import { EditorBox } from "../editorCommon";
 
 export function loadInterpreter<AST>(
   initialInterp: AbstractInterpreter,
@@ -64,18 +46,10 @@ export function CodeEditor(props: {
   interp: AbstractInterpreter;
   getSuggestions: (interp: AbstractInterpreter) => Suggestion[];
   highlightCSS: string;
-  state: EditorState;
-  setState: (st: EditorState) => void;
+  editorState: EditorState;
+  setEditorState: (st: EditorState) => void;
   loadError: EvalError | null;
 }) {
-  const st = props.state;
-  const setCursorPos = (pos: number) => {
-    return props.setState({
-      ...st,
-      cursorPos: pos,
-    });
-  };
-
   let evalError: EvalError | null = null;
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
@@ -98,82 +72,33 @@ export function CodeEditor(props: {
       : []),
   ];
 
-  const actionCtx = {
+  const actionCtx: ActionContext = {
     interp: props.interp,
-    state: st,
+    state: props.editorState,
     suggestions,
     errors: locatedErrors,
-  };
-  const applyAction = (action: EditorAction) => {
-    if (action.available(actionCtx)) {
-      props.setState(action.apply(actionCtx));
-    }
   };
   const errorsToDisplay = [evalError, props.loadError].filter(
     (x) => x !== null
   );
+  const highlighted = highlight(
+    props.interp,
+    props.editorState.source,
+    props.loadError && props.loadError.type === "ParseError"
+      ? props.loadError.offset
+      : null,
+    typeErrors
+  );
 
   return (
-    <div>
-      <style>{props.highlightCSS}</style>
-      <div style={{ display: "flex" }}>
-        <Editor
-          name="wut" // type error without this, even tho optional
-          style={{
-            fontFamily: "monospace",
-            height: 150,
-            width: 500,
-            backgroundColor: "rgb(250, 250, 250)",
-            border: "1px solid black",
-            marginBottom: 10,
-          }}
-          autoFocus={true}
-          padding={10}
-          value={st.source}
-          onValueChange={(source) => props.setState({ ...st, source })}
-          cursorPos={st.cursorPos} // would be nice if we could have an onCursorPos
-          highlight={(_) =>
-            highlight(
-              props.interp,
-              props.state.source,
-              props.loadError && props.loadError.type === "ParseError"
-                ? props.loadError.offset
-                : null,
-              typeErrors
-            )
-          }
-          onKeyDown={(evt) => {
-            handleKeyDown(
-              evt,
-              suggestions,
-              props.state,
-              props.setState,
-              applyAction
-            );
-          }}
-          onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
-          onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
-        />
-        <KeyBindingsTable actionCtx={actionCtx} />
-        <div>
-          <SuggestionsList
-            suggestions={suggestions}
-            applyAction={applyAction}
-            editorState={st}
-          />
-        </div>
-      </div>
-      <div style={{ fontFamily: "monospace", color: "red" }}>
-        <ul>
-          {errorsToDisplay.map((err, idx) => (
-            <li key={idx}>
-              {err.type === "ParseError"
-                ? `Parse error: expected ${err.expected.join(" or ")}`
-                : `Eval error: ${err.err}`}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <EditorBox
+      actionCtx={actionCtx}
+      editorState={props.editorState}
+      setEditorState={props.setEditorState}
+      errorsToDisplay={errorsToDisplay}
+      highlightCSS={props.highlightCSS}
+      highlighted={highlighted}
+      suggestions={suggestions}
+    />
   );
 }

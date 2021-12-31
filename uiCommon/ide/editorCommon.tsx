@@ -1,5 +1,6 @@
 import React from "react";
 import { clamp, mapObjToList } from "../../util/util";
+import Editor from "./editor";
 import {
   keyMap,
   KEY_A,
@@ -9,7 +10,7 @@ import {
   KEY_Z,
 } from "./keymap";
 import { insertSuggestionAction, Suggestion } from "./suggestions";
-import { ActionContext, EditorAction, EditorState } from "./types";
+import { ActionContext, EditorAction, EditorState, EvalError } from "./types";
 
 export function KeyBindingsTable(props: { actionCtx: ActionContext }) {
   return (
@@ -102,4 +103,84 @@ export function handleKeyDown(
       return;
     }
   }
+}
+
+export function EditorBox(props: {
+  highlightCSS: string;
+  editorState: EditorState;
+  setEditorState: (st: EditorState) => void;
+  suggestions: Suggestion[];
+  errorsToDisplay: EvalError[];
+  actionCtx: ActionContext;
+  highlighted: React.ReactNode;
+}) {
+  const setCursorPos = (pos: number) => {
+    return props.setEditorState({
+      ...props.editorState,
+      cursorPos: pos,
+    });
+  };
+
+  const applyAction = (action: EditorAction) => {
+    if (action.available(props.actionCtx)) {
+      props.setEditorState(action.apply(props.actionCtx));
+    }
+  };
+
+  return (
+    <div>
+      <style>{props.highlightCSS}</style>
+      <div style={{ display: "flex" }}>
+        <Editor
+          name="wut" // type error without this, even tho optional
+          style={{
+            fontFamily: "monospace",
+            height: 150,
+            width: 500,
+            backgroundColor: "rgb(250, 250, 250)",
+            border: "1px solid black",
+            marginBottom: 10,
+          }}
+          autoFocus={true}
+          padding={10}
+          value={props.editorState.source}
+          onValueChange={(source) =>
+            props.setEditorState({ ...props.editorState, source })
+          }
+          cursorPos={props.editorState.cursorPos} // would be nice if we could have an onCursorPos
+          highlight={(_) => props.highlighted}
+          onKeyDown={(evt) => {
+            handleKeyDown(
+              evt,
+              props.suggestions,
+              props.editorState,
+              props.setEditorState,
+              applyAction
+            );
+          }}
+          onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
+          onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
+        />
+        <KeyBindingsTable actionCtx={props.actionCtx} />
+        <div>
+          <SuggestionsList
+            suggestions={props.suggestions}
+            applyAction={applyAction}
+            editorState={props.editorState}
+          />
+        </div>
+      </div>
+      <div style={{ fontFamily: "monospace", color: "red" }}>
+        <ul>
+          {props.errorsToDisplay.map((err, idx) => (
+            <li key={idx}>
+              {err.type === "ParseError"
+                ? `Parse error: expected ${err.expected.join(" or ")}`
+                : `Eval error: ${err.err}`}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }

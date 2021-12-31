@@ -43,8 +43,8 @@ function Main() {
         interp={interp}
         getSuggestions={getSuggestions}
         highlightCSS={highlightCSS}
-        state={editorState}
-        setState={setEditorState}
+        editorState={editorState}
+        setEditorState={setEditorState}
         loadError={error}
       />
       <CollapsibleWithHeading
