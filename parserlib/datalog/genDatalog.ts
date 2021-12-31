@@ -89,15 +89,6 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         ),
       ];
     case "Sequence": {
-      const headVars: { [key: string]: Term } = pairsToObj(
-        range(rule.items.length).map((idx) => ({
-          key: `seq_${idx}`,
-          val: rec("span", {
-            from: varr(`P${idx * 2 + 1}`),
-            to: varr(`P${idx * 2 + 2}`),
-          }),
-        }))
-      );
       return [
         dl.rule(
           rec(name, {
@@ -105,15 +96,14 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
               from: varr("P1"),
               to: varr(`P${rule.items.length * 2}`),
             }),
-            ...headVars,
           }),
           or([
             and([
               ...rule.items.map((char, idx) =>
                 rec(seqItemName(name, idx), {
                   span: rec("span", {
-                    from: varr(`P${idx * 2 + 1}`),
-                    to: varr(`P${idx * 2 + 2}`),
+                    from: varr(`P${idx + 1}`),
+                    to: varr(`P${idx + 2}`),
                   }),
                 })
               ),
