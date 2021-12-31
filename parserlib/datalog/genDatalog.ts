@@ -164,6 +164,11 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           }),
           or([
             and([
+              rec(`${name}_succeed`, {
+                span: rec("span", { from: varr("P1"), to: varr("P4") }),
+              }),
+            ]),
+            and([
               rec(`${name}_rep`, {
                 span: rec("span", { from: varr("P1"), to: varr("P4") }),
               }),
@@ -184,6 +189,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         ...ruleToDL(`${name}_rep`, rule.rep),
         // TODO: handle case where this is empty
         ...ruleToDL(`${name}_sep`, rule.sep),
+        succeedRule(`${name}_succeed`), // TODO: everyone should use the same succeed rule
       ];
   }
 }

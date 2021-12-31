@@ -83,6 +83,7 @@ main :- repSep("foo", "bar").
 ----
 application/datalog
 main{span: span{from: P1, to: P4}} :- 
+  main_succeed{span: span{from: P1, to: P4}} |
   main_rep{span: span{from: P1, to: P4}} |
   main_rep{span: span{from: P1, to: P2}} &
   main_sep{span: span{from: P2, to: P3}} &
@@ -101,6 +102,7 @@ main_sep{span: span{from: P1, to: P4}} :-
   input.next{left: P1, right: P2} &
   input.next{left: P2, right: P3} &
   input.next{left: P3, right: P4}.
+main_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 
 input
 foo
@@ -112,6 +114,7 @@ input
 foobar
 ----
 application/datalog
+main{span: span{from: 0, to: -2}}.
 
 input
 foobarfoo
@@ -131,6 +134,7 @@ main_seq_0{span: span{from: P1, to: P2}} :-
   input.char{char: "[", id: P1} &
   input.next{left: P1, right: P2}.
 main_seq_1{span: span{from: P1, to: P4}} :- 
+  main_seq_1_succeed{span: span{from: P1, to: P4}} |
   main_seq_1_rep{span: span{from: P1, to: P4}} |
   main_seq_1_rep{span: span{from: P1, to: P2}} &
   main_seq_1_sep{span: span{from: P2, to: P3}} &
@@ -143,6 +147,7 @@ main_seq_1_rep{span: span{from: P1, to: P2}} :-
 main_seq_1_sep{span: span{from: P1, to: P2}} :- 
   input.char{char: ",", id: P1} &
   input.next{left: P1, right: P2}.
+main_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 main_seq_2{span: span{from: P1, to: P2}} :- 
   input.char{char: "]", id: P1} &
   input.next{left: P1, right: P2}.
@@ -158,6 +163,7 @@ main :- repSep([0-9], "").
 ----
 application/datalog
 main{span: span{from: P1, to: P4}} :- 
+  main_succeed{span: span{from: P1, to: P4}} |
   main_rep{span: span{from: P1, to: P4}} |
   main_rep{span: span{from: P1, to: P2}} &
   main_sep{span: span{from: P2, to: P3}} &
@@ -168,17 +174,20 @@ main_rep{span: span{from: P1, to: P2}} :-
   "0" <= C &
   C <= "9".
 main_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+main_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 
 input
 1
 ----
 application/datalog
 main{span: span{from: 0, to: -2}}.
+main{span: span{from: 0, to: -2}}.
 
 input
 123
 ----
 application/datalog
+main{span: span{from: 0, to: -2}}.
 main{span: span{from: 0, to: -2}}.
 
 gram
@@ -200,6 +209,7 @@ array_seq_0{span: span{from: P1, to: P2}} :-
   input.char{char: "[", id: P1} &
   input.next{left: P1, right: P2}.
 array_seq_1{span: span{from: P1, to: P4}} :- 
+  array_seq_1_succeed{span: span{from: P1, to: P4}} |
   array_seq_1_rep{span: span{from: P1, to: P4}} |
   array_seq_1_rep{span: span{from: P1, to: P2}} &
   array_seq_1_sep{span: span{from: P2, to: P3}} &
@@ -208,6 +218,7 @@ array_seq_1_rep{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: 
 array_seq_1_sep{span: span{from: P1, to: P2}} :- 
   input.char{char: ",", id: P1} &
   input.next{left: P1, right: P2}.
+array_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 array_seq_2{span: span{from: P1, to: P2}} :- 
   input.char{char: "]", id: P1} &
   input.next{left: P1, right: P2}.
@@ -220,6 +231,7 @@ int_seq_0{span: span{from: P1, to: P2}} :-
   "0" <= C &
   C <= "9".
 int_seq_1{span: span{from: P1, to: P4}} :- 
+  int_seq_1_succeed{span: span{from: P1, to: P4}} |
   int_seq_1_rep{span: span{from: P1, to: P4}} |
   int_seq_1_rep{span: span{from: P1, to: P2}} &
   int_seq_1_sep{span: span{from: P2, to: P3}} &
@@ -230,6 +242,7 @@ int_seq_1_rep{span: span{from: P1, to: P2}} :-
   "0" <= C &
   C <= "9".
 int_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+int_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 keyValue{span: span{from: P1, to: P4}} :- 
   keyValue_seq_0{span: span{from: P1, to: P2}} &
   keyValue_seq_1{span: span{from: P2, to: P3}} &
@@ -257,6 +270,7 @@ object_seq_0{span: span{from: P1, to: P2}} :-
   input.char{char: "{", id: P1} &
   input.next{left: P1, right: P2}.
 object_seq_1{span: span{from: P1, to: P4}} :- 
+  object_seq_1_succeed{span: span{from: P1, to: P4}} |
   object_seq_1_rep{span: span{from: P1, to: P4}} |
   object_seq_1_rep{span: span{from: P1, to: P2}} &
   object_seq_1_sep{span: span{from: P2, to: P3}} &
@@ -265,6 +279,7 @@ object_seq_1_rep{span: span{from: P1, to: P2}} :- keyValue{span: span{from: P1, 
 object_seq_1_sep{span: span{from: P1, to: P2}} :- 
   input.char{char: ",", id: P1} &
   input.next{left: P1, right: P2}.
+object_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 object_seq_2{span: span{from: P1, to: P2}} :- 
   input.char{char: "}", id: P1} &
   input.next{left: P1, right: P2}.
@@ -276,6 +291,7 @@ string_seq_0{span: span{from: P1, to: P2}} :-
   input.char{char: "'", id: P1} &
   input.next{left: P1, right: P2}.
 string_seq_1{span: span{from: P1, to: P4}} :- 
+  string_seq_1_succeed{span: span{from: P1, to: P4}} |
   string_seq_1_rep{span: span{from: P1, to: P4}} |
   string_seq_1_rep{span: span{from: P1, to: P2}} &
   string_seq_1_sep{span: span{from: P2, to: P3}} &
@@ -286,6 +302,7 @@ string_seq_1_rep{span: span{from: P1, to: P2}} :-
   "a" <= C &
   C <= "z".
 string_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+string_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 string_seq_2{span: span{from: P1, to: P2}} :- 
   input.char{char: "'", id: P1} &
   input.next{left: P1, right: P2}.
@@ -300,3 +317,15 @@ value_choice_1{span: span{from: P1, to: P2}} :- array{span: span{from: P1, to: P
 value_choice_2{span: span{from: P1, to: P2}} :- int{span: span{from: P1, to: P2}}.
 value_choice_3{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
 value_choice_4{span: span{from: P1, to: P2}} :- null{span: span{from: P1, to: P2}}.
+
+input
+null
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+input
+[1,2,3]
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
