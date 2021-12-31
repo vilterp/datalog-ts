@@ -3,15 +3,15 @@ import { CSSProperties } from "react";
 export const highlightColor = "lightgrey";
 
 export function tab(props: {
-  selected: boolean;
-  nonempty: boolean;
+  open: boolean;
+  empty: boolean;
   highlighted: boolean;
 }): CSSProperties {
   return {
     cursor: "pointer",
-    color: "purple",
+    color: props.empty ? "black" : "purple",
     fontFamily: "monospace",
-    fontWeight: props.nonempty ? "bold" : "normal",
+    fontWeight: props.empty ? "normal" : "bold",
     backgroundColor: props.highlighted ? highlightColor : "",
   };
 }
