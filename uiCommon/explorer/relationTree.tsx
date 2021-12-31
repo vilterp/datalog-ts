@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Relation } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
 import { contains, lastItem, toggle } from "../../util/util";
@@ -12,6 +13,7 @@ import {
 import * as styles from "./styles";
 
 export function RelationTree(props: {
+  interp: AbstractInterpreter;
   allRules: Relation[];
   allTables: Relation[];
   highlight: HighlightProps;
@@ -73,15 +75,21 @@ export function RelationTree(props: {
                 highlight.type === "Term" &&
                 highlight.term.type === "Record" &&
                 highlight.term.relation === rel.name;
+              const isHighlighted =
+                isHighlightedRelation || isRelationOfHighlightedTerm;
               const isOpen = contains(props.openRelations, item.relation.name);
+              const count = useMemo(
+                () => props.interp.queryStr(`${rel.name}{}`).length,
+                [props.interp, rel.name]
+              );
               return (
                 <>
                   <span
                     key={rel.name}
                     style={styles.tab({
-                      selected: isOpen,
-                      highlighted:
-                        isHighlightedRelation || isRelationOfHighlightedTerm,
+                      open: isOpen,
+                      empty: count === 0,
+                      highlighted: isHighlighted,
                     })}
                     onClick={() =>
                       props.setOpenRelations(
@@ -99,6 +107,9 @@ export function RelationTree(props: {
                   >
                     {lastItem(rel.name.split("."))}
                   </span>
+                  {count > 0 && isHighlighted ? (
+                    <span style={{ color: "grey" }}> ({count})</span>
+                  ) : null}
                 </>
               );
             }
