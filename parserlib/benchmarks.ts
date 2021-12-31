@@ -75,39 +75,9 @@ function parserTestNativeJS(
   grammarSource: string,
   input: string
 ): BenchmarkResult {
-  try {
-    const grammarParsed = parseGrammar(grammarSource);
+  const grammarParsed = parseGrammar(grammarSource);
 
-    const before = performance.now();
-
-    v8profiler.startProfiling();
-    for (let i = 0; i < repetitions; i++) {
-      if (i % 10 === 0) {
-        console.log("  ", i);
-      }
-
-      parse(grammarParsed, "main", input);
-    }
-
-    const after = performance.now();
-    const profile = v8profiler.stopProfiling();
-    v8profiler.deleteAllProfiles();
-    const profilePath = `profile-${Math.random()}.cpuprofile`;
-    const file = fs.createWriteStream(profilePath);
-    profile
-      .export()
-      .pipe(file)
-      .on("finish", () => {
-        console.log("wrote profile to", profilePath);
-      });
-
-    return {
-      type: "Finished",
-      repetitions,
-      totalTimeMS: after - before,
-      profilePath,
-    };
-  } catch (error) {
-    return { type: "Errored", error };
-  }
+  return doBenchmark(repetitions, () => {
+    parse(grammarParsed, "main", input);
+  });
 }
