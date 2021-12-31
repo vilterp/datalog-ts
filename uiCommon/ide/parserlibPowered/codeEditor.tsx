@@ -1,7 +1,6 @@
 import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import Editor from "../editor";
-import { KeyBindingsTable } from "../editorCommon";
 import { highlight } from "../highlight";
 
 export function CodeEditor(props: {
