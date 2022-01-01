@@ -27,7 +27,7 @@ export class IndexedCollection<T> {
   }
 
   indexNames(): string[] {
-    return Object.keys(this.indexes);
+    return [...this.indexes.keys()];
   }
 
   toJSON(): Json {
