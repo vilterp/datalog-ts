@@ -1,4 +1,4 @@
-import { Rule, Rec, OrExpr, AndClause, VarMappings, Res } from "../types";
+import { Rule, Rec, OrExpr, AndClause, VarMappings, Res, Term } from "../types";
 import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../binExpr";
@@ -238,6 +238,10 @@ function addRec(graph: RuleGraph, rec: Rec): AddResult {
 
 type ColName = string;
 
+function fastPPT(term: Term): string {
+  return JSON.stringify(term);
+}
+
 export function getIndexKey(res: Res, varNames: string[]): string {
   return varNames
     .map((varName) => {
@@ -248,7 +252,7 @@ export function getIndexKey(res: Res, varNames: string[]): string {
         );
       }
       // TODO: fastPPT
-      return ppt(term);
+      return fastPPT(term);
     })
     .join("/");
 }
