@@ -5,6 +5,8 @@ import { extractBinExprs } from "../binExpr";
 import {
   combineObjects,
   filterObj,
+  mapObjToList,
+  mapObjToListUnordered,
   permute,
   setAdd,
   setUnion,
@@ -239,7 +241,25 @@ function addRec(graph: RuleGraph, rec: Rec): AddResult {
 type ColName = string;
 
 function fastPPT(term: Term): string {
-  return JSON.stringify(term);
+  switch (term.type) {
+    case "Array":
+      return `[${term.items.map(fastPPT).join(",")}]`;
+    case "BinExpr":
+      return `${fastPPT(term.left)} ${term.op} ${term.right}`;
+    case "Bool":
+      return term.val.toString();
+    case "StringLit":
+      return term.val;
+    case "IntLit":
+      return term.val.toString();
+    case "Var":
+      return term.name;
+    case "Record":
+      return `${term.relation}{${mapObjToListUnordered(
+        term.attrs,
+        (k, v) => `${k}:${fastPPT(v)}`
+      )}}`;
+  }
 }
 
 export function getIndexKey(res: Res, varNames: string[]): string {
