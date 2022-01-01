@@ -25,7 +25,7 @@ export const parserBenchmarks: BenchmarkSpec[] = [
     run(): BenchmarkResult {
       return parserTestDatalog(
         () => new SimpleInterpreter(".", fsLoader),
-        10,
+        50,
         GRAMMAR,
         INPUT
       );
@@ -36,7 +36,7 @@ export const parserBenchmarks: BenchmarkSpec[] = [
     run(): BenchmarkResult {
       return parserTestDatalog(
         () => new IncrementalInterpreter(".", fsLoader),
-        10,
+        50,
         GRAMMAR,
         INPUT
       );
