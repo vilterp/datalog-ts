@@ -39,7 +39,6 @@ export function doBenchmark(
     v8profiler.deleteAllProfiles();
     const profileName = `profile-${Math.random()}.cpuprofile`;
     const tmpFile = tmp.tmpNameSync({ name: profileName });
-    console.log(tmpFile);
 
     const file = fs.createWriteStream(tmpFile);
     profile
