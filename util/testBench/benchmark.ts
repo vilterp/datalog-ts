@@ -37,6 +37,7 @@ export async function doBenchmark(
     }
     const after = performance.now();
     const profile = v8profiler.stopProfiling();
+    v8profiler.deleteAllProfiles();
 
     const profilePath = await exportProfile(profile);
 
