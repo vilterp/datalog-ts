@@ -106,11 +106,7 @@ export type AddResult = {
   tipID: NodeID;
 };
 
-export function addOr(
-  graph: RuleGraph,
-  ruleName: string,
-  or: OrExpr
-): AddResult {
+export function addOr(graph: RuleGraph, or: OrExpr): AddResult {
   if (or.opts.length === 1) {
     return addAnd(graph, or.opts[0].clauses);
   }
@@ -388,5 +384,5 @@ function addIndex(
   graph.nodes.get(nodeID).cache.createIndex(getIndexName(attrs), (res) => {
     return getIndexKey(res, attrs);
   });
-  return this; // TODO: stop pretending this is immutable
+  return graph; // TODO: stop pretending this is immutable
 }

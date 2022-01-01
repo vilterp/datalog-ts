@@ -30,11 +30,7 @@ export function addRule(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   // console.log("add", rule.head.relation);
   const substID = rule.head.relation;
-  const {
-    newGraph: withOr,
-    tipID: orID,
-    newNodeIDs,
-  } = addOr(graph, rule.head.relation, rule.defn);
+  const { newGraph: withOr, tipID: orID, newNodeIDs } = addOr(graph, rule.defn);
   const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
@@ -378,7 +374,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
   cache.insert(res);
-  return this; // TODO: stop pretending this is immutable
+  return graph; // TODO: stop pretending this is immutable
 }
 
 // TODO: retractStep
