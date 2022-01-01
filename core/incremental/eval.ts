@@ -370,22 +370,15 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
       // TODO: should this be its own trace node??
       return { term: res.term, bindings, trace: res.trace };
     })
-    .filter((x) => x !== null)
-    .toArray();
+    .filter((x) => x !== null);
 }
 
 // helpers
 
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.insert(res);
-  return {
-    ...graph,
-    nodes: graph.nodes.set(nodeID, {
-      ...graph.nodes.get(nodeID),
-      cache: newCache,
-    }),
-  };
+  cache.insert(res);
+  return this; // TODO: stop pretending this is immutable
 }
 
 // TODO: retractStep

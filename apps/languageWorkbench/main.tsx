@@ -69,16 +69,12 @@ function Playground() {
     dlErrors,
     ruleTree,
     traceTree,
-  } = useMemo(
-    () =>
-      constructInterp({
-        cursorPos,
-        dlSource,
-        grammarSource,
-        langSource,
-      }),
-    [cursorPos, dlSource, grammarSource, langSource]
-  );
+  } = constructInterp({
+    cursorPos,
+    dlSource,
+    grammarSource,
+    langSource,
+  });
 
   return (
     <>
