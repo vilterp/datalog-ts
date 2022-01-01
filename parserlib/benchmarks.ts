@@ -23,18 +23,23 @@ export const parserBenchmarks: BenchmarkSpec[] = [
   {
     name: "parse-json-simple",
     run(): BenchmarkResult {
-      const interp: AbstractInterpreter = new SimpleInterpreter(".", fsLoader);
-      return parserTestDatalog(interp, 10, GRAMMAR, INPUT);
+      return parserTestDatalog(
+        () => new SimpleInterpreter(".", fsLoader),
+        10,
+        GRAMMAR,
+        INPUT
+      );
     },
   },
   {
     name: "parse-json-incr",
     run(): BenchmarkResult {
-      const interp: AbstractInterpreter = new IncrementalInterpreter(
-        ".",
-        fsLoader
+      return parserTestDatalog(
+        () => new IncrementalInterpreter(".", fsLoader),
+        10,
+        GRAMMAR,
+        INPUT
       );
-      return parserTestDatalog(interp, 10, GRAMMAR, INPUT);
     },
   },
   {
@@ -46,17 +51,17 @@ export const parserBenchmarks: BenchmarkSpec[] = [
 ];
 
 function parserTestDatalog(
-  emptyInterp: AbstractInterpreter,
+  mkInterp: () => AbstractInterpreter,
   repetitions: number,
   grammarSource: string,
   input: string
 ): BenchmarkResult {
-  const loadedInterp = emptyInterp.doLoad("parserlib/datalog/parse.dl");
-  const grammarParsed = parseGrammar(grammarSource);
-  const grammarDL = grammarToDL(grammarParsed);
-  const inputDL = inputToDL(input);
-
   return doBenchmark(repetitions, () => {
+    const loadedInterp = mkInterp().doLoad("parserlib/datalog/parse.dl");
+    const grammarParsed = parseGrammar(grammarSource);
+    const grammarDL = grammarToDL(grammarParsed);
+    const inputDL = inputToDL(input);
+
     let interp = loadedInterp;
     interp = interp.insertAll(grammarDL);
     interp = interp.insertAll(inputDL);

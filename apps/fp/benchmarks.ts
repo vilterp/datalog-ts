@@ -16,41 +16,39 @@ export const fpBenchmarks: BenchmarkSpec[] = [
   {
     name: "typeQuery1-simple",
     run(): BenchmarkResult {
-      const originalInterp: AbstractInterpreter = new SimpleInterpreter(
-        "apps/fp/dl",
-        fsLoader
+      return fpBench(
+        () => new SimpleInterpreter("apps/fp/dl", fsLoader),
+        200,
+        INPUT
       );
-      return fpBench(originalInterp, 200, INPUT);
     },
   },
   {
     name: "typeQuery1-incr",
     run(): BenchmarkResult {
-      const originalInterp: AbstractInterpreter = new IncrementalInterpreter(
-        "apps/fp/dl",
-        fsLoader
+      return fpBench(
+        () => new IncrementalInterpreter("apps/fp/dl", fsLoader),
+        200,
+        INPUT
       );
-      return fpBench(originalInterp, 200, INPUT);
     },
   },
 ];
 
 function fpBench(
-  emptyInterp: AbstractInterpreter,
+  mkInterp: () => AbstractInterpreter,
   repetitions: number,
   input: string
 ): BenchmarkResult {
-  let loadedInterp = emptyInterp.evalStmt({
-    type: "LoadStmt",
-    path: "main.dl",
-  })[1];
-
   // TODO: get these from a DD file
   const parsed = language.expr.tryParse(input);
   const flattened = flatten(parsed);
 
   return doBenchmark(repetitions, () => {
-    let interp = loadedInterp;
+    let interp = mkInterp().evalStmt({
+      type: "LoadStmt",
+      path: "main.dl",
+    })[1];
     for (let record of flattened) {
       interp = interp.insert(record);
     }
