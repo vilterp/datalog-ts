@@ -10,10 +10,10 @@ const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
 
 async function runAll() {
   for (let suiteName of Object.keys(allBenchmarks)) {
-    console.log(suiteName);
+    console.group(suiteName);
     const suite = allBenchmarks[suiteName];
     for (let entry of suite) {
-      console.log(`  ${entry.name}`);
+      console.group(entry.name);
       const res = entry.run();
       console.log(res);
       const recordName = `${suiteName}/${entry.name}`;
@@ -22,7 +22,9 @@ async function runAll() {
         "posted to airtable:",
         airtableRecords.map((r) => r.id)
       );
+      console.groupEnd();
     }
+    console.groupEnd();
   }
 }
 
