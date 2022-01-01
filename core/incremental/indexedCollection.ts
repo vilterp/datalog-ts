@@ -1,67 +1,69 @@
-import { List, Map } from "immutable";
+import { Json } from "../../util/json";
 
 export function emptyIndexedCollection<T>(): IndexedCollection<T> {
-  return new IndexedCollection(List(), Map());
+  return new IndexedCollection([], new Map());
 }
 
+type Key = string[];
+
 type Index<T> = {
-  getKey: (t: T) => List<string>;
-  items: Map<List<string>, List<T>>;
+  getKey: (t: T) => Key;
+  items: Map<Key, T[]>;
 };
 
 export class IndexedCollection<T> {
-  private readonly allRecords: List<T>;
+  private readonly allRecords: T[];
   private readonly indexes: Map<string, Index<T>>;
   readonly size: number;
 
-  constructor(allRecords: List<T>, indexes: Map<string, Index<T>>) {
+  constructor(allRecords: T[], indexes: Map<string, Index<T>>) {
     this.allRecords = allRecords;
     this.indexes = indexes;
-    this.size = allRecords.size;
+    this.size = allRecords.length;
   }
 
-  all(): List<T> {
+  all(): T[] {
     return this.allRecords;
   }
 
   indexNames(): string[] {
-    return this.indexes.keySeq().toArray();
+    return Object.keys(this.indexes);
   }
 
-  toJSON(): object {
-    return this.indexes.toJSON();
+  toJSON(): Json {
+    // TODO
+    return {};
   }
 
-  createIndex(
-    name: string,
-    getKey: (t: T) => List<string>
-  ): IndexedCollection<T> {
-    return new IndexedCollection<T>(
-      this.allRecords,
-      this.indexes.set(name, {
-        getKey,
-        items: this.allRecords.reduce(
-          (accum, item) =>
-            accum.update(getKey(item), List(), (l) => l.push(item)),
-          Map()
-        ),
-      })
-    );
+  createIndex(name: string, getKey: (t: T) => Key) {
+    const index: Index<T> = {
+      getKey,
+      items: new Map<Key, T[]>(),
+    };
+    this.allRecords.forEach((item) => {
+      this.insertIntoIndex(index, item);
+    });
+    this.indexes.set(name, index);
   }
 
-  insert(item: T): IndexedCollection<T> {
-    return new IndexedCollection<T>(
-      this.allRecords.push(item),
-      this.indexes.map((index) => ({
-        ...index,
-        items: index.items.update(index.getKey(item), List(), (items) =>
-          items.push(item)
-        ),
-      }))
-    );
+  insert(item: T) {
+    this.allRecords.push(item);
+    this.indexes.forEach((index) => {
+      this.insertIntoIndex(index, item);
+    });
   }
 
-  get(indexName: string, key: List<string>): List<T> {
-    return this.indexes.get(indexName).items.get(key, List());
+  private insertIntoIndex(index: Index<T>, item: T) {
+    const key = index.getKey(item);
+    let itemsForKey: T[] = index.items.get(key);
+    if (!itemsForKey) {
+      itemsForKey = [];
+      index.items.set(key, itemsForKey);
+    }
+    itemsForKey.push(item);
+  }
+
+  get(indexName: string, key: Key): T[] {
+    return this.indexes.get(indexName).items.get(key) || [];
   }
 }
