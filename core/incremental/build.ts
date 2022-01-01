@@ -119,10 +119,11 @@ export function addOr(
   let outGraph = g1;
   let outNodeIDs = new Set<NodeID>([orID]);
   for (let orOption of or.opts) {
-    const { newGraph, newNodeIDs, tipID: andID } = addAnd(
-      outGraph,
-      orOption.clauses
-    );
+    const {
+      newGraph,
+      newNodeIDs,
+      tipID: andID,
+    } = addAnd(outGraph, orOption.clauses);
     outGraph = addEdge(newGraph, andID, orID);
     outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
   }
@@ -175,10 +176,11 @@ function addAndBinary(
   let outGraph = graph;
   const joinInfo = getJoinInfo(left, right);
   const varsToIndex = Object.keys(joinInfo.join);
-  const { newGraph: outGraph2, newNodeIDs: nn1, tipID: leftID } = addRec(
-    outGraph,
-    left
-  );
+  const {
+    newGraph: outGraph2,
+    newNodeIDs: nn1,
+    tipID: leftID,
+  } = addRec(outGraph, left);
   outGraph = outGraph2;
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
@@ -210,12 +212,11 @@ function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
     rec: rightRec,
     newNodeIDs: nn1,
   } = addJoinTree(ruleGraph, joinTree.right);
-  const { newGraph: newGraph2, tipID: andID, newNodeIDs: nn2 } = addAndBinary(
-    newGraph,
-    joinTree.left,
-    rightRec,
-    rightID
-  );
+  const {
+    newGraph: newGraph2,
+    tipID: andID,
+    newNodeIDs: nn2,
+  } = addAndBinary(newGraph, joinTree.left, rightRec, rightID);
   return {
     newGraph: newGraph2,
     tipID: andID,
@@ -241,18 +242,19 @@ function addRec(graph: RuleGraph, rec: Rec): AddResult {
 
 type ColName = string;
 
-export function getIndexKey(res: Res, varNames: string[]): List<string> {
-  return List(
-    varNames.map((varName) => {
+export function getIndexKey(res: Res, varNames: string[]): string {
+  return varNames
+    .map((varName) => {
       const term = res.bindings[varName];
       if (!term) {
         throw new Error(
           `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
         );
       }
+      // TODO: fastPPT
       return ppt(term);
     })
-  );
+    .join("/");
 }
 
 export function getIndexName(attrs: ColName[]): string {
@@ -383,15 +385,8 @@ function addIndex(
   nodeID: NodeID,
   attrs: string[]
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (node) => ({
-      ...node,
-      cache: node.cache.createIndex(getIndexName(attrs), (res) => {
-        // TODO: is this gonna be a perf bottleneck?
-        // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(res, attrs);
-      }),
-    })),
-  };
+  graph.nodes.get(nodeID).cache.createIndex(getIndexName(attrs), (res) => {
+    return getIndexKey(res, attrs);
+  });
+  return this; // TODO: stop pretending this is immutable
 }

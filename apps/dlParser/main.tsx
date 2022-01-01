@@ -20,10 +20,7 @@ function Main() {
     INITIAL_GRAMMAR_TEXT
   );
 
-  const { interp, error } = useMemo(
-    () => constructInterp({ grammarSource, source }),
-    [grammarSource, source]
-  );
+  const { interp, error } = constructInterp({ grammarSource, source });
 
   return (
     <>

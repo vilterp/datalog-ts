@@ -23,7 +23,7 @@ export function RelationTable(props: {
   if (relation === null) {
     return <em>{props.relation} not found.</em>;
   }
-  const [results, error] = useMemo(() => {
+  const [results, error] = (() => {
     try {
       const results =
         relation.type === "Table"
@@ -37,7 +37,7 @@ export function RelationTable(props: {
     } catch (e) {
       return [[], e.toString()];
     }
-  }, [props.interp, props.relation]);
+  })();
   const fields =
     results.length === 0
       ? []

@@ -4,7 +4,7 @@ export function emptyIndexedCollection<T>(): IndexedCollection<T> {
   return new IndexedCollection([], new Map());
 }
 
-type Key = string[];
+type Key = string;
 
 type Index<T> = {
   getKey: (t: T) => Key;
