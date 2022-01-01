@@ -60,12 +60,12 @@ async function parserTestDatalog(
   grammarSource: string,
   input: string
 ): Promise<BenchmarkResult> {
-  const loadedInterp = mkInterp().doLoad("parserlib/datalog/parse.dl");
-  const grammarParsed = parseGrammar(grammarSource);
-  const grammarDL = grammarToDL(grammarParsed);
-  const inputDL = inputToDL(input);
-
   return doBenchmark(repetitions, () => {
+    const loadedInterp = mkInterp().doLoad("parserlib/datalog/parse.dl");
+    const grammarParsed = parseGrammar(grammarSource);
+    const grammarDL = grammarToDL(grammarParsed);
+    const inputDL = inputToDL(input);
+
     let interp = loadedInterp;
     interp = interp.insertAll(grammarDL);
     interp = interp.insertAll(inputDL);

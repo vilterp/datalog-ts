@@ -49,7 +49,10 @@ async function fpBench(
   })[1];
 
   return doBenchmark(repetitions, () => {
-    let interp = loadedInterp;
+    let interp = mkInterp().evalStmt({
+      type: "LoadStmt",
+      path: "main.dl",
+    })[1];
     for (let record of flattened) {
       interp = interp.insert(record);
     }
