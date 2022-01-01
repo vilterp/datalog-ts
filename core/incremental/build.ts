@@ -257,14 +257,14 @@ export function getIndexName(attrs: ColName[]): string {
   return attrs.join("-");
 }
 
-export type JoinTree =
+type JoinTree =
   | {
       type: "Leaf";
       rec: Rec;
     }
   | { type: "Node"; left: Rec; joinInfo: JoinInfo; right: JoinTree | null };
 
-export function getJoinTree(recs: Rec[]): JoinTree {
+function getJoinTree(recs: Rec[]): JoinTree {
   if (recs.length === 1) {
     return { type: "Leaf", rec: recs[0] };
   }
@@ -277,7 +277,7 @@ export function getJoinTree(recs: Rec[]): JoinTree {
   };
 }
 
-export function numJoinsWithCommonVars(joinTree: JoinTree): number {
+function numJoinsWithCommonVars(joinTree: JoinTree): number {
   if (joinTree.type === "Leaf") {
     return 0;
   }
