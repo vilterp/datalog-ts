@@ -1,23 +1,23 @@
 {"foo":2}
 ----
 application/datalog
-ast.key{id: 3, parentID: 2, span: span{from: 1, to: 6}, text: "\"foo\""}
-ast.number{id: 5, parentID: 4, span: span{from: 7, to: 8}, text: "2"}
-ast.value{id: 4, parentID: 2, span: span{from: 7, to: 8}, text: "2"}
-ast.keyValue{id: 2, parentID: 1, span: span{from: 1, to: 8}, text: "\"foo\":2"}
-ast.object{id: 1, parentID: 0, span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
-ast.value{id: 0, parentID: -1, span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
+ast.key{id: 3, parentID: 2, rule: "key", span: span{from: 1, to: 6}, text: "\"foo\""}
+ast.number{id: 5, parentID: 4, rule: "number", span: span{from: 7, to: 8}, text: "2"}
+ast.value{id: 4, parentID: 2, rule: "value", span: span{from: 7, to: 8}, text: "2"}
+ast.keyValue{id: 2, parentID: 1, rule: "keyValue", span: span{from: 1, to: 8}, text: "\"foo\":2"}
+ast.object{id: 1, parentID: 0, rule: "object", span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
+ast.value{id: 0, parentID: -1, rule: "value", span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
 
 {"foo":2,"bar":3}
 ----
 application/datalog
-ast.key{id: 3, parentID: 2, span: span{from: 1, to: 6}, text: "\"foo\""}
-ast.number{id: 5, parentID: 4, span: span{from: 7, to: 8}, text: "2"}
-ast.value{id: 4, parentID: 2, span: span{from: 7, to: 8}, text: "2"}
-ast.keyValue{id: 2, parentID: 1, span: span{from: 1, to: 8}, text: "\"foo\":2"}
-ast.key{id: 7, parentID: 6, span: span{from: 9, to: 14}, text: "\"bar\""}
-ast.number{id: 9, parentID: 8, span: span{from: 15, to: 16}, text: "3"}
-ast.value{id: 8, parentID: 6, span: span{from: 15, to: 16}, text: "3"}
-ast.keyValue{id: 6, parentID: 1, span: span{from: 9, to: 16}, text: "\"bar\":3"}
-ast.object{id: 1, parentID: 0, span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
-ast.value{id: 0, parentID: -1, span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
+ast.key{id: 3, parentID: 2, rule: "key", span: span{from: 1, to: 6}, text: "\"foo\""}
+ast.number{id: 5, parentID: 4, rule: "number", span: span{from: 7, to: 8}, text: "2"}
+ast.value{id: 4, parentID: 2, rule: "value", span: span{from: 7, to: 8}, text: "2"}
+ast.keyValue{id: 2, parentID: 1, rule: "keyValue", span: span{from: 1, to: 8}, text: "\"foo\":2"}
+ast.key{id: 7, parentID: 6, rule: "key", span: span{from: 9, to: 14}, text: "\"bar\""}
+ast.number{id: 9, parentID: 8, rule: "number", span: span{from: 15, to: 16}, text: "3"}
+ast.value{id: 8, parentID: 6, rule: "value", span: span{from: 15, to: 16}, text: "3"}
+ast.keyValue{id: 6, parentID: 1, rule: "keyValue", span: span{from: 9, to: 16}, text: "\"bar\":3"}
+ast.object{id: 1, parentID: 0, rule: "object", span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
+ast.value{id: 0, parentID: -1, rule: "value", span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
