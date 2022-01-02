@@ -3,12 +3,13 @@ import { useBoolLocalStorage } from "./hooks";
 
 export function CollapsibleWithHeading(props: {
   heading: string;
+  storageKey?: string;
   initiallyCollapsed?: boolean;
   content: React.ReactNode;
 }) {
   return (
     <Collapsible
-      id={props.heading}
+      storageKey={props.storageKey ? props.storageKey : props.heading}
       renderLabel={(collapsed) => (
         <h3>{`${collapsed ? ">" : "v"} ${props.heading}`}</h3>
       )}
@@ -20,12 +21,12 @@ export function CollapsibleWithHeading(props: {
 
 export function Collapsible(props: {
   renderLabel: (collapsed: boolean) => React.ReactNode;
-  id: string;
+  storageKey: string;
   initiallyCollapsed?: boolean;
   content: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useBoolLocalStorage(
-    `collapsed-${props.id}`,
+    `collapsed-${props.storageKey}`,
     !!props.initiallyCollapsed
   );
 

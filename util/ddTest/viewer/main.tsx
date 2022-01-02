@@ -80,7 +80,7 @@ function TestViewer(props: { archive: Archive }) {
           {(testArchive[currentTest] || []).map((pair, idx) => (
             <div key={idx}>
               <Collapsible
-                id={pair.input}
+                storageKey={pair.input}
                 renderLabel={(collapsed) => (
                   <div style={{ display: "flex" }}>
                     <div style={{ fontFamily: "monospace" }}>
