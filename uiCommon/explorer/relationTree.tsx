@@ -85,6 +85,7 @@ export function RelationTree(props: {
                     key={rel.name}
                     style={styles.tab({
                       open: isOpen,
+                      errors: status.type === "Error",
                       empty: !hasContents(status),
                       highlighted: isHighlighted,
                     })}
@@ -121,8 +122,8 @@ function Status(props: { status: RelationStatus; highlighted: boolean }) {
       return props.highlighted ? (
         <span style={{ color: "grey" }}> ({props.status.count})</span>
       ) : null;
-    case "Error":
-      return <span style={{ color: "red" }}> (!)</span>;
+    default:
+      return null;
   }
 }
 
