@@ -29,6 +29,8 @@ import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
+// @ts-ignore
+import ruleTreeViz from "./ruleTreeViz.dl";
 
 function Main() {
   return <Playground />;
@@ -259,6 +261,7 @@ function constructInterp({
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
       finalInterp = ensureHighlightSegmentTable(finalInterp);
+      finalInterp = finalInterp.evalStr(ruleTreeViz)[1];
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
