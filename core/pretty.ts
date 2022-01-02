@@ -47,7 +47,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {
   const oneLine = pp.intersperse(" | ")(
-    rule.defn.opts.map((ae) =>
+    rule.body.opts.map((ae) =>
       pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
     )
   );
@@ -56,7 +56,7 @@ export function prettyPrintRule(rule: Rule): pp.IDoc {
     pp.indent(
       2,
       pp.intersperse([" |", pp.line])(
-        rule.defn.opts.map((ae) =>
+        rule.body.opts.map((ae) =>
           pp.intersperse([" &", pp.line])(ae.clauses.map(prettyPrintTerm))
         )
       )

@@ -69,7 +69,7 @@ export type Statement =
 export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
-  defn: OrExpr;
+  body: OrExpr;
 }
 
 export type OrExpr = { type: "Or"; opts: AndExpr[] };
@@ -109,7 +109,7 @@ export type Operator = "==" | "!=" | ">=" | "<=";
 // rule helpers
 
 export function rule(head: Rec, defn: OrExpr): Rule {
-  return { head, defn };
+  return { head, body: defn };
 }
 
 export function or(opts: AndExpr[]): OrExpr {

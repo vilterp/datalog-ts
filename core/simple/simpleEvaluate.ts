@@ -184,7 +184,7 @@ function doEvaluate(
           //   newScope: ppb(newScope),
           // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
-          const rawResults = flatMap(rule.defn.opts, (andExpr, optIdx) => {
+          const rawResults = flatMap(rule.body.opts, (andExpr, optIdx) => {
             const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
             const recResults = doJoin(
               depth,
