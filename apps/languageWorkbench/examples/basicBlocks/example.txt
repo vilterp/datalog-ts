@@ -1,5 +1,6 @@
 foo {
   a = 2;
+  b = "foo";
   y = zoop;
   x = boop(y);
 }

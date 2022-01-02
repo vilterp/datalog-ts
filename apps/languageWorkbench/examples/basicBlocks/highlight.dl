@@ -6,7 +6,9 @@ hl.Segment{type: T, span: S, highlight: H} :-
   hl.segmentDefnHL{type: T, span: S, highlight: H} |
   hl.segmentUsage{type: T, span: S, highlight: H} |
   hl.segmentUsageHL{type: T, span: S, highlight: H} |
-  hl.segmentFuncName{type: T, span: S, highlight: H}.
+  hl.segmentFuncName{type: T, span: S, highlight: H} |
+  hl.segmentInt{type: T, span: S, highlight: H} |
+  hl.segmentString{type: T, span: S, highlight: H}.
 
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
@@ -20,6 +22,7 @@ hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
   ast.call{id: CallID, parentID: RValueID} &
   ast.ident{parentID: CallID, span: S}.
 
+# TODO: only highlight if used
 hl.segmentDefn{type: "defn", span: S, highlight: false} :-
   hl.varDefn{span: S}.
 hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
@@ -30,6 +33,11 @@ hl.segmentUsage{type: "usage", span: S, highlight: false} :-
   ide.Usage{usageLoc: S}.
 hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S}.
+
+hl.segmentInt{type: "int", span: S, highlight: false} :-
+  ast.int{span: S}.
+hl.segmentString{type: "string", span: S, highlight: false} :-
+  ast.string{span: S}.
 
 # === defn ===
 
