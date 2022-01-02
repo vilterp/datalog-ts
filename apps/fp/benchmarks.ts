@@ -43,11 +43,6 @@ async function fpBench(
   const parsed = language.expr.tryParse(input);
   const flattened = flatten(parsed);
 
-  let loadedInterp = mkInterp().evalStmt({
-    type: "LoadStmt",
-    path: "main.dl",
-  })[1];
-
   return doBenchmark(repetitions, () => {
     let interp = mkInterp().evalStmt({
       type: "LoadStmt",
