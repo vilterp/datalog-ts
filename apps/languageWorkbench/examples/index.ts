@@ -3,7 +3,7 @@
 // @ts-ignore
 import datalogCSS from "./dl/theme.css";
 // @ts-ignore
-import datalogDL from "./dl/highlight.dl";
+import datalogDL from "./dl/language.dl";
 // @ts-ignore
 import datalogGrammar from "./dl/datalog.grammar";
 // @ts-ignore
@@ -14,7 +14,7 @@ import datalogExample from "./dl/example.txt";
 // @ts-ignore
 import jsonCSS from "./json/theme.css";
 // @ts-ignore
-import jsonDL from "./json/highlight.dl";
+import jsonDL from "./json/language.dl";
 // @ts-ignore
 import jsonGrammar from "./json/json.grammar";
 // @ts-ignore
@@ -25,7 +25,7 @@ import jsonExample from "./json/example.txt";
 // @ts-ignore
 import basicBlocksCSS from "./basicBlocks/theme.css";
 // @ts-ignore
-import basicBlocksDL from "./basicBlocks/highlight.dl";
+import basicBlocksDL from "./basicBlocks/language.dl";
 // @ts-ignore
 import basicBlocksGrammar from "./basicBlocks/basicBlocks.grammar";
 // @ts-ignore
