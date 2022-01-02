@@ -1,4 +1,4 @@
-import { Bindings, rec, Term, VarMappings } from "./types";
+import { array, Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "../util/util";
 
 export function unify(
@@ -148,6 +148,8 @@ export function substitute(term: Term, bindings: Bindings): Term {
       );
     case "Var":
       return bindings[term.name] ? bindings[term.name] : term; // TODO: handling missing. lol
+    case "Array":
+      return array(term.items.map((item) => substitute(item, bindings)));
     default:
       return term;
   }
