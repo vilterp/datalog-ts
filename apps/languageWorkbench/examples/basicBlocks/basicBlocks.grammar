@@ -5,7 +5,7 @@ ident :- [[a-z], repSep([a-z], "")].
 instr :- (callInstr | gotoInstr).
 callInstr :- [ident, ws, "=", ws, call].
 call :- [ident, (params | "")].
-gotoInstr :- [gotoKW, ws, ident].
+gotoInstr :- [gotoKW, ws, (ident | placeholder)].
 gotoKW :- "goto".
 params :- ["(", repSep((ident | placeholder), [",", ws]), ")"].
 placeholder :- "???".
