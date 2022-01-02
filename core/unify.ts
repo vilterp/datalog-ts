@@ -1,5 +1,6 @@
 import { array, Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "../util/util";
+import { jsonEq } from "../util/json";
 
 export function unify(
   prior: Bindings,
@@ -96,6 +97,10 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
 
 export function termSameType(left: Term, right: Term): boolean {
   return left.type === right.type;
+}
+
+export function termEq(left: Term, right: Term): boolean {
+  return jsonEq(left, right);
 }
 
 export function termLT(left: Term, right: Term): boolean {

@@ -5,7 +5,7 @@ import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
-import { contains, ensurePresent, sortBy, toggle } from "../../util/util";
+import { ensurePresent, sortBy } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
 import { RelationCollapseStates } from "./types";
 

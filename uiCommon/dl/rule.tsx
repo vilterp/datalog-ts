@@ -25,7 +25,7 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
               <br />
             </React.Fragment>
           ),
-          props.rule.defn.opts.map((opt, idx) => (
+          props.rule.body.opts.map((opt, idx) => (
             <React.Fragment key={idx}>
               {intersperseIdx(
                 (idx) => (

@@ -2,7 +2,6 @@ import {
   rec,
   int,
   Rec,
-  Term,
   str,
   Statement,
   Rule,
@@ -48,7 +47,7 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
     nextID: 0,
     source,
   };
-  recur(state, tree, -1);
+  recur(state, tree, -1, 0);
   return state.records;
 }
 
@@ -60,6 +59,7 @@ function getUnionRule(g: Grammar): Rule {
       span: varr("Span"),
       text: varr("Text"),
       rule: varr("Rule"),
+      idx: varr("Idx"),
     }),
     or(
       Object.keys(g).map((ruleName) =>
@@ -70,6 +70,7 @@ function getUnionRule(g: Grammar): Rule {
             span: varr("Span"),
             text: varr("Text"),
             rule: varr("Rule"),
+            idx: varr("Idx"),
           }),
         ])
       )
@@ -77,20 +78,26 @@ function getUnionRule(g: Grammar): Rule {
   );
 }
 
-function recur(state: State, tree: RuleTree, parentID: number): number {
+function recur(
+  state: State,
+  tree: RuleTree,
+  parentID: number,
+  idx: number
+): number {
   const id = state.nextID;
   state.nextID++;
-  tree.children.forEach((child) => {
-    recur(state, child, id);
+  tree.children.forEach((child, idx) => {
+    recur(state, child, id, idx);
   });
   state.records.push(
     rec(`ast.${tree.name}`, {
       id: int(id),
+      parentID: int(parentID),
       span: rec("span", {
         from: int(tree.span.from),
         to: int(tree.span.to),
       }),
-      parentID: int(parentID),
+      idx: int(idx),
       text: str(state.source.substring(tree.span.from, tree.span.to)),
       // a bit duplicative to put this in here since it's already in
       // the record name, but it does make rendering the rule tree a

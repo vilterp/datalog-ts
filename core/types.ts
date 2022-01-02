@@ -69,7 +69,7 @@ export type Statement =
 export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
-  defn: OrExpr;
+  body: OrExpr;
 }
 
 export type OrExpr = { type: "Or"; opts: AndExpr[] };
@@ -104,12 +104,12 @@ export type StringLit = { type: "StringLit"; val: string };
 export type Array = { type: "Array"; items: Term[] };
 
 // TODO: moar, argument types, etc.
-export type Operator = "==" | "!=" | ">=" | "<=";
+export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 
 // rule helpers
 
-export function rule(head: Rec, defn: OrExpr): Rule {
-  return { head, defn };
+export function rule(head: Rec, body: OrExpr): Rule {
+  return { head, body };
 }
 
 export function or(opts: AndExpr[]): OrExpr {
@@ -188,3 +188,12 @@ export type SituatedBinding = {
   name: string;
   path: ScopePath;
 };
+
+// probably shouldn't be using errors at all,
+// but at least differentiate our errors from
+// other JS runtime errors.
+export class UserError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

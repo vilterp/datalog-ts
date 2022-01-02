@@ -13,6 +13,7 @@ import {
   baseFactTrace,
   RulePathSegment,
   InvocationLocation,
+  UserError,
 } from "../types";
 import {
   applyMappings,
@@ -184,7 +185,7 @@ function doEvaluate(
           //   newScope: ppb(newScope),
           // });
           const mappings = getMappings(rule.head.attrs, term.attrs);
-          const rawResults = flatMap(rule.defn.opts, (andExpr, optIdx) => {
+          const rawResults = flatMap(rule.body.opts, (andExpr, optIdx) => {
             const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
             const recResults = doJoin(
               depth,
@@ -234,7 +235,7 @@ function doEvaluate(
             return outerRes;
           });
         }
-        throw new Error(`not found: ${term.relation}`);
+        throw new UserError(`not found: ${term.relation}`);
       }
       case "Var":
         return [{ term: scope[term.name], bindings: scope, trace: varTrace }];

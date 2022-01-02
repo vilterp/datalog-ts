@@ -43,7 +43,7 @@ export function EditorBox(props: {
           name="wut" // type error without this, even tho optional
           style={{
             fontFamily: "monospace",
-            height: 150,
+            height: 200,
             width: 500,
             backgroundColor: "rgb(250, 250, 250)",
             border: "1px solid black",

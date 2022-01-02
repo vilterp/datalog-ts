@@ -1,5 +1,5 @@
 .segment-var {
-  color: orange;
+  color: purple;
 }
 .segment-int {
   color: blue;
@@ -9,6 +9,9 @@
 }
 .segment-keyword {
   color: orange;
+}
+.segment-funcName {
+  color: purple;
 }
 .segment-defn {
   color: purple;
