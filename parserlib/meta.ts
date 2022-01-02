@@ -118,7 +118,9 @@ function extractRule(input: string, rt: RuleTree): Rule {
         textForSpan(input, {
           from: rt.span.from + 1,
           to: rt.span.to - 1,
-        }).replace(/\\n/, "\n")
+        })
+          .replace(/\\n/, "\n")
+          .replace(/\\\"/, '"')
       );
       return theText;
     case "charRule":
