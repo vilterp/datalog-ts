@@ -24,10 +24,11 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { uniq } from "../../util/util";
+import { mapObjToList, uniq } from "../../util/util";
 import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
+import { EXAMPLES } from "./examples";
 
 function Main() {
   return <Playground />;
@@ -80,9 +81,31 @@ function Playground() {
     [cursorPos, dlSource, grammarSource, langSource]
   );
 
+  const setExample = (name) => {
+    const example = EXAMPLES[name];
+    setGrammarSource(example.grammar);
+    setThemeSource(example.themeCSS);
+    setDLSource(example.datalog);
+  };
+
   return (
     <>
       <h1>Language Workbench</h1>
+
+      <div>
+        <h3>Example:</h3>
+        <select
+          onChange={(evt) => {
+            setExample(evt.target.value);
+          }}
+        >
+          {mapObjToList(EXAMPLES, (name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <table>
         <tbody>
