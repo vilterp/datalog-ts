@@ -116,17 +116,6 @@ function Playground() {
         <tbody>
           <tr>
             <td>
-              <h3>Grammar Source</h3>
-              <textarea
-                value={grammarSource}
-                onChange={(evt) => setGrammarSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
-              />
-              <ErrorList errors={allGrammarErrors} />
-            </td>
-            <td>
               <h3>Language Source</h3>
               <CodeEditor
                 editorState={exampleEditorState}
@@ -138,6 +127,17 @@ function Playground() {
                 suggestions={[]} // TODO: get suggestions
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
+            </td>
+            <td>
+              <h3>Grammar Source</h3>
+              <textarea
+                value={grammarSource}
+                onChange={(evt) => setGrammarSource(evt.target.value)}
+                rows={10}
+                cols={50}
+                spellCheck={false}
+              />
+              <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
