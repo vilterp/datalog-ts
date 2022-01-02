@@ -65,14 +65,14 @@ defn.block{id: BlockID, name: N, labelSpan: S} :-
 
 # === Scope ===
 
-scope.item{id: I, type: T, name: N, defnSpan: S} :-
-  scope.itemVar{id: I, type: T, name: N, defnSpan: S} |
-  scope.itemLabel{id: I, type: T, name: N, defnSpan: S}.
+scope.Item{id: InstrID, type: T, name: N, defnSpan: S} :-
+  scope.itemVar{id: InstrID, type: T, name: N, defnSpan: S} |
+  scope.itemLabel{id: InstrID, type: T, name: N, defnSpan: S}.
 
-scope.itemVar{id: I, type: "var", name: N, defnSpan: S} :-
-  defn.ssaVar{instrID: InstrID, name: N, defnSpan: S} &
-  ast.instr{id: InstrID, parentID: BlockID, idx: DefnIdx} &
-  ast.instr{id: I, parentID: BlockID, idx: CurrentIdx} &
+scope.itemVar{id: UsageInstrID, type: "var", name: N, defnSpan: S} :-
+  defn.ssaVar{instrID: DefnInstrID, name: N, span: S} &
+  ast.instr{id: DefnInstrID, parentID: BlockID, idx: DefnIdx} &
+  ast.instr{id: UsageInstrID, parentID: BlockID, idx: CurrentIdx} &
   DefnIdx <= CurrentIdx.
 
 scope.itemLabel{id: I, type: "label", name: N, defnSpan: S} :-
@@ -82,15 +82,20 @@ scope.itemLabel{id: I, type: "label", name: N, defnSpan: S} :-
 # === Reference Graph ===
 
 refGraph.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N}.
-  # refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N}.
+  refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} |
+  refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N}.
 
 refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
   defn.block{labelSpan: DL, name: N} &
   defn.goto{labelSpan: UL, to: N}.
 
-# refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
-#   XXXX.
+refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
+  ast.ident{parentID: ParamsID, text: N, span: UL} &
+  ast.params{id: ParamsID, parentID: CallID} &
+  ast.call{id: CallID, parentID: RValueID} &
+  ast.rvalue{id: RValueID, parentID: ValueInstrID} &
+  ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
+  scope.Item{id: InstrID, type: "var", name: N, defnSpan: DL}.
 
 # === viz ===
 
