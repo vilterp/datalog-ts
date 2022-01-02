@@ -2,9 +2,9 @@ main :- repSep(block,ws).
 block :- [label, ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
 label :- ident.
 ident :- [[a-z], repSep([a-z], "")].
-instr :- (callInstr | gotoInstr | constInstr).
-constInstr :- [ident, ws, "=", ws, const].
-callInstr :- [ident, ws, "=", ws, call].
+instr :- (valueInstr | gotoInstr).
+valueInstr :- [ident, ws, "=", ws, rvalue].
+rvalue :- (call | const).
 call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, (ident | placeholder)].
 gotoKW :- "goto".

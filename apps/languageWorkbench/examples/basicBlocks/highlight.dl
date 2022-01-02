@@ -16,8 +16,8 @@ hl.varDefn{span: S} :-
   defn.ssaVar{span: S}.
 
 hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
-  ast.callInstr{id: InstrID} &
-  ast.call{id: CallID, parentID: InstrID} &
+  ast.rvalue{id: RValueID} &
+  ast.call{id: CallID, parentID: RValueID} &
   ast.ident{parentID: CallID, span: S}.
 
 hl.segmentDefn{type: "defn", span: S, highlight: false} :-
@@ -39,10 +39,11 @@ defn.goto{blockID: BlockID, instrID: InstrID, to: ToName, labelSpan: S} :-
   ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
   ast.instr{id: InstrID, parentID: BlockID}.
 
+# TODO: refactor this into a generic "rvalue" concept? idk
 defn.ssaVar{instrID: InstrID, span: S, name: N} :-
   ast.instr{id: InstrID} &
-  ast.callInstr{id: CallInstrID, parentID: InstrID} &
-  ast.ident{parentID: CallInstrID, text: N, span: S}.
+  ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
+  ast.ident{parentID: ValueInstrID, text: N, span: S}.
 
 defn.block{id: BlockID, name: N, labelSpan: S} :-
   ast.block{id: BlockID} &
