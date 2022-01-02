@@ -1,7 +1,15 @@
+# basically getting everything but text
+ast_internal.ruleTreeNode{
+  id: ID,
+  parentID: PID,
+  display: node{rule: R, span: S}
+} :-
+  ast_internal.node{id: ID, parentID: PID, rule: R, span: S}.
+
 internal.visualization{
   name: "Rule Tree",
   spec: tree{
-    nodes: "ast_internal.node{id: ID, parentID: ParentID}",
+    nodes: "ast_internal.ruleTreeNode{id: ID, parentID: ParentID, display: Display}",
     rootTerm: -1
   }
 }.
