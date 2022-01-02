@@ -1,4 +1,4 @@
-import { assertStringEqual, Suite } from "../testing";
+import { assertStringEqual, Suite } from "../testBench/testing";
 import fs from "fs";
 import { zip } from "../util";
 import { parseDDTest } from "./parser";

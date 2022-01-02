@@ -2,7 +2,7 @@ import {
   BenchmarkResult,
   BenchmarkSpec,
   doBenchmark,
-} from "../../util/benchmark";
+} from "../../util/testBench/benchmark";
 import { language } from "./parser";
 import { flatten } from "./flatten";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -15,39 +15,38 @@ const INPUT = `let x = 2 in let y = 3 in let z = "hello world " in concat(z, int
 export const fpBenchmarks: BenchmarkSpec[] = [
   {
     name: "typeQuery1-simple",
-    run(): BenchmarkResult {
-      const originalInterp: AbstractInterpreter = new SimpleInterpreter(
-        "apps/fp/dl",
-        fsLoader
+    async run(): Promise<BenchmarkResult> {
+      return fpBench(
+        () => new SimpleInterpreter("apps/fp/dl", fsLoader),
+        200,
+        INPUT
       );
-      return fpBench(originalInterp, 200, INPUT);
     },
   },
   {
     name: "typeQuery1-incr",
-    run(): BenchmarkResult {
-      const originalInterp: AbstractInterpreter = new IncrementalInterpreter(
-        "apps/fp/dl",
-        fsLoader
+    async run(): Promise<BenchmarkResult> {
+      return fpBench(
+        () => new IncrementalInterpreter("apps/fp/dl", fsLoader),
+        200,
+        INPUT
       );
-      return fpBench(originalInterp, 200, INPUT);
     },
   },
 ];
 
-function fpBench(
-  emptyInterp: AbstractInterpreter,
+async function fpBench(
+  mkInterp: () => AbstractInterpreter,
   repetitions: number,
   input: string
-): BenchmarkResult {
-  let loadedInterp = emptyInterp.evalStmt({
+): Promise<BenchmarkResult> {
+  const parsed = language.expr.tryParse(input);
+  const flattened = flatten(parsed);
+
+  let loadedInterp = mkInterp().evalStmt({
     type: "LoadStmt",
     path: "main.dl",
   })[1];
-
-  // TODO: get these from a DD file
-  const parsed = language.expr.tryParse(input);
-  const flattened = flatten(parsed);
 
   return doBenchmark(repetitions, () => {
     let interp = loadedInterp;

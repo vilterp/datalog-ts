@@ -1,15 +1,16 @@
-import { ProcessFn } from "./ddTest";
+import { ProcessFn } from "../ddTest";
 import fs from "fs";
-import { parseDDTest } from "./ddTest/parser";
+import { parseDDTest } from "../ddTest/parser";
 import { Performance } from "w3c-hr-time";
 import v8profiler from "v8-profiler-node8";
 import tmp from "tmp";
+import { postResultToAirtable } from "../airtable";
 
 const performance = new Performance();
 
 export type BenchmarkSpec = {
   name: string;
-  run: () => BenchmarkResult;
+  run: () => Promise<BenchmarkResult>;
 };
 
 export type BenchmarkResult =
@@ -21,10 +22,10 @@ export type BenchmarkResult =
     }
   | { type: "Errored"; error: Error };
 
-export function doBenchmark(
+export async function doBenchmark(
   repetitions: number,
   op: () => void
-): BenchmarkResult {
+): Promise<BenchmarkResult> {
   try {
     v8profiler.startProfiling();
     const before = performance.now();
@@ -36,34 +37,42 @@ export function doBenchmark(
     }
     const after = performance.now();
     const profile = v8profiler.stopProfiling();
-    v8profiler.deleteAllProfiles();
-    const profileName = `profile-${Math.random()}.cpuprofile`;
-    const tmpFile = tmp.tmpNameSync({ name: profileName });
-    console.log(tmpFile);
 
-    const file = fs.createWriteStream(tmpFile);
-    profile
-      .export()
-      .pipe(file)
-      .on("finish", () => {
-        console.log("wrote profile to", tmpFile);
-      });
+    const profilePath = await exportProfile(profile);
+
     return {
       type: "Finished",
       repetitions,
       totalTimeMS: after - before,
-      profilePath: tmpFile,
+      profilePath: profilePath,
     };
   } catch (error) {
     return { type: "Errored", error };
   }
 }
 
-export function runDDBenchmark(
+// returns promise with temp file path
+async function exportProfile(profile): Promise<string> {
+  const profileName = `profile-${Math.random()}.cpuprofile`;
+  const fileName = tmp.tmpNameSync({ name: profileName });
+
+  const file = fs.createWriteStream(fileName);
+
+  return new Promise((resolve) => {
+    profile
+      .export()
+      .pipe(file)
+      .on("finish", () => {
+        resolve(fileName);
+      });
+  });
+}
+
+export async function runDDBenchmark(
   path: string,
   getResults: ProcessFn,
   repetitions: number
-): BenchmarkResult {
+): Promise<BenchmarkResult> {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
   return doBenchmark(repetitions, () => {
@@ -82,4 +91,24 @@ export function runDDBenchmarkManual(
     repetitions,
     inputs.map((pair) => pair.input)
   );
+}
+
+export async function runAll(benchmarks: { [name: string]: BenchmarkSpec[] }) {
+  for (let suiteName of Object.keys(benchmarks)) {
+    console.group(suiteName);
+    const suite = benchmarks[suiteName];
+    for (let entry of suite) {
+      console.group(entry.name);
+      const res = await entry.run();
+      console.log(res);
+      const recordName = `${suiteName}/${entry.name}`;
+      const airtableRecords = await postResultToAirtable(recordName, res);
+      console.log(
+        "posted to airtable:",
+        airtableRecords.map((r) => r.id)
+      );
+      console.groupEnd();
+    }
+    console.groupEnd();
+  }
 }
