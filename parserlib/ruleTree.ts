@@ -5,6 +5,7 @@ import { flatten } from "../util/util";
 export type RuleTree = {
   name: string;
   span: Span;
+  output?: string; // if this is present, the output is different than input.substring(span)
   children: RuleTree[];
 };
 

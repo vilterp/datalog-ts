@@ -11,6 +11,7 @@ import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 export type TraceTree = {
   span: Span;
   error: ParseError | null;
+  output?: string; // if this is present, the output is different than input.substring(span)
 } & TraceInner;
 
 // TODO:
@@ -29,7 +30,8 @@ type TraceInner =
   | { type: "RefTrace"; name: string; innerTrace: TraceTree }
   | { type: "TextTrace" }
   | { type: "CharTrace" }
-  | { type: "SucceedTrace" };
+  | { type: "SucceedTrace" }
+  | { type: "EscapeTrace" };
 
 export function parse(
   grammar: Grammar,
@@ -70,14 +72,12 @@ function doParse(
       if (next === rule.value) {
         return {
           type: "TextTrace",
-          // rule,
           span: { from: startIdx, to: startIdx + rule.value.length },
           error: null,
         };
       }
       return {
         type: "TextTrace",
-        // rule,
         span: { from: startIdx, to: startIdx },
         error: { offset: startIdx, expected: [rule.value], got: next },
       };
@@ -87,7 +87,6 @@ function doParse(
       return {
         type: "RefTrace",
         name: rule.name,
-        // rule,
         span: innerTrace.span,
         error: innerTrace.error,
         innerTrace,
@@ -205,6 +204,22 @@ function doParse(
           curIdx = res.span.to;
         }
       }
+    case "Escape": {
+      const next = input.slice(startIdx, startIdx + rule.escapeCode.length);
+      if (next === rule.escapeCode) {
+        return {
+          type: "EscapeTrace",
+          error: null,
+          span: { from: startIdx, to: startIdx + rule.escapeCode.length },
+          output: rule.resultChar,
+        };
+      }
+      return {
+        type: "EscapeTrace",
+        error: { offset: startIdx, expected: [rule.escapeCode], got: next },
+        span: { from: startIdx, to: startIdx + rule.escapeCode.length },
+      };
+    }
   }
 }
 
@@ -258,6 +273,7 @@ function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
         forEachTraceTreeNode(innerTrace, fn);
       });
       break;
+    // default: do nothing
   }
 }
 
