@@ -18,14 +18,23 @@ defn.goto{blockID: BlockID, instrID: InstrID, to: ToName, labelSpan: S} :-
   ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
   ast.instr{id: InstrID, parentID: BlockID}.
 
-defn.ssaVar{span: S, name: N} :-
-  ast.callInstr{id: InstrID} &
-  ast.ident{parentID: InstrID, text: N, span: S}.
+defn.ssaVar{instrID: InstrID, span: S, name: N} :-
+  ast.instr{id: InstrID} &
+  ast.callInstr{id: CallInstrID, parentID: InstrID} &
+  ast.ident{parentID: CallInstrID, text: N, span: S}.
 
 defn.block{id: BlockID, name: N, labelSpan: S} :-
   ast.block{id: BlockID} &
   ast.label{id: LabelID, parentID: BlockID} &
   ast.ident{parentID: LabelID, text: N, span: S}.
+
+# === Scope ===
+
+scope.item{id: I, type: "var", name: N} :-
+  defn.ssaVar{instrID: InstrID, name: N} &
+  ast.instr{id: InstrID, parentID: BlockID, idx: DefnIdx} &
+  ast.instr{id: I, parentID: BlockID, idx: CurrentIdx} &
+  DefnIdx <= CurrentIdx.
 
 # === IDE ===
 
