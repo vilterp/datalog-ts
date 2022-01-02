@@ -23,3 +23,9 @@ ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
 ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
   ide.currentUsageUsage{defnLoc: DL} &
   refGraph.Usage{definitionLoc: DL, usageLoc: UL}.
+
+# used by Jump To Definition
+ide.DefnForCursor{defnLoc: DL} :-
+  ide.Cursor{idx: CIdx} &
+  refGraph.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  FIdx <= CIdx & CIdx <= TIdx.
