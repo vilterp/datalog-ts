@@ -7,5 +7,6 @@ callInstr :- [ident, ws, "=", ws, call].
 call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, ident].
 gotoKW :- "goto".
-params :- ["(", repSep(ident, [",", ws]), ")"].
+params :- ["(", repSep((ident | placeholder), [",", ws]), ")"].
+placeholder :- "???".
 ws :- repSep((" "|"\n"), "").
