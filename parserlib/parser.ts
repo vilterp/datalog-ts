@@ -268,7 +268,7 @@ export function getErrors(input: string, tree: TraceTree): ParseError[] {
       out.push(node.error);
     }
   });
-  if (tree.span.to !== input.length) {
+  if (out.length === 0 && tree.span.to !== input.length) {
     out.push({
       offset: tree.span.to,
       // TODO: make this into a different type of parse error

@@ -185,7 +185,13 @@ function parserTestFixedStartRule(
   });
 }
 
-function handleResults(tree: TraceTree, source: string): TestOutput {
-  const ruleTree = extractRuleTree(tree);
-  return plainTextOut(prettyPrintRuleTree(ruleTree, source));
+function handleResults(traceTree: TraceTree, source: string): TestOutput {
+  const ruleTree = extractRuleTree(traceTree);
+  const errors = getErrors(source, traceTree);
+  return plainTextOut(
+    [
+      ...prettyPrintRuleTree(ruleTree, source).split("\n"),
+      ...errors.map((err) => `error: ${formatParseError(err)}`),
+    ].join("\n")
+  );
 }

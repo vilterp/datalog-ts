@@ -54,6 +54,7 @@ value [0-31]
 ----
 text/plain
 value: "" [0-0]
+error: offset 0: expected [object | array | number | stringLit | bool | null]; got "foo
 
 {
   "foo": [
