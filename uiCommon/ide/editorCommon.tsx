@@ -20,6 +20,7 @@ export function EditorBox(props: {
   errorsToDisplay: EvalError[];
   actionCtx: ActionContext;
   highlighted: React.ReactNode;
+  hideKeyBindingsTable?: boolean;
 }) {
   const setCursorPos = (pos: number) => {
     return props.setEditorState({
@@ -68,7 +69,9 @@ export function EditorBox(props: {
           onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
           onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
         />
-        <KeyBindingsTable actionCtx={props.actionCtx} />
+        {!props.hideKeyBindingsTable ? (
+          <KeyBindingsTable actionCtx={props.actionCtx} />
+        ) : null}
         <div>
           <SuggestionsList
             suggestions={props.suggestions}

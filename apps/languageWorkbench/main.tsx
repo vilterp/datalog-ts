@@ -29,6 +29,7 @@ import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
+import useHashParam from "use-hash-param";
 // @ts-ignore
 import ruleTreeViz from "./ruleTreeViz.dl";
 
@@ -40,6 +41,10 @@ const initInterp = new SimpleInterpreter(".", nullLoader);
 
 function Playground() {
   // state
+  const [exampleName, setExampleName] = useHashParam(
+    "",
+    Object.keys(EXAMPLES)[0]
+  );
   const [grammarSource, setGrammarSource] = useLocalStorage(
     "language-workbench-grammar-source",
     `main :- "foo".`
@@ -57,15 +62,15 @@ function Playground() {
       "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
     );
-  const [langEditorState, setLangEditorState] =
+  const [exampleEditorState, setExampleEditorState] =
     useJSONLocalStorage<EditorState>(
-      "language-workbench-editor-state",
+      "language-workbench-example-editor-state",
       initialEditorState("let x = 2 in intToString(x)")
     );
-  const cursorPos = langEditorState.cursorPos;
-  const langSource = langEditorState.source;
-  const setLangSource = (source: string) => {
-    setLangEditorState({ ...langEditorState, source });
+  const cursorPos = exampleEditorState.cursorPos;
+  const langSource = exampleEditorState.source;
+  const setExampleSource = (source: string) => {
+    setExampleEditorState({ ...exampleEditorState, source });
   };
 
   const {
@@ -87,11 +92,12 @@ function Playground() {
   );
 
   const setExample = (name) => {
+    setExampleName(name);
     const example = EXAMPLES[name];
     setGrammarSource(example.grammar);
     setThemeSource(example.themeCSS);
     setDLSource(example.datalog);
-    setLangSource(example.example);
+    setExampleSource(example.example);
   };
 
   return (
@@ -104,6 +110,7 @@ function Playground() {
           onChange={(evt) => {
             setExample(evt.target.value);
           }}
+          value={exampleName}
         >
           {mapObjToList(EXAMPLES, (name) => (
             <option key={name} value={name}>
@@ -130,8 +137,8 @@ function Playground() {
             <td>
               <h3>Language Source</h3>
               <CodeEditor
-                editorState={langEditorState}
-                setEditorState={setLangEditorState}
+                editorState={exampleEditorState}
+                setEditorState={setExampleEditorState}
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
                 highlightCSS={themeSource}

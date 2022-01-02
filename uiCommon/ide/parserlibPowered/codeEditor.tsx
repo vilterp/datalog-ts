@@ -40,6 +40,7 @@ export function CodeEditor(props: {
       errorsToDisplay={[]} // TODO: pass through errors
       highlighted={highlighted}
       suggestions={props.suggestions}
+      hideKeyBindingsTable
     />
   );
 }
