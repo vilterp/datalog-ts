@@ -16,7 +16,7 @@ export type TraceTree = {
 // TODO:
 // Either<{span: Span} & TraceInner, ParseError>
 
-type ParseError = { expected: string[]; got: string };
+type ParseError = { offset: number; expected: string[]; got: string };
 
 type TraceInner =
   | { type: "SeqTrace"; itemTraces: TraceTree[] }
@@ -57,11 +57,7 @@ function doParse(
   input: string
 ): TraceTree {
   if (startIdx > input.length) {
-    return {
-      type: "TextTrace", // this is messed up... what to return here?
-      error: { expected: ["TODO"], got: "EOF" },
-      span: { from: startIdx, to: startIdx },
-    };
+    throw new Error("parser internal error: startIdx > input.length");
   }
   switch (rule.type) {
     case "Text":
@@ -79,7 +75,7 @@ function doParse(
         type: "TextTrace",
         // rule,
         span: { from: startIdx, to: startIdx },
-        error: { expected: [rule.value], got: next },
+        error: { offset: startIdx, expected: [rule.value], got: next },
       };
     case "Ref":
       const innerRule = grammar[rule.name];
@@ -102,6 +98,7 @@ function doParse(
         return {
           type: "ChoiceTrace",
           error: {
+            offset: startIdx,
             expected: [prettyPrintRule(rule)],
             got: input.slice(startIdx, startIdx + 5), // lol
           },
@@ -165,6 +162,7 @@ function doParse(
         type: "CharTrace",
         span: { from: startIdx, to: startIdx },
         error: {
+          offset: startIdx,
           expected: [prettyPrintCharRule(rule.rule)],
           got: input[startIdx],
         },
@@ -226,7 +224,9 @@ function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
 }
 
 export function formatParseError(error: ParseError): string {
-  return `expected ${error.expected.join(" | ")}; got ${error.got}`;
+  return `offset ${error.offset}: expected ${error.expected.join(" | ")}; got ${
+    error.got
+  }`;
 }
 
 function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
@@ -255,12 +255,20 @@ function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
   }
 }
 
-export function getErrors(tree: TraceTree): ParseError[] {
+export function getErrors(input: string, tree: TraceTree): ParseError[] {
   const out: ParseError[] = [];
   forEachTraceTreeNode(tree, (node) => {
     if (node.error) {
       out.push(node.error);
     }
   });
+  if (tree.span.to !== input.length) {
+    out.push({
+      offset: tree.span.to,
+      // TODO: make this into a different type of parse error
+      expected: ["end of file"],
+      got: input.slice(tree.span.to),
+    });
+  }
   return out;
 }

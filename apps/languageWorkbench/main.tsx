@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import {
   formatParseError,
@@ -45,27 +45,19 @@ function Playground() {
     "",
     Object.keys(EXAMPLES)[0]
   );
-  const [grammarSource, setGrammarSource] = useLocalStorage(
-    "language-workbench-grammar-source",
-    `main :- "foo".`
-  );
-  const [dlSource, setDLSource] = useLocalStorage(
-    "language-workbench-dl-source",
-    ""
-  );
-  const [themeSource, setThemeSource] = useLocalStorage(
-    "language-workbench-theme-source",
-    ""
+
+  const curExample = EXAMPLES[exampleName];
+
+  const [grammarSource, setGrammarSource] = useState(curExample.grammar);
+  const [dlSource, setDLSource] = useState(curExample.datalog);
+  const [themeSource, setThemeSource] = useState(curExample.themeCSS);
+  const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
+    initialEditorState(curExample.example)
   );
   const [ruleTreeCollapseState, setRuleTreeCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
       "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
-    );
-  const [exampleEditorState, setExampleEditorState] =
-    useJSONLocalStorage<EditorState>(
-      "language-workbench-example-editor-state",
-      initialEditorState("let x = 2 in intToString(x)")
     );
   const cursorPos = exampleEditorState.cursorPos;
   const langSource = exampleEditorState.source;
@@ -237,7 +229,9 @@ function constructInterp({
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
-  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
+  const grammarParseErrors = getErrors(grammarSource, grammarTraceTree).map(
+    formatParseError
+  );
   const grammarErrors = validateGrammar(grammar);
   const [interpWithRules, dlErrors] = (() => {
     try {

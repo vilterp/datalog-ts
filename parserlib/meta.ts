@@ -32,7 +32,7 @@ import { parse, getErrors, formatParseError } from "./parser";
 
 export function parseGrammar(input: string): Grammar {
   const traceTree = parse(metaGrammar, "grammar", input);
-  const errors = getErrors(traceTree);
+  const errors = getErrors(input, traceTree);
   if (errors.length > 0) {
     throw new Error(`parse errors: ${errors.map(formatParseError).join(", ")}`);
   }
