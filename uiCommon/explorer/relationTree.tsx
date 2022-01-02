@@ -78,7 +78,10 @@ export function RelationTree(props: {
               const isHighlighted =
                 isHighlightedRelation || isRelationOfHighlightedTerm;
               const isOpen = contains(props.openRelations, item.relation.name);
-              const status = getStatus(props.interp, rel.name);
+              const status = useMemo(
+                () => getStatus(props.interp, rel.name),
+                [props.interp, rel.name]
+              );
               return (
                 <>
                   <span
