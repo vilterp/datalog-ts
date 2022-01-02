@@ -6,16 +6,11 @@ import {
   parse,
   TraceTree,
 } from "../../parserlib/parser";
-import ReactJson from "react-json-view";
-import useLocalStorage from "react-use-localstorage";
 import { extractRuleTree, RuleTree } from "../../parserlib/ruleTree";
-import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import {
-  TreeView,
   TreeCollapseState,
   emptyCollapseState,
 } from "../../uiCommon/generic/treeView";
-import { ruleTreeToTree, renderRuleNode } from "../../parserlib/pretty";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
@@ -65,14 +60,7 @@ function Playground() {
     setExampleEditorState({ ...exampleEditorState, source });
   };
 
-  const {
-    finalInterp,
-    allGrammarErrors,
-    langParseError,
-    dlErrors,
-    ruleTree,
-    traceTree,
-  } = useMemo(
+  const { finalInterp, allGrammarErrors, langParseError, dlErrors } = useMemo(
     () =>
       constructInterp({
         cursorPos,
@@ -193,7 +181,8 @@ function constructInterp({
   const grammarParseErrors = getErrors(grammarSource, grammarTraceTree).map(
     formatParseError
   );
-  const grammarErrors = validateGrammar(grammar);
+  const grammarErrors =
+    grammarParseErrors.length > 0 ? validateGrammar(grammar) : [];
   const [interpWithRules, dlErrors] = (() => {
     try {
       const result =
@@ -236,8 +225,6 @@ function constructInterp({
     allGrammarErrors,
     langParseError,
     dlErrors,
-    ruleTree,
-    traceTree,
   };
 }
 
