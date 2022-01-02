@@ -171,45 +171,6 @@ function Playground() {
         ) : (
           <em>Grammar isn't valid</em>
         )}
-
-        {/* TODO: memoize some of these. they take non-trival time to render */}
-
-        <CollapsibleWithHeading
-          heading="Rule Tree"
-          content={
-            <>
-              {ruleTree ? (
-                <TreeView
-                  tree={ruleTreeToTree(ruleTree, langSource)}
-                  render={(n) => renderRuleNode(n.item, langSource)}
-                  collapseState={ruleTreeCollapseState}
-                  setCollapseState={setRuleTreeCollapseState}
-                />
-              ) : (
-                <em>Grammar isn't valid</em>
-              )}
-            </>
-          }
-        />
-        <CollapsibleWithHeading
-          heading="Trace Tree"
-          content={
-            <>
-              {traceTree ? (
-                <ReactJson
-                  name={null}
-                  enableClipboard={false}
-                  displayObjectSize={false}
-                  displayDataTypes={false}
-                  src={traceTree}
-                  shouldCollapse={({ name }) => name === "span"}
-                />
-              ) : (
-                <em>Grammar isn't valid</em>
-              )}
-            </>
-          }
-        />
       </>
     </>
   );
