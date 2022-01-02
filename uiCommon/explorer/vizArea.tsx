@@ -13,22 +13,24 @@ export function VizArea(props: {
     "internal.visualization{name: Name, spec: Spec}"
   );
 
-  const description = XXX;
-
   return (
     <>
       <h3>Visualizations</h3>
 
-      {specs.map((result, idx) => (
-        <IndividualViz
-          key={idx}
-          interp={props.interp}
-          name={(result.bindings.Name as StringLit).val}
-          description={()}
-          spec={result.bindings.Spec as Rec}
-          setHighlightedTerm={props.setHighlightedTerm}
-        />
-      ))}
+      {specs.map((result, idx) => {
+        const description = (result.term as Rec).attrs.description;
+
+        return (
+          <IndividualViz
+            key={idx}
+            interp={props.interp}
+            name={(result.bindings.Name as StringLit).val}
+            description={description ? (description as StringLit).val : null}
+            spec={result.bindings.Spec as Rec}
+            setHighlightedTerm={props.setHighlightedTerm}
+          />
+        );
+      })}
     </>
   );
 }
@@ -36,6 +38,7 @@ export function VizArea(props: {
 function IndividualViz(props: {
   interp: AbstractInterpreter;
   name: string;
+  description: string | null;
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
 }) {
@@ -46,9 +49,7 @@ function IndividualViz(props: {
       storageKey={`viz-${props.name}`}
       content={
         <div>
-          {props.spec.attrs.description ? (
-            <p>{(props.spec.attrs.description as StringLit).val}</p>
-          ) : null}
+          {props.description ? <p>{props.description}</p> : null}
           {viz ? (
             <viz.component
               interp={props.interp}
