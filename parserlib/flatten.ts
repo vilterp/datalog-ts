@@ -90,11 +90,11 @@ function recur(
   state.records.push(
     rec(`ast.${tree.name}`, {
       id: int(id),
+      parentID: int(parentID),
       span: rec("span", {
         from: int(tree.span.from),
         to: int(tree.span.to),
       }),
-      parentID: int(parentID),
       idx: int(idx),
       text: str(state.source.substring(tree.span.from, tree.span.to)),
       // a bit duplicative to put this in here since it's already in
