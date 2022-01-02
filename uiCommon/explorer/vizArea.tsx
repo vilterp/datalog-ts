@@ -13,6 +13,8 @@ export function VizArea(props: {
     "internal.visualization{name: Name, spec: Spec}"
   );
 
+  const description = XXX;
+
   return (
     <>
       <h3>Visualizations</h3>
@@ -22,6 +24,7 @@ export function VizArea(props: {
           key={idx}
           interp={props.interp}
           name={(result.bindings.Name as StringLit).val}
+          description={()}
           spec={result.bindings.Spec as Rec}
           setHighlightedTerm={props.setHighlightedTerm}
         />
@@ -42,15 +45,20 @@ function IndividualViz(props: {
       heading={props.name}
       storageKey={`viz-${props.name}`}
       content={
-        viz ? (
-          <viz.component
-            interp={props.interp}
-            spec={props.spec}
-            setHighlightedTerm={props.setHighlightedTerm}
-          />
-        ) : (
-          <pre>viz {props.spec.relation} not found</pre>
-        )
+        <div>
+          {props.spec.attrs.description ? (
+            <p>{(props.spec.attrs.description as StringLit).val}</p>
+          ) : null}
+          {viz ? (
+            <viz.component
+              interp={props.interp}
+              spec={props.spec}
+              setHighlightedTerm={props.setHighlightedTerm}
+            />
+          ) : (
+            <pre>viz {props.spec.relation} not found</pre>
+          )}
+        </div>
       }
     />
   );

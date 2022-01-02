@@ -8,6 +8,7 @@ ast_internal.ruleTreeNode{
 
 internal.visualization{
   name: "Rule Tree",
+  description: "The tree of grammar rules and their source spans, as parsed from the example input.",
   spec: tree{
     nodes: "ast_internal.ruleTreeNode{id: ID, parentID: ParentID, display: Display}",
     rootTerm: -1
