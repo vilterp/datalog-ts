@@ -188,3 +188,12 @@ export type SituatedBinding = {
   name: string;
   path: ScopePath;
 };
+
+// probably shouldn't be using errors at all,
+// but at least differentiate our errors from
+// other JS runtime errors.
+export class UserError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

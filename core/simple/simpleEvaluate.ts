@@ -13,6 +13,7 @@ import {
   baseFactTrace,
   RulePathSegment,
   InvocationLocation,
+  UserError,
 } from "../types";
 import {
   applyMappings,
@@ -234,7 +235,7 @@ function doEvaluate(
             return outerRes;
           });
         }
-        throw new Error(`not found: ${term.relation}`);
+        throw new UserError(`not found: ${term.relation}`);
       }
       case "Var":
         return [{ term: scope[term.name], bindings: scope, trace: varTrace }];

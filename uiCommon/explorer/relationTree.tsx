@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Relation } from "../../core/types";
+import { Relation, UserError } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
 import { contains, lastItem, toggle } from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
@@ -78,17 +78,14 @@ export function RelationTree(props: {
               const isHighlighted =
                 isHighlightedRelation || isRelationOfHighlightedTerm;
               const isOpen = contains(props.openRelations, item.relation.name);
-              const count = useMemo(
-                () => props.interp.queryStr(`${rel.name}{}`).length,
-                [props.interp, rel.name]
-              );
+              const status = getStatus(props.interp, rel.name);
               return (
                 <>
                   <span
                     key={rel.name}
                     style={styles.tab({
                       open: isOpen,
-                      empty: count === 0,
+                      empty: !hasContents(status),
                       highlighted: isHighlighted,
                     })}
                     onClick={() =>
@@ -107,9 +104,7 @@ export function RelationTree(props: {
                   >
                     {lastItem(rel.name.split("."))}
                   </span>
-                  {count > 0 && isHighlighted ? (
-                    <span style={{ color: "grey" }}> ({count})</span>
-                  ) : null}
+                  <Status status={status} highlighted={isHighlighted} />
                 </>
               );
             }
@@ -118,6 +113,17 @@ export function RelationTree(props: {
       />
     </>
   );
+}
+
+function Status(props: { status: RelationStatus; highlighted: boolean }) {
+  switch (props.status.type) {
+    case "Count":
+      return props.highlighted ? (
+        <span style={{ color: "grey" }}> ({props.status.count})</span>
+      ) : null;
+    case "Error":
+      return <span style={{ color: "red" }}> (!)</span>;
+  }
 }
 
 type TreeItem =
@@ -171,4 +177,24 @@ function isExported(name: string): boolean {
 
 function isUpperCase(char: string): boolean {
   return char.toUpperCase() === char;
+}
+
+type RelationStatus = { type: "Count"; count: number } | { type: "Error" };
+
+function getStatus(interp: AbstractInterpreter, name: string): RelationStatus {
+  try {
+    const count = interp.queryStr(`${name}{}`).length;
+    return { type: "Count", count };
+  } catch (e) {
+    if (!(e instanceof UserError)) {
+      console.error(`error while getting ${name}:`, e);
+    }
+    // TODO: this could swallow up an internal error...
+    // should get better about errors...
+    return { type: "Error" };
+  }
+}
+
+function hasContents(status: RelationStatus) {
+  return status.type === "Count" && status.count > 0;
 }

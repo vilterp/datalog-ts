@@ -1,5 +1,5 @@
 import { RuleGraph, NodeID, JoinDesc, JoinInfo } from "./types";
-import { Rec, Res, Rule } from "../types";
+import { Rec, Res, Rule, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../../util/util";
@@ -358,7 +358,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   const node = graph.nodes.get(query.relation);
   if (!node) {
     // TODO: maybe start using result type
-    throw new Error(`no such relation: ${query.relation}`);
+    throw new UserError(`no such relation: ${query.relation}`);
   }
   return node.cache
     .all()
