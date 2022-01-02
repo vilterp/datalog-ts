@@ -40,8 +40,7 @@ hl.varDefn{span: S} :-
 # TODO: DRY
 
 hl.segmentDefn{type: "defn", span: S, highlight: false} :-
-  hl.varDefn{span: S} &
-  ide.Usage{definitionLoc: S}.
+  hl.varDefn{span: S}.
 hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
   ide.CurrentUsage{defnLoc: S} &
   hl.varDefn{span: S}.
