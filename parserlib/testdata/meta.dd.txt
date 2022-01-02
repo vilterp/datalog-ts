@@ -2,13 +2,13 @@ main :- value.
 value :- (object | array | intLit | stringLit).
 object :- ["{", repSep(keyValue, ","), "}"].
 keyValue :- [stringLit, ": ", value].
-intLit :- repSep(digit, <succeed>).
+intLit :- repSep(digit, "").
 array :- ["[", repSep(value, ","), "]"].
 digit :- [0-9].
-stringLit :- ["'", repSep([a-z], <succeed>), "'"].
+stringLit :- ["'", repSep([a-z], ""), "'"].
 ----
 text/plain
-grammar [0-146]
+grammar [0-275]
   ruleDefn [0-14]
     ruleName: "main" [0-4]
     rule [8-13]
@@ -49,6 +49,52 @@ grammar [0-146]
           text: "\": \"" [132-136]
         rule [138-143]
           ref: "value" [138-143]
+  ruleDefn [146-174]
+    ruleName: "intLit" [146-152]
+    rule [156-173]
+      repSep [156-173]
+        rule [163-168]
+          ref: "digit" [163-168]
+        rule [170-172]
+          text: "\"\"" [170-172]
+  ruleDefn [175-215]
+    ruleName: "array" [175-180]
+    rule [184-214]
+      seq [184-214]
+        rule [185-188]
+          text: "\"[\"" [185-188]
+        rule [190-208]
+          repSep [190-208]
+            rule [197-202]
+              ref: "value" [197-202]
+            rule [204-207]
+              text: "\",\"" [204-207]
+        rule [210-213]
+          text: "\"]\"" [210-213]
+  ruleDefn [216-231]
+    ruleName: "digit" [216-221]
+    rule [225-230]
+      charRule [225-230]
+        crRange [225-230]
+          singleChar: "0" [226-227]
+          singleChar: "9" [228-229]
+  ruleDefn [232-275]
+    ruleName: "stringLit" [232-241]
+    rule [245-274]
+      seq [245-274]
+        rule [246-249]
+          text: "\"'\"" [246-249]
+        rule [251-268]
+          repSep [251-268]
+            rule [258-263]
+              charRule [258-263]
+                crRange [258-263]
+                  singleChar: "a" [259-260]
+                  singleChar: "z" [261-262]
+            rule [265-267]
+              text: "\"\"" [265-267]
+        rule [270-273]
+          text: "\"'\"" [270-273]
 {
   "main": {
     "type": "Ref",
@@ -113,6 +159,77 @@ grammar [0-146]
       {
         "type": "Ref",
         "name": "value"
+      }
+    ]
+  },
+  "intLit": {
+    "type": "RepSep",
+    "rep": {
+      "type": "Ref",
+      "name": "digit"
+    },
+    "sep": {
+      "type": "Text",
+      "value": ""
+    }
+  },
+  "array": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": "["
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Ref",
+          "name": "value"
+        },
+        "sep": {
+          "type": "Text",
+          "value": ","
+        }
+      },
+      {
+        "type": "Text",
+        "value": "]"
+      }
+    ]
+  },
+  "digit": {
+    "type": "Char",
+    "rule": {
+      "type": "Range",
+      "from": "0",
+      "to": "9"
+    }
+  },
+  "stringLit": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": "'"
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Char",
+          "rule": {
+            "type": "Range",
+            "from": "a",
+            "to": "z"
+          }
+        },
+        "sep": {
+          "type": "Text",
+          "value": ""
+        }
+      },
+      {
+        "type": "Text",
+        "value": "'"
       }
     ]
   }
