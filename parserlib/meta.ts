@@ -120,7 +120,7 @@ function extractRule(input: string, rt: RuleTree): Rule {
           to: rt.span.to - 1,
         })
           .replace(/\\n/, "\n")
-          .replace(/\\\"/, '"')
+          .replace(/\\"/, '"')
       );
       return theText;
     case "charRule":
