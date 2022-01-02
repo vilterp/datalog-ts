@@ -2,7 +2,7 @@ import {
   BenchmarkResult,
   BenchmarkSpec,
   doBenchmark,
-} from "../../util/benchmark";
+} from "../../util/testBench/benchmark";
 import { language } from "./parser";
 import { flatten } from "./flatten";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";

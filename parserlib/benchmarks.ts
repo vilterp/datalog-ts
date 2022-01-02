@@ -1,4 +1,8 @@
-import { BenchmarkResult, BenchmarkSpec, doBenchmark } from "../util/benchmark";
+import {
+  BenchmarkResult,
+  BenchmarkSpec,
+  doBenchmark,
+} from "../util/testBench/benchmark";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { fsLoader } from "../core/fsLoader";

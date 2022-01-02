@@ -1,6 +1,6 @@
 import { str } from "./types";
 import { prettyPrintTerm } from "./pretty";
-import { assertStringEqual } from "../util/testing";
+import { assertStringEqual } from "../util/testBench/testing";
 import * as pp from "prettier-printer";
 
 export const prettyPrintTests = [

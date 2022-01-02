@@ -1,4 +1,4 @@
-import { Suite, assertDeepEqual } from "../../util/testing";
+import { Suite, assertDeepEqual } from "../../util/testBench/testing";
 import { getNewSpans } from "./rename";
 
 export const actionsTests: Suite = [

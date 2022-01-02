@@ -1,10 +1,10 @@
 import Airtable from "airtable";
-import { BenchmarkResult } from "./benchmark";
+import { BenchmarkResult } from "./testBench/benchmark";
 import AWS from "aws-sdk";
 import * as fs from "fs";
 import path from "path";
 
-export async function uploadResultToAirtable(
+export async function postResultToAirtable(
   name: string,
   result: BenchmarkResult
 ) {

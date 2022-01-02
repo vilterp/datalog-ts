@@ -1,4 +1,4 @@
-import { Suite } from "../util/testing";
+import { Suite } from "../util/testBench/testing";
 import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";

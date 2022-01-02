@@ -1,4 +1,4 @@
-import { Suite } from "../util/testing";
+import { Suite } from "../util/testBench/testing";
 import { runDDTestAtPath } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { parse, TraceTree } from "./parser";
@@ -11,8 +11,6 @@ import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
 import { flatten } from "./flatten";
 import { ppt } from "../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
-import { SimpleInterpreter } from "../core/simple/interpreter";
-import { nullLoader } from "../core/loaders";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { Rec } from "../core/types";
 import { fsLoader } from "../core/fsLoader";
