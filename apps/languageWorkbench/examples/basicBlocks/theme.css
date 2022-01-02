@@ -10,6 +10,9 @@
 .segment-keyword {
   color: orange;
 }
+.segment-funcName {
+  color: purple;
+}
 .segment-defn {
   color: purple;
 }
