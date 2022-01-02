@@ -34,3 +34,7 @@ ide.UsageForCursor{usageLoc: UL} :-
   ide.Cursor{idx: CIdx} &
   refGraph.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
   FIdx <= CIdx & CIdx <= TIdx.
+
+ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
+  ide.CurrentUsage{defnLoc: DL, usageLoc: UL} &
+  DL != "builtin".
