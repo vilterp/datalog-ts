@@ -2,9 +2,9 @@
 ast_internal.ruleTreeNode{
   id: ID,
   parentID: PID,
-  display: node{rule: R, span: S}
+  display: [R, [F, T]]
 } :-
-  ast_internal.node{id: ID, parentID: PID, rule: R, span: S}.
+  ast_internal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}}.
 
 internal.visualization{
   name: "Rule Tree",
