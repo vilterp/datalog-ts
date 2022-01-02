@@ -33,16 +33,6 @@ ide.jump{from: BF, to: BT} :-
   defn.goto{blockID: BlockID, to: BT} &
   defn.block{id: BlockID, name: BF}.
 
-# === viz ===
-
-internal.visualization{
-  name: "Jumps",
-  spec: graphviz{
-    nodes: "defn.block{name: ID}",
-    edges: "ide.jump{from: From, to: To}"
-  }
-}.
-
 hl.varDefn{span: S} :-
   defn.block{labelSpan: S}.
 
@@ -78,3 +68,13 @@ ide.CurrentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
 ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
   ide.CurrentUsageUsage{defnLoc: DL} &
   ide.Usage{definitionLoc: DL, usageLoc: UL}.
+
+# === viz ===
+
+internal.visualization{
+  name: "Jumps",
+  spec: graphviz{
+    nodes: "defn.block{name: ID}",
+    edges: "ide.jump{from: From, to: To}"
+  }
+}.

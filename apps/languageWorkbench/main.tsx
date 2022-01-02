@@ -21,7 +21,6 @@ import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
 import { getAllStatements } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { mapObjToList, uniq } from "../../util/util";
@@ -31,13 +30,14 @@ import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
 import useHashParam from "use-hash-param";
 // @ts-ignore
-import ruleTreeViz from "./ruleTreeViz.dl";
+import mainDL from "./dl/main.dl";
+import { LOADER } from "./dl";
 
 function Main() {
   return <Playground />;
 }
 
-const initInterp = new SimpleInterpreter(".", nullLoader);
+const initInterp = new SimpleInterpreter(".", LOADER);
 
 function Playground() {
   // state
@@ -262,7 +262,7 @@ function constructInterp({
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
       finalInterp = ensureHighlightSegmentTable(finalInterp);
-      finalInterp = finalInterp.evalStr(ruleTreeViz)[1];
+      finalInterp = finalInterp.evalStr(mainDL)[1];
     } catch (e) {
       langParseError = e.toString();
       console.error(e);

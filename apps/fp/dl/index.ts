@@ -13,7 +13,7 @@ import astDL from "./ast.dl";
 // @ts-ignore
 import mainDL from "./main.dl";
 
-export const loader = makeMemoryLoader({
+export const LOADER = makeMemoryLoader({
   "./typecheck.dl": typecheckDL,
   "./ide.dl": ideDL,
   "./stdlib.dl": stdlibDL,
