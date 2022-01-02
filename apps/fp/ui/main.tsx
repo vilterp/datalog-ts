@@ -13,13 +13,13 @@ import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../../uiCommon/ide/types";
 // @ts-ignore
 import highlightCSS from "./highlight.css";
-import { loader } from "../dl";
+import { LOADER } from "../dl";
 import { getSuggestions } from "./suggestions";
 import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 
 function Main() {
-  let interp = new IncrementalInterpreter(".", loader) as AbstractInterpreter;
+  let interp = new IncrementalInterpreter(".", LOADER) as AbstractInterpreter;
 
   const [editorState, setEditorState] = useJSONLocalStorage(
     "fp-editor-state",

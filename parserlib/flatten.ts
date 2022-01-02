@@ -52,13 +52,14 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
   return state.records;
 }
 
-export function getUnionRule(g: Grammar): Rule {
+function getUnionRule(g: Grammar): Rule {
   return rule(
     rec("ast_internal.node", {
       id: varr("ID"),
       parentID: varr("ParentID"),
-      span: varr("S"),
-      text: varr("T"),
+      span: varr("Span"),
+      text: varr("Text"),
+      rule: varr("Rule"),
     }),
     or(
       Object.keys(g).map((ruleName) =>
@@ -66,8 +67,9 @@ export function getUnionRule(g: Grammar): Rule {
           rec(`ast.${ruleName}`, {
             id: varr("ID"),
             parentID: varr("ParentID"),
-            span: varr("S"),
-            text: varr("T"),
+            span: varr("Span"),
+            text: varr("Text"),
+            rule: varr("Rule"),
           }),
         ])
       )
@@ -78,18 +80,23 @@ export function getUnionRule(g: Grammar): Rule {
 function recur(state: State, tree: RuleTree, parentID: number): number {
   const id = state.nextID;
   state.nextID++;
-  const props: { [name: string]: Term } = {
-    id: int(id),
-    span: rec("span", {
-      from: int(tree.span.from),
-      to: int(tree.span.to),
-    }),
-    parentID: int(parentID),
-    text: str(state.source.substring(tree.span.from, tree.span.to)),
-  };
   tree.children.forEach((child) => {
     recur(state, child, id);
   });
-  state.records.push(rec(`ast.${tree.name}`, props));
+  state.records.push(
+    rec(`ast.${tree.name}`, {
+      id: int(id),
+      span: rec("span", {
+        from: int(tree.span.from),
+        to: int(tree.span.to),
+      }),
+      parentID: int(parentID),
+      text: str(state.source.substring(tree.span.from, tree.span.to)),
+      // a bit duplicative to put this in here since it's already in
+      // the record name, but it does make rendering the rule tree a
+      // lot easier in the absence a virtual `equal` relation.
+      rule: str(tree.name),
+    })
+  );
   return id;
 }

@@ -21,7 +21,6 @@ import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
 import { getAllStatements } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { mapObjToList, uniq } from "../../util/util";
@@ -31,13 +30,14 @@ import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
 import useHashParam from "use-hash-param";
 // @ts-ignore
-import ruleTreeViz from "./ruleTreeViz.dl";
+import mainDL from "./dl/main.dl";
+import { LOADER } from "./dl";
 
 function Main() {
   return <Playground />;
 }
 
-const initInterp = new SimpleInterpreter(".", nullLoader);
+const initInterp = new SimpleInterpreter(".", LOADER);
 
 function Playground() {
   // state
@@ -116,17 +116,6 @@ function Playground() {
         <tbody>
           <tr>
             <td>
-              <h3>Grammar Source</h3>
-              <textarea
-                value={grammarSource}
-                onChange={(evt) => setGrammarSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
-              />
-              <ErrorList errors={allGrammarErrors} />
-            </td>
-            <td>
               <h3>Language Source</h3>
               <CodeEditor
                 editorState={exampleEditorState}
@@ -138,6 +127,17 @@ function Playground() {
                 suggestions={[]} // TODO: get suggestions
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
+            </td>
+            <td>
+              <h3>Grammar Source</h3>
+              <textarea
+                value={grammarSource}
+                onChange={(evt) => setGrammarSource(evt.target.value)}
+                rows={10}
+                cols={50}
+                spellCheck={false}
+              />
+              <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
@@ -171,45 +171,6 @@ function Playground() {
         ) : (
           <em>Grammar isn't valid</em>
         )}
-
-        {/* TODO: memoize some of these. they take non-trival time to render */}
-
-        <CollapsibleWithHeading
-          heading="Rule Tree"
-          content={
-            <>
-              {ruleTree ? (
-                <TreeView
-                  tree={ruleTreeToTree(ruleTree, langSource)}
-                  render={(n) => renderRuleNode(n.item, langSource)}
-                  collapseState={ruleTreeCollapseState}
-                  setCollapseState={setRuleTreeCollapseState}
-                />
-              ) : (
-                <em>Grammar isn't valid</em>
-              )}
-            </>
-          }
-        />
-        <CollapsibleWithHeading
-          heading="Trace Tree"
-          content={
-            <>
-              {traceTree ? (
-                <ReactJson
-                  name={null}
-                  enableClipboard={false}
-                  displayObjectSize={false}
-                  displayDataTypes={false}
-                  src={traceTree}
-                  shouldCollapse={({ name }) => name === "span"}
-                />
-              ) : (
-                <em>Grammar isn't valid</em>
-              )}
-            </>
-          }
-        />
       </>
     </>
   );
@@ -262,7 +223,7 @@ function constructInterp({
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
       finalInterp = ensureHighlightSegmentTable(finalInterp);
-      finalInterp = finalInterp.evalStr(ruleTreeViz)[1];
+      finalInterp = finalInterp.evalStr(mainDL)[1];
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
