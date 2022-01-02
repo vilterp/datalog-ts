@@ -57,7 +57,11 @@ function doParse(
   input: string
 ): TraceTree {
   if (startIdx > input.length) {
-    throw new Error("parser internal error: startIdx > input.length");
+    return {
+      type: "TextTrace", // this is messed up... what to return here?
+      error: { offset: startIdx, expected: ["something"], got: "EOF" },
+      span: { from: startIdx, to: startIdx },
+    };
   }
   switch (rule.type) {
     case "Text":
@@ -233,7 +237,9 @@ function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
   fn(tree);
   switch (tree.type) {
     case "ChoiceTrace":
-      forEachTraceTreeNode(tree.innerTrace, fn);
+      if (tree.innerTrace) {
+        forEachTraceTreeNode(tree.innerTrace, fn);
+      }
       break;
     case "SeqTrace":
       tree.itemTraces.forEach((itemTrace) => {
