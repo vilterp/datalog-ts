@@ -29,3 +29,8 @@ ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
   refGraph.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   FIdx <= CIdx & CIdx <= TIdx.
+
+ide.UsageForCursor{usageLoc: UL} :-
+  ide.Cursor{idx: CIdx} &
+  refGraph.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  FIdx <= CIdx & CIdx <= TIdx.
