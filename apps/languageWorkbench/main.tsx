@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import {
   formatParseError,
@@ -24,10 +24,14 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { uniq } from "../../util/util";
+import { mapObjToList, uniq } from "../../util/util";
 import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
+import { EXAMPLES } from "./examples";
+import useHashParam from "use-hash-param";
+// @ts-ignore
+import ruleTreeViz from "./ruleTreeViz.dl";
 
 function Main() {
   return <Playground />;
@@ -37,30 +41,29 @@ const initInterp = new SimpleInterpreter(".", nullLoader);
 
 function Playground() {
   // state
-  const [grammarSource, setGrammarSource] = useLocalStorage(
-    "language-workbench-grammar-source",
-    `main :- "foo".`
+  const [exampleName, setExampleName] = useHashParam(
+    "",
+    Object.keys(EXAMPLES)[0]
   );
-  const [dlSource, setDLSource] = useLocalStorage(
-    "language-workbench-dl-source",
-    ""
-  );
-  const [themeSource, setThemeSource] = useLocalStorage(
-    "language-workbench-theme-source",
-    ""
+
+  const curExample = EXAMPLES[exampleName];
+
+  const [grammarSource, setGrammarSource] = useState(curExample.grammar);
+  const [dlSource, setDLSource] = useState(curExample.datalog);
+  const [themeSource, setThemeSource] = useState(curExample.themeCSS);
+  const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
+    initialEditorState(curExample.example)
   );
   const [ruleTreeCollapseState, setRuleTreeCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
       "language-workbench-rule-tree-collapse-state",
       emptyCollapseState
     );
-  const [langEditorState, setLangEditorState] =
-    useJSONLocalStorage<EditorState>(
-      "language-workbench-editor-state",
-      initialEditorState("let x = 2 in intToString(x)")
-    );
-  const cursorPos = langEditorState.cursorPos;
-  const langSource = langEditorState.source;
+  const cursorPos = exampleEditorState.cursorPos;
+  const langSource = exampleEditorState.source;
+  const setExampleSource = (source: string) => {
+    setExampleEditorState({ ...exampleEditorState, source });
+  };
 
   const {
     finalInterp,
@@ -80,9 +83,34 @@ function Playground() {
     [cursorPos, dlSource, grammarSource, langSource]
   );
 
+  const setExample = (name) => {
+    setExampleName(name);
+    const example = EXAMPLES[name];
+    setGrammarSource(example.grammar);
+    setThemeSource(example.themeCSS);
+    setDLSource(example.datalog);
+    setExampleSource(example.example);
+  };
+
   return (
     <>
       <h1>Language Workbench</h1>
+
+      <div>
+        <h3>Example:</h3>
+        <select
+          onChange={(evt) => {
+            setExample(evt.target.value);
+          }}
+          value={exampleName}
+        >
+          {mapObjToList(EXAMPLES, (name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <table>
         <tbody>
@@ -101,8 +129,8 @@ function Playground() {
             <td>
               <h3>Language Source</h3>
               <CodeEditor
-                editorState={langEditorState}
-                setEditorState={setLangEditorState}
+                editorState={exampleEditorState}
+                setEditorState={setExampleEditorState}
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
                 highlightCSS={themeSource}
@@ -201,7 +229,9 @@ function constructInterp({
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
-  const grammarParseErrors = getErrors(grammarTraceTree).map(formatParseError);
+  const grammarParseErrors = getErrors(grammarSource, grammarTraceTree).map(
+    formatParseError
+  );
   const grammarErrors = validateGrammar(grammar);
   const [interpWithRules, dlErrors] = (() => {
     try {
@@ -232,6 +262,7 @@ function constructInterp({
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
       finalInterp = ensureHighlightSegmentTable(finalInterp);
+      finalInterp = finalInterp.evalStr(ruleTreeViz)[1];
     } catch (e) {
       langParseError = e.toString();
       console.error(e);

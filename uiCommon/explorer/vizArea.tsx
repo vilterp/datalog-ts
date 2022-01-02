@@ -40,6 +40,7 @@ function IndividualViz(props: {
   return (
     <CollapsibleWithHeading
       heading={props.name}
+      storageKey={`viz-${props.name}`}
       content={
         viz ? (
           <viz.component

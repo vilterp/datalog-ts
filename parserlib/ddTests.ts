@@ -1,7 +1,7 @@
 import { Suite } from "../util/testBench/testing";
 import { runDDTestAtPath } from "../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
-import { parse, TraceTree } from "./parser";
+import { formatParseError, getErrors, parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
 import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
@@ -106,6 +106,10 @@ function metaTest(test: string[]): TestOutput[] {
     const traceTree = parse(metaGrammar, "grammar", input);
     const ruleTree = extractRuleTree(traceTree);
     const grammar = extractGrammar(input, ruleTree);
+    const errors = getErrors(input, traceTree);
+    if (errors.length > 0) {
+      throw new Error(`errors in metaTest: ${errors.map(formatParseError)}`);
+    }
     return plainTextOut(
       prettyPrintRuleTree(ruleTree, input) +
         "\n" +
@@ -181,7 +185,13 @@ function parserTestFixedStartRule(
   });
 }
 
-function handleResults(tree: TraceTree, source: string): TestOutput {
-  const ruleTree = extractRuleTree(tree);
-  return plainTextOut(prettyPrintRuleTree(ruleTree, source));
+function handleResults(traceTree: TraceTree, source: string): TestOutput {
+  const ruleTree = extractRuleTree(traceTree);
+  const errors = getErrors(source, traceTree);
+  return plainTextOut(
+    [
+      ...prettyPrintRuleTree(ruleTree, source).split("\n"),
+      ...errors.map((err) => `error: ${formatParseError(err)}`),
+    ].join("\n")
+  );
 }
