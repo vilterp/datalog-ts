@@ -2,11 +2,15 @@ main :- repSep(block,ws).
 block :- [label, ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
 label :- ident.
 ident :- [[a-z], repSep([a-z], "")].
-instr :- (callInstr | gotoInstr).
+instr :- (callInstr | gotoInstr | constInstr).
+constInstr :- [ident, ws, "=", ws, const].
 callInstr :- [ident, ws, "=", ws, call].
 call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, (ident | placeholder)].
 gotoKW :- "goto".
 params :- ["(", repSep((ident | placeholder), [",", ws]), ")"].
+const :- (string | int).
+string :- ["\"", repSep([a-z], ""), "\""].
+int :- [[0-9], repSep([0-9], "")].
 placeholder :- "???".
 ws :- repSep((" "|"\n"), "").

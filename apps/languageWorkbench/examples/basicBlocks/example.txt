@@ -1,4 +1,5 @@
 foo {
+  a = 2;
   y = zoop;
   x = boop(y);
 }
