@@ -1,12 +1,4 @@
-import {
-  DB,
-  Rec,
-  Res,
-  Statement,
-  rec,
-  str,
-  Rule,
-} from "../types";
+import { DB, Rec, Res, Statement, rec, str, Rule } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
@@ -55,6 +47,11 @@ export class SimpleInterpreter extends AbstractInterpreter {
       }
       case "Rule": {
         const rule = stmt.rule;
+        // TODO: move this to some kind of validation phase?
+        // better than silent failure tho.
+        if (this.db.rules[rule.head.relation]) {
+          throw new Error(`rule "${rule.head.relation}" already defined`);
+        }
         return [
           [],
           this.withDB({
