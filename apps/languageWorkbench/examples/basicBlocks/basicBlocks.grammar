@@ -6,7 +6,7 @@ instr :- (valueInstr | gotoInstr).
 valueInstr :- [ident, ws, "=", ws, rvalue].
 rvalue :- (call | const).
 call :- [ident, (params | "")].
-gotoInstr :- [gotoKW, ws, (ident | placeholder)].
+gotoInstr :- [gotoKW, ws, (label | placeholder)].
 gotoKW :- "goto".
 params :- ["(", repSep((ident | placeholder), [",", ws]), ")"].
 const :- (string | int).
