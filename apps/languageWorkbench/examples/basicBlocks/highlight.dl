@@ -18,6 +18,10 @@ defn.goto{blockID: BlockID, instrID: InstrID, to: ToName, labelSpan: S} :-
   ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
   ast.instr{id: InstrID, parentID: BlockID}.
 
+defn.ssaVar{span: S, name: N} :-
+  ast.callInstr{id: InstrID} &
+  ast.ident{parentID: InstrID, text: N, span: S}.
+
 defn.block{id: BlockID, name: N, labelSpan: S} :-
   ast.block{id: BlockID} &
   ast.label{id: LabelID, parentID: BlockID} &
@@ -34,7 +38,8 @@ ide.jump{from: BF, to: BT} :-
   defn.block{id: BlockID, name: BF}.
 
 hl.varDefn{span: S} :-
-  defn.block{labelSpan: S}.
+  defn.block{labelSpan: S} |
+  defn.ssaVar{span: S}.
 
 # copy/pasted from FP
 # TODO: DRY

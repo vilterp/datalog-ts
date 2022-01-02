@@ -3,7 +3,8 @@ block :- [label, ws, "{", ws, repSep(instr,[";",ws]), ws, "}"].
 label :- ident.
 ident :- [[a-z], repSep([a-z], "")].
 instr :- (callInstr | gotoInstr).
-callInstr :- [ident, ws, "=", ws, ident, (params | "")].
+callInstr :- [ident, ws, "=", ws, call].
+call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, ident].
 gotoKW :- "goto".
 params :- ["(", repSep(ident, [",", ws]), ")"].
