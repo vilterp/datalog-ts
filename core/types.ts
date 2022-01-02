@@ -108,8 +108,8 @@ export type Operator = "==" | "!=" | ">=" | "<=";
 
 // rule helpers
 
-export function rule(head: Rec, defn: OrExpr): Rule {
-  return { head, body: defn };
+export function rule(head: Rec, body: OrExpr): Rule {
+  return { head, body };
 }
 
 export function or(opts: AndExpr[]): OrExpr {

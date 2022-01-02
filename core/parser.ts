@@ -29,7 +29,7 @@ export const language = P.createLanguage({
     P.seq(r.record, word(":-"), r.ruleOptions, r.period).map(
       ([head, _, options, __]) => ({
         type: "Rule",
-        rule: { head, defn: options },
+        rule: { head, body: options },
       })
     ),
   ruleOptions: (r) =>
@@ -51,11 +51,9 @@ export const language = P.createLanguage({
       attrs: pairsToObj(pairs),
     })),
   arrayLit: (r) =>
-    P.seq(
-      r.lsquare,
-      P.sepBy(r.term, r.comma),
-      r.rsquare
-    ).map(([_1, items, _2]) => ({ type: "Array", items })),
+    P.seq(r.lsquare, P.sepBy(r.term, r.comma), r.rsquare).map(
+      ([_1, items, _2]) => ({ type: "Array", items })
+    ),
   binExpr: (r) =>
     P.seq(
       r.term.skip(P.optWhitespace),

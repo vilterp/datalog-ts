@@ -83,7 +83,7 @@ export const parserTests: Suite = [
           type: "Rule",
           rule: {
             head: rec("parent", { child: varr("C"), parent: varr("P") }),
-            defn: {
+            body: {
               type: "Or",
               opts: [
                 {
@@ -115,7 +115,7 @@ export const parserTests: Suite = [
               grandchild: varr("A"),
               grandfather: varr("C"),
             }),
-            defn: {
+            body: {
               type: "Or",
               opts: [
                 {
