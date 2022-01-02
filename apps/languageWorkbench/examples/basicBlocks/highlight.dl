@@ -30,11 +30,19 @@ defn.block{id: BlockID, name: N, labelSpan: S} :-
 
 # === Scope ===
 
-scope.item{id: I, type: "var", name: N} :-
+scope.item{id: I, type: T, name: N} :-
+  scope.itemVar{id: I, type: T, name: N} |
+  scope.itemLabel{id: I, type: T, name: N}.
+
+scope.itemVar{id: I, type: "var", name: N} :-
   defn.ssaVar{instrID: InstrID, name: N} &
   ast.instr{id: InstrID, parentID: BlockID, idx: DefnIdx} &
   ast.instr{id: I, parentID: BlockID, idx: CurrentIdx} &
   DefnIdx <= CurrentIdx.
+
+scope.itemLabel{id: I, type: "label", name: N} :-
+  ast.instr{id: I} &
+  defn.block{name: N}.
 
 # === IDE ===
 
