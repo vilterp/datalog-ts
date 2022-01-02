@@ -62,6 +62,9 @@ function Playground() {
     );
   const cursorPos = langEditorState.cursorPos;
   const langSource = langEditorState.source;
+  const setLangSource = (source: string) => {
+    setLangEditorState({ ...langEditorState, source });
+  };
 
   const {
     finalInterp,
@@ -86,6 +89,7 @@ function Playground() {
     setGrammarSource(example.grammar);
     setThemeSource(example.themeCSS);
     setDLSource(example.datalog);
+    setLangSource(example.example);
   };
 
   return (
