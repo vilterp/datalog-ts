@@ -22,36 +22,41 @@ const INPUT = "[{'a':null,'b':'bar','c':[1]},3]";
 export const parserBenchmarks: BenchmarkSpec[] = [
   {
     name: "parse-json-simple",
-    run(): BenchmarkResult {
-      const interp: AbstractInterpreter = new SimpleInterpreter(".", fsLoader);
-      return parserTestDatalog(interp, 10, GRAMMAR, INPUT);
+    async run(): Promise<BenchmarkResult> {
+      return parserTestDatalog(
+        () => new SimpleInterpreter(".", fsLoader),
+        50,
+        GRAMMAR,
+        INPUT
+      );
     },
   },
   {
     name: "parse-json-incr",
-    run(): BenchmarkResult {
-      const interp: AbstractInterpreter = new IncrementalInterpreter(
-        ".",
-        fsLoader
+    async run(): Promise<BenchmarkResult> {
+      return parserTestDatalog(
+        () => new IncrementalInterpreter(".", fsLoader),
+        50,
+        GRAMMAR,
+        INPUT
       );
-      return parserTestDatalog(interp, 10, GRAMMAR, INPUT);
     },
   },
   {
     name: "parse-json-native",
-    run(): BenchmarkResult {
+    async run(): Promise<BenchmarkResult> {
       return parserTestNativeJS(10000, GRAMMAR, INPUT);
     },
   },
 ];
 
-function parserTestDatalog(
-  emptyInterp: AbstractInterpreter,
+async function parserTestDatalog(
+  mkInterp: () => AbstractInterpreter,
   repetitions: number,
   grammarSource: string,
   input: string
-): BenchmarkResult {
-  const loadedInterp = emptyInterp.doLoad("parserlib/datalog/parse.dl");
+): Promise<BenchmarkResult> {
+  const loadedInterp = mkInterp().doLoad("parserlib/datalog/parse.dl");
   const grammarParsed = parseGrammar(grammarSource);
   const grammarDL = grammarToDL(grammarParsed);
   const inputDL = inputToDL(input);
@@ -65,11 +70,11 @@ function parserTestDatalog(
   });
 }
 
-function parserTestNativeJS(
+async function parserTestNativeJS(
   repetitions: number,
   grammarSource: string,
   input: string
-): BenchmarkResult {
+): Promise<BenchmarkResult> {
   const grammarParsed = parseGrammar(grammarSource);
 
   return doBenchmark(repetitions, () => {
