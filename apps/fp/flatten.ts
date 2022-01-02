@@ -42,18 +42,25 @@ function recurse(
         })
       );
     case "Placeholder":
+      // TODO decide on location vs span
       return simple(
-        rec("ast.Placeholder", { id: nextIDTerm, location: spanToDL(e.span) })
+        rec("ast.Placeholder", {
+          id: nextIDTerm,
+          location: spanToDL(e.span),
+          span: spanToDL(e.span),
+        })
       );
     case "FuncCall": {
-      const { terms: funcExprTerms, id: funcExprID, nextID: nid1 } = recurse(
-        nextID + 1,
-        e.func
-      );
-      const { terms: argExprTerms, id: argExprID, nextID: nid2 } = recurse(
-        nid1,
-        e.arg
-      );
+      const {
+        terms: funcExprTerms,
+        id: funcExprID,
+        nextID: nid1,
+      } = recurse(nextID + 1, e.func);
+      const {
+        terms: argExprTerms,
+        id: argExprID,
+        nextID: nid2,
+      } = recurse(nid1, e.arg);
       return {
         terms: [
           rec("ast.FuncCall", {
@@ -70,14 +77,16 @@ function recurse(
       };
     }
     case "Let": {
-      const { id: bindingID, terms: bindingsTerms, nextID: nid1 } = recurse(
-        nextID + 1,
-        e.binding
-      );
-      const { id: bodyID, terms: bodyTerms, nextID: nid2 } = recurse(
-        nid1,
-        e.body
-      );
+      const {
+        id: bindingID,
+        terms: bindingsTerms,
+        nextID: nid1,
+      } = recurse(nextID + 1, e.binding);
+      const {
+        id: bodyID,
+        terms: bodyTerms,
+        nextID: nid2,
+      } = recurse(nid1, e.body);
       const overallTerm = rec("ast.LetExpr", {
         id: nextIDTerm,
         varName: str(e.name.ident),
@@ -95,10 +104,11 @@ function recurse(
       };
     }
     case "Lambda": {
-      const { id: bodyID, nextID: nid, terms: bodyTerms } = recurse(
-        nextID + 1,
-        e.body
-      );
+      const {
+        id: bodyID,
+        nextID: nid,
+        terms: bodyTerms,
+      } = recurse(nextID + 1, e.body);
       const paramTerms = e.params.map((param, idx) =>
         rec("ast.LambdaParam", {
           lambdaID: int(nextID),

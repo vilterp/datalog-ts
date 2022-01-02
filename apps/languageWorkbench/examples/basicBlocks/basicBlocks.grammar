@@ -6,11 +6,11 @@ instr :- (valueInstr | gotoInstr).
 valueInstr :- [ident, ws, "=", ws, rvalue].
 rvalue :- (call | const).
 call :- [ident, (params | "")].
-gotoInstr :- [gotoKW, ws, (label | placeholder)].
+gotoInstr :- [gotoKW, ws, (label | Placeholder)].
 gotoKW :- "goto".
-params :- ["(", repSep((ident | placeholder), [",", ws]), ")"].
+params :- ["(", repSep((ident | Placeholder), [",", ws]), ")"].
 const :- (string | int).
 string :- ["\"", repSep([a-z], ""), "\""].
 int :- [[0-9], repSep([0-9], "")].
-placeholder :- "???".
+Placeholder :- "???".
 ws :- repSep((" "|"\n"), "").

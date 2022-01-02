@@ -7,8 +7,9 @@ export function replaceAtSpan(source: string, span: Span, newText: string) {
 }
 
 export function getCursor(interp: AbstractInterpreter): number {
-  return ((interp.queryStr("ide.Cursor{idx: Idx}")[0].term as Rec).attrs
-    .idx as Int).val;
+  return (
+    (interp.queryStr("ide.Cursor{idx: Idx}")[0].term as Rec).attrs.idx as Int
+  ).val;
 }
 
 export function spanContainsIdx(span: Span, cursor: number): boolean {
@@ -37,7 +38,7 @@ export function getCurrentPlaceholder(
 export function getPlaceholders(interp: AbstractInterpreter): Span[] {
   return sortSpans(
     interp
-      .queryStr("ast.Placeholder{location: S}")
-      .map((res) => dlToSpan((res.term as Rec).attrs.location as Rec))
+      .queryStr("ast.Placeholder{span: S}")
+      .map((res) => dlToSpan((res.term as Rec).attrs.span as Rec))
   );
 }

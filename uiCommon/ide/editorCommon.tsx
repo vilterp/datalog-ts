@@ -102,7 +102,7 @@ function KeyBindingsTable(props: { actionCtx: ActionContext }) {
     } catch (e) {
       console.warn(
         `error while checking availability of action "${action.name}":`,
-        e.message
+        e
       );
       return false;
     }

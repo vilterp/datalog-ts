@@ -82,6 +82,7 @@ export const jumpToFirstPlaceholderAction: EditorAction = {
   name: "Jump to Placeholder",
   available(ctx: ActionContext): boolean {
     const placeholders = getPlaceholders(ctx.interp);
+    console.log("jumpToFirstPlaceholderAction", { placeholders });
     const cursorPos = getCursor(ctx.interp);
     return (
       placeholders.length > 0 && !spanContainsIdx(placeholders[0], cursorPos)

@@ -19,7 +19,7 @@ export const digit = charRule(range("0", "9"));
 
 export const alphaNum = choice([alpha, digit]);
 
-export const ident = seq([charRule(range("a", "z")), rep(alphaNum)]);
+export const ident = seq([alpha, rep(alphaNum)]);
 
 export const intLit = rep1(digit);
 
