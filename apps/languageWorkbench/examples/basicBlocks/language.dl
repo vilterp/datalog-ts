@@ -7,11 +7,16 @@ hl.Segment{type: T, span: S, highlight: H} :-
   hl.segmentUsage{type: T, span: S, highlight: H} |
   hl.segmentUsageHL{type: T, span: S, highlight: H} |
   hl.segmentFuncName{type: T, span: S, highlight: H} |
+  hl.segmentVar{type: T, span: S, highlight: H} |
   hl.segmentInt{type: T, span: S, highlight: H} |
   hl.segmentString{type: T, span: S, highlight: H}.
 
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.gotoKW{span: S}.
+
+hl.segmentVar{type: "var", span: S, highlight: false} :-
+  ast.ident{parentID: ParamsID, span: S} &
+  ast.params{id: ParamsID}.
 
 hl.varDefn{span: S} :-
   defn.block{labelSpan: S} |
@@ -30,7 +35,7 @@ hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
   hl.varDefn{span: S}.
 
 hl.segmentUsage{type: "usage", span: S, highlight: false} :-
-  ide.Usage{usageLoc: S}.
+  refGraph.Usage{usageLoc: S}.
 hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S}.
 
@@ -60,50 +65,39 @@ defn.block{id: BlockID, name: N, labelSpan: S} :-
 
 # === Scope ===
 
-scope.item{id: I, type: T, name: N} :-
-  scope.itemVar{id: I, type: T, name: N} |
-  scope.itemLabel{id: I, type: T, name: N}.
+scope.item{id: I, type: T, name: N, defnSpan: S} :-
+  scope.itemVar{id: I, type: T, name: N, defnSpan: S} |
+  scope.itemLabel{id: I, type: T, name: N, defnSpan: S}.
 
-scope.itemVar{id: I, type: "var", name: N} :-
-  defn.ssaVar{instrID: InstrID, name: N} &
+scope.itemVar{id: I, type: "var", name: N, defnSpan: S} :-
+  defn.ssaVar{instrID: InstrID, name: N, defnSpan: S} &
   ast.instr{id: InstrID, parentID: BlockID, idx: DefnIdx} &
   ast.instr{id: I, parentID: BlockID, idx: CurrentIdx} &
   DefnIdx <= CurrentIdx.
 
-scope.itemLabel{id: I, type: "label", name: N} :-
+scope.itemLabel{id: I, type: "label", name: N, defnSpan: S} :-
   ast.instr{id: I} &
-  defn.block{name: N}.
+  defn.block{name: N, labelSpan: S}.
 
-# === IDE ===
+# === Reference Graph ===
 
-ide.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
+refGraph.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
+  refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N}.
+  # refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N}.
+
+refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
   defn.block{labelSpan: DL, name: N} &
   defn.goto{labelSpan: UL, to: N}.
 
+# refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
+#   XXXX.
+
+# === viz ===
+
+# TODO: not sure where this should live...
 ide.jump{from: BF, to: BT} :-
   defn.goto{blockID: BlockID, to: BT} &
   defn.block{id: BlockID, name: BF}.
-
-
-# all usages of the var the cursor is currently on,
-# with definition location.
-ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
-  ide.CurrentUsageDefn{defnLoc: DL, usageLoc: UL} |
-  ide.CurrentUsageUsage{defnLoc: DL, usageLoc: UL} |
-  ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
-ide.CurrentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
-  ide.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
-  ide.Cursor{idx: CIdx} &
-  FIdx <= CIdx & CIdx <= TIdx.
-ide.CurrentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
-  ide.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
-  ide.Cursor{idx: CIdx} &
-  FIdx <= CIdx & CIdx <= TIdx.
-ide.CurrentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
-  ide.CurrentUsageUsage{defnLoc: DL} &
-  ide.Usage{definitionLoc: DL, usageLoc: UL}.
-
-# === viz ===
 
 internal.visualization{
   name: "Jumps",

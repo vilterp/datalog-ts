@@ -1,0 +1,25 @@
+# depends on: module refGraph
+
+# all usages of the var the cursor is currently on,
+# with definition location.
+ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
+  ide.currentUsageDefn{defnLoc: DL, usageLoc: UL} |
+  ide.currentUsageUsage{defnLoc: DL, usageLoc: UL} |
+  ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
+
+# when the cursor is over a definition
+ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
+  refGraph.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+
+# when the cursor is over a usage
+ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
+  refGraph.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+
+# ???
+ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
+  ide.currentUsageUsage{defnLoc: DL} &
+  refGraph.Usage{definitionLoc: DL, usageLoc: UL}.
