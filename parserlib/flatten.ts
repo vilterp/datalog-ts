@@ -59,6 +59,7 @@ function getUnionRule(g: Grammar): Rule {
       span: varr("Span"),
       text: varr("Text"),
       rule: varr("Rule"),
+      idx: varr("Idx"),
     }),
     or(
       Object.keys(g).map((ruleName) =>
@@ -69,6 +70,7 @@ function getUnionRule(g: Grammar): Rule {
             span: varr("Span"),
             text: varr("Text"),
             rule: varr("Rule"),
+            idx: varr("Idx"),
           }),
         ])
       )

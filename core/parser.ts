@@ -89,7 +89,8 @@ export const language = P.createLanguage({
     P.regex(/([a-zA-Z][a-zA-Z0-9_\.]*)/, 1).desc("record identifier"),
 
   filePath: () => P.regex(/[^\n]+/).desc("file path"),
-  binOp: () => P.alt(word("=="), word("!="), word("<="), word(">=")),
+  binOp: () =>
+    P.alt(word("=="), word("!="), word("<="), word(">="), word("<"), word(">")),
   lbrace: () => word("{"),
   rbrace: () => word("}"),
   lsquare: () => word("["),
