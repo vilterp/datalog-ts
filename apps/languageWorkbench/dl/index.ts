@@ -2,9 +2,9 @@ import { makeMemoryLoader } from "../../../core/loaders";
 // @ts-ignore
 import ruleTreeVizDL from "./ruleTreeViz.dl";
 // @ts-ignore
-import commonDL from "./common.dl";
+import ideDL from "./ide.dl";
 
 export const LOADER = makeMemoryLoader({
   "./ruleTreeViz.dl": ruleTreeVizDL,
-  "./common.dl": commonDL,
+  "./ide.dl": ideDL,
 });

@@ -1,2 +1,2 @@
-.load common.dl
+.load ide.dl
 .load ruleTreeViz.dl
