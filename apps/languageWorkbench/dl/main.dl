@@ -1,2 +1,3 @@
 .load ide.dl
 .load ruleTreeViz.dl
+.load scopeGraph.dl

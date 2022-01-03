@@ -38,3 +38,20 @@ ide.UsageForCursor{usageLoc: UL} :-
 ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
   ide.CurrentUsage{defnLoc: DL, usageLoc: UL} &
   DL != "builtin".
+
+# === suggestions ===
+
+# ide.CurrentPlaceholder{id: I, span: span{from: FIdx, to: TIdx}} :-
+#   ast.Placeholder{id: I, span: span{from: FIdx, to: TIdx}} &
+#   ide.Cursor{idx: CIdx} &
+#   FIdx <= CIdx & CIdx <= TIdx.
+# 
+# ide.CurrentSuggestion{id: I, name: N, type: T, typeMatch: M} :-
+#   ide.CurrentPlaceholder{id: I} &
+#   ide.Suggestion{id: I, name: N, type: T, typeMatch: M}.
+# 
+# ide.Suggestion{id: I, name: N, type: T, typeMatch: M} :-
+#   ide.suggestionVar{id: I, name: N, type: T, typeMatch: M} |
+#   ide.suggestionFunc{id: I, name: N, type: T, typeMatch: M} |
+#   ide.suggestionScope{id: I, name: N, type: T, typeMatch: M}.
+# 

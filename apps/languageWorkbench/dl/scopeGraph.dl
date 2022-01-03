@@ -1,0 +1,14 @@
+# nodes:
+# - definitions
+# edges:
+# - sub-scopes
+# usages
+
+scopeGraph.edge{from: From, to: To} :-
+  scopeGraph.edgeUsage{from: From, to: To} |
+  scopeGraph.edgeSubScope{from: From, to: To}.
+
+internal.visualization{
+  nodes: "scopeGraph.node{id: ID}",
+  edges: "scopeGraph.edge{from: From, to: To}"
+}.

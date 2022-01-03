@@ -18,10 +18,6 @@ hl.segmentVar{type: "var", span: S, highlight: false} :-
   ast.ident{parentID: ParamsID, span: S} &
   ast.params{id: ParamsID}.
 
-hl.varDefn{span: S} :-
-  defn.block{labelSpan: S} |
-  defn.ssaVar{span: S}.
-
 hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
   ast.rvalue{id: RValueID} &
   ast.call{id: CallID, parentID: RValueID} &
@@ -29,10 +25,10 @@ hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
 
 # TODO: only highlight if used
 hl.segmentDefn{type: "defn", span: S, highlight: false} :-
-  hl.varDefn{span: S}.
+  refGraph.VarDefn{span: S}.
 hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
   ide.CurrentUsage{defnLoc: S} &
-  hl.varDefn{span: S}.
+  refGraph.VarDefn{span: S}.
 
 hl.segmentUsage{type: "usage", span: S, highlight: false} :-
   refGraph.Usage{usageLoc: S}.
@@ -80,6 +76,10 @@ scope.itemLabel{id: I, type: "label", name: N, defnSpan: S} :-
   defn.block{name: N, labelSpan: S}.
 
 # === Reference Graph ===
+
+refGraph.VarDefn{span: S, name: N} :-
+  defn.block{labelSpan: S, name: N} |
+  defn.ssaVar{span: S, name: N}.
 
 refGraph.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
   refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} |

@@ -30,6 +30,17 @@ export function VizArea(props: {
   );
 }
 
+type VizSpec = {
+  name: string;
+  specRec: Rec;
+};
+
+function getSpec(res: Res) {
+  try {
+    XXXX
+  }
+}
+
 function IndividualViz(props: {
   interp: AbstractInterpreter;
   name: string;
