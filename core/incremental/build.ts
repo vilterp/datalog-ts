@@ -9,9 +9,10 @@ import {
   setAdd,
   setUnion,
 } from "../../util/util";
-import { ppb, ppt } from "../pretty";
+import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "./indexedCollection";
+import { fastPPT } from "./fastPPT";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {
@@ -119,10 +120,11 @@ export function addOr(
   let outGraph = g1;
   let outNodeIDs = new Set<NodeID>([orID]);
   for (let orOption of or.opts) {
-    const { newGraph, newNodeIDs, tipID: andID } = addAnd(
-      outGraph,
-      orOption.clauses
-    );
+    const {
+      newGraph,
+      newNodeIDs,
+      tipID: andID,
+    } = addAnd(outGraph, orOption.clauses);
     outGraph = addEdge(newGraph, andID, orID);
     outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
   }
@@ -175,10 +177,11 @@ function addAndBinary(
   let outGraph = graph;
   const joinInfo = getJoinInfo(left, right);
   const varsToIndex = Object.keys(joinInfo.join);
-  const { newGraph: outGraph2, newNodeIDs: nn1, tipID: leftID } = addRec(
-    outGraph,
-    left
-  );
+  const {
+    newGraph: outGraph2,
+    newNodeIDs: nn1,
+    tipID: leftID,
+  } = addRec(outGraph, left);
   outGraph = outGraph2;
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
@@ -210,12 +213,11 @@ function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
     rec: rightRec,
     newNodeIDs: nn1,
   } = addJoinTree(ruleGraph, joinTree.right);
-  const { newGraph: newGraph2, tipID: andID, newNodeIDs: nn2 } = addAndBinary(
-    newGraph,
-    joinTree.left,
-    rightRec,
-    rightID
-  );
+  const {
+    newGraph: newGraph2,
+    tipID: andID,
+    newNodeIDs: nn2,
+  } = addAndBinary(newGraph, joinTree.left, rightRec, rightID);
   return {
     newGraph: newGraph2,
     tipID: andID,
@@ -250,7 +252,7 @@ export function getIndexKey(res: Res, varNames: string[]): List<string> {
           `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
         );
       }
-      return ppt(term);
+      return fastPPT(term);
     })
   );
 }

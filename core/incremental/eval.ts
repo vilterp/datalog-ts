@@ -1,5 +1,5 @@
-import { RuleGraph, NodeID, JoinDesc, JoinInfo } from "./types";
-import { Rec, Res, Rule, UserError } from "../types";
+import { RuleGraph, NodeID, JoinDesc } from "./types";
+import { Rec, Res, Rule } from "../types";
 import { applyMappings, substitute, unify, unifyVars } from "../unify";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../../util/util";
@@ -34,7 +34,7 @@ export function addRule(
     newGraph: withOr,
     tipID: orID,
     newNodeIDs,
-  } = addOr(graph, rule.head.relation, rule.body);
+  } = addOr(graph, rule.head.relation, rule.defn);
   const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
@@ -108,7 +108,7 @@ function replayFacts(
 }
 
 function getRoots(rule: Rule): NodeID[] {
-  return flatMap(rule.body.opts, (opt) => {
+  return flatMap(rule.defn.opts, (opt) => {
     return filterMap(opt.clauses, (andClause) => {
       if (andClause.type === "BinExpr") {
         return null;
@@ -358,7 +358,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   const node = graph.nodes.get(query.relation);
   if (!node) {
     // TODO: maybe start using result type
-    throw new UserError(`no such relation: ${query.relation}`);
+    throw new Error(`no such relation: ${query.relation}`);
   }
   return node.cache
     .all()
