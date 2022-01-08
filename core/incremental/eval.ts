@@ -34,7 +34,7 @@ export function addRule(
     newGraph: withOr,
     tipID: orID,
     newNodeIDs,
-  } = addOr(graph, rule.head.relation, rule.defn);
+  } = addOr(graph, rule.head.relation, rule.body);
   const withSubst = addNodeKnownID(substID, withOr, false, {
     type: "Substitute",
     rec: rule.head,
@@ -108,7 +108,7 @@ function replayFacts(
 }
 
 function getRoots(rule: Rule): NodeID[] {
-  return flatMap(rule.defn.opts, (opt) => {
+  return flatMap(rule.body.opts, (opt) => {
     return filterMap(opt.clauses, (andClause) => {
       if (andClause.type === "BinExpr") {
         return null;
