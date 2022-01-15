@@ -7,7 +7,7 @@ function grandfather(parent, father) {
   _out = [];
   for (parent_item of parent) for (father_item of father) {
     unifyRes = unify({}, parent_item, father_item);
-    if (unifyRes === null) _out.push(foo);
+    if (unifyRes !== null) _out.push(foo);
   }
   return _out;
 }
