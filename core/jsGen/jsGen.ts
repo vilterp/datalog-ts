@@ -109,7 +109,10 @@ function generateJoinRecur(
       right: { type: "Identifier", name: clause.relation },
       body:
         outerVar === null
-          ? generateJoinRecur(thisVar, join.slice(1), depth + 1, out)
+          ? {
+              type: "BlockStatement",
+              body: [generateJoinRecur(thisVar, join.slice(1), depth + 1, out)],
+            }
           : generateUnifyStmt(outerVar, thisVar, innerLoop, bindingsVar),
     };
   } else {
@@ -153,7 +156,14 @@ function generateUnifyStmt(
   };
   return {
     type: "BlockStatement",
-    body: [unifyAssnStmt, { type: "IfStatement", test, consequent: inner }],
+    body: [
+      unifyAssnStmt,
+      {
+        type: "IfStatement",
+        test,
+        consequent: { type: "BlockStatement", body: [inner] },
+      },
+    ],
   };
 }
 
