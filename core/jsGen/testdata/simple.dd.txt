@@ -6,11 +6,11 @@ text/plain
 function grandfather(parent, father) {
   _out = [];
   for (parent_item of parent) for (father_item of father) {
-    unifyRes = unify({}, parent_item, father_item);
-    if (unifyRes !== null) _out.push({
+    bindings1 = unify({}, parent_item, father_item);
+    if (bindings1 !== null) _out.push(substitute({
       type: "Record",
       relation: "grandfather"
-    });
+    }, bindings0));
   }
   return _out;
 }

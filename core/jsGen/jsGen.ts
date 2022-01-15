@@ -55,14 +55,16 @@ export function generateRule(rule: Rule): FunctionDeclaration {
 }
 
 function generateJoin(join: AndClause[], out: Rec): Statement {
-  return generateJoinRecur(null, join, out);
+  return generateJoinRecur(null, join, 0, out);
 }
 
 function generateJoinRecur(
   outerVar: string | null,
   join: AndClause[],
+  depth: number,
   out: Rec
 ): Statement {
+  const bindingsVar = `bindings${depth}`;
   if (join.length === 0) {
     return {
       type: "ExpressionStatement",
@@ -76,7 +78,10 @@ function generateJoinRecur(
           optional: false,
         },
         arguments: [
-          generateTerm(out), // TODO: substitute
+          generateSubstituteCall(
+            { type: "Identifier", name: bindingsVar },
+            generateTerm(out)
+          ),
         ],
         optional: false,
       },
@@ -93,8 +98,8 @@ function generateJoinRecur(
       right: { type: "Identifier", name: clause.relation },
       body:
         outerVar === null
-          ? generateJoinRecur(thisVar, join.slice(1), out)
-          : generateUnifyStmt(outerVar, thisVar, innerLoop),
+          ? generateJoinRecur(thisVar, join.slice(1), depth + 1, out)
+          : generateUnifyStmt(outerVar, thisVar, innerLoop, bindingsVar),
     };
   } else {
     // generate if statement
@@ -105,7 +110,8 @@ function generateJoinRecur(
 function generateUnifyStmt(
   left: string,
   right: string,
-  inner: Statement
+  inner: Statement,
+  bindingsVar: string
 ): Statement {
   const unifyCall: CallExpression = {
     type: "CallExpression",
@@ -121,20 +127,32 @@ function generateUnifyStmt(
     type: "ExpressionStatement",
     expression: {
       type: "AssignmentExpression",
-      left: { type: "Identifier", name: "unifyRes" },
+      left: { type: "Identifier", name: bindingsVar },
       operator: "=",
       right: unifyCall,
     },
   };
   const test: Expression = {
     type: "BinaryExpression",
-    left: { type: "Identifier", name: "unifyRes" },
+    left: { type: "Identifier", name: bindingsVar },
     operator: "!==",
     right: { type: "Identifier", name: "null" },
   };
   return {
     type: "BlockStatement",
     body: [unifyAssnStmt, { type: "IfStatement", test, consequent: inner }],
+  };
+}
+
+function generateSubstituteCall(
+  bindings: Expression,
+  rec: Expression
+): Expression {
+  return {
+    type: "CallExpression",
+    callee: { type: "Identifier", name: "substitute" },
+    arguments: [rec, bindings],
+    optional: false,
   };
 }
 
@@ -162,6 +180,7 @@ function generateTerm(term: Term): Expression {
             kind: "init",
             method: false,
           },
+          // TODO: attrs
         ],
       };
   }
