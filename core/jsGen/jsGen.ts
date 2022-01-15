@@ -91,7 +91,7 @@ function generateJoinRecur(
   const bindingsVar = `bindings${depth}`;
   const clause = join[0];
   if (clause.type === "Record") {
-    const thisVar = `${clause.relation}_item`;
+    const thisVar = `${clause.relation}_item_${depth}`;
     const innerLoop = generateJoinRecur(thisVar, join.slice(1), depth + 1, out);
     return {
       type: "ForOfStatement",

@@ -5,9 +5,9 @@ grandfather{grandchild: A, grandfather: C} :-
 text/plain
 function grandfather(parent, father) {
   const _out = [];
-  for (const parent_item of parent) {
-    for (const father_item of father) {
-      const bindings1 = unify({}, parent_item, father_item);
+  for (const parent_item_0 of parent) {
+    for (const father_item_1 of father) {
+      const bindings1 = unify({}, parent_item_0, father_item_1);
       if (bindings1 !== null) {
         _out.push(substitute({
           type: "Record",
@@ -27,12 +27,12 @@ greatGrandfather{grandchild: A, grandfather: D} :-
 text/plain
 function greatGrandfather(parent, parent, father) {
   const _out = [];
-  for (const parent_item of parent) {
-    for (const parent_item of parent) {
-      const bindings1 = unify({}, parent_item, parent_item);
+  for (const parent_item_0 of parent) {
+    for (const parent_item_1 of parent) {
+      const bindings1 = unify({}, parent_item_0, parent_item_1);
       if (bindings1 !== null) {
-        for (const father_item of father) {
-          const bindings2 = unify({}, parent_item, father_item);
+        for (const father_item_2 of father) {
+          const bindings2 = unify({}, parent_item_1, father_item_2);
           if (bindings2 !== null) {
             _out.push(substitute({
               type: "Record",
