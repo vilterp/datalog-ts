@@ -28,12 +28,12 @@ function doWriteResults(path: string, results: Result[]) {
 export function suiteFromDDTestsInDir(
   dir: string,
   writeResults: boolean,
-  tests: [string, ProcessFn][]
+  tests: { [name: string]: ProcessFn }
 ): Suite {
-  return tests.map(([name, fn]) => ({
+  return Object.keys(tests).map((name) => ({
     name,
     test() {
-      runDDTestAtPath(`${dir}/${name}.dd.txt`, fn, writeResults);
+      runDDTestAtPath(`${dir}/${name}.dd.txt`, tests[name], writeResults);
     },
   }));
 }

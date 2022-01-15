@@ -1,0 +1,11 @@
+grandfather{grandchild: A, grandfather: C} :-
+  parent{child: A, parent: B} &
+  father{child: B, father: C}.
+----
+
+
+greatGrandfather{grandchild: A, grandfather: D} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C} &
+  father{child: C, father: D}.
+----
