@@ -14,7 +14,6 @@ export function evaluateRule(db: DB, rule: Rule): Rec[] {
     db,
   };
   const innerJS = `const context = this;\n${js}`;
-  console.log(innerJS);
   const func = Function(innerJS).bind(context);
   return func();
 }
