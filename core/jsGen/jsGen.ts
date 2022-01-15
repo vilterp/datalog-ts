@@ -96,7 +96,16 @@ function generateJoinRecur(
     return {
       type: "ForOfStatement",
       await: false,
-      left: { type: "Identifier", name: thisVar },
+      left: {
+        type: "VariableDeclaration",
+        kind: "const",
+        declarations: [
+          {
+            type: "VariableDeclarator",
+            id: { type: "Identifier", name: thisVar },
+          },
+        ],
+      },
       right: { type: "Identifier", name: clause.relation },
       body:
         outerVar === null
