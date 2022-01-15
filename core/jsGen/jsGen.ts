@@ -139,23 +139,12 @@ function generateUnifyIfStmt(
     type: "CallExpression",
     callee: { type: "Identifier", name: "unify" },
     arguments: [
-      // TODO: should we pass vars in here, or nah?
-      // should this argument to unify even exist?
-      { type: "ObjectExpression", properties: [] },
+      outerBindings,
       { type: "Identifier", name: left },
       { type: "Identifier", name: right },
     ],
     optional: false,
   };
-  const combineCall: CallExpression =
-    depth === 1
-      ? unifyCall
-      : {
-          type: "CallExpression",
-          callee: { type: "Identifier", name: "unifyVars" },
-          arguments: [outerBindings, unifyCall],
-          optional: false,
-        };
   const unifyAssnStmt: Statement = {
     type: "VariableDeclaration",
     kind: "const",
@@ -163,7 +152,7 @@ function generateUnifyIfStmt(
       {
         type: "VariableDeclarator",
         id: { type: "Identifier", name: thisBindingsVar },
-        init: combineCall,
+        init: unifyCall,
       },
     ],
   };

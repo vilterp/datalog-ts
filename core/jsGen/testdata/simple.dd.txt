@@ -32,7 +32,7 @@ function greatGrandfather(parent, parent, father) {
       const bindings1 = unify({}, parent_item_0, parent_item_1);
       if (bindings1 !== null) {
         for (const father_item_2 of father) {
-          const bindings2 = unifyVars(bindings1, unify({}, parent_item_1, father_item_2));
+          const bindings2 = unify(bindings1, parent_item_1, father_item_2);
           if (bindings2 !== null) {
             _out.push(substitute({
               type: "Record",
