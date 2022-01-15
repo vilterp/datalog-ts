@@ -13,8 +13,10 @@ export function evaluateRule(db: DB, rule: Rule): Rec[] {
     substitute,
     db,
   };
-  const closure = () => eval(js);
-  return closure.call(context);
+  const innerJS = `console.log(this);\n${js}`;
+  console.log(innerJS);
+  const func = Function(innerJS).bind(context);
+  return func();
 }
 
 function generateCall(rule: Rule): Statement {
@@ -27,6 +29,6 @@ function generateCall(rule: Rule): Statement {
   };
   return {
     type: "BlockStatement",
-    body: [genRule, { type: "ExpressionStatement", expression: call }],
+    body: [genRule, { type: "ReturnStatement", argument: call }],
   };
 }
