@@ -12,7 +12,34 @@ function grandfather(parent, father) {
         _out.push(substitute({
           type: "Record",
           relation: "grandfather"
-        }, bindings0));
+        }, bindings1));
+      }
+    }
+  }
+  return _out;
+}
+
+greatGrandfather{grandchild: A, grandfather: D} :-
+  parent{child: A, parent: B} &
+  parent{child: B, parent: C} &
+  father{child: C, father: D}.
+----
+text/plain
+function greatGrandfather(parent, parent, father) {
+  const _out = [];
+  for (const parent_item of parent) {
+    for (const parent_item of parent) {
+      const bindings1 = unify({}, parent_item, parent_item);
+      if (bindings1 !== null) {
+        for (const father_item of father) {
+          const bindings2 = unify({}, parent_item, father_item);
+          if (bindings2 !== null) {
+            _out.push(substitute({
+              type: "Record",
+              relation: "greatGrandfather"
+            }, bindings2));
+          }
+        }
       }
     }
   }

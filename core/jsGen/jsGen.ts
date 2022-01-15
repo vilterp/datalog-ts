@@ -66,7 +66,6 @@ function generateJoinRecur(
   depth: number,
   out: Rec
 ): Statement {
-  const bindingsVar = `bindings${depth}`;
   if (join.length === 0) {
     return {
       type: "ExpressionStatement",
@@ -81,7 +80,7 @@ function generateJoinRecur(
         },
         arguments: [
           generateSubstituteCall(
-            { type: "Identifier", name: bindingsVar },
+            { type: "Identifier", name: `bindings${depth - 1}` },
             generateTerm(out)
           ),
         ],
@@ -89,10 +88,11 @@ function generateJoinRecur(
       },
     };
   }
+  const bindingsVar = `bindings${depth}`;
   const clause = join[0];
-  const innerLoop = generateJoin(join.slice(1), out);
   if (clause.type === "Record") {
     const thisVar = `${clause.relation}_item`;
+    const innerLoop = generateJoinRecur(thisVar, join.slice(1), depth + 1, out);
     return {
       type: "ForOfStatement",
       await: false,
@@ -111,9 +111,9 @@ function generateJoinRecur(
         outerVar === null
           ? {
               type: "BlockStatement",
-              body: [generateJoinRecur(thisVar, join.slice(1), depth + 1, out)],
+              body: [innerLoop],
             }
-          : generateUnifyStmt(outerVar, thisVar, innerLoop, bindingsVar),
+          : generateUnifyIfStmt(outerVar, thisVar, innerLoop, bindingsVar),
     };
   } else {
     // generate if statement
@@ -121,7 +121,7 @@ function generateJoinRecur(
   }
 }
 
-function generateUnifyStmt(
+function generateUnifyIfStmt(
   left: string,
   right: string,
   inner: Statement,
