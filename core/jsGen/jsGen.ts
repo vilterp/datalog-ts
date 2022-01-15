@@ -10,8 +10,8 @@ import { AndClause, Rec, Rule, Term } from "../types";
 
 const OUT_VAR = "_out";
 
-export function prettyPrintJS(decl: FunctionDeclaration): string {
-  return generate(decl);
+export function prettyPrintJS(node: Node): string {
+  return generate(node);
 }
 
 export function generateRule(rule: Rule): FunctionDeclaration {
