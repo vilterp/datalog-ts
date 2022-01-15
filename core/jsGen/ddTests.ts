@@ -1,7 +1,7 @@
 import { runDDTestAtPath } from "../../util/ddTest";
 import { plainTextOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
-import { generateJS, prettyPrintJS } from "./jsGen";
+import { generateRule, prettyPrintJS } from "./jsGen";
 import { language } from "../parser";
 import { Rule } from "../types";
 
@@ -23,6 +23,6 @@ export function jsGenTests(writeResults: boolean): Suite {
 function jsGenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const rule = language.rule.tryParse(input).rule as Rule;
-    return plainTextOut(prettyPrintJS(generateJS(rule)));
+    return plainTextOut(prettyPrintJS(generateRule(rule)));
   });
 }
