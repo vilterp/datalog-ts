@@ -23,13 +23,15 @@ export function generateRule(rule: Rule): FunctionDeclaration {
   );
 
   const initOut: Node = {
-    type: "ExpressionStatement",
-    expression: {
-      type: "AssignmentExpression",
-      left: { type: "Identifier", name: OUT_VAR },
-      operator: "=",
-      right: { type: "ArrayExpression", elements: [] },
-    },
+    type: "VariableDeclaration",
+    kind: "const",
+    declarations: [
+      {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name: OUT_VAR },
+        init: { type: "ArrayExpression", elements: [] },
+      },
+    ],
   };
   const returnOut: Node = {
     type: "ReturnStatement",
@@ -124,13 +126,15 @@ function generateUnifyStmt(
     optional: false,
   };
   const unifyAssnStmt: Statement = {
-    type: "ExpressionStatement",
-    expression: {
-      type: "AssignmentExpression",
-      left: { type: "Identifier", name: bindingsVar },
-      operator: "=",
-      right: unifyCall,
-    },
+    type: "VariableDeclaration",
+    kind: "const",
+    declarations: [
+      {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name: bindingsVar },
+        init: unifyCall,
+      },
+    ],
   };
   const test: Expression = {
     type: "BinaryExpression",

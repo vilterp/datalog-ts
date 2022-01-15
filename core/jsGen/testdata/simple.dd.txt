@@ -4,9 +4,9 @@ grandfather{grandchild: A, grandfather: C} :-
 ----
 text/plain
 function grandfather(parent, father) {
-  _out = [];
+  const _out = [];
   for (parent_item of parent) for (father_item of father) {
-    bindings1 = unify({}, parent_item, father_item);
+    const bindings1 = unify({}, parent_item, father_item);
     if (bindings1 !== null) _out.push(substitute({
       type: "Record",
       relation: "grandfather"
