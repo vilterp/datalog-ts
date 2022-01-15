@@ -1,5 +1,11 @@
 import { generate } from "astring";
-import { FunctionDeclaration, Node, Statement } from "estree";
+import {
+  CallExpression,
+  Expression,
+  FunctionDeclaration,
+  Node,
+  Statement,
+} from "estree";
 import { flatMap } from "../../util/util";
 import { AndClause, AndExpr, Rule } from "../types";
 
@@ -47,6 +53,13 @@ export function generateRule(rule: Rule): FunctionDeclaration {
 }
 
 function generateJoin(join: AndClause[]): Statement {
+  return generateJoinRecur(null, join);
+}
+
+function generateJoinRecur(
+  outerVar: string | null,
+  join: AndClause[]
+): Statement {
   if (join.length === 0) {
     return {
       type: "ExpressionStatement",
@@ -65,16 +78,57 @@ function generateJoin(join: AndClause[]): Statement {
     };
   }
   const clause = join[0];
+  const innerLoop = generateJoin(join.slice(1));
   if (clause.type === "Record") {
+    const thisVar = `${clause.relation}_item`;
     return {
       type: "ForOfStatement",
-      body: generateJoin(join.slice(1)),
       await: false,
-      left: { type: "Identifier", name: `${clause.relation}_item` },
+      left: { type: "Identifier", name: thisVar },
       right: { type: "Identifier", name: clause.relation },
+      body:
+        outerVar === null
+          ? generateJoinRecur(thisVar, join.slice(1))
+          : generateUnifyStmt(outerVar, thisVar, innerLoop),
     };
   } else {
     // generate if statement
-    throw new Error("TODO: generate if statement");
+    throw new Error("TODO: generate if statement for BinExpr");
   }
+}
+
+function generateUnifyStmt(
+  left: string,
+  right: string,
+  inner: Statement
+): Statement {
+  const unifyCall: CallExpression = {
+    type: "CallExpression",
+    callee: { type: "Identifier", name: "unify" },
+    arguments: [
+      { type: "ObjectExpression", properties: [] },
+      { type: "Identifier", name: left },
+      { type: "Identifier", name: right },
+    ],
+    optional: false,
+  };
+  const unifyAssnStmt: Statement = {
+    type: "ExpressionStatement",
+    expression: {
+      type: "AssignmentExpression",
+      left: { type: "Identifier", name: "unifyRes" },
+      operator: "=",
+      right: unifyCall,
+    },
+  };
+  const test: Expression = {
+    type: "BinaryExpression",
+    left: { type: "Identifier", name: "unifyRes" },
+    operator: "!==",
+    right: { type: "Identifier", name: "null" },
+  };
+  return {
+    type: "BlockStatement",
+    body: [unifyAssnStmt, { type: "IfStatement", test, consequent: inner }],
+  };
 }
