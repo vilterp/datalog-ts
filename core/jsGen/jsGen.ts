@@ -80,7 +80,7 @@ function generateJoinRecur(
         },
         arguments: [
           generateSubstituteCall(
-            { type: "Identifier", name: `bindings${depth - 1}` },
+            { type: "Identifier", name: bindingsVar(depth - 1) },
             generateTerm(out)
           ),
         ],
@@ -88,7 +88,6 @@ function generateJoinRecur(
       },
     };
   }
-  const bindingsVar = `bindings${depth}`;
   const clause = join[0];
   if (clause.type === "Record") {
     const thisVar = `${clause.relation}_item_${depth}`;
@@ -113,7 +112,7 @@ function generateJoinRecur(
               type: "BlockStatement",
               body: [innerLoop],
             }
-          : generateUnifyIfStmt(outerVar, thisVar, innerLoop, bindingsVar),
+          : generateUnifyIfStmt(outerVar, thisVar, innerLoop, depth),
     };
   } else {
     // generate if statement
@@ -121,36 +120,56 @@ function generateJoinRecur(
   }
 }
 
+function bindingsVar(depth: number) {
+  return `bindings${depth}`;
+}
+
 function generateUnifyIfStmt(
   left: string,
   right: string,
   inner: Statement,
-  bindingsVar: string
+  depth: number
 ): Statement {
+  const thisBindingsVar = bindingsVar(depth);
+  const outerBindings: Expression =
+    depth <= 1
+      ? { type: "ObjectExpression", properties: [] }
+      : { type: "Identifier", name: bindingsVar(depth - 1) };
   const unifyCall: CallExpression = {
     type: "CallExpression",
     callee: { type: "Identifier", name: "unify" },
     arguments: [
+      // TODO: should we pass vars in here, or nah?
+      // should this argument to unify even exist?
       { type: "ObjectExpression", properties: [] },
       { type: "Identifier", name: left },
       { type: "Identifier", name: right },
     ],
     optional: false,
   };
+  const combineCall: CallExpression =
+    depth === 1
+      ? unifyCall
+      : {
+          type: "CallExpression",
+          callee: { type: "Identifier", name: "unifyVars" },
+          arguments: [outerBindings, unifyCall],
+          optional: false,
+        };
   const unifyAssnStmt: Statement = {
     type: "VariableDeclaration",
     kind: "const",
     declarations: [
       {
         type: "VariableDeclarator",
-        id: { type: "Identifier", name: bindingsVar },
-        init: unifyCall,
+        id: { type: "Identifier", name: thisBindingsVar },
+        init: combineCall,
       },
     ],
   };
   const test: Expression = {
     type: "BinaryExpression",
-    left: { type: "Identifier", name: bindingsVar },
+    left: { type: "Identifier", name: thisBindingsVar },
     operator: "!==",
     right: { type: "Identifier", name: "null" },
   };
