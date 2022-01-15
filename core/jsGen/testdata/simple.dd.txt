@@ -3,4 +3,4 @@ grandfather{grandchild: A, grandfather: C} :-
   father{child: B, father: C}.
 ----
 text/plain
-function grandfather() {}
+function grandfather(parent, father) {}
