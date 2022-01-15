@@ -7,7 +7,7 @@ import {
   Statement,
 } from "estree";
 import { flatMap } from "../../util/util";
-import { AndClause, AndExpr, Rule } from "../types";
+import { AndClause, AndExpr, Rec, Rule, Term } from "../types";
 
 const OUT_VAR = "_out";
 
@@ -36,7 +36,9 @@ export function generateRule(rule: Rule): FunctionDeclaration {
     argument: { type: "Identifier", name: OUT_VAR },
   };
 
-  const joins = rule.body.opts.map((andExpr) => generateJoin(andExpr.clauses));
+  const joins = rule.body.opts.map((andExpr) =>
+    generateJoin(andExpr.clauses, rule.head)
+  );
 
   return {
     type: "FunctionDeclaration",
@@ -52,13 +54,14 @@ export function generateRule(rule: Rule): FunctionDeclaration {
   };
 }
 
-function generateJoin(join: AndClause[]): Statement {
-  return generateJoinRecur(null, join);
+function generateJoin(join: AndClause[], out: Rec): Statement {
+  return generateJoinRecur(null, join, out);
 }
 
 function generateJoinRecur(
   outerVar: string | null,
-  join: AndClause[]
+  join: AndClause[],
+  out: Rec
 ): Statement {
   if (join.length === 0) {
     return {
@@ -72,13 +75,15 @@ function generateJoinRecur(
           computed: false,
           optional: false,
         },
-        arguments: [{ type: "Identifier", name: "foo" }], // TODO: what do we push?
+        arguments: [
+          generateTerm(out), // TODO: substitute
+        ],
         optional: false,
       },
     };
   }
   const clause = join[0];
-  const innerLoop = generateJoin(join.slice(1));
+  const innerLoop = generateJoin(join.slice(1), out);
   if (clause.type === "Record") {
     const thisVar = `${clause.relation}_item`;
     return {
@@ -88,7 +93,7 @@ function generateJoinRecur(
       right: { type: "Identifier", name: clause.relation },
       body:
         outerVar === null
-          ? generateJoinRecur(thisVar, join.slice(1))
+          ? generateJoinRecur(thisVar, join.slice(1), out)
           : generateUnifyStmt(outerVar, thisVar, innerLoop),
     };
   } else {
@@ -131,4 +136,33 @@ function generateUnifyStmt(
     type: "BlockStatement",
     body: [unifyAssnStmt, { type: "IfStatement", test, consequent: inner }],
   };
+}
+
+function generateTerm(term: Term): Expression {
+  switch (term.type) {
+    case "Record":
+      return {
+        type: "ObjectExpression",
+        properties: [
+          {
+            type: "Property",
+            key: { type: "Identifier", name: "type" },
+            value: { type: "Literal", value: "Record" },
+            computed: false,
+            shorthand: false,
+            kind: "init",
+            method: false,
+          },
+          {
+            type: "Property",
+            key: { type: "Identifier", name: "relation" },
+            value: { type: "Literal", value: term.relation },
+            computed: false,
+            shorthand: false,
+            kind: "init",
+            method: false,
+          },
+        ],
+      };
+  }
 }
