@@ -1489,6 +1489,11 @@ scheduler@^0.20.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
+scoped-eval@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/scoped-eval/-/scoped-eval-0.4.1.tgz#9f678c9d463a55875738a96106c5dda7e406e826"
+  integrity sha512-7EV/SDDpuSHOCi5AzTzwWXJBs9HfOvl1LmrVpt/U81kDPpTy0qyGcq/rwT/CAeJCMqgug8lnRwJpV5LNYvnxNQ==
+
 secure-compare@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/secure-compare/-/secure-compare-3.0.1.tgz#f1a0329b308b221fae37b9974f3d578d0ca999e3"
