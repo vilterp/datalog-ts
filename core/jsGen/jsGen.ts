@@ -142,7 +142,13 @@ function generateUnifyIfStmt(
       : { type: "Identifier", name: bindingsVar(depth - 1) };
   const unifyCall: CallExpression = {
     type: "CallExpression",
-    callee: { type: "Identifier", name: "unify" },
+    callee: {
+      type: "MemberExpression",
+      object: { type: "Identifier", name: "context" },
+      property: { type: "Identifier", name: "unify" },
+      computed: false,
+      optional: false,
+    },
     arguments: [
       outerBindings,
       { type: "Identifier", name: left },
@@ -186,7 +192,13 @@ function generateSubstituteCall(
 ): Expression {
   return {
     type: "CallExpression",
-    callee: { type: "Identifier", name: "substitute" },
+    callee: {
+      type: "MemberExpression",
+      object: { type: "Identifier", name: "context" },
+      property: { type: "Identifier", name: "substitute" },
+      computed: false,
+      optional: false,
+    },
     arguments: [rec, bindings],
     optional: false,
   };

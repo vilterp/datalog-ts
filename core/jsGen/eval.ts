@@ -13,7 +13,7 @@ export function evaluateRule(db: DB, rule: Rule): Rec[] {
     substitute,
     db,
   };
-  const innerJS = `console.log(this);\n${js}`;
+  const innerJS = `const context = this;\n${js}`;
   console.log(innerJS);
   const func = Function(innerJS).bind(context);
   return func();
@@ -24,7 +24,15 @@ function generateCall(rule: Rule): Statement {
   const call: Expression = {
     type: "CallExpression",
     callee: { type: "Identifier", name: rule.head.relation },
-    arguments: [{ type: "Identifier", name: "db" }],
+    arguments: [
+      {
+        type: "MemberExpression",
+        object: { type: "ThisExpression" },
+        property: { type: "Identifier", name: "db" },
+        computed: false,
+        optional: false,
+      },
+    ],
     optional: false,
   };
   return {
