@@ -6,8 +6,7 @@ import {
   Node,
   Statement,
 } from "estree";
-import { flatMap } from "../../util/util";
-import { AndClause, AndExpr, Rec, Rule, Term } from "../types";
+import { AndClause, Rec, Rule, Term } from "../types";
 
 const OUT_VAR = "_out";
 
@@ -16,12 +15,6 @@ export function prettyPrintJS(decl: FunctionDeclaration): string {
 }
 
 export function generateRule(rule: Rule): FunctionDeclaration {
-  const rulesUsed = flatMap(rule.body.opts, (andExpr) =>
-    flatMap(andExpr.clauses, (clause) =>
-      clause.type == "Record" ? [clause.relation] : []
-    )
-  );
-
   const initOut: Node = {
     type: "VariableDeclaration",
     kind: "const",
@@ -48,7 +41,7 @@ export function generateRule(rule: Rule): FunctionDeclaration {
       type: "Identifier",
       name: rule.head.relation,
     },
-    params: rulesUsed.map((name) => ({ type: "Identifier", name })),
+    params: [{ type: "Identifier", name: "db" }],
     body: {
       type: "BlockStatement",
       body: [initOut, ...joins, returnOut],
@@ -105,7 +98,19 @@ function generateJoinRecur(
           },
         ],
       },
-      right: { type: "Identifier", name: clause.relation },
+      right: {
+        type: "MemberExpression",
+        object: {
+          type: "MemberExpression",
+          object: { type: "Identifier", name: "db" },
+          property: { type: "Identifier", name: "tables" },
+          computed: false,
+          optional: false,
+        },
+        property: { type: "Identifier", name: clause.relation },
+        computed: false,
+        optional: false,
+      },
       body:
         outerVar === null
           ? {

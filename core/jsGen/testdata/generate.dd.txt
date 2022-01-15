@@ -3,10 +3,10 @@ grandfather{grandchild: A, grandfather: C} :-
   father{child: B, father: C}.
 ----
 text/plain
-function grandfather(parent, father) {
+function grandfather(db) {
   const _out = [];
-  for (const parent_item_0 of parent) {
-    for (const father_item_1 of father) {
+  for (const parent_item_0 of db.tables.parent) {
+    for (const father_item_1 of db.tables.father) {
       const bindings1 = unify({}, parent_item_0, father_item_1);
       if (bindings1 !== null) {
         _out.push(substitute({
@@ -25,13 +25,13 @@ greatGrandfather{grandchild: A, grandfather: D} :-
   father{child: C, father: D}.
 ----
 text/plain
-function greatGrandfather(parent, parent, father) {
+function greatGrandfather(db) {
   const _out = [];
-  for (const parent_item_0 of parent) {
-    for (const parent_item_1 of parent) {
+  for (const parent_item_0 of db.tables.parent) {
+    for (const parent_item_1 of db.tables.parent) {
       const bindings1 = unify({}, parent_item_0, parent_item_1);
       if (bindings1 !== null) {
-        for (const father_item_2 of father) {
+        for (const father_item_2 of db.tables.father) {
           const bindings2 = unify(bindings1, parent_item_1, father_item_2);
           if (bindings2 !== null) {
             _out.push(substitute({
