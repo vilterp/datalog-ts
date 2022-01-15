@@ -2,108 +2,43 @@ gram
 main :- "foo".
 ----
 application/datalog
-grammar.node{id: 0}.
-grammar.node{id: 1}.
-grammar.edge{from: 0, label: "f", to: 1}.
-grammar.node{id: 2}.
-grammar.edge{from: 1, label: "o", to: 2}.
-grammar.node{id: 3}.
-grammar.edge{from: 2, label: "o", to: 3}.
-grammar.ruleMarker{endID: 3, name: "main", startID: 0}.
-
-gram
-main :- repSep("foo", "bar").
-----
-application/datalog
-grammar.node{id: 0}.
-grammar.node{id: 1}.
-grammar.node{id: 2}.
-grammar.edge{from: 1, label: "f", to: 2}.
-grammar.node{id: 3}.
-grammar.edge{from: 2, label: "o", to: 3}.
-grammar.node{id: 4}.
-grammar.edge{from: 3, label: "o", to: 4}.
-grammar.ruleMarker{endID: 4, name: "main_rep", startID: 1}.
-grammar.node{id: 5}.
-grammar.node{id: 6}.
-grammar.edge{from: 5, label: "b", to: 6}.
-grammar.node{id: 7}.
-grammar.edge{from: 6, label: "a", to: 7}.
-grammar.node{id: 8}.
-grammar.edge{from: 7, label: "r", to: 8}.
-grammar.ruleMarker{endID: 8, name: "main_rep", startID: 5}.
-grammar.unlabeledEdge{from: 0, to: 1}.
-grammar.unlabeledEdge{from: 4, to: 5}.
-grammar.unlabeledEdge{from: 8, to: 1}.
-grammar.unlabeledEdge{from: 0, to: 4}.
-grammar.ruleMarker{endID: 4, name: "main", startID: 0}.
+main{span: span{from: P1, to: P4}} :- 
+  input.char{char: "f", id: P1} &
+  input.char{char: "o", id: P2} &
+  input.char{char: "o", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
 
 input
 foo
 ----
 application/datalog
-parse.fullMatch{}.
-
-input
-foobar
-----
-application/datalog
-
-input
-foobarfoo
-----
-application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 gram
-main :- ["[", repSep([a-z], ","), "]"].
+main :- ["a", "b", "c"].
 ----
 application/datalog
-grammar.node{id: 0}.
-grammar.node{id: 1}.
-grammar.node{id: 2}.
-grammar.edge{from: 1, label: "[", to: 2}.
-grammar.ruleMarker{endID: 2, name: "main_seq_0", startID: 1}.
-grammar.unlabeledEdge{from: 0, to: 1}.
-grammar.node{id: 3}.
-grammar.node{id: 4}.
-grammar.node{id: 5}.
-grammar.charRangeEdge{from: 4, fromChar: "a", to: 5, toChar: "z"}.
-grammar.ruleMarker{endID: 5, name: "main_seq_1_rep", startID: 4}.
-grammar.node{id: 6}.
-grammar.node{id: 7}.
-grammar.edge{from: 6, label: ",", to: 7}.
-grammar.ruleMarker{endID: 7, name: "main_seq_1_rep", startID: 6}.
-grammar.unlabeledEdge{from: 3, to: 4}.
-grammar.unlabeledEdge{from: 5, to: 6}.
-grammar.unlabeledEdge{from: 7, to: 4}.
-grammar.unlabeledEdge{from: 3, to: 5}.
-grammar.ruleMarker{endID: 5, name: "main_seq_1", startID: 3}.
-grammar.unlabeledEdge{from: 2, to: 3}.
-grammar.node{id: 8}.
-grammar.node{id: 9}.
-grammar.edge{from: 8, label: "]", to: 9}.
-grammar.ruleMarker{endID: 9, name: "main_seq_2", startID: 8}.
-grammar.unlabeledEdge{from: 5, to: 8}.
-grammar.ruleMarker{endID: 9, name: "main", startID: 0}.
+main{span: span{from: P1, to: P4}} :- 
+  main_seq_0{span: span{from: P1, to: P2}} &
+  main_seq_1{span: span{from: P2, to: P3}} &
+  main_seq_2{span: span{from: P3, to: P4}}.
+main_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "a", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_1{span: span{from: P1, to: P2}} :- 
+  input.char{char: "b", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "c", id: P1} &
+  input.next{left: P1, right: P2}.
 
 input
-[]
+abc
 ----
 application/datalog
-parse.fullMatch{}.
-
-input
-[a]
-----
-application/datalog
-parse.fullMatch{}.
-
-input
-[a,b,c]
-----
-application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- (foo | bar).
@@ -111,74 +46,149 @@ foo :- "foo".
 bar :- "bar".
 ----
 application/datalog
-grammar.node{id: 0}.
-grammar.node{id: 1}.
-grammar.edge{from: 0, label: "b", to: 1}.
-grammar.node{id: 2}.
-grammar.edge{from: 1, label: "a", to: 2}.
-grammar.node{id: 3}.
-grammar.edge{from: 2, label: "r", to: 3}.
-grammar.ruleMarker{endID: 3, name: "bar", startID: 0}.
-grammar.node{id: 4}.
-grammar.node{id: 5}.
-grammar.edge{from: 4, label: "f", to: 5}.
-grammar.node{id: 6}.
-grammar.edge{from: 5, label: "o", to: 6}.
-grammar.node{id: 7}.
-grammar.edge{from: 6, label: "o", to: 7}.
-grammar.ruleMarker{endID: 7, name: "foo", startID: 4}.
-grammar.node{id: 8}.
-grammar.node{id: 9}.
-grammar.node{id: 10}.
-grammar.node{id: 11}.
-grammar.refEdge{fromID: 10, ruleName: "foo", toID: 11}.
-grammar.ruleMarker{endID: 11, name: "main_choice_0", startID: 10}.
-grammar.unlabeledEdge{from: 8, to: 10}.
-grammar.unlabeledEdge{from: 11, to: 9}.
-grammar.node{id: 12}.
-grammar.node{id: 13}.
-grammar.refEdge{fromID: 12, ruleName: "bar", toID: 13}.
-grammar.ruleMarker{endID: 13, name: "main_choice_1", startID: 12}.
-grammar.unlabeledEdge{from: 8, to: 12}.
-grammar.unlabeledEdge{from: 13, to: 9}.
-grammar.ruleMarker{endID: 9, name: "main", startID: 8}.
+bar{span: span{from: P1, to: P4}} :- 
+  input.char{char: "b", id: P1} &
+  input.char{char: "a", id: P2} &
+  input.char{char: "r", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+foo{span: span{from: P1, to: P4}} :- 
+  input.char{char: "f", id: P1} &
+  input.char{char: "o", id: P2} &
+  input.char{char: "o", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+main{span: span{from: P1, to: P2}} :- 
+  main_choice_0{span: span{from: P1, to: P2}} |
+  main_choice_1{span: span{from: P1, to: P2}}.
+main_choice_0{span: span{from: P1, to: P2}} :- foo{span: span{from: P1, to: P2}}.
+main_choice_1{span: span{from: P1, to: P2}} :- bar{span: span{from: P1, to: P2}}.
 
 input
 foo
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
+
+input
+bar
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+gram
+main :- repSep("foo", "bar").
+----
+application/datalog
+main{span: span{from: P1, to: P4}} :- 
+  main_succeed{span: span{from: P1, to: P4}} |
+  main_rep{span: span{from: P1, to: P4}} |
+  main_rep{span: span{from: P1, to: P2}} &
+  main_sep{span: span{from: P2, to: P3}} &
+  main{span: span{from: P3, to: P4}}.
+main_rep{span: span{from: P1, to: P4}} :- 
+  input.char{char: "f", id: P1} &
+  input.char{char: "o", id: P2} &
+  input.char{char: "o", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+main_sep{span: span{from: P1, to: P4}} :- 
+  input.char{char: "b", id: P1} &
+  input.char{char: "a", id: P2} &
+  input.char{char: "r", id: P3} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4}.
+main_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+
+input
+foo
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+input
+foobar
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+input
+foobarfoo
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
+
+gram
+main :- ["[", repSep([a-z], ","), "]"].
+----
+application/datalog
+main{span: span{from: P1, to: P4}} :- 
+  main_seq_0{span: span{from: P1, to: P2}} &
+  main_seq_1{span: span{from: P2, to: P3}} &
+  main_seq_2{span: span{from: P3, to: P4}}.
+main_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "[", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_1{span: span{from: P1, to: P4}} :- 
+  main_seq_1_succeed{span: span{from: P1, to: P4}} |
+  main_seq_1_rep{span: span{from: P1, to: P4}} |
+  main_seq_1_rep{span: span{from: P1, to: P2}} &
+  main_seq_1_sep{span: span{from: P2, to: P3}} &
+  main_seq_1{span: span{from: P3, to: P4}}.
+main_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "a" <= C &
+  C <= "z".
+main_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+main_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+main_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "]", id: P1} &
+  input.next{left: P1, right: P2}.
+
+input
+[a,b,c]
+----
+application/datalog
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- repSep([0-9], "").
 ----
 application/datalog
-grammar.node{id: 0}.
-grammar.node{id: 1}.
-grammar.node{id: 2}.
-grammar.charRangeEdge{from: 1, fromChar: "0", to: 2, toChar: "9"}.
-grammar.ruleMarker{endID: 2, name: "main_rep", startID: 1}.
-grammar.node{id: 3}.
-grammar.ruleMarker{endID: 3, name: "main_rep", startID: 3}.
-grammar.unlabeledEdge{from: 0, to: 1}.
-grammar.unlabeledEdge{from: 2, to: 3}.
-grammar.unlabeledEdge{from: 3, to: 1}.
-grammar.unlabeledEdge{from: 0, to: 2}.
-grammar.ruleMarker{endID: 2, name: "main", startID: 0}.
+main{span: span{from: P1, to: P4}} :- 
+  main_succeed{span: span{from: P1, to: P4}} |
+  main_rep{span: span{from: P1, to: P4}} |
+  main_rep{span: span{from: P1, to: P2}} &
+  main_sep{span: span{from: P2, to: P3}} &
+  main{span: span{from: P3, to: P4}}.
+main_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
+main_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+main_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
 
 input
 1
 ----
 application/datalog
-parse.fullMatch{}.
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
+main{span: span{from: 0, to: -2}}.
 
 input
-1234
+123
 ----
 application/datalog
-parse.fullMatch{}.
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
+main{span: span{from: 0, to: -2}}.
 
 gram
 main :- value.
@@ -191,192 +201,131 @@ array :- ["[", repSep(value, ","), "]"].
 null :- "null".
 ----
 application/datalog
-grammar.node{id: 0}.
-grammar.node{id: 1}.
-grammar.node{id: 2}.
-grammar.edge{from: 1, label: "[", to: 2}.
-grammar.ruleMarker{endID: 2, name: "array_seq_0", startID: 1}.
-grammar.unlabeledEdge{from: 0, to: 1}.
-grammar.node{id: 3}.
-grammar.node{id: 4}.
-grammar.node{id: 5}.
-grammar.refEdge{fromID: 4, ruleName: "value", toID: 5}.
-grammar.ruleMarker{endID: 5, name: "array_seq_1_rep", startID: 4}.
-grammar.node{id: 6}.
-grammar.node{id: 7}.
-grammar.edge{from: 6, label: ",", to: 7}.
-grammar.ruleMarker{endID: 7, name: "array_seq_1_rep", startID: 6}.
-grammar.unlabeledEdge{from: 3, to: 4}.
-grammar.unlabeledEdge{from: 5, to: 6}.
-grammar.unlabeledEdge{from: 7, to: 4}.
-grammar.unlabeledEdge{from: 3, to: 5}.
-grammar.ruleMarker{endID: 5, name: "array_seq_1", startID: 3}.
-grammar.unlabeledEdge{from: 2, to: 3}.
-grammar.node{id: 8}.
-grammar.node{id: 9}.
-grammar.edge{from: 8, label: "]", to: 9}.
-grammar.ruleMarker{endID: 9, name: "array_seq_2", startID: 8}.
-grammar.unlabeledEdge{from: 5, to: 8}.
-grammar.ruleMarker{endID: 9, name: "array", startID: 0}.
-grammar.node{id: 10}.
-grammar.node{id: 11}.
-grammar.node{id: 12}.
-grammar.charRangeEdge{from: 11, fromChar: "0", to: 12, toChar: "9"}.
-grammar.ruleMarker{endID: 12, name: "int_seq_0", startID: 11}.
-grammar.unlabeledEdge{from: 10, to: 11}.
-grammar.node{id: 13}.
-grammar.node{id: 14}.
-grammar.node{id: 15}.
-grammar.charRangeEdge{from: 14, fromChar: "0", to: 15, toChar: "9"}.
-grammar.ruleMarker{endID: 15, name: "int_seq_1_rep", startID: 14}.
-grammar.node{id: 16}.
-grammar.ruleMarker{endID: 16, name: "int_seq_1_rep", startID: 16}.
-grammar.unlabeledEdge{from: 13, to: 14}.
-grammar.unlabeledEdge{from: 15, to: 16}.
-grammar.unlabeledEdge{from: 16, to: 14}.
-grammar.unlabeledEdge{from: 13, to: 15}.
-grammar.ruleMarker{endID: 15, name: "int_seq_1", startID: 13}.
-grammar.unlabeledEdge{from: 12, to: 13}.
-grammar.ruleMarker{endID: 15, name: "int", startID: 10}.
-grammar.node{id: 17}.
-grammar.node{id: 18}.
-grammar.node{id: 19}.
-grammar.refEdge{fromID: 18, ruleName: "string", toID: 19}.
-grammar.ruleMarker{endID: 19, name: "keyValue_seq_0", startID: 18}.
-grammar.unlabeledEdge{from: 17, to: 18}.
-grammar.node{id: 20}.
-grammar.node{id: 21}.
-grammar.edge{from: 20, label: ":", to: 21}.
-grammar.ruleMarker{endID: 21, name: "keyValue_seq_1", startID: 20}.
-grammar.unlabeledEdge{from: 19, to: 20}.
-grammar.node{id: 22}.
-grammar.node{id: 23}.
-grammar.refEdge{fromID: 22, ruleName: "value", toID: 23}.
-grammar.ruleMarker{endID: 23, name: "keyValue_seq_2", startID: 22}.
-grammar.unlabeledEdge{from: 21, to: 22}.
-grammar.ruleMarker{endID: 23, name: "keyValue", startID: 17}.
-grammar.node{id: 24}.
-grammar.node{id: 25}.
-grammar.refEdge{fromID: 24, ruleName: "value", toID: 25}.
-grammar.ruleMarker{endID: 25, name: "main", startID: 24}.
-grammar.node{id: 26}.
-grammar.node{id: 27}.
-grammar.edge{from: 26, label: "n", to: 27}.
-grammar.node{id: 28}.
-grammar.edge{from: 27, label: "u", to: 28}.
-grammar.node{id: 29}.
-grammar.edge{from: 28, label: "l", to: 29}.
-grammar.node{id: 30}.
-grammar.edge{from: 29, label: "l", to: 30}.
-grammar.ruleMarker{endID: 30, name: "null", startID: 26}.
-grammar.node{id: 31}.
-grammar.node{id: 32}.
-grammar.node{id: 33}.
-grammar.edge{from: 32, label: "{", to: 33}.
-grammar.ruleMarker{endID: 33, name: "object_seq_0", startID: 32}.
-grammar.unlabeledEdge{from: 31, to: 32}.
-grammar.node{id: 34}.
-grammar.node{id: 35}.
-grammar.node{id: 36}.
-grammar.refEdge{fromID: 35, ruleName: "keyValue", toID: 36}.
-grammar.ruleMarker{endID: 36, name: "object_seq_1_rep", startID: 35}.
-grammar.node{id: 37}.
-grammar.node{id: 38}.
-grammar.edge{from: 37, label: ",", to: 38}.
-grammar.ruleMarker{endID: 38, name: "object_seq_1_rep", startID: 37}.
-grammar.unlabeledEdge{from: 34, to: 35}.
-grammar.unlabeledEdge{from: 36, to: 37}.
-grammar.unlabeledEdge{from: 38, to: 35}.
-grammar.unlabeledEdge{from: 34, to: 36}.
-grammar.ruleMarker{endID: 36, name: "object_seq_1", startID: 34}.
-grammar.unlabeledEdge{from: 33, to: 34}.
-grammar.node{id: 39}.
-grammar.node{id: 40}.
-grammar.edge{from: 39, label: "}", to: 40}.
-grammar.ruleMarker{endID: 40, name: "object_seq_2", startID: 39}.
-grammar.unlabeledEdge{from: 36, to: 39}.
-grammar.ruleMarker{endID: 40, name: "object", startID: 31}.
-grammar.node{id: 41}.
-grammar.node{id: 42}.
-grammar.node{id: 43}.
-grammar.edge{from: 42, label: "'", to: 43}.
-grammar.ruleMarker{endID: 43, name: "string_seq_0", startID: 42}.
-grammar.unlabeledEdge{from: 41, to: 42}.
-grammar.node{id: 44}.
-grammar.node{id: 45}.
-grammar.node{id: 46}.
-grammar.charRangeEdge{from: 45, fromChar: "a", to: 46, toChar: "z"}.
-grammar.ruleMarker{endID: 46, name: "string_seq_1_rep", startID: 45}.
-grammar.node{id: 47}.
-grammar.ruleMarker{endID: 47, name: "string_seq_1_rep", startID: 47}.
-grammar.unlabeledEdge{from: 44, to: 45}.
-grammar.unlabeledEdge{from: 46, to: 47}.
-grammar.unlabeledEdge{from: 47, to: 45}.
-grammar.unlabeledEdge{from: 44, to: 46}.
-grammar.ruleMarker{endID: 46, name: "string_seq_1", startID: 44}.
-grammar.unlabeledEdge{from: 43, to: 44}.
-grammar.node{id: 48}.
-grammar.node{id: 49}.
-grammar.edge{from: 48, label: "'", to: 49}.
-grammar.ruleMarker{endID: 49, name: "string_seq_2", startID: 48}.
-grammar.unlabeledEdge{from: 46, to: 48}.
-grammar.ruleMarker{endID: 49, name: "string", startID: 41}.
-grammar.node{id: 50}.
-grammar.node{id: 51}.
-grammar.node{id: 52}.
-grammar.node{id: 53}.
-grammar.refEdge{fromID: 52, ruleName: "object", toID: 53}.
-grammar.ruleMarker{endID: 53, name: "value_choice_0", startID: 52}.
-grammar.unlabeledEdge{from: 50, to: 52}.
-grammar.unlabeledEdge{from: 53, to: 51}.
-grammar.node{id: 54}.
-grammar.node{id: 55}.
-grammar.refEdge{fromID: 54, ruleName: "array", toID: 55}.
-grammar.ruleMarker{endID: 55, name: "value_choice_1", startID: 54}.
-grammar.unlabeledEdge{from: 50, to: 54}.
-grammar.unlabeledEdge{from: 55, to: 51}.
-grammar.node{id: 56}.
-grammar.node{id: 57}.
-grammar.refEdge{fromID: 56, ruleName: "int", toID: 57}.
-grammar.ruleMarker{endID: 57, name: "value_choice_2", startID: 56}.
-grammar.unlabeledEdge{from: 50, to: 56}.
-grammar.unlabeledEdge{from: 57, to: 51}.
-grammar.node{id: 58}.
-grammar.node{id: 59}.
-grammar.refEdge{fromID: 58, ruleName: "string", toID: 59}.
-grammar.ruleMarker{endID: 59, name: "value_choice_3", startID: 58}.
-grammar.unlabeledEdge{from: 50, to: 58}.
-grammar.unlabeledEdge{from: 59, to: 51}.
-grammar.node{id: 60}.
-grammar.node{id: 61}.
-grammar.refEdge{fromID: 60, ruleName: "null", toID: 61}.
-grammar.ruleMarker{endID: 61, name: "value_choice_4", startID: 60}.
-grammar.unlabeledEdge{from: 50, to: 60}.
-grammar.unlabeledEdge{from: 61, to: 51}.
-grammar.ruleMarker{endID: 51, name: "value", startID: 50}.
+array{span: span{from: P1, to: P4}} :- 
+  array_seq_0{span: span{from: P1, to: P2}} &
+  array_seq_1{span: span{from: P2, to: P3}} &
+  array_seq_2{span: span{from: P3, to: P4}}.
+array_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "[", id: P1} &
+  input.next{left: P1, right: P2}.
+array_seq_1{span: span{from: P1, to: P4}} :- 
+  array_seq_1_succeed{span: span{from: P1, to: P4}} |
+  array_seq_1_rep{span: span{from: P1, to: P4}} |
+  array_seq_1_rep{span: span{from: P1, to: P2}} &
+  array_seq_1_sep{span: span{from: P2, to: P3}} &
+  array_seq_1{span: span{from: P3, to: P4}}.
+array_seq_1_rep{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
+array_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+array_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+array_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "]", id: P1} &
+  input.next{left: P1, right: P2}.
+int{span: span{from: P1, to: P3}} :- 
+  int_seq_0{span: span{from: P1, to: P2}} &
+  int_seq_1{span: span{from: P2, to: P3}}.
+int_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
+int_seq_1{span: span{from: P1, to: P4}} :- 
+  int_seq_1_succeed{span: span{from: P1, to: P4}} |
+  int_seq_1_rep{span: span{from: P1, to: P4}} |
+  int_seq_1_rep{span: span{from: P1, to: P2}} &
+  int_seq_1_sep{span: span{from: P2, to: P3}} &
+  int_seq_1{span: span{from: P3, to: P4}}.
+int_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "0" <= C &
+  C <= "9".
+int_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+int_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+keyValue{span: span{from: P1, to: P4}} :- 
+  keyValue_seq_0{span: span{from: P1, to: P2}} &
+  keyValue_seq_1{span: span{from: P2, to: P3}} &
+  keyValue_seq_2{span: span{from: P3, to: P4}}.
+keyValue_seq_0{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
+keyValue_seq_1{span: span{from: P1, to: P2}} :- 
+  input.char{char: ":", id: P1} &
+  input.next{left: P1, right: P2}.
+keyValue_seq_2{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
+main{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
+null{span: span{from: P1, to: P5}} :- 
+  input.char{char: "n", id: P1} &
+  input.char{char: "u", id: P2} &
+  input.char{char: "l", id: P3} &
+  input.char{char: "l", id: P4} &
+  input.next{left: P1, right: P2} &
+  input.next{left: P2, right: P3} &
+  input.next{left: P3, right: P4} &
+  input.next{left: P4, right: P5}.
+object{span: span{from: P1, to: P4}} :- 
+  object_seq_0{span: span{from: P1, to: P2}} &
+  object_seq_1{span: span{from: P2, to: P3}} &
+  object_seq_2{span: span{from: P3, to: P4}}.
+object_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "{", id: P1} &
+  input.next{left: P1, right: P2}.
+object_seq_1{span: span{from: P1, to: P4}} :- 
+  object_seq_1_succeed{span: span{from: P1, to: P4}} |
+  object_seq_1_rep{span: span{from: P1, to: P4}} |
+  object_seq_1_rep{span: span{from: P1, to: P2}} &
+  object_seq_1_sep{span: span{from: P2, to: P3}} &
+  object_seq_1{span: span{from: P3, to: P4}}.
+object_seq_1_rep{span: span{from: P1, to: P2}} :- keyValue{span: span{from: P1, to: P2}}.
+object_seq_1_sep{span: span{from: P1, to: P2}} :- 
+  input.char{char: ",", id: P1} &
+  input.next{left: P1, right: P2}.
+object_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+object_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "}", id: P1} &
+  input.next{left: P1, right: P2}.
+string{span: span{from: P1, to: P4}} :- 
+  string_seq_0{span: span{from: P1, to: P2}} &
+  string_seq_1{span: span{from: P2, to: P3}} &
+  string_seq_2{span: span{from: P3, to: P4}}.
+string_seq_0{span: span{from: P1, to: P2}} :- 
+  input.char{char: "'", id: P1} &
+  input.next{left: P1, right: P2}.
+string_seq_1{span: span{from: P1, to: P4}} :- 
+  string_seq_1_succeed{span: span{from: P1, to: P4}} |
+  string_seq_1_rep{span: span{from: P1, to: P4}} |
+  string_seq_1_rep{span: span{from: P1, to: P2}} &
+  string_seq_1_sep{span: span{from: P2, to: P3}} &
+  string_seq_1{span: span{from: P3, to: P4}}.
+string_seq_1_rep{span: span{from: P1, to: P2}} :- 
+  input.char{char: C, id: P1} &
+  input.next{left: P1, right: P2} &
+  "a" <= C &
+  C <= "z".
+string_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+string_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+string_seq_2{span: span{from: P1, to: P2}} :- 
+  input.char{char: "'", id: P1} &
+  input.next{left: P1, right: P2}.
+value{span: span{from: P1, to: P2}} :- 
+  value_choice_0{span: span{from: P1, to: P2}} |
+  value_choice_1{span: span{from: P1, to: P2}} |
+  value_choice_2{span: span{from: P1, to: P2}} |
+  value_choice_3{span: span{from: P1, to: P2}} |
+  value_choice_4{span: span{from: P1, to: P2}}.
+value_choice_0{span: span{from: P1, to: P2}} :- object{span: span{from: P1, to: P2}}.
+value_choice_1{span: span{from: P1, to: P2}} :- array{span: span{from: P1, to: P2}}.
+value_choice_2{span: span{from: P1, to: P2}} :- int{span: span{from: P1, to: P2}}.
+value_choice_3{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
+value_choice_4{span: span{from: P1, to: P2}} :- null{span: span{from: P1, to: P2}}.
 
 input
-[1,2]
+null
 ----
 application/datalog
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
 
 input
-{'a':[1,2]}
+[1,2,3]
 ----
 application/datalog
-parse.fullMatch{}.
-parse.fullMatch{}.
-
-input
-{'a':[2,3],'b':{'z':null}}
-----
-application/datalog
-parse.fullMatch{}.
-parse.fullMatch{}.
-parse.fullMatch{}.
-parse.fullMatch{}.
-parse.fullMatch{}.
-parse.fullMatch{}.
-parse.fullMatch{}.
-parse.fullMatch{}.
+main{span: span{from: 0, to: -2}}.
