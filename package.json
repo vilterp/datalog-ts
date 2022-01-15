@@ -46,7 +46,10 @@
   "dependencies": {
     "@hookeasy/use-title": "^1.0.2",
     "@react-hook/window-size": "^3.0.7",
+    "@types/astring": "^1.7.0",
+    "@types/estree": "^0.0.50",
     "@types/tmp": "^0.2.3",
+    "astring": "^1.8.1",
     "classnames": "^2.3.1",
     "denque": "^2.0.1",
     "graphviz-react": "^1.2.0",

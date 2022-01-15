@@ -1,0 +1,6 @@
+grandfather{grandchild: A, grandfather: C} :-
+  parent{child: A, parent: B} &
+  father{child: B, father: C}.
+----
+text/plain
+function grandfather() {}
