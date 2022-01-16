@@ -1,6 +1,6 @@
 import { Expression, Statement } from "estree";
 import { DB, rec, Rec, Rule, varr } from "../types";
-import { substitute, unify } from "../unify";
+import { substitute, unify, unifyVars } from "../unify";
 import { generateRule, prettyPrintJS } from "./jsGen";
 
 // TODO: should return Res[]
@@ -10,6 +10,7 @@ export function evaluateRule(db: DB, rule: Rule): Rec[] {
   const js = prettyPrintJS(generated);
   const context = {
     unify,
+    unifyVars,
     substitute,
     db,
     rec,

@@ -14,6 +14,7 @@ import {
   jsConstAssn,
   jsConstInit,
   jsIdent,
+  jsLogVar,
   jsObj,
   jsString as jsStr,
 } from "./astHelpers";
@@ -115,10 +116,17 @@ function generateUnifyIfStmt(
     jsIdent(varName),
     generateTerm(clause),
   ]);
-  const unifyAssnStmt = jsConstAssn(thisBindingsVar, unifyCall);
+  const unifyAssnStmt = jsConstAssn(`match${depth}`, unifyCall);
+  const combineAssnStmt = jsConstAssn(
+    thisBindingsVar,
+    jsCall(jsChain(["ctx", "unifyVars"]), [
+      jsIdent(`match${depth}`),
+      outerBindings,
+    ])
+  );
   const test: Expression = {
     type: "BinaryExpression",
-    left: jsIdent(thisBindingsVar),
+    left: jsIdent(`match${depth}`),
     operator: "!==",
     right: jsIdent("null"),
   };
@@ -126,10 +134,14 @@ function generateUnifyIfStmt(
     type: "BlockStatement",
     body: [
       unifyAssnStmt,
+      jsLogVar(`match${depth}`),
       {
         type: "IfStatement",
         test,
-        consequent: { type: "BlockStatement", body: [inner] },
+        consequent: {
+          type: "BlockStatement",
+          body: [combineAssnStmt, jsLogVar(thisBindingsVar), inner],
+        },
       },
     ],
   };

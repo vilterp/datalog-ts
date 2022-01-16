@@ -12,37 +12,3 @@ grandfather{grandchild: A, grandfather: C}.
 grandfather{grandchild: A, grandfather: C}.
 grandfather{grandchild: A, grandfather: C}.
 grandfather{grandchild: A, grandfather: C}.
-
-greatGrandfather{grandchild: A, grandfather: D} :-
-  parent{child: A, parent: B} &
-  parent{child: B, parent: C} &
-  father{child: C, father: D}.
-----
-application/datalog
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.
-greatGrandfather{grandchild: A, grandfather: D}.

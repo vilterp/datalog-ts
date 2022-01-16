@@ -1,6 +1,7 @@
 import { array, Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "../util/util";
 import { jsonEq } from "../util/json";
+import { ppb, ppt } from "./pretty";
 
 export function unify(
   prior: Bindings,
@@ -145,6 +146,7 @@ export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
 }
 
 export function substitute(term: Term, bindings: Bindings): Term {
+  console.log("substitute", ppt(term), ppb(bindings));
   switch (term.type) {
     case "Record":
       return rec(

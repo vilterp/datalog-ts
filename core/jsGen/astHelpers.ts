@@ -4,6 +4,7 @@ import {
   Identifier,
   MemberExpression,
   ObjectExpression,
+  Statement,
   VariableDeclaration,
 } from "estree";
 
@@ -86,5 +87,14 @@ export function jsConstAssn(
         init: expr,
       },
     ],
+  };
+}
+
+export function jsLogVar(name: string): Statement {
+  return {
+    type: "ExpressionStatement",
+    expression: jsCall(jsChain(["console", "log"]), [
+      jsObj({ [name]: jsIdent(name) }),
+    ]),
   };
 }
