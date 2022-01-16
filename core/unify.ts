@@ -126,7 +126,7 @@ export function termLT(left: Term, right: Term): boolean {
 }
 
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
-  console.log("unifyVars", { left: ppb(left), right: ppb(right) });
+  // console.log("unifyVars", { left: ppb(left), right: ppb(right) });
   const res: Bindings = {};
   for (const leftKey of Object.keys(left)) {
     const leftVal = left[leftKey];

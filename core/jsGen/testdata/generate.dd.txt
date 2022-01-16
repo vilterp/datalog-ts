@@ -10,12 +10,10 @@ function grandfather(db) {
       child: ctx.varr("A"),
       parent: ctx.varr("B")
     }));
-    console.log("match0", ctx.ppb(match0 || ({})));
     if (match0 === null) {
       continue;
     }
     const bindings0 = ctx.unifyVars(match0, {});
-    console.log("bindings0", ctx.ppb(bindings0 || ({})));
     if (bindings0 === null) {
       continue;
     }
@@ -24,12 +22,10 @@ function grandfather(db) {
         child: ctx.varr("B"),
         father: ctx.varr("C")
       }));
-      console.log("match1", ctx.ppb(match1 || ({})));
       if (match1 === null) {
         continue;
       }
       const bindings1 = ctx.unifyVars(match1, bindings0);
-      console.log("bindings1", ctx.ppb(bindings1 || ({})));
       if (bindings1 === null) {
         continue;
       }
@@ -55,12 +51,10 @@ function greatGrandfather(db) {
       child: ctx.varr("A"),
       parent: ctx.varr("B")
     }));
-    console.log("match0", ctx.ppb(match0 || ({})));
     if (match0 === null) {
       continue;
     }
     const bindings0 = ctx.unifyVars(match0, {});
-    console.log("bindings0", ctx.ppb(bindings0 || ({})));
     if (bindings0 === null) {
       continue;
     }
@@ -69,12 +63,10 @@ function greatGrandfather(db) {
         child: ctx.varr("B"),
         parent: ctx.varr("C")
       }));
-      console.log("match1", ctx.ppb(match1 || ({})));
       if (match1 === null) {
         continue;
       }
       const bindings1 = ctx.unifyVars(match1, bindings0);
-      console.log("bindings1", ctx.ppb(bindings1 || ({})));
       if (bindings1 === null) {
         continue;
       }
@@ -83,12 +75,10 @@ function greatGrandfather(db) {
           child: ctx.varr("C"),
           father: ctx.varr("D")
         }));
-        console.log("match2", ctx.ppb(match2 || ({})));
         if (match2 === null) {
           continue;
         }
         const bindings2 = ctx.unifyVars(match2, bindings1);
-        console.log("bindings2", ctx.ppb(bindings2 || ({})));
         if (bindings2 === null) {
           continue;
         }

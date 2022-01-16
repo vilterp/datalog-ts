@@ -138,13 +138,13 @@ function generateUnifyIfStmt(
   };
   return jsBlock([
     unifyAssnStmt,
-    jsLogBindingsIfNotNull(`match${depth}`),
+    // jsLogBindingsIfNotNull(`match${depth}`),
     jsIf(
       jsBinExpr(jsIdent(`match${depth}`), "===", jsNull),
       jsBlock([jsContinue])
     ),
     combineAssnStmt,
-    jsLogBindingsIfNotNull(thisBindingsVar),
+    // jsLogBindingsIfNotNull(thisBindingsVar),
     jsIf(
       jsBinExpr(jsIdent(thisBindingsVar), "===", jsNull),
       jsBlock([jsContinue])
