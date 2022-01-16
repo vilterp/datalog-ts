@@ -1,5 +1,5 @@
 import { Expression, Statement } from "estree";
-import { DB, Rec, Rule } from "../types";
+import { DB, rec, Rec, Rule, varr } from "../types";
 import { substitute, unify } from "../unify";
 import { generateRule, prettyPrintJS } from "./jsGen";
 
@@ -12,8 +12,10 @@ export function evaluateRule(db: DB, rule: Rule): Rec[] {
     unify,
     substitute,
     db,
+    rec,
+    varr,
   };
-  const innerJS = `const context = this;\n${js}`;
+  const innerJS = `const ctx = this;\n${js}`;
   const func = Function(innerJS).bind(context);
   return func();
 }

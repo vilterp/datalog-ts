@@ -8,7 +8,14 @@ import {
 } from "estree";
 import { mapObj } from "../../util/util";
 import { AndClause, Rec, Rule, Term } from "../types";
-import { jsCall, jsIdent, jsObj, jsString as jsStr } from "./astHelpers";
+import {
+  jsCall,
+  jsChain,
+  jsIdent,
+  jsMember,
+  jsObj,
+  jsString as jsStr,
+} from "./astHelpers";
 
 const OUT_VAR = "out";
 
@@ -139,7 +146,7 @@ function generateUnifyIfStmt(
     type: "CallExpression",
     callee: {
       type: "MemberExpression",
-      object: { type: "Identifier", name: "context" },
+      object: { type: "Identifier", name: "ctx" },
       property: { type: "Identifier", name: "unify" },
       computed: false,
       optional: false,
@@ -189,7 +196,7 @@ function generateSubstituteCall(
     type: "CallExpression",
     callee: {
       type: "MemberExpression",
-      object: { type: "Identifier", name: "context" },
+      object: { type: "Identifier", name: "ctx" },
       property: { type: "Identifier", name: "substitute" },
       computed: false,
       optional: false,
@@ -202,11 +209,11 @@ function generateSubstituteCall(
 function generateTerm(term: Term): Expression {
   switch (term.type) {
     case "Record":
-      return jsCall(jsIdent("rec"), [
+      return jsCall(jsChain(["ctx", "rec"]), [
         jsStr(term.relation),
         jsObj(mapObj(term.attrs, (attr, term) => generateTerm(term))),
       ]);
     case "Var":
-      return jsCall(jsIdent("varr"), [jsStr(term.name)]);
+      return jsCall(jsChain(["ctx", "varr"]), [jsStr(term.name)]);
   }
 }

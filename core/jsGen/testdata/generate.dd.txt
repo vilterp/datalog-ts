@@ -6,20 +6,20 @@ text/plain
 function grandfather(db) {
   const out = [];
   for (const parent_item_0 of db.tables.parent) {
-    const bindings0 = context.unify({}, parent_item_0, rec("parent", {
-      child: varr("A"),
-      parent: varr("B")
+    const bindings0 = ctx.unify({}, parent_item_0, ctx.rec("parent", {
+      child: ctx.varr("A"),
+      parent: ctx.varr("B")
     }));
     if (bindings0 !== null) {
       for (const father_item_1 of db.tables.father) {
-        const bindings1 = context.unify(bindings0, father_item_1, rec("father", {
-          child: varr("B"),
-          father: varr("C")
+        const bindings1 = ctx.unify(bindings0, father_item_1, ctx.rec("father", {
+          child: ctx.varr("B"),
+          father: ctx.varr("C")
         }));
         if (bindings1 !== null) {
-          out.push(context.substitute(rec("grandfather", {
-            grandchild: varr("A"),
-            grandfather: varr("C")
+          out.push(ctx.substitute(ctx.rec("grandfather", {
+            grandchild: ctx.varr("A"),
+            grandfather: ctx.varr("C")
           }), bindings1));
         }
       }
@@ -37,26 +37,26 @@ text/plain
 function greatGrandfather(db) {
   const out = [];
   for (const parent_item_0 of db.tables.parent) {
-    const bindings0 = context.unify({}, parent_item_0, rec("parent", {
-      child: varr("A"),
-      parent: varr("B")
+    const bindings0 = ctx.unify({}, parent_item_0, ctx.rec("parent", {
+      child: ctx.varr("A"),
+      parent: ctx.varr("B")
     }));
     if (bindings0 !== null) {
       for (const parent_item_1 of db.tables.parent) {
-        const bindings1 = context.unify(bindings0, parent_item_1, rec("parent", {
-          child: varr("B"),
-          parent: varr("C")
+        const bindings1 = ctx.unify(bindings0, parent_item_1, ctx.rec("parent", {
+          child: ctx.varr("B"),
+          parent: ctx.varr("C")
         }));
         if (bindings1 !== null) {
           for (const father_item_2 of db.tables.father) {
-            const bindings2 = context.unify(bindings1, father_item_2, rec("father", {
-              child: varr("C"),
-              father: varr("D")
+            const bindings2 = ctx.unify(bindings1, father_item_2, ctx.rec("father", {
+              child: ctx.varr("C"),
+              father: ctx.varr("D")
             }));
             if (bindings2 !== null) {
-              out.push(context.substitute(rec("greatGrandfather", {
-                grandchild: varr("A"),
-                grandfather: varr("D")
+              out.push(ctx.substitute(ctx.rec("greatGrandfather", {
+                grandchild: ctx.varr("A"),
+                grandfather: ctx.varr("D")
               }), bindings2));
             }
           }

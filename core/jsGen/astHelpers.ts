@@ -47,3 +47,13 @@ export function jsMember(obj: Expression, member: string): MemberExpression {
 export function jsString(value: string): Expression {
   return { type: "Literal", value };
 }
+
+export function jsChain(chain: string[]): Expression {
+  if (chain.length === 1) {
+    return { type: "Identifier", name: chain[0] };
+  }
+  return jsMember(
+    jsChain(chain.slice(0, chain.length - 1)),
+    chain[chain.length - 1]
+  );
+}
