@@ -13,30 +13,38 @@ function grandfather(db) {
     console.log({
       match0: match0
     });
-    if (match0 !== null) {
-      const bindings0 = ctx.unifyVars(match0, {});
+    if (match0 === null) {
+      continue;
+    }
+    const bindings0 = ctx.unifyVars(match0, {});
+    console.log({
+      bindings0: bindings0
+    });
+    if (bindings0 === null) {
+      continue;
+    }
+    for (const father_item_1 of db.tables.father) {
+      const match1 = ctx.unify({}, father_item_1, ctx.rec("father", {
+        child: ctx.varr("B"),
+        father: ctx.varr("C")
+      }));
       console.log({
-        bindings0: bindings0
+        match1: match1
       });
-      for (const father_item_1 of db.tables.father) {
-        const match1 = ctx.unify(bindings0, father_item_1, ctx.rec("father", {
-          child: ctx.varr("B"),
-          father: ctx.varr("C")
-        }));
-        console.log({
-          match1: match1
-        });
-        if (match1 !== null) {
-          const bindings1 = ctx.unifyVars(match1, bindings0);
-          console.log({
-            bindings1: bindings1
-          });
-          out.push(ctx.substitute(ctx.rec("grandfather", {
-            grandchild: ctx.varr("A"),
-            grandfather: ctx.varr("C")
-          }), bindings1));
-        }
+      if (match1 === null) {
+        continue;
       }
+      const bindings1 = ctx.unifyVars(match1, bindings0);
+      console.log({
+        bindings1: bindings1
+      });
+      if (bindings1 === null) {
+        continue;
+      }
+      out.push(ctx.substitute(ctx.rec("grandfather", {
+        grandchild: ctx.varr("A"),
+        grandfather: ctx.varr("C")
+      }), bindings1));
     }
   }
   return out;
@@ -58,44 +66,56 @@ function greatGrandfather(db) {
     console.log({
       match0: match0
     });
-    if (match0 !== null) {
-      const bindings0 = ctx.unifyVars(match0, {});
+    if (match0 === null) {
+      continue;
+    }
+    const bindings0 = ctx.unifyVars(match0, {});
+    console.log({
+      bindings0: bindings0
+    });
+    if (bindings0 === null) {
+      continue;
+    }
+    for (const parent_item_1 of db.tables.parent) {
+      const match1 = ctx.unify({}, parent_item_1, ctx.rec("parent", {
+        child: ctx.varr("B"),
+        parent: ctx.varr("C")
+      }));
       console.log({
-        bindings0: bindings0
+        match1: match1
       });
-      for (const parent_item_1 of db.tables.parent) {
-        const match1 = ctx.unify(bindings0, parent_item_1, ctx.rec("parent", {
-          child: ctx.varr("B"),
-          parent: ctx.varr("C")
+      if (match1 === null) {
+        continue;
+      }
+      const bindings1 = ctx.unifyVars(match1, bindings0);
+      console.log({
+        bindings1: bindings1
+      });
+      if (bindings1 === null) {
+        continue;
+      }
+      for (const father_item_2 of db.tables.father) {
+        const match2 = ctx.unify({}, father_item_2, ctx.rec("father", {
+          child: ctx.varr("C"),
+          father: ctx.varr("D")
         }));
         console.log({
-          match1: match1
+          match2: match2
         });
-        if (match1 !== null) {
-          const bindings1 = ctx.unifyVars(match1, bindings0);
-          console.log({
-            bindings1: bindings1
-          });
-          for (const father_item_2 of db.tables.father) {
-            const match2 = ctx.unify(bindings1, father_item_2, ctx.rec("father", {
-              child: ctx.varr("C"),
-              father: ctx.varr("D")
-            }));
-            console.log({
-              match2: match2
-            });
-            if (match2 !== null) {
-              const bindings2 = ctx.unifyVars(match2, bindings1);
-              console.log({
-                bindings2: bindings2
-              });
-              out.push(ctx.substitute(ctx.rec("greatGrandfather", {
-                grandchild: ctx.varr("A"),
-                grandfather: ctx.varr("D")
-              }), bindings2));
-            }
-          }
+        if (match2 === null) {
+          continue;
         }
+        const bindings2 = ctx.unifyVars(match2, bindings1);
+        console.log({
+          bindings2: bindings2
+        });
+        if (bindings2 === null) {
+          continue;
+        }
+        out.push(ctx.substitute(ctx.rec("greatGrandfather", {
+          grandchild: ctx.varr("A"),
+          grandfather: ctx.varr("D")
+        }), bindings2));
       }
     }
   }

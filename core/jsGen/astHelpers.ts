@@ -1,5 +1,7 @@
 import {
+  BinaryOperator,
   CallExpression,
+  ContinueStatement,
   Expression,
   Identifier,
   MemberExpression,
@@ -89,6 +91,26 @@ export function jsConstAssn(
     ],
   };
 }
+
+export function jsBlock(statements: Statement[]): Statement {
+  return { type: "BlockStatement", body: statements };
+}
+
+export function jsIf(test: Expression, consequent: Statement): Statement {
+  return { type: "IfStatement", test, consequent };
+}
+
+export function jsBinExpr(
+  left: Expression,
+  operator: BinaryOperator,
+  right: Expression
+): Expression {
+  return { type: "BinaryExpression", left, operator, right };
+}
+
+export const jsContinue: ContinueStatement = { type: "ContinueStatement" };
+
+export const jsNull: Expression = { type: "Identifier", name: "null" };
 
 export function jsLogVar(name: string): Statement {
   return {

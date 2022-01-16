@@ -9,12 +9,17 @@ import {
 import { mapObj } from "../../util/util";
 import { AndClause, Rec, Rule, Term } from "../types";
 import {
+  jsBinExpr,
+  jsBlock,
   jsCall,
   jsChain,
   jsConstAssn,
   jsConstInit,
+  jsContinue,
   jsIdent,
+  jsIf,
   jsLogVar,
+  jsNull,
   jsObj,
   jsString as jsStr,
 } from "./astHelpers";
@@ -112,7 +117,7 @@ function generateUnifyIfStmt(
   const outerBindings: Expression =
     depth === 0 ? jsObj({}) : jsIdent(bindingsVar(depth - 1));
   const unifyCall = jsCall(jsChain(["ctx", "unify"]), [
-    outerBindings,
+    jsObj({}),
     jsIdent(varName),
     generateTerm(clause),
   ]);
@@ -130,21 +135,21 @@ function generateUnifyIfStmt(
     operator: "!==",
     right: jsIdent("null"),
   };
-  return {
-    type: "BlockStatement",
-    body: [
-      unifyAssnStmt,
-      jsLogVar(`match${depth}`),
-      {
-        type: "IfStatement",
-        test,
-        consequent: {
-          type: "BlockStatement",
-          body: [combineAssnStmt, jsLogVar(thisBindingsVar), inner],
-        },
-      },
-    ],
-  };
+  return jsBlock([
+    unifyAssnStmt,
+    jsLogVar(`match${depth}`),
+    jsIf(
+      jsBinExpr(jsIdent(`match${depth}`), "===", jsNull),
+      jsBlock([jsContinue])
+    ),
+    combineAssnStmt,
+    jsLogVar(thisBindingsVar),
+    jsIf(
+      jsBinExpr(jsIdent(thisBindingsVar), "===", jsNull),
+      jsBlock([jsContinue])
+    ),
+    inner,
+  ]);
 }
 
 function generateSubstituteCall(
