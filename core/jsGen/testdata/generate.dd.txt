@@ -4,19 +4,29 @@ grandfather{grandchild: A, grandfather: C} :-
 ----
 text/plain
 function grandfather(db) {
-  const _out = [];
+  const out = [];
   for (const parent_item_0 of db.tables.parent) {
     for (const father_item_1 of db.tables.father) {
       const bindings1 = context.unify({}, parent_item_0, father_item_1);
       if (bindings1 !== null) {
-        _out.push(context.substitute({
+        out.push(context.substitute({
           type: "Record",
-          relation: "grandfather"
+          relation: "grandfather",
+          attrs: {
+            grandchild: {
+              type: "Var",
+              name: "A"
+            },
+            grandfather: {
+              type: "Var",
+              name: "C"
+            }
+          }
         }, bindings1));
       }
     }
   }
-  return _out;
+  return out;
 }
 
 greatGrandfather{grandchild: A, grandfather: D} :-
@@ -26,7 +36,7 @@ greatGrandfather{grandchild: A, grandfather: D} :-
 ----
 text/plain
 function greatGrandfather(db) {
-  const _out = [];
+  const out = [];
   for (const parent_item_0 of db.tables.parent) {
     for (const parent_item_1 of db.tables.parent) {
       const bindings1 = context.unify({}, parent_item_0, parent_item_1);
@@ -34,14 +44,24 @@ function greatGrandfather(db) {
         for (const father_item_2 of db.tables.father) {
           const bindings2 = context.unify(bindings1, parent_item_1, father_item_2);
           if (bindings2 !== null) {
-            _out.push(context.substitute({
+            out.push(context.substitute({
               type: "Record",
-              relation: "greatGrandfather"
+              relation: "greatGrandfather",
+              attrs: {
+                grandchild: {
+                  type: "Var",
+                  name: "A"
+                },
+                grandfather: {
+                  type: "Var",
+                  name: "D"
+                }
+              }
             }, bindings2));
           }
         }
       }
     }
   }
-  return _out;
+  return out;
 }

@@ -8,7 +8,7 @@ import {
 } from "estree";
 import { AndClause, Rec, Rule, Term } from "../types";
 
-const OUT_VAR = "_out";
+const OUT_VAR = "out";
 
 export function prettyPrintJS(node: Node): string {
   return generate(node);
@@ -228,7 +228,50 @@ function generateTerm(term: Term): Expression {
             kind: "init",
             method: false,
           },
-          // TODO: attrs
+          {
+            type: "Property",
+            key: { type: "Identifier", name: "attrs" },
+            value: {
+              type: "ObjectExpression",
+              properties: Object.keys(term.attrs).map((key) => ({
+                type: "Property",
+                key: { type: "Identifier", name: key },
+                value: generateTerm(term.attrs[key]),
+                computed: false,
+                shorthand: false,
+                kind: "init",
+                method: false,
+              })),
+            },
+            computed: false,
+            shorthand: false,
+            kind: "init",
+            method: false,
+          },
+        ],
+      };
+    case "Var":
+      return {
+        type: "ObjectExpression",
+        properties: [
+          {
+            type: "Property",
+            key: { type: "Identifier", name: "type" },
+            value: { type: "Literal", value: "Var" },
+            computed: false,
+            shorthand: false,
+            kind: "init",
+            method: false,
+          },
+          {
+            type: "Property",
+            key: { type: "Identifier", name: "name" },
+            value: { type: "Literal", value: term.name },
+            computed: false,
+            shorthand: false,
+            kind: "init",
+            method: false,
+          },
         ],
       };
   }
