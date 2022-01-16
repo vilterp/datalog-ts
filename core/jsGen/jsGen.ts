@@ -11,8 +11,9 @@ import { AndClause, Rec, Rule, Term } from "../types";
 import {
   jsCall,
   jsChain,
+  jsConstAssn,
+  jsConstInit,
   jsIdent,
-  jsMember,
   jsObj,
   jsString as jsStr,
 } from "./astHelpers";
@@ -24,17 +25,10 @@ export function prettyPrintJS(node: Node): string {
 }
 
 export function generateRule(rule: Rule): FunctionDeclaration {
-  const initOut: Node = {
-    type: "VariableDeclaration",
-    kind: "const",
-    declarations: [
-      {
-        type: "VariableDeclarator",
-        id: { type: "Identifier", name: OUT_VAR },
-        init: { type: "ArrayExpression", elements: [] },
-      },
-    ],
-  };
+  const initOut = jsConstAssn(OUT_VAR, {
+    type: "ArrayExpression",
+    elements: [],
+  });
   const returnOut: Node = {
     type: "ReturnStatement",
     argument: { type: "Identifier", name: OUT_VAR },
@@ -46,11 +40,8 @@ export function generateRule(rule: Rule): FunctionDeclaration {
 
   return {
     type: "FunctionDeclaration",
-    id: {
-      type: "Identifier",
-      name: rule.head.relation,
-    },
-    params: [{ type: "Identifier", name: "db" }],
+    id: jsIdent(rule.head.relation),
+    params: [jsIdent("db")],
     body: {
       type: "BlockStatement",
       body: [initOut, ...joins, returnOut],
@@ -96,29 +87,8 @@ function generateJoinRecur(
     return {
       type: "ForOfStatement",
       await: false,
-      left: {
-        type: "VariableDeclaration",
-        kind: "const",
-        declarations: [
-          {
-            type: "VariableDeclarator",
-            id: { type: "Identifier", name: thisVar },
-          },
-        ],
-      },
-      right: {
-        type: "MemberExpression",
-        object: {
-          type: "MemberExpression",
-          object: { type: "Identifier", name: "db" },
-          property: { type: "Identifier", name: "tables" },
-          computed: false,
-          optional: false,
-        },
-        property: { type: "Identifier", name: clause.relation },
-        computed: false,
-        optional: false,
-      },
+      left: jsConstInit(thisVar),
+      right: jsChain(["db", "tables", clause.relation]),
       body: generateUnifyIfStmt(thisVar, clause, innerLoop, depth),
     };
   } else {
@@ -139,41 +109,18 @@ function generateUnifyIfStmt(
 ): Statement {
   const thisBindingsVar = bindingsVar(depth);
   const outerBindings: Expression =
-    depth === 0
-      ? { type: "ObjectExpression", properties: [] }
-      : { type: "Identifier", name: bindingsVar(depth - 1) };
-  const unifyCall: CallExpression = {
-    type: "CallExpression",
-    callee: {
-      type: "MemberExpression",
-      object: { type: "Identifier", name: "ctx" },
-      property: { type: "Identifier", name: "unify" },
-      computed: false,
-      optional: false,
-    },
-    arguments: [
-      outerBindings,
-      { type: "Identifier", name: varName },
-      generateTerm(clause),
-    ],
-    optional: false,
-  };
-  const unifyAssnStmt: Statement = {
-    type: "VariableDeclaration",
-    kind: "const",
-    declarations: [
-      {
-        type: "VariableDeclarator",
-        id: { type: "Identifier", name: thisBindingsVar },
-        init: unifyCall,
-      },
-    ],
-  };
+    depth === 0 ? jsObj({}) : jsIdent(bindingsVar(depth - 1));
+  const unifyCall = jsCall(jsChain(["ctx", "unify"]), [
+    outerBindings,
+    jsIdent(varName),
+    generateTerm(clause),
+  ]);
+  const unifyAssnStmt = jsConstAssn(thisBindingsVar, unifyCall);
   const test: Expression = {
     type: "BinaryExpression",
-    left: { type: "Identifier", name: thisBindingsVar },
+    left: jsIdent(thisBindingsVar),
     operator: "!==",
-    right: { type: "Identifier", name: "null" },
+    right: jsIdent("null"),
   };
   return {
     type: "BlockStatement",
@@ -192,18 +139,7 @@ function generateSubstituteCall(
   bindings: Expression,
   rec: Expression
 ): Expression {
-  return {
-    type: "CallExpression",
-    callee: {
-      type: "MemberExpression",
-      object: { type: "Identifier", name: "ctx" },
-      property: { type: "Identifier", name: "substitute" },
-      computed: false,
-      optional: false,
-    },
-    arguments: [rec, bindings],
-    optional: false,
-  };
+  return jsCall(jsChain(["ctx", "substitute"]), [rec, bindings]);
 }
 
 function generateTerm(term: Term): Expression {

@@ -1,12 +1,13 @@
 import {
   CallExpression,
   Expression,
+  Identifier,
   MemberExpression,
-  Node,
   ObjectExpression,
+  VariableDeclaration,
 } from "estree";
 
-export function jsIdent(name: string): Expression {
+export function jsIdent(name: string): Identifier {
   return { type: "Identifier", name };
 }
 
@@ -56,4 +57,34 @@ export function jsChain(chain: string[]): Expression {
     jsChain(chain.slice(0, chain.length - 1)),
     chain[chain.length - 1]
   );
+}
+
+export function jsConstInit(name: string): VariableDeclaration {
+  return {
+    type: "VariableDeclaration",
+    kind: "const",
+    declarations: [
+      {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name },
+      },
+    ],
+  };
+}
+
+export function jsConstAssn(
+  name: string,
+  expr: Expression
+): VariableDeclaration {
+  return {
+    type: "VariableDeclaration",
+    kind: "const",
+    declarations: [
+      {
+        type: "VariableDeclarator",
+        id: { type: "Identifier", name },
+        init: expr,
+      },
+    ],
+  };
 }
