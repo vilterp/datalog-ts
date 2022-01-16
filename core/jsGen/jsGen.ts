@@ -6,7 +6,9 @@ import {
   Node,
   Statement,
 } from "estree";
+import { mapObj } from "../../util/util";
 import { AndClause, Rec, Rule, Term } from "../types";
+import { jsCall, jsIdent, jsObj, jsString as jsStr } from "./astHelpers";
 
 const OUT_VAR = "out";
 
@@ -200,72 +202,11 @@ function generateSubstituteCall(
 function generateTerm(term: Term): Expression {
   switch (term.type) {
     case "Record":
-      return {
-        type: "ObjectExpression",
-        properties: [
-          {
-            type: "Property",
-            key: { type: "Identifier", name: "type" },
-            value: { type: "Literal", value: "Record" },
-            computed: false,
-            shorthand: false,
-            kind: "init",
-            method: false,
-          },
-          {
-            type: "Property",
-            key: { type: "Identifier", name: "relation" },
-            value: { type: "Literal", value: term.relation },
-            computed: false,
-            shorthand: false,
-            kind: "init",
-            method: false,
-          },
-          {
-            type: "Property",
-            key: { type: "Identifier", name: "attrs" },
-            value: {
-              type: "ObjectExpression",
-              properties: Object.keys(term.attrs).map((key) => ({
-                type: "Property",
-                key: { type: "Identifier", name: key },
-                value: generateTerm(term.attrs[key]),
-                computed: false,
-                shorthand: false,
-                kind: "init",
-                method: false,
-              })),
-            },
-            computed: false,
-            shorthand: false,
-            kind: "init",
-            method: false,
-          },
-        ],
-      };
+      return jsCall(jsIdent("rec"), [
+        jsStr(term.relation),
+        jsObj(mapObj(term.attrs, (attr, term) => generateTerm(term))),
+      ]);
     case "Var":
-      return {
-        type: "ObjectExpression",
-        properties: [
-          {
-            type: "Property",
-            key: { type: "Identifier", name: "type" },
-            value: { type: "Literal", value: "Var" },
-            computed: false,
-            shorthand: false,
-            kind: "init",
-            method: false,
-          },
-          {
-            type: "Property",
-            key: { type: "Identifier", name: "name" },
-            value: { type: "Literal", value: term.name },
-            computed: false,
-            shorthand: false,
-            kind: "init",
-            method: false,
-          },
-        ],
-      };
+      return jsCall(jsIdent("varr"), [jsStr(term.name)]);
   }
 }

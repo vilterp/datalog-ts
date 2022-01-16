@@ -6,51 +6,21 @@ text/plain
 function grandfather(db) {
   const out = [];
   for (const parent_item_0 of db.tables.parent) {
-    const bindings0 = context.unify({}, parent_item_0, {
-      type: "Record",
-      relation: "parent",
-      attrs: {
-        child: {
-          type: "Var",
-          name: "A"
-        },
-        parent: {
-          type: "Var",
-          name: "B"
-        }
-      }
-    });
+    const bindings0 = context.unify({}, parent_item_0, rec("parent", {
+      child: varr("A"),
+      parent: varr("B")
+    }));
     if (bindings0 !== null) {
       for (const father_item_1 of db.tables.father) {
-        const bindings1 = context.unify(bindings0, father_item_1, {
-          type: "Record",
-          relation: "father",
-          attrs: {
-            child: {
-              type: "Var",
-              name: "B"
-            },
-            father: {
-              type: "Var",
-              name: "C"
-            }
-          }
-        });
+        const bindings1 = context.unify(bindings0, father_item_1, rec("father", {
+          child: varr("B"),
+          father: varr("C")
+        }));
         if (bindings1 !== null) {
-          out.push(context.substitute({
-            type: "Record",
-            relation: "grandfather",
-            attrs: {
-              grandchild: {
-                type: "Var",
-                name: "A"
-              },
-              grandfather: {
-                type: "Var",
-                name: "C"
-              }
-            }
-          }, bindings1));
+          out.push(context.substitute(rec("grandfather", {
+            grandchild: varr("A"),
+            grandfather: varr("C")
+          }), bindings1));
         }
       }
     }
@@ -67,67 +37,27 @@ text/plain
 function greatGrandfather(db) {
   const out = [];
   for (const parent_item_0 of db.tables.parent) {
-    const bindings0 = context.unify({}, parent_item_0, {
-      type: "Record",
-      relation: "parent",
-      attrs: {
-        child: {
-          type: "Var",
-          name: "A"
-        },
-        parent: {
-          type: "Var",
-          name: "B"
-        }
-      }
-    });
+    const bindings0 = context.unify({}, parent_item_0, rec("parent", {
+      child: varr("A"),
+      parent: varr("B")
+    }));
     if (bindings0 !== null) {
       for (const parent_item_1 of db.tables.parent) {
-        const bindings1 = context.unify(bindings0, parent_item_1, {
-          type: "Record",
-          relation: "parent",
-          attrs: {
-            child: {
-              type: "Var",
-              name: "B"
-            },
-            parent: {
-              type: "Var",
-              name: "C"
-            }
-          }
-        });
+        const bindings1 = context.unify(bindings0, parent_item_1, rec("parent", {
+          child: varr("B"),
+          parent: varr("C")
+        }));
         if (bindings1 !== null) {
           for (const father_item_2 of db.tables.father) {
-            const bindings2 = context.unify(bindings1, father_item_2, {
-              type: "Record",
-              relation: "father",
-              attrs: {
-                child: {
-                  type: "Var",
-                  name: "C"
-                },
-                father: {
-                  type: "Var",
-                  name: "D"
-                }
-              }
-            });
+            const bindings2 = context.unify(bindings1, father_item_2, rec("father", {
+              child: varr("C"),
+              father: varr("D")
+            }));
             if (bindings2 !== null) {
-              out.push(context.substitute({
-                type: "Record",
-                relation: "greatGrandfather",
-                attrs: {
-                  grandchild: {
-                    type: "Var",
-                    name: "A"
-                  },
-                  grandfather: {
-                    type: "Var",
-                    name: "D"
-                  }
-                }
-              }, bindings2));
+              out.push(context.substitute(rec("greatGrandfather", {
+                grandchild: varr("A"),
+                grandfather: varr("D")
+              }), bindings2));
             }
           }
         }
