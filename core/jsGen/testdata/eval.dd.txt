@@ -3,6 +3,15 @@ grandfather{grandchild: A, grandfather: C} :-
   father{child: B, father: C}.
 ----
 application/datalog
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
+grandfather{grandchild: A, grandfather: C}.
 
 greatGrandfather{grandchild: A, grandfather: D} :-
   parent{child: A, parent: B} &
@@ -10,3 +19,30 @@ greatGrandfather{grandchild: A, grandfather: D} :-
   father{child: C, father: D}.
 ----
 application/datalog
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.
+greatGrandfather{grandchild: A, grandfather: D}.

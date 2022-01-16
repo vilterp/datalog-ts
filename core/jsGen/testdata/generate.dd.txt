@@ -6,23 +6,52 @@ text/plain
 function grandfather(db) {
   const out = [];
   for (const parent_item_0 of db.tables.parent) {
-    for (const father_item_1 of db.tables.father) {
-      const bindings1 = context.unify({}, parent_item_0, father_item_1);
-      if (bindings1 !== null) {
-        out.push(context.substitute({
+    const bindings0 = context.unify({}, parent_item_0, {
+      type: "Record",
+      relation: "parent",
+      attrs: {
+        child: {
+          type: "Var",
+          name: "A"
+        },
+        parent: {
+          type: "Var",
+          name: "B"
+        }
+      }
+    });
+    if (bindings0 !== null) {
+      for (const father_item_1 of db.tables.father) {
+        const bindings1 = context.unify(bindings0, father_item_1, {
           type: "Record",
-          relation: "grandfather",
+          relation: "father",
           attrs: {
-            grandchild: {
+            child: {
               type: "Var",
-              name: "A"
+              name: "B"
             },
-            grandfather: {
+            father: {
               type: "Var",
               name: "C"
             }
           }
-        }, bindings1));
+        });
+        if (bindings1 !== null) {
+          out.push(context.substitute({
+            type: "Record",
+            relation: "grandfather",
+            attrs: {
+              grandchild: {
+                type: "Var",
+                name: "A"
+              },
+              grandfather: {
+                type: "Var",
+                name: "C"
+              }
+            }
+          }, bindings1));
+        }
       }
     }
   }
@@ -38,26 +67,68 @@ text/plain
 function greatGrandfather(db) {
   const out = [];
   for (const parent_item_0 of db.tables.parent) {
-    for (const parent_item_1 of db.tables.parent) {
-      const bindings1 = context.unify({}, parent_item_0, parent_item_1);
-      if (bindings1 !== null) {
-        for (const father_item_2 of db.tables.father) {
-          const bindings2 = context.unify(bindings1, parent_item_1, father_item_2);
-          if (bindings2 !== null) {
-            out.push(context.substitute({
+    const bindings0 = context.unify({}, parent_item_0, {
+      type: "Record",
+      relation: "parent",
+      attrs: {
+        child: {
+          type: "Var",
+          name: "A"
+        },
+        parent: {
+          type: "Var",
+          name: "B"
+        }
+      }
+    });
+    if (bindings0 !== null) {
+      for (const parent_item_1 of db.tables.parent) {
+        const bindings1 = context.unify(bindings0, parent_item_1, {
+          type: "Record",
+          relation: "parent",
+          attrs: {
+            child: {
+              type: "Var",
+              name: "B"
+            },
+            parent: {
+              type: "Var",
+              name: "C"
+            }
+          }
+        });
+        if (bindings1 !== null) {
+          for (const father_item_2 of db.tables.father) {
+            const bindings2 = context.unify(bindings1, father_item_2, {
               type: "Record",
-              relation: "greatGrandfather",
+              relation: "father",
               attrs: {
-                grandchild: {
+                child: {
                   type: "Var",
-                  name: "A"
+                  name: "C"
                 },
-                grandfather: {
+                father: {
                   type: "Var",
                   name: "D"
                 }
               }
-            }, bindings2));
+            });
+            if (bindings2 !== null) {
+              out.push(context.substitute({
+                type: "Record",
+                relation: "greatGrandfather",
+                attrs: {
+                  grandchild: {
+                    type: "Var",
+                    name: "A"
+                  },
+                  grandfather: {
+                    type: "Var",
+                    name: "D"
+                  }
+                }
+              }, bindings2));
+            }
           }
         }
       }

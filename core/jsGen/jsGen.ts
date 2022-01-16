@@ -50,11 +50,10 @@ export function generateRule(rule: Rule): FunctionDeclaration {
 }
 
 function generateJoin(join: AndClause[], out: Rec): Statement {
-  return generateJoinRecur(null, join, 0, out);
+  return generateJoinRecur(join, 0, out);
 }
 
 function generateJoinRecur(
-  outerVar: string | null,
   join: AndClause[],
   depth: number,
   out: Rec
@@ -84,7 +83,7 @@ function generateJoinRecur(
   const clause = join[0];
   if (clause.type === "Record") {
     const thisVar = `${clause.relation}_item_${depth}`;
-    const innerLoop = generateJoinRecur(thisVar, join.slice(1), depth + 1, out);
+    const innerLoop = generateJoinRecur(join.slice(1), depth + 1, out);
     return {
       type: "ForOfStatement",
       await: false,
@@ -111,13 +110,7 @@ function generateJoinRecur(
         computed: false,
         optional: false,
       },
-      body:
-        outerVar === null
-          ? {
-              type: "BlockStatement",
-              body: [innerLoop],
-            }
-          : generateUnifyIfStmt(outerVar, thisVar, innerLoop, depth),
+      body: generateUnifyIfStmt(thisVar, clause, innerLoop, depth),
     };
   } else {
     // generate if statement
@@ -130,14 +123,14 @@ function bindingsVar(depth: number) {
 }
 
 function generateUnifyIfStmt(
-  left: string,
-  right: string,
+  varName: string,
+  clause: Rec,
   inner: Statement,
   depth: number
 ): Statement {
   const thisBindingsVar = bindingsVar(depth);
   const outerBindings: Expression =
-    depth <= 1
+    depth === 0
       ? { type: "ObjectExpression", properties: [] }
       : { type: "Identifier", name: bindingsVar(depth - 1) };
   const unifyCall: CallExpression = {
@@ -151,8 +144,8 @@ function generateUnifyIfStmt(
     },
     arguments: [
       outerBindings,
-      { type: "Identifier", name: left },
-      { type: "Identifier", name: right },
+      { type: "Identifier", name: varName },
+      generateTerm(clause),
     ],
     optional: false,
   };
