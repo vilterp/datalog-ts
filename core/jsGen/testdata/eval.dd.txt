@@ -3,5 +3,5 @@ grandfather{grandchild: A, grandfather: C} :-
   father{child: B, father: C}.
 ----
 application/datalog
-grandfather{grandchild: "Pete", grandfather: C}.
-grandfather{grandchild: "Paul", grandfather: C}.
+grandfather{grandchild: "Pete", grandfather: "Peter"}.
+grandfather{grandchild: "Paul", grandfather: "Emil"}.

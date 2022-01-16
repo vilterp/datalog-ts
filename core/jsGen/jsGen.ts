@@ -18,10 +18,11 @@ import {
   jsContinue,
   jsIdent,
   jsIf,
-  jsLogVar,
+  jsConsoleLog,
   jsNull,
   jsObj,
-  jsString as jsStr,
+  jsStr as jsStr,
+  jsLogical,
 } from "./astHelpers";
 
 const OUT_VAR = "out";
@@ -137,13 +138,13 @@ function generateUnifyIfStmt(
   };
   return jsBlock([
     unifyAssnStmt,
-    jsLogVar(`match${depth}`),
+    jsLogBindingsIfNotNull(`match${depth}`),
     jsIf(
       jsBinExpr(jsIdent(`match${depth}`), "===", jsNull),
       jsBlock([jsContinue])
     ),
     combineAssnStmt,
-    jsLogVar(thisBindingsVar),
+    jsLogBindingsIfNotNull(thisBindingsVar),
     jsIf(
       jsBinExpr(jsIdent(thisBindingsVar), "===", jsNull),
       jsBlock([jsContinue])
@@ -169,4 +170,11 @@ function generateTerm(term: Term): Expression {
     case "Var":
       return jsCall(jsChain(["ctx", "varr"]), [jsStr(term.name)]);
   }
+}
+
+function jsLogBindingsIfNotNull(name: string) {
+  return jsConsoleLog(
+    name,
+    jsCall(jsChain(["ctx", "ppb"]), [jsLogical(jsIdent(name), "||", jsObj({}))])
+  );
 }

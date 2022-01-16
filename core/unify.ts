@@ -126,6 +126,7 @@ export function termLT(left: Term, right: Term): boolean {
 }
 
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
+  console.log("unifyVars", { left: ppb(left), right: ppb(right) });
   const res: Bindings = {};
   for (const leftKey of Object.keys(left)) {
     const leftVal = left[leftKey];
@@ -146,7 +147,7 @@ export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
 }
 
 export function substitute(term: Term, bindings: Bindings): Term {
-  console.log("substitute", ppt(term), ppb(bindings));
+  // console.log("substitute", ppt(term), ppb(bindings));
   switch (term.type) {
     case "Record":
       return rec(

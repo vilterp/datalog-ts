@@ -4,6 +4,7 @@ import {
   ContinueStatement,
   Expression,
   Identifier,
+  LogicalOperator,
   MemberExpression,
   ObjectExpression,
   Statement,
@@ -48,7 +49,7 @@ export function jsMember(obj: Expression, member: string): MemberExpression {
   };
 }
 
-export function jsString(value: string): Expression {
+export function jsStr(value: string): Expression {
   return { type: "Literal", value };
 }
 
@@ -108,15 +109,21 @@ export function jsBinExpr(
   return { type: "BinaryExpression", left, operator, right };
 }
 
+export function jsLogical(
+  left: Expression,
+  operator: LogicalOperator,
+  right: Expression
+): Expression {
+  return { type: "LogicalExpression", left, operator, right };
+}
+
 export const jsContinue: ContinueStatement = { type: "ContinueStatement" };
 
 export const jsNull: Expression = { type: "Identifier", name: "null" };
 
-export function jsLogVar(name: string): Statement {
+export function jsConsoleLog(tag: string, expr: Expression): Statement {
   return {
     type: "ExpressionStatement",
-    expression: jsCall(jsChain(["console", "log"]), [
-      jsObj({ [name]: jsIdent(name) }),
-    ]),
+    expression: jsCall(jsChain(["console", "log"]), [jsStr(tag), expr]),
   };
 }

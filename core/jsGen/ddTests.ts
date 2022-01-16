@@ -40,9 +40,9 @@ const TEST_DB: DB = {
       rec("parent", { child: str("Peter"), parent: str("Emil") }),
     ],
     father: [
-      rec("father", { child: str("Pete"), parent: str("Paul") }),
-      rec("father", { child: str("Paul"), parent: str("Peter") }),
-      rec("father", { child: str("Peter"), parent: str("Emil") }),
+      rec("father", { child: str("Pete"), father: str("Paul") }),
+      rec("father", { child: str("Paul"), father: str("Peter") }),
+      rec("father", { child: str("Peter"), father: str("Emil") }),
     ],
   },
 };
