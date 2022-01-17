@@ -27,12 +27,11 @@ export function ruleToGraph(rule: Rule): Graph {
       ...Object.keys(varToPaths).map((varName) => ({ id: varName, attrs: {} })),
       ...flatMap(rule.body.opts, (andExpr, optIdx) =>
         andExpr.clauses.map((clause, clauseIdx) => {
-          const path = [`opt${optIdx}`, `clause${clauseIdx}`];
           return {
-            id: path.join("/"),
+            id: [`opt${optIdx}`, `clause${clauseIdx}`].join("/"),
             attrs: {
               shape: "record",
-              label: termToRecordTree(clause, path, "up"),
+              label: termToRecordTree(clause, [], "up"),
             },
           };
         })
@@ -40,11 +39,15 @@ export function ruleToGraph(rule: Rule): Graph {
     ],
     edges: [
       ...flatMap(Object.entries(varToPaths), ([varName, paths]) =>
-        paths.map((path) => ({
-          from: varName,
-          to: path.join("/"),
-          attrs: {},
-        }))
+        paths.map((path) => {
+          const nodeID = path.slice(0, 2).join("/");
+          const rowID = path.slice(2).join("/");
+          return {
+            from: varName,
+            to: { nodeID, rowID },
+            attrs: {},
+          };
+        })
       ),
     ],
   };

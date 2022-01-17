@@ -81,7 +81,7 @@ function stringifyEdgeID(id: EdgeID) {
     return `"${escapeStr(id)}"`;
   }
   // TODO: can we quote and escape rowID too?
-  return `"${escapeStr(id.nodeID)}":${id.rowID}`;
+  return `"${escapeStr(id.nodeID)}":"${id.rowID}"`;
 }
 
 function escapeStr(str: string): string {
