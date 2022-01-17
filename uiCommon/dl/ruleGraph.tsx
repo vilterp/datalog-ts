@@ -1,5 +1,5 @@
 import { Rule, Term } from "../../core/types";
-import { Graph, RecordTree } from "../../util/graphviz";
+import { Graph, recordLeaf, recordNode, RecordTree } from "../../util/graphviz";
 import { flatMap } from "../../util/util";
 
 export function ruleToGraph(rule: Rule): Graph {
@@ -29,37 +29,20 @@ function termToRecordTree(term: Term): RecordTree {
 function termToNodeRecur(term: Term, path: string[]): RecordTree {
   switch (term.type) {
     case "Var":
-      return { type: "Leaf", id: path.join("/"), content: term.name };
+      return recordLeaf(path.join("/"), term.name);
     case "StringLit":
-      return {
-        type: "Leaf",
-        id: path.join("/"),
-        content: JSON.stringify(term.val),
-      };
+      return recordLeaf(path.join("/"), JSON.stringify(term.val));
     case "Record":
-      return {
-        type: "Node",
-        children: [
-          {
-            type: "Leaf",
-            id: [...path, "relation"].join("/"),
-            content: term.relation,
-          },
-          {
-            type: "Node",
-            children: Object.keys(term.attrs).map((attr) => ({
-              type: "Node",
-              children: [
-                {
-                  type: "Leaf",
-                  id: [...path, "attrs", attr].join("/"),
-                  content: attr,
-                },
-                termToRecordTree(term.attrs[attr]),
-              ],
-            })),
-          },
-        ],
-      };
+      return recordNode([
+        recordLeaf([...path, "relation"].join("/"), term.relation),
+        recordNode(
+          Object.keys(term.attrs).map((attr) =>
+            recordNode([
+              recordLeaf([...path, "attrs", attr].join("/"), attr),
+              termToRecordTree(term.attrs[attr]),
+            ])
+          )
+        ),
+      ]);
   }
 }
