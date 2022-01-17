@@ -2,7 +2,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Int, int } from "../../core/types";
 import { Span, dlToSpan } from "./types";
 import { mapTree, filterTree, getLeaves } from "../../util/tree";
-import { treeFromRecords } from "../generic/treeFromRecords";
+import { treeFromRecords } from "../dl/treeFromRecords";
 
 // just `TypeError` is a builtin
 export type DLTypeError = {

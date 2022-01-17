@@ -6,7 +6,7 @@ import { fsLoader } from "./fsLoader";
 import { datalogOut, graphvizOut, plainTextOut } from "../util/ddTest/types";
 import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
-import { traceToGraph } from "./traceGraph";
+import { traceToGraph } from "../uiCommon/dl/traceGraph";
 import { prettyPrintGraph } from "../util/graphviz";
 
 export function coreTestsSimple(writeResults: boolean): Suite {
