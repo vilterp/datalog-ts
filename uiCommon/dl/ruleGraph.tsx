@@ -7,14 +7,23 @@ export function ruleToGraph(rule: Rule): Graph {
     nodes: [
       {
         id: "head",
-        attrs: { shape: "record", label: termToRecordTree(rule.head, "down") },
+        attrs: {
+          shape: "record",
+          label: termToRecordTree(rule.head, ["head"], "down"),
+        },
       },
-      ...flatMap(rule.body.opts, (andExpr) =>
-        andExpr.clauses.map((clause) => termToRecordTree(clause, "up"))
-      ).map((recTree, idx) => ({
-        id: `${idx}`,
-        attrs: { shape: "record", label: recTree },
-      })),
+      ...flatMap(rule.body.opts, (andExpr, optIdx) =>
+        andExpr.clauses.map((clause, clauseIdx) => {
+          const path = [`opt${optIdx}`, `clause${clauseIdx}`];
+          return {
+            id: path.join("/"),
+            attrs: {
+              shape: "record",
+              label: termToRecordTree(clause, path, "up"),
+            },
+          };
+        })
+      ),
     ],
     edges: [],
   };
@@ -22,11 +31,7 @@ export function ruleToGraph(rule: Rule): Graph {
 
 type Orientation = "up" | "down";
 
-function termToRecordTree(term: Term, orientation: Orientation): RecordTree {
-  return termToRecordTreeRecur(term, [], orientation);
-}
-
-function termToRecordTreeRecur(
+function termToRecordTree(
   term: Term,
   path: string[],
   orientation: Orientation
@@ -43,11 +48,7 @@ function termToRecordTreeRecur(
           Object.keys(term.attrs).map((attr) => {
             const contents = [
               recordLeaf([...path, "attrs", attr].join("/"), attr),
-              termToRecordTreeRecur(
-                term.attrs[attr],
-                [...path, attr],
-                orientation
-              ),
+              termToRecordTree(term.attrs[attr], [...path, attr], orientation),
             ];
             return recordNode(
               orientation === "down" ? contents : contents.reverse()
@@ -63,8 +64,8 @@ function termToRecordTreeRecur(
       const contents = [
         recordLeaf([...path, "binOp"].join("/"), term.op),
         recordNode([
-          termToRecordTreeRecur(term.left, [...path, "left"], orientation),
-          termToRecordTreeRecur(term.right, [...path, "right"], orientation),
+          termToRecordTree(term.left, [...path, "left"], orientation),
+          termToRecordTree(term.right, [...path, "right"], orientation),
         ]),
       ];
       return recordNode([
