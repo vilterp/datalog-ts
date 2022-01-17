@@ -15,4 +15,12 @@ digraph G {
   "opt0/clause1" [label="{{{<opt0/clause1/idx> CIdx|<opt0/clause1/attrs/idx> idx}}|<opt0/clause1/relation> ide.Cursor}" shape="record"];
   "opt0/clause2" [label="{{<opt0/clause2/left> FIdx|<opt0/clause2/right> CIdx}|<opt0/clause2/binOp> \<=}" shape="record"];
   "opt0/clause3" [label="{{<opt0/clause3/left> CIdx|<opt0/clause3/right> TIdx}|<opt0/clause3/binOp> \<=}" shape="record"];
+  "FIdx" -> "opt0/clause0/definitionLoc/from" [];
+  "FIdx" -> "opt0/clause2/left" [];
+  "TIdx" -> "opt0/clause0/definitionLoc/to" [];
+  "TIdx" -> "opt0/clause3/right" [];
+  "UL" -> "opt0/clause0/usageLoc" [];
+  "CIdx" -> "opt0/clause1/idx" [];
+  "CIdx" -> "opt0/clause2/right" [];
+  "CIdx" -> "opt0/clause3/left" [];
 }
