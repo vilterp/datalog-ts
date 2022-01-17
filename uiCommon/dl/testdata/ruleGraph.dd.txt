@@ -1,0 +1,14 @@
+ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
+  refGraph.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx &
+  CIdx <= TIdx.
+----
+application/graphviz
+digraph G {
+  "head" [label="{<relation> ide.currentUsageDefn|{{<attrs/defnLoc> defnLoc|{{<defnLoc/relation> span|{{<defnLoc/attrs/from> from|<defnLoc/from> FIdx}|{<defnLoc/attrs/to> to|<defnLoc/to> TIdx}}}}}|{<attrs/usageLoc> usageLoc|<usageLoc> UL}}}" shape="record"];
+  "0" [label="{{{{{{{<definitionLoc/from> FIdx|<definitionLoc/attrs/from> from}|{<definitionLoc/to> TIdx|<definitionLoc/attrs/to> to}}|<definitionLoc/relation> span}}|<attrs/definitionLoc> definitionLoc}|{<usageLoc> UL|<attrs/usageLoc> usageLoc}}|<relation> refGraph.Usage}" shape="record"];
+  "1" [label="{{{<idx> CIdx|<attrs/idx> idx}}|<relation> ide.Cursor}" shape="record"];
+  "2" [label="{{<left> FIdx|<right> CIdx}|<binOp> \<=}" shape="record"];
+  "3" [label="{{<left> CIdx|<right> TIdx}|<binOp> \<=}" shape="record"];
+}
