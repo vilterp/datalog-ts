@@ -6,15 +6,15 @@ ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
 ----
 application/graphviz
 digraph G {
-  "head" [label="{<head/relation> ide.currentUsageDefn|{{<head/attrs/defnLoc> defnLoc|{{<head/defnLoc/relation> span|{{<head/defnLoc/attrs/from> from|<head/defnLoc/from> FIdx}|{<head/defnLoc/attrs/to> to|<head/defnLoc/to> TIdx}}}}}|{<head/attrs/usageLoc> usageLoc|<head/usageLoc> UL}}}" shape="record"];
+  "head" [label="{<head/relation> ide.currentUsageDefn|{{<head/attrs/defnLoc> defnLoc|{{<head/defnLoc/relation> span|{{<head/defnLoc/attrs/from> from|<head/defnLoc/from> }|{<head/defnLoc/attrs/to> to|<head/defnLoc/to> }}}}}|{<head/attrs/usageLoc> usageLoc|<head/usageLoc> }}}" shape="record"];
   "FIdx" [];
   "TIdx" [];
   "UL" [];
   "CIdx" [];
-  "opt0/clause0" [label="{{{{{{{<definitionLoc/from> FIdx|<definitionLoc/attrs/from> from}|{<definitionLoc/to> TIdx|<definitionLoc/attrs/to> to}}|<definitionLoc/relation> span}}|<attrs/definitionLoc> definitionLoc}|{<usageLoc> UL|<attrs/usageLoc> usageLoc}}|<relation> refGraph.Usage}" shape="record"];
-  "opt0/clause1" [label="{{{<idx> CIdx|<attrs/idx> idx}}|<relation> ide.Cursor}" shape="record"];
-  "opt0/clause2" [label="{{<left> FIdx|<right> CIdx}|<binOp> \<=}" shape="record"];
-  "opt0/clause3" [label="{{<left> CIdx|<right> TIdx}|<binOp> \<=}" shape="record"];
+  "opt0/clause0" [label="{{{{{{{<definitionLoc/from> |<definitionLoc/attrs/from> from}|{<definitionLoc/to> |<definitionLoc/attrs/to> to}}|<definitionLoc/relation> span}}|<attrs/definitionLoc> definitionLoc}|{<usageLoc> |<attrs/usageLoc> usageLoc}}|<relation> refGraph.Usage}" shape="record"];
+  "opt0/clause1" [label="{{{<idx> |<attrs/idx> idx}}|<relation> ide.Cursor}" shape="record"];
+  "opt0/clause2" [label="{{<left> |<right> }|<binOp> \<=}" shape="record"];
+  "opt0/clause3" [label="{{<left> |<right> }|<binOp> \<=}" shape="record"];
   "head":"defnLoc/from" -> "FIdx" [];
   "head":"defnLoc/to" -> "TIdx" [];
   "head":"usageLoc" -> "UL" [];

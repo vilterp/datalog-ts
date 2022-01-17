@@ -74,7 +74,7 @@ function termToRecordTree(
 ): RecordTree {
   switch (term.type) {
     case "Var":
-      return recordLeaf(path.join("/"), term.name);
+      return recordLeaf(path.join("/"), "");
     case "StringLit":
       return recordLeaf(path.join("/"), JSON.stringify(term.val));
     case "Record": {
