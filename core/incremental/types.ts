@@ -22,24 +22,6 @@ export type NodeAndCache = {
   cache: IndexedCollection<Res>;
 };
 
-export type AttrName = string;
-
-export type AttrPath = AttrName[];
-
-export type VarToPath = { [varName: string]: AttrPath };
-
-export type JoinInfo = {
-  leftVars: VarToPath;
-  rightVars: VarToPath;
-  join: {
-    [varName: string]: {
-      varName: string;
-      leftAttr: AttrPath;
-      rightAttr: AttrPath;
-    };
-  };
-};
-
 export type JoinDesc = {
   type: "Join";
   joinVars: string[];

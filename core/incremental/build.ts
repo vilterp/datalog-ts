@@ -1,5 +1,5 @@
 import { Rule, Rec, OrExpr, AndClause, VarMappings, Res } from "../types";
-import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
+import { RuleGraph, NodeDesc, NodeID } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../binExpr";
 import {
@@ -13,6 +13,7 @@ import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "./indexedCollection";
 import { fastPPT } from "./fastPPT";
+import { getVarToPath, JoinInfo } from "../ruleGraph";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {
@@ -78,25 +79,6 @@ export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
       (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
     ),
   };
-}
-
-function getVarToPath(rec: Rec): VarToPath {
-  const out: VarToPath = {};
-  Object.entries(rec.attrs).forEach(([attr, attrVal]) => {
-    switch (attrVal.type) {
-      case "Var":
-        out[attrVal.name] = [attr];
-        break;
-      case "Record":
-        const subMapping = getVarToPath(attrVal);
-        Object.entries(subMapping).forEach(([subVar, subPath]) => {
-          out[subVar] = [attr, ...subPath];
-        });
-        break;
-      // TODO: lists?
-    }
-  });
-  return out;
 }
 
 // TODO: put RuleGraph back into this
