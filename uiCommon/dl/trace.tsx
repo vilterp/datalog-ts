@@ -11,7 +11,7 @@ import { intersperse, mapObjToListUnordered } from "../../util/util";
 import { TreeView, TreeCollapseState } from "../generic/treeView";
 import Graphviz from "graphviz-react";
 import { prettyPrintGraph } from "../../util/graphviz";
-import { traceToGraph } from "../../core/traceGraph";
+import { traceToGraph } from "./traceGraph";
 import { BareTerm } from "./replViews";
 
 const MemoizedGraphviz = React.memo(Graphviz);

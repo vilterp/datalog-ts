@@ -4,7 +4,7 @@ import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { emptyCollapseState, TreeView } from "../generic/treeView";
 import { BareTerm } from "../dl/replViews";
-import { treeFromRecords } from "../generic/treeFromRecords";
+import { treeFromRecords } from "../dl/treeFromRecords";
 
 export const tree: VizTypeSpec = {
   name: "Tree",
