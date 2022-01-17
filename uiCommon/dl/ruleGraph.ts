@@ -3,7 +3,7 @@ import { Graph, recordLeaf, recordNode, RecordTree } from "../../util/graphviz";
 import { flatMap } from "../../util/util";
 
 export function ruleToGraph(rule: Rule): Graph {
-  const varToPaths = combineVarToPaths(
+  const bodyVarToPaths = combineVarToPaths(
     rule.body.opts.map((andExpr, optIdx) =>
       combineVarToPaths(
         andExpr.clauses.map((clause, clauseIdx) =>
@@ -13,7 +13,7 @@ export function ruleToGraph(rule: Rule): Graph {
     )
   );
 
-  console.log(varToPaths);
+  const headVarToPaths = getVarToPaths(rule.head, []);
 
   return {
     nodes: [
@@ -24,7 +24,10 @@ export function ruleToGraph(rule: Rule): Graph {
           label: termToRecordTree(rule.head, ["head"], "down"),
         },
       },
-      ...Object.keys(varToPaths).map((varName) => ({ id: varName, attrs: {} })),
+      ...Object.keys(bodyVarToPaths).map((varName) => ({
+        id: varName,
+        attrs: {},
+      })),
       ...flatMap(rule.body.opts, (andExpr, optIdx) =>
         andExpr.clauses.map((clause, clauseIdx) => {
           return {
@@ -38,7 +41,16 @@ export function ruleToGraph(rule: Rule): Graph {
       ),
     ],
     edges: [
-      ...flatMap(Object.entries(varToPaths), ([varName, paths]) =>
+      ...flatMap(Object.entries(headVarToPaths), ([varName, paths]) =>
+        paths.map((path) => {
+          return {
+            from: { nodeID: "head", rowID: path.join("/") },
+            to: varName,
+            attrs: {},
+          };
+        })
+      ),
+      ...flatMap(Object.entries(bodyVarToPaths), ([varName, paths]) =>
         paths.map((path) => {
           const nodeID = path.slice(0, 2).join("/");
           const rowID = path.slice(2).join("/");
