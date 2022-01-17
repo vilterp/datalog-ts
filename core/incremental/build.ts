@@ -1,5 +1,5 @@
 import { Rule, Rec, OrExpr, AndClause, VarMappings, Res } from "../types";
-import { RuleGraph, NodeDesc, NodeID } from "./types";
+import { RuleGraph, NodeDesc, NodeID, JoinInfo } from "./types";
 import { getMappings } from "../unify";
 import { extractBinExprs } from "../binExpr";
 import {
@@ -13,7 +13,7 @@ import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "./indexedCollection";
 import { fastPPT } from "./fastPPT";
-import { getVarToPath, JoinInfo } from "../ruleGraph";
+import { getVarToPath } from "../ruleGraph";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {

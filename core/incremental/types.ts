@@ -2,6 +2,7 @@ import { Rec, BinExpr, VarMappings, Rule, Res } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
 import { IndexedCollection } from "./indexedCollection";
+import { AttrPath, VarToPath } from "../ruleGraph";
 
 export type NodeID = string;
 
@@ -20,6 +21,18 @@ export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
   cache: IndexedCollection<Res>;
+};
+
+export type JoinInfo = {
+  leftVars: VarToPath;
+  rightVars: VarToPath;
+  join: {
+    [varName: string]: {
+      varName: string;
+      leftAttr: AttrPath;
+      rightAttr: AttrPath;
+    };
+  };
 };
 
 export type JoinDesc = {
