@@ -10,9 +10,7 @@ export function ruleToGraph(rule: Rule): Graph {
         attrs: { shape: "record", label: termToRecordTree(rule.head, "down") },
       },
       ...flatMap(rule.body.opts, (andExpr) =>
-        flatMap(andExpr.clauses, (clause) =>
-          clause.type === "BinExpr" ? [] : [termToRecordTree(clause, "up")]
-        )
+        andExpr.clauses.map((clause) => termToRecordTree(clause, "up"))
       ).map((recTree, idx) => ({
         id: `${idx}`,
         attrs: { shape: "record", label: recTree },
@@ -61,5 +59,19 @@ function termToRecordTreeRecur(
         recordNode(orientation === "down" ? contents : contents.reverse()),
       ]);
     }
+    case "BinExpr": {
+      const contents = [
+        recordLeaf([...path, "binOp"].join("/"), term.op),
+        recordNode([
+          termToRecordTreeRecur(term.left, [...path, "left"], orientation),
+          termToRecordTreeRecur(term.right, [...path, "right"], orientation),
+        ]),
+      ];
+      return recordNode([
+        recordNode(orientation === "down" ? contents : contents.reverse()),
+      ]);
+    }
+    default:
+      throw new Error(`TODO: ${term.type}`);
   }
 }
