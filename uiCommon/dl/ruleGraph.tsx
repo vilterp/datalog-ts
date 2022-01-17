@@ -7,11 +7,11 @@ export function ruleToGraph(rule: Rule): Graph {
     nodes: [
       {
         id: "head",
-        attrs: { shape: "record", label: termToRecordTree(rule.head) },
+        attrs: { shape: "record", label: termToRecordTree(rule.head, "down") },
       },
       ...flatMap(rule.body.opts, (andExpr) =>
         flatMap(andExpr.clauses, (clause) =>
-          clause.type === "BinExpr" ? [] : [termToRecordTree(clause)]
+          clause.type === "BinExpr" ? [] : [termToRecordTree(clause, "up")]
         )
       ).map((recTree, idx) => ({
         id: `${idx}`,
@@ -22,27 +22,44 @@ export function ruleToGraph(rule: Rule): Graph {
   };
 }
 
-function termToRecordTree(term: Term): RecordTree {
-  return termToNodeRecur(term, []);
+type Orientation = "up" | "down";
+
+function termToRecordTree(term: Term, orientation: Orientation): RecordTree {
+  return termToRecordTreeRecur(term, [], orientation);
 }
 
-function termToNodeRecur(term: Term, path: string[]): RecordTree {
+function termToRecordTreeRecur(
+  term: Term,
+  path: string[],
+  orientation: Orientation
+): RecordTree {
   switch (term.type) {
     case "Var":
       return recordLeaf(path.join("/"), term.name);
     case "StringLit":
       return recordLeaf(path.join("/"), JSON.stringify(term.val));
-    case "Record":
-      return recordNode([
+    case "Record": {
+      const contents = [
         recordLeaf([...path, "relation"].join("/"), term.relation),
         recordNode(
-          Object.keys(term.attrs).map((attr) =>
-            recordNode([
+          Object.keys(term.attrs).map((attr) => {
+            const contents = [
               recordLeaf([...path, "attrs", attr].join("/"), attr),
-              termToRecordTree(term.attrs[attr]),
-            ])
-          )
+              termToRecordTreeRecur(
+                term.attrs[attr],
+                [...path, attr],
+                orientation
+              ),
+            ];
+            return recordNode(
+              orientation === "down" ? contents : contents.reverse()
+            );
+          })
         ),
+      ];
+      return recordNode([
+        recordNode(orientation === "down" ? contents : contents.reverse()),
       ]);
+    }
   }
 }
