@@ -7,6 +7,10 @@ ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
 application/graphviz
 digraph G {
   "head" [label="{<head/relation> ide.currentUsageDefn|{{<head/attrs/defnLoc> defnLoc|{{<head/defnLoc/relation> span|{{<head/defnLoc/attrs/from> from|<head/defnLoc/from> FIdx}|{<head/defnLoc/attrs/to> to|<head/defnLoc/to> TIdx}}}}}|{<head/attrs/usageLoc> usageLoc|<head/usageLoc> UL}}}" shape="record"];
+  "FIdx" [];
+  "TIdx" [];
+  "UL" [];
+  "CIdx" [];
   "opt0/clause0" [label="{{{{{{{<opt0/clause0/definitionLoc/from> FIdx|<opt0/clause0/definitionLoc/attrs/from> from}|{<opt0/clause0/definitionLoc/to> TIdx|<opt0/clause0/definitionLoc/attrs/to> to}}|<opt0/clause0/definitionLoc/relation> span}}|<opt0/clause0/attrs/definitionLoc> definitionLoc}|{<opt0/clause0/usageLoc> UL|<opt0/clause0/attrs/usageLoc> usageLoc}}|<opt0/clause0/relation> refGraph.Usage}" shape="record"];
   "opt0/clause1" [label="{{{<opt0/clause1/idx> CIdx|<opt0/clause1/attrs/idx> idx}}|<opt0/clause1/relation> ide.Cursor}" shape="record"];
   "opt0/clause2" [label="{{<opt0/clause2/left> FIdx|<opt0/clause2/right> CIdx}|<opt0/clause2/binOp> \<=}" shape="record"];

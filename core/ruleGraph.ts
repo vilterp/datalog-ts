@@ -6,18 +6,6 @@ export type AttrPath = AttrName[];
 
 export type VarToPath = { [varName: string]: AttrPath };
 
-export type JoinInfo = {
-  leftVars: VarToPath;
-  rightVars: VarToPath;
-  join: {
-    [varName: string]: {
-      varName: string;
-      leftAttr: AttrPath;
-      rightAttr: AttrPath;
-    };
-  };
-};
-
 export function getVarToPath(rec: Rec): VarToPath {
   const out: VarToPath = {};
   Object.entries(rec.attrs).forEach(([attr, attrVal]) => {
