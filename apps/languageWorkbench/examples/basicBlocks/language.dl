@@ -35,7 +35,7 @@ hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
   hl.varDefn{span: S}.
 
 hl.segmentUsage{type: "usage", span: S, highlight: false} :-
-  refGraph.Usage{usageLoc: S}.
+  scope.Usage{usageLoc: S}.
 hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S}.
 
