@@ -66,16 +66,6 @@ scope.Var{scopeID: InstrID, name: N, span: S} :-
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID}.
 
-# === Reference Graph ===
-
-refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  ast.ident{parentID: ParamsID, text: N, span: UL} &
-  ast.params{id: ParamsID, parentID: CallID} &
-  ast.call{id: CallID, parentID: RValueID} &
-  ast.rvalue{id: RValueID, parentID: ValueInstrID} &
-  ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
-  scope.Item{id: InstrID, type: "var", name: N, defnSpan: DL}.
-
 # === viz ===
 
 ## TODO: not sure where this should live...
