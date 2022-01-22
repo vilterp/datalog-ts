@@ -1,0 +1,14 @@
+# TODO: labels
+viz.scopeGraph.edge{from: F, to: T, label: L} :-
+  viz.scopeGraph.parentEdge{from: F, to: T, label: L}.
+
+viz.scopeGraph.parentEdge{from: F, to: T, label: "child"} :-
+  scope.Parent{parentID: F, childID: T}.
+
+internal.visualization{
+  name: "Scope Graph",
+  spec: graphviz{
+    nodes: "scope.Scope{id: ID}",
+    edges: "viz.scopeGraph.edge{from: From, to: To, label: Label}"
+  }
+}.

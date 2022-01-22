@@ -68,7 +68,7 @@ defn.block{id: BlockID, name: N, labelSpan: S} :-
 scope.Scope{id: InstrID} :-
   ast.instr{id: InstrID}.
 
-scope.ParentScope{child: ChildID, parent: ParentID} :-
+scope.Parent{childID: ChildID, parentID: ParentID} :-
   ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
   ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
   ChildIdx > ParentIdx.

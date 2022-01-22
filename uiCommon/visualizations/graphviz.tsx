@@ -5,6 +5,18 @@ import { VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph } from "../../util/graphviz";
 
+/*
+Example:
+
+internal.visualization{
+  name: "Scope Graph",
+  spec: graphviz{
+    nodes: "node{id: ID}",
+    edges: "edge{from: From, to: To, label: Label}"
+  }
+}.
+*/
+
 export const graphviz: VizTypeSpec = {
   name: "Graphviz",
   description: "visualize directed graphs",

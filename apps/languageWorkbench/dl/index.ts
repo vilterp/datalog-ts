@@ -3,8 +3,11 @@ import { makeMemoryLoader } from "../../../core/loaders";
 import ruleTreeVizDL from "./ruleTreeViz.dl";
 // @ts-ignore
 import ideDL from "./ide.dl";
+// @ts-ignore
+import scopeGraphVizDL from "./scopeGraphViz.dl";
 
 export const LOADER = makeMemoryLoader({
-  "./ruleTreeViz.dl": ruleTreeVizDL,
   "./ide.dl": ideDL,
+  "./ruleTreeViz.dl": ruleTreeVizDL,
+  "./scopeGraphViz.dl": scopeGraphVizDL,
 });
