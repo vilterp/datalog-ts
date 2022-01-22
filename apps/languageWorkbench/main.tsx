@@ -27,9 +27,7 @@ import useHashParam from "use-hash-param";
 // @ts-ignore
 import mainDL from "./dl/main.dl";
 import { LOADER } from "./dl";
-import { Suggestion } from "../../uiCommon/ide/suggestions";
-import { Rec, StringLit } from "../../core/types";
-import { dlToSpan } from "../../uiCommon/ide/types";
+import { getSuggestions } from "../../uiCommon/ide/parserlibPowered/suggestions";
 
 function Main() {
   return <Playground />;
@@ -83,26 +81,6 @@ function Playground() {
     setExampleSource(example.example);
   };
 
-  // TODO: move this into parserlibPowered?
-  const suggestions = uniqBy(
-    finalInterp
-      .queryStr("ide.CurrentSuggestion{name: Name, span: Span}")
-      .map((res): Suggestion => {
-        const name = (res.bindings.Name as StringLit).val;
-        const replacementSpan = dlToSpan(res.bindings.Span as Rec);
-
-        return {
-          kind: "",
-          textToInsert: name,
-          cursorOffsetAfter: name.length,
-          bold: false,
-          replacementSpan,
-          display: name,
-        };
-      }),
-    (s) => s.textToInsert
-  );
-
   return (
     <>
       <h1>Language Workbench</h1>
@@ -135,7 +113,7 @@ function Playground() {
                 validGrammar={allGrammarErrors.length === 0}
                 highlightCSS={themeSource}
                 locatedErrors={[]} // TODO: parse errors
-                suggestions={suggestions}
+                suggestions={getSuggestions(finalInterp)}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
