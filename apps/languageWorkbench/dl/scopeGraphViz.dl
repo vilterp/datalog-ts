@@ -1,0 +1,27 @@
+# nodes
+
+viz.scopeGraph.node{id: ID, label: L} :-
+  viz.scopeGraph.scopeNode{id: ID, label: L} |
+  viz.scopeGraph.defnNode{id: ID, label: L}.
+viz.scopeGraph.scopeNode{id: ID, label: ID} :-
+  scope.Scope{id: ID}.
+viz.scopeGraph.defnNode{id: defn{scopeID: I, name: N}, label: N} :-
+  scope.Defn{scopeID: I, span: S, name: N}.
+
+# edges
+
+viz.scopeGraph.edge{from: F, to: T, label: L} :-
+  viz.scopeGraph.parentEdge{from: F, to: T, label: L} |
+  viz.scopeGraph.defnEdge{from: F, to: T, label: L}.
+viz.scopeGraph.parentEdge{from: F, to: T, label: "child"} :-
+  scope.Parent{parentID: F, childID: T}.
+viz.scopeGraph.defnEdge{from: F, to: defn{scopeID: F, name: N}, label: ""} :-
+  scope.Defn{scopeID: F, name: N}.
+
+internal.visualization{
+  name: "Scope Graph",
+  spec: graphviz{
+    nodes: "viz.scopeGraph.node{id: ID, label: Label}",
+    edges: "viz.scopeGraph.edge{from: From, to: To, label: Label}"
+  }
+}.

@@ -1,4 +1,18 @@
-# depends on: module refGraph
+# === scope / reference graph ===
+
+# TODO: decide on defnSpan vs definitionLoc
+
+scope.Item{scopeID: I, name: N, defnSpan: S} :-
+  scope.Defn{scopeID: I, name: N, span: S} |
+  scope.Parent{childID: I, parentID: P} &
+  scope.Item{scopeID: P, name: N, defnSpan: S}.
+
+# TODO: reference scope ids?
+scope.Usage{name: N, definitionLoc: DL, usageLoc: UL} :-
+  scope.Item{defnSpan: DL, name: N, scopeID: I} &
+  scope.Var{span: UL, scopeID: I, name: N}.
+
+# === interaction with cursor ===
 
 # all usages of the var the cursor is currently on,
 # with definition location.
@@ -9,32 +23,47 @@ ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
 
 # when the cursor is over a definition
 ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
-  refGraph.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  scope.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 # when the cursor is over a usage
 ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
-  refGraph.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 # ???
 ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
   ide.currentUsageUsage{defnLoc: DL} &
-  refGraph.Usage{definitionLoc: DL, usageLoc: UL}.
+  scope.Usage{definitionLoc: DL, usageLoc: UL}.
 
 # used by Jump To Definition
 ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
-  refGraph.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 ide.UsageForCursor{usageLoc: UL} :-
   ide.Cursor{idx: CIdx} &
-  refGraph.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  scope.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
   ide.CurrentUsage{defnLoc: DL, usageLoc: UL} &
   DL != "builtin".
+
+# === suggestions ===
+
+ide.Suggestion{id: I, name: N, span: S} :-
+  scope.Placeholder{scopeID: I, name: N, span: S} &
+  scope.Item{scopeID: I, name: N}.
+
+ide.CurrentPlaceholder{id: I, span: span{from: FIdx, to: TIdx}} :-
+  scope.Placeholder{scopeID: I, span: span{from: FIdx, to: TIdx}} &
+  ide.Cursor{idx: CIdx} &
+  FIdx <= CIdx & CIdx <= TIdx.
+
+ide.CurrentSuggestion{id: I, name: N, span: S} :-
+  ide.CurrentPlaceholder{id: I} &
+  ide.Suggestion{id: I, name: N, span: S}.

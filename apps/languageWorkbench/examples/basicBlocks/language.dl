@@ -18,10 +18,6 @@ hl.segmentVar{type: "var", span: S, highlight: false} :-
   ast.ident{parentID: ParamsID, span: S} &
   ast.params{id: ParamsID}.
 
-hl.varDefn{span: S} :-
-  defn.block{labelSpan: S} |
-  defn.ssaVar{span: S}.
-
 hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
   ast.rvalue{id: RValueID} &
   ast.call{id: CallID, parentID: RValueID} &
@@ -29,13 +25,13 @@ hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
 
 # TODO: only highlight if used
 hl.segmentDefn{type: "defn", span: S, highlight: false} :-
-  hl.varDefn{span: S}.
+  scope.Defn{span: S}.
 hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
   ide.CurrentUsage{defnLoc: S} &
-  hl.varDefn{span: S}.
+  scope.Defn{span: S}.
 
 hl.segmentUsage{type: "usage", span: S, highlight: false} :-
-  refGraph.Usage{usageLoc: S}.
+  scope.Usage{usageLoc: S}.
 hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S}.
 
@@ -44,70 +40,50 @@ hl.segmentInt{type: "int", span: S, highlight: false} :-
 hl.segmentString{type: "string", span: S, highlight: false} :-
   ast.string{span: S}.
 
-# === defn ===
+# === Scope ===
 
-defn.goto{blockID: BlockID, instrID: InstrID, to: ToName, labelSpan: S} :-
-  ast.ident{text: ToName, parentID: LabelID} &
-  ast.label{id: LabelID, parentID: GotoInstrID, span: S} &
-  ast.gotoInstr{id: GotoInstrID, parentID: InstrID} &
-  ast.instr{id: InstrID, parentID: BlockID}.
+scope.Scope{id: InstrID} :-
+  ast.instr{id: InstrID}.
 
-# TODO: refactor this into a generic "rvalue" concept? idk
-defn.ssaVar{instrID: InstrID, span: S, name: N} :-
+scope.Parent{childID: ChildID, parentID: ParentID} :-
+  ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
+  ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
+  ChildIdx > ParentIdx.
+
+# this var defined at this node
+scope.Defn{scopeID: InstrID, span: S, name: N} :-
   ast.instr{id: InstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
   ast.ident{parentID: ValueInstrID, text: N, span: S}.
+# TODO: block labels
 
-defn.block{id: BlockID, name: N, labelSpan: S} :-
-  ast.block{id: BlockID} &
-  ast.label{id: LabelID, parentID: BlockID} &
-  ast.ident{parentID: LabelID, text: N, span: S}.
-
-# === Scope ===
-
-scope.Item{id: InstrID, type: T, name: N, defnSpan: S} :-
-  scope.itemVar{id: InstrID, type: T, name: N, defnSpan: S} |
-  scope.itemLabel{id: InstrID, type: T, name: N, defnSpan: S}.
-
-scope.itemVar{id: UsageInstrID, type: "var", name: N, defnSpan: S} :-
-  defn.ssaVar{instrID: DefnInstrID, name: N, span: S} &
-  ast.instr{id: DefnInstrID, parentID: BlockID, idx: DefnIdx} &
-  ast.instr{id: UsageInstrID, parentID: BlockID, idx: CurrentIdx} &
-  DefnIdx <= CurrentIdx.
-
-scope.itemLabel{id: I, type: "label", name: N, defnSpan: S} :-
-  ast.instr{id: I} &
-  defn.block{name: N, labelSpan: S}.
-
-# === Reference Graph ===
-
-refGraph.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} |
-  refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N}.
-
-refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  defn.block{labelSpan: DL, name: N} &
-  defn.goto{labelSpan: UL, to: N}.
-
-refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  ast.ident{parentID: ParamsID, text: N, span: UL} &
+# TODO: say which kind of var it's trying to use
+# i.e. value vs. label
+scope.Var{scopeID: InstrID, name: N, span: S} :-
+  ast.ident{parentID: ParamsID, text: N, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
-  ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
-  scope.Item{id: InstrID, type: "var", name: N, defnSpan: DL}.
+  ast.valueInstr{id: ValueInstrID, parentID: InstrID}.
+
+scope.Placeholder{span: S, scopeID: I} :-
+  ast.Placeholder{id: PlaceholderID, parentID: ParamsID, span: S} &
+  ast.params{id: ParamsID, parentID: CallID} &
+  ast.call{id: CallID, parentID: RValueID} &
+  ast.rvalue{id: RValueID, parentID: ValueInstrID} &
+  ast.valueInstr{id: ValueInstrID, parentID: I}.
 
 # === viz ===
 
-# TODO: not sure where this should live...
-ide.jump{from: BF, to: BT} :-
-  defn.goto{blockID: BlockID, to: BT} &
-  defn.block{id: BlockID, name: BF}.
+## TODO: not sure where this should live...
+# ide.jump{from: BF, to: BT} :-
+#   defn.goto{blockID: BlockID, to: BT} &
+#   defn.block{id: BlockID, name: BF}.
 
-internal.visualization{
-  name: "Jumps",
-  spec: graphviz{
-    nodes: "defn.block{name: ID}",
-    edges: "ide.jump{from: From, to: To}"
-  }
-}.
+# internal.visualization{
+#   name: "Jumps",
+#   spec: graphviz{
+#     nodes: "defn.block{name: ID}",
+#     edges: "ide.jump{from: From, to: To}"
+#   }
+# }.
