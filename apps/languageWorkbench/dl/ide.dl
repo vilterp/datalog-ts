@@ -55,8 +55,8 @@ ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
 
 # === suggestions ===
 
-ide.Suggestion{id: I, name: N, type: T, typeMatch: M} :-
-  scope.Placeholder{scopeID: I, name: N} &
+ide.Suggestion{id: I, name: N, span: S} :-
+  scope.Placeholder{scopeID: I, name: N, span: S} &
   scope.Item{scopeID: I, name: N}.
 
 ide.CurrentPlaceholder{id: I, span: span{from: FIdx, to: TIdx}} :-
@@ -64,6 +64,6 @@ ide.CurrentPlaceholder{id: I, span: span{from: FIdx, to: TIdx}} :-
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-ide.CurrentSuggestion{id: I, name: N, type: T, typeMatch: M} :-
+ide.CurrentSuggestion{id: I, name: N, span: S} :-
   ide.CurrentPlaceholder{id: I} &
-  ide.Suggestion{id: I, name: N, type: T, typeMatch: M}.
+  ide.Suggestion{id: I, name: N, span: S}.
