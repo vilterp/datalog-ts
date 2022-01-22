@@ -5,6 +5,7 @@ scope.Item{scopeID: I, name: N, defnSpan: S} :-
   scope.Parent{childID: I, parentID: P} &
   scope.Item{scopeID: P, name: N, defnSpan: S}.
 
+# TODO: reference scope ids?
 scope.Usage{name: N, definitionLoc: DL, usageLoc: UL} :-
   scope.Item{defnSpan: DL, name: N, scopeID: I} &
   scope.Var{span: UL, scopeID: I, name: N}.
