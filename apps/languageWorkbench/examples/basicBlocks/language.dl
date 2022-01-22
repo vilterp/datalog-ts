@@ -73,6 +73,12 @@ scope.ParentScope{child: ChildID, parent: ParentID} :-
   ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
   ChildIdx > ParentIdx.
 
+# this var defined at this node
+scope.Defn{id: InstrID, span: S, name: N} :-
+  ast.instr{id: InstrID} &
+  ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
+  ast.ident{parentID: ValueInstrID, text: N, span: S}.
+
 scope.Item{id: InstrID, type: T, name: N, defnSpan: S} :-
   scope.itemVar{id: InstrID, type: T, name: N, defnSpan: S} |
   scope.itemLabel{id: InstrID, type: T, name: N, defnSpan: S}.
