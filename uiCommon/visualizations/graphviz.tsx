@@ -4,6 +4,7 @@ import { Rec, StringLit, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph } from "../../util/graphviz";
+import { ppt } from "../../core/pretty";
 
 /*
 Example:
@@ -33,10 +34,8 @@ function GraphvizWrapper(props: {
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
     const nodesRes = props.interp.queryStr(nodesQuery);
     const nodes = nodesRes.map((res) => {
-      const id = stringifyNodeID(res.bindings.ID);
-      const label = res.bindings.Label
-        ? stringifyNodeID(res.bindings.Label)
-        : id;
+      const id = ppt(res.bindings.ID);
+      const label = res.bindings.Label ? ppt(res.bindings.Label) : id;
       return {
         id,
         attrs: { label },
@@ -45,10 +44,10 @@ function GraphvizWrapper(props: {
     const edgesQuery = (props.spec.attrs.edges as StringLit).val;
     const edgesRes = props.interp.queryStr(edgesQuery);
     const edges = edgesRes.map((res) => ({
-      to: stringifyNodeID(res.bindings.To),
-      from: stringifyNodeID(res.bindings.From),
+      to: ppt(res.bindings.To),
+      from: ppt(res.bindings.From),
       attrs: {
-        label: res.bindings.Label ? stringifyNodeID(res.bindings.Label) : "",
+        label: res.bindings.Label ? ppt(res.bindings.Label) : "",
       },
     }));
 
@@ -69,16 +68,6 @@ function GraphvizWrapper(props: {
 }
 
 const MemoizedGraphviz = React.memo(Graphviz);
-
-function stringifyNodeID(term: Term): string {
-  if (term.type === "StringLit") {
-    return term.val;
-  }
-  if (term.type === "IntLit") {
-    return term.val.toString();
-  }
-  throw new Error(`expected int or string, got "${JSON.stringify(term)}"`);
-}
 
 // pull out this object to avoid creating it each time,
 // which defeats React.memo (and allocates unnecessarily...)

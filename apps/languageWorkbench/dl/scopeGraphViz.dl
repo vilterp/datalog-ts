@@ -1,9 +1,12 @@
 # nodes
 
 viz.scopeGraph.node{id: ID, label: L} :-
-  viz.scopeGraph.scopeNode{id: ID, label: L}.
+  viz.scopeGraph.scopeNode{id: ID, label: L} |
+  viz.scopeGraph.defnNode{id: ID, label: L}.
 viz.scopeGraph.scopeNode{id: ID, label: ID} :-
   scope.Scope{id: ID}.
+viz.scopeGraph.defnNode{id: defn{scopeID: I, name: N}, label: N} :-
+  scope.Defn{scopeID: I, span: S, name: N}.
 
 # edges
 

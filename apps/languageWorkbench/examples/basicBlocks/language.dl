@@ -74,7 +74,7 @@ scope.Parent{childID: ChildID, parentID: ParentID} :-
   ChildIdx > ParentIdx.
 
 # this var defined at this node
-scope.Defn{id: InstrID, span: S, name: N} :-
+scope.Defn{scopeID: InstrID, span: S, name: N} :-
   ast.instr{id: InstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
   ast.ident{parentID: ValueInstrID, text: N, span: S}.
