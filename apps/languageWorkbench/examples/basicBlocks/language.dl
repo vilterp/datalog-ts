@@ -65,6 +65,14 @@ defn.block{id: BlockID, name: N, labelSpan: S} :-
 
 # === Scope ===
 
+scope.Scope{id: InstrID} :-
+  ast.instr{id: InstrID}.
+
+scope.ParentScope{child: ChildID, parent: ParentID} :-
+  ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
+  ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
+  ChildIdx > ParentIdx.
+
 scope.Item{id: InstrID, type: T, name: N, defnSpan: S} :-
   scope.itemVar{id: InstrID, type: T, name: N, defnSpan: S} |
   scope.itemLabel{id: InstrID, type: T, name: N, defnSpan: S}.
