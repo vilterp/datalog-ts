@@ -11,9 +11,12 @@ viz.scopeGraph.defnNode{id: defn{scopeID: I, name: N}, label: N} :-
 # edges
 
 viz.scopeGraph.edge{from: F, to: T, label: L} :-
-  viz.scopeGraph.parentEdge{from: F, to: T, label: L}.
+  viz.scopeGraph.parentEdge{from: F, to: T, label: L} |
+  viz.scopeGraph.defnEdge{from: F, to: T, label: L}.
 viz.scopeGraph.parentEdge{from: F, to: T, label: "child"} :-
   scope.Parent{parentID: F, childID: T}.
+viz.scopeGraph.defnEdge{from: F, to: defn{scopeID: F, name: N}, label: ""} :-
+  scope.Defn{scopeID: F, name: N}.
 
 internal.visualization{
   name: "Scope Graph",
