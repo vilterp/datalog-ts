@@ -1,4 +1,13 @@
-# depends on: module refGraph
+# TODO: decide on defnSpan vs definitionLoc
+
+scope.Item{scopeID: I, name: N, defnSpan: S} :-
+  scope.Defn{scopeID: I, name: N, span: S} |
+  scope.Parent{childID: I, parentID: P} &
+  scope.Item{scopeID: P, name: N, defnSpan: S}.
+
+scope.Usage{name: N, definitionLoc: DL, usageLoc: UL} :-
+  scope.Item{defnSpan: DL, name: N, scopeID: I} &
+  scope.Var{span: UL, scopeID: I, name: N}.
 
 # all usages of the var the cursor is currently on,
 # with definition location.

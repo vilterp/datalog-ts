@@ -79,29 +79,21 @@ scope.Defn{scopeID: InstrID, span: S, name: N} :-
   ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
   ast.ident{parentID: ValueInstrID, text: N, span: S}.
 
-scope.Item{id: InstrID, type: T, name: N, defnSpan: S} :-
-  scope.itemVar{id: InstrID, type: T, name: N, defnSpan: S} |
-  scope.itemLabel{id: InstrID, type: T, name: N, defnSpan: S}.
-
-scope.itemVar{id: UsageInstrID, type: "var", name: N, defnSpan: S} :-
-  defn.ssaVar{instrID: DefnInstrID, name: N, span: S} &
-  ast.instr{id: DefnInstrID, parentID: BlockID, idx: DefnIdx} &
-  ast.instr{id: UsageInstrID, parentID: BlockID, idx: CurrentIdx} &
-  DefnIdx <= CurrentIdx.
-
+# TODO: make this a different type of ScopeDefn
 scope.itemLabel{id: I, type: "label", name: N, defnSpan: S} :-
   ast.instr{id: I} &
   defn.block{name: N, labelSpan: S}.
 
+# TODO: say which kind of var it's trying to use
+# i.e. value vs. label
+scope.Var{scopeID: InstrID, name: N, span: S} :-
+  ast.ident{parentID: ParamsID, text: N, span: S} &
+  ast.params{id: ParamsID, parentID: CallID} &
+  ast.call{id: CallID, parentID: RValueID} &
+  ast.rvalue{id: RValueID, parentID: ValueInstrID} &
+  ast.valueInstr{id: ValueInstrID, parentID: InstrID}.
+
 # === Reference Graph ===
-
-refGraph.Usage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} |
-  refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N}.
-
-refGraph.labelUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
-  defn.block{labelSpan: DL, name: N} &
-  defn.goto{labelSpan: UL, to: N}.
 
 refGraph.varUsage{definitionLoc: DL, usageLoc: UL, name: N} :-
   ast.ident{parentID: ParamsID, text: N, span: UL} &
