@@ -88,12 +88,18 @@ scope.varLabel{scopeID: InstrID, name: N, span: S, kind: K} :-
   ast.label{id: LabelID, parentID: GotoID, text: N, span: S} &
   ast.gotoInstr{id: GotoID, parentID: InstrID}.
 
-scope.Placeholder{span: S, scopeID: I} :-
+scope.Placeholder{span: S, scopeID: I, kind: K} :-
+  scope.placeholderValue{span: S, scopeID: I, kind: K} |
+  scope.placeholderLabel{span: S, scopeID: I, kind: K}.
+scope.placeholderValue{span: S, scopeID: I, kind: "value"} :-
   ast.Placeholder{id: PlaceholderID, parentID: ParamsID, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: I}.
+scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
+  ast.Placeholder{id: PlaceholderID, parentID: GotoInstrID, span: S} &
+  ast.gotoInstr{id: GotoInstrID, parentID: I}.
 
 # === viz ===
 
