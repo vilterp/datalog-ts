@@ -18,8 +18,7 @@ scope.Usage{name: N, definitionLoc: DL, usageLoc: UL} :-
 # with definition location.
 ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
   ide.currentUsageDefn{defnLoc: DL, usageLoc: UL} |
-  ide.currentUsageUsage{defnLoc: DL, usageLoc: UL} |
-  ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} & DL != "builtin".
+  ide.currentUsageUsage{defnLoc: DL, usageLoc: UL}.
 
 # when the cursor is over a definition
 ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
@@ -32,11 +31,6 @@ ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
   scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
-
-# ???
-ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
-  ide.currentUsageUsage{defnLoc: DL} &
-  scope.Usage{definitionLoc: DL, usageLoc: UL}.
 
 # used by Jump To Definition
 ide.DefnForCursor{defnLoc: DL} :-
