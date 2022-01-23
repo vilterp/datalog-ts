@@ -1,44 +1,5 @@
-# === highlight ===
-
-hl.Segment{type: T, span: S, highlight: H} :-
-  hl.keyword{type: T, span: S, highlight: H} |
-  hl.segmentDefn{type: T, span: S, highlight: H} |
-  hl.segmentDefnHL{type: T, span: S, highlight: H} |
-  hl.segmentUsage{type: T, span: S, highlight: H} |
-  hl.segmentUsageHL{type: T, span: S, highlight: H} |
-  hl.segmentFuncName{type: T, span: S, highlight: H} |
-  hl.segmentVar{type: T, span: S, highlight: H} |
-  hl.segmentInt{type: T, span: S, highlight: H} |
-  hl.segmentString{type: T, span: S, highlight: H}.
-
-hl.keyword{type: "keyword", span: S, highlight: false} :-
+ast.keyword{span: S} :-
   ast.gotoKW{span: S}.
-
-hl.segmentVar{type: "var", span: S, highlight: false} :-
-  ast.ident{parentID: ParamsID, span: S} &
-  ast.params{id: ParamsID}.
-
-hl.segmentFuncName{type: "funcName", span: S, highlight: false} :-
-  ast.rvalue{id: RValueID} &
-  ast.call{id: CallID, parentID: RValueID} &
-  ast.ident{parentID: CallID, span: S}.
-
-# TODO: only highlight if used
-hl.segmentDefn{type: "defn", span: S, highlight: false} :-
-  scope.Defn{span: S}.
-hl.segmentDefnHL{type: "defn", span: S, highlight: true} :-
-  ide.CurrentUsage{defnLoc: S} &
-  scope.Defn{span: S}.
-
-hl.segmentUsage{type: "usage", span: S, highlight: false} :-
-  scope.Usage{usageLoc: S}.
-hl.segmentUsageHL{type: "usage", span: S, highlight: true} :-
-  ide.CurrentUsage{usageLoc: S}.
-
-hl.segmentInt{type: "int", span: S, highlight: false} :-
-  ast.int{span: S}.
-hl.segmentString{type: "string", span: S, highlight: false} :-
-  ast.string{span: S}.
 
 # === Scope ===
 
@@ -112,18 +73,3 @@ scope.placeholderValue{span: S, scopeID: I, kind: "value"} :-
 scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
   ast.Placeholder{id: PlaceholderID, parentID: GotoInstrID, span: S} &
   ast.gotoInstr{id: GotoInstrID, parentID: I}.
-
-# === viz ===
-
-## TODO: not sure where this should live...
-# ide.jump{from: BF, to: BT} :-
-#   defn.goto{blockID: BlockID, to: BT} &
-#   defn.block{id: BlockID, name: BF}.
-
-# internal.visualization{
-#   name: "Jumps",
-#   spec: graphviz{
-#     nodes: "defn.block{name: ID}",
-#     edges: "ide.jump{from: From, to: To}"
-#   }
-# }.

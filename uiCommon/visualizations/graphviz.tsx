@@ -3,7 +3,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, StringLit, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
-import { prettyPrintGraph } from "../../util/graphviz";
+import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
 import { ppt } from "../../core/pretty";
 
 /*
@@ -29,11 +29,20 @@ function GraphvizWrapper(props: {
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
 }) {
+  // TODO: better error messages when bindings are missing
+  // in theory this could be found statically...
+
+  // TODO: node attrs, edge attrs
+
+  let nodes: Node[] = [];
+  let edges: Edge[] = [];
+  let nodesErr: Error = null;
+  let edgesErr: Error = null;
+  // nodes
   try {
-    // TODO: better error messages when bindings are missing
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
     const nodesRes = props.interp.queryStr(nodesQuery);
-    const nodes = nodesRes.map((res) => {
+    nodes = nodesRes.map((res) => {
       const id = specialPPT(res.bindings.ID);
       const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
       return {
@@ -41,30 +50,56 @@ function GraphvizWrapper(props: {
         attrs: { label },
       };
     });
+  } catch (e) {
+    console.error("edges", e);
+    nodesErr = e;
+  }
+
+  // edges
+  try {
     const edgesQuery = (props.spec.attrs.edges as StringLit).val;
     const edgesRes = props.interp.queryStr(edgesQuery);
-    const edges = edgesRes.map((res) => ({
+    edges = edgesRes.map((res) => ({
       to: specialPPT(res.bindings.To),
       from: specialPPT(res.bindings.From),
       attrs: {
         label: res.bindings.Label ? specialPPT(res.bindings.Label) : "",
       },
     }));
-
-    const dot = prettyPrintGraph({
-      nodes,
-      edges,
-    });
-
-    return (
-      <div>
-        <MemoizedGraphviz dot={dot} options={GRAPHVIZ_OPTIONS} />
-      </div>
-    );
   } catch (e) {
-    console.error(e);
-    return <pre style={{ color: "red" }}>{e.toString()}</pre>;
+    edgesErr = e;
+    console.error("edges", e);
   }
+
+  const dot = prettyPrintGraph({
+    nodes,
+    edges,
+  });
+
+  const errors = {
+    edges: edgesErr,
+    nodes: nodesErr,
+  };
+  const errorPairs = Object.entries(errors).filter(
+    ([key, value]) => value !== null
+  );
+
+  return (
+    <div>
+      {errorPairs.length === 0 ? null : (
+        <pre style={{ color: "red" }}>
+          <ul>
+            {errorPairs.map(([key, value]) => (
+              <li key={key}>
+                Error getting {key}: {value.toString()}
+              </li>
+            ))}
+          </ul>
+        </pre>
+      )}
+      <MemoizedGraphviz dot={dot} options={GRAPHVIZ_OPTIONS} />
+    </div>
+  );
 }
 
 // don't love special cases, but all the quotes are annoying

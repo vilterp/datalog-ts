@@ -1,8 +1,0 @@
-hl.Segment{type: T, span: S, highlight: H} :-
-  hl.int{type: T, span: S, highlight: H} |
-  hl.string{type: T, span: S, highlight: H}.
-
-hl.int{type: "int", span: S, highlight: false} :-
-  ast.int{span: S}.
-hl.string{type: "string", span: S, highlight: false} :-
-  ast.string{span: S}.

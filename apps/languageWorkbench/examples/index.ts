@@ -1,8 +1,6 @@
 // DL
 
 // @ts-ignore
-import datalogCSS from "./dl/theme.css";
-// @ts-ignore
 import datalogDL from "./dl/language.dl";
 // @ts-ignore
 import datalogGrammar from "./dl/datalog.grammar";
@@ -11,8 +9,6 @@ import datalogExample from "./dl/example.txt";
 
 // JSON
 
-// @ts-ignore
-import jsonCSS from "./json/theme.css";
 // @ts-ignore
 import jsonDL from "./json/language.dl";
 // @ts-ignore
@@ -23,8 +19,6 @@ import jsonExample from "./json/example.txt";
 // basic blocks
 
 // @ts-ignore
-import basicBlocksCSS from "./basicBlocks/theme.css";
-// @ts-ignore
 import basicBlocksDL from "./basicBlocks/language.dl";
 // @ts-ignore
 import basicBlocksGrammar from "./basicBlocks/basicBlocks.grammar";
@@ -33,19 +27,16 @@ import basicBlocksExample from "./basicBlocks/example.txt";
 
 export const EXAMPLES: { [name: string]: LanguageSpec } = {
   datalog: {
-    themeCSS: datalogCSS,
     datalog: datalogDL,
     grammar: datalogGrammar,
     example: datalogExample,
   },
   json: {
-    themeCSS: jsonCSS,
     datalog: jsonDL,
     grammar: jsonGrammar,
     example: jsonExample,
   },
   basicBlocks: {
-    themeCSS: basicBlocksCSS,
     datalog: basicBlocksDL,
     grammar: basicBlocksGrammar,
     example: basicBlocksExample,
@@ -53,7 +44,6 @@ export const EXAMPLES: { [name: string]: LanguageSpec } = {
 };
 
 type LanguageSpec = {
-  themeCSS: string;
   datalog: string;
   grammar: string;
   example: string;

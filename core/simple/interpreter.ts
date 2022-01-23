@@ -97,7 +97,10 @@ export class SimpleInterpreter extends AbstractInterpreter {
   }
 
   getTables(): string[] {
-    return Object.keys(this.db.tables);
+    return [
+      ...Object.keys(this.db.tables),
+      ...Object.keys(this.db.virtualTables),
+    ];
   }
 }
 

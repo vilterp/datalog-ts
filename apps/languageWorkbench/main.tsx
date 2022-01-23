@@ -20,12 +20,14 @@ import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { mapObjToList, uniq } from "../../util/util";
 import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
-import { ensureHighlightSegmentTable } from "./util";
+import { ensureRequiredTables } from "./util";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
 import useHashParam from "use-hash-param";
 // @ts-ignore
 import mainDL from "./dl/main.dl";
+// @ts-ignore
+import commonThemeCSS from "./commonTheme.css";
 import { LOADER } from "./dl";
 
 function Main() {
@@ -45,7 +47,6 @@ function Playground() {
 
   const [grammarSource, setGrammarSource] = useState(curExample.grammar);
   const [dlSource, setDLSource] = useState(curExample.datalog);
-  const [themeSource, setThemeSource] = useState(curExample.themeCSS);
   const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
     initialEditorState(curExample.example)
   );
@@ -75,7 +76,6 @@ function Playground() {
     setExampleName(name);
     const example = EXAMPLES[name];
     setGrammarSource(example.grammar);
-    setThemeSource(example.themeCSS);
     setDLSource(example.datalog);
     setExampleSource(example.example);
   };
@@ -110,7 +110,7 @@ function Playground() {
                 setEditorState={setExampleEditorState}
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
-                highlightCSS={themeSource}
+                highlightCSS={commonThemeCSS}
                 locatedErrors={[]} // TODO: parse errors
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
@@ -136,16 +136,6 @@ function Playground() {
                 spellCheck={false}
               />
               <ErrorList errors={dlErrors} />
-            </td>
-            <td>
-              <h3>Theme Source</h3>
-              <textarea
-                value={themeSource}
-                onChange={(evt) => setThemeSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
-              />
             </td>
           </tr>
         </tbody>
@@ -210,8 +200,8 @@ function constructInterp({
       ruleTree = extractRuleTree(traceTree);
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = ensureHighlightSegmentTable(finalInterp);
       finalInterp = finalInterp.evalStr(mainDL)[1];
+      finalInterp = ensureRequiredTables(finalInterp);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);

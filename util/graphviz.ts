@@ -7,7 +7,7 @@ export interface Graph {
   comments?: string[];
 }
 
-interface Node {
+export interface Node {
   id: string;
   attrs: { [key: string]: string | RecordTree };
   comment?: string;
@@ -15,7 +15,7 @@ interface Node {
 
 type EdgeID = string | { nodeID: string; rowID: string };
 
-interface Edge {
+export interface Edge {
   from: EdgeID;
   to: EdgeID;
   attrs: { [key: string]: string };

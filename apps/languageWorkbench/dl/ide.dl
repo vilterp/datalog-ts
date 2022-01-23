@@ -16,10 +16,11 @@ scope.Usage{
   definitionLoc: DL,
   usageLoc: UL,
   definitionScopeID: DS,
-  usageScopeID: US
+  usageScopeID: US,
+  kind: K
 } :-
-  scope.Item{scopeID: US, defnSpan: DL, name: N, defnScopeID: DS} &
-  scope.Var{scopeID: US, span: UL, name: N}.
+  scope.Item{scopeID: US, defnSpan: DL, name: N, defnScopeID: DS, kind: K} &
+  scope.Var{scopeID: US, span: UL, name: N, kind: K}.
 
 # === interaction with cursor ===
 
