@@ -22,8 +22,9 @@ function mkTree(
   return {
     key: ppt(curID),
     item: curRes,
-    children: (termGraph[ppt(curID)] || [])
-      .sort((a, b) => (a.bindings.Seq as Int).val - (b.bindings.Seq as Int).val)
-      .map((child) => mkTree(termGraph, child.bindings.ID, child)),
+    // TODO: figure out hwo to sort again
+    children: (termGraph[ppt(curID)] || []).map((child) =>
+      mkTree(termGraph, child.bindings.ID, child)
+    ),
   };
 }
