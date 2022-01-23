@@ -5,12 +5,12 @@ viz.scopeGraph.node{id: ID, label: L} :-
 
 # edges
 
-viz.scopeGraph.edge{from: F, to: T} :-
-  viz.scopeGraph.parentEdge{from: F, to: T} |
-  viz.scopeGraph.usageEdge{from: F, to: T}.
-viz.scopeGraph.parentEdge{from: F, to: T} :-
+viz.scopeGraph.edge{from: F, to: T, label: L} :-
+  viz.scopeGraph.parentEdge{from: F, to: T, label: L} |
+  viz.scopeGraph.usageEdge{from: F, to: T, label: L}.
+viz.scopeGraph.parentEdge{from: F, to: T, label: "child"} :-
   scope.Parent{parentID: F, childID: T}.
-viz.scopeGraph.usageEdge{from: F, to: T} :-
+viz.scopeGraph.usageEdge{from: F, to: T, label: "usage"} :-
   scope.Usage{definitionScopeID: T, usageScopeID: F, name: N}.
 
 internal.visualization{
