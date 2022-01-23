@@ -46,32 +46,60 @@ scope.Scope{id: InstrID} :-
   ast.instr{id: InstrID}.
 
 scope.Parent{childID: ChildID, parentID: ParentID} :-
+  scope.parentWithinBlock{childID: ChildID, parentID: ParentID} |
+  scope.parentGlobal{childID: ChildID, parentID: ParentID}.
+# each instr creates a scope for the instrs below it
+scope.parentWithinBlock{childID: ChildID, parentID: ParentID} :-
   ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
   ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
   ChildIdx > ParentIdx.
+# global is parent of all scopes
+scope.parentGlobal{parentID: "global", childID: ChildID} :-
+  ast.instr{id: ChildID}.
 
 # this var defined at this node
-scope.Defn{scopeID: InstrID, span: S, name: N} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.defnValue{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnLabel{scopeID: I, span: S, name: N, kind: K}.
+# definitions of value variables
+scope.defnValue{scopeID: InstrID, span: S, name: N, kind: "value"} :-
   ast.instr{id: InstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
   ast.ident{parentID: ValueInstrID, text: N, span: S}.
-# TODO: block labels
+# definitions of label variables
+scope.defnLabel{scopeID: "global", span: S, name: N, kind: "label"} :-
+  ast.label{parentID: BlockID, span: S, text: N} &
+  ast.block{id: BlockID}.
 
 # TODO: say which kind of var it's trying to use
 # i.e. value vs. label
-scope.Var{scopeID: InstrID, name: N, span: S} :-
+scope.Var{scopeID: InstrID, name: N, span: S, kind: K} :-
+  scope.varValue{scopeID: InstrID, name: N, span: S, kind: "value"} |
+  scope.varLabel{scopeID: InstrID, name: N, span: S, kind: "label"}.
+# variables that refer to values
+scope.varValue{scopeID: InstrID, name: N, span: S, kind: K} :-
   ast.ident{parentID: ParamsID, text: N, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID}.
+# variables that refer to labels
+scope.varLabel{scopeID: InstrID, name: N, span: S, kind: K} :-
+  ast.label{id: LabelID, parentID: GotoID, text: N, span: S} &
+  ast.gotoInstr{id: GotoID, parentID: InstrID}.
 
-scope.Placeholder{span: S, scopeID: I} :-
+scope.Placeholder{span: S, scopeID: I, kind: K} :-
+  scope.placeholderValue{span: S, scopeID: I, kind: K} |
+  scope.placeholderLabel{span: S, scopeID: I, kind: K}.
+scope.placeholderValue{span: S, scopeID: I, kind: "value"} :-
   ast.Placeholder{id: PlaceholderID, parentID: ParamsID, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: I}.
+scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
+  ast.Placeholder{id: PlaceholderID, parentID: GotoInstrID, span: S} &
+  ast.gotoInstr{id: GotoInstrID, parentID: I}.
 
 # === viz ===
 
