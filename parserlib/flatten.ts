@@ -82,7 +82,6 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
   let prevChildID = -1;
   tree.children.forEach((child, idx) => {
     const childID = recur(state, child, id);
-    console.log({ childID, prevChildID });
     if (idx > 0 && idx < tree.children.length) {
       state.records.push(
         rec(`astInternal.next`, {

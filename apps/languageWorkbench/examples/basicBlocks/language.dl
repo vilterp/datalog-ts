@@ -52,7 +52,7 @@ scope.Parent{childID: ChildID, parentID: ParentID} :-
 scope.parentWithinBlock{childID: ChildID, parentID: ParentID} :-
   ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
   ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
-  ChildIdx > ParentIdx.
+  astInternal.next{prev: ParentID, next: ChildID}.
 # global is parent of all scopes
 scope.parentGlobal{parentID: "global", childID: ChildID} :-
   ast.instr{id: ChildID}.
