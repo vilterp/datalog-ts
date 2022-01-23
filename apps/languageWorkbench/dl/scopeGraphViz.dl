@@ -15,7 +15,7 @@ viz.scopeGraph.edge{from: F, to: T, label: L} :-
   viz.scopeGraph.defnEdge{from: F, to: T, label: L}.
 viz.scopeGraph.parentEdge{from: F, to: T, label: "child"} :-
   scope.Parent{parentID: F, childID: T}.
-viz.scopeGraph.defnEdge{from: F, to: defn{scopeID: F, name: N}, label: ""} :-
+viz.scopeGraph.defnEdge{from: F, to: defn{scopeID: F, name: N}, label: "defn"} :-
   scope.Defn{scopeID: F, name: N}.
 
 internal.visualization{
