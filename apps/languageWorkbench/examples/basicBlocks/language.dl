@@ -42,8 +42,12 @@ hl.segmentString{type: "string", span: S, highlight: false} :-
 
 # === Scope ===
 
-scope.Scope{id: I} :-
-  ast.instr{id: I} |
+scope.Scope{id: I, label: L} :-
+  scope.scopeInstr{id: I, label: L} |
+  scope.scopeBlock{id: I, label: L}.
+scope.scopeInstr{id: I, label: T} :-
+  ast.instr{id: I, text: T}.
+scope.scopeBlock{id: I, label: I} :-
   ast.block{id: I}.
 
 scope.Parent{childID: ChildID, parentID: ParentID} :-
