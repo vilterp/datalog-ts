@@ -51,11 +51,18 @@ scope.Parent{childID: ChildID, parentID: ParentID} :-
   ChildIdx > ParentIdx.
 
 # this var defined at this node
-scope.Defn{scopeID: InstrID, span: S, name: N} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.defnValue{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnLabel{scopeID: I, span: S, name: N, kind: K}.
+# definitions of value variables
+scope.defnValue{scopeID: InstrID, span: S, name: N, kind: "value"} :-
   ast.instr{id: InstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
   ast.ident{parentID: ValueInstrID, text: N, span: S}.
-# TODO: block labels
+# definitions of label variables
+scope.defnLabel{scopeID: "global", span: S, name: N, kind: "label"} :-
+  ast.label{parentID: BlockID, span: S, text: N} &
+  ast.block{id: BlockID}.
 
 # TODO: say which kind of var it's trying to use
 # i.e. value vs. label
