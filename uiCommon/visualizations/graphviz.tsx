@@ -34,8 +34,8 @@ function GraphvizWrapper(props: {
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
     const nodesRes = props.interp.queryStr(nodesQuery);
     const nodes = nodesRes.map((res) => {
-      const id = ppt(res.bindings.ID);
-      const label = res.bindings.Label ? ppt(res.bindings.Label) : id;
+      const id = specialPPT(res.bindings.ID);
+      const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
       return {
         id,
         attrs: { label },
@@ -44,10 +44,10 @@ function GraphvizWrapper(props: {
     const edgesQuery = (props.spec.attrs.edges as StringLit).val;
     const edgesRes = props.interp.queryStr(edgesQuery);
     const edges = edgesRes.map((res) => ({
-      to: ppt(res.bindings.To),
-      from: ppt(res.bindings.From),
+      to: specialPPT(res.bindings.To),
+      from: specialPPT(res.bindings.From),
       attrs: {
-        label: res.bindings.Label ? ppt(res.bindings.Label) : "",
+        label: res.bindings.Label ? specialPPT(res.bindings.Label) : "",
       },
     }));
 
@@ -64,6 +64,16 @@ function GraphvizWrapper(props: {
   } catch (e) {
     console.error(e);
     return <pre style={{ color: "red" }}>{e.toString()}</pre>;
+  }
+}
+
+// don't love special cases, but all the quotes are annoying
+function specialPPT(term: Term) {
+  switch (term.type) {
+    case "StringLit":
+      return term.val;
+    default:
+      return ppt(term);
   }
 }
 
