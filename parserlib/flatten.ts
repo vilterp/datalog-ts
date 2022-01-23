@@ -59,7 +59,6 @@ function getUnionRule(g: Grammar): Rule {
       span: varr("Span"),
       text: varr("Text"),
       rule: varr("Rule"),
-      idx: varr("Idx"),
     }),
     or(
       Object.keys(g).map((ruleName) =>
@@ -70,7 +69,6 @@ function getUnionRule(g: Grammar): Rule {
             span: varr("Span"),
             text: varr("Text"),
             rule: varr("Rule"),
-            idx: varr("Idx"),
           }),
         ])
       )
@@ -86,8 +84,18 @@ function recur(
 ): number {
   const id = state.nextID;
   state.nextID++;
+  let prevChildID = -1;
   tree.children.forEach((child, idx) => {
-    recur(state, child, id, idx);
+    const childID = recur(state, child, id, idx);
+    if (prevChildID != -1 && idx < tree.children.length) {
+      state.records.push(
+        rec(`astInternal.next`, {
+          prev: int(prevChildID),
+          next: int(childID),
+        })
+      );
+    }
+    prevChildID = childID;
   });
   state.records.push(
     rec(`ast.${tree.name}`, {
@@ -97,7 +105,6 @@ function recur(
         from: int(tree.span.from),
         to: int(tree.span.to),
       }),
-      idx: int(idx),
       text: str(state.source.substring(tree.span.from, tree.span.to)),
       // a bit duplicative to put this in here since it's already in
       // the record name, but it does make rendering the rule tree a
