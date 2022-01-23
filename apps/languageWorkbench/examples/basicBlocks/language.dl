@@ -48,19 +48,21 @@ scope.Scope{id: I} :-
 
 scope.Parent{childID: ChildID, parentID: ParentID} :-
   scope.parentWithinBlock{childID: ChildID, parentID: ParentID} |
-  scope.parentGlobal{childID: ChildID, parentID: ParentID} |
-  scope.instrToBlock{childID: ChildID, parentID: ParentID}.
+  scope.globalToBlock{childID: ChildID, parentID: ParentID} |
+  scope.blockToInstr{childID: ChildID, parentID: ParentID}.
 # each instr creates a scope for the instrs below it
 scope.parentWithinBlock{childID: ChildID, parentID: ParentID} :-
-  ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
-  ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
+  ast.instr{id: ChildID, parentID: BlockBodyID, idx: ChildIdx} &
+  ast.instr{id: ParentID, parentID: BlockBodyID, idx: ParentIdx} &
   astInternal.next{prev: ParentID, next: ChildID}.
 # global is parent of all scopes
-scope.parentGlobal{parentID: "global", childID: BlockID} :-
+scope.globalToBlock{parentID: "global", childID: BlockID} :-
   ast.block{id: BlockID}.
-scope.instrToBlock{childID: InstrID, parentID: BlockID} :-
+scope.blockToInstr{childID: InstrID, parentID: BlockID} :-
   ast.block{id: BlockID} &
-  astInternal.first{parentID: BlockID, id: InstrID}.
+  ast.blockBody{id: BlockBodyID, parentID: BlockID} &
+  astInternal.firstChild{parentID: BlockBodyID, id: WSID} &
+  astInternal.next{prev: WSID, next: InstrID}.
 
 # this var defined at this node
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
