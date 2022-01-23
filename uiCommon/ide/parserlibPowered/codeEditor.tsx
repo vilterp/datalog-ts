@@ -2,6 +2,7 @@ import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
+import { Suggestion } from "../suggestions";
 import { ActionContext, EditorState } from "../types";
 import { getSuggestions } from "./suggestions";
 
@@ -23,7 +24,12 @@ export function CodeEditor(props: {
     }
   }
 
-  const suggestions = getSuggestions(props.interp);
+  let suggestions: Suggestion[] = [];
+  try {
+    suggestions = getSuggestions(props.interp);
+  } catch (e) {
+    console.warn("error while getting suggestions:", e);
+  }
 
   const actionCtx: ActionContext = {
     interp: props.interp,
