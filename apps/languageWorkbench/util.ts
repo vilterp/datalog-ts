@@ -1,10 +1,30 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
-export function ensureHighlightSegmentTable(
+const REQUIRED_TABLES = [
+  "ast.keyword",
+  "ast.ident",
+  "scope.Defn",
+  "scope.Var",
+  "scope.Parent",
+  "scope.Placeholder",
+];
+
+export function ensureRequiredTables(
   interp: AbstractInterpreter
 ): AbstractInterpreter {
-  if (interp.getRules().some((r) => r.head.relation === "hl.Segment")) {
-    return interp;
-  }
-  return interp.evalStmt({ type: "TableDecl", name: "hl.Segment" })[1];
+  const existing = new Set([
+    ...interp.getRules().map((r) => r.head.relation),
+    ...interp.getTables(),
+  ]);
+  let finalInterp = interp;
+  REQUIRED_TABLES.forEach((requiredTable) => {
+    if (!existing.has(requiredTable)) {
+      console.log("adding", requiredTable);
+      finalInterp = finalInterp.evalStmt({
+        type: "TableDecl",
+        name: requiredTable,
+      })[1];
+    }
+  });
+  return finalInterp;
 }

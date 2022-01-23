@@ -1,3 +1,6 @@
+ast.keyword{span: S} :-
+  ast.gotoKW{span: S}.
+
 # === Scope ===
 
 scope.Scope{id: I, label: L} :-

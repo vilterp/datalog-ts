@@ -12,7 +12,7 @@ hl.segmentInt{type: "int", span: S, highlight: false} :-
 hl.segmentString{type: "string", span: S, highlight: false} :-
   ast.string{span: S}.
 hl.keyword{type: "keyword", span: S, highlight: false} :-
-  ast.gotoKW{span: S}.
+  ast.keyword{span: S}.
 
 # identifiers
 hl.segmentIdent{type: "var", span: S, highlight: false} :-
