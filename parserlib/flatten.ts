@@ -47,7 +47,7 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
     nextID: 0,
     source,
   };
-  recur(state, tree, -1, 0);
+  recur(state, tree, -1);
   return state.records;
 }
 
@@ -76,17 +76,12 @@ function getUnionRule(g: Grammar): Rule {
   );
 }
 
-function recur(
-  state: State,
-  tree: RuleTree,
-  parentID: number,
-  idx: number
-): number {
+function recur(state: State, tree: RuleTree, parentID: number): number {
   const id = state.nextID;
   state.nextID++;
   let prevChildID = -1;
   tree.children.forEach((child, idx) => {
-    const childID = recur(state, child, id, idx);
+    const childID = recur(state, child, id);
     if (prevChildID != -1 && idx < tree.children.length) {
       state.records.push(
         rec(`astInternal.next`, {
