@@ -85,7 +85,16 @@ function stringifyEdgeID(id: EdgeID) {
 }
 
 function escapeStr(str: string): string {
-  return str.split('"').join('\\"').split("\n").join("\\n");
+  return (
+    str
+      // have to escape backslashes first, cuz other steps insert backslashes
+      .split("\\")
+      .join("\\\\")
+      .split('"')
+      .join('\\"')
+      .split("\n")
+      .join("\\n")
+  );
 }
 
 function stringifyNodeAttrValue(value: string | RecordTree): string {
