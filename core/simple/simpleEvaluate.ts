@@ -22,8 +22,9 @@ import {
   unify,
   unifyVars,
 } from "../unify";
-import { filterMap, flatMap } from "../../util/util";
+import { filterMap, flatMap, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
+import { ppb, ppt } from "../pretty";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -116,7 +117,7 @@ function doEvaluate(
   scope: Bindings,
   term: Term
 ): Res[] {
-  // console.group(repeat(depth + 1, "="), "doEvaluate", ppt(term), ppb(scope));
+  // console.group("doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
   //   throw new Error("too deep");
   // }
@@ -128,6 +129,7 @@ function doEvaluate(
         const records = table ? table : virtual ? virtual(db) : null;
         if (records) {
           const out: Res[] = [];
+          // console.log("scan", term.relation, ppb(scope));
           for (const rec of records) {
             const unifyRes = unify(scope, term, rec);
             // console.log("scan", {
@@ -139,7 +141,6 @@ function doEvaluate(
             if (unifyRes === null) {
               continue;
             }
-            // TODO: filter based on scope, right here
             out.push({
               term: rec,
               bindings: unifyRes,
