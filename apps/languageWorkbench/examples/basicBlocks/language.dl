@@ -46,9 +46,16 @@ scope.Scope{id: InstrID} :-
   ast.instr{id: InstrID}.
 
 scope.Parent{childID: ChildID, parentID: ParentID} :-
+  scope.parentWithinBlock{childID: ChildID, parentID: ParentID} |
+  scope.parentGlobal{childID: ChildID, parentID: ParentID}.
+# each instr creates a scope for the instrs below it
+scope.parentWithinBlock{childID: ChildID, parentID: ParentID} :-
   ast.instr{id: ChildID, parentID: BlockID, idx: ChildIdx} &
   ast.instr{id: ParentID, parentID: BlockID, idx: ParentIdx} &
   ChildIdx > ParentIdx.
+# global is parent of all scopes
+scope.parentGlobal{parentID: "global", childID: ChildID} :-
+  ast.instr{id: ChildID}.
 
 # this var defined at this node
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
