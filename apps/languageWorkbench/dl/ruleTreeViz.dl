@@ -1,43 +1,43 @@
 # basically getting everything but text
-ast_internal.ruleTreeNode{id: ID, parentID: PID, seq: Seq, display: D} :-
-  ast_internal.ruleTreeNodeCur{id: ID, parentID: PID, seq: Seq, display: D} |
-  ast_internal.ruleTreeNodeBefore{id: ID, parentID: PID, seq: Seq, display: D} |
-  ast_internal.ruleTreeNodeAfter{id: ID, parentID: PID, seq: Seq, display: D}.
+astInternal.ruleTreeNode{id: ID, parentID: PID, display: D} :-
+  astInternal.ruleTreeNodeCur{id: ID, parentID: PID, display: D} |
+  astInternal.ruleTreeNodeBefore{id: ID, parentID: PID, display: D} |
+  astInternal.ruleTreeNodeAfter{id: ID, parentID: PID, display: D}.
 
-ast_internal.ruleTreeNodeBefore{
+astInternal.ruleTreeNodeBefore{
   id: ID,
   parentID: PID,
-  display: [R, [F, T]],
+  display: [ID, R, [F, T]],
   seq: Seq
 } :-
-  ast_internal.node{id: ID, parentID: PID, idx: Seq, rule: R, span: span{from: F, to: T}} &
+  astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
   Idx > T.
 
-ast_internal.ruleTreeNodeAfter{
+astInternal.ruleTreeNodeAfter{
   id: ID,
   parentID: PID,
-  display: [R, [F, T]],
+  display: [ID, R, [F, T]],
   seq: Seq
 } :-
-  ast_internal.node{id: ID, parentID: PID, idx: Seq, rule: R, span: span{from: F, to: T}} &
+  astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
   Idx < F.
 
-ast_internal.ruleTreeNodeCur{
+astInternal.ruleTreeNodeCur{
   id: ID,
   parentID: PID,
-  display: ["*", R, [F, T]],
+  display: ["*", ID, R, [F, T]],
   seq: Seq
 } :-
-  ast_internal.node{id: ID, parentID: PID, idx: Seq, rule: R, span: span{from: F, to: T}} &
+  astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
   F <= Idx & Idx <= T.
 
 internal.visualization{
   name: "Rule Tree",
   spec: tree{
-    nodes: "ast_internal.ruleTreeNode{id: ID, parentID: ParentID, display: Display, seq: Seq}",
+    nodes: "astInternal.ruleTreeNode{id: ID, parentID: ParentID, display: Display, seq: Seq}",
     rootTerm: -1
   }
 }.

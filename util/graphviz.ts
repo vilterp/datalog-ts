@@ -81,11 +81,20 @@ function stringifyEdgeID(id: EdgeID) {
     return `"${escapeStr(id)}"`;
   }
   // TODO: can we quote and escape rowID too?
-  return `"${escapeStr(id.nodeID)}":${id.rowID}`;
+  return `"${escapeStr(id.nodeID)}":"${id.rowID}"`;
 }
 
 function escapeStr(str: string): string {
-  return str.split('"').join('\\"').split("\n").join("\\n");
+  return (
+    str
+      // have to escape backslashes first, cuz other steps insert backslashes
+      .split("\\")
+      .join("\\\\")
+      .split('"')
+      .join('\\"')
+      .split("\n")
+      .join("\\n")
+  );
 }
 
 function stringifyNodeAttrValue(value: string | RecordTree): string {
@@ -166,5 +175,13 @@ function stringifyRecordTree(node: RecordTree): string {
 }
 
 function escapeRecordSyntax(str: string) {
-  return str.split("{").join("\\{").split("}").join("\\}");
+  return str
+    .split("{")
+    .join("\\{")
+    .split("}")
+    .join("\\}")
+    .split("<")
+    .join("\\<")
+    .split(">")
+    .join("\\>");
 }

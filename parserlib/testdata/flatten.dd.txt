@@ -1,23 +1,43 @@
 {"foo":2}
 ----
 application/datalog
-ast.key{id: 3, idx: 0, parentID: 2, rule: "key", span: span{from: 1, to: 6}, text: "\"foo\""}
-ast.number{id: 5, idx: 0, parentID: 4, rule: "number", span: span{from: 7, to: 8}, text: "2"}
-ast.value{id: 4, idx: 1, parentID: 2, rule: "value", span: span{from: 7, to: 8}, text: "2"}
-ast.keyValue{id: 2, idx: 0, parentID: 1, rule: "keyValue", span: span{from: 1, to: 8}, text: "\"foo\":2"}
-ast.object{id: 1, idx: 0, parentID: 0, rule: "object", span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
-ast.value{id: 0, idx: 0, parentID: -1, rule: "value", span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
+ast.key{id: 3, parentID: 2, rule: "key", span: span{from: 1, to: 6}, text: "\"foo\""}
+astInternal.firstChild{id: 3, parentID: 2}
+ast.number{id: 5, parentID: 4, rule: "number", span: span{from: 7, to: 8}, text: "2"}
+astInternal.firstChild{id: 5, parentID: 4}
+astInternal.lastChild{id: 5, parentID: 4}
+ast.value{id: 4, parentID: 2, rule: "value", span: span{from: 7, to: 8}, text: "2"}
+astInternal.next{next: 4, prev: 3}
+astInternal.lastChild{id: 4, parentID: 2}
+ast.keyValue{id: 2, parentID: 1, rule: "keyValue", span: span{from: 1, to: 8}, text: "\"foo\":2"}
+astInternal.firstChild{id: 2, parentID: 1}
+astInternal.lastChild{id: 2, parentID: 1}
+ast.object{id: 1, parentID: 0, rule: "object", span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
+ast.value{id: 0, parentID: -1, rule: "value", span: span{from: 0, to: 9}, text: "{\"foo\":2}"}
 
 {"foo":2,"bar":3}
 ----
 application/datalog
-ast.key{id: 3, idx: 0, parentID: 2, rule: "key", span: span{from: 1, to: 6}, text: "\"foo\""}
-ast.number{id: 5, idx: 0, parentID: 4, rule: "number", span: span{from: 7, to: 8}, text: "2"}
-ast.value{id: 4, idx: 1, parentID: 2, rule: "value", span: span{from: 7, to: 8}, text: "2"}
-ast.keyValue{id: 2, idx: 0, parentID: 1, rule: "keyValue", span: span{from: 1, to: 8}, text: "\"foo\":2"}
-ast.key{id: 7, idx: 0, parentID: 6, rule: "key", span: span{from: 9, to: 14}, text: "\"bar\""}
-ast.number{id: 9, idx: 0, parentID: 8, rule: "number", span: span{from: 15, to: 16}, text: "3"}
-ast.value{id: 8, idx: 1, parentID: 6, rule: "value", span: span{from: 15, to: 16}, text: "3"}
-ast.keyValue{id: 6, idx: 1, parentID: 1, rule: "keyValue", span: span{from: 9, to: 16}, text: "\"bar\":3"}
-ast.object{id: 1, idx: 0, parentID: 0, rule: "object", span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
-ast.value{id: 0, idx: 0, parentID: -1, rule: "value", span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
+ast.key{id: 3, parentID: 2, rule: "key", span: span{from: 1, to: 6}, text: "\"foo\""}
+astInternal.firstChild{id: 3, parentID: 2}
+ast.number{id: 5, parentID: 4, rule: "number", span: span{from: 7, to: 8}, text: "2"}
+astInternal.firstChild{id: 5, parentID: 4}
+astInternal.lastChild{id: 5, parentID: 4}
+ast.value{id: 4, parentID: 2, rule: "value", span: span{from: 7, to: 8}, text: "2"}
+astInternal.next{next: 4, prev: 3}
+astInternal.lastChild{id: 4, parentID: 2}
+ast.keyValue{id: 2, parentID: 1, rule: "keyValue", span: span{from: 1, to: 8}, text: "\"foo\":2"}
+astInternal.firstChild{id: 2, parentID: 1}
+ast.key{id: 7, parentID: 6, rule: "key", span: span{from: 9, to: 14}, text: "\"bar\""}
+astInternal.firstChild{id: 7, parentID: 6}
+ast.number{id: 9, parentID: 8, rule: "number", span: span{from: 15, to: 16}, text: "3"}
+astInternal.firstChild{id: 9, parentID: 8}
+astInternal.lastChild{id: 9, parentID: 8}
+ast.value{id: 8, parentID: 6, rule: "value", span: span{from: 15, to: 16}, text: "3"}
+astInternal.next{next: 8, prev: 7}
+astInternal.lastChild{id: 8, parentID: 6}
+ast.keyValue{id: 6, parentID: 1, rule: "keyValue", span: span{from: 9, to: 16}, text: "\"bar\":3"}
+astInternal.next{next: 6, prev: 2}
+astInternal.lastChild{id: 6, parentID: 1}
+ast.object{id: 1, parentID: 0, rule: "object", span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}
+ast.value{id: 0, parentID: -1, rule: "value", span: span{from: 0, to: 17}, text: "{\"foo\":2,\"bar\":3}"}

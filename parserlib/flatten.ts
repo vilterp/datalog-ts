@@ -47,19 +47,18 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
     nextID: 0,
     source,
   };
-  recur(state, tree, -1, 0);
+  recur(state, tree, -1);
   return state.records;
 }
 
 function getUnionRule(g: Grammar): Rule {
   return rule(
-    rec("ast_internal.node", {
+    rec("astInternal.node", {
       id: varr("ID"),
       parentID: varr("ParentID"),
       span: varr("Span"),
       text: varr("Text"),
       rule: varr("Rule"),
-      idx: varr("Idx"),
     }),
     or(
       Object.keys(g).map((ruleName) =>
@@ -70,7 +69,6 @@ function getUnionRule(g: Grammar): Rule {
             span: varr("Span"),
             text: varr("Text"),
             rule: varr("Rule"),
-            idx: varr("Idx"),
           }),
         ])
       )
@@ -78,16 +76,34 @@ function getUnionRule(g: Grammar): Rule {
   );
 }
 
-function recur(
-  state: State,
-  tree: RuleTree,
-  parentID: number,
-  idx: number
-): number {
+function recur(state: State, tree: RuleTree, parentID: number): number {
   const id = state.nextID;
   state.nextID++;
+  let prevChildID = -1;
   tree.children.forEach((child, idx) => {
-    recur(state, child, id, idx);
+    const childID = recur(state, child, id);
+    if (parentID != -1 && idx === 0) {
+      state.records.push(
+        rec(`astInternal.firstChild`, {
+          parentID: int(id),
+          id: int(childID),
+        })
+      );
+    }
+    if (idx > 0 && idx < tree.children.length) {
+      state.records.push(
+        rec(`astInternal.next`, {
+          prev: int(prevChildID),
+          next: int(childID),
+        })
+      );
+    }
+    if (parentID != -1 && idx === tree.children.length - 1) {
+      state.records.push(
+        rec(`astInternal.lastChild`, { parentID: int(id), id: int(childID) })
+      );
+    }
+    prevChildID = childID;
   });
   state.records.push(
     rec(`ast.${tree.name}`, {
@@ -97,7 +113,6 @@ function recur(
         from: int(tree.span.from),
         to: int(tree.span.to),
       }),
-      idx: int(idx),
       text: str(state.source.substring(tree.span.from, tree.span.to)),
       // a bit duplicative to put this in here since it's already in
       // the record name, but it does make rendering the rule tree a
