@@ -18,7 +18,7 @@ import { getAllStatements } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { mapObjToList, uniq, uniqBy } from "../../util/util";
+import { mapObjToList, uniq } from "../../util/util";
 import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
 import { ensureHighlightSegmentTable } from "./util";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
@@ -27,7 +27,6 @@ import useHashParam from "use-hash-param";
 // @ts-ignore
 import mainDL from "./dl/main.dl";
 import { LOADER } from "./dl";
-import { getSuggestions } from "../../uiCommon/ide/parserlibPowered/suggestions";
 
 function Main() {
   return <Playground />;
@@ -113,7 +112,6 @@ function Playground() {
                 validGrammar={allGrammarErrors.length === 0}
                 highlightCSS={themeSource}
                 locatedErrors={[]} // TODO: parse errors
-                suggestions={getSuggestions(finalInterp)}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>

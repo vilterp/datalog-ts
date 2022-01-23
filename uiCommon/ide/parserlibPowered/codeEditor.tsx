@@ -2,8 +2,8 @@ import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
-import { Suggestion } from "../suggestions";
 import { ActionContext, EditorState } from "../types";
+import { getSuggestions } from "./suggestions";
 
 export function CodeEditor(props: {
   editorState: EditorState;
@@ -11,7 +11,6 @@ export function CodeEditor(props: {
   interp: AbstractInterpreter;
   validGrammar: boolean;
   highlightCSS: string;
-  suggestions: Suggestion[];
   locatedErrors: { offset: number }[];
 }) {
   let highlighted: React.ReactNode = <>{props.editorState.source}</>;
@@ -24,10 +23,12 @@ export function CodeEditor(props: {
     }
   }
 
+  const suggestions = getSuggestions(props.interp);
+
   const actionCtx: ActionContext = {
     interp: props.interp,
     state: props.editorState,
-    suggestions: props.suggestions,
+    suggestions,
     errors: props.locatedErrors,
   };
 
@@ -39,7 +40,7 @@ export function CodeEditor(props: {
       setEditorState={props.setEditorState}
       errorsToDisplay={[]} // TODO: pass through errors
       highlighted={highlighted}
-      suggestions={props.suggestions}
+      suggestions={suggestions}
     />
   );
 }
