@@ -210,8 +210,8 @@ function constructInterp({
       ruleTree = extractRuleTree(traceTree);
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = ensureHighlightSegmentTable(finalInterp);
       finalInterp = finalInterp.evalStr(mainDL)[1];
+      finalInterp = ensureHighlightSegmentTable(finalInterp);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);

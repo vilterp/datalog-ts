@@ -1,0 +1,25 @@
+hl.Segment{type: T, span: S, highlight: H} :-
+  hl.segmentInt{type: T, span: S, highlight: H} |
+  hl.segmentString{type: T, span: S, highlight: H} |
+  hl.keyword{type: T, span: S, highlight: H} |
+  hl.segmentIdent{type: T, span: S, highlight: H} |
+  hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
+  hl.segmentIdentUsageHL{type: T, span: S, highlight: H}.
+
+# primitives
+hl.segmentInt{type: "int", span: S, highlight: false} :-
+  ast.int{span: S}.
+hl.segmentString{type: "string", span: S, highlight: false} :-
+  ast.string{span: S}.
+hl.keyword{type: "keyword", span: S, highlight: false} :-
+  ast.gotoKW{span: S}.
+
+# identifiers
+hl.segmentIdent{type: "var", span: S, highlight: false} :-
+  ast.ident{parentID: ParamsID, span: S}.
+hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
+  ide.CurrentUsage{defnLoc: S} &
+  scope.Defn{span: S}.
+hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
+  ide.CurrentUsage{usageLoc: S} &
+  scope.Var{span: S}.
