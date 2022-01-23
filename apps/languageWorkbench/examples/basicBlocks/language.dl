@@ -47,8 +47,9 @@ scope.Scope{id: I, label: L} :-
   scope.scopeBlock{id: I, label: L}.
 scope.scopeInstr{id: I, label: T} :-
   ast.instr{id: I, text: T}.
-scope.scopeBlock{id: I, label: I} :-
-  ast.block{id: I}.
+scope.scopeBlock{id: BlockID, label: T} :-
+  ast.block{id: BlockID} &
+  ast.label{parentID: BlockID, text: T}.
 
 scope.Parent{childID: ChildID, parentID: ParentID} :-
   scope.parentWithinBlock{childID: ChildID, parentID: ParentID} |
