@@ -82,12 +82,26 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
   let prevChildID = -1;
   tree.children.forEach((child, idx) => {
     const childID = recur(state, child, id);
+    // console.log({ parentID, childID, idx });
+    if (parentID != -1 && idx === 0) {
+      state.records.push(
+        rec(`astInternal.first`, {
+          parentID: int(parentID),
+          id: int(childID),
+        })
+      );
+    }
     if (idx > 0 && idx < tree.children.length) {
       state.records.push(
         rec(`astInternal.next`, {
           prev: int(prevChildID),
           next: int(childID),
         })
+      );
+    }
+    if (parentID != -1 && idx === tree.children.length - 1) {
+      state.records.push(
+        rec(`astInternal.last`, { parentID: int(parentID), id: int(childID) })
       );
     }
     prevChildID = childID;
