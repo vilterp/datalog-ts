@@ -1,3 +1,4 @@
 .load ide.dl
 .load ruleTreeViz.dl
 .load scopeGraphViz.dl
+.load relationGraphViz.dl

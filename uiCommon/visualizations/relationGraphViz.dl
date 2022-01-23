@@ -1,0 +1,9 @@
+# TODO: don't know where this should live
+
+internal.visualization{
+  name: "Relation Graph",
+  spec: graphviz{
+    nodes: "internal.Relation{name: ID}",
+    edges: "internal.RelationReference{from: From, to: To}"
+  }
+}.
