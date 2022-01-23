@@ -12,11 +12,14 @@ viz.scopeGraph.defnNode{id: defn{scopeID: I, name: N}, label: N} :-
 
 viz.scopeGraph.edge{from: F, to: T, label: L} :-
   viz.scopeGraph.parentEdge{from: F, to: T, label: L} |
-  viz.scopeGraph.defnEdge{from: F, to: T, label: L}.
+  viz.scopeGraph.defnEdge{from: F, to: T, label: L} |
+  viz.scopeGraph.usageEdge{from: F, to: T, label: L}.
 viz.scopeGraph.parentEdge{from: F, to: T, label: "child"} :-
   scope.Parent{parentID: F, childID: T}.
 viz.scopeGraph.defnEdge{from: F, to: defn{scopeID: F, name: N}, label: "defn"} :-
   scope.Defn{scopeID: F, name: N}.
+viz.scopeGraph.usageEdge{from: F, to: T, label: usage{name: N}} :-
+  scope.Usage{definitionScopeID: T, usageScopeID: F, name: N}.
 
 internal.visualization{
   name: "Scope Graph",
@@ -25,3 +28,5 @@ internal.visualization{
     edges: "viz.scopeGraph.edge{from: From, to: To, label: Label}"
   }
 }.
+
+# TODO: tree viz as well?

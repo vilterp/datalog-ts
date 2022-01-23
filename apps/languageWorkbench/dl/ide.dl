@@ -2,15 +2,24 @@
 
 # TODO: decide on defnSpan vs definitionLoc
 
-scope.Item{scopeID: I, name: N, defnSpan: S, kind: K} :-
-  scope.Defn{scopeID: I, name: N, span: S, kind: K} |
+scope.Item{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K} :-
+  scope.defnHere{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K} |
+  scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K}.
+scope.defnHere{scopeID: I, defnScopeID: I, name: N, defnSpan: S, kind: K} :-
+  scope.Defn{scopeID: I, name: N, span: S, kind: K}.
+scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K} :-
   scope.Parent{childID: I, parentID: P} &
-  scope.Item{scopeID: P, name: N, defnSpan: S, kind: K}.
+  scope.Item{scopeID: P, defnScopeID: DS, name: N, defnSpan: S, kind: K}.
 
-# TODO: reference scope ids?
-scope.Usage{name: N, definitionLoc: DL, usageLoc: UL} :-
-  scope.Item{defnSpan: DL, name: N, scopeID: I} &
-  scope.Var{span: UL, scopeID: I, name: N}.
+scope.Usage{
+  name: N,
+  definitionLoc: DL,
+  usageLoc: UL,
+  definitionScopeID: DS,
+  usageScopeID: US
+} :-
+  scope.Item{scopeID: US, defnSpan: DL, name: N, defnScopeID: DS} &
+  scope.Var{scopeID: US, span: UL, name: N}.
 
 # === interaction with cursor ===
 
