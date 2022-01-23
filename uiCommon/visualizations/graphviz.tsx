@@ -30,6 +30,9 @@ function GraphvizWrapper(props: {
   setHighlightedTerm: (t: Term | null) => void;
 }) {
   // TODO: better error messages when bindings are missing
+  // in theory this could be found statically...
+
+  // TODO: node attrs, edge attrs
 
   let nodes: Node[] = [];
   let edges: Edge[] = [];
