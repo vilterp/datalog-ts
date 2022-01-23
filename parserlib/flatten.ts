@@ -53,7 +53,7 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
 
 function getUnionRule(g: Grammar): Rule {
   return rule(
-    rec("ast_internal.node", {
+    rec("astInternal.node", {
       id: varr("ID"),
       parentID: varr("ParentID"),
       span: varr("Span"),
@@ -82,7 +82,8 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
   let prevChildID = -1;
   tree.children.forEach((child, idx) => {
     const childID = recur(state, child, id);
-    if (prevChildID != -1 && idx < tree.children.length) {
+    console.log({ childID, prevChildID });
+    if (idx > 0 && idx < tree.children.length) {
       state.records.push(
         rec(`astInternal.next`, {
           prev: int(prevChildID),
