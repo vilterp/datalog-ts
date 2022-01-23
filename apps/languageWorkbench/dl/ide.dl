@@ -2,10 +2,10 @@
 
 # TODO: decide on defnSpan vs definitionLoc
 
-scope.Item{scopeID: I, name: N, defnSpan: S} :-
-  scope.Defn{scopeID: I, name: N, span: S} |
+scope.Item{scopeID: I, name: N, defnSpan: S, kind: K} :-
+  scope.Defn{scopeID: I, name: N, span: S, kind: K} |
   scope.Parent{childID: I, parentID: P} &
-  scope.Item{scopeID: P, name: N, defnSpan: S}.
+  scope.Item{scopeID: P, name: N, defnSpan: S, kind: K}.
 
 # TODO: reference scope ids?
 scope.Usage{name: N, definitionLoc: DL, usageLoc: UL} :-
@@ -50,8 +50,8 @@ ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
 # === suggestions ===
 
 ide.Suggestion{id: I, name: N, span: S} :-
-  scope.Placeholder{scopeID: I, name: N, span: S} &
-  scope.Item{scopeID: I, name: N}.
+  scope.Placeholder{scopeID: I, name: N, span: S, kind: K} &
+  scope.Item{scopeID: I, name: N, kind: K}.
 
 ide.CurrentPlaceholder{id: I, span: span{from: FIdx, to: TIdx}} :-
   scope.Placeholder{scopeID: I, span: span{from: FIdx, to: TIdx}} &
