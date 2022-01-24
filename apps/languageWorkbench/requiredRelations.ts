@@ -1,15 +1,20 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
-const REQUIRED_TABLES = [
+// this is the closest we've come thus far to specifying an API...
+const REQUIRED_RELATIONS = [
   "ast.keyword",
   "ast.ident",
+  "ast.string",
+  "ast.int",
+  "ast.bool",
+  "scope.Scope",
   "scope.Defn",
   "scope.Var",
   "scope.Parent",
   "scope.Placeholder",
 ];
 
-export function ensureRequiredTables(
+export function ensureRequiredRelations(
   interp: AbstractInterpreter
 ): AbstractInterpreter {
   const existing = new Set([
@@ -17,7 +22,7 @@ export function ensureRequiredTables(
     ...interp.getTables(),
   ]);
   let finalInterp = interp;
-  REQUIRED_TABLES.forEach((requiredTable) => {
+  REQUIRED_RELATIONS.forEach((requiredTable) => {
     if (!existing.has(requiredTable)) {
       console.log("adding", requiredTable);
       finalInterp = finalInterp.evalStmt({

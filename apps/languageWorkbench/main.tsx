@@ -20,7 +20,7 @@ import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { mapObjToList, uniq } from "../../util/util";
 import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
-import { ensureRequiredTables } from "./util";
+import { ensureRequiredRelations } from "./requiredRelations";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
 import useHashParam from "use-hash-param";
@@ -201,7 +201,7 @@ function constructInterp({
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
       finalInterp = finalInterp.evalStr(mainDL)[1];
-      finalInterp = ensureRequiredTables(finalInterp);
+      finalInterp = ensureRequiredRelations(finalInterp);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);

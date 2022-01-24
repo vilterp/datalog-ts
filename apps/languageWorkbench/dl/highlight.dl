@@ -1,6 +1,7 @@
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.segmentInt{type: T, span: S, highlight: H} |
   hl.segmentString{type: T, span: S, highlight: H} |
+  hl.segmentBool{type: T, span: S, highlight: H} |
   hl.keyword{type: T, span: S, highlight: H} |
   hl.segmentIdent{type: T, span: S, highlight: H} |
   hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
@@ -13,6 +14,8 @@ hl.segmentString{type: "string", span: S, highlight: false} :-
   ast.string{span: S}.
 hl.keyword{type: "keyword", span: S, highlight: false} :-
   ast.keyword{span: S}.
+hl.segmentBool{type: "bool", span: S, highlight: false} :-
+  ast.bool{span: S}.
 
 # identifiers
 hl.segmentIdent{type: "var", span: S, highlight: false} :-

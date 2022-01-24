@@ -4,6 +4,9 @@
 .segment-string {
   color: green;
 }
+.segment-bool {
+  color: blue;
+}
 .segment-keyword {
   color: orange;
 }
