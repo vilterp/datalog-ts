@@ -14,7 +14,11 @@ import {
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { metaGrammar, extractGrammar } from "../../parserlib/meta";
 import { validateGrammar } from "../../parserlib/validate";
-import { getAllStatements } from "../../parserlib/flatten";
+import {
+  declareTables,
+  flatten,
+  getAllStatements,
+} from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -29,12 +33,13 @@ import mainDL from "./dl/main.dl";
 // @ts-ignore
 import commonThemeCSS from "./commonTheme.css";
 import { LOADER } from "./dl";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 function Main() {
   return <Playground />;
 }
 
-const initInterp = new SimpleInterpreter(".", LOADER);
+const initInterp = new IncrementalInterpreter(".", LOADER);
 
 function Playground() {
   // state
@@ -50,11 +55,6 @@ function Playground() {
   const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
     initialEditorState(curExample.example)
   );
-  const [ruleTreeCollapseState, setRuleTreeCollapseState] =
-    useJSONLocalStorage<TreeCollapseState>(
-      "language-workbench-rule-tree-collapse-state",
-      emptyCollapseState
-    );
   const cursorPos = exampleEditorState.cursorPos;
   const langSource = exampleEditorState.source;
   const setExampleSource = (source: string) => {
@@ -198,10 +198,12 @@ function constructInterp({
     try {
       traceTree = parse(grammar, "main", langSource);
       ruleTree = extractRuleTree(traceTree);
-      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
-      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
+      const tableDecls = declareTables(grammar);
+      const flattenStmts = flatten(ruleTree, langSource);
+      finalInterp = finalInterp.evalStmts(tableDecls)[1];
       finalInterp = finalInterp.evalStr(mainDL)[1];
       finalInterp = ensureRequiredRelations(finalInterp);
+      finalInterp = finalInterp.insertAll(flattenStmts);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);

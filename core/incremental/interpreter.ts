@@ -36,6 +36,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     newInterp: AbstractInterpreter;
     output: Output;
   } {
+    console.log("==== processStmt ====");
     const interp = this;
     const graph = interp.graph;
     switch (stmt.type) {

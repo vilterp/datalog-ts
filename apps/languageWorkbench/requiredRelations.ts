@@ -7,11 +7,15 @@ const REQUIRED_RELATIONS = [
   "ast.string",
   "ast.int",
   "ast.bool",
+  "astInternal.firstChild",
+  "astInternal.lastChild",
+  "astInternal.next",
   "scope.Scope",
   "scope.Defn",
   "scope.Var",
   "scope.Parent",
   "scope.Placeholder",
+  "ide.Cursor",
 ];
 
 export function ensureRequiredRelations(

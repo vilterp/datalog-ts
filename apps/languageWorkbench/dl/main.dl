@@ -1,5 +1,5 @@
 .load ide.dl
 .load highlight.dl
-.load ruleTreeViz.dl
-.load scopeGraphViz.dl
-.load relationGraphViz.dl
+# .load ruleTreeViz.dl
+# .load scopeGraphViz.dl
+# .load relationGraphViz.dl
