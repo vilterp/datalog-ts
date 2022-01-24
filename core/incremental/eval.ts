@@ -10,9 +10,10 @@ import {
   addUnmappedRule,
   getIndexKey,
   getIndexName,
-  resolveUnmappedRule,
+  resolveUnmappedRules,
 } from "./build";
 import Denque from "denque";
+import { ppr } from "../pretty";
 
 export type Insertion = {
   res: Res;
@@ -42,11 +43,7 @@ export function addRule(
   newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
   const withEdge = addEdge(withSubst, orID, substID);
   const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
-  let resultGraph = withUnmapped;
-  for (let unmappedRuleName in withUnmapped.unmappedRules) {
-    const rule = withUnmapped.unmappedRules[unmappedRuleName];
-    resultGraph = resolveUnmappedRule(resultGraph, rule.rule, rule.newNodeIDs);
-  }
+  const resultGraph = resolveUnmappedRules(withUnmapped);
   if (Object.keys(resultGraph.unmappedRules).length === 0) {
     const nodesToReplay = new Set([
       ...flatMap(
@@ -124,7 +121,9 @@ export function insertFact(
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   if (Object.keys(graph.unmappedRules).length > 0) {
     throw new Error(
-      `some rules still rely on things not defined yet: [${mapObjToList(
+      `tried to insert fact ${ppr(
+        res
+      )} when some rules still rely on things not defined yet: [${mapObjToList(
         graph.unmappedRules,
         (name) => name
       ).join(", ")}]`
