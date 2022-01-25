@@ -4,16 +4,33 @@ scope.Scope{id: RuleID, label: N} :-
   ast.ident{parentID: RecordID, text: N}.
 
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
-  scope.defnRule{scopeID: I, span: S, name: N, kind: K}.
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnVar{scopeID: I, name: N, span: S, kind: K}.
 scope.defnRule{scopeID: "global", span: S, name: N, kind: "rule"} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
+# TODO: recurse into records as values
+scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.keyValue{id: KeyValueID, parentID: RecordID} &
+  ast.term{id: ValueTermID, parentID: KeyValueID} &
+  ast.var{span: S, text: N, parentID: ValueTermID}.
 
-scope.Var{scopeID: InstrID, name: N, span: S, kind: K} :-
-  scope.ruleInvocation{scopeID: InstrID, name: N, span: S, kind: K}.
-scope.ruleInvocation{scopeID: "global", name: N, span: S, kind: "rule"} :-
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
+  scope.varTerm{scopeID: I, name: N, span: S, kind: K}.
+scope.varRuleInvocation{scopeID: "global", name: N, span: S, kind: "rule"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
   ast.record{id: RecordID, parentID: DisjunctID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
+# TODO: bin exprs
+scope.varTerm{scopeID: I, name: N, span: S, kind: "var"} :-
+  ast.rule{id: RuleID} &
+  ast.disjunct{id: DisjunctID, parentID: RuleID} &
+  ast.record{id: RecordID, parentID: DisjunctID} &
+  ast.keyValue{id: KeyValueID, parentID: RecordID} &
+  ast.term{id: ValueTermID, parentID: KeyValueID} &
+  ast.var{parentID: ValueTermID, text: N, span: S}.
