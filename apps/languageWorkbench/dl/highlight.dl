@@ -23,6 +23,7 @@ hl.segmentIdent{type: "var", span: S, highlight: false} :-
 hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
   ide.CurrentUsage{defnLoc: S} &
   scope.Defn{span: S}.
+# TODO: highlight other usages
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S} &
   scope.Var{span: S}.
