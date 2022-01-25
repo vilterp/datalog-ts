@@ -1,0 +1,19 @@
+scope.Scope{id: RuleID, label: N} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.ident{parentID: RecordID, text: N}.
+
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K}.
+scope.defnRule{scopeID: "global", span: S, name: N, kind: "rule"} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.ident{parentID: RecordID, text: N, span: S}.
+
+scope.Var{scopeID: InstrID, name: N, span: S, kind: K} :-
+  scope.ruleInvocation{scopeID: InstrID, name: N, span: S, kind: K}.
+scope.ruleInvocation{scopeID: "global", name: N, span: S, kind: "rule"} :-
+  ast.rule{id: RuleID} &
+  ast.disjunct{id: DisjunctID, parentID: RuleID} &
+  ast.record{id: RecordID, parentID: DisjunctID} &
+  ast.ident{parentID: RecordID, text: N, span: S}.
