@@ -23,7 +23,8 @@ export const renameRefactorAction: EditorAction = {
   },
   apply(ctx: ActionContext): EditorState {
     const spans = getSpansToReplace(ctx.interp);
-    const newText = window.prompt("new text"); // TODO: do this inline or something. lol
+    const currentText = textAtSpan(ctx.state.source, spans[0]);
+    const newText = window.prompt("new text", currentText); // TODO: do this inline or something. lol
     const cursor = getCursor(ctx.interp);
     const cursorSpanIdx = spans.findIndex((span) =>
       spanContainsIdx(span, cursor)
@@ -60,6 +61,10 @@ function replaceAtSpans(code: string, spans: Span[], newText: string): string {
     (curCode, span) => replaceAtSpan(curCode, span, newText),
     code
   );
+}
+
+function textAtSpan(source: string, span: Span): string {
+  return source.slice(span.from, span.to);
 }
 
 // exported for testing

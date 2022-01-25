@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Rec, StringLit, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -20,9 +20,11 @@ function TreeViz(props: {
   const [collapseState, setCollapseState] = useState(emptyCollapseState);
   try {
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
-    const nodesRes = props.interp.queryStr(nodesQuery);
-    const rootTerm = props.spec.attrs.rootTerm;
-    const tree = treeFromRecords(nodesRes, rootTerm);
+    const tree = useMemo(() => {
+      const nodesRes = props.interp.queryStr(nodesQuery);
+      const rootTerm = props.spec.attrs.rootTerm;
+      return treeFromRecords(nodesRes, rootTerm);
+    }, [props.interp]);
     return (
       <TreeView
         collapseState={collapseState}
