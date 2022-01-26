@@ -1,0 +1,3 @@
+hl.mapping{rule: "int", type: "int"}.
+hl.mapping{rule: "string", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.

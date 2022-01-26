@@ -1,8 +1,3 @@
-ast.keyword{span: S} :-
-  ast.gotoKW{span: S}.
-
-# === Scope ===
-
 scope.Scope{id: I, label: L} :-
   scope.scopeInstr{id: I, label: L} |
   scope.scopeBlock{id: I, label: L}.
@@ -73,3 +68,11 @@ scope.placeholderValue{span: S, scopeID: I, kind: "value"} :-
 scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
   ast.Placeholder{id: PlaceholderID, parentID: GotoInstrID, span: S} &
   ast.gotoInstr{id: GotoInstrID, parentID: I}.
+
+# === highlighting ===
+
+hl.mapping{rule: "gotoKW", type: "keyword"}.
+hl.mapping{rule: "int", type: "int"}.
+hl.mapping{rule: "string", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.
