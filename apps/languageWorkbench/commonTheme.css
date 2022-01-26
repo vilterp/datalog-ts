@@ -10,6 +10,9 @@
 .segment-keyword {
   color: orange;
 }
+.segment-specialVar {
+  color: orange;
+}
 .segment-var {
   color: purple;
 }

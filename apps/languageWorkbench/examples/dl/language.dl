@@ -34,3 +34,9 @@ scope.varTerm{scopeID: I, name: N, span: S, kind: "var"} :-
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.var{parentID: ValueTermID, text: N, span: S}.
+
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "var", type: "specialVar"}.
+hl.mapping{rule: "int", type: "int"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "string", type: "string"}.
