@@ -2,11 +2,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 // this is the closest we've come thus far to specifying an API...
 const REQUIRED_RELATIONS = [
-  "ast.keyword",
-  "ast.ident",
-  "ast.string",
-  "ast.int",
-  "ast.bool",
+  "hl.mapping",
   "scope.Scope",
   "scope.Defn",
   "scope.Var",
