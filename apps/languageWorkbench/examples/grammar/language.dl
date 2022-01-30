@@ -1,0 +1,4 @@
+hl.mapping{rule: "repSepKW", type: "keyword"}.
+hl.mapping{rule: "text", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.

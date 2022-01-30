@@ -8,10 +8,15 @@ seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
 choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
 ref :- ident.
 text :- ["\"", repSep([a-z], ""), "\""].
-charRule :- ["[", ([A-Z]|[a-z]), "-", ([A-Z]|[a-z]), "]"].
-repSep :- ["repSep(", rule, commaSpace, rule, ")"].
+charRule :- ["[", alphaNum, "-", alphaNum, "]"].
+repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
+repSepKW :- "repSep".
 
-ident :- repSep([a-z], "").
+ident :- repSep(alpha, "").
 ws :- repSep((" "|"\n"), "").
 commaSpace :- [",", ws].
 placeholder :- "???".
+
+alphaNum :- (alpha | num).
+alpha :- ([a-z] | [A-Z]).
+num :- [0-9].
