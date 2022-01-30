@@ -4,8 +4,8 @@ ruleDefn :- [ident, ws, ":-", ws, rule, "."].
 
 rule :- (seq | choice | ref | text | charRule | repSep).
 
-seq :- ["[", repSep(rule, commaSpace), "]"].
-choice :- ["(", repSep(rule, commaSpace), ")"].
+seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
+choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
 ref :- ident.
 text :- ["\"", repSep([a-z], ""), "\""].
 charRule :- ["[", ([A-Z]|[a-z]), "-", ([A-Z]|[a-z]), "]"].
