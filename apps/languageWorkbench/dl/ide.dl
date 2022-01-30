@@ -60,7 +60,7 @@ ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
 # === suggestions ===
 
 ide.Suggestion{id: I, name: N, span: S} :-
-  scope.Placeholder{scopeID: I, name: N, span: S, kind: K} &
+  scope.Placeholder{scopeID: I, span: S, kind: K} &
   scope.Item{scopeID: I, name: N, kind: K}.
 
 ide.CurrentPlaceholder{id: I, span: span{from: FIdx, to: TIdx}} :-

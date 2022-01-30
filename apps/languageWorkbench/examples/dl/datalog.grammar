@@ -5,9 +5,9 @@ comment :- ["#", repSep(([a-z]|[A-Z]|" "), "")].
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws])].
 disjunct :- repSep(record, [ws, "&", ws]).
 
-term :- (record | int | var | string | bool).
+term :- (record | int | var | string | bool | placeholder).
 var :- [[A-Z], repSep(([A-Z]|[a-z]), "")].
-record :- [ident, "{", repSep(keyValue, [",", ws]), "}"].
+record :- [(ident | placeholder), "{", repSep(keyValue, [",", ws]), "}"].
 keyValue :- [ident, ":", ws, term].
 int :- [num, repSep(num, "")].
 string :- ["\"", repSep([a-z], ""), "\""].
@@ -18,3 +18,4 @@ num :- [0-9].
 alphaNum :- (alpha | num).
 ident :- [alpha, repSep((alphaNum | "."), "")].
 ws :- repSep((" "|"\n"), "").
+placeholder :- "???".

@@ -1,8 +1,8 @@
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.ident{type: T, span: S, highlight: H} |
-  hl.var{type: T, span: S, highlight: H} |
+  ???{type: T, span: S, highlight: H} |
   hl.int{type: T, span: S, highlight: H} |
-  hl.string{type: T, span: S, highlight: H}.
+  hl.string{type: T, span: S, highlight: ???}.
 
 hl.ident{type: "ident", span: S, highlight: false} :-
   ast.ident{span: S}.
