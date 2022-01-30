@@ -2,7 +2,7 @@ main :- repSep(ruleDefn, ws).
 
 ruleDefn :- [ident, ws, ":-", ws, rule, "."].
 
-rule :- (seq | choice | ref | text | charRule | repSep).
+rule :- (seq | choice | ref | text | charRule | repSep | placeholder).
 
 seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
 choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
