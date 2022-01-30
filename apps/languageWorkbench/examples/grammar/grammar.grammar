@@ -11,10 +11,7 @@ text :- ["\"", repSep([a-z], ""), "\""].
 charRule :- ["[", ([A-Z]|[a-z]), "-", ([A-Z]|[a-z]), "]"].
 repSep :- ["repSep(", rule, commaSpace, rule, ")"].
 
-ident :- [alpha, repSep((alphaNum | "."), "")].
-alpha :- ([a-z] | [A-Z] | "_").
-num :- [0-9].
-alphaNum :- (alpha | num).
+ident :- repSep([a-z], "").
 ws :- repSep((" "|"\n"), "").
 commaSpace :- [",", ws].
 placeholder :- "???".
