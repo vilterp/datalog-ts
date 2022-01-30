@@ -20,7 +20,6 @@ export function ensureRequiredRelations(
   let finalInterp = interp;
   REQUIRED_RELATIONS.forEach((requiredTable) => {
     if (!existing.has(requiredTable)) {
-      console.log("adding", requiredTable);
       finalInterp = finalInterp.evalStmt({
         type: "TableDecl",
         name: requiredTable,
