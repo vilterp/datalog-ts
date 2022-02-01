@@ -1,11 +1,11 @@
 scope.Scope{id: "global", label: "global"}.
 
-scope.Defn{scopeID: I, span: S, name: N, kind: "rule"} :-
+scope.Defn{scopeID: "global", span: S, name: N, kind: "rule"} :-
   ast.ruleDefn{id: I} &
   ast.ident{parentID: I, span: S, text: N}.
 
-# scope.Var{scopeID: I, name: N, span: S, kind: "rule"} :-
-#  XXX.
+scope.Var{scopeID: "global", name: N, span: S, kind: "rule"} :-
+  ast.ref{span: S, text: N}.
 
 # scope.Placeholder{scopeID: I, span: S, kind: K} :-
 #   XXX.
