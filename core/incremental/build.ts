@@ -39,7 +39,6 @@ export function resolveUnmappedRule(
   rule: Rule,
   newNodes: Set<NodeID>
 ): RuleGraph {
-  console.log("try resolving", rule.head.relation);
   let curGraph = graph;
   let resolved = true;
   for (let newNodeID of newNodes) {
@@ -49,7 +48,6 @@ export function resolveUnmappedRule(
       const callRec = nodeDesc.rec;
       const callNode = graph.nodes.get(callRec.relation);
       if (!callNode) {
-        console.log("  missing", callRec.relation);
         // not defined yet
         resolved = false;
         // console.log("=> exit: not defined yet:", callRec.relation);
@@ -73,7 +71,6 @@ export function resolveUnmappedRule(
       curGraph = updateMappings(curGraph, newNodeID, mappings);
     }
   }
-  console.log("  resolved", resolved);
   // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
   return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
 }
