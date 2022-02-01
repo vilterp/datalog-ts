@@ -25,6 +25,15 @@ import basicBlocksGrammar from "./basicBlocks/basicBlocks.grammar";
 // @ts-ignore
 import basicBlocksExample from "./basicBlocks/example.txt";
 
+// grammar
+
+// @ts-ignore
+import grammarDL from "./grammar/language.dl";
+// @ts-ignore
+import grammarGrammar from "./grammar/grammar.grammar";
+// @ts-ignore
+import grammarExample from "./grammar/example.txt";
+
 export const EXAMPLES: { [name: string]: LanguageSpec } = {
   datalog: {
     datalog: datalogDL,
@@ -40,6 +49,11 @@ export const EXAMPLES: { [name: string]: LanguageSpec } = {
     datalog: basicBlocksDL,
     grammar: basicBlocksGrammar,
     example: basicBlocksExample,
+  },
+  grammar: {
+    datalog: grammarDL,
+    grammar: grammarGrammar,
+    example: grammarExample,
   },
 };
 

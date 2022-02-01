@@ -1,0 +1,22 @@
+main :- repSep(ruleDefn, ws).
+
+ruleDefn :- [ident, ws, ":-", ws, rule, "."].
+
+rule :- (seq | choice | ref | text | charRule | repSep | placeholder).
+
+seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
+choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
+ref :- ident.
+text :- ["\"", repSep([a-z], ""), "\""].
+charRule :- ["[", alphaNum, "-", alphaNum, "]"].
+repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
+repSepKW :- "repSep".
+
+ident :- repSep(alpha, "").
+ws :- repSep((" "|"\n"), "").
+commaSpace :- [",", ws].
+placeholder :- "???".
+
+alphaNum :- (alpha | num).
+alpha :- ([a-z] | [A-Z]).
+num :- [0-9].

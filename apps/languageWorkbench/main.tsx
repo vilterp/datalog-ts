@@ -171,7 +171,7 @@ function constructInterp({
     formatParseError
   );
   const grammarErrors =
-    grammarParseErrors.length > 0 ? validateGrammar(grammar) : [];
+    grammarParseErrors.length === 0 ? validateGrammar(grammar) : [];
   const [interpWithRules, dlErrors] = (() => {
     try {
       const result =

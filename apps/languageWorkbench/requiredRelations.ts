@@ -8,6 +8,7 @@ const REQUIRED_RELATIONS = [
   "scope.Var",
   "scope.Parent",
   "scope.Placeholder",
+  "ast.Placeholder", // to stop the annoying warning from the "jump to placeholder" action
 ];
 
 export function ensureRequiredRelations(
@@ -20,7 +21,6 @@ export function ensureRequiredRelations(
   let finalInterp = interp;
   REQUIRED_RELATIONS.forEach((requiredTable) => {
     if (!existing.has(requiredTable)) {
-      console.log("adding", requiredTable);
       finalInterp = finalInterp.evalStmt({
         type: "TableDecl",
         name: requiredTable,
