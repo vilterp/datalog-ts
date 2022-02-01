@@ -7,8 +7,8 @@ scope.Defn{scopeID: "global", span: S, name: N, kind: "rule"} :-
 scope.Var{scopeID: "global", name: N, span: S, kind: "rule"} :-
   ast.ref{span: S, text: N}.
 
-# scope.Placeholder{scopeID: I, span: S, kind: K} :-
-#   XXX.
+scope.Placeholder{scopeID: "global", span: S, kind: "rule"} :-
+  ast.placeholder{span: S}.
 
 hl.mapping{rule: "repSepKW", type: "keyword"}.
 hl.mapping{rule: "text", type: "string"}.
