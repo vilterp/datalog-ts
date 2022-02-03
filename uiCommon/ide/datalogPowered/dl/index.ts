@@ -1,4 +1,4 @@
-import { makeMemoryLoader } from "../../../core/loaders";
+import { makeMemoryLoader } from "../../../../core/loaders";
 // @ts-ignore
 import ruleTreeVizDL from "./ruleTreeViz.dl";
 // @ts-ignore
@@ -8,7 +8,7 @@ import highlightDL from "./highlight.dl";
 // @ts-ignore
 import scopeGraphVizDL from "./scopeGraphViz.dl";
 // @ts-ignore
-import relationGraphVizDL from "../../../uiCommon/visualizations/relationGraphViz.dl";
+import relationGraphVizDL from "../../../visualizations/relationGraphViz.dl";
 
 export const LOADER = makeMemoryLoader({
   "./ide.dl": ideDL,
