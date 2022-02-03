@@ -39,7 +39,12 @@ export function WrappedCodeEditor(props: {
         dlSource: props.datalog,
         langSource: props.editorState.source,
       }),
-    []
+    [
+      props.grammar,
+      props.editorState.cursorPos,
+      props.datalog,
+      props.editorState.source,
+    ]
   );
 
   return (
