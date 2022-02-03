@@ -11,7 +11,10 @@ import useHashParam from "use-hash-param";
 import commonThemeCSS from "./commonTheme.css";
 import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import { constructInterp } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+import {
+  constructInterp,
+  WrappedCodeEditor,
+} from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 
@@ -28,8 +31,13 @@ function Playground() {
 
   const curExample = EXAMPLES[exampleName];
 
-  const [grammarSource, setGrammarSource] = useState(curExample.grammar);
-  const [dlSource, setDLSource] = useState(curExample.datalog);
+  const [grammarEditorState, setGrammarEditorState] = useState(
+    initialEditorState(curExample.grammar)
+  );
+  const [dlEditorState, setDLEditorState] = useState(
+    initialEditorState(curExample.datalog)
+  );
+
   const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
     initialEditorState(curExample.example)
   );
@@ -44,18 +52,18 @@ function Playground() {
       constructInterp({
         initInterp,
         cursorPos,
-        dlSource,
-        grammarSource,
+        dlSource: dlEditorState.source,
+        grammarSource: grammarEditorState.source,
         langSource,
       }),
-    [cursorPos, dlSource, grammarSource, langSource]
+    [cursorPos, dlEditorState.source, grammarEditorState.source, langSource]
   );
 
   const setExample = (name) => {
     setExampleName(name);
     const example = EXAMPLES[name];
-    setGrammarSource(example.grammar);
-    setDLSource(example.datalog);
+    setGrammarEditorState({ ...grammarEditorState, source: example.grammar });
+    setDLEditorState({ ...dlEditorState, source: example.datalog });
     setExampleSource(example.example);
   };
 
@@ -96,23 +104,23 @@ function Playground() {
             </td>
             <td>
               <h3>Grammar Source</h3>
-              <textarea
-                value={grammarSource}
-                onChange={(evt) => setGrammarSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
+              <WrappedCodeEditor
+                editorState={grammarEditorState}
+                setEditorState={setGrammarEditorState}
+                datalog={EXAMPLES.grammar.datalog}
+                grammar={EXAMPLES.grammar.grammar}
+                highlightCSS={commonThemeCSS}
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
-              <textarea
-                value={dlSource}
-                onChange={(evt) => setDLSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
+              <WrappedCodeEditor
+                editorState={dlEditorState}
+                setEditorState={setDLEditorState}
+                datalog={EXAMPLES.datalog.datalog}
+                grammar={EXAMPLES.datalog.grammar}
+                highlightCSS={commonThemeCSS}
               />
               <ErrorList errors={dlErrors} />
             </td>
