@@ -1,6 +1,9 @@
-import React, { useMemo } from "react";
-import { ensureRequiredRelations } from "./requiredRelations";
+import React from "react";
+import { useMemo } from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { SimpleInterpreter } from "../../../core/simple/interpreter";
+import { getAllStatements } from "../../../parserlib/flatten";
+import { extractGrammar, metaGrammar } from "../../../parserlib/meta";
 import {
   formatParseError,
   getErrors,
@@ -8,18 +11,13 @@ import {
   TraceTree,
 } from "../../../parserlib/parser";
 import { extractRuleTree, RuleTree } from "../../../parserlib/ruleTree";
-import { EditorBox } from "../editorCommon";
-import { highlight } from "../highlight";
-import { Suggestion } from "../suggestions";
-import { ActionContext, EditorState } from "../types";
-import { getSuggestions } from "./suggestions";
-import { extractGrammar, metaGrammar } from "../../../parserlib/meta";
 import { validateGrammar } from "../../../parserlib/validate";
-import { getAllStatements } from "../../../parserlib/flatten";
+import { EditorState } from "../types";
+import { LOADER } from "./dl";
+import { ensureRequiredRelations } from "./requiredRelations";
 // @ts-ignore
 import mainDL from "./dl/main.dl";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
-import { LOADER } from "../../../apps/fp/dl";
+import { OpenCodeEditor } from "./openCodeEditor";
 import { ErrorList } from "../errorList";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
@@ -60,52 +58,6 @@ export function WrappedCodeEditor(props: {
   );
 }
 
-export function OpenCodeEditor(props: {
-  editorState: EditorState;
-  setEditorState: (st: EditorState) => void;
-  interp: AbstractInterpreter;
-  validGrammar: boolean;
-  highlightCSS: string;
-  locatedErrors: { offset: number }[];
-}) {
-  let highlighted: React.ReactNode = <>{props.editorState.source}</>;
-  let error = null;
-  if (props.validGrammar) {
-    try {
-      highlighted = highlight(props.interp, props.editorState.source, 0, []);
-    } catch (e) {
-      error = e.toString();
-    }
-  }
-
-  let suggestions: Suggestion[] = [];
-  try {
-    suggestions = getSuggestions(props.interp);
-  } catch (e) {
-    console.warn("error while getting suggestions:", e);
-  }
-
-  const actionCtx: ActionContext = {
-    interp: props.interp,
-    state: props.editorState,
-    suggestions,
-    errors: props.locatedErrors,
-  };
-
-  return (
-    <EditorBox
-      highlightCSS={props.highlightCSS}
-      actionCtx={actionCtx}
-      editorState={props.editorState}
-      setEditorState={props.setEditorState}
-      errorsToDisplay={[]} // TODO: pass through errors
-      highlighted={highlighted}
-      suggestions={suggestions}
-    />
-  );
-}
-
-// TODO: should this be exported?
 export function constructInterp({
   initInterp,
   dlSource,

@@ -3,10 +3,7 @@ import ReactDOM from "react-dom";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
-import {
-  constructInterp,
-  OpenCodeEditor,
-} from "../../uiCommon/ide/datalogPowered/codeEditor";
+import { OpenCodeEditor } from "../../uiCommon/ide/datalogPowered/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
 import useHashParam from "use-hash-param";
@@ -14,6 +11,7 @@ import useHashParam from "use-hash-param";
 import commonThemeCSS from "./commonTheme.css";
 import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
 import { ErrorList } from "../../uiCommon/ide/errorList";
+import { constructInterp } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 
