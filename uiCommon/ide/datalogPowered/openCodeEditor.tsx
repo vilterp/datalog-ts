@@ -13,6 +13,7 @@ export function OpenCodeEditor(props: {
   validGrammar: boolean;
   highlightCSS: string;
   locatedErrors: { offset: number }[];
+  hideKeyBindingsTable?: boolean;
 }) {
   let highlighted: React.ReactNode = <>{props.editorState.source}</>;
   let error = null;
@@ -47,6 +48,7 @@ export function OpenCodeEditor(props: {
       errorsToDisplay={[]} // TODO: pass through errors
       highlighted={highlighted}
       suggestions={suggestions}
+      hideKeyBindingsTable={props.hideKeyBindingsTable}
     />
   );
 }

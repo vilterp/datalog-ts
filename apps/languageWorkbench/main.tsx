@@ -110,6 +110,7 @@ function Playground() {
                 datalog={EXAMPLES.grammar.datalog}
                 grammar={EXAMPLES.grammar.grammar}
                 highlightCSS={commonThemeCSS}
+                hideKeyBindingsTable
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
@@ -121,6 +122,7 @@ function Playground() {
                 datalog={EXAMPLES.datalog.datalog}
                 grammar={EXAMPLES.datalog.grammar}
                 highlightCSS={commonThemeCSS}
+                hideKeyBindingsTable
               />
               <ErrorList errors={dlErrors} />
             </td>
