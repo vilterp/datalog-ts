@@ -259,3 +259,41 @@ grammar [0-17]
     }
   }
 }
+
+escapedQuote :- ['\', '"'].
+----
+text/plain
+grammar [0-27]
+  ruleDefn [0-27]
+    ruleName: "escapedQuote" [0-12]
+    rule [16-26]
+      seq [16-26]
+        rule [17-20]
+          charRule [17-20]
+            crLiteral [17-20]
+              singleChar: "\\" [18-19]
+        rule [22-25]
+          charRule [22-25]
+            crLiteral [22-25]
+              singleChar: "\"" [23-24]
+{
+  "escapedQuote": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Char",
+        "rule": {
+          "type": "Literal",
+          "value": "\\"
+        }
+      },
+      {
+        "type": "Char",
+        "rule": {
+          "type": "Literal",
+          "value": "\""
+        }
+      }
+    ]
+  }
+}
