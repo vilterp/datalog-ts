@@ -6,13 +6,14 @@ import { Suggestion } from "../suggestions";
 import { ActionContext, EditorState } from "../types";
 import { getSuggestions } from "./suggestions";
 
-export function CodeEditor(props: {
+export function OpenCodeEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   interp: AbstractInterpreter;
   validGrammar: boolean;
   highlightCSS: string;
   locatedErrors: { offset: number }[];
+  hideKeyBindingsTable?: boolean;
 }) {
   let highlighted: React.ReactNode = <>{props.editorState.source}</>;
   let error = null;
@@ -47,6 +48,7 @@ export function CodeEditor(props: {
       errorsToDisplay={[]} // TODO: pass through errors
       highlighted={highlighted}
       suggestions={suggestions}
+      hideKeyBindingsTable={props.hideKeyBindingsTable}
     />
   );
 }

@@ -1,40 +1,26 @@
 import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom";
-import {
-  formatParseError,
-  getErrors,
-  parse,
-  TraceTree,
-} from "../../parserlib/parser";
-import { extractRuleTree, RuleTree } from "../../parserlib/ruleTree";
-import {
-  TreeCollapseState,
-  emptyCollapseState,
-} from "../../uiCommon/generic/treeView";
-import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
-import { metaGrammar, extractGrammar } from "../../parserlib/meta";
-import { validateGrammar } from "../../parserlib/validate";
-import { getAllStatements } from "../../parserlib/flatten";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { mapObjToList, uniq } from "../../util/util";
-import { CodeEditor } from "../../uiCommon/ide/parserlibPowered/codeEditor";
-import { ensureRequiredRelations } from "./requiredRelations";
+import { mapObjToList } from "../../util/util";
+import { OpenCodeEditor } from "../../uiCommon/ide/datalogPowered/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { EXAMPLES } from "./examples";
 import useHashParam from "use-hash-param";
 // @ts-ignore
-import mainDL from "./dl/main.dl";
-// @ts-ignore
 import commonThemeCSS from "./commonTheme.css";
-import { LOADER } from "./dl";
+import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
+import { ErrorList } from "../../uiCommon/ide/errorList";
+import {
+  constructInterp,
+  WrappedCodeEditor,
+} from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+
+const initInterp = new SimpleInterpreter(".", LOADER);
 
 function Main() {
   return <Playground />;
 }
-
-const initInterp = new SimpleInterpreter(".", LOADER);
 
 function Playground() {
   // state
@@ -45,16 +31,16 @@ function Playground() {
 
   const curExample = EXAMPLES[exampleName];
 
-  const [grammarSource, setGrammarSource] = useState(curExample.grammar);
-  const [dlSource, setDLSource] = useState(curExample.datalog);
+  const [grammarEditorState, setGrammarEditorState] = useState(
+    initialEditorState(curExample.grammar)
+  );
+  const [dlEditorState, setDLEditorState] = useState(
+    initialEditorState(curExample.datalog)
+  );
+
   const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
     initialEditorState(curExample.example)
   );
-  const [ruleTreeCollapseState, setRuleTreeCollapseState] =
-    useJSONLocalStorage<TreeCollapseState>(
-      "language-workbench-rule-tree-collapse-state",
-      emptyCollapseState
-    );
   const cursorPos = exampleEditorState.cursorPos;
   const langSource = exampleEditorState.source;
   const setExampleSource = (source: string) => {
@@ -64,19 +50,20 @@ function Playground() {
   const { finalInterp, allGrammarErrors, langParseError, dlErrors } = useMemo(
     () =>
       constructInterp({
+        initInterp,
         cursorPos,
-        dlSource,
-        grammarSource,
+        dlSource: dlEditorState.source,
+        grammarSource: grammarEditorState.source,
         langSource,
       }),
-    [cursorPos, dlSource, grammarSource, langSource]
+    [cursorPos, dlEditorState.source, grammarEditorState.source, langSource]
   );
 
   const setExample = (name) => {
     setExampleName(name);
     const example = EXAMPLES[name];
-    setGrammarSource(example.grammar);
-    setDLSource(example.datalog);
+    setGrammarEditorState({ ...grammarEditorState, source: example.grammar });
+    setDLEditorState({ ...dlEditorState, source: example.datalog });
     setExampleSource(example.example);
   };
 
@@ -105,7 +92,7 @@ function Playground() {
           <tr>
             <td>
               <h3>Language Source</h3>
-              <CodeEditor
+              <OpenCodeEditor
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
                 interp={finalInterp}
@@ -117,23 +104,25 @@ function Playground() {
             </td>
             <td>
               <h3>Grammar Source</h3>
-              <textarea
-                value={grammarSource}
-                onChange={(evt) => setGrammarSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
+              <WrappedCodeEditor
+                editorState={grammarEditorState}
+                setEditorState={setGrammarEditorState}
+                datalog={EXAMPLES.grammar.datalog}
+                grammar={EXAMPLES.grammar.grammar}
+                highlightCSS={commonThemeCSS}
+                hideKeyBindingsTable
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
-              <textarea
-                value={dlSource}
-                onChange={(evt) => setDLSource(evt.target.value)}
-                rows={10}
-                cols={50}
-                spellCheck={false}
+              <WrappedCodeEditor
+                editorState={dlEditorState}
+                setEditorState={setDLEditorState}
+                datalog={EXAMPLES.datalog.datalog}
+                grammar={EXAMPLES.datalog.grammar}
+                highlightCSS={commonThemeCSS}
+                hideKeyBindingsTable
               />
               <ErrorList errors={dlErrors} />
             </td>
@@ -151,85 +140,6 @@ function Playground() {
       </>
     </>
   );
-}
-
-function constructInterp({
-  dlSource,
-  grammarSource,
-  langSource,
-  cursorPos,
-}: {
-  dlSource: string;
-  grammarSource: string;
-  langSource: string;
-  cursorPos: number;
-}) {
-  const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
-  const grammarRuleTree = extractRuleTree(grammarTraceTree);
-  const grammar = extractGrammar(grammarSource, grammarRuleTree);
-  const grammarParseErrors = getErrors(grammarSource, grammarTraceTree).map(
-    formatParseError
-  );
-  const grammarErrors =
-    grammarParseErrors.length === 0 ? validateGrammar(grammar) : [];
-  const [interpWithRules, dlErrors] = (() => {
-    try {
-      const result =
-        dlSource.length > 0 ? initInterp.evalStr(dlSource)[1] : initInterp;
-      return [result, []];
-    } catch (e) {
-      return [initInterp, [e.toString()]];
-    }
-  })();
-  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
-  const allGrammarErrors = [
-    ...grammarErrors,
-    ...grammarParseErrors,
-    ...noMainError,
-  ];
-
-  // initialize stuff that we'll fill in later, if parse succeeds
-  let traceTree: TraceTree = null;
-  let ruleTree: RuleTree = null;
-  let langParseError: string = null;
-  let finalInterp: AbstractInterpreter = interpWithRules;
-
-  if (allGrammarErrors.length === 0) {
-    try {
-      traceTree = parse(grammar, "main", langSource);
-      ruleTree = extractRuleTree(traceTree);
-      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
-      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = finalInterp.evalStr(mainDL)[1];
-      finalInterp = ensureRequiredRelations(finalInterp);
-    } catch (e) {
-      langParseError = e.toString();
-      console.error(e);
-    }
-  }
-  finalInterp = finalInterp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
-
-  return {
-    finalInterp,
-    allGrammarErrors,
-    langParseError,
-    dlErrors,
-  };
-}
-
-function ErrorList(props: { errors: string[] }) {
-  return props.errors.length > 0 ? (
-    <ul>
-      {uniq(props.errors).map((err) => (
-        <li
-          key={err}
-          style={{ color: "red", fontFamily: "monospace", whiteSpace: "pre" }}
-        >
-          {err}
-        </li>
-      ))}
-    </ul>
-  ) : null;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

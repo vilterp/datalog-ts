@@ -7,7 +7,7 @@ rule :- (seq | choice | ref | text | charRule | repSep | placeholder).
 seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
 choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
 ref :- ident.
-text :- ["\"", repSep([a-z], ""), "\""].
+text :- ["\"", repSep(stringChar, ""), "\""].
 charRule :- ["[", alphaNum, "-", alphaNum, "]"].
 repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
 repSepKW :- "repSep".
@@ -20,3 +20,4 @@ placeholder :- "???".
 alphaNum :- (alpha | num).
 alpha :- ([a-z] | [A-Z]).
 num :- [0-9].
+stringChar :- ([^'"'] | ['\', '"']).

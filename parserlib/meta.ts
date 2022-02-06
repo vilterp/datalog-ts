@@ -11,6 +11,7 @@ import {
   SingleCharRule,
   literalChar,
   range,
+  notChar,
 } from "./grammar";
 import {
   ident,
@@ -138,7 +139,9 @@ function extractRule(input: string, rt: RuleTree): Rule {
 function extractCharRule(input: string, rt: RuleTree): SingleCharRule {
   switch (rt.name) {
     case "crNot":
-      return extractCharRule(input, childByName(rt, "charRule"));
+      return notChar(
+        extractCharRule(input, childByName(rt, "charRule").children[0])
+      );
     case "crRange":
       return range(
         textForSpan(input, rt.children[0].span),
@@ -150,5 +153,7 @@ function extractCharRule(input: string, rt: RuleTree): SingleCharRule {
       );
     case "crAny":
       return anyChar;
+    default:
+      throw new Error(`unknown char rule type: ${rt.name}`);
   }
 }
