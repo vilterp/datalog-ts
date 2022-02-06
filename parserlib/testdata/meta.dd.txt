@@ -234,3 +234,28 @@ grammar [0-277]
     ]
   }
 }
+
+notQuote :- ^'"'.
+----
+text/plain
+grammar [0-17]
+  ruleDefn [0-17]
+    ruleName: "notQuote" [0-8]
+    rule [12-16]
+      charRule [12-16]
+        crNot [12-16]
+          charRule [13-16]
+            crLiteral [13-16]
+              singleChar: "\"" [14-15]
+{
+  "notQuote": {
+    "type": "Char",
+    "rule": {
+      "type": "Not",
+      "rule": {
+        "type": "Literal",
+        "value": "\""
+      }
+    }
+  }
+}
