@@ -2,8 +2,9 @@ scope.Scope{id: I, label: I} :-
   ast.expr{id: I}.
 
 scope.Defn{scopeID: I, span: S, name: N, kind: "var"} :-
-  ast.letExpr{id: I} &
-  ast.ident{parentID: I, text: N, span: S}.
+  ast.expr{id: I} &
+  ast.letExpr{id: LetExprID, parentID: I} &
+  ast.ident{parentID: LetExprID, text: N, span: S}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
   ast.expr{id: I} &
@@ -12,8 +13,10 @@ scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
   ast.funcCall{id: FuncCallID, parentID: I} &
   ast.varExpr{parentID: FuncCallID, text: N, span: S}.
 
-# scope.Parent{} :-
-#   XXX.
+scope.Parent{childID: ChildID, parentID: ParentID} :-
+  ast.expr{id: ParentID} &
+  astInternal.node{parentID: ParentID, id: IntermediateID} &
+  ast.expr{id: ChildID, parentID: IntermediateID}.
 
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "stringLit", type: "string"}.
