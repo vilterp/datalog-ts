@@ -1,0 +1,30 @@
+scope.Scope{id: I, label: I} :-
+  ast.expr{id: I}.
+
+scope.Defn{scopeID: I, span: S, name: N, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.letExpr{id: LetExprID, parentID: I} &
+  ast.ident{parentID: LetExprID, text: N, span: S}.
+
+scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.varExpr{parentID: I, text: N, span: S} |
+  ast.expr{id: I} &
+  ast.funcCall{id: FuncCallID, parentID: I} &
+  ast.varExpr{parentID: FuncCallID, text: N, span: S}.
+
+scope.Parent{childID: ChildID, parentID: ParentID} :-
+  ast.expr{id: ParentID} &
+  astInternal.node{parentID: ParentID, id: IntermediateID} &
+  ast.expr{id: ChildID, parentID: IntermediateID}.
+
+scope.Placeholder{scopeID: I, span: S, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.placeholder{parentID: I, span: S}.
+
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "letKW", type: "keyword"}.
+hl.mapping{rule: "inKW", type: "keyword"}.
