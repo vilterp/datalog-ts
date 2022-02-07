@@ -1,1 +1,3 @@
-let x = 2 in intToString(x)
+let x = f(2) in
+let y = g(x) in
+intToString(???)

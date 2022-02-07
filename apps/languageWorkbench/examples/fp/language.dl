@@ -18,6 +18,10 @@ scope.Parent{childID: ChildID, parentID: ParentID} :-
   astInternal.node{parentID: ParentID, id: IntermediateID} &
   ast.expr{id: ChildID, parentID: IntermediateID}.
 
+scope.Placeholder{scopeID: I, span: S, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.placeholder{parentID: I, span: S}.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "bool"}.
