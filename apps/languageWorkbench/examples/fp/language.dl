@@ -1,3 +1,20 @@
+scope.Scope{id: I, label: I} :-
+  ast.expr{id: I}.
+
+scope.Defn{scopeID: I, span: S, name: N, kind: "var"} :-
+  ast.letExpr{id: I} &
+  ast.ident{parentID: I, text: N, span: S}.
+
+scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.varExpr{parentID: I, text: N, span: S} |
+  ast.expr{id: I} &
+  ast.funcCall{id: FuncCallID, parentID: I} &
+  ast.varExpr{parentID: FuncCallID, text: N, span: S}.
+
+# scope.Parent{} :-
+#   XXX.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "bool"}.
