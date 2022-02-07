@@ -11,9 +11,6 @@ import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
-import Graphviz from "graphviz-react";
-import { prettyPrintGraph } from "../../util/graphviz";
-import { ruleToGraph } from "../dl/ruleGraph";
 
 export function RelationTable(props: {
   relation: string;
@@ -54,7 +51,7 @@ export function RelationTable(props: {
       {relation.type === "Rule" ? (
         <>
           <RuleC highlight={props.highlight} rule={relation.rule} />
-          <Graphviz dot={prettyPrintGraph(ruleToGraph(relation.rule))} />
+          {/* <Graphviz dot={prettyPrintGraph(ruleToGraph(relation.rule))} /> */}
         </>
       ) : null}
       {results.length === 0 ? (
