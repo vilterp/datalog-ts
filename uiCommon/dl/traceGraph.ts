@@ -1,17 +1,17 @@
-import { Graph, recordLeaf, recordNode, RecordTree } from "../util/graphviz";
-import { Tree } from "../util/tree";
-import { objToPairs } from "../util/util";
+import { Graph, recordLeaf, recordNode, RecordTree } from "../../util/graphviz";
+import { Tree } from "../../util/tree";
+import { objToPairs } from "../../util/util";
 import {
   defaultTracePrintOpts,
   ppt,
   prettyPrintTermWithBindings,
-} from "./pretty";
+} from "../../core/pretty";
 import {
   makeTermWithBindings,
   printTermWithBindings,
   traceToTree,
-} from "./traceTree";
-import { Res, TermWithBindings } from "./types";
+} from "../../core/traceTree";
+import { Res, TermWithBindings } from "../../core/types";
 import * as pp from "prettier-printer";
 
 export function traceToGraph(res: Res): Graph {
