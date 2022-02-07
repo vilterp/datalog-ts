@@ -8,7 +8,7 @@ import { Suite } from "../../util/testBench/testing";
 import { ruleToGraph } from "./ruleGraph";
 
 export function uiCommonTests(writeResults: boolean): Suite {
-  return suiteFromDDTestsInDir("uiCommon/dl/testData", writeResults, [
+  return suiteFromDDTestsInDir("uiCommon/dl/testdata", writeResults, [
     ["ruleGraph", ruleGraphTest],
   ]);
 }
