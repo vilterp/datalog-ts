@@ -49,10 +49,7 @@ export function RelationTable(props: {
   return (
     <>
       {relation.type === "Rule" ? (
-        <>
-          <RuleC highlight={props.highlight} rule={relation.rule} />
-          {/* <Graphviz dot={prettyPrintGraph(ruleToGraph(relation.rule))} /> */}
-        </>
+        <RuleC highlight={props.highlight} rule={relation.rule} />
       ) : null}
       {results.length === 0 ? (
         error === "" ? (
