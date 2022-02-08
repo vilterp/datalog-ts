@@ -1,7 +1,7 @@
 // DL
 
 // @ts-ignore
-import datalogDL from "./dl/language.dl";
+import datalogDL from "./dl/datalog.dl";
 // @ts-ignore
 import datalogGrammar from "./dl/datalog.grammar";
 // @ts-ignore
@@ -10,7 +10,7 @@ import datalogExample from "./dl/example.txt";
 // JSON
 
 // @ts-ignore
-import jsonDL from "./json/language.dl";
+import jsonDL from "./json/json.dl";
 // @ts-ignore
 import jsonGrammar from "./json/json.grammar";
 // @ts-ignore
@@ -19,7 +19,7 @@ import jsonExample from "./json/example.txt";
 // basic blocks
 
 // @ts-ignore
-import basicBlocksDL from "./basicBlocks/language.dl";
+import basicBlocksDL from "./basicBlocks/basicBlocks.dl";
 // @ts-ignore
 import basicBlocksGrammar from "./basicBlocks/basicBlocks.grammar";
 // @ts-ignore
@@ -28,7 +28,7 @@ import basicBlocksExample from "./basicBlocks/example.txt";
 // grammar
 
 // @ts-ignore
-import grammarDL from "./grammar/language.dl";
+import grammarDL from "./grammar/grammar.dl";
 // @ts-ignore
 import grammarGrammar from "./grammar/grammar.grammar";
 // @ts-ignore
@@ -37,7 +37,7 @@ import grammarExample from "./grammar/example.txt";
 // fp
 
 // @ts-ignore
-import fpDL from "./fp/language.dl";
+import fpDL from "./fp/fp.dl";
 // @ts-ignore
 import fpGrammar from "./fp/fp.grammar";
 // @ts-ignore
