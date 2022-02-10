@@ -10,4 +10,4 @@ CREATE TABLE posts (
 );
 
 SELECT id FROM users;
-SELECT id FROM posts;
+SELECT id, ??? FROM posts;
