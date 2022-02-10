@@ -1,3 +1,21 @@
+# scope.Scope{id: I, label: L} :-
+#   XXX.
+
+# scope.Parent{childID: ChildID, parentID: ParentID} :-
+#   XXX.
+
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.tableDefn{scopeID: I, span: S, name: N, kind: K}.
+scope.tableDefn{scopeID: "global", span: S, name: N, kind: "table"} :-
+  ast.createTableStmt{id: CreateTableID} &
+  ast.tableName{parentID: CreateTableID, text: N, span: S}.
+
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.tableUsage{scopeID: I, name: N, span: S, kind: K}.
+scope.tableUsage{scopeID: "global", name: N, span: S, kind: "table"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.tableName{parentID: SelectID, span: S, text: N}.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "bool"}.
