@@ -1,0 +1,10 @@
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "type", type: "ident"}.
+
+hl.mapping{rule: "createKW", type: "keyword"}.
+hl.mapping{rule: "tableKW", type: "keyword"}.
+hl.mapping{rule: "selectKW", type: "keyword"}.
+hl.mapping{rule: "fromKW", type: "keyword"}.

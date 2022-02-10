@@ -1,0 +1,32 @@
+main :- repSep(statement, ws).
+
+statement :- [(selectStmt | createTableStmt), ";"].
+
+selectStmt :- [selectKW, ws, selection, ws, fromKW, ws, tableName].
+selection :- repSep(columnName, ", ").
+
+createTableStmt :- [createKW, ws, tableKW, ws, tableName, ws, "(", ws, repSep(colSpec, commaWS), ws, ")"].
+
+colSpec :- [columnName, ws, type].
+
+type :- ("INT" | "TEXT").
+
+createKW :- "CREATE".
+tableKW :- "TABLE".
+selectKW :- "SELECT".
+fromKW :- "FROM".
+
+columnName :- ident.
+tableName :- ident.
+
+int :- [num, repSep(num, "")].
+string :- ["\"", repSep([a-z], ""), "\""].
+bool :- ("true" | "false").
+
+ident :- [alpha, repSep((alphaNum | "."), "")].
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep((" "|"\n"), "").
+commaWS :- [",", ws].
+placeholder :- "???".

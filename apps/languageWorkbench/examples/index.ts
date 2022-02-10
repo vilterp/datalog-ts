@@ -43,6 +43,15 @@ import fpGrammar from "./fp/fp.grammar";
 // @ts-ignore
 import fpExample from "./fp/example.txt";
 
+// SQL
+
+// @ts-ignore
+import sqlDL from "./sql/sql.dl";
+// @ts-ignore
+import sqlGrammar from "./sql/sql.grammar";
+// @ts-ignore
+import sqlExample from "./sql/example.txt";
+
 export const EXAMPLES: { [name: string]: LanguageSpec } = {
   datalog: {
     datalog: datalogDL,
@@ -68,6 +77,11 @@ export const EXAMPLES: { [name: string]: LanguageSpec } = {
     datalog: fpDL,
     example: fpExample,
     grammar: fpGrammar,
+  },
+  sql: {
+    datalog: sqlDL,
+    example: sqlExample,
+    grammar: sqlGrammar,
   },
 };
 
