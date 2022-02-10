@@ -3,4 +3,11 @@ CREATE TABLE users (
   name TEXT
 );
 
+CREATE TABLE posts (
+  id INT,
+  user_id INT,
+  body TEXT
+);
+
 SELECT id FROM users;
+SELECT id FROM posts;

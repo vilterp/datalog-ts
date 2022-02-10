@@ -16,8 +16,8 @@ tableKW :- "TABLE".
 selectKW :- "SELECT".
 fromKW :- "FROM".
 
-columnName :- ident.
-tableName :- ident.
+columnName :- (ident | placeholder).
+tableName :- (ident | placeholder).
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
