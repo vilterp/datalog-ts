@@ -15,4 +15,4 @@ MANY posts {
   user: ONE user {
     name
   }
-}
+};

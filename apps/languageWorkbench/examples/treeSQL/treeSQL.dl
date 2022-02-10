@@ -48,6 +48,6 @@ hl.mapping{rule: "type", type: "ident"}.
 
 hl.mapping{rule: "createKW", type: "keyword"}.
 hl.mapping{rule: "tableKW", type: "keyword"}.
-hl.mapping{rule: "selectKW", type: "keyword"}.
-hl.mapping{rule: "fromKW", type: "keyword"}.
+hl.mapping{rule: "manyKW", type: "keyword"}.
+hl.mapping{rule: "oneKW", type: "keyword"}.
 hl.mapping{rule: "referencesKW", type: "keyword"}.
