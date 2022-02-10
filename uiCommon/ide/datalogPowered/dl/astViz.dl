@@ -35,7 +35,7 @@ astInternal.ruleTreeNodeCur{
   F <= Idx & Idx <= T.
 
 internal.visualization{
-  name: "Rule Tree",
+  name: "Abstract Syntax Tree",
   spec: tree{
     nodes: "astInternal.ruleTreeNode{id: ID, parentID: ParentID, display: Display, seq: Seq}",
     rootTerm: -1
