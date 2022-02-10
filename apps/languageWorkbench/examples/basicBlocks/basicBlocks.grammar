@@ -11,7 +11,8 @@ gotoInstr :- [gotoKW, ws, (label | Placeholder)].
 gotoKW :- "goto".
 params :- ["(", repSep((ident | Placeholder), [",", ws]), ")"].
 const :- (string | int).
-string :- ["\"", repSep([a-z], ""), "\""].
 int :- [[0-9], repSep([0-9], "")].
 Placeholder :- "???".
 ws :- repSep((" "|"\n"), "").
+string :- ["\"", repSep(stringChar, ""), "\""].
+stringChar :- (^'"' | ['\', '"']).

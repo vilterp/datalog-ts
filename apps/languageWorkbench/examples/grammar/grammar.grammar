@@ -20,4 +20,4 @@ placeholder :- "???".
 alphaNum :- (alpha | num).
 alpha :- ([a-z] | [A-Z]).
 num :- [0-9].
-stringChar :- ([^'"'] | ['\', '"']).
+stringChar :- (^'"' | ['\', '"']).
