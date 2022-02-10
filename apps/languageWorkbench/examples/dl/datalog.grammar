@@ -12,12 +12,13 @@ var :- [[A-Z], repSep(([A-Z]|[a-z]), "")].
 record :- [(ident | placeholder), "{", repSep(keyValue, [",", ws]), "}"].
 keyValue :- [ident, ":", ws, term].
 int :- [num, repSep(num, "")].
-string :- ["\"", repSep([a-z], ""), "\""].
 bool :- ("true" | "false").
 
+ident :- [alpha, repSep((alphaNum | "."), "")].
+string :- ["\"", repSep(stringChar, ""), "\""].
+stringChar :- (^'"' | ['\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
 alphaNum :- (alpha | num).
-ident :- [alpha, repSep((alphaNum | "."), "")].
 ws :- repSep((" "|"\n"), "").
 placeholder :- "???".

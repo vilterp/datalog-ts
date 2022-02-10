@@ -15,7 +15,7 @@ alphaNum :- (alpha | num).
 ident :- [alpha, repSep((alphaNum | "."), "")].
 ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
-stringChar :- ([^'"'] | ['\', '"']).
+stringChar :- (^'"' | ['\', '"']).
 
 letKW :- "let".
 inKW :- "in".
