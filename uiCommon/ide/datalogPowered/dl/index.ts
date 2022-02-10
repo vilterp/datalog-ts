@@ -1,6 +1,6 @@
 import { makeMemoryLoader } from "../../../../core/loaders";
 // @ts-ignore
-import ruleTreeVizDL from "./ruleTreeViz.dl";
+import astVizDL from "./astViz.dl";
 // @ts-ignore
 import ideDL from "./ide.dl";
 // @ts-ignore
@@ -13,7 +13,7 @@ import relationGraphVizDL from "../../../visualizations/relationGraphViz.dl";
 export const LOADER = makeMemoryLoader({
   "./ide.dl": ideDL,
   "./highlight.dl": highlightDL,
-  "./ruleTreeViz.dl": ruleTreeVizDL,
+  "./astViz.dl": astVizDL,
   "./scopeGraphViz.dl": scopeGraphVizDL,
   "./relationGraphViz.dl": relationGraphVizDL,
 });
