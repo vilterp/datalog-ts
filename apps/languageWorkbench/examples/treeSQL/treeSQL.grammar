@@ -7,9 +7,10 @@ selection :- repSep(columnName, ", ").
 
 createTableStmt :- [createKW, ws, tableKW, ws, tableName, ws, "(", ws, repSep(colSpec, commaWS), ws, ")"].
 
-colSpec :- [columnName, ws, type].
+colSpec :- [columnName, ws, type, ws, (referencesClause | "")].
 
 type :- ("INT" | "TEXT").
+referencesClause :- [referencesKW, ws, tableName].
 
 columnName :- (ident | placeholder).
 tableName :- (ident | placeholder).
@@ -18,6 +19,7 @@ createKW :- "CREATE".
 tableKW :- "TABLE".
 selectKW :- "SELECT".
 fromKW :- "FROM".
+referencesKW :- "REFERENCES".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].

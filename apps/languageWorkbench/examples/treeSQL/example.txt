@@ -1,0 +1,18 @@
+CREATE TABLE users (
+  id INT,
+  name TEXT
+);
+
+CREATE TABLE posts (
+  id INT,
+  user_id INT REFERENCES users,
+  body TEXT
+);
+
+MANY posts {
+  id,
+  body,
+  user: ONE user {
+    name
+  }
+}

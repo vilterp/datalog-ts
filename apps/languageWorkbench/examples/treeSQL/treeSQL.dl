@@ -1,0 +1,53 @@
+scope.tableColumn{defnLoc: DL, name: N, table: T, type: TY} :-
+  ast.createTableStmt{id: CreateTableID} &
+  ast.tableName{parentID: CreateTableID, text: T} &
+  ast.colSpec{id: ColSpecID, parentID: CreateTableID} &
+  ast.type{parentID: ColSpecID, text: TY} &
+  ast.columnName{parentID: ColSpecID, span: DL, text: N}.
+
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.tableDefn{scopeID: I, span: S, name: N, kind: K} |
+  scope.columnFromSelectTable{scopeID: I, span: S, name: N, kind: K}.
+scope.tableDefn{scopeID: "global", span: S, name: N, kind: "table"} :-
+  ast.createTableStmt{id: CreateTableID} &
+  ast.tableName{parentID: CreateTableID, text: N, span: S}.
+scope.columnFromSelectTable{scopeID: SelectID, span: S, name: N, kind: "column"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.tableName{parentID: SelectID, text: T} &
+  scope.tableColumn{table: T, defnLoc: S, name: N}.
+
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.tableUsage{scopeID: I, name: N, span: S, kind: K} |
+  scope.columnUsage{scopeID: I, name: N, span: S, kind: K}.
+scope.tableUsage{scopeID: "global", name: N, span: S, kind: "table"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.tableName{parentID: SelectID, span: S, text: N}.
+scope.columnUsage{scopeID: SelectID, name: N, span: S, kind: "column"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.selection{parentID: SelectID, id: SelectionID} &
+  ast.columnName{parentID: SelectionID, span: S, text: N}.
+
+scope.Placeholder{span: S, scopeID: I, kind: K} :-
+  scope.placeholderColumn{span: S, scopeID: I, kind: K} |
+  scope.placeholderSelectTable{span: S, scopeID: I, kind: K}.
+scope.placeholderColumn{span: S, scopeID: SelectID, kind: "column"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.selection{parentID: SelectID, id: SelectionID} &
+  ast.columnName{parentID: SelectionID, id: ColNameID} &
+  ast.placeholder{parentID: ColNameID, span: S}.
+scope.placeholderSelectTable{span: S, scopeID: "global", kind: "table"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.tableName{parentID: SelectID, id: TableNameID} &
+  ast.placeholder{parentID: TableNameID, span: S}.
+
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "type", type: "ident"}.
+
+hl.mapping{rule: "createKW", type: "keyword"}.
+hl.mapping{rule: "tableKW", type: "keyword"}.
+hl.mapping{rule: "selectKW", type: "keyword"}.
+hl.mapping{rule: "fromKW", type: "keyword"}.
+hl.mapping{rule: "referencesKW", type: "keyword"}.
