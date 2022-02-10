@@ -1,9 +1,3 @@
-# scope.Scope{id: I, label: L} :-
-#   XXX.
-
-# scope.Parent{childID: ChildID, parentID: ParentID} :-
-#   XXX.
-
 scope.tableColumn{defnLoc: DL, name: N, table: T, type: TY} :-
   ast.createTableStmt{id: CreateTableID} &
   ast.tableName{parentID: CreateTableID, text: T} &
@@ -12,10 +6,15 @@ scope.tableColumn{defnLoc: DL, name: N, table: T, type: TY} :-
   ast.columnName{parentID: ColSpecID, span: DL, text: N}.
 
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
-  scope.tableDefn{scopeID: I, span: S, name: N, kind: K}.
+  scope.tableDefn{scopeID: I, span: S, name: N, kind: K} |
+  scope.columnFromSelectTable{scopeID: I, span: S, name: N, kind: K}.
 scope.tableDefn{scopeID: "global", span: S, name: N, kind: "table"} :-
   ast.createTableStmt{id: CreateTableID} &
   ast.tableName{parentID: CreateTableID, text: N, span: S}.
+scope.columnFromSelectTable{scopeID: SelectID, span: S, name: N, kind: "column"} :-
+  ast.selectStmt{id: SelectID} &
+  ast.tableName{parentID: SelectID, text: T} &
+  scope.tableColumn{table: T, defnLoc: S, name: N}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.tableUsage{scopeID: I, name: N, span: S, kind: K} |
