@@ -43,13 +43,14 @@ export function EditorBox(props: {
           name="wut" // type error without this, even tho optional
           style={{
             fontFamily: "monospace",
-            height: 200,
+            // height: 400,
             width: 500,
             backgroundColor: "rgb(250, 250, 250)",
-            border: "1px solid black",
-            marginBottom: 10,
+            // border: "1px solid black",
           }}
-          autoFocus={true}
+          tabSize={2}
+          insertSpaces
+          autoFocus
           padding={10}
           value={props.editorState.source}
           onValueChange={(source) =>
