@@ -26,6 +26,16 @@ import { filterMap, flatMap, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
 
+let updated = false;
+const stats: { [query: string]: number } = {};
+
+setInterval(() => {
+  if (updated) {
+    console.log(stats);
+    updated = false;
+  }
+}, 1000);
+
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
 }
@@ -117,6 +127,10 @@ function doEvaluate(
   scope: Bindings,
   term: Term
 ): Res[] {
+  const key = `${ppt(term)}; ${ppb(scope)}`;
+  const stat = stats[key] || 0;
+  stats[key] = stat + 1;
+  updated = true;
   // console.group("doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
   //   throw new Error("too deep");
