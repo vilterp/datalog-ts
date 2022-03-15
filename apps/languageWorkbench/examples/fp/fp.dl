@@ -64,11 +64,13 @@ tc.typeVar{id: I, type: T} :-
   tc.ScopeItem{id: I, name: N, type: T}.
 # TODO: get this to work for multiple parameters...
 tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
-  ast.lambda{id: I, retType: R, body: B} &
-  ast.lambdaParam{lambdaID: I, ty: F} &
+  ast.expr{id: I} &
+  ast.lambda{id: L, parentID: I, retType: R, body: B} &
+  ast.lambdaParam{lambdaID: L, ty: F} &
   tc.Type{id: B, type: R}.
 tc.typePlaceholder{id: I, type: "unknown"} :-
-  ast.Placeholder{id: I}.
+  ast.expr{id: I} &
+  ast.Placeholder{id: P, parentID: I}.
 
 tc.ScopeItem{id: I, name: N, type: T, location: L} :-
   tc.scopeBuiltin{id: I, name: N, type: T, location: L} |
