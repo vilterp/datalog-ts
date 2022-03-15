@@ -42,7 +42,7 @@ function testLangQuery(test: string[]): TestOutput[] {
         initInterp,
       });
     const res = finalInterp.queryStr(query);
-    if (allGrammarErrors || dlErrors || langParseError) {
+    if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
       return jsonOut({ allGrammarErrors, langParseError, dlErrors });
     }
     return datalogOut(res.map((res) => ppt(res.term)).join("\n"));
