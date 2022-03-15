@@ -6,7 +6,8 @@ hl.Segment{type: T, span: S, highlight: H} :-
   hl.segmentIdent{type: T, span: S, highlight: H} |
   hl.segmentSpecialVar{type: T, span: S, highlight: H} |
   hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
-  hl.segmentIdentUsageHL{type: T, span: S, highlight: H}.
+  hl.segmentIdentUsageHL{type: T, span: S, highlight: H} |
+  hl.segmentComment{type: T, span: S, highlight: H}.
 
 # primitives
 hl.segmentInt{type: "int", span: S, highlight: false} :-
@@ -20,6 +21,9 @@ hl.keyword{type: "keyword", span: S, highlight: false} :-
   astInternal.node{rule: R, span: S}.
 hl.segmentBool{type: "bool", span: S, highlight: false} :-
   hl.mapping{rule: R, type: "bool"} &
+  astInternal.node{rule: R, span: S}.
+hl.segmentComment{type: "comment", span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "comment"} &
   astInternal.node{rule: R, span: S}.
 
 # identifiers

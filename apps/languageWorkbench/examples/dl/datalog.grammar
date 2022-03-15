@@ -1,10 +1,11 @@
 main :- repSep((stmt | comment), ws).
-stmt :- [(rule | fact), "."].
-comment :- ["#", repSep(([a-z]|[A-Z]|" "), "")].
+stmt :- (rule | fact | tableDecl).
+comment :- ["#", repSep(([A-Z] | [a-z] | " " | ":" | "."), "")].
+tableDecl :- [".table", ws, ident].
 
-fact :- record.
+fact :- [record, "."].
 
-rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws])].
+rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(record, [ws, "&", ws]).
 
 term :- (record | int | var | string | bool | placeholder).

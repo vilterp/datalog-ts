@@ -56,3 +56,4 @@ hl.mapping{rule: "var", type: "specialVar"}.
 hl.mapping{rule: "int", type: "int"}.
 hl.mapping{rule: "bool", type: "bool"}.
 hl.mapping{rule: "string", type: "string"}.
+hl.mapping{rule: "comment", type: "comment"}.
