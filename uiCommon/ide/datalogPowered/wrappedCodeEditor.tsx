@@ -4,6 +4,7 @@ import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { EditorState } from "../types";
 import { LOADER } from "./dl";
 // @ts-ignore
+import mainDL from "./dl/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";
 import { ErrorList } from "../errorList";
 import { constructInterp } from "./interp";
@@ -22,6 +23,7 @@ export function WrappedCodeEditor(props: {
     () =>
       constructInterp({
         initInterp,
+        builtinSource: mainDL,
         grammarSource: props.grammar,
         cursorPos: props.editorState.cursorPos,
         dlSource: props.datalog,

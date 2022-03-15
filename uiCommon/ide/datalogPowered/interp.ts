@@ -9,12 +9,11 @@ import {
 } from "../../../parserlib/parser";
 import { extractRuleTree, RuleTree } from "../../../parserlib/ruleTree";
 import { validateGrammar } from "../../../parserlib/validate";
-// @ts-ignore
-import mainDL from "./dl/main.dl";
 import { ensureRequiredRelations } from "./requiredRelations";
 
 export function constructInterp(args: {
   initInterp: AbstractInterpreter;
+  builtinSource: string;
   dlSource: string;
   grammarSource: string;
   langSource: string;
@@ -34,13 +33,16 @@ export function constructInterp(args: {
   );
   const grammarErrors =
     grammarParseErrors.length === 0 ? validateGrammar(grammar) : [];
-  const [interpWithRules, dlErrors] = (() => {
+  const {
+    interpWithRules,
+    dlErrors,
+  }: { interpWithRules: AbstractInterpreter; dlErrors: string[] } = (() => {
     try {
       const result =
         dlSource.length > 0 ? initInterp.evalStr(dlSource)[1] : initInterp;
-      return [result, []];
+      return { interpWithRules: result, dlErrors: [] };
     } catch (e) {
-      return [initInterp, [e.toString()]];
+      return { interpWithRules: initInterp, dlErrors: [e.toString()] };
     }
   })();
   const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
@@ -62,7 +64,7 @@ export function constructInterp(args: {
       ruleTree = extractRuleTree(traceTree);
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
       finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = finalInterp.evalStr(mainDL)[1];
+      finalInterp = finalInterp.evalStr(args.builtinSource)[1];
       finalInterp = ensureRequiredRelations(finalInterp);
     } catch (e) {
       langParseError = e.toString();

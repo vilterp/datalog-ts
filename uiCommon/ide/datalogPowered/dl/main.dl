@@ -2,4 +2,4 @@
 .load highlight.dl
 .load astViz.dl
 .load scopeGraphViz.dl
-.load relationGraphViz.dl
+# .load relationGraphViz.dl

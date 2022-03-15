@@ -1,11 +1,11 @@
+import { fsLoader } from "../../core/fsLoader";
 import { ppt } from "../../core/pretty";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
 import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
 import { TestOutput } from "../../util/ddTest";
 import { suiteFromDDTestsInDir } from "../../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../../util/ddTest/types";
-import { EXAMPLES } from "./examples";
+import * as fs from "fs";
 
 export function lwbTests(writeResults: boolean) {
   return suiteFromDDTestsInDir(
@@ -15,17 +15,29 @@ export function lwbTests(writeResults: boolean) {
   );
 }
 
-const initInterp = new SimpleInterpreter(".", LOADER);
+const initInterp = new SimpleInterpreter(
+  "uiCommon/ide/datalogPowered/dl",
+  fsLoader
+);
 
 function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
     const [lang, example, query] = input.split("\n");
-    const langObj = EXAMPLES[lang];
     const { finalInterp, allGrammarErrors, dlErrors, langParseError } =
       constructInterp({
         cursorPos: 1,
-        dlSource: langObj.datalog,
-        grammarSource: langObj.grammar,
+        builtinSource: fs.readFileSync(
+          "uiCommon/ide/datalogPowered/dl/main.dl",
+          "utf8"
+        ),
+        dlSource: fs.readFileSync(
+          `apps/languageWorkbench/examples/${lang}/${lang}.dl`,
+          "utf8"
+        ),
+        grammarSource: fs.readFileSync(
+          `apps/languageWorkbench/examples/${lang}/${lang}.grammar`,
+          "utf8"
+        ),
         langSource: example,
         initInterp,
       });
