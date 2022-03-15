@@ -19,7 +19,6 @@ function testParse(test: string[]): TestOutput[] {
     const lines = input.split("\n");
     const ruleName = lines[0];
     const rest = lines.slice(1).join("\n");
-    console.log(ruleName);
     const output = language[ruleName].tryParse(rest);
     return jsonOut(output);
   });
