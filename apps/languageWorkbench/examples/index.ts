@@ -52,6 +52,15 @@ import sqlGrammar from "./sql/sql.grammar";
 // @ts-ignore
 import sqlExample from "./sql/example.txt";
 
+// TreeSQL
+
+// @ts-ignore
+import treeSQLDL from "./treeSQL/treeSQL.dl";
+// @ts-ignore
+import treeSQLGrammar from "./treeSQL/treeSQL.grammar";
+// @ts-ignore
+import treeSQLExample from "./treeSQL/example.txt";
+
 export const EXAMPLES: { [name: string]: LanguageSpec } = {
   datalog: {
     datalog: datalogDL,
@@ -82,6 +91,11 @@ export const EXAMPLES: { [name: string]: LanguageSpec } = {
     datalog: sqlDL,
     example: sqlExample,
     grammar: sqlGrammar,
+  },
+  treeSQL: {
+    datalog: treeSQLDL,
+    example: treeSQLExample,
+    grammar: treeSQLGrammar,
   },
 };
 

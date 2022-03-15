@@ -2,22 +2,26 @@ main :- repSep(statement, ws).
 
 statement :- [(selectStmt | createTableStmt), ";"].
 
-selectStmt :- [selectKW, ws, selection, ws, fromKW, ws, tableName].
-selection :- repSep(columnName, commaWS).
+selectStmt :- [(manyKW | oneKW), ws, tableName, ws, selection].
+selection :- ["{", ws, repSep(selectionElement, commaWS), ws, "}"].
+selectionElement :- [columnName, (subSelection | "")].
+subSelection :- [":", ws, selectStmt].
 
 createTableStmt :- [createKW, ws, tableKW, ws, tableName, ws, "(", ws, repSep(colSpec, commaWS), ws, ")"].
 
-colSpec :- [columnName, ws, type].
+colSpec :- [columnName, ws, type, ws, (referencesClause | "")].
 
 type :- ("INT" | "TEXT").
+referencesClause :- [referencesKW, ws, tableName].
 
 columnName :- (ident | placeholder).
 tableName :- (ident | placeholder).
 
 createKW :- "CREATE".
 tableKW :- "TABLE".
-selectKW :- "SELECT".
-fromKW :- "FROM".
+manyKW :- "MANY".
+oneKW :- "ONE".
+referencesKW :- "REFERENCES".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
