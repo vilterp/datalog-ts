@@ -11,10 +11,10 @@ import useHashParam from "use-hash-param";
 import commonThemeCSS from "./commonTheme.css";
 import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import {
-  constructInterp,
-  WrappedCodeEditor,
-} from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+// @ts-ignore
+import mainDL from "../../uiCommon/ide/datalogPowered/dl/main.dl";
+import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 
@@ -50,6 +50,7 @@ function Playground() {
   const { finalInterp, allGrammarErrors, langParseError, dlErrors } = useMemo(
     () =>
       constructInterp({
+        builtinSource: mainDL,
         initInterp,
         cursorPos,
         dlSource: dlEditorState.source,
