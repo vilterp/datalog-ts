@@ -21,8 +21,13 @@ export const unifyTests = [
         res2
       );
 
-      const res3 = unifyBindings({ X: varr("X") }, { X: int(1) });
-      assertDeepEqual({ X: int(1) }, res3);
+      // var on left, string on right
+      const res3 = unifyBindings({ X: varr("X") }, { X: str("Paul") });
+      assertDeepEqual({ X: str("Paul") }, res3);
+
+      // string on left, var on right
+      const res4 = unifyBindings({ X: str("Paul") }, { X: varr("X") });
+      assertDeepEqual({ X: str("Paul") }, res4);
     },
   },
   {

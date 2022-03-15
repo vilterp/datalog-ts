@@ -36,7 +36,12 @@ export const language = P.createLanguage({
     P.sepBy(r.andClauses, r.or).map((xs) => ({ type: "Or", opts: xs })),
   andClauses: (r) =>
     P.sepBy(r.clause, r.and).map((xs) => ({ type: "And", clauses: xs })),
-  clause: (r) => P.alt(r.record, r.binExpr),
+  clause: (r) => P.alt(r.record, r.negation, r.binExpr),
+  negation: (r) =>
+    P.seq(word("!"), r.record).map(([_, record]) => ({
+      type: "Negation",
+      record,
+    })),
   term: (r) =>
     P.alt(r.arrayLit, r.var, r.boolLit, r.record, r.stringLit, r.intLit), // TODO: binExpr should be in here...
   record: (r) =>

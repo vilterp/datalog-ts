@@ -110,6 +110,9 @@ function getRoots(rule: Rule): NodeID[] {
       if (andClause.type === "BinExpr") {
         return null;
       }
+      if (andClause.type === "Negation") {
+        return andClause.record.relation;
+      }
       return andClause.relation;
     });
   });

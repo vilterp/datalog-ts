@@ -30,6 +30,7 @@ export type Trace =
       innerRes: Res;
       mappings: VarMappings;
     }
+  | { type: "NegationTrace"; negatedTerm: Term }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "VarTrace" }
@@ -47,7 +48,8 @@ export type InvocationLocation = RulePathSegment[];
 
 export type RulePathSegment =
   | { type: "OrOpt"; idx: number }
-  | { type: "AndClause"; idx: number };
+  | { type: "AndClause"; idx: number }
+  | { type: "Negation" };
 
 export type ScopePath = { name: string; invokeLoc: InvocationLocation }[];
 
@@ -78,7 +80,9 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type AndClause = Rec | BinExpr;
+export type AndClause = Rec | BinExpr | Negation;
+
+type Negation = { type: "Negation"; record: Rec };
 
 export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
 
@@ -156,6 +160,12 @@ export const trueTerm: Term = { type: "Bool", val: true };
 
 export const falseTerm: Term = { type: "Bool", val: false };
 
+export type RelationalBool = Term[];
+
+export const relationalTrue: Term[] = [rec("", {})];
+
+export const relationalFalse: Term[] = [];
+
 // inner to outer (?)
 export type VarMappings = { [from: string]: string };
 
@@ -164,6 +174,7 @@ export type TermWithBindings =
   | RecordWithBindings
   | ArrayWithBindings
   | BinExprWithBindings
+  | NegationWithBindings
   | { type: "Atom"; term: Int | Bool | StringLit | Var };
 
 export type RecordWithBindings = {
@@ -184,6 +195,11 @@ export type BinExprWithBindings = {
   left: TermWithBindings;
   right: TermWithBindings;
   op: Operator;
+};
+
+export type NegationWithBindings = {
+  type: "NegationWithBindings";
+  // TODO: figure out what else should go here
 };
 
 export type SituatedBinding = {

@@ -888,3 +888,36 @@ application/json
     }
   }
 }
+
+rule
+a{} :- !b{}.
+----
+application/json
+{
+  "type": "Rule",
+  "rule": {
+    "head": {
+      "type": "Record",
+      "relation": "a",
+      "attrs": {}
+    },
+    "body": {
+      "type": "Or",
+      "opts": [
+        {
+          "type": "And",
+          "clauses": [
+            {
+              "type": "Negation",
+              "record": {
+                "type": "Record",
+                "relation": "b",
+                "attrs": {}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+varExpr{name: "x"}.
+varDefn{name: "y"}.
+undefVar{name: N} :-
+  varExpr{name: N} &
+  !varDefn{name: N}.
+undefVar{name: N}.
+----
+application/datalog
+undefVar{name: "x"}.

@@ -44,7 +44,6 @@ plus2("hello world")
 tc.Problem{}
 ----
 application/datalog
-tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 14, span: span{from: 6, to: 19}}
 
 fp
 plus2("hello world")
@@ -75,6 +74,19 @@ tc.Problem{}
 ----
 application/datalog
 tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 45, span: span{from: 26, to: 27}}
+
+fp
+let x = 2 in y
+tc.Problem{}
+----
+application/datalog
+tc.Problem{desc: undefinedVar{name: "y"}, nodeID: 15, span: span{from: 13, to: 14}}
+
+fp
+let x = 2 in x
+tc.Problem{}
+----
+application/datalog
 
 fp
 let x = 2 in

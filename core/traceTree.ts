@@ -58,6 +58,8 @@ export function traceToTree(res: Res): Tree<Res> {
       return leaf(`base_fact: ${resStr}`, res);
     case "LiteralTrace":
       return leaf(`literal: ${resStr}`, res);
+    case "NegationTrace":
+      return leaf("negation", res);
   }
 }
 
@@ -246,6 +248,10 @@ export function makeTermWithBindings(
         left: makeTermWithBindings(term.left, bindings),
         op: term.op,
         right: makeTermWithBindings(term.right, bindings),
+      };
+    case "Negation":
+      return {
+        type: "NegationWithBindings",
       };
     default:
       return { type: "Atom", term };
