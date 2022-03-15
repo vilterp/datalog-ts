@@ -1,3 +1,1 @@
-let x = f(2) in
-let y = g(x) in
-intToString(???)
+let x = 2 in x
