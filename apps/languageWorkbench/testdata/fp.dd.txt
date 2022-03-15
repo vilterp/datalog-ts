@@ -1,0 +1,4 @@
+fp
+let x = 2 in (plus2)(x)
+tc.Type{id: I, type: T}
+----
