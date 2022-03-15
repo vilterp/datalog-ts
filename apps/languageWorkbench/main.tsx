@@ -12,7 +12,7 @@ import commonThemeCSS from "./commonTheme.css";
 import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 // @ts-ignore
-import mainDL from "./dl/main.dl";
+import mainDL from "../../uiCommon/ide/datalogPowered/dl/main.dl";
 import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
 import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
 
