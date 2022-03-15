@@ -81,8 +81,8 @@ tc.scopeLambda{id: I, name: N, type: T, location: L} :-
   ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
 
 tc.parentScope{id: I, parentID: P} :-
-  ast.letDefnExpr{letID: P, defnID: I}.
-  # ast.letInnerExpr{letID: P, innerID: I} |
+  ast.letDefnExpr{letID: P, defnID: I} |
+  ast.letInnerExpr{letID: P, innerID: I}.
   # ast.funcCallArg{callID: C, argID: I} |
   # ast.funcCallFunc{callID: C, funcID: F} |
   # ast.lambda{body: I, id: P}.
@@ -94,8 +94,12 @@ ast.letDefnExpr{letID: L, defnID: D} :-
   ast.inKW{id: IN, parentID: L} &
   astInternal.next{prev: WS, next: IN} &
   astInternal.next{prev: D, next: WS}.
-# ast.letInnerExpr{letID: L, innerID: I} :-
-#   XXX.
+ast.letInnerExpr{letID: L, innerID: I} :-
+  ast.letExpr{letID: L} &
+  ast.expr{id: D, parentID: L} &
+  ast.inKW{id: IN, parentID: L} &
+  astInternal.next{prev: IN, next: WS} &
+  astInternal.next{prev: WS, next: I}.
 # ast.funcCallArg{callID: C, argID: I} :-
 #   XXX.
 # ast.funcCallFunc{callID: C, funcID: F} :-
