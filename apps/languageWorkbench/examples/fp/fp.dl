@@ -29,9 +29,9 @@ hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "letKW", type: "keyword"}.
 hl.mapping{rule: "inKW", type: "keyword"}.
 
-.table lang.Builtin
+lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
 
-ast.RootExpr{id: 0}.
+ast.RootExpr{id: 1}.
 
 tc.Type{id: I, type: T} :-
   tc.typeS{id: I, type: T} |
@@ -49,7 +49,10 @@ tc.typeI{id: I, type: "int"} :-
   ast.expr{id: I} &
   ast.intLit{parentID: I}.
 tc.typeFC{id: I, type: T} :-
-  ast.funcCall{id: I, funcID: FID, argID: AID} &
+  ast.expr{id: I} &
+  ast.funcCall{parentID: I, id: FC} &
+  ast.funcCallArg{callID: FC, argID: AID} &
+  ast.funcCallFunc{callID: FC, funcID: FID} &
   tc.Type{id: FID, type: tapp{from: F, to: T}} &
   tc.Type{id: AID, type: F}.
 tc.typeLet{id: I, type: T} :-
@@ -91,10 +94,14 @@ tc.scopeLambda{id: I, name: N, type: T, location: L} :-
   ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
 
 tc.parentScope{id: I, parentID: P} :-
-  ast.letBindingExpr{letID: P, bindingID: I} |
-  ast.letBodyExpr{letID: P, bodyID: I}.
-  # ast.funcCallArg{callID: C, argID: I} |
-  # ast.funcCallFunc{callID: C, funcID: F} |
+  ast.letExpr{id: L, parentID: P} &
+  ast.letBindingExpr{letID: L, bindingID: I} |
+  ast.letExpr{id: L, parentID: P} &
+  ast.letBodyExpr{letID: L, bodyID: I} |
+  ast.funcCall{id: C, parentID: P} &
+  ast.funcCallArg{callID: C, argID: I} |
+  ast.funcCall{id: C, parentID: P} &
+  ast.funcCallFunc{callID: C, funcID: I}.
   # ast.lambda{body: I, id: P}.
 
 # parents
@@ -111,9 +118,12 @@ ast.letBodyExpr{letID: L, bodyID: I} :-
 ast.letVar{letID: L, name: N, span: S} :-
   ast.letExpr{id: L} &
   ast.ident{parentID: L, text: N, span: S}.
-# ast.funcCallArg{callID: C, argID: I} :-
-#   XXX.
-# ast.funcCallFunc{callID: C, funcID: F} :-
-#   XXX.
+ast.funcCallArg{callID: C, argID: I} :-
+  ast.funcCall{id: C} &
+  ast.expr{parentID: C, id: I}.
+ast.funcCallFunc{callID: C, funcID: F} :-
+  ast.funcCall{id: C} &
+  ast.parenExpr{id: P, parentID: C} &
+  ast.expr{id: F, parentID: P}.
 # ast.lambdaBody{lambdaID: L, bodyID: B} :-
 #   XXX.

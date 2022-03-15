@@ -2,7 +2,8 @@ main :- expr.
 
 expr :- (funcCall | lambda | letExpr | varExpr | stringLit | intLit | placeholder).
 
-funcCall :- [varExpr, "(", expr, ")"].
+funcCall :- [parenExpr, "(", expr, ")"].
+parenExpr :- ["(", expr, ")"].
 lambda :- ["(", ident ,")", ws, "=>", ws, expr].
 letExpr :- [letKW, ws, ident, ws, "=", ws, expr, ws, inKW, ws, expr].
 varExpr :- ident.
