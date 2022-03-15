@@ -43,18 +43,24 @@ tc.Type{id: I, type: T} :-
   tc.typePlaceholder{id: I, type: T}.
 
 tc.typeS{id: I, type: "string"} :-
-  ast.stringLit{id: I}.
+  ast.expr{id: I} &
+  ast.stringLit{parentID: I}.
 tc.typeI{id: I, type: "int"} :-
-  ast.intLit{id: I}.
+  ast.expr{id: I} &
+  ast.intLit{parentID: I}.
 tc.typeFC{id: I, type: T} :-
   ast.funcCall{id: I, funcID: FID, argID: AID} &
   tc.Type{id: FID, type: tapp{from: F, to: T}} &
   tc.Type{id: AID, type: F}.
 tc.typeLet{id: I, type: T} :-
-  ast.letBodyExpr{letID: I, bodyID: BID} &
+  ast.expr{id: I} &
+  ast.letExpr{id: L, parentID: I} &
+  ast.letBodyExpr{letID: L, bodyID: BID} &
   tc.Type{id: BID, type: T}.
+# TOOO: convert to scope.Item
 tc.typeVar{id: I, type: T} :-
-  ast.varExpr{id: I, name: N} &
+  ast.expr{id: I} &
+  ast.varExpr{id: V, parentID: I, text: N} &
   tc.ScopeItem{id: I, name: N, type: T}.
 # TODO: get this to work for multiple parameters...
 tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
