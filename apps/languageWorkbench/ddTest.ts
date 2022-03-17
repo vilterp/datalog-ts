@@ -11,10 +11,7 @@ export function lwbTests(writeResults: boolean) {
   return suiteFromDDTestsInDir(
     "apps/languageWorkbench/testdata",
     writeResults,
-    [
-      ["fp", testLangQuery],
-      ["sql", testLangQuery],
-    ]
+    ["fp", "sql", "dl"].map((name) => [name, testLangQuery])
   );
 }
 
