@@ -1,0 +1,8 @@
+grammar
+foo :- ["bar:", ???].
+bar :- "foo".
+ide.Suggestion{}
+----
+application/datalog
+ide.Suggestion{id: "global", name: "foo", span: span{from: 16, to: 19}, type: T}
+ide.Suggestion{id: "global", name: "bar", span: span{from: 16, to: 19}, type: T}
