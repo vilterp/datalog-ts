@@ -2,14 +2,25 @@
 
 # TODO: decide on defnSpan vs definitionLoc
 
-scope.Item{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K} :-
-  scope.defnHere{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K} |
-  scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K}.
-scope.defnHere{scopeID: I, defnScopeID: I, name: N, defnSpan: S, kind: K} :-
-  scope.Defn{scopeID: I, name: N, span: S, kind: K}.
-scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K} :-
+scope.Item{
+  scopeID: I,
+  defnScopeID: DS,
+  name: N,
+  defnSpan: S,
+  kind: K,
+  type: T
+} :-
+  scope.defnHere{
+    scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K, type: T
+  } |
+  scope.defnParent{
+    scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K, type: T
+  }.
+scope.defnHere{scopeID: I, defnScopeID: I, name: N, defnSpan: S, kind: K, type: T} :-
+  scope.Defn{scopeID: I, name: N, span: S, kind: K, type: T}.
+scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K, type: T} :-
   scope.Parent{childID: I, parentID: P} &
-  scope.Item{scopeID: P, defnScopeID: DS, name: N, defnSpan: S, kind: K}.
+  scope.Item{scopeID: P, defnScopeID: DS, name: N, defnSpan: S, kind: K, type: T}.
 
 scope.Usage{
   name: N,
