@@ -39,11 +39,10 @@ ast.funcCallFunc{callID: C, funcID: F} :-
 scope.Scope{id: I, label: I} :-
   ast.expr{id: I}.
 
-scope.Defn{id: I, name: N, type: T, span: S, kind: "var"} :-
+scope.Defn{scopeID: I, name: N, type: T, span: S, kind: "var"} :-
   tc.scopeBuiltin{id: I, name: N, type: T, location: S} |
   tc.scopeLet{id: I, name: N, type: T, location: S} |
-  tc.scopeLambda{id: I, name: N, type: T, location: S} |
-  tc.parentScope{id: I, parentID: P} & tc.ScopeItem{id: P, name: N, type: T, location: S}.
+  tc.scopeLambda{id: I, name: N, type: T, location: S}.
 
 tc.scopeBuiltin{id: I, name: N, type: T, location: "builtin"} :-
   ast.RootExpr{id: I} &
