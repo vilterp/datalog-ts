@@ -1,10 +1,60 @@
+# === parent ===
+
+scope.Parent{childID: I, parentID: P} :-
+  ast.letExpr{id: L, parentID: P} &
+  ast.letBindingExpr{letID: L, bindingID: I} |
+  ast.letExpr{id: L, parentID: P} &
+  ast.letBodyExpr{letID: L, bodyID: I} |
+  ast.funcCall{id: C, parentID: P} &
+  ast.funcCallArg{callID: C, argID: I} |
+  ast.funcCall{id: C, parentID: P} &
+  ast.funcCallFunc{callID: C, funcID: I}.
+  # ast.lambda{body: I, id: P}.
+
+ast.letBindingExpr{letID: L, bindingID: D} :-
+  ast.letExpr{letID: L} &
+  ast.inKW{id: IN, parentID: L} &
+  astInternal.next{prev: WS, next: IN} &
+  astInternal.next{prev: D, next: WS}.
+ast.letBodyExpr{letID: L, bodyID: I} :-
+  ast.letExpr{letID: L} &
+  ast.inKW{id: IN, parentID: L} &
+  astInternal.next{prev: IN, next: WS} &
+  astInternal.next{prev: WS, next: I}.
+ast.letVar{letID: L, name: N, span: S} :-
+  ast.letExpr{id: L} &
+  ast.ident{parentID: L, text: N, span: S}.
+ast.funcCallArg{callID: C, argID: I} :-
+  ast.funcCall{id: C} &
+  ast.expr{parentID: C, id: I}.
+ast.funcCallFunc{callID: C, funcID: F} :-
+  ast.funcCall{id: C} &
+  ast.parenExpr{id: P, parentID: C} &
+  ast.expr{id: F, parentID: P}.
+# ast.lambdaBody{lambdaID: L, bodyID: B} :-
+#   XXX.
+
+# === scope ===
+
 scope.Scope{id: I, label: I} :-
   ast.expr{id: I}.
 
-scope.Defn{scopeID: I, span: S, name: N, kind: "var"} :-
-  ast.expr{id: I} &
-  ast.letExpr{id: LetExprID, parentID: I} &
-  ast.ident{parentID: LetExprID, text: N, span: S}.
+scope.Defn{scopeID: I, name: N, type: T, span: S, kind: "var"} :-
+  scope.builtin{id: I, name: N, type: T, location: S} |
+  scope.let{id: I, name: N, type: T, location: S} |
+  scope.lambda{id: I, name: N, type: T, location: S}.
+
+scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
+  ast.RootExpr{id: I} &
+  lang.Builtin{name: N, type: T}.
+scope.let{id: I, name: N, type: T, location: S} :-
+  ast.letBodyExpr{letID: L, bodyID: I} &
+  ast.letBindingExpr{letID: L, bindingID: B} &
+  ast.letVar{letID: L, name: N, span: S} &
+  tc.Type{id: B, type: T}.
+scope.lambda{id: I, name: N, type: T, location: L} :-
+  ast.lambda{body: I, id: LID} &
+  ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
   ast.expr{id: I} &
@@ -13,25 +63,11 @@ scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
   ast.funcCall{id: FuncCallID, parentID: I} &
   ast.varExpr{parentID: FuncCallID, text: N, span: S}.
 
-scope.Parent{childID: ChildID, parentID: ParentID} :-
-  ast.expr{id: ParentID} &
-  astInternal.node{parentID: ParentID, id: IntermediateID} &
-  ast.expr{id: ChildID, parentID: IntermediateID}.
-
 scope.Placeholder{scopeID: I, span: S, kind: "var"} :-
   ast.expr{id: I} &
   ast.placeholder{parentID: I, span: S}.
 
-hl.mapping{rule: "intLit", type: "int"}.
-hl.mapping{rule: "stringLit", type: "string"}.
-hl.mapping{rule: "bool", type: "bool"}.
-hl.mapping{rule: "ident", type: "ident"}.
-hl.mapping{rule: "letKW", type: "keyword"}.
-hl.mapping{rule: "inKW", type: "keyword"}.
-
-lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
-
-ast.RootExpr{id: 1}.
+# === Type ===
 
 tc.Type{id: I, type: T} :-
   tc.typeS{id: I, type: T} |
@@ -64,7 +100,7 @@ tc.typeLet{id: I, type: T} :-
 tc.typeVar{id: I, type: T} :-
   ast.expr{id: I} &
   ast.varExpr{id: V, parentID: I, text: N} &
-  tc.ScopeItem{id: I, name: N, type: T}.
+  scope.Item{scopeID: I, name: N, type: T}.
 # TODO: get this to work for multiple parameters...
 tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
   ast.expr{id: I} &
@@ -75,55 +111,17 @@ tc.typePlaceholder{id: I, type: "unknown"} :-
   ast.expr{id: I} &
   ast.Placeholder{id: P, parentID: I}.
 
-tc.ScopeItem{id: I, name: N, type: T, location: L} :-
-  tc.scopeBuiltin{id: I, name: N, type: T, location: L} |
-  tc.scopeLet{id: I, name: N, type: T, location: L} |
-  tc.scopeLambda{id: I, name: N, type: T, location: L} |
-  tc.parentScope{id: I, parentID: P} & tc.ScopeItem{id: P, name: N, type: T, location: L}.
+# === roots ===
 
-tc.scopeBuiltin{id: I, name: N, type: T, location: "builtin"} :-
-  ast.RootExpr{id: I} &
-  lang.Builtin{name: N, type: T}.
-tc.scopeLet{id: I, name: N, type: T, location: S} :-
-  ast.letBodyExpr{letID: L, bodyID: I} &
-  ast.letBindingExpr{letID: L, bindingID: B} &
-  ast.letVar{letID: L, name: N, span: S} &
-  tc.Type{id: B, type: T}.
-tc.scopeLambda{id: I, name: N, type: T, location: L} :-
-  ast.lambda{body: I, id: LID} &
-  ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
+lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
 
-tc.parentScope{id: I, parentID: P} :-
-  ast.letExpr{id: L, parentID: P} &
-  ast.letBindingExpr{letID: L, bindingID: I} |
-  ast.letExpr{id: L, parentID: P} &
-  ast.letBodyExpr{letID: L, bodyID: I} |
-  ast.funcCall{id: C, parentID: P} &
-  ast.funcCallArg{callID: C, argID: I} |
-  ast.funcCall{id: C, parentID: P} &
-  ast.funcCallFunc{callID: C, funcID: I}.
-  # ast.lambda{body: I, id: P}.
+ast.RootExpr{id: 1}.
 
-# parents
-ast.letBindingExpr{letID: L, bindingID: D} :-
-  ast.letExpr{letID: L} &
-  ast.inKW{id: IN, parentID: L} &
-  astInternal.next{prev: WS, next: IN} &
-  astInternal.next{prev: D, next: WS}.
-ast.letBodyExpr{letID: L, bodyID: I} :-
-  ast.letExpr{letID: L} &
-  ast.inKW{id: IN, parentID: L} &
-  astInternal.next{prev: IN, next: WS} &
-  astInternal.next{prev: WS, next: I}.
-ast.letVar{letID: L, name: N, span: S} :-
-  ast.letExpr{id: L} &
-  ast.ident{parentID: L, text: N, span: S}.
-ast.funcCallArg{callID: C, argID: I} :-
-  ast.funcCall{id: C} &
-  ast.expr{parentID: C, id: I}.
-ast.funcCallFunc{callID: C, funcID: F} :-
-  ast.funcCall{id: C} &
-  ast.parenExpr{id: P, parentID: C} &
-  ast.expr{id: F, parentID: P}.
-# ast.lambdaBody{lambdaID: L, bodyID: B} :-
-#   XXX.
+# === highlight ===
+
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "letKW", type: "keyword"}.
+hl.mapping{rule: "inKW", type: "keyword"}.
