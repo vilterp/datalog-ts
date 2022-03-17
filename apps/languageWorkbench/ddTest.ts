@@ -11,7 +11,10 @@ export function lwbTests(writeResults: boolean) {
   return suiteFromDDTestsInDir(
     "apps/languageWorkbench/testdata",
     writeResults,
-    [["fp", testLangQuery]]
+    [
+      ["fp", testLangQuery],
+      ["sql", testLangQuery],
+    ]
   );
 }
 
@@ -22,7 +25,10 @@ const initInterp = new SimpleInterpreter(
 
 function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const [lang, example, query] = input.split("\n");
+    const lines = input.split("\n");
+    const lang = lines[0];
+    const example = lines.slice(1, lines.length - 1).join("\n");
+    const query = lines[lines.length - 1];
     const { finalInterp, allGrammarErrors, dlErrors, langParseError } =
       constructInterp({
         cursorPos: 1,
