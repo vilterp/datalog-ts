@@ -78,7 +78,9 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type AndClause = Rec | BinExpr;
+export type AndClause = Rec | BinExpr | Negation;
+
+type Negation = { type: "Negation"; record: Rec };
 
 export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
 
