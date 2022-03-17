@@ -1,9 +1,9 @@
 // DL
 
 // @ts-ignore
-import datalogDL from "./dl/datalog.dl";
+import datalogDL from "./dl/dl.dl";
 // @ts-ignore
-import datalogGrammar from "./dl/datalog.grammar";
+import datalogGrammar from "./dl/dl.grammar";
 // @ts-ignore
 import datalogExample from "./dl/example.txt";
 

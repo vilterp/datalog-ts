@@ -1,0 +1,15 @@
+sql
+CREATE TABLE blog_posts (
+  id INT,
+  body TEXT
+);
+CREATE TABLE comments (
+  id INT,
+  post_id INT
+);
+SELECT id, ??? FROM blog_posts;
+ide.Suggestion{}
+----
+application/datalog
+ide.Suggestion{id: 104, name: "id", span: span{from: 113, to: 116}, type: T}
+ide.Suggestion{id: 104, name: "body", span: span{from: 113, to: 116}, type: T}
