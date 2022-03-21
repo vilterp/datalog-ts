@@ -12,7 +12,8 @@ astInternal.ruleTreeNodeBefore{
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
-  Idx > T.
+  Idx > T &
+  R != "ws".
 
 astInternal.ruleTreeNodeAfter{
   id: ID,
@@ -22,22 +23,25 @@ astInternal.ruleTreeNodeAfter{
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
-  Idx < F.
+  Idx < F &
+  R != "ws".
 
 astInternal.ruleTreeNodeCur{
   id: ID,
   parentID: PID,
-  display: ["*", ID, R, [F, T]],
+  display: [ID, R, [F, T]],
   seq: Seq
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
-  F <= Idx & Idx <= T.
+  F <= Idx & Idx <= T &
+  R != "ws".
 
 internal.visualization{
   name: "Abstract Syntax Tree",
   spec: tree{
     nodes: "astInternal.ruleTreeNode{id: ID, parentID: ParentID, display: Display, seq: Seq}",
-    rootTerm: -1
+    rootTerm: -1,
+    sortChildren: true
   }
 }.
