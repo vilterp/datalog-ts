@@ -1,6 +1,6 @@
 main :- repSep((stmt | comment), ws).
 stmt :- (rule | fact | tableDecl).
-comment :- ["#", repSep(([A-Z] | [a-z] | " " | ":" | "."), "")].
+comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [".table", ws, ident].
 
 fact :- [record, "."].
@@ -23,3 +23,5 @@ num :- [0-9].
 alphaNum :- (alpha | num).
 ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
+
+commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | ",").
