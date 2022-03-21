@@ -3,16 +3,22 @@ import { ppt } from "../../core/pretty";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
 import { TestOutput } from "../../util/ddTest";
-import { suiteFromDDTestsInDir } from "../../util/ddTest/runner";
+import { runDDTestAtPath } from "../../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../../util/ddTest/types";
 import * as fs from "fs";
+import { Suite } from "../../util/testBench/testing";
 
-export function lwbTests(writeResults: boolean) {
-  return suiteFromDDTestsInDir(
-    "apps/languageWorkbench/testdata",
-    writeResults,
-    ["fp", "sql", "dl", "grammar"].map((name) => [name, testLangQuery])
-  );
+export function lwbTests(writeResults: boolean): Suite {
+  return ["fp", "sql", "dl", "grammar"].map((lang) => ({
+    name: lang,
+    test() {
+      runDDTestAtPath(
+        `apps/languageWorkbench/examples/${lang}/${lang}.dd.txt`,
+        testLangQuery,
+        writeResults
+      );
+    },
+  }));
 }
 
 const initInterp = new SimpleInterpreter(
