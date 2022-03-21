@@ -43,8 +43,8 @@ export function EditorBox(props: {
           name="wut" // type error without this, even tho optional
           style={{
             fontFamily: "monospace",
-            height: 200,
-            width: 500,
+            height: 400,
+            width: 510,
             backgroundColor: "rgb(250, 250, 250)",
             border: "1px solid black",
             marginBottom: 10,
@@ -133,7 +133,7 @@ function SuggestionsList(props: {
   editorState: EditorState;
 }) {
   return (
-    <ul style={{ fontFamily: "monospace" }}>
+    <ul style={{ fontFamily: "monospace", paddingInlineStart: 10 }}>
       {props.suggestions.map((sugg, idx) => (
         <li
           key={JSON.stringify(sugg)}
