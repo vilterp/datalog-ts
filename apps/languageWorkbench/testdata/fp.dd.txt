@@ -1,13 +1,20 @@
 fp
-let x = 2 in (plus2)(x)
+let x = 2 in plus2(x)
 tc.Type{id: I, type: T}
 ----
 application/datalog
 tc.Type{id: 9, type: "int"}
 tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
 tc.Type{id: 1, type: "int"}
-tc.Type{id: 18, type: tapp{from: "int", to: "int"}}
-tc.Type{id: 30, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 28, type: "int"}
 
 fp
 let x = 2 in ???

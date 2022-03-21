@@ -62,6 +62,11 @@ import treeSQLGrammar from "./treeSQL/treeSQL.grammar";
 import treeSQLExample from "./treeSQL/example.txt";
 
 export const EXAMPLES: { [name: string]: LanguageSpec } = {
+  plainText: {
+    datalog: "",
+    grammar: "",
+    example: "",
+  },
   datalog: {
     datalog: datalogDL,
     grammar: datalogGrammar,

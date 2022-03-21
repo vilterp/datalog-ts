@@ -1,3 +1,36 @@
+# === scope ===
+
+scope.Defn{scopeID: I, name: N, type: T, span: S} :-
+  scope.builtin{id: I, name: N, type: T, location: S} |
+  scope.let{id: I, name: N, type: T, location: S} |
+  scope.lambda{id: I, name: N, type: T, location: S}.
+
+scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
+  ast.RootExpr{id: I} &
+  lang.Builtin{name: N, type: T}.
+scope.let{id: I, name: N, type: T, location: S} :-
+  ast.letBodyExpr{letID: L, bodyID: I} &
+  ast.letBindingExpr{letID: L, bindingID: B} &
+  ast.letVar{letID: L, name: N, span: S} &
+  tc.Type{id: B, type: T}.
+scope.lambda{id: I, name: N, type: T, location: L} :-
+  ast.lambda{body: I, id: LID} &
+  ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
+
+scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.varExpr{parentID: I, text: N, span: S} |
+  ast.expr{id: I} &
+  ast.funcCall{id: FuncCallID, parentID: I} &
+  ast.varExpr{parentID: FuncCallID, text: N, span: S}.
+
+scope.Scope{id: I, label: I} :-
+  ast.expr{id: I}.
+
+scope.Placeholder{scopeID: I, span: S, kind: "var"} :-
+  ast.expr{id: I} &
+  ast.placeholder{parentID: I, span: S}.
+
 # === parent ===
 
 scope.Parent{childID: I, parentID: P} :-
@@ -29,43 +62,9 @@ ast.funcCallArg{callID: C, argID: I} :-
   ast.expr{parentID: C, id: I}.
 ast.funcCallFunc{callID: C, funcID: F} :-
   ast.funcCall{id: C} &
-  ast.parenExpr{id: P, parentID: C} &
-  ast.expr{id: F, parentID: P}.
+  ast.varExpr{id: F, parentID: C}.
 # ast.lambdaBody{lambdaID: L, bodyID: B} :-
 #   XXX.
-
-# === scope ===
-
-scope.Scope{id: I, label: I} :-
-  ast.expr{id: I}.
-
-scope.Defn{scopeID: I, name: N, type: T, span: S, kind: "var"} :-
-  scope.builtin{id: I, name: N, type: T, location: S} |
-  scope.let{id: I, name: N, type: T, location: S} |
-  scope.lambda{id: I, name: N, type: T, location: S}.
-
-scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
-  ast.RootExpr{id: I} &
-  lang.Builtin{name: N, type: T}.
-scope.let{id: I, name: N, type: T, location: S} :-
-  ast.letBodyExpr{letID: L, bodyID: I} &
-  ast.letBindingExpr{letID: L, bindingID: B} &
-  ast.letVar{letID: L, name: N, span: S} &
-  tc.Type{id: B, type: T}.
-scope.lambda{id: I, name: N, type: T, location: L} :-
-  ast.lambda{body: I, id: LID} &
-  ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
-
-scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
-  ast.expr{id: I} &
-  ast.varExpr{parentID: I, text: N, span: S} |
-  ast.expr{id: I} &
-  ast.funcCall{id: FuncCallID, parentID: I} &
-  ast.varExpr{parentID: FuncCallID, text: N, span: S}.
-
-scope.Placeholder{scopeID: I, span: S, kind: "var"} :-
-  ast.expr{id: I} &
-  ast.placeholder{parentID: I, span: S}.
 
 # === Type ===
 
@@ -89,7 +88,8 @@ tc.typeFC{id: I, type: T} :-
   ast.funcCall{parentID: I, id: FC} &
   ast.funcCallArg{callID: FC, argID: AID} &
   ast.funcCallFunc{callID: FC, funcID: FID} &
-  tc.Type{id: FID, type: tapp{from: F, to: T}} &
+  ast.varExpr{id: FID, text: N} &
+  scope.Item{id: FID, name: N, type: tapp{from: F, to: T}} &
   tc.Type{id: AID, type: F}.
 tc.typeLet{id: I, type: T} :-
   ast.expr{id: I} &

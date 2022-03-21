@@ -21,6 +21,7 @@ export function highlight(
   const sortedSegments = hlWins(
     uniqBy(
       segments
+        .filter((res) => (res.term as Rec).attrs.span.type === "Record") // filter out "builtin", etc
         .map((res) => mkRawSegment(res.term as Rec))
         .sort((a, b) => getStartOffset(a) - getStartOffset(b)),
       (rs) => `${spanToString(rs.span)}-${rs.state.highlight}`

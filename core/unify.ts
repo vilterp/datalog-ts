@@ -100,28 +100,57 @@ export function termSameType(left: Term, right: Term): boolean {
 }
 
 export function termEq(left: Term, right: Term): boolean {
+  // TODO: build out termCmp for Records; use it here
   return jsonEq(left, right);
 }
 
-export function termLT(left: Term, right: Term): boolean {
+export function termCmp(left: Term, right: Term): number {
   switch (left.type) {
     case "IntLit":
       switch (right.type) {
         case "IntLit":
-          return left.val < right.val;
+          return left.val - right.val;
         default:
-          return false;
+          return 0;
       }
     case "StringLit":
       switch (right.type) {
         case "StringLit":
-          return left.val < right.val;
+          return left.val.localeCompare(right.val);
         default:
-          return false;
+          return 0;
+      }
+    case "Array":
+      switch (right.type) {
+        case "Array":
+          return lexicographical(left.items, right.items);
+        default:
+          return 0;
       }
     default:
-      return false;
+      return 0;
   }
+}
+
+function lexicographical(left: Term[], right: Term[]): number {
+  if (left.length === 0 && right.length === 0) {
+    return 0;
+  }
+  if (left.length === 0) {
+    return 1;
+  }
+  if (right.length === 0) {
+    return -1;
+  }
+  const firstElem = termCmp(left[0], right[0]);
+  if (firstElem !== 0) {
+    return firstElem;
+  }
+  return lexicographical(left.slice(1), right.slice(1));
+}
+
+export function termLT(left: Term, right: Term): boolean {
+  return termCmp(left, right) < 0;
 }
 
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
