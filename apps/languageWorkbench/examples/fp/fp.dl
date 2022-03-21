@@ -17,7 +17,7 @@ scope.lambda{id: I, name: N, type: T, location: L} :-
   ast.lambda{body: I, id: LID} &
   ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
 
-scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
+scope.Var{scopeID: I, name: N, span: S} :-
   ast.expr{id: I} &
   ast.varExpr{parentID: I, text: N, span: S} |
   ast.expr{id: I} &
@@ -27,7 +27,7 @@ scope.Var{scopeID: I, name: N, span: S, kind: "var"} :-
 scope.Scope{id: I, label: I} :-
   ast.expr{id: I}.
 
-scope.Placeholder{scopeID: I, span: S, kind: "var"} :-
+scope.Placeholder{scopeID: I, span: S} :-
   ast.expr{id: I} &
   ast.placeholder{parentID: I, span: S}.
 
