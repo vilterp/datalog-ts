@@ -15,6 +15,7 @@ import { ErrorList } from "../../uiCommon/ide/errorList";
 import mainDL from "../../uiCommon/ide/datalogPowered/dl/main.dl";
 import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
 import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 
@@ -92,7 +93,7 @@ function Playground() {
         <tbody>
           <tr>
             <td>
-              <h3>Language Source</h3>
+              <h3>Example Source</h3>
               <OpenCodeEditor
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
@@ -131,14 +132,19 @@ function Playground() {
         </tbody>
       </table>
 
-      <>
-        {/* we run into errors querying highlight rules if the grammar isn't valid */}
-        {allGrammarErrors.length === 0 ? (
-          <Explorer interp={finalInterp} showViz />
-        ) : (
-          <em>Grammar isn't valid</em>
-        )}
-      </>
+      <CollapsibleWithHeading
+        heading="Explorer"
+        content={
+          <>
+            {/* we run into errors querying highlight rules if the grammar isn't valid */}
+            {allGrammarErrors.length === 0 ? (
+              <Explorer interp={finalInterp} showViz />
+            ) : (
+              <em>Grammar isn't valid</em>
+            )}
+          </>
+        }
+      />
     </>
   );
 }
