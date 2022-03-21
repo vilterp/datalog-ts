@@ -29,7 +29,7 @@ astInternal.ruleTreeNodeAfter{
 astInternal.ruleTreeNodeCur{
   id: ID,
   parentID: PID,
-  display: [ID, R, [F, T]],
+  display: [ID, R, [F, T], "*"],
   seq: Seq
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
