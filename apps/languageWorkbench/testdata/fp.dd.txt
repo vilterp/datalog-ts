@@ -4,6 +4,16 @@ tc.Type{id: I, type: T}
 ----
 application/datalog
 tc.Type{id: 9, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 15, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
+tc.Type{id: 1, type: "int"}
 tc.Type{id: 28, type: "int"}
 
 fp

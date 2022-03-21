@@ -62,8 +62,7 @@ ast.funcCallArg{callID: C, argID: I} :-
   ast.expr{parentID: C, id: I}.
 ast.funcCallFunc{callID: C, funcID: F} :-
   ast.funcCall{id: C} &
-  ast.parenExpr{id: P, parentID: C} &
-  ast.expr{id: F, parentID: P}.
+  ast.varExpr{id: F, parentID: C}.
 # ast.lambdaBody{lambdaID: L, bodyID: B} :-
 #   XXX.
 
@@ -89,7 +88,8 @@ tc.typeFC{id: I, type: T} :-
   ast.funcCall{parentID: I, id: FC} &
   ast.funcCallArg{callID: FC, argID: AID} &
   ast.funcCallFunc{callID: FC, funcID: FID} &
-  tc.Type{id: FID, type: tapp{from: F, to: T}} &
+  ast.varExpr{id: FID, text: N} &
+  scope.Item{id: FID, name: N, type: tapp{from: F, to: T}} &
   tc.Type{id: AID, type: F}.
 tc.typeLet{id: I, type: T} :-
   ast.expr{id: I} &
