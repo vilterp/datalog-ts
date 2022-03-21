@@ -33,11 +33,6 @@ function mkTree(
         return termCmp(aDisplay, bDisplay);
       })
     : childTerms;
-  console.log({
-    childTerms: childTerms.map((r) => ppt(r.term)),
-    sortedChildTerms: sortedChildTerms.map((r) => ppt(r.term)),
-    sortChildren,
-  });
   return {
     key: ppt(curID),
     item: curRes,
