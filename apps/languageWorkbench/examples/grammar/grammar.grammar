@@ -8,9 +8,13 @@ seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
 choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
 ref :- ident.
 text :- ["\"", repSep(stringChar, ""), "\""].
-charRule :- ["[", alphaNum, "-", alphaNum, "]"].
 repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
 repSepKW :- "repSep".
+
+charRule :- (charRange | notChar | singleChar).
+charRange :- ["[", alphaNum, "-", alphaNum, "]"].
+notChar :- ['^', charRule].
+singleChar :- ["'", ., "'"].
 
 ident :- repSep(alpha, "").
 ws :- repSep((" "|"\n"), "").

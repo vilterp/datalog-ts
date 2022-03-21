@@ -6,3 +6,30 @@ ide.Suggestion{}
 application/datalog
 ide.Suggestion{id: "global", name: "foo", span: span{from: 16, to: 19}, type: T}
 ide.Suggestion{id: "global", name: "bar", span: span{from: 16, to: 19}, type: T}
+
+grammar
+a :- (^'"' | ['\', '"']).
+astInternal.node{}
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 25}, text: "a :- (^'\"' | ['\\', '\"'])."}
+astInternal.node{id: 1, parentID: 0, rule: "ruleDefn", span: span{from: 0, to: 25}, text: "a :- (^'\"' | ['\\', '\"'])."}
+astInternal.node{id: 8, parentID: 7, rule: "rule", span: span{from: 6, to: 10}, text: "^'\"'"}
+astInternal.node{id: 15, parentID: 14, rule: "rule", span: span{from: 14, to: 17}, text: "'\\'"}
+astInternal.node{id: 18, parentID: 14, rule: "rule", span: span{from: 19, to: 22}, text: "'\"'"}
+astInternal.node{id: 13, parentID: 7, rule: "rule", span: span{from: 13, to: 23}, text: "['\\', '\"']"}
+astInternal.node{id: 6, parentID: 1, rule: "rule", span: span{from: 5, to: 24}, text: "(^'\"' | ['\\', '\"'])"}
+astInternal.node{id: 14, parentID: 13, rule: "seq", span: span{from: 13, to: 23}, text: "['\\', '\"']"}
+astInternal.node{id: 7, parentID: 6, rule: "choice", span: span{from: 5, to: 24}, text: "(^'\"' | ['\\', '\"'])"}
+astInternal.node{id: 11, parentID: 10, rule: "charRule", span: span{from: 7, to: 10}, text: "'\"'"}
+astInternal.node{id: 9, parentID: 8, rule: "charRule", span: span{from: 6, to: 10}, text: "^'\"'"}
+astInternal.node{id: 16, parentID: 15, rule: "charRule", span: span{from: 14, to: 17}, text: "'\\'"}
+astInternal.node{id: 19, parentID: 18, rule: "charRule", span: span{from: 19, to: 22}, text: "'\"'"}
+astInternal.node{id: 10, parentID: 9, rule: "notChar", span: span{from: 6, to: 10}, text: "^'\"'"}
+astInternal.node{id: 12, parentID: 11, rule: "singleChar", span: span{from: 7, to: 10}, text: "'\"'"}
+astInternal.node{id: 17, parentID: 16, rule: "singleChar", span: span{from: 14, to: 17}, text: "'\\'"}
+astInternal.node{id: 20, parentID: 19, rule: "singleChar", span: span{from: 19, to: 22}, text: "'\"'"}
+astInternal.node{id: 2, parentID: 1, rule: "ident", span: span{from: 0, to: 1}, text: "a"}
+astInternal.node{id: 4, parentID: 1, rule: "ws", span: span{from: 1, to: 2}, text: " "}
+astInternal.node{id: 5, parentID: 1, rule: "ws", span: span{from: 4, to: 5}, text: " "}
+astInternal.node{id: 3, parentID: 2, rule: "alpha", span: span{from: 0, to: 1}, text: "a"}
