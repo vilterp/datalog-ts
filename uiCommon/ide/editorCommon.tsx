@@ -69,10 +69,10 @@ export function EditorBox(props: {
           onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
           onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
         />
-        {!props.hideKeyBindingsTable ? (
-          <KeyBindingsTable actionCtx={props.actionCtx} />
-        ) : null}
         <div>
+          {!props.hideKeyBindingsTable ? (
+            <KeyBindingsTable actionCtx={props.actionCtx} />
+          ) : null}
           <SuggestionsList
             suggestions={props.suggestions}
             applyAction={applyAction}
@@ -109,7 +109,7 @@ function KeyBindingsTable(props: { actionCtx: ActionContext }) {
   };
 
   return (
-    <table>
+    <table style={{ display: "block" }}>
       <tbody>
         {mapObjToList(keyMap, (key, action) => (
           <tr
@@ -133,7 +133,7 @@ function SuggestionsList(props: {
   editorState: EditorState;
 }) {
   return (
-    <ul style={{ fontFamily: "monospace", paddingInlineStart: 10 }}>
+    <ul style={{ fontFamily: "monospace" }}>
       {props.suggestions.map((sugg, idx) => (
         <li
           key={JSON.stringify(sugg)}
