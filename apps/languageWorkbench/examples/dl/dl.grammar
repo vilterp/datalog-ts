@@ -1,4 +1,4 @@
-main :- repSep((stmt | comment), ws).
+main :- [ws, repSep((stmt | comment), ws), ws].
 stmt :- (rule | fact | tableDecl).
 comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [".table", ws, ident].
