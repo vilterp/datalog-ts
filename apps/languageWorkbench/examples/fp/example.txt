@@ -1,1 +1,1 @@
-let x = 40 in plus2(???)
+let x = 40 in plus2(x)
