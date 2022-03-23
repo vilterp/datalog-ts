@@ -11,10 +11,11 @@ text :- ["\"", repSep(stringChar, ""), "\""].
 repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
 repSepKW :- "repSep".
 
-charRule :- (charRange | notChar | singleChar).
+charRule :- (charRange | notChar | singleChar | anyChar).
 charRange :- ["[", alphaNum, "-", alphaNum, "]"].
 notChar :- ['^', charRule].
 singleChar :- ["'", ., "'"].
+anyChar :- ".".
 
 ident :- repSep(alpha, "").
 ws :- repSep((" "|"\n"), "").
