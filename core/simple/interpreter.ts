@@ -1,8 +1,9 @@
-import { DB, Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
+import { Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
+import { DB } from "./types";
 
 const initialDB: DB = {
   tables: {},

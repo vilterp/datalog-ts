@@ -1,11 +1,3 @@
-export interface DB {
-  tables: { [name: string]: Rec[] };
-  rules: { [name: string]: Rule };
-  virtualTables: { [name: string]: VirtualTable };
-}
-
-type VirtualTable = (db: DB) => Rec[];
-
 export type Relation =
   | { type: "Table"; name: string }
   | { type: "Rule"; name: string; rule: Rule };

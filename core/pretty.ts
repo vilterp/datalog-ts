@@ -1,6 +1,5 @@
 import {
   Bindings,
-  DB,
   Res,
   Rule,
   Term,
@@ -81,15 +80,6 @@ export function prettyPrintRule(rule: Rule): pp.IDoc {
     ),
   ];
   return [prettyPrintTerm(rule.head), " :- ", pp.choice(oneLine, splitUp)];
-}
-
-export function prettyPrintDB(db: DB): pp.IDoc {
-  return pp.intersperse(pp.lineBreak)(
-    [
-      ...flatMapObjToList(db.tables, (name, tbl) => tbl.map(prettyPrintTerm)),
-      ...mapObjToList(db.rules, (name, rule) => prettyPrintRule(rule)),
-    ].map((d) => [d, "."])
-  );
 }
 
 export function prettyPrintBindings(bindings: Bindings): pp.IDoc {
