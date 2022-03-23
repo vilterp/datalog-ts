@@ -38,7 +38,7 @@ export function getCurrentPlaceholder(
 export function getPlaceholders(interp: AbstractInterpreter): Span[] {
   return sortSpans(
     interp
-      .queryStr("ast.Placeholder{span: S}")
+      .queryStr("scope.Placeholder{span: S}")
       .map((res) => dlToSpan((res.term as Rec).attrs.span as Rec))
   );
 }
