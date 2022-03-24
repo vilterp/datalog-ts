@@ -1,11 +1,11 @@
 export function perfMark(key: string) {
-  if (performance) {
+  if (typeof performance !== "undefined") {
     performance.mark(key);
   }
 }
 
 export function perfMeasure(key: string, start: string, end: string) {
-  if (performance) {
+  if (typeof performance !== "undefined") {
     performance.measure(key, start, end);
   }
 }
