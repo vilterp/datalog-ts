@@ -26,6 +26,7 @@ import { filterMap, flatMap, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
 import { fastPPB } from "../incremental/fastPPT";
+import { perfMark, perfMeasure } from "../../util/perf";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -158,7 +159,7 @@ function doEvaluate(
         if (rule) {
           const s = `${term.relation} start`;
           const e = `${term.relation} end`;
-          performance.mark(s);
+          perfMark(s);
           // console.log(
           //   "calling",
           //   pp.render(100, [
@@ -239,8 +240,8 @@ function doEvaluate(
             };
             return outerRes;
           });
-          performance.mark(e);
-          performance.measure(
+          perfMark(e);
+          perfMeasure(
             `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
             s,
             e
