@@ -22,7 +22,6 @@ export function WrappedCodeEditor(props: {
 }) {
   const { finalInterp, allGrammarErrors, langParseError, dlErrors } =
     useMemo(() => {
-      console.log("constructing interp for language", props.lang);
       return constructInterp({
         initInterp,
         builtinSource: mainDL,

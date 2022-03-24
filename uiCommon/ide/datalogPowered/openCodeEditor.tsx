@@ -17,7 +17,6 @@ export function OpenCodeEditor(props: {
   hideKeyBindingsTable?: boolean;
 }) {
   const { highlighted, error, suggestions } = React.useMemo(() => {
-    console.log(`highlighting for ${props.lang}`);
     let highlighted: React.ReactNode = <>{props.editorState.source}</>;
     let error = null;
     let suggestions: Suggestion[] = [];
