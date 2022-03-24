@@ -23,3 +23,15 @@ ide.Suggestion{id: I, name: N, span: S, type: T}
 application/datalog
 ide.Suggestion{id: 15, name: "x", span: span{from: 13, to: 16}, type: "int"}
 ide.Suggestion{id: 15, name: "plus2", span: span{from: 13, to: 16}, type: tapp{from: "int", to: "int"}}
+
+fp
+let x = 40 in plus2(x)
+hl.Segment{}
+----
+application/datalog
+hl.Segment{highlight: false, span: span{from: 8, to: 10}, type: "int"}
+hl.Segment{highlight: false, span: span{from: 0, to: 3}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 11, to: 13}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 4, to: 5}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 14, to: 19}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 20, to: 21}, type: "var"}
