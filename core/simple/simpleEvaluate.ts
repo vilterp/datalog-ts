@@ -155,6 +155,7 @@ function doEvaluate(
         }
         const rule = db.rules[term.relation];
         if (rule) {
+          performance.mark(`${term.relation} start`);
           // console.log(
           //   "calling",
           //   pp.render(100, [
@@ -199,7 +200,7 @@ function doEvaluate(
           });
           // console.groupEnd();
           // console.log("rawResults", rawResults.map(ppr));
-          return filterMap(rawResults, (res) => {
+          const finalRes = filterMap(rawResults, (res) => {
             const mappedBindings = applyMappings(mappings, res.bindings);
             const nextTerm = substitute(rule.head, res.bindings);
             const unif = unify(mappedBindings, term, nextTerm);
@@ -235,6 +236,13 @@ function doEvaluate(
             };
             return outerRes;
           });
+          performance.mark(`${term.relation} end`);
+          performance.measure(
+            term.relation,
+            `${term.relation} start`,
+            `${term.relation} end`
+          );
+          return finalRes;
         }
         throw new UserError(`not found: ${term.relation}`);
       }
