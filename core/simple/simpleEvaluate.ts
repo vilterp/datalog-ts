@@ -129,9 +129,6 @@ function doEvaluate(
         const virtual = db.virtualTables[term.relation];
         const records = table ? table : virtual ? virtual(db) : null;
         if (records) {
-          const s = `${term.relation} start`;
-          const e = `${term.relation} end`;
-          performance.mark(s);
           const out: Res[] = [];
           // console.log("scan", term.relation, ppb(scope));
           for (const rec of records) {
@@ -155,12 +152,6 @@ function doEvaluate(
               },
             });
           }
-          performance.mark(e);
-          performance.measure(
-            `scan ${term.relation}${fastPPB(scope)} => ${out.length}`,
-            s,
-            e
-          );
           return out;
         }
         const rule = db.rules[term.relation];
