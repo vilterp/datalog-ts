@@ -39,36 +39,45 @@ export function EditorBox(props: {
     <div>
       <style>{props.highlightCSS}</style>
       <div style={{ display: "flex" }}>
-        <Editor
-          name="wut" // type error without this, even tho optional
+        <div
           style={{
-            fontFamily: "monospace",
-            height: 400,
             width: 510,
-            backgroundColor: "rgb(250, 250, 250)",
+            height: 400,
+            overflow: "auto",
             border: "1px solid black",
             marginBottom: 10,
           }}
-          autoFocus={true}
-          padding={10}
-          value={props.editorState.source}
-          onValueChange={(source) =>
-            props.setEditorState({ ...props.editorState, source })
-          }
-          cursorPos={props.editorState.cursorPos} // would be nice if we could have an onCursorPos
-          highlight={(_) => props.highlighted}
-          onKeyDown={(evt) => {
-            handleKeyDown(
-              evt,
-              props.suggestions,
-              props.editorState,
-              props.setEditorState,
-              applyAction
-            );
-          }}
-          onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
-          onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
-        />
+        >
+          <Editor
+            name="wut" // type error without this, even tho optional
+            style={{
+              fontFamily: "monospace",
+              minWidth: "100%",
+              minHeight: "100%",
+              whiteSpace: "pre",
+              backgroundColor: "rgb(250, 250, 250)",
+            }}
+            autoFocus={true}
+            padding={10}
+            value={props.editorState.source}
+            onValueChange={(source) =>
+              props.setEditorState({ ...props.editorState, source })
+            }
+            cursorPos={props.editorState.cursorPos} // would be nice if we could have an onCursorPos
+            highlight={(_) => props.highlighted}
+            onKeyDown={(evt) => {
+              handleKeyDown(
+                evt,
+                props.suggestions,
+                props.editorState,
+                props.setEditorState,
+                applyAction
+              );
+            }}
+            onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
+            onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
+          />
+        </div>
         <div>
           {!props.hideKeyBindingsTable ? (
             <KeyBindingsTable actionCtx={props.actionCtx} />
