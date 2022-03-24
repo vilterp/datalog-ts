@@ -185,7 +185,9 @@ function doEvaluate(
           }
           const rule = db.rules[term.relation];
           if (rule) {
-            perfMark(`${term.relation} start`);
+            if (perf) {
+              perfMark(`${term.relation} start`);
+            }
             // console.log(
             //   "calling",
             //   pp.render(100, [
