@@ -30,6 +30,7 @@ import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { IndexedCollection } from "../../util/indexedCollection";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
+import { List } from "immutable";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -302,7 +303,7 @@ function getIndex(
   collection: LazyIndexedCollection,
   scope: Bindings,
   rec: Rec
-) {
+): List<Rec> {
   if (!scope) {
     return null;
   }
@@ -322,14 +323,23 @@ function getIndex(
       if (!collection.hasIndex(attr)) {
         continue;
       }
-      return collection.get(attr, val);
+      // console.log("chose index", {
+      //   attr,
+      //   index: collection.indexes[attr]
+      //     .mapEntries(([k, v]) => [k, v.toArray().map(ppt)])
+      //     .toObject(),
+      //   val: ppt(val),
+      //   res: collection.get(attr, scopeVal).map(ppt).toArray(),
+      // });
+      return collection.get(attr, scopeVal);
     }
     if (!collection.hasIndex(attr)) {
       continue;
     }
+    // console.log("chose index", attr);
     return collection.get(attr, val);
   }
-  return null;
+  return collection.all();
 }
 
 function getForScope(
@@ -337,13 +347,14 @@ function getForScope(
   scope: Bindings,
   original: Rec
 ) {
-  const keyAndTerm = getIndex(collection, scope, original);
-  const records =
-    keyAndTerm && collection.hasIndex(keyAndTerm.key)
-      ? collection.get(keyAndTerm.key, keyAndTerm.term)
-      : collection.all();
   const out: Res[] = [];
-  for (const rec of records) {
+  const records = getIndex(collection, scope, original);
+  // console.log({
+  //   original: ppt(original),
+  //   scope: ppb(scope),
+  //   res: records.toArray().map(ppt),
+  // });
+  for (const rec of records.toArray()) {
     const unifyRes = unify(scope, original, rec);
     // console.log("scan", {
     //   scope: ppb(scope),

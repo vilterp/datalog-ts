@@ -10,8 +10,8 @@ export function emptyLazyIndexedCollection() {
 type Index = Map<string, List<Rec>>;
 
 export class LazyIndexedCollection {
-  private readonly allRecords: List<Rec>;
-  private readonly indexes: { [attr: string]: Index };
+  readonly allRecords: List<Rec>;
+  readonly indexes: { [attr: string]: Index };
   readonly size: number;
 
   constructor(allRecords: List<Rec>, indexes: { [key: string]: Index }) {
