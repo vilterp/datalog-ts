@@ -25,6 +25,7 @@ import {
 import { filterMap, flatMap, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
+import { fastPPB } from "../incremental/fastPPT";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -128,6 +129,9 @@ function doEvaluate(
         const virtual = db.virtualTables[term.relation];
         const records = table ? table : virtual ? virtual(db) : null;
         if (records) {
+          const s = `${term.relation} start`;
+          const e = `${term.relation} end`;
+          performance.mark(s);
           const out: Res[] = [];
           // console.log("scan", term.relation, ppb(scope));
           for (const rec of records) {
@@ -151,11 +155,19 @@ function doEvaluate(
               },
             });
           }
+          performance.mark(e);
+          performance.measure(
+            `scan ${term.relation}${fastPPB(scope)} => ${out.length}`,
+            s,
+            e
+          );
           return out;
         }
         const rule = db.rules[term.relation];
         if (rule) {
-          performance.mark(`${term.relation} start`);
+          const s = `${term.relation} start`;
+          const e = `${term.relation} end`;
+          performance.mark(s);
           // console.log(
           //   "calling",
           //   pp.render(100, [
@@ -236,11 +248,11 @@ function doEvaluate(
             };
             return outerRes;
           });
-          performance.mark(`${term.relation} end`);
+          performance.mark(e);
           performance.measure(
-            term.relation,
-            `${term.relation} start`,
-            `${term.relation} end`
+            `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
+            s,
+            e
           );
           return finalRes;
         }
