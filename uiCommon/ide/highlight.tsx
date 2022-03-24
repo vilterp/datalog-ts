@@ -10,14 +10,18 @@ export function highlight(
   interp: AbstractInterpreter,
   code: string,
   syntaxErrorIdx: number | null,
-  typeErrors: DLTypeError[]
+  typeErrors: DLTypeError[],
+  lang: string
 ): React.ReactNode {
   if (syntaxErrorIdx) {
     return highlightSyntaxError(code, syntaxErrorIdx);
   }
+  performance.mark("highlight start");
   const segments = interp.queryStr(
     "hl.Segment{type: T, span: S, highlight: H}"
   );
+  performance.mark("highlight end");
+  performance.measure(`highlight ${lang}`, "highlight start", "highlight end");
   const sortedSegments = hlWins(
     uniqBy(
       segments

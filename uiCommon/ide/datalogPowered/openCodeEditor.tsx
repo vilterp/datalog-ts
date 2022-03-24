@@ -13,13 +13,20 @@ export function OpenCodeEditor(props: {
   validGrammar: boolean;
   highlightCSS: string;
   locatedErrors: { offset: number }[];
+  lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
   let highlighted: React.ReactNode = <>{props.editorState.source}</>;
   let error = null;
   if (props.validGrammar) {
     try {
-      highlighted = highlight(props.interp, props.editorState.source, 0, []);
+      highlighted = highlight(
+        props.interp,
+        props.editorState.source,
+        0,
+        [],
+        props.lang
+      );
     } catch (e) {
       error = e.toString();
     }

@@ -17,6 +17,7 @@ export function WrappedCodeEditor(props: {
   highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
+  lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
   const { finalInterp, allGrammarErrors, langParseError, dlErrors } = useMemo(
@@ -47,6 +48,7 @@ export function WrappedCodeEditor(props: {
         locatedErrors={[]} // TODO: parse errors, dl errors
         validGrammar={allGrammarErrors.length === 0}
         hideKeyBindingsTable={props.hideKeyBindingsTable}
+        lang={props.lang}
       />
       <ErrorList
         errors={[langParseError, ...dlErrors].filter((x) => x !== null)}

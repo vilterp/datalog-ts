@@ -25,12 +25,9 @@ function Main() {
 
 function Playground() {
   // state
-  const [exampleName, setExampleName] = useHashParam(
-    "",
-    Object.keys(EXAMPLES)[0]
-  );
+  const [langName, setExampleName] = useHashParam("", Object.keys(EXAMPLES)[0]);
 
-  const curExample = EXAMPLES[exampleName];
+  const curExample = EXAMPLES[langName];
 
   const [grammarEditorState, setGrammarEditorState] = useState(
     initialEditorState(curExample.grammar)
@@ -61,7 +58,7 @@ function Playground() {
     [cursorPos, dlEditorState.source, grammarEditorState.source, langSource]
   );
 
-  const setExample = (name) => {
+  const setLangName = (name) => {
     setExampleName(name);
     const example = EXAMPLES[name];
     setGrammarEditorState({ ...grammarEditorState, source: example.grammar });
@@ -77,9 +74,9 @@ function Playground() {
         <h3>Example:</h3>
         <select
           onChange={(evt) => {
-            setExample(evt.target.value);
+            setLangName(evt.target.value);
           }}
-          value={exampleName}
+          value={langName}
         >
           {mapObjToList(EXAMPLES, (name) => (
             <option key={name} value={name}>
@@ -100,6 +97,7 @@ function Playground() {
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
                 highlightCSS={commonThemeCSS}
+                lang={langName}
                 locatedErrors={[]} // TODO: parse errors
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
@@ -112,6 +110,7 @@ function Playground() {
                 datalog={EXAMPLES.grammar.datalog}
                 grammar={EXAMPLES.grammar.grammar}
                 highlightCSS={commonThemeCSS}
+                lang="grammar"
                 hideKeyBindingsTable
               />
               <ErrorList errors={allGrammarErrors} />
@@ -124,6 +123,7 @@ function Playground() {
                 datalog={EXAMPLES.datalog.datalog}
                 grammar={EXAMPLES.datalog.grammar}
                 highlightCSS={commonThemeCSS}
+                lang="dl"
                 hideKeyBindingsTable
               />
               <ErrorList errors={dlErrors} />
