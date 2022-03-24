@@ -5,6 +5,6 @@ foo{bar: A, baz: B} :-
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 2, name: "A", span: span{from: 45, to: 48}, type: T}
-ide.Suggestion{id: 2, name: "B", span: span{from: 45, to: 48}, type: T}
+ide.Suggestion{id: 3, name: "A", span: span{from: 45, to: 48}, type: T}
+ide.Suggestion{id: 3, name: "B", span: span{from: 45, to: 48}, type: T}
 ide.Suggestion{id: "global", name: "foo", span: span{from: 25, to: 28}, type: T}
