@@ -17,7 +17,7 @@ export function fastPPT(term: Term): string {
     case "Bool":
       return term.val.toString();
     case "StringLit":
-      return term.val;
+      return `"${term.val}"`;
     case "IntLit":
       return term.val.toString();
     case "Var":
