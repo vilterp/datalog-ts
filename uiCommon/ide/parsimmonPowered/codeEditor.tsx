@@ -49,6 +49,7 @@ export function CodeEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   loadError: EvalError | null;
+  lang: string;
 }) {
   let evalError: EvalError | null = null;
   let suggestions: Suggestion[] = [];
@@ -87,7 +88,8 @@ export function CodeEditor(props: {
     props.loadError && props.loadError.type === "ParseError"
       ? props.loadError.offset
       : null,
-    typeErrors
+    typeErrors,
+    props.lang
   );
 
   return (

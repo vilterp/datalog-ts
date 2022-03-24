@@ -13,23 +13,35 @@ export function OpenCodeEditor(props: {
   validGrammar: boolean;
   highlightCSS: string;
   locatedErrors: { offset: number }[];
+  lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
-  let highlighted: React.ReactNode = <>{props.editorState.source}</>;
-  let error = null;
-  if (props.validGrammar) {
-    try {
-      highlighted = highlight(props.interp, props.editorState.source, 0, []);
-    } catch (e) {
-      error = e.toString();
+  const { highlighted, error, suggestions } = React.useMemo(() => {
+    let highlighted: React.ReactNode = <>{props.editorState.source}</>;
+    let error = null;
+    let suggestions: Suggestion[] = [];
+    if (props.validGrammar) {
+      try {
+        highlighted = highlight(
+          props.interp,
+          props.editorState.source,
+          0,
+          [],
+          props.lang
+        );
+        suggestions = getSuggestions(props.interp);
+      } catch (e) {
+        error = e.toString();
+      }
     }
-  }
+    return { highlighted, error, suggestions };
+  }, [props.interp, props.editorState.source, props.lang]);
 
-  let suggestions: Suggestion[] = [];
-  try {
-    suggestions = getSuggestions(props.interp);
-  } catch (e) {
-    console.warn("error while getting suggestions:", e);
+  if (error) {
+    console.error(
+      `while highlighting and getting suggestions for ${props.lang}:`,
+      error
+    );
   }
 
   const actionCtx: ActionContext = {

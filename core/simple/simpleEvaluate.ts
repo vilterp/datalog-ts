@@ -25,6 +25,8 @@ import {
 import { filterMap, flatMap, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
+import { fastPPB } from "../incremental/fastPPT";
+import { perfMark, perfMeasure } from "../../util/perf";
 
 export function evaluate(db: DB, term: Term): Res[] {
   return doEvaluate(0, [], db, {}, term);
@@ -155,6 +157,9 @@ function doEvaluate(
         }
         const rule = db.rules[term.relation];
         if (rule) {
+          if (perf) {
+            perfMark(`${term.relation} start`);
+          }
           // console.log(
           //   "calling",
           //   pp.render(100, [
@@ -199,7 +204,7 @@ function doEvaluate(
           });
           // console.groupEnd();
           // console.log("rawResults", rawResults.map(ppr));
-          return filterMap(rawResults, (res) => {
+          const finalRes = filterMap(rawResults, (res) => {
             const mappedBindings = applyMappings(mappings, res.bindings);
             const nextTerm = substitute(rule.head, res.bindings);
             const unif = unify(mappedBindings, term, nextTerm);
@@ -235,6 +240,16 @@ function doEvaluate(
             };
             return outerRes;
           });
+          if (perf) {
+            const e = `${term.relation} end`;
+            perfMark(e);
+            perfMeasure(
+              `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
+              `${term.relation} start`,
+              e
+            );
+          }
+          return finalRes;
         }
         throw new UserError(`not found: ${term.relation}`);
       }
@@ -271,4 +286,19 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
+}
+
+// enable marking datalog rules on the Chrome devtools performance timeline
+let perf = false;
+
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  window.enablePerf = () => {
+    perf = true;
+  };
+
+  // @ts-ignore
+  window.disablePerf = () => {
+    perf = false;
+  };
 }
