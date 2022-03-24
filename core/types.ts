@@ -1,5 +1,7 @@
+import { LazyIndexedCollection } from "./simple/lazyIndexedCollection";
+
 export interface DB {
-  tables: { [name: string]: Rec[] };
+  tables: { [name: string]: LazyIndexedCollection };
   rules: { [name: string]: Rule };
   virtualTables: { [name: string]: VirtualTable };
 }

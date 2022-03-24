@@ -23,11 +23,13 @@ import {
   unify,
   unifyVars,
 } from "../unify";
-import { filterMap, flatMap, repeat } from "../../util/util";
+import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
-import { fastPPB, fastPPT } from "../incremental/fastPPT";
+import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
+import { IndexedCollection } from "../../util/indexedCollection";
+import { LazyIndexedCollection } from "./lazyIndexedCollection";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -155,33 +157,11 @@ function doEvaluate(
       case "Record": {
         return memo(cache, term, scope, () => {
           const table = db.tables[term.relation];
-          const virtual = db.virtualTables[term.relation];
-          const records = table ? table : virtual ? virtual(db) : null;
-          if (records) {
-            const out: Res[] = [];
+          // const virtual = db.virtualTables[term.relation];
+          // const records = table ? table : virtual ? virtual(db) : null;
+          if (table) {
             // console.log("scan", term.relation, ppb(scope));
-            for (const rec of records) {
-              const unifyRes = unify(scope, term, rec);
-              // console.log("scan", {
-              //   scope: ppb(scope),
-              //   term: ppt(term),
-              //   rec: ppt(rec),
-              //   unifyRes: unifyRes ? ppb(unifyRes) : null,
-              // });
-              if (unifyRes === null) {
-                continue;
-              }
-              out.push({
-                term: rec,
-                bindings: unifyRes,
-                trace: {
-                  type: "MatchTrace",
-                  match: term,
-                  fact: { term: rec, trace: baseFactTrace, bindings: {} },
-                },
-              });
-            }
-            return out;
+            return getForScope(table, scope, term);
           }
           const rule = db.rules[term.relation];
           if (rule) {
@@ -316,6 +296,53 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
+}
+
+function getIndex(collection: LazyIndexedCollection, scope: Bindings) {
+  if (!scope) {
+    return null;
+  }
+  for (const name in collection.indexNames()) {
+    if (scope[name]) {
+      return { key: name, term: scope[name] };
+    }
+  }
+  return null;
+}
+
+function getForScope(
+  collection: LazyIndexedCollection,
+  scope: Bindings,
+  original: Rec
+) {
+  const keyAndTerm = getIndex(collection, scope);
+  const records =
+    keyAndTerm && collection.hasIndex(keyAndTerm.key)
+      ? collection.get(keyAndTerm.key, keyAndTerm.term)
+      : collection.all();
+  const out: Res[] = [];
+  for (const rec of records) {
+    const unifyRes = unify(scope, original, rec);
+    // console.log("scan", {
+    //   scope: ppb(scope),
+    //   term: ppt(term),
+    //   rec: ppt(rec),
+    //   unifyRes: unifyRes ? ppb(unifyRes) : null,
+    // });
+    if (unifyRes === null) {
+      continue;
+    }
+    out.push({
+      term: rec,
+      bindings: unifyRes,
+      trace: {
+        type: "MatchTrace",
+        match: original,
+        fact: { term: rec, trace: baseFactTrace, bindings: {} },
+      },
+    });
+  }
+  return out;
 }
 
 // enable marking datalog rules on the Chrome devtools performance timeline

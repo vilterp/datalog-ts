@@ -1,5 +1,5 @@
-import { mapObjToListUnordered } from "../../util/util";
-import { Bindings, Term } from "../types";
+import { mapObjToListUnordered } from "../util/util";
+import { Bindings, Term } from "./types";
 
 export function fastPPB(bindings: Bindings) {
   return `{${mapObjToListUnordered(

@@ -2,7 +2,7 @@ import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Loader } from "../../../core/loaders";
 import { Rec, StringLit } from "../../../core/types";
 import * as readline from "readline";
-import { prettyPrintDB, prettyPrintTerm } from "../../../core/pretty";
+import { prettyPrintTerm } from "../../../core/pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "../../../util/graphviz";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";

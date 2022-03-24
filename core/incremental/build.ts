@@ -12,7 +12,7 @@ import {
 import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "../../util/indexedCollection";
-import { fastPPT } from "./fastPPT";
+import { fastPPT } from "../fastPPT";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {
