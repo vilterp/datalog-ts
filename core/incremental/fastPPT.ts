@@ -1,5 +1,12 @@
 import { mapObjToListUnordered } from "../../util/util";
-import { Term } from "../types";
+import { Bindings, Term } from "../types";
+
+export function fastPPB(bindings: Bindings) {
+  return `{${mapObjToListUnordered(
+    bindings,
+    (k, v) => `${k}: ${fastPPT(v)}`
+  ).join(", ")}}`;
+}
 
 export function fastPPT(term: Term): string {
   switch (term.type) {
