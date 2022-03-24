@@ -157,9 +157,9 @@ function doEvaluate(
         }
         const rule = db.rules[term.relation];
         if (rule) {
-          const s = `${term.relation} start`;
-          const e = `${term.relation} end`;
-          perfMark(s);
+          if (perf) {
+            perfMark(`${term.relation} start`);
+          }
           // console.log(
           //   "calling",
           //   pp.render(100, [
@@ -240,12 +240,15 @@ function doEvaluate(
             };
             return outerRes;
           });
-          perfMark(e);
-          perfMeasure(
-            `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
-            s,
-            e
-          );
+          if (perf) {
+            const e = `${term.relation} end`;
+            perfMark(e);
+            perfMeasure(
+              `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
+              `${term.relation} start`,
+              e
+            );
+          }
           return finalRes;
         }
         throw new UserError(`not found: ${term.relation}`);
@@ -283,4 +286,19 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
+}
+
+// enable marking datalog rules on the Chrome devtools performance timeline
+let perf = false;
+
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  window.enablePerf = () => {
+    perf = true;
+  };
+
+  // @ts-ignore
+  window.disablePerf = () => {
+    perf = false;
+  };
 }
