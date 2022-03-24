@@ -298,14 +298,36 @@ export function hasVars(t: Term): boolean {
   }
 }
 
-function getIndex(collection: LazyIndexedCollection, scope: Bindings) {
+function getIndex(
+  collection: LazyIndexedCollection,
+  scope: Bindings,
+  rec: Rec
+) {
   if (!scope) {
     return null;
   }
-  for (const name in collection.indexNames()) {
-    if (scope[name]) {
-      return { key: name, term: scope[name] };
+  for (const attr in rec.attrs) {
+    const val = rec.attrs[attr];
+    if (!val) {
+      continue;
     }
+    if (val.type === "Var") {
+      const scopeVal = scope[val.name];
+      if (!scopeVal) {
+        continue;
+      }
+      if (scopeVal.type === "Var") {
+        continue;
+      }
+      if (!collection.hasIndex(attr)) {
+        continue;
+      }
+      return collection.get(attr, val);
+    }
+    if (!collection.hasIndex(attr)) {
+      continue;
+    }
+    return collection.get(attr, val);
   }
   return null;
 }
@@ -315,7 +337,7 @@ function getForScope(
   scope: Bindings,
   original: Rec
 ) {
-  const keyAndTerm = getIndex(collection, scope);
+  const keyAndTerm = getIndex(collection, scope, original);
   const records =
     keyAndTerm && collection.hasIndex(keyAndTerm.key)
       ? collection.get(keyAndTerm.key, keyAndTerm.term)
