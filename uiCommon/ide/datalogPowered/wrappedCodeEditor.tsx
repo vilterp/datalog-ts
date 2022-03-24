@@ -20,23 +20,23 @@ export function WrappedCodeEditor(props: {
   lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
-  const { finalInterp, allGrammarErrors, langParseError, dlErrors } = useMemo(
-    () =>
-      constructInterp({
+  const { finalInterp, allGrammarErrors, langParseError, dlErrors } =
+    useMemo(() => {
+      console.log("constructing interp for language", props.lang);
+      return constructInterp({
         initInterp,
         builtinSource: mainDL,
         grammarSource: props.grammar,
         cursorPos: props.editorState.cursorPos,
         dlSource: props.datalog,
         langSource: props.editorState.source,
-      }),
-    [
+      });
+    }, [
       props.grammar,
       props.editorState.cursorPos,
       props.datalog,
       props.editorState.source,
-    ]
-  );
+    ]);
 
   return (
     <>
