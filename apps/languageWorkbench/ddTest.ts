@@ -1,7 +1,10 @@
 import { fsLoader } from "../../core/fsLoader";
 import { ppt } from "../../core/pretty";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
+import {
+  constructInterp,
+  insertCursorPos,
+} from "../../uiCommon/ide/datalogPowered/interp";
 import { TestOutput } from "../../util/ddTest";
 import { runDDTestAtPath } from "../../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../../util/ddTest/types";
@@ -34,7 +37,6 @@ function testLangQuery(test: string[]): TestOutput[] {
     const query = lines[lines.length - 1];
     const { finalInterp, allGrammarErrors, dlErrors, langParseError } =
       constructInterp({
-        cursorPos: 1,
         builtinSource: fs.readFileSync(
           "uiCommon/ide/datalogPowered/dl/main.dl",
           "utf8"
@@ -50,7 +52,8 @@ function testLangQuery(test: string[]): TestOutput[] {
         langSource: example,
         initInterp,
       });
-    const res = finalInterp.queryStr(query);
+    const finalFinalInterp = insertCursorPos(finalInterp, 1);
+    const res = finalFinalInterp.queryStr(query);
     if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
       return jsonOut({ allGrammarErrors, langParseError, dlErrors });
     }
