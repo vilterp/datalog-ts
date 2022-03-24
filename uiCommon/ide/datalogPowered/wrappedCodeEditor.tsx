@@ -7,7 +7,7 @@ import { LOADER } from "./dl";
 import mainDL from "./dl/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";
 import { ErrorList } from "../errorList";
-import { constructInterp } from "./interp";
+import { constructInterp, insertCursorPos } from "./interp";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 
@@ -26,16 +26,15 @@ export function WrappedCodeEditor(props: {
         initInterp,
         builtinSource: mainDL,
         grammarSource: props.grammar,
-        cursorPos: props.editorState.cursorPos,
         dlSource: props.datalog,
         langSource: props.editorState.source,
       });
-    }, [
-      props.grammar,
-      props.editorState.cursorPos,
-      props.datalog,
-      props.editorState.source,
-    ]);
+    }, [props.grammar, props.datalog, props.editorState.source]);
+
+  const finalFinalInterp = useMemo(
+    () => insertCursorPos(finalInterp, props.editorState.cursorPos),
+    [props.editorState.cursorPos, finalInterp]
+  );
 
   return (
     <>
@@ -43,7 +42,7 @@ export function WrappedCodeEditor(props: {
         editorState={props.editorState}
         setEditorState={props.setEditorState}
         highlightCSS={props.highlightCSS}
-        interp={finalInterp}
+        interp={finalFinalInterp}
         locatedErrors={[]} // TODO: parse errors, dl errors
         validGrammar={allGrammarErrors.length === 0}
         hideKeyBindingsTable={props.hideKeyBindingsTable}
