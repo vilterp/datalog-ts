@@ -23,13 +23,13 @@ import {
   unify,
   unifyVars,
 } from "../unify";
-import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
+import { filterMap, flatMap, repeat, uniqBy } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
-import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
 import { List } from "immutable";
+import { fastPPB, fastPPR, fastPPT } from "../fastPPT";
 
 export function evaluate(db: DB, term: Term): Res[] {
   console.log("------------- ", ppt(term));
@@ -268,7 +268,14 @@ function doEvaluate(
                 e
               );
             }
-            return finalRes;
+            const finalFinalRes = uniqBy(finalRes, fastPPR);
+            if (finalFinalRes.length < finalRes.length) {
+              console.log({
+                beforeLen: finalRes.length,
+                afterLen: finalFinalRes.length,
+              });
+            }
+            return finalFinalRes;
           }
           throw new UserError(`not found: ${term.relation}`);
         });
