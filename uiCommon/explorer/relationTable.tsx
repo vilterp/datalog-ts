@@ -74,9 +74,7 @@ export function RelationTable(props: {
           </thead>
           <tbody>
             {/* TODO: preserve order? */}
-            {objToPairs(groupBy(results, ppr)).map(([_, results], idx) => {
-              const result = results[0];
-              const sameResultCount = results.length;
+            {results.map((result, idx) => {
               const key = JSON.stringify(result);
               const rowCollapseState: TreeCollapseState = props.collapseState[
                 key
@@ -138,9 +136,7 @@ export function RelationTable(props: {
                         />
                       </td>
                     ))}
-                    <td>
-                      {sameResultCount > 1 ? `(${sameResultCount})` : null}
-                    </td>
+                    <td></td>
                   </tr>
                   {rowCollapseState.collapsed || !result.trace ? null : (
                     <tr>
