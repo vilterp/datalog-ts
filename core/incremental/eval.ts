@@ -8,6 +8,7 @@ import {
   addNodeKnownID,
   addOr,
   addUnmappedRule,
+  declareTable,
   getIndexKey,
   getIndexName,
   resolveUnmappedRules,
@@ -117,19 +118,16 @@ function getRoots(rule: Rule): NodeID[] {
 
 export function insertFact(
   graph: RuleGraph,
-  res: Res
+  rec: Rec
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  if (Object.keys(graph.unmappedRules).length > 0) {
-    throw new Error(
-      `tried to insert fact ${ppr(
-        res
-      )} when some rules still rely on things not defined yet: [${mapObjToList(
-        graph.unmappedRules,
-        (name) => name
-      ).join(", ")}]`
-    );
+  if (graph.nodes.has(rec.relation)) {
+    graph = declareTable(graph, rec.relation);
   }
-
+  const res: Res = {
+    term: rec,
+    bindings: {},
+    trace: { type: "BaseFactTrace" },
+  };
   const iter = getInsertionIterator(graph, res);
   const result = stepIteratorAll(graph, iter);
 

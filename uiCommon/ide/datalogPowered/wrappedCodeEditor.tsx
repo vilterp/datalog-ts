@@ -8,8 +8,9 @@ import mainDL from "./dl/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";
 import { ErrorList } from "../errorList";
 import { constructInterp } from "./interp";
+import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 
-const initInterp = new SimpleInterpreter(".", LOADER);
+const initInterp = new IncrementalInterpreter(".", LOADER);
 
 export function WrappedCodeEditor(props: {
   grammar: string;
