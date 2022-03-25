@@ -89,7 +89,7 @@ tc.typeFC{id: I, type: T} :-
   ast.funcCallArg{callID: FC, argID: AID} &
   ast.funcCallFunc{callID: FC, funcID: FID} &
   ast.varExpr{id: FID, text: N} &
-  scope.Item{id: FID, name: N, type: tapp{from: F, to: T}} &
+  scope.Item{scopeID: FID, name: N, type: tapp{from: F, to: T}} &
   tc.Type{id: AID, type: F}.
 tc.typeLet{id: I, type: T} :-
   ast.expr{id: I} &
