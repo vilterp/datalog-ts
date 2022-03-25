@@ -3,6 +3,11 @@ import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
+import { IndexedCollection } from "../../util/indexedCollection";
+import {
+  emptyLazyIndexedCollection,
+  LazyIndexedCollection,
+} from "./lazyIndexedCollection";
 
 const initialDB: DB = {
   tables: {},
@@ -33,14 +38,15 @@ export class SimpleInterpreter extends AbstractInterpreter {
           // TODO: separate method for querying?
           return [this.evalQuery(record), this];
         }
-        let tbl = this.db.tables[record.relation] || [];
+        let tbl =
+          this.db.tables[record.relation] || emptyLazyIndexedCollection();
         return [
           [],
           this.withDB({
             ...this.db,
             tables: {
               ...this.db.tables,
-              [record.relation]: [...tbl, record],
+              [record.relation]: tbl.insert(record),
             },
           }),
         ];
@@ -73,7 +79,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
             ...this.db,
             tables: {
               ...this.db.tables,
-              [stmt.name]: [],
+              [stmt.name]: emptyLazyIndexedCollection(),
             },
           }),
         ];

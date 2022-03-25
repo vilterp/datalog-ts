@@ -14,6 +14,7 @@ import {
   RulePathSegment,
   InvocationLocation,
   UserError,
+  Rec,
 } from "../types";
 import {
   applyMappings,
@@ -22,14 +23,20 @@ import {
   unify,
   unifyVars,
 } from "../unify";
-import { filterMap, flatMap, repeat } from "../../util/util";
+import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
-import { fastPPB } from "../incremental/fastPPT";
+import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
+import { IndexedCollection } from "../../util/indexedCollection";
+import { LazyIndexedCollection } from "./lazyIndexedCollection";
+import { List } from "immutable";
 
 export function evaluate(db: DB, term: Term): Res[] {
-  return doEvaluate(0, [], db, {}, term);
+  const cache: Cache = {};
+  const res = doEvaluate(0, [], db, {}, term, cache);
+  // console.log({ cache });
+  return res;
 }
 
 function doJoin(
@@ -37,7 +44,8 @@ function doJoin(
   invokeLoc: InvocationLocation,
   db: DB,
   scope: Bindings,
-  clauses: AndClause[]
+  clauses: AndClause[],
+  cache: Cache
 ): Res[] {
   if (clauses.length === 0) {
     return [];
@@ -50,7 +58,8 @@ function doJoin(
       [...invokeLoc, { type: "AndClause", idx: 0 }],
       db,
       scope,
-      clauses[0]
+      clauses[0],
+      cache
     );
   }
   // console.group("doJoin: about to get left results");
@@ -59,7 +68,8 @@ function doJoin(
     [...invokeLoc, { type: "AndClause", idx: 0 }],
     db,
     scope,
-    clauses[0]
+    clauses[0],
+    cache
   );
   // console.groupEnd();
   // console.log("doJoin: left results", leftResults.map(ppr));
@@ -79,7 +89,8 @@ function doJoin(
       [...invokeLoc, { type: "AndClause", idx: 1 }],
       db,
       nextScope,
-      clauses.slice(1)
+      clauses.slice(1),
+      cache
     );
     // console.groupEnd();
     // console.log("right results", rightResults);
@@ -112,12 +123,31 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
   return applyFilter(exprs[0], applyFilters(exprs.slice(1), recResults));
 }
 
+type Cache = { [key: string]: Res[] };
+
+function memo(
+  cache: Cache,
+  term: Rec,
+  scope: Bindings,
+  evaluate: () => Res[]
+): Res[] {
+  const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
+  const cacheRes = cache[cacheKey];
+  if (cacheRes) {
+    return cacheRes;
+  }
+  const computeRes = evaluate();
+  cache[cacheKey] = computeRes;
+  return computeRes;
+}
+
 function doEvaluate(
   depth: number,
   path: RulePathSegment[],
   db: DB,
   scope: Bindings,
-  term: Term
+  term: Term,
+  cache: Cache
 ): Res[] {
   // console.group("doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
@@ -126,132 +156,113 @@ function doEvaluate(
   const bigRes = (() => {
     switch (term.type) {
       case "Record": {
-        const table = db.tables[term.relation];
-        const virtual = db.virtualTables[term.relation];
-        const records = table ? table : virtual ? virtual(db) : null;
-        if (records) {
-          const out: Res[] = [];
-          // console.log("scan", term.relation, ppb(scope));
-          for (const rec of records) {
-            const unifyRes = unify(scope, term, rec);
-            // console.log("scan", {
-            //   scope: ppb(scope),
-            //   term: ppt(term),
-            //   rec: ppt(rec),
-            //   unifyRes: unifyRes ? ppb(unifyRes) : null,
-            // });
-            if (unifyRes === null) {
-              continue;
+        return memo(cache, term, scope, () => {
+          const table = db.tables[term.relation];
+          // const virtual = db.virtualTables[term.relation];
+          // const records = table ? table : virtual ? virtual(db) : null;
+          if (table) {
+            // console.log("scan", term.relation, ppb(scope));
+            return getForScope(table, scope, term);
+          }
+          const rule = db.rules[term.relation];
+          if (rule) {
+            if (perf) {
+              perfMark(`${term.relation} start`);
             }
-            out.push({
-              term: rec,
-              bindings: unifyRes,
-              trace: {
-                type: "MatchTrace",
-                match: term,
-                fact: { term: rec, trace: baseFactTrace, bindings: {} },
-              },
+            // console.log(
+            //   "calling",
+            //   pp.render(100, [
+            //     prettyPrintTerm(term),
+            //     "=>",
+            //     prettyPrintTerm(rule.head),
+            //   ])
+            // );
+            const substTerm = substitute(term, scope);
+            const newScope = unify({}, substTerm, rule.head);
+            // console.group(
+            //   "rule",
+            //   ppt(rule.head),
+            //   newScope ? ppb(newScope) : "null"
+            // );
+            // console.log("call: unifying", {
+            //   scope: {},
+            //   ruleHead: ppt(rule.head),
+            //   call: ppt(substTerm),
+            //   res: newScope,
+            // });
+            if (newScope === null) {
+              // console.groupEnd();
+              return []; // ?
+            }
+            // console.log("call", {
+            //   call: ppt(term),
+            //   head: ppt(rule.head),
+            //   newScope: ppb(newScope),
+            // });
+            const mappings = getMappings(rule.head.attrs, term.attrs);
+            const rawResults = flatMap(rule.body.opts, (andExpr, optIdx) => {
+              const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
+              const recResults = doJoin(
+                depth,
+                [{ type: "OrOpt", idx: optIdx }],
+                db,
+                newScope,
+                clauses,
+                cache
+              );
+              return applyFilters(exprs, recResults);
             });
-          }
-          return out;
-        }
-        const rule = db.rules[term.relation];
-        if (rule) {
-          if (perf) {
-            perfMark(`${term.relation} start`);
-          }
-          // console.log(
-          //   "calling",
-          //   pp.render(100, [
-          //     prettyPrintTerm(term),
-          //     "=>",
-          //     prettyPrintTerm(rule.head),
-          //   ])
-          // );
-          const substTerm = substitute(term, scope);
-          const newScope = unify({}, substTerm, rule.head);
-          // console.group(
-          //   "rule",
-          //   ppt(rule.head),
-          //   newScope ? ppb(newScope) : "null"
-          // );
-          // console.log("call: unifying", {
-          //   scope: {},
-          //   ruleHead: ppt(rule.head),
-          //   call: ppt(substTerm),
-          //   res: newScope,
-          // });
-          if (newScope === null) {
             // console.groupEnd();
-            return []; // ?
-          }
-          // console.log("call", {
-          //   call: ppt(term),
-          //   head: ppt(rule.head),
-          //   newScope: ppb(newScope),
-          // });
-          const mappings = getMappings(rule.head.attrs, term.attrs);
-          const rawResults = flatMap(rule.body.opts, (andExpr, optIdx) => {
-            const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
-            const recResults = doJoin(
-              depth,
-              [{ type: "OrOpt", idx: optIdx }],
-              db,
-              newScope,
-              clauses
-            );
-            return applyFilters(exprs, recResults);
-          });
-          // console.groupEnd();
-          // console.log("rawResults", rawResults.map(ppr));
-          const finalRes = filterMap(rawResults, (res) => {
-            const mappedBindings = applyMappings(mappings, res.bindings);
-            const nextTerm = substitute(rule.head, res.bindings);
-            const unif = unify(mappedBindings, term, nextTerm);
-            // console.log("unify", {
-            //   prior: ppb(mappedBindings),
-            //   left: ppt(term),
-            //   right: ppt(nextTerm),
-            //   res: unif ? ppb(unif) : null,
-            // });
-            if (unif === null) {
-              return null;
+            // console.log("rawResults", rawResults.map(ppr));
+            const finalRes = filterMap(rawResults, (res) => {
+              const mappedBindings = applyMappings(mappings, res.bindings);
+              const nextTerm = substitute(rule.head, res.bindings);
+              const unif = unify(mappedBindings, term, nextTerm);
+              // console.log("unify", {
+              //   prior: ppb(mappedBindings),
+              //   left: ppt(term),
+              //   right: ppt(nextTerm),
+              //   res: unif ? ppb(unif) : null,
+              // });
+              if (unif === null) {
+                return null;
+              }
+              // console.log({
+              //   mappings: mappings,
+              //   resTerm: ppt(res.term),
+              //   resBindings: ppb(res.bindings),
+              //   mappedBindings: ppb(mappedBindings),
+              //   nextTerm: ppt(nextTerm),
+              //   term: ppt(term), // call
+              //   unifRaw: unif,
+              //   unif: unif ? ppb(unif) : null,
+              // });
+              const outerRes: Res = {
+                bindings: unif,
+                term: nextTerm,
+                trace: {
+                  type: "RefTrace",
+                  refTerm: term,
+                  invokeLoc: path,
+                  innerRes: res,
+                  mappings,
+                },
+              };
+              return outerRes;
+            });
+            if (perf) {
+              const e = `${term.relation} end`;
+              perfMark(e);
+              perfMeasure(
+                `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
+                `${term.relation} start`,
+                e
+              );
             }
-            // console.log({
-            //   mappings: mappings,
-            //   resTerm: ppt(res.term),
-            //   resBindings: ppb(res.bindings),
-            //   mappedBindings: ppb(mappedBindings),
-            //   nextTerm: ppt(nextTerm),
-            //   term: ppt(term), // call
-            //   unifRaw: unif,
-            //   unif: unif ? ppb(unif) : null,
-            // });
-            const outerRes: Res = {
-              bindings: unif,
-              term: nextTerm,
-              trace: {
-                type: "RefTrace",
-                refTerm: term,
-                invokeLoc: path,
-                innerRes: res,
-                mappings,
-              },
-            };
-            return outerRes;
-          });
-          if (perf) {
-            const e = `${term.relation} end`;
-            perfMark(e);
-            perfMeasure(
-              `${term.relation}${fastPPB(scope)} => ${finalRes.length}`,
-              `${term.relation} start`,
-              e
-            );
+            return finalRes;
           }
-          return finalRes;
-        }
-        throw new UserError(`not found: ${term.relation}`);
+          throw new UserError(`not found: ${term.relation}`);
+        });
       }
       case "Var":
         return [{ term: scope[term.name], bindings: scope, trace: varTrace }];
@@ -286,6 +297,100 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
+}
+
+function getFromIndex(
+  collection: LazyIndexedCollection,
+  scope: Bindings,
+  rec: Rec
+): List<Rec> {
+  if (!scope) {
+    return null;
+  }
+  for (const attr in rec.attrs) {
+    const val = rec.attrs[attr];
+    if (!val) {
+      continue;
+    }
+    if (val.type === "Var") {
+      const scopeVal = scope[val.name];
+      if (!scopeVal) {
+        continue;
+      }
+      if (scopeVal.type === "Var" || scopeVal.type === "Record") {
+        continue;
+      }
+      if (!collection.hasIndex(attr)) {
+        continue;
+      }
+      // console.log("chose index from scope", {
+      //   attr,
+      //   index: collection.indexes[attr]
+      //     .mapEntries(([k, v]) => [k, v.toArray().map(ppt)])
+      //     .toObject(),
+      //   val: ppt(scopeVal),
+      //   res: collection.get(attr, scopeVal).map(ppt).toArray(),
+      // });
+      return collection.get(attr, scopeVal);
+    }
+    if (val.type === "Record") {
+      continue;
+    }
+    if (!collection.hasIndex(attr)) {
+      continue;
+    }
+    // console.log("chose index from attr", attr);
+    return collection.get(attr, val);
+  }
+  return collection.all();
+}
+
+function getForScope(
+  collection: LazyIndexedCollection,
+  scope: Bindings,
+  original: Rec
+) {
+  const out: Res[] = [];
+  const records = getFromIndex(collection, scope, original);
+  const otherRecords = collection
+    .all()
+    .filter((v) => unify(scope, original, v) !== null);
+  if (
+    records.filter((v) => unify(scope, original, v) !== null).size !==
+    otherRecords.size
+  ) {
+    console.log("mismatch", {
+      index: records.toArray().map(ppt),
+      normal: otherRecords.toArray().map(ppt),
+    });
+  }
+  // console.log({
+  //   original: ppt(original),
+  //   scope: ppb(scope),
+  //   res: records.toArray().map(ppt),
+  // });
+  for (const rec of records.toArray()) {
+    const unifyRes = unify(scope, original, rec);
+    // console.log("scan", {
+    //   scope: ppb(scope),
+    //   term: ppt(term),
+    //   rec: ppt(rec),
+    //   unifyRes: unifyRes ? ppb(unifyRes) : null,
+    // });
+    if (unifyRes === null) {
+      continue;
+    }
+    out.push({
+      term: rec,
+      bindings: unifyRes,
+      trace: {
+        type: "MatchTrace",
+        match: original,
+        fact: { term: rec, trace: baseFactTrace, bindings: {} },
+      },
+    });
+  }
+  return out;
 }
 
 // enable marking datalog rules on the Chrome devtools performance timeline

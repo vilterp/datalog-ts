@@ -11,8 +11,8 @@ import {
 } from "../../util/util";
 import { ppb } from "../pretty";
 import { List } from "immutable";
-import { emptyIndexedCollection } from "./indexedCollection";
-import { fastPPT } from "./fastPPT";
+import { emptyIndexedCollection } from "../../util/indexedCollection";
+import { fastPPT } from "../fastPPT";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {

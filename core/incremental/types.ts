@@ -1,7 +1,7 @@
 import { Rec, BinExpr, VarMappings, Rule, Res } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
-import { IndexedCollection } from "./indexedCollection";
+import { IndexedCollection } from "../../util/indexedCollection";
 
 export type NodeID = string;
 
