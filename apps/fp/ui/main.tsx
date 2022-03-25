@@ -19,7 +19,7 @@ import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 
 function Main() {
-  let interp = new IncrementalInterpreter(".", LOADER) as AbstractInterpreter;
+  let interp = new SimpleInterpreter(".", LOADER) as AbstractInterpreter;
 
   const [editorState, setEditorState] = useJSONLocalStorage(
     "fp-editor-state",
@@ -40,6 +40,7 @@ function Main() {
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
       <CodeEditor
+        lang="fp"
         interp={interp}
         getSuggestions={getSuggestions}
         highlightCSS={highlightCSS}
