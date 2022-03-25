@@ -299,7 +299,7 @@ export function hasVars(t: Term): boolean {
   }
 }
 
-function getIndex(
+function getFromIndex(
   collection: LazyIndexedCollection,
   scope: Bindings,
   rec: Rec
@@ -317,26 +317,29 @@ function getIndex(
       if (!scopeVal) {
         continue;
       }
-      if (scopeVal.type === "Var") {
+      if (scopeVal.type === "Var" || scopeVal.type === "Record") {
         continue;
       }
       if (!collection.hasIndex(attr)) {
         continue;
       }
-      // console.log("chose index", {
+      // console.log("chose index from scope", {
       //   attr,
       //   index: collection.indexes[attr]
       //     .mapEntries(([k, v]) => [k, v.toArray().map(ppt)])
       //     .toObject(),
-      //   val: ppt(val),
+      //   val: ppt(scopeVal),
       //   res: collection.get(attr, scopeVal).map(ppt).toArray(),
       // });
       return collection.get(attr, scopeVal);
     }
+    if (val.type === "Record") {
+      continue;
+    }
     if (!collection.hasIndex(attr)) {
       continue;
     }
-    // console.log("chose index", attr);
+    // console.log("chose index from attr", attr);
     return collection.get(attr, val);
   }
   return collection.all();
@@ -348,7 +351,19 @@ function getForScope(
   original: Rec
 ) {
   const out: Res[] = [];
-  const records = getIndex(collection, scope, original);
+  const records = getFromIndex(collection, scope, original);
+  const otherRecords = collection
+    .all()
+    .filter((v) => unify(scope, original, v) !== null);
+  if (
+    records.filter((v) => unify(scope, original, v) !== null).size !==
+    otherRecords.size
+  ) {
+    console.log("mismatch", {
+      index: records.toArray().map(ppt),
+      normal: otherRecords.toArray().map(ppt),
+    });
+  }
   // console.log({
   //   original: ppt(original),
   //   scope: ppb(scope),
