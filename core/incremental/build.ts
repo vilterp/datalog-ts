@@ -21,6 +21,7 @@ export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   const withNode = addNodeKnownID(name, graph, false, {
     type: "BaseFactTable",
   });
+  console.log("resolving unmapped rules for", name);
   const resolved = resolveUnmappedRules(withNode);
   return { ...resolved, tables: [...graph.tables, name] };
 }
@@ -50,7 +51,7 @@ export function resolveUnmappedRule(
       if (!callNode) {
         // not defined yet
         resolved = false;
-        // console.log("=> exit: not defined yet:", callRec.relation);
+        console.log(`=> exit ${newNodeID}: not defined yet:`, callRec.relation);
         continue;
       }
       const ruleNodeDesc = callNode.desc;
@@ -70,6 +71,9 @@ export function resolveUnmappedRule(
       // });
       curGraph = updateMappings(curGraph, newNodeID, mappings);
     }
+  }
+  if (resolved) {
+    console.log("resolved", rule.head.relation);
   }
   // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
   return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;

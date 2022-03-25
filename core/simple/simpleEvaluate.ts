@@ -269,12 +269,6 @@ function doEvaluate(
               );
             }
             const finalFinalRes = uniqBy(finalRes, fastPPR);
-            if (finalFinalRes.length < finalRes.length) {
-              console.log({
-                beforeLen: finalRes.length,
-                afterLen: finalFinalRes.length,
-              });
-            }
             return finalFinalRes;
           }
           throw new UserError(`not found: ${term.relation}`);

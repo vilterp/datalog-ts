@@ -1,5 +1,5 @@
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import { getAllStatements } from "../../../parserlib/flatten";
+import { declareTables, getAllStatements } from "../../../parserlib/flatten";
 import { extractGrammar, metaGrammar } from "../../../parserlib/meta";
 import {
   formatParseError,
@@ -33,6 +33,14 @@ export function constructInterp(args: {
   );
   const grammarErrors =
     grammarParseErrors.length === 0 ? validateGrammar(grammar) : [];
+  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
+  const allGrammarErrors = [
+    ...grammarErrors,
+    ...grammarParseErrors,
+    ...noMainError,
+  ];
+
+  // put in user rules
   const {
     interpWithRules,
     dlErrors,
@@ -45,32 +53,32 @@ export function constructInterp(args: {
       return { interpWithRules: initInterp, dlErrors: [e.toString()] };
     }
   })();
-  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
-  const allGrammarErrors = [
-    ...grammarErrors,
-    ...grammarParseErrors,
-    ...noMainError,
-  ];
 
-  // initialize stuff that we'll fill in later, if parse succeeds
+  let finalInterp: AbstractInterpreter = interpWithRules;
+
+  // put in grammar tables
+  if (allGrammarErrors.length === 0) {
+    finalInterp = finalInterp.evalStmts(declareTables(grammar))[1];
+    finalInterp = ensureRequiredRelations(finalInterp);
+  }
+
+  // put in builtins
+  finalInterp = finalInterp.evalStr(args.builtinSource)[1];
+
+  // put in ast tuples
   let traceTree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let langParseError: string | null = null;
-  let finalInterp: AbstractInterpreter = interpWithRules;
-
-  if (allGrammarErrors.length === 0) {
-    try {
-      traceTree = parse(grammar, "main", langSource);
-      ruleTree = extractRuleTree(traceTree);
-      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
-      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = finalInterp.evalStr(args.builtinSource)[1];
-      finalInterp = ensureRequiredRelations(finalInterp);
-    } catch (e) {
-      langParseError = e.toString();
-      console.error(e);
-    }
+  try {
+    traceTree = parse(grammar, "main", langSource);
+    ruleTree = extractRuleTree(traceTree);
+    const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
+    finalInterp = finalInterp.evalStmts(flattenStmts)[1];
+  } catch (e) {
+    langParseError = e.toString();
+    console.error(e);
   }
+
   finalInterp = finalInterp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
 
   return {

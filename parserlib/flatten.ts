@@ -29,7 +29,6 @@ export function getAllStatements(
     ...flatten(tree, source).map(
       (record): Statement => ({ type: "Insert", record })
     ),
-    { type: "Rule", rule: getUnionRule(grammar) },
   ];
 }
 
@@ -38,6 +37,10 @@ export function declareTables(grammar: Grammar): Statement[] {
   Object.keys(grammar).forEach((ruleName) => {
     stmts.push({ type: "TableDecl", name: `ast.${ruleName}` });
   });
+  stmts.push({ type: "Rule", rule: getUnionRule(grammar) });
+  stmts.push({ type: "TableDecl", name: `astInternal.firstChild` });
+  stmts.push({ type: "TableDecl", name: `astInternal.lastChild` });
+  stmts.push({ type: "TableDecl", name: `astInternal.next` });
   return stmts;
 }
 

@@ -8,6 +8,11 @@ const REQUIRED_RELATIONS = [
   "scope.Var",
   "scope.Parent",
   "scope.Placeholder",
+  "astInternal.firstChild",
+  "astInternal.next",
+  "astInternal.lastChild",
+  "internal.visualization",
+  "ide.Cursor",
   "ast.Placeholder", // to stop the annoying warning from the "jump to placeholder" action
 ];
 
