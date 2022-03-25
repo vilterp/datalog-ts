@@ -45,12 +45,12 @@ scope.Parent{childID: I, parentID: P} :-
   # ast.lambda{body: I, id: P}.
 
 ast.letBindingExpr{letID: L, bindingID: D} :-
-  ast.letExpr{letID: L} &
+  ast.letExpr{id: L} &
   ast.inKW{id: IN, parentID: L} &
   astInternal.next{prev: WS, next: IN} &
   astInternal.next{prev: D, next: WS}.
 ast.letBodyExpr{letID: L, bodyID: I} :-
-  ast.letExpr{letID: L} &
+  ast.letExpr{id: L} &
   ast.inKW{id: IN, parentID: L} &
   astInternal.next{prev: IN, next: WS} &
   astInternal.next{prev: WS, next: I}.
