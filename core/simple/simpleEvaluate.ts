@@ -138,6 +138,9 @@ function memo(
   const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
   const cacheRes = cache[cacheKey];
   if (cacheRes) {
+    if (perf) {
+      performance.mark(`memoHit: ${cacheKey} => ${cacheRes.length}`);
+    }
     return cacheRes;
   }
   const computeRes = evaluate();
