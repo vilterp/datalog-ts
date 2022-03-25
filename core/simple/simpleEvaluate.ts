@@ -28,13 +28,13 @@ import { evalBinExpr, extractBinExprs } from "../binExpr";
 import { ppb, ppt } from "../pretty";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
-import { IndexedCollection } from "../../util/indexedCollection";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
 import { List } from "immutable";
 
 export function evaluate(db: DB, term: Term): Res[] {
+  console.log("------------- ", ppt(term));
   const cache: Cache = {};
-  const res = doEvaluate(0, [], db, {}, term, cache);
+  const res = doEvaluate(0, [], db, {}, term, cache, [ppt(term)]);
   // console.log({ cache });
   return res;
 }
@@ -45,7 +45,8 @@ function doJoin(
   db: DB,
   scope: Bindings,
   clauses: AndClause[],
-  cache: Cache
+  cache: Cache,
+  stack: string[]
 ): Res[] {
   if (clauses.length === 0) {
     return [];
@@ -59,7 +60,8 @@ function doJoin(
       db,
       scope,
       clauses[0],
-      cache
+      cache,
+      [...stack, ppt(clauses[0])]
     );
   }
   // console.group("doJoin: about to get left results");
@@ -69,7 +71,8 @@ function doJoin(
     db,
     scope,
     clauses[0],
-    cache
+    cache,
+    [...stack, ppt(clauses[0])]
   );
   // console.groupEnd();
   // console.log("doJoin: left results", leftResults.map(ppr));
@@ -90,7 +93,8 @@ function doJoin(
       db,
       nextScope,
       clauses.slice(1),
-      cache
+      cache,
+      stack
     );
     // console.groupEnd();
     // console.log("right results", rightResults);
@@ -147,7 +151,8 @@ function doEvaluate(
   db: DB,
   scope: Bindings,
   term: Term,
-  cache: Cache
+  cache: Cache,
+  stack: string[]
 ): Res[] {
   // console.group("doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
@@ -208,7 +213,8 @@ function doEvaluate(
                 db,
                 newScope,
                 clauses,
-                cache
+                cache,
+                stack
               );
               return applyFilters(exprs, recResults);
             });
@@ -279,6 +285,13 @@ function doEvaluate(
         return [{ term: term, bindings: scope, trace: literalTrace }];
     }
   })();
+  if (bigRes.length > 1000) {
+    console.warn("big relation:", {
+      term: ppt(term),
+      length: bigRes.length,
+      stack,
+    });
+  }
   // console.groupEnd();
   // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
