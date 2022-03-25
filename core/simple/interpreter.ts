@@ -3,11 +3,7 @@ import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { IndexedCollection } from "../../util/indexedCollection";
-import {
-  emptyLazyIndexedCollection,
-  LazyIndexedCollection,
-} from "./lazyIndexedCollection";
+import { emptyLazyIndexedCollection } from "./lazyIndexedCollection";
 
 const initialDB: DB = {
   tables: {},
