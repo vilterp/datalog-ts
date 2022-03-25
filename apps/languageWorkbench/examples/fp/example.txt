@@ -1,1 +1,3 @@
-let x = 40 in plus2(x)
+let x = 40 in
+let y = plus2(x)
+in plus2(x)
