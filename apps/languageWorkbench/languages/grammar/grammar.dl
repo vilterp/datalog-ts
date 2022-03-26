@@ -4,6 +4,9 @@ scope.Defn{scopeID: "global", span: S, name: N, kind: "rule"} :-
   ast.ruleDefn{id: RuleID} &
   ast.ident{parentID: RuleID, span: S, text: N}.
 
+scope.Parent{childID: N, parentID: "global"} :-
+  scope.Defn{name: N}.
+
 scope.Var{scopeID: "global", name: N, span: S, kind: "rule"} :-
   ast.ref{span: S, text: N}.
 
