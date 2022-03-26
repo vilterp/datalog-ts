@@ -21,7 +21,7 @@ CREATE TABLE blog_posts (
 );
 CREATE TABLE comments (
   id INT,
-  post_id INT REFERENCES blog_posts (id)
+  post_id INT REFERENCES blog_posts (i|||d)
 );
 SELECT id, ??? FROM blog_posts;
 hl.Segment{}
@@ -48,3 +48,6 @@ hl.Segment{highlight: false, span: span{from: 31, to: 34}, type: "var"}
 hl.Segment{highlight: false, span: span{from: 43, to: 47}, type: "var"}
 hl.Segment{highlight: false, span: span{from: 80, to: 83}, type: "var"}
 hl.Segment{highlight: false, span: span{from: 95, to: 98}, type: "var"}
+hl.Segment{highlight: true, span: span{from: 28, to: 30}, type: "defn"}
+hl.Segment{highlight: true, span: span{from: 28, to: 30}, type: "defn"}
+hl.Segment{highlight: true, span: span{from: 122, to: 124}, type: "usage"}
