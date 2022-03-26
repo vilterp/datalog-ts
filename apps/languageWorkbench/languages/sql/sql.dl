@@ -18,7 +18,8 @@ scope.columnFromSelectTable{scopeID: SelectID, span: S, name: N, kind: "column"}
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.tableUsage{scopeID: I, name: N, span: S, kind: K} |
-  scope.columnUsage{scopeID: I, name: N, span: S, kind: K}.
+  scope.columnUsage{scopeID: I, name: N, span: S, kind: K} |
+  scope.tableRef{scopeID: I, name: N, span: S, kind: K}.
 scope.tableUsage{scopeID: "global", name: N, span: S, kind: "table"} :-
   ast.selectStmt{id: SelectID} &
   ast.tableName{parentID: SelectID, span: S, text: N}.
@@ -26,6 +27,9 @@ scope.columnUsage{scopeID: SelectID, name: N, span: S, kind: "column"} :-
   ast.selectStmt{id: SelectID} &
   ast.selection{parentID: SelectID, id: SelectionID} &
   ast.columnName{parentID: SelectionID, span: S, text: N}.
+scope.tableRef{scopeID: "global", name: N, span: S, kind: "table"} :-
+  ast.refClause{id: C} &
+  ast.tableName{parentID: C, text: N, span: S}.
 
 scope.Placeholder{span: S, scopeID: I, kind: K} :-
   scope.placeholderColumn{span: S, scopeID: I, kind: K} |
