@@ -352,18 +352,6 @@ function getForScope(
 ) {
   const out: Res[] = [];
   const records = getFromIndex(collection, scope, original);
-  const otherRecords = collection
-    .all()
-    .filter((v) => unify(scope, original, v) !== null);
-  if (
-    records.filter((v) => unify(scope, original, v) !== null).size !==
-    otherRecords.size
-  ) {
-    console.log("mismatch", {
-      index: records.toArray().map(ppt),
-      normal: otherRecords.toArray().map(ppt),
-    });
-  }
   // console.log({
   //   original: ppt(original),
   //   scope: ppb(scope),
