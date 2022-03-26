@@ -24,4 +24,4 @@ alphaNum :- (alpha | num).
 ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
 
-commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | "," | "-").
+commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | "," | "-" | "'").
