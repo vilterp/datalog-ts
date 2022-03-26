@@ -30,11 +30,12 @@ export function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
     const lines = input.split("\n");
     const lang = lines[0];
-    const example = lines.slice(1, lines.length - 1).join("\n");
+    const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
+    const { input: example, cursorPos } = extractCursor(exampleWithCursor);
     const query = lines[lines.length - 1];
     const { finalInterp, allGrammarErrors, dlErrors, langParseError } =
       constructInterp({
-        cursorPos: 1,
+        cursorPos,
         builtinSource: fs.readFileSync(
           "uiCommon/ide/datalogPowered/dl/main.dl",
           "utf8"
@@ -56,4 +57,14 @@ export function testLangQuery(test: string[]): TestOutput[] {
     }
     return datalogOut(res.map((res) => ppt(res.term)).join("\n"));
   });
+}
+
+const CURSOR = "|||";
+
+function extractCursor(input: string): { input: string; cursorPos: number } {
+  const split = input.split(CURSOR, 2);
+  if (split.length === 1) {
+    return { input, cursorPos: 1 };
+  }
+  return { input: split[0] + split[1], cursorPos: split[0].length };
 }
