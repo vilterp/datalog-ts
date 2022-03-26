@@ -53,6 +53,15 @@ scope.placeholderSelectTable{span: S, scopeID: "global", kind: "table"} :-
   ast.tableName{parentID: SelectID, id: TableNameID} &
   ast.placeholder{parentID: TableNameID, span: S}.
 
+scope.foreignKey{fromTable: FT, fromCol: FC, toTable: TT, toCol: TC} :-
+  ast.createTableStmt{id: CreateTable} &
+  ast.tableName{parentID: CreateTable, text: FT} &
+  ast.colSpec{id: ColSpec, parentID: CreateTable} &
+  ast.columnName{parentID: ColSpec, text: FC} &
+  ast.refClause{id: TR, parentID: ColSpec} &
+  ast.tableName{parentID: TR, text: TT} &
+  ast.columnName{parentID: TR, text: TC}.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "bool"}.
