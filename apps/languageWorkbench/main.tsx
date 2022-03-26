@@ -68,7 +68,7 @@ function Playground() {
 
   return (
     <>
-      <h1>Language Workbench</h1>
+      <h1>Lingo Language Workbench</h1>
 
       <div>
         <h3>Example:</h3>
