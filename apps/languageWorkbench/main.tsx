@@ -5,7 +5,7 @@ import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
 import { OpenCodeEditor } from "../../uiCommon/ide/datalogPowered/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { EXAMPLES } from "./examples";
+import { LANGUAGES } from "./languages";
 import useHashParam from "use-hash-param";
 // @ts-ignore
 import commonThemeCSS from "./commonTheme.css";
@@ -25,9 +25,12 @@ function Main() {
 
 function Playground() {
   // state
-  const [langName, setExampleName] = useHashParam("", Object.keys(EXAMPLES)[0]);
+  const [langName, setExampleName] = useHashParam(
+    "",
+    Object.keys(LANGUAGES)[0]
+  );
 
-  const curExample = EXAMPLES[langName];
+  const curExample = LANGUAGES[langName];
 
   const [grammarEditorState, setGrammarEditorState] = useState(
     initialEditorState(curExample.grammar)
@@ -60,7 +63,7 @@ function Playground() {
 
   const setLangName = (name) => {
     setExampleName(name);
-    const example = EXAMPLES[name];
+    const example = LANGUAGES[name];
     setGrammarEditorState({ ...grammarEditorState, source: example.grammar });
     setDLEditorState({ ...dlEditorState, source: example.datalog });
     setExampleSource(example.example);
@@ -78,7 +81,7 @@ function Playground() {
           }}
           value={langName}
         >
-          {mapObjToList(EXAMPLES, (name) => (
+          {mapObjToList(LANGUAGES, (name) => (
             <option key={name} value={name}>
               {name}
             </option>
@@ -107,8 +110,8 @@ function Playground() {
               <WrappedCodeEditor
                 editorState={grammarEditorState}
                 setEditorState={setGrammarEditorState}
-                datalog={EXAMPLES.grammar.datalog}
-                grammar={EXAMPLES.grammar.grammar}
+                datalog={LANGUAGES.grammar.datalog}
+                grammar={LANGUAGES.grammar.grammar}
                 highlightCSS={commonThemeCSS}
                 lang="grammar"
                 hideKeyBindingsTable
@@ -120,8 +123,8 @@ function Playground() {
               <WrappedCodeEditor
                 editorState={dlEditorState}
                 setEditorState={setDLEditorState}
-                datalog={EXAMPLES.datalog.datalog}
-                grammar={EXAMPLES.datalog.grammar}
+                datalog={LANGUAGES.datalog.datalog}
+                grammar={LANGUAGES.datalog.grammar}
                 highlightCSS={commonThemeCSS}
                 lang="dl"
                 hideKeyBindingsTable
