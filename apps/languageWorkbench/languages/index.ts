@@ -61,7 +61,7 @@ import treeSQLGrammar from "./treeSQL/treeSQL.grammar";
 // @ts-ignore
 import treeSQLExample from "./treeSQL/example.txt";
 
-export const EXAMPLES: { [name: string]: LanguageSpec } = {
+export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText: {
     datalog: "",
     grammar: "",

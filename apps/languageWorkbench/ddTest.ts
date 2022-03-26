@@ -13,7 +13,7 @@ export function lwbTests(writeResults: boolean): Suite {
     name: lang,
     test() {
       runDDTestAtPath(
-        `apps/languageWorkbench/examples/${lang}/${lang}.dd.txt`,
+        `apps/languageWorkbench/languages/${lang}/${lang}.dd.txt`,
         testLangQuery,
         writeResults
       );
@@ -26,7 +26,7 @@ const initInterp = new SimpleInterpreter(
   fsLoader
 );
 
-function testLangQuery(test: string[]): TestOutput[] {
+export function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
     const lines = input.split("\n");
     const lang = lines[0];
@@ -40,11 +40,11 @@ function testLangQuery(test: string[]): TestOutput[] {
           "utf8"
         ),
         dlSource: fs.readFileSync(
-          `apps/languageWorkbench/examples/${lang}/${lang}.dl`,
+          `apps/languageWorkbench/languages/${lang}/${lang}.dl`,
           "utf8"
         ),
         grammarSource: fs.readFileSync(
-          `apps/languageWorkbench/examples/${lang}/${lang}.grammar`,
+          `apps/languageWorkbench/languages/${lang}/${lang}.grammar`,
           "utf8"
         ),
         langSource: example,
