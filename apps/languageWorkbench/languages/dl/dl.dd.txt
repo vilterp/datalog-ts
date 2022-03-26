@@ -8,3 +8,644 @@ application/datalog
 ide.Suggestion{id: 3, name: "A", span: span{from: 45, to: 48}, type: T}
 ide.Suggestion{id: 3, name: "B", span: span{from: 45, to: 48}, type: T}
 ide.Suggestion{id: "global", name: "foo", span: span{from: 25, to: 28}, type: T}
+
+dl
+scope.Defn{scopeID: I, name: N, type: T, span: S} :-
+  scope.builtin{id: I, name: N, type: T, location: S} |
+  scope.l|||et{id: I, name: N, type: T, location: S} |
+  scope.lambda{id: I, name: N, type: T, location: S}.
+scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
+  ast.RootExpr{id: I} &
+  lang.Builtin{name: N, type: T}.
+scope.let{id: I, name: N, type: T, location: S} :-
+  ast.letBodyExpr{letID: L, bodyID: I} &
+  ast.letBindingExpr{letID: L, bindingID: B} &
+  ast.letVar{letID: L, name: N, span: S} &
+  tc.Type{id: B, type: T}.
+scope.lambda{id: I, name: N, type: T, location: L} :-
+  ast.lambda{body: I, id: LID} &
+  ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
+scope.Var{scopeID: I, name: N, span: S} :-
+  ast.expr{id: I} &
+  ast.varExpr{parentID: I, text: N, span: S} |
+  ast.expr{id: I} &
+  ast.funcCall{id: FuncCallID, parentID: I} &
+  ast.varExpr{parentID: FuncCallID, text: N, span: S}.
+scope.Scope{id: I, label: I} :-
+  ast.expr{id: I}.
+scope.Placeholder{scopeID: I, span: S} :-
+  ast.expr{id: I} &
+  ast.placeholder{parentID: I, span: S}.
+scope.Parent{childID: I, parentID: P} :-
+  ast.letExpr{id: L, parentID: P} &
+  ast.letBindingExpr{letID: L, bindingID: I} |
+  ast.letExpr{id: L, parentID: P} &
+  ast.letBodyExpr{letID: L, bodyID: I} |
+  ast.funcCall{id: C, parentID: P} &
+  ast.funcCallArg{callID: C, argID: I} |
+  ast.funcCall{id: C, parentID: P} &
+  ast.funcCallFunc{callID: C, funcID: I}.
+  # ast.lambda{body: I, id: P}.
+ast.letBindingExpr{letID: L, bindingID: D} :-
+  ast.letExpr{id: L} &
+  ast.inKW{id: IN, parentID: L} &
+  astInternal.next{prev: WS, next: IN} &
+  astInternal.next{prev: D, next: WS}.
+ast.letBodyExpr{letID: L, bodyID: I} :-
+  ast.letExpr{id: L} &
+  ast.inKW{id: IN, parentID: L} &
+  astInternal.next{prev: IN, next: WS} &
+  astInternal.next{prev: WS, next: I}.
+ast.letVar{letID: L, name: N, span: S} :-
+  ast.letExpr{id: L} &
+  ast.ident{parentID: L, text: N, span: S}.
+ast.funcCallArg{callID: C, argID: I} :-
+  ast.funcCall{id: C} &
+  ast.expr{parentID: C, id: I}.
+ast.funcCallFunc{callID: C, funcID: F} :-
+  ast.funcCall{id: C} &
+  ast.varExpr{id: F, parentID: C}.
+tc.Type{id: I, type: T} :-
+  tc.typeS{id: I, type: T} |
+  tc.typeI{id: I, type: T} |
+  tc.typeLambda{id: I, type: T} |
+  tc.typeFC{id: I, type: T} |
+  tc.typeLet{id: I, type: T} |
+  tc.typeVar{id: I, type: T} |
+  tc.typePlaceholder{id: I, type: T}.
+tc.typeS{id: I, type: "string"} :-
+  ast.expr{id: I} &
+  ast.stringLit{parentID: I}.
+tc.typeI{id: I, type: "int"} :-
+  ast.expr{id: I} &
+  ast.intLit{parentID: I}.
+tc.typeFC{id: I, type: T} :-
+  ast.expr{id: I} &
+  ast.funcCall{parentID: I, id: FC} &
+  ast.funcCallArg{callID: FC, argID: AID} &
+  ast.funcCallFunc{callID: FC, funcID: FID} &
+  ast.varExpr{id: FID, text: N} &
+  scope.Item{scopeID: FID, name: N, type: tapp{from: F, to: T}} &
+  tc.Type{id: AID, type: F}.
+tc.typeLet{id: I, type: T} :-
+  ast.expr{id: I} &
+  ast.letExpr{id: L, parentID: I} &
+  ast.letBodyExpr{letID: L, bodyID: BID} &
+  tc.Type{id: BID, type: T}.
+tc.typeVar{id: I, type: T} :-
+  ast.expr{id: I} &
+  ast.varExpr{id: V, parentID: I, text: N} &
+  scope.Item{scopeID: I, name: N, type: T}.
+tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
+  ast.expr{id: I} &
+  ast.lambda{id: L, parentID: I, retType: R, body: B} &
+  ast.lambdaParam{lambdaID: L, ty: F} &
+  tc.Type{id: B, type: R}.
+tc.typePlaceholder{id: I, type: "unknown"} :-
+  ast.expr{id: I} &
+  ast.Placeholder{id: P, parentID: I}.
+lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
+ast.RootExpr{id: 1}.
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "letKW", type: "keyword"}.
+hl.mapping{rule: "inKW", type: "keyword"}.
+hl.Segment{}
+----
+application/datalog
+hl.Segment{highlight: false, span: span{from: 3534, to: 3535}, type: "int"}
+hl.Segment{highlight: false, span: span{from: 264, to: 273}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 2407, to: 2415}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 2492, to: 2497}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3379, to: 3388}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3471, to: 3478}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3497, to: 3502}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3508, to: 3513}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3555, to: 3563}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3571, to: 3576}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3596, to: 3607}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3615, to: 3623}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3643, to: 3649}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3657, to: 3663}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3683, to: 3690}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3698, to: 3705}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3725, to: 3732}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3740, to: 3749}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3769, to: 3775}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 3783, to: 3792}, type: "string"}
+hl.Segment{highlight: false, span: span{from: 0, to: 10}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 11, to: 18}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 23, to: 27}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 32, to: 36}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 41, to: 45}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 55, to: 68}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 69, to: 71}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 76, to: 80}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 85, to: 89}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 94, to: 102}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 111, to: 120}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 121, to: 123}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 128, to: 132}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 137, to: 141}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 146, to: 154}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 163, to: 175}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 176, to: 178}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 183, to: 187}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 192, to: 196}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 201, to: 209}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 215, to: 228}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 229, to: 231}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 236, to: 240}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 245, to: 249}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 254, to: 262}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 280, to: 292}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 293, to: 295}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 304, to: 316}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 317, to: 321}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 326, to: 330}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 336, to: 345}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 346, to: 348}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 353, to: 357}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 362, to: 366}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 371, to: 379}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 389, to: 404}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 405, to: 410}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 415, to: 421}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 430, to: 448}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 449, to: 454}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 459, to: 468}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 477, to: 487}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 488, to: 493}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 498, to: 502}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 507, to: 511}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 520, to: 527}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 528, to: 530}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 535, to: 539}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 545, to: 557}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 558, to: 560}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 565, to: 569}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 574, to: 578}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 583, to: 591}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 601, to: 611}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 612, to: 616}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 621, to: 623}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 634, to: 649}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 650, to: 658}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 665, to: 669}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 674, to: 676}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 681, to: 689}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 695, to: 704}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 705, to: 712}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 717, to: 721}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 726, to: 730}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 740, to: 748}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 749, to: 751}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 760, to: 771}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 772, to: 780}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 785, to: 789}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 794, to: 798}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 807, to: 815}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 816, to: 818}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 827, to: 839}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 840, to: 842}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 856, to: 864}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 873, to: 884}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 885, to: 893}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 907, to: 911}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 916, to: 920}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 926, to: 937}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 938, to: 940}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 945, to: 950}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 960, to: 968}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 969, to: 971}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 977, to: 994}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 995, to: 1002}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1007, to: 1011}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1021, to: 1029}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1030, to: 1032}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1041, to: 1056}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1057, to: 1065}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1070, to: 1074}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1080, to: 1092}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1093, to: 1100}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1105, to: 1113}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1123, to: 1134}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1135, to: 1137}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1142, to: 1150}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1159, to: 1177}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1178, to: 1183}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1188, to: 1197}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1206, to: 1217}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1218, to: 1220}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1225, to: 1233}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1242, to: 1257}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1258, to: 1263}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1268, to: 1274}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1283, to: 1295}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1296, to: 1298}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1303, to: 1311}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1320, to: 1335}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1336, to: 1342}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1347, to: 1352}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1361, to: 1373}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1374, to: 1376}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1381, to: 1389}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1398, to: 1414}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1415, to: 1421}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1426, to: 1432}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1470, to: 1488}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1489, to: 1494}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1499, to: 1508}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1518, to: 1529}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1530, to: 1532}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1541, to: 1549}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1550, to: 1552}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1558, to: 1566}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1575, to: 1591}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1592, to: 1596}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1602, to: 1606}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1616, to: 1632}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1633, to: 1637}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1642, to: 1646}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1653, to: 1668}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1669, to: 1674}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1679, to: 1685}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1695, to: 1706}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1707, to: 1709}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1718, to: 1726}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1727, to: 1729}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1735, to: 1743}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1752, to: 1768}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1769, to: 1773}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1779, to: 1783}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1793, to: 1809}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1810, to: 1814}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1820, to: 1824}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1830, to: 1840}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1841, to: 1846}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1851, to: 1855}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1860, to: 1864}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1874, to: 1885}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1886, to: 1888}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1897, to: 1906}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1907, to: 1915}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1920, to: 1924}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1929, to: 1933}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1939, to: 1954}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1955, to: 1961}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1966, to: 1971}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1981, to: 1993}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 1994, to: 1996}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2005, to: 2013}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2014, to: 2022}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2027, to: 2029}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2035, to: 2051}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2052, to: 2058}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2063, to: 2069}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2079, to: 2091}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2092, to: 2094}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2103, to: 2114}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2115, to: 2117}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2122, to: 2130}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2136, to: 2143}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2144, to: 2146}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2151, to: 2155}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2165, to: 2173}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2174, to: 2176}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2181, to: 2185}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2194, to: 2202}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2203, to: 2205}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2210, to: 2214}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2223, to: 2236}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2237, to: 2239}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2244, to: 2248}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2257, to: 2266}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2267, to: 2269}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2274, to: 2278}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2287, to: 2297}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2298, to: 2300}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2305, to: 2309}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2318, to: 2328}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2329, to: 2331}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2336, to: 2340}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2349, to: 2367}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2368, to: 2370}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2375, to: 2379}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2385, to: 2393}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2394, to: 2396}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2401, to: 2405}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2422, to: 2430}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2431, to: 2433}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2442, to: 2455}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2456, to: 2464}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2470, to: 2478}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2479, to: 2481}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2486, to: 2490}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2504, to: 2512}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2513, to: 2515}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2524, to: 2534}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2535, to: 2543}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2549, to: 2558}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2559, to: 2561}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2566, to: 2570}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2580, to: 2588}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2589, to: 2591}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2600, to: 2612}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2613, to: 2621}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2626, to: 2628}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2638, to: 2653}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2654, to: 2660}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2666, to: 2671}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2682, to: 2698}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2699, to: 2705}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2711, to: 2717}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2728, to: 2739}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2740, to: 2742}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2749, to: 2753}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2762, to: 2772}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2773, to: 2780}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2787, to: 2791}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2796, to: 2800}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2802, to: 2806}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2807, to: 2811}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2816, to: 2818}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2828, to: 2835}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2836, to: 2838}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2845, to: 2849}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2855, to: 2865}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2866, to: 2868}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2873, to: 2877}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2887, to: 2895}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2896, to: 2898}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2907, to: 2918}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2919, to: 2921}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2926, to: 2934}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2943, to: 2958}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2959, to: 2964}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2969, to: 2975}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2986, to: 2993}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 2994, to: 2996}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3003, to: 3007}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3013, to: 3023}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3024, to: 3026}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3031, to: 3035}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3045, to: 3053}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3054, to: 3056}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3065, to: 3076}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3077, to: 3079}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3084, to: 3092}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3097, to: 3101}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3110, to: 3120}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3121, to: 3128}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3133, to: 3137}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3142, to: 3146}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3152, to: 3165}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3166, to: 3168}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3173, to: 3177}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3179, to: 3183}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3184, to: 3188}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3193, to: 3195}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3206, to: 3214}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3215, to: 3217}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3226, to: 3236}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3237, to: 3239}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3244, to: 3252}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3257, to: 3264}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3269, to: 3273}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3282, to: 3297}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3298, to: 3306}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3311, to: 3313}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3322, to: 3329}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3330, to: 3332}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3337, to: 3341}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3347, to: 3365}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3366, to: 3368}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3373, to: 3377}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3395, to: 3403}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3404, to: 3406}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3415, to: 3430}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3431, to: 3433}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3438, to: 3446}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3452, to: 3464}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3465, to: 3469}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3480, to: 3484}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3486, to: 3490}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3491, to: 3495}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3504, to: 3506}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3517, to: 3529}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3530, to: 3532}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3538, to: 3548}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3549, to: 3553}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3565, to: 3569}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3579, to: 3589}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3590, to: 3594}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3609, to: 3613}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3626, to: 3636}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3637, to: 3641}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3651, to: 3655}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3666, to: 3676}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3677, to: 3681}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3692, to: 3696}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3708, to: 3718}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3719, to: 3723}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3734, to: 3738}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3752, to: 3762}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3763, to: 3767}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 3777, to: 3781}, type: "var"}
+hl.Segment{highlight: false, span: span{from: 20, to: 21}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 29, to: 30}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 38, to: 39}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 47, to: 48}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 73, to: 74}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 82, to: 83}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 91, to: 92}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 104, to: 105}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 125, to: 126}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 134, to: 135}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 143, to: 144}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 156, to: 157}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 180, to: 181}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 189, to: 190}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 198, to: 199}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 211, to: 212}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 233, to: 234}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 242, to: 243}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 251, to: 252}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 297, to: 298}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 323, to: 324}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 332, to: 333}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 350, to: 351}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 359, to: 360}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 368, to: 369}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 381, to: 382}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 412, to: 413}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 423, to: 424}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 456, to: 457}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 470, to: 471}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 495, to: 496}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 504, to: 505}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 513, to: 514}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 532, to: 533}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 541, to: 542}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 562, to: 563}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 571, to: 572}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 580, to: 581}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 593, to: 594}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 618, to: 619}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 625, to: 628}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 660, to: 663}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 671, to: 672}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 678, to: 679}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 691, to: 692}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 714, to: 715}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 723, to: 724}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 732, to: 733}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 753, to: 754}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 782, to: 783}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 791, to: 792}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 800, to: 801}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 820, to: 821}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 844, to: 854}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 866, to: 867}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 895, to: 905}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 913, to: 914}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 922, to: 923}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 942, to: 943}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 952, to: 953}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 973, to: 974}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1004, to: 1005}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1013, to: 1014}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1034, to: 1035}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1067, to: 1068}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1076, to: 1077}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1102, to: 1103}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1115, to: 1116}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1139, to: 1140}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1152, to: 1153}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1185, to: 1186}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1199, to: 1200}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1222, to: 1223}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1235, to: 1236}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1265, to: 1266}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1276, to: 1277}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1300, to: 1301}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1313, to: 1314}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1344, to: 1345}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1354, to: 1355}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1378, to: 1379}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1391, to: 1392}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1423, to: 1424}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1434, to: 1435}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1496, to: 1497}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1510, to: 1511}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1534, to: 1535}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1554, to: 1556}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1568, to: 1569}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1598, to: 1600}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1608, to: 1610}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1639, to: 1640}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1648, to: 1650}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1676, to: 1677}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1687, to: 1688}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1711, to: 1712}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1731, to: 1733}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1745, to: 1746}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1775, to: 1777}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1785, to: 1787}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1816, to: 1818}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1826, to: 1827}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1848, to: 1849}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1857, to: 1858}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1866, to: 1867}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1890, to: 1891}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1917, to: 1918}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1926, to: 1927}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1935, to: 1936}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1963, to: 1964}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1973, to: 1974}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 1998, to: 1999}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2024, to: 2025}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2031, to: 2032}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2060, to: 2061}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2071, to: 2072}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2096, to: 2097}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2119, to: 2120}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2132, to: 2133}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2148, to: 2149}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2157, to: 2158}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2178, to: 2179}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2187, to: 2188}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2207, to: 2208}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2216, to: 2217}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2241, to: 2242}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2250, to: 2251}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2271, to: 2272}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2280, to: 2281}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2302, to: 2303}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2311, to: 2312}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2333, to: 2334}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2342, to: 2343}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2372, to: 2373}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2381, to: 2382}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2398, to: 2399}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2435, to: 2436}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2466, to: 2467}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2483, to: 2484}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2517, to: 2518}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2545, to: 2546}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2563, to: 2564}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2572, to: 2573}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2593, to: 2594}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2623, to: 2624}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2630, to: 2632}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2662, to: 2664}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2673, to: 2676}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2707, to: 2709}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2719, to: 2722}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2744, to: 2747}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2755, to: 2756}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2782, to: 2785}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2793, to: 2794}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2813, to: 2814}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2820, to: 2821}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2840, to: 2843}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2851, to: 2852}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2870, to: 2871}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2879, to: 2880}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2900, to: 2901}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2923, to: 2924}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2936, to: 2937}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2966, to: 2967}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2977, to: 2980}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 2998, to: 3001}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3009, to: 3010}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3028, to: 3029}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3037, to: 3038}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3058, to: 3059}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3081, to: 3082}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3094, to: 3095}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3103, to: 3104}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3130, to: 3131}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3139, to: 3140}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3148, to: 3149}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3170, to: 3171}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3190, to: 3191}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3197, to: 3198}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3219, to: 3220}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3241, to: 3242}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3254, to: 3255}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3266, to: 3267}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3275, to: 3276}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3308, to: 3309}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3315, to: 3316}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3334, to: 3335}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3343, to: 3344}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3370, to: 3371}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3408, to: 3409}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3435, to: 3436}, type: "specialVar"}
+hl.Segment{highlight: false, span: span{from: 3448, to: 3449}, type: "specialVar"}
+hl.Segment{highlight: true, span: span{from: 336, to: 345}, type: "defn"}
+hl.Segment{highlight: true, span: span{from: 111, to: 120}, type: "usage"}
+hl.Segment{highlight: false, span: span{from: 1440, to: 1469}, type: "comment"}
