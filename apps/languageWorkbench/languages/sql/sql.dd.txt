@@ -11,8 +11,8 @@ SELECT id, ??? FROM blog_posts;
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 104, name: "id", span: span{from: 113, to: 116}, type: T}
-ide.Suggestion{id: 104, name: "body", span: span{from: 113, to: 116}, type: T}
+ide.Suggestion{id: 138, name: "id", span: span{from: 140, to: 143}, type: T}
+ide.Suggestion{id: 138, name: "body", span: span{from: 140, to: 143}, type: T}
 
 sql
 CREATE TABLE blog_posts (
@@ -26,3 +26,177 @@ CREATE TABLE comments (
 SELECT id, ??? FROM blog_posts;
 astInternal.node{}
 ----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 160}, text: "CREATE TABLE blog_posts (\n  id INT,\n  body TEXT\n);\nCREATE TABLE comments (\n  id INT,\n  post_id INT REFERENCES blog_posts (id)\n);\nSELECT id, ??? FROM blog_posts;"}
+astInternal.node{id: 1, parentID: 0, rule: "statement", span: span{from: 0, to: 50}, text: "CREATE TABLE blog_posts (\n  id INT,\n  body TEXT\n);"}
+astInternal.node{id: 53, parentID: 0, rule: "statement", span: span{from: 51, to: 128}, text: "CREATE TABLE comments (\n  id INT,\n  post_id INT REFERENCES blog_posts (id)\n);"}
+astInternal.node{id: 137, parentID: 0, rule: "statement", span: span{from: 129, to: 160}, text: "SELECT id, ??? FROM blog_posts;"}
+astInternal.node{id: 138, parentID: 137, rule: "selectStmt", span: span{from: 129, to: 159}, text: "SELECT id, ??? FROM blog_posts"}
+astInternal.node{id: 141, parentID: 138, rule: "selection", span: span{from: 136, to: 143}, text: "id, ???"}
+astInternal.node{id: 2, parentID: 1, rule: "createTableStmt", span: span{from: 0, to: 49}, text: "CREATE TABLE blog_posts (\n  id INT,\n  body TEXT\n)"}
+astInternal.node{id: 54, parentID: 53, rule: "createTableStmt", span: span{from: 51, to: 127}, text: "CREATE TABLE comments (\n  id INT,\n  post_id INT REFERENCES blog_posts (id)\n)"}
+astInternal.node{id: 30, parentID: 2, rule: "colSpec", span: span{from: 28, to: 34}, text: "id INT"}
+astInternal.node{id: 39, parentID: 2, rule: "colSpec", span: span{from: 38, to: 48}, text: "body TEXT\n"}
+astInternal.node{id: 78, parentID: 54, rule: "colSpec", span: span{from: 77, to: 83}, text: "id INT"}
+astInternal.node{id: 87, parentID: 54, rule: "colSpec", span: span{from: 87, to: 125}, text: "post_id INT REFERENCES blog_posts (id)"}
+astInternal.node{id: 106, parentID: 87, rule: "refClause", span: span{from: 99, to: 125}, text: "REFERENCES blog_posts (id)"}
+astInternal.node{id: 37, parentID: 30, rule: "type", span: span{from: 31, to: 34}, text: "INT"}
+astInternal.node{id: 50, parentID: 39, rule: "type", span: span{from: 43, to: 47}, text: "TEXT"}
+astInternal.node{id: 85, parentID: 78, rule: "type", span: span{from: 80, to: 83}, text: "INT"}
+astInternal.node{id: 104, parentID: 87, rule: "type", span: span{from: 95, to: 98}, text: "INT"}
+astInternal.node{id: 31, parentID: 30, rule: "columnName", span: span{from: 28, to: 30}, text: "id"}
+astInternal.node{id: 40, parentID: 39, rule: "columnName", span: span{from: 38, to: 42}, text: "body"}
+astInternal.node{id: 79, parentID: 78, rule: "columnName", span: span{from: 77, to: 79}, text: "id"}
+astInternal.node{id: 88, parentID: 87, rule: "columnName", span: span{from: 87, to: 94}, text: "post_id"}
+astInternal.node{id: 131, parentID: 106, rule: "columnName", span: span{from: 122, to: 124}, text: "id"}
+astInternal.node{id: 142, parentID: 141, rule: "columnName", span: span{from: 136, to: 138}, text: "id"}
+astInternal.node{id: 147, parentID: 141, rule: "columnName", span: span{from: 140, to: 143}, text: "???"}
+astInternal.node{id: 7, parentID: 2, rule: "tableName", span: span{from: 13, to: 23}, text: "blog_posts"}
+astInternal.node{id: 59, parentID: 54, rule: "tableName", span: span{from: 64, to: 72}, text: "comments"}
+astInternal.node{id: 109, parentID: 106, rule: "tableName", span: span{from: 110, to: 120}, text: "blog_posts"}
+astInternal.node{id: 152, parentID: 138, rule: "tableName", span: span{from: 149, to: 159}, text: "blog_posts"}
+astInternal.node{id: 3, parentID: 2, rule: "createKW", span: span{from: 0, to: 6}, text: "CREATE"}
+astInternal.node{id: 55, parentID: 54, rule: "createKW", span: span{from: 51, to: 57}, text: "CREATE"}
+astInternal.node{id: 5, parentID: 2, rule: "tableKW", span: span{from: 7, to: 12}, text: "TABLE"}
+astInternal.node{id: 57, parentID: 54, rule: "tableKW", span: span{from: 58, to: 63}, text: "TABLE"}
+astInternal.node{id: 139, parentID: 138, rule: "selectKW", span: span{from: 129, to: 135}, text: "SELECT"}
+astInternal.node{id: 150, parentID: 138, rule: "fromKW", span: span{from: 144, to: 148}, text: "FROM"}
+astInternal.node{id: 107, parentID: 106, rule: "refKW", span: span{from: 99, to: 109}, text: "REFERENCES"}
+astInternal.node{id: 8, parentID: 7, rule: "ident", span: span{from: 13, to: 23}, text: "blog_posts"}
+astInternal.node{id: 32, parentID: 31, rule: "ident", span: span{from: 28, to: 30}, text: "id"}
+astInternal.node{id: 41, parentID: 40, rule: "ident", span: span{from: 38, to: 42}, text: "body"}
+astInternal.node{id: 60, parentID: 59, rule: "ident", span: span{from: 64, to: 72}, text: "comments"}
+astInternal.node{id: 80, parentID: 79, rule: "ident", span: span{from: 77, to: 79}, text: "id"}
+astInternal.node{id: 89, parentID: 88, rule: "ident", span: span{from: 87, to: 94}, text: "post_id"}
+astInternal.node{id: 110, parentID: 109, rule: "ident", span: span{from: 110, to: 120}, text: "blog_posts"}
+astInternal.node{id: 132, parentID: 131, rule: "ident", span: span{from: 122, to: 124}, text: "id"}
+astInternal.node{id: 143, parentID: 142, rule: "ident", span: span{from: 136, to: 138}, text: "id"}
+astInternal.node{id: 153, parentID: 152, rule: "ident", span: span{from: 149, to: 159}, text: "blog_posts"}
+astInternal.node{id: 9, parentID: 8, rule: "alpha", span: span{from: 13, to: 14}, text: "b"}
+astInternal.node{id: 11, parentID: 10, rule: "alpha", span: span{from: 14, to: 15}, text: "l"}
+astInternal.node{id: 13, parentID: 12, rule: "alpha", span: span{from: 15, to: 16}, text: "o"}
+astInternal.node{id: 15, parentID: 14, rule: "alpha", span: span{from: 16, to: 17}, text: "g"}
+astInternal.node{id: 17, parentID: 16, rule: "alpha", span: span{from: 17, to: 18}, text: "_"}
+astInternal.node{id: 19, parentID: 18, rule: "alpha", span: span{from: 18, to: 19}, text: "p"}
+astInternal.node{id: 21, parentID: 20, rule: "alpha", span: span{from: 19, to: 20}, text: "o"}
+astInternal.node{id: 23, parentID: 22, rule: "alpha", span: span{from: 20, to: 21}, text: "s"}
+astInternal.node{id: 25, parentID: 24, rule: "alpha", span: span{from: 21, to: 22}, text: "t"}
+astInternal.node{id: 27, parentID: 26, rule: "alpha", span: span{from: 22, to: 23}, text: "s"}
+astInternal.node{id: 33, parentID: 32, rule: "alpha", span: span{from: 28, to: 29}, text: "i"}
+astInternal.node{id: 35, parentID: 34, rule: "alpha", span: span{from: 29, to: 30}, text: "d"}
+astInternal.node{id: 42, parentID: 41, rule: "alpha", span: span{from: 38, to: 39}, text: "b"}
+astInternal.node{id: 44, parentID: 43, rule: "alpha", span: span{from: 39, to: 40}, text: "o"}
+astInternal.node{id: 46, parentID: 45, rule: "alpha", span: span{from: 40, to: 41}, text: "d"}
+astInternal.node{id: 48, parentID: 47, rule: "alpha", span: span{from: 41, to: 42}, text: "y"}
+astInternal.node{id: 61, parentID: 60, rule: "alpha", span: span{from: 64, to: 65}, text: "c"}
+astInternal.node{id: 63, parentID: 62, rule: "alpha", span: span{from: 65, to: 66}, text: "o"}
+astInternal.node{id: 65, parentID: 64, rule: "alpha", span: span{from: 66, to: 67}, text: "m"}
+astInternal.node{id: 67, parentID: 66, rule: "alpha", span: span{from: 67, to: 68}, text: "m"}
+astInternal.node{id: 69, parentID: 68, rule: "alpha", span: span{from: 68, to: 69}, text: "e"}
+astInternal.node{id: 71, parentID: 70, rule: "alpha", span: span{from: 69, to: 70}, text: "n"}
+astInternal.node{id: 73, parentID: 72, rule: "alpha", span: span{from: 70, to: 71}, text: "t"}
+astInternal.node{id: 75, parentID: 74, rule: "alpha", span: span{from: 71, to: 72}, text: "s"}
+astInternal.node{id: 81, parentID: 80, rule: "alpha", span: span{from: 77, to: 78}, text: "i"}
+astInternal.node{id: 83, parentID: 82, rule: "alpha", span: span{from: 78, to: 79}, text: "d"}
+astInternal.node{id: 90, parentID: 89, rule: "alpha", span: span{from: 87, to: 88}, text: "p"}
+astInternal.node{id: 92, parentID: 91, rule: "alpha", span: span{from: 88, to: 89}, text: "o"}
+astInternal.node{id: 94, parentID: 93, rule: "alpha", span: span{from: 89, to: 90}, text: "s"}
+astInternal.node{id: 96, parentID: 95, rule: "alpha", span: span{from: 90, to: 91}, text: "t"}
+astInternal.node{id: 98, parentID: 97, rule: "alpha", span: span{from: 91, to: 92}, text: "_"}
+astInternal.node{id: 100, parentID: 99, rule: "alpha", span: span{from: 92, to: 93}, text: "i"}
+astInternal.node{id: 102, parentID: 101, rule: "alpha", span: span{from: 93, to: 94}, text: "d"}
+astInternal.node{id: 111, parentID: 110, rule: "alpha", span: span{from: 110, to: 111}, text: "b"}
+astInternal.node{id: 113, parentID: 112, rule: "alpha", span: span{from: 111, to: 112}, text: "l"}
+astInternal.node{id: 115, parentID: 114, rule: "alpha", span: span{from: 112, to: 113}, text: "o"}
+astInternal.node{id: 117, parentID: 116, rule: "alpha", span: span{from: 113, to: 114}, text: "g"}
+astInternal.node{id: 119, parentID: 118, rule: "alpha", span: span{from: 114, to: 115}, text: "_"}
+astInternal.node{id: 121, parentID: 120, rule: "alpha", span: span{from: 115, to: 116}, text: "p"}
+astInternal.node{id: 123, parentID: 122, rule: "alpha", span: span{from: 116, to: 117}, text: "o"}
+astInternal.node{id: 125, parentID: 124, rule: "alpha", span: span{from: 117, to: 118}, text: "s"}
+astInternal.node{id: 127, parentID: 126, rule: "alpha", span: span{from: 118, to: 119}, text: "t"}
+astInternal.node{id: 129, parentID: 128, rule: "alpha", span: span{from: 119, to: 120}, text: "s"}
+astInternal.node{id: 133, parentID: 132, rule: "alpha", span: span{from: 122, to: 123}, text: "i"}
+astInternal.node{id: 135, parentID: 134, rule: "alpha", span: span{from: 123, to: 124}, text: "d"}
+astInternal.node{id: 144, parentID: 143, rule: "alpha", span: span{from: 136, to: 137}, text: "i"}
+astInternal.node{id: 146, parentID: 145, rule: "alpha", span: span{from: 137, to: 138}, text: "d"}
+astInternal.node{id: 154, parentID: 153, rule: "alpha", span: span{from: 149, to: 150}, text: "b"}
+astInternal.node{id: 156, parentID: 155, rule: "alpha", span: span{from: 150, to: 151}, text: "l"}
+astInternal.node{id: 158, parentID: 157, rule: "alpha", span: span{from: 151, to: 152}, text: "o"}
+astInternal.node{id: 160, parentID: 159, rule: "alpha", span: span{from: 152, to: 153}, text: "g"}
+astInternal.node{id: 162, parentID: 161, rule: "alpha", span: span{from: 153, to: 154}, text: "_"}
+astInternal.node{id: 164, parentID: 163, rule: "alpha", span: span{from: 154, to: 155}, text: "p"}
+astInternal.node{id: 166, parentID: 165, rule: "alpha", span: span{from: 155, to: 156}, text: "o"}
+astInternal.node{id: 168, parentID: 167, rule: "alpha", span: span{from: 156, to: 157}, text: "s"}
+astInternal.node{id: 170, parentID: 169, rule: "alpha", span: span{from: 157, to: 158}, text: "t"}
+astInternal.node{id: 172, parentID: 171, rule: "alpha", span: span{from: 158, to: 159}, text: "s"}
+astInternal.node{id: 10, parentID: 8, rule: "alphaNum", span: span{from: 14, to: 15}, text: "l"}
+astInternal.node{id: 12, parentID: 8, rule: "alphaNum", span: span{from: 15, to: 16}, text: "o"}
+astInternal.node{id: 14, parentID: 8, rule: "alphaNum", span: span{from: 16, to: 17}, text: "g"}
+astInternal.node{id: 16, parentID: 8, rule: "alphaNum", span: span{from: 17, to: 18}, text: "_"}
+astInternal.node{id: 18, parentID: 8, rule: "alphaNum", span: span{from: 18, to: 19}, text: "p"}
+astInternal.node{id: 20, parentID: 8, rule: "alphaNum", span: span{from: 19, to: 20}, text: "o"}
+astInternal.node{id: 22, parentID: 8, rule: "alphaNum", span: span{from: 20, to: 21}, text: "s"}
+astInternal.node{id: 24, parentID: 8, rule: "alphaNum", span: span{from: 21, to: 22}, text: "t"}
+astInternal.node{id: 26, parentID: 8, rule: "alphaNum", span: span{from: 22, to: 23}, text: "s"}
+astInternal.node{id: 34, parentID: 32, rule: "alphaNum", span: span{from: 29, to: 30}, text: "d"}
+astInternal.node{id: 43, parentID: 41, rule: "alphaNum", span: span{from: 39, to: 40}, text: "o"}
+astInternal.node{id: 45, parentID: 41, rule: "alphaNum", span: span{from: 40, to: 41}, text: "d"}
+astInternal.node{id: 47, parentID: 41, rule: "alphaNum", span: span{from: 41, to: 42}, text: "y"}
+astInternal.node{id: 62, parentID: 60, rule: "alphaNum", span: span{from: 65, to: 66}, text: "o"}
+astInternal.node{id: 64, parentID: 60, rule: "alphaNum", span: span{from: 66, to: 67}, text: "m"}
+astInternal.node{id: 66, parentID: 60, rule: "alphaNum", span: span{from: 67, to: 68}, text: "m"}
+astInternal.node{id: 68, parentID: 60, rule: "alphaNum", span: span{from: 68, to: 69}, text: "e"}
+astInternal.node{id: 70, parentID: 60, rule: "alphaNum", span: span{from: 69, to: 70}, text: "n"}
+astInternal.node{id: 72, parentID: 60, rule: "alphaNum", span: span{from: 70, to: 71}, text: "t"}
+astInternal.node{id: 74, parentID: 60, rule: "alphaNum", span: span{from: 71, to: 72}, text: "s"}
+astInternal.node{id: 82, parentID: 80, rule: "alphaNum", span: span{from: 78, to: 79}, text: "d"}
+astInternal.node{id: 91, parentID: 89, rule: "alphaNum", span: span{from: 88, to: 89}, text: "o"}
+astInternal.node{id: 93, parentID: 89, rule: "alphaNum", span: span{from: 89, to: 90}, text: "s"}
+astInternal.node{id: 95, parentID: 89, rule: "alphaNum", span: span{from: 90, to: 91}, text: "t"}
+astInternal.node{id: 97, parentID: 89, rule: "alphaNum", span: span{from: 91, to: 92}, text: "_"}
+astInternal.node{id: 99, parentID: 89, rule: "alphaNum", span: span{from: 92, to: 93}, text: "i"}
+astInternal.node{id: 101, parentID: 89, rule: "alphaNum", span: span{from: 93, to: 94}, text: "d"}
+astInternal.node{id: 112, parentID: 110, rule: "alphaNum", span: span{from: 111, to: 112}, text: "l"}
+astInternal.node{id: 114, parentID: 110, rule: "alphaNum", span: span{from: 112, to: 113}, text: "o"}
+astInternal.node{id: 116, parentID: 110, rule: "alphaNum", span: span{from: 113, to: 114}, text: "g"}
+astInternal.node{id: 118, parentID: 110, rule: "alphaNum", span: span{from: 114, to: 115}, text: "_"}
+astInternal.node{id: 120, parentID: 110, rule: "alphaNum", span: span{from: 115, to: 116}, text: "p"}
+astInternal.node{id: 122, parentID: 110, rule: "alphaNum", span: span{from: 116, to: 117}, text: "o"}
+astInternal.node{id: 124, parentID: 110, rule: "alphaNum", span: span{from: 117, to: 118}, text: "s"}
+astInternal.node{id: 126, parentID: 110, rule: "alphaNum", span: span{from: 118, to: 119}, text: "t"}
+astInternal.node{id: 128, parentID: 110, rule: "alphaNum", span: span{from: 119, to: 120}, text: "s"}
+astInternal.node{id: 134, parentID: 132, rule: "alphaNum", span: span{from: 123, to: 124}, text: "d"}
+astInternal.node{id: 145, parentID: 143, rule: "alphaNum", span: span{from: 137, to: 138}, text: "d"}
+astInternal.node{id: 155, parentID: 153, rule: "alphaNum", span: span{from: 150, to: 151}, text: "l"}
+astInternal.node{id: 157, parentID: 153, rule: "alphaNum", span: span{from: 151, to: 152}, text: "o"}
+astInternal.node{id: 159, parentID: 153, rule: "alphaNum", span: span{from: 152, to: 153}, text: "g"}
+astInternal.node{id: 161, parentID: 153, rule: "alphaNum", span: span{from: 153, to: 154}, text: "_"}
+astInternal.node{id: 163, parentID: 153, rule: "alphaNum", span: span{from: 154, to: 155}, text: "p"}
+astInternal.node{id: 165, parentID: 153, rule: "alphaNum", span: span{from: 155, to: 156}, text: "o"}
+astInternal.node{id: 167, parentID: 153, rule: "alphaNum", span: span{from: 156, to: 157}, text: "s"}
+astInternal.node{id: 169, parentID: 153, rule: "alphaNum", span: span{from: 157, to: 158}, text: "t"}
+astInternal.node{id: 171, parentID: 153, rule: "alphaNum", span: span{from: 158, to: 159}, text: "s"}
+astInternal.node{id: 4, parentID: 2, rule: "ws", span: span{from: 6, to: 7}, text: " "}
+astInternal.node{id: 6, parentID: 2, rule: "ws", span: span{from: 12, to: 13}, text: " "}
+astInternal.node{id: 28, parentID: 2, rule: "ws", span: span{from: 23, to: 24}, text: " "}
+astInternal.node{id: 29, parentID: 2, rule: "ws", span: span{from: 25, to: 28}, text: "\n  "}
+astInternal.node{id: 36, parentID: 30, rule: "ws", span: span{from: 30, to: 31}, text: " "}
+astInternal.node{id: 38, parentID: 30, rule: "ws", span: span{from: 34, to: 34}, text: ""}
+astInternal.node{id: 49, parentID: 39, rule: "ws", span: span{from: 42, to: 43}, text: " "}
+astInternal.node{id: 51, parentID: 39, rule: "ws", span: span{from: 47, to: 48}, text: "\n"}
+astInternal.node{id: 52, parentID: 2, rule: "ws", span: span{from: 48, to: 48}, text: ""}
+astInternal.node{id: 56, parentID: 54, rule: "ws", span: span{from: 57, to: 58}, text: " "}
+astInternal.node{id: 58, parentID: 54, rule: "ws", span: span{from: 63, to: 64}, text: " "}
+astInternal.node{id: 76, parentID: 54, rule: "ws", span: span{from: 72, to: 73}, text: " "}
+astInternal.node{id: 77, parentID: 54, rule: "ws", span: span{from: 74, to: 77}, text: "\n  "}
+astInternal.node{id: 84, parentID: 78, rule: "ws", span: span{from: 79, to: 80}, text: " "}
+astInternal.node{id: 86, parentID: 78, rule: "ws", span: span{from: 83, to: 83}, text: ""}
+astInternal.node{id: 103, parentID: 87, rule: "ws", span: span{from: 94, to: 95}, text: " "}
+astInternal.node{id: 105, parentID: 87, rule: "ws", span: span{from: 98, to: 99}, text: " "}
+astInternal.node{id: 108, parentID: 106, rule: "ws", span: span{from: 109, to: 110}, text: " "}
+astInternal.node{id: 130, parentID: 106, rule: "ws", span: span{from: 120, to: 121}, text: " "}
+astInternal.node{id: 136, parentID: 54, rule: "ws", span: span{from: 125, to: 126}, text: "\n"}
+astInternal.node{id: 140, parentID: 138, rule: "ws", span: span{from: 135, to: 136}, text: " "}
+astInternal.node{id: 149, parentID: 138, rule: "ws", span: span{from: 143, to: 144}, text: " "}
+astInternal.node{id: 151, parentID: 138, rule: "ws", span: span{from: 148, to: 149}, text: " "}
+astInternal.node{id: 148, parentID: 147, rule: "placeholder", span: span{from: 140, to: 143}, text: "???"}

@@ -50,3 +50,4 @@ hl.mapping{rule: "createKW", type: "keyword"}.
 hl.mapping{rule: "tableKW", type: "keyword"}.
 hl.mapping{rule: "selectKW", type: "keyword"}.
 hl.mapping{rule: "fromKW", type: "keyword"}.
+hl.mapping{rule: "refKW", type: "keyword"}.
