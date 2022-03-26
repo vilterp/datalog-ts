@@ -27,3 +27,14 @@ hl.Segment{highlight: false, span: span{from: 11, to: 13}, type: "keyword"}
 hl.Segment{highlight: false, span: span{from: 4, to: 5}, type: "var"}
 hl.Segment{highlight: false, span: span{from: 14, to: 19}, type: "var"}
 hl.Segment{highlight: false, span: span{from: 20, to: 21}, type: "var"}
+
+fp
+let x = 2 in
+let y = plus2(x) in
+plus2(??|||?)
+ide.CurrentSuggestion{}
+----
+application/datalog
+ide.CurrentSuggestion{id: 56, name: "y", span: span{from: 39, to: 42}, type: "int"}
+ide.CurrentSuggestion{id: 56, name: "x", span: span{from: 39, to: 42}, type: "int"}
+ide.CurrentSuggestion{id: 56, name: "plus2", span: span{from: 39, to: 42}, type: tapp{from: "int", to: "int"}}
