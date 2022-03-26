@@ -7,7 +7,8 @@ scope.tableColumn{defnLoc: DL, name: N, table: T, type: TY} :-
 
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.tableDefn{scopeID: I, span: S, name: N, kind: K} |
-  scope.columnFromSelectTable{scopeID: I, span: S, name: N, kind: K}.
+  scope.columnFromSelectTable{scopeID: I, span: S, name: N, kind: K} |
+  scope.columnFromTableRef{scopeID: I, span: S, name: N, kind: K}.
 scope.tableDefn{scopeID: "global", span: S, name: N, kind: "table"} :-
   ast.createTableStmt{id: CreateTableID} &
   ast.tableName{parentID: CreateTableID, text: N, span: S}.
@@ -15,10 +16,16 @@ scope.columnFromSelectTable{scopeID: SelectID, span: S, name: N, kind: "column"}
   ast.selectStmt{id: SelectID} &
   ast.tableName{parentID: SelectID, text: T} &
   scope.tableColumn{table: T, defnLoc: S, name: N}.
+scope.columnFromTableRef{scopeID: RefID, span: S, name: N, kind: "column"} :-
+  ast.refClause{id: RefID} &
+  ast.tableName{parentID: RefID, text: T} &
+  scope.tableColumn{table: T, defnLoc: S, name: N}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.tableUsage{scopeID: I, name: N, span: S, kind: K} |
-  scope.columnUsage{scopeID: I, name: N, span: S, kind: K}.
+  scope.columnUsage{scopeID: I, name: N, span: S, kind: K} |
+  scope.tableRef{scopeID: I, name: N, span: S, kind: K} |
+  scope.columnRef{scopeID: I, name: N, span: S, kind: K}.
 scope.tableUsage{scopeID: "global", name: N, span: S, kind: "table"} :-
   ast.selectStmt{id: SelectID} &
   ast.tableName{parentID: SelectID, span: S, text: N}.
@@ -26,6 +33,12 @@ scope.columnUsage{scopeID: SelectID, name: N, span: S, kind: "column"} :-
   ast.selectStmt{id: SelectID} &
   ast.selection{parentID: SelectID, id: SelectionID} &
   ast.columnName{parentID: SelectionID, span: S, text: N}.
+scope.tableRef{scopeID: "global", name: N, span: S, kind: "table"} :-
+  ast.refClause{id: C} &
+  ast.tableName{parentID: C, text: N, span: S}.
+scope.columnRef{scopeID: C, name: N, span: S, kind: "column"} :-
+  ast.refClause{id: C} &
+  ast.columnName{parentID: C, text: N, span: S}.
 
 scope.Placeholder{span: S, scopeID: I, kind: K} :-
   scope.placeholderColumn{span: S, scopeID: I, kind: K} |
@@ -50,3 +63,4 @@ hl.mapping{rule: "createKW", type: "keyword"}.
 hl.mapping{rule: "tableKW", type: "keyword"}.
 hl.mapping{rule: "selectKW", type: "keyword"}.
 hl.mapping{rule: "fromKW", type: "keyword"}.
+hl.mapping{rule: "refKW", type: "keyword"}.
