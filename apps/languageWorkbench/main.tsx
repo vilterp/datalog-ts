@@ -25,10 +25,7 @@ function Main() {
 
 function Playground() {
   // state
-  const [langName, setExampleName] = useHashParam(
-    "",
-    Object.keys(LANGUAGES)[0]
-  );
+  const [langName, setLangName] = useHashParam("", Object.keys(LANGUAGES)[0]);
 
   const curExample = LANGUAGES[langName];
 
@@ -61,8 +58,8 @@ function Playground() {
     [cursorPos, dlEditorState.source, grammarEditorState.source, langSource]
   );
 
-  const setLangName = (name) => {
-    setExampleName(name);
+  const setLang = (name) => {
+    setLangName(name);
     const example = LANGUAGES[name];
     setGrammarEditorState({ ...grammarEditorState, source: example.grammar });
     setDLEditorState({ ...dlEditorState, source: example.datalog });
@@ -77,7 +74,7 @@ function Playground() {
         <h3>Example:</h3>
         <select
           onChange={(evt) => {
-            setLangName(evt.target.value);
+            setLang(evt.target.value);
           }}
           value={langName}
         >
