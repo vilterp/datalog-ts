@@ -26,7 +26,7 @@ const initInterp = new SimpleInterpreter(
   fsLoader
 );
 
-function testLangQuery(test: string[]): TestOutput[] {
+export function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
     const lines = input.split("\n");
     const lang = lines[0];
