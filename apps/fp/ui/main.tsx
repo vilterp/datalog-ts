@@ -40,6 +40,7 @@ function Main() {
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
       <CodeEditor
+        lang="fp"
         interp={interp}
         getSuggestions={getSuggestions}
         highlightCSS={highlightCSS}
