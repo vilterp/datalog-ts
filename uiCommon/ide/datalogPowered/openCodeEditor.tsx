@@ -1,11 +1,12 @@
 import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { ppt } from "../../../core/pretty";
-import { Rec } from "../../../core/types";
+import { Rec, Res } from "../../../core/types";
+import { filterMap } from "../../../util/util";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
 import { Suggestion } from "../suggestions";
-import { ActionContext, EditorState, LangError } from "../types";
+import { ActionContext, dlToSpan, EditorState, LangError } from "../types";
 import { getSuggestions } from "./suggestions";
 
 export function OpenCodeEditor(props: {
@@ -18,46 +19,53 @@ export function OpenCodeEditor(props: {
   lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
-  const { highlighted, error, suggestions } = React.useMemo(() => {
-    let highlighted: React.ReactNode = <>{props.editorState.source}</>;
-    let error = null;
-    let suggestions: Suggestion[] = [];
-    if (props.validGrammar) {
-      try {
-        highlighted = highlight(
-          props.interp,
-          props.editorState.source,
-          0,
-          [],
-          props.lang
-        );
-        suggestions = getSuggestions(props.interp);
-      } catch (e) {
-        error = e.toString();
+  const { highlighted, error, suggestions, currentProblems, allProblems } =
+    React.useMemo(() => {
+      let highlighted: React.ReactNode = <>{props.editorState.source}</>;
+      let error = null;
+      let suggestions: Suggestion[] = [];
+      let currentProblems: LangError[] = [];
+      let allProblems: LangError[] = [];
+      if (props.validGrammar) {
+        try {
+          highlighted = highlight(
+            props.interp,
+            props.editorState.source,
+            0,
+            [],
+            props.lang
+          );
+          suggestions = getSuggestions(props.interp);
+          currentProblems = extractErrors(
+            props.interp.queryStr("ide.CurrentProblem{desc: D, span: S}")
+          );
+          allProblems = extractErrors(
+            props.interp.queryStr("tc.Problem{desc: D, span: S}")
+          );
+        } catch (e) {
+          error = e.toString();
+        }
       }
-    }
-    return { highlighted, error, suggestions };
-  }, [props.interp, props.editorState.source, props.lang]);
+      return { highlighted, error, suggestions, currentProblems, allProblems };
+    }, [props.interp, props.editorState.source, props.lang]);
 
   if (error) {
     console.error(
-      `while highlighting and getting suggestions for ${props.lang}:`,
+      `while highlighting and getting suggestions and errors for ${props.lang}:`,
       error
     );
   }
-
-  const currentProblems: LangError[] = props.interp
-    .queryStr("ide.CurrentProblem{desc: D}")
-    .map((res) => {
-      const rec = res.term as Rec;
-      return { type: "Problem", problem: ppt(rec.attrs.desc) };
-    });
 
   const actionCtx: ActionContext = {
     interp: props.interp,
     state: props.editorState,
     suggestions,
-    errors: props.locatedErrors,
+    errors: [
+      ...props.locatedErrors,
+      ...filterMap(allProblems, (e) =>
+        e.type === "Problem" ? { offset: e.offset } : null
+      ),
+    ],
   };
 
   return (
@@ -72,4 +80,15 @@ export function OpenCodeEditor(props: {
       hideKeyBindingsTable={props.hideKeyBindingsTable}
     />
   );
+}
+
+function extractErrors(results: Res[]): LangError[] {
+  return results.map((res) => {
+    const rec = res.term as Rec;
+    return {
+      type: "Problem",
+      problem: ppt(rec.attrs.desc),
+      offset: dlToSpan(rec.attrs.span as Rec).from,
+    };
+  });
 }
