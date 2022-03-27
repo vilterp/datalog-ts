@@ -111,6 +111,18 @@ tc.typePlaceholder{id: I, type: "unknown"} :-
   ast.expr{id: I} &
   ast.Placeholder{id: P, parentID: I}.
 
+tc.Problem{desc: D, span: S} :-
+  tc.wrongArgType{desc: D, span: S}.
+# TODO: DRY this up with tc.typeFC
+tc.wrongArgType{desc: argTypeMismatch{expected: RequiredArgType, got: ArgType}, span: S} :-
+  ast.funcCall{parentID: I, id: FC} &
+  ast.funcCallArg{callID: FC, argID: AID} &
+  ast.funcCallFunc{callID: FC, funcID: FID} &
+  ast.varExpr{id: FID, text: N, span: S} &
+  scope.Item{scopeID: FID, name: N, type: tapp{from: RequiredArgType, to: T}} &
+  tc.Type{id: AID, type: ArgType} &
+  RequiredArgType != ArgType.
+
 # === roots ===
 
 lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
