@@ -9,6 +9,7 @@ const REQUIRED_RELATIONS = [
   "scope.Parent",
   "scope.Placeholder",
   "ast.Placeholder", // to stop the annoying warning from the "jump to placeholder" action
+  "tc.Problem",
 ];
 
 export function ensureRequiredRelations(
