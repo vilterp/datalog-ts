@@ -86,7 +86,6 @@ function mkRawSegment(rec: Rec): SegmentSpan {
       highlight: (rec.attrs.highlight as Bool).val,
       error: null,
     },
-    nodeID: (rec.attrs.id as Int).val,
     span: dlToSpan(rec.attrs.span as Rec),
     type: (rec.attrs.type as StringLit).val,
   };
@@ -113,7 +112,6 @@ function renderSegment(segment: Segment): React.ReactNode {
 type SegmentState = { highlight: boolean; error: string | null };
 
 type SegmentAttrs = {
-  nodeID: number | null; // id in the AST
   type: string | null;
   state: SegmentState;
 };
@@ -143,7 +141,6 @@ function recurse(
     return [
       {
         type: null,
-        nodeID: null,
         state: { highlight: false, error: null },
         text: src.substring(offset),
       },
@@ -155,11 +152,9 @@ function recurse(
   if (offset === fromIdx) {
     const matchingMissingType =
       missingTypes[0] && missingTypes[0].span.from === offset;
-    const nodeIDForSpan = firstSpan.nodeID;
     const matchingProblem = problems[fromIdx];
     const outSpan: Segment = {
       type: firstSpan.type,
-      nodeID: nodeIDForSpan,
       text: src.substring(offset, toIdx),
       state: {
         ...firstSpan.state,
@@ -178,7 +173,6 @@ function recurse(
     return [
       {
         type: null,
-        nodeID: null,
         state: { highlight: false, error: null },
         text: src.substring(offset, fromIdx),
       },
