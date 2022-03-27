@@ -31,7 +31,7 @@ hl.segmentSpecialVar{type: "specialVar", span: S, highlight: false} :-
   hl.mapping{rule: R, type: "specialVar"} &
   astInternal.node{rule: R, span: S}.
 
-hl.segmentIdent{type: "var", span: S, highlight: false} :-
+hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: ParamsID, span: S}.
 hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
