@@ -59,3 +59,11 @@ ide.Suggestion{}
 ----
 application/datalog
 ide.Suggestion{id: 26, name: "x", span: span{from: 17, to: 20}, type: "int"}
+
+fp
+(x: int): int => x
+tc.Type{}
+----
+application/datalog
+tc.Type{id: 1, type: tapp{from: "int", to: "int"}}
+tc.Type{id: 26, type: "int"}

@@ -108,9 +108,10 @@ tc.typeVar{id: I, type: T} :-
 # TODO: get this to work for multiple parameters...
 tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
   ast.expr{id: I} &
-  ast.lambda{id: L, parentID: I, retType: R, body: B} &
-  ast.lambdaParam{lambdaID: L, ty: F} &
-  tc.Type{id: B, type: R}.
+  ast.lambda{id: Lambda, parentID: I} &
+  ast.type{parentID: Lambda, text: R} &
+  ast.lambdaParam{id: Param, parentID: Lambda} &
+  ast.type{parentID: Param, text: F}.
 tc.typePlaceholder{id: I, type: "unknown"} :-
   ast.expr{id: I} &
   ast.Placeholder{id: P, parentID: I}.
