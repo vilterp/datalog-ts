@@ -48,4 +48,4 @@ export function initialEditorState(source: string): EditorState {
 export type LangError =
   | { type: "ParseError"; expected: string[]; offset: number }
   | { type: "EvalError"; err: Error }
-  | { type: "Problem"; problem: string };
+  | { type: "Problem"; problem: string; offset: number };

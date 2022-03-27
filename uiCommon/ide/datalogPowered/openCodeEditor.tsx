@@ -2,10 +2,11 @@ import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { ppt } from "../../../core/pretty";
 import { Rec } from "../../../core/types";
+import { filterMap } from "../../../util/util";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
 import { Suggestion } from "../suggestions";
-import { ActionContext, EditorState, LangError } from "../types";
+import { ActionContext, dlToSpan, EditorState, LangError } from "../types";
 import { getSuggestions } from "./suggestions";
 
 export function OpenCodeEditor(props: {
@@ -35,10 +36,14 @@ export function OpenCodeEditor(props: {
           );
           suggestions = getSuggestions(props.interp);
           currentProblems = props.interp
-            .queryStr("ide.CurrentProblem{desc: D}")
+            .queryStr("tc.Problem{desc: D, span: S}")
             .map((res) => {
               const rec = res.term as Rec;
-              return { type: "Problem", problem: ppt(rec.attrs.desc) };
+              return {
+                type: "Problem",
+                problem: ppt(rec.attrs.desc),
+                offset: dlToSpan(rec.attrs.span as Rec).from,
+              };
             });
         } catch (e) {
           error = e.toString();
@@ -58,8 +63,15 @@ export function OpenCodeEditor(props: {
     interp: props.interp,
     state: props.editorState,
     suggestions,
-    errors: props.locatedErrors,
+    errors: [
+      ...props.locatedErrors,
+      ...filterMap(currentProblems, (e) =>
+        e.type === "Problem" ? { offset: e.offset } : null
+      ),
+    ],
   };
+
+  console.log("errors", { actionCtx: actionCtx.errors, currentProblems });
 
   return (
     <EditorBox
