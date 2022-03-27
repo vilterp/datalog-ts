@@ -23,6 +23,22 @@ CREATE TABLE comments (
   id INT,
   post_id INT REFERENCES blog_posts (i|||d)
 );
+SELECT id FROM ???;
+ide.Suggestion{}
+----
+application/datalog
+ide.Suggestion{id: "global", name: "blog_posts", span: span{from: 144, to: 147}, type: T}
+ide.Suggestion{id: "global", name: "comments", span: span{from: 144, to: 147}, type: T}
+
+sql
+CREATE TABLE blog_posts (
+  id INT,
+  body TEXT
+);
+CREATE TABLE comments (
+  id INT,
+  post_id INT REFERENCES blog_posts (i|||d)
+);
 SELECT id, ??? FROM blog_posts;
 hl.Segment{}
 ----
