@@ -5,6 +5,7 @@ import { Rec, StringLit, Bool, Int, Res } from "../../core/types";
 import { uniqBy } from "../../util/util";
 import { dlToSpan, Span } from "./types";
 import { DLTypeError as DLMissingType } from "./errors";
+import { ppt } from "../../core/pretty";
 
 export function highlight(
   interp: AbstractInterpreter,
@@ -83,7 +84,7 @@ function mkRawSegment(rec: Rec): SegmentSpan {
   return {
     state: {
       highlight: (rec.attrs.highlight as Bool).val,
-      error: false,
+      error: null,
     },
     nodeID: (rec.attrs.id as Int).val,
     span: dlToSpan(rec.attrs.span as Rec),
@@ -109,7 +110,7 @@ function renderSegment(segment: Segment): React.ReactNode {
   }
 }
 
-type SegmentState = { highlight: boolean; error: boolean };
+type SegmentState = { highlight: boolean; error: string | null };
 
 type SegmentAttrs = {
   nodeID: number | null; // id in the AST
@@ -143,7 +144,7 @@ function recurse(
       {
         type: null,
         nodeID: null,
-        state: { highlight: false, error: false },
+        state: { highlight: false, error: null },
         text: src.substring(offset),
       },
     ];
@@ -162,7 +163,11 @@ function recurse(
       text: src.substring(offset, toIdx),
       state: {
         ...firstSpan.state,
-        error: !!matchingMissingType || !!matchingProblem,
+        error: matchingMissingType
+          ? "type could not be inferred"
+          : matchingProblem
+          ? ppt(matchingProblem)
+          : null,
       },
     };
     return [
@@ -174,7 +179,7 @@ function recurse(
       {
         type: null,
         nodeID: null,
-        state: { highlight: false, error: false },
+        state: { highlight: false, error: null },
         text: src.substring(offset, fromIdx),
       },
       ...recurse(src, fromIdx, spans, missingTypes, problems),
