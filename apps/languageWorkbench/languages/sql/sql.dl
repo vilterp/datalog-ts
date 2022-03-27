@@ -62,6 +62,10 @@ scope.foreignKey{fromTable: FT, fromCol: FC, toTable: TT, toCol: TC} :-
   ast.tableName{parentID: TR, text: TT} &
   ast.columnName{parentID: TR, text: TC}.
 
+scope.table{name: N} :-
+  ast.createTableStmt{id: CreateTable} &
+  ast.tableName{parentID: CreateTable, text: N}.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "bool"}.
@@ -73,3 +77,11 @@ hl.mapping{rule: "tableKW", type: "keyword"}.
 hl.mapping{rule: "selectKW", type: "keyword"}.
 hl.mapping{rule: "fromKW", type: "keyword"}.
 hl.mapping{rule: "refKW", type: "keyword"}.
+
+internal.visualization{
+  name: "Foreign Key Graph",
+  spec: graphviz{
+    nodes: "scope.table{name: ID}",
+    edges: "scope.foreignKey{fromTable: From, toTable: To, fromCol: Label}"
+  }
+}.
