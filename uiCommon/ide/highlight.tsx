@@ -1,16 +1,17 @@
 import React from "react";
 import classnames from "classnames";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, StringLit, Bool } from "../../core/types";
+import { Rec, StringLit, Bool, Int, Res } from "../../core/types";
 import { uniqBy } from "../../util/util";
 import { dlToSpan, Span } from "./types";
-import { DLTypeError } from "./errors";
+import { DLTypeError as DLMissingType } from "./errors";
+import { ppt } from "../../core/pretty";
 
 export function highlight(
   interp: AbstractInterpreter,
   code: string,
   syntaxErrorIdx: number | null,
-  typeErrors: DLTypeError[],
+  missingTypes: DLMissingType[],
   lang: string
 ): React.ReactNode {
   if (syntaxErrorIdx) {
@@ -18,8 +19,11 @@ export function highlight(
   }
   performance.mark("highlight start");
   const segments = interp.queryStr(
-    "hl.Segment{type: T, span: S, highlight: H}"
+    "hl.Segment{type: T, span: S, id: I, highlight: H}"
   );
+  // TODO: tree-based highlighting. Problems are always attached to an AST node,
+  //   but that AST node can cover multiple highlighting spans.
+  const problems = interp.queryStr("tc.Problem{desc: D, nodeID: I, span: S}");
   performance.mark("highlight end");
   performance.measure(`highlight ${lang}`, "highlight start", "highlight end");
   const sortedSegments = hlWins(
@@ -31,10 +35,27 @@ export function highlight(
       (rs) => `${spanToString(rs.span)}-${rs.state.highlight}`
     )
   );
-  const inOrder = intersperseTextSegments(code, sortedSegments, typeErrors);
+  const inOrder = intersperseTextSegments(
+    code,
+    sortedSegments,
+    missingTypes,
+    problemsByStartIdx(problems)
+  );
   return inOrder.map((s, idx) => (
     <React.Fragment key={idx}>{renderSegment(s)}</React.Fragment>
   ));
+}
+
+type ProblemsByStartIdx = { [startIdx: string]: Rec };
+
+function problemsByStartIdx(problems: Res[]): ProblemsByStartIdx {
+  const out: ProblemsByStartIdx = {};
+  for (const problem of problems) {
+    const rec = problem.term as Rec;
+    const span = dlToSpan(rec.attrs.span as Rec);
+    out[span.from] = rec;
+  }
+  return out;
 }
 
 function highlightSyntaxError(code: string, idx: number): React.ReactNode {
@@ -63,7 +84,7 @@ function mkRawSegment(rec: Rec): SegmentSpan {
   return {
     state: {
       highlight: (rec.attrs.highlight as Bool).val,
-      error: false,
+      error: null,
     },
     span: dlToSpan(rec.attrs.span as Rec),
     type: (rec.attrs.type as StringLit).val,
@@ -88,7 +109,7 @@ function renderSegment(segment: Segment): React.ReactNode {
   }
 }
 
-type SegmentState = { highlight: boolean; error: boolean };
+type SegmentState = { highlight: boolean; error: string | null };
 
 type SegmentAttrs = {
   type: string | null;
@@ -102,9 +123,10 @@ type Segment = SegmentAttrs & { text: string };
 function intersperseTextSegments(
   src: string,
   rawSegments: SegmentSpan[],
-  typeErrors: DLTypeError[]
+  missingTypes: DLMissingType[],
+  problems: ProblemsByStartIdx
 ): Segment[] {
-  return recurse(src, 0, rawSegments, typeErrors);
+  return recurse(src, 0, rawSegments, missingTypes, problems);
 }
 
 // TODO: this treatment of type errors is hacky
@@ -112,13 +134,14 @@ function recurse(
   src: string,
   offset: number,
   spans: SegmentSpan[],
-  typeErrors: DLTypeError[]
+  missingTypes: DLMissingType[],
+  problems: ProblemsByStartIdx
 ): Segment[] {
   if (spans.length === 0) {
     return [
       {
         type: null,
-        state: { highlight: false, error: false },
+        state: { highlight: false, error: null },
         text: src.substring(offset),
       },
     ];
@@ -127,30 +150,33 @@ function recurse(
   const fromIdx = firstSpan.span.from;
   const toIdx = firstSpan.span.to;
   if (offset === fromIdx) {
-    const matchingTypeError =
-      typeErrors[0] && typeErrors[0].span.from === offset;
+    const matchingMissingType =
+      missingTypes[0] && missingTypes[0].span.from === offset;
+    const matchingProblem = problems[fromIdx];
     const outSpan: Segment = {
       type: firstSpan.type,
       text: src.substring(offset, toIdx),
-      state: { ...firstSpan.state, error: matchingTypeError },
+      state: {
+        ...firstSpan.state,
+        error: matchingMissingType
+          ? "type could not be inferred"
+          : matchingProblem
+          ? ppt(matchingProblem)
+          : null,
+      },
     };
     return [
       outSpan,
-      ...recurse(
-        src,
-        toIdx,
-        spans.slice(1),
-        matchingTypeError ? typeErrors.slice(1) : typeErrors
-      ),
+      ...recurse(src, toIdx, spans.slice(1), missingTypes, problems),
     ];
   } else {
     return [
       {
         type: null,
-        state: { highlight: false, error: false },
+        state: { highlight: false, error: null },
         text: src.substring(offset, fromIdx),
       },
-      ...recurse(src, fromIdx, spans, typeErrors),
+      ...recurse(src, fromIdx, spans, missingTypes, problems),
     ];
   }
 }

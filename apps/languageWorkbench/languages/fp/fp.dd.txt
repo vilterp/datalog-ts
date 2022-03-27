@@ -21,12 +21,12 @@ let x = 40 in plus2(x)
 hl.Segment{}
 ----
 application/datalog
-hl.Segment{highlight: false, span: span{from: 8, to: 10}, type: "int"}
-hl.Segment{highlight: false, span: span{from: 0, to: 3}, type: "keyword"}
-hl.Segment{highlight: false, span: span{from: 11, to: 13}, type: "keyword"}
-hl.Segment{highlight: false, span: span{from: 4, to: 5}, type: "var"}
-hl.Segment{highlight: false, span: span{from: 14, to: 19}, type: "var"}
-hl.Segment{highlight: false, span: span{from: 20, to: 21}, type: "var"}
+hl.Segment{highlight: false, id: 10, span: span{from: 8, to: 10}, type: "int"}
+hl.Segment{highlight: false, id: 3, span: span{from: 0, to: 3}, type: "keyword"}
+hl.Segment{highlight: false, id: 14, span: span{from: 11, to: 13}, type: "keyword"}
+hl.Segment{highlight: false, id: I, span: span{from: 4, to: 5}, type: "var"}
+hl.Segment{highlight: false, id: I, span: span{from: 14, to: 19}, type: "var"}
+hl.Segment{highlight: false, id: I, span: span{from: 20, to: 21}, type: "var"}
 
 fp
 let x = 2 in
@@ -38,3 +38,17 @@ application/datalog
 ide.CurrentSuggestion{id: 56, name: "y", span: span{from: 39, to: 42}, type: "int"}
 ide.CurrentSuggestion{id: 56, name: "x", span: span{from: 39, to: 42}, type: "int"}
 ide.CurrentSuggestion{id: 56, name: "plus2", span: span{from: 39, to: 42}, type: tapp{from: "int", to: "int"}}
+
+fp
+plus2("hello world")
+tc.Problem{}
+----
+application/datalog
+tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 14, span: span{from: 6, to: 19}}
+
+fp
+plus2("hello world")
+astInternal.node{id: 14}
+----
+application/datalog
+astInternal.node{id: 14, parentID: 2, rule: "expr", span: span{from: 6, to: 19}, text: "\"hello world\""}

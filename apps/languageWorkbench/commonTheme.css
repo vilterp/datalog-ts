@@ -31,3 +31,8 @@
 .segment-comment {
   color: darkgrey;
 }
+.segment-type-error {
+  text-decoration: underline red;
+  text-decoration-style: dotted;
+  text-decoration-skip-ink: none;
+}

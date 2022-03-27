@@ -85,3 +85,6 @@ ide.currentUsageUsageIndirect{defnLoc: DL, usageLoc: UL} :-
 ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
   ide.CurrentUsage{defnLoc: DL, usageLoc: UL} &
   DL != "builtin".
+
+# hack because this is now required by code editor
+.table tc.Problem

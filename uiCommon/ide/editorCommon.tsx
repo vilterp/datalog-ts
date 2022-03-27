@@ -10,14 +10,14 @@ import {
   KEY_Z,
 } from "./keymap";
 import { insertSuggestionAction, Suggestion } from "./suggestions";
-import { ActionContext, EditorAction, EditorState, EvalError } from "./types";
+import { ActionContext, EditorAction, EditorState, LangError } from "./types";
 
 export function EditorBox(props: {
   highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   suggestions: Suggestion[];
-  errorsToDisplay: EvalError[];
+  errorsToDisplay: LangError[];
   actionCtx: ActionContext;
   highlighted: React.ReactNode;
   hideKeyBindingsTable?: boolean;
@@ -92,16 +92,23 @@ export function EditorBox(props: {
       <div style={{ fontFamily: "monospace", color: "red" }}>
         <ul>
           {props.errorsToDisplay.map((err, idx) => (
-            <li key={idx}>
-              {err.type === "ParseError"
-                ? `Parse error: expected ${err.expected.join(" or ")}`
-                : `Eval error: ${err.err}`}
-            </li>
+            <li key={idx}>{displayError(err)}</li>
           ))}
         </ul>
       </div>
     </div>
   );
+}
+
+function displayError(err: LangError) {
+  switch (err.type) {
+    case "ParseError":
+      return `Parse error: expected ${err.expected.join(" or ")}`;
+    case "EvalError":
+      return `Error during datalog evaluation: ${err.err}`;
+    case "Problem":
+      return `Problem: ${err.problem}`;
+  }
 }
 
 function KeyBindingsTable(props: { actionCtx: ActionContext }) {

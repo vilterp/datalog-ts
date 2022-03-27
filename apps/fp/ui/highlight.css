@@ -28,11 +28,7 @@
 .segment-type__highlighted {
   background-color: rgba(168, 168, 168, 0.37);
 }
-.segment-syntax-error {
-  text-decoration: underline red;
-  text-decoration-style: dotted;
-  text-decoration-skip-ink: none;
-}
+.segment-syntax-error,
 .segment-type-error {
   text-decoration: underline red;
   text-decoration-style: dotted;

@@ -6,15 +6,17 @@ import { treeFromRecords } from "../generic/treeFromRecords";
 
 // just `TypeError` is a builtin
 export type DLTypeError = {
-  exprID: number;
+  nodeID: number;
   span: Span;
 };
 
-export function getTypeErrors(interp: AbstractInterpreter): DLTypeError[] {
+export function getNodesMissingTypes(
+  interp: AbstractInterpreter
+): DLTypeError[] {
   const exprTreeRecs = interp.queryStr(
     "ast.ParentExpr{id: ID, parent: ParentID}"
   );
-  const exprTree = treeFromRecords(exprTreeRecs, int(0));
+  const exprTree = treeFromRecords(exprTreeRecs, int(0), false);
   const exprIDsWithTypes = new Set(
     interp
       .queryStr("tc.Type{id: I}")
@@ -25,11 +27,11 @@ export function getTypeErrors(interp: AbstractInterpreter): DLTypeError[] {
       return null;
     }
     const rec = res.term as Rec;
-    const exprID = (rec.attrs.id as Int).val;
+    const nodeID = (rec.attrs.id as Int).val;
     return {
-      exprID,
+      nodeID,
       span: dlToSpan(rec.attrs.span as Rec),
-      error: !exprIDsWithTypes.has(exprID),
+      error: !exprIDsWithTypes.has(nodeID),
     };
   });
 
