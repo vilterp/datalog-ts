@@ -156,7 +156,8 @@ function SuggestionsList(props: {
             props.applyAction(insertSuggestionAction);
           }}
         >
-          {sugg.display ? sugg.display : sugg.textToInsert}: {sugg.kind}
+          {sugg.display ? sugg.display : sugg.textToInsert}
+          {sugg.kind ? `: ${sugg.kind}` : null}
         </li>
       ))}
     </ul>

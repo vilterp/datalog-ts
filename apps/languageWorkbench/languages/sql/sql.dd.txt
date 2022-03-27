@@ -23,6 +23,22 @@ CREATE TABLE comments (
   id INT,
   post_id INT REFERENCES blog_posts (i|||d)
 );
+SELECT id FROM ???;
+ide.Suggestion{}
+----
+application/datalog
+ide.Suggestion{id: "global", name: "blog_posts", span: span{from: 144, to: 147}, type: T}
+ide.Suggestion{id: "global", name: "comments", span: span{from: 144, to: 147}, type: T}
+
+sql
+CREATE TABLE blog_posts (
+  id INT,
+  body TEXT
+);
+CREATE TABLE comments (
+  id INT,
+  post_id INT REFERENCES blog_posts (i|||d)
+);
 SELECT id, ??? FROM blog_posts;
 hl.Segment{}
 ----
@@ -51,3 +67,18 @@ hl.Segment{highlight: false, span: span{from: 95, to: 98}, type: "var"}
 hl.Segment{highlight: true, span: span{from: 28, to: 30}, type: "defn"}
 hl.Segment{highlight: true, span: span{from: 28, to: 30}, type: "defn"}
 hl.Segment{highlight: true, span: span{from: 122, to: 124}, type: "usage"}
+
+sql
+CREATE TABLE blog_posts (
+  id INT,
+  body TEXT
+);
+CREATE TABLE comments (
+  id INT,
+  post_id INT REFERENCES blog_posts (i|||d)
+);
+SELECT id, ??? FROM blog_posts;
+scope.foreignKey{}
+----
+application/datalog
+scope.foreignKey{fromCol: "post_id", fromTable: "comments", toCol: "id", toTable: "blog_posts"}

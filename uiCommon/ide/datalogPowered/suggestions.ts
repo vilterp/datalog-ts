@@ -39,6 +39,8 @@ function getTypeString(term: Term): string {
         )}`;
       }
       return ppt(term);
+    case "Var":
+      return null;
     default:
       return ppt(term);
   }
