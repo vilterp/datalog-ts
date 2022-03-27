@@ -45,6 +45,7 @@ export function initialEditorState(source: string): EditorState {
   };
 }
 
-export type EvalError =
+export type LangError =
   | { type: "ParseError"; expected: string[]; offset: number }
-  | { type: "EvalError"; err: EvalError };
+  | { type: "EvalError"; err: Error }
+  | { type: "Problem"; problem: string };

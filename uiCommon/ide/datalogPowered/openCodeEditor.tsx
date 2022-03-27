@@ -1,9 +1,11 @@
 import React from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { ppt } from "../../../core/pretty";
+import { Rec } from "../../../core/types";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
 import { Suggestion } from "../suggestions";
-import { ActionContext, EditorState } from "../types";
+import { ActionContext, EditorState, LangError } from "../types";
 import { getSuggestions } from "./suggestions";
 
 export function OpenCodeEditor(props: {
@@ -44,6 +46,13 @@ export function OpenCodeEditor(props: {
     );
   }
 
+  const currentProblems: LangError[] = props.interp
+    .queryStr("ide.CurrentProblem{desc: D}")
+    .map((res) => {
+      const rec = res.term as Rec;
+      return { type: "Problem", problem: ppt(rec.attrs.desc) };
+    });
+
   const actionCtx: ActionContext = {
     interp: props.interp,
     state: props.editorState,
@@ -57,7 +66,7 @@ export function OpenCodeEditor(props: {
       actionCtx={actionCtx}
       editorState={props.editorState}
       setEditorState={props.setEditorState}
-      errorsToDisplay={[]} // TODO: pass through errors
+      errorsToDisplay={currentProblems} // TODO: pass through more errors
       highlighted={highlighted}
       suggestions={suggestions}
       hideKeyBindingsTable={props.hideKeyBindingsTable}

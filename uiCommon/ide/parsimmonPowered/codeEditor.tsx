@@ -5,7 +5,7 @@ import Parsimmon from "parsimmon";
 import { Suggestion } from "../suggestions";
 import { Rec, Term } from "../../../core/types";
 import { getNodesMissingTypes, DLTypeError } from "../errors";
-import { EditorState, EvalError, ActionContext } from "../types";
+import { EditorState, LangError, ActionContext } from "../types";
 import { EditorBox } from "../editorCommon";
 
 export function loadInterpreter<AST>(
@@ -13,9 +13,9 @@ export function loadInterpreter<AST>(
   state: EditorState,
   parse: Parsimmon.Parser<AST>,
   flatten: (t: AST) => Term[]
-): { interp: AbstractInterpreter; error: EvalError | null } {
+): { interp: AbstractInterpreter; error: LangError | null } {
   let interp = initialInterp;
-  let error: EvalError | null = null;
+  let error: LangError | null = null;
 
   interp = interp.evalStr(`ide.Cursor{idx: ${state.cursorPos}}.`)[1];
 
@@ -48,10 +48,10 @@ export function CodeEditor(props: {
   highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
-  loadError: EvalError | null;
+  loadError: LangError | null;
   lang: string;
 }) {
-  let evalError: EvalError | null = null;
+  let evalError: LangError | null = null;
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
   try {
