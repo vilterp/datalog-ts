@@ -1,1 +1,1 @@
-let x = "hello" in plus2(x)
+let x = 2 in plus2(x)
