@@ -135,6 +135,7 @@ function intersperseTextSegments(
   missingTypesByID: MissingTypesByID,
   problems: ProblemsByID
 ): Segment[] {
+  console.log("intersperseTextSegments", { problems, rawSegments });
   return recurse(src, 0, rawSegments, missingTypesByID, problems);
 }
 
@@ -159,10 +160,20 @@ function recurse(
   const firstSpan = spans[0];
   const fromIdx = firstSpan.span.from;
   const toIdx = firstSpan.span.to;
+  const nodeIDForSpan = firstSpan.nodeID;
+  console.log("recurse", {
+    firstSpan,
+    offset,
+    fromIdx,
+    nodeIDForSpan,
+    problemsByID,
+  });
   if (offset === fromIdx) {
-    const nodeIDForSpan = firstSpan.nodeID;
     const matchingMissingType = missingTypesByID[nodeIDForSpan];
     const matchingProblem = problemsByID[nodeIDForSpan];
+    if (Object.keys(problemsByID).length > 1) {
+      console.log({ problemsByID, matchingProblem, nodeIDForSpan });
+    }
     const outSpan: Segment = {
       type: firstSpan.type,
       nodeID: nodeIDForSpan,
