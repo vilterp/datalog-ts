@@ -20,7 +20,9 @@ export function highlight(
   const segments = interp.queryStr(
     "hl.Segment{type: T, span: S, id: I, highlight: H}"
   );
-  const problems = interp.queryStr("tc.Problem{desc: D, nodeID: I}");
+  // TODO: tree-based highlighting. Problems are always attached to an AST node,
+  //   but that AST node can cover multiple highlighting spans.
+  const problems = interp.queryStr("tc.Problem{desc: D, nodeID: I, span: S}");
   performance.mark("highlight end");
   performance.measure(`highlight ${lang}`, "highlight start", "highlight end");
   const sortedSegments = hlWins(
@@ -35,32 +37,22 @@ export function highlight(
   const inOrder = intersperseTextSegments(
     code,
     sortedSegments,
-    missingTypesByID(missingTypes),
-    problemsByID(problems)
+    missingTypes,
+    problemsByStartIdx(problems)
   );
   return inOrder.map((s, idx) => (
     <React.Fragment key={idx}>{renderSegment(s)}</React.Fragment>
   ));
 }
 
-type ProblemsByID = { [id: string]: Rec };
+type ProblemsByStartIdx = { [startIdx: string]: Rec };
 
-function problemsByID(problems: Res[]): ProblemsByID {
-  const out: ProblemsByID = {};
+function problemsByStartIdx(problems: Res[]): ProblemsByStartIdx {
+  const out: ProblemsByStartIdx = {};
   for (const problem of problems) {
     const rec = problem.term as Rec;
-    const nodeID = (rec.attrs.nodeID as Int).val;
-    out[nodeID] = rec;
-  }
-  return out;
-}
-
-type MissingTypesByID = { [id: string]: DLMissingType };
-
-function missingTypesByID(items: DLMissingType[]) {
-  const out: MissingTypesByID = {};
-  for (const item of items) {
-    out[item.nodeID] = item;
+    const span = dlToSpan(rec.attrs.span as Rec);
+    out[span.from] = rec;
   }
   return out;
 }
@@ -132,10 +124,10 @@ type Segment = SegmentAttrs & { text: string };
 function intersperseTextSegments(
   src: string,
   rawSegments: SegmentSpan[],
-  missingTypesByID: MissingTypesByID,
-  problems: ProblemsByID
+  missingTypes: DLMissingType[],
+  problems: ProblemsByStartIdx
 ): Segment[] {
-  return recurse(src, 0, rawSegments, missingTypesByID, problems);
+  return recurse(src, 0, rawSegments, missingTypes, problems);
 }
 
 // TODO: this treatment of type errors is hacky
@@ -143,8 +135,8 @@ function recurse(
   src: string,
   offset: number,
   spans: SegmentSpan[],
-  missingTypesByID: MissingTypesByID,
-  problemsByID: ProblemsByID
+  missingTypes: DLMissingType[],
+  problems: ProblemsByStartIdx
 ): Segment[] {
   if (spans.length === 0) {
     return [
@@ -160,9 +152,10 @@ function recurse(
   const fromIdx = firstSpan.span.from;
   const toIdx = firstSpan.span.to;
   if (offset === fromIdx) {
+    const matchingMissingType =
+      missingTypes[0] && missingTypes[0].span.from === offset;
     const nodeIDForSpan = firstSpan.nodeID;
-    const matchingMissingType = missingTypesByID[nodeIDForSpan];
-    const matchingProblem = problemsByID[nodeIDForSpan];
+    const matchingProblem = problems[fromIdx];
     const outSpan: Segment = {
       type: firstSpan.type,
       nodeID: nodeIDForSpan,
@@ -174,7 +167,7 @@ function recurse(
     };
     return [
       outSpan,
-      ...recurse(src, toIdx, spans.slice(1), missingTypesByID, problemsByID),
+      ...recurse(src, toIdx, spans.slice(1), missingTypes, problems),
     ];
   } else {
     return [
@@ -184,7 +177,7 @@ function recurse(
         state: { highlight: false, error: false },
         text: src.substring(offset, fromIdx),
       },
-      ...recurse(src, fromIdx, spans, missingTypesByID, problemsByID),
+      ...recurse(src, fromIdx, spans, missingTypes, problems),
     ];
   }
 }
