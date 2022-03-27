@@ -44,8 +44,9 @@ scope.Parent{childID: I, parentID: P} :-
   ast.funcCall{id: C, parentID: P} &
   ast.funcCallArg{callID: C, argID: I} |
   ast.funcCall{id: C, parentID: P} &
-  ast.funcCallFunc{callID: C, funcID: I}.
-  # ast.lambda{body: I, id: P}.
+  ast.funcCallFunc{callID: C, funcID: I} |
+  ast.lambda{id: L, parentID: P} &
+  ast.expr{parentID: L, id: I}.
 
 ast.letBindingExpr{letID: L, bindingID: D} :-
   ast.letExpr{id: L} &

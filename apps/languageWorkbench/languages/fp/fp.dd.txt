@@ -59,6 +59,7 @@ ide.Suggestion{}
 ----
 application/datalog
 ide.Suggestion{id: 26, name: "x", span: span{from: 17, to: 20}, type: "int"}
+ide.Suggestion{id: 26, name: "plus2", span: span{from: 17, to: 20}, type: tapp{from: "int", to: "int"}}
 
 fp
 (x: int): int => x
@@ -67,3 +68,10 @@ tc.Type{}
 application/datalog
 tc.Type{id: 1, type: tapp{from: "int", to: "int"}}
 tc.Type{id: 26, type: "int"}
+
+fp
+(x: string): int => plus2(x)
+tc.Problem{}
+----
+application/datalog
+tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 45, span: span{from: 26, to: 27}}
