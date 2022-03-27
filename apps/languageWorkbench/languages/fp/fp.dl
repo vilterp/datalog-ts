@@ -111,10 +111,10 @@ tc.typePlaceholder{id: I, type: "unknown"} :-
   ast.expr{id: I} &
   ast.Placeholder{id: P, parentID: I}.
 
-tc.Problem{desc: D, span: S} :-
-  tc.wrongArgType{desc: D, span: S}.
+tc.Problem{desc: D, nodeID: I} :-
+  tc.wrongArgType{desc: D, nodeID: I}.
 # TODO: DRY this up with tc.typeFC
-tc.wrongArgType{desc: argTypeMismatch{expected: RequiredArgType, got: ArgType}, span: S} :-
+tc.wrongArgType{desc: argTypeMismatch{expected: RequiredArgType, got: ArgType}, nodeID: AID} :-
   ast.funcCall{parentID: I, id: FC} &
   ast.funcCallArg{callID: FC, argID: AID} &
   ast.funcCallFunc{callID: FC, funcID: FID} &
