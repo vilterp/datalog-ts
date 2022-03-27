@@ -1,14 +1,14 @@
 # === scope ===
 
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
-  scope.builtin{id: I, name: N, type: T, location: S} |
-  scope.let{id: I, name: N, type: T, location: S} |
+  scope.builtin{id: I, name: N, type: T, span: S} |
+  scope.let{id: I, name: N, type: T, span: S} |
   scope.lambda{id: I, name: N, type: T, span: S}.
 
-scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
+scope.builtin{id: I, name: N, type: T, span: "builtin"} :-
   ast.RootExpr{id: I} &
   lang.Builtin{name: N, type: T}.
-scope.let{id: I, name: N, type: T, location: S} :-
+scope.let{id: I, name: N, type: T, span: S} :-
   ast.letBodyExpr{letID: L, bodyID: I} &
   ast.letBindingExpr{letID: L, bindingID: B} &
   ast.letVar{letID: L, name: N, span: S} &
