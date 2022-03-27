@@ -1,4 +1,4 @@
-main :- lambda.
+main :- expr.
 
 expr :- (funcCall | lambda | letExpr | varExpr | stringLit | intLit | placeholder).
 
