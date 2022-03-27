@@ -14,7 +14,7 @@ export function getTypeErrors(interp: AbstractInterpreter): DLTypeError[] {
   const exprTreeRecs = interp.queryStr(
     "ast.ParentExpr{id: ID, parent: ParentID}"
   );
-  const exprTree = treeFromRecords(exprTreeRecs, int(0));
+  const exprTree = treeFromRecords(exprTreeRecs, int(0), false);
   const exprIDsWithTypes = new Set(
     interp
       .queryStr("tc.Type{id: I}")
