@@ -4,11 +4,14 @@ expr :- (funcCall | lambda | letExpr | varExpr | stringLit | intLit | placeholde
 
 funcCall :- [varExpr, "(", expr, ")"].
 parenExpr :- ["(", expr, ")"].
-lambda :- ["(", ident ,")", ws, "=>", ws, expr].
+lambda :- ["(", lambdaParam ,")", ws, ":", ws, type, ws, "=>", ws, expr].
+lambdaParam :- [ident, ws, ":", ws, type].
 letExpr :- [letKW, ws, ident, ws, "=", ws, expr, ws, inKW, ws, expr].
 varExpr :- ident.
 stringLit :- ["\"", repSep(stringChar, ""), "\""].
 intLit :- [num, repSep(num, "")].
+
+type :- ident.
 
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
