@@ -4,7 +4,7 @@ import { highlight } from "../highlight";
 import Parsimmon from "parsimmon";
 import { Suggestion } from "../suggestions";
 import { Rec, Term } from "../../../core/types";
-import { getTypeErrors, DLTypeError } from "../errors";
+import { getNodesMissingTypes, DLTypeError } from "../errors";
 import { EditorState, EvalError, ActionContext } from "../types";
 import { EditorBox } from "../editorCommon";
 
@@ -57,7 +57,7 @@ export function CodeEditor(props: {
   try {
     // get suggestions
     suggestions = props.getSuggestions(props.interp);
-    typeErrors = getTypeErrors(props.interp);
+    typeErrors = getNodesMissingTypes(props.interp);
   } catch (e) {
     evalError = { type: "EvalError", err: e };
     console.error("eval error", evalError.err);
