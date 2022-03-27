@@ -18,26 +18,34 @@ export function OpenCodeEditor(props: {
   lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
-  const { highlighted, error, suggestions } = React.useMemo(() => {
-    let highlighted: React.ReactNode = <>{props.editorState.source}</>;
-    let error = null;
-    let suggestions: Suggestion[] = [];
-    if (props.validGrammar) {
-      try {
-        highlighted = highlight(
-          props.interp,
-          props.editorState.source,
-          0,
-          [],
-          props.lang
-        );
-        suggestions = getSuggestions(props.interp);
-      } catch (e) {
-        error = e.toString();
+  const { highlighted, error, suggestions, currentProblems } =
+    React.useMemo(() => {
+      let highlighted: React.ReactNode = <>{props.editorState.source}</>;
+      let error = null;
+      let suggestions: Suggestion[] = [];
+      let currentProblems: LangError[] = [];
+      if (props.validGrammar) {
+        try {
+          highlighted = highlight(
+            props.interp,
+            props.editorState.source,
+            0,
+            [],
+            props.lang
+          );
+          suggestions = getSuggestions(props.interp);
+          currentProblems = props.interp
+            .queryStr("ide.CurrentProblem{desc: D}")
+            .map((res) => {
+              const rec = res.term as Rec;
+              return { type: "Problem", problem: ppt(rec.attrs.desc) };
+            });
+        } catch (e) {
+          error = e.toString();
+        }
       }
-    }
-    return { highlighted, error, suggestions };
-  }, [props.interp, props.editorState.source, props.lang]);
+      return { highlighted, error, suggestions, currentProblems };
+    }, [props.interp, props.editorState.source, props.lang]);
 
   if (error) {
     console.error(
@@ -45,13 +53,6 @@ export function OpenCodeEditor(props: {
       error
     );
   }
-
-  const currentProblems: LangError[] = props.interp
-    .queryStr("ide.CurrentProblem{desc: D}")
-    .map((res) => {
-      const rec = res.term as Rec;
-      return { type: "Problem", problem: ppt(rec.attrs.desc) };
-    });
 
   const actionCtx: ActionContext = {
     interp: props.interp,
