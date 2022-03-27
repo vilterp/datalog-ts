@@ -52,3 +52,10 @@ astInternal.node{id: 14}
 ----
 application/datalog
 astInternal.node{id: 14, parentID: 2, rule: "expr", span: span{from: 6, to: 19}, text: "\"hello world\""}
+
+fp
+(x: int): int => ???
+ide.Suggestion{}
+----
+application/datalog
+ide.Suggestion{id: 26, name: "x", span: span{from: 17, to: 20}, type: "int"}

@@ -3,7 +3,7 @@
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.let{id: I, name: N, type: T, location: S} |
-  scope.lambda{id: I, name: N, type: T, location: S}.
+  scope.lambda{id: I, name: N, type: T, span: S}.
 
 scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
   ast.RootExpr{id: I} &
@@ -13,9 +13,12 @@ scope.let{id: I, name: N, type: T, location: S} :-
   ast.letBindingExpr{letID: L, bindingID: B} &
   ast.letVar{letID: L, name: N, span: S} &
   tc.Type{id: B, type: T}.
-scope.lambda{id: I, name: N, type: T, location: L} :-
-  ast.lambda{body: I, id: LID} &
-  ast.lambdaParam{lambdaID: LID, name: N, ty: T, location: L}.
+scope.lambda{id: I, name: N, type: T, span: S} :-
+  ast.lambda{id: Lambda} &
+  ast.lambdaParam{id: Param, parentID: Lambda} &
+  ast.type{parentID: Param, text: T} &
+  ast.ident{parentID: Param, text: N, span: S} &
+  ast.lambdaBody{lambdaID: Lambda, bodyID: I}.
 
 scope.Var{scopeID: I, name: N, span: S} :-
   ast.expr{id: I} &
@@ -63,8 +66,9 @@ ast.funcCallArg{callID: C, argID: I} :-
 ast.funcCallFunc{callID: C, funcID: F} :-
   ast.funcCall{id: C} &
   ast.varExpr{id: F, parentID: C}.
-# ast.lambdaBody{lambdaID: L, bodyID: B} :-
-#   XXX.
+ast.lambdaBody{lambdaID: L, bodyID: B} :-
+  ast.lambda{id: L} &
+  ast.expr{parentID: L, id: B}.
 
 # === Type ===
 
@@ -110,6 +114,8 @@ tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
 tc.typePlaceholder{id: I, type: "unknown"} :-
   ast.expr{id: I} &
   ast.Placeholder{id: P, parentID: I}.
+
+# === problems ===
 
 tc.Problem{desc: D, nodeID: I, span: S} :-
   tc.wrongArgType{desc: D, nodeID: I, span: S}.
