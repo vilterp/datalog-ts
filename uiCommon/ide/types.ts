@@ -28,7 +28,6 @@ export type ActionContext = {
   //   they can be computed from the repl, but will always have been computed
   //   by the editor already UI anyway; passing them for efficiency
   suggestions: Suggestion[];
-  errors: { offset: number }[];
 };
 
 export type EditorAction = {
@@ -45,6 +44,12 @@ export function initialEditorState(source: string): EditorState {
   };
 }
 
-export type EvalError =
+export type ErrorToDisplay =
   | { type: "ParseError"; expected: string[]; offset: number }
-  | { type: "EvalError"; err: EvalError };
+  | { type: "DLEvalError"; err: Error }
+  | { type: "Problem"; problem: Problem };
+
+export type Problem = {
+  desc: Term;
+  span: Span;
+};

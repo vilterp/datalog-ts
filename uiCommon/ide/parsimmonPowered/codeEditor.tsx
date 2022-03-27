@@ -5,7 +5,7 @@ import Parsimmon from "parsimmon";
 import { Suggestion } from "../suggestions";
 import { Rec, Term } from "../../../core/types";
 import { getTypeErrors, DLTypeError } from "../errors";
-import { EditorState, EvalError, ActionContext } from "../types";
+import { EditorState, ErrorToDisplay, ActionContext } from "../types";
 import { EditorBox } from "../editorCommon";
 
 export function loadInterpreter<AST>(
@@ -13,9 +13,9 @@ export function loadInterpreter<AST>(
   state: EditorState,
   parse: Parsimmon.Parser<AST>,
   flatten: (t: AST) => Term[]
-): { interp: AbstractInterpreter; error: EvalError | null } {
+): { interp: AbstractInterpreter; error: ErrorToDisplay | null } {
   let interp = initialInterp;
-  let error: EvalError | null = null;
+  let error: ErrorToDisplay | null = null;
 
   interp = interp.evalStr(`ide.Cursor{idx: ${state.cursorPos}}.`)[1];
 
@@ -34,7 +34,7 @@ export function loadInterpreter<AST>(
         interp
       );
     } catch (e) {
-      error = { type: "EvalError", err: e };
+      error = { type: "DLEvalError", err: e };
       console.error("eval error", error.err);
     }
   }
@@ -48,10 +48,10 @@ export function CodeEditor(props: {
   highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
-  loadError: EvalError | null;
+  loadError: ErrorToDisplay | null;
   lang: string;
 }) {
-  let evalError: EvalError | null = null;
+  let evalError: ErrorToDisplay | null = null;
   let suggestions: Suggestion[] = [];
   let typeErrors: DLTypeError[] = [];
   try {
@@ -59,7 +59,7 @@ export function CodeEditor(props: {
     suggestions = props.getSuggestions(props.interp);
     typeErrors = getTypeErrors(props.interp);
   } catch (e) {
-    evalError = { type: "EvalError", err: e };
+    evalError = { type: "DLEvalError", err: e };
     console.error("eval error", evalError.err);
   }
 
@@ -77,7 +77,6 @@ export function CodeEditor(props: {
     interp: props.interp,
     state: props.editorState,
     suggestions,
-    errors: locatedErrors,
   };
   const errorsToDisplay = [evalError, props.loadError].filter(
     (x) => x !== null

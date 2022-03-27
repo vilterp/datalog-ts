@@ -10,14 +10,19 @@ import {
   KEY_Z,
 } from "./keymap";
 import { insertSuggestionAction, Suggestion } from "./suggestions";
-import { ActionContext, EditorAction, EditorState, EvalError } from "./types";
+import {
+  ActionContext,
+  EditorAction,
+  EditorState,
+  ErrorToDisplay,
+} from "./types";
 
 export function EditorBox(props: {
   highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   suggestions: Suggestion[];
-  errorsToDisplay: EvalError[];
+  errorsToDisplay: ErrorToDisplay[];
   actionCtx: ActionContext;
   highlighted: React.ReactNode;
   hideKeyBindingsTable?: boolean;

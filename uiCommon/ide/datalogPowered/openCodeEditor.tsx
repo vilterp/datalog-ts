@@ -3,7 +3,7 @@ import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { EditorBox } from "../editorCommon";
 import { highlight } from "../highlight";
 import { Suggestion } from "../suggestions";
-import { ActionContext, EditorState } from "../types";
+import { ActionContext, EditorState, Problem } from "../types";
 import { getSuggestions } from "./suggestions";
 
 export function OpenCodeEditor(props: {
@@ -12,7 +12,7 @@ export function OpenCodeEditor(props: {
   interp: AbstractInterpreter;
   validGrammar: boolean;
   highlightCSS: string;
-  locatedErrors: { offset: number }[];
+  problems: Problem[];
   lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
@@ -48,7 +48,6 @@ export function OpenCodeEditor(props: {
     interp: props.interp,
     state: props.editorState,
     suggestions,
-    errors: props.locatedErrors,
   };
 
   return (
