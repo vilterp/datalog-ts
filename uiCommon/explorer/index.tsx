@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Relation, Term } from "../../core/types";
+import { Term } from "../../core/types";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
-import { ensurePresent, sortBy } from "../../util/util";
+import { ensurePresent } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
 import { RelationCollapseStates } from "./types";
 
@@ -13,27 +13,6 @@ export function Explorer(props: {
   interp: AbstractInterpreter;
   showViz?: boolean;
 }) {
-  const allRules: Relation[] = sortBy(
-    props.interp.getRules(),
-    (r) => r.head.relation
-  ).map((rule) => ({
-    type: "Rule",
-    name: rule.head.relation,
-    rule,
-  }));
-  const allTables: Relation[] = [
-    ...props.interp
-      .getTables()
-      .sort()
-      .map(
-        (name): Relation => ({
-          type: "Table",
-          name,
-        })
-      ),
-    // TODO: virtual tables
-  ];
-
   const [highlight, setHighlight] = useState(noHighlight);
 
   const [relationCollapseStates, setRelationCollapseStates] =
@@ -68,8 +47,6 @@ export function Explorer(props: {
       >
         <RelationTree
           interp={props.interp}
-          allRules={allRules}
-          allTables={allTables}
           highlight={highlightProps}
           openRelations={openRelations}
           setOpenRelations={setOpenRelations}

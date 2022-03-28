@@ -9,8 +9,9 @@ const initialDB: DB = {
   tables: {},
   rules: {},
   virtualTables: {
-    "internal.Relation": virtualRelations,
-    "internal.RelationReference": virtualReferences,
+    // TODO: re-enable
+    // "internal.Relation": virtualRelations,
+    // "internal.RelationReference": virtualReferences,
   },
 };
 
