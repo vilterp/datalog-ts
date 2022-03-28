@@ -42,7 +42,7 @@ export function EditorBox(props: {
         <div
           style={{
             width: 510,
-            height: 400,
+            height: 450,
             overflow: "auto",
             border: "1px solid black",
             marginBottom: 10,
