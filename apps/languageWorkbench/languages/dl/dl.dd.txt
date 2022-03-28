@@ -5,6 +5,9 @@ foo{bar: A, baz: B} :-
 ide.Suggestion{}
 ----
 application/datalog
+ide.Suggestion{id: 3, name: "A", span: span{from: 45, to: 48}, type: T}
+ide.Suggestion{id: 3, name: "B", span: span{from: 45, to: 48}, type: T}
+ide.Suggestion{id: "global", name: "foo", span: span{from: 25, to: 28}, type: T}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
@@ -643,4 +646,6 @@ hl.Segment{highlight: false, id: I, span: span{from: 3370, to: 3371}, type: "spe
 hl.Segment{highlight: false, id: I, span: span{from: 3408, to: 3409}, type: "specialVar"}
 hl.Segment{highlight: false, id: I, span: span{from: 3435, to: 3436}, type: "specialVar"}
 hl.Segment{highlight: false, id: I, span: span{from: 3448, to: 3449}, type: "specialVar"}
+hl.Segment{highlight: true, id: I, span: span{from: 336, to: 345}, type: "defn"}
+hl.Segment{highlight: true, id: I, span: span{from: 111, to: 120}, type: "usage"}
 hl.Segment{highlight: false, id: 2105, span: span{from: 1440, to: 1469}, type: "comment"}
