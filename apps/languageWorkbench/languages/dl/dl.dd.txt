@@ -5,9 +5,6 @@ foo{bar: A, baz: B} :-
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 3, name: "A", span: span{from: 45, to: 48}, type: T}
-ide.Suggestion{id: 3, name: "B", span: span{from: 45, to: 48}, type: T}
-ide.Suggestion{id: "global", name: "foo", span: span{from: 25, to: 28}, type: T}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
@@ -115,26 +112,26 @@ hl.mapping{rule: "inKW", type: "keyword"}.
 hl.Segment{}
 ----
 application/datalog
-hl.Segment{highlight: false, id: 5055, span: span{from: 3534, to: 3535}, type: "int"}
-hl.Segment{highlight: false, id: 390, span: span{from: 264, to: 273}, type: "string"}
-hl.Segment{highlight: false, id: 3469, span: span{from: 2407, to: 2415}, type: "string"}
-hl.Segment{highlight: false, id: 3589, span: span{from: 2492, to: 2497}, type: "string"}
-hl.Segment{highlight: false, id: 4834, span: span{from: 3379, to: 3388}, type: "string"}
-hl.Segment{highlight: false, id: 4967, span: span{from: 3471, to: 3478}, type: "string"}
-hl.Segment{highlight: false, id: 5005, span: span{from: 3497, to: 3502}, type: "string"}
-hl.Segment{highlight: false, id: 5016, span: span{from: 3508, to: 3513}, type: "string"}
-hl.Segment{highlight: false, id: 5091, span: span{from: 3555, to: 3563}, type: "string"}
-hl.Segment{highlight: false, id: 5109, span: span{from: 3571, to: 3576}, type: "string"}
-hl.Segment{highlight: false, id: 5147, span: span{from: 3596, to: 3607}, type: "string"}
-hl.Segment{highlight: false, id: 5168, span: span{from: 3615, to: 3623}, type: "string"}
-hl.Segment{highlight: false, id: 5209, span: span{from: 3643, to: 3649}, type: "string"}
-hl.Segment{highlight: false, id: 5225, span: span{from: 3657, to: 3663}, type: "string"}
-hl.Segment{highlight: false, id: 5264, span: span{from: 3683, to: 3690}, type: "string"}
-hl.Segment{highlight: false, id: 5281, span: span{from: 3698, to: 3705}, type: "string"}
-hl.Segment{highlight: false, id: 5321, span: span{from: 3725, to: 3732}, type: "string"}
-hl.Segment{highlight: false, id: 5338, span: span{from: 3740, to: 3749}, type: "string"}
-hl.Segment{highlight: false, id: 5380, span: span{from: 3769, to: 3775}, type: "string"}
-hl.Segment{highlight: false, id: 5396, span: span{from: 3783, to: 3792}, type: "string"}
+hl.Segment{highlight: false, id: 5127, span: span{from: 3534, to: 3535}, type: "int"}
+hl.Segment{highlight: false, id: 393, span: span{from: 264, to: 273}, type: "string"}
+hl.Segment{highlight: false, id: 3517, span: span{from: 2407, to: 2415}, type: "string"}
+hl.Segment{highlight: false, id: 3639, span: span{from: 2492, to: 2497}, type: "string"}
+hl.Segment{highlight: false, id: 4904, span: span{from: 3379, to: 3388}, type: "string"}
+hl.Segment{highlight: false, id: 5039, span: span{from: 3471, to: 3478}, type: "string"}
+hl.Segment{highlight: false, id: 5077, span: span{from: 3497, to: 3502}, type: "string"}
+hl.Segment{highlight: false, id: 5088, span: span{from: 3508, to: 3513}, type: "string"}
+hl.Segment{highlight: false, id: 5163, span: span{from: 3555, to: 3563}, type: "string"}
+hl.Segment{highlight: false, id: 5181, span: span{from: 3571, to: 3576}, type: "string"}
+hl.Segment{highlight: false, id: 5219, span: span{from: 3596, to: 3607}, type: "string"}
+hl.Segment{highlight: false, id: 5240, span: span{from: 3615, to: 3623}, type: "string"}
+hl.Segment{highlight: false, id: 5281, span: span{from: 3643, to: 3649}, type: "string"}
+hl.Segment{highlight: false, id: 5297, span: span{from: 3657, to: 3663}, type: "string"}
+hl.Segment{highlight: false, id: 5336, span: span{from: 3683, to: 3690}, type: "string"}
+hl.Segment{highlight: false, id: 5353, span: span{from: 3698, to: 3705}, type: "string"}
+hl.Segment{highlight: false, id: 5393, span: span{from: 3725, to: 3732}, type: "string"}
+hl.Segment{highlight: false, id: 5410, span: span{from: 3740, to: 3749}, type: "string"}
+hl.Segment{highlight: false, id: 5452, span: span{from: 3769, to: 3775}, type: "string"}
+hl.Segment{highlight: false, id: 5468, span: span{from: 3783, to: 3792}, type: "string"}
 hl.Segment{highlight: false, id: I, span: span{from: 0, to: 10}, type: "var"}
 hl.Segment{highlight: false, id: I, span: span{from: 11, to: 18}, type: "var"}
 hl.Segment{highlight: false, id: I, span: span{from: 23, to: 27}, type: "var"}
@@ -646,6 +643,4 @@ hl.Segment{highlight: false, id: I, span: span{from: 3370, to: 3371}, type: "spe
 hl.Segment{highlight: false, id: I, span: span{from: 3408, to: 3409}, type: "specialVar"}
 hl.Segment{highlight: false, id: I, span: span{from: 3435, to: 3436}, type: "specialVar"}
 hl.Segment{highlight: false, id: I, span: span{from: 3448, to: 3449}, type: "specialVar"}
-hl.Segment{highlight: true, id: I, span: span{from: 336, to: 345}, type: "defn"}
-hl.Segment{highlight: true, id: I, span: span{from: 111, to: 120}, type: "usage"}
-hl.Segment{highlight: false, id: 2078, span: span{from: 1440, to: 1469}, type: "comment"}
+hl.Segment{highlight: false, id: 2105, span: span{from: 1440, to: 1469}, type: "comment"}
