@@ -24,13 +24,15 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
 scope.varRuleInvocation{scopeID: "global", name: N, span: S, kind: "rule"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.record{id: RecordID, parentID: DisjunctID} &
+  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  ast.record{id: RecordID, parentID: ConjunctID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
 # TODO: bin exprs
 scope.varTerm{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.record{id: RecordID, parentID: DisjunctID} &
+  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  ast.record{id: RecordID, parentID: ConjunctID} &
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.var{parentID: ValueTermID, text: N, span: S}.
@@ -41,14 +43,16 @@ scope.Placeholder{scopeID: I, span: S, kind: K} :-
 scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.record{id: RecordID, parentID: DisjunctID} &
+  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  ast.record{id: RecordID, parentID: ConjunctID} &
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.placeholder{parentID: ValueTermID, span: S}.
 scope.placeholderRule{scopeID: "global", span: S, kind: "rule"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.record{id: RecordID, parentID: DisjunctID} &
+  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  ast.record{id: RecordID, parentID: ConjunctID} &
   ast.placeholder{parentID: RecordID, span: S}.
 
 hl.mapping{rule: "ident", type: "ident"}.
