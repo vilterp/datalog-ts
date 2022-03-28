@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import { INSPECT_MAX_BYTES } from "buffer";
+import React, { CSSProperties, useMemo } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { filterTree, insertAtPath, Tree } from "../../util/tree";
+import { filterTree, insertAtPath, node, Tree } from "../../util/tree";
 import { contains, lastItem, toggle } from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
 import { useBoolLocalStorage, useJSONLocalStorage } from "../generic/hooks";
@@ -28,7 +29,7 @@ export function RelationTree(props: {
 
   const [justPublic, setJustPublic] = useBoolLocalStorage("just-public", false);
 
-  const baseRelationTree: Tree<TreeItem> = makeRelationTree(
+  const baseRelationTree: Tree<NodeWithCounts> = makeRelationTree(
     props.allRules,
     props.allTables
   );
@@ -36,8 +37,8 @@ export function RelationTree(props: {
     ? filterTree(
         baseRelationTree,
         (node) =>
-          node.type !== "Relation" ||
-          (node.type === "Relation" && isExported(node.relation.name))
+          node.item.type !== "Relation" ||
+          (node.item.type === "Relation" && isExported(node.item.relation.name))
       )
     : baseRelationTree;
 
@@ -58,14 +59,17 @@ export function RelationTree(props: {
         setCollapseState={setRelTreeCollapseState}
         tree={relationTree}
         render={(relNode) => {
-          const item = relNode.item;
+          const item = relNode.item.item;
+          const counts = relNode.item.counts;
           switch (item.type) {
             case "Root":
               return "root";
             case "Category":
-              return <strong>{item.cat}</strong>;
+              return (
+                <strong style={internalNodeStyle(counts)}>{item.cat}</strong>
+              );
             case "Namespace":
-              return item.name;
+              return <span style={internalNodeStyle(counts)}>{item.name}</span>;
             case "Relation": {
               const rel = item.relation;
               const highlight = props.highlight.highlight;
@@ -127,6 +131,19 @@ function Status(props: { status: RelationStatus; highlighted: boolean }) {
   }
 }
 
+function internalNodeStyle(counts: NodeCounts): CSSProperties {
+  return styles.tab({
+    empty: counts.count === 0,
+    errors: counts.errors > 0,
+    highlighted: false,
+    open: false,
+  });
+}
+
+type NodeCounts = { errors: number; count: number };
+
+type NodeWithCounts = { item: TreeItem; counts: NodeCounts };
+
 type TreeItem =
   | { type: "Root" }
   | { type: "Category"; cat: "rules" | "tables" }
@@ -136,8 +153,8 @@ type TreeItem =
 function makeRelationTree(
   allRules: RelationInfo[],
   allTables: RelationInfo[]
-): Tree<TreeItem> {
-  return {
+): Tree<NodeWithCounts> {
+  const rawTree: Tree<TreeItem> = {
     key: "root",
     item: { type: "Root" },
     children: [
@@ -145,6 +162,41 @@ function makeRelationTree(
       insertByDots("rules", allRules),
     ],
   };
+  return getSums(rawTree);
+}
+
+function getSums(rawNode: Tree<TreeItem>): Tree<NodeWithCounts> {
+  const children = rawNode.children.map((child) => getSums(child));
+  const curCounts = countsForItem(rawNode.item);
+  const childCountsSum: NodeCounts = children.reduce(
+    (prev, item) => addCounts(prev, item.item.counts),
+    {
+      count: 0,
+      errors: 0,
+    }
+  );
+  const totalCounts = addCounts(childCountsSum, curCounts);
+  return node(
+    rawNode.key,
+    { item: rawNode.item, counts: totalCounts },
+    children
+  );
+}
+
+function addCounts(a: NodeCounts, b: NodeCounts): NodeCounts {
+  return { errors: a.errors + b.errors, count: a.count + b.count };
+}
+
+function countsForItem(item: TreeItem): NodeCounts {
+  switch (item.type) {
+    case "Relation":
+      const status = item.relation.status;
+      return status.type === "Error"
+        ? { errors: 1, count: 0 }
+        : { errors: 0, count: status.count };
+    default:
+      return { errors: 0, count: 0 };
+  }
 }
 
 function insertByDots(
