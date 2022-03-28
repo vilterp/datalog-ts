@@ -11,7 +11,7 @@ import {
   TreeView,
 } from "../generic/treeView";
 import * as styles from "./styles";
-import { RelationInfo, RelationStatus } from "./types";
+import { RelationWithStatus, RelationStatus } from "./types";
 
 export function RelationTree(props: {
   interp: AbstractInterpreter;
@@ -41,7 +41,8 @@ export function RelationTree(props: {
         baseRelationTree,
         (node) =>
           node.item.type !== "Relation" ||
-          (node.item.type === "Relation" && isExported(node.item.relation.name))
+          (node.item.type === "Relation" &&
+            isExported(node.item.relation.relation.name))
       )
     : baseRelationTree;
 
@@ -77,19 +78,23 @@ export function RelationTree(props: {
               const rel = item.relation;
               const highlight = props.highlight.highlight;
               const isHighlightedRelation =
-                highlight.type === "Relation" && highlight.name === rel.name;
+                highlight.type === "Relation" &&
+                highlight.name === rel.relation.name;
               const isRelationOfHighlightedTerm =
                 highlight.type === "Term" &&
                 highlight.term.type === "Record" &&
-                highlight.term.relation === rel.name;
+                highlight.term.relation === rel.relation.name;
               const isHighlighted =
                 isHighlightedRelation || isRelationOfHighlightedTerm;
-              const isOpen = contains(props.openRelations, item.relation.name);
+              const isOpen = contains(
+                props.openRelations,
+                item.relation.relation.name
+              );
               const status = rel.status;
               return (
                 <>
                   <span
-                    key={rel.name}
+                    key={rel.relation.name}
                     style={styles.tab({
                       open: isOpen,
                       errors: status.type === "Error",
@@ -98,19 +103,19 @@ export function RelationTree(props: {
                     })}
                     onClick={() =>
                       props.setOpenRelations(
-                        toggle(props.openRelations, rel.name)
+                        toggle(props.openRelations, rel.relation.name)
                       )
                     }
                     // TODO: would be nice to factor out these handlers
                     onMouseOver={() =>
                       props.highlight.setHighlight({
                         type: "Relation",
-                        name: rel.name,
+                        name: rel.relation.name,
                       })
                     }
                     onMouseOut={() => props.highlight.setHighlight(noHighlight)}
                   >
-                    {lastItem(rel.name.split("."))}
+                    {lastItem(rel.relation.name.split("."))}
                   </span>
                   <Status status={status} highlighted={isHighlighted} />
                 </>
@@ -135,26 +140,26 @@ function Status(props: { status: RelationStatus; highlighted: boolean }) {
 }
 
 function getRulesAndTables(interp: AbstractInterpreter): {
-  rules: RelationInfo[];
-  tables: RelationInfo[];
+  rules: RelationWithStatus[];
+  tables: RelationWithStatus[];
 } {
-  const allRules: RelationInfo[] = sortBy(
+  const allRules: RelationWithStatus[] = sortBy(
     interp.getRules(),
     (r) => r.head.relation
   ).map((rule) => ({
-    type: "Rule",
-    name: rule.head.relation,
-    rule,
+    relation: { type: "Rule", name: rule.head.relation, rule },
     status: getStatus(interp, rule.head.relation),
   }));
-  const allTables: RelationInfo[] = [
+  const allTables: RelationWithStatus[] = [
     ...interp
       .getTables()
       .sort()
       .map(
-        (name): RelationInfo => ({
-          type: "Table",
-          name,
+        (name): RelationWithStatus => ({
+          relation: {
+            type: "Table",
+            name,
+          },
           status: getStatus(interp, name),
         })
       ),
@@ -180,11 +185,11 @@ type TreeItem =
   | { type: "Root" }
   | { type: "Category"; cat: "rules" | "tables" }
   | { type: "Namespace"; name: string }
-  | { type: "Relation"; relation: RelationInfo };
+  | { type: "Relation"; relation: RelationWithStatus };
 
 function makeRelationTree(
-  allRules: RelationInfo[],
-  allTables: RelationInfo[]
+  allRules: RelationWithStatus[],
+  allTables: RelationWithStatus[]
 ): Tree<NodeWithCounts> {
   const rawTree: Tree<TreeItem> = {
     key: "root",
@@ -233,15 +238,15 @@ function countsForItem(item: TreeItem): NodeCounts {
 
 function insertByDots(
   category: "rules" | "tables",
-  relations: RelationInfo[]
+  relations: RelationWithStatus[]
 ): Tree<TreeItem> {
   return relations.reduce<Tree<TreeItem>>(
     (tree, rel) =>
       insertAtPath(
         tree,
-        rel.name.split("."),
+        rel.relation.name.split("."),
         {
-          key: rel.name,
+          key: rel.relation.name,
           item: { type: "Relation", relation: rel },
           children: [],
         },
