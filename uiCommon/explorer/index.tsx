@@ -1,34 +1,36 @@
 import React, { useState } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Relation, Term } from "../../core/types";
+import { Term, UserError } from "../../core/types";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
 import { ensurePresent, sortBy } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
-import { RelationCollapseStates } from "./types";
+import { RelationCollapseStates, RelationInfo, RelationStatus } from "./types";
 
 export function Explorer(props: {
   interp: AbstractInterpreter;
   showViz?: boolean;
 }) {
-  const allRules: Relation[] = sortBy(
+  const allRules: RelationInfo[] = sortBy(
     props.interp.getRules(),
     (r) => r.head.relation
   ).map((rule) => ({
     type: "Rule",
     name: rule.head.relation,
     rule,
+    status: getStatus(props.interp, rule.head.relation),
   }));
-  const allTables: Relation[] = [
+  const allTables: RelationInfo[] = [
     ...props.interp
       .getTables()
       .sort()
       .map(
-        (name): Relation => ({
+        (name): RelationInfo => ({
           type: "Table",
           name,
+          status: getStatus(props.interp, name),
         })
       ),
     // TODO: virtual tables
@@ -99,4 +101,18 @@ export function Explorer(props: {
       ) : null}
     </div>
   );
+}
+
+function getStatus(interp: AbstractInterpreter, name: string): RelationStatus {
+  try {
+    const count = interp.queryStr(`${name}{}`).length;
+    return { type: "Count", count };
+  } catch (e) {
+    if (!(e instanceof UserError)) {
+      console.error(`error while getting ${name}:`, e);
+    }
+    // TODO: this could swallow up an internal error...
+    // should get better about errors...
+    return { type: "Error" };
+  }
 }

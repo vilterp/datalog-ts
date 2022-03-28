@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Relation, UserError } from "../../core/types";
 import { filterTree, insertAtPath, Tree } from "../../util/tree";
 import { contains, lastItem, toggle } from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
@@ -11,11 +10,12 @@ import {
   TreeView,
 } from "../generic/treeView";
 import * as styles from "./styles";
+import { RelationInfo, RelationStatus } from "./types";
 
 export function RelationTree(props: {
   interp: AbstractInterpreter;
-  allRules: Relation[];
-  allTables: Relation[];
+  allRules: RelationInfo[];
+  allTables: RelationInfo[];
   highlight: HighlightProps;
   openRelations: string[];
   setOpenRelations: (p: string[]) => void;
@@ -78,10 +78,7 @@ export function RelationTree(props: {
               const isHighlighted =
                 isHighlightedRelation || isRelationOfHighlightedTerm;
               const isOpen = contains(props.openRelations, item.relation.name);
-              const status = useMemo(
-                () => getStatus(props.interp, rel.name),
-                [props.interp, rel.name]
-              );
+              const status = rel.status;
               return (
                 <>
                   <span
@@ -134,11 +131,11 @@ type TreeItem =
   | { type: "Root" }
   | { type: "Category"; cat: "rules" | "tables" }
   | { type: "Namespace"; name: string }
-  | { type: "Relation"; relation: Relation };
+  | { type: "Relation"; relation: RelationInfo };
 
 function makeRelationTree(
-  allRules: Relation[],
-  allTables: Relation[]
+  allRules: RelationInfo[],
+  allTables: RelationInfo[]
 ): Tree<TreeItem> {
   return {
     key: "root",
@@ -152,7 +149,7 @@ function makeRelationTree(
 
 function insertByDots(
   category: "rules" | "tables",
-  relations: Relation[]
+  relations: RelationInfo[]
 ): Tree<TreeItem> {
   return relations.reduce<Tree<TreeItem>>(
     (tree, rel) =>
@@ -181,22 +178,6 @@ function isExported(name: string): boolean {
 
 function isUpperCase(char: string): boolean {
   return char.toUpperCase() === char;
-}
-
-type RelationStatus = { type: "Count"; count: number } | { type: "Error" };
-
-function getStatus(interp: AbstractInterpreter, name: string): RelationStatus {
-  try {
-    const count = interp.queryStr(`${name}{}`).length;
-    return { type: "Count", count };
-  } catch (e) {
-    if (!(e instanceof UserError)) {
-      console.error(`error while getting ${name}:`, e);
-    }
-    // TODO: this could swallow up an internal error...
-    // should get better about errors...
-    return { type: "Error" };
-  }
 }
 
 function hasContents(status: RelationStatus) {

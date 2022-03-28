@@ -8,10 +8,6 @@ export interface DB {
 
 type VirtualTable = (db: DB) => Rec[];
 
-export type Relation =
-  | { type: "Table"; name: string }
-  | { type: "Rule"; name: string; rule: Rule };
-
 export interface Res {
   term: Term;
   bindings: Bindings;
