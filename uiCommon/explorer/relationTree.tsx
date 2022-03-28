@@ -1,8 +1,8 @@
-import { INSPECT_MAX_BYTES } from "buffer";
 import React, { CSSProperties, useMemo } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { UserError } from "../../core/types";
 import { filterTree, insertAtPath, node, Tree } from "../../util/tree";
-import { contains, lastItem, toggle } from "../../util/util";
+import { contains, lastItem, sortBy, toggle } from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
 import { useBoolLocalStorage, useJSONLocalStorage } from "../generic/hooks";
 import {
@@ -15,8 +15,6 @@ import { RelationInfo, RelationStatus } from "./types";
 
 export function RelationTree(props: {
   interp: AbstractInterpreter;
-  allRules: RelationInfo[];
-  allTables: RelationInfo[];
   highlight: HighlightProps;
   openRelations: string[];
   setOpenRelations: (p: string[]) => void;
@@ -29,9 +27,14 @@ export function RelationTree(props: {
 
   const [justPublic, setJustPublic] = useBoolLocalStorage("just-public", false);
 
+  const { rules, tables } = useMemo(
+    () => getRulesAndTables(props.interp),
+    [props.interp]
+  );
+
   const baseRelationTree: Tree<NodeWithCounts> = makeRelationTree(
-    props.allRules,
-    props.allTables
+    rules,
+    tables
   );
   const relationTree = justPublic
     ? filterTree(
@@ -129,6 +132,35 @@ function Status(props: { status: RelationStatus; highlighted: boolean }) {
     default:
       return null;
   }
+}
+
+function getRulesAndTables(interp: AbstractInterpreter): {
+  rules: RelationInfo[];
+  tables: RelationInfo[];
+} {
+  const allRules: RelationInfo[] = sortBy(
+    interp.getRules(),
+    (r) => r.head.relation
+  ).map((rule) => ({
+    type: "Rule",
+    name: rule.head.relation,
+    rule,
+    status: getStatus(interp, rule.head.relation),
+  }));
+  const allTables: RelationInfo[] = [
+    ...interp
+      .getTables()
+      .sort()
+      .map(
+        (name): RelationInfo => ({
+          type: "Table",
+          name,
+          status: getStatus(interp, name),
+        })
+      ),
+    // TODO: virtual tables
+  ];
+  return { rules: allRules, tables: allTables };
 }
 
 function internalNodeStyle(counts: NodeCounts): CSSProperties {
@@ -234,4 +266,18 @@ function isUpperCase(char: string): boolean {
 
 function hasContents(status: RelationStatus) {
   return status.type === "Count" && status.count > 0;
+}
+
+function getStatus(interp: AbstractInterpreter, name: string): RelationStatus {
+  try {
+    const count = interp.queryStr(`${name}{}`).length;
+    return { type: "Count", count };
+  } catch (e) {
+    if (!(e instanceof UserError)) {
+      console.error(`error while getting ${name}:`, e);
+    }
+    // TODO: this could swallow up an internal error...
+    // should get better about errors...
+    return { type: "Error" };
+  }
 }
