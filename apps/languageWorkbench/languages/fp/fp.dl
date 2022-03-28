@@ -8,11 +8,11 @@ scope.Defn{scopeID: I, name: N, type: T, span: S} :-
 scope.builtin{id: I, name: N, type: T, span: "builtin"} :-
   ast.RootExpr{id: I} &
   lang.Builtin{name: N, type: T}.
-scope.let{id: I, name: N, type: T, span: S} :-
-  ast.letBodyExpr{letID: L, bodyID: I} &
-  ast.letBindingExpr{letID: L, bindingID: B} &
-  ast.letVar{letID: L, name: N, span: S} &
-  tc.Type{id: B, type: T}.
+scope.let{id: Body, name: N, type: T, span: S} :-
+  ast.letBodyExpr{letID: Let, bodyID: Body} &
+  ast.letBindingExpr{letID: Let, bindingID: Binding} &
+  ast.letVar{letID: Let, name: N, span: S} &
+  tc.Type{id: Binding, type: T}.
 scope.lambda{id: I, name: N, type: T, span: S} :-
   ast.lambda{id: Lambda} &
   ast.lambdaParam{id: Param, parentID: Lambda} &
