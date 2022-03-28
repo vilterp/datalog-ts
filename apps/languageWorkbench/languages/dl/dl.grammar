@@ -6,7 +6,10 @@ tableDecl :- [".table", ws, ident].
 fact :- [record, "."].
 
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
-disjunct :- repSep(record, [ws, "&", ws]).
+disjunct :- repSep(conjunct, [ws, "&", ws]).
+conjunct :- (record | binExpr).
+binExpr :- [term, ws, binOp, ws, term].
+binOp :- ("<=" | ">=" | "==" | "!=").
 
 term :- (record | int | var | string | bool | placeholder).
 var :- [[A-Z], repSep(([A-Z]|[a-z]), "")].
