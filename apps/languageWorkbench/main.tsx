@@ -62,7 +62,7 @@ function Playground() {
         grammarSource: grammarEditorState.source,
         langSource,
       }),
-    [cursorPos, dlEditorState.source, grammarEditorState.source, langSource]
+    [dlEditorState.source, grammarEditorState.source, langSource]
   );
 
   const finalInterp = useMemo(
