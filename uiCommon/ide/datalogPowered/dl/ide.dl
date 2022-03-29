@@ -83,7 +83,7 @@ ide.CurrentSuggestion{id: I, name: N, span: S, type: T} :-
   ide.CurrentPlaceholder{id: I} &
   ide.Suggestion{id: I, name: N, span: S, type: T}.
 
-ide.CurrentProblem{desc: D} :-
+ide.CurrentProblem{desc: D, span: span{from: F, to: T}} :-
   tc.Problem{desc: D, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
