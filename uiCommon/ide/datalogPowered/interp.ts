@@ -17,14 +17,13 @@ export function constructInterp(args: {
   dlSource: string;
   grammarSource: string;
   langSource: string;
-  cursorPos: number;
 }): {
   finalInterp: AbstractInterpreter;
   allGrammarErrors: string[];
   langParseError: string | null;
   dlErrors: string[];
 } {
-  const { initInterp, dlSource, grammarSource, langSource, cursorPos } = args;
+  const { initInterp, dlSource, grammarSource, langSource } = args;
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
   const grammar = extractGrammar(grammarSource, grammarRuleTree);
@@ -71,7 +70,6 @@ export function constructInterp(args: {
       console.error(e);
     }
   }
-  finalInterp = finalInterp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
 
   return {
     finalInterp,
@@ -79,4 +77,11 @@ export function constructInterp(args: {
     langParseError,
     dlErrors,
   };
+}
+
+export function addCursor(
+  interp: AbstractInterpreter,
+  cursorPos: number
+): AbstractInterpreter {
+  return interp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
 }
