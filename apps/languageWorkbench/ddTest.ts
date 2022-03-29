@@ -1,7 +1,10 @@
 import { fsLoader } from "../../core/fsLoader";
 import { ppt } from "../../core/pretty";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
+import {
+  addCursor,
+  constructInterp,
+} from "../../uiCommon/ide/datalogPowered/interp";
 import { TestOutput } from "../../util/ddTest";
 import { runDDTestAtPath } from "../../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../../util/ddTest/types";
@@ -33,24 +36,28 @@ export function testLangQuery(test: string[]): TestOutput[] {
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
     const { input: example, cursorPos } = extractCursor(exampleWithCursor);
     const query = lines[lines.length - 1];
-    const { finalInterp, allGrammarErrors, dlErrors, langParseError } =
-      constructInterp({
-        cursorPos,
-        builtinSource: fs.readFileSync(
-          "uiCommon/ide/datalogPowered/dl/main.dl",
-          "utf8"
-        ),
-        dlSource: fs.readFileSync(
-          `apps/languageWorkbench/languages/${lang}/${lang}.dl`,
-          "utf8"
-        ),
-        grammarSource: fs.readFileSync(
-          `apps/languageWorkbench/languages/${lang}/${lang}.grammar`,
-          "utf8"
-        ),
-        langSource: example,
-        initInterp,
-      });
+    const {
+      finalInterp: withoutCursor,
+      allGrammarErrors,
+      dlErrors,
+      langParseError,
+    } = constructInterp({
+      builtinSource: fs.readFileSync(
+        "uiCommon/ide/datalogPowered/dl/main.dl",
+        "utf8"
+      ),
+      dlSource: fs.readFileSync(
+        `apps/languageWorkbench/languages/${lang}/${lang}.dl`,
+        "utf8"
+      ),
+      grammarSource: fs.readFileSync(
+        `apps/languageWorkbench/languages/${lang}/${lang}.grammar`,
+        "utf8"
+      ),
+      langSource: example,
+      initInterp,
+    });
+    const finalInterp = addCursor(withoutCursor, cursorPos);
     const res = finalInterp.queryStr(query);
     if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
       return jsonOut({ allGrammarErrors, langParseError, dlErrors });
