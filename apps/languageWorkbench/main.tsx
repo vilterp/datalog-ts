@@ -14,7 +14,10 @@ import { ErrorList } from "../../uiCommon/ide/errorList";
 // @ts-ignore
 import mainDL from "../../uiCommon/ide/datalogPowered/dl/main.dl";
 import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
-import { constructInterp } from "../../uiCommon/ide/datalogPowered/interp";
+import {
+  addCursor,
+  constructInterp,
+} from "../../uiCommon/ide/datalogPowered/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
@@ -45,17 +48,26 @@ function Playground() {
     setExampleEditorState({ ...exampleEditorState, source });
   };
 
-  const { finalInterp, allGrammarErrors, langParseError, dlErrors } = useMemo(
+  const {
+    finalInterp: withoutCursor,
+    allGrammarErrors,
+    langParseError,
+    dlErrors,
+  } = useMemo(
     () =>
       constructInterp({
         builtinSource: mainDL,
         initInterp,
-        cursorPos,
         dlSource: dlEditorState.source,
         grammarSource: grammarEditorState.source,
         langSource,
       }),
     [cursorPos, dlEditorState.source, grammarEditorState.source, langSource]
+  );
+
+  const finalInterp = useMemo(
+    () => addCursor(withoutCursor, cursorPos),
+    [cursorPos]
   );
 
   const setLang = (name) => {

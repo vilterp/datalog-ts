@@ -386,12 +386,12 @@ let perf = false;
 
 if (typeof window !== "undefined") {
   // @ts-ignore
-  window.enablePerf = () => {
-    perf = true;
-  };
-
-  // @ts-ignore
-  window.disablePerf = () => {
-    perf = false;
+  window.dlPerf = {
+    enable: () => {
+      perf = true;
+    },
+    disable: () => {
+      perf = false;
+    },
   };
 }

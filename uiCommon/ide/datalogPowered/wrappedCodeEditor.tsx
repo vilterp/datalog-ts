@@ -7,7 +7,7 @@ import { LOADER } from "./dl";
 import mainDL from "./dl/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";
 import { ErrorList } from "../errorList";
-import { constructInterp } from "./interp";
+import { addCursor, constructInterp } from "./interp";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 
@@ -20,22 +20,25 @@ export function WrappedCodeEditor(props: {
   lang: string;
   hideKeyBindingsTable?: boolean;
 }) {
-  const { finalInterp, allGrammarErrors, langParseError, dlErrors } =
-    useMemo(() => {
-      return constructInterp({
-        initInterp,
-        builtinSource: mainDL,
-        grammarSource: props.grammar,
-        cursorPos: props.editorState.cursorPos,
-        dlSource: props.datalog,
-        langSource: props.editorState.source,
-      });
-    }, [
-      props.grammar,
-      props.editorState.cursorPos,
-      props.datalog,
-      props.editorState.source,
-    ]);
+  const {
+    finalInterp: withoutCursor,
+    allGrammarErrors,
+    langParseError,
+    dlErrors,
+  } = useMemo(() => {
+    return constructInterp({
+      initInterp,
+      builtinSource: mainDL,
+      grammarSource: props.grammar,
+      dlSource: props.datalog,
+      langSource: props.editorState.source,
+    });
+  }, [props.grammar, props.datalog, props.editorState.source]);
+
+  const finalInterp = useMemo(
+    () => addCursor(withoutCursor, props.editorState.cursorPos),
+    [props.editorState.cursorPos]
+  );
 
   return (
     <>
