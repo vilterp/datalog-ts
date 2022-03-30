@@ -18,6 +18,7 @@ export function OpenCodeEditor(props: {
   locatedErrors: { offset: number }[];
   lang: string;
   hideKeyBindingsTable?: boolean;
+  autofocus?: boolean;
 }) {
   const { highlighted, error, suggestions, currentProblems, allProblems } =
     React.useMemo(() => {
@@ -78,6 +79,7 @@ export function OpenCodeEditor(props: {
       highlighted={highlighted}
       suggestions={suggestions}
       hideKeyBindingsTable={props.hideKeyBindingsTable}
+      autofocus={props.autofocus}
     />
   );
 }
