@@ -67,7 +67,7 @@ function Playground() {
 
   const finalInterp = useMemo(
     () => addCursor(withoutCursor, cursorPos),
-    [cursorPos]
+    [cursorPos, withoutCursor]
   );
 
   const setLang = (name) => {

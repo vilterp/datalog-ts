@@ -23,6 +23,8 @@ export function constructInterp(args: {
   langParseError: string | null;
   dlErrors: string[];
 } {
+  console.log("constructInterp", args);
+
   const { initInterp, dlSource, grammarSource, langSource } = args;
   const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);

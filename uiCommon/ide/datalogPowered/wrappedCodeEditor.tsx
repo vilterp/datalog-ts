@@ -37,7 +37,7 @@ export function WrappedCodeEditor(props: {
 
   const finalInterp = useMemo(
     () => addCursor(withoutCursor, props.editorState.cursorPos),
-    [props.editorState.cursorPos]
+    [props.editorState.cursorPos, withoutCursor]
   );
 
   return (
