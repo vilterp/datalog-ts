@@ -21,6 +21,7 @@ export function EditorBox(props: {
   actionCtx: ActionContext;
   highlighted: React.ReactNode;
   hideKeyBindingsTable?: boolean;
+  autofocus?: boolean;
 }) {
   const setCursorPos = (pos: number) => {
     return props.setEditorState({
@@ -57,7 +58,7 @@ export function EditorBox(props: {
               whiteSpace: "pre",
               backgroundColor: "rgb(250, 250, 250)",
             }}
-            autoFocus={true}
+            autoFocus={props.autofocus}
             padding={10}
             value={props.editorState.source}
             onValueChange={(source) =>

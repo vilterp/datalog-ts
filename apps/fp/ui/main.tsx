@@ -47,6 +47,7 @@ function Main() {
         editorState={editorState}
         setEditorState={setEditorState}
         loadError={error}
+        autofocus={true}
       />
       <CollapsibleWithHeading
         heading="Facts &amp; Rules"

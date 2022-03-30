@@ -50,6 +50,7 @@ export function CodeEditor(props: {
   setEditorState: (st: EditorState) => void;
   loadError: LangError | null;
   lang: string;
+  autofocus?: boolean;
 }) {
   let evalError: LangError | null = null;
   let suggestions: Suggestion[] = [];
@@ -101,6 +102,7 @@ export function CodeEditor(props: {
       highlightCSS={props.highlightCSS}
       highlighted={highlighted}
       suggestions={suggestions}
+      autofocus={props.autofocus}
     />
   );
 }

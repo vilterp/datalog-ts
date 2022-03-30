@@ -111,6 +111,7 @@ function Playground() {
                 highlightCSS={commonThemeCSS}
                 lang={langName}
                 locatedErrors={[]} // TODO: parse errors
+                autofocus
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
