@@ -1,7 +1,6 @@
-import { Rule, Rec, OrExpr, AndClause, VarMappings, Res } from "../types";
+import { Rule, Rec, OrExpr, Conjunct, VarMappings, Res } from "../types";
 import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
 import { getMappings } from "../unify";
-import { extractBinExprs } from "../binExpr";
 import {
   combineObjects,
   filterObj,
@@ -146,7 +145,7 @@ export function addOr(
   };
 }
 
-function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
+function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
   const { recs, exprs } = extractBinExprs(clauses);
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {

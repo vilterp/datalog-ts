@@ -50,12 +50,6 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
       return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
     case "StringLit":
       return `"${escapeString(term.val)}"`;
-    case "BinExpr":
-      return [
-        prettyPrintTerm(term.left),
-        ` ${term.op} `,
-        prettyPrintTerm(term.right),
-      ];
     case "Bool":
       return `${term.val}`;
     case "IntLit":

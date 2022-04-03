@@ -1,50 +1,41 @@
-import { AndClause, Bindings, BinExpr, Rec, Term } from "./types";
+import {
+  Bindings,
+  BinExpr,
+  relationalFalse,
+  relationalTrue,
+  Term,
+} from "./types";
 import { substitute, termEq, termLT, termSameType } from "./unify";
 
-export function evalBinExpr(expr: BinExpr, scope: Bindings): boolean {
+export function evalBinExpr(expr: BinExpr, scope: Bindings): Term[] {
   const left = substitute(expr.left, scope);
   const right = substitute(expr.right, scope);
-  switch (expr.op) {
-    case "==":
-      return termEq(left, right);
-    case "!=":
-      return !termEq(left, right);
-    case "<=":
-      return (
-        termSameType(left, right) &&
-        (termLT(left, right) || termEq(left, right))
-      );
-    case ">=":
-      return termSameType(left, right) && !termLT(left, right);
-    case "<":
-      return termSameType(left, right) && termLT(left, right);
-    case ">":
-      return (
-        termSameType(left, right) &&
-        !termLT(left, right) &&
-        !termEq(left, right)
-      );
-  }
+  const res = (() => {
+    switch (expr.op) {
+      case "==":
+        return termEq(left, right);
+      case "!=":
+        return !termEq(left, right);
+      case "<=":
+        return (
+          termSameType(left, right) &&
+          (termLT(left, right) || termEq(left, right))
+        );
+      case ">=":
+        return termSameType(left, right) && !termLT(left, right);
+      case "<":
+        return termSameType(left, right) && termLT(left, right);
+      case ">":
+        return (
+          termSameType(left, right) &&
+          !termLT(left, right) &&
+          !termEq(left, right)
+        );
+    }
+  })();
+  return toRelationalBool(res);
 }
 
-export function extractBinExprs(clauses: AndClause[]): {
-  recs: Rec[];
-  exprs: BinExpr[];
-} {
-  const recs: Rec[] = [];
-  const exprs: BinExpr[] = [];
-  clauses.forEach((clause) => {
-    switch (clause.type) {
-      case "BinExpr":
-        exprs.push(clause);
-        break;
-      case "Record":
-        recs.push(clause);
-        break;
-    }
-  });
-  return {
-    recs,
-    exprs,
-  };
+function toRelationalBool(val: boolean) {
+  return val ? relationalTrue : relationalFalse;
 }

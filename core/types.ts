@@ -1,5 +1,6 @@
 import { LazyIndexedCollection } from "./simple/lazyIndexedCollection";
 
+// TODO: move to simple interpreter
 export interface DB {
   tables: { [name: string]: LazyIndexedCollection };
   rules: { [name: string]: Rule };
@@ -76,13 +77,13 @@ export interface Rule {
 
 export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
-export type AndExpr = { type: "And"; clauses: AndClause[] };
+export type AndExpr = { type: "And"; clauses: Conjunct[] };
 
-export type AndClause = Rec | BinExpr | Negation;
+export type Conjunct = Rec | BinExpr | Negation;
 
 type Negation = { type: "Negation"; record: Rec };
 
-export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
+export type Term = Rec | StringLit | Var | Bool | Int | Array;
 
 export type Var = { type: "Var"; name: string };
 
@@ -120,7 +121,7 @@ export function or(opts: AndExpr[]): OrExpr {
   return { type: "Or", opts };
 }
 
-export function and(clauses: AndClause[]): AndExpr {
+export function and(clauses: Conjunct[]): AndExpr {
   return { type: "And", clauses };
 }
 
@@ -157,6 +158,10 @@ export function array(items: Term[]): Array {
 export const trueTerm: Term = { type: "Bool", val: true };
 
 export const falseTerm: Term = { type: "Bool", val: false };
+
+export const relationalTrue: Term[] = [rec("", {})];
+
+export const relationalFalse: Term[] = [];
 
 // inner to outer (?)
 export type VarMappings = { [from: string]: string };

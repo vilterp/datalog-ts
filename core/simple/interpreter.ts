@@ -1,9 +1,10 @@
 import { DB, Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
-import { evaluate, hasVars } from "./simpleEvaluate";
+import { evaluate } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { emptyLazyIndexedCollection } from "./lazyIndexedCollection";
+import { hasVars } from "../util";
 
 const initialDB: DB = {
   tables: {},
