@@ -2,3 +2,13 @@ plus{a: 1, b: 2, res: R}.
 ----
 application/datalog
 3.
+
+plus{a: 1, b: R, res: 3}.
+----
+application/datalog
+2.
+
+plus{a: R, b: 2, res: 3}.
+----
+application/datalog
+1.

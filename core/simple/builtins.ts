@@ -8,18 +8,27 @@ export const BUILTINS: { [name: string]: Builtin } = {
 };
 
 export function plus(rec: Rec): Res[] {
-  console.log("hello from plus", ppt(rec));
   const a = rec.attrs.a;
   const b = rec.attrs.b;
   const res = rec.attrs.res;
   if (a.type === "IntLit" && b.type === "IntLit") {
-    return [
-      {
-        term: int(a.val + b.val),
-        bindings: {},
-        trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
-      },
-    ];
+    return mkIntResult(a.val + b.val);
   }
-  return [];
+  if (a.type === "IntLit" && res.type === "IntLit") {
+    return mkIntResult(res.val - a.val);
+  }
+  if (b.type === "IntLit" && res.type === "IntLit") {
+    return mkIntResult(res.val - b.val);
+  }
+  throw new Error(`this case supported: ${ppt(rec)}`);
+}
+
+function mkIntResult(val: number): Res[] {
+  return [
+    {
+      term: int(val),
+      bindings: {},
+      trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
+    },
+  ];
 }
