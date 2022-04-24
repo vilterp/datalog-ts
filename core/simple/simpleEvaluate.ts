@@ -31,6 +31,7 @@ import { perfMark, perfMeasure } from "../../util/perf";
 import { IndexedCollection } from "../../util/indexedCollection";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
 import { List } from "immutable";
+import { BUILTINS } from "./builtins";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -163,6 +164,10 @@ function doEvaluate(
           if (table) {
             // console.log("scan", term.relation, ppb(scope));
             return getForScope(table, scope, term);
+          }
+          const builtin = BUILTINS[term.relation];
+          if (builtin) {
+            return builtin(substitute(term, scope) as Rec);
           }
           const rule = db.rules[term.relation];
           if (rule) {

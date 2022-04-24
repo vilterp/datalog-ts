@@ -10,7 +10,20 @@ import { traceToGraph } from "./traceGraph";
 import { prettyPrintGraph } from "../util/graphviz";
 
 export function coreTestsSimple(writeResults: boolean): Suite {
-  return coreTests(writeResults, () => new SimpleInterpreter(".", fsLoader));
+  return [
+    ...coreTests(writeResults, () => new SimpleInterpreter(".", fsLoader)),
+    {
+      name: "arithmetic",
+      test() {
+        runDDTestAtPath(
+          "core/testdata/arithmetic.dd.txt",
+          (test) =>
+            putThroughInterp(test, () => new SimpleInterpreter(".", fsLoader)),
+          writeResults
+        );
+      },
+    },
+  ];
 }
 
 export function coreTestsIncremental(writeResults: boolean): Suite {
