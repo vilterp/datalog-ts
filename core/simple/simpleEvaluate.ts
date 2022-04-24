@@ -169,7 +169,7 @@ function doEvaluate(
           if (builtin) {
             const substituted = substitute(term, scope) as Rec;
             const res = builtin(substituted);
-            console.log({ substituted: ppt(substituted), res: res.map(ppr) });
+            // console.log({ substituted: ppt(substituted), res: res.map(ppr) });
             return res;
           }
           const rule = db.rules[term.relation];

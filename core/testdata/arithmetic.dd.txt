@@ -13,10 +13,6 @@ add{a: R, b: 2, res: 3}.
 application/datalog
 1.
 
-gte{a: 1, b: 10}.
-----
-application/datalog
-
 pos{time: T, y: Y} :-
   startPos{time: T, y: Y} |
   stepPos{time: T, y: Y}.
@@ -32,3 +28,4 @@ application/datalog
 pos{time: 10, y: Y}.
 ----
 application/datalog
+pos{time: T, y: 27}.

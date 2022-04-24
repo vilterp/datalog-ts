@@ -29,7 +29,9 @@ export function gte(rec: Rec): Res[] {
   const a = rec.attrs.a;
   const b = rec.attrs.b;
   if (a.type !== "Var" && b.type !== "Var") {
-    return termCmp(a, b) === -1 ? relationalTrue : relationalFalse;
+    const res = termCmp(a, b) > 0;
+    // console.log({ rec: ppt(rec), res });
+    return res ? relationalTrue : relationalFalse;
   }
   throw new Error(`this case is not supported: ${ppt(rec)}`);
 }
