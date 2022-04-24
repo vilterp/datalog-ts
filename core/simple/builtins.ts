@@ -1,10 +1,12 @@
 import { ppt } from "../pretty";
-import { int, Rec, Res } from "../types";
+import { int, rec, Rec, Res } from "../types";
+import { termCmp } from "../unify";
 
 export type Builtin = (rec: Rec) => Res[];
 
 export const BUILTINS: { [name: string]: Builtin } = {
   add,
+  gte,
 };
 
 export function add(rec: Rec): Res[] {
@@ -22,6 +24,25 @@ export function add(rec: Rec): Res[] {
   }
   throw new Error(`this case is not supported: ${ppt(rec)}`);
 }
+
+export function gte(rec: Rec): Res[] {
+  const a = rec.attrs.a;
+  const b = rec.attrs.b;
+  if (a.type !== "Var" && b.type !== "Var") {
+    return termCmp(a, b) === -1 ? relationalTrue : relationalFalse;
+  }
+  throw new Error(`this case is not supported: ${ppt(rec)}`);
+}
+
+const relationalTrue: Res[] = [
+  {
+    term: rec("", {}),
+    bindings: {},
+    trace: { type: "BaseFactTrace" },
+  },
+];
+
+const relationalFalse: Res[] = [];
 
 function mkIntResult(val: number, outVar: string): Res[] {
   return [
