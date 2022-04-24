@@ -373,8 +373,12 @@ export function stringToArray(str: string): string[] {
 }
 
 export function range(length: number): number[] {
+  return rangeFrom(0, length);
+}
+
+export function rangeFrom(from: number, to: number): number[] {
   const out: number[] = [];
-  for (let i = 0; i < length; i++) {
+  for (let i = from; i < to; i++) {
     out.push(i);
   }
   return out;
