@@ -1,3 +1,4 @@
 plus{a: 1, b: 2, res: R}.
 ----
 application/datalog
+3.
