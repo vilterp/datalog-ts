@@ -4,10 +4,10 @@ import { int, Rec, Res } from "../types";
 export type Builtin = (rec: Rec) => Res[];
 
 export const BUILTINS: { [name: string]: Builtin } = {
-  plus,
+  add,
 };
 
-export function plus(rec: Rec): Res[] {
+export function add(rec: Rec): Res[] {
   const a = rec.attrs.a;
   const b = rec.attrs.b;
   const res = rec.attrs.res;
@@ -20,7 +20,7 @@ export function plus(rec: Rec): Res[] {
   if (b.type === "IntLit" && res.type === "IntLit") {
     return mkIntResult(res.val - b.val);
   }
-  throw new Error(`this case supported: ${ppt(rec)}`);
+  throw new Error(`this case is not supported: ${ppt(rec)}`);
 }
 
 function mkIntResult(val: number): Res[] {
