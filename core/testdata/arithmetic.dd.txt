@@ -19,7 +19,7 @@ pos{time: T, y: Y} :-
 startPos{time: 1, y: 0}.
 stepPos{time: T, y: NewPos} :-
   add{a: PrevTime, b: 1, res: T} &
-  pos{time: PrevTime, pos: PrevPos} &
+  pos{time: PrevTime, y: PrevPos} &
   add{a: PrevPos, b: 3, res: NewPos}.
 ----
 

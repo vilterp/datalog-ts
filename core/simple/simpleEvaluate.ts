@@ -167,7 +167,9 @@ function doEvaluate(
           }
           const builtin = BUILTINS[term.relation];
           if (builtin) {
-            return builtin(substitute(term, scope) as Rec);
+            const substituted = substitute(term, scope) as Rec;
+            // console.log({ substituted: ppt(substituted) });
+            return builtin(substituted);
           }
           const rule = db.rules[term.relation];
           if (rule) {
