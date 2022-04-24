@@ -157,7 +157,7 @@ function doEvaluate(
   const bigRes = (() => {
     switch (term.type) {
       case "Record": {
-        return memo(cache, term, scope, () => {
+        return memo(cache, term, scope, (): Res[] => {
           const table = db.tables[term.relation];
           // const virtual = db.virtualTables[term.relation];
           // const records = table ? table : virtual ? virtual(db) : null;
@@ -168,9 +168,15 @@ function doEvaluate(
           const builtin = BUILTINS[term.relation];
           if (builtin) {
             const substituted = substitute(term, scope) as Rec;
-            const res = builtin(substituted);
+            const records = builtin(substituted);
             // console.log({ substituted: ppt(substituted), res: res.map(ppr) });
-            return res;
+            return records.map(
+              (rec): Res => ({
+                term: rec,
+                bindings: unify(scope, rec, term),
+                trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
+              })
+            );
           }
           const rule = db.rules[term.relation];
           if (rule) {

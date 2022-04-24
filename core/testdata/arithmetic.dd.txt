@@ -1,17 +1,17 @@
 add{a: 1, b: 2, res: R}.
 ----
 application/datalog
-3.
+add{a: 1, b: 2, res: 3}.
 
 add{a: 1, b: R, res: 3}.
 ----
 application/datalog
-2.
+add{a: 1, b: 2, res: 3}.
 
 add{a: R, b: 2, res: 3}.
 ----
 application/datalog
-1.
+add{a: 1, b: 2, res: 3}.
 
 pos{time: T, y: Y} :-
   startPos{time: T, y: Y} |
@@ -28,4 +28,4 @@ application/datalog
 pos{time: 10, y: Y}.
 ----
 application/datalog
-pos{time: T, y: 27}.
+pos{time: 10, y: 27}.
