@@ -25,12 +25,13 @@ import {
 } from "../unify";
 import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
-import { ppb, ppt } from "../pretty";
+import { ppb, ppr, ppt } from "../pretty";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { IndexedCollection } from "../../util/indexedCollection";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
 import { List } from "immutable";
+import { BUILTINS } from "./builtins";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -156,13 +157,26 @@ function doEvaluate(
   const bigRes = (() => {
     switch (term.type) {
       case "Record": {
-        return memo(cache, term, scope, () => {
+        return memo(cache, term, scope, (): Res[] => {
           const table = db.tables[term.relation];
           // const virtual = db.virtualTables[term.relation];
           // const records = table ? table : virtual ? virtual(db) : null;
           if (table) {
             // console.log("scan", term.relation, ppb(scope));
             return getForScope(table, scope, term);
+          }
+          const builtin = BUILTINS[term.relation];
+          if (builtin) {
+            const substituted = substitute(term, scope) as Rec;
+            const records = builtin(substituted);
+            // console.log({ substituted: ppt(substituted), res: res.map(ppr) });
+            return records.map(
+              (rec): Res => ({
+                term: rec,
+                bindings: unify(scope, rec, term),
+                trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
+              })
+            );
           }
           const rule = db.rules[term.relation];
           if (rule) {
