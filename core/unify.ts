@@ -155,16 +155,19 @@ export function termLT(left: Term, right: Term): boolean {
 
 export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
   const res: Bindings = {};
-  for (const leftKey of Object.keys(left)) {
-    const leftVal = left[leftKey];
-    const rightVal = right[leftKey];
-    // console.log("unifyvars", leftKey, leftVal, rightVal);
-    if (rightVal) {
-      if (!unify({}, rightVal, leftVal)) {
+  for (const leftTerm of Object.keys(left)) {
+    const leftVal = left[leftTerm];
+    const rightTerm = right[leftTerm];
+    console.log("unifyvars", leftTerm, leftVal, rightTerm);
+    if (rightTerm) {
+      const unifyRes = unify({}, rightTerm, leftVal);
+      if (!unifyRes) {
         return null; // TODO: nice error message showing mismatch
       }
+      res[leftTerm] = unifyRes[leftTerm];
+    } else {
+      res[leftTerm] = leftVal;
     }
-    res[leftKey] = leftVal;
   }
   const onlyInRight = Object.keys(right).filter((key) => !left[key]);
   for (const key of onlyInRight) {

@@ -22,19 +22,19 @@ const stayAlive = flags.has("--stay-alive");
 
 const suites: { [name: string]: Suite } = {
   unifyTests,
-  parserTests: parserTests(writeResults),
+  // parserTests: parserTests(writeResults),
   // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
-  coreTestsSimple: coreTestsSimple(writeResults),
-  coreTestsIncremental: coreTestsIncremental(writeResults),
-  coreTestsCommon: coreTestsCommon(writeResults),
-  incrTests: incrTests(writeResults),
-  fpTests: fpTests(writeResults),
-  lwbTests: lwbTests(writeResults),
-  json2DLTests,
-  prettyPrintTests,
-  treeTests,
-  actionsTests,
-  parserlibTests: parserlibTests(writeResults),
+  // coreTestsSimple: coreTestsSimple(writeResults),
+  // coreTestsIncremental: coreTestsIncremental(writeResults),
+  // coreTestsCommon: coreTestsCommon(writeResults),
+  // incrTests: incrTests(writeResults),
+  // fpTests: fpTests(writeResults),
+  // lwbTests: lwbTests(writeResults),
+  // json2DLTests,
+  // prettyPrintTests,
+  // treeTests,
+  // actionsTests,
+  // parserlibTests: parserlibTests(writeResults),
 };
 
 try {

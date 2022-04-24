@@ -1,6 +1,5 @@
 import { array, int, rec, str, varr } from "./types";
 import { unify, unifyVars } from "./unify";
-import * as assert from "assert";
 import { assertDeepEqual } from "../util/testBench/testing";
 
 export const unifyTests = [
@@ -21,6 +20,9 @@ export const unifyTests = [
         { X: str("Paul"), Y: str("Peter"), Z: str("Peter") },
         res2
       );
+
+      const res3 = unifyVars({ X: varr("X") }, { X: int(1) });
+      assertDeepEqual({ X: int(1) }, res3);
     },
   },
   {
