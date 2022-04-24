@@ -25,7 +25,7 @@ import {
 } from "../unify";
 import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
-import { ppb, ppt } from "../pretty";
+import { ppb, ppr, ppt } from "../pretty";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -168,8 +168,9 @@ function doEvaluate(
           const builtin = BUILTINS[term.relation];
           if (builtin) {
             const substituted = substitute(term, scope) as Rec;
-            // console.log({ substituted: ppt(substituted) });
-            return builtin(substituted);
+            const res = builtin(substituted);
+            console.log({ substituted: ppt(substituted), res: res.map(ppr) });
+            return res;
           }
           const rule = db.rules[term.relation];
           if (rule) {
