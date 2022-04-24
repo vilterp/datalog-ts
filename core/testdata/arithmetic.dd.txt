@@ -29,3 +29,24 @@ pos{time: 10, y: Y}.
 ----
 application/datalog
 pos{time: 10, y: 27}.
+
+range{from: 1, to: 10, val: V}.
+----
+application/datalog
+range{from: 1, to: 10, val: 10}.
+range{from: 1, to: 10, val: 1}.
+range{from: 1, to: 10, val: 2}.
+range{from: 1, to: 10, val: 3}.
+range{from: 1, to: 10, val: 4}.
+range{from: 1, to: 10, val: 5}.
+range{from: 1, to: 10, val: 6}.
+range{from: 1, to: 10, val: 7}.
+range{from: 1, to: 10, val: 8}.
+range{from: 1, to: 10, val: 9}.
+
+sim{time: T, pos: Y} :-
+  range{from: 1, to: 10, val: T} &
+  pos{time: T, y: Y}.
+sim{time: T, pos: Y}.
+----
+application/datalog

@@ -372,9 +372,13 @@ export function stringToArray(str: string): string[] {
   return str.split("");
 }
 
-export function range(length: number): number[] {
+export function range(to: number): number[] {
+  return rangeFrom(0, to);
+}
+
+export function rangeFrom(from: number, to: number): number[] {
   const out: number[] = [];
-  for (let i = 0; i < length; i++) {
+  for (let i = from; i < to; i++) {
     out.push(i);
   }
   return out;
