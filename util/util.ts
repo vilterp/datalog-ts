@@ -372,8 +372,8 @@ export function stringToArray(str: string): string[] {
   return str.split("");
 }
 
-export function range(length: number): number[] {
-  return rangeFrom(0, length);
+export function range(to: number): number[] {
+  return rangeFrom(0, to);
 }
 
 export function rangeFrom(from: number, to: number): number[] {

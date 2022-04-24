@@ -43,3 +43,10 @@ range{from: 1, to: 10, val: 6}.
 range{from: 1, to: 10, val: 7}.
 range{from: 1, to: 10, val: 8}.
 range{from: 1, to: 10, val: 9}.
+
+sim{time: T, pos: Y} :-
+  range{from: 1, to: 10, val: T} &
+  pos{time: T, y: Y}.
+sim{time: T, pos: Y}.
+----
+application/datalog
