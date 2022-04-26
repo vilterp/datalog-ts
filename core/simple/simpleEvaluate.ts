@@ -35,7 +35,7 @@ import { BUILTINS } from "./builtins";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
-  const res = doEvaluate(0, [], db, {}, term, cache);
+  const res = doEvaluate(0, [], db, term, cache);
   // console.log({ cache });
   return res;
 }
@@ -58,7 +58,6 @@ function doJoin(
       depth + 1,
       [...invokeLoc, { type: "AndClause", idx: 0 }],
       db,
-      scope,
       clauses[0],
       cache
     );
@@ -68,7 +67,6 @@ function doJoin(
     depth + 1,
     [...invokeLoc, { type: "AndClause", idx: 0 }],
     db,
-    scope,
     clauses[0],
     cache
   );
@@ -102,7 +100,6 @@ function doJoin(
       }
       out.push({
         term: leftRes.term, // ???
-        bindings: unifyRes,
         trace: {
           type: "AndTrace",
           sources: [leftRes, rightRes],
@@ -126,13 +123,8 @@ function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
 
 type Cache = { [key: string]: Res[] };
 
-function memo(
-  cache: Cache,
-  term: Rec,
-  scope: Bindings,
-  evaluate: () => Res[]
-): Res[] {
-  const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
+function memo(cache: Cache, term: Rec, evaluate: () => Res[]): Res[] {
+  const cacheKey = fastPPT(term);
   const cacheRes = cache[cacheKey];
   if (cacheRes) {
     return cacheRes;
@@ -146,7 +138,6 @@ function doEvaluate(
   depth: number,
   path: RulePathSegment[],
   db: DB,
-  scope: Bindings,
   term: Term,
   cache: Cache
 ): Res[] {
@@ -157,7 +148,7 @@ function doEvaluate(
   const bigRes = (() => {
     switch (term.type) {
       case "Record": {
-        return memo(cache, term, scope, (): Res[] => {
+        return memo(cache, term, (): Res[] => {
           const table = db.tables[term.relation];
           // const virtual = db.virtualTables[term.relation];
           // const records = table ? table : virtual ? virtual(db) : null;
@@ -252,7 +243,6 @@ function doEvaluate(
               //   unif: unif ? ppb(unif) : null,
               // });
               const outerRes: Res = {
-                bindings: unif,
                 term: nextTerm,
                 trace: {
                   type: "RefTrace",
@@ -279,7 +269,7 @@ function doEvaluate(
         });
       }
       case "Var":
-        return [{ term: scope[term.name], bindings: scope, trace: varTrace }];
+        return [{ term: scope[term.name], trace: varTrace }];
       case "BinExpr":
         return [
           {
@@ -384,11 +374,10 @@ function getForScope(
     }
     out.push({
       term: rec,
-      bindings: unifyRes,
       trace: {
         type: "MatchTrace",
         match: original,
-        fact: { term: rec, trace: baseFactTrace, bindings: {} },
+        fact: { term: rec, trace: baseFactTrace },
       },
     });
   }

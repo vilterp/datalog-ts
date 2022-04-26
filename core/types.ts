@@ -1,10 +1,10 @@
 import { LazyIndexedCollection } from "./simple/lazyIndexedCollection";
 
-export interface DB {
+export type DB = {
   tables: { [name: string]: LazyIndexedCollection };
   rules: { [name: string]: Rule };
   virtualTables: { [name: string]: VirtualTable };
-}
+};
 
 type VirtualTable = (db: DB) => Rec[];
 
@@ -12,11 +12,10 @@ export type Relation =
   | { type: "Table"; name: string }
   | { type: "Rule"; name: string; rule: Rule };
 
-export interface Res {
+export type Res = {
   term: Term;
-  bindings: Bindings;
   trace: Trace;
-}
+};
 
 // traces
 

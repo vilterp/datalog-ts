@@ -2,23 +2,19 @@ import { array, Bindings, rec, Term, VarMappings } from "./types";
 import { mapObj } from "../util/util";
 import { jsonEq } from "../util/json";
 
-export function unify(
-  prior: Bindings,
-  left: Term,
-  right: Term
-): Bindings | null {
+export function unify(left: Term, right: Term): Bindings | null {
   // console.group("unify", {
   //   prior: ppb(prior),
   //   left: ppt(left),
   //   right: ppt(right),
   // });
-  const res = doUnify(prior, left, right);
+  const res = doUnify(left, right);
   // console.groupEnd();
   // console.log("res", res ? ppb(res) : null);
   return res;
 }
 
-function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
+function doUnify(left: Term, right: Term): Bindings | null {
   switch (left.type) {
     case "StringLit":
     case "IntLit":
