@@ -158,18 +158,18 @@ export function unifyBindings(
   right: Bindings
 ): Bindings | null {
   const res: Bindings = {};
-  for (const leftTerm of Object.keys(left)) {
-    const leftVal = left[leftTerm];
-    const rightTerm = right[leftTerm];
+  for (const leftVar of Object.keys(left)) {
+    const leftTerm = left[leftVar];
+    const rightTerm = right[leftVar];
     // console.log("unifyvars", leftTerm, leftVal, rightTerm);
     if (rightTerm) {
-      const unifyRes = unify({}, rightTerm, leftVal);
+      const unifyRes = unify({}, rightTerm, leftTerm);
       if (!unifyRes) {
         return null; // TODO: nice error message showing mismatch
       }
-      res[leftTerm] = unifyRes[leftTerm];
+      res[leftVar] = unifyRes[leftVar];
     } else {
-      res[leftTerm] = leftVal;
+      res[leftVar] = leftTerm;
     }
   }
   const onlyInRight = Object.keys(right).filter((key) => !left[key]);
