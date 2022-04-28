@@ -167,7 +167,7 @@ export function unifyBindings(
       if (!unifyRes) {
         return null; // TODO: nice error message showing mismatch
       }
-      res[leftVar] = unifyRes[leftVar];
+      res[leftVar] = unifyRes[leftVar] || leftTerm;
     } else {
       res[leftVar] = leftTerm;
     }
