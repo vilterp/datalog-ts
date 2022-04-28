@@ -8,6 +8,9 @@ stepPos{time: T, y: NewPos} :-
   pos{time: PrevTime, y: PrevPos} &
   add{a: PrevPos, b: 3, res: NewPos}.
 
+time{time: T} :-
+  range{from: 1, to: 10, val: T}.
+
 sim{time: T, pos: Y} :-
-  range{from: 1, to: 10, val: T} &
+  time{time: T} &
   pos{time: T, y: Y}.
