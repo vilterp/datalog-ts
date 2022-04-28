@@ -3,8 +3,11 @@ import ReactDOM from "react-dom";
 import { nullLoader } from "../../core/loaders";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
+// @ts-ignore
+import simDL from "./dl/sim.dl";
 
-const interp = new SimpleInterpreter(".", nullLoader);
+const emptyInterp = new SimpleInterpreter(".", nullLoader);
+const interp = emptyInterp.evalStr(simDL)[1];
 
 function Main() {
   return (
