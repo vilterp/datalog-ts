@@ -51,7 +51,7 @@ function doJoin(
   if (clauses.length === 0) {
     return [];
   }
-  console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
+  // console.log("doJoin", { clauses: clauses.map(ppt), scope: ppb(scope) });
   if (clauses.length === 1) {
     // console.log("doJoin: evaluating only clause", ppt(clauses[0]));
     return doEvaluate(
@@ -73,17 +73,16 @@ function doJoin(
     cache
   );
   // console.groupEnd();
-  console.log("doJoin: left results", leftResults.map(ppr));
+  // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
     const nextScope = unifyBindings(scope, leftRes.bindings);
-    console.log("about to join with");
-    console.log({
-      leftResBindings: ppb(leftRes.bindings),
-      scope: ppb(scope),
-      clauses: clauses.slice(1).map(ppt),
-      nextScope: ppb(nextScope),
-    });
+    // console.log({
+    //   leftResBindings: ppb(leftRes.bindings),
+    //   scope: ppb(scope),
+    //   clauses: clauses.slice(1).map(ppt),
+    //   nextScope: ppb(nextScope),
+    // });
     const rightResults = doJoin(
       depth,
       [...invokeLoc, { type: "AndClause", idx: 1 }],
@@ -149,7 +148,7 @@ function doEvaluate(
   term: Term,
   cache: Cache
 ): Res[] {
-  console.group("doEvaluate", ppt(term), ppb(scope));
+  // console.group("doEvaluate", ppt(term), ppb(scope));
   // if (depth > 5) {
   //   throw new Error("too deep");
   // }
@@ -294,7 +293,7 @@ function doEvaluate(
         return [{ term: term, bindings: scope, trace: literalTrace }];
     }
   })();
-  console.groupEnd();
+  // console.groupEnd();
   // console.log(repeat(depth + 1, "="), "doevaluate <=", bigRes.map(ppr));
   return bigRes;
 }
