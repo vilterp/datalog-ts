@@ -1,19 +1,18 @@
 import { array, int, rec, str, varr } from "./types";
-import { unify, unifyVars } from "./unify";
-import * as assert from "assert";
+import { unify, unifyBindings } from "./unify";
 import { assertDeepEqual } from "../util/testBench/testing";
 
 export const unifyTests = [
   {
-    name: "unifyVars",
+    name: "unifyBindings",
     test() {
-      const res = unifyVars(
+      const res = unifyBindings(
         { A: str("Pete"), B: str("Paul") },
         { B: str("Paul"), C: str("Peter") }
       );
       assertDeepEqual({ A: str("Pete"), B: str("Paul"), C: str("Peter") }, res);
 
-      const res2 = unifyVars(
+      const res2 = unifyBindings(
         { X: str("Paul"), Y: str("Peter") },
         { X: varr("X"), Z: str("Peter") }
       );
@@ -21,6 +20,9 @@ export const unifyTests = [
         { X: str("Paul"), Y: str("Peter"), Z: str("Peter") },
         res2
       );
+
+      const res3 = unifyBindings({ X: varr("X") }, { X: int(1) });
+      assertDeepEqual({ X: int(1) }, res3);
     },
   },
   {

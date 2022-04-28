@@ -1,6 +1,6 @@
 import { RuleGraph, NodeID, JoinDesc } from "./types";
 import { Rec, Res, Rule, UserError } from "../types";
-import { applyMappings, substitute, unify, unifyVars } from "../unify";
+import { applyMappings, substitute, unify, unifyBindings } from "../unify";
 import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../../util/util";
 import {
@@ -332,7 +332,7 @@ function doJoin(
   // });
   for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch.bindings;
-    const unifyRes = unifyVars(thisVars || {}, otherVars || {});
+    const unifyRes = unifyBindings(thisVars || {}, otherVars || {});
     // console.log("join", {
     //   left: ppb(thisVars),
     //   right: ppb(otherVars),

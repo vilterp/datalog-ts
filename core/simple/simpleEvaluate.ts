@@ -21,7 +21,7 @@ import {
   getMappings,
   substitute,
   unify,
-  unifyVars,
+  unifyBindings,
 } from "../unify";
 import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
@@ -76,14 +76,12 @@ function doJoin(
   // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
-    const nextScope = unifyVars(scope, leftRes.bindings);
-    // console.log("about to join with");
+    const nextScope = unifyBindings(scope, leftRes.bindings);
     // console.log({
     //   leftResBindings: ppb(leftRes.bindings),
     //   scope: ppb(scope),
     //   clauses: clauses.slice(1).map(ppt),
     //   nextScope: ppb(nextScope),
-    //   nextScope: nextScope ? ppb(nextScope) : null,
     // });
     const rightResults = doJoin(
       depth,
@@ -96,7 +94,7 @@ function doJoin(
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
-      const unifyRes = unifyVars(leftRes.bindings, rightRes.bindings);
+      const unifyRes = unifyBindings(leftRes.bindings, rightRes.bindings);
       if (unifyRes === null) {
         continue;
       }
@@ -170,13 +168,15 @@ function doEvaluate(
             const substituted = substitute(term, scope) as Rec;
             const records = builtin(substituted);
             // console.log({ substituted: ppt(substituted), res: res.map(ppr) });
-            return records.map(
+            const results = records.map(
               (rec): Res => ({
                 term: rec,
                 bindings: unify(scope, rec, term),
                 trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
               })
             );
+            // console.log(results.map(ppr));
+            return results;
           }
           const rule = db.rules[term.relation];
           if (rule) {

@@ -1,0 +1,16 @@
+pos{time: T, y: Y} :-
+  startPos{time: T, y: Y} |
+  stepPos{time: T, y: Y}.
+startPos{time: 1, y: 0}.
+stepPos{time: T, y: NewPos} :-
+  gte{a: T, b: 1} &
+  add{a: PrevTime, b: 1, res: T} &
+  pos{time: PrevTime, y: PrevPos} &
+  add{a: PrevPos, b: 3, res: NewPos}.
+
+time{time: T} :-
+  range{from: 1, to: 10, val: T}.
+
+sim{time: T, pos: Y} :-
+  time{time: T} &
+  pos{time: T, y: Y}.

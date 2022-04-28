@@ -47,5 +47,11 @@ export function range(input: Rec): Rec[] {
       .rangeFrom(from.val, to.val + 1)
       .map((num) => rec("range", { from, to, val: int(num) }));
   }
+  if (from.type === "IntLit" && to.type === "IntLit" && val.type === "IntLit") {
+    if (from.val <= val.val && val.val <= to.val) {
+      return [input];
+    }
+    return [];
+  }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
