@@ -50,3 +50,13 @@ sim{time: T, pos: Y} :-
 sim{time: T, pos: Y}.
 ----
 application/datalog
+sim{pos: 0, time: 1}.
+sim{pos: 12, time: 5}.
+sim{pos: 15, time: 6}.
+sim{pos: 18, time: 7}.
+sim{pos: 21, time: 8}.
+sim{pos: 24, time: 9}.
+sim{pos: 27, time: 10}.
+sim{pos: 3, time: 2}.
+sim{pos: 6, time: 3}.
+sim{pos: 9, time: 4}.
