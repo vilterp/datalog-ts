@@ -13,6 +13,11 @@ add{a: R, b: 2, res: 3}.
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
+mul{a: 2, b: 3, res: V}.
+----
+application/datalog
+mul{a: 2, b: 3, res: 6}.
+
 pos{time: T, y: Y} :-
   startPos{time: T, y: Y} |
   stepPos{time: T, y: Y}.
