@@ -175,7 +175,7 @@ function doEvaluate(
                 trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
               })
             );
-            console.log(results.map(ppr));
+            // console.log(results.map(ppr));
             return results;
           }
           const rule = db.rules[term.relation];
