@@ -11,6 +11,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   range,
 };
 
+console.log("foo");
+
 export function add(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
