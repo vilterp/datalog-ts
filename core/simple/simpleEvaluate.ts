@@ -21,7 +21,7 @@ import {
   getMappings,
   substitute,
   unify,
-  unifyVars,
+  unifyBindings,
 } from "../unify";
 import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
 import { evalBinExpr, extractBinExprs } from "../binExpr";
@@ -76,7 +76,7 @@ function doJoin(
   console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
-    const nextScope = unifyVars(scope, leftRes.bindings);
+    const nextScope = unifyBindings(scope, leftRes.bindings);
     console.log("about to join with");
     console.log({
       leftResBindings: ppb(leftRes.bindings),
@@ -95,7 +95,7 @@ function doJoin(
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
-      const unifyRes = unifyVars(leftRes.bindings, rightRes.bindings);
+      const unifyRes = unifyBindings(leftRes.bindings, rightRes.bindings);
       if (unifyRes === null) {
         continue;
       }

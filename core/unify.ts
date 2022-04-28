@@ -153,12 +153,15 @@ export function termLT(left: Term, right: Term): boolean {
   return termCmp(left, right) < 0;
 }
 
-export function unifyVars(left: Bindings, right: Bindings): Bindings | null {
+export function unifyBindings(
+  left: Bindings,
+  right: Bindings
+): Bindings | null {
   const res: Bindings = {};
   for (const leftTerm of Object.keys(left)) {
     const leftVal = left[leftTerm];
     const rightTerm = right[leftTerm];
-    console.log("unifyvars", leftTerm, leftVal, rightTerm);
+    // console.log("unifyvars", leftTerm, leftVal, rightTerm);
     if (rightTerm) {
       const unifyRes = unify({}, rightTerm, leftVal);
       if (!unifyRes) {
