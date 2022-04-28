@@ -4,7 +4,7 @@ import { assertDeepEqual } from "../util/testBench/testing";
 
 export const unifyTests = [
   {
-    name: "unifyVars",
+    name: "unifyBindings",
     test() {
       const res = unifyBindings(
         { A: str("Pete"), B: str("Paul") },
