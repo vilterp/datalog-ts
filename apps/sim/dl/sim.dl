@@ -14,3 +14,10 @@ time{time: T} :-
 sim{time: T, pos: Y} :-
   time{time: T} &
   pos{time: T, y: Y}.
+
+pos2{time: T, pos: Y} :-
+  mul{a: T, b: 3, res: Y}.
+
+sim2{time: T, pos: Y} :-
+  time{time: T} &
+  pos2{time: T, pos: Y}.
