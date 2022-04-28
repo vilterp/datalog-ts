@@ -27,6 +27,16 @@ export function add(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
+export function mul(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  const b = input.attrs.b;
+  const res = input.attrs.res;
+  if (a.type === "IntLit" && b.type === "IntLit" && res.type === "Var") {
+    return [rec(input.relation, { a, b, res: int(a.val * b.val) })];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
 export function gte(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
