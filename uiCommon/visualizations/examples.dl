@@ -1,0 +1,13 @@
+# TODO: tree
+# TODO: graphviz
+
+internal.visualization{
+  name: "Vega Test",
+  spec: vegalite{
+    mark: "bar",
+    encoding: encoding{
+      x: mapping{field: "a", type: "ordinal"},
+      b: mapping{field: "b", type: "quantitative"}
+    }
+  }
+}.
