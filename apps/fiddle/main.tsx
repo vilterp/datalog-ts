@@ -4,18 +4,26 @@ import { nullLoader } from "../../core/loaders";
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
-import useLocalStorage from "react-use-localstorage";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+import { initialEditorState } from "../../uiCommon/ide/types";
+import { LANGUAGES } from "../languageWorkbench/languages";
+// @ts-ignore
+import commonThemeCSS from "../languageWorkbench/commonTheme.css";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 
 function Main() {
-  const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
+  const [editorState, setEditorState] = useJSONLocalStorage(
+    "datalog-fiddle-editor-state",
+    initialEditorState(familyDL)
+  );
 
   let error = null;
 
   let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
   try {
-    interp = interp.evalStr(source)[1];
+    interp = interp.evalStr(editorState.source)[1];
   } catch (e) {
     error = e.toString();
   }
@@ -23,13 +31,13 @@ function Main() {
   return (
     <div>
       <h1>Datalog Fiddle</h1>
-      <textarea
-        onChange={(evt) => setSource(evt.target.value)}
-        value={source}
-        style={{ fontFamily: "monospace" }}
-        cols={50}
-        rows={10}
-        spellCheck={false}
+      <WrappedCodeEditor
+        datalog={LANGUAGES.datalog.datalog}
+        grammar={LANGUAGES.datalog.grammar}
+        highlightCSS={commonThemeCSS}
+        lang="datalog"
+        editorState={editorState}
+        setEditorState={setEditorState}
       />
       <br />
       {error ? (
