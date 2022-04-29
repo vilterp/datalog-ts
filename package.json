@@ -48,6 +48,7 @@
   "dependencies": {
     "@hookeasy/use-title": "^1.0.2",
     "@react-hook/window-size": "^3.0.7",
+    "@types/react-vega": "^7.0.0",
     "@types/tmp": "^0.2.3",
     "classnames": "^2.3.1",
     "denque": "^2.0.1",
@@ -63,10 +64,13 @@
     "react-router-dom": "^5.2.0",
     "react-textarea-autosize": "^8.3.2",
     "react-use-localstorage": "^3.4.1",
+    "react-vega": "^7.5.0",
     "simple-markdown": "^0.7.3",
     "tmp": "^0.2.1",
     "use-hash-param": "^0.2.3",
     "use-http": "^1.0.20",
+    "vega": "^5.22.1",
+    "vega-lite": "^5.2.0",
     "w3c-hr-time": "^1.0.2"
   },
   "bin": {

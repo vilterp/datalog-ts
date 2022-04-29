@@ -1,3 +1,15 @@
+internal.visualization{
+  name: "Position over Time",
+  spec: vegalite{
+    mark: "point",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "pos", type: "quantitative"}
+    },
+    query: sim2{}
+  }
+}.
+
 pos{time: T, y: Y} :-
   startPos{time: T, y: Y} |
   stepPos{time: T, y: Y}.

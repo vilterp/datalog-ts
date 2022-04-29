@@ -1,0 +1,26 @@
+foo{a: 1, b: 2}.
+foo{a: 3, b: 4}.
+
+internal.visualization{
+  name: "Vega Test",
+  spec: vegalite{
+    mark: "bar",
+    encoding: encoding{
+      x: mapping{field: "a", type: "ordinal"},
+      y: mapping{field: "b", type: "quantitative"}
+    },
+    query: foo{}
+  }
+}.
+
+# based on:
+#
+# const spec1: VisualizationSpec = {
+#   data: { name: "myData" },
+#   description: "A simple bar chart with embedded data.",
+#   encoding: {
+#     x: { field: "a", type: "ordinal" },
+#     y: { field: "b", type: "quantitative" },
+#   },
+#   mark: "bar",
+# };

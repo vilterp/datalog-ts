@@ -1,59 +1,60 @@
-import {
-  array,
-  falseTerm,
-  int,
-  rec,
-  Rec,
-  str,
-  Term,
-  trueTerm,
-} from "../core/types";
+import { rec, str, Rec, array, int, Term, bool } from "../core/types";
 import { Json } from "./json";
 
-export function jsonToDL(json: Json, emit: (rec: Rec) => void) {
-  recurse([], json, emit);
-}
+type ADT = { type: string; [more: string]: Json };
 
-function recurse(pathSoFar: Term[], json: Json, emit: (rec: Rec) => void) {
-  if (json === null) {
-    return;
-  }
+export function jsonToDL(json: Json): Term {
   switch (typeof json) {
+    case "number":
+      return int(json);
+    case "string":
+      return str(json);
+    case "boolean":
+      return bool(json);
     case "object":
       if (Array.isArray(json)) {
-        json.map((item, idx) => {
-          recurse([...pathSoFar, int(idx)], item, emit);
-        });
-      } else {
-        Object.keys(json).forEach((key) => {
-          recurse([...pathSoFar, str(key)], json[key], emit);
-        });
+        return array(json.map(jsonToDL));
       }
-      break;
-    case "boolean":
-    case "string":
-    case "number":
-      emit(
-        rec("val", {
-          path: array(pathSoFar),
-          val: primitiveToTerm(json),
-        })
-      );
-      break;
+      // this might not always be desired... but meh
+      if (json.hasOwnProperty("type") && typeof json.type === "string") {
+        return adtToRec(json as ADT);
+      }
+      const out: { [key: string]: Term } = {};
+      for (const key in json) {
+        out[key] = jsonToDL(json[key]);
+      }
+      return rec("", out);
     default:
-      throw new Error(`not json: ${json}`);
+      throw new Error(`unsupported value: ${json}`);
   }
 }
 
-function primitiveToTerm(v: boolean | number | string): Term {
-  switch (typeof v) {
-    case "boolean":
-      return v ? trueTerm : falseTerm;
-    case "number":
-      return int(v); // TOOD: float...
-    case "string":
-      return str(v);
-    default:
-      throw new Error("wut");
+export function adtToRec(adt: ADT): Rec {
+  const copy = { ...adt };
+  delete copy.type;
+  return rec(adt.type, (jsonToDL(copy) as Rec).attrs);
+}
+
+export function dlToJson(term: Term, addTypeTags: boolean = true): Json {
+  switch (term.type) {
+    case "StringLit":
+      return term.val;
+    case "Bool":
+      return term.val;
+    case "IntLit":
+      return term.val;
+    case "Record":
+      const out: Json = {};
+      for (const key in term.attrs) {
+        out[key] = dlToJson(term.attrs[key], addTypeTags);
+      }
+      if (addTypeTags) {
+        if (term.relation) {
+          out.type = term.relation;
+        }
+      }
+      return out;
+    case "Array":
+      return term.items.map((i) => dlToJson(i, addTypeTags));
   }
 }

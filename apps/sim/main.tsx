@@ -13,7 +13,7 @@ function Main() {
   return (
     <>
       <h1>Simulator</h1>
-      <Explorer interp={interp} />
+      <Explorer interp={interp} showViz />
     </>
   );
 }
