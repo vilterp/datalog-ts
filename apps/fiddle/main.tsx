@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { nullLoader } from "../../core/loaders";
 // @ts-ignore
