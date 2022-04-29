@@ -22,7 +22,7 @@ function VegaLiteViz(props: {
   let error: string | null = null;
   try {
     data = query
-      ? props.interp.queryRec(query).map((res) => dlToJson(res.term))
+      ? props.interp.queryRec(query).map((res) => dlToJson(res.term, false))
       : [];
   } catch (e) {
     error = e;
