@@ -13,8 +13,6 @@ import { LANGUAGES } from "../languageWorkbench/languages";
 import commonThemeCSS from "../languageWorkbench/commonTheme.css";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 
-console.log({ LANGUAGES });
-
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
     "datalog-fiddle-editor-state",
