@@ -1,13 +1,15 @@
 dl
+.table baz
 foo{bar: A, baz: B} :-
   ???{} &
   bar{doop: ???}.
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 3, name: "A", span: span{from: 45, to: 48}, type: T}
-ide.Suggestion{id: 3, name: "B", span: span{from: 45, to: 48}, type: T}
-ide.Suggestion{id: "global", name: "foo", span: span{from: 25, to: 28}, type: T}
+ide.Suggestion{id: 13, name: "A", span: span{from: 56, to: 59}, type: T}
+ide.Suggestion{id: 13, name: "B", span: span{from: 56, to: 59}, type: T}
+ide.Suggestion{id: "global", name: "foo", span: span{from: 36, to: 39}, type: T}
+ide.Suggestion{id: "global", name: "baz", span: span{from: 36, to: 39}, type: T}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
