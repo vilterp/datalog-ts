@@ -13,7 +13,7 @@ import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
 import { parserlibTests } from "./parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
-import { lwbTests } from "./apps/languageWorkbench/ddTest";
+import { lwbTests } from "./uiCommon/ide/datalogPowered/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));

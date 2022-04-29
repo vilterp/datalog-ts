@@ -1,22 +1,19 @@
-import { fsLoader } from "../../core/fsLoader";
-import { ppt } from "../../core/pretty";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
-import {
-  addCursor,
-  constructInterp,
-} from "../../uiCommon/ide/datalogPowered/interp";
-import { TestOutput } from "../../util/ddTest";
-import { runDDTestAtPath } from "../../util/ddTest/runner";
-import { datalogOut, jsonOut } from "../../util/ddTest/types";
+import { fsLoader } from "../../../core/fsLoader";
+import { ppt } from "../../../core/pretty";
+import { SimpleInterpreter } from "../../../core/simple/interpreter";
+import { addCursor, constructInterp } from "./interp";
+import { TestOutput } from "../../../util/ddTest";
+import { runDDTestAtPath } from "../../../util/ddTest/runner";
+import { datalogOut, jsonOut } from "../../../util/ddTest/types";
 import * as fs from "fs";
-import { Suite } from "../../util/testBench/testing";
+import { Suite } from "../../../util/testBench/testing";
 
 export function lwbTests(writeResults: boolean): Suite {
   return ["fp", "sql", "dl", "grammar"].map((lang) => ({
     name: lang,
     test() {
       runDDTestAtPath(
-        `apps/languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+        `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.dd.txt`,
         testLangQuery,
         writeResults
       );
@@ -47,11 +44,11 @@ export function testLangQuery(test: string[]): TestOutput[] {
         "utf8"
       ),
       dlSource: fs.readFileSync(
-        `apps/languageWorkbench/languages/${lang}/${lang}.dl`,
+        `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.dl`,
         "utf8"
       ),
       grammarSource: fs.readFileSync(
-        `apps/languageWorkbench/languages/${lang}/${lang}.grammar`,
+        `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.grammar`,
         "utf8"
       ),
       langSource: example,
