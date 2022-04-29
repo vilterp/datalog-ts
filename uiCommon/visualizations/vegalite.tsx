@@ -5,20 +5,6 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
 
-const data1 = {
-  myData: [
-    { a: "A", b: 20 },
-    { a: "B", b: 34 },
-    { a: "C", b: 55 },
-    { a: "D", b: 19 },
-    { a: "E", b: 40 },
-    { a: "F", b: 34 },
-    { a: "G", b: 91 },
-    { a: "H", b: 78 },
-    { a: "I", b: 25 },
-  ],
-};
-
 export const vegalite: VizTypeSpec = {
   name: "Vega Lite",
   description: "visualize data with Vega Lite",
@@ -31,6 +17,13 @@ function VegaLiteViz(props: {
   setHighlightedTerm: (t: Term | null) => void;
 }) {
   const spec = dlToJson(props.spec, false) as VisualizationSpec;
-  console.log({ spec });
-  return <VegaLite spec={spec} data={data1} />;
+  const query = props.spec.attrs.query as Rec;
+  const data = query
+    ? props.interp.queryRec(query).map((res) => dlToJson(res.term))
+    : [];
+  const specWithData = {
+    ...spec,
+    data: { values: data },
+  };
+  return <VegaLite spec={specWithData} />;
 }
