@@ -5,10 +5,10 @@ import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
 import { OpenCodeEditor } from "../../uiCommon/ide/datalogPowered/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "./languages";
+import { LANGUAGES } from "../../uiCommon/ide/datalogPowered/languages";
 import useHashParam from "use-hash-param";
 // @ts-ignore
-import commonThemeCSS from "./commonTheme.css";
+import commonThemeCSS from "../../uiCommon/ide/datalogPowered/commonTheme.css";
 import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 // @ts-ignore

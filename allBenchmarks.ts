@@ -1,7 +1,7 @@
 import { BenchmarkSpec, runAll } from "./util/testBench/benchmark";
 import { fpBenchmarks } from "./apps/fp/benchmarks";
 import { parserBenchmarks } from "./parserlib/benchmarks";
-import { lwbBenchmarks } from "./apps/languageWorkbench/benchmarks";
+import { lwbBenchmarks } from "./uiCommon/ide/datalogPowered/benchmarks";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
   parserBenchmarks,

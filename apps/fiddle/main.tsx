@@ -8,9 +8,9 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
 import { initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../languageWorkbench/languages";
+import { LANGUAGES } from "../../uiCommon/ide/datalogPowered/languages";
 // @ts-ignore
-import commonThemeCSS from "../languageWorkbench/commonTheme.css";
+import commonThemeCSS from "../../uiCommon/ide/datalogPowered/commonTheme.css";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 
 function Main() {
