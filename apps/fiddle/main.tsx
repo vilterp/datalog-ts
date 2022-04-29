@@ -7,9 +7,13 @@ import { Explorer } from "../../uiCommon/explorer";
 import useLocalStorage from "react-use-localstorage";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
 
 function Main() {
-  const [source, setSource] = useLocalStorage("fiddle-dl-source", familyDL);
+  const [editorState, setEditorState] = useLocalStorage(
+    "fiddle-dl-source",
+    familyDL
+  );
 
   let error = null;
 
@@ -23,13 +27,19 @@ function Main() {
   return (
     <div>
       <h1>Datalog Fiddle</h1>
-      <textarea
-        onChange={(evt) => setSource(evt.target.value)}
-        value={source}
-        style={{ fontFamily: "monospace" }}
-        cols={50}
-        rows={10}
-        spellCheck={false}
+      <WrappedCodeEditor
+        datalog={XXX}
+        grammar={XXX}
+        highlightCSS={""}
+        editorState={{
+          cursorPos: 0,
+          source: "",
+          selectedSuggIdx: 0,
+        }}
+        setEditorState={function (st: EditorState): void {
+          throw new Error("Function not implemented.");
+        }}
+        lang={""}
       />
       <br />
       {error ? (
