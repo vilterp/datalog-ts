@@ -18,12 +18,25 @@ function VegaLiteViz(props: {
 }) {
   const spec = dlToJson(props.spec, false) as VisualizationSpec;
   const query = props.spec.attrs.query as Rec;
-  const data = query
-    ? props.interp.queryRec(query).map((res) => dlToJson(res.term))
-    : [];
+  let data = [];
+  let error: string | null = null;
+  try {
+    data = query
+      ? props.interp.queryRec(query).map((res) => dlToJson(res.term))
+      : [];
+  } catch (e) {
+    error = e;
+  }
   const specWithData = {
     ...spec,
     data: { values: data },
   };
-  return <VegaLite spec={specWithData} />;
+  return error ? (
+    <pre style={{ color: "red" }}>{error.toString()}</pre>
+  ) : (
+    // Slight disagreement about the type of spec, but it doesn't actually
+    // prevent us from rendering...
+    // @ts-ignore
+    <VegaLite spec={specWithData} />
+  );
 }
