@@ -1,7 +1,7 @@
 main :- [ws, repSep((stmt | comment), ws), ws].
 stmt :- (rule | fact | tableDecl).
 comment :- ["#", repSep(commentChar, "")].
-tableDecl :- [".table", ws, ident].
+tableDecl :- [tableKW, ws, ident].
 
 fact :- [record, "."].
 
@@ -17,6 +17,8 @@ record :- [(ident | placeholder), "{", ws, repSep(keyValue, [",", ws]), ws, "}"]
 keyValue :- [ident, ":", ws, term].
 int :- [num, repSep(num, "")].
 bool :- ("true" | "false").
+
+tableKW :- ".table".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
