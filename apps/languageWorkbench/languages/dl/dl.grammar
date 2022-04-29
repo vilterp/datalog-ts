@@ -12,7 +12,7 @@ binExpr :- [term, ws, binOp, ws, term].
 binOp :- ("<=" | ">=" | "==" | "!=").
 
 term :- (record | int | var | string | bool | placeholder).
-var :- [[A-Z], repSep(([A-Z]|[a-z]), "")].
+var :- [[A-Z], repSep(([A-Z]|[a-z]|[0-9]), "")].
 record :- [(ident | placeholder), "{", ws, repSep(keyValue, [",", ws]), ws, "}"].
 keyValue :- [ident, ":", ws, term].
 int :- [num, repSep(num, "")].
