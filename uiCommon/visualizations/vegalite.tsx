@@ -1,5 +1,6 @@
 import React from "react";
 import { VegaLite, VisualizationSpec } from "react-vega";
+import { dlToJson } from "../../util/json2dl";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
@@ -18,16 +19,6 @@ const data1 = {
   ],
 };
 
-const spec1: VisualizationSpec = {
-  data: { name: "myData" },
-  description: "A simple bar chart with embedded data.",
-  encoding: {
-    x: { field: "a", type: "ordinal" },
-    y: { field: "b", type: "quantitative" },
-  },
-  mark: "bar",
-};
-
 export const vegalite: VizTypeSpec = {
   name: "Vega Lite",
   description: "visualize data with Vega Lite",
@@ -39,5 +30,7 @@ function VegaLiteViz(props: {
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
 }) {
-  return <VegaLite spec={spec1} data={data1} />;
+  const spec = dlToJson(props.spec) as VisualizationSpec;
+  console.log({ spec });
+  return <VegaLite spec={spec} data={data1} />;
 }
