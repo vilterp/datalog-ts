@@ -5,7 +5,6 @@ type ADT = { type: string; [more: string]: Json };
 
 export function jsonToDL(json: Json): Term {
   switch (typeof json) {
-    // TODO: bool
     case "number":
       return int(json);
     case "string":
@@ -36,7 +35,7 @@ export function adtToRec(adt: ADT): Rec {
   return rec(adt.type, (jsonToDL(copy) as Rec).attrs);
 }
 
-export function dlToJson(term: Term): Json {
+export function dlToJson(term: Term, addTypeTags: boolean = false): Json {
   switch (term.type) {
     case "StringLit":
       return term.val;
@@ -49,12 +48,13 @@ export function dlToJson(term: Term): Json {
       for (const key in term.attrs) {
         out[key] = dlToJson(term.attrs[key]);
       }
-      // this also might not always be desired.
-      if (term.relation) {
-        out.type = term.relation;
+      if (addTypeTags) {
+        if (term.relation) {
+          out._type = term.relation;
+        }
       }
       return out;
     case "Array":
-      return term.items.map(dlToJson);
+      return term.items.map((i) => dlToJson(i, addTypeTags));
   }
 }
