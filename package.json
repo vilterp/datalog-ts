@@ -67,6 +67,7 @@
     "tmp": "^0.2.1",
     "use-hash-param": "^0.2.3",
     "use-http": "^1.0.20",
+    "vega-lite": "^5.2.0",
     "w3c-hr-time": "^1.0.2"
   },
   "bin": {
