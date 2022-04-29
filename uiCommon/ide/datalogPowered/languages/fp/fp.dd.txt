@@ -24,9 +24,9 @@ application/datalog
 hl.Segment{highlight: false, id: 10, span: span{from: 8, to: 10}, type: "int"}
 hl.Segment{highlight: false, id: 3, span: span{from: 0, to: 3}, type: "keyword"}
 hl.Segment{highlight: false, id: 14, span: span{from: 11, to: 13}, type: "keyword"}
-hl.Segment{highlight: false, id: I, span: span{from: 4, to: 5}, type: "var"}
-hl.Segment{highlight: false, id: I, span: span{from: 14, to: 19}, type: "var"}
-hl.Segment{highlight: false, id: I, span: span{from: 20, to: 21}, type: "var"}
+hl.Segment{highlight: false, id: 2, span: span{from: 4, to: 5}, type: "var"}
+hl.Segment{highlight: false, id: 18, span: span{from: 14, to: 19}, type: "var"}
+hl.Segment{highlight: false, id: 30, span: span{from: 20, to: 21}, type: "var"}
 
 fp
 let x = 2 in
