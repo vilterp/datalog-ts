@@ -30,7 +30,7 @@ function VegaLiteViz(props: {
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
 }) {
-  const spec = dlToJson(props.spec) as VisualizationSpec;
+  const spec = dlToJson(props.spec, false) as VisualizationSpec;
   console.log({ spec });
   return <VegaLite spec={spec} data={data1} />;
 }

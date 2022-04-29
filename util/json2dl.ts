@@ -35,7 +35,7 @@ export function adtToRec(adt: ADT): Rec {
   return rec(adt.type, (jsonToDL(copy) as Rec).attrs);
 }
 
-export function dlToJson(term: Term, addTypeTags: boolean = false): Json {
+export function dlToJson(term: Term, addTypeTags: boolean = true): Json {
   switch (term.type) {
     case "StringLit":
       return term.val;
@@ -46,11 +46,11 @@ export function dlToJson(term: Term, addTypeTags: boolean = false): Json {
     case "Record":
       const out: Json = {};
       for (const key in term.attrs) {
-        out[key] = dlToJson(term.attrs[key]);
+        out[key] = dlToJson(term.attrs[key], addTypeTags);
       }
       if (addTypeTags) {
         if (term.relation) {
-          out._type = term.relation;
+          out.type = term.relation;
         }
       }
       return out;
