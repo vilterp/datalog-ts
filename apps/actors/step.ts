@@ -1,6 +1,6 @@
 import { Json } from "../../util/json";
 import { int, Rec, rec, str, StringLit } from "../../core/types";
-import { adtToRec, dlToJson, jsonToDL } from "./conversion";
+import { adtToRec, dlToJson, jsonToDL } from "../../util/json2dl";
 import {
   ActorResp,
   AddressedTickInitiator,
