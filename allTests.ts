@@ -7,7 +7,6 @@ import {
   coreTestsCommon,
 } from "./core/ddTests";
 import { fpTests } from "./apps/fp/ddTests";
-import { json2DLTests } from "./util/json2dlTest";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
@@ -30,7 +29,6 @@ const suites: { [name: string]: Suite } = {
   incrTests: incrTests(writeResults),
   fpTests: fpTests(writeResults),
   lwbTests: lwbTests(writeResults),
-  json2DLTests,
   prettyPrintTests,
   treeTests,
   actionsTests,
