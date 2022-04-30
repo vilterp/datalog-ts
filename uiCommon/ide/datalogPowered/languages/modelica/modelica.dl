@@ -1,3 +1,12 @@
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.paramDefn{scopeID: I, span: S, name: N, kind: K} |
+  scope.varDefn{scopeID: I, span: S, name: N, kind: K}.
+
+scope.paramDefn{scopeID: Model, span: S, name: N, kind: "var"} :-
+  ast.model{id: Model} &
+  ast.params{id: Params, parentID: Model} &
+  ast.ident{parentID: Params, span: S, text: N}.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "modelKW", type: "keyword"}.
