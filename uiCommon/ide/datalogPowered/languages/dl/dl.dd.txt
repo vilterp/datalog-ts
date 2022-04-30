@@ -11,9 +11,9 @@ ide.Suggestion{}
 application/datalog
 ide.Suggestion{id: 13, name: "A", span: span{from: 56, to: 59}, type: T}
 ide.Suggestion{id: 13, name: "B", span: span{from: 56, to: 59}, type: T}
-ide.Suggestion{id: "global", name: "foo", span: span{from: 36, to: 39}, type: T}
-ide.Suggestion{id: "global", name: "baz", span: span{from: 36, to: 39}, type: T}
-ide.Suggestion{id: "global", name: "baz", span: span{from: 36, to: 39}, type: T}
+ide.Suggestion{id: global{}, name: "foo", span: span{from: 36, to: 39}, type: T}
+ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}
+ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}
 ide.Suggestion{id: "baz", name: "time", span: span{from: 69, to: 72}, type: T}
 
 dl
@@ -122,30 +122,30 @@ hl.mapping{rule: "inKW", type: "keyword"}.
 scope.Usage{}
 ----
 application/datalog
-scope.Usage{definitionLoc: span{from: 215, to: 228}, definitionScopeID: "global", kind: "relation", name: "scope.builtin", usageLoc: span{from: 55, to: 68}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 336, to: 345}, definitionScopeID: "global", kind: "relation", name: "scope.let", usageLoc: span{from: 111, to: 120}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 545, to: 557}, definitionScopeID: "global", kind: "relation", name: "scope.lambda", usageLoc: span{from: 163, to: 175}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1470, to: 1488}, definitionScopeID: "global", kind: "relation", name: "ast.letBindingExpr", usageLoc: span{from: 430, to: 448}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1470, to: 1488}, definitionScopeID: "global", kind: "relation", name: "ast.letBindingExpr", usageLoc: span{from: 1159, to: 1177}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1653, to: 1668}, definitionScopeID: "global", kind: "relation", name: "ast.letBodyExpr", usageLoc: span{from: 389, to: 404}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1653, to: 1668}, definitionScopeID: "global", kind: "relation", name: "ast.letBodyExpr", usageLoc: span{from: 1242, to: 1257}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1653, to: 1668}, definitionScopeID: "global", kind: "relation", name: "ast.letBodyExpr", usageLoc: span{from: 2943, to: 2958}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1830, to: 1840}, definitionScopeID: "global", kind: "relation", name: "ast.letVar", usageLoc: span{from: 477, to: 487}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1939, to: 1954}, definitionScopeID: "global", kind: "relation", name: "ast.funcCallArg", usageLoc: span{from: 1320, to: 1335}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 1939, to: 1954}, definitionScopeID: "global", kind: "relation", name: "ast.funcCallArg", usageLoc: span{from: 2638, to: 2653}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2035, to: 2051}, definitionScopeID: "global", kind: "relation", name: "ast.funcCallFunc", usageLoc: span{from: 1398, to: 1414}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2035, to: 2051}, definitionScopeID: "global", kind: "relation", name: "ast.funcCallFunc", usageLoc: span{from: 2682, to: 2698}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: "global", kind: "relation", name: "tc.Type", usageLoc: span{from: 520, to: 527}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: "global", kind: "relation", name: "tc.Type", usageLoc: span{from: 2828, to: 2835}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: "global", kind: "relation", name: "tc.Type", usageLoc: span{from: 2986, to: 2993}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: "global", kind: "relation", name: "tc.Type", usageLoc: span{from: 3322, to: 3329}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2385, to: 2393}, definitionScopeID: "global", kind: "relation", name: "tc.typeS", usageLoc: span{from: 2165, to: 2173}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2470, to: 2478}, definitionScopeID: "global", kind: "relation", name: "tc.typeI", usageLoc: span{from: 2194, to: 2202}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2549, to: 2558}, definitionScopeID: "global", kind: "relation", name: "tc.typeFC", usageLoc: span{from: 2257, to: 2266}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 2855, to: 2865}, definitionScopeID: "global", kind: "relation", name: "tc.typeLet", usageLoc: span{from: 2287, to: 2297}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 3013, to: 3023}, definitionScopeID: "global", kind: "relation", name: "tc.typeVar", usageLoc: span{from: 2318, to: 2328}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 3152, to: 3165}, definitionScopeID: "global", kind: "relation", name: "tc.typeLambda", usageLoc: span{from: 2223, to: 2236}, usageScopeID: "global"}
-scope.Usage{definitionLoc: span{from: 3347, to: 3365}, definitionScopeID: "global", kind: "relation", name: "tc.typePlaceholder", usageLoc: span{from: 2349, to: 2367}, usageScopeID: "global"}
+scope.Usage{definitionLoc: span{from: 215, to: 228}, definitionScopeID: global{}, kind: "relation", name: "scope.builtin", usageLoc: span{from: 55, to: 68}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 336, to: 345}, definitionScopeID: global{}, kind: "relation", name: "scope.let", usageLoc: span{from: 111, to: 120}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 545, to: 557}, definitionScopeID: global{}, kind: "relation", name: "scope.lambda", usageLoc: span{from: 163, to: 175}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1470, to: 1488}, definitionScopeID: global{}, kind: "relation", name: "ast.letBindingExpr", usageLoc: span{from: 430, to: 448}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1470, to: 1488}, definitionScopeID: global{}, kind: "relation", name: "ast.letBindingExpr", usageLoc: span{from: 1159, to: 1177}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1653, to: 1668}, definitionScopeID: global{}, kind: "relation", name: "ast.letBodyExpr", usageLoc: span{from: 389, to: 404}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1653, to: 1668}, definitionScopeID: global{}, kind: "relation", name: "ast.letBodyExpr", usageLoc: span{from: 1242, to: 1257}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1653, to: 1668}, definitionScopeID: global{}, kind: "relation", name: "ast.letBodyExpr", usageLoc: span{from: 2943, to: 2958}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1830, to: 1840}, definitionScopeID: global{}, kind: "relation", name: "ast.letVar", usageLoc: span{from: 477, to: 487}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1939, to: 1954}, definitionScopeID: global{}, kind: "relation", name: "ast.funcCallArg", usageLoc: span{from: 1320, to: 1335}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 1939, to: 1954}, definitionScopeID: global{}, kind: "relation", name: "ast.funcCallArg", usageLoc: span{from: 2638, to: 2653}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2035, to: 2051}, definitionScopeID: global{}, kind: "relation", name: "ast.funcCallFunc", usageLoc: span{from: 1398, to: 1414}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2035, to: 2051}, definitionScopeID: global{}, kind: "relation", name: "ast.funcCallFunc", usageLoc: span{from: 2682, to: 2698}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: global{}, kind: "relation", name: "tc.Type", usageLoc: span{from: 520, to: 527}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: global{}, kind: "relation", name: "tc.Type", usageLoc: span{from: 2828, to: 2835}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: global{}, kind: "relation", name: "tc.Type", usageLoc: span{from: 2986, to: 2993}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2136, to: 2143}, definitionScopeID: global{}, kind: "relation", name: "tc.Type", usageLoc: span{from: 3322, to: 3329}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2385, to: 2393}, definitionScopeID: global{}, kind: "relation", name: "tc.typeS", usageLoc: span{from: 2165, to: 2173}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2470, to: 2478}, definitionScopeID: global{}, kind: "relation", name: "tc.typeI", usageLoc: span{from: 2194, to: 2202}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2549, to: 2558}, definitionScopeID: global{}, kind: "relation", name: "tc.typeFC", usageLoc: span{from: 2257, to: 2266}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 2855, to: 2865}, definitionScopeID: global{}, kind: "relation", name: "tc.typeLet", usageLoc: span{from: 2287, to: 2297}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 3013, to: 3023}, definitionScopeID: global{}, kind: "relation", name: "tc.typeVar", usageLoc: span{from: 2318, to: 2328}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 3152, to: 3165}, definitionScopeID: global{}, kind: "relation", name: "tc.typeLambda", usageLoc: span{from: 2223, to: 2236}, usageScopeID: global{}}
+scope.Usage{definitionLoc: span{from: 3347, to: 3365}, definitionScopeID: global{}, kind: "relation", name: "tc.typePlaceholder", usageLoc: span{from: 2349, to: 2367}, usageScopeID: global{}}
 scope.Usage{definitionLoc: span{from: 20, to: 21}, definitionScopeID: 3, kind: "var", name: "I", usageLoc: span{from: 73, to: 74}, usageScopeID: 3}
 scope.Usage{definitionLoc: span{from: 20, to: 21}, definitionScopeID: 3, kind: "var", name: "I", usageLoc: span{from: 125, to: 126}, usageScopeID: 3}
 scope.Usage{definitionLoc: span{from: 20, to: 21}, definitionScopeID: 3, kind: "var", name: "I", usageLoc: span{from: 180, to: 181}, usageScopeID: 3}
