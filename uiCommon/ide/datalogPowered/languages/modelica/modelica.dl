@@ -13,6 +13,16 @@ scope.varDefn{scopeID: Model, span: S, name: N, kind: "var"} :-
   ast.varDecl{id: Var, parentID: Vars} &
   ast.var{parentID: Var, text: N, span: S}.
 
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.initEqVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.eqVar{scopeID: I, name: N, span: S, kind: K}.
+
+scope.initEqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
+  ast.model{id: Model} &
+  ast.init{id: Init, parentID: Model} &
+  ast.initEq{id: EQ, parentID: Init} &
+  ast.var{parentID: EQ, text: N, span: S}.
+
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "modelKW", type: "keyword"}.
