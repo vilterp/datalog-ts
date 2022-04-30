@@ -1,0 +1,7 @@
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "modelKW", type: "keyword"}.
+hl.mapping{rule: "initKW", type: "keyword"}.
+hl.mapping{rule: "equationKW", type: "keyword"}.
+hl.mapping{rule: "endKW", type: "keyword"}.
+hl.mapping{rule: "derKW", type: "keyword"}.
