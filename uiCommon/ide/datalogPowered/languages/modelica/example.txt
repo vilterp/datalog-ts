@@ -1,4 +1,4 @@
-model BouncingBall(restitution=0.8, initHeight=1.0)
+model BouncingBall(restitution, initHeight)
   h;
   v;
 init

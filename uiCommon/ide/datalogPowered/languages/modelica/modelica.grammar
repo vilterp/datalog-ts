@@ -1,0 +1,17 @@
+main :- model.
+model :- [modelKW, ws, ident, params, ws, vars, initKW, ws, init, ws, equationKW, ws, equations, ws, endKW].
+params :- ["(", repSep(ident, commaSpace), ")"].
+
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ident :- [alpha, repSep((alphaNum | "."), "")].
+ws :- repSep((" "|"\n"), "").
+commaSpace :- [",", ws].
+placeholder :- "???".
+stringChar :- (^'"' | ['\', '"']).
+
+modelKW :- "model".
+initKW :- "init".
+equationKW :- "equation".
+endKW :- "end".
