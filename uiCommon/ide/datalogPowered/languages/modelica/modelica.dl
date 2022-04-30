@@ -21,7 +21,19 @@ scope.initEqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
   ast.model{id: Model} &
   ast.init{id: Init, parentID: Model} &
   ast.initEq{id: EQ, parentID: Init} &
-  ast.var{parentID: EQ, text: N, span: S}.
+  ast.expr{id: Expr, parentID: EQ} &
+  scope.exprVar{id: Expr, text: N, span: S}.
+
+scope.exprVar{id: I, text: N, span: S} :-
+  scope.thisExprVar{id: I, text: N, span: S} |
+  scope.childExprVar{id: I, text: N, span: S}.
+
+scope.thisExprVar{id: I, text: N, span: S} :-
+  ast.var{id: I, text: N, span: S}.
+
+scope.childExprVar{id: I, text: N, span: S} :-
+  ast.derivative{id: I} &
+  ast.ident{parentID: I, text: N, span: S}.
 
 hl.mapping{rule: "intLit", type: "int"}.
 hl.mapping{rule: "ident", type: "ident"}.
