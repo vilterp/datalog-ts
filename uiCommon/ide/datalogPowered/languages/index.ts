@@ -61,6 +61,15 @@ import treeSQLGrammar from "./treeSQL/treeSQL.grammar";
 // @ts-ignore
 import treeSQLExample from "./treeSQL/example.txt";
 
+// Modelica
+
+// @ts-ignore
+import modelicaDL from "./modelica/modelica.dl";
+// @ts-ignore
+import modelicaGrammar from "./modelica/modelica.grammar";
+// @ts-ignore
+import modelicaExample from "./modelica/example.txt";
+
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText: {
     datalog: "",
@@ -101,6 +110,11 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
     datalog: treeSQLDL,
     example: treeSQLExample,
     grammar: treeSQLGrammar,
+  },
+  modelica: {
+    datalog: modelicaDL,
+    example: modelicaExample,
+    grammar: modelicaGrammar,
   },
 };
 
