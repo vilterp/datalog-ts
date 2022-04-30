@@ -5,7 +5,7 @@ params :- ["(", repSep(ident, commaSpace), ")"].
 vars :- repSep(varDecl, ws).
 init :- repSep(initEq, ws).
 varDecl :- [var, ";"].
-initEq :- [ident, ws, "=", ws, expr, ";"].
+initEq :- [var, ws, "=", ws, expr, ";"].
 expr :- (intLit | derivative | var).
 var :- ident.
 derivative :- [derKW, "(", ident, ")"].

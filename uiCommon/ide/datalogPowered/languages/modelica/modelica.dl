@@ -25,11 +25,16 @@ scope.eqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
   scope.exprVar{id: Expr, text: N, span: S}.
 
 scope.initEqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
+  scope.initEq{scopeID: Model, eqID: EQ} &
+  ast.expr{id: Expr, parentID: EQ} &
+  scope.exprVar{id: Expr, text: N, span: S} |
+  scope.initEq{scopeID: Model, eqID: EQ} &
+  ast.var{parentID: EQ, text: N, span: S}.
+
+scope.initEq{scopeID: Model, eqID: EQ} :-
   ast.model{id: Model} &
   ast.init{id: Init, parentID: Model} &
-  ast.initEq{id: EQ, parentID: Init} &
-  ast.expr{id: Expr, parentID: EQ} &
-  scope.exprVar{id: Expr, text: N, span: S}.
+  ast.initEq{id: EQ, parentID: Init}.
 
 scope.exprVar{id: I, text: N, span: S} :-
   scope.thisExprVar{id: I, text: N, span: S} |
