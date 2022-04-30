@@ -1,0 +1,10 @@
+model FallingBall(initHeight)
+  h;
+  v;
+init
+  h = initHeight;
+  v = 0;
+equation
+  v = der(h);
+  der(v) = 9;
+end

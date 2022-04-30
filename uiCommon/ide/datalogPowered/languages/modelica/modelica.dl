@@ -1,0 +1,58 @@
+scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+  scope.paramDefn{scopeID: I, span: S, name: N, kind: K} |
+  scope.varDefn{scopeID: I, span: S, name: N, kind: K}.
+
+scope.paramDefn{scopeID: Model, span: S, name: N, kind: "var"} :-
+  ast.model{id: Model} &
+  ast.params{id: Params, parentID: Model} &
+  ast.ident{parentID: Params, span: S, text: N}.
+
+scope.varDefn{scopeID: Model, span: S, name: N, kind: "var"} :-
+  ast.model{id: Model} &
+  ast.vars{id: Vars, parentID: Model} &
+  ast.varDecl{id: Var, parentID: Vars} &
+  ast.var{parentID: Var, text: N, span: S}.
+
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.initEqVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.eqVar{scopeID: I, name: N, span: S, kind: K}.
+
+scope.eqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
+  ast.model{id: Model} &
+  ast.equations{id: Equations, parentID: Model} &
+  ast.equation{id: EQ, parentID: Equations} &
+  ast.expr{id: Expr, parentID: EQ} &
+  scope.exprVar{id: Expr, text: N, span: S}.
+
+scope.initEqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
+  scope.initEq{scopeID: Model, eqID: EQ} &
+  ast.expr{id: Expr, parentID: EQ} &
+  scope.exprVar{id: Expr, text: N, span: S} |
+  scope.initEq{scopeID: Model, eqID: EQ} &
+  ast.var{parentID: EQ, text: N, span: S}.
+
+scope.initEq{scopeID: Model, eqID: EQ} :-
+  ast.model{id: Model} &
+  ast.init{id: Init, parentID: Model} &
+  ast.initEq{id: EQ, parentID: Init}.
+
+scope.exprVar{id: I, text: N, span: S} :-
+  scope.thisExprVar{id: I, text: N, span: S} |
+  scope.childExprVar{id: I, text: N, span: S}.
+
+scope.thisExprVar{id: Expr, text: N, span: S} :-
+  ast.expr{id: Expr} &
+  ast.var{parentID: Expr, text: N, span: S}.
+
+scope.childExprVar{id: Expr, text: N, span: S} :-
+  ast.expr{id: Expr} &
+  ast.derivative{id: Der, parentID: Expr} &
+  ast.ident{parentID: Der, text: N, span: S}.
+
+hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "modelKW", type: "keyword"}.
+hl.mapping{rule: "initKW", type: "keyword"}.
+hl.mapping{rule: "equationKW", type: "keyword"}.
+hl.mapping{rule: "endKW", type: "keyword"}.
+hl.mapping{rule: "derKW", type: "keyword"}.

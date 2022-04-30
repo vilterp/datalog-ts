@@ -1,0 +1,30 @@
+main :- model.
+model :- [modelKW, ws, ident, params, ws, vars, ws, initKW, ws, init, ws, equationKW, ws, equations, ws, endKW].
+params :- ["(", repSep(ident, commaSpace), ")"].
+
+vars :- repSep(varDecl, ws).
+init :- repSep(initEq, ws).
+varDecl :- [var, ";"].
+initEq :- [var, ws, "=", ws, expr, ";"].
+expr :- (intLit | derivative | var).
+var :- ident.
+derivative :- [derKW, "(", ident, ")"].
+equations :- repSep(equation, ws).
+equation :- [expr, ws, "=", ws, expr, ";"].
+
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+intLit :- [[0-9], repSep([0-9], "")].
+alphaNum :- (alpha | num).
+ident :- [alpha, repSep((alphaNum | "."), "")].
+ws :- repSep((" "|"\n"), "").
+commaSpace :- [",", ws].
+semicolonSpace :- [";", ws].
+placeholder :- "???".
+stringChar :- (^'"' | ['\', '"']).
+
+modelKW :- "model".
+initKW :- "init".
+equationKW :- "equation".
+endKW :- "end".
+derKW :- "der".
