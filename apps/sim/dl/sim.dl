@@ -1,35 +1,21 @@
 internal.visualization{
   name: "Position over Time",
   spec: vegalite{
-    mark: "point",
+    mark: "line",
     encoding: encoding{
       x: mapping{field: "time", type: "quantitative"},
       y: mapping{field: "pos", type: "quantitative"}
     },
-    query: sim2{}
+    query: sim{}
   }
 }.
 
-pos{time: T, y: Y} :-
-  startPos{time: T, y: Y} |
-  stepPos{time: T, y: Y}.
-startPos{time: 1, y: 0}.
-stepPos{time: T, y: NewPos} :-
-  gte{a: T, b: 1} &
-  add{a: PrevTime, b: 1, res: T} &
-  pos{time: PrevTime, y: PrevPos} &
-  add{a: PrevPos, b: 3, res: NewPos}.
-
 time{time: T} :-
-  range{from: 1, to: 10, val: T}.
+  range{from: 1, to: 1000, val: T}.
+
+pos{time: T, pos: Y} :-
+  mul{a: T, b: 3, res: Y}.
 
 sim{time: T, pos: Y} :-
   time{time: T} &
-  pos{time: T, y: Y}.
-
-pos2{time: T, pos: Y} :-
-  mul{a: T, b: 3, res: Y}.
-
-sim2{time: T, pos: Y} :-
-  time{time: T} &
-  pos2{time: T, pos: Y}.
+  pos{time: T, pos: Y}.
