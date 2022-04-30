@@ -57,7 +57,8 @@ scope.varAttr{scopeID: Relation, name: N, span: S, kind: "attr"} :-
 
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
-  scope.placeholderRule{scopeID: I, span: S, kind: K}.
+  scope.placeholderRule{scopeID: I, span: S, kind: K} |
+  scope.placeholderAttr{scopeID: I, span: S, kind: K}.
 scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
@@ -72,6 +73,12 @@ scope.placeholderRule{scopeID: "global", span: S, kind: "relation"} :-
   ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.placeholder{parentID: RecordID, span: S}.
+scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
+  ast.conjunct{id: Conjunct} &
+  ast.record{id: Rec, parentID: Conjunct} &
+  ast.ident{parentID: Rec, text: Relation} &
+  ast.keyValue{id: KV, parentID: Rec} &
+  ast.placeholder{parentID: KV, span: S}.
 
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "specialVar"}.
