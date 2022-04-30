@@ -17,6 +17,13 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.initEqVar{scopeID: I, name: N, span: S, kind: K} |
   scope.eqVar{scopeID: I, name: N, span: S, kind: K}.
 
+scope.eqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
+  ast.model{id: Model} &
+  ast.equations{id: Equations, parentID: Model} &
+  ast.equation{id: EQ, parentID: Equations} &
+  ast.expr{id: Expr, parentID: EQ} &
+  scope.exprVar{id: Expr, name: N, span: S}.
+
 scope.initEqVar{scopeID: Model, name: N, span: S, kind: "var"} :-
   ast.model{id: Model} &
   ast.init{id: Init, parentID: Model} &
