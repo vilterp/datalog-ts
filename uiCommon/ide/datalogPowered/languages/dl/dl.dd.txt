@@ -2,7 +2,10 @@ dl
 .table baz
 foo{bar: A, baz: B} :-
   ???{} &
-  bar{doop: ???}.
+  bar{doop: ???} &
+  baz{???: T}.
+baz{time: T} :-
+  time{time: T}.
 ide.Suggestion{}
 ----
 application/datalog
@@ -10,6 +13,8 @@ ide.Suggestion{id: 13, name: "A", span: span{from: 56, to: 59}, type: T}
 ide.Suggestion{id: 13, name: "B", span: span{from: 56, to: 59}, type: T}
 ide.Suggestion{id: "global", name: "foo", span: span{from: 36, to: 39}, type: T}
 ide.Suggestion{id: "global", name: "baz", span: span{from: 36, to: 39}, type: T}
+ide.Suggestion{id: "global", name: "baz", span: span{from: 36, to: 39}, type: T}
+ide.Suggestion{id: "baz", name: "time", span: span{from: 69, to: 72}, type: T}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
