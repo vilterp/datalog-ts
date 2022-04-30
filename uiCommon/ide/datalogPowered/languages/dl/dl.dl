@@ -6,8 +6,9 @@ scope.Scope{id: RuleID, label: N} :-
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnVar{scopeID: I, name: N, span: S, kind: K} |
-  scope.defnTable{scopeID: I, name: N, span: S, kind: K}.
-scope.defnRule{scopeID: "global", span: S, name: N, kind: "relation"} :-
+  scope.defnTable{scopeID: I, name: N, span: S, kind: K} |
+  scope.defnAttr{scopeID: I, name: N, span: S, kind: K}.
+scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
@@ -18,14 +19,21 @@ scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.var{span: S, text: N, parentID: ValueTermID}.
-scope.defnTable{scopeID: "global", name: N, span: S, kind: "relation"} :-
+scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.tableDecl{id: DeclID} &
   ast.ident{parentID: DeclID, span: S, text: N}.
+scope.defnAttr{scopeID: RuleName, name: N, span: S, kind: "attr"} :-
+  ast.rule{id: Rule} &
+  ast.record{id: Rec, parentID: Rule} &
+  ast.ident{parentID: Rec, text: RuleName} &
+  ast.keyValue{id: KV, parentID: Rec} &
+  ast.ident{parentID: KV, text: N, span: S}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
-  scope.varTerm{scopeID: I, name: N, span: S, kind: K}.
-scope.varRuleInvocation{scopeID: "global", name: N, span: S, kind: "relation"} :-
+  scope.varTerm{scopeID: I, name: N, span: S, kind: K} |
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
+scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
   ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
@@ -40,10 +48,17 @@ scope.varTerm{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.var{parentID: ValueTermID, text: N, span: S}.
+scope.varAttr{scopeID: Relation, name: N, span: S, kind: "attr"} :-
+  ast.conjunct{id: Conjunct} &
+  ast.record{id: Rec, parentID: Conjunct} &
+  ast.ident{parentID: Rec, text: Relation} &
+  ast.keyValue{id: KV, parentID: Rec} &
+  ast.ident{parentID: KV, text: N, span: S}.
 
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
-  scope.placeholderRule{scopeID: I, span: S, kind: K}.
+  scope.placeholderRule{scopeID: I, span: S, kind: K} |
+  scope.placeholderAttr{scopeID: I, span: S, kind: K}.
 scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
@@ -52,12 +67,18 @@ scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.placeholder{parentID: ValueTermID, span: S}.
-scope.placeholderRule{scopeID: "global", span: S, kind: "relation"} :-
+scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
   ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.placeholder{parentID: RecordID, span: S}.
+scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
+  ast.conjunct{id: Conjunct} &
+  ast.record{id: Rec, parentID: Conjunct} &
+  ast.ident{parentID: Rec, text: Relation} &
+  ast.keyValue{id: KV, parentID: Rec} &
+  ast.placeholder{parentID: KV, span: S}.
 
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "specialVar"}.
