@@ -8,7 +8,7 @@ varDecl :- [var, ";"].
 initEq :- [ident, ws, "=", ws, expr, ";"].
 expr :- (intLit | derivative | var).
 var :- ident.
-derivative :- ["der(", ident, ")"].
+derivative :- [derKW, "(", ident, ")"].
 equations :- repSep(equation, ws).
 equation :- [expr, ws, "=", ws, expr, ";"].
 
@@ -27,3 +27,4 @@ modelKW :- "model".
 initKW :- "init".
 equationKW :- "equation".
 endKW :- "end".
+derKW :- "der".
