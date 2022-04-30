@@ -1,14 +1,16 @@
 main :- model.
-model :- [modelKW, ws, ident, params, ws, vars, initKW, ws, init, ws, equationKW, ws, equations, ws, endKW].
+model :- [modelKW, ws, ident, params, ws, vars, ws, initKW, ws, init, ws, equationKW, ws, equations, ws, endKW].
 params :- ["(", repSep(ident, commaSpace), ")"].
 
-vars :- repSep(ident, semicolonSpace).
-init :- repSep(initEq, semicolonSpace).
-initEq :- [ident, ws, "=", ws, expr].
-expr :- (intLit | derivative).
+vars :- repSep(varDecl, ws).
+init :- repSep(initEq, ws).
+varDecl :- [var, ";"].
+initEq :- [ident, ws, "=", ws, expr, ";"].
+expr :- (intLit | derivative | var).
+var :- ident.
 derivative :- ["der(", ident, ")"].
-equations :- repSep(equation, semicolonSpace).
-equation :- [expr, ws, "=", ws, expr].
+equations :- repSep(equation, ws).
+equation :- [expr, ws, "=", ws, expr, ";"].
 
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
