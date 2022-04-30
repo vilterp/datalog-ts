@@ -35,8 +35,9 @@ scope.exprVar{id: I, text: N, span: S} :-
   scope.thisExprVar{id: I, text: N, span: S} |
   scope.childExprVar{id: I, text: N, span: S}.
 
-scope.thisExprVar{id: I, text: N, span: S} :-
-  ast.var{id: I, text: N, span: S}.
+scope.thisExprVar{id: Expr, text: N, span: S} :-
+  ast.expr{id: Expr} &
+  ast.var{parentID: Expr, text: N, span: S}.
 
 scope.childExprVar{id: I, text: N, span: S} :-
   ast.derivative{id: I} &
