@@ -20,6 +20,8 @@ export function WrappedCodeEditor(props: {
   lang: string;
   hideKeyBindingsTable?: boolean;
   autofocus?: boolean;
+  width?: number;
+  height?: number;
 }) {
   const {
     finalInterp: withoutCursor,
@@ -53,6 +55,8 @@ export function WrappedCodeEditor(props: {
         hideKeyBindingsTable={props.hideKeyBindingsTable}
         lang={props.lang}
         autofocus={props.autofocus}
+        width={props.width}
+        height={props.height}
       />
       <ErrorList
         errors={[langParseError, ...dlErrors].filter((x) => x !== null)}
