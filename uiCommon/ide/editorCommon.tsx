@@ -22,6 +22,8 @@ export function EditorBox(props: {
   highlighted: React.ReactNode;
   hideKeyBindingsTable?: boolean;
   autofocus?: boolean;
+  width?: number;
+  height?: number;
 }) {
   const setCursorPos = (pos: number) => {
     return props.setEditorState({
@@ -42,8 +44,8 @@ export function EditorBox(props: {
       <div style={{ display: "flex" }}>
         <div
           style={{
-            width: 510,
-            height: 450,
+            width: props.width || 510,
+            height: props.height || 450,
             overflow: "auto",
             border: "1px solid black",
             marginBottom: 10,

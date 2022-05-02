@@ -12,6 +12,7 @@ import { LANGUAGES } from "../../uiCommon/ide/datalogPowered/languages";
 // @ts-ignore
 import commonThemeCSS from "../../uiCommon/ide/datalogPowered/commonTheme.css";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -38,6 +39,8 @@ function Main() {
         lang="datalog"
         editorState={editorState}
         setEditorState={setEditorState}
+        width={800}
+        height={1000}
       />
       <br />
       {error ? (
@@ -46,8 +49,10 @@ function Main() {
           <pre style={{ fontFamily: "monospace", color: "red" }}>{error}</pre>
         </>
       ) : null}
-      <h3>Explore</h3>
-      <Explorer interp={interp} showViz />
+      <CollapsibleWithHeading
+        heading="Explore"
+        content={<Explorer interp={interp} showViz />}
+      />
     </div>
   );
 }
