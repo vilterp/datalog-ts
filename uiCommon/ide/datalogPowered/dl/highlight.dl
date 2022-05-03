@@ -30,17 +30,31 @@ hl.segmentComment{type: "comment", id: I, span: S, highlight: false} :-
 hl.segmentSpecialVar{type: "specialVar", span: S, highlight: false} :-
   hl.mapping{rule: R, type: "specialVar"} &
   astInternal.node{rule: R, span: S}.
-
 hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: I, span: S}.
-hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
-  ide.CurrentUsage{defnLoc: S} &
-  scope.Defn{span: S}.
-# TODO: highlight other usages
+
+# highlighting
+hl.segmentIdentDefnHL{type: "defn", span: span{from: F, to: T}, highlight: true} :-
+  scope.Defn{span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
-  ide.CurrentUsage{usageLoc: S} &
-  scope.Var{span: S}.
+  hl.currentVar{span: S} |
+  hl.otherInstanceOfCurrentVar{span: S}.
+
+hl.currentVar{span: S} :-
+  ide.CurrentVar{span: S}.
+hl.otherInstanceOfCurrentVar{span: S} :-
+  ide.CurrentVar{scopeID: CurrentVarScope, name: N} &
+  scope.Item{scopeID: CurrentVarScope, definitionScopeID: DefnScope, name: N} &
+  scope.Item{scopeID: OtherVarScope, definitionScopeID: DefnScope, name: N} &
+  scope.Var{scopeID: OtherVarScope, name: N, span: S}.
+
+ide.CurrentVar{scopeID: I, name: N, span: span{from: F, to: T}} :-
+  scope.Var{scopeID: I, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{id: CIdx} &
+  F <= CIdx & CIdx <= T.
 
 # just for testing
 hl.usageAndDefn{type: T, span: S, highlight: H} :-
