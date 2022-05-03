@@ -37,18 +37,24 @@ hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
 # highlighting
 # TODO: OR we're over a usage of this! come on
 hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
-  ide.CurrentDefn{span: S}.
+  ide.CurrentDefn{span: S} |
+  ide.DefnOfCurrentVar{span: S}.
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
   hl.currentVar{span: S} |
-  hl.otherInstanceOfCurrentVar{span: S}.
+  hl.otherInstanceOfCurrentVar{span: S} |
+  hl.usageOfCurrentDefn{span: S}.
 
 hl.currentVar{span: S} :-
   ide.CurrentVar{span: S}.
 hl.otherInstanceOfCurrentVar{span: S} :-
   ide.CurrentVar{scopeID: CurrentVarScope, name: N} &
-  scope.Item{scopeID: CurrentVarScope, definitionScopeID: DefnScope, name: N} &
-  scope.Item{scopeID: OtherVarScope, definitionScopeID: DefnScope, name: N} &
+  scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
+  scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
   scope.Var{scopeID: OtherVarScope, name: N, span: S}.
+hl.usageOfCurrentDefn{span: S} :-
+  ide.CurrentDefn{scopeID: DefnScope, name: N} &
+  scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N} &
+  scope.Var{scopeID: UsageScope, name: N, span: S}.
 
 # just for testing
 hl.usageAndDefn{type: T, span: S, highlight: H} :-
@@ -56,12 +62,16 @@ hl.usageAndDefn{type: T, span: S, highlight: H} :-
   hl.segmentIdentUsageHL{type: T, span: S, highlight: H}.
 
 # TODO: move these to IDE
-ide.CurrentVar{scopeID: I, name: N, span: span{from: F, to: T}} :-
-  scope.Var{scopeID: I, name: N, span: span{from: F, to: T}} &
-  ide.Cursor{id: CIdx} &
-  F <= CIdx & CIdx <= T.
-
-ide.CurrentDefn{span: span{from: F, to: T}} :-
-  scope.Defn{span: span{from: F, to: T}} &
+ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
+  scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
+
+ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
+  scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
+
+ide.DefnOfCurrentVar{span: S} :-
+  ide.CurrentVar{scopeID: UsageScope, name: N} &
+  scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
