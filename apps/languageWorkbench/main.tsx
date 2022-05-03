@@ -158,6 +158,15 @@ function Playground() {
           </>
         }
       />
+
+      <p>
+        <em>
+          Source:{" "}
+          <a href="https://github.com/vilterp/datalog-ts">
+            github.com/vilterp/datalog-ts
+          </a>
+        </em>
+      </p>
     </>
   );
 }
