@@ -114,3 +114,17 @@ plus2(x)
 hl.usageAndDefn{}
 ----
 application/datalog
+
+fp
+let x = 2 in x|||
+ide.RenameCandidate{}
+----
+application/datalog
+ide.RenameCandidate{defnLoc: span{from: 4, to: 5}, usageSpan: span{from: 13, to: 14}}
+
+fp
+let x||| = 2 in x
+ide.RenameCandidate{}
+----
+application/datalog
+ide.RenameCandidate{defnLoc: span{from: 4, to: 5}, usageSpan: span{from: 13, to: 14}}
