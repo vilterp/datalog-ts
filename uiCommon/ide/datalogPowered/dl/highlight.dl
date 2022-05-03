@@ -41,3 +41,8 @@ hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
   ide.CurrentUsage{usageLoc: S} &
   scope.Var{span: S}.
+
+# just for testing
+hl.usageAndDefn{type: T, span: S, highlight: H} :-
+  hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
+  hl.segmentIdentUsageHL{type: T, span: S, highlight: H}.

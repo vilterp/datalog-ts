@@ -75,3 +75,13 @@ tc.Problem{}
 ----
 application/datalog
 tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 45, span: span{from: 26, to: 27}}
+
+fp
+let x = 2 in
+let y = x in
+plus2(x|||)
+hl.usageAndDefn{}
+----
+application/datalog
+hl.usageAndDefn{highlight: true, span: span{from: 4, to: 5}, type: "defn"}
+hl.usageAndDefn{highlight: true, span: span{from: 32, to: 33}, type: "usage"}
