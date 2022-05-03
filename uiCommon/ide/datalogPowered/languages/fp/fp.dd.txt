@@ -106,3 +106,11 @@ hl.usageAndDefn{}
 ----
 application/datalog
 hl.usageAndDefn{highlight: true, span: span{from: 4, to: 5}, type: "defn"}
+
+fp
+let z||| = somethingUndef in
+let x = 3 in
+plus2(x)
+hl.usageAndDefn{}
+----
+application/datalog
