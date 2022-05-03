@@ -42,6 +42,8 @@ MANY posts {
     ???
   }
 };
-scope.Placeholder{}
+ide.Suggestion{}
 ----
 application/datalog
+ide.Suggestion{id: 164, name: "id", span: span{from: 185, to: 188}, type: T}
+ide.Suggestion{id: 164, name: "name", span: span{from: 185, to: 188}, type: T}

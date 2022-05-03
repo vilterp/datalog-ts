@@ -31,11 +31,12 @@ scope.columnUsage{scopeID: Select, name: N, span: S, kind: "column"} :-
 scope.Placeholder{span: S, scopeID: I, kind: K} :-
   scope.placeholderColumn{span: S, scopeID: I, kind: K} |
   scope.placeholderSelectTable{span: S, scopeID: I, kind: K}.
-scope.placeholderColumn{span: S, scopeID: SelectID, kind: "column"} :-
-  ast.selectStmt{id: SelectID} &
-  ast.selection{parentID: SelectID, id: SelectionID} &
-  ast.columnName{parentID: SelectionID, id: ColNameID} &
-  ast.placeholder{parentID: ColNameID, span: S}.
+scope.placeholderColumn{span: S, scopeID: Select, kind: "column"} :-
+  ast.selectStmt{id: Select} &
+  ast.selection{id: Selection, parentID: Select} &
+  ast.selectionElement{id: Element, parentID: Selection} &
+  ast.columnName{id: ColName, parentID: Element} &
+  ast.placeholder{parentID: ColName, span: S}.
 scope.placeholderSelectTable{span: S, scopeID: "global", kind: "table"} :-
   ast.selectStmt{id: SelectID} &
   ast.tableName{parentID: SelectID, id: TableNameID} &
