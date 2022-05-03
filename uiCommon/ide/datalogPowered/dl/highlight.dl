@@ -34,8 +34,7 @@ hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: I, span: S}.
 
-# highlighting
-# TODO: OR we're over a usage of this! come on
+# identifiers with cursor
 hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
   ide.CurrentDefn{span: S} |
   ide.DefnOfCurrentVar{span: S}.
