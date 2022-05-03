@@ -73,7 +73,7 @@ import modelicaExample from "./modelica/example.txt";
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText: {
     datalog: "",
-    grammar: "",
+    grammar: `main :- repSep(., "").`,
     example: "",
   },
   datalog: {
