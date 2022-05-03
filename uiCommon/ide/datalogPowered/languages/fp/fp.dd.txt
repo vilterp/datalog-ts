@@ -44,6 +44,7 @@ plus2("hello world")
 tc.Problem{}
 ----
 application/datalog
+tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 14, span: span{from: 6, to: 19}}
 
 fp
 plus2("hello world")
