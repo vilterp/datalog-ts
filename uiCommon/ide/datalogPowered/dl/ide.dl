@@ -1,6 +1,6 @@
 # === scope / reference graph ===
 
-# TODO: decide on defnSpan vs definitionLoc
+# TODO: decide on defnSpan vs defnSpan
 
 scope.Item{
   scopeID: I,
@@ -24,8 +24,8 @@ scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K, typ
 
 scope.Usage{
   name: N,
-  definitionLoc: DL,
-  usageLoc: UL,
+  defnSpan: DL,
+  usageSpan: UL,
   definitionScopeID: DS,
   usageScopeID: US,
   kind: K
@@ -37,35 +37,35 @@ scope.Usage{
 
 # all usages of the var the cursor is currently on,
 # with definition location.
-ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
-  ide.currentUsageDefn{defnLoc: DL, usageLoc: UL} |
-  ide.currentUsageUsage{defnLoc: DL, usageLoc: UL}.
+ide.CurrentUsage{defnLoc: DL, usageSpan: UL} :-
+  ide.currentUsageDefn{defnLoc: DL, usageSpan: UL} |
+  ide.currentUsageUsage{defnLoc: DL, usageSpan: UL}.
 
 # when the cursor is over a definition
-ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
-  scope.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageSpan: UL} :-
+  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: UL} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 # when the cursor is over a usage
-ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
-  scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+ide.currentUsageUsage{defnLoc: DL, usageSpan: span{from: FIdx, to: TIdx}} :-
+  scope.Usage{defnSpan: DL, usageSpan: span{from: FIdx, to: TIdx}} &
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 # used by Jump To Definition
 ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
-  scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  scope.Usage{defnSpan: DL, usageSpan: span{from: FIdx, to: TIdx}} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-ide.UsageForCursor{usageLoc: UL} :-
+ide.UsageForCursor{usageSpan: UL} :-
   ide.Cursor{idx: CIdx} &
-  scope.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: UL} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
-  ide.CurrentUsage{defnLoc: DL, usageLoc: UL} &
+ide.RenameCandidate{defnLoc: DL, usageSpan: UL} :-
+  ide.CurrentUsage{defnLoc: DL, usageSpan: UL} &
   DL != "builtin".
 
 # === suggestions ===
