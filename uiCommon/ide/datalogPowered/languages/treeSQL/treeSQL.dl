@@ -22,10 +22,11 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
 scope.tableUsage{scopeID: "global", name: N, span: S, kind: "table"} :-
   ast.selectStmt{id: SelectID} &
   ast.tableName{parentID: SelectID, span: S, text: N}.
-scope.columnUsage{scopeID: SelectID, name: N, span: S, kind: "column"} :-
-  ast.selectStmt{id: SelectID} &
-  ast.selection{parentID: SelectID, id: SelectionID} &
-  ast.columnName{parentID: SelectionID, span: S, text: N}.
+scope.columnUsage{scopeID: Select, name: N, span: S, kind: "column"} :-
+  ast.selectStmt{id: Select} &
+  ast.selection{id: Selection, parentID: Select} &
+  ast.selectionElement{id: Element, parentID: Selection} &
+  ast.columnName{parentID: Element, span: S, text: N}.
 
 scope.Placeholder{span: S, scopeID: I, kind: K} :-
   scope.placeholderColumn{span: S, scopeID: I, kind: K} |

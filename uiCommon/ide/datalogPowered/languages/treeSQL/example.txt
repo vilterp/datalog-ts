@@ -12,7 +12,7 @@ CREATE TABLE posts (
 MANY posts {
   id,
   body,
-  user: ONE user {
+  user: ONE users {
     name
   }
 };
