@@ -67,6 +67,12 @@ export function TraceNode(props: {
   switch (res.trace.type) {
     case "AndTrace":
       return <>And</>;
+    case "NegationTrace":
+      return (
+        <>
+          !<BareTerm term={res.trace.negatedTerm} />
+        </>
+      );
     default:
       return term;
   }

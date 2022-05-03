@@ -15,6 +15,8 @@ import {
   InvocationLocation,
   UserError,
   Rec,
+  relationalTrue,
+  relationalFalse,
 } from "../types";
 import {
   applyMappings,
@@ -152,7 +154,7 @@ function doEvaluate(
   // if (depth > 5) {
   //   throw new Error("too deep");
   // }
-  const bigRes = (() => {
+  const bigRes = ((): Res[] => {
     switch (term.type) {
       case "Record": {
         return memo(cache, term, scope, (): Res[] => {
@@ -215,16 +217,14 @@ function doEvaluate(
             // });
             const mappings = getMappings(rule.head.attrs, term.attrs);
             const rawResults = flatMap(rule.body.opts, (andExpr, optIdx) => {
-              const { recs: clauses, exprs } = extractBinExprs(andExpr.clauses);
-              const recResults = doJoin(
+              return doJoin(
                 depth,
                 [{ type: "OrOpt", idx: optIdx }],
                 db,
                 newScope,
-                clauses,
+                andExpr.clauses,
                 cache
               );
-              return applyFilters(exprs, recResults);
             });
             // console.groupEnd();
             // console.log("rawResults", rawResults.map(ppr));
@@ -280,17 +280,33 @@ function doEvaluate(
       }
       case "Var":
         return [{ term: scope[term.name], bindings: scope, trace: varTrace }];
-      case "BinExpr":
-        return [
-          {
-            term: evalBinExpr(term, scope) ? trueTerm : falseTerm,
-            bindings: scope,
-            trace: binExprTrace,
-          },
-        ];
+      case "BinExpr": {
+        const res = evalBinExpr(term, scope);
+        const relationalRes = res ? relationalTrue : relationalFalse;
+        return relationalRes.map((term) => ({
+          term,
+          bindings: scope,
+          trace: binExprTrace,
+        }));
+      }
       case "Bool":
       case "StringLit":
         return [{ term: term, bindings: scope, trace: literalTrace }];
+      case "Negation":
+        const results = doEvaluate(
+          depth + 1,
+          [...path, { type: "Negation" }],
+          db,
+          scope,
+          term.record,
+          cache
+        );
+        const terms = results.length > 0 ? relationalFalse : relationalTrue;
+        return terms.map((resultTerm) => ({
+          term: resultTerm,
+          bindings: scope,
+          trace: { type: "NegationTrace", negatedTerm: term.record },
+        }));
     }
   })();
   // console.groupEnd();

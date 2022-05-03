@@ -80,6 +80,9 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
   ast.keyValue{id: KV, parentID: Rec} &
   ast.placeholder{parentID: KV, span: S}.
 
+# TODO: make autocompletion work inside of negations
+# maybe by using scope.parent instead of explicitly joining down
+
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "specialVar"}.
 hl.mapping{rule: "int", type: "int"}.
