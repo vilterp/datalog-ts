@@ -15,7 +15,7 @@ binOp :- ("<=" | ">=" | "==" | "!=").
 
 
 term :- (record | int | var | string | bool | placeholder).
-var :- [[A-Z], repSep(([A-Z]|[a-z]|[0-9]), "")].
+var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 record :- [(ident | placeholder), "{", ws, repSep(keyValue, [",", ws]), ws, "}"].
 keyValue :- [(ident | placeholder), ":", ws, term].
 int :- [num, repSep(num, "")].
