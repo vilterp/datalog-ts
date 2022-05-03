@@ -36,23 +36,6 @@ hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
 
 # identifiers with cursor
 hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
-  ide.CurrentDefn{span: S} |
-  ide.DefnOfCurrentVar{span: S}.
+  ide.CurrentDefnOrDefnOfCurrentVar{span: S}.
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
-  hl.currentVar{span: S} |
-  hl.usageOfCurrentDefn{span: S}.
-
-hl.currentVar{span: S} :-
-  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
-  scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
-  scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
-  scope.Var{scopeID: OtherVarScope, name: N, span: S}.
-hl.usageOfCurrentDefn{span: S} :-
-  ide.CurrentDefn{scopeID: DefnScope, name: N} &
-  scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N} &
-  scope.Var{scopeID: UsageScope, name: N, span: S}.
-
-# just for testing
-hl.usageAndDefn{type: T, span: S, highlight: H} :-
-  hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
-  hl.segmentIdentUsageHL{type: T, span: S, highlight: H}.
+  ide.CurrentVarOrUsageOfCurrentDefn{span: S}.

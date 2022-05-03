@@ -35,27 +35,9 @@ scope.Usage{
 
 # === Rename ===
 
-ide.RenameCandidate{defnLoc: DL, usageSpan: UL} :-
-  ide.CurrentUsage{defnLoc: DL, usageSpan: UL} &
-  DL != "builtin".
-
-# all usages of the var the cursor is currently on,
-# with definition location.
-ide.CurrentUsage{defnLoc: DL, usageSpan: UL} :-
-  ide.currentUsageDefn{defnLoc: DL, usageSpan: UL} |
-  ide.currentUsageUsage{defnLoc: DL, usageSpan: UL}.
-
-# when the cursor is over a definition
-ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageSpan: UL} :-
-  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: UL} &
-  ide.Cursor{idx: CIdx} &
-  FIdx <= CIdx & CIdx <= TIdx.
-
-# when the cursor is over a usage
-ide.currentUsageUsage{defnLoc: DL, usageSpan: span{from: FIdx, to: TIdx}} :-
-  scope.Usage{defnSpan: DL, usageSpan: span{from: FIdx, to: TIdx}} &
-  ide.Cursor{idx: CIdx} &
-  FIdx <= CIdx & CIdx <= TIdx.
+ide.RenameSpan{span: S} :-
+  ide.UsageAndDefn{span: S} &
+  S != "builtin".
 
 # === Jump to Definition ===
 
@@ -96,6 +78,10 @@ ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
 
+ide.CurrentDefnOrDefnOfCurrentVar{span: S} :-
+  ide.CurrentDefn{span: S} |
+  ide.DefnOfCurrentVar{span: S}.
+
 ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
   scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
@@ -104,3 +90,22 @@ ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
 ide.DefnOfCurrentVar{span: S} :-
   ide.CurrentVar{scopeID: UsageScope, name: N} &
   scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
+
+ide.CurrentVarOrUsageOfCurrentDefn{span: S} :-
+  ide.instanceOfCurrentVar{span: S} |
+  ide.usageOfCurrentDefn{span: S}.
+
+ide.instanceOfCurrentVar{span: S} :-
+  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
+  scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
+  scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
+  scope.Var{scopeID: OtherVarScope, name: N, span: S}.
+ide.usageOfCurrentDefn{span: S} :-
+  ide.CurrentDefn{scopeID: DefnScope, name: N} &
+  scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N} &
+  scope.Var{scopeID: UsageScope, name: N, span: S}.
+
+# just for testing
+ide.UsageAndDefn{type: T, span: S, highlight: H} :-
+  ide.segmentIdentDefnHL{type: T, span: S, highlight: H} |
+  ide.segmentIdentUsageHL{type: T, span: S, highlight: H}.
