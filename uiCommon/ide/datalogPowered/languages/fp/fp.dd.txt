@@ -97,3 +97,12 @@ application/datalog
 hl.usageAndDefn{highlight: true, span: span{from: 4, to: 5}, type: "defn"}
 hl.usageAndDefn{highlight: true, span: span{from: 21, to: 22}, type: "usage"}
 hl.usageAndDefn{highlight: true, span: span{from: 32, to: 33}, type: "usage"}
+
+fp
+let z||| = 2 in
+let x = 3 in
+plus2(x)
+hl.usageAndDefn{}
+----
+application/datalog
+hl.usageAndDefn{highlight: true, span: span{from: 4, to: 5}, type: "defn"}
