@@ -1,3 +1,0 @@
-letExpr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
-intLit{id: 1, val: 2}.
-var{id: 2, name: "x"}.

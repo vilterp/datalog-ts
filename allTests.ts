@@ -6,7 +6,6 @@ import {
   coreTestsIncremental,
   coreTestsCommon,
 } from "./core/ddTests";
-import { fpTests } from "./apps/fp/ddTests";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
@@ -27,7 +26,6 @@ const suites: { [name: string]: Suite } = {
   coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
   incrTests: incrTests(writeResults),
-  fpTests: fpTests(writeResults),
   lwbTests: lwbTests(writeResults),
   prettyPrintTests,
   treeTests,

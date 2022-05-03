@@ -1,2 +1,0 @@
-Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
-intLit{id: 0, val: 2}.
