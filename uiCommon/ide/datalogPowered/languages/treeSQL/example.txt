@@ -13,6 +13,7 @@ MANY posts {
   id,
   body,
   user: ONE users {
-    name
+    name,
+    ???
   }
 };
