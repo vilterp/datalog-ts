@@ -33,7 +33,11 @@ scope.Usage{
   scope.Item{scopeID: US, defnSpan: DL, name: N, defnScopeID: DS, kind: K} &
   scope.Var{scopeID: US, span: UL, name: N, kind: K}.
 
-# === interaction with cursor ===
+# === Rename ===
+
+ide.RenameCandidate{defnLoc: DL, usageSpan: UL} :-
+  ide.CurrentUsage{defnLoc: DL, usageSpan: UL} &
+  DL != "builtin".
 
 # all usages of the var the cursor is currently on,
 # with definition location.
@@ -53,7 +57,8 @@ ide.currentUsageUsage{defnLoc: DL, usageSpan: span{from: FIdx, to: TIdx}} :-
   ide.Cursor{idx: CIdx} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-# used by Jump To Definition
+# === Jump to Definition ===
+
 ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
   scope.Usage{defnSpan: DL, usageSpan: span{from: FIdx, to: TIdx}} &
@@ -64,11 +69,7 @@ ide.UsageForCursor{usageSpan: UL} :-
   scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: UL} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-ide.RenameCandidate{defnLoc: DL, usageSpan: UL} :-
-  ide.CurrentUsage{defnLoc: DL, usageSpan: UL} &
-  DL != "builtin".
-
-# === suggestions ===
+# === Suggestions ===
 
 ide.Suggestion{id: I, name: N, span: S, type: T} :-
   scope.Placeholder{scopeID: I, span: S, kind: K} &
@@ -87,3 +88,19 @@ ide.CurrentProblem{desc: D, span: span{from: F, to: T}} :-
   tc.Problem{desc: D, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
+
+# === Highlight ===
+
+ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
+  scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
+
+ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
+  scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
+
+ide.DefnOfCurrentVar{span: S} :-
+  ide.CurrentVar{scopeID: UsageScope, name: N} &
+  scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.

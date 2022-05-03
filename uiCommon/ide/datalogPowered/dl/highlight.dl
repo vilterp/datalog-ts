@@ -57,18 +57,3 @@ hl.usageOfCurrentDefn{span: S} :-
 hl.usageAndDefn{type: T, span: S, highlight: H} :-
   hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
   hl.segmentIdentUsageHL{type: T, span: S, highlight: H}.
-
-# TODO: move these to IDE
-ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
-  scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}} &
-  ide.Cursor{idx: CIdx} &
-  F <= CIdx & CIdx <= T.
-
-ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
-  scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
-  ide.Cursor{idx: CIdx} &
-  F <= CIdx & CIdx <= T.
-
-ide.DefnOfCurrentVar{span: S} :-
-  ide.CurrentVar{scopeID: UsageScope, name: N} &
-  scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
