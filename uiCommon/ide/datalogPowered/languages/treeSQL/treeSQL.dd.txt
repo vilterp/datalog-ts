@@ -23,3 +23,25 @@ scope.Usage{definitionScopeID: "global", defnSpan: span{from: 59, to: 64}, kind:
 scope.Usage{definitionScopeID: 164, defnSpan: span{from: 33, to: 37}, kind: "column", name: "name", usageScopeID: 164, usageSpan: span{from: 175, to: 179}}
 scope.Usage{definitionScopeID: 119, defnSpan: span{from: 69, to: 71}, kind: "column", name: "id", usageScopeID: 119, usageSpan: span{from: 139, to: 141}}
 scope.Usage{definitionScopeID: 119, defnSpan: span{from: 111, to: 115}, kind: "column", name: "body", usageScopeID: 119, usageSpan: span{from: 145, to: 149}}
+
+treeSQL
+CREATE TABLE users (
+  id INT,
+  name TEXT
+);
+CREATE TABLE posts (
+  id INT,
+  user_id INT REFERENCES users,
+  body TEXT
+);
+MANY posts {
+  id,
+  body,
+  user: ONE users {
+    name,
+    ???
+  }
+};
+scope.Placeholder{}
+----
+application/datalog
