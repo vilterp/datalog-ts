@@ -41,13 +41,10 @@ hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
   ide.DefnOfCurrentVar{span: S}.
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
   hl.currentVar{span: S} |
-  hl.otherInstanceOfCurrentVar{span: S} |
   hl.usageOfCurrentDefn{span: S}.
 
 hl.currentVar{span: S} :-
-  ide.CurrentVar{span: S}.
-hl.otherInstanceOfCurrentVar{span: S} :-
-  ide.CurrentVar{scopeID: CurrentVarScope, name: N} &
+  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
   scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
   scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
   scope.Var{scopeID: OtherVarScope, name: N, span: S}.
