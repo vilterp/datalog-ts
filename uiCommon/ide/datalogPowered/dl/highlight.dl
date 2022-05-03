@@ -30,14 +30,12 @@ hl.segmentComment{type: "comment", id: I, span: S, highlight: false} :-
 hl.segmentSpecialVar{type: "specialVar", span: S, highlight: false} :-
   hl.mapping{rule: R, type: "specialVar"} &
   astInternal.node{rule: R, span: S}.
-
 hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: I, span: S}.
+
+# identifiers with cursor
 hl.segmentIdentDefnHL{type: "defn", span: S, highlight: true} :-
-  ide.CurrentUsage{defnLoc: S} &
-  scope.Defn{span: S}.
-# TODO: highlight other usages
+  ide.CurrentDefnOrDefnOfCurrentVar{span: S}.
 hl.segmentIdentUsageHL{type: "usage", span: S, highlight: true} :-
-  ide.CurrentUsage{usageLoc: S} &
-  scope.Var{span: S}.
+  ide.CurrentVarOrUsageOfCurrentDefn{span: S}.

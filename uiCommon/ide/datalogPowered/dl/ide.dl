@@ -1,6 +1,6 @@
 # === scope / reference graph ===
 
-# TODO: decide on defnSpan vs definitionLoc
+# TODO: decide on defnSpan vs defnSpan
 
 scope.Item{
   scopeID: I,
@@ -24,8 +24,8 @@ scope.defnParent{scopeID: I, defnScopeID: DS, name: N, defnSpan: S, kind: K, typ
 
 scope.Usage{
   name: N,
-  definitionLoc: DL,
-  usageLoc: UL,
+  defnSpan: DL,
+  usageSpan: UL,
   definitionScopeID: DS,
   usageScopeID: US,
   kind: K
@@ -33,42 +33,25 @@ scope.Usage{
   scope.Item{scopeID: US, defnSpan: DL, name: N, defnScopeID: DS, kind: K} &
   scope.Var{scopeID: US, span: UL, name: N, kind: K}.
 
-# === interaction with cursor ===
+# === Rename ===
 
-# all usages of the var the cursor is currently on,
-# with definition location.
-ide.CurrentUsage{defnLoc: DL, usageLoc: UL} :-
-  ide.currentUsageDefn{defnLoc: DL, usageLoc: UL} |
-  ide.currentUsageUsage{defnLoc: DL, usageLoc: UL}.
+ide.RenameSpan{span: S} :-
+  ide.UsageAndDefn{span: S} &
+  S != "builtin".
 
-# when the cursor is over a definition
-ide.currentUsageDefn{defnLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} :-
-  scope.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
-  ide.Cursor{idx: CIdx} &
-  FIdx <= CIdx & CIdx <= TIdx.
+# === Jump to Definition ===
 
-# when the cursor is over a usage
-ide.currentUsageUsage{defnLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} :-
-  scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
-  ide.Cursor{idx: CIdx} &
-  FIdx <= CIdx & CIdx <= TIdx.
-
-# used by Jump To Definition
 ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
-  scope.Usage{definitionLoc: DL, usageLoc: span{from: FIdx, to: TIdx}} &
+  scope.Usage{defnSpan: DL, usageSpan: span{from: FIdx, to: TIdx}} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-ide.UsageForCursor{usageLoc: UL} :-
+ide.UsageForCursor{usageSpan: UL} :-
   ide.Cursor{idx: CIdx} &
-  scope.Usage{definitionLoc: span{from: FIdx, to: TIdx}, usageLoc: UL} &
+  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: UL} &
   FIdx <= CIdx & CIdx <= TIdx.
 
-ide.RenameCandidate{defnLoc: DL, usageLoc: UL} :-
-  ide.CurrentUsage{defnLoc: DL, usageLoc: UL} &
-  DL != "builtin".
-
-# === suggestions ===
+# === Suggestions ===
 
 ide.Suggestion{id: I, name: N, span: S, type: T} :-
   scope.Placeholder{scopeID: I, span: S, kind: K} &
@@ -87,3 +70,42 @@ ide.CurrentProblem{desc: D, span: span{from: F, to: T}} :-
   tc.Problem{desc: D, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
+
+# === Highlight ===
+
+ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
+  scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
+
+ide.CurrentDefnOrDefnOfCurrentVar{span: S} :-
+  ide.CurrentDefn{span: S} |
+  ide.DefnOfCurrentVar{span: S}.
+
+ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
+  scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
+
+ide.DefnOfCurrentVar{span: S} :-
+  ide.CurrentVar{scopeID: UsageScope, name: N} &
+  scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
+
+ide.CurrentVarOrUsageOfCurrentDefn{span: S} :-
+  ide.instanceOfCurrentVar{span: S} |
+  ide.usageOfCurrentDefn{span: S}.
+
+ide.instanceOfCurrentVar{span: S} :-
+  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
+  scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
+  scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
+  scope.Var{scopeID: OtherVarScope, name: N, span: S}.
+ide.usageOfCurrentDefn{span: S} :-
+  ide.CurrentDefn{scopeID: DefnScope, name: N} &
+  scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N} &
+  scope.Var{scopeID: UsageScope, name: N, span: S}.
+
+# just for testing
+ide.UsageAndDefn{type: T, span: S, highlight: H} :-
+  ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S, highlight: H} |
+  ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S, highlight: H}.

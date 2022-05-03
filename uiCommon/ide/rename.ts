@@ -39,17 +39,12 @@ export const renameRefactorAction: EditorAction = {
 };
 
 function getSpansToReplace(interp: AbstractInterpreter): Span[] {
-  const results = interp.queryStr(
-    "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}"
-  );
+  const results = interp.queryStr("ide.RenameSpan{span: S}");
   return sortSpans(
     uniqBy(
-      flatMap(results, (res) => {
+      results.map((res) => {
         const rec = res.term as Rec;
-        return [
-          dlToSpan(rec.attrs.defnLoc as Rec),
-          dlToSpan(rec.attrs.usageLoc as Rec),
-        ];
+        return dlToSpan(rec.attrs.span as Rec);
       }),
       (s) => `${s.from}`
     )

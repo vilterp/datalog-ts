@@ -75,3 +75,65 @@ tc.Problem{}
 ----
 application/datalog
 tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, nodeID: 45, span: span{from: 26, to: 27}}
+
+fp
+let x = 2 in
+let y = x in
+plus2(x|||)
+ide.UsageAndDefn{}
+----
+application/datalog
+ide.UsageAndDefn{highlight: H, span: span{from: 4, to: 5}, type: T}
+ide.UsageAndDefn{highlight: H, span: span{from: 21, to: 22}, type: T}
+ide.UsageAndDefn{highlight: H, span: span{from: 32, to: 33}, type: T}
+
+fp
+let x||| = 2 in
+let y = x in
+plus2(x)
+ide.UsageAndDefn{}
+----
+application/datalog
+ide.UsageAndDefn{highlight: H, span: span{from: 4, to: 5}, type: T}
+ide.UsageAndDefn{highlight: H, span: span{from: 21, to: 22}, type: T}
+ide.UsageAndDefn{highlight: H, span: span{from: 32, to: 33}, type: T}
+
+fp
+let z||| = 2 in
+let x = 3 in
+plus2(x)
+ide.UsageAndDefn{}
+----
+application/datalog
+ide.UsageAndDefn{highlight: H, span: span{from: 4, to: 5}, type: T}
+
+fp
+let z||| = somethingUndef in
+let x = 3 in
+plus2(x)
+ide.UsageAndDefn{}
+----
+application/datalog
+
+fp
+let x = 2 in x|||
+ide.RenameSpan{}
+----
+application/datalog
+ide.RenameSpan{span: span{from: 4, to: 5}}
+ide.RenameSpan{span: span{from: 13, to: 14}}
+
+fp
+let x||| = 2 in x
+ide.RenameSpan{}
+----
+application/datalog
+ide.RenameSpan{span: span{from: 4, to: 5}}
+ide.RenameSpan{span: span{from: 13, to: 14}}
+
+fp
+let x||| = 2 in 3
+ide.RenameSpan{}
+----
+application/datalog
+ide.RenameSpan{span: span{from: 4, to: 5}}
