@@ -107,5 +107,5 @@ ide.usageOfCurrentDefn{span: S} :-
 
 # just for testing
 ide.UsageAndDefn{type: T, span: S, highlight: H} :-
-  ide.segmentIdentDefnHL{type: T, span: S, highlight: H} |
-  ide.segmentIdentUsageHL{type: T, span: S, highlight: H}.
+  ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S, highlight: H} |
+  ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S, highlight: H}.
