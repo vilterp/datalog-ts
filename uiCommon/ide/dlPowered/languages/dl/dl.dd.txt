@@ -17,6 +17,15 @@ ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}
 ide.Suggestion{id: "baz", name: "time", span: span{from: 69, to: 72}, type: T}
 
 dl
+foo{a: A, b: B} :- bar{a: A, b: B}.
+baz{a: A, b: B} :- foo{aa: A, bb: B}.
+tc.Problem{}
+----
+application/datalog
+tc.Problem{desc: nonexistentAttr{attr: "aa", relation: "foo"}, nodeID: 86, span: span{from: 59, to: 61}}
+tc.Problem{desc: nonexistentAttr{attr: "bb", relation: "foo"}, nodeID: 94, span: span{from: 66, to: 68}}
+
+dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.l|||et{id: I, name: N, type: T, location: S} |
