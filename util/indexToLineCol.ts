@@ -1,5 +1,3 @@
-// TODO: I swear I've written this before...
-
 export type LineAndCol = { line: number; col: number };
 
 export function lineAndColFromIdx(source: string, index: number): LineAndCol {

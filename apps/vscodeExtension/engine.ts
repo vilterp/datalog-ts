@@ -6,7 +6,7 @@ import { LOADER, mainDL } from "../../uiCommon/ide/dlPowered/common";
 import { Rec } from "../../core/types";
 import { dlToSpan } from "../../uiCommon/ide/types";
 import { ppt } from "../../core/pretty";
-import { lineAndColFromIdx } from "./util";
+import { lineAndColFromIdx } from "../../util/indexToLineCol";
 
 export function refreshDiagnostics(
   doc: vscode.TextDocument,
