@@ -1,4 +1,7 @@
-export type LineAndCol = { line: number; col: number };
+export type LineAndCol = {
+  line: number; // zero-indexed
+  col: number; // zero-indexed
+};
 
 export function lineAndColFromIdx(source: string, index: number): LineAndCol {
   const lines = source.split("\n");
