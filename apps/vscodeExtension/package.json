@@ -1,0 +1,16 @@
+{
+  "name": "datalog",
+  "displayName": "Datalog",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vilterp/datalog-ts"
+  },
+  "engines": {
+    "vscode": "^1.32.0"
+  },
+  "activationEvents": [
+    "onLanguage:datalog"
+  ],
+  "main": "./out/extension.js"
+}
