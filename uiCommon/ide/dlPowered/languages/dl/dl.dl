@@ -9,9 +9,7 @@ scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnTable{scopeID: I, name: N, span: S, kind: K} |
   scope.defnAttr{scopeID: I, name: N, span: S, kind: K}.
 scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} :-
-  ast.rule{id: RuleID} &
-  ast.record{id: RecordID, parentID: RuleID} &
-  ast.ident{parentID: RecordID, text: N, span: S}.
+  scope.rule{span: S, name: N}.
 # TODO: recurse into records as values
 scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
@@ -81,7 +79,8 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
 
 # TODO: var in head that's unbound
 tc.Problem{desc: D, nodeID: I, span: S} :-
-  tc.nonexistentAttr{desc: D, nodeID: I, span: S}.
+  tc.nonexistentAttr{desc: D, nodeID: I, span: S} |
+  tc.unboundVarInHead{desc: D, nodeID: I, span: S}.
 tc.nonexistentAttr{
   desc: nonexistentAttr{relation: Relation, attr: N},
   nodeID: I,
@@ -90,6 +89,15 @@ tc.nonexistentAttr{
   scope.defnRule{name: Relation} &
   scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S} &
   !tc.ruleAttr{rule: Relation, attr: N}.
+tc.unboundVarInHead{desc: unboundVarInHead{rule: R, name: N}, nodeID: I, span: S} :-
+  scope.defnVar{scopeID: RuleID, span: S, name: N} &
+  scope.rule{scopeID: RuleID, name: R} &
+  !scope.varTerm{scopeID: RuleID, name: N}.
+
+scope.rule{scopeID: RuleID, name: N, span: S} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.ident{parentID: RecordID, text: N, span: S}.
 
 tc.ruleAttr{rule: RuleName, attr: Attr, span: S} :-
   ast.rule{id: Rule} &

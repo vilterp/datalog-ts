@@ -26,6 +26,13 @@ tc.Problem{desc: nonexistentAttr{attr: "aa", relation: "foo"}, nodeID: 86, span:
 tc.Problem{desc: nonexistentAttr{attr: "bb", relation: "foo"}, nodeID: 94, span: span{from: 66, to: 68}}
 
 dl
+foo{a: A, b: C} :- bar{a: A, b: B}.
+tc.Problem{}
+----
+application/datalog
+tc.Problem{desc: unboundVarInHead{name: "C", rule: "foo"}, nodeID: I, span: span{from: 13, to: 14}}
+
+dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.l|||et{id: I, name: N, type: T, location: S} |
