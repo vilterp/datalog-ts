@@ -6,11 +6,11 @@ import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
 import { initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../../uiCommon/ide/datalogPowered/languages";
+import { LANGUAGES } from "../../uiCommon/ide/dlPowered/languages";
 // @ts-ignore
-import commonThemeCSS from "../../uiCommon/ide/datalogPowered/commonTheme.css";
+import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 

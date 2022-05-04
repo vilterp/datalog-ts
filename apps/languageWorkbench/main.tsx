@@ -3,21 +3,21 @@ import ReactDOM from "react-dom";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
-import { OpenCodeEditor } from "../../uiCommon/ide/datalogPowered/openCodeEditor";
+import { OpenCodeEditor } from "../../uiCommon/ide/dlPowered/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../../uiCommon/ide/datalogPowered/languages";
+import { LANGUAGES } from "../../uiCommon/ide/dlPowered/languages";
 import useHashParam from "use-hash-param";
 // @ts-ignore
-import commonThemeCSS from "../../uiCommon/ide/datalogPowered/commonTheme.css";
-import { LOADER } from "../../uiCommon/ide/datalogPowered/dl";
+import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
+import { LOADER } from "../../uiCommon/ide/dlPowered/common";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 // @ts-ignore
-import mainDL from "../../uiCommon/ide/datalogPowered/dl/main.dl";
-import { WrappedCodeEditor } from "../../uiCommon/ide/datalogPowered/wrappedCodeEditor";
+import mainDL from "../../uiCommon/ide/dlPowered/common/main.dl";
+import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
 import {
   addCursor,
   constructInterp,
-} from "../../uiCommon/ide/datalogPowered/interp";
+} from "../../uiCommon/ide/dlPowered/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
