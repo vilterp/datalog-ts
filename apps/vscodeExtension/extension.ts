@@ -1,4 +1,12 @@
 import * as vscode from "vscode";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { constructInterp } from "../../uiCommon/ide/dlPowered/interp";
+import { LANGUAGES } from "../../uiCommon/ide/dlPowered/languages";
+import { LOADER, mainDL } from "../../uiCommon/ide/dlPowered/common";
+import { Rec } from "../../core/types";
+import { dlToSpan } from "../../uiCommon/ide/types";
+import { ppt } from "../../core/pretty";
+import { lineAndColFromIdx } from "./util";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -42,27 +50,28 @@ function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   console.log("refresh diagnostics");
-  const out: vscode.Diagnostic[] = [];
+  const source = doc.getText();
 
-  for (let lineIndex = 0; lineIndex < doc.lineCount; lineIndex++) {
-    const lineOfText = doc.lineAt(lineIndex);
-    out.push(createDiagnostic(doc, lineOfText));
-  }
+  const { finalInterp } = constructInterp({
+    initInterp: new SimpleInterpreter(".", LOADER),
+    builtinSource: mainDL,
+    dlSource: LANGUAGES.datalog.datalog,
+    grammarSource: LANGUAGES.datalog.grammar,
+    langSource: source,
+  });
 
-  diagnostics.set(doc.uri, out);
+  const problems = finalInterp.queryStr("tc.Problem{}");
+  const diags = problems.map((res) =>
+    problemToDiagnostic(source, res.term as Rec)
+  );
+  diagnostics.set(doc.uri, diags);
 }
 
-function createDiagnostic(
-  doc: vscode.TextDocument,
-  line: vscode.TextLine
-): vscode.Diagnostic {
-  // create range that represents, where in the document the word is
-  const range = new vscode.Range(line.lineNumber, 1, line.lineNumber, 2);
+function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
+  const span = dlToSpan(rec.attrs.span as Rec);
+  const from = lineAndColFromIdx(source, span.from);
+  const to = lineAndColFromIdx(source, span.to);
 
-  const diagnostic = new vscode.Diagnostic(
-    range,
-    "some problem",
-    vscode.DiagnosticSeverity.Error
-  );
-  return diagnostic;
+  const range = new vscode.Range(from.line, from.col, to.line, to.col);
+  return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
 }

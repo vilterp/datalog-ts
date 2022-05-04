@@ -9,10 +9,8 @@ import { LANGUAGES } from "../../uiCommon/ide/dlPowered/languages";
 import useHashParam from "use-hash-param";
 // @ts-ignore
 import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
-import { LOADER } from "../../uiCommon/ide/dlPowered/common";
+import { LOADER, mainDL } from "../../uiCommon/ide/dlPowered/common";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-// @ts-ignore
-import mainDL from "../../uiCommon/ide/dlPowered/common/main.dl";
 import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
 import {
   addCursor,
