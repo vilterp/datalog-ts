@@ -24,8 +24,11 @@ hl.int{type: "int", span: S, highlight: false} :-
   ast.int{span: S}.
 hl.string{type: "string", span: S, highlight: false} :-
   ast.string{span: S}.`;
-      const out = lineAndColFromIdx(input, 106);
-      assertDeepEqual({ line: 5, col: 45 }, out);
+      const out1 = lineAndColFromIdx(input, 106);
+      assertDeepEqual({ line: 5, col: 40 }, out1);
+
+      const out2 = lineAndColFromIdx(input, 108);
+      assertDeepEqual({ line: 5, col: 42 }, out2);
     },
   },
 ];

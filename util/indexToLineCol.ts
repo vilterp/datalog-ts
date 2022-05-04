@@ -8,7 +8,7 @@ export function lineAndColFromIdx(source: string, index: number): LineAndCol {
     if (lineStartidx + line.length > index) {
       return { line: lineIdx, col: index - lineStartidx };
     }
-    lineStartidx += line.length;
+    lineStartidx += line.length + 1; // +1 for the newline
   }
   throw new Error(`not found: index ${index}`);
 }
