@@ -252,6 +252,7 @@ export function makeTermWithBindings(
     case "Negation":
       return {
         type: "NegationWithBindings",
+        inner: makeTermWithBindings(term.record, bindings),
       };
     default:
       return { type: "Atom", term };

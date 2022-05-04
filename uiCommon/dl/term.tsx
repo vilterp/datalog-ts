@@ -129,6 +129,17 @@ export function TermView(props: {
           />
         </>
       );
+    case "NegationWithBindings":
+      return (
+        <>
+          !
+          <TermView
+            highlight={props.highlight}
+            scopePath={props.scopePath}
+            term={term.inner}
+          />
+        </>
+      );
     case "Atom":
       const t = term.term;
       switch (t.type) {
