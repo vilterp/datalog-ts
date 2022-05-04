@@ -12,5 +12,15 @@
   "activationEvents": [
     "onLanguage:datalog"
   ],
-  "main": "./out/extension.js"
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "datalog",
+        "extensions": [
+          ".dl"
+        ]
+      }
+    ]
+  }
 }
