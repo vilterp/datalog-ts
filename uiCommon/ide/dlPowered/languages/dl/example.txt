@@ -3,7 +3,7 @@
 .table ast.var
 .table ast.int
 
-hl.Segment{type: T, span: S, highlight: H} :-
+hl.Segment{type: T, span: S, highlight: HH} :-
   hl.ident{type: T, span: S, highlight: H} |
   ???{type: T, span: S, highlight: H} |
   hl.int{???: T, span: S, highlight: H} |
