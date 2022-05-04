@@ -54,9 +54,12 @@ function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   console.log("refresh diagnostics");
-  const out: vscode.Diagnostic[] = [createDiagnostic(doc, doc.lineAt(1))];
+  const out: vscode.Diagnostic[] = [];
 
-  // get contents of doc; do something
+  for (let lineIndex = 0; lineIndex < doc.lineCount; lineIndex++) {
+    const lineOfText = doc.lineAt(lineIndex);
+    out.push(createDiagnostic(doc, lineOfText));
+  }
 
   diagnostics.set(doc.uri, out);
 }
