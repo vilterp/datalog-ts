@@ -3,5 +3,4 @@ secret-testdata
 .DS_Store
 dist
 .env
-.vscode
 *.cpuprofile

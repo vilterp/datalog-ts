@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "shell: run_benchmarks_locally.sh",
+      "command": "${workspaceFolder}/scripts/run_benchmarks_locally.sh",
+      "problemMatcher": [],
+      "detail": "scripts/run_benchmarks_locally.sh"
+    },
+    {
+      "type": "npm",
+      "script": "test-write-results",
+      "problemMatcher": [],
+      "label": "npm: test-write-results",
+      "detail": "ts-node allTests.ts --write-results"
+    }
+  ]
+}

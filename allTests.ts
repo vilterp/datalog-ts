@@ -13,6 +13,7 @@ import { actionsTests } from "./uiCommon/ide/actionsTest";
 import { parserlibTests } from "./parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
 import { lwbTests } from "./uiCommon/ide/dlPowered/ddTests";
+import { indexToLineColTests } from "./util/indexToLineColTest";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -33,6 +34,7 @@ const suites: { [name: string]: Suite } = {
   treeTests,
   actionsTests,
   parserlibTests: parserlibTests(writeResults),
+  indexToLineColTests,
 };
 
 try {

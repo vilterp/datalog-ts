@@ -9,6 +9,10 @@ import highlightDL from "./highlight.dl";
 import scopeGraphVizDL from "./scopeGraphViz.dl";
 // @ts-ignore
 import relationGraphVizDL from "../../../visualizations/relationGraphViz.dl";
+// @ts-ignore
+import mainDLImp from "./main.dl";
+
+export const mainDL = mainDLImp;
 
 export const LOADER = makeMemoryLoader({
   "./ide.dl": ideDL,
