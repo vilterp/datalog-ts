@@ -6,7 +6,7 @@ export function lineAndColFromIdx(source: string, index: number): LineAndCol {
   for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
     const line = lines[lineIdx];
     if (lineStartidx + line.length > index) {
-      return { line: lineIdx + 1, col: index - lineStartidx + 1 };
+      return { line: lineIdx, col: index - lineStartidx };
     }
     lineStartidx += line.length;
   }

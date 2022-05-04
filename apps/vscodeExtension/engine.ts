@@ -24,6 +24,10 @@ export function refreshDiagnostics(
   });
 
   const problems = finalInterp.queryStr("tc.Problem{}");
+  console.log(
+    "problems",
+    problems.map((r) => ppt(r.term))
+  );
   const diags = problems.map((res) =>
     problemToDiagnostic(source, res.term as Rec)
   );
@@ -34,6 +38,8 @@ function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
   const span = dlToSpan(rec.attrs.span as Rec);
   const from = lineAndColFromIdx(source, span.from);
   const to = lineAndColFromIdx(source, span.to);
+
+  console.log("problem", { span, from, to });
 
   const range = new vscode.Range(from.line, from.col, to.line, to.col);
   return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
