@@ -11,7 +11,7 @@ export const lwbBenchmarks: BenchmarkSpec[] = [
   name: lang,
   async run() {
     return runDDBenchmark(
-      `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.dd.txt`,
+      `uiCommon/ide/dlPowered/languages/${lang}/${lang}.dd.txt`,
       testLangQuery,
       reps
     );

@@ -13,7 +13,7 @@ export function lwbTests(writeResults: boolean): Suite {
     name: lang,
     test() {
       runDDTestAtPath(
-        `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.dd.txt`,
+        `uiCommon/ide/dlPowered/languages/${lang}/${lang}.dd.txt`,
         testLangQuery,
         writeResults
       );
@@ -22,7 +22,7 @@ export function lwbTests(writeResults: boolean): Suite {
 }
 
 const initInterp = new SimpleInterpreter(
-  "uiCommon/ide/datalogPowered/dl",
+  "uiCommon/ide/dlPowered/common",
   fsLoader
 );
 
@@ -40,15 +40,15 @@ export function testLangQuery(test: string[]): TestOutput[] {
       langParseError,
     } = constructInterp({
       builtinSource: fs.readFileSync(
-        "uiCommon/ide/datalogPowered/dl/main.dl",
+        "uiCommon/ide/dlPowered/common/main.dl",
         "utf8"
       ),
       dlSource: fs.readFileSync(
-        `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.dl`,
+        `uiCommon/ide/dlPowered/languages/${lang}/${lang}.dl`,
         "utf8"
       ),
       grammarSource: fs.readFileSync(
-        `uiCommon/ide/datalogPowered/languages/${lang}/${lang}.grammar`,
+        `uiCommon/ide/dlPowered/languages/${lang}/${lang}.grammar`,
         "utf8"
       ),
       langSource: example,

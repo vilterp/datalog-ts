@@ -2,9 +2,9 @@ import React from "react";
 import { useMemo } from "react";
 import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { EditorState } from "../types";
-import { LOADER } from "./dl";
+import { LOADER } from "./common";
 // @ts-ignore
-import mainDL from "./dl/main.dl";
+import mainDL from "./common/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";
 import { ErrorList } from "../errorList";
 import { addCursor, constructInterp } from "./interp";
