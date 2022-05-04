@@ -7,18 +7,6 @@ export function activate(context: vscode.ExtensionContext) {
   const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
   context.subscriptions.push(diagnostics);
   subscribeToChanges(context, diagnostics);
-
-  const disposable = vscode.commands.registerCommand(
-    "extension.helloWorld",
-    () => {
-      // The code you place here will be executed every time your command is executed
-
-      // Display a message box to the user
-      vscode.window.showInformationMessage("Hello World!");
-    }
-  );
-
-  context.subscriptions.push(disposable);
 }
 
 function subscribeToChanges(
