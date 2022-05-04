@@ -199,7 +199,7 @@ export type BinExprWithBindings = {
 
 export type NegationWithBindings = {
   type: "NegationWithBindings";
-  // TODO: figure out what else should go here
+  inner: TermWithBindings;
 };
 
 export type SituatedBinding = {

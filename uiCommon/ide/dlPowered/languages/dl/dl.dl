@@ -23,11 +23,7 @@ scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.tableDecl{id: DeclID} &
   ast.ident{parentID: DeclID, span: S, text: N}.
 scope.defnAttr{scopeID: RuleName, name: N, span: S, kind: "attr"} :-
-  ast.rule{id: Rule} &
-  ast.record{id: Rec, parentID: Rule} &
-  ast.ident{parentID: Rec, text: RuleName} &
-  ast.keyValue{id: KV, parentID: Rec} &
-  ast.ident{parentID: KV, text: N, span: S}.
+  tc.ruleAttr{rule: RuleName, attr: N, span: S}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
@@ -48,12 +44,12 @@ scope.varTerm{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.var{parentID: ValueTermID, text: N, span: S}.
-scope.varAttr{scopeID: Relation, name: N, span: S, kind: "attr"} :-
+scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
   ast.record{id: Rec, parentID: Conjunct} &
   ast.ident{parentID: Rec, text: Relation} &
   ast.keyValue{id: KV, parentID: Rec} &
-  ast.ident{parentID: KV, text: N, span: S}.
+  ast.ident{id: I, parentID: KV, text: N, span: S}.
 
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
@@ -82,6 +78,25 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
 
 # TODO: make autocompletion work inside of negations
 # maybe by using scope.parent instead of explicitly joining down
+
+# TODO: var in head that's unbound
+tc.Problem{desc: D, nodeID: I, span: S} :-
+  tc.nonexistentAttr{desc: D, nodeID: I, span: S}.
+tc.nonexistentAttr{
+  desc: nonexistentAttr{relation: Relation, attr: N},
+  nodeID: I,
+  span: S
+} :-
+  scope.defnRule{name: Relation} &
+  scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S} &
+  !tc.ruleAttr{rule: Relation, attr: N}.
+
+tc.ruleAttr{rule: RuleName, attr: Attr, span: S} :-
+  ast.rule{id: Rule} &
+  ast.record{id: Rec, parentID: Rule} &
+  ast.ident{parentID: Rec, text: RuleName} &
+  ast.keyValue{id: KV, parentID: Rec} &
+  ast.ident{parentID: KV, text: Attr, span: S}.
 
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "specialVar"}.
