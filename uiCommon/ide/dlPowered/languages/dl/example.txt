@@ -1,7 +1,7 @@
-.table ast.string
-.table ast.ident
-.table ast.var
-.table ast.int
+.table ast.string{}
+.table ast.ident{}
+.table ast.var{}
+.table ast.int{}
 
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.ident{type: T, span: S, highlight: H} |

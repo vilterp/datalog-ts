@@ -18,8 +18,9 @@ scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.var{span: S, text: N, parentID: ValueTermID}.
 scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
-  ast.tableDecl{id: DeclID} &
-  ast.ident{parentID: DeclID, span: S, text: N}.
+  ast.tableDecl{id: Decl} &
+  ast.record{id: Record, parentID: Decl} &
+  ast.ident{parentID: Record, span: S, text: N}.
 scope.defnAttr{scopeID: RuleName, name: N, span: S, kind: "attr"} :-
   tc.ruleAttr{rule: RuleName, attr: N, span: S}.
 
