@@ -10,6 +10,12 @@ scope.Var{scopeID: "global", name: N, span: S, kind: "rule"} :-
 scope.Placeholder{scopeID: "global", span: S, kind: "rule"} :-
   ast.placeholder{span: S}.
 
+tc.Problem{desc: D, nodeID: I, span: S} :-
+  tc.undefinedRule{desc: D, nodeID: I, span: S}.
+tc.undefinedRule{desc: undefinedRule{name: N}, nodeID: I, span: S} :-
+  scope.Var{name: N, span: S} &
+  !scope.Defn{name: N}.
+
 hl.mapping{rule: "repSepKW", type: "keyword"}.
 hl.mapping{rule: "text", type: "string"}.
 hl.mapping{rule: "bool", type: "bool"}.
