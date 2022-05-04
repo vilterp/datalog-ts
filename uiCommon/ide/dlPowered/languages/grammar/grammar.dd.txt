@@ -8,6 +8,13 @@ ide.Suggestion{id: "global", name: "foo", span: span{from: 16, to: 19}, type: T}
 ide.Suggestion{id: "global", name: "bar", span: span{from: 16, to: 19}, type: T}
 
 grammar
+foo :- baz.
+tc.Problem{}
+----
+application/datalog
+tc.Problem{desc: undefinedRule{name: "baz"}, nodeID: I, span: span{from: 7, to: 10}}
+
+grammar
 a :- (^'"' | ['\', '"']).
 astInternal.node{}
 ----
