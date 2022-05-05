@@ -28,18 +28,18 @@ hl.segmentString{type: "string", id: I, span: S, highlight: false} :-
 hl.keyword{type: "keyword", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "keyword"} &
   astInternal.node{rule: R, id: I, span: S}.
-hl.segmentBool{type: "bool", id: I, span: S, highlight: false} :-
-  hl.mapping{rule: R, type: "bool"} &
+hl.segmentBool{type: "boolean", id: I, span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "boolean"} &
   astInternal.node{rule: R, id: I, span: S}.
 hl.segmentComment{type: "comment", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "comment"} &
   astInternal.node{rule: R, id: I, span: S}.
 
 # identifiers
-hl.segmentSpecialVar{type: "specialVar", span: S, highlight: false} :-
-  hl.mapping{rule: R, type: "specialVar"} &
+hl.segmentSpecialVar{type: "typeParameter", span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "typeParameter"} &
   astInternal.node{rule: R, span: S}.
-hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
+hl.segmentIdent{type: "variable", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: I, span: S}.
 

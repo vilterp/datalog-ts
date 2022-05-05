@@ -1,19 +1,19 @@
-.segment-int {
+.segment-number {
   color: blue;
 }
 .segment-string {
   color: green;
 }
-.segment-bool {
+.segment-boolean {
   color: blue;
 }
 .segment-keyword {
   color: darkorange;
 }
-.segment-specialVar {
+.segment-typeParameter {
   color: darkorange;
 }
-.segment-var {
+.segment-variable {
   color: purple;
 }
 .segment-defn {
