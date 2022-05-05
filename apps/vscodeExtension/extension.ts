@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
-import { getDefinition, getReferences, refreshDiagnostics } from "./engine";
+import {
+  getDefinition,
+  getHighlights,
+  getReferences,
+  refreshDiagnostics,
+} from "./engine";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -44,7 +49,23 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // TODO: highlight
+  // highlight
+  context.subscriptions.push(
+    vscode.languages.registerDocumentHighlightProvider("datalog", {
+      provideDocumentHighlights(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
+        try {
+          return getHighlights(document, position, token);
+        } catch (e) {
+          console.error("in highlight provider:", e);
+        }
+      },
+    })
+  );
+
   // TODO: completions
 }
 

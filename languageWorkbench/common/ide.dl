@@ -36,7 +36,7 @@ scope.Usage{
 # === Rename ===
 
 ide.RenameSpan{span: S} :-
-  ide.UsageAndDefn{span: S} &
+  ide.CurrentUsageOrDefn{span: S} &
   S != "builtin".
 
 # === Jump to Definition ===
@@ -78,40 +78,42 @@ ide.CurrentProblem{desc: D, span: span{from: F, to: T}} :-
   F <= CIdx & CIdx <= T.
 
 # === Highlight ===
+# TODO: consolidate a bit?
 
 ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
   scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
 
-ide.CurrentDefnOrDefnOfCurrentVar{span: S} :-
-  ide.CurrentDefn{span: S} |
-  ide.DefnOfCurrentVar{span: S}.
-
-ide.CurrentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
+ide.CurrentDefnOrDefnOfCurrentVar{type: "defn", span: S} :-
+  ide.currentDefn{span: S} |
+  ide.defnOfCurrentVar{span: S}.
+ide.currentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
   scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
-
-ide.DefnOfCurrentVar{span: S} :-
+ide.defnOfCurrentVar{span: S} :-
   ide.CurrentVar{scopeID: UsageScope, name: N} &
   scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
 
-ide.CurrentVarOrUsageOfCurrentDefn{span: S} :-
+ide.CurrentVarOrUsageOfCurrentDefn{type: "usage", span: S} :-
   ide.instanceOfCurrentVar{span: S} |
   ide.usageOfCurrentDefn{span: S}.
-
 ide.instanceOfCurrentVar{span: S} :-
   ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
   scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
   scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
   scope.Var{scopeID: OtherVarScope, name: N, span: S}.
 ide.usageOfCurrentDefn{span: S} :-
-  ide.CurrentDefn{scopeID: DefnScope, name: N} &
+  ide.currentDefn{scopeID: DefnScope, name: N} &
   scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N} &
   scope.Var{scopeID: UsageScope, name: N, span: S}.
 
-# just for testing
-ide.UsageAndDefn{type: T, span: S, highlight: H} :-
-  ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S, highlight: H} |
-  ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S, highlight: H}.
+ide.CurrentUsageOrDefn{type: T, span: S} :-
+  ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S} |
+  ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S}.
+
+# TODO: unused, but probably should be used instead of the above
+ide.CurrentUsageOrDefnFromPos{idx: CIdx, type: T, span: S} :-
+  ide.CurrentUsageOrDefn{type: T, span: span{from: FIdx, to: TIdx}} &
+  FIdx <= CIdx & CIdx <= TIdx.
