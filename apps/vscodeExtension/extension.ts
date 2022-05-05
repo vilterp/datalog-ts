@@ -166,11 +166,18 @@ export function activate(context: vscode.ExtensionContext) {
         "datalogExplorer",
         "Datalog Explorer",
         vscode.ViewColumn.Beside,
-        { enableScripts: true, enableFindWidget: true }
+        {
+          enableScripts: true,
+          enableFindWidget: true,
+          localResourceRoots: [
+            vscode.Uri.file(path.join(context.extensionPath, "out")),
+          ],
+        }
       );
-      const jsURL = vscode.Uri.file(
+      const jsDiskPath = vscode.Uri.file(
         path.join(context.extensionPath, "out", "webView.js")
       );
+      const jsURL = panel.webview.asWebviewUri(jsDiskPath);
       panel.webview.html = getWebViewContent(jsURL);
     })
   );
