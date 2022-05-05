@@ -11,6 +11,8 @@ import {
   refreshDiagnostics,
   semanticTokensLegend,
 } from "./engine";
+import * as path from "path";
+import { MessageFromWebView, MessageToWebView } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -18,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   // diagnostics
   const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
   context.subscriptions.push(diagnostics);
-  subscribeToChanges(context, diagnostics);
+  subscribeDiagnosticsToChanges(context, diagnostics);
 
   // go to defn
   context.subscriptions.push(
@@ -137,7 +139,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // symbols / syntax highlighting
+  // syntax highlighting
   context.subscriptions.push(
     vscode.languages.registerDocumentSemanticTokensProvider(
       "datalog",
@@ -147,7 +149,11 @@ export function activate(context: vscode.ExtensionContext) {
           token: vscode.CancellationToken
         ): vscode.ProviderResult<vscode.SemanticTokens> {
           try {
-            return getSemanticTokens(document, token);
+            const before = new Date().getTime();
+            const tokens = getSemanticTokens(document, token);
+            const after = new Date().getTime();
+            console.log("datalog: getSemanticTokens:", after - before, "ms");
+            return tokens;
           } catch (e) {
             console.error("in token provider:", e);
           }
@@ -156,9 +162,71 @@ export function activate(context: vscode.ExtensionContext) {
       semanticTokensLegend
     )
   );
+
+  // explorer web view
+  context.subscriptions.push(
+    vscode.commands.registerCommand("datalog.openExplorer", () => {
+      // Create and show a new webview
+      const panel = vscode.window.createWebviewPanel(
+        "datalogExplorer",
+        "Datalog Explorer",
+        vscode.ViewColumn.Beside,
+        {
+          enableScripts: true,
+          enableFindWidget: true,
+          localResourceRoots: [
+            vscode.Uri.file(path.join(context.extensionPath, "out")),
+          ],
+        }
+      );
+      const jsDiskPath = vscode.Uri.file(
+        path.join(context.extensionPath, "out", "webView.js")
+      );
+      const jsURL = panel.webview.asWebviewUri(jsDiskPath);
+      panel.webview.html = getWebViewContent(jsURL);
+
+      subscribeWebViewToChanges(context, panel);
+    })
+  );
 }
 
-function subscribeToChanges(
+function subscribeWebViewToChanges(
+  context: vscode.ExtensionContext,
+  panel: vscode.WebviewPanel
+) {
+  const originalActiveEditor = vscode.window.activeTextEditor;
+  context.subscriptions.push(
+    panel.webview.onDidReceiveMessage((evt) => {
+      const msg: MessageFromWebView = evt as MessageFromWebView;
+
+      switch (msg.type) {
+        case "ReadyForMessages":
+          if (originalActiveEditor) {
+            sendContents(panel.webview, originalActiveEditor.document);
+          }
+          break;
+        default:
+          console.error("uknown message:", msg);
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      sendContents(panel.webview, e.document);
+    })
+  );
+}
+
+function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
+  const msg: MessageToWebView = {
+    type: "ContentsUpdated",
+    text: doc.getText(),
+  };
+  webview.postMessage(msg);
+}
+
+function subscribeDiagnosticsToChanges(
   context: vscode.ExtensionContext,
   diagnostics: vscode.DiagnosticCollection
 ) {
@@ -184,4 +252,19 @@ function subscribeToChanges(
       diagnostics.delete(doc.uri)
     )
   );
+}
+
+function getWebViewContent(jsURL: vscode.Uri) {
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Datalog Explorer</title>
+  </head>
+  <body style="background-color: white">
+    <div id="main"></div>
+
+    <script src="${jsURL.toString()}"></script>
+  </body>
+</html>
+`;
 }

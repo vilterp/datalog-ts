@@ -188,7 +188,6 @@ export function getSemanticTokens(
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
-  console.log("getSemanticTokens", semanticTokensLegend);
   const source = document.getText();
   const interp = getInterp(LANGUAGES.datalog, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
