@@ -91,11 +91,13 @@ export function getCompletionItems(
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
   const source = doc.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
+  const sourceWithPlaceholder =
+    source.slice(0, idx) + "???" + source.slice(idx);
+  const interp = getInterp(LANGUAGES.datalog, sourceWithPlaceholder);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
@@ -105,7 +107,9 @@ export function getCompletionItems(
     const result = res.term as Rec;
     const label = result.attrs.name as StringLit;
     const range = spanToRange(source, result.attrs.span as Rec);
-    return { label: label.val, range };
+    return {
+      label: label.val,
+    };
   });
 }
 

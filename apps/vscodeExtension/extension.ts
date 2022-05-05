@@ -78,7 +78,6 @@ export function activate(context: vscode.ExtensionContext) {
       ): vscode.ProviderResult<vscode.CompletionItem[]> {
         try {
           const items = getCompletionItems(document, position, token, context);
-          console.log({ items });
           return items;
         } catch (e) {
           console.error("in completion provider:", e);
