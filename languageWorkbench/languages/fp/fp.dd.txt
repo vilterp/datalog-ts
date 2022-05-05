@@ -96,9 +96,9 @@ plus2(x|||)
 ide.UsageAndDefn{}
 ----
 application/datalog
-ide.UsageAndDefn{highlight: H, span: span{from: 4, to: 5}, type: T}
-ide.UsageAndDefn{highlight: H, span: span{from: 21, to: 22}, type: T}
-ide.UsageAndDefn{highlight: H, span: span{from: 32, to: 33}, type: T}
+ide.UsageAndDefn{span: span{from: 4, to: 5}, type: "defn"}
+ide.UsageAndDefn{span: span{from: 21, to: 22}, type: "usage"}
+ide.UsageAndDefn{span: span{from: 32, to: 33}, type: "usage"}
 
 fp
 let x||| = 2 in
@@ -107,9 +107,9 @@ plus2(x)
 ide.UsageAndDefn{}
 ----
 application/datalog
-ide.UsageAndDefn{highlight: H, span: span{from: 4, to: 5}, type: T}
-ide.UsageAndDefn{highlight: H, span: span{from: 21, to: 22}, type: T}
-ide.UsageAndDefn{highlight: H, span: span{from: 32, to: 33}, type: T}
+ide.UsageAndDefn{span: span{from: 4, to: 5}, type: "defn"}
+ide.UsageAndDefn{span: span{from: 21, to: 22}, type: "usage"}
+ide.UsageAndDefn{span: span{from: 32, to: 33}, type: "usage"}
 
 fp
 let z||| = 2 in
@@ -118,7 +118,7 @@ plus2(x)
 ide.UsageAndDefn{}
 ----
 application/datalog
-ide.UsageAndDefn{highlight: H, span: span{from: 4, to: 5}, type: T}
+ide.UsageAndDefn{span: span{from: 4, to: 5}, type: "defn"}
 
 fp
 let z||| = somethingUndef in

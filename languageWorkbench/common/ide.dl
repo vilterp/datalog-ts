@@ -84,7 +84,7 @@ ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
 
-ide.CurrentDefnOrDefnOfCurrentVar{span: S} :-
+ide.CurrentDefnOrDefnOfCurrentVar{type: "defn", span: S} :-
   ide.CurrentDefn{span: S} |
   ide.DefnOfCurrentVar{span: S}.
 
@@ -97,7 +97,7 @@ ide.DefnOfCurrentVar{span: S} :-
   ide.CurrentVar{scopeID: UsageScope, name: N} &
   scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
 
-ide.CurrentVarOrUsageOfCurrentDefn{span: S} :-
+ide.CurrentVarOrUsageOfCurrentDefn{type: "usage", span: S} :-
   ide.instanceOfCurrentVar{span: S} |
   ide.usageOfCurrentDefn{span: S}.
 
@@ -112,6 +112,6 @@ ide.usageOfCurrentDefn{span: S} :-
   scope.Var{scopeID: UsageScope, name: N, span: S}.
 
 # just for testing
-ide.UsageAndDefn{type: T, span: S, highlight: H} :-
-  ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S, highlight: H} |
-  ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S, highlight: H}.
+ide.UsageAndDefn{type: T, span: S} :-
+  ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S} |
+  ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S}.
