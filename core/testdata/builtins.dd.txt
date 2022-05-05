@@ -69,4 +69,4 @@ sim{pos: 9, time: 4}.
 concat{a: "hello ", b: "world", res: V}.
 ----
 application/datalog
-concat{a: "hello", b: "world", res: "helloworld"}.
+concat{a: "hello ", b: "world", res: "hello world"}.
