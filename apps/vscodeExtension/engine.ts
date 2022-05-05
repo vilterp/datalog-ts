@@ -162,6 +162,37 @@ export function getSymbolList(
   });
 }
 
+export function getSemanticTokens(
+  document: vscode.TextDocument,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.SemanticTokens> {
+  console.log("getSemanticTokens", semanticTokensLegend);
+  const source = document.getText();
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const results = interp.queryStr("hl.NonHighlightSegment{}");
+
+  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+  results.forEach((res) => {
+    const result = res.term as Rec;
+    const range = spanToRange(source, result.attrs.span as Rec);
+    const typ = (result.attrs.type as StringLit).val;
+    console.log("push typ", typ);
+    builder.push(range, typ);
+  });
+  return builder.build();
+}
+
+// somewhat duplicated from highlight.dl
+export const semanticTokensLegend = new vscode.SemanticTokensLegend([
+  "int",
+  "string",
+  "keyword",
+  "bool",
+  "comment",
+  "var",
+  "specialVar",
+]);
+
 export function refreshDiagnostics(
   doc: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection

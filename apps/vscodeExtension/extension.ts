@@ -5,8 +5,10 @@ import {
   getHighlights,
   getReferences,
   getRenameEdits,
+  getSemanticTokens,
   getSymbolList,
   refreshDiagnostics,
+  semanticTokensLegend,
 } from "./engine";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -117,10 +119,30 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           return getSymbolList(document, token);
         } catch (e) {
-          console.error("in completion provider:", e);
+          console.error("in symbol provider:", e);
         }
       },
     })
+  );
+
+  // symbols / syntax highlighting
+  context.subscriptions.push(
+    vscode.languages.registerDocumentSemanticTokensProvider(
+      "datalog",
+      {
+        provideDocumentSemanticTokens(
+          document: vscode.TextDocument,
+          token: vscode.CancellationToken
+        ): vscode.ProviderResult<vscode.SemanticTokens> {
+          try {
+            return getSemanticTokens(document, token);
+          } catch (e) {
+            console.error("in token provider:", e);
+          }
+        },
+      },
+      semanticTokensLegend
+    )
   );
 }
 

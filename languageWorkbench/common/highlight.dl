@@ -9,6 +9,15 @@ hl.Segment{type: T, id: I, span: S, highlight: H} :-
   hl.segmentIdentUsageHL{type: T, id: I, span: S, highlight: H} |
   hl.segmentComment{type: T, id: I, span: S, highlight: H}.
 
+hl.NonHighlightSegment{type: T, span: S} :-
+  hl.segmentInt{type: T, span: S} |
+  hl.segmentString{type: T, span: S} |
+  hl.segmentBool{type: T, span: S} |
+  hl.keyword{type: T, span: S} |
+  hl.segmentIdent{type: T, span: S} |
+  hl.segmentSpecialVar{type: T, span: S} |
+  hl.segmentComment{type: T, span: S}.
+
 # primitives
 hl.segmentInt{type: "int", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "int"} &
