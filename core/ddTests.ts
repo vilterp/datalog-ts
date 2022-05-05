@@ -16,7 +16,7 @@ export function coreTestsSimple(writeResults: boolean): Suite {
       name: "arithmetic",
       test() {
         runDDTestAtPath(
-          "core/testdata/arithmetic.dd.txt",
+          "core/testdata/builtins.dd.txt",
           (test) =>
             putThroughInterp(test, () => new SimpleInterpreter(".", fsLoader)),
           writeResults

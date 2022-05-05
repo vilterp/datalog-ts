@@ -1,5 +1,5 @@
 import { ppt } from "./pretty";
-import { int, rec, Rec } from "./types";
+import { int, rec, Rec, str } from "./types";
 import { termCmp } from "./unify";
 import * as util from "../util/util";
 
@@ -10,6 +10,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   mul,
   gte,
   range,
+  concat,
 };
 
 export function add(input: Rec): Rec[] {
@@ -65,5 +66,16 @@ export function range(input: Rec): Rec[] {
     }
     return [];
   }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+export function concat(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  const b = input.attrs.b;
+  const res = input.attrs.res;
+  if (a.type === "StringLit" && b.type === "StringLit" && res.type === "Var") {
+    return [rec(input.relation, { a, b, res: str(a.val + b.val) })];
+  }
+  // TODO: other combos? essentially matching? lol
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }

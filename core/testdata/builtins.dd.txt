@@ -65,3 +65,8 @@ sim{pos: 27, time: 10}.
 sim{pos: 3, time: 2}.
 sim{pos: 6, time: 3}.
 sim{pos: 9, time: 4}.
+
+concat{a: "hello ", b: "world", res: V}.
+----
+application/datalog
+concat{a: "hello", b: "world", res: "helloworld"}.
