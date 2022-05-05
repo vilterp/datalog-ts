@@ -93,38 +93,38 @@ fp
 let x = 2 in
 let y = x in
 plus2(x|||)
-ide.UsageOrDefn{}
+ide.CurrentUsageOrDefn{}
 ----
 application/datalog
-ide.UsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
-ide.UsageOrDefn{span: span{from: 21, to: 22}, type: "usage"}
-ide.UsageOrDefn{span: span{from: 32, to: 33}, type: "usage"}
+ide.CurrentUsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
+ide.CurrentUsageOrDefn{span: span{from: 21, to: 22}, type: "usage"}
+ide.CurrentUsageOrDefn{span: span{from: 32, to: 33}, type: "usage"}
 
 fp
 let x||| = 2 in
 let y = x in
 plus2(x)
-ide.UsageOrDefn{}
+ide.CurrentUsageOrDefn{}
 ----
 application/datalog
-ide.UsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
-ide.UsageOrDefn{span: span{from: 21, to: 22}, type: "usage"}
-ide.UsageOrDefn{span: span{from: 32, to: 33}, type: "usage"}
+ide.CurrentUsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
+ide.CurrentUsageOrDefn{span: span{from: 21, to: 22}, type: "usage"}
+ide.CurrentUsageOrDefn{span: span{from: 32, to: 33}, type: "usage"}
 
 fp
 let z||| = 2 in
 let x = 3 in
 plus2(x)
-ide.UsageOrDefn{}
+ide.CurrentUsageOrDefn{}
 ----
 application/datalog
-ide.UsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
+ide.CurrentUsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
 
 fp
 let z||| = somethingUndef in
 let x = 3 in
 plus2(x)
-ide.UsageOrDefn{}
+ide.CurrentUsageOrDefn{}
 ----
 application/datalog
 
