@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { refreshDiagnostics } from "./engine";
+import { getDeclaration, refreshDiagnostics } from "./engine";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -8,6 +8,18 @@ export function activate(context: vscode.ExtensionContext) {
   const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
   context.subscriptions.push(diagnostics);
   subscribeToChanges(context, diagnostics);
+
+  // completions
+  vscode.languages.registerDeclarationProvider("datalog", {
+    provideDeclaration(
+      document: vscode.TextDocument,
+      position: vscode.Position,
+      token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.Declaration> {
+      console.log("hello from declaration provider");
+      return getDeclaration(document, position, token);
+    },
+  });
 }
 
 function subscribeToChanges(

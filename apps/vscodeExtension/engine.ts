@@ -6,15 +6,40 @@ import { LOADER, mainDL } from "../../languageWorkbench/common";
 import { Rec } from "../../core/types";
 import { dlToSpan } from "../../uiCommon/ide/types";
 import { ppt } from "../../core/pretty";
-import { lineAndColFromIdx } from "../../util/indexToLineCol";
+import {
+  idxFromLineAndCol,
+  lineAndColFromIdx,
+} from "../../util/indexToLineCol";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { spanToRange } from "./util";
+
+export function getDeclaration(
+  doc: vscode.TextDocument,
+  position: vscode.Position,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.Declaration> {
+  const source = doc.getText();
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const results = interp.queryStr(`scope.DefnAtPos{idx: ${idx}, defnSpan: US}`);
+  if (results.length === 0) {
+    return null;
+  }
+  const result = results[0].term as Rec;
+  return new vscode.Location(
+    doc.uri,
+    spanToRange(source, result.attrs.defnSpan as Rec)
+  );
+}
 
 export function refreshDiagnostics(
   doc: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = doc.getText();
-
   const interp = getInterp(LANGUAGES.datalog, source);
 
   const problems = interp.queryStr("tc.Problem{}");

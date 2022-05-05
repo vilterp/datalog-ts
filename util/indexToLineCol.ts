@@ -15,3 +15,12 @@ export function lineAndColFromIdx(source: string, index: number): LineAndCol {
   }
   throw new Error(`not found: index ${index}`);
 }
+
+export function idxFromLineAndCol(source: string, pos: LineAndCol): number {
+  const lines = source.split("\n");
+  let out = 0;
+  for (let curLine = 0; curLine < pos.line; curLine++) {
+    out += lines[curLine].length;
+  }
+  return out + pos.col;
+}
