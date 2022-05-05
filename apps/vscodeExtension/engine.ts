@@ -3,7 +3,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { constructInterp } from "../../languageWorkbench/interp";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
-import { Rec, Res } from "../../core/types";
+import { Rec, Res, StringLit } from "../../core/types";
 import { dlToSpan } from "../../uiCommon/ide/types";
 import { ppt } from "../../core/pretty";
 import {
@@ -56,6 +56,33 @@ export function getReferences(
         spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec)
       )
   );
+}
+
+const HIGHLIGHT_KINDS = {
+  defn: vscode.DocumentHighlightKind.Write,
+  usage: vscode.DocumentHighlightKind.Write,
+};
+
+export function getHighlights(
+  doc: vscode.TextDocument,
+  position: vscode.Position,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.DocumentHighlight[]> {
+  const source = doc.getText();
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const results = interp.queryStr(
+    `ide.UsageOrDefnFromPos{idx: ${idx}, span: S, type: T}`
+  );
+  return results.map((res) => {
+    const result = res.term as Rec;
+    const kind = result.attrs.type as StringLit;
+    const range = spanToRange(source, result.attrs.span as Rec);
+    return new vscode.DocumentHighlight(range, HIGHLIGHT_KINDS[kind.val]);
+  });
 }
 
 export function refreshDiagnostics(
