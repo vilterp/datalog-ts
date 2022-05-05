@@ -4,7 +4,6 @@ import {
   getDefinition,
   getHighlights,
   getReferences,
-  MyCompletionItem,
   refreshDiagnostics,
 } from "./engine";
 

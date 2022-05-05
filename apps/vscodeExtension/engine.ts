@@ -84,11 +84,6 @@ export function getHighlights(
   });
 }
 
-export interface MyCompletionItem extends vscode.CompletionItem {
-  label: string;
-  range: vscode.Range;
-}
-
 export function getCompletionItems(
   doc: vscode.TextDocument,
   position: vscode.Position,
@@ -105,12 +100,12 @@ export function getCompletionItems(
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
   );
-  console.log("getCompletionItems", results);
+  console.log("getCompletionItems", { position, results });
   return results.map((res) => {
     const result = res.term as Rec;
     const label = result.attrs.name as StringLit;
     const range = spanToRange(source, result.attrs.span as Rec);
-    return new vscode.CompletionItem(label.val);
+    return { label: label.val, range };
   });
 }
 
