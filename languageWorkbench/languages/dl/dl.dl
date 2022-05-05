@@ -74,10 +74,22 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
   ast.keyValue{id: KV, parentID: Rec} &
   ast.placeholder{parentID: KV, span: S}.
 
-# TODO: make autocompletion work inside of negations
-# maybe by using scope.parent instead of explicitly joining down
+scope.Parent{childID: ChildID, parentID: ParentID} :-
+  scope.parentConjunct{childID: ChildID, parentID: ParentID} |
+  scope.parentNestedRecord{childID: ChildID, parentID: ParentID} |
+  scope.parentArray{childID: ChildID, parentID: ParentID} |
+  scope.parentNegation{childID: ChildID, parentID: ParentID}.
 
-# TODO: var in head that's unbound
+# really this should just be terms
+scope.parentConjunct{childID: ChildID, parentID: ParentID} :-
+  XXX{}.
+scope.parentNestedRecord{childID: ChildID, parentID: ParentID} :-
+  XXX{}.
+scope.parentArray{childID: ChildID, parentID: ParentID} :-
+  XXX{}.
+scope.parentNegation{childID: ChildID, parentID: ParentID} :-
+  XXX{}.
+
 tc.Problem{desc: D, nodeID: I, span: S} :-
   tc.nonexistentAttr{desc: D, nodeID: I, span: S} |
   tc.unboundVarInHead{desc: D, nodeID: I, span: S}.
