@@ -3,7 +3,7 @@ import { assertDeepEqual, Suite } from "./testBench/testing";
 
 export const indexToLineColTests: Suite = [
   {
-    name: "indexToLineCol",
+    name: "lineAndColFromIdx",
     test() {
       const input = `.table ast.string
 .table ast.ident
@@ -29,6 +29,26 @@ hl.string{type: "string", span: S, highlight: false} :-
 
       const out2 = lineAndColFromIdx(input, 108);
       assertDeepEqual({ line: 5, col: 42 }, out2);
+
+      const input2 = `# basically getting everything but text
+astInternal.ruleTreeNode{id: ID, parentID: PID, display: D} :-
+  astInternal.ruleTreeNodeCur{id: ID, parentID: PID, display: D} |
+  astInternal.ruleTreeNodeBefore{id: ID, parentID: PID, display: D} |
+  astInternal.ruleTreeNodeAfter{id: ID, parentID: PID, display: D}.
+
+astInternal.ruleTreeNodeBefore{
+  id: ID,
+  parentID: PID,
+  display: [ID, R, [F, T]],
+  seq: Seq
+} :-
+  astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
+  ide.Cursor{idx: Idx} &
+  Idx > T &
+  R != "ws".
+`;
+      const out3 = lineAndColFromIdx(input2, 406);
+      assertDeepEqual({ line: 10, col: 10 }, out3);
     },
   },
 ];
