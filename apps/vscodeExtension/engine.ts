@@ -147,14 +147,14 @@ export function prepareRename(
   });
   const interp = getInterp(LANGUAGES.datalog, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr("ide.DefnForCursor{defnLoc: DL}");
+  const results = interp2.queryStr(
+    "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
+  );
   if (results.length === 0) {
     return null;
   }
   const result = results[0].term as Rec;
-  const range = spanToRange(source, result.attrs.defnLoc as Rec);
-  console.log("prepareRename:", range);
-  return range;
+  return spanToRange(source, result.attrs.span as Rec);
 }
 
 // TODO: parameterize by language
@@ -203,15 +203,17 @@ export function getSemanticTokens(
   return builder.build();
 }
 
-// somewhat duplicated from highlight.dl
+// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
+// needs to match highlight.dl
+// needs to match commonTheme.css
 export const semanticTokensLegend = new vscode.SemanticTokensLegend([
   "number",
   "string",
   "keyword",
-  "bool",
+  "boolean",
   "comment",
-  "var",
-  "specialVar",
+  "variable",
+  "typeParameter",
 ]);
 
 export function refreshDiagnostics(
