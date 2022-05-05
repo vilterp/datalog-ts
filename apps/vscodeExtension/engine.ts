@@ -60,7 +60,7 @@ export function getReferences(
 
 const HIGHLIGHT_KINDS = {
   defn: vscode.DocumentHighlightKind.Write,
-  usage: vscode.DocumentHighlightKind.Write,
+  usage: vscode.DocumentHighlightKind.Read,
 };
 
 export function getHighlights(
