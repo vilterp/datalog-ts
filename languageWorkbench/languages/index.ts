@@ -118,7 +118,7 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
   },
 };
 
-type LanguageSpec = {
+export type LanguageSpec = {
   datalog: string;
   grammar: string;
   example: string;

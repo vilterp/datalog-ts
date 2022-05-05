@@ -1,7 +1,4 @@
-import {
-  BenchmarkSpec,
-  runDDBenchmark,
-} from "../../../util/testBench/benchmark";
+import { BenchmarkSpec, runDDBenchmark } from "../util/testBench/benchmark";
 import { testLangQuery } from "./ddTests";
 
 export const lwbBenchmarks: BenchmarkSpec[] = [
@@ -11,7 +8,7 @@ export const lwbBenchmarks: BenchmarkSpec[] = [
   name: lang,
   async run() {
     return runDDBenchmark(
-      `uiCommon/ide/dlPowered/languages/${lang}/${lang}.dd.txt`,
+      `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
       testLangQuery,
       reps
     );

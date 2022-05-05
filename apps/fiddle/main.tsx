@@ -8,7 +8,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
 import { initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../../uiCommon/ide/dlPowered/languages";
+import { LANGUAGES } from "../../languageWorkbench/languages";
 // @ts-ignore
 import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";

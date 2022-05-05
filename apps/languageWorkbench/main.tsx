@@ -5,17 +5,14 @@ import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
 import { OpenCodeEditor } from "../../uiCommon/ide/dlPowered/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../../uiCommon/ide/dlPowered/languages";
+import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 // @ts-ignore
 import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
-import { LOADER, mainDL } from "../../uiCommon/ide/dlPowered/common";
+import { LOADER, mainDL } from "../../languageWorkbench/common";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
-import {
-  addCursor,
-  constructInterp,
-} from "../../uiCommon/ide/dlPowered/interp";
+import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
