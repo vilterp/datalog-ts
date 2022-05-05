@@ -20,7 +20,7 @@ export function idxFromLineAndCol(source: string, pos: LineAndCol): number {
   const lines = source.split("\n");
   let out = 0;
   for (let curLine = 0; curLine < pos.line; curLine++) {
-    out += lines[curLine].length;
+    out += lines[curLine].length + 1; // +1 for newline
   }
   return out + pos.col;
 }
