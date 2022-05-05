@@ -136,6 +136,14 @@ export function getRenameEdits(
   return edit;
 }
 
+export function getSymbolList(
+  document: vscode.TextDocument,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
+  // TODO: how are we gonna do this? just list all the defns?
+  return [];
+}
+
 export function refreshDiagnostics(
   doc: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection

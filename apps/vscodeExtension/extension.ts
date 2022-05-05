@@ -5,6 +5,7 @@ import {
   getHighlights,
   getReferences,
   getRenameEdits,
+  getSymbolList,
   refreshDiagnostics,
 } from "./engine";
 
@@ -104,7 +105,23 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // TODO: symbols / outline
+  // symbols
+  context.subscriptions.push(
+    vscode.languages.registerDocumentSymbolProvider("datalog", {
+      provideDocumentSymbols(
+        document: vscode.TextDocument,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<
+        vscode.SymbolInformation[] | vscode.DocumentSymbol[]
+      > {
+        try {
+          return getSymbolList(document, token);
+        } catch (e) {
+          console.error("in completion provider:", e);
+        }
+      },
+    })
+  );
 }
 
 function subscribeToChanges(
