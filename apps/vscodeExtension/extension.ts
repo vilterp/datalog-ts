@@ -4,7 +4,7 @@ import {
   getDefinition,
   getHighlights,
   getReferences,
-  BasicCompletionItem,
+  MyCompletionItem,
   refreshDiagnostics,
 } from "./engine";
 
@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-      ): vscode.ProviderResult<BasicCompletionItem[]> {
+      ): vscode.ProviderResult<vscode.CompletionItem[]> {
         try {
           const items = getCompletionItems(document, position, token, context);
           console.log({ items });
