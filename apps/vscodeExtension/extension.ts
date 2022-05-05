@@ -12,7 +12,7 @@ import {
   semanticTokensLegend,
 } from "./engine";
 import * as path from "path";
-import { MessageToWebView } from "./types";
+import { MessageFromWebView, MessageToWebView } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   // diagnostics
   const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
   context.subscriptions.push(diagnostics);
-  subscribeToChanges(context, diagnostics);
+  subscribeDiagnosticsToChanges(context, diagnostics);
 
   // go to defn
   context.subscriptions.push(
@@ -185,18 +185,37 @@ export function activate(context: vscode.ExtensionContext) {
       const jsURL = panel.webview.asWebviewUri(jsDiskPath);
       panel.webview.html = getWebViewContent(jsURL);
 
-      if (vscode.window.activeTextEditor) {
-        // TODO: not sure the handler is installed yet...
-        // could wait a bit, but that's flaky
-        sendContents(panel.webview, vscode.window.activeTextEditor.document);
-      }
-      context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument((e) => {
-          sendContents(panel.webview, e.document);
-        })
-      );
+      subscribeWebViewToChanges(context, panel);
+    })
+  );
+}
 
-      // TODO: dispose this stuff?
+function subscribeWebViewToChanges(
+  context: vscode.ExtensionContext,
+  panel: vscode.WebviewPanel
+) {
+  context.subscriptions.push(
+    panel.webview.onDidReceiveMessage((evt) => {
+      const msg: MessageFromWebView = evt as MessageFromWebView;
+
+      switch (msg.type) {
+        case "ReadyForMessages":
+          if (vscode.window.activeTextEditor) {
+            sendContents(
+              panel.webview,
+              vscode.window.activeTextEditor.document
+            );
+          }
+          break;
+        default:
+          console.error("uknown message:", msg);
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      sendContents(panel.webview, e.document);
     })
   );
 }
@@ -209,7 +228,7 @@ function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
   webview.postMessage(msg);
 }
 
-function subscribeToChanges(
+function subscribeDiagnosticsToChanges(
   context: vscode.ExtensionContext,
   diagnostics: vscode.DiagnosticCollection
 ) {

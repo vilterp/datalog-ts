@@ -4,7 +4,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
-import { MessageToWebView } from "./types";
+import { MessageFromWebView, MessageToWebView } from "./types";
 
 export function Main() {
   const [dlSource, setDLSource] = useState("");
@@ -44,3 +44,7 @@ export function Main() {
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
+
+// let the other side know we're ready
+const msg: MessageFromWebView = { type: "ReadyForMessages" };
+window.postMessage(msg);
