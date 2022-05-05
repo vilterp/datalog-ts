@@ -149,7 +149,11 @@ export function activate(context: vscode.ExtensionContext) {
           token: vscode.CancellationToken
         ): vscode.ProviderResult<vscode.SemanticTokens> {
           try {
-            return getSemanticTokens(document, token);
+            const before = new Date().getTime();
+            const tokens = getSemanticTokens(document, token);
+            const after = new Date().getTime();
+            console.log("datalog: getSemanticTokens:", after - before, "ms");
+            return tokens;
           } catch (e) {
             console.error("in token provider:", e);
           }
