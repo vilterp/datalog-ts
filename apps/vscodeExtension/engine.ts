@@ -84,12 +84,17 @@ export function getHighlights(
   });
 }
 
+export interface BasicCompletionItem extends vscode.CompletionItem {
+  label: string;
+  range: vscode.Range;
+}
+
 export function getCompletionItems(
   doc: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken,
   context: vscode.CompletionContext
-): vscode.ProviderResult<vscode.CompletionItem[]> {
+): vscode.ProviderResult<BasicCompletionItem[]> {
   const source = doc.getText();
   const interp = getInterp(LANGUAGES.datalog, source);
   const idx = idxFromLineAndCol(source, {
@@ -97,11 +102,18 @@ export function getCompletionItems(
     col: position.character,
   });
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.CurrentSuggestion{}`);
+  const results = interp2.queryStr(
+    `ide.CurrentSuggestion{name: N, span: S, type: T}`
+  );
+  console.log("getCompletionItems", results);
   return results.map((res) => {
     const result = res.term as Rec;
     const label = result.attrs.name as StringLit;
-    return new vscode.CompletionItem(label.val);
+    const range = spanToRange(source, result.attrs.span as Rec);
+    return {
+      label: label.val,
+      range,
+    };
   });
 }
 
