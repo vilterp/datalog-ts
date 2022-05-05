@@ -176,7 +176,6 @@ export function getSemanticTokens(
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
     const typ = (result.attrs.type as StringLit).val;
-    console.log("push typ", typ);
     builder.push(range, typ);
   });
   return builder.build();
