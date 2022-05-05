@@ -102,7 +102,6 @@ export function getCompletionItems(
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
   );
-  console.log("getCompletionItems", { position, results });
   return results.map((res) => {
     const result = res.term as Rec;
     const label = result.attrs.name as StringLit;
@@ -111,6 +110,30 @@ export function getCompletionItems(
       label: label.val,
     };
   });
+}
+
+export function getRenameEdits(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+  newName: string,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.WorkspaceEdit> {
+  const source = document.getText();
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
+
+  const edit = new vscode.WorkspaceEdit();
+  results.forEach((res) => {
+    const result = res.term as Rec;
+    const range = spanToRange(source, result.attrs.span as Rec);
+    edit.replace(document.uri, range, newName);
+  });
+  return edit;
 }
 
 export function refreshDiagnostics(

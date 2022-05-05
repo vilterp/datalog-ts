@@ -4,6 +4,7 @@ import {
   getDefinition,
   getHighlights,
   getReferences,
+  getRenameEdits,
   refreshDiagnostics,
 } from "./engine";
 
@@ -77,8 +78,25 @@ export function activate(context: vscode.ExtensionContext) {
         context: vscode.CompletionContext
       ): vscode.ProviderResult<vscode.CompletionItem[]> {
         try {
-          const items = getCompletionItems(document, position, token, context);
-          return items;
+          return getCompletionItems(document, position, token, context);
+        } catch (e) {
+          console.error("in completion provider:", e);
+        }
+      },
+    })
+  );
+
+  // renames
+  context.subscriptions.push(
+    vscode.languages.registerRenameProvider("datalog", {
+      provideRenameEdits(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        newName: string,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.WorkspaceEdit> {
+        try {
+          return getRenameEdits(document, position, newName, token);
         } catch (e) {
           console.error("in completion provider:", e);
         }
