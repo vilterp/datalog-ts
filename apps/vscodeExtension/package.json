@@ -19,7 +19,17 @@
         "id": "datalog",
         "extensions": [
           ".dl"
+        ],
+        "aliases": [
+          "Datalog"
         ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "datalog",
+        "scopeName": "source.datalog",
+        "path": "./out/datalog.tmLanguage.json"
       }
     ]
   }
