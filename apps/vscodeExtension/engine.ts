@@ -3,7 +3,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { constructInterp } from "../../languageWorkbench/interp";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
-import { Rec, StringLit } from "../../core/types";
+import { rec, Rec, StringLit } from "../../core/types";
 import { dlToSpan } from "../../uiCommon/ide/types";
 import { ppt } from "../../core/pretty";
 import {
@@ -134,6 +134,32 @@ export function getRenameEdits(
     edit.replace(document.uri, range, newName);
   });
   return edit;
+}
+
+const GLOBAL_SCOPE = rec("global", {});
+
+export function getSymbolList(
+  document: vscode.TextDocument,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
+  const source = document.getText();
+  const interp = getInterp(LANGUAGES.datalog, source);
+
+  const results = interp.queryStr(
+    `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
+  );
+
+  return results.map((res) => {
+    const rec = res.term as Rec;
+    const name = (rec.attrs.name as StringLit).val;
+    const range = spanToRange(source, rec.attrs.span as Rec);
+    return new vscode.SymbolInformation(
+      name,
+      vscode.SymbolKind.Function,
+      "",
+      new vscode.Location(document.uri, range)
+    );
+  });
 }
 
 export function refreshDiagnostics(
