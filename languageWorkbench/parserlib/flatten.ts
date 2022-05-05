@@ -9,7 +9,7 @@ import {
   varr,
   or,
   and,
-} from "../core/types";
+} from "../../core/types";
 import { Grammar } from "./grammar";
 import { RuleTree } from "./ruleTree";
 

@@ -1,19 +1,19 @@
-import { fsLoader } from "../../../core/fsLoader";
-import { ppt } from "../../../core/pretty";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
+import { fsLoader } from "../core/fsLoader";
+import { ppt } from "../core/pretty";
+import { SimpleInterpreter } from "../core/simple/interpreter";
 import { addCursor, constructInterp } from "./interp";
-import { TestOutput } from "../../../util/ddTest";
-import { runDDTestAtPath } from "../../../util/ddTest/runner";
-import { datalogOut, jsonOut } from "../../../util/ddTest/types";
+import { TestOutput } from "../util/ddTest";
+import { runDDTestAtPath } from "../util/ddTest/runner";
+import { datalogOut, jsonOut } from "../util/ddTest/types";
 import * as fs from "fs";
-import { Suite } from "../../../util/testBench/testing";
+import { Suite } from "../util/testBench/testing";
 
 export function lwbTests(writeResults: boolean): Suite {
   return ["fp", "sql", "dl", "grammar", "modelica", "treeSQL"].map((lang) => ({
     name: lang,
     test() {
       runDDTestAtPath(
-        `uiCommon/ide/dlPowered/languages/${lang}/${lang}.dd.txt`,
+        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
         testLangQuery,
         writeResults
       );
@@ -21,10 +21,7 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
-const initInterp = new SimpleInterpreter(
-  "uiCommon/ide/dlPowered/common",
-  fsLoader
-);
+const initInterp = new SimpleInterpreter("languageWorkbench/common", fsLoader);
 
 export function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
@@ -40,15 +37,15 @@ export function testLangQuery(test: string[]): TestOutput[] {
       langParseError,
     } = constructInterp({
       builtinSource: fs.readFileSync(
-        "uiCommon/ide/dlPowered/common/main.dl",
+        "languageWorkbench/common/main.dl",
         "utf8"
       ),
       dlSource: fs.readFileSync(
-        `uiCommon/ide/dlPowered/languages/${lang}/${lang}.dl`,
+        `languageWorkbench/languages/${lang}/${lang}.dl`,
         "utf8"
       ),
       grammarSource: fs.readFileSync(
-        `uiCommon/ide/dlPowered/languages/${lang}/${lang}.grammar`,
+        `languageWorkbench/languages/${lang}/${lang}.grammar`,
         "utf8"
       ),
       langSource: example,

@@ -1,11 +1,11 @@
-import * as dl from "../../core/types";
+import * as dl from "../../../core/types";
 import {
   flatMap,
   flatMapObjToList,
   pairsToObj,
   range,
   stringToArray,
-} from "../../util/util";
+} from "../../../util/util";
 import * as gram from "../grammar";
 import {
   BinExpr,
@@ -18,7 +18,7 @@ import {
   varr,
   or,
   and,
-} from "../../core/types";
+} from "../../../core/types";
 import { SingleCharRule } from "../grammar";
 
 // generate datalog rules that implement a parser for this grammar

@@ -1,14 +1,17 @@
 import React, { useMemo } from "react";
 import * as ReactDOM from "react-dom";
-import { grammarToDL, inputToDL } from "../../parserlib/datalog/genDatalog";
+import {
+  grammarToDL,
+  inputToDL,
+} from "../../languageWorkbench/parserlib/datalog/genDatalog";
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { parseGrammar } from "../../parserlib/meta";
+import { parseGrammar } from "../../languageWorkbench/parserlib/meta";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import useLocalStorage from "react-use-localstorage";
 // @ts-ignore
-import parseDL from "../../parserlib/datalog/parse.dl";
+import parseDL from "../../languageWorkbench/parserlib/datalog/parse.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;

@@ -2,11 +2,11 @@ import {
   BenchmarkResult,
   BenchmarkSpec,
   doBenchmark,
-} from "../util/testBench/benchmark";
-import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { SimpleInterpreter } from "../core/simple/interpreter";
-import { fsLoader } from "../core/fsLoader";
-import { IncrementalInterpreter } from "../core/incremental/interpreter";
+} from "../../util/testBench/benchmark";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { fsLoader } from "../../core/fsLoader";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { parseGrammar } from "./meta";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { parse } from "./parser";
@@ -60,7 +60,9 @@ async function parserTestDatalog(
   grammarSource: string,
   input: string
 ): Promise<BenchmarkResult> {
-  const loadedInterp = mkInterp().doLoad("parserlib/datalog/parse.dl");
+  const loadedInterp = mkInterp().doLoad(
+    "languageWorkbench/parserlib/datalog/parse.dl"
+  );
   const grammarParsed = parseGrammar(grammarSource);
   const grammarDL = grammarToDL(grammarParsed);
   const inputDL = inputToDL(input);

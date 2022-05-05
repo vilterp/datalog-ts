@@ -1,15 +1,15 @@
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import { getAllStatements } from "../../../parserlib/flatten";
-import { extractGrammar, metaGrammar } from "../../../parserlib/meta";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { getAllStatements } from "./parserlib/flatten";
+import { extractGrammar, metaGrammar } from "./parserlib/meta";
 import {
   formatParseError,
   getErrors,
   parse,
   TraceTree,
-} from "../../../parserlib/parser";
-import { extractRuleTree, RuleTree } from "../../../parserlib/ruleTree";
-import { validateGrammar } from "../../../parserlib/validate";
-import { ensureRequiredRelations } from "./requiredRelations";
+} from "./parserlib/parser";
+import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
+import { validateGrammar } from "./parserlib/validate";
+import { ensureRequiredRelations } from "../uiCommon/ide/dlPowered/requiredRelations";
 
 export function constructInterp(args: {
   initInterp: AbstractInterpreter;

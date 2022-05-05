@@ -10,9 +10,9 @@ import { fpTests } from "./apps/fp/ddTests";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { actionsTests } from "./uiCommon/ide/actionsTest";
-import { parserlibTests } from "./parserlib/ddTests";
+import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
-import { lwbTests } from "./uiCommon/ide/dlPowered/ddTests";
+import { lwbTests } from "./languageWorkbench/ddTests";
 import { indexToLineColTests } from "./util/indexToLineColTest";
 
 // TODO: use a real arg parser

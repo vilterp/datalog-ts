@@ -1,5 +1,5 @@
-import { Suite } from "../util/testBench/testing";
-import { runDDTestAtPath } from "../util/ddTest";
+import { Suite } from "../../util/testBench/testing";
+import { runDDTestAtPath } from "../../util/ddTest";
 import { Grammar, seq, text, choice } from "./grammar";
 import { formatParseError, getErrors, parse, TraceTree } from "./parser";
 import { jsonGrammar } from "./examples/json";
@@ -7,14 +7,14 @@ import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
 import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
-import { datalogOut, plainTextOut, TestOutput } from "../util/ddTest/types";
+import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
 import { flatten } from "./flatten";
-import { ppRule, ppt } from "../core/pretty";
+import { ppRule, ppt } from "../../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
-import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { Rule } from "../core/types";
-import { fsLoader } from "../core/fsLoader";
-import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { Rule } from "../../core/types";
+import { fsLoader } from "../../core/fsLoader";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -32,7 +32,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "basic",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/basic.dd.txt",
+          "languageWorkbench/parserlib/testdata/basic.dd.txt",
           (t) => parserTest(basicGrammar, t),
           writeResults
         );
@@ -42,7 +42,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "json",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/json.dd.txt",
+          "languageWorkbench/parserlib/testdata/json.dd.txt",
           (t) => parserTestFixedStartRule(jsonGrammar, "value", t),
           writeResults
         );
@@ -52,7 +52,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "meta",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/meta.dd.txt",
+          "languageWorkbench/parserlib/testdata/meta.dd.txt",
           metaTest,
           writeResults
         );
@@ -62,7 +62,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "flatten",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/flatten.dd.txt",
+          "languageWorkbench/parserlib/testdata/flatten.dd.txt",
           flattenTest,
           writeResults
         );
@@ -72,7 +72,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "datalog",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/datalog.dd.txt",
+          "languageWorkbench/parserlib/testdata/datalog.dd.txt",
           datalogTest,
           writeResults
         );
@@ -82,7 +82,7 @@ export function parserlibTests(writeResults: boolean): Suite {
       name: "datalogInput",
       test() {
         runDDTestAtPath(
-          "parserlib/testdata/datalogInput.dd.txt",
+          "languageWorkbench/parserlib/testdata/datalogInput.dd.txt",
           datalogInputTest,
           writeResults
         );
@@ -144,7 +144,7 @@ function datalogTest(test: string[]): TestOutput[] {
         fsLoader
       ) as AbstractInterpreter;
       // load parsing rules
-      interp = interp.doLoad("parserlib/datalog/parse.dl");
+      interp = interp.doLoad("languageWorkbench/parserlib/datalog/parse.dl");
       // insert grammar as data
       interp = interp.evalStmts(
         grammarRules.map((rule) => ({ type: "Rule", rule }))
