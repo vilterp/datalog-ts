@@ -103,6 +103,8 @@ export function activate(context: vscode.ExtensionContext) {
       },
     })
   );
+
+  // TODO: symbols / outline
 }
 
 function subscribeToChanges(
