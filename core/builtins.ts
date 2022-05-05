@@ -1,7 +1,7 @@
-import { ppt } from "../pretty";
-import { int, rec, Rec } from "../types";
-import { termCmp } from "../unify";
-import * as util from "../../util/util";
+import { ppt } from "./pretty";
+import { int, rec, Rec } from "./types";
+import { termCmp } from "./unify";
+import * as util from "../util/util";
 
 export type Builtin = (rec: Rec) => Rec[];
 
