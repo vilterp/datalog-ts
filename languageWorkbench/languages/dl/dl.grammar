@@ -11,15 +11,15 @@ conjunct :- (record | binExpr | negation).
 negation :- ["!", record].
 
 binExpr :- [term, ws, binOp, ws, term].
-binOp :- ("<=" | ">=" | "==" | "!=").
+binOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
 
-
-term :- (record | int | var | string | bool | placeholder).
+term :- (record | int | var | string | bool | array | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
-record :- [(ident | placeholder), "{", ws, repSep(keyValue, [",", ws]), ws, "}"].
+record :- [(ident | placeholder), "{", ws, repSep(keyValue, commaSpace), ws, "}"].
 keyValue :- [(ident | placeholder), ":", ws, term].
-int :- [num, repSep(num, "")].
+int :- [("-" | ""), num, repSep(num, "")].
 bool :- ("true" | "false").
+array :- ["[", repSep(term, commaSpace), "]"].
 
 tableKW :- ".table".
 
@@ -31,5 +31,6 @@ num :- [0-9].
 alphaNum :- (alpha | num).
 ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
+commaSpace :- [",", ws].
 
 commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | "," | "-" | "'" | "/" | "?").

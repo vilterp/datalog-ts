@@ -8,7 +8,7 @@ export function lineAndColFromIdx(source: string, index: number): LineAndCol {
   let lineStartidx = 0;
   for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
     const line = lines[lineIdx];
-    if (lineStartidx + line.length > index) {
+    if (lineStartidx + line.length >= index) {
       return { line: lineIdx, col: index - lineStartidx };
     }
     lineStartidx += line.length + 1; // +1 for the newline

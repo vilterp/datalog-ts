@@ -29,7 +29,7 @@
     "build-sim": "esbuild apps/sim/main.tsx --bundle --outfile=apps/sim/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto --loader:.dl=text",
     "serve-sim": "cd apps/sim/public && http-server -c-1",
     "build-vscode-extension": "esbuild apps/vscodeExtension/extension.ts --bundle --platform=node --outfile=apps/vscodeExtension/out/extension.js --external:vscode --loader:.dl=text --loader:.grammar=text",
-    "package-vscode-extension": "cd apps/vscodeExtention && vsce package"
+    "package-vscode-extension": "cd apps/vscodeExtension && vsce package"
   },
   "devDependencies": {
     "@types/diff": "^4.0.2",
