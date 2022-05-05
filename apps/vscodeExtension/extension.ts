@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getDefinition, refreshDiagnostics } from "./engine";
+import { getDefinition, getReferences, refreshDiagnostics } from "./engine";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -25,6 +25,27 @@ export function activate(context: vscode.ExtensionContext) {
       },
     })
   );
+
+  // references
+  context.subscriptions.push(
+    vscode.languages.registerReferenceProvider("datalog", {
+      provideReferences(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        context: vscode.ReferenceContext,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Location[]> {
+        try {
+          return getReferences(document, position, context, token);
+        } catch (e) {
+          console.error("in reference provider:", e);
+        }
+      },
+    })
+  );
+
+  // TODO: highlight
+  // TODO: completions
 }
 
 function subscribeToChanges(

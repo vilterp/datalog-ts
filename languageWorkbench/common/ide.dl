@@ -41,17 +41,20 @@ ide.RenameSpan{span: S} :-
 
 # === Jump to Definition ===
 
-ide.DefnAtPos{idx: CIdx, defnSpan: DS} :-
-  scope.Usage{defnSpan: DS, usageSpan: span{from: FIdx, to: TIdx}} &
-  FIdx <= CIdx & CIdx <= TIdx.
-
 ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
   ide.DefnAtPos{idx: CIdx, defnSpan: DL}.
 
-ide.UsageForCursor{usageSpan: UL} :-
+ide.DefnAtPos{idx: CIdx, defnSpan: DS} :-
+  scope.Usage{defnSpan: DS, usageSpan: span{from: FIdx, to: TIdx}} &
+  FIdx <= CIdx & CIdx <= TIdx.
+
+ide.UsageForCursor{usageSpan: US} :-
   ide.Cursor{idx: CIdx} &
-  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: UL} &
+  ide.UsageAtPos{idx: CIdx, usageSpan: US}.
+
+ide.UsageAtPos{idx: CIdx, usageSpan: US} :-
+  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: US} &
   FIdx <= CIdx & CIdx <= TIdx.
 
 # === Suggestions ===

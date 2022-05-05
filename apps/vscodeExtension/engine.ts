@@ -36,6 +36,28 @@ export function getDefinition(
   return location;
 }
 
+export function getReferences(
+  doc: vscode.TextDocument,
+  position: vscode.Position,
+  context: vscode.ReferenceContext,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.Location[]> {
+  const source = doc.getText();
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
+  return results.map(
+    (res) =>
+      new vscode.Location(
+        doc.uri,
+        spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec)
+      )
+  );
+}
+
 export function refreshDiagnostics(
   doc: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection
