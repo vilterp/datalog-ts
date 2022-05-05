@@ -38,7 +38,7 @@ export function Main() {
   return (
     <>
       {error ? <pre style={{ backgroundColor: "red" }}>{error}</pre> : null}
-      <Explorer interp={interp} />
+      <Explorer interp={interp} showViz />
     </>
   );
 }
