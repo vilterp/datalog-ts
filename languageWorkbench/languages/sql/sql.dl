@@ -66,9 +66,9 @@ scope.table{name: N} :-
   ast.createTableStmt{id: CreateTable} &
   ast.tableName{parentID: CreateTable, text: N}.
 
-hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "intLit", type: "number"}.
 hl.mapping{rule: "stringLit", type: "string"}.
-hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "bool", type: "boolean"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "type", type: "ident"}.
 

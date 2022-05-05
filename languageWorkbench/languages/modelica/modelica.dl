@@ -49,7 +49,7 @@ scope.childExprVar{id: Expr, name: N, span: S} :-
   ast.derivative{id: Der, parentID: Expr} &
   ast.ident{parentID: Der, text: N, span: S}.
 
-hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "intLit", type: "number"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "modelKW", type: "keyword"}.
 hl.mapping{rule: "initKW", type: "keyword"}.

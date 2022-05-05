@@ -42,9 +42,9 @@ scope.placeholderSelectTable{span: S, scopeID: "global", kind: "table"} :-
   ast.tableName{parentID: SelectID, id: TableNameID} &
   ast.placeholder{parentID: TableNameID, span: S}.
 
-hl.mapping{rule: "intLit", type: "int"}.
+hl.mapping{rule: "intLit", type: "number"}.
 hl.mapping{rule: "stringLit", type: "string"}.
-hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "bool", type: "boolean"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "type", type: "ident"}.
 
