@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           return getHighlights(document, position, token);
         } catch (e) {
-          console.error("in reference provider:", e);
+          console.error("in highlight provider:", e);
         }
       },
     })
