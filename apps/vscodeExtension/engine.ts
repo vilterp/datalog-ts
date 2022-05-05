@@ -136,6 +136,28 @@ export function getRenameEdits(
   return edit;
 }
 
+export function prepareRename(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): vscode.ProviderResult<vscode.Range> {
+  const source = document.getText();
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr("ide.DefnForCursor{defnLoc: DL}");
+  if (results.length === 0) {
+    return null;
+  }
+  const result = results[0].term as Rec;
+  const range = spanToRange(source, result.attrs.defnLoc as Rec);
+  console.log("prepareRename:", range);
+  return range;
+}
+
+// TODO: parameterize by language
 const GLOBAL_SCOPE = rec("global", {});
 
 export function getSymbolList(
@@ -183,7 +205,7 @@ export function getSemanticTokens(
 
 // somewhat duplicated from highlight.dl
 export const semanticTokensLegend = new vscode.SemanticTokensLegend([
-  "int",
+  "number",
   "string",
   "keyword",
   "bool",

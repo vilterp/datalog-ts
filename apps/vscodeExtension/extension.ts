@@ -7,6 +7,7 @@ import {
   getRenameEdits,
   getSemanticTokens,
   getSymbolList,
+  prepareRename,
   refreshDiagnostics,
   semanticTokensLegend,
 } from "./engine";
@@ -101,7 +102,18 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           return getRenameEdits(document, position, newName, token);
         } catch (e) {
-          console.error("in completion provider:", e);
+          console.error("in rename provider:", e);
+        }
+      },
+      prepareRename(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Range> {
+        try {
+          return prepareRename(document, position);
+        } catch (e) {
+          console.error("in prepare rename:", e);
         }
       },
     })
