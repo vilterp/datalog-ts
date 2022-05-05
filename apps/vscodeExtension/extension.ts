@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getDeclaration, refreshDiagnostics } from "./engine";
+import { getDefinition, refreshDiagnostics } from "./engine";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -11,14 +11,16 @@ export function activate(context: vscode.ExtensionContext) {
 
   // completions
   context.subscriptions.push(
-    vscode.languages.registerDeclarationProvider("datalog", {
-      provideDeclaration(
+    vscode.languages.registerDefinitionProvider("datalog", {
+      provideDefinition(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Declaration> {
-        console.log("hello from declaration provider");
-        return getDeclaration(document, position, token);
+      ): vscode.ProviderResult<vscode.Definition> {
+        console.log("hello from definition provider");
+        const defn = getDefinition(document, position, token);
+        console.log("defn", defn);
+        return defn;
       },
     })
   );
