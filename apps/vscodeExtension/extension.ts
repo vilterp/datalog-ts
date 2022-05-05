@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import {
+  getCompletionItems,
   getDefinition,
   getHighlights,
   getReferences,
@@ -66,7 +67,24 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // TODO: completions
+  // completions
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider("datalog", {
+      provideCompletionItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken,
+        context: vscode.CompletionContext
+      ): vscode.ProviderResult<vscode.CompletionItem[]> {
+        try {
+          const items = getCompletionItems(document, position, token, context);
+          return items;
+        } catch (e) {
+          console.error("in completion provider:", e);
+        }
+      },
+    })
+  );
 }
 
 function subscribeToChanges(

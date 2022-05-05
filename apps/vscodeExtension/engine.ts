@@ -3,7 +3,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { constructInterp } from "../../languageWorkbench/interp";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
-import { Rec, Res, StringLit } from "../../core/types";
+import { Rec, StringLit } from "../../core/types";
 import { dlToSpan } from "../../uiCommon/ide/types";
 import { ppt } from "../../core/pretty";
 import {
@@ -81,6 +81,35 @@ export function getHighlights(
     const kind = result.attrs.type as StringLit;
     const range = spanToRange(source, result.attrs.span as Rec);
     return new vscode.DocumentHighlight(range, HIGHLIGHT_KINDS[kind.val]);
+  });
+}
+
+export function getCompletionItems(
+  doc: vscode.TextDocument,
+  position: vscode.Position,
+  token: vscode.CancellationToken,
+  context: vscode.CompletionContext
+): vscode.ProviderResult<vscode.CompletionItem[]> {
+  const source = doc.getText();
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const sourceWithPlaceholder =
+    source.slice(0, idx) + "???" + source.slice(idx);
+  const interp = getInterp(LANGUAGES.datalog, sourceWithPlaceholder);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(
+    `ide.CurrentSuggestion{name: N, span: S, type: T}`
+  );
+  console.log("getCompletionItems", { position, results });
+  return results.map((res) => {
+    const result = res.term as Rec;
+    const label = result.attrs.name as StringLit;
+    const range = spanToRange(source, result.attrs.span as Rec);
+    return {
+      label: label.val,
+    };
   });
 }
 
