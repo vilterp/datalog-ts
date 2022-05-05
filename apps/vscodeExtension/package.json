@@ -21,6 +21,13 @@
           ".dl"
         ]
       }
+    ],
+    "commands": [
+      {
+        "command": "datalog.openExplorer",
+        "title": "Open Explorer",
+        "category": "Datalog"
+      }
     ]
   }
 }

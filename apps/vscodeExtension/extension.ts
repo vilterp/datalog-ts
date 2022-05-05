@@ -11,6 +11,7 @@ import {
   refreshDiagnostics,
   semanticTokensLegend,
 } from "./engine";
+import * as path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -137,7 +138,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // symbols / syntax highlighting
+  // syntax highlighting
   context.subscriptions.push(
     vscode.languages.registerDocumentSemanticTokensProvider(
       "datalog",
@@ -155,6 +156,23 @@ export function activate(context: vscode.ExtensionContext) {
       },
       semanticTokensLegend
     )
+  );
+
+  // explorer web view
+  context.subscriptions.push(
+    vscode.commands.registerCommand("datalog.openExplorer", () => {
+      // Create and show a new webview
+      const panel = vscode.window.createWebviewPanel(
+        "datalogExplorer",
+        "Datalog Explorer",
+        vscode.ViewColumn.Beside,
+        { enableScripts: true, enableFindWidget: true }
+      );
+      const jsURL = vscode.Uri.file(
+        path.join(context.extensionPath, "out", "webView.js")
+      );
+      panel.webview.html = getWebViewContent(jsURL);
+    })
   );
 }
 
@@ -184,4 +202,19 @@ function subscribeToChanges(
       diagnostics.delete(doc.uri)
     )
   );
+}
+
+function getWebViewContent(jsURL: vscode.Uri) {
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Datalog Explorer</title>
+  </head>
+  <body>
+    <div id="main"></div>
+
+    <script src="${jsURL.toString()}"></script>
+  </body>
+</html>
+`;
 }
