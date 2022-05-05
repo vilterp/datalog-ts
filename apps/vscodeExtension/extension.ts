@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(diagnostics);
   subscribeToChanges(context, diagnostics);
 
-  // completions
+  // go to defn
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider("datalog", {
       provideDefinition(
