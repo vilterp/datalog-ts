@@ -46,5 +46,8 @@ export function Main() {
 ReactDOM.render(<Main />, document.getElementById("main"));
 
 // let the other side know we're ready
+// @ts-ignore
+const vscode = acquireVsCodeApi();
 const msg: MessageFromWebView = { type: "ReadyForMessages" };
-window.postMessage(msg);
+vscode.postMessage(msg);
+console.log(vscode, msg);

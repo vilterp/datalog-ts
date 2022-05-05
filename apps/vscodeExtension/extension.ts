@@ -194,17 +194,18 @@ function subscribeWebViewToChanges(
   context: vscode.ExtensionContext,
   panel: vscode.WebviewPanel
 ) {
+  const originalActiveEditor = vscode.window.activeTextEditor;
+  console.log({ originalActiveEditor });
   context.subscriptions.push(
     panel.webview.onDidReceiveMessage((evt) => {
       const msg: MessageFromWebView = evt as MessageFromWebView;
+      console.log("got message", evt);
 
       switch (msg.type) {
         case "ReadyForMessages":
-          if (vscode.window.activeTextEditor) {
-            sendContents(
-              panel.webview,
-              vscode.window.activeTextEditor.document
-            );
+          console.log("sending to", originalActiveEditor);
+          if (originalActiveEditor) {
+            sendContents(panel.webview, originalActiveEditor.document);
           }
           break;
         default:
