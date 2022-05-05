@@ -17,10 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
         position: vscode.Position,
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Definition> {
-        console.log("hello from definition provider");
-        const defn = getDefinition(document, position, token);
-        console.log("defn", defn);
-        return defn;
+        try {
+          return getDefinition(document, position, token);
+        } catch (e) {
+          console.error("in definition provider:", e);
+        }
       },
     })
   );

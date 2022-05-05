@@ -24,16 +24,7 @@ export function getDefinition(
     line: position.line,
     col: position.character,
   });
-  console.log("hello from getDefinition", { source, position, idx });
-  console.log("hello from getDefinition 2");
-  let results: Res[] = [];
-  // TODO: put this try/catch elsewhere
-  try {
-    results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
-  } catch (e) {
-    console.log(e);
-  }
-  console.log("hello from getDefinition 3", results);
+  const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
   if (results.length === 0) {
     return null;
   }
@@ -42,7 +33,6 @@ export function getDefinition(
     doc.uri,
     spanToRange(source, result.attrs.defnSpan as Rec)
   );
-  console.log("location", location);
   return location;
 }
 
