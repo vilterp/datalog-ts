@@ -1,5 +1,5 @@
 hl.Segment{type: T, id: I, span: S, highlight: H} :-
-  hl.segmentInt{type: T, id: I, span: S, highlight: H} |
+  hl.segmentNumber{type: T, id: I, span: S, highlight: H} |
   hl.segmentString{type: T, id: I, span: S, highlight: H} |
   hl.segmentBool{type: T, id: I, span: S, highlight: H} |
   hl.keyword{type: T, id: I, span: S, highlight: H} |
@@ -10,7 +10,7 @@ hl.Segment{type: T, id: I, span: S, highlight: H} :-
   hl.segmentComment{type: T, id: I, span: S, highlight: H}.
 
 hl.NonHighlightSegment{type: T, span: S} :-
-  hl.segmentInt{type: T, span: S} |
+  hl.segmentNumber{type: T, span: S} |
   hl.segmentString{type: T, span: S} |
   hl.segmentBool{type: T, span: S} |
   hl.keyword{type: T, span: S} |
@@ -19,8 +19,8 @@ hl.NonHighlightSegment{type: T, span: S} :-
   hl.segmentComment{type: T, span: S}.
 
 # primitives
-hl.segmentInt{type: "int", id: I, span: S, highlight: false} :-
-  hl.mapping{rule: R, type: "int"} &
+hl.segmentNumber{type: "number", id: I, span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "number"} &
   astInternal.node{rule: R, id: I, span: S}.
 hl.segmentString{type: "string", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "string"} &
