@@ -74,9 +74,8 @@ export function getHighlights(
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(
-    `ide.UsageOrDefnFromPos{idx: ${idx}, span: S, type: T}`
-  );
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.CurrentUsageOrDefn{span: S, type: T}`);
   return results.map((res) => {
     const result = res.term as Rec;
     const kind = result.attrs.type as StringLit;
