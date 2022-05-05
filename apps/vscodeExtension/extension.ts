@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { refreshDiagnostics } from "./engine";
+import { getDefinition, refreshDiagnostics } from "./engine";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -8,6 +8,23 @@ export function activate(context: vscode.ExtensionContext) {
   const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
   context.subscriptions.push(diagnostics);
   subscribeToChanges(context, diagnostics);
+
+  // go to defn
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider("datalog", {
+      provideDefinition(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Definition> {
+        try {
+          return getDefinition(document, position, token);
+        } catch (e) {
+          console.error("in definition provider:", e);
+        }
+      },
+    })
+  );
 }
 
 function subscribeToChanges(
