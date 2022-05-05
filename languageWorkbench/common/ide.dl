@@ -36,7 +36,7 @@ scope.Usage{
 # === Rename ===
 
 ide.RenameSpan{span: S} :-
-  ide.UsageAndDefn{span: S} &
+  ide.UsageOrDefn{span: S} &
   S != "builtin".
 
 # === Jump to Definition ===
@@ -112,6 +112,6 @@ ide.usageOfCurrentDefn{span: S} :-
   scope.Var{scopeID: UsageScope, name: N, span: S}.
 
 # just for testing
-ide.UsageAndDefn{type: T, span: S} :-
+ide.UsageOrDefn{type: T, span: S} :-
   ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S} |
   ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S}.
