@@ -136,6 +136,28 @@ export function getRenameEdits(
   return edit;
 }
 
+export function prepareRename(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): vscode.ProviderResult<vscode.Range> {
+  const source = document.getText();
+  const idx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(
+    "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
+  );
+  if (results.length === 0) {
+    return null;
+  }
+  const result = results[0].term as Rec;
+  return spanToRange(source, result.attrs.span as Rec);
+}
+
+// TODO: parameterize by language
 const GLOBAL_SCOPE = rec("global", {});
 
 export function getSymbolList(
@@ -161,6 +183,38 @@ export function getSymbolList(
     );
   });
 }
+
+export function getSemanticTokens(
+  document: vscode.TextDocument,
+  token: vscode.CancellationToken
+): vscode.ProviderResult<vscode.SemanticTokens> {
+  console.log("getSemanticTokens", semanticTokensLegend);
+  const source = document.getText();
+  const interp = getInterp(LANGUAGES.datalog, source);
+  const results = interp.queryStr("hl.NonHighlightSegment{}");
+
+  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+  results.forEach((res) => {
+    const result = res.term as Rec;
+    const range = spanToRange(source, result.attrs.span as Rec);
+    const typ = (result.attrs.type as StringLit).val;
+    builder.push(range, typ);
+  });
+  return builder.build();
+}
+
+// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
+// needs to match highlight.dl
+// needs to match commonTheme.css
+export const semanticTokensLegend = new vscode.SemanticTokensLegend([
+  "number",
+  "string",
+  "keyword",
+  "boolean",
+  "comment",
+  "variable",
+  "typeParameter",
+]);
 
 export function refreshDiagnostics(
   doc: vscode.TextDocument,

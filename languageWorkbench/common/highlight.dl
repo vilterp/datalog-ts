@@ -1,17 +1,20 @@
 hl.Segment{type: T, id: I, span: S, highlight: H} :-
-  hl.segmentInt{type: T, id: I, span: S, highlight: H} |
-  hl.segmentString{type: T, id: I, span: S, highlight: H} |
-  hl.segmentBool{type: T, id: I, span: S, highlight: H} |
-  hl.keyword{type: T, id: I, span: S, highlight: H} |
-  hl.segmentIdent{type: T, id: I, span: S, highlight: H} |
-  hl.segmentSpecialVar{type: T, id: I, span: S, highlight: H} |
+  hl.NonHighlightSegment{type: T, id: I, span: S, highlight: false} |
   hl.segmentIdentDefnHL{type: T, id: I, span: S, highlight: H} |
-  hl.segmentIdentUsageHL{type: T, id: I, span: S, highlight: H} |
-  hl.segmentComment{type: T, id: I, span: S, highlight: H}.
+  hl.segmentIdentUsageHL{type: T, id: I, span: S, highlight: H}.
+
+hl.NonHighlightSegment{type: T, span: S, highlight: false} :-
+  hl.segmentNumber{type: T, span: S} |
+  hl.segmentString{type: T, span: S} |
+  hl.segmentBool{type: T, span: S} |
+  hl.keyword{type: T, span: S} |
+  hl.segmentIdent{type: T, span: S} |
+  hl.segmentSpecialVar{type: T, span: S} |
+  hl.segmentComment{type: T, span: S}.
 
 # primitives
-hl.segmentInt{type: "int", id: I, span: S, highlight: false} :-
-  hl.mapping{rule: R, type: "int"} &
+hl.segmentNumber{type: "number", id: I, span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "number"} &
   astInternal.node{rule: R, id: I, span: S}.
 hl.segmentString{type: "string", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "string"} &
@@ -19,18 +22,18 @@ hl.segmentString{type: "string", id: I, span: S, highlight: false} :-
 hl.keyword{type: "keyword", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "keyword"} &
   astInternal.node{rule: R, id: I, span: S}.
-hl.segmentBool{type: "bool", id: I, span: S, highlight: false} :-
-  hl.mapping{rule: R, type: "bool"} &
+hl.segmentBool{type: "boolean", id: I, span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "boolean"} &
   astInternal.node{rule: R, id: I, span: S}.
 hl.segmentComment{type: "comment", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "comment"} &
   astInternal.node{rule: R, id: I, span: S}.
 
 # identifiers
-hl.segmentSpecialVar{type: "specialVar", span: S, highlight: false} :-
-  hl.mapping{rule: R, type: "specialVar"} &
+hl.segmentSpecialVar{type: "typeParameter", span: S, highlight: false} :-
+  hl.mapping{rule: R, type: "typeParameter"} &
   astInternal.node{rule: R, span: S}.
-hl.segmentIdent{type: "var", id: I, span: S, highlight: false} :-
+hl.segmentIdent{type: "variable", id: I, span: S, highlight: false} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: I, span: S}.
 

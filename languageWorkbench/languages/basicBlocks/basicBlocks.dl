@@ -74,5 +74,5 @@ scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
 hl.mapping{rule: "gotoKW", type: "keyword"}.
 hl.mapping{rule: "int", type: "int"}.
 hl.mapping{rule: "string", type: "string"}.
-hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "bool", type: "boolean"}.
 hl.mapping{rule: "ident", type: "ident"}.

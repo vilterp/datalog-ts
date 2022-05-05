@@ -107,9 +107,9 @@ tc.ruleAttr{rule: RuleName, attr: Attr, span: S} :-
   ast.ident{parentID: KV, text: Attr, span: S}.
 
 hl.mapping{rule: "ident", type: "ident"}.
-hl.mapping{rule: "var", type: "specialVar"}.
-hl.mapping{rule: "int", type: "int"}.
-hl.mapping{rule: "bool", type: "bool"}.
+hl.mapping{rule: "var", type: "typeParameter"}.
+hl.mapping{rule: "int", type: "number"}.
+hl.mapping{rule: "bool", type: "boolean"}.
 hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "comment", type: "comment"}.
 hl.mapping{rule: "tableKW", type: "keyword"}.
