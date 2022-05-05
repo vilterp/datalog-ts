@@ -12,6 +12,7 @@ import {
   semanticTokensLegend,
 } from "./engine";
 import * as path from "path";
+import { MessageToWebView } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -179,8 +180,29 @@ export function activate(context: vscode.ExtensionContext) {
       );
       const jsURL = panel.webview.asWebviewUri(jsDiskPath);
       panel.webview.html = getWebViewContent(jsURL);
+
+      if (vscode.window.activeTextEditor) {
+        // TODO: not sure the handler is installed yet...
+        // could wait a bit, but that's flaky
+        sendContents(panel.webview, vscode.window.activeTextEditor.document);
+      }
+      context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument((e) => {
+          sendContents(panel.webview, e.document);
+        })
+      );
+
+      // TODO: dispose this stuff?
     })
   );
+}
+
+function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
+  const msg: MessageToWebView = {
+    type: "ContentsUpdated",
+    text: doc.getText(),
+  };
+  webview.postMessage(msg);
 }
 
 function subscribeToChanges(
