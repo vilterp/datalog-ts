@@ -10,16 +10,18 @@ export function activate(context: vscode.ExtensionContext) {
   subscribeToChanges(context, diagnostics);
 
   // completions
-  vscode.languages.registerDeclarationProvider("datalog", {
-    provideDeclaration(
-      document: vscode.TextDocument,
-      position: vscode.Position,
-      token: vscode.CancellationToken
-    ): vscode.ProviderResult<vscode.Declaration> {
-      console.log("hello from declaration provider");
-      return getDeclaration(document, position, token);
-    },
-  });
+  context.subscriptions.push(
+    vscode.languages.registerDeclarationProvider("datalog", {
+      provideDeclaration(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Declaration> {
+        console.log("hello from declaration provider");
+        return getDeclaration(document, position, token);
+      },
+    })
+  );
 }
 
 function subscribeToChanges(
