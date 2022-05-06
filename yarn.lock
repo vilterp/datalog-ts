@@ -1883,6 +1883,15 @@ prop-types@^15.5.8, prop-types@^15.6.2:
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
+prop-types@^15.8.1:
+  version "15.8.1"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
+  integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
+  dependencies:
+    loose-envify "^1.4.0"
+    object-assign "^4.1.1"
+    react-is "^16.13.1"
+
 psl@^1.1.28:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.8.0.tgz#9326f8bcfb013adcc005fdff056acce020e51c24"
@@ -1970,7 +1979,7 @@ react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
-react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
+react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
@@ -2033,13 +2042,23 @@ react-use-localstorage@^3.4.1:
   resolved "https://registry.yarnpkg.com/react-use-localstorage/-/react-use-localstorage-3.4.1.tgz#29d802012c0c116bae687e3abc9b47b4eb700b02"
   integrity sha512-OKKAQT3CeDWGhoboE78XchXRJkxCYIFNZBM5gfiBxOcaMQU+CSP7d3iyBHwpgdSen2DlIdy2ZvExwIk4oci3pg==
 
-react-vega@*, react-vega@^7.5.0:
+react-vega@*:
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/react-vega/-/react-vega-7.5.0.tgz#b9726d4fd7f35299d417d340935e093bf4bed558"
   integrity sha512-JysyZ0PdihfSztkbxOd7DcYBrCVotRbkKiGNYWKkLP1D4Mt2Dq0uMwNtBEBGjoWdmrE3Qwd+uz7ekklP6MqxDw==
   dependencies:
     "@types/react" "^16.9.19"
     fast-deep-equal "^3.1.1"
+    vega-embed "^6.5.1"
+
+react-vega@^7.5.1:
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/react-vega/-/react-vega-7.5.1.tgz#574ada8b53aa8bdae61a286c1e0fb5a8efdbd064"
+  integrity sha512-pbcSrLsqmUP2+1v+/im99GdGompT0jJwJo9Cjq3QQ9URUYMuEEvfTCergEtfVRcBjC6bPTN6sLbe+8yQSqB4jg==
+  dependencies:
+    "@types/react" "*"
+    fast-deep-equal "^3.1.1"
+    prop-types "^15.8.1"
     vega-embed "^6.5.1"
 
 react@^16.13.1:

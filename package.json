@@ -67,7 +67,7 @@
     "react-router-dom": "^5.2.0",
     "react-textarea-autosize": "^8.3.2",
     "react-use-localstorage": "^3.4.1",
-    "react-vega": "^7.5.0",
+    "react-vega": "^7.5.1",
     "simple-markdown": "^0.7.3",
     "tmp": "^0.2.1",
     "use-hash-param": "^0.2.3",
