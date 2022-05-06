@@ -1,9 +1,9 @@
-import { StringLit, Rec, Bool, Term } from "../../../core/types";
-import { Suggestion } from "../../../uiCommon/ide/suggestions";
-import { repeatArr, uniqBy } from "../../../util/util";
-import { getCurrentPlaceholder } from "../../../uiCommon/ide/util";
-import { Span } from "../../../uiCommon/ide/types";
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { StringLit, Rec, Bool, Term } from "../../core/types";
+import { Suggestion } from "../../uiCommon/ide/suggestions";
+import { repeatArr, uniqBy } from "../../util/util";
+import { getCurrentPlaceholder } from "../../uiCommon/ide/util";
+import { Span } from "../../uiCommon/ide/types";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 // TODO: derive more of this from the grammar & rules :P
 
@@ -15,28 +15,26 @@ export function getSuggestions(interp: AbstractInterpreter): Suggestion[] {
   const varSuggs: Suggestion[] = uniqBy(
     interp
       .queryStr("ide.CurrentSuggestion{name: N, type: T, typeMatch: M}")
-      .map(
-        (res): Suggestion => {
-          const rec = res.term as Rec;
-          const type = rec.attrs.type as Rec;
-          const name = (rec.attrs.name as StringLit).val;
-          const numPlaceholders = placeholdersNeeded(type);
-          const typeMatch = (rec.attrs.typeMatch as Bool).val;
+      .map((res): Suggestion => {
+        const rec = res.term as Rec;
+        const type = rec.attrs.type as Rec;
+        const name = (rec.attrs.name as StringLit).val;
+        const numPlaceholders = placeholdersNeeded(type);
+        const typeMatch = (rec.attrs.typeMatch as Bool).val;
 
-          return {
-            kind: typeToString(rec.attrs.type),
-            textToInsert:
-              numPlaceholders === 0
-                ? name
-                : `${name}(${repeatArr(numPlaceholders, "???").join(", ")})`,
-            cursorOffsetAfter:
-              numPlaceholders === 0 ? name.length : name.length + 1,
-            bold: typeMatch,
-            replacementSpan,
-            display: name,
-          };
-        }
-      ),
+        return {
+          kind: typeToString(rec.attrs.type),
+          textToInsert:
+            numPlaceholders === 0
+              ? name
+              : `${name}(${repeatArr(numPlaceholders, "???").join(", ")})`,
+          cursorOffsetAfter:
+            numPlaceholders === 0 ? name.length : name.length + 1,
+          bold: typeMatch,
+          replacementSpan,
+          display: name,
+        };
+      }),
     (s) => s.textToInsert
   );
   const syntaxSuggs: Suggestion[] = [

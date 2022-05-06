@@ -1,22 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { language as fpLanguage } from "../parser";
-import { flatten } from "../flatten";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
-import { Explorer } from "../../../uiCommon/explorer";
-import { CollapsibleWithHeading } from "../../../uiCommon/generic/collapsible";
+import { language as fpLanguage } from "./parser";
+import { flatten } from "./flatten";
+import { Explorer } from "../../uiCommon/explorer";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import {
   CodeEditor,
   loadInterpreter,
-} from "../../../uiCommon/ide/parsimmonPowered/codeEditor";
-import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
-import { initialEditorState } from "../../../uiCommon/ide/types";
+} from "../../uiCommon/ide/parsimmonPowered/codeEditor";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { initialEditorState } from "../../uiCommon/ide/types";
 // @ts-ignore
 import highlightCSS from "./highlight.css";
-import { LOADER } from "../dl";
+import { LOADER } from "./dl";
 import { getSuggestions } from "./suggestions";
-import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 function Main() {
   let interp = new IncrementalInterpreter(".", LOADER) as AbstractInterpreter;
