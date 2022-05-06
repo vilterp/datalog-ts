@@ -28,8 +28,8 @@ export function LingoEditor(props: {
   return (
     <div>
       <Editor
-        width={props.width}
-        height={props.height}
+        width={props.width || 500}
+        height={props.height || 500}
         value={props.editorState.source}
         onChange={setSource}
         options={{
