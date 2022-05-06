@@ -31,6 +31,8 @@ jobs:
       # build UIs (note doesn't typecheck them)
       - run: yarn run build-fiddle
       - run: yarn run build-fp-ui
+      - run: yarn run build-vscode-extension
+      - run: yarn run package-vscode-extension
       # TODO: re-enable
       # build dist (does typecheck)
       # - run: yarn run build-dist
