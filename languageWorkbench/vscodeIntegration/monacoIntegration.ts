@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import * as monaco from "monaco-editor";
 import { LanguageSpec } from "../languages";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
@@ -14,17 +14,17 @@ import { ppt } from "../../core/pretty";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
-): vscode.Disposable[] {
-  const subscriptions: vscode.Disposable[] = [];
+): monaco.IDisposable[] {
+  const subscriptions: monaco.IDisposable[] = [];
 
   // go to defn
   subscriptions.push(
-    vscode.languages.registerDefinitionProvider(spec.name, {
+    monaco.languages.registerDefinitionProvider(spec.name, {
       provideDefinition(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Definition> {
+        document: monaco.editor.ITextModel,
+        position: monaco.Position,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.Definition> {
         try {
           return getDefinition(spec, document, position, token);
         } catch (e) {
@@ -36,13 +36,13 @@ export function registerLanguageSupport(
 
   // references
   subscriptions.push(
-    vscode.languages.registerReferenceProvider(spec.name, {
+    monaco.languages.registerReferenceProvider(spec.name, {
       provideReferences(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        context: vscode.ReferenceContext,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Location[]> {
+        document: monaco.editor.ITextModel,
+        position: monaco.Position,
+        context: monaco.languages.ReferenceContext,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
         try {
           return getReferences(spec, document, position, context, token);
         } catch (e) {
@@ -54,12 +54,12 @@ export function registerLanguageSupport(
 
   // highlight
   subscriptions.push(
-    vscode.languages.registerDocumentHighlightProvider(spec.name, {
+    monaco.languages.registerDocumentHighlightProvider(spec.name, {
       provideDocumentHighlights(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
+        document: monaco.editor.ITextModel,
+        position: monaco.Position,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
         try {
           return getHighlights(spec, document, position, token);
         } catch (e) {
@@ -71,13 +71,13 @@ export function registerLanguageSupport(
 
   // completions
   subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(spec.name, {
+    monaco.languages.registerCompletionItemProvider(spec.name, {
       provideCompletionItems(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
-      ): vscode.ProviderResult<vscode.CompletionItem[]> {
+        model: monaco.editor.ITextModel,
+        position: monaco.Position,
+        context: monaco.languages.CompletionContext,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
         try {
           return getCompletionItems(spec, document, position, token, context);
         } catch (e) {
@@ -89,26 +89,26 @@ export function registerLanguageSupport(
 
   // renames
   subscriptions.push(
-    vscode.languages.registerRenameProvider(spec.name, {
+    monaco.languages.registerRenameProvider(spec.name, {
       provideRenameEdits(
-        document: vscode.TextDocument,
-        position: vscode.Position,
+        document: monaco.editor.ITextModel,
+        position: monaco.Position,
         newName: string,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.WorkspaceEdit> {
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
         try {
           return getRenameEdits(spec, document, position, newName, token);
         } catch (e) {
           console.error("in rename provider:", e);
         }
       },
-      prepareRename(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Range> {
+      resolveRenameLocation(
+        model: monaco.editor.ITextModel,
+        position: monaco.Position,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
         try {
-          return prepareRename(spec, document, position);
+          return prepareRename(spec, model, position);
         } catch (e) {
           console.error("in prepare rename:", e);
         }
@@ -118,13 +118,11 @@ export function registerLanguageSupport(
 
   // symbols
   subscriptions.push(
-    vscode.languages.registerDocumentSymbolProvider(spec.name, {
+    monaco.languages.registerDocumentSymbolProvider(spec.name, {
       provideDocumentSymbols(
-        document: vscode.TextDocument,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<
-        vscode.SymbolInformation[] | vscode.DocumentSymbol[]
-      > {
+        document: monaco.editor.ITextModel,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
         try {
           return getSymbolList(spec, document, token);
         } catch (e) {
@@ -136,13 +134,13 @@ export function registerLanguageSupport(
 
   // syntax highlighting
   subscriptions.push(
-    vscode.languages.registerDocumentSemanticTokensProvider(
+    monaco.languages.registerDocumentSemanticTokensProvider(
       spec.name,
       {
         provideDocumentSemanticTokens(
-          document: vscode.TextDocument,
-          token: vscode.CancellationToken
-        ): vscode.ProviderResult<vscode.SemanticTokens> {
+          document: monaco.editor.ITextModel,
+          token: monaco.CancellationToken
+        ): monaco.languages.ProviderResult<monaco.SemanticTokens> {
           try {
             const before = new Date().getTime();
             const tokens = getSemanticTokens(spec, document, token);
@@ -163,22 +161,22 @@ export function registerLanguageSupport(
 
 export function getDefinition(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.Definition> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  position: monaco.Position,
+  token: monaco.CancellationToken
+): monaco.languages.ProviderResult<monaco.Definition> {
+  const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
-    line: position.line,
-    col: position.character,
+    line: position.lineNumber,
+    col: position.column,
   });
   const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
   if (results.length === 0) {
     return null;
   }
   const result = results[0].term as Rec;
-  const location = new vscode.Location(
+  const location = new monaco.Location(
     document.uri,
     spanToRange(source, result.attrs.defnSpan as Rec)
   );
@@ -187,21 +185,21 @@ export function getDefinition(
 
 export function getReferences(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  context: vscode.ReferenceContext,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.Location[]> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  position: monaco.Position,
+  context: monaco.ReferenceContext,
+  token: monaco.CancellationToken
+): monaco.languages.ProviderResult<monaco.Location[]> {
+  const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
-    line: position.line,
-    col: position.character,
+    line: position.lineNumber,
+    col: position.column,
   });
   const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
   return results.map(
     (res) =>
-      new vscode.Location(
+      new monaco.Location(
         document.uri,
         spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec)
       )
@@ -209,21 +207,21 @@ export function getReferences(
 }
 
 const HIGHLIGHT_KINDS = {
-  defn: vscode.DocumentHighlightKind.Write,
-  usage: vscode.DocumentHighlightKind.Read,
+  defn: monaco.languages.DocumentHighlightKind.Write,
+  usage: monaco.languages.DocumentHighlightKind.Read,
 };
 
 export function getHighlights(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.DocumentHighlight[]> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  position: monaco.Position,
+  token: monaco.CancellationToken
+): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
+  const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
-    line: position.line,
-    col: position.character,
+    line: position.lineNumber,
+    col: position.column,
   });
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.CurrentUsageOrDefn{span: S, type: T}`);
@@ -231,21 +229,24 @@ export function getHighlights(
     const result = res.term as Rec;
     const kind = result.attrs.type as StringLit;
     const range = spanToRange(source, result.attrs.span as Rec);
-    return new vscode.DocumentHighlight(range, HIGHLIGHT_KINDS[kind.val]);
+    return {
+      range,
+      kind: HIGHLIGHT_KINDS[kind.val],
+    };
   });
 }
 
 export function getCompletionItems(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken,
-  context: vscode.CompletionContext
-): vscode.ProviderResult<vscode.CompletionItem[]> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  position: monaco.Position,
+  token: monaco.CancellationToken,
+  context: monaco.languages.CompletionContext
+): monaco.languages.ProviderResult<monaco.languages.CompletionItem[]> {
+  const source = document.getValue();
   const idx = idxFromLineAndCol(source, {
-    line: position.line,
-    col: position.character,
+    line: position.lineNumber,
+    col: position.column,
   });
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
@@ -266,38 +267,41 @@ export function getCompletionItems(
 
 export function getRenameEdits(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
+  document: monaco.editor.ITextModel,
+  position: monaco.Position,
   newName: string,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.WorkspaceEdit> {
-  const source = document.getText();
+  token: monaco.CancellationToken
+): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
+  const source = document.getValue();
   const idx = idxFromLineAndCol(source, {
-    line: position.line,
-    col: position.character,
+    line: position.lineNumber,
+    col: position.column,
   });
   const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
-  const edit = new vscode.WorkspaceEdit();
+  const edits: monaco.languages.TextEdit[] = [];
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
-    edit.replace(document.uri, range, newName);
+    edits.push({
+      range,
+      text: newName,
+    });
   });
-  return edit;
+  return edits;
 }
 
 export function prepareRename(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position
-): vscode.ProviderResult<vscode.Range> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  position: monaco.Position
+): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
+  const source = document.getValue();
   const idx = idxFromLineAndCol(source, {
-    line: position.line,
-    col: position.character,
+    line: position.lineNumber,
+    col: position.column,
   });
   const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
@@ -316,10 +320,12 @@ const GLOBAL_SCOPE = rec("global", {});
 
 export function getSymbolList(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  token: monaco.CancellationToken
+): monaco.languages.ProviderResult<
+  monaco.SymbolInformation[] | monaco.DocumentSymbol[]
+> {
+  const source = document.getValue();
   const interp = getInterp(spec, source);
 
   const results = interp.queryStr(
@@ -330,25 +336,25 @@ export function getSymbolList(
     const rec = res.term as Rec;
     const name = (rec.attrs.name as StringLit).val;
     const range = spanToRange(source, rec.attrs.span as Rec);
-    return new vscode.SymbolInformation(
+    return new monaco.SymbolInformation(
       name,
-      vscode.SymbolKind.Function,
+      monaco.SymbolKind.Function,
       "",
-      new vscode.Location(document.uri, range)
+      new monaco.Location(document.uri, range)
     );
   });
 }
 
 export function getSemanticTokens(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.SemanticTokens> {
-  const source = document.getText();
+  document: monaco.editor.ITextModel,
+  token: monaco.CancellationToken
+): monaco.languages.ProviderResult<monaco.SemanticTokens> {
+  const source = document.getValue();
   const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
 
-  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+  const builder = new monaco.SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
@@ -360,7 +366,7 @@ export function getSemanticTokens(
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // needs to match highlight.dl
-export const semanticTokensLegend = new vscode.SemanticTokensLegend([
+export const semanticTokensLegend = new monaco.SemanticTokensLegend([
   "number",
   "string",
   "keyword",
@@ -371,10 +377,10 @@ export const semanticTokensLegend = new vscode.SemanticTokensLegend([
 
 export function refreshDiagnostics(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  diagnostics: vscode.DiagnosticCollection
+  document: monaco.editor.ITextModel,
+  diagnostics: monaco.DiagnosticCollection
 ) {
-  const source = document.getText();
+  const source = document.getValue();
   const interp = getInterp(spec, source);
 
   const problems = interp.queryStr("tc.Problem{}");
@@ -384,13 +390,13 @@ export function refreshDiagnostics(
   diagnostics.set(document.uri, diags);
 }
 
-function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
+function problemToDiagnostic(source: string, rec: Rec): monaco.Diagnostic {
   const span = dlToSpan(rec.attrs.span as Rec);
   const from = lineAndColFromIdx(source, span.from);
   const to = lineAndColFromIdx(source, span.to);
 
-  const range = new vscode.Range(from.line, from.col, to.line, to.col);
-  return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
+  const range = new monaco.Range(from.line, from.col, to.line, to.col);
+  return new monaco.Diagnostic(range, ppt(rec.attrs.desc));
 }
 
 function getInterp(
@@ -409,14 +415,19 @@ function getInterp(
 
 // utils
 
-function idxToPosition(source: string, idx: number): vscode.Position {
+export function idxToPosition(source: string, idx: number): monaco.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
-  return new vscode.Position(lineAndCol.line, lineAndCol.col);
+  return new monaco.Position(lineAndCol.line, lineAndCol.col);
 }
 
-function spanToRange(source: string, dlSpan: Rec): vscode.Range {
+export function spanToRange(source: string, dlSpan: Rec): monaco.Range {
   const span = dlToSpan(dlSpan);
   const from = idxToPosition(source, span.from);
   const to = idxToPosition(source, span.to);
-  return new vscode.Range(from, to);
+  return new monaco.Range(
+    from.lineNumber,
+    from.column,
+    to.lineNumber,
+    to.column
+  );
 }
