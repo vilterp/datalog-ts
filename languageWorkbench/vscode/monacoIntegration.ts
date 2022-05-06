@@ -406,7 +406,25 @@ function problemToDiagnostic(
   };
 }
 
+// TODO: use some generic memoizer. lol
+let lastLang: LanguageSpec = null;
+let lastSource: string = "";
+let lastInterp: AbstractInterpreter = null;
+
 function getInterp(
+  language: LanguageSpec,
+  source: string
+): AbstractInterpreter {
+  if (language === lastLang && source === lastSource) {
+    return lastInterp;
+  }
+  lastInterp = getInterpInner(language, source);
+  lastLang = language;
+  lastSource = source;
+  return lastInterp;
+}
+
+function getInterpInner(
   language: LanguageSpec,
   source: string
 ): AbstractInterpreter {
