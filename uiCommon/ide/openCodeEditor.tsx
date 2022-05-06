@@ -8,9 +8,7 @@ export function OpenCodeEditor(props: {
   setEditorState: (st: EditorState) => void;
   interp: AbstractInterpreter;
   validGrammar: boolean;
-  locatedErrors: { offset: number }[];
-  lang: string;
-  autofocus?: boolean;
+  langName: string;
   width?: number;
   height?: number;
 }) {

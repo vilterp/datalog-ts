@@ -101,9 +101,7 @@ function Playground() {
                 setEditorState={setExampleEditorState}
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
-                lang={langName}
-                locatedErrors={[]} // TODO: parse errors
-                autofocus
+                langName={langName}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>

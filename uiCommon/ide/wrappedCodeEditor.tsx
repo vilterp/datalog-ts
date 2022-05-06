@@ -47,10 +47,8 @@ export function WrappedCodeEditor(props: {
         editorState={props.editorState}
         setEditorState={props.setEditorState}
         interp={finalInterp}
-        locatedErrors={[]} // TODO: parse errors, dl errors
         validGrammar={allGrammarErrors.length === 0}
-        lang={props.lang}
-        autofocus={props.autofocus}
+        langName={props.lang}
         width={props.width}
         height={props.height}
       />
