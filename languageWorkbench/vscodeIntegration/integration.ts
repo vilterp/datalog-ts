@@ -1,17 +1,17 @@
 import * as vscode from "vscode";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { constructInterp } from "../../languageWorkbench/interp";
-import { LanguageSpec } from "../../languageWorkbench/languages";
-import { LOADER, mainDL } from "../../languageWorkbench/common";
+import { constructInterp } from "../interp";
+import { LanguageSpec } from "../languages";
+import { LOADER, mainDL } from "../common";
 import { rec, Rec, StringLit } from "../../core/types";
-import { dlToSpan } from "./types";
 import { ppt } from "../../core/pretty";
 import {
+  dlToSpan,
   idxFromLineAndCol,
   lineAndColFromIdx,
-} from "../../util/indexToLineCol";
+} from "../sourcePositions";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { spanToRange } from "../../apps/vscodeExtension/util";
+import { spanToRange } from "./util";
 
 export function registerLanguageSupport(
   spec: LanguageSpec

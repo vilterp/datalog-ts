@@ -1,18 +1,3 @@
-import { Rec, Term, Int } from "../../core/types";
-
-export type Span = { from: number; to: number };
-
-export function dlToSpan(rec: Rec): Span {
-  return {
-    from: dlToPos(rec.attrs.from),
-    to: dlToPos(rec.attrs.to),
-  };
-}
-
-function dlToPos(term: Term): number {
-  return (term as Int).val;
-}
-
 export type EditorState = {
   cursorPos: number;
   source: string;

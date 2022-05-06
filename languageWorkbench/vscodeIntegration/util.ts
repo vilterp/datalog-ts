@@ -1,7 +1,6 @@
-import { Rec } from "../../core/types";
 import * as vscode from "vscode";
-import { lineAndColFromIdx } from "../../util/indexToLineCol";
-import { dlToSpan } from "../../uiCommon/ide/types";
+import { Rec } from "../../core/types";
+import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 
 export function idxToPosition(source: string, idx: number): vscode.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
