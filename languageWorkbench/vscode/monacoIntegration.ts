@@ -208,7 +208,6 @@ function getHighlights(
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
-  console.log("getHighlights", position.lineNumber, position.column);
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
