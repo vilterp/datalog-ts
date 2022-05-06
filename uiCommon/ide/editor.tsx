@@ -31,7 +31,10 @@ export function LingoEditor(props: {
         width={props.width || 570}
         height={props.height || 400}
         value={props.editorState.source}
-        onChange={setSource}
+        onChange={(newSource, evt) => {
+          setSource(newSource);
+          console.log("change", evt);
+        }}
         language={props.langSpec.name}
         options={{
           minimap: { enabled: false },
