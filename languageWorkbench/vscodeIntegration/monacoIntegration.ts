@@ -319,7 +319,12 @@ export function prepareRename(
     return null;
   }
   const result = results[0].term as Rec;
-  return spanToRange(source, result.attrs.span as Rec);
+  const dlSpan = result.attrs.span as Rec;
+  const span = dlToSpan(dlSpan);
+  return {
+    range: spanToRange(source, dlSpan),
+    text: source.slice(span.from, span.to),
+  };
 }
 
 // TODO: parameterize by language
@@ -329,9 +334,7 @@ export function getSymbolList(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
-): monaco.languages.ProviderResult<
-  monaco.SymbolInformation[] | monaco.DocumentSymbol[]
-> {
+): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
 
@@ -343,12 +346,14 @@ export function getSymbolList(
     const rec = res.term as Rec;
     const name = (rec.attrs.name as StringLit).val;
     const range = spanToRange(source, rec.attrs.span as Rec);
-    return new monaco.SymbolInformation(
+    return {
       name,
-      monaco.SymbolKind.Function,
-      "",
-      new monaco.Location(document.uri, range)
-    );
+      kind: monaco.languages.SymbolKind.Function,
+      detail: "",
+      range: range,
+      selectionRange: range,
+      tags: [],
+    };
   });
 }
 
@@ -356,7 +361,7 @@ export function getSemanticTokens(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
-): monaco.languages.ProviderResult<monaco.SemanticTokens> {
+): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
