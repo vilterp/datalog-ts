@@ -3,13 +3,12 @@ import ReactDOM from "react-dom";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
-import { OpenCodeEditor } from "../../uiCommon/ide/openCodeEditor";
+import { LingoEditor } from "../../uiCommon/ide/editor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { LOADER, mainDL } from "../../languageWorkbench/commonDL";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
@@ -71,6 +70,8 @@ function Playground() {
     setExampleSource(example.example);
   };
 
+  const langSpec = LANGUAGES[langName];
+
   return (
     <>
       <h1>Lingo Language Workbench</h1>
@@ -96,34 +97,28 @@ function Playground() {
           <tr>
             <td>
               <h3>Example Source</h3>
-              <OpenCodeEditor
+              <LingoEditor
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
-                interp={finalInterp}
-                validGrammar={allGrammarErrors.length === 0}
-                langName={langName}
+                langSpec={langSpec}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
             <td>
               <h3>Grammar Source</h3>
-              <WrappedCodeEditor
+              <LingoEditor
                 editorState={grammarEditorState}
                 setEditorState={setGrammarEditorState}
-                datalog={LANGUAGES.grammar.datalog}
-                grammar={LANGUAGES.grammar.grammar}
-                lang="grammar"
+                langSpec={LANGUAGES.grammar}
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
-              <WrappedCodeEditor
+              <LingoEditor
                 editorState={dlEditorState}
                 setEditorState={setDLEditorState}
-                datalog={LANGUAGES.datalog.datalog}
-                grammar={LANGUAGES.datalog.grammar}
-                lang="dl"
+                langSpec={LANGUAGES.datalog}
               />
               <ErrorList errors={dlErrors} />
             </td>

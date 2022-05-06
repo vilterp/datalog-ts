@@ -1,13 +1,12 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import React, { useEffect } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
-import { registerLanguageSupport } from "../../languageWorkbench/vscodeIntegration/vscodeIntegration";
+import { registerLanguageSupport } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
 
-export function OpenCodeEditor(props: {
+export function LingoEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
-  validGrammar: boolean;
   langSpec: LanguageSpec;
   width?: number;
   height?: number;

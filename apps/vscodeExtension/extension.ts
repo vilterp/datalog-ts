@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import {
   refreshDiagnostics,
   registerLanguageSupport,
-} from "../../languageWorkbench/vscodeIntegration/vscodeIntegration";
+} from "../../languageWorkbench/vscode/vscodeIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
