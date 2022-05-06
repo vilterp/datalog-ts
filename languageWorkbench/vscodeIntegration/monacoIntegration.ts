@@ -11,6 +11,7 @@ import {
   lineAndColFromIdx,
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
+import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -366,7 +367,7 @@ export function getSemanticTokens(
   const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
 
-  const builder = new monaco.SemanticTokensBuilder(semanticTokensLegend);
+  const builder = new SemanticTokensBuilder();
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
