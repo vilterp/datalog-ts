@@ -39,3 +39,41 @@ sister{person: L, sister: R} :-
 ancestor{desc: X, an: Z} :-
   parent{child: X, parent: Z} |
   parent{child: X, parent: Y} & ancestor{desc: Y, an: Z}.
+
+person{name: "Paul", gender: "Male"}.
+person{name: "Ann", gender: "Female"}.
+father{child: "Pete", father: "Paul"}.
+father{child: "Paul", father: "Peter"}.
+father{child: "Ann", father: "Peter"}.
+father{child: "Mary", father: "Mark"}.
+father{child: "Bob", father: "John"}.
+father{child: "Carolyn", father: "Paul"}.
+father{child: "Henry", father: "Bob"}.
+father{child: "Charlie", father: "Bob"}.
+
+mother{child: "Pete", mother: "Mary"}.
+mother{child: "Paul", mother: "Judith"}.
+mother{child: "Ann", mother: "Judith"}.
+mother{child: "Bob", mother: "Ann"}.
+mother{child: "Mary", mother: "Carolyn K"}.
+mother{child: "Carolyn", mother: "Mary"}.
+mother{child: "Henry", mother: "Becki"}.
+mother{child: "Charlie", mother: "Becki"}.
+
+familyViz.node{id: ID} :-
+  mother{child: ID} |
+  mother{mother: ID} |
+  father{child: ID} |
+  father{father: ID}.
+
+familyViz.edge{from: F, to: T, label: ""} :-
+  mother{child: F, mother: T} |
+  father{child: F, father: T}.
+
+internal.visualization{
+  name: "Family",
+  spec: graphviz{
+    nodes: "familyViz.node{id: ID}",
+    edges: "familyViz.edge{from: From, to: To, label: Label}"
+  }
+}.
