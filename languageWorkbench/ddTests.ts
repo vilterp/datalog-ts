@@ -29,7 +29,10 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
-const initInterp = new SimpleInterpreter("languageWorkbench/common", fsLoader);
+const initInterp = new SimpleInterpreter(
+  "languageWorkbench/commonDL",
+  fsLoader
+);
 
 export function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
@@ -45,7 +48,7 @@ export function testLangQuery(test: string[]): TestOutput[] {
       langParseError,
     } = constructInterp({
       builtinSource: fs.readFileSync(
-        "languageWorkbench/common/main.dl",
+        "languageWorkbench/commonDL/main.dl",
         "utf8"
       ),
       dlSource: fs.readFileSync(
