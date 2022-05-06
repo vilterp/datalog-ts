@@ -5,36 +5,44 @@ import {
 } from "../../uiCommon/ide/editorIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
+import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
+  const languageSpec = LANGUAGES.datalog;
+
   registerExplorerWebView(context);
-  registerLanguageSupport(context);
+  registerLanguageSupport(context, languageSpec);
 
   const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
   context.subscriptions.push(diagnostics);
-  subscribeDiagnosticsToChanges(context, diagnostics);
+  subscribeDiagnosticsToChanges(context, languageSpec, diagnostics);
 }
 
 function subscribeDiagnosticsToChanges(
   context: vscode.ExtensionContext,
+  spec: LanguageSpec,
   diagnostics: vscode.DiagnosticCollection
 ) {
   if (vscode.window.activeTextEditor) {
-    refreshDiagnostics(vscode.window.activeTextEditor.document, diagnostics);
+    refreshDiagnostics(
+      spec,
+      vscode.window.activeTextEditor.document,
+      diagnostics
+    );
   }
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (editor) {
-        refreshDiagnostics(editor.document, diagnostics);
+        refreshDiagnostics(spec, editor.document, diagnostics);
       }
     })
   );
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((e) =>
-      refreshDiagnostics(e.document, diagnostics)
+      refreshDiagnostics(spec, e.document, diagnostics)
     )
   );
 

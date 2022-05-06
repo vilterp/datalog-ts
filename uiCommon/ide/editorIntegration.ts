@@ -26,7 +26,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Definition> {
         try {
-          return getDefinition(document, position, token);
+          return getDefinition(spec, document, position, token);
         } catch (e) {
           console.error("in definition provider:", e);
         }
@@ -44,7 +44,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Location[]> {
         try {
-          return getReferences(document, position, context, token);
+          return getReferences(spec, document, position, context, token);
         } catch (e) {
           console.error("in reference provider:", e);
         }
@@ -61,7 +61,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
         try {
-          return getHighlights(document, position, token);
+          return getHighlights(spec, document, position, token);
         } catch (e) {
           console.error("in highlight provider:", e);
         }
@@ -79,7 +79,7 @@ export function registerLanguageSupport(
         context: vscode.CompletionContext
       ): vscode.ProviderResult<vscode.CompletionItem[]> {
         try {
-          return getCompletionItems(document, position, token, context);
+          return getCompletionItems(spec, document, position, token, context);
         } catch (e) {
           console.error("in completion provider:", e);
         }
@@ -97,7 +97,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.WorkspaceEdit> {
         try {
-          return getRenameEdits(document, position, newName, token);
+          return getRenameEdits(spec, document, position, newName, token);
         } catch (e) {
           console.error("in rename provider:", e);
         }
@@ -108,7 +108,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Range> {
         try {
-          return prepareRename(document, position);
+          return prepareRename(spec, document, position);
         } catch (e) {
           console.error("in prepare rename:", e);
         }
@@ -126,7 +126,7 @@ export function registerLanguageSupport(
         vscode.SymbolInformation[] | vscode.DocumentSymbol[]
       > {
         try {
-          return getSymbolList(document, token);
+          return getSymbolList(spec, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
         }
@@ -145,7 +145,7 @@ export function registerLanguageSupport(
         ): vscode.ProviderResult<vscode.SemanticTokens> {
           try {
             const before = new Date().getTime();
-            const tokens = getSemanticTokens(document, token);
+            const tokens = getSemanticTokens(spec, document, token);
             const after = new Date().getTime();
             console.log("datalog: getSemanticTokens:", after - before, "ms");
             return tokens;
@@ -160,12 +160,13 @@ export function registerLanguageSupport(
 }
 
 function getDefinition(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
   const source = document.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -183,13 +184,14 @@ function getDefinition(
 }
 
 function getReferences(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.ReferenceContext,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
   const source = document.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -210,12 +212,13 @@ const HIGHLIGHT_KINDS = {
 };
 
 function getHighlights(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
   const source = document.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -231,6 +234,7 @@ function getHighlights(
 }
 
 function getCompletionItems(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken,
@@ -243,7 +247,7 @@ function getCompletionItems(
   });
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
-  const interp = getInterp(LANGUAGES.datalog, sourceWithPlaceholder);
+  const interp = getInterp(spec, sourceWithPlaceholder);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
@@ -259,6 +263,7 @@ function getCompletionItems(
 }
 
 function getRenameEdits(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
   newName: string,
@@ -269,7 +274,7 @@ function getRenameEdits(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
@@ -283,6 +288,7 @@ function getRenameEdits(
 }
 
 function prepareRename(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position
 ): vscode.ProviderResult<vscode.Range> {
@@ -291,7 +297,7 @@ function prepareRename(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
@@ -307,11 +313,12 @@ function prepareRename(
 const GLOBAL_SCOPE = rec("global", {});
 
 function getSymbolList(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
   const source = document.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
 
   const results = interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -331,11 +338,12 @@ function getSymbolList(
 }
 
 function getSemanticTokens(
+  spec: LanguageSpec,
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
 
   const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
@@ -360,17 +368,18 @@ const semanticTokensLegend = new vscode.SemanticTokensLegend([
 ]);
 
 export function refreshDiagnostics(
-  doc: vscode.TextDocument,
+  spec: LanguageSpec,
+  document: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection
 ) {
-  const source = doc.getText();
-  const interp = getInterp(LANGUAGES.datalog, source);
+  const source = document.getText();
+  const interp = getInterp(spec, source);
 
   const problems = interp.queryStr("tc.Problem{}");
   const diags = problems.map((res) =>
     problemToDiagnostic(source, res.term as Rec)
   );
-  diagnostics.set(doc.uri, diags);
+  diagnostics.set(document.uri, diags);
 }
 
 function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
