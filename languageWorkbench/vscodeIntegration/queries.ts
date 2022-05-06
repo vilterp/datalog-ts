@@ -9,14 +9,22 @@ import {
   idxFromLineAndCol,
   lineAndColFromIdx,
 } from "../sourcePositions";
+import {
+  CancellationToken,
+  Definition,
+  Position,
+  ProviderResult,
+  TextDocument,
+  Location,
+} from "./types";
 import { spanToRange } from "./util";
 
 export function getDefinition(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.Definition> {
+  document: TextDocument,
+  position: Position,
+  token: CancellationToken
+): ProviderResult<Definition> {
   const source = document.getText();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
@@ -28,7 +36,7 @@ export function getDefinition(
     return null;
   }
   const result = results[0].term as Rec;
-  const location = new vscode.Location(
+  const location = new Location(
     document.uri,
     spanToRange(source, result.attrs.defnSpan as Rec)
   );
@@ -37,11 +45,11 @@ export function getDefinition(
 
 export function getReferences(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  context: vscode.ReferenceContext,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.Location[]> {
+  document: TextDocument,
+  position: Position,
+  context: ReferenceContext,
+  token: CancellationToken
+): ProviderResult<Location[]> {
   const source = document.getText();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
@@ -51,7 +59,7 @@ export function getReferences(
   const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
   return results.map(
     (res) =>
-      new vscode.Location(
+      new Location(
         document.uri,
         spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec)
       )
@@ -59,16 +67,16 @@ export function getReferences(
 }
 
 const HIGHLIGHT_KINDS = {
-  defn: vscode.DocumentHighlightKind.Write,
-  usage: vscode.DocumentHighlightKind.Read,
+  defn: DocumentHighlightKind.Write,
+  usage: DocumentHighlightKind.Read,
 };
 
 export function getHighlights(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.DocumentHighlight[]> {
+  document: TextDocument,
+  position: Position,
+  token: CancellationToken
+): ProviderResult<DocumentHighlight[]> {
   const source = document.getText();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
@@ -81,17 +89,17 @@ export function getHighlights(
     const result = res.term as Rec;
     const kind = result.attrs.type as StringLit;
     const range = spanToRange(source, result.attrs.span as Rec);
-    return new vscode.DocumentHighlight(range, HIGHLIGHT_KINDS[kind.val]);
+    return new DocumentHighlight(range, HIGHLIGHT_KINDS[kind.val]);
   });
 }
 
 export function getCompletionItems(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
-  token: vscode.CancellationToken,
-  context: vscode.CompletionContext
-): vscode.ProviderResult<vscode.CompletionItem[]> {
+  document: TextDocument,
+  position: Position,
+  token: CancellationToken,
+  context: CompletionContext
+): ProviderResult<CompletionItem[]> {
   const source = document.getText();
   const idx = idxFromLineAndCol(source, {
     line: position.line,
@@ -116,11 +124,11 @@ export function getCompletionItems(
 
 export function getRenameEdits(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position,
+  document: TextDocument,
+  position: Position,
   newName: string,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.WorkspaceEdit> {
+  token: CancellationToken
+): ProviderResult<WorkspaceEdit> {
   const source = document.getText();
   const idx = idxFromLineAndCol(source, {
     line: position.line,
@@ -130,7 +138,7 @@ export function getRenameEdits(
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
-  const edit = new vscode.WorkspaceEdit();
+  const edit = new WorkspaceEdit();
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
@@ -141,9 +149,9 @@ export function getRenameEdits(
 
 export function prepareRename(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  position: vscode.Position
-): vscode.ProviderResult<vscode.Range> {
+  document: TextDocument,
+  position: Position
+): ProviderResult<Range> {
   const source = document.getText();
   const idx = idxFromLineAndCol(source, {
     line: position.line,
@@ -166,9 +174,9 @@ const GLOBAL_SCOPE = rec("global", {});
 
 export function getSymbolList(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
+  document: TextDocument,
+  token: CancellationToken
+): ProviderResult<SymbolInformation[] | DocumentSymbol[]> {
   const source = document.getText();
   const interp = getInterp(spec, source);
 
@@ -180,25 +188,25 @@ export function getSymbolList(
     const rec = res.term as Rec;
     const name = (rec.attrs.name as StringLit).val;
     const range = spanToRange(source, rec.attrs.span as Rec);
-    return new vscode.SymbolInformation(
+    return new SymbolInformation(
       name,
-      vscode.SymbolKind.Function,
+      SymbolKind.Function,
       "",
-      new vscode.Location(document.uri, range)
+      new Location(document.uri, range)
     );
   });
 }
 
 export function getSemanticTokens(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  token: vscode.CancellationToken
-): vscode.ProviderResult<vscode.SemanticTokens> {
+  document: TextDocument,
+  token: CancellationToken
+): ProviderResult<SemanticTokens> {
   const source = document.getText();
   const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
 
-  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+  const builder = new SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
@@ -210,7 +218,7 @@ export function getSemanticTokens(
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // needs to match highlight.dl
-export const semanticTokensLegend = new vscode.SemanticTokensLegend([
+export const semanticTokensLegend = new SemanticTokensLegend([
   "number",
   "string",
   "keyword",
@@ -221,8 +229,8 @@ export const semanticTokensLegend = new vscode.SemanticTokensLegend([
 
 export function refreshDiagnostics(
   spec: LanguageSpec,
-  document: vscode.TextDocument,
-  diagnostics: vscode.DiagnosticCollection
+  document: TextDocument,
+  diagnostics: DiagnosticCollection
 ) {
   const source = document.getText();
   const interp = getInterp(spec, source);
@@ -234,13 +242,13 @@ export function refreshDiagnostics(
   diagnostics.set(document.uri, diags);
 }
 
-function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
+function problemToDiagnostic(source: string, rec: Rec): Diagnostic {
   const span = dlToSpan(rec.attrs.span as Rec);
   const from = lineAndColFromIdx(source, span.from);
   const to = lineAndColFromIdx(source, span.to);
 
-  const range = new vscode.Range(from.line, from.col, to.line, to.col);
-  return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
+  const range = new Range(from.line, from.col, to.line, to.col);
+  return new Diagnostic(range, ppt(rec.attrs.desc));
 }
 
 function getInterp(

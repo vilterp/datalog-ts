@@ -99,9 +99,7 @@ function Playground() {
               <OpenCodeEditor
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
-                interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
-                langName={langName}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
