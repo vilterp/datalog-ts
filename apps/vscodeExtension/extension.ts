@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import {
   refreshDiagnostics,
   registerLanguageSupport,
-} from "../../uiCommon/ide/editorIntegration";
+} from "../../languageWorkbench/vscodeIntegration/integration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
@@ -10,14 +10,14 @@ import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
-  registerExplorerWebView(context);
+  // registerExplorerWebView(context);
 
-  [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
-    registerLanguageSupport(spec).forEach((sub) => {
-      context.subscriptions.push(sub);
-    });
-    registerDiagnosticsSupport(context, spec);
-  });
+  // [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+  //   registerLanguageSupport(spec).forEach((sub) => {
+  //     context.subscriptions.push(sub);
+  //   });
+  //   registerDiagnosticsSupport(context, spec);
+  // });
 }
 
 function registerDiagnosticsSupport(
