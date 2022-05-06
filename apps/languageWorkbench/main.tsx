@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
-import { OpenCodeEditor } from "../../uiCommon/ide/dlPowered/openCodeEditor";
+import { OpenCodeEditor } from "../../uiCommon/ide/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
@@ -11,7 +11,7 @@ import useHashParam from "use-hash-param";
 import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
+import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 

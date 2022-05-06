@@ -4,14 +4,14 @@ import { constructInterp } from "../../languageWorkbench/interp";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
 import { rec, Rec, StringLit } from "../../core/types";
-import { dlToSpan } from "../../uiCommon/ide/types";
+import { dlToSpan } from "./types";
 import { ppt } from "../../core/pretty";
 import {
   idxFromLineAndCol,
   lineAndColFromIdx,
 } from "../../util/indexToLineCol";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { spanToRange } from "./util";
+import { spanToRange } from "../../apps/vscodeExtension/util";
 
 export function getDefinition(
   doc: vscode.TextDocument,

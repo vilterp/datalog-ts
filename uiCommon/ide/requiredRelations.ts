@@ -1,4 +1,4 @@
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 // this is the closest we've come thus far to specifying an API...
 const REQUIRED_RELATIONS = [

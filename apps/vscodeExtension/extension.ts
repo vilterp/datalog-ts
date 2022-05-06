@@ -10,7 +10,7 @@ import {
   prepareRename,
   refreshDiagnostics,
   semanticTokensLegend,
-} from "./engine";
+} from "../../uiCommon/ide/editorIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 

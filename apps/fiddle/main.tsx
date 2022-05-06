@@ -6,7 +6,7 @@ import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
+import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 // @ts-ignore

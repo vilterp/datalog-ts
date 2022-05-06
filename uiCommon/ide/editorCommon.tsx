@@ -29,7 +29,6 @@ export function EditorBox(props: {
 
   return (
     <div>
-      <style>{props.highlightCSS}</style>
       <div style={{ display: "flex" }}>
         <div
           style={{

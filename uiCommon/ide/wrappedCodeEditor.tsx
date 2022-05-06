@@ -1,13 +1,13 @@
 import React from "react";
 import { useMemo } from "react";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
-import { EditorState } from "../types";
-import { LOADER } from "../../../languageWorkbench/common";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { EditorState } from "./types";
+import { LOADER } from "../../languageWorkbench/common";
 // @ts-ignore
 import mainDL from "../../../languageWorkbench/common/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";
-import { ErrorList } from "../errorList";
-import { addCursor, constructInterp } from "../../../languageWorkbench/interp";
+import { ErrorList } from "./errorList";
+import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 
 const initInterp = new SimpleInterpreter(".", LOADER);
 

@@ -1,12 +1,12 @@
 import React from "react";
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import { ppt } from "../../../core/pretty";
-import { Rec, Res } from "../../../core/types";
-import { filterMap } from "../../../util/util";
-import { EditorBox } from "../editorCommon";
-import { highlight } from "../highlight";
-import { Suggestion } from "../suggestions";
-import { ActionContext, dlToSpan, EditorState, LangError } from "../types";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { ppt } from "../../core/pretty";
+import { Rec, Res } from "../../core/types";
+import { filterMap } from "../../util/util";
+import { EditorBox } from "./editorCommon";
+import { highlight } from "./highlight";
+import { Suggestion } from "./suggestions";
+import { ActionContext, dlToSpan, EditorState, LangError } from "./types";
 import { getSuggestions } from "./suggestions";
 
 export function OpenCodeEditor(props: {
