@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
-import { registerLanguageSupport } from "../../languageWorkbench/vscodeIntegration/vscodeIntegration";
+import {
+  refreshDiagnostics,
+  registerLanguageSupport,
+} from "../../languageWorkbench/vscodeIntegration/vscodeIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
-import { refreshDiagnostics } from "../../languageWorkbench/vscodeIntegration/queries";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
