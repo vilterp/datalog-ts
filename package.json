@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@hookeasy/use-title": "^1.0.2",
+    "@monaco-editor/react": "^4.4.4",
     "@react-hook/window-size": "^3.0.7",
     "classnames": "^2.3.1",
     "denque": "^2.0.1",
