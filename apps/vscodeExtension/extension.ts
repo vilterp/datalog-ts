@@ -13,7 +13,9 @@ export function activate(context: vscode.ExtensionContext) {
   registerExplorerWebView(context);
 
   [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
-    registerLanguageSupport(context, spec);
+    registerLanguageSupport(spec).forEach((sub) => {
+      context.subscriptions.push(sub);
+    });
     registerDiagnosticsSupport(context, spec);
   });
 }

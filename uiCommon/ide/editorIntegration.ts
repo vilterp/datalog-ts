@@ -14,11 +14,12 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { spanToRange } from "../../apps/vscodeExtension/util";
 
 export function registerLanguageSupport(
-  context: vscode.ExtensionContext,
   spec: LanguageSpec
-) {
+): vscode.Disposable[] {
+  const subscriptions: vscode.Disposable[] = [];
+
   // go to defn
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerDefinitionProvider(spec.name, {
       provideDefinition(
         document: vscode.TextDocument,
@@ -35,7 +36,7 @@ export function registerLanguageSupport(
   );
 
   // references
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerReferenceProvider(spec.name, {
       provideReferences(
         document: vscode.TextDocument,
@@ -53,7 +54,7 @@ export function registerLanguageSupport(
   );
 
   // highlight
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerDocumentHighlightProvider(spec.name, {
       provideDocumentHighlights(
         document: vscode.TextDocument,
@@ -70,7 +71,7 @@ export function registerLanguageSupport(
   );
 
   // completions
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerCompletionItemProvider(spec.name, {
       provideCompletionItems(
         document: vscode.TextDocument,
@@ -88,7 +89,7 @@ export function registerLanguageSupport(
   );
 
   // renames
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerRenameProvider(spec.name, {
       provideRenameEdits(
         document: vscode.TextDocument,
@@ -117,7 +118,7 @@ export function registerLanguageSupport(
   );
 
   // symbols
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerDocumentSymbolProvider(spec.name, {
       provideDocumentSymbols(
         document: vscode.TextDocument,
@@ -135,7 +136,7 @@ export function registerLanguageSupport(
   );
 
   // syntax highlighting
-  context.subscriptions.push(
+  subscriptions.push(
     vscode.languages.registerDocumentSemanticTokensProvider(
       spec.name,
       {
@@ -157,6 +158,8 @@ export function registerLanguageSupport(
       semanticTokensLegend
     )
   );
+
+  return subscriptions;
 }
 
 function getDefinition(
