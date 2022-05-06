@@ -1,4 +1,7 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { SimpleInterpreter } from "../core/simple/interpreter";
+import { LOADER } from "./commonDL";
+import { LanguageSpec } from "./languages";
 import { getAllStatements } from "./parserlib/flatten";
 import { extractGrammar, metaGrammar } from "./parserlib/meta";
 import {
@@ -9,41 +12,38 @@ import {
 } from "./parserlib/parser";
 import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
 import { validateGrammar } from "./parserlib/validate";
-import { ensureRequiredRelations } from "../uiCommon/ide/dlPowered/requiredRelations";
+import { ensureRequiredRelations } from "./requiredRelations";
 
-export function constructInterp(args: {
-  initInterp: AbstractInterpreter;
-  builtinSource: string;
-  dlSource: string;
-  grammarSource: string;
-  langSource: string;
-}): {
-  finalInterp: AbstractInterpreter;
+// TODO: push memoization in here? idk
+// TODO: separate function to inject the langSource
+// so we can memoize that separately
+export function constructInterp(
+  initInterp: AbstractInterpreter,
+  spec: LanguageSpec,
+  langSource: string
+): {
+  interp: AbstractInterpreter;
+  // TODO: consolidate these into one errors list
+  // with different error types
   allGrammarErrors: string[];
   langParseError: string | null;
   dlErrors: string[];
 } {
-  const { initInterp, dlSource, grammarSource, langSource } = args;
-  const grammarTraceTree = parse(metaGrammar, "grammar", grammarSource);
+  let interp = initInterp;
+  interp = interp.doLoad("main.dl");
+
+  let dlErrors: string[] = [];
+
+  // process grammar
+  const grammarTraceTree = parse(metaGrammar, "grammar", spec.grammar);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
-  const grammar = extractGrammar(grammarSource, grammarRuleTree);
-  const grammarParseErrors = getErrors(grammarSource, grammarTraceTree).map(
+  const grammar = extractGrammar(spec.grammar, grammarRuleTree);
+  const grammarParseErrors = getErrors(spec.grammar, grammarTraceTree).map(
     formatParseError
   );
   const grammarErrors =
     grammarParseErrors.length === 0 ? validateGrammar(grammar) : [];
-  const {
-    interpWithRules,
-    dlErrors,
-  }: { interpWithRules: AbstractInterpreter; dlErrors: string[] } = (() => {
-    try {
-      const result =
-        dlSource.length > 0 ? initInterp.evalStr(dlSource)[1] : initInterp;
-      return { interpWithRules: result, dlErrors: [] };
-    } catch (e) {
-      return { interpWithRules: initInterp, dlErrors: [e.toString()] };
-    }
-  })();
+
   const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
   const allGrammarErrors = [
     ...grammarErrors,
@@ -51,20 +51,27 @@ export function constructInterp(args: {
     ...noMainError,
   ];
 
+  // add datalog
+  try {
+    if (spec.datalog.length > 0) {
+      interp = interp.evalStr(spec.datalog)[1];
+    }
+  } catch (e) {
+    dlErrors = [e.toString()];
+  }
+
   // initialize stuff that we'll fill in later, if parse succeeds
   let traceTree: TraceTree = null;
   let ruleTree: RuleTree = null;
   let langParseError: string | null = null;
-  let finalInterp: AbstractInterpreter = interpWithRules;
 
   if (allGrammarErrors.length === 0) {
     try {
       traceTree = parse(grammar, "main", langSource);
       ruleTree = extractRuleTree(traceTree);
       const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
-      finalInterp = finalInterp.evalStmts(flattenStmts)[1];
-      finalInterp = finalInterp.evalStr(args.builtinSource)[1];
-      finalInterp = ensureRequiredRelations(finalInterp);
+      interp = interp.evalStmts(flattenStmts)[1];
+      interp = ensureRequiredRelations(interp);
     } catch (e) {
       langParseError = e.toString();
       console.error(e);
@@ -72,7 +79,7 @@ export function constructInterp(args: {
   }
 
   return {
-    finalInterp,
+    interp,
     allGrammarErrors,
     langParseError,
     dlErrors,

@@ -1,7 +1,0 @@
-letExpr{bindingID: 1, bodyID: 2, id: 0, varName: "x"}.
-intLit{id: 1, val: 2}.
-funcCall{id: 2, name: "toString", numArgs: 1}.
-funcCall{id: 3, name: "plus2", numArgs: 1}.
-var{id: 4, name: "x"}.
-funcArg{argExprID: 4, callExprID: 3, idx: 0}.
-funcArg{argExprID: 3, callExprID: 2, idx: 0}.

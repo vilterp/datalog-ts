@@ -1,7 +1,7 @@
-import { lineAndColFromIdx } from "./indexToLineCol";
-import { assertDeepEqual, Suite } from "./testBench/testing";
+import { assertDeepEqual, Suite } from "../util/testBench/testing";
+import { lineAndColFromIdx } from "./sourcePositions";
 
-export const indexToLineColTests: Suite = [
+export const sourcePositionsTests: Suite = [
   {
     name: "lineAndColFromIdx",
     test() {

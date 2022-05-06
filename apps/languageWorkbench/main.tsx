@@ -3,19 +3,16 @@ import ReactDOM from "react-dom";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
-import { OpenCodeEditor } from "../../uiCommon/ide/dlPowered/openCodeEditor";
+import { LingoEditor } from "../../uiCommon/ide/editor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
-// @ts-ignore
-import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
-import { LOADER, mainDL } from "../../languageWorkbench/common";
+import { LOADER } from "../../languageWorkbench/commonDL";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import { WrappedCodeEditor } from "../../uiCommon/ide/dlPowered/wrappedCodeEditor";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
-const initInterp = new SimpleInterpreter(".", LOADER);
+const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
 function Main() {
   return <Playground />;
@@ -43,28 +40,6 @@ function Playground() {
     setExampleEditorState({ ...exampleEditorState, source });
   };
 
-  const {
-    finalInterp: withoutCursor,
-    allGrammarErrors,
-    langParseError,
-    dlErrors,
-  } = useMemo(
-    () =>
-      constructInterp({
-        builtinSource: mainDL,
-        initInterp,
-        dlSource: dlEditorState.source,
-        grammarSource: grammarEditorState.source,
-        langSource,
-      }),
-    [dlEditorState.source, grammarEditorState.source, langSource]
-  );
-
-  const finalInterp = useMemo(
-    () => addCursor(withoutCursor, cursorPos),
-    [cursorPos, withoutCursor]
-  );
-
   const setLang = (name) => {
     setLangName(name);
     const example = LANGUAGES[name];
@@ -72,6 +47,19 @@ function Playground() {
     setDLEditorState({ ...dlEditorState, source: example.datalog });
     setExampleSource(example.example);
   };
+
+  const langSpec = LANGUAGES[langName];
+
+  const {
+    interp: interpWithoutCursor,
+    allGrammarErrors,
+    langParseError,
+    dlErrors,
+  } = useMemo(
+    () => constructInterp(INIT_INTERP, langSpec, langSource),
+    [langSpec, langSource]
+  );
+  const interp = addCursor(interpWithoutCursor, cursorPos);
 
   return (
     <>
@@ -98,41 +86,28 @@ function Playground() {
           <tr>
             <td>
               <h3>Example Source</h3>
-              <OpenCodeEditor
+              <LingoEditor
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
-                interp={finalInterp}
-                validGrammar={allGrammarErrors.length === 0}
-                highlightCSS={commonThemeCSS}
-                lang={langName}
-                locatedErrors={[]} // TODO: parse errors
-                autofocus
+                langSpec={langSpec}
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
             <td>
               <h3>Grammar Source</h3>
-              <WrappedCodeEditor
+              <LingoEditor
                 editorState={grammarEditorState}
                 setEditorState={setGrammarEditorState}
-                datalog={LANGUAGES.grammar.datalog}
-                grammar={LANGUAGES.grammar.grammar}
-                highlightCSS={commonThemeCSS}
-                lang="grammar"
-                hideKeyBindingsTable
+                langSpec={LANGUAGES.grammar}
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
-              <WrappedCodeEditor
+              <LingoEditor
                 editorState={dlEditorState}
                 setEditorState={setDLEditorState}
-                datalog={LANGUAGES.datalog.datalog}
-                grammar={LANGUAGES.datalog.grammar}
-                highlightCSS={commonThemeCSS}
-                lang="dl"
-                hideKeyBindingsTable
+                langSpec={LANGUAGES.datalog}
               />
               <ErrorList errors={dlErrors} />
             </td>
@@ -146,7 +121,7 @@ function Playground() {
           <>
             {/* we run into errors querying highlight rules if the grammar isn't valid */}
             {allGrammarErrors.length === 0 ? (
-              <Explorer interp={finalInterp} showViz />
+              <Explorer interp={interp} showViz />
             ) : (
               <em>Grammar isn't valid</em>
             )}

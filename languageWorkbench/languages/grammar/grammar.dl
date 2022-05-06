@@ -1,13 +1,13 @@
-scope.Scope{id: "global", label: "global"}.
+scope.Scope{id: global{}, label: "global"}.
 
-scope.Defn{scopeID: "global", span: S, name: N, kind: "rule"} :-
+scope.Defn{scopeID: global{}, span: S, name: N, kind: "rule"} :-
   ast.ruleDefn{id: RuleID} &
   ast.ident{parentID: RuleID, span: S, text: N}.
 
-scope.Var{scopeID: "global", name: N, span: S, kind: "rule"} :-
+scope.Var{scopeID: global{}, name: N, span: S, kind: "rule"} :-
   ast.ref{span: S, text: N}.
 
-scope.Placeholder{scopeID: "global", span: S, kind: "rule"} :-
+scope.Placeholder{scopeID: global{}, span: S, kind: "rule"} :-
   ast.placeholder{span: S}.
 
 tc.Problem{desc: D, nodeID: I, span: S} :-
