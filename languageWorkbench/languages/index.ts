@@ -72,46 +72,55 @@ import modelicaExample from "./modelica/example.txt";
 
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText: {
+    name: "plainText",
     datalog: "",
     grammar: `main :- repSep(., "").`,
     example: "",
   },
   datalog: {
+    name: "datalog",
     datalog: datalogDL,
     grammar: datalogGrammar,
     example: datalogExample,
   },
   json: {
+    name: "json",
     datalog: jsonDL,
     grammar: jsonGrammar,
     example: jsonExample,
   },
   basicBlocks: {
+    name: "basicBlocks",
     datalog: basicBlocksDL,
     grammar: basicBlocksGrammar,
     example: basicBlocksExample,
   },
   grammar: {
+    name: "grammar",
     datalog: grammarDL,
     grammar: grammarGrammar,
     example: grammarExample,
   },
   fp: {
+    name: "fp",
     datalog: fpDL,
     example: fpExample,
     grammar: fpGrammar,
   },
   sql: {
+    name: "sql",
     datalog: sqlDL,
     example: sqlExample,
     grammar: sqlGrammar,
   },
   treeSQL: {
+    name: "treeSQL",
     datalog: treeSQLDL,
     example: treeSQLExample,
     grammar: treeSQLGrammar,
   },
   modelica: {
+    name: "modelica",
     datalog: modelicaDL,
     example: modelicaExample,
     grammar: modelicaGrammar,
@@ -119,6 +128,7 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
 };
 
 export type LanguageSpec = {
+  name: string;
   datalog: string;
   grammar: string;
   example: string;

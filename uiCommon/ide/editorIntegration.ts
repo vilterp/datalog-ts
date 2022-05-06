@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { constructInterp } from "../../languageWorkbench/interp";
-import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
+import { LanguageSpec } from "../../languageWorkbench/languages";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
 import { rec, Rec, StringLit } from "../../core/types";
 import { dlToSpan } from "./types";
@@ -13,10 +13,13 @@ import {
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { spanToRange } from "../../apps/vscodeExtension/util";
 
-export function registerLanguageSupport(context: vscode.ExtensionContext) {
+export function registerLanguageSupport(
+  context: vscode.ExtensionContext,
+  spec: LanguageSpec
+) {
   // go to defn
   context.subscriptions.push(
-    vscode.languages.registerDefinitionProvider("datalog", {
+    vscode.languages.registerDefinitionProvider(spec.name, {
       provideDefinition(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -33,7 +36,7 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
 
   // references
   context.subscriptions.push(
-    vscode.languages.registerReferenceProvider("datalog", {
+    vscode.languages.registerReferenceProvider(spec.name, {
       provideReferences(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -51,7 +54,7 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
 
   // highlight
   context.subscriptions.push(
-    vscode.languages.registerDocumentHighlightProvider("datalog", {
+    vscode.languages.registerDocumentHighlightProvider(spec.name, {
       provideDocumentHighlights(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -68,7 +71,7 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
 
   // completions
   context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider("datalog", {
+    vscode.languages.registerCompletionItemProvider(spec.name, {
       provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -86,7 +89,7 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
 
   // renames
   context.subscriptions.push(
-    vscode.languages.registerRenameProvider("datalog", {
+    vscode.languages.registerRenameProvider(spec.name, {
       provideRenameEdits(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -115,7 +118,7 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
 
   // symbols
   context.subscriptions.push(
-    vscode.languages.registerDocumentSymbolProvider("datalog", {
+    vscode.languages.registerDocumentSymbolProvider(spec.name, {
       provideDocumentSymbols(
         document: vscode.TextDocument,
         token: vscode.CancellationToken
@@ -134,7 +137,7 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
   // syntax highlighting
   context.subscriptions.push(
     vscode.languages.registerDocumentSemanticTokensProvider(
-      "datalog",
+      spec.name,
       {
         provideDocumentSemanticTokens(
           document: vscode.TextDocument,
@@ -157,11 +160,11 @@ export function registerLanguageSupport(context: vscode.ExtensionContext) {
 }
 
 function getDefinition(
-  doc: vscode.TextDocument,
+  document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
-  const source = doc.getText();
+  const source = document.getText();
   const interp = getInterp(LANGUAGES.datalog, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
@@ -173,19 +176,19 @@ function getDefinition(
   }
   const result = results[0].term as Rec;
   const location = new vscode.Location(
-    doc.uri,
+    document.uri,
     spanToRange(source, result.attrs.defnSpan as Rec)
   );
   return location;
 }
 
 function getReferences(
-  doc: vscode.TextDocument,
+  document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.ReferenceContext,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
-  const source = doc.getText();
+  const source = document.getText();
   const interp = getInterp(LANGUAGES.datalog, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
@@ -195,7 +198,7 @@ function getReferences(
   return results.map(
     (res) =>
       new vscode.Location(
-        doc.uri,
+        document.uri,
         spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec)
       )
   );
@@ -207,11 +210,11 @@ const HIGHLIGHT_KINDS = {
 };
 
 function getHighlights(
-  doc: vscode.TextDocument,
+  document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
-  const source = doc.getText();
+  const source = document.getText();
   const interp = getInterp(LANGUAGES.datalog, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
@@ -228,12 +231,12 @@ function getHighlights(
 }
 
 function getCompletionItems(
-  doc: vscode.TextDocument,
+  document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken,
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
-  const source = doc.getText();
+  const source = document.getText();
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,

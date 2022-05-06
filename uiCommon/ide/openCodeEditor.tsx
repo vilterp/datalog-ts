@@ -7,7 +7,6 @@ export function OpenCodeEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   validGrammar: boolean;
-  langName: string;
   langSpec: LanguageSpec;
   width?: number;
   height?: number;
