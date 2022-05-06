@@ -19,7 +19,7 @@ export function highlight(
   }
   performance.mark("highlight start");
   const segments = interp.queryStr(
-    "hl.Segment{type: T, span: S, id: I, highlight: H}"
+    "hl.Segment{type: T, span: S, highlight: H}"
   );
   // TODO: tree-based highlighting. Problems are always attached to an AST node,
   //   but that AST node can cover multiple highlighting spans.

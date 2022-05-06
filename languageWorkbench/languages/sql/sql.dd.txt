@@ -43,29 +43,29 @@ SELECT id, ??? FROM blog_posts;
 hl.Segment{}
 ----
 application/datalog
-hl.Segment{highlight: H, id: I, span: span{from: 0, to: 6}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 51, to: 57}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 7, to: 12}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 58, to: 63}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 129, to: 135}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 144, to: 148}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 99, to: 109}, type: "keyword"}
-hl.Segment{highlight: H, id: I, span: span{from: 13, to: 23}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 28, to: 30}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 38, to: 42}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 64, to: 72}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 77, to: 79}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 87, to: 94}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 110, to: 120}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 122, to: 124}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 136, to: 138}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 149, to: 159}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 31, to: 34}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 43, to: 47}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 80, to: 83}, type: "variable"}
-hl.Segment{highlight: H, id: I, span: span{from: 95, to: 98}, type: "variable"}
-hl.Segment{highlight: true, id: I, span: span{from: 28, to: 30}, type: "defn"}
-hl.Segment{highlight: true, id: I, span: span{from: 122, to: 124}, type: "usage"}
+hl.Segment{highlight: false, span: span{from: 0, to: 6}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 51, to: 57}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 7, to: 12}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 58, to: 63}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 129, to: 135}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 144, to: 148}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 99, to: 109}, type: "keyword"}
+hl.Segment{highlight: false, span: span{from: 13, to: 23}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 28, to: 30}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 38, to: 42}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 64, to: 72}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 77, to: 79}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 87, to: 94}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 110, to: 120}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 122, to: 124}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 136, to: 138}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 149, to: 159}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 31, to: 34}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 43, to: 47}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 80, to: 83}, type: "variable"}
+hl.Segment{highlight: false, span: span{from: 95, to: 98}, type: "variable"}
+hl.Segment{highlight: true, span: span{from: 28, to: 30}, type: "defn"}
+hl.Segment{highlight: true, span: span{from: 122, to: 124}, type: "usage"}
 
 sql
 CREATE TABLE blog_posts (
