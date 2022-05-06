@@ -13,7 +13,150 @@ import {
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { spanToRange } from "../../apps/vscodeExtension/util";
 
-export function getDefinition(
+export function registerLanguageSupport(context: vscode.ExtensionContext) {
+  // go to defn
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider("datalog", {
+      provideDefinition(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Definition> {
+        try {
+          return getDefinition(document, position, token);
+        } catch (e) {
+          console.error("in definition provider:", e);
+        }
+      },
+    })
+  );
+
+  // references
+  context.subscriptions.push(
+    vscode.languages.registerReferenceProvider("datalog", {
+      provideReferences(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        context: vscode.ReferenceContext,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Location[]> {
+        try {
+          return getReferences(document, position, context, token);
+        } catch (e) {
+          console.error("in reference provider:", e);
+        }
+      },
+    })
+  );
+
+  // highlight
+  context.subscriptions.push(
+    vscode.languages.registerDocumentHighlightProvider("datalog", {
+      provideDocumentHighlights(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
+        try {
+          return getHighlights(document, position, token);
+        } catch (e) {
+          console.error("in highlight provider:", e);
+        }
+      },
+    })
+  );
+
+  // completions
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider("datalog", {
+      provideCompletionItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken,
+        context: vscode.CompletionContext
+      ): vscode.ProviderResult<vscode.CompletionItem[]> {
+        try {
+          return getCompletionItems(document, position, token, context);
+        } catch (e) {
+          console.error("in completion provider:", e);
+        }
+      },
+    })
+  );
+
+  // renames
+  context.subscriptions.push(
+    vscode.languages.registerRenameProvider("datalog", {
+      provideRenameEdits(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        newName: string,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.WorkspaceEdit> {
+        try {
+          return getRenameEdits(document, position, newName, token);
+        } catch (e) {
+          console.error("in rename provider:", e);
+        }
+      },
+      prepareRename(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<vscode.Range> {
+        try {
+          return prepareRename(document, position);
+        } catch (e) {
+          console.error("in prepare rename:", e);
+        }
+      },
+    })
+  );
+
+  // symbols
+  context.subscriptions.push(
+    vscode.languages.registerDocumentSymbolProvider("datalog", {
+      provideDocumentSymbols(
+        document: vscode.TextDocument,
+        token: vscode.CancellationToken
+      ): vscode.ProviderResult<
+        vscode.SymbolInformation[] | vscode.DocumentSymbol[]
+      > {
+        try {
+          return getSymbolList(document, token);
+        } catch (e) {
+          console.error("in symbol provider:", e);
+        }
+      },
+    })
+  );
+
+  // syntax highlighting
+  context.subscriptions.push(
+    vscode.languages.registerDocumentSemanticTokensProvider(
+      "datalog",
+      {
+        provideDocumentSemanticTokens(
+          document: vscode.TextDocument,
+          token: vscode.CancellationToken
+        ): vscode.ProviderResult<vscode.SemanticTokens> {
+          try {
+            const before = new Date().getTime();
+            const tokens = getSemanticTokens(document, token);
+            const after = new Date().getTime();
+            console.log("datalog: getSemanticTokens:", after - before, "ms");
+            return tokens;
+          } catch (e) {
+            console.error("in token provider:", e);
+          }
+        },
+      },
+      semanticTokensLegend
+    )
+  );
+}
+
+function getDefinition(
   doc: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
@@ -36,7 +179,7 @@ export function getDefinition(
   return location;
 }
 
-export function getReferences(
+function getReferences(
   doc: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.ReferenceContext,
@@ -63,7 +206,7 @@ const HIGHLIGHT_KINDS = {
   usage: vscode.DocumentHighlightKind.Read,
 };
 
-export function getHighlights(
+function getHighlights(
   doc: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
@@ -84,7 +227,7 @@ export function getHighlights(
   });
 }
 
-export function getCompletionItems(
+function getCompletionItems(
   doc: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken,
@@ -112,7 +255,7 @@ export function getCompletionItems(
   });
 }
 
-export function getRenameEdits(
+function getRenameEdits(
   document: vscode.TextDocument,
   position: vscode.Position,
   newName: string,
@@ -136,7 +279,7 @@ export function getRenameEdits(
   return edit;
 }
 
-export function prepareRename(
+function prepareRename(
   document: vscode.TextDocument,
   position: vscode.Position
 ): vscode.ProviderResult<vscode.Range> {
@@ -160,7 +303,7 @@ export function prepareRename(
 // TODO: parameterize by language
 const GLOBAL_SCOPE = rec("global", {});
 
-export function getSymbolList(
+function getSymbolList(
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
@@ -184,7 +327,7 @@ export function getSymbolList(
   });
 }
 
-export function getSemanticTokens(
+function getSemanticTokens(
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
@@ -204,7 +347,7 @@ export function getSemanticTokens(
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // needs to match highlight.dl
-export const semanticTokensLegend = new vscode.SemanticTokensLegend([
+const semanticTokensLegend = new vscode.SemanticTokensLegend([
   "number",
   "string",
   "keyword",

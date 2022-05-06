@@ -1,23 +1,25 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import React, { useEffect } from "react";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { LanguageSpec } from "../../languageWorkbench/languages";
 import { EditorState } from "./types";
 
 export function OpenCodeEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
-  interp: AbstractInterpreter;
   validGrammar: boolean;
   langName: string;
+  langSpec: LanguageSpec;
   width?: number;
   height?: number;
 }) {
   const monaco = useMonaco();
 
   useEffect(() => {
-    if (monaco) {
-      console.log("hello, this is the monaco instance!", monaco);
+    if (!monaco) {
+      return;
     }
+
+    monaco.languages.registerCompletionItemProvider(XXXX);
   }, [monaco]);
 
   const setSource = (source: string) => {
