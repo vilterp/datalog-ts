@@ -27,7 +27,7 @@ export function LingoEditor(props: {
   };
 
   return (
-    <div>
+    <div style={{ border: "1px solid black", padding: 5 }}>
       <Editor
         width={props.width || 570}
         height={props.height || 400}
