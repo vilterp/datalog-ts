@@ -59,6 +59,7 @@ export function LingoEditor(props: {
         value={props.editorState.source}
         onChange={setSource}
         language={props.langSpec.name}
+        path={`file.${props.langSpec.name}`}
         options={{
           minimap: { enabled: false },
           scrollBeyondLastLine: false,

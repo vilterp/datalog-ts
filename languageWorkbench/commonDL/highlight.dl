@@ -1,3 +1,4 @@
+# TODO: prob don't need this anymore
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.NonHighlightSegment{type: T, span: S, highlight: H} |
   hl.segmentIdentDefnHL{type: T, span: S, highlight: H} |
@@ -30,10 +31,10 @@ hl.segmentComment{type: "comment", span: S} :-
   astInternal.node{rule: R, span: S}.
 
 # identifiers
-hl.segmentSpecialVar{type: "typeParameter", span: S, highlight: false} :-
+hl.segmentSpecialVar{type: "typeParameter", span: S} :-
   hl.mapping{rule: R, type: "typeParameter"} &
   astInternal.node{rule: R, span: S}.
-hl.segmentIdent{type: "variable", id: I, span: S, highlight: false} :-
+hl.segmentIdent{type: "variable", id: I, span: S} :-
   hl.mapping{rule: R, type: "ident"} &
   astInternal.node{rule: R, parentID: I, span: S}.
 
