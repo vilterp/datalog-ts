@@ -47,8 +47,8 @@ export class SemanticTokensBuilder {
     if (!this._tokenTypeStrToInt.has(tokenType)) {
       throw new Error("`tokenType` is not in the provided legend");
     }
-    const line = range.startLineNumber;
-    const char = range.startColumn;
+    const line = range.startLineNumber - 1;
+    const char = range.startColumn - 1;
     const length = range.endColumn - range.startColumn;
     const nTokenType = this._tokenTypeStrToInt.get(tokenType)!;
     let nTokenModifiers = 0;
