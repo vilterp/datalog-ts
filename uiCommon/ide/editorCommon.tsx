@@ -1,9 +1,7 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import React, { useEffect } from "react";
-import { clamp, mapObjToList } from "../../util/util";
-import { keyMap } from "./keymap";
-import { insertSuggestionAction, Suggestion } from "./suggestions";
-import { ActionContext, EditorAction, EditorState, LangError } from "./types";
+import { Suggestion } from "./suggestions";
+import { ActionContext, EditorState, LangError } from "./types";
 
 export function EditorBox(props: {
   highlightCSS: string;
@@ -13,7 +11,6 @@ export function EditorBox(props: {
   errorsToDisplay: LangError[];
   actionCtx: ActionContext;
   highlighted: React.ReactNode;
-  hideKeyBindingsTable?: boolean;
   autofocus?: boolean;
   width?: number;
   height?: number;
@@ -48,12 +45,11 @@ export function EditorBox(props: {
             height={props.height}
             value={props.editorState.source}
             onChange={setSource}
+            options={{
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+            }}
           />
-        </div>
-        <div>
-          {!props.hideKeyBindingsTable ? (
-            <KeyBindingsTable actionCtx={props.actionCtx} />
-          ) : null}
         </div>
       </div>
       <div style={{ fontFamily: "monospace", color: "red" }}>
@@ -76,36 +72,4 @@ function displayError(err: LangError) {
     case "Problem":
       return `Problem: ${err.problem}`;
   }
-}
-
-function KeyBindingsTable(props: { actionCtx: ActionContext }) {
-  const actionAvailable = (action: EditorAction): boolean => {
-    try {
-      return action.available(props.actionCtx);
-    } catch (e) {
-      console.warn(
-        `error while checking availability of action "${action.name}":`,
-        e
-      );
-      return false;
-    }
-  };
-
-  return (
-    <table style={{ display: "block" }}>
-      <tbody>
-        {mapObjToList(keyMap, (key, action) => (
-          <tr
-            key={action.name}
-            style={{
-              color: actionAvailable(action) ? "black" : "lightgrey",
-            }}
-          >
-            <td>⌘{key.toUpperCase()}</td>
-            <td>{action.name}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
 }
