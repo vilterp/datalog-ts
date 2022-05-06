@@ -209,7 +209,6 @@ export const semanticTokensLegend = new vscode.SemanticTokensLegend([
   "number",
   "string",
   "keyword",
-  "boolean",
   "comment",
   "variable",
   "typeParameter",

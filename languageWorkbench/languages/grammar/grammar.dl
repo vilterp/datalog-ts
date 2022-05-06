@@ -18,6 +18,6 @@ tc.undefinedRule{desc: undefinedRule{name: N}, nodeID: I, span: S} :-
 
 hl.mapping{rule: "repSepKW", type: "keyword"}.
 hl.mapping{rule: "text", type: "string"}.
-hl.mapping{rule: "bool", type: "boolean"}.
+hl.mapping{rule: "bool", type: "number"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "charRule", type: "number"}.

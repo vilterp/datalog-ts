@@ -44,7 +44,7 @@ scope.placeholderSelectTable{span: S, scopeID: "global", kind: "table"} :-
 
 hl.mapping{rule: "intLit", type: "number"}.
 hl.mapping{rule: "stringLit", type: "string"}.
-hl.mapping{rule: "bool", type: "boolean"}.
+hl.mapping{rule: "bool", type: "number"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "type", type: "ident"}.
 
