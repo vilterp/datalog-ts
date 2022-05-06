@@ -9,7 +9,7 @@ import {
 } from "./parserlib/parser";
 import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
 import { validateGrammar } from "./parserlib/validate";
-import { ensureRequiredRelations } from "../uiCommon/ide/requiredRelations";
+import { ensureRequiredRelations } from "./requiredRelations";
 
 export function constructInterp(args: {
   initInterp: AbstractInterpreter;
