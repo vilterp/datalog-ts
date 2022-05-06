@@ -18,7 +18,6 @@ export function WrappedCodeEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   lang: string;
-  hideKeyBindingsTable?: boolean;
   autofocus?: boolean;
   width?: number;
   height?: number;
@@ -52,7 +51,6 @@ export function WrappedCodeEditor(props: {
         interp={finalInterp}
         locatedErrors={[]} // TODO: parse errors, dl errors
         validGrammar={allGrammarErrors.length === 0}
-        hideKeyBindingsTable={props.hideKeyBindingsTable}
         lang={props.lang}
         autofocus={props.autofocus}
         width={props.width}

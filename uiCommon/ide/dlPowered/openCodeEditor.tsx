@@ -17,7 +17,6 @@ export function OpenCodeEditor(props: {
   highlightCSS: string;
   locatedErrors: { offset: number }[];
   lang: string;
-  hideKeyBindingsTable?: boolean;
   autofocus?: boolean;
   width?: number;
   height?: number;
@@ -80,7 +79,6 @@ export function OpenCodeEditor(props: {
       errorsToDisplay={currentProblems} // TODO: pass through more errors
       highlighted={highlighted}
       suggestions={suggestions}
-      hideKeyBindingsTable={props.hideKeyBindingsTable}
       autofocus={props.autofocus}
       width={props.width}
       height={props.height}
