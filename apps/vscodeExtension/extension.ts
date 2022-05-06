@@ -10,14 +10,20 @@ import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
-  const languageSpec = LANGUAGES.datalog;
+  const datalogSpec = LANGUAGES.datalog;
 
   registerExplorerWebView(context);
-  registerLanguageSupport(context, languageSpec);
+  registerLanguageSupport(context, datalogSpec);
+  registerDiagnosticsSupport(context, datalogSpec);
+}
 
-  const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
+function registerDiagnosticsSupport(
+  context: vscode.ExtensionContext,
+  spec: LanguageSpec
+) {
+  const diagnostics = vscode.languages.createDiagnosticCollection(spec.name);
   context.subscriptions.push(diagnostics);
-  subscribeDiagnosticsToChanges(context, languageSpec, diagnostics);
+  subscribeDiagnosticsToChanges(context, spec, diagnostics);
 }
 
 function subscribeDiagnosticsToChanges(
