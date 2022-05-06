@@ -395,10 +395,10 @@ function problemToDiagnostic(
 
   const desc = ppt(rec.attrs.desc);
   return {
-    startLineNumber: from.line,
-    startColumn: from.col,
-    endLineNumber: to.line,
-    endColumn: to.col,
+    startLineNumber: from.line + 1,
+    startColumn: from.col + 1,
+    endLineNumber: to.line + 1,
+    endColumn: to.col + 1,
     message: desc,
     owner: "lingo",
     resource: model.uri,

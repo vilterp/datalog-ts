@@ -19,7 +19,7 @@ export function LingoEditor(props: {
   console.log("render");
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
-    monacoRef.current = monaco;
+    monacoRef.current = monacoInstance;
     registerLanguageSupport(monacoInstance, props.langSpec);
   }
 
@@ -27,7 +27,6 @@ export function LingoEditor(props: {
     const model = editor.getModel();
     const markers = getMarkers(props.langSpec, model);
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
-    console.log("setting markers", { model, markers });
   }
 
   const editorRef = useRef<monaco.editor.ICodeEditor>(null);
@@ -35,13 +34,6 @@ export function LingoEditor(props: {
     editorRef.current = editor;
 
     updateMarkers(editor);
-    editor.onDidChangeModelContent((evt) => {
-      console.log(
-        "current markers:",
-        monacoRef.current.editor.getModelMarkers({})
-      );
-      updateMarkers(editor);
-    });
 
     editor.onDidChangeCursorPosition((evt) => {
       const value = editor.getModel().getValue();
@@ -56,6 +48,7 @@ export function LingoEditor(props: {
   const setSource = (source: string) => {
     console.log("set state 2");
     props.setEditorState({ ...props.editorState, source });
+    updateMarkers(editorRef.current);
   };
 
   return (
