@@ -10,11 +10,12 @@ import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
-  const datalogSpec = LANGUAGES.datalog;
-
   registerExplorerWebView(context);
-  registerLanguageSupport(context, datalogSpec);
-  registerDiagnosticsSupport(context, datalogSpec);
+
+  [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+    registerLanguageSupport(context, spec);
+    registerDiagnosticsSupport(context, spec);
+  });
 }
 
 function registerDiagnosticsSupport(

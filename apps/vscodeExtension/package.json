@@ -10,7 +10,8 @@
     "vscode": "^1.32.0"
   },
   "activationEvents": [
-    "onLanguage:datalog"
+    "onLanguage:datalog",
+    "onLanguage:grammar"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -19,6 +20,12 @@
         "id": "datalog",
         "extensions": [
           ".dl"
+        ]
+      },
+      {
+        "id": "grammar",
+        "extensions": [
+          ".grammar"
         ]
       }
     ],
