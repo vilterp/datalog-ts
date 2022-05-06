@@ -378,37 +378,49 @@ export function getSemanticTokens(
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // needs to match highlight.dl
-export const semanticTokensLegend = new monaco.SemanticTokensLegend([
-  "number",
-  "string",
-  "keyword",
-  "comment",
-  "variable",
-  "typeParameter",
-]);
+export const semanticTokensLegend: monaco.languages.SemanticTokensLegend = {
+  tokenTypes: [
+    "number",
+    "string",
+    "keyword",
+    "comment",
+    "variable",
+    "typeParameter",
+  ],
+  tokenModifiers: [],
+};
 
-export function refreshDiagnostics(
+export function getMarkers(
   spec: LanguageSpec,
-  document: monaco.editor.ITextModel,
-  diagnostics: monaco.DiagnosticCollection
-) {
+  document: monaco.editor.ITextModel
+): monaco.editor.IMarker[] {
   const source = document.getValue();
   const interp = getInterp(spec, source);
 
   const problems = interp.queryStr("tc.Problem{}");
-  const diags = problems.map((res) =>
-    problemToDiagnostic(source, res.term as Rec)
-  );
-  diagnostics.set(document.uri, diags);
+  return problems.map((res) => problemToDiagnostic(document, res.term as Rec));
 }
 
-function problemToDiagnostic(source: string, rec: Rec): monaco.Diagnostic {
+function problemToDiagnostic(
+  model: monaco.editor.ITextModel,
+  rec: Rec
+): monaco.editor.IMarker {
+  const source = model.getValue();
   const span = dlToSpan(rec.attrs.span as Rec);
   const from = lineAndColFromIdx(source, span.from);
   const to = lineAndColFromIdx(source, span.to);
 
-  const range = new monaco.Range(from.line, from.col, to.line, to.col);
-  return new monaco.Diagnostic(range, ppt(rec.attrs.desc));
+  const desc = ppt(rec.attrs.desc);
+  return {
+    startLineNumber: from.line,
+    startColumn: from.col,
+    endLineNumber: to.line,
+    endColumn: to.col,
+    message: desc,
+    owner: "lingo",
+    resource: model.uri,
+    severity: monaco.MarkerSeverity.Error,
+  };
 }
 
 function getInterp(
