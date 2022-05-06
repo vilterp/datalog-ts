@@ -1,6 +1,5 @@
 import React from "react";
 import { clamp, mapObjToList } from "../../util/util";
-import Editor from "./editor";
 import {
   keyMap,
   KEY_A,
@@ -51,45 +50,12 @@ export function EditorBox(props: {
             marginBottom: 10,
           }}
         >
-          <Editor
-            name="wut" // type error without this, even tho optional
-            style={{
-              fontFamily: "monospace",
-              minWidth: "100%",
-              minHeight: "100%",
-              whiteSpace: "pre",
-              backgroundColor: "rgb(250, 250, 250)",
-            }}
-            autoFocus={props.autofocus}
-            padding={10}
-            value={props.editorState.source}
-            onValueChange={(source) =>
-              props.setEditorState({ ...props.editorState, source })
-            }
-            cursorPos={props.editorState.cursorPos} // would be nice if we could have an onCursorPos
-            highlight={(_) => props.highlighted}
-            onKeyDown={(evt) => {
-              handleKeyDown(
-                evt,
-                props.suggestions,
-                props.editorState,
-                props.setEditorState,
-                applyAction
-              );
-            }}
-            onKeyUp={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
-            onClick={(evt) => setCursorPos(evt.currentTarget.selectionStart)}
-          />
+          XXXX
         </div>
         <div>
           {!props.hideKeyBindingsTable ? (
             <KeyBindingsTable actionCtx={props.actionCtx} />
           ) : null}
-          <SuggestionsList
-            suggestions={props.suggestions}
-            applyAction={applyAction}
-            editorState={props.editorState}
-          />
         </div>
       </div>
       <div style={{ fontFamily: "monospace", color: "red" }}>
@@ -144,78 +110,4 @@ function KeyBindingsTable(props: { actionCtx: ActionContext }) {
       </tbody>
     </table>
   );
-}
-
-function SuggestionsList(props: {
-  suggestions: Suggestion[];
-  applyAction: (action: EditorAction) => void;
-  editorState: EditorState;
-}) {
-  return (
-    <ul style={{ fontFamily: "monospace" }}>
-      {props.suggestions.map((sugg, idx) => (
-        <li
-          key={JSON.stringify(sugg)}
-          style={{
-            cursor: "pointer",
-            fontWeight: sugg.bold ? "bold" : "normal",
-            textDecoration:
-              props.editorState.selectedSuggIdx === idx ? "underline" : "none",
-          }}
-          onClick={() => {
-            props.applyAction(insertSuggestionAction);
-          }}
-        >
-          {sugg.display ? sugg.display : sugg.textToInsert}
-          {sugg.kind ? `: ${sugg.kind}` : null}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function handleKeyDown(
-  evt: React.KeyboardEvent<HTMLTextAreaElement>,
-  suggestions: Suggestion[],
-  editorState: EditorState,
-  setState: (st: EditorState) => void,
-  applyAction: (action: EditorAction) => void
-) {
-  const haveSuggestions = suggestions.length > 0;
-  const clampSuggIdx = (n: number) => clamp(n, [0, suggestions.length - 1]);
-  if (haveSuggestions) {
-    switch (evt.keyCode) {
-      case KEY_DOWN_ARROW:
-        evt.preventDefault();
-        setState({
-          ...editorState,
-          selectedSuggIdx: clampSuggIdx(editorState.selectedSuggIdx + 1),
-        });
-        return;
-      case KEY_UP_ARROW:
-        if (editorState.selectedSuggIdx > 0) {
-          evt.preventDefault();
-          setState({
-            ...editorState,
-            selectedSuggIdx: clampSuggIdx(editorState.selectedSuggIdx - 1),
-          });
-          return;
-        }
-        return;
-      case KEY_ENTER:
-        evt.preventDefault();
-        applyAction(insertSuggestionAction);
-        return;
-    }
-  }
-  if (evt.metaKey) {
-    if (KEY_A <= evt.keyCode && evt.keyCode <= KEY_Z) {
-      const action = keyMap[evt.key];
-      if (!action) {
-        return;
-      }
-      applyAction(action);
-      return;
-    }
-  }
 }
