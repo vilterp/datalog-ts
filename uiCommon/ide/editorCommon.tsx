@@ -1,13 +1,7 @@
-import React from "react";
+import Editor, { useMonaco } from "@monaco-editor/react";
+import React, { useEffect } from "react";
 import { clamp, mapObjToList } from "../../util/util";
-import {
-  keyMap,
-  KEY_A,
-  KEY_DOWN_ARROW,
-  KEY_ENTER,
-  KEY_UP_ARROW,
-  KEY_Z,
-} from "./keymap";
+import { keyMap } from "./keymap";
 import { insertSuggestionAction, Suggestion } from "./suggestions";
 import { ActionContext, EditorAction, EditorState, LangError } from "./types";
 
@@ -24,17 +18,16 @@ export function EditorBox(props: {
   width?: number;
   height?: number;
 }) {
-  const setCursorPos = (pos: number) => {
-    return props.setEditorState({
-      ...props.editorState,
-      cursorPos: pos,
-    });
-  };
+  const monaco = useMonaco();
 
-  const applyAction = (action: EditorAction) => {
-    if (action.available(props.actionCtx)) {
-      props.setEditorState(action.apply(props.actionCtx));
+  useEffect(() => {
+    if (monaco) {
+      console.log("hello, this is the monaco instance!", monaco);
     }
+  }, [monaco]);
+
+  const setSource = (source: string) => {
+    props.setEditorState({ ...props.editorState, source });
   };
 
   return (
@@ -50,7 +43,12 @@ export function EditorBox(props: {
             marginBottom: 10,
           }}
         >
-          XXXX
+          <Editor
+            width={props.width}
+            height={props.height}
+            value={props.editorState.source}
+            onChange={setSource}
+          />
         </div>
         <div>
           {!props.hideKeyBindingsTable ? (
