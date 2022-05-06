@@ -79,7 +79,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
         try {
-          return getCompletionItems(spec, document, position, token, context);
+          return getCompletionItems(spec, model, position, token, context);
         } catch (e) {
           console.error("in completion provider:", e);
         }
@@ -134,26 +134,29 @@ export function registerLanguageSupport(
 
   // syntax highlighting
   subscriptions.push(
-    monaco.languages.registerDocumentSemanticTokensProvider(
-      spec.name,
-      {
-        provideDocumentSemanticTokens(
-          document: monaco.editor.ITextModel,
-          token: monaco.CancellationToken
-        ): monaco.languages.ProviderResult<monaco.SemanticTokens> {
-          try {
-            const before = new Date().getTime();
-            const tokens = getSemanticTokens(spec, document, token);
-            const after = new Date().getTime();
-            console.log("datalog: getSemanticTokens:", after - before, "ms");
-            return tokens;
-          } catch (e) {
-            console.error("in token provider:", e);
-          }
-        },
+    monaco.languages.registerDocumentSemanticTokensProvider(spec.name, {
+      provideDocumentSemanticTokens(
+        model: monaco.editor.ITextModel,
+        lastResultId: string | null,
+        token: monaco.CancellationToken
+      ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
+        try {
+          const before = new Date().getTime();
+          const tokens = getSemanticTokens(spec, model, token);
+          const after = new Date().getTime();
+          console.log("datalog: getSemanticTokens:", after - before, "ms");
+          return tokens;
+        } catch (e) {
+          console.error("in token provider:", e);
+        }
       },
-      semanticTokensLegend
-    )
+      getLegend() {
+        return semanticTokensLegend;
+      },
+      releaseDocumentSemanticTokens() {
+        // TODO: ...?
+      },
+    })
   );
 
   return subscriptions;
@@ -164,7 +167,7 @@ export function getDefinition(
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken
-): monaco.languages.ProviderResult<monaco.Definition> {
+): monaco.languages.ProviderResult<monaco.languages.Definition> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
@@ -176,20 +179,19 @@ export function getDefinition(
     return null;
   }
   const result = results[0].term as Rec;
-  const location = new monaco.Location(
-    document.uri,
-    spanToRange(source, result.attrs.defnSpan as Rec)
-  );
-  return location;
+  const location = {
+    uri: document.uri,
+    range: spanToRange(source, result.attrs.defnSpan as Rec),
+  };
 }
 
 export function getReferences(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
-  context: monaco.ReferenceContext,
+  context: monaco.languages.ReferenceContext,
   token: monaco.CancellationToken
-): monaco.languages.ProviderResult<monaco.Location[]> {
+): monaco.languages.ProviderResult<monaco.languages.Location[]> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
@@ -197,13 +199,10 @@ export function getReferences(
     col: position.column,
   });
   const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
-  return results.map(
-    (res) =>
-      new monaco.Location(
-        document.uri,
-        spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec)
-      )
-  );
+  return results.map((res) => ({
+    uri: document.uri,
+    range: spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec),
+  }));
 }
 
 const HIGHLIGHT_KINDS = {
@@ -242,7 +241,7 @@ export function getCompletionItems(
   position: monaco.Position,
   token: monaco.CancellationToken,
   context: monaco.languages.CompletionContext
-): monaco.languages.ProviderResult<monaco.languages.CompletionItem[]> {
+): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
   const source = document.getValue();
   const idx = idxFromLineAndCol(source, {
     line: position.lineNumber,
@@ -255,14 +254,19 @@ export function getCompletionItems(
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
   );
-  return results.map((res) => {
-    const result = res.term as Rec;
-    const label = result.attrs.name as StringLit;
-    const range = spanToRange(source, result.attrs.span as Rec);
-    return {
-      label: label.val,
-    };
-  });
+  return {
+    suggestions: results.map((res) => {
+      const result = res.term as Rec;
+      const label = result.attrs.name as StringLit;
+      const range = spanToRange(source, result.attrs.span as Rec);
+      return {
+        insertText: label.val,
+        label: label.val,
+        range,
+        kind: monaco.languages.CompletionItemKind.Variable,
+      };
+    }),
+  };
 }
 
 export function getRenameEdits(
@@ -281,16 +285,19 @@ export function getRenameEdits(
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
-  const edits: monaco.languages.TextEdit[] = [];
+  const edits: monaco.languages.WorkspaceTextEdit[] = [];
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
     edits.push({
-      range,
-      text: newName,
+      resource: document.uri,
+      edit: {
+        range,
+        text: newName,
+      },
     });
   });
-  return edits;
+  return { edits };
 }
 
 export function prepareRename(
