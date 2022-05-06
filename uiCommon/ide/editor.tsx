@@ -28,10 +28,11 @@ export function LingoEditor(props: {
   return (
     <div>
       <Editor
-        width={props.width || 500}
-        height={props.height || 500}
+        width={props.width || 570}
+        height={props.height || 400}
         value={props.editorState.source}
         onChange={setSource}
+        language={props.langSpec.name}
         options={{
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
