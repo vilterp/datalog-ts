@@ -42,17 +42,17 @@ scope.defnLabel{scopeID: "global", span: S, name: N, kind: "label"} :-
 # TODO: say which kind of var it's trying to use
 # i.e. value vs. label
 scope.Var{scopeID: InstrID, name: N, span: S, kind: K} :-
-  scope.varValue{scopeID: InstrID, name: N, span: S, kind: "value"} |
-  scope.varLabel{scopeID: InstrID, name: N, span: S, kind: "label"}.
+  scope.varValue{scopeID: InstrID, name: N, span: S, kind: K} |
+  scope.varLabel{scopeID: InstrID, name: N, span: S, kind: K}.
 # variables that refer to values
-scope.varValue{scopeID: InstrID, name: N, span: S, kind: K} :-
+scope.varValue{scopeID: InstrID, name: N, span: S, kind: "value"} :-
   ast.ident{parentID: ParamsID, text: N, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID}.
 # variables that refer to labels
-scope.varLabel{scopeID: InstrID, name: N, span: S, kind: K} :-
+scope.varLabel{scopeID: InstrID, name: N, span: S, kind: "label"} :-
   ast.label{id: LabelID, parentID: GotoID, text: N, span: S} &
   ast.gotoInstr{id: GotoID, parentID: InstrID}.
 

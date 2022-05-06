@@ -9,7 +9,15 @@ import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 
 export function lwbTests(writeResults: boolean): Suite {
-  return ["fp", "sql", "dl", "grammar", "modelica", "treeSQL"].map((lang) => ({
+  return [
+    "fp",
+    "sql",
+    "dl",
+    "grammar",
+    "modelica",
+    "treeSQL",
+    "basicBlocks",
+  ].map((lang) => ({
     name: lang,
     test() {
       runDDTestAtPath(
