@@ -6,11 +6,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec, Rec, StringLit } from "../../core/types";
 import { LOADER, mainDL } from "../commonDL";
 import { constructInterp } from "../interp";
-import {
-  dlToSpan,
-  idxFromLineAndCol,
-  lineAndColFromIdx,
-} from "../sourcePositions";
+import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 
@@ -175,10 +171,7 @@ export function getDefinition(
 ): monaco.languages.ProviderResult<monaco.languages.Definition> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
-  const idx = idxFromLineAndCol(source, {
-    line: position.lineNumber,
-    col: position.column,
-  });
+  const idx = idxFromPosition(source, position);
   const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
   if (results.length === 0) {
     return null;
@@ -199,10 +192,7 @@ export function getReferences(
 ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
-  const idx = idxFromLineAndCol(source, {
-    line: position.lineNumber,
-    col: position.column,
-  });
+  const idx = idxFromPosition(source, position);
   const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
   return results.map((res) => ({
     uri: document.uri,
@@ -223,10 +213,7 @@ export function getHighlights(
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
   const source = document.getValue();
   const interp = getInterp(spec, source);
-  const idx = idxFromLineAndCol(source, {
-    line: position.lineNumber,
-    col: position.column,
-  });
+  const idx = idxFromPosition(source, position);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.CurrentUsageOrDefn{span: S, type: T}`);
   return results.map((res) => {
@@ -248,10 +235,7 @@ export function getCompletionItems(
   context: monaco.languages.CompletionContext
 ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
   const source = document.getValue();
-  const idx = idxFromLineAndCol(source, {
-    line: position.lineNumber,
-    col: position.column,
-  });
+  const idx = idxFromPosition(source, position);
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
   const interp = getInterp(spec, sourceWithPlaceholder);
@@ -282,10 +266,7 @@ export function getRenameEdits(
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
   const source = document.getValue();
-  const idx = idxFromLineAndCol(source, {
-    line: position.lineNumber,
-    col: position.column,
-  });
+  const idx = idxFromPosition(source, position);
   const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
@@ -311,10 +292,7 @@ export function prepareRename(
   position: monaco.Position
 ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
   const source = document.getValue();
-  const idx = idxFromLineAndCol(source, {
-    line: position.lineNumber,
-    col: position.column,
-  });
+  const idx = idxFromPosition(source, position);
   const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
@@ -444,19 +422,32 @@ function getInterp(
 
 // utils
 
-export function idxToPosition(source: string, idx: number): monaco.Position {
+// Monaco uses 1-indexed positions; vscode uses 0-indexed. So, the Monaco
+// integration needs its own utilities here.
+
+function positionFromIdx(source: string, idx: number): monaco.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
-  return new monaco.Position(lineAndCol.line, lineAndCol.col);
+  const out = new monaco.Position(lineAndCol.line + 1, lineAndCol.col + 1);
+  return out;
 }
 
-export function spanToRange(source: string, dlSpan: Rec): monaco.Range {
+function spanToRange(source: string, dlSpan: Rec): monaco.Range {
   const span = dlToSpan(dlSpan);
-  const from = idxToPosition(source, span.from);
-  const to = idxToPosition(source, span.to);
+  const from = positionFromIdx(source, span.from);
+  const to = positionFromIdx(source, span.to);
   return new monaco.Range(
     from.lineNumber,
     from.column,
     to.lineNumber,
     to.column
   );
+}
+
+function idxFromPosition(source: string, pos: monaco.Position): number {
+  const lines = source.split("\n");
+  let out = 0;
+  for (let curLine = 0; curLine < pos.lineNumber - 1; curLine++) {
+    out += lines[curLine].length + 1; // +1 for newline
+  }
+  return out + pos.column;
 }
