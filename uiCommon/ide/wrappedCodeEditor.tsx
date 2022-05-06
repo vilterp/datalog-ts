@@ -2,7 +2,7 @@ import React from "react";
 import { useMemo } from "react";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { EditorState } from "./types";
-import { LOADER } from "../../languageWorkbench/common";
+import { LOADER } from "../../languageWorkbench/commonDL";
 // @ts-ignore
 import mainDL from "../../../languageWorkbench/common/main.dl";
 import { OpenCodeEditor } from "./openCodeEditor";

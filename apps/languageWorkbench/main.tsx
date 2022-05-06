@@ -7,7 +7,7 @@ import { OpenCodeEditor } from "../../uiCommon/ide/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
-import { LOADER, mainDL } from "../../languageWorkbench/common";
+import { LOADER, mainDL } from "../../languageWorkbench/commonDL";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";

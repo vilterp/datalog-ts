@@ -1,6 +1,7 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import React, { useEffect } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
+import { registerLanguageSupport } from "../../languageWorkbench/vscodeIntegration/vscodeIntegration";
 import { EditorState } from "./types";
 
 export function OpenCodeEditor(props: {
@@ -18,7 +19,7 @@ export function OpenCodeEditor(props: {
       return;
     }
 
-    monaco.languages.registerCompletionItemProvider(XXXX);
+    registerLanguageSupport(props.langSpec);
   }, [monaco]);
 
   const setSource = (source: string) => {
