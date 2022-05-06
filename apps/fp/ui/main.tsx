@@ -2,13 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { language as fpLanguage } from "../parser";
 import { flatten } from "../flatten";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { Explorer } from "../../../uiCommon/explorer";
 import { CollapsibleWithHeading } from "../../../uiCommon/generic/collapsible";
-import {
-  CodeEditor,
-  loadInterpreter,
-} from "../../../uiCommon/ide/parsimmonPowered/codeEditor";
 import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../../uiCommon/ide/types";
 // @ts-ignore
@@ -17,37 +12,26 @@ import { LOADER } from "../dl";
 import { getSuggestions } from "./suggestions";
 import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { LingoEditor } from "../../../uiCommon/ide/editor";
+import { LANGUAGES } from "../../../languageWorkbench/languages";
+import { constructInterp } from "../../../languageWorkbench/interp";
 
 function Main() {
-  let interp = new IncrementalInterpreter(".", LOADER) as AbstractInterpreter;
-
   const [editorState, setEditorState] = useJSONLocalStorage(
     "fp-editor-state",
     initialEditorState("let x = 2 in intToString(x)")
   );
 
-  interp = interp.doLoad("main.dl");
-  const { interp: newInterp, error } = loadInterpreter(
-    interp,
-    editorState,
-    fpLanguage.expr,
-    flatten
-  );
-  interp = newInterp;
+  const { finalInterp } = constructInterp();
 
   return (
     <div>
       <h1>Datalog Typechecker</h1>
       <h2>Source</h2>
-      <CodeEditor
-        lang="fp"
-        interp={interp}
-        getSuggestions={getSuggestions}
-        highlightCSS={highlightCSS}
+      <LingoEditor
         editorState={editorState}
         setEditorState={setEditorState}
-        loadError={error}
-        autofocus={true}
+        langSpec={LANGUAGES.fp}
       />
       <CollapsibleWithHeading
         heading="Facts &amp; Rules"
