@@ -18,7 +18,8 @@ export function LingoEditor(props: {
       return;
     }
 
-    registerLanguageSupport(props.langSpec);
+    registerLanguageSupport(monaco, props.langSpec);
+    console.log("languages", monaco.languages.getLanguages());
   }, [monaco]);
 
   const setSource = (source: string) => {

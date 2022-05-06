@@ -1,4 +1,5 @@
 import * as monaco from "monaco-editor";
+import { Monaco } from "@monaco-editor/react";
 import { LanguageSpec } from "../languages";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
@@ -14,13 +15,16 @@ import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 
 export function registerLanguageSupport(
+  monacoInstance: Monaco,
   spec: LanguageSpec
 ): monaco.IDisposable[] {
   const subscriptions: monaco.IDisposable[] = [];
 
+  monacoInstance.languages.register({ id: spec.name });
+
   // go to defn
   subscriptions.push(
-    monaco.languages.registerDefinitionProvider(spec.name, {
+    monacoInstance.languages.registerDefinitionProvider(spec.name, {
       provideDefinition(
         document: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -37,7 +41,7 @@ export function registerLanguageSupport(
 
   // references
   subscriptions.push(
-    monaco.languages.registerReferenceProvider(spec.name, {
+    monacoInstance.languages.registerReferenceProvider(spec.name, {
       provideReferences(
         document: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -55,7 +59,7 @@ export function registerLanguageSupport(
 
   // highlight
   subscriptions.push(
-    monaco.languages.registerDocumentHighlightProvider(spec.name, {
+    monacoInstance.languages.registerDocumentHighlightProvider(spec.name, {
       provideDocumentHighlights(
         document: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -72,7 +76,7 @@ export function registerLanguageSupport(
 
   // completions
   subscriptions.push(
-    monaco.languages.registerCompletionItemProvider(spec.name, {
+    monacoInstance.languages.registerCompletionItemProvider(spec.name, {
       provideCompletionItems(
         model: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -90,7 +94,7 @@ export function registerLanguageSupport(
 
   // renames
   subscriptions.push(
-    monaco.languages.registerRenameProvider(spec.name, {
+    monacoInstance.languages.registerRenameProvider(spec.name, {
       provideRenameEdits(
         document: monaco.editor.ITextModel,
         position: monaco.Position,
@@ -119,7 +123,7 @@ export function registerLanguageSupport(
 
   // symbols
   subscriptions.push(
-    monaco.languages.registerDocumentSymbolProvider(spec.name, {
+    monacoInstance.languages.registerDocumentSymbolProvider(spec.name, {
       provideDocumentSymbols(
         document: monaco.editor.ITextModel,
         token: monaco.CancellationToken
@@ -135,7 +139,7 @@ export function registerLanguageSupport(
 
   // syntax highlighting
   subscriptions.push(
-    monaco.languages.registerDocumentSemanticTokensProvider(spec.name, {
+    monacoInstance.languages.registerDocumentSemanticTokensProvider(spec.name, {
       provideDocumentSemanticTokens(
         model: monaco.editor.ITextModel,
         lastResultId: string | null,
