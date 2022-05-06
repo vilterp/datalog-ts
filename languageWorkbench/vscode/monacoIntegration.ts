@@ -235,7 +235,6 @@ function getCompletionItems(
   const idx = idxFromPosition(source, position);
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
-  console.log("sourceWithPlaceholder", { sourceWithPlaceholder, idx });
   const interp = getInterp(spec, sourceWithPlaceholder);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
@@ -262,7 +261,6 @@ function getCompletionItems(
       };
     }),
   };
-  console.log("getCompletions", { position, out });
   return out;
 }
 
