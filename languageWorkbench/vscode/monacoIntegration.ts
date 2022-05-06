@@ -9,6 +9,7 @@ import { constructInterp } from "../interp";
 import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
+import { TOKEN_TYPES } from "./common";
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,
@@ -349,7 +350,7 @@ function getSemanticTokens(
   const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
 
-  const builder = new SemanticTokensBuilder();
+  const builder = new SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
@@ -359,17 +360,8 @@ function getSemanticTokens(
   return builder.build();
 }
 
-// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
-// needs to match highlight.dl
 const semanticTokensLegend: monaco.languages.SemanticTokensLegend = {
-  tokenTypes: [
-    "number",
-    "string",
-    "keyword",
-    "comment",
-    "variable",
-    "typeParameter",
-  ],
+  tokenTypes: TOKEN_TYPES,
   tokenModifiers: [],
 };
 

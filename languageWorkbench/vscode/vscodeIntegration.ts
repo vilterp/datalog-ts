@@ -11,6 +11,7 @@ import {
   lineAndColFromIdx,
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
+import { TOKEN_TYPES } from "./common";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -358,16 +359,9 @@ function getSemanticTokens(
   return builder.build();
 }
 
-// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
-// needs to match highlight.dl
-export const semanticTokensLegend = new vscode.SemanticTokensLegend([
-  "number",
-  "string",
-  "keyword",
-  "comment",
-  "variable",
-  "typeParameter",
-]);
+export const semanticTokensLegend = new vscode.SemanticTokensLegend(
+  TOKEN_TYPES
+);
 
 export function refreshDiagnostics(
   spec: LanguageSpec,

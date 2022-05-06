@@ -36,6 +36,7 @@ export function LingoEditor(props: {
         options={{
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
+          "semanticHighlighting.enabled": true,
         }}
       />
     </div>
