@@ -1,17 +1,10 @@
 import Editor, { useMonaco } from "@monaco-editor/react";
 import React, { useEffect } from "react";
-import { Suggestion } from "./suggestions";
-import { ActionContext, EditorState, LangError } from "./types";
+import { EditorState } from "./types";
 
 export function EditorBox(props: {
-  highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
-  suggestions: Suggestion[];
-  errorsToDisplay: LangError[];
-  actionCtx: ActionContext;
-  highlighted: React.ReactNode;
-  autofocus?: boolean;
   width?: number;
   height?: number;
 }) {
@@ -51,24 +44,6 @@ export function EditorBox(props: {
           />
         </div>
       </div>
-      <div style={{ fontFamily: "monospace", color: "red" }}>
-        <ul>
-          {props.errorsToDisplay.map((err, idx) => (
-            <li key={idx}>{displayError(err)}</li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
-}
-
-function displayError(err: LangError) {
-  switch (err.type) {
-    case "ParseError":
-      return `Parse error: expected ${err.expected.join(" or ")}`;
-    case "EvalError":
-      return `Error during datalog evaluation: ${err.err}`;
-    case "Problem":
-      return `Problem: ${err.problem}`;
-  }
 }
