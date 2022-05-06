@@ -6,11 +6,11 @@ import familyDL from "../../core/testdata/family_rules.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
+import { LingoEditor } from "../../uiCommon/ide/editor";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -30,10 +30,8 @@ function Main() {
   return (
     <div>
       <h1>Datalog Fiddle</h1>
-      <WrappedCodeEditor
-        datalog={LANGUAGES.datalog.datalog}
-        grammar={LANGUAGES.datalog.grammar}
-        lang="datalog"
+      <LingoEditor
+        langSpec={LANGUAGES.datalog}
         editorState={editorState}
         setEditorState={setEditorState}
         width={800}
