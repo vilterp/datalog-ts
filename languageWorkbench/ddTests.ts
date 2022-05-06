@@ -7,6 +7,7 @@ import { runDDTestAtPath } from "../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
+import { LanguageSpec } from "./languages";
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
@@ -29,36 +30,36 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
-const initInterp = new SimpleInterpreter("languageWorkbench/common", fsLoader);
+const INIT_INTERP = new SimpleInterpreter(
+  "languageWorkbench/commonDL",
+  fsLoader
+);
 
 export function testLangQuery(test: string[]): TestOutput[] {
   return test.map((input) => {
     const lines = input.split("\n");
-    const lang = lines[0];
+    const langName = lines[0];
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
     const { input: example, cursorPos } = extractCursor(exampleWithCursor);
     const query = lines[lines.length - 1];
+    const langSpec: LanguageSpec = {
+      name: langName,
+      datalog: fs.readFileSync(
+        `languageWorkbench/languages/${langName}/${langName}.dl`,
+        "utf8"
+      ),
+      grammar: fs.readFileSync(
+        `languageWorkbench/languages/${langName}/${langName}.grammar`,
+        "utf8"
+      ),
+      example: "",
+    };
     const {
-      finalInterp: withoutCursor,
+      interp: withoutCursor,
       allGrammarErrors,
       dlErrors,
       langParseError,
-    } = constructInterp({
-      builtinSource: fs.readFileSync(
-        "languageWorkbench/common/main.dl",
-        "utf8"
-      ),
-      dlSource: fs.readFileSync(
-        `languageWorkbench/languages/${lang}/${lang}.dl`,
-        "utf8"
-      ),
-      grammarSource: fs.readFileSync(
-        `languageWorkbench/languages/${lang}/${lang}.grammar`,
-        "utf8"
-      ),
-      langSource: example,
-      initInterp,
-    });
+    } = constructInterp(INIT_INTERP, langSpec, example);
     const finalInterp = addCursor(withoutCursor, cursorPos);
     const res = finalInterp.queryStr(query);
     if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {

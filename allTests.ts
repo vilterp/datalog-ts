@@ -6,14 +6,12 @@ import {
   coreTestsIncremental,
   coreTestsCommon,
 } from "./core/ddTests";
-import { fpTests } from "./apps/fp/ddTests";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
-import { actionsTests } from "./uiCommon/ide/actionsTest";
 import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
 import { lwbTests } from "./languageWorkbench/ddTests";
-import { indexToLineColTests } from "./util/indexToLineColTest";
+import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -28,13 +26,11 @@ const suites: { [name: string]: Suite } = {
   // coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
   incrTests: incrTests(writeResults),
-  fpTests: fpTests(writeResults),
   lwbTests: lwbTests(writeResults),
   prettyPrintTests,
   treeTests,
-  actionsTests,
   parserlibTests: parserlibTests(writeResults),
-  indexToLineColTests,
+  sourcePositionsTests,
 };
 
 try {

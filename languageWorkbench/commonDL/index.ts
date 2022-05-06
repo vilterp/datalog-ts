@@ -10,9 +10,7 @@ import scopeGraphVizDL from "./scopeGraphViz.dl";
 // @ts-ignore
 import relationGraphVizDL from "../../uiCommon/visualizations/relationGraphViz.dl";
 // @ts-ignore
-import mainDLImp from "./main.dl";
-
-export const mainDL = mainDLImp;
+import mainDL from "./main.dl";
 
 export const LOADER = makeMemoryLoader({
   "./ide.dl": ideDL,
@@ -20,4 +18,5 @@ export const LOADER = makeMemoryLoader({
   "./astViz.dl": astVizDL,
   "./scopeGraphViz.dl": scopeGraphVizDL,
   "./relationGraphViz.dl": relationGraphVizDL,
+  "./main.dl": mainDL,
 });

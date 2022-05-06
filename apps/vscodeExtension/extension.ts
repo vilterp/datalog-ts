@@ -1,169 +1,68 @@
 import * as vscode from "vscode";
 import {
-  getCompletionItems,
-  getDefinition,
-  getHighlights,
-  getReferences,
-  getRenameEdits,
-  getSemanticTokens,
-  getSymbolList,
-  prepareRename,
   refreshDiagnostics,
-  semanticTokensLegend,
-} from "./engine";
+  registerLanguageSupport,
+} from "../../languageWorkbench/vscode/vscodeIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
+import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
-  // diagnostics
-  const diagnostics = vscode.languages.createDiagnosticCollection("datalog");
+  registerExplorerWebView(context);
+
+  [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+    registerLanguageSupport(spec).forEach((sub) => {
+      context.subscriptions.push(sub);
+    });
+    registerDiagnosticsSupport(context, spec);
+  });
+}
+
+function registerDiagnosticsSupport(
+  context: vscode.ExtensionContext,
+  spec: LanguageSpec
+) {
+  const diagnostics = vscode.languages.createDiagnosticCollection(spec.name);
   context.subscriptions.push(diagnostics);
-  subscribeDiagnosticsToChanges(context, diagnostics);
+  subscribeDiagnosticsToChanges(context, spec, diagnostics);
+}
 
-  // go to defn
+function subscribeDiagnosticsToChanges(
+  context: vscode.ExtensionContext,
+  spec: LanguageSpec,
+  diagnostics: vscode.DiagnosticCollection
+) {
+  if (vscode.window.activeTextEditor) {
+    refreshDiagnostics(
+      spec,
+      vscode.window.activeTextEditor.document,
+      diagnostics
+    );
+  }
   context.subscriptions.push(
-    vscode.languages.registerDefinitionProvider("datalog", {
-      provideDefinition(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Definition> {
-        try {
-          return getDefinition(document, position, token);
-        } catch (e) {
-          console.error("in definition provider:", e);
-        }
-      },
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (editor) {
+        refreshDiagnostics(spec, editor.document, diagnostics);
+      }
     })
   );
 
-  // references
   context.subscriptions.push(
-    vscode.languages.registerReferenceProvider("datalog", {
-      provideReferences(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        context: vscode.ReferenceContext,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Location[]> {
-        try {
-          return getReferences(document, position, context, token);
-        } catch (e) {
-          console.error("in reference provider:", e);
-        }
-      },
-    })
-  );
-
-  // highlight
-  context.subscriptions.push(
-    vscode.languages.registerDocumentHighlightProvider("datalog", {
-      provideDocumentHighlights(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
-        try {
-          return getHighlights(document, position, token);
-        } catch (e) {
-          console.error("in highlight provider:", e);
-        }
-      },
-    })
-  );
-
-  // completions
-  context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider("datalog", {
-      provideCompletionItems(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
-      ): vscode.ProviderResult<vscode.CompletionItem[]> {
-        try {
-          return getCompletionItems(document, position, token, context);
-        } catch (e) {
-          console.error("in completion provider:", e);
-        }
-      },
-    })
-  );
-
-  // renames
-  context.subscriptions.push(
-    vscode.languages.registerRenameProvider("datalog", {
-      provideRenameEdits(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        newName: string,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.WorkspaceEdit> {
-        try {
-          return getRenameEdits(document, position, newName, token);
-        } catch (e) {
-          console.error("in rename provider:", e);
-        }
-      },
-      prepareRename(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<vscode.Range> {
-        try {
-          return prepareRename(document, position);
-        } catch (e) {
-          console.error("in prepare rename:", e);
-        }
-      },
-    })
-  );
-
-  // symbols
-  context.subscriptions.push(
-    vscode.languages.registerDocumentSymbolProvider("datalog", {
-      provideDocumentSymbols(
-        document: vscode.TextDocument,
-        token: vscode.CancellationToken
-      ): vscode.ProviderResult<
-        vscode.SymbolInformation[] | vscode.DocumentSymbol[]
-      > {
-        try {
-          return getSymbolList(document, token);
-        } catch (e) {
-          console.error("in symbol provider:", e);
-        }
-      },
-    })
-  );
-
-  // syntax highlighting
-  context.subscriptions.push(
-    vscode.languages.registerDocumentSemanticTokensProvider(
-      "datalog",
-      {
-        provideDocumentSemanticTokens(
-          document: vscode.TextDocument,
-          token: vscode.CancellationToken
-        ): vscode.ProviderResult<vscode.SemanticTokens> {
-          try {
-            const before = new Date().getTime();
-            const tokens = getSemanticTokens(document, token);
-            const after = new Date().getTime();
-            console.log("datalog: getSemanticTokens:", after - before, "ms");
-            return tokens;
-          } catch (e) {
-            console.error("in token provider:", e);
-          }
-        },
-      },
-      semanticTokensLegend
+    vscode.workspace.onDidChangeTextDocument((e) =>
+      refreshDiagnostics(spec, e.document, diagnostics)
     )
   );
 
-  // explorer web view
+  context.subscriptions.push(
+    vscode.workspace.onDidCloseTextDocument((doc) =>
+      diagnostics.delete(doc.uri)
+    )
+  );
+}
+
+function registerExplorerWebView(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("datalog.openExplorer", () => {
       // Create and show a new webview
@@ -224,34 +123,6 @@ function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
     text: doc.getText(),
   };
   webview.postMessage(msg);
-}
-
-function subscribeDiagnosticsToChanges(
-  context: vscode.ExtensionContext,
-  diagnostics: vscode.DiagnosticCollection
-) {
-  if (vscode.window.activeTextEditor) {
-    refreshDiagnostics(vscode.window.activeTextEditor.document, diagnostics);
-  }
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
-      if (editor) {
-        refreshDiagnostics(editor.document, diagnostics);
-      }
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument((e) =>
-      refreshDiagnostics(e.document, diagnostics)
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.onDidCloseTextDocument((doc) =>
-      diagnostics.delete(doc.uri)
-    )
-  );
 }
 
 function getWebViewContent(jsURL: vscode.Uri) {

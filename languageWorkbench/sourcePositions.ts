@@ -1,7 +1,22 @@
+import { Int, Rec, Term } from "../core/types";
+
 export type LineAndCol = {
   line: number; // zero-indexed
   col: number; // zero-indexed
 };
+
+export type Span = { from: number; to: number };
+
+export function dlToSpan(rec: Rec): Span {
+  return {
+    from: dlToPos(rec.attrs.from),
+    to: dlToPos(rec.attrs.to),
+  };
+}
+
+function dlToPos(term: Term): number {
+  return (term as Int).val;
+}
 
 export function lineAndColFromIdx(source: string, index: number): LineAndCol {
   const lines = source.split("\n");
@@ -13,6 +28,7 @@ export function lineAndColFromIdx(source: string, index: number): LineAndCol {
     }
     lineStartidx += line.length + 1; // +1 for the newline
   }
+  console.error("lineAndColFromIdx: not found:", { source, index });
   throw new Error(`not found: index ${index}`);
 }
 

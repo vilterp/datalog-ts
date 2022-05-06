@@ -1,7 +1,7 @@
 {
-  "name": "datalog",
-  "displayName": "Datalog",
-  "version": "0.0.7",
+  "name": "lingo",
+  "displayName": "Lingo",
+  "version": "0.0.8",
   "repository": {
     "type": "git",
     "url": "https://github.com/vilterp/datalog-ts"
@@ -10,7 +10,8 @@
     "vscode": "^1.32.0"
   },
   "activationEvents": [
-    "onLanguage:datalog"
+    "onLanguage:datalog",
+    "onLanguage:grammar"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -19,6 +20,12 @@
         "id": "datalog",
         "extensions": [
           ".dl"
+        ]
+      },
+      {
+        "id": "grammar",
+        "extensions": [
+          ".grammar"
         ]
       }
     ],
