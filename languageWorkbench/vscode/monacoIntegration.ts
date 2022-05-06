@@ -163,7 +163,7 @@ export function registerLanguageSupport(
   return subscriptions;
 }
 
-export function getDefinition(
+function getDefinition(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
@@ -183,7 +183,7 @@ export function getDefinition(
   };
 }
 
-export function getReferences(
+function getReferences(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
@@ -205,7 +205,7 @@ const HIGHLIGHT_KINDS = {
   usage: monaco.languages.DocumentHighlightKind.Read,
 };
 
-export function getHighlights(
+function getHighlights(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
@@ -227,7 +227,7 @@ export function getHighlights(
   });
 }
 
-export function getCompletionItems(
+function getCompletionItems(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
@@ -258,7 +258,7 @@ export function getCompletionItems(
   };
 }
 
-export function getRenameEdits(
+function getRenameEdits(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
@@ -286,7 +286,7 @@ export function getRenameEdits(
   return { edits };
 }
 
-export function prepareRename(
+function prepareRename(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   position: monaco.Position
@@ -313,7 +313,7 @@ export function prepareRename(
 // TODO: parameterize by language
 const GLOBAL_SCOPE = rec("global", {});
 
-export function getSymbolList(
+function getSymbolList(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
@@ -340,7 +340,7 @@ export function getSymbolList(
   });
 }
 
-export function getSemanticTokens(
+function getSemanticTokens(
   spec: LanguageSpec,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
@@ -361,7 +361,7 @@ export function getSemanticTokens(
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // needs to match highlight.dl
-export const semanticTokensLegend: monaco.languages.SemanticTokensLegend = {
+const semanticTokensLegend: monaco.languages.SemanticTokensLegend = {
   tokenTypes: [
     "number",
     "string",

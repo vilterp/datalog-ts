@@ -161,7 +161,7 @@ export function registerLanguageSupport(
   return subscriptions;
 }
 
-export function getDefinition(
+function getDefinition(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -185,7 +185,7 @@ export function getDefinition(
   return location;
 }
 
-export function getReferences(
+function getReferences(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -213,7 +213,7 @@ const HIGHLIGHT_KINDS = {
   usage: vscode.DocumentHighlightKind.Read,
 };
 
-export function getHighlights(
+function getHighlights(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -235,7 +235,7 @@ export function getHighlights(
   });
 }
 
-export function getCompletionItems(
+function getCompletionItems(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -264,7 +264,7 @@ export function getCompletionItems(
   });
 }
 
-export function getRenameEdits(
+function getRenameEdits(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position,
@@ -289,7 +289,7 @@ export function getRenameEdits(
   return edit;
 }
 
-export function prepareRename(
+function prepareRename(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   position: vscode.Position
@@ -314,7 +314,7 @@ export function prepareRename(
 // TODO: parameterize by language
 const GLOBAL_SCOPE = rec("global", {});
 
-export function getSymbolList(
+function getSymbolList(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   token: vscode.CancellationToken
@@ -339,7 +339,7 @@ export function getSymbolList(
   });
 }
 
-export function getSemanticTokens(
+function getSemanticTokens(
   spec: LanguageSpec,
   document: vscode.TextDocument,
   token: vscode.CancellationToken
