@@ -58,6 +58,7 @@
     "denque": "^2.0.1",
     "graphviz-react": "^1.2.0",
     "immutable": "^4.0.0-rc.12",
+    "monaco-editor": "^0.33.0",
     "parsimmon": "^1.13.0",
     "path-browserify": "^1.0.1",
     "prettier-printer": "^1.1.4",
