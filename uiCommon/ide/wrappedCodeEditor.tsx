@@ -14,7 +14,6 @@ const initInterp = new SimpleInterpreter(".", LOADER);
 export function WrappedCodeEditor(props: {
   grammar: string;
   datalog: string;
-  highlightCSS: string;
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   lang: string;
@@ -47,7 +46,6 @@ export function WrappedCodeEditor(props: {
       <OpenCodeEditor
         editorState={props.editorState}
         setEditorState={props.setEditorState}
-        highlightCSS={props.highlightCSS}
         interp={finalInterp}
         locatedErrors={[]} // TODO: parse errors, dl errors
         validGrammar={allGrammarErrors.length === 0}

@@ -7,8 +7,6 @@ import { OpenCodeEditor } from "../../uiCommon/ide/openCodeEditor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
-// @ts-ignore
-import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
 import { LOADER, mainDL } from "../../languageWorkbench/common";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
@@ -103,7 +101,6 @@ function Playground() {
                 setEditorState={setExampleEditorState}
                 interp={finalInterp}
                 validGrammar={allGrammarErrors.length === 0}
-                highlightCSS={commonThemeCSS}
                 lang={langName}
                 locatedErrors={[]} // TODO: parse errors
                 autofocus
@@ -117,7 +114,6 @@ function Playground() {
                 setEditorState={setGrammarEditorState}
                 datalog={LANGUAGES.grammar.datalog}
                 grammar={LANGUAGES.grammar.grammar}
-                highlightCSS={commonThemeCSS}
                 lang="grammar"
               />
               <ErrorList errors={allGrammarErrors} />
@@ -129,7 +125,6 @@ function Playground() {
                 setEditorState={setDLEditorState}
                 datalog={LANGUAGES.datalog.datalog}
                 grammar={LANGUAGES.datalog.grammar}
-                highlightCSS={commonThemeCSS}
                 lang="dl"
               />
               <ErrorList errors={dlErrors} />

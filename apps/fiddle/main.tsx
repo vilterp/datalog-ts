@@ -9,8 +9,6 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { WrappedCodeEditor } from "../../uiCommon/ide/wrappedCodeEditor";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-// @ts-ignore
-import commonThemeCSS from "../../uiCommon/ide/dlPowered/commonTheme.css";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
@@ -35,7 +33,6 @@ function Main() {
       <WrappedCodeEditor
         datalog={LANGUAGES.datalog.datalog}
         grammar={LANGUAGES.datalog.grammar}
-        highlightCSS={commonThemeCSS}
         lang="datalog"
         editorState={editorState}
         setEditorState={setEditorState}

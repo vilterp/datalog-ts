@@ -204,7 +204,6 @@ export function getSemanticTokens(
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // needs to match highlight.dl
-// needs to match commonTheme.css
 export const semanticTokensLegend = new vscode.SemanticTokensLegend([
   "number",
   "string",
