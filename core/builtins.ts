@@ -12,6 +12,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   range,
   concat,
   "math.sin": sin,
+  invert,
 };
 
 function add(input: Rec): Rec[] {
@@ -89,8 +90,18 @@ function concat(input: Rec): Rec[] {
 function sin(input: Rec): Rec[] {
   const a = input.attrs.a;
   const res = input.attrs.res;
-  if (a.type == "IntLit") {
+  if (a.type == "IntLit" && res.type === "Var") {
     return [rec(input.relation, { a, res: int(Math.sin(a.val)) })];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+// because I'm too lazy to add negative numbers to the language
+function invert(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  const res = input.attrs.res;
+  if (a.type === "IntLit" && res.type === "Var") {
+    return [rec(input.relation, { a: a, res: int(-a.val) })];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
