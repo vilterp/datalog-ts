@@ -28,8 +28,7 @@ nodeBattery{id: I, label: battery{id: I, capacity: S}} :-
 
 current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
-  currentAtSink{id: I, time: T, level: L} |
-  currentAtBattery{id: I, time: T, level: L}.
+  currentAtSink{id: I, time: T, level: L}.
 
 currentAtSource{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
@@ -45,9 +44,6 @@ currentAtSink{id: I, time: T, level: ShiftedL} :-
   mul{a: Raw, b: Size, res: C} &
   add{a: 20, b: C, res: ShiftedL}.
 
-currentAtBattery{id: I, time: T, level: L} :-
-  battery{id: I, capacity: C}.
-
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
   batteryLevelStep{id: I, time: T, level: L}.
@@ -60,16 +56,20 @@ batteryLevelStep{id: I, time: T, level: L} :-
   time{time: PrevT} &
   add{a: PrevT, b: 1, res: T} &
   batteryLevel{id: I, time: PrevT, level: PrevLevel} &
-  batteryInputCurrent{id: I, time: T, current: InputCurrent} &
+  batteryLevelDelta{id: I, time: T, delta: InputCurrent} &
   add{a: PrevLevel, b: InputCurrent, res: L}.
 
+batteryLevelDelta{id: B, time: T, delta: Delta} :-
+  batteryInputCurrent{id: B, time: T, current: Input} &
+  batteryOutputCurrent{id: B, time: T, current: PosOutput} &
+  invert{a: PosOutput, res: Output} &
+  add{a: Input, b: Output, res: Delta}.
 batteryInputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
   source{id: S} &
   connection{from: S, to: B} &
   currentAtSource{id: S, time: T, level: L}.
-
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
