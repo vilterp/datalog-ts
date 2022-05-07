@@ -1,21 +1,58 @@
+# === scenario ===
+
+source{id: 1, size: 10}.
+sink{id: 2, size: 10}.
+connection{from: 1, to: 2}.
+
+# === rules ===
+
+node{id: I, label: L} :-
+  nodeSource{id: I, label: L} |
+  nodeSink{id: I, label: L}.
+
+nodeSource{id: I, label: source{size: S}} :-
+  source{id: I, size: S}.
+
+nodeSink{id: I, label: sink{size: S}} :-
+  sink{id: I, size: S}.
+
+current{id: I, time: T, level: L} :-
+  currentAtSource{id: I, time: T, level: L} |
+  currentAtSink{id: I, time: T, level: L}.
+
+currentAtSource{id: I, time: T, level: L} :-
+  time{time: T} &
+  source{id: I, size: Size} &
+  math.sin{a: T, res: Raw} &
+  mul{a: Raw, b: Size, res: L}.
+
+currentAtSink{id: I, time: T, level: L} :-
+  time{time: T} &
+  source{id: I, size: Size} &
+  math.sin{a: T, res: Raw} &
+  mul{a: Raw, b: Size, res: L}.
+
+time{time: T} :-
+  range{from: 1, to: 100, val: T}.
+
+# === visualization ===
+
 internal.visualization{
   name: "Position over Time",
   spec: vegalite{
     mark: "line",
     encoding: encoding{
       x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "pos", type: "quantitative"}
+      y: mapping{field: "level", type: "quantitative"}
     },
-    query: sim{}
+    query: currentAtSource{}
   }
 }.
 
-time{time: T} :-
-  range{from: 1, to: 1000, val: T}.
-
-pos{time: T, pos: Y} :-
-  mul{a: T, b: 3, res: Y}.
-
-sim{time: T, pos: Y} :-
-  time{time: T} &
-  pos{time: T, pos: Y}.
+internal.visualization{
+  name: "Layout",
+  spec: graphviz{
+    nodes: "node{id: ID, label: Label}",
+    edges: "connection{from: From, to: To}"
+  }
+}.
