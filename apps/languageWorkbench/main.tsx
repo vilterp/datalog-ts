@@ -90,6 +90,7 @@ function Playground() {
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
                 langSpec={langSpec}
+                lineNumbers="off"
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>
@@ -99,6 +100,7 @@ function Playground() {
                 editorState={grammarEditorState}
                 setEditorState={setGrammarEditorState}
                 langSpec={LANGUAGES.grammar}
+                lineNumbers="off"
               />
               <ErrorList errors={allGrammarErrors} />
             </td>
@@ -108,6 +110,7 @@ function Playground() {
                 editorState={dlEditorState}
                 setEditorState={setDLEditorState}
                 langSpec={LANGUAGES.datalog}
+                lineNumbers="off"
               />
               <ErrorList errors={dlErrors} />
             </td>

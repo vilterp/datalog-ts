@@ -15,6 +15,7 @@ export function LingoEditor(props: {
   langSpec: LanguageSpec;
   width?: number;
   height?: number;
+  lineNumbers?: monaco.editor.LineNumbersType;
 }) {
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -69,7 +70,7 @@ export function LingoEditor(props: {
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
           "semanticHighlighting.enabled": true,
-          lineNumbers: "off",
+          lineNumbers: props.lineNumbers || "on",
         }}
         beforeMount={handleBeforeMount}
         onMount={handleOnMount}
