@@ -15,7 +15,7 @@ const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
     "fp-editor-state",
-    initialEditorState("let x = 2 in intToString(x)")
+    initialEditorState("let x = 40 in plus2(y)")
   );
 
   const { interp: withoutCursor } = constructInterp(
