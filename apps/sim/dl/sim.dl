@@ -74,3 +74,24 @@ time{time: T} :-
 
 # === visualization ===
 
+internal.visualization{
+  name: "Current over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+      color: mapping{field: "id"}
+    },
+    query: current{}
+  }
+}.
+
+internal.visualization{
+  name: "Layout",
+  spec: graphviz{
+    nodes: "node{id: ID, label: Label}",
+    edges: "connection{from: From, to: To}"
+  }
+}.
+
