@@ -84,17 +84,21 @@ function registerExplorerWebView(context: vscode.ExtensionContext) {
       const jsURL = panel.webview.asWebviewUri(jsDiskPath);
       panel.webview.html = getWebViewContent(jsURL);
 
-      subscribeWebViewToChanges(context, panel);
+      const subs = subscribeWebViewToChanges(panel);
+      panel.onDidDispose(() => {
+        subs.forEach((disposable) => disposable.dispose());
+      });
     })
   );
 }
 
 function subscribeWebViewToChanges(
-  context: vscode.ExtensionContext,
   panel: vscode.WebviewPanel
-) {
+): vscode.Disposable[] {
+  const subs: vscode.Disposable[] = [];
+
   const originalActiveEditor = vscode.window.activeTextEditor;
-  context.subscriptions.push(
+  subs.push(
     panel.webview.onDidReceiveMessage((evt) => {
       const msg: MessageFromWebView = evt as MessageFromWebView;
 
@@ -110,11 +114,13 @@ function subscribeWebViewToChanges(
     })
   );
 
-  context.subscriptions.push(
+  subs.push(
     vscode.workspace.onDidChangeTextDocument((e) => {
       sendContents(panel.webview, e.document);
     })
   );
+
+  return subs;
 }
 
 function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
