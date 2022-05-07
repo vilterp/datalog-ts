@@ -13,6 +13,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   concat,
   "math.sin": sin,
   invert,
+  clamp,
 };
 
 function add(input: Rec): Rec[] {
@@ -102,6 +103,29 @@ function invert(input: Rec): Rec[] {
   const res = input.attrs.res;
   if (a.type === "IntLit" && res.type === "Var") {
     return [rec(input.relation, { a: a, res: int(-a.val) })];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function clamp(input: Rec): Rec[] {
+  const min = input.attrs.min;
+  const max = input.attrs.max;
+  const val = input.attrs.val;
+  const res = input.attrs.res;
+  if (
+    min.type === "IntLit" &&
+    max.type === "IntLit" &&
+    val.type === "IntLit" &&
+    res.type === "Var"
+  ) {
+    return [
+      rec(input.relation, {
+        min,
+        max,
+        val,
+        res: int(util.clamp(val.val, [min.val, max.val])),
+      }),
+    ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
