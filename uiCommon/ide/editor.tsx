@@ -16,12 +16,18 @@ export function LingoEditor(props: {
   width?: number;
   height?: number;
 }) {
-  console.log("render");
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoInstance, props.langSpec);
+    registerLanguageSupport(monacoRef.current, props.langSpec);
   }
+
+  useEffect(() => {
+    if (!monacoRef.current) {
+      return;
+    }
+    registerLanguageSupport(monacoRef.current, props.langSpec);
+  }, [props.langSpec, monacoRef.current]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
@@ -37,7 +43,8 @@ export function LingoEditor(props: {
 
     editor.onDidChangeCursorPosition((evt) => {
       const value = editor.getModel().getValue();
-      console.log("set state 1");
+      // TODO: can we get away without setting the value here?
+      // tried not to earlier, and it made it un-editable...
       props.setEditorState({
         source: value,
         cursorPos: idxFromPosition(value, evt.position),
@@ -46,7 +53,6 @@ export function LingoEditor(props: {
   }
 
   const setSource = (source: string) => {
-    console.log("set state 2");
     props.setEditorState({ ...props.editorState, source });
     updateMarkers(editorRef.current);
   };
@@ -59,7 +65,6 @@ export function LingoEditor(props: {
         value={props.editorState.source}
         onChange={setSource}
         language={props.langSpec.name}
-        path={`file.${props.langSpec.name}`}
         options={{
           minimap: { enabled: false },
           scrollBeyondLastLine: false,
