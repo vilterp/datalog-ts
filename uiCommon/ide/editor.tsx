@@ -93,6 +93,14 @@ function updateKeyBindings(editor: monaco.editor.ICodeEditor) {
     "editor.action.goToReferences",
     monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU
   );
-  // TODO: jump to first error (was cmd-e)
-  // TODO: rename (was cmd-J)
+  patchKeyBinding(
+    editor,
+    "editor.action.marker.next", // go to next problem
+    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE
+  );
+  patchKeyBinding(
+    editor,
+    "editor.action.rename",
+    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ
+  );
 }
