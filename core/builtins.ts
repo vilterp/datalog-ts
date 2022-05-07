@@ -11,9 +11,10 @@ export const BUILTINS: { [name: string]: Builtin } = {
   gte,
   range,
   concat,
+  "math.sin": sin,
 };
 
-export function add(input: Rec): Rec[] {
+function add(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
   const res = input.attrs.res;
@@ -29,7 +30,7 @@ export function add(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-export function mul(input: Rec): Rec[] {
+function mul(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
   const res = input.attrs.res;
@@ -40,7 +41,7 @@ export function mul(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-export function gte(input: Rec): Rec[] {
+function gte(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
   if (a.type !== "Var" && b.type !== "Var") {
@@ -50,7 +51,7 @@ export function gte(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-export function range(input: Rec): Rec[] {
+function range(input: Rec): Rec[] {
   const from = input.attrs.from;
   const to = input.attrs.to;
   const val = input.attrs.val;
@@ -69,7 +70,7 @@ export function range(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-export function concat(input: Rec): Rec[] {
+function concat(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
   const res = input.attrs.res;
@@ -77,5 +78,14 @@ export function concat(input: Rec): Rec[] {
     return [rec(input.relation, { a, b, res: str(a.val + b.val) })];
   }
   // TODO: other combos? essentially matching? lol
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function sin(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  const res = input.attrs.res;
+  if (a.type == "IntLit") {
+    return [rec(input.relation, { a, res: int(Math.sin(a.val)) })];
+  }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
