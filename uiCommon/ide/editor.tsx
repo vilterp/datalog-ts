@@ -8,7 +8,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
-import { patchKeyBinding } from "./monacoUtil";
+import { patchKeyBinding } from "./patchKeyBindings";
 
 export function LingoEditor(props: {
   editorState: EditorState;

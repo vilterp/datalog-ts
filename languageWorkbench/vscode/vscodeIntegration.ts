@@ -8,6 +8,7 @@ import {
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { getInterp, TOKEN_TYPES } from "./common";
+import { uniqBy } from "../../util/util";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -259,10 +260,14 @@ function getCompletionItems(
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
   );
-  return results.map((res) => {
+  const uniqueResults = uniqBy(
+    (res) => ((res.term as Rec).attrs.name as StringLit).val,
+    results
+  );
+  console.log({ uniqueResults });
+  return uniqueResults.map((res) => {
     const result = res.term as Rec;
     const label = result.attrs.name as StringLit;
-    const range = spanToRange(source, result.attrs.span as Rec);
     return {
       label: label.val,
     };

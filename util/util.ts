@@ -110,10 +110,10 @@ export function repeatArr<T>(n: number, item: T): T[] {
 }
 
 export function uniq(l: string[]): string[] {
-  return uniqBy(l, (x) => x);
+  return uniqBy((x) => x, l);
 }
 
-export function uniqBy<T>(l: T[], f: (t: T) => string): T[] {
+export function uniqBy<T>(f: (t: T) => string, l: T[]): T[] {
   const seen = new Set<string>();
   const out: T[] = [];
   for (const item of l) {

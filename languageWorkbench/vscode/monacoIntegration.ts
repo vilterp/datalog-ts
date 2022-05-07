@@ -6,6 +6,7 @@ import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 import { getInterp, TOKEN_TYPES } from "./common";
+import { uniqBy } from "../../util/util";
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,
@@ -243,8 +244,13 @@ function getCompletionItems(
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
   );
+  const uniqueResults = uniqBy(
+    (res) => ((res.term as Rec).attrs.name as StringLit).val,
+    results
+  );
+  console.log("getCompletionItems", { uniqueResults });
   const out = {
-    suggestions: results.map((res) => {
+    suggestions: uniqueResults.map((res) => {
       const result = res.term as Rec;
       const label = result.attrs.name as StringLit;
       const range = spanToRange(
