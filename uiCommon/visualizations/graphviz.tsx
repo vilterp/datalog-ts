@@ -6,18 +6,6 @@ import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
 import { ppt } from "../../core/pretty";
 
-/*
-Example:
-
-internal.visualization{
-  name: "Scope Graph",
-  spec: graphviz{
-    nodes: "node{id: ID}",
-    edges: "edge{from: From, to: To, label: Label}"
-  }
-}.
-*/
-
 export const graphviz: VizTypeSpec = {
   name: "Graphviz",
   description: "visualize directed graphs",
@@ -40,8 +28,8 @@ function GraphvizWrapper(props: {
   let edgesErr: Error = null;
   // nodes
   try {
-    const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
-    const nodesRes = props.interp.queryStr(nodesQuery);
+    const nodesQuery = props.spec.attrs.nodes as Rec;
+    const nodesRes = props.interp.queryRec(nodesQuery);
     nodes = nodesRes.map((res) => {
       const id = specialPPT(res.bindings.ID);
       const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
@@ -57,8 +45,8 @@ function GraphvizWrapper(props: {
 
   // edges
   try {
-    const edgesQuery = (props.spec.attrs.edges as StringLit).val;
-    const edgesRes = props.interp.queryStr(edgesQuery);
+    const edgesQuery = props.spec.attrs.edges as Rec;
+    const edgesRes = props.interp.queryRec(edgesQuery);
     edges = edgesRes.map((res) => ({
       to: specialPPT(res.bindings.To),
       from: specialPPT(res.bindings.From),

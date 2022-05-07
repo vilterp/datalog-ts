@@ -16,8 +16,8 @@ viz.scopeGraph.usageEdge{from: F, to: T, label: "usage"} :-
 internal.visualization{
   name: "Scope Graph",
   spec: graphviz{
-    nodes: "viz.scopeGraph.node{id: ID, label: Label}",
-    edges: "viz.scopeGraph.edge{from: From, to: To, label: Label}"
+    nodes: viz.scopeGraph.node{id: ID, label: Label},
+    edges: viz.scopeGraph.edge{from: From, to: To, label: Label}
   }
 }.
 

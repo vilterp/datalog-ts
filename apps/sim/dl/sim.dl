@@ -112,8 +112,8 @@ internal.visualization{
 internal.visualization{
   name: "Layout",
   spec: graphviz{
-    nodes: "node{id: ID, label: Label}",
-    edges: "connection{from: From, to: To}"
+    nodes: node{id: ID, label: Label},
+    edges: connection{from: From, to: To}
   }
 }.
 
