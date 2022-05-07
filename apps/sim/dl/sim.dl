@@ -1,39 +1,60 @@
 # === scenario ===
 
-source{id: 1, size: 10}.
-sink{id: 2, size: 10}.
+source{id: 1, supply: 10}.
+battery{id: 2, capacity: 100, initialLevel: 50}.
+sink{id: 3, demand: 10}.
 connection{from: 1, to: 2}.
+connection{from: 2, to: 3}.
 
 # === rules ===
 
 node{id: I, label: L} :-
   nodeSource{id: I, label: L} |
-  nodeSink{id: I, label: L}.
+  nodeSink{id: I, label: L} |
+  nodeBattery{id: I, label: L}.
 
-nodeSource{id: I, label: source{id: I, size: S}} :-
-  source{id: I, size: S}.
-
-nodeSink{id: I, label: sink{id: I, size: S}} :-
-  sink{id: I, size: S}.
+nodeSource{id: I, label: source{id: I, supply: S}} :-
+  source{id: I, supply: S}.
+nodeSink{id: I, label: sink{id: I, demand: S}} :-
+  sink{id: I, demand: S}.
+nodeBattery{id: I, label: battery{id: I, capacity: S}} :-
+  battery{id: I, capacity: S}.
 
 current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
-  currentAtSink{id: I, time: T, level: L}.
+  currentAtSink{id: I, time: T, level: L} |
+  currentAtBattery{id: I, time: T, level: L}.
 
 currentAtSource{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
-  source{id: I, size: Size} &
+  source{id: I, supply: Size} &
   math.sin{a: T, res: Raw} &
   mul{a: Raw, b: Size, res: C} &
   add{a: 20, b: C, res: ShiftedL}.
-
 currentAtSink{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
   add{a: T, b: 2, res: ShiftedT} &
-  sink{id: I, size: Size} &
+  sink{id: I, demand: Size} &
   math.sin{a: ShiftedT, res: Raw} &
   mul{a: Raw, b: Size, res: C} &
   add{a: 20, b: C, res: ShiftedL}.
+
+currentAtBattery{id: I, time: T, level: L} :-
+  battery{id: I, capacity: C}.
+
+batteryLevel{id: I, time: T, level: L} :-
+  batteryLevelInitial{id: I, time: T, level: L} |
+  batteryLevelStep{id: I, time: T, level: L}.
+batteryLevelInitial{id: I, time: 0, level: L} :-
+  battery{id: I, initialLevel: L}.
+# TODO: flexible discharge rate
+# TODO: look at demand
+batteryLevelStep{id: I, time: T, level: L} :-
+  time{time: PrevT} &
+  time{time: T} &
+  add{a: PrevT, b: 1, res: T} &
+  batteryLevel{id: I, time: PrevT, level: PrevLevel} &
+  add{a: PrevLevel, b: 1, res: L}.
 
 time{time: T} :-
   range{from: 1, to: 10, val: T}.
