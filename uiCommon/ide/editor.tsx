@@ -8,7 +8,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
-import { updateKeyBinding } from "./monacoUtil";
+import { patchKeyBinding } from "./monacoUtil";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -83,12 +83,12 @@ export function LingoEditor(props: {
 }
 
 function updateKeyBindings(editor: monaco.editor.ICodeEditor) {
-  updateKeyBinding(
+  patchKeyBinding(
     editor,
     "editor.action.revealDefinition",
     monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB
   );
-  updateKeyBinding(
+  patchKeyBinding(
     editor,
     "editor.action.goToReferences",
     monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU

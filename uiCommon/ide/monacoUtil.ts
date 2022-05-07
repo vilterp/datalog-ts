@@ -1,31 +1,33 @@
-import { editor } from "monaco-editor";
+import * as monaco from "monaco-editor";
 import { editor as editorBase } from "monaco-editor";
-import { CommandsRegistry } from "monaco-editor/esm/vs/platform/commands/common/commands";
+import { ContextKeyExpr } from "monaco-editor/esm/vs/platform/contextkey/common/contextkey";
 
 // from https://github.com/microsoft/monaco-editor/issues/102#issuecomment-822981429
+// and https://github.com/microsoft/monaco-editor/issues/102#issuecomment-701938863
 
-export function updateKeyBinding(
-  editor: editor.ICodeEditor,
+export function patchKeyBinding(
+  editor: monaco.editor.ICodeEditor,
   id: string,
-  newKeyBinding?: number
-) {
-  console.log(editor._standaloneKeybindingService);
+  newKeyBinding?: number,
+  context?: string
+): void {
+  // remove existing one; no official API yet
+  // the '-' before the commandId removes the binding
+  // as of >=0.21.0 we need to supply a dummy command handler to not get errors (because of the fix for https://github.com/microsoft/monaco-editor/issues/1857)
   editor._standaloneKeybindingService.addDynamicKeybinding(
     `-${id}`,
     undefined,
     () => {}
   );
-
   if (newKeyBinding) {
-    const { handler, when } = CommandsRegistry.getCommand(id) ?? {};
-    if (handler) {
-      editor._standaloneKeybindingService.addDynamicKeybinding(
-        id,
-        newKeyBinding,
-        handler,
-        when
-      );
-    }
+    const action = editor.getAction(id);
+    const when = ContextKeyExpr.deserialize(context);
+    editor._standaloneKeybindingService.addDynamicKeybinding(
+      id,
+      newKeyBinding,
+      () => action.run(),
+      when
+    );
   }
 }
 
@@ -42,7 +44,7 @@ declare module "monaco-editor" {
         commandId: string,
         keybinding: number | undefined,
         handler: editorBase.ICommandHandler,
-        when?: any // ContextKeyExpression
+        when?: ContextKeyExpr
       ): IDisposable;
     }
 
