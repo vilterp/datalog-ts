@@ -70,6 +70,13 @@ batteryInputCurrent{id: B, time: T, current: L} :-
   connection{from: S, to: B} &
   currentAtSource{id: S, time: T, level: L}.
 
+batteryOutputCurrent{id: B, time: T, current: L} :-
+  time{time: T} &
+  battery{id: B} &
+  sink{id: S} &
+  connection{from: B, to: S} &
+  currentAtSink{id: S, time: T, level: L}.
+
 time{time: T} :-
   range{from: 1, to: 10, val: T}.
 
