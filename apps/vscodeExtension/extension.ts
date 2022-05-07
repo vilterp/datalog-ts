@@ -118,6 +118,9 @@ function subscribeWebViewToChanges(
 }
 
 function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
+  if (!doc.fileName.endsWith(".dl")) {
+    return;
+  }
   const msg: MessageToWebView = {
     type: "ContentsUpdated",
     text: doc.getText(),
