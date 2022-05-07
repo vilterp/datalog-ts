@@ -17,7 +17,7 @@ export function Main() {
           setDLSource(msg.text);
           break;
         default:
-          console.log("unknown message:", msg);
+          console.warn("unknown message:", msg);
           break;
       }
     };
@@ -50,4 +50,3 @@ ReactDOM.render(<Main />, document.getElementById("main"));
 const vscode = acquireVsCodeApi();
 const msg: MessageFromWebView = { type: "ReadyForMessages" };
 vscode.postMessage(msg);
-console.log(vscode, msg);
