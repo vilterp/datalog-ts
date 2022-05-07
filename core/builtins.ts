@@ -27,6 +27,11 @@ function add(input: Rec): Rec[] {
   if (b.type === "IntLit" && res.type === "IntLit" && a.type === "Var") {
     return [rec(input.relation, { res, b, a: int(res.val - b.val) })];
   }
+  if (b.type === "IntLit" && res.type === "IntLit" && a.type === "IntLit") {
+    return a.val + b.val === res.val
+      ? [rec(input.relation, { a, b, res })]
+      : [];
+  }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
