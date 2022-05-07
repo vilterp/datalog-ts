@@ -20,18 +20,20 @@ current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
   currentAtSink{id: I, time: T, level: L}.
 
-currentAtSource{id: I, time: T, level: L} :-
+currentAtSource{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
   source{id: I, size: Size} &
   math.sin{a: T, res: Raw} &
-  mul{a: Raw, b: Size, res: L}.
+  mul{a: Raw, b: Size, res: C} &
+  add{a: 20, b: C, res: ShiftedL}.
 
-currentAtSink{id: I, time: T, level: B} :-
+currentAtSink{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
   add{a: T, b: 2, res: ShiftedT} &
   sink{id: I, size: Size} &
   math.sin{a: ShiftedT, res: Raw} &
-  mul{a: Raw, b: Size, res: B}.
+  mul{a: Raw, b: Size, res: C} &
+  add{a: 20, b: C, res: ShiftedL}.
 
 time{time: T} :-
   range{from: 1, to: 10, val: T}.
