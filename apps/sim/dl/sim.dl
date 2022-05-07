@@ -1,21 +1,119 @@
+# === scenario ===
+
+.table source
+.table sink
+.table battery
+.table connection
+.table internal.visualization
+
+source{id: 1, supply: 10}.
+battery{id: 2, capacity: 100, initialLevel: 50}.
+sink{id: 3, demand: 15}.
+connection{from: 1, to: 2}.
+connection{from: 2, to: 3}.
+
+# === rules ===
+
+node{id: I, label: L} :-
+  nodeSource{id: I, label: L} |
+  nodeSink{id: I, label: L} |
+  nodeBattery{id: I, label: L}.
+
+nodeSource{id: I, label: source{id: I, supply: S}} :-
+  source{id: I, supply: S}.
+nodeSink{id: I, label: sink{id: I, demand: S}} :-
+  sink{id: I, demand: S}.
+nodeBattery{id: I, label: battery{id: I, capacity: S}} :-
+  battery{id: I, capacity: S}.
+
+current{id: I, time: T, level: L} :-
+  currentAtSource{id: I, time: T, level: L} |
+  currentAtSink{id: I, time: T, level: L}.
+
+currentAtSource{id: I, time: T, level: ShiftedL} :-
+  time{time: T} &
+  source{id: I, supply: Size} &
+  math.sin{a: T, res: Raw} &
+  mul{a: Raw, b: Size, res: C} &
+  add{a: 30, b: C, res: ShiftedL}.
+currentAtSink{id: I, time: T, level: ShiftedL} :-
+  time{time: T} &
+  add{a: T, b: 2, res: ShiftedT} &
+  sink{id: I, demand: Size} &
+  math.sin{a: ShiftedT, res: Raw} &
+  mul{a: Raw, b: Size, res: C} &
+  add{a: 20, b: C, res: ShiftedL}.
+
+batteryLevel{id: I, time: T, level: L} :-
+  batteryLevelInitial{id: I, time: T, level: L} |
+  batteryLevelStep{id: I, time: T, level: L}.
+batteryLevelInitial{id: I, time: 1, level: L} :-
+  battery{id: I, initialLevel: L}.
+# TODO: flexible discharge rate
+# TODO: look at demand
+batteryLevelStep{id: I, time: T, level: NextLevel} :-
+  battery{id: I, capacity: Capacity} &
+  time{time: PrevT} &
+  add{a: PrevT, b: 1, res: T} &
+  batteryLevel{id: I, time: PrevT, level: PrevLevel} &
+  batteryLevelDelta{id: I, time: T, delta: InputCurrent} &
+  add{a: PrevLevel, b: InputCurrent, res: NotClamped} &
+  clamp{min: 0, max: Capacity, val: NotClamped, res: NextLevel}.
+
+batteryLevelDelta{id: B, time: T, delta: Delta} :-
+  batteryInputCurrent{id: B, time: T, current: Input} &
+  batteryOutputCurrent{id: B, time: T, current: PosOutput} &
+  invert{a: PosOutput, res: Output} &
+  add{a: Input, b: Output, res: Delta}.
+batteryInputCurrent{id: B, time: T, current: L} :-
+  time{time: T} &
+  battery{id: B} &
+  source{id: S} &
+  connection{from: S, to: B} &
+  currentAtSource{id: S, time: T, level: L}.
+batteryOutputCurrent{id: B, time: T, current: L} :-
+  time{time: T} &
+  battery{id: B} &
+  sink{id: S} &
+  connection{from: B, to: S} &
+  currentAtSink{id: S, time: T, level: L}.
+
+time{time: T} :-
+  range{from: 1, to: 30, val: T}.
+
+# === visualization ===
+
 internal.visualization{
-  name: "Position over Time",
+  name: "Current over Time",
   spec: vegalite{
     mark: "line",
     encoding: encoding{
       x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "pos", type: "quantitative"}
+      y: mapping{field: "level", type: "quantitative"},
+      color: mapping{field: "id"}
     },
-    query: sim{}
+    query: current{}
   }
 }.
 
-time{time: T} :-
-  range{from: 1, to: 1000, val: T}.
+internal.visualization{
+  name: "Battery Level",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+      color: mapping{field: "id"}
+    },
+    query: batteryLevel{}
+  }
+}.
 
-pos{time: T, pos: Y} :-
-  mul{a: T, b: 3, res: Y}.
+internal.visualization{
+  name: "Layout",
+  spec: graphviz{
+    nodes: "node{id: ID, label: Label}",
+    edges: "connection{from: From, to: To}"
+  }
+}.
 
-sim{time: T, pos: Y} :-
-  time{time: T} &
-  pos{time: T, pos: Y}.

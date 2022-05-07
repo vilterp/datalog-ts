@@ -47,11 +47,11 @@ function GraphvizWrapper(props: {
       const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
       return {
         id,
-        attrs: { label },
+        attrs: { label, shape: "rect", fontname: "Courier New" },
       };
     });
   } catch (e) {
-    console.error("edges", e);
+    console.error("nodes", e);
     nodesErr = e;
   }
 
