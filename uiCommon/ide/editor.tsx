@@ -8,6 +8,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
+import { updateKeyBinding } from "./monacoUtil";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -26,6 +27,8 @@ export function LingoEditor(props: {
     if (!monacoRef.current) {
       return;
     }
+    // make sure to register support for new langauge when we switch
+    // languages.
     registerLanguageSupport(monacoRef.current, props.langSpec);
   }, [props.langSpec, monacoRef.current]);
 
@@ -40,6 +43,7 @@ export function LingoEditor(props: {
     editorRef.current = editor;
 
     updateMarkers(editor);
+    updateKeyBindings(editor);
 
     editor.onDidChangeCursorPosition((evt) => {
       const value = editor.getModel().getValue();
@@ -76,4 +80,19 @@ export function LingoEditor(props: {
       />
     </div>
   );
+}
+
+function updateKeyBindings(editor: monaco.editor.ICodeEditor) {
+  updateKeyBinding(
+    editor,
+    "editor.action.revealDefinition",
+    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB
+  );
+  updateKeyBinding(
+    editor,
+    "editor.action.goToReferences",
+    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU
+  );
+  // TODO: jump to first error (was cmd-e)
+  // TODO: rename (was cmd-J)
 }
