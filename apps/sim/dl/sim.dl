@@ -45,13 +45,13 @@ currentAtBattery{id: I, time: T, level: L} :-
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
   batteryLevelStep{id: I, time: T, level: L}.
-batteryLevelInitial{id: I, time: 0, level: L} :-
+batteryLevelInitial{id: I, time: 1, level: L} :-
   battery{id: I, initialLevel: L}.
 # TODO: flexible discharge rate
 # TODO: look at demand
 batteryLevelStep{id: I, time: T, level: L} :-
+  battery{id: I} &
   time{time: PrevT} &
-  time{time: T} &
   add{a: PrevT, b: 1, res: T} &
   batteryLevel{id: I, time: PrevT, level: PrevLevel} &
   add{a: PrevLevel, b: 1, res: L}.
