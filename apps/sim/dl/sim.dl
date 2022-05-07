@@ -60,7 +60,8 @@ batteryLevelStep{id: I, time: T, level: L} :-
   time{time: PrevT} &
   add{a: PrevT, b: 1, res: T} &
   batteryLevel{id: I, time: PrevT, level: PrevLevel} &
-  add{a: PrevLevel, b: 1, res: L}.
+  batteryInputCurrent{id: I, time: T, current: InputCurrent} &
+  add{a: PrevLevel, b: InputCurrent, res: L}.
 
 batteryInputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
@@ -84,6 +85,19 @@ internal.visualization{
       color: mapping{field: "id"}
     },
     query: current{}
+  }
+}.
+
+internal.visualization{
+  name: "Battery Level",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+      color: mapping{field: "id"}
+    },
+    query: batteryLevel{}
   }
 }.
 
