@@ -228,7 +228,10 @@ function getHighlights(
     col: position.character,
   });
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.CurrentUsageOrDefn{span: S, type: T}`);
+  // pattern match `span` to avoid getting `"builtin"`
+  const results = interp2.queryStr(
+    `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}`
+  );
   return results.map((res) => {
     const result = res.term as Rec;
     const kind = result.attrs.type as StringLit;
