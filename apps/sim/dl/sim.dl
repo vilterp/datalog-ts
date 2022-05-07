@@ -1,5 +1,11 @@
 # === scenario ===
 
+.table source
+.table sink
+.table battery
+.table connection
+.table internal.visualization
+
 source{id: 1, supply: 10}.
 battery{id: 2, capacity: 100, initialLevel: 50}.
 sink{id: 3, demand: 10}.
@@ -56,28 +62,15 @@ batteryLevelStep{id: I, time: T, level: L} :-
   batteryLevel{id: I, time: PrevT, level: PrevLevel} &
   add{a: PrevLevel, b: 1, res: L}.
 
+batteryInputCurrent{id: B, time: T, current: L} :-
+  time{time: T} &
+  battery{id: B} &
+  source{id: S} &
+  connection{from: S, to: B} &
+  currentAtSource{id: S, time: T, level: L}.
+
 time{time: T} :-
   range{from: 1, to: 10, val: T}.
 
 # === visualization ===
 
-internal.visualization{
-  name: "Current over Time",
-  spec: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-      color: mapping{field: "id"}
-    },
-    query: current{}
-  }
-}.
-
-internal.visualization{
-  name: "Layout",
-  spec: graphviz{
-    nodes: "node{id: ID, label: Label}",
-    edges: "connection{from: From, to: To}"
-  }
-}.
