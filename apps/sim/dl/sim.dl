@@ -10,10 +10,10 @@ node{id: I, label: L} :-
   nodeSource{id: I, label: L} |
   nodeSink{id: I, label: L}.
 
-nodeSource{id: I, label: source{size: S}} :-
+nodeSource{id: I, label: source{id: I, size: S}} :-
   source{id: I, size: S}.
 
-nodeSink{id: I, label: sink{size: S}} :-
+nodeSink{id: I, label: sink{id: I, size: S}} :-
   sink{id: I, size: S}.
 
 current{id: I, time: T, level: L} :-
@@ -26,26 +26,28 @@ currentAtSource{id: I, time: T, level: L} :-
   math.sin{a: T, res: Raw} &
   mul{a: Raw, b: Size, res: L}.
 
-currentAtSink{id: I, time: T, level: L} :-
+currentAtSink{id: I, time: T, level: B} :-
   time{time: T} &
-  source{id: I, size: Size} &
-  math.sin{a: T, res: Raw} &
-  mul{a: Raw, b: Size, res: L}.
+  add{a: T, b: 2, res: ShiftedT} &
+  sink{id: I, size: Size} &
+  math.sin{a: ShiftedT, res: Raw} &
+  mul{a: Raw, b: Size, res: B}.
 
 time{time: T} :-
-  range{from: 1, to: 100, val: T}.
+  range{from: 1, to: 10, val: T}.
 
 # === visualization ===
 
 internal.visualization{
-  name: "Position over Time",
+  name: "Current over Time",
   spec: vegalite{
     mark: "line",
     encoding: encoding{
       x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"}
+      y: mapping{field: "level", type: "quantitative"},
+      color: mapping{field: "id"}
     },
-    query: currentAtSource{}
+    query: current{}
   }
 }.
 
