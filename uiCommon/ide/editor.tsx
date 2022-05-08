@@ -89,11 +89,12 @@ export function LingoEditor(props: {
     updateMarkers(editorRef.current);
   };
 
-  const withoutCursor = constructInterp(
-    INIT_INTERP,
-    props.langSpec,
-    props.editorState.source
-  ).interp;
+  const withoutCursor = useMemo(
+    () =>
+      constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
+        .interp,
+    [props.langSpec, props.editorState.source]
+  );
   const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
   return (
