@@ -1,6 +1,6 @@
 import * as monaco from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
@@ -89,11 +89,12 @@ export function LingoEditor(props: {
     updateMarkers(editorRef.current);
   };
 
-  const withoutCursor = constructInterp(
-    INIT_INTERP,
-    props.langSpec,
-    props.editorState.source
-  ).interp;
+  const withoutCursor = useMemo(
+    () =>
+      constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
+        .interp,
+    [props.langSpec, props.editorState.source]
+  );
   const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
   return (
