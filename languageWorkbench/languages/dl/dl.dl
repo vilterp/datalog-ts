@@ -29,11 +29,9 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
 scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  scope.ruleTerm{ruleID: RuleID, termOrRecord: RecordID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
-# TODO: bin exprs
 scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
   scope.ruleTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
   scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.

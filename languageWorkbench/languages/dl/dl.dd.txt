@@ -37,13 +37,16 @@ foo{id: F, span: span{from: F}, spanArr: [F]} :-
   from{id: F} &
   !something{pos: F} &
   F != F.
-scope.varTerm{}
+scope.Var{}
 ----
 application/datalog
-scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 60, to: 61}}
-scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 83, to: 84}}
-scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 90, to: 91}}
-scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 95, to: 96}}
+scope.Var{kind: "relation", name: "from", scopeID: global{}, span: span{from: 51, to: 55}}
+scope.Var{kind: "relation", name: "something", scopeID: global{}, span: span{from: 68, to: 77}}
+scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 60, to: 61}}
+scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 83, to: 84}}
+scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 90, to: 91}}
+scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 95, to: 96}}
+scope.Var{kind: "attr", name: "id", scopeID: "from", span: span{from: 56, to: 58}}
 
 dl
 foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
