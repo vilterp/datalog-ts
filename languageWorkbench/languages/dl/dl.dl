@@ -14,9 +14,7 @@ scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} :-
 scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
-  ast.keyValue{id: KeyValueID, parentID: RecordID} &
-  ast.term{id: ValueTermID, parentID: KeyValueID} &
-  ast.var{span: S, text: N, parentID: ValueTermID}.
+  scope.recordVar{record: RecordID, name: N, span: S}.
 scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.tableDecl{id: DeclID} &
   ast.ident{parentID: DeclID, span: S, text: N}.
@@ -29,26 +27,21 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
 scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  scope.ruleBodyTerm{ruleID: RuleID, termOrRecord: RecordID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
-# TODO: bin exprs
-scope.varTerm{scopeID: RuleID, name: N, span: S, kind: "var"} :-
-  ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
-  ast.record{id: RecordID, parentID: ConjunctID} &
-  ast.keyValue{id: KeyValueID, parentID: RecordID} &
-  ast.term{id: ValueTermID, parentID: KeyValueID} &
-  ast.var{parentID: ValueTermID, text: N, span: S}.
+scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
+  scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
+  scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.
+# TODO: recurse into nested records?
 scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
-  ast.conjunct{id: Conjunct} &
-  ast.record{id: Rec, parentID: Conjunct} &
+  scope.ruleBodyTerm{termOrRecord: Rec} &
+  ast.record{id: Rec} &
   ast.ident{parentID: Rec, text: Relation} &
   ast.keyValue{id: KV, parentID: Rec} &
   ast.ident{id: I, parentID: KV, text: N, span: S}.
 
+# TODO: get placeholders in nested terms
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
   scope.placeholderRule{scopeID: I, span: S, kind: K} |
@@ -74,22 +67,57 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
   ast.keyValue{id: KV, parentID: Rec} &
   ast.placeholder{parentID: KV, span: S}.
 
-# TODO: make autocompletion work inside of negations
-# maybe by using scope.parent instead of explicitly joining down
+# === rules for traversing into nested terms ===
 
-# TODO: var in head that's unbound
-tc.Problem{desc: D, nodeID: I, span: S} :-
-  tc.nonexistentAttr{desc: D, nodeID: I, span: S} |
-  tc.unboundVarInHead{desc: D, nodeID: I, span: S}.
-tc.nonexistentAttr{
-  desc: nonexistentAttr{relation: Relation, attr: N},
-  nodeID: I,
-  span: S
-} :-
+scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
+  ast.rule{id: Rule} &
+  ast.disjunct{id: Disjunct, parentID: Rule} &
+  ast.conjunct{id: Conjunct, parentID: Disjunct}.
+# it's kind of an issue that some of them are records
+# and some of them are terms
+scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.record{id: TermOrRecord, parentID: Conjunct}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.negation{id: Negation, parentID: Conjunct} &
+  ast.record{id: TermOrRecord, parentID: Negation}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.binExpr{id: BinExpr, parentID: Conjunct} &
+  ast.term{id: TermOrRecord, parentID: BinExpr}.
+
+scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
+  scope.recordVar{record: TermOrRecord, name: N, span: S} |
+  scope.termVar{term: TermOrRecord, name: N, span: S}.
+scope.termVar{term: Term, name: N, span: S} :-
+  ast.term{id: Term} &
+  ast.var{parentID: Term, text: N, span: S}
+  |
+  ast.term{id: Term} &
+  ast.record{id: Record, parentID: Term} &
+  scope.recordVar{record: Record, name: N, span: S}
+  |
+  ast.term{id: Term} &
+  ast.array{id: Array, parentID: Term} &
+  ast.term{id: ArrItemTerm, parentID: Array} &
+  scope.termVar{term: ArrItemTerm, name: N, span: S}.
+scope.recordVar{record: Record, name: N, span: S} :-
+  ast.record{id: Record} &
+  ast.keyValue{id: KeyValue, parentID: Record} &
+  ast.term{id: ValueTerm, parentID: KeyValue} &
+  scope.termVar{term: ValueTerm, name: N, span: S}.
+
+# === problems ===
+
+tc.Problem{desc: D, span: S} :-
+  tc.nonexistentAttr{desc: D, span: S} |
+  tc.unboundVarInHead{desc: D, span: S}.
+tc.nonexistentAttr{desc: nonexistentAttr{relation: Relation, attr: N}, span: S} :-
   scope.defnRule{name: Relation} &
-  scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S} &
+  scope.varAttr{scopeID: Relation, name: N, span: S} &
   !tc.ruleAttr{rule: Relation, attr: N}.
-tc.unboundVarInHead{desc: unboundVarInHead{rule: R, name: N}, nodeID: I, span: S} :-
+tc.unboundVarInHead{desc: unboundVarInHead{rule: R, name: N}, span: S} :-
   scope.defnVar{scopeID: RuleID, span: S, name: N} &
   scope.rule{scopeID: RuleID, name: R} &
   !scope.varTerm{scopeID: RuleID, name: N}.

@@ -1,10 +1,15 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Bool, Rec, StringLit, Term } from "../../core/types";
 import { VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { emptyCollapseState, TreeView } from "../generic/treeView";
+import {
+  emptyCollapseState,
+  TreeCollapseState,
+  TreeView,
+} from "../generic/treeView";
 import { BareTerm } from "../dl/replViews";
 import { treeFromRecords } from "../generic/treeFromRecords";
+import { useJSONLocalStorage } from "../generic/hooks";
 
 export const tree: VizTypeSpec = {
   name: "Tree",
@@ -14,10 +19,15 @@ export const tree: VizTypeSpec = {
 
 function TreeViz(props: {
   interp: AbstractInterpreter;
+  id: string;
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
 }) {
-  const [collapseState, setCollapseState] = useState(emptyCollapseState);
+  const [collapseState, setCollapseState] =
+    useJSONLocalStorage<TreeCollapseState>(
+      `tree-viz-${props.id}`,
+      emptyCollapseState
+    );
   try {
     const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
     const sortChildren = (props.spec.attrs.sortChildren as Bool)?.val;

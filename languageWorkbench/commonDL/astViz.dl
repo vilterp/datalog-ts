@@ -7,8 +7,7 @@ astInternal.ruleTreeNode{id: ID, parentID: PID, display: D} :-
 astInternal.ruleTreeNodeBefore{
   id: ID,
   parentID: PID,
-  display: [ID, R, [F, T]],
-  seq: Seq
+  display: [ID, R, [F, T]]
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
@@ -18,8 +17,7 @@ astInternal.ruleTreeNodeBefore{
 astInternal.ruleTreeNodeAfter{
   id: ID,
   parentID: PID,
-  display: [ID, R, [F, T]],
-  seq: Seq
+  display: [ID, R, [F, T]]
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &
@@ -29,8 +27,7 @@ astInternal.ruleTreeNodeAfter{
 astInternal.ruleTreeNodeCur{
   id: ID,
   parentID: PID,
-  display: [ID, R, [F, T], "*"],
-  seq: Seq
+  display: [ID, R, [F, T], "*"]
 } :-
   astInternal.node{id: ID, parentID: PID, rule: R, span: span{from: F, to: T}} &
   ide.Cursor{idx: Idx} &

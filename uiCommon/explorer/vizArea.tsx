@@ -47,6 +47,7 @@ function IndividualViz(props: {
             interp={props.interp}
             spec={props.spec}
             setHighlightedTerm={props.setHighlightedTerm}
+            id={props.name}
           />
         ) : (
           <pre>viz {props.spec.relation} not found</pre>
