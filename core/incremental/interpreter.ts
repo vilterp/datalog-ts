@@ -119,10 +119,6 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   getTables(): string[] {
     return this.graph.tables;
   }
-
-  bulkInsert(records: Rec[]): AbstractInterpreter {
-    throw new Error("Method not implemented.");
-  }
 }
 
 const ack: Output = { type: "Acknowledge" };
