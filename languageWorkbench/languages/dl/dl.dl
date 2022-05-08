@@ -14,9 +14,7 @@ scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} :-
 scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
-  ast.keyValue{id: KeyValueID, parentID: RecordID} &
-  ast.term{id: ValueTermID, parentID: KeyValueID} &
-  ast.var{span: S, text: N, parentID: ValueTermID}.
+  scope.recordVar{record: RecordID, name: N, span: S}.
 scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.tableDecl{id: DeclID} &
   ast.ident{parentID: DeclID, span: S, text: N}.

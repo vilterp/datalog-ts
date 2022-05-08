@@ -44,6 +44,21 @@ foo{id: F, span: span{from: F}, spanArr: [F]} :-
   from{id: F} &
   !something{pos: F} &
   F != F.
+scope.Defn{}
+----
+application/datalog
+scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 0, to: 3}}
+scope.Defn{kind: "var", name: "F", scopeID: 3, span: span{from: 8, to: 9}}
+scope.Defn{kind: "var", name: "F", scopeID: 3, span: span{from: 28, to: 29}}
+scope.Defn{kind: "attr", name: "id", scopeID: "foo", span: span{from: 4, to: 6}}
+scope.Defn{kind: "attr", name: "span", scopeID: "foo", span: span{from: 11, to: 15}}
+scope.Defn{kind: "attr", name: "spanArr", scopeID: "foo", span: span{from: 32, to: 39}}
+
+dl
+foo{id: F, span: span{from: F}, spanArr: [F]} :-
+  from{id: F} &
+  !something{pos: F} &
+  F != F.
 scope.Var{}
 ----
 application/datalog
@@ -68,6 +83,11 @@ application/datalog
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 70, to: 71}}
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 92, to: 93}}
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 122, to: 123}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 28, to: 29}, kind: "var", name: "F", usageScopeID: 3, usageSpan: span{from: 78, to: 79}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 28, to: 29}, kind: "var", name: "F", usageScopeID: 3, usageSpan: span{from: 137, to: 138}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 3, usageSpan: span{from: 100, to: 101}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 3, usageSpan: span{from: 130, to: 131}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 3, usageSpan: span{from: 142, to: 143}}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
@@ -289,6 +309,9 @@ scope.Usage{definitionScopeID: 4388, defnSpan: span{from: 3028, to: 3029}, kind:
 scope.Usage{definitionScopeID: 4388, defnSpan: span{from: 3037, to: 3038}, kind: "var", name: "T", usageScopeID: 4388, usageSpan: span{from: 3148, to: 3149}}
 scope.Usage{definitionScopeID: 4588, defnSpan: span{from: 3170, to: 3171}, kind: "var", name: "I", usageScopeID: 4588, usageSpan: span{from: 3219, to: 3220}}
 scope.Usage{definitionScopeID: 4588, defnSpan: span{from: 3170, to: 3171}, kind: "var", name: "I", usageScopeID: 4588, usageSpan: span{from: 3254, to: 3255}}
+scope.Usage{definitionScopeID: 4588, defnSpan: span{from: 3190, to: 3191}, kind: "var", name: "F", usageScopeID: 4588, usageSpan: span{from: 3315, to: 3316}}
+scope.Usage{definitionScopeID: 4588, defnSpan: span{from: 3197, to: 3198}, kind: "var", name: "R", usageScopeID: 4588, usageSpan: span{from: 3266, to: 3267}}
+scope.Usage{definitionScopeID: 4588, defnSpan: span{from: 3197, to: 3198}, kind: "var", name: "R", usageScopeID: 4588, usageSpan: span{from: 3343, to: 3344}}
 scope.Usage{definitionScopeID: 4872, defnSpan: span{from: 3370, to: 3371}, kind: "var", name: "I", usageScopeID: 4872, usageSpan: span{from: 3408, to: 3409}}
 scope.Usage{definitionScopeID: 4872, defnSpan: span{from: 3370, to: 3371}, kind: "var", name: "I", usageScopeID: 4872, usageSpan: span{from: 3448, to: 3449}}
 scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 229, to: 231}, kind: "attr", name: "id", usageScopeID: "scope.builtin", usageSpan: span{from: 69, to: 71}}
