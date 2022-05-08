@@ -19,7 +19,6 @@ function Main() {
   );
 
   let error = null;
-
   let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
   try {
     interp = interp.evalStr(editorState.source)[1];
@@ -36,6 +35,8 @@ function Main() {
         setEditorState={setEditorState}
         width={800}
         height={1000}
+        lineNumbers="on"
+        showKeyBindingsTable
       />
       <br />
       {error ? (
