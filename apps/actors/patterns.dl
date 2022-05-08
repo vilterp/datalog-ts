@@ -38,12 +38,13 @@ messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Pa
 
 hop{
   messageID: MessageID,
+  message: Payload,
   fromTickID: FromTickID,
   fromActorID: FromActorID,
   toTickID: ToTickID,
   toActorID: ToActorID
 } :-
-  message{id: MessageID, fromTickID: FromTickID, toActorID: ToActorID} &
+  message{id: MessageID, fromTickID: FromTickID, toActorID: ToActorID, payload: Payload} &
   tick{id: FromTickID, actorID: FromActorID} &
   tick{id: ToTickID, initiator: messageReceived{messageID: MessageID}}.
 
