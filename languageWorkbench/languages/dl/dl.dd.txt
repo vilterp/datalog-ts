@@ -36,6 +36,7 @@ dl
 foo{id: I, span: span{from: F, to: T}} :-
   from{id: I, pos: F} &
   to{id: I, pos: T} &
+  !something{id: I, pos: T} &
   F != T.
 scope.Usage{}
 ----
