@@ -54,6 +54,17 @@ export function LingoEditor(props: {
         cursorPos: idxFromPosition(value, evt.position),
       });
     });
+
+    editor.onDidFocusEditorText(() => {
+      console.log("focus");
+      // TODO: patch key bindings
+    });
+
+    editor.onDidBlurEditorText(() => {
+      console.log("blur");
+      // TODO: unpatch key bindings?
+      // is that a thing you can do??? fuck
+    });
   }
 
   const setSource = (source: string) => {
