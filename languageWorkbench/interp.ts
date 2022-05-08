@@ -1,6 +1,4 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { SimpleInterpreter } from "../core/simple/interpreter";
-import { LOADER } from "./commonDL";
 import { LanguageSpec } from "./languages";
 import { getAllStatements } from "./parserlib/flatten";
 import { extractGrammar, metaGrammar } from "./parserlib/meta";
@@ -14,31 +12,59 @@ import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
 import { validateGrammar } from "./parserlib/validate";
 import { ensureRequiredRelations } from "./requiredRelations";
 
-// TODO: push memoization in here? idk
-// TODO: separate function to inject the langSource
-// so we can memoize that separately
-export function constructInterp(
-  initInterp: AbstractInterpreter,
-  spec: LanguageSpec,
-  langSource: string
-): {
+type ConstructInterpRes = {
   interp: AbstractInterpreter;
   // TODO: consolidate these into one errors list
   // with different error types
   allGrammarErrors: string[];
   langParseError: string | null;
   dlErrors: string[];
-} {
+};
+
+// TODO: this doesn't work that well when there are multiple languages
+// we're switching between, like in the LWB...
+// Is there a way to cache by object identity in javascript?
+let lastInitInterp: AbstractInterpreter | null = null;
+let lastLangSpec: LanguageSpec | null = null;
+let lastSource: string = "";
+let lastResult: ConstructInterpRes | null = null;
+
+export function constructInterp(
+  initInterp: AbstractInterpreter,
+  langSpec: LanguageSpec,
+  source: string
+): ConstructInterpRes {
+  if (
+    initInterp === lastInitInterp &&
+    langSpec === lastLangSpec &&
+    source === lastSource
+  ) {
+    return lastResult;
+  }
+  lastResult = constructInterpInner(initInterp, langSpec, source);
+  lastInitInterp = initInterp;
+  lastLangSpec = langSpec;
+  lastSource = source;
+  return lastResult;
+}
+
+// TODO: separate function to inject the langSource
+// so we can memoize that separately
+function constructInterpInner(
+  initInterp: AbstractInterpreter,
+  langSpec: LanguageSpec,
+  source: string
+): ConstructInterpRes {
   let interp = initInterp;
   interp = interp.doLoad("main.dl");
 
   let dlErrors: string[] = [];
 
   // process grammar
-  const grammarTraceTree = parse(metaGrammar, "grammar", spec.grammar);
+  const grammarTraceTree = parse(metaGrammar, "grammar", langSpec.grammar);
   const grammarRuleTree = extractRuleTree(grammarTraceTree);
-  const grammar = extractGrammar(spec.grammar, grammarRuleTree);
-  const grammarParseErrors = getErrors(spec.grammar, grammarTraceTree).map(
+  const grammar = extractGrammar(langSpec.grammar, grammarRuleTree);
+  const grammarParseErrors = getErrors(langSpec.grammar, grammarTraceTree).map(
     formatParseError
   );
   const grammarErrors =
@@ -53,8 +79,8 @@ export function constructInterp(
 
   // add datalog
   try {
-    if (spec.datalog.length > 0) {
-      interp = interp.evalStr(spec.datalog)[1];
+    if (langSpec.datalog.length > 0) {
+      interp = interp.evalStr(langSpec.datalog)[1];
     }
   } catch (e) {
     dlErrors = [e.toString()];
@@ -67,9 +93,9 @@ export function constructInterp(
 
   if (allGrammarErrors.length === 0) {
     try {
-      traceTree = parse(grammar, "main", langSource);
+      traceTree = parse(grammar, "main", source);
       ruleTree = extractRuleTree(traceTree);
-      const flattenStmts = getAllStatements(grammar, ruleTree, langSource);
+      const flattenStmts = getAllStatements(grammar, ruleTree, source);
       interp = interp.evalStmts(flattenStmts)[1];
       interp = ensureRequiredRelations(interp);
     } catch (e) {

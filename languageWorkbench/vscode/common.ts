@@ -19,25 +19,7 @@ export const TOKEN_TYPES = [
 
 export const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
-// TODO: use some generic memoizer. lol
-let lastLang: LanguageSpec = null;
-let lastSource: string = "";
-let lastInterp: AbstractInterpreter = null;
-
 export function getInterp(
-  language: LanguageSpec,
-  source: string
-): AbstractInterpreter {
-  if (language === lastLang && source === lastSource) {
-    return lastInterp;
-  }
-  lastInterp = getInterpInner(language, source);
-  lastLang = language;
-  lastSource = source;
-  return lastInterp;
-}
-
-function getInterpInner(
   language: LanguageSpec,
   source: string
 ): AbstractInterpreter {
