@@ -101,7 +101,10 @@ export class SimpleInterpreter extends AbstractInterpreter {
       .mapEntries(([name, table]) => [name, table.all().toArray()])
       .toJSON();
     for (const record of records) {
-      tables[record.relation].push(record);
+      // is there a better pattern for this?
+      const table = tables[record.relation] || [];
+      table.push(record);
+      tables[record.relation] = table;
     }
     const newTables = Map(tables).mapEntries(([name, records]) => [
       name,
