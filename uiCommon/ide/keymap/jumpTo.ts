@@ -67,16 +67,28 @@ function getFirstUsageForCursor(interp: AbstractInterpreter): Span | null {
 export const jumpToErrorAction: EditorAction = {
   name: "Jump to First Error",
   available(ctx: ActionContext): boolean {
-    return ctx.errors.length > 0;
+    return getProblems(ctx.interp).length > 0;
   },
   apply(ctx: ActionContext): EditorState {
-    console.log(ctx.errors);
+    const errors = getProblems(ctx.interp);
+    console.log(errors);
     return {
       ...ctx.state,
-      cursorPos: ctx.errors[0].offset,
+      cursorPos: errors[0].offset,
     };
   },
 };
+
+function getProblems(interp: AbstractInterpreter): { offset: number }[] {
+  const offsets = interp.queryStr("tc.Problem{span: S}").map((res) => {
+    const rec = res.term as Rec;
+    const span = dlToSpan(rec.attrs.span as Rec);
+    return span.from;
+  });
+  return offsets.map((offset) => ({
+    offset,
+  }));
+}
 
 export const jumpToFirstPlaceholderAction: EditorAction = {
   name: "Jump to Placeholder",

@@ -23,8 +23,6 @@ export type EditorState = {
 export type ActionContext = {
   interp: AbstractInterpreter;
   state: EditorState;
-
-  errors: { offset: number }[];
 };
 
 export type EditorAction = {
