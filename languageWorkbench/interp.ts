@@ -1,6 +1,11 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { LanguageSpec } from "./languages";
-import { getAllStatements } from "./parserlib/flatten";
+import {
+  declareTables,
+  flatten,
+  getAllStatements,
+  getUnionRule,
+} from "./parserlib/flatten";
 import { extractGrammar, metaGrammar } from "./parserlib/meta";
 import {
   formatParseError,
@@ -95,8 +100,13 @@ function constructInterpInner(
     try {
       traceTree = parse(grammar, "main", source);
       ruleTree = extractRuleTree(traceTree);
-      const flattenStmts = getAllStatements(grammar, ruleTree, source);
-      interp = interp.evalStmts(flattenStmts)[1];
+      const records = flatten(ruleTree, source);
+      interp = interp.bulkInsert(records);
+      interp = interp.evalStmts(declareTables(grammar))[1];
+      interp = interp.evalStmt({
+        type: "Rule",
+        rule: getUnionRule(grammar),
+      })[1];
       interp = ensureRequiredRelations(interp);
     } catch (e) {
       langParseError = e.toString();

@@ -15,6 +15,15 @@ export abstract class AbstractInterpreter {
 
   abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
 
+  // default impl that isn't bulk
+  bulkInsert(records: Rec[]): AbstractInterpreter {
+    let interp: AbstractInterpreter = this;
+    for (const record of records) {
+      interp = interp.evalStmt({ type: "Insert", record })[1];
+    }
+    return interp;
+  }
+
   evalStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
     const results: Res[] = [];
     let interp: AbstractInterpreter = this;

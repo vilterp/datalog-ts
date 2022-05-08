@@ -7,6 +7,32 @@ export function emptyLazyIndexedCollection() {
   return new LazyIndexedCollection(List(), {});
 }
 
+type MutableIndex = { [value: string]: Rec[] };
+
+// bulk initialize
+export function lazyIndexedCollectionFromList(records: Rec[]) {
+  if (records.length === 0) {
+    return emptyLazyIndexedCollection();
+  }
+  const first = records[0];
+  const attrs = Object.keys(first.attrs);
+  const mutableIndexes: { [attr: string]: MutableIndex } = {};
+  attrs.forEach((attr) => {
+    const mutableIndex: MutableIndex = {};
+    for (const record of records) {
+      const key = fastPPT(record.attrs[attr]);
+      const list = mutableIndex[key] || [];
+      list.push(record);
+      mutableIndex[key] = list;
+    }
+    mutableIndexes[attr] = mutableIndex;
+  });
+  const immutableIndexes = mapObj(mutableIndexes, (attr, mutableIndex) =>
+    Map(mapObj(mutableIndex, (value, records) => List(records)))
+  );
+  return new LazyIndexedCollection(List(records), immutableIndexes);
+}
+
 type Index = Map<string, List<Rec>>;
 
 export class LazyIndexedCollection {
@@ -14,6 +40,8 @@ export class LazyIndexedCollection {
   readonly indexes: { [attr: string]: Index };
   readonly size: number;
 
+  // TODO: exposing this constructor feels weird, since it doesn't
+  // enforce that the indexes are consistent with allRecords
   constructor(allRecords: List<Rec>, indexes: { [key: string]: Index }) {
     this.allRecords = allRecords;
     this.indexes = indexes;

@@ -51,7 +51,7 @@ export function flatten(tree: RuleTree, source: string): Rec[] {
   return state.records;
 }
 
-function getUnionRule(g: Grammar): Rule {
+export function getUnionRule(g: Grammar): Rule {
   return rule(
     rec("astInternal.node", {
       id: varr("ID"),

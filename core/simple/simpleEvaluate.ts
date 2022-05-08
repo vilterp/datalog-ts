@@ -115,6 +115,7 @@ function doJoin(
 
 type Cache = { [key: string]: Res[] };
 
+// only memoizing within the execution of one query...
 function memo(
   cache: Cache,
   term: Rec,
