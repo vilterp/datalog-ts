@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor";
-import Editor, { Monaco, useMonaco } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import React, { useEffect, useRef } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
@@ -11,10 +11,7 @@ import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { LOADER } from "../../languageWorkbench/commonDL";
-
-const INIT_INTERP = new SimpleInterpreter(".", LOADER);
+import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditor(props: {
   editorState: EditorState;
