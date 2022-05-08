@@ -113,17 +113,6 @@ function doJoin(
   return out;
 }
 
-function applyFilter(binExpr: BinExpr, res: Res[]): Res[] {
-  return res.filter((res) => evalBinExpr(binExpr, res.bindings));
-}
-
-function applyFilters(exprs: BinExpr[], recResults: Res[]): Res[] {
-  if (exprs.length === 0) {
-    return recResults;
-  }
-  return applyFilter(exprs[0], applyFilters(exprs.slice(1), recResults));
-}
-
 type Cache = { [key: string]: Res[] };
 
 function memo(

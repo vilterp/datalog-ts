@@ -12,7 +12,7 @@ import {
   Statement,
 } from "./types";
 import * as pp from "prettier-printer";
-import { flatMapObjToList, mapObjToList, repeat, flatMap } from "../util/util";
+import { mapObjToList, repeat, flatMap } from "../util/util";
 import { Tree } from "../util/tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 
