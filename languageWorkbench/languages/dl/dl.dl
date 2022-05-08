@@ -98,10 +98,12 @@ scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
   scope.termVar{term: TermOrRecord, name: N, span: S}.
 scope.termVar{term: Term, name: N, span: S} :-
   ast.term{id: Term} &
-  ast.var{parentID: Term, text: N, span: S} |
+  ast.var{parentID: Term, text: N, span: S}
+  |
   ast.term{id: Term} &
   ast.record{id: Record, parentID: Term} &
-  scope.recordVar{record: Record, name: N, span: S} |
+  scope.recordVar{record: Record, name: N, span: S}
+  |
   ast.term{id: Term} &
   ast.array{id: Array, parentID: Term} &
   ast.term{id: Term, parentID: Array} &
