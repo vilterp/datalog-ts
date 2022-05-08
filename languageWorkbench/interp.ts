@@ -1,6 +1,4 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { SimpleInterpreter } from "../core/simple/interpreter";
-import { LOADER } from "./commonDL";
 import { LanguageSpec } from "./languages";
 import { getAllStatements } from "./parserlib/flatten";
 import { extractGrammar, metaGrammar } from "./parserlib/meta";
