@@ -32,6 +32,13 @@ tc.Problem{}
 application/datalog
 
 dl
+foo{ab: C} :- bar{bc: D}.
+scope.ruleBodyTerm{}
+----
+application/datalog
+scope.ruleBodyTerm{ruleID: 3, termOrRecord: 25}
+
+dl
 foo{id: F, span: span{from: F}, spanArr: [F]} :-
   from{id: F} &
   !something{pos: F} &
@@ -48,6 +55,7 @@ scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 83, to: 84}}
 scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 90, to: 91}}
 scope.Var{kind: "var", name: "F", scopeID: 3, span: span{from: 95, to: 96}}
 scope.Var{kind: "attr", name: "id", scopeID: "from", span: span{from: 56, to: 58}}
+scope.Var{kind: "attr", name: "pos", scopeID: "something", span: span{from: 78, to: 81}}
 
 dl
 foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
