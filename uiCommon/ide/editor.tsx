@@ -89,6 +89,8 @@ export function LingoEditor(props: {
     updateMarkers(editorRef.current);
   };
 
+  // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
+  // instances... sigh
   const withoutCursor = useMemo(
     () =>
       constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
