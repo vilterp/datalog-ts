@@ -2,6 +2,7 @@
 
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { rec } from "../../core/types";
 import { LOADER } from "../commonDL";
 import { constructInterp } from "../interp";
 import { LanguageSpec } from "../languages";
@@ -16,7 +17,7 @@ export const TOKEN_TYPES = [
   "typeParameter",
 ];
 
-const INIT_INTERP = new SimpleInterpreter(".", LOADER);
+export const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
 // TODO: use some generic memoizer. lol
 let lastLang: LanguageSpec = null;
@@ -44,3 +45,6 @@ function getInterpInner(
   // TODO: something with errors if they're there
   return res.interp;
 }
+
+// TODO: parameterize by language
+export const GLOBAL_SCOPE = rec("global", {});

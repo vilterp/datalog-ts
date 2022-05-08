@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
 import { LanguageSpec } from "../languages";
-import { rec, Rec, StringLit } from "../../core/types";
+import { Rec, StringLit } from "../../core/types";
 import {
   dlToSpan,
   idxFromLineAndCol,
   lineAndColFromIdx,
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
-import { getInterp, TOKEN_TYPES } from "./common";
+import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
 
 export function registerLanguageSupport(
@@ -320,9 +320,6 @@ function prepareRename(
   const result = results[0].term as Rec;
   return spanToRange(source, result.attrs.span as Rec);
 }
-
-// TODO: parameterize by language
-const GLOBAL_SCOPE = rec("global", {});
 
 function getSymbolList(
   spec: LanguageSpec,

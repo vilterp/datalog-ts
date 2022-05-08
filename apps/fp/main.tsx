@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
@@ -8,9 +7,7 @@ import { initialEditorState } from "../../uiCommon/ide/types";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
-import { LOADER } from "../../languageWorkbench/commonDL";
-
-const INIT_INTERP = new SimpleInterpreter(".", LOADER);
+import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(

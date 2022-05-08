@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor";
-import Editor, { Monaco, useMonaco } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import React, { useEffect, useRef } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
@@ -9,6 +9,9 @@ import {
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
+import { KeyBindingsTable } from "./keymap/keyBindingsTable";
+import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -17,6 +20,7 @@ export function LingoEditor(props: {
   width?: number;
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
+  showKeyBindingsTable?: boolean;
 }) {
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -85,27 +89,46 @@ export function LingoEditor(props: {
     updateMarkers(editorRef.current);
   };
 
+  const withoutCursor = constructInterp(
+    INIT_INTERP,
+    props.langSpec,
+    props.editorState.source
+  ).interp;
+  const interp = addCursor(withoutCursor, props.editorState.cursorPos);
+
   return (
-    <div style={{ border: "1px solid black", padding: 5 }}>
-      <Editor
-        width={props.width || 570}
-        height={props.height || 400}
-        value={props.editorState.source}
-        onChange={setSource}
-        language={props.langSpec.name}
-        options={{
-          minimap: { enabled: false },
-          scrollBeyondLastLine: false,
-          "semanticHighlighting.enabled": true,
-          lineNumbers: props.lineNumbers || "on",
-        }}
-        beforeMount={handleBeforeMount}
-        onMount={handleOnMount}
-      />
+    <div style={{ display: "flex" }}>
+      <div style={{ border: "1px solid black", padding: 5 }}>
+        <Editor
+          width={props.width || 500}
+          height={props.height || 400}
+          value={props.editorState.source}
+          onChange={setSource}
+          language={props.langSpec.name}
+          options={{
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            "semanticHighlighting.enabled": true,
+            lineNumbers: props.lineNumbers || "on",
+          }}
+          beforeMount={handleBeforeMount}
+          onMount={handleOnMount}
+        />
+      </div>
+      {props.showKeyBindingsTable ? (
+        <KeyBindingsTable
+          actionCtx={{
+            interp,
+            state: props.editorState,
+          }}
+        />
+      ) : null}
     </div>
   );
 }
 
+// matches uiCommon/ide/editor.tsx
+// TODO: DRY up
 const KEY_MAP = {
   "editor.action.revealDefinition": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
   "editor.action.goToReferences": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,

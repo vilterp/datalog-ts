@@ -1,11 +1,11 @@
 import * as monaco from "monaco-editor";
 import { Monaco } from "@monaco-editor/react";
 import { LanguageSpec } from "../languages";
-import { rec, Rec, StringLit } from "../../core/types";
+import { Rec, StringLit } from "../../core/types";
 import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
-import { getInterp, TOKEN_TYPES } from "./common";
+import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
 
 export function registerLanguageSupport(
@@ -324,9 +324,6 @@ function prepareRename(
     text: source.slice(span.from, span.to),
   };
 }
-
-// TODO: parameterize by language
-const GLOBAL_SCOPE = rec("global", {});
 
 function getSymbolList(
   spec: LanguageSpec,
