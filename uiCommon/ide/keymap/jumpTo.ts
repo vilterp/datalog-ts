@@ -49,7 +49,7 @@ export const jumpToFirstUsageAction: EditorAction = {
 };
 
 function getFirstUsageForCursor(interp: AbstractInterpreter): Span | null {
-  const res = interp.queryStr(`ide.UsageForCursor{usageLoc: S}`);
+  const res = interp.queryStr(`ide.UsageForCursor{usageSpan: S}`);
   if (res.length === 0) {
     return null;
   }
@@ -57,7 +57,7 @@ function getFirstUsageForCursor(interp: AbstractInterpreter): Span | null {
     // for "builtin"
     return null;
   }
-  return dlToSpan((res[0].term as Rec).attrs.usageLoc as Rec);
+  return dlToSpan((res[0].term as Rec).attrs.usageSpan as Rec);
 }
 
 export const jumpToErrorAction: EditorAction = {
