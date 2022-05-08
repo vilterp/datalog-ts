@@ -14,5 +14,6 @@ export const keyMap: { [key: string]: EditorAction } = {
   u: jumpToFirstUsageAction,
   e: jumpToErrorAction,
   j: renameRefactorAction, // would choose cmd+r, but it's taken
-  i: jumpToFirstPlaceholderAction,
+  // i: jumpToFirstPlaceholderAction,
+  // TODO: re-enable this; monaco doesn't have support for it
 };

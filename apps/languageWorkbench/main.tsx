@@ -1,18 +1,15 @@
 import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
-import { LOADER } from "../../languageWorkbench/commonDL";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-
-const INIT_INTERP = new SimpleInterpreter(".", LOADER);
+import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 function Main() {
   return <Playground />;
