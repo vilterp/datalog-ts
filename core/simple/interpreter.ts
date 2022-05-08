@@ -1,24 +1,15 @@
-import { DB, Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
+import { Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { emptyLazyIndexedCollection } from "./lazyIndexedCollection";
-
-const initialDB: DB = {
-  tables: {},
-  rules: {},
-  virtualTables: {
-    // TODO: re-enable
-    // "internal.Relation": virtualRelations,
-    // "internal.RelationReference": virtualReferences,
-  },
-};
+import { DB, emptyDB } from "./types";
 
 export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;
 
-  constructor(cwd: string, loader: Loader, db: DB = initialDB) {
+  constructor(cwd: string, loader: Loader, db: DB = emptyDB) {
     super(cwd, loader);
     this.db = db;
     this.cwd = cwd;
@@ -35,16 +26,15 @@ export class SimpleInterpreter extends AbstractInterpreter {
           // TODO: separate method for querying?
           return [this.evalQuery(record), this];
         }
-        let tbl =
-          this.db.tables[record.relation] || emptyLazyIndexedCollection();
         return [
           [],
           this.withDB({
             ...this.db,
-            tables: {
-              ...this.db.tables,
-              [record.relation]: tbl.insert(record),
-            },
+            tables: this.db.tables.update(
+              record.relation,
+              emptyLazyIndexedCollection(),
+              (tbl) => tbl.insert(record)
+            ),
           }),
         ];
       }
@@ -59,25 +49,20 @@ export class SimpleInterpreter extends AbstractInterpreter {
           [],
           this.withDB({
             ...this.db,
-            rules: {
-              ...this.db.rules,
-              [rule.head.relation]: rule,
-            },
+            rules: this.db.rules.set(rule.head.relation, rule),
           }),
         ];
       }
       case "TableDecl":
-        if (this.db.tables[stmt.name]) {
-          return [[], this];
-        }
         return [
           [],
           this.withDB({
             ...this.db,
-            tables: {
-              ...this.db.tables,
-              [stmt.name]: emptyLazyIndexedCollection(),
-            },
+            tables: this.db.tables.update(
+              stmt.name,
+              emptyLazyIndexedCollection(),
+              (x) => x // leave it alone if it's there
+            ),
           }),
         ];
       case "LoadStmt":
@@ -96,33 +81,33 @@ export class SimpleInterpreter extends AbstractInterpreter {
   }
 
   getRules(): Rule[] {
-    return Object.values(this.db.rules);
+    return this.db.rules.valueSeq().toArray();
   }
 
   getTables(): string[] {
     return [
-      ...Object.keys(this.db.tables),
-      ...Object.keys(this.db.virtualTables),
+      ...this.db.tables.keySeq().toArray(),
+      ...this.db.virtualTables.keySeq().toArray(),
     ];
   }
 }
 
 function virtualRelations(db: DB): Rec[] {
   return [
-    ...mapObjToList(db.rules, (name) =>
+    ...mapObjToList(db.rules.toJSON(), (name) =>
       rec("internal.Relation", { type: str("rule"), name: str(name) })
     ),
-    ...mapObjToList(db.tables, (name) =>
+    ...mapObjToList(db.tables.toJSON(), (name) =>
       rec("internal.Relation", { type: str("table"), name: str(name) })
     ),
-    ...mapObjToList(db.virtualTables, (name) =>
+    ...mapObjToList(db.virtualTables.toJSON(), (name) =>
       rec("internal.Relation", { type: str("virtual"), name: str(name) })
     ),
   ];
 }
 
 function virtualReferences(db: DB): Rec[] {
-  return flatMapObjToList(db.rules, (ruleName, rule) =>
+  return flatMapObjToList(db.rules.toJSON(), (ruleName, rule) =>
     flatMap(rule.body.opts, (opt) =>
       flatMap(opt.clauses, (clause) =>
         clause.type === "Record"

@@ -1,6 +1,5 @@
 import {
   Bindings,
-  DB,
   Res,
   Rule,
   Term,

@@ -2,7 +2,6 @@ import {
   AndClause,
   Bindings,
   BinExpr,
-  DB,
   falseTerm,
   Res,
   Term,
@@ -34,6 +33,7 @@ import { IndexedCollection } from "../../util/indexedCollection";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
 import { List } from "immutable";
 import { BUILTINS } from "../builtins";
+import { DB } from "./types";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -158,8 +158,8 @@ function doEvaluate(
     switch (term.type) {
       case "Record": {
         return memo(cache, term, scope, (): Res[] => {
-          const table = db.tables[term.relation];
-          // const virtual = db.virtualTables[term.relation];
+          const table = db.tables.get(term.relation);
+          // const virtual = db.virtualTables.get(term.relation);
           // const records = table ? table : virtual ? virtual(db) : null;
           if (table) {
             // console.log("scan", term.relation, ppb(scope));
@@ -180,7 +180,7 @@ function doEvaluate(
             // console.log(results.map(ppr));
             return results;
           }
-          const rule = db.rules[term.relation];
+          const rule = db.rules.get(term.relation);
           if (rule) {
             if (perf) {
               perfMark(`${term.relation} start`);
