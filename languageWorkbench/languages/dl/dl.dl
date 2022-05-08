@@ -100,8 +100,8 @@ scope.termVar{term: Term, name: N, span: S} :-
   |
   ast.term{id: Term} &
   ast.array{id: Array, parentID: Term} &
-  ast.term{id: Term, parentID: Array} &
-  scope.termVar{term: Term, name: N, span: S}.
+  ast.term{id: ArrItemTerm, parentID: Array} &
+  scope.termVar{term: ArrItemTerm, name: N, span: S}.
 scope.recordVar{record: Record, name: N, span: S} :-
   ast.record{id: Record} &
   ast.keyValue{id: KeyValue, parentID: Record} &
