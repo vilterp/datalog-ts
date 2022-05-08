@@ -8,6 +8,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
+import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -27,6 +28,8 @@ export function LingoEditor(props: {
     if (!monacoRef.current) {
       return;
     }
+    // make sure to register support for new langauge when we switch
+    // languages.
     registerLanguageSupport(monacoRef.current, props.langSpec);
   }, [props.langSpec, monacoRef.current]);
 
@@ -49,6 +52,30 @@ export function LingoEditor(props: {
       props.setEditorState({
         source: value,
         cursorPos: idxFromPosition(value, evt.position),
+      });
+    });
+
+    // Remove key bindings that are already there
+    Object.keys(KEY_MAP).map((actionID) => {
+      removeKeyBinding(editor, actionID);
+    });
+
+    // When an editor focuses, bind. When it blurs, unbind.
+    // This is hacking around the fact that if we just patch the
+    // bindings on each editor, they'll interfere with each other...
+    // i.e. jump-to-defn on one will try to jump to another :facepalm:
+    // TODO: file this as an issue in Monaco, lol.
+    // This is not great because every time we add or remove, we're pushing something
+    // onto the end of a list inside Monaco, so we're accumulating memory over time... oh well lol.
+    editor.onDidFocusEditorText(() => {
+      Object.keys(KEY_MAP).map((actionID) => {
+        addKeyBinding(editor, actionID, KEY_MAP[actionID]);
+      });
+    });
+
+    editor.onDidBlurEditorText(() => {
+      Object.keys(KEY_MAP).map((actionID) => {
+        removeKeyBinding(editor, actionID);
       });
     });
   }
@@ -78,3 +105,10 @@ export function LingoEditor(props: {
     </div>
   );
 }
+
+const KEY_MAP = {
+  "editor.action.revealDefinition": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
+  "editor.action.goToReferences": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,
+  "editor.action.marker.next": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
+  "editor.action.rename": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ,
+};
