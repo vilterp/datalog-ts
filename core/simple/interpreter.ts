@@ -32,8 +32,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
             ...this.db,
             tables: this.db.tables.update(
               record.relation,
-              emptyLazyIndexedCollection(),
-              (tbl) => tbl.insert(record)
+              (tbl = emptyLazyIndexedCollection()) => tbl.insert(record)
             ),
           }),
         ];
@@ -60,8 +59,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
             ...this.db,
             tables: this.db.tables.update(
               stmt.name,
-              emptyLazyIndexedCollection(),
-              (x) => x // leave it alone if it's there
+              (x = emptyLazyIndexedCollection()) => x // leave it alone if it's there
             ),
           }),
         ];
