@@ -1,9 +1,14 @@
+import { Map, List } from "immutable";
 import { Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { emptyLazyIndexedCollection } from "./lazyIndexedCollection";
+import {
+  emptyLazyIndexedCollection,
+  LazyIndexedCollection,
+  lazyIndexedCollectionFromList,
+} from "./lazyIndexedCollection";
 import { DB, emptyDB } from "./types";
 
 export class SimpleInterpreter extends AbstractInterpreter {
@@ -87,6 +92,22 @@ export class SimpleInterpreter extends AbstractInterpreter {
       ...this.db.tables.keySeq().toArray(),
       ...this.db.virtualTables.keySeq().toArray(),
     ];
+  }
+
+  // caveats: throws away all the indices.
+  // most efficient when starting from an empty DB.
+  bulkInsert(records: Rec[]): SimpleInterpreter {
+    const tables = this.db.tables
+      .mapEntries(([name, table]) => [name, table.all().toArray()])
+      .toJSON();
+    for (const record of records) {
+      tables[record.relation].push(record);
+    }
+    const newTables = Map(tables).mapEntries(([name, records]) => [
+      name,
+      lazyIndexedCollectionFromList(records),
+    ]);
+    return this.withDB({ ...this.db, tables: newTables });
   }
 }
 

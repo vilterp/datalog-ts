@@ -14,6 +14,7 @@ export abstract class AbstractInterpreter {
   }
 
   abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
+  abstract bulkInsert(records: Rec[]): AbstractInterpreter;
 
   evalStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
     const results: Res[] = [];
