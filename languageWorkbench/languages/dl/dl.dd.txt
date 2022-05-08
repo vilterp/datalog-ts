@@ -33,6 +33,19 @@ application/datalog
 tc.Problem{desc: unboundVarInHead{name: "C", rule: "foo"}, span: span{from: 13, to: 14}}
 
 dl
+foo{id: F, span: span{from: F}, spanArr: [F]} :-
+  from{id: F} &
+  !something{pos: F} &
+  F != F.
+scope.varTerm{}
+----
+application/datalog
+scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 60, to: 61}}
+scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 83, to: 84}}
+scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 90, to: 91}}
+scope.varTerm{kind: "var", name: "F", scopeID: 3, span: span{from: 95, to: 96}}
+
+dl
 foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
   from{id: I, pos: F} &
   to{id: I, pos: T} &

@@ -81,10 +81,12 @@ scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
 # and some of them are terms
 scope.ruleTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
-  ast.record{id: TermOrRecord, parentID: Conjunct} |
+  ast.record{id: TermOrRecord, parentID: Conjunct}
+  |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.negation{id: Negation, parentID: Conjunct} &
-  ast.record{id: TermOrRecord, parentID: Negation} |
+  ast.record{id: TermOrRecord, parentID: Negation}
+  |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.binExpr{id: BinExpr, parentID: Conjunct} &
   ast.term{id: TermOrRecord, parentID: BinExpr}.
