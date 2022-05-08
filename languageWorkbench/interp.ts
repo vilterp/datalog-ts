@@ -21,6 +21,9 @@ type ConstructInterpRes = {
   dlErrors: string[];
 };
 
+// TODO: this doesn't work that well when there are multiple languages
+// we're switching between, like in the LWB...
+// Is there a way to cache by object identity in javascript?
 let lastInitInterp: AbstractInterpreter | null = null;
 let lastLangSpec: LanguageSpec | null = null;
 let lastSource: string = "";
