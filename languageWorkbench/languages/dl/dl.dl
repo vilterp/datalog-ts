@@ -49,6 +49,7 @@ scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
   ast.keyValue{id: KV, parentID: Rec} &
   ast.ident{id: I, parentID: KV, text: N, span: S}.
 
+# TODO: get placeholders in nested terms
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
   scope.placeholderRule{scopeID: I, span: S, kind: K} |
@@ -89,6 +90,10 @@ scope.ruleTerm{ruleID: Rule, termID: Term} :-
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.binExpr{id: BinExpr, parentID: Conjunct} &
   ast.term{id: Term, parentID: BinExpr}.
+scope.termOrRecordVar{} :-
+  XXX{}.
+scope.termVar{} :-
+  XXXX{}.
 
 # TODO: var in head that's unbound
 tc.Problem{desc: D, span: S} :-
