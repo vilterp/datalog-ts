@@ -100,22 +100,24 @@ export function LingoEditor(props: {
   const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
   return (
-    <div style={{ border: "1px solid black", padding: 5 }}>
-      <Editor
-        width={props.width || 570}
-        height={props.height || 400}
-        value={props.editorState.source}
-        onChange={setSource}
-        language={props.langSpec.name}
-        options={{
-          minimap: { enabled: false },
-          scrollBeyondLastLine: false,
-          "semanticHighlighting.enabled": true,
-          lineNumbers: props.lineNumbers || "on",
-        }}
-        beforeMount={handleBeforeMount}
-        onMount={handleOnMount}
-      />
+    <div style={{ display: "flex" }}>
+      <div style={{ border: "1px solid black", padding: 5 }}>
+        <Editor
+          width={props.width || 500}
+          height={props.height || 400}
+          value={props.editorState.source}
+          onChange={setSource}
+          language={props.langSpec.name}
+          options={{
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            "semanticHighlighting.enabled": true,
+            lineNumbers: props.lineNumbers || "on",
+          }}
+          beforeMount={handleBeforeMount}
+          onMount={handleOnMount}
+        />
+      </div>
       {props.showKeyBindingsTable ? (
         <KeyBindingsTable
           actionCtx={{
