@@ -119,11 +119,11 @@ tc.typePlaceholder{id: I, type: "unknown"} :-
 
 # === problems ===
 
-tc.Problem{desc: D, nodeID: I, span: S} :-
-  tc.wrongArgType{desc: D, nodeID: I, span: S} |
-  tc.undefinedVar{desc: D, nodeID: I, span: S}.
+tc.Problem{desc: D, span: S} :-
+  tc.wrongArgType{desc: D, span: S} |
+  tc.undefinedVar{desc: D, span: S}.
 # TODO: DRY this up with tc.typeFC
-tc.wrongArgType{desc: argTypeMismatch{expected: RequiredArgType, got: ArgType}, nodeID: AID, span: S} :-
+tc.wrongArgType{desc: argTypeMismatch{expected: RequiredArgType, got: ArgType}, span: S} :-
   ast.funcCall{parentID: I, id: FC} &
   ast.funcCallArg{callID: FC, argID: AID} &
   ast.funcCallFunc{callID: FC, funcID: FID} &
@@ -132,7 +132,7 @@ tc.wrongArgType{desc: argTypeMismatch{expected: RequiredArgType, got: ArgType}, 
   scope.Item{scopeID: FID, name: N, type: tapp{from: RequiredArgType, to: T}} &
   tc.Type{id: AID, type: ArgType} &
   RequiredArgType != ArgType.
-tc.undefinedVar{desc: undefinedVar{name: N}, nodeID: I, span: S} :-
+tc.undefinedVar{desc: undefinedVar{name: N}, span: S} :-
   ast.expr{id: I} &
   ast.varExpr{id: Var, parentID: I, span: S, text: N} &
   !scope.Item{scopeID: I, name: N}.
