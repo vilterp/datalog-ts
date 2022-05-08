@@ -96,7 +96,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
 
   // caveats: throws away all the indices.
   // most efficient when starting from an empty DB.
-  override bulkInsert(records: Rec[]): SimpleInterpreter {
+  bulkInsert(records: Rec[]): SimpleInterpreter {
     const tables = this.db.tables
       .mapEntries(([name, table]) => [name, table.all().toArray()])
       .toJSON();
