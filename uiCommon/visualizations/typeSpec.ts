@@ -7,6 +7,7 @@ export type VizTypeSpec = {
   component: (props: {
     interp: AbstractInterpreter;
     spec: Rec;
+    id: string; // uniquely identify this visualization instance
     setHighlightedTerm: (t: Term | null) => void;
   }) => React.ReactElement;
 };

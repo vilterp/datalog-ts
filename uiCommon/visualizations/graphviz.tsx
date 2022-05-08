@@ -6,18 +6,6 @@ import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
 import { ppt } from "../../core/pretty";
 
-/*
-Example:
-
-internal.visualization{
-  name: "Scope Graph",
-  spec: graphviz{
-    nodes: "node{id: ID}",
-    edges: "edge{from: From, to: To, label: Label}"
-  }
-}.
-*/
-
 export const graphviz: VizTypeSpec = {
   name: "Graphviz",
   description: "visualize directed graphs",
