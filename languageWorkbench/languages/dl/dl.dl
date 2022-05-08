@@ -75,6 +75,8 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
   ast.keyValue{id: KV, parentID: Rec} &
   ast.placeholder{parentID: KV, span: S}.
 
+# === rules for traversing into nested terms ===
+
 scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
   ast.rule{id: Rule} &
   ast.disjunct{id: Disjunct, parentID: Rule} &
@@ -90,12 +92,28 @@ scope.ruleTerm{ruleID: Rule, termID: Term} :-
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.binExpr{id: BinExpr, parentID: Conjunct} &
   ast.term{id: Term, parentID: BinExpr}.
-scope.termOrRecordVar{} :-
-  XXX{}.
-scope.termVar{} :-
-  XXXX{}.
 
-# TODO: var in head that's unbound
+scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
+  scope.recordVar{record: TermOrRecord, name: N, span: S} |
+  scope.termVar{term: TermOrRecord, name: N, span: S}.
+scope.termVar{term: Term, name: N, span: S} :-
+  ast.term{id: Term} &
+  ast.var{parentID: Term, text: N, span: S} |
+  ast.term{id: Term} &
+  ast.record{id: Record, parentID: Term} &
+  scope.recordVar{record: Record, name: N, span: S} |
+  ast.term{id: Term} &
+  ast.array{id: Array, parentID: Term} &
+  ast.term{id: Term, parentID: Array} &
+  scope.termVar{term: Term, name: N, span: S}.
+scope.recordVar{record: Record, name: N, span: S} :-
+  ast.record{id: Record} &
+  ast.keyValue{id: KeyValue, parentID: Record} &
+  ast.term{id: ValueTerm, parentID: KeyValue} &
+  scope.termVar{term: ValueTerm, name: N, span: S}.
+
+# === problems ===
+
 tc.Problem{desc: D, span: S} :-
   tc.nonexistentAttr{desc: D, span: S} |
   tc.unboundVarInHead{desc: D, span: S}.
