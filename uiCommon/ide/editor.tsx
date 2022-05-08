@@ -64,6 +64,8 @@ export function LingoEditor(props: {
     // bindings on each editor, they'll interfere with each other...
     // i.e. jump-to-defn on one will try to jump to another :facepalm:
     // TODO: file this as an issue in Monaco, lol.
+    // This is not great because every time we add or remove, we're pushing something
+    // onto the end of a list inside Monaco, so we're accumulating memory over time... oh well lol.
     editor.onDidFocusEditorText(() => {
       Object.keys(KEY_MAP).map((actionID) => {
         addKeyBinding(editor, actionID, KEY_MAP[actionID]);
