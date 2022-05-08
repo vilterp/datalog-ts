@@ -29,7 +29,7 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
 scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
-  scope.ruleTerm{ruleID: RuleID, termOrRecord: RecordID} &
+  scope.ruleBodyTerm{ruleID: RuleID, termOrRecord: RecordID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
 scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
@@ -37,9 +37,9 @@ scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
   ast.record{id: Head, parentID: Rule} &
   scope.recordVar{record: Head, name: N, span: S}
   |
-  scope.ruleTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
+  scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
   scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.
-# TODO: make this use ruleTerm and termVar as well
+# TODO: recurse into nested records?
 scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
   ast.record{id: Rec, parentID: Conjunct} &
@@ -81,7 +81,7 @@ scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
   ast.conjunct{id: Conjunct, parentID: Disjunct}.
 # it's kind of an issue that some of them are records
 # and some of them are terms
-scope.ruleTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
+scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.record{id: TermOrRecord, parentID: Conjunct}
   |
