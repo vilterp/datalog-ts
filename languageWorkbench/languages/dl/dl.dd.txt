@@ -33,7 +33,7 @@ application/datalog
 tc.Problem{desc: unboundVarInHead{name: "C", rule: "foo"}, span: span{from: 13, to: 14}}
 
 dl
-foo{id: I, span: span{from: F, to: T}} :-
+foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
   from{id: I, pos: F} &
   to{id: I, pos: T} &
   !something{id: I, pos: T} &
@@ -41,8 +41,8 @@ foo{id: I, span: span{from: F, to: T}} :-
 scope.Usage{}
 ----
 application/datalog
-scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 53, to: 54}}
-scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 75, to: 76}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 70, to: 71}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 92, to: 93}}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
