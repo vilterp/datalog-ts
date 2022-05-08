@@ -74,8 +74,21 @@ scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
   ast.keyValue{id: KV, parentID: Rec} &
   ast.placeholder{parentID: KV, span: S}.
 
-# TODO: make autocompletion work inside of negations
-# maybe by using scope.parent instead of explicitly joining down
+scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
+  ast.rule{id: Rule} &
+  ast.disjunct{id: Disjunct, parentID: Rule} &
+  ast.conjunct{id: Conjunct, parentID: Disjunct}.
+# it's kind of an issue that some of them are records
+# and some of them are terms
+scope.ruleTerm{ruleID: Rule, termID: Term} :-
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.record{id: Term, parentID: Conjunct} |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.negation{id: Negation, parentID: Conjunct} &
+  ast.record{id: Term, parentID: Negation} |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.binExpr{id: BinExpr, parentID: Conjunct} &
+  ast.term{id: Term, parentID: BinExpr}.
 
 # TODO: var in head that's unbound
 tc.Problem{desc: D, span: S} :-
