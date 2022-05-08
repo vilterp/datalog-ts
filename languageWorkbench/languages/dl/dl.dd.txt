@@ -43,6 +43,7 @@ scope.Usage{}
 application/datalog
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 70, to: 71}}
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 92, to: 93}}
+scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 122, to: 123}}
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
@@ -254,6 +255,7 @@ scope.Usage{definitionScopeID: 3627, defnSpan: span{from: 2483, to: 2484}, kind:
 scope.Usage{definitionScopeID: 3627, defnSpan: span{from: 2483, to: 2484}, kind: "var", name: "I", usageScopeID: 3627, usageSpan: span{from: 2545, to: 2546}}
 scope.Usage{definitionScopeID: 3740, defnSpan: span{from: 2563, to: 2564}, kind: "var", name: "I", usageScopeID: 3740, usageSpan: span{from: 2593, to: 2594}}
 scope.Usage{definitionScopeID: 3740, defnSpan: span{from: 2563, to: 2564}, kind: "var", name: "I", usageScopeID: 3740, usageSpan: span{from: 2623, to: 2624}}
+scope.Usage{definitionScopeID: 3740, defnSpan: span{from: 2572, to: 2573}, kind: "var", name: "T", usageScopeID: 3740, usageSpan: span{from: 2820, to: 2821}}
 scope.Usage{definitionScopeID: 4166, defnSpan: span{from: 2870, to: 2871}, kind: "var", name: "I", usageScopeID: 4166, usageSpan: span{from: 2900, to: 2901}}
 scope.Usage{definitionScopeID: 4166, defnSpan: span{from: 2870, to: 2871}, kind: "var", name: "I", usageScopeID: 4166, usageSpan: span{from: 2936, to: 2937}}
 scope.Usage{definitionScopeID: 4166, defnSpan: span{from: 2879, to: 2880}, kind: "var", name: "T", usageScopeID: 4166, usageSpan: span{from: 3009, to: 3010}}

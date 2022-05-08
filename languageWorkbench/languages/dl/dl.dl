@@ -34,14 +34,10 @@ scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
 # TODO: bin exprs
-scope.varTerm{scopeID: RuleID, name: N, span: S, kind: "var"} :-
-  ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
-  ast.record{id: RecordID, parentID: ConjunctID} &
-  ast.keyValue{id: KeyValueID, parentID: RecordID} &
-  ast.term{id: ValueTermID, parentID: KeyValueID} &
-  ast.var{parentID: ValueTermID, text: N, span: S}.
+scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
+  scope.ruleTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
+  scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.
+# TODO: make this use ruleTerm and termVar as well
 scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
   ast.record{id: Rec, parentID: Conjunct} &
@@ -83,15 +79,15 @@ scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
   ast.conjunct{id: Conjunct, parentID: Disjunct}.
 # it's kind of an issue that some of them are records
 # and some of them are terms
-scope.ruleTerm{ruleID: Rule, termID: Term} :-
+scope.ruleTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
-  ast.record{id: Term, parentID: Conjunct} |
+  ast.record{id: TermOrRecord, parentID: Conjunct} |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.negation{id: Negation, parentID: Conjunct} &
-  ast.record{id: Term, parentID: Negation} |
+  ast.record{id: TermOrRecord, parentID: Negation} |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.binExpr{id: BinExpr, parentID: Conjunct} &
-  ast.term{id: Term, parentID: BinExpr}.
+  ast.term{id: TermOrRecord, parentID: BinExpr}.
 
 scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
   scope.recordVar{record: TermOrRecord, name: N, span: S} |
