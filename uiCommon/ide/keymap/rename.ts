@@ -35,18 +35,13 @@ export const renameRefactorAction: EditorAction = {
 };
 
 function getSpansToReplace(interp: AbstractInterpreter): Span[] {
-  const results = interp.queryStr(
-    "ide.RenameCandidate{defnLoc: DL, usageLoc: UL}"
-  );
+  const results = interp.queryStr("ide.RenameSpan{defnLoc: DL, usageLoc: UL}");
   return sortSpans(
     uniqBy(
       (s) => `${s.from}`,
-      flatMap(results, (res) => {
+      results.map((res) => {
         const rec = res.term as Rec;
-        return [
-          dlToSpan(rec.attrs.defnLoc as Rec),
-          dlToSpan(rec.attrs.usageLoc as Rec),
-        ];
+        return dlToSpan(rec.attrs.span as Rec);
       })
     )
   );
