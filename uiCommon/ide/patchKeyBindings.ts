@@ -2,15 +2,14 @@ import * as monaco from "monaco-editor";
 import { editor as editorBase } from "monaco-editor";
 import { ContextKeyExpr } from "monaco-editor/esm/vs/platform/contextkey/common/contextkey";
 
+// cobbled together
 // from https://github.com/microsoft/monaco-editor/issues/102#issuecomment-822981429
 // and https://github.com/microsoft/monaco-editor/issues/102#issuecomment-701938863
 
-export function patchKeyBinding(
+export function removeKeyBinding(
   editor: monaco.editor.ICodeEditor,
-  id: string,
-  newKeyBinding?: number,
-  context?: string
-): void {
+  id: string
+) {
   // remove existing one; no official API yet
   // the '-' before the commandId removes the binding
   // as of >=0.21.0 we need to supply a dummy command handler to not get errors (because of the fix for https://github.com/microsoft/monaco-editor/issues/1857)
@@ -19,6 +18,14 @@ export function patchKeyBinding(
     undefined,
     () => {}
   );
+}
+
+export function addKeyBinding(
+  editor: monaco.editor.ICodeEditor,
+  id: string,
+  newKeyBinding?: number,
+  context?: string
+): void {
   if (newKeyBinding) {
     const action = editor.getAction(id);
     const when = ContextKeyExpr.deserialize(context);

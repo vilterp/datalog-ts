@@ -8,7 +8,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
-import { patchKeyBinding } from "./patchKeyBindings";
+import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -43,7 +43,6 @@ export function LingoEditor(props: {
     editorRef.current = editor;
 
     updateMarkers(editor);
-    updateKeyBindings(editor);
 
     editor.onDidChangeCursorPosition((evt) => {
       const value = editor.getModel().getValue();
@@ -55,15 +54,26 @@ export function LingoEditor(props: {
       });
     });
 
+    // Remove key bindings that are already there
+    Object.keys(KEY_MAP).map((actionID) => {
+      removeKeyBinding(editor, actionID);
+    });
+
+    // When an editor focuses, bind. When it blurs, unbind.
+    // This is hacking around the fact that if we just patch the
+    // bindings on each editor, they'll interfere with each other...
+    // i.e. jump-to-defn on one will try to jump to another :facepalm:
+    // TODO: file this as an issue in Monaco, lol.
     editor.onDidFocusEditorText(() => {
-      console.log("focus");
-      // TODO: patch key bindings
+      Object.keys(KEY_MAP).map((actionID) => {
+        addKeyBinding(editor, actionID, KEY_MAP[actionID]);
+      });
     });
 
     editor.onDidBlurEditorText(() => {
-      console.log("blur");
-      // TODO: unpatch key bindings?
-      // is that a thing you can do??? fuck
+      Object.keys(KEY_MAP).map((actionID) => {
+        removeKeyBinding(editor, actionID);
+      });
     });
   }
 
@@ -93,25 +103,9 @@ export function LingoEditor(props: {
   );
 }
 
-function updateKeyBindings(editor: monaco.editor.ICodeEditor) {
-  patchKeyBinding(
-    editor,
-    "editor.action.revealDefinition",
-    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB
-  );
-  patchKeyBinding(
-    editor,
-    "editor.action.goToReferences",
-    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU
-  );
-  patchKeyBinding(
-    editor,
-    "editor.action.marker.next", // go to next problem
-    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE
-  );
-  patchKeyBinding(
-    editor,
-    "editor.action.rename",
-    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ
-  );
-}
+const KEY_MAP = {
+  "editor.action.revealDefinition": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
+  "editor.action.goToReferences": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,
+  "editor.action.marker.next": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
+  "editor.action.rename": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ,
+};
