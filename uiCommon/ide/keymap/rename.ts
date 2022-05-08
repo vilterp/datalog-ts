@@ -1,13 +1,9 @@
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { Rec } from "../../../core/types";
+import { dlToSpan } from "../../../languageWorkbench/sourcePositions";
 import { flatMap, uniqBy } from "../../../util/util";
-import {
-  ActionContext,
-  dlToSpan,
-  EditorAction,
-  EditorState,
-  Span,
-} from "./types";
+import { EditorState } from "../types";
+import { ActionContext, EditorAction, Span } from "./types";
 import {
   getCursor,
   replaceAtSpan,

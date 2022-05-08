@@ -91,6 +91,7 @@ function Playground() {
                 setEditorState={setExampleEditorState}
                 langSpec={langSpec}
                 lineNumbers="off"
+                showKeyBindingsTable
               />
               <ErrorList errors={langParseError ? [langParseError] : []} />
             </td>

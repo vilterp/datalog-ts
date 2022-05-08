@@ -1,6 +1,7 @@
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { Int, Rec } from "../../../core/types";
-import { Span, dlToSpan } from "./types";
+import { dlToSpan } from "../../../languageWorkbench/sourcePositions";
+import { Span } from "./types";
 
 export function replaceAtSpan(source: string, span: Span, newText: string) {
   return source.substring(0, span.from) + newText + source.substring(span.to);

@@ -1,12 +1,8 @@
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { Rec } from "../../../core/types";
-import {
-  Span,
-  dlToSpan,
-  EditorAction,
-  ActionContext,
-  EditorState,
-} from "./types";
+import { dlToSpan } from "../../../languageWorkbench/sourcePositions";
+import { EditorState } from "../types";
+import { Span, EditorAction, ActionContext } from "./types";
 import { getPlaceholders, getCursor, spanContainsIdx } from "./util";
 
 export const jumpToDefnAction: EditorAction = {

@@ -9,6 +9,12 @@ import {
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
+import { KeyBindingsTable } from "./keymap/keyBindingsTable";
+import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { LOADER } from "../../languageWorkbench/commonDL";
+
+const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -17,6 +23,7 @@ export function LingoEditor(props: {
   width?: number;
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
+  showKeyBindingsTable?: boolean;
 }) {
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -85,6 +92,13 @@ export function LingoEditor(props: {
     updateMarkers(editorRef.current);
   };
 
+  const withoutCursor = constructInterp(
+    INIT_INTERP,
+    props.langSpec,
+    props.editorState.source
+  ).interp;
+  const interp = addCursor(withoutCursor, props.editorState.cursorPos);
+
   return (
     <div style={{ border: "1px solid black", padding: 5 }}>
       <Editor
@@ -102,6 +116,14 @@ export function LingoEditor(props: {
         beforeMount={handleBeforeMount}
         onMount={handleOnMount}
       />
+      {props.showKeyBindingsTable ? (
+        <KeyBindingsTable
+          actionCtx={{
+            interp,
+            state: props.editorState,
+          }}
+        />
+      ) : null}
     </div>
   );
 }
