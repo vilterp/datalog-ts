@@ -127,6 +127,8 @@ export function LingoEditor(props: {
   );
 }
 
+// matches uiCommon/ide/editor.tsx
+// TODO: DRY up
 const KEY_MAP = {
   "editor.action.revealDefinition": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
   "editor.action.goToReferences": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,

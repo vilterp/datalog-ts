@@ -7,7 +7,8 @@ import {
 } from "./jumpTo";
 import { renameRefactorAction } from "./rename";
 
-// matches
+// matches uiCommon/ide/editor.tsx
+// TODO: DRY up
 export const keyMap: { [key: string]: EditorAction } = {
   b: jumpToDefnAction,
   u: jumpToFirstUsageAction,
