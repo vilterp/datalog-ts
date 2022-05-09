@@ -291,7 +291,7 @@ function getRenameEdits(
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
   const edit = new vscode.WorkspaceEdit();
-  results.forEach((res) => {
+  uniqBy((res) => ppt(res.term), results).forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
     edit.replace(document.uri, range, newName);

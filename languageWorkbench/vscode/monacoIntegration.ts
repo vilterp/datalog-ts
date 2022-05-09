@@ -287,7 +287,7 @@ function getRenameEdits(
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
   const edits: monaco.languages.WorkspaceTextEdit[] = [];
-  results.forEach((res) => {
+  uniqBy((res) => ppt(res.term), results).forEach((res) => {
     const result = res.term as Rec;
     const range = spanToRange(source, result.attrs.span as Rec);
     edits.push({
