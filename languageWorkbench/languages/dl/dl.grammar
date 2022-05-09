@@ -7,16 +7,17 @@ fact :- [record, "."].
 
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
-conjunct :- (record | binExpr | negation).
+conjunct :- (record | binExpr | negation | placeholder).
 negation :- ["!", record].
 
 binExpr :- [term, ws, binOp, ws, term].
 binOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
 
-term :- (record | int | var | string | bool | array | placeholder).
+term :- (record | int | var | string | bool | array).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
-record :- [(ident | placeholder), "{", ws, repSep(keyValue, commaSpace), ws, "}"].
-keyValue :- [(ident | placeholder), ":", ws, term].
+record :- [ident, "{", ws, recordAttrs, ws, "}"].
+recordAttrs :- repSep((keyValue | placeholder), commaSpace).
+keyValue :- [ident, ":", ws, term].
 int :- [("-" | ""), num, repSep(num, "")].
 bool :- ("true" | "false").
 array :- ["[", repSep(term, commaSpace), "]"].
