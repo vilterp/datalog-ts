@@ -38,7 +38,8 @@ scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
   scope.ruleBodyTerm{termOrRecord: Rec} &
   ast.record{id: Rec} &
   ast.ident{parentID: Rec, text: Relation} &
-  ast.keyValue{id: KV, parentID: Rec} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.keyValue{id: KV, parentID: Attrs} &
   ast.ident{id: I, parentID: KV, text: N, span: S}.
 
 # TODO: get placeholders in nested terms
@@ -49,7 +50,8 @@ scope.Placeholder{scopeID: I, span: S, kind: K} :-
 scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   scope.ruleConjunct{ruleID: RuleID, conjunct: ConjunctID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
-  ast.keyValue{id: KeyValueID, parentID: RecordID} &
+  ast.recordAttrs{id: AttrsID, parentID: RecordID} &
+  ast.keyValue{id: KeyValueID, parentID: AttrsID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.placeholder{parentID: ValueTermID, span: S}.
 scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
