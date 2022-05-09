@@ -45,12 +45,15 @@ function Playground() {
     setExampleSource(example.example);
   };
 
-  const langSpec: LanguageSpec = {
-    name: langName,
-    datalog: dlEditorState.source,
-    grammar: grammarEditorState.source,
-    example: "",
-  };
+  const langSpec: LanguageSpec = useMemo(
+    () => ({
+      name: langName,
+      datalog: dlEditorState.source,
+      grammar: grammarEditorState.source,
+      example: "",
+    }),
+    [langName, dlEditorState.source, grammarEditorState.source]
+  );
 
   const {
     interp: interpWithoutCursor,
