@@ -4,7 +4,7 @@ import { Explorer } from "../../uiCommon/explorer";
 import { mapObjToList } from "../../util/util";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../../languageWorkbench/languages";
+import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
@@ -45,7 +45,12 @@ function Playground() {
     setExampleSource(example.example);
   };
 
-  const langSpec = LANGUAGES[langName];
+  const langSpec: LanguageSpec = {
+    name: langName,
+    datalog: dlEditorState.source,
+    grammar: grammarEditorState.source,
+    example: "",
+  };
 
   const {
     interp: interpWithoutCursor,
