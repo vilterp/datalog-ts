@@ -45,11 +45,9 @@ scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
   scope.placeholderRule{scopeID: I, span: S, kind: K} |
-  scope.placeholderAttr{scopeID: I, span: S, kind: K}.
+  scope.placeholderKeyValue{scopeID: I, span: S, kind: K}.
 scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
-  ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  scope.ruleConjunct{ruleID: RuleID, conjunct: ConjunctID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
   ast.keyValue{id: KeyValueID, parentID: RecordID} &
   ast.term{id: ValueTermID, parentID: KeyValueID} &
@@ -58,14 +56,13 @@ scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
   ast.disjunct{id: DisjunctID, parentID: RuleID} &
   ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
-  ast.record{id: RecordID, parentID: ConjunctID} &
-  ast.placeholder{parentID: RecordID, span: S}.
-scope.placeholderAttr{scopeID: Relation, span: S, kind: "attr"} :-
+  ast.placeholder{parentID: ConjunctID, span: S}.
+scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
   ast.record{id: Rec, parentID: Conjunct} &
   ast.ident{parentID: Rec, text: Relation} &
-  ast.keyValue{id: KV, parentID: Rec} &
-  ast.placeholder{parentID: KV, span: S}.
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.placeholder{parentID: Attrs, span: S}.
 
 # === rules for traversing into nested terms ===
 
@@ -104,7 +101,8 @@ scope.termVar{term: Term, name: N, span: S} :-
   scope.termVar{term: ArrItemTerm, name: N, span: S}.
 scope.recordVar{record: Record, name: N, span: S} :-
   ast.record{id: Record} &
-  ast.keyValue{id: KeyValue, parentID: Record} &
+  ast.recordAttrs{id: Attrs, parentID: Record} &
+  ast.keyValue{id: KeyValue, parentID: Attrs} &
   ast.term{id: ValueTerm, parentID: KeyValue} &
   scope.termVar{term: ValueTerm, name: N, span: S}.
 
@@ -131,7 +129,8 @@ tc.ruleAttr{rule: RuleName, attr: Attr, span: S} :-
   ast.rule{id: Rule} &
   ast.record{id: Rec, parentID: Rule} &
   ast.ident{parentID: Rec, text: RuleName} &
-  ast.keyValue{id: KV, parentID: Rec} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.keyValue{id: KV, parentID: Attrs} &
   ast.ident{parentID: KV, text: Attr, span: S}.
 
 hl.mapping{rule: "ident", type: "ident"}.
