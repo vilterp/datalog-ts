@@ -31,7 +31,8 @@ scope.Usage{
   kind: K
 } :-
   scope.Item{scopeID: US, defnSpan: DL, name: N, defnScopeID: DS, kind: K} &
-  scope.Var{scopeID: US, span: UL, name: N, kind: K}.
+  scope.Var{scopeID: US, span: UL, name: N, kind: K} &
+  DL != UL.
 
 # === Rename ===
 
