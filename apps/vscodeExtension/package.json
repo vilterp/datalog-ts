@@ -20,13 +20,15 @@
         "id": "datalog",
         "extensions": [
           ".dl"
-        ]
+        ],
+        "configuration": "./dl-language-configuration.json"
       },
       {
         "id": "grammar",
         "extensions": [
           ".grammar"
-        ]
+        ],
+        "configuration": "./grammar-language-configuration.json"
       }
     ],
     "commands": [
