@@ -25,6 +25,7 @@ export function LingoEditor(props: {
       props.langSpec,
       newSource
     ).interp;
+    // TODO: incrementally process changes to the source
     props.setEditorState({
       ...props.editorState,
       interp: newInterp,
