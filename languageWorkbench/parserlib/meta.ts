@@ -45,13 +45,14 @@ export function parseGrammar(input: string): Grammar {
 
 // hardcoded grammar for parsing grammar rules
 export const metaGrammar: Grammar = {
-  grammar: repSep(ref("ruleDefn"), whitespace),
+  grammar: repSep(choice([ref("ruleDefn"), ref("comment")]), whitespace),
   ruleDefn: seq([
     ref("ruleName"),
     spaceAround(text(":-")),
     ref("rule"),
     text("."),
   ]),
+  comment: seq([text("#"), repSep(ref("commentChar"), text(""))]),
   ruleName: ident,
   rule: choice([
     ref("seq"),
@@ -83,6 +84,7 @@ export const metaGrammar: Grammar = {
   crLiteral: seq([text("'"), ref("singleChar"), text("'")]),
   crAny: text("."),
   singleChar: charRule(anyChar), // TODO: escaping
+  commentChar: charRule(notChar(literalChar("\n"))),
   repSep: seq([
     text("repSep("),
     ref("rule"),
@@ -94,9 +96,18 @@ export const metaGrammar: Grammar = {
 
 export function extractGrammar(input: string, rt: RuleTree): Grammar {
   const out: Grammar = {};
-  rt.children.forEach((ruleDefn) => {
-    const name = textForSpan(input, childByName(ruleDefn, "ruleName").span);
-    const rule = extractRule(input, childByName(ruleDefn, "rule").children[0]);
+  rt.children.forEach((ruleDefnOrComment) => {
+    if (ruleDefnOrComment.name === "comment") {
+      return;
+    }
+    const name = textForSpan(
+      input,
+      childByName(ruleDefnOrComment, "ruleName").span
+    );
+    const rule = extractRule(
+      input,
+      childByName(ruleDefnOrComment, "rule").children[0]
+    );
     out[name] = rule;
   });
   return out;

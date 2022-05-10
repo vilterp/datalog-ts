@@ -1,5 +1,6 @@
-main :- repSep(ruleDefn, ws).
+main :- repSep((ruleDefn | comment), ws).
 
+comment :- ["#", repSep(commentChar, "")].
 ruleDefn :- [ident, ws, ":-", ws, rule, "."].
 
 rule :- (seq | choice | ref | text | charRule | repSep | placeholder).
@@ -26,3 +27,4 @@ alphaNum :- (alpha | num).
 alpha :- ([a-z] | [A-Z]).
 num :- [0-9].
 stringChar :- (^'"' | ['\', '"']).
+commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | "," | "-" | "'" | "\"" | "/" | "?" | "&" | "|").
