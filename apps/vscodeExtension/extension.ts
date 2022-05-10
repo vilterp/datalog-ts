@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
       context.subscriptions.push(diagnostics);
       subscribeToCurrentDoc((doc) => {
         console.log("updating interp cache for", doc);
-        if (doc.uri.toString().endsWith(spec.name)) {
+        if (doc.languageId === spec.name) {
           const interpAndSource = interpGetter.getInterp(doc);
           refreshDiagnostics(interpAndSource, doc, diagnostics);
         }
