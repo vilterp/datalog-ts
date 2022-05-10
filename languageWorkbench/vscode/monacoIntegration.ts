@@ -236,7 +236,6 @@ function getHighlights(
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
-  console.log("get some highlights:", position.lineNumber, position.column);
   const source = document.getValue();
   if (source !== interpAndSource.source) {
     console.error("not matching", {
@@ -249,6 +248,18 @@ function getHighlights(
   // pattern match `span` to avoid getting `"builtin"`
   const results = interp2.queryStr(
     `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}`
+  );
+  console.log(
+    "get some highlights:",
+    position.lineNumber,
+    position.column,
+    idx,
+    results.map((res) => {
+      const result = res.term as Rec;
+      const span = dlToSpan(result.attrs.span as Rec);
+      const sliced = source.slice(span.from, span.to);
+      return [ppt(res.term), sliced];
+    })
   );
   return results.map((res) => {
     const result = res.term as Rec;
