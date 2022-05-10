@@ -40,38 +40,9 @@ type InterpCacheEntry = {
   lastResult: ConstructInterpRes;
 };
 
-export function constructInterp(
-  cache: InterpCache,
-  initInterp: AbstractInterpreter,
-  fileName: string,
-  langSpec: LanguageSpec,
-  source: string
-): { cache: InterpCache; res: ConstructInterpRes } {
-  const entry = cache[fileName];
-  if (
-    entry &&
-    initInterp === entry.lastInitInterp &&
-    langSpec === entry.lastLangSpec &&
-    source === entry.lastSource
-  ) {
-    return { cache, res: entry.lastResult };
-  }
-  const newEntry: InterpCacheEntry = {
-    lastResult: constructInterpInner(initInterp, langSpec, source),
-    lastInitInterp: initInterp,
-    lastLangSpec: langSpec,
-    lastSource: source,
-  };
-  const newCache = {
-    ...cache,
-    [fileName]: newEntry,
-  };
-  return { cache: newCache, res: newEntry.lastResult };
-}
-
 // TODO: separate function to inject the langSource
 // so we can memoize that separately
-function constructInterpInner(
+export function constructInterp(
   initInterp: AbstractInterpreter,
   langSpec: LanguageSpec,
   source: string

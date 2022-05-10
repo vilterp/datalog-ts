@@ -16,7 +16,8 @@ import { InterpGetter } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditorInner(props: {
   editorState: EditorState;
-  setEditorState: (st: EditorState) => void;
+  setCursorPos: (pos: number) => void;
+  setSource: (source: string) => void;
   langSpec: LanguageSpec;
   interp: AbstractInterpreter;
   width?: number;
@@ -72,10 +73,7 @@ export function LingoEditorInner(props: {
       // tried not to earlier, and it made it un-editable...
       const newIdx = idxFromPosition(value, evt.position);
       console.log("setting cursor idx to", newIdx);
-      props.setEditorState({
-        source: value,
-        cursorPos: newIdx,
-      });
+      props.setCursorPos(newIdx);
     });
 
     // Remove key bindings that are already there
@@ -104,7 +102,7 @@ export function LingoEditorInner(props: {
   }
 
   const setSource = (source: string) => {
-    props.setEditorState({ ...props.editorState, source });
+    props.setSource(source);
     updateMarkers(editorRef.current);
   };
 
