@@ -1,6 +1,6 @@
 import * as monaco from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
@@ -11,35 +11,35 @@ import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { addCursor } from "../../languageWorkbench/interp";
-import { InterpGetter } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditorInner(props: {
   editorState: EditorState;
-  setCursorPos: (pos: number) => void;
-  setSource: (source: string) => void;
+  setEditorState: (st: EditorState) => void;
   langSpec: LanguageSpec;
+  interp: AbstractInterpreter;
   width?: number;
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
 }) {
   console.log("render editorInner", props.editorState);
-  const interpGetter: InterpGetter = {
-    getInterp: () => {
-      const out = {
-        interp: props.editorState.interp,
-        source: props.editorState.source,
-      };
-      console.log("getInterp", out);
-      return out;
-    },
-  };
+  const interpRef = useRef<{ interp: AbstractInterpreter; source: string }>({
+    interp: props.interp,
+    source: props.editorState.source,
+  });
+
+  // apparently the ref doesn't get updated if we don't do this
+  useEffect(() => {
+    interpRef.current = {
+      interp: props.interp,
+      source: props.editorState.source,
+    };
+  }, [props.interp, props.editorState.source]);
 
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
   }
 
   useEffect(() => {
@@ -48,13 +48,13 @@ export function LingoEditorInner(props: {
     }
     // make sure to register support for new langauge when we switch
     // languages.
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
-  }, [props.langSpec, monacoRef.current]);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
+  }, [props.langSpec, monacoRef.current, interpRef]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
     const markers = getMarkers(
-      { interp: props.editorState.interp, source: props.editorState.source },
+      { interp: props.interp, source: props.editorState.source },
       model
     );
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
@@ -70,9 +70,10 @@ export function LingoEditorInner(props: {
       const value = editor.getModel().getValue();
       // TODO: can we get away without setting the value here?
       // tried not to earlier, and it made it un-editable...
-      const newIdx = idxFromPosition(value, evt.position);
-      console.log("setting cursor idx to", newIdx);
-      props.setCursorPos(newIdx);
+      props.setEditorState({
+        source: value,
+        cursorPos: idxFromPosition(value, evt.position),
+      });
     });
 
     // Remove key bindings that are already there
@@ -101,15 +102,9 @@ export function LingoEditorInner(props: {
   }
 
   const setSource = (source: string) => {
-    console.log("setSource", source);
-    props.setSource(source);
+    props.setEditorState({ ...props.editorState, source });
     updateMarkers(editorRef.current);
   };
-
-  const withCursor = addCursor(
-    props.editorState.interp,
-    props.editorState.cursorPos
-  );
 
   return (
     <div style={{ display: "flex" }}>
@@ -133,7 +128,7 @@ export function LingoEditorInner(props: {
       {props.showKeyBindingsTable ? (
         <KeyBindingsTable
           actionCtx={{
-            interp: withCursor,
+            interp: props.interp,
             state: props.editorState,
           }}
         />
