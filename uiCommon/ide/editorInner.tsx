@@ -23,7 +23,13 @@ export function LingoEditorInner(props: {
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
 }) {
-  const interpGetter: InterpGetter = { getInterp: () => props.interp };
+  console.log("render editorInner", props.editorState);
+  const interpGetter: InterpGetter = {
+    getInterp: () => ({
+      interp: props.interp,
+      source: props.editorState.source,
+    }),
+  };
 
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -42,7 +48,10 @@ export function LingoEditorInner(props: {
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
-    const markers = getMarkers(props.interp, model);
+    const markers = getMarkers(
+      { interp: props.interp, source: props.editorState.source },
+      model
+    );
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
   }
 
@@ -98,7 +107,7 @@ export function LingoEditorInner(props: {
         <Editor
           width={props.width || 500}
           height={props.height || 400}
-          value={props.editorState.source}
+          defaultValue={props.editorState.source}
           onChange={setSource}
           language={props.langSpec.name}
           options={{

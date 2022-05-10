@@ -15,6 +15,7 @@ export function LingoEditor(props: {
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
 }) {
+  console.log("render editor", props.editorState);
   // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
   // instances... sigh
   const withoutCursor = useMemo(
