@@ -386,8 +386,6 @@ export function getMarkers(
   interp: AbstractInterpreter,
   document: monaco.editor.ITextModel
 ): monaco.editor.IMarker[] {
-  const source = document.getValue();
-
   const problems = interp.queryStr("tc.Problem{}");
   return problems.map((res) => problemToDiagnostic(document, res.term as Rec));
 }
