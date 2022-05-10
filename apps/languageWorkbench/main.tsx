@@ -55,15 +55,14 @@ function Playground() {
     [langName, dlEditorState.source, grammarEditorState.source]
   );
 
+  const exampleFileName = `example.${langSpec.name}`;
+
   const {
     interp: interpWithoutCursor,
     allGrammarErrors,
     langParseError,
     dlErrors,
-  } = useMemo(
-    () => constructInterp(INIT_INTERP, langSpec, langSource),
-    [langSpec, langSource]
-  );
+  } = constructInterp(INIT_INTERP, langSpec, exampleFileName, langSource);
   const interp = addCursor(interpWithoutCursor, cursorPos);
 
   return (
@@ -95,6 +94,7 @@ function Playground() {
                 editorState={exampleEditorState}
                 setEditorState={setExampleEditorState}
                 langSpec={langSpec}
+                fileName={exampleFileName}
                 lineNumbers="off"
                 showKeyBindingsTable
               />
@@ -105,6 +105,7 @@ function Playground() {
               <LingoEditor
                 editorState={grammarEditorState}
                 setEditorState={setGrammarEditorState}
+                fileName={`${langSpec.name}.grammar`}
                 langSpec={LANGUAGES.grammar}
                 lineNumbers="off"
               />
@@ -115,6 +116,7 @@ function Playground() {
               <LingoEditor
                 editorState={dlEditorState}
                 setEditorState={setDLEditorState}
+                fileName={`${langSpec.name}.dl`}
                 langSpec={LANGUAGES.datalog}
                 lineNumbers="off"
               />

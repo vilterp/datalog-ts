@@ -33,6 +33,7 @@ function Main() {
         langSpec={LANGUAGES.datalog}
         editorState={editorState}
         setEditorState={setEditorState}
+        fileName="myfile.dl"
         width={800}
         height={500}
         lineNumbers="on"

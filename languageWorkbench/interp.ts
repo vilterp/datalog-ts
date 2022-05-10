@@ -40,21 +40,23 @@ type InterpCacheEntry = {
   lastResult: ConstructInterpRes;
 };
 
+// uh-oh, mutable global state!
+const INTERP_CACHE: InterpCache = {};
+
 export function constructInterp(
-  cache: InterpCache,
   initInterp: AbstractInterpreter,
-  fileName: string,
   langSpec: LanguageSpec,
+  fileName: string,
   source: string
-): { cache: InterpCache; res: ConstructInterpRes } {
-  const entry = cache[fileName];
+): ConstructInterpRes {
+  const entry = INTERP_CACHE[fileName];
   if (
     entry &&
     initInterp === entry.lastInitInterp &&
     langSpec === entry.lastLangSpec &&
     source === entry.lastSource
   ) {
-    return { cache, res: entry.lastResult };
+    return entry.lastResult;
   }
   const newEntry: InterpCacheEntry = {
     lastResult: constructInterpInner(initInterp, langSpec, source),
@@ -62,11 +64,8 @@ export function constructInterp(
     lastLangSpec: langSpec,
     lastSource: source,
   };
-  const newCache = {
-    ...cache,
-    [fileName]: newEntry,
-  };
-  return { cache: newCache, res: newEntry.lastResult };
+  INTERP_CACHE[fileName] = newEntry;
+  return newEntry.lastResult;
 }
 
 // TODO: separate function to inject the langSource

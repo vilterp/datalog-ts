@@ -9,6 +9,8 @@ import { LANGUAGES } from "../../languageWorkbench/languages";
 import { addCursor, constructInterp } from "../../languageWorkbench/interp";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
+const FILE_NAME = "myfile.fp";
+
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
     "fp-editor-state",
@@ -18,6 +20,7 @@ function Main() {
   const { interp: withoutCursor } = constructInterp(
     INIT_INTERP,
     LANGUAGES.fp,
+    FILE_NAME,
     editorState.source
   );
   const interp = addCursor(withoutCursor, editorState.cursorPos);
@@ -30,6 +33,7 @@ function Main() {
         editorState={editorState}
         setEditorState={setEditorState}
         langSpec={LANGUAGES.fp}
+        fileName={FILE_NAME}
       />
       <CollapsibleWithHeading
         heading="Facts &amp; Rules"

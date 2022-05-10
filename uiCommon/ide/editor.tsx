@@ -10,6 +10,7 @@ export function LingoEditor(props: {
   editorState: EditorState;
   setEditorState: (st: EditorState) => void;
   langSpec: LanguageSpec;
+  fileName: string; // TODO: come up with a default?
   width?: number;
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
@@ -18,12 +19,12 @@ export function LingoEditor(props: {
   console.log("render editor", props.editorState);
   // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
   // instances... sigh
-  const interp = useMemo(
-    () =>
-      constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
-        .interp,
-    [props.langSpec, props.editorState.source]
-  );
+  const interp = constructInterp(
+    INIT_INTERP,
+    props.langSpec,
+    props.fileName,
+    props.editorState.source
+  ).interp;
 
   return (
     <LingoEditorInner
