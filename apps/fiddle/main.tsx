@@ -11,6 +11,8 @@ import { LANGUAGES } from "../../languageWorkbench/languages";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { LingoEditor } from "../../uiCommon/ide/editor";
+import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -18,13 +20,19 @@ function Main() {
     initialEditorState(familyDL)
   );
 
-  let error = null;
-  let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
-  try {
-    interp = interp.evalStr(editorState.source)[1];
-  } catch (e) {
-    error = e.toString();
-  }
+  // let error = null;
+  // let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
+  // try {
+  //   interp = interp.evalStr(editorState.source)[1];
+  // } catch (e) {
+  //   error = e.toString();
+  // }
+  const withoutCursor = constructInterp(
+    INIT_INTERP,
+    LANGUAGES.datalog,
+    editorState.source
+  ).interp;
+  const interp = addCursor(withoutCursor, editorState.cursorPos);
 
   return (
     <div>
@@ -34,17 +42,11 @@ function Main() {
         editorState={editorState}
         setEditorState={setEditorState}
         width={800}
-        height={1000}
+        height={500}
         lineNumbers="on"
         showKeyBindingsTable
       />
       <br />
-      {error ? (
-        <>
-          <h3>Error</h3>
-          <pre style={{ fontFamily: "monospace", color: "red" }}>{error}</pre>
-        </>
-      ) : null}
       <CollapsibleWithHeading
         heading="Explore"
         content={<Explorer interp={interp} showViz />}

@@ -366,6 +366,11 @@ function getSemanticTokens(
 ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
   const source = document.getValue();
   const results = interp.queryStr("hl.NonHighlightSegment{}");
+  console.log(
+    "getSemanticTokens",
+    source,
+    results.map((res) => ppt(res.term))
+  );
 
   const builder = new SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
