@@ -181,6 +181,12 @@ function getDefinition(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -207,6 +213,12 @@ function getReferences(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -235,6 +247,12 @@ function getHighlights(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -260,6 +278,12 @@ function getCompletionItems(
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -293,6 +317,12 @@ function getRenameEdits(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.WorkspaceEdit> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -315,6 +345,12 @@ function prepareRename(
   position: vscode.Position
 ): vscode.ProviderResult<vscode.Range> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -336,6 +372,12 @@ function getSymbolList(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
 
   const results = interpAndSource.interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -360,6 +402,12 @@ function getSemanticTokens(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
   const results = interpAndSource.interp.queryStr("hl.NonHighlightSegment{}");
 
   const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
@@ -382,6 +430,12 @@ export function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
+  if (source !== interpAndSource.source) {
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
 
   const problems = interpAndSource.interp.queryStr("tc.Problem{}");
   const diags = problems.map((res) =>
