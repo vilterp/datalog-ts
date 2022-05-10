@@ -8,15 +8,12 @@ import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-
-export interface InterpGetter {
-  getInterp(): { interp: AbstractInterpreter; source: string };
-}
+import { RefObject } from "react";
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,
   spec: LanguageSpec,
-  interpGetter: InterpGetter
+  interpRef: RefObject<{ interp: AbstractInterpreter; source: string }>
 ): monaco.IDisposable[] {
   const subscriptions: monaco.IDisposable[] = [];
 
@@ -31,8 +28,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Definition> {
         try {
-          const interp = interpGetter.getInterp();
-          return getDefinition(interp, document, position, token);
+          const interpAndSource = interpRef.current;
+          return getDefinition(interpAndSource, document, position, token);
         } catch (e) {
           console.error("in definition provider:", e);
         }
@@ -50,7 +47,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
         try {
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           return getReferences(interp, document, position, context, token);
         } catch (e) {
           console.error("in reference provider:", e);
@@ -68,7 +65,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
         try {
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           return getHighlights(interp, document, position, token);
         } catch (e) {
           console.error("in highlight provider:", e);
@@ -87,7 +84,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
         try {
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           return getCompletionItems(interp, document, position, token, context);
         } catch (e) {
           console.error("in completion provider:", e);
@@ -106,7 +103,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
         try {
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           return getRenameEdits(interp, document, position, newName, token);
         } catch (e) {
           console.error("in rename provider:", e);
@@ -118,7 +115,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
         try {
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           return prepareRename(interp, document, position);
         } catch (e) {
           console.error("in prepare rename:", e);
@@ -135,7 +132,7 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
         try {
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           return getSymbolList(interp, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
@@ -154,7 +151,7 @@ export function registerLanguageSupport(
       ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
         try {
           const before = new Date().getTime();
-          const interp = interpGetter.getInterp();
+          const interp = interpRef.current;
           const tokens = getSemanticTokens(interp, document, token);
           const after = new Date().getTime();
           console.log("getSemanticTokens for", spec.name, after - before, "ms");

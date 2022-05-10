@@ -5,7 +5,6 @@ import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
   idxFromPosition,
-  InterpGetter,
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
@@ -29,16 +28,10 @@ export function LingoEditorInner(props: {
     source: props.editorState.source,
   });
 
-  const interpGetter: InterpGetter = {
-    getInterp: () => {
-      return interpRef.current;
-    },
-  };
-
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
   }
 
   useEffect(() => {
@@ -47,8 +40,8 @@ export function LingoEditorInner(props: {
     }
     // make sure to register support for new langauge when we switch
     // languages.
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
-  }, [props.langSpec, monacoRef.current, interpGetter]);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
+  }, [props.langSpec, monacoRef.current, interpRef]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
