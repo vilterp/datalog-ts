@@ -48,7 +48,7 @@ export function LingoEditorInner(props: {
     // make sure to register support for new langauge when we switch
     // languages.
     registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
-  }, [props.langSpec, monacoRef.current, interpGetter]);
+  }, [props.langSpec, monacoRef.current]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
