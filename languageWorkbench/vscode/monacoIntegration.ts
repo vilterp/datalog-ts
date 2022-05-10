@@ -7,10 +7,16 @@ import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+
+export interface InterpGetter {
+  getInterp(): AbstractInterpreter;
+}
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,
-  spec: LanguageSpec
+  spec: LanguageSpec,
+  interpGetter: InterpGetter
 ): monaco.IDisposable[] {
   const subscriptions: monaco.IDisposable[] = [];
 
@@ -25,7 +31,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Definition> {
         try {
-          return getDefinition(spec, document, position, token);
+          const interp = interpGetter.getInterp();
+          return getDefinition(interp, document, position, token);
         } catch (e) {
           console.error("in definition provider:", e);
         }
@@ -43,7 +50,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
         try {
-          return getReferences(spec, document, position, context, token);
+          const interp = interpGetter.getInterp();
+          return getReferences(interp, document, position, context, token);
         } catch (e) {
           console.error("in reference provider:", e);
         }
@@ -60,7 +68,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
         try {
-          return getHighlights(spec, document, position, token);
+          const interp = interpGetter.getInterp();
+          return getHighlights(interp, document, position, token);
         } catch (e) {
           console.error("in highlight provider:", e);
         }
@@ -72,13 +81,14 @@ export function registerLanguageSupport(
   subscriptions.push(
     monacoInstance.languages.registerCompletionItemProvider(spec.name, {
       provideCompletionItems(
-        model: monaco.editor.ITextModel,
+        document: monaco.editor.ITextModel,
         position: monaco.Position,
         context: monaco.languages.CompletionContext,
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
         try {
-          return getCompletionItems(spec, model, position, token, context);
+          const interp = interpGetter.getInterp();
+          return getCompletionItems(interp, document, position, token, context);
         } catch (e) {
           console.error("in completion provider:", e);
         }
@@ -96,18 +106,20 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
         try {
-          return getRenameEdits(spec, document, position, newName, token);
+          const interp = interpGetter.getInterp();
+          return getRenameEdits(interp, document, position, newName, token);
         } catch (e) {
           console.error("in rename provider:", e);
         }
       },
       resolveRenameLocation(
-        model: monaco.editor.ITextModel,
+        document: monaco.editor.ITextModel,
         position: monaco.Position,
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
         try {
-          return prepareRename(spec, model, position);
+          const interp = interpGetter.getInterp();
+          return prepareRename(interp, document, position);
         } catch (e) {
           console.error("in prepare rename:", e);
         }
@@ -123,7 +135,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
         try {
-          return getSymbolList(spec, document, token);
+          const interp = interpGetter.getInterp();
+          return getSymbolList(interp, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
         }
@@ -135,13 +148,14 @@ export function registerLanguageSupport(
   subscriptions.push(
     monacoInstance.languages.registerDocumentSemanticTokensProvider(spec.name, {
       provideDocumentSemanticTokens(
-        model: monaco.editor.ITextModel,
+        document: monaco.editor.ITextModel,
         lastResultId: string | null,
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
         try {
           const before = new Date().getTime();
-          const tokens = getSemanticTokens(spec, model, token);
+          const interp = interpGetter.getInterp();
+          const tokens = getSemanticTokens(interp, document, token);
           const after = new Date().getTime();
           console.log("getSemanticTokens for", spec.name, after - before, "ms");
           return tokens;
@@ -162,13 +176,12 @@ export function registerLanguageSupport(
 }
 
 function getDefinition(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.Definition> {
   const source = document.getValue();
-  const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
   const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
   if (results.length === 0) {
@@ -182,14 +195,13 @@ function getDefinition(
 }
 
 function getReferences(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   context: monaco.languages.ReferenceContext,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
   const source = document.getValue();
-  const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
   const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
   return results.map((res) => ({
@@ -204,13 +216,12 @@ const HIGHLIGHT_KINDS = {
 };
 
 function getHighlights(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
   const source = document.getValue();
-  const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   // pattern match `span` to avoid getting `"builtin"`
@@ -229,7 +240,7 @@ function getHighlights(
 }
 
 function getCompletionItems(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken,
@@ -239,7 +250,6 @@ function getCompletionItems(
   const idx = idxFromPosition(source, position);
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
-  const interp = getInterp(spec, sourceWithPlaceholder);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
@@ -274,7 +284,7 @@ function getCompletionItems(
 }
 
 function getRenameEdits(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   newName: string,
@@ -282,7 +292,6 @@ function getRenameEdits(
 ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
   const source = document.getValue();
   const idx = idxFromPosition(source, position);
-  const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
@@ -302,13 +311,12 @@ function getRenameEdits(
 }
 
 function prepareRename(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   position: monaco.Position
 ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
   const source = document.getValue();
   const idx = idxFromPosition(source, position);
-  const interp = getInterp(spec, source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
@@ -326,12 +334,11 @@ function prepareRename(
 }
 
 function getSymbolList(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
   const source = document.getValue();
-  const interp = getInterp(spec, source);
 
   const results = interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -353,12 +360,11 @@ function getSymbolList(
 }
 
 function getSemanticTokens(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
   const source = document.getValue();
-  const interp = getInterp(spec, source);
   const results = interp.queryStr("hl.NonHighlightSegment{}");
 
   const builder = new SemanticTokensBuilder(semanticTokensLegend);
@@ -377,11 +383,10 @@ const semanticTokensLegend: monaco.languages.SemanticTokensLegend = {
 };
 
 export function getMarkers(
-  spec: LanguageSpec,
+  interp: AbstractInterpreter,
   document: monaco.editor.ITextModel
 ): monaco.editor.IMarker[] {
   const source = document.getValue();
-  const interp = getInterp(spec, source);
 
   const problems = interp.queryStr("tc.Problem{}");
   return problems.map((res) => problemToDiagnostic(document, res.term as Rec));
