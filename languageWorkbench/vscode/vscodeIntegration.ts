@@ -9,14 +9,12 @@ import {
 import { ppt } from "../../core/pretty";
 import {
   assertMatching,
-  getInterp,
   GLOBAL_SCOPE,
   InterpAndSource,
   InterpGetter,
   TOKEN_TYPES,
 } from "./common";
 import { uniqBy } from "../../util/util";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 export function registerLanguageSupport(
   spec: LanguageSpec,
