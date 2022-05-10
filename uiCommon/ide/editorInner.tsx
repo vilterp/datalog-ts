@@ -14,9 +14,9 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 export function LingoEditorInner(props: {
   editorState: EditorState;
-  setEditorState: (st: EditorState) => void;
+  setCursorPos: (pos: number) => void;
+  setSource: (source: string) => void;
   langSpec: LanguageSpec;
-  interp: AbstractInterpreter;
   width?: number;
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
@@ -24,17 +24,17 @@ export function LingoEditorInner(props: {
 }) {
   console.log("render editorInner", props.editorState);
   const interpRef = useRef<{ interp: AbstractInterpreter; source: string }>({
-    interp: props.interp,
+    interp: props.editorState.interp,
     source: props.editorState.source,
   });
 
   // apparently the ref doesn't get updated if we don't do this
   useEffect(() => {
     interpRef.current = {
-      interp: props.interp,
+      interp: props.editorState.interp,
       source: props.editorState.source,
     };
-  }, [props.interp, props.editorState.source]);
+  }, [props.editorState.interp, props.editorState.source]);
 
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -54,7 +54,7 @@ export function LingoEditorInner(props: {
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
     const markers = getMarkers(
-      { interp: props.interp, source: props.editorState.source },
+      { interp: props.editorState.interp, source: props.editorState.source },
       model
     );
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
@@ -70,10 +70,7 @@ export function LingoEditorInner(props: {
       const value = editor.getModel().getValue();
       // TODO: can we get away without setting the value here?
       // tried not to earlier, and it made it un-editable...
-      props.setEditorState({
-        source: value,
-        cursorPos: idxFromPosition(value, evt.position),
-      });
+      props.setCursorPos(idxFromPosition(value, evt.position));
     });
 
     // Remove key bindings that are already there
@@ -102,7 +99,7 @@ export function LingoEditorInner(props: {
   }
 
   const setSource = (source: string) => {
-    props.setEditorState({ ...props.editorState, source });
+    props.setSource(source);
     updateMarkers(editorRef.current);
   };
 
@@ -128,7 +125,7 @@ export function LingoEditorInner(props: {
       {props.showKeyBindingsTable ? (
         <KeyBindingsTable
           actionCtx={{
-            interp: props.interp,
+            interp: props.editorState.interp,
             state: props.editorState,
           }}
         />
