@@ -24,14 +24,14 @@ export function LingoEditorInner(props: {
   showKeyBindingsTable?: boolean;
 }) {
   console.log("render editorInner", props.editorState);
+  const interpRef = useRef<{ interp: AbstractInterpreter; source: string }>({
+    interp: props.interp,
+    source: props.editorState.source,
+  });
+
   const interpGetter: InterpGetter = {
     getInterp: () => {
-      const out = {
-        interp: props.interp,
-        source: props.editorState.source,
-      };
-      console.log("getInterp", out);
-      return out;
+      return interpRef.current;
     },
   };
 
