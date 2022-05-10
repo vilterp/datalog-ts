@@ -19,7 +19,6 @@ export function LingoEditorInner(props: {
   setCursorPos: (pos: number) => void;
   setSource: (source: string) => void;
   langSpec: LanguageSpec;
-  interp: AbstractInterpreter;
   width?: number;
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
@@ -29,7 +28,7 @@ export function LingoEditorInner(props: {
   const interpGetter: InterpGetter = {
     getInterp: () => {
       const out = {
-        interp: props.interp,
+        interp: props.editorState.interp,
         source: props.editorState.source,
       };
       console.log("getInterp", out);
@@ -55,7 +54,7 @@ export function LingoEditorInner(props: {
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
     const markers = getMarkers(
-      { interp: props.interp, source: props.editorState.source },
+      { interp: props.editorState.interp, source: props.editorState.source },
       model
     );
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
@@ -106,7 +105,10 @@ export function LingoEditorInner(props: {
     updateMarkers(editorRef.current);
   };
 
-  const withCursor = addCursor(props.interp, props.editorState.cursorPos);
+  const withCursor = addCursor(
+    props.editorState.interp,
+    props.editorState.cursorPos
+  );
 
   return (
     <div style={{ display: "flex" }}>

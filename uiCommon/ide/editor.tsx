@@ -39,7 +39,6 @@ export function LingoEditor(props: {
 
   return (
     <LingoEditorInner
-      interp={props.editorState.interp}
       editorState={props.editorState}
       setCursorPos={setCursorPos}
       setSource={setSource}

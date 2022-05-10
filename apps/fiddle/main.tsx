@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 // @ts-ignore
 import familyDL from "../../core/testdata/family_rules.dl";
@@ -10,8 +10,7 @@ import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 
 function Main() {
-  const [editorState, setEditorState] = useJSONLocalStorage(
-    "datalog-fiddle-editor-state",
+  const [editorState, setEditorState] = useState(
     initialEditorState(LANGUAGES.datalog, familyDL)
   );
 
