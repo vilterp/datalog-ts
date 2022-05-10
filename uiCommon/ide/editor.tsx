@@ -5,6 +5,7 @@ import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
   idxFromPosition,
+  InterpGetter,
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
@@ -22,10 +23,24 @@ export function LingoEditor(props: {
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
 }) {
+  // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
+  // instances... sigh
+  const withoutCursor = useMemo(
+    () =>
+      constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
+        .interp,
+    [props.langSpec, props.editorState.source]
+  );
+  const interp = addCursor(withoutCursor, props.editorState.cursorPos);
+
+  const interpGetter: InterpGetter = {
+    getInterp: () => ({ interp, source: props.editorState.source }),
+  };
+
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
   }
 
   useEffect(() => {
@@ -34,12 +49,12 @@ export function LingoEditor(props: {
     }
     // make sure to register support for new langauge when we switch
     // languages.
-    registerLanguageSupport(monacoRef.current, props.langSpec);
-  }, [props.langSpec, monacoRef.current]);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+  }, [props.langSpec, monacoRef.current, interpGetter]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
-    const markers = getMarkers(props.langSpec, model);
+    const markers = getMarkers(interpGetter.getInterp(), model);
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
   }
 
@@ -49,15 +64,15 @@ export function LingoEditor(props: {
 
     updateMarkers(editor);
 
-    editor.onDidChangeCursorPosition((evt) => {
-      const value = editor.getModel().getValue();
-      // TODO: can we get away without setting the value here?
-      // tried not to earlier, and it made it un-editable...
-      props.setEditorState({
-        source: value,
-        cursorPos: idxFromPosition(value, evt.position),
-      });
-    });
+    // editor.onDidChangeCursorPosition((evt) => {
+    //   const value = editor.getModel().getValue();
+    //   // TODO: can we get away without setting the value here?
+    //   // tried not to earlier, and it made it un-editable...
+    //   props.setEditorState({
+    //     source: value,
+    //     cursorPos: idxFromPosition(value, evt.position),
+    //   });
+    // });
 
     // Remove key bindings that are already there
     Object.keys(KEY_MAP).map((actionID) => {
@@ -88,16 +103,6 @@ export function LingoEditor(props: {
     props.setEditorState({ ...props.editorState, source });
     updateMarkers(editorRef.current);
   };
-
-  // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
-  // instances... sigh
-  const withoutCursor = useMemo(
-    () =>
-      constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
-        .interp,
-    [props.langSpec, props.editorState.source]
-  );
-  const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
   return (
     <div style={{ display: "flex" }}>
