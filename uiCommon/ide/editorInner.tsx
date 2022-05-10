@@ -35,6 +35,13 @@ export function LingoEditorInner(props: {
   }
 
   useEffect(() => {
+    interpRef.current = {
+      interp: props.interp,
+      source: props.editorState.source,
+    };
+  }, [props.interp, props.editorState.source]);
+
+  useEffect(() => {
     if (!monacoRef.current) {
       return;
     }
