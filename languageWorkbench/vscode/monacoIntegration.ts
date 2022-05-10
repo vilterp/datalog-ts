@@ -5,9 +5,14 @@ import { Rec, StringLit } from "../../core/types";
 import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
-import { GLOBAL_SCOPE, InterpGetter, TOKEN_TYPES } from "./common";
+import {
+  assertMatching,
+  GLOBAL_SCOPE,
+  InterpAndSource,
+  InterpGetter,
+  TOKEN_TYPES,
+} from "./common";
 import { uniqBy } from "../../util/util";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,
@@ -172,18 +177,13 @@ export function registerLanguageSupport(
 }
 
 function getDefinition(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.Definition> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromPosition(source, position);
   const results = interpAndSource.interp.queryStr(
     `ide.DefnAtPos{idx: ${idx}, defnSpan: US}`
@@ -199,19 +199,14 @@ function getDefinition(
 }
 
 function getReferences(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   context: monaco.languages.ReferenceContext,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromPosition(source, position);
   const results = interpAndSource.interp.queryStr(
     `ide.UsageAtPos{idx: ${idx}, usageSpan: US}`
@@ -228,19 +223,14 @@ const HIGHLIGHT_KINDS = {
 };
 
 function getHighlights(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
   console.log("get some highlights:", position.lineNumber, position.column);
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromPosition(source, position);
   const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   // pattern match `span` to avoid getting `"builtin"`
@@ -259,19 +249,14 @@ function getHighlights(
 }
 
 function getCompletionItems(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   token: monaco.CancellationToken,
   context: monaco.languages.CompletionContext
 ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromPosition(source, position);
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
@@ -309,19 +294,14 @@ function getCompletionItems(
 }
 
 function getRenameEdits(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   position: monaco.Position,
   newName: string,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromPosition(source, position);
   const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
@@ -342,17 +322,12 @@ function getRenameEdits(
 }
 
 function prepareRename(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   position: monaco.Position
 ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromPosition(source, position);
   const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
@@ -371,17 +346,12 @@ function prepareRename(
 }
 
 function getSymbolList(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
 
   const results = interpAndSource.interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -403,17 +373,12 @@ function getSymbolList(
 }
 
 function getSemanticTokens(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
   const source = document.getValue();
-  if (source !== interpAndSource.source) {
-    console.error("not matching", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const results = interpAndSource.interp.queryStr("hl.NonHighlightSegment{}");
   const builder = new SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
@@ -431,7 +396,7 @@ const semanticTokensLegend: monaco.languages.SemanticTokensLegend = {
 };
 
 export function getMarkers(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: monaco.editor.ITextModel
 ): monaco.editor.IMarker[] {
   const problems = interpAndSource.interp.queryStr("tc.Problem{}");

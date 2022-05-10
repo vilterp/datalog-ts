@@ -5,9 +5,24 @@ import { LOADER } from "../commonDL";
 import { constructInterp } from "../interp";
 import { LanguageSpec } from "../languages";
 
+export type InterpAndSource = { interp: AbstractInterpreter; source: string };
+
 export type InterpGetter = {
-  getInterp(): { interp: AbstractInterpreter; source: string };
+  getInterp(): InterpAndSource;
 };
+
+export function assertMatching(
+  interpAndSource: InterpAndSource,
+  source: string
+) {
+  if (source !== interpAndSource.source) {
+    // TODO: throw?
+    console.error("not matching:", {
+      source,
+      givenSource: interpAndSource.source,
+    });
+  }
+}
 
 // needs to match highlight.dl
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification

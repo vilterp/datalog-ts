@@ -7,7 +7,14 @@ import {
   lineAndColFromIdx,
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
-import { getInterp, GLOBAL_SCOPE, InterpGetter, TOKEN_TYPES } from "./common";
+import {
+  assertMatching,
+  getInterp,
+  GLOBAL_SCOPE,
+  InterpAndSource,
+  InterpGetter,
+  TOKEN_TYPES,
+} from "./common";
 import { uniqBy } from "../../util/util";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
@@ -175,18 +182,13 @@ export function registerLanguageSupport(
 }
 
 function getDefinition(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -206,19 +208,14 @@ function getDefinition(
 }
 
 function getReferences(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.ReferenceContext,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -241,18 +238,13 @@ const HIGHLIGHT_KINDS = {
 };
 
 function getHighlights(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -271,19 +263,14 @@ function getHighlights(
 }
 
 function getCompletionItems(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken,
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -310,19 +297,14 @@ function getCompletionItems(
 }
 
 function getRenameEdits(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   position: vscode.Position,
   newName: string,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.WorkspaceEdit> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -340,17 +322,12 @@ function getRenameEdits(
 }
 
 function prepareRename(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   position: vscode.Position
 ): vscode.ProviderResult<vscode.Range> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -367,17 +344,12 @@ function prepareRename(
 }
 
 function getSymbolList(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
 
   const results = interpAndSource.interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -397,17 +369,12 @@ function getSymbolList(
 }
 
 function getSemanticTokens(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
   const results = interpAndSource.interp.queryStr("hl.NonHighlightSegment{}");
 
   const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
@@ -425,17 +392,12 @@ export const semanticTokensLegend = new vscode.SemanticTokensLegend(
 );
 
 export function refreshDiagnostics(
-  interpAndSource: { interp: AbstractInterpreter; source: string },
+  interpAndSource: InterpAndSource,
   document: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
-  if (source !== interpAndSource.source) {
-    console.error("not matching:", {
-      source,
-      givenSource: interpAndSource.source,
-    });
-  }
+  assertMatching(interpAndSource, source);
 
   const problems = interpAndSource.interp.queryStr("tc.Problem{}");
   const diags = problems.map((res) =>
