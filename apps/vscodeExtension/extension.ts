@@ -1,23 +1,56 @@
 import * as vscode from "vscode";
 import {
+  InterpGetter,
   refreshDiagnostics,
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/vscodeIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
-import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
+import { LANGUAGES } from "../../languageWorkbench/languages";
 import { constructInterp, InterpCache } from "../../languageWorkbench/interp";
-import {
-  INIT_INTERP,
-  InterpGetter,
-} from "../../languageWorkbench/vscode/common";
+import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 const INTERP_CACHE: InterpCache = {};
 
+const LANGUAGES_TO_REGISTER = {
+  datalog: LANGUAGES.datalog,
+  grammar: LANGUAGES.grammar,
+};
+
 const interpGetter: InterpGetter = {
-  getInterp: (fileName) => {
-    const res = INTERP_CACHE[fileName];
-    return { interp: res.lastResult.interp, source: res.lastSource };
+  getInterp: (doc: vscode.TextDocument) => {
+    const langID = doc.languageId;
+    const spec = LANGUAGES_TO_REGISTER[langID];
+    console.log("interpGetter:", doc);
+    const source = doc.getText();
+
+    const cachedRes = INTERP_CACHE[doc.uri.toString()];
+    if (cachedRes) {
+      if (
+        cachedRes.lastInitInterp === INIT_INTERP &&
+        cachedRes.lastLangSpec === spec &&
+        cachedRes.lastSource === source
+      ) {
+        return {
+          interp: cachedRes.lastResult.interp,
+          source: cachedRes.lastSource,
+        };
+      }
+    }
+
+    const res = constructInterp(INIT_INTERP, spec, source);
+    const newEntry = {
+      lastInitInterp: INIT_INTERP,
+      lastLangSpec: spec,
+      lastResult: res,
+      lastSource: source,
+    };
+    INTERP_CACHE[doc.uri.toString()] = newEntry;
+
+    return {
+      interp: newEntry.lastResult.interp,
+      source: newEntry.lastSource,
+    };
   },
 };
 
@@ -26,9 +59,8 @@ export function activate(context: vscode.ExtensionContext) {
   try {
     registerExplorerWebView(context);
 
-    // TODO: build interp each time the doc changes?
-
-    [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+    Object.keys(LANGUAGES_TO_REGISTER).forEach((name) => {
+      const spec = LANGUAGES_TO_REGISTER[name];
       const diagnostics = vscode.languages.createDiagnosticCollection(
         spec.name
       );
@@ -36,16 +68,11 @@ export function activate(context: vscode.ExtensionContext) {
       subscribeToCurrentDoc((doc) => {
         console.log("updating interp cache for", doc);
         if (doc.uri.toString().endsWith(spec.name)) {
-          const source = doc.getText();
-          const res = constructInterp(INIT_INTERP, spec, source);
-          INTERP_CACHE[doc.uri.toString()] = {
-            lastInitInterp: INIT_INTERP,
-            lastLangSpec: spec,
-            lastResult: res,
-            lastSource: source,
-          };
-          refreshDiagnostics({ interp: res.interp, source }, doc, diagnostics);
+          const interpAndSource = interpGetter.getInterp(doc);
+          refreshDiagnostics(interpAndSource, doc, diagnostics);
         }
+      }).forEach((sub) => {
+        context.subscriptions.push(sub);
       });
 
       registerLanguageSupport(spec, interpGetter).forEach((sub) => {

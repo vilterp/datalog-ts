@@ -11,10 +11,13 @@ import {
   assertMatching,
   GLOBAL_SCOPE,
   InterpAndSource,
-  InterpGetter,
   TOKEN_TYPES,
 } from "./common";
 import { uniqBy } from "../../util/util";
+
+export type InterpGetter = {
+  getInterp(doc: vscode.TextDocument): InterpAndSource;
+};
 
 export function registerLanguageSupport(
   spec: LanguageSpec,
@@ -31,7 +34,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Definition> {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return getDefinition(interp, document, position, token);
         } catch (e) {
           console.error("in definition provider:", e);
@@ -50,7 +53,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Location[]> {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return getReferences(interp, document, position, context, token);
         } catch (e) {
           console.error("in reference provider:", e);
@@ -68,7 +71,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return getHighlights(interp, document, position, token);
         } catch (e) {
           console.error("in highlight provider:", e);
@@ -87,7 +90,7 @@ export function registerLanguageSupport(
         context: vscode.CompletionContext
       ): vscode.ProviderResult<vscode.CompletionItem[]> {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return getCompletionItems(interp, document, position, token, context);
         } catch (e) {
           console.error("in completion provider:", e);
@@ -106,7 +109,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.WorkspaceEdit> {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return getRenameEdits(interp, document, position, newName, token);
         } catch (e) {
           console.error("in rename provider:", e);
@@ -118,7 +121,7 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Range> {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return prepareRename(interp, document, position);
         } catch (e) {
           console.error("in prepare rename:", e);
@@ -137,7 +140,7 @@ export function registerLanguageSupport(
         vscode.SymbolInformation[] | vscode.DocumentSymbol[]
       > {
         try {
-          const interp = interpGetter.getInterp(document.uri.toString());
+          const interp = interpGetter.getInterp(document);
           return getSymbolList(interp, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
@@ -156,7 +159,7 @@ export function registerLanguageSupport(
           token: vscode.CancellationToken
         ): vscode.ProviderResult<vscode.SemanticTokens> {
           try {
-            const interp = interpGetter.getInterp(document.uri.toString());
+            const interp = interpGetter.getInterp(document);
             const before = new Date().getTime();
             const tokens = getSemanticTokens(interp, document, token);
             const after = new Date().getTime();

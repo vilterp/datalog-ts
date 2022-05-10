@@ -1,4 +1,19 @@
-scope.Scope{id: RuleID, label: N} :-
+.table ast.array
+.table ast.binExpr
+.table ast.conjunct
+.table ast.disjunct
+.table ast.ident
+.table ast.keyValue
+.table ast.negation
+.table ast.placeholder
+.table ast.record
+.table ast.recordAttrs
+.table ast.rule
+.table ast.tableDecl
+.table ast.term
+.table ast.var
+
+scope.Scope{id: RuleID, label: NNNNNNNNN} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
   ast.ident{parentID: RecordID, text: N}.
