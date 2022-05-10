@@ -25,10 +25,14 @@ export function LingoEditorInner(props: {
 }) {
   console.log("render editorInner", props.editorState);
   const interpGetter: InterpGetter = {
-    getInterp: () => ({
-      interp: props.interp,
-      source: props.editorState.source,
-    }),
+    getInterp: () => {
+      const out = {
+        interp: props.interp,
+        source: props.editorState.source,
+      };
+      console.log("getInterp", out);
+      return out;
+    },
   };
 
   const monacoRef = useRef<typeof monaco>(null);
