@@ -31,37 +31,50 @@ function registerDiagnosticsSupport(
   subscribeDiagnosticsToChanges(context, spec, diagnostics);
 }
 
+// TODO: dispose when something closes
+function subscribeToCurrentDoc(
+  callback: (doc: vscode.TextDocument) => void,
+  closeCallback?: (doc: vscode.TextDocument) => void
+): vscode.Disposable[] {
+  const subs: vscode.Disposable[] = [];
+
+  if (vscode.window.activeTextEditor) {
+    const doc = vscode.window.activeTextEditor.document;
+    callback(doc);
+  }
+  subs.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (editor) {
+        callback(editor.document);
+      }
+    })
+  );
+
+  subs.push(
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      callback(e.document);
+    })
+  );
+
+  subs.push(
+    vscode.workspace.onDidCloseTextDocument((doc) => {
+      if (closeCallback) {
+        closeCallback(doc);
+      }
+    })
+  );
+
+  return subs;
+}
+
 function subscribeDiagnosticsToChanges(
   context: vscode.ExtensionContext,
   spec: LanguageSpec,
   diagnostics: vscode.DiagnosticCollection
 ) {
-  if (vscode.window.activeTextEditor) {
-    refreshDiagnostics(
-      spec,
-      vscode.window.activeTextEditor.document,
-      diagnostics
-    );
-  }
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
-      if (editor) {
-        refreshDiagnostics(spec, editor.document, diagnostics);
-      }
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument((e) =>
-      refreshDiagnostics(spec, e.document, diagnostics)
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.onDidCloseTextDocument((doc) =>
-      diagnostics.delete(doc.uri)
-    )
-  );
+  subscribeToCurrentDoc((doc) => {
+    refreshDiagnostics(spec, doc, diagnostics);
+  });
 }
 
 function registerExplorerWebView(context: vscode.ExtensionContext) {
