@@ -29,6 +29,10 @@ export function activate(context: vscode.ExtensionContext) {
     // TODO: build interp each time the doc changes?
 
     [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+      const diagnostics = vscode.languages.createDiagnosticCollection(
+        spec.name
+      );
+      context.subscriptions.push(diagnostics);
       subscribeToCurrentDoc((doc) => {
         console.log("updating interp cache for", doc);
         if (doc.uri.toString().endsWith(spec.name)) {
@@ -40,26 +44,17 @@ export function activate(context: vscode.ExtensionContext) {
             lastResult: res,
             lastSource: source,
           };
+          refreshDiagnostics({ interp: res.interp, source }, doc, diagnostics);
         }
       });
 
       registerLanguageSupport(spec, interpGetter).forEach((sub) => {
         context.subscriptions.push(sub);
       });
-      registerDiagnosticsSupport(context, spec);
     });
   } catch (e) {
     console.error("in activation:", e);
   }
-}
-
-function registerDiagnosticsSupport(
-  context: vscode.ExtensionContext,
-  spec: LanguageSpec
-) {
-  const diagnostics = vscode.languages.createDiagnosticCollection(spec.name);
-  context.subscriptions.push(diagnostics);
-  subscribeDiagnosticsToChanges(context, spec, diagnostics);
 }
 
 // TODO: dispose when something closes
@@ -96,20 +91,6 @@ function subscribeToCurrentDoc(
   );
 
   return subs;
-}
-
-function subscribeDiagnosticsToChanges(
-  context: vscode.ExtensionContext,
-  spec: LanguageSpec,
-  diagnostics: vscode.DiagnosticCollection
-) {
-  subscribeToCurrentDoc((doc) => {
-    const interp = interpGetter.getInterp(doc.uri.toString());
-    if (!interp) {
-      return;
-    }
-    refreshDiagnostics(interp, doc, diagnostics);
-  });
 }
 
 function registerExplorerWebView(context: vscode.ExtensionContext) {
