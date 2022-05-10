@@ -23,30 +23,34 @@ const interpGetter: InterpGetter = {
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
+  try {
+    registerExplorerWebView(context);
 
-  registerExplorerWebView(context);
+    // TODO: build interp each time the doc changes?
 
-  // TODO: build interp each time the doc changes?
+    [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+      subscribeToCurrentDoc((doc) => {
+        console.log("updating interp cache for", doc);
+        if (doc.uri.toString().endsWith(spec.name)) {
+          const source = doc.getText();
+          const res = constructInterp(INIT_INTERP, spec, source);
+          INTERP_CACHE[doc.uri.toString()] = {
+            lastInitInterp: INIT_INTERP,
+            lastLangSpec: spec,
+            lastResult: res,
+            lastSource: source,
+          };
+        }
+      });
 
-  [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
-    registerLanguageSupport(spec, interpGetter).forEach((sub) => {
-      context.subscriptions.push(sub);
+      registerLanguageSupport(spec, interpGetter).forEach((sub) => {
+        context.subscriptions.push(sub);
+      });
+      registerDiagnosticsSupport(context, spec);
     });
-    registerDiagnosticsSupport(context, spec);
-
-    subscribeToCurrentDoc((doc) => {
-      if (doc.uri.toString().endsWith(spec.name)) {
-        const source = doc.getText();
-        const res = constructInterp(INIT_INTERP, spec, source);
-        INTERP_CACHE[doc.uri.toString()] = {
-          lastInitInterp: INIT_INTERP,
-          lastLangSpec: spec,
-          lastResult: res,
-          lastSource: source,
-        };
-      }
-    });
-  });
+  } catch (e) {
+    console.error("in activation:", e);
+  }
 }
 
 function registerDiagnosticsSupport(
@@ -100,11 +104,11 @@ function subscribeDiagnosticsToChanges(
   diagnostics: vscode.DiagnosticCollection
 ) {
   subscribeToCurrentDoc((doc) => {
-    refreshDiagnostics(
-      interpGetter.getInterp(doc.uri.toString()),
-      doc,
-      diagnostics
-    );
+    const interp = interpGetter.getInterp(doc.uri.toString());
+    if (!interp) {
+      return;
+    }
+    refreshDiagnostics(interp, doc, diagnostics);
   });
 }
 
