@@ -26,31 +26,47 @@ type ConstructInterpRes = {
   dlErrors: string[];
 };
 
-// TODO: this doesn't work that well when there are multiple languages
-// we're switching between, like in the LWB...
-// Is there a way to cache by object identity in javascript?
-let lastInitInterp: AbstractInterpreter | null = null;
-let lastLangSpec: LanguageSpec | null = null;
-let lastSource: string = "";
-let lastResult: ConstructInterpRes | null = null;
+// TODO: put all the data into one interpreter?
+export type InterpCache = {
+  [fileName: string]: InterpCacheEntry;
+};
+
+export const emptyInterpCache: InterpCache = {};
+
+type InterpCacheEntry = {
+  lastInitInterp: AbstractInterpreter;
+  lastLangSpec: LanguageSpec;
+  lastSource: string;
+  lastResult: ConstructInterpRes;
+};
 
 export function constructInterp(
+  cache: InterpCache,
   initInterp: AbstractInterpreter,
+  fileName: string,
   langSpec: LanguageSpec,
   source: string
-): ConstructInterpRes {
+): { cache: InterpCache; res: ConstructInterpRes } {
+  const entry = cache[fileName];
   if (
-    initInterp === lastInitInterp &&
-    langSpec === lastLangSpec &&
-    source === lastSource
+    entry &&
+    initInterp === entry.lastInitInterp &&
+    langSpec === entry.lastLangSpec &&
+    source === entry.lastSource
   ) {
-    return lastResult;
+    return { cache, res: entry.lastResult };
   }
-  lastResult = constructInterpInner(initInterp, langSpec, source);
-  lastInitInterp = initInterp;
-  lastLangSpec = langSpec;
-  lastSource = source;
-  return lastResult;
+  const newEntry: InterpCacheEntry = {
+    lastResult: constructInterpInner(initInterp, langSpec, source),
+    lastInitInterp: initInterp,
+    lastLangSpec: langSpec,
+    lastSource: source,
+  };
+  const newCache = {
+    ...cache,
+    [fileName]: newEntry,
+  };
+  return { cache: newCache, res: newEntry.lastResult };
 }
 
 // TODO: separate function to inject the langSource
