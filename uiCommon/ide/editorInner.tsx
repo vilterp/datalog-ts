@@ -101,6 +101,7 @@ export function LingoEditorInner(props: {
   }
 
   const setSource = (source: string) => {
+    console.log("setSource", source);
     props.setSource(source);
     updateMarkers(editorRef.current);
   };
