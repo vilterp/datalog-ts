@@ -23,6 +23,8 @@ export function LingoEditorInner(props: {
   showKeyBindingsTable?: boolean;
 }) {
   console.log("render editorInner", props.editorState);
+
+  // passing a ref to registerLanguageSupport so we can close over a single mutable object
   const interpRef = useRef<{ interp: AbstractInterpreter; source: string }>({
     interp: props.editorState.interp,
     source: props.editorState.source,
