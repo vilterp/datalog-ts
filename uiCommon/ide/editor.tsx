@@ -33,14 +33,15 @@ export function LingoEditor(props: {
   );
   const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
-  const interpGetter: InterpGetter = {
-    getInterp: () => ({ interp, source: props.editorState.source }),
-  };
+  const interpRef = useRef<InterpGetter>({
+    interp: interp,
+    source: props.editorState.source,
+  });
 
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
   }
 
   useEffect(() => {
@@ -49,12 +50,12 @@ export function LingoEditor(props: {
     }
     // make sure to register support for new langauge when we switch
     // languages.
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
-  }, [props.langSpec, monacoRef.current, interpGetter]);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
+  }, [props.langSpec, monacoRef.current, interpRef]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();
-    const markers = getMarkers(interpGetter.getInterp(), model);
+    const markers = getMarkers(interpRef.current, model);
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
   }
 
