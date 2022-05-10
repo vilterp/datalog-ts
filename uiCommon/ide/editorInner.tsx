@@ -1,6 +1,6 @@
 import * as monaco from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
@@ -35,19 +35,34 @@ export function LingoEditorInner(props: {
     },
   };
 
+  const [subs, setSubs] = useState<monaco.IDisposable[]>([]);
+
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+    const newSubs = registerLanguageSupport(
+      monacoRef.current,
+      props.langSpec,
+      interpGetter
+    );
+    setSubs(newSubs);
   }
 
   useEffect(() => {
     if (!monacoRef.current) {
       return;
     }
+    console.log("registering language support");
     // make sure to register support for new langauge when we switch
     // languages.
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+    // TODO: registering and deregistering each time is kind of insane.
+    subs.forEach((sub) => sub.dispose());
+    const newSubs = registerLanguageSupport(
+      monacoRef.current,
+      props.langSpec,
+      interpGetter
+    );
+    setSubs(newSubs);
   }, [props.langSpec, monacoRef.current, interpGetter]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
