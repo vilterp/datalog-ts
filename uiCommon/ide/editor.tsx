@@ -18,13 +18,13 @@ export function LingoEditor(props: {
   console.log("render editor", props.editorState);
   // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
   // instances... sigh
-  const withoutCursor = useMemo(
+  const interp = useMemo(
     () =>
       constructInterp(INIT_INTERP, props.langSpec, props.editorState.source)
         .interp,
     [props.langSpec, props.editorState.source]
   );
-  const interp = addCursor(withoutCursor, props.editorState.cursorPos);
+  // const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
   return (
     <LingoEditorInner
