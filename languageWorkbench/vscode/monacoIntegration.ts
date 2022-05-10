@@ -416,10 +416,10 @@ function getSemanticTokens(
     });
   }
   const results = interpAndSource.interp.queryStr("hl.NonHighlightSegment{}");
-  console.log(
-    "tokens",
-    results.map((res) => ppt(res.term))
-  );
+  // console.log(
+  //   "tokens",
+  //   results.map((res) => ppt(res.term))
+  // );
 
   const builder = new SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
