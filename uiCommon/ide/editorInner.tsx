@@ -28,18 +28,19 @@ export function LingoEditorInner(props: {
     source: props.editorState.source,
   });
 
-  const monacoRef = useRef<typeof monaco>(null);
-  function handleBeforeMount(monacoInstance: typeof monaco) {
-    monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
-  }
-
+  // apparently the ref doesn't get updated if we don't do this
   useEffect(() => {
     interpRef.current = {
       interp: props.interp,
       source: props.editorState.source,
     };
   }, [props.interp, props.editorState.source]);
+
+  const monacoRef = useRef<typeof monaco>(null);
+  function handleBeforeMount(monacoInstance: typeof monaco) {
+    monacoRef.current = monacoInstance;
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
+  }
 
   useEffect(() => {
     if (!monacoRef.current) {
