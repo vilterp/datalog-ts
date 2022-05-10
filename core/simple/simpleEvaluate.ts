@@ -122,13 +122,13 @@ function memo(
   scope: Bindings,
   evaluate: () => Res[]
 ): Res[] {
-  const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
-  const cacheRes = cache[cacheKey];
-  if (cacheRes) {
-    return cacheRes;
-  }
+  // const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
+  // const cacheRes = cache[cacheKey];
+  // if (cacheRes) {
+  //   return cacheRes;
+  // }
   const computeRes = evaluate();
-  cache[cacheKey] = computeRes;
+  // cache[cacheKey] = computeRes;
   return computeRes;
 }
 
