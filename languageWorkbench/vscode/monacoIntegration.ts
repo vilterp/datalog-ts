@@ -9,7 +9,6 @@ import {
   assertMatching,
   GLOBAL_SCOPE,
   InterpAndSource,
-  InterpGetter,
   TOKEN_TYPES,
 } from "./common";
 import { uniqBy } from "../../util/util";

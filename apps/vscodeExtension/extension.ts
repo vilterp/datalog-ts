@@ -6,6 +6,20 @@ import {
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
+import { constructInterp, InterpCache } from "../../languageWorkbench/interp";
+import {
+  INIT_INTERP,
+  InterpGetter,
+} from "../../languageWorkbench/vscode/common";
+
+const INTERP_CACHE: InterpCache = {};
+
+const interpGetter: InterpGetter = {
+  getInterp: (fileName) => {
+    const res = INTERP_CACHE[fileName];
+    return { interp: res.lastResult.interp, source: res.lastSource };
+  },
+};
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
@@ -15,10 +29,23 @@ export function activate(context: vscode.ExtensionContext) {
   // TODO: build interp each time the doc changes?
 
   [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
-    registerLanguageSupport(spec).forEach((sub) => {
+    registerLanguageSupport(spec, interpGetter).forEach((sub) => {
       context.subscriptions.push(sub);
     });
     registerDiagnosticsSupport(context, spec);
+
+    subscribeToCurrentDoc((doc) => {
+      if (doc.uri.toString().endsWith(spec.name)) {
+        const source = doc.getText();
+        const res = constructInterp(INIT_INTERP, spec, source);
+        INTERP_CACHE[doc.uri.toString()] = {
+          lastInitInterp: INIT_INTERP,
+          lastLangSpec: spec,
+          lastResult: res,
+          lastSource: source,
+        };
+      }
+    });
   });
 }
 
@@ -73,7 +100,11 @@ function subscribeDiagnosticsToChanges(
   diagnostics: vscode.DiagnosticCollection
 ) {
   subscribeToCurrentDoc((doc) => {
-    refreshDiagnostics(spec, doc, diagnostics);
+    refreshDiagnostics(
+      interpGetter.getInterp(doc.uri.toString()),
+      doc,
+      diagnostics
+    );
   });
 }
 

@@ -8,7 +8,7 @@ import { LanguageSpec } from "../languages";
 export type InterpAndSource = { interp: AbstractInterpreter; source: string };
 
 export type InterpGetter = {
-  getInterp(): InterpAndSource;
+  getInterp(fileName: string): InterpAndSource;
 };
 
 export function assertMatching(
