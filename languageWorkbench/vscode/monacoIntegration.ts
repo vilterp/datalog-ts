@@ -237,6 +237,7 @@ function getHighlights(
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
+  console.log("get some highlights:", position.lineNumber, position.column);
   const source = document.getValue();
   if (source !== interpAndSource.source) {
     console.error("not matching", {
