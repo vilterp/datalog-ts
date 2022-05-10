@@ -23,7 +23,17 @@ export function LingoEditorInner(props: {
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
 }) {
+  console.log("render inner");
   const interpGetter: InterpGetter = { getInterp: () => props.interp };
+
+  const setSource = (source: string) => {
+    props.setEditorState({ ...props.editorState, source });
+    updateMarkers(editorRef.current);
+  };
+
+  const setCursorPos = (cursorPos: number) => {
+    props.setEditorState({ ...props.editorState, cursorPos });
+  };
 
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -54,12 +64,10 @@ export function LingoEditorInner(props: {
 
     // editor.onDidChangeCursorPosition((evt) => {
     //   const value = editor.getModel().getValue();
+    //   const idx = idxFromPosition(value, evt.position);
     //   // TODO: can we get away without setting the value here?
     //   // tried not to earlier, and it made it un-editable...
-    //   props.setEditorState({
-    //     source: value,
-    //     cursorPos: idxFromPosition(value, evt.position),
-    //   });
+    //   setCursorPos(idx);
     // });
 
     // Remove key bindings that are already there
@@ -86,11 +94,6 @@ export function LingoEditorInner(props: {
       });
     });
   }
-
-  const setSource = (source: string) => {
-    props.setEditorState({ ...props.editorState, source });
-    updateMarkers(editorRef.current);
-  };
 
   return (
     <div style={{ display: "flex" }}>
