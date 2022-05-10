@@ -7,11 +7,13 @@ import {
   lineAndColFromIdx,
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
-import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
+import { getInterp, GLOBAL_SCOPE, InterpGetter, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 export function registerLanguageSupport(
-  spec: LanguageSpec
+  spec: LanguageSpec,
+  interpGetter: InterpGetter
 ): vscode.Disposable[] {
   const subscriptions: vscode.Disposable[] = [];
 
@@ -24,7 +26,8 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Definition> {
         try {
-          return getDefinition(spec, document, position, token);
+          const interp = interpGetter.getInterp();
+          return getDefinition(interp, document, position, token);
         } catch (e) {
           console.error("in definition provider:", e);
         }
@@ -42,7 +45,8 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Location[]> {
         try {
-          return getReferences(spec, document, position, context, token);
+          const interp = interpGetter.getInterp();
+          return getReferences(interp, document, position, context, token);
         } catch (e) {
           console.error("in reference provider:", e);
         }
@@ -59,7 +63,8 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
         try {
-          return getHighlights(spec, document, position, token);
+          const interp = interpGetter.getInterp();
+          return getHighlights(interp, document, position, token);
         } catch (e) {
           console.error("in highlight provider:", e);
         }
@@ -77,7 +82,8 @@ export function registerLanguageSupport(
         context: vscode.CompletionContext
       ): vscode.ProviderResult<vscode.CompletionItem[]> {
         try {
-          return getCompletionItems(spec, document, position, token, context);
+          const interp = interpGetter.getInterp();
+          return getCompletionItems(interp, document, position, token, context);
         } catch (e) {
           console.error("in completion provider:", e);
         }
@@ -95,7 +101,8 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.WorkspaceEdit> {
         try {
-          return getRenameEdits(spec, document, position, newName, token);
+          const interp = interpGetter.getInterp();
+          return getRenameEdits(interp, document, position, newName, token);
         } catch (e) {
           console.error("in rename provider:", e);
         }
@@ -106,7 +113,8 @@ export function registerLanguageSupport(
         token: vscode.CancellationToken
       ): vscode.ProviderResult<vscode.Range> {
         try {
-          return prepareRename(spec, document, position);
+          const interp = interpGetter.getInterp();
+          return prepareRename(interp, document, position);
         } catch (e) {
           console.error("in prepare rename:", e);
         }
@@ -124,7 +132,8 @@ export function registerLanguageSupport(
         vscode.SymbolInformation[] | vscode.DocumentSymbol[]
       > {
         try {
-          return getSymbolList(spec, document, token);
+          const interp = interpGetter.getInterp();
+          return getSymbolList(interp, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
         }
@@ -142,8 +151,9 @@ export function registerLanguageSupport(
           token: vscode.CancellationToken
         ): vscode.ProviderResult<vscode.SemanticTokens> {
           try {
+            const interp = interpGetter.getInterp();
             const before = new Date().getTime();
-            const tokens = getSemanticTokens(spec, document, token);
+            const tokens = getSemanticTokens(interp, document, token);
             const after = new Date().getTime();
             console.log(
               "getSemanticTokens for",
@@ -165,18 +175,19 @@ export function registerLanguageSupport(
 }
 
 function getDefinition(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
+  const results = interpAndSource.interp.queryStr(
+    `ide.DefnAtPos{idx: ${idx}, defnSpan: US}`
+  );
   if (results.length === 0) {
     return null;
   }
@@ -189,19 +200,20 @@ function getDefinition(
 }
 
 function getReferences(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   position: vscode.Position,
   context: vscode.ReferenceContext,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
+  const results = interpAndSource.interp.queryStr(
+    `ide.UsageAtPos{idx: ${idx}, usageSpan: US}`
+  );
   return results.map(
     (res) =>
       new vscode.Location(
@@ -217,18 +229,17 @@ const HIGHLIGHT_KINDS = {
 };
 
 function getHighlights(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
-  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   // pattern match `span` to avoid getting `"builtin"`
   const results = interp2.queryStr(
     `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}`
@@ -242,7 +253,7 @@ function getHighlights(
 }
 
 function getCompletionItems(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   position: vscode.Position,
   token: vscode.CancellationToken,
@@ -255,8 +266,8 @@ function getCompletionItems(
   });
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
-  const interp = getInterp(spec, sourceWithPlaceholder);
-  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const interp = interpAndSource.interp;
+  const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
   );
@@ -275,7 +286,7 @@ function getCompletionItems(
 }
 
 function getRenameEdits(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   position: vscode.Position,
   newName: string,
@@ -286,8 +297,7 @@ function getRenameEdits(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(spec, source);
-  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
   const edit = new vscode.WorkspaceEdit();
@@ -300,7 +310,7 @@ function getRenameEdits(
 }
 
 function prepareRename(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   position: vscode.Position
 ): vscode.ProviderResult<vscode.Range> {
@@ -309,8 +319,7 @@ function prepareRename(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(spec, source);
-  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
   );
@@ -322,14 +331,13 @@ function prepareRename(
 }
 
 function getSymbolList(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
 
-  const results = interp.queryStr(
+  const results = interpAndSource.interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
   );
 
@@ -347,13 +355,12 @@ function getSymbolList(
 }
 
 function getSemanticTokens(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
-  const results = interp.queryStr("hl.NonHighlightSegment{}");
+  const results = interpAndSource.interp.queryStr("hl.NonHighlightSegment{}");
 
   const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
@@ -370,14 +377,13 @@ export const semanticTokensLegend = new vscode.SemanticTokensLegend(
 );
 
 export function refreshDiagnostics(
-  spec: LanguageSpec,
+  interpAndSource: { interp: AbstractInterpreter; source: string },
   document: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
-  const interp = getInterp(spec, source);
 
-  const problems = interp.queryStr("tc.Problem{}");
+  const problems = interpAndSource.interp.queryStr("tc.Problem{}");
   const diags = problems.map((res) =>
     problemToDiagnostic(source, res.term as Rec)
   );
