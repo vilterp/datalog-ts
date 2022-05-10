@@ -52,15 +52,15 @@ export function LingoEditorInner(props: {
 
     updateMarkers(editor);
 
-    editor.onDidChangeCursorPosition((evt) => {
-      const value = editor.getModel().getValue();
-      // TODO: can we get away without setting the value here?
-      // tried not to earlier, and it made it un-editable...
-      props.setEditorState({
-        source: value,
-        cursorPos: idxFromPosition(value, evt.position),
-      });
-    });
+    // editor.onDidChangeCursorPosition((evt) => {
+    //   const value = editor.getModel().getValue();
+    //   // TODO: can we get away without setting the value here?
+    //   // tried not to earlier, and it made it un-editable...
+    //   props.setEditorState({
+    //     source: value,
+    //     cursorPos: idxFromPosition(value, evt.position),
+    //   });
+    // });
 
     // Remove key bindings that are already there
     Object.keys(KEY_MAP).map((actionID) => {
