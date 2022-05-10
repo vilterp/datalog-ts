@@ -34,7 +34,7 @@ function getDefnForCursor(interp: AbstractInterpreter): Span | null {
 }
 
 export const jumpToFirstUsageAction: EditorAction = {
-  name: "Jump to First Usage",
+  name: "Find Usages",
   available(ctx: ActionContext): boolean {
     const span = getFirstUsageForCursor(ctx.interp);
     return !!span;
