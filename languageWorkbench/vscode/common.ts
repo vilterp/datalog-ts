@@ -1,5 +1,3 @@
-// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
-
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
@@ -7,7 +5,12 @@ import { LOADER } from "../commonDL";
 import { constructInterp } from "../interp";
 import { LanguageSpec } from "../languages";
 
+export type InterpGetter = {
+  getInterp(): { interp: AbstractInterpreter; source: string };
+};
+
 // needs to match highlight.dl
+// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 export const TOKEN_TYPES = [
   "number",
   "string",

@@ -1,11 +1,10 @@
 import * as monaco from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
   idxFromPosition,
-  InterpGetter,
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
@@ -13,6 +12,7 @@ import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { addCursor } from "../../languageWorkbench/interp";
+import { InterpGetter } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditorInner(props: {
   editorState: EditorState;

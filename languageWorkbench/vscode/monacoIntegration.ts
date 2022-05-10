@@ -5,13 +5,9 @@ import { Rec, StringLit } from "../../core/types";
 import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
-import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
+import { GLOBAL_SCOPE, InterpGetter, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-
-export interface InterpGetter {
-  getInterp(): { interp: AbstractInterpreter; source: string };
-}
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,
