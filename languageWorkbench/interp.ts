@@ -49,6 +49,7 @@ export function constructInterp(
   fileName: string,
   source: string
 ): ConstructInterpRes {
+  console.log("constructInterp", { langSpec, fileName, source });
   const entry = INTERP_CACHE[fileName];
   if (
     entry &&
@@ -56,8 +57,10 @@ export function constructInterp(
     langSpec === entry.lastLangSpec &&
     source === entry.lastSource
   ) {
+    console.log("cache hit");
     return entry.lastResult;
   }
+  console.log("cache miss");
   const newEntry: InterpCacheEntry = {
     lastResult: constructInterpInner(initInterp, langSpec, source),
     lastInitInterp: initInterp,

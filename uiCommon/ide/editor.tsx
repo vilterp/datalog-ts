@@ -1,10 +1,10 @@
 import * as monaco from "monaco-editor";
-import React, { useMemo } from "react";
+import React from "react";
 import { LanguageSpec } from "../../languageWorkbench/languages";
 import { EditorState } from "./types";
 import { LingoEditorInner } from "./editorInner";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
-import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import { constructInterp } from "../../languageWorkbench/interp";
 
 export function LingoEditor(props: {
   editorState: EditorState;

@@ -37,14 +37,5 @@ export const TOKEN_TYPES = [
 
 export const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
-export function getInterp(
-  language: LanguageSpec,
-  source: string
-): AbstractInterpreter {
-  const res = constructInterp(INIT_INTERP, language, source);
-  // TODO: something with errors if they're there
-  return res.interp;
-}
-
 // TODO: parameterize by language
 export const GLOBAL_SCOPE = rec("global", {});
