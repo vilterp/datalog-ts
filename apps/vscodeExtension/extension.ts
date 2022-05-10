@@ -12,6 +12,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   registerExplorerWebView(context);
 
+  // TODO: build interp each time the doc changes?
+
   [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
     registerLanguageSupport(spec).forEach((sub) => {
       context.subscriptions.push(sub);
