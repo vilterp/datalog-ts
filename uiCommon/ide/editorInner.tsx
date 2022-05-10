@@ -12,6 +12,7 @@ import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { addCursor } from "../../languageWorkbench/interp";
 
 export function LingoEditorInner(props: {
   editorState: EditorState;
@@ -69,9 +70,11 @@ export function LingoEditorInner(props: {
       const value = editor.getModel().getValue();
       // TODO: can we get away without setting the value here?
       // tried not to earlier, and it made it un-editable...
+      const newIdx = idxFromPosition(value, evt.position);
+      console.log("setting cursor idx to", newIdx);
       props.setEditorState({
         source: value,
-        cursorPos: idxFromPosition(value, evt.position),
+        cursorPos: newIdx,
       });
     });
 
@@ -105,6 +108,8 @@ export function LingoEditorInner(props: {
     updateMarkers(editorRef.current);
   };
 
+  const withCursor = addCursor(props.interp, props.editorState.cursorPos);
+
   return (
     <div style={{ display: "flex" }}>
       <div style={{ border: "1px solid black", padding: 5 }}>
@@ -127,7 +132,7 @@ export function LingoEditorInner(props: {
       {props.showKeyBindingsTable ? (
         <KeyBindingsTable
           actionCtx={{
-            interp: props.interp,
+            interp: withCursor,
             state: props.editorState,
           }}
         />

@@ -36,7 +36,7 @@ function Main() {
         width={800}
         height={500}
         lineNumbers="on"
-        // showKeyBindingsTable
+        showKeyBindingsTable
       />
       <br />
       {error ? (

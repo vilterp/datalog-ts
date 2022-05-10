@@ -24,7 +24,6 @@ export function LingoEditor(props: {
         .interp,
     [props.langSpec, props.editorState.source]
   );
-  // const interp = addCursor(withoutCursor, props.editorState.cursorPos);
 
   return (
     <LingoEditorInner
