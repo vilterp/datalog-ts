@@ -38,6 +38,11 @@ export function LingoEditor(props: {
     source: props.editorState.source,
   });
 
+  // this just seems odd
+  useEffect(() => {
+    interpRef.current = { interp: interp, source: props.editorState.source };
+  }, [interp, props.editorState.source]);
+
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
