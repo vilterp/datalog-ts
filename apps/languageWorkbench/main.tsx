@@ -19,17 +19,17 @@ function Playground() {
   // state
   const [langName, setLangName] = useHashParam("", Object.keys(LANGUAGES)[0]);
 
-  const curExample = LANGUAGES[langName];
+  const curLangSpec = LANGUAGES[langName];
 
   const [grammarEditorState, setGrammarEditorState] = useState(
-    initialEditorState(curExample.grammar)
+    initialEditorState(curLangSpec, curLangSpec.grammar)
   );
   const [dlEditorState, setDLEditorState] = useState(
-    initialEditorState(curExample.datalog)
+    initialEditorState(LANGUAGES.datalog, curLangSpec.datalog)
   );
 
   const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
-    initialEditorState(curExample.example)
+    initialEditorState(LANGUAGES.grammar, curLangSpec.example)
   );
   const cursorPos = exampleEditorState.cursorPos;
   const langSource = exampleEditorState.source;

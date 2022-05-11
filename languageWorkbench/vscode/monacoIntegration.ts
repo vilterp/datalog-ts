@@ -14,10 +14,14 @@ import {
 import { uniqBy } from "../../util/util";
 import { RefObject } from "react";
 
+export type InterpGetter = {
+  getInterp(doc: monaco.editor.ITextModel): InterpAndSource;
+};
+
 export function registerLanguageSupport(
   monacoInstance: Monaco,
   spec: LanguageSpec,
-  interpAndSourceRef: RefObject<InterpAndSource>
+  interpGetter: InterpGetter
 ): monaco.IDisposable[] {
   const subscriptions: monaco.IDisposable[] = [];
 
@@ -32,8 +36,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Definition> {
         try {
-          const interp = interpAndSourceRef.current;
-          return getDefinition(interp, document, position, token);
+          const interpAndSource = interpGetter.getInterp(document);
+          return getDefinition(interpAndSource, document, position, token);
         } catch (e) {
           console.error("in definition provider:", e);
         }
@@ -51,8 +55,14 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
         try {
-          const interp = interpAndSourceRef.current;
-          return getReferences(interp, document, position, context, token);
+          const interpAndSource = interpGetter.getInterp(document);
+          return getReferences(
+            interpAndSource,
+            document,
+            position,
+            context,
+            token
+          );
         } catch (e) {
           console.error("in reference provider:", e);
         }
@@ -69,8 +79,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
         try {
-          const interp = interpAndSourceRef.current;
-          return getHighlights(interp, document, position, token);
+          const interpAndSource = interpGetter.getInterp(document);
+          return getHighlights(interpAndSource, document, position, token);
         } catch (e) {
           console.error("in highlight provider:", e);
         }
@@ -88,8 +98,14 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
         try {
-          const interp = interpAndSourceRef.current;
-          return getCompletionItems(interp, document, position, token, context);
+          const interpAndSource = interpGetter.getInterp(document);
+          return getCompletionItems(
+            interpAndSource,
+            document,
+            position,
+            token,
+            context
+          );
         } catch (e) {
           console.error("in completion provider:", e);
         }
@@ -107,8 +123,14 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
         try {
-          const interp = interpAndSourceRef.current;
-          return getRenameEdits(interp, document, position, newName, token);
+          const interpAndSource = interpGetter.getInterp(document);
+          return getRenameEdits(
+            interpAndSource,
+            document,
+            position,
+            newName,
+            token
+          );
         } catch (e) {
           console.error("in rename provider:", e);
         }
@@ -119,8 +141,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.RenameLocation> {
         try {
-          const interp = interpAndSourceRef.current;
-          return prepareRename(interp, document, position);
+          const interpAndSource = interpGetter.getInterp(document);
+          return prepareRename(interpAndSource, document, position);
         } catch (e) {
           console.error("in prepare rename:", e);
         }
@@ -136,8 +158,8 @@ export function registerLanguageSupport(
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentSymbol[]> {
         try {
-          const interp = interpAndSourceRef.current;
-          return getSymbolList(interp, document, token);
+          const interpAndSource = interpGetter.getInterp(document);
+          return getSymbolList(interpAndSource, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
         }
@@ -155,8 +177,8 @@ export function registerLanguageSupport(
       ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
         try {
           const before = new Date().getTime();
-          const interp = interpAndSourceRef.current;
-          const tokens = getSemanticTokens(interp, document, token);
+          const interpAndSource = interpGetter.getInterp(document);
+          const tokens = getSemanticTokens(interpAndSource, document, token);
           const after = new Date().getTime();
           console.log("getSemanticTokens for", spec.name, after - before, "ms");
           return tokens;

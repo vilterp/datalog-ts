@@ -26,6 +26,7 @@ export function LingoEditor(props: {
       newSource
     ).interp;
     // TODO: incrementally process changes to the source
+    // or at least cache by file name or something
     props.setEditorState({
       ...props.editorState,
       interp: newInterp,

@@ -5,12 +5,16 @@ import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
   idxFromPosition,
+  InterpGetter,
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/monacoIntegration";
 import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { InterpAndSource } from "../../languageWorkbench/vscode/common";
+
+type InterpCache = { [fileName: string]: InterpAndSource };
 
 export function LingoEditorInner(props: {
   editorState: EditorState;
@@ -25,7 +29,7 @@ export function LingoEditorInner(props: {
   console.log("render editorInner", props.editorState);
 
   // passing a ref to registerLanguageSupport so we can close over a single mutable object
-  const interpRef = useRef<{ interp: AbstractInterpreter; source: string }>({
+  const interpRef = useRef<InterpCache>({
     interp: props.editorState.interp,
     source: props.editorState.source,
   });
@@ -38,10 +42,16 @@ export function LingoEditorInner(props: {
     };
   }, [props.editorState.interp, props.editorState.source]);
 
+  const interpGetter: InterpGetter = {
+    getInterp: (doc: monaco.editor.ITextModel) => {
+      XXXX;
+    },
+  };
+
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
     monacoRef.current = monacoInstance;
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
   }
 
   useEffect(() => {
@@ -50,8 +60,8 @@ export function LingoEditorInner(props: {
     }
     // make sure to register support for new langauge when we switch
     // languages.
-    registerLanguageSupport(monacoRef.current, props.langSpec, interpRef);
-  }, [props.langSpec, monacoRef.current, interpRef]);
+    registerLanguageSupport(monacoRef.current, props.langSpec, interpGetter);
+  }, [props.langSpec, monacoRef.current, interpGetter]);
 
   function updateMarkers(editor: monaco.editor.ICodeEditor) {
     const model = editor.getModel();

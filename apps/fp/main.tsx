@@ -12,7 +12,7 @@ import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
     "fp-editor-state",
-    initialEditorState("let x = 40 in plus2(y)")
+    initialEditorState(LANGUAGES.fp, "let x = 40 in plus2(y)")
   );
 
   const { interp: withoutCursor } = constructInterp(
