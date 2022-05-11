@@ -51,7 +51,10 @@ function runEffect(state: State, effect: Effect): Action[] {
 function dispatch(action: Action) {
   const queue = [action];
   while (queue.length > 0) {
-    const [newState, effects] = update(STATE, action);
+    const nextAction = queue.shift();
+    const [newState, effects] = update(STATE, nextAction);
+    console.log("ran", nextAction, "got", newState);
+    console.log("got effects", effects);
     effects.forEach((eff) => {
       const actions = runEffect(newState, eff);
       actions.forEach((action) => {
