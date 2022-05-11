@@ -37,9 +37,9 @@ export type Action =
 
 export type Effect =
   | { type: "RegisterLangInEditor"; langSpec: LanguageSpec }
-  | { type: "UpdateLangInEditor"; langSpec: LanguageSpec };
+  | { type: "UpdateLangInEditor"; newLangSpec: LanguageSpec };
 
-export function update(state: State, action: Action): State {
+export function update(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "EditDoc": {
       const current = state[action.uri];
@@ -50,57 +50,71 @@ export function update(state: State, action: Action): State {
       );
       // TODO: something with errors from constructing interp
       // TODO: process incremental updates. lol
-      return {
-        ...state,
-        files: {
-          ...state.files,
-          [action.uri]: {
-            ...current,
-            interp: res.interp,
-            source: action.newSource,
+      return [
+        {
+          ...state,
+          files: {
+            ...state.files,
+            [action.uri]: {
+              ...current,
+              interp: res.interp,
+              source: action.newSource,
+            },
           },
         },
-      };
+        [],
+      ];
     }
     case "EditLang": {
       // TODO: register new lang with Monaco
-      return {
-        ...state,
-        files: mapObj(state.files, (docURI, docState) => {
-          const newInterp = constructInterp(
-            INIT_INTERP,
-            action.newLangSpec,
-            docState.source
-          );
-          return {
-            interp: newInterp.interp,
-            langSpec: action.newLangSpec,
-            source: docState.source,
-          };
-        }),
-      };
+      return [
+        {
+          ...state,
+          files: mapObj(state.files, (docURI, docState) => {
+            const newInterp = constructInterp(
+              INIT_INTERP,
+              action.newLangSpec,
+              docState.source
+            );
+            return {
+              interp: newInterp.interp,
+              langSpec: action.newLangSpec,
+              source: docState.source,
+            };
+          }),
+        },
+        [{ type: "UpdateLangInEditor", newLangSpec: action.newLangSpec }],
+      ];
     }
     case "CreateDoc":
-      return {
-        ...state,
-        files: {
-          ...state.files,
-          [action.uri]: {
-            langSpec: action.langSpec,
-            source: action.initSource,
-            interp: constructInterp(
-              INIT_INTERP,
-              action.langSpec,
-              action.initSource
-            ).interp,
+      return [
+        {
+          ...state,
+          files: {
+            ...state.files,
+            [action.uri]: {
+              langSpec: action.langSpec,
+              source: action.initSource,
+              interp: constructInterp(
+                INIT_INTERP,
+                action.langSpec,
+                action.initSource
+              ).interp,
+            },
           },
         },
-      };
+        [],
+      ];
     case "CreateLang":
-      return {
-        ...state,
-        registeredLanguages: { [action.newLangSpec.name]: action.newLangSpec },
-      };
+      return [
+        {
+          ...state,
+          registeredLanguages: {
+            [action.newLangSpec.name]: action.newLangSpec,
+          },
+        },
+        [{ type: "RegisterLangInEditor", langSpec: action.newLangSpec }],
+      ];
   }
 }
 
