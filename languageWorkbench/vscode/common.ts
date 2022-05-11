@@ -7,14 +7,17 @@ import { constructInterp } from "../interp";
 import { LanguageSpec } from "../languages";
 
 export type State = {
-  [documentURI: string]: {
-    interp: AbstractInterpreter;
-    source: string;
-    langSpec: LanguageSpec;
+  registeredLanguages: { [id: string]: LanguageSpec };
+  files: {
+    [documentURI: string]: {
+      interp: AbstractInterpreter;
+      source: string;
+      langSpec: LanguageSpec;
+    };
   };
 };
 
-export const initialState: State = {};
+export const initialState: State = { files: {}, registeredLanguages: {} };
 
 export type Action =
   | {
@@ -29,7 +32,12 @@ export type Action =
       newSource: string;
       // TODO: diff events
     }
-  | { type: "ChangeLang"; newLangSpec: LanguageSpec };
+  | { type: "EditLang"; newLangSpec: LanguageSpec }
+  | { type: "CreateLang"; newLangSpec: LanguageSpec };
+
+export type Effect =
+  | { type: "RegisterLangInEditor"; langSpec: LanguageSpec }
+  | { type: "UpdateLangInEditor"; langSpec: LanguageSpec };
 
 export function update(state: State, action: Action): State {
   switch (action.type) {
@@ -44,40 +52,54 @@ export function update(state: State, action: Action): State {
       // TODO: process incremental updates. lol
       return {
         ...state,
-        [action.uri]: {
-          ...current,
-          interp: res.interp,
-          source: action.newSource,
+        files: {
+          ...state.files,
+          [action.uri]: {
+            ...current,
+            interp: res.interp,
+            source: action.newSource,
+          },
         },
       };
     }
-    case "ChangeLang": {
+    case "EditLang": {
       // TODO: register new lang with Monaco
-      return mapObj(state, (docURI, docState) => {
-        const newInterp = constructInterp(
-          INIT_INTERP,
-          action.newLangSpec,
-          docState.source
-        );
-        return {
-          interp: newInterp.interp,
-          langSpec: action.newLangSpec,
-          source: docState.source,
-        };
-      });
+      return {
+        ...state,
+        files: mapObj(state.files, (docURI, docState) => {
+          const newInterp = constructInterp(
+            INIT_INTERP,
+            action.newLangSpec,
+            docState.source
+          );
+          return {
+            interp: newInterp.interp,
+            langSpec: action.newLangSpec,
+            source: docState.source,
+          };
+        }),
+      };
     }
     case "CreateDoc":
       return {
         ...state,
-        [action.uri]: {
-          langSpec: action.langSpec,
-          source: action.initSource,
-          interp: constructInterp(
-            INIT_INTERP,
-            action.langSpec,
-            action.initSource
-          ).interp,
+        files: {
+          ...state.files,
+          [action.uri]: {
+            langSpec: action.langSpec,
+            source: action.initSource,
+            interp: constructInterp(
+              INIT_INTERP,
+              action.langSpec,
+              action.initSource
+            ).interp,
+          },
         },
+      };
+    case "CreateLang":
+      return {
+        ...state,
+        registeredLanguages: { [action.newLangSpec.name]: action.newLangSpec },
       };
   }
 }
