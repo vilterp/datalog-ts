@@ -7,77 +7,82 @@ import {
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { constructInterp, InterpCache } from "../../languageWorkbench/interp";
-import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
+import {
+  Action,
+  Effect,
+  initialState,
+  InterpAndSource,
+  State,
+  update,
+} from "../../languageWorkbench/vscode/common";
 
-const INTERP_CACHE: InterpCache = {};
+const LANGUAGES_TO_REGISTER = [LANGUAGES.datalog, LANGUAGES.grammar];
 
-const LANGUAGES_TO_REGISTER = {
-  datalog: LANGUAGES.datalog,
-  grammar: LANGUAGES.grammar,
-};
+function runEffect(state: State, effect: Effect): Action[] {
+  switch (effect.type) {
+    case "RegisterLangInEditor": {
+      const subs = registerLanguageSupport(effect.langSpec, interpGetter);
+      return [{ type: "LangUpdated", langID: effect.langSpec.name, subs }];
+    }
+    case "UpdateLangInEditor": {
+      state.registeredLanguages[effect.newLangSpec.name].subs.forEach((sub) => {
+        sub.dispose();
+      });
+      const subs = registerLanguageSupport(effect.newLangSpec, interpGetter);
+      return [{ type: "LangUpdated", langID: effect.newLangSpec.name, subs }];
+    }
+    case "UpdateProblems": {
+      const entry = state.files[effect.uri];
+      const interpAndSource: InterpAndSource = {
+        interp: entry.interp,
+        source: entry.source,
+      };
+      refreshDiagnostics(
+        interpAndSource,
+        effect.uri,
+        effect.newProblems,
+        DIAGNOSTICS
+      );
+      return [];
+    }
+  }
+}
+
+function dispatch(action: Action) {
+  const queue = [action];
+  while (queue.length > 0) {
+    const [newState, effects] = update(STATE, action);
+    effects.forEach((eff) => {
+      const actions = runEffect(newState, eff);
+      actions.forEach((action) => {
+        queue.push(action);
+      });
+    });
+    STATE = newState;
+  }
+}
+
+let STATE = initialState;
+const DIAGNOSTICS = vscode.languages.createDiagnosticCollection("lingo");
 
 const interpGetter: InterpGetter = {
-  getInterp: (doc: vscode.TextDocument) => {
-    const langID = doc.languageId;
-    const spec = LANGUAGES_TO_REGISTER[langID];
-    console.log("interpGetter:", doc);
-    const source = doc.getText();
-
-    const cachedRes = INTERP_CACHE[doc.uri.toString()];
-    if (cachedRes) {
-      if (
-        cachedRes.lastInitInterp === INIT_INTERP &&
-        cachedRes.lastLangSpec === spec &&
-        cachedRes.lastSource === source
-      ) {
-        return {
-          interp: cachedRes.lastResult.interp,
-          source: cachedRes.lastSource,
-        };
-      }
-    }
-
-    const res = constructInterp(INIT_INTERP, spec, source);
-    const newEntry = {
-      lastInitInterp: INIT_INTERP,
-      lastLangSpec: spec,
-      lastResult: res,
-      lastSource: source,
-    };
-    INTERP_CACHE[doc.uri.toString()] = newEntry;
-
-    return {
-      interp: newEntry.lastResult.interp,
-      source: newEntry.lastSource,
-    };
+  getInterp: (uri: string) => {
+    const res = STATE.files[uri];
+    // TODO: should prob just return the whole thing, including the spec
+    return { interp: res.interp, source: res.source };
   },
 };
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
+
   try {
+    registerInitialLanguages();
     registerExplorerWebView(context);
+    // TODO: is one collection for all languages ok?
 
-    Object.keys(LANGUAGES_TO_REGISTER).forEach((name) => {
-      const spec = LANGUAGES_TO_REGISTER[name];
-      const diagnostics = vscode.languages.createDiagnosticCollection(
-        spec.name
-      );
-      context.subscriptions.push(diagnostics);
-      subscribeToCurrentDoc((doc) => {
-        console.log("updating interp cache for", doc);
-        if (doc.languageId === spec.name) {
-          const interpAndSource = interpGetter.getInterp(doc);
-          refreshDiagnostics(interpAndSource, doc, diagnostics);
-        }
-      }).forEach((sub) => {
-        context.subscriptions.push(sub);
-      });
-
-      registerLanguageSupport(spec, interpGetter).forEach((sub) => {
-        context.subscriptions.push(sub);
-      });
+    subscribeToCurrentDoc().forEach((sub) => {
+      context.subscriptions.push(sub);
     });
   } catch (e) {
     console.error("in activation:", e);
@@ -85,39 +90,56 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // TODO: dispose when something closes
-function subscribeToCurrentDoc(
-  callback: (doc: vscode.TextDocument) => void,
-  closeCallback?: (doc: vscode.TextDocument) => void
-): vscode.Disposable[] {
+function subscribeToCurrentDoc(): vscode.Disposable[] {
   const subs: vscode.Disposable[] = [];
 
   if (vscode.window.activeTextEditor) {
     const doc = vscode.window.activeTextEditor.document;
-    callback(doc);
+    dispatch({
+      type: "CreateDoc",
+      uri: doc.uri.toString(),
+      initSource: doc.getText(),
+      langSpec: LANGUAGES[doc.languageId],
+    });
   }
   subs.push(
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (editor) {
-        callback(editor.document);
+        // This could be a doc that already exists, I guess? oh well
+        const doc = editor.document;
+        dispatch({
+          type: "CreateDoc",
+          uri: doc.uri.toString(),
+          initSource: doc.getText(),
+          langSpec: LANGUAGES[doc.languageId],
+        });
       }
     })
   );
 
   subs.push(
-    vscode.workspace.onDidChangeTextDocument((e) => {
-      callback(e.document);
+    vscode.workspace.onDidChangeTextDocument((evt) => {
+      dispatch({
+        type: "EditDoc",
+        newSource: evt.document.getText(),
+        uri: evt.document.uri.toString(),
+      });
     })
   );
 
   subs.push(
     vscode.workspace.onDidCloseTextDocument((doc) => {
-      if (closeCallback) {
-        closeCallback(doc);
-      }
+      // TODO: delete doc I guess
     })
   );
 
   return subs;
+}
+
+function registerInitialLanguages() {
+  LANGUAGES_TO_REGISTER.forEach((langSpec) => {
+    dispatch({ type: "CreateLang", newLangSpec: langSpec });
+  });
 }
 
 function registerExplorerWebView(context: vscode.ExtensionContext) {

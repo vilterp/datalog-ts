@@ -1,13 +1,17 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { rec } from "../../core/types";
+import { Rec, rec } from "../../core/types";
 import { mapObj } from "../../util/util";
 import { LOADER } from "../commonDL";
 import { constructInterp } from "../interp";
 import { LanguageSpec } from "../languages";
 
+type Disposable = { dispose: () => void };
+
 export type State = {
-  registeredLanguages: { [id: string]: LanguageSpec };
+  registeredLanguages: {
+    [id: string]: { spec: LanguageSpec; subs: Disposable[] };
+  };
   files: {
     [documentURI: string]: {
       interp: AbstractInterpreter;
@@ -33,11 +37,13 @@ export type Action =
       // TODO: diff events
     }
   | { type: "EditLang"; newLangSpec: LanguageSpec }
-  | { type: "CreateLang"; newLangSpec: LanguageSpec };
+  | { type: "CreateLang"; newLangSpec: LanguageSpec }
+  | { type: "LangUpdated"; langID: string; subs: Disposable[] };
 
 export type Effect =
   | { type: "RegisterLangInEditor"; langSpec: LanguageSpec }
-  | { type: "UpdateLangInEditor"; newLangSpec: LanguageSpec };
+  | { type: "UpdateLangInEditor"; newLangSpec: LanguageSpec }
+  | { type: "UpdateProblems"; uri: string; newProblems: Rec[] };
 
 export function update(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
@@ -48,6 +54,9 @@ export function update(state: State, action: Action): [State, Effect[]] {
         current.langSpec,
         action.newSource
       );
+      const problems = res.interp
+        .queryStr("tc.Problem{}")
+        .map((res) => res.term as Rec);
       // TODO: something with errors from constructing interp
       // TODO: process incremental updates. lol
       return [
@@ -62,7 +71,7 @@ export function update(state: State, action: Action): [State, Effect[]] {
             },
           },
         },
-        [],
+        [{ type: "UpdateProblems", uri: action.uri, newProblems: problems }],
       ];
     }
     case "EditLang": {
@@ -110,10 +119,24 @@ export function update(state: State, action: Action): [State, Effect[]] {
         {
           ...state,
           registeredLanguages: {
-            [action.newLangSpec.name]: action.newLangSpec,
+            [action.newLangSpec.name]: { spec: action.newLangSpec, subs: [] },
           },
         },
         [{ type: "RegisterLangInEditor", langSpec: action.newLangSpec }],
+      ];
+    case "LangUpdated":
+      return [
+        {
+          ...state,
+          registeredLanguages: {
+            ...state.registeredLanguages,
+            [action.langID]: {
+              ...state.registeredLanguages[action.langID],
+              subs: action.subs,
+            },
+          },
+        },
+        [],
       ];
   }
 }
