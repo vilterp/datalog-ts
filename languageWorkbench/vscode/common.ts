@@ -119,6 +119,7 @@ export function update(state: State, action: Action): [State, Effect[]] {
         {
           ...state,
           registeredLanguages: {
+            ...state.registeredLanguages,
             [action.newLangSpec.name]: { spec: action.newLangSpec, subs: [] },
           },
         },
