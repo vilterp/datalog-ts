@@ -282,6 +282,7 @@ function getCompletionItems(
   const idx = idxFromPosition(source, position);
   const sourceWithPlaceholder =
     source.slice(0, idx) + "???" + source.slice(idx);
+  // TODO: construct interp with sourceWithPlaceholder
   const interp2 = interpAndSource.interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     `ide.CurrentSuggestion{name: N, span: S, type: T}`
