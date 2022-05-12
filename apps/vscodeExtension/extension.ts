@@ -53,13 +53,14 @@ function dispatch(action: Action) {
   while (queue.length > 0) {
     const nextAction = queue.shift();
     try {
+      console.log("update(", STATE, ",", nextAction, ")");
       const [newState, effects] = update(STATE, nextAction);
-      console.log("ran", nextAction, "got", newState);
-      console.log("got effects", effects);
+      console.log("=>", [newState, effects]);
       effects.forEach((eff) => {
         try {
           const actions = runEffect(newState, eff);
           actions.forEach((action) => {
+            console.log("pushing onto action queue:", action);
             queue.push(action);
           });
         } catch (e) {
@@ -68,7 +69,14 @@ function dispatch(action: Action) {
       });
       STATE = newState;
     } catch (e) {
-      console.error("while running action", action, "got error", e);
+      console.error(
+        "while running update(",
+        STATE,
+        ",",
+        action,
+        ") got error",
+        e
+      );
     }
   }
 }
@@ -130,7 +138,6 @@ function subscribeToCurrentDoc(): vscode.Disposable[] {
 
   subs.push(
     vscode.workspace.onDidChangeTextDocument((evt) => {
-      console.log("dispatching EditDoc");
       dispatch({
         type: "EditDoc",
         newSource: evt.document.getText(),
