@@ -11,9 +11,19 @@ export function dispatch(stateRef: StateRef, action: Action) {
   while (queue.length > 0) {
     const nextAction = queue.shift();
     try {
-      console.log("update(", stateRef.state, ",", nextAction, ")");
+      console.log(
+        "update(",
+        "action=",
+        nextAction,
+        ",",
+        "state=",
+        stateRef.state,
+        ")"
+      );
+      const before = new Date().getTime();
       const [newState, effects] = stateRef.update(stateRef.state, nextAction);
-      console.log("=>", [newState, effects]);
+      const after = new Date().getTime();
+      console.log("=>", [newState, effects], after - before, "ms");
       effects.forEach((eff) => {
         try {
           const actions = stateRef.runEffect(newState, eff);
