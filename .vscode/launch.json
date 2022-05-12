@@ -12,7 +12,8 @@
 			"outFiles": [
 				"${workspaceFolder}/apps/vscodeExtension/out/**/*.js"
 			],
-            "preLaunchTask": "npm: build-vscode-extension"
+            "preLaunchTask": "npm: build-vscode-extension",
+			"autoAttachChildProcesses": true
 		}
 	]
 }
