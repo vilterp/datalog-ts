@@ -48,7 +48,7 @@ export type Effect =
 export function update(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "EditDoc": {
-      const current = state[action.uri];
+      const current = state.files[action.uri];
       const res = constructInterp(
         INIT_INTERP,
         current.langSpec,
