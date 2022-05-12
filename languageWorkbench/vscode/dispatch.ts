@@ -1,4 +1,4 @@
-import { Action, Effect, State } from "../../languageWorkbench/vscode/common";
+import { Action, Effect, State } from "./common";
 
 export type StateRef = {
   state: State;

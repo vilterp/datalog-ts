@@ -15,7 +15,7 @@ import {
   State,
   update,
 } from "../../languageWorkbench/vscode/common";
-import { dispatch, StateRef } from "./dispatch";
+import { dispatch, StateRef } from "../../languageWorkbench/vscode/dispatch";
 
 const LANGUAGES_TO_REGISTER = [LANGUAGES.datalog, LANGUAGES.grammar];
 
