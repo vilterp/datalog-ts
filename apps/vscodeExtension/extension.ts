@@ -15,6 +15,7 @@ import {
   State,
   update,
 } from "../../languageWorkbench/vscode/common";
+import { dispatch, StateRef } from "./dispatch";
 
 const LANGUAGES_TO_REGISTER = [LANGUAGES.datalog, LANGUAGES.grammar];
 
@@ -48,45 +49,12 @@ function runEffect(state: State, effect: Effect): Action[] {
   }
 }
 
-function dispatch(action: Action) {
-  const queue = [action];
-  while (queue.length > 0) {
-    const nextAction = queue.shift();
-    try {
-      console.log("update(", STATE, ",", nextAction, ")");
-      const [newState, effects] = update(STATE, nextAction);
-      console.log("=>", [newState, effects]);
-      effects.forEach((eff) => {
-        try {
-          const actions = runEffect(newState, eff);
-          actions.forEach((action) => {
-            console.log("pushing onto action queue:", action);
-            queue.push(action);
-          });
-        } catch (e) {
-          console.error("while running effect", eff, "got error", e);
-        }
-      });
-      STATE = newState;
-    } catch (e) {
-      console.error(
-        "while running update(",
-        STATE,
-        ",",
-        action,
-        ") got error",
-        e
-      );
-    }
-  }
-}
-
-let STATE = initialState;
+let STATE: StateRef = { state: initialState, update, runEffect };
 const DIAGNOSTICS = vscode.languages.createDiagnosticCollection("lingo");
 
 const interpGetter: InterpGetter = {
   getInterp: (uri: string) => {
-    const res = STATE.files[uri];
+    const res = STATE.state.files[uri];
     // TODO: should prob just return the whole thing, including the spec
     return { interp: res.interp, source: res.source };
   },
@@ -114,7 +82,7 @@ function subscribeToCurrentDoc(): vscode.Disposable[] {
 
   if (vscode.window.activeTextEditor) {
     const doc = vscode.window.activeTextEditor.document;
-    dispatch({
+    dispatch(STATE, {
       type: "CreateDoc",
       uri: doc.uri.toString(),
       initSource: doc.getText(),
@@ -126,7 +94,7 @@ function subscribeToCurrentDoc(): vscode.Disposable[] {
       if (editor) {
         // This could be a doc that already exists, I guess? oh well
         const doc = editor.document;
-        dispatch({
+        dispatch(STATE, {
           type: "CreateDoc",
           uri: doc.uri.toString(),
           initSource: doc.getText(),
@@ -138,7 +106,7 @@ function subscribeToCurrentDoc(): vscode.Disposable[] {
 
   subs.push(
     vscode.workspace.onDidChangeTextDocument((evt) => {
-      dispatch({
+      dispatch(STATE, {
         type: "EditDoc",
         newSource: evt.document.getText(),
         uri: evt.document.uri.toString(),
@@ -157,7 +125,7 @@ function subscribeToCurrentDoc(): vscode.Disposable[] {
 
 function registerInitialLanguages() {
   LANGUAGES_TO_REGISTER.forEach((langSpec) => {
-    dispatch({ type: "CreateLang", newLangSpec: langSpec });
+    dispatch(STATE, { type: "CreateLang", newLangSpec: langSpec });
   });
 }
 
