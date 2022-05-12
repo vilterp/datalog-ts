@@ -49,6 +49,10 @@ export function update(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "EditDoc": {
       const current = state.files[action.uri];
+      if (current.source === action.newSource) {
+        console.log("update(EDIT_DOC): source hasn't changed");
+        return [state, []];
+      }
       const res = constructInterp(
         INIT_INTERP,
         current.langSpec,
