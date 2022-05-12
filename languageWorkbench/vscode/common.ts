@@ -80,6 +80,9 @@ export function update(state: State, action: Action): [State, Effect[]] {
         {
           ...state,
           files: mapObj(state.files, (docURI, docState) => {
+            if (docState.langSpec.name !== action.newLangSpec.name) {
+              return docState;
+            }
             const newInterp = constructInterp(
               INIT_INTERP,
               action.newLangSpec,
