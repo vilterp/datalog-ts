@@ -110,6 +110,7 @@ function subscribeToCurrentDoc(): vscode.Disposable[] {
         type: "EditDoc",
         newSource: evt.document.getText(),
         uri: evt.document.uri.toString(),
+        reason: evt.reason ? evt.reason.toString() : "",
       });
     })
   );

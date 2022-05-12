@@ -34,6 +34,7 @@ export type Action =
       type: "EditDoc";
       uri: string;
       newSource: string;
+      reason: string;
       // TODO: diff events
     }
   | { type: "EditLang"; newLangSpec: LanguageSpec }
