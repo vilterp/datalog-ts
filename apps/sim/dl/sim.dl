@@ -62,11 +62,11 @@ currentAtSink{id: I, time: T, level: ShiftedL} :-
 #   add{a: PrevLevel, b: InputCurrent, res: NotClamped} &
 #   clamp{min: 0, max: Capacity, val: NotClamped, res: NextLevel}.
 
-# batteryLevelDelta{id: B, time: T, delta: Delta} :-
-#   batteryInputCurrent{id: B, time: T, current: Input} &
-#   batteryOutputCurrent{id: B, time: T, current: PosOutput} &
-#   invert{a: PosOutput, res: Output} &
-#   add{a: Input, b: Output, res: Delta}.
+batteryLevelDelta{id: B, time: T, delta: Delta} :-
+  batteryInputCurrent{id: B, time: T, current: Input} &
+  batteryOutputCurrent{id: B, time: T, current: PosOutput} &
+  invert{a: PosOutput, res: Output} &
+  add{a: Input, b: Output, res: Delta}.
 batteryInputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
