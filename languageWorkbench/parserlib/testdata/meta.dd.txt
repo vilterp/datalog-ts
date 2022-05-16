@@ -383,3 +383,23 @@ grammar [0-21]
     }
   }
 }
+
+backslash :- '\\'.
+----
+text/plain
+grammar [0-18]
+  ruleDefn [0-18]
+    ruleName: "backslash" [0-9]
+    rule [13-17]
+      charRule [13-17]
+        crLiteral [13-17]
+          singleChar: "\\\\" [14-16]
+{
+  "backslash": {
+    "type": "Char",
+    "rule": {
+      "type": "Literal",
+      "value": "\\"
+    }
+  }
+}

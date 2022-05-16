@@ -83,7 +83,7 @@ export const metaGrammar: Grammar = {
   ]),
   crLiteral: seq([text("'"), ref("singleChar"), text("'")]),
   crAny: text("."),
-  singleChar: choice([text("\\n"), charRule(anyChar)]), // TODO: escaping
+  singleChar: choice([text("\\n"), text("\\\\"), charRule(anyChar)]), // TODO: escaping
   commentChar: charRule(notChar(literalChar("\n"))),
   repSep: seq([
     text("repSep("),
@@ -163,6 +163,8 @@ function extractCharRule(input: string, rt: RuleTree): SingleCharRule {
       switch (text) {
         case "\\n":
           return literalChar("\n");
+        case "\\\\":
+          return literalChar("\\");
         default:
           return literalChar(text);
       }
