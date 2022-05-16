@@ -67,12 +67,12 @@ currentAtSink{id: I, time: T, level: ShiftedL} :-
 #   batteryOutputCurrent{id: B, time: T, current: PosOutput} &
 #   invert{a: PosOutput, res: Output} &
 #   add{a: Input, b: Output, res: Delta}.
-# batteryInputCurrent{id: B, time: T, current: L} :-
-#   time{time: T} &
-#   battery{id: B} &
-#   source{id: S} &
-#   connection{from: S, to: B} &
-#   currentAtSource{id: S, time: T, level: L}.
+batteryInputCurrent{id: B, time: T, current: L} :-
+  time{time: T} &
+  battery{id: B} &
+  source{id: S} &
+  connection{from: S, to: B} &
+  currentAtSource{id: S, time: T, level: L}.
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
