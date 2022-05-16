@@ -7,10 +7,12 @@
 .table internal.visualization
 
 source{id: 1, supply: 10}.
+source{id: 4, supply: 15}.
 battery{id: 2, capacity: 100, initialLevel: 50}.
 sink{id: 3, demand: 15}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
+connection{from: 4, to: 2}.
 
 # === rules ===
 
@@ -42,15 +44,15 @@ currentAtSink{id: I, time: T, level: ShiftedL} :-
   sink{id: I, demand: Size} &
   math.sin{a: ShiftedT, res: Raw} &
   mul{a: Raw, b: Size, res: C} &
-  add{a: 20, b: C, res: ShiftedL}.
+  add{a: 30, b: C, res: ShiftedL}.
 
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
   batteryLevelStep{id: I, time: T, level: L}.
 batteryLevelInitial{id: I, time: 1, level: L} :-
   battery{id: I, initialLevel: L}.
-# TODO: flexible discharge rate
-# TODO: look at demand
+# # TODO: flexible discharge rate
+# # TODO: look at demand
 batteryLevelStep{id: I, time: T, level: NextLevel} :-
   battery{id: I, capacity: Capacity} &
   time{time: PrevT} &
@@ -65,12 +67,14 @@ batteryLevelDelta{id: B, time: T, delta: Delta} :-
   batteryOutputCurrent{id: B, time: T, current: PosOutput} &
   invert{a: PosOutput, res: Output} &
   add{a: Input, b: Output, res: Delta}.
-batteryInputCurrent{id: B, time: T, current: L} :-
+batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
   time{time: T} &
   battery{id: B} &
   source{id: S} &
   connection{from: S, to: B} &
   currentAtSource{id: S, time: T, level: L}.
+batteryInputCurrent{id: B, time: T, current: C} :-
+  sum[C: batteryInputCurrentFrom{id: B, time: T, current: C}].
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
@@ -79,7 +83,7 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   currentAtSink{id: S, time: T, level: L}.
 
 time{time: T} :-
-  range{from: 1, to: 30, val: T}.
+  range{from: 1, to: 3, val: T}.
 
 # === visualization ===
 
