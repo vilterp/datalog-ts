@@ -7,10 +7,12 @@
 .table internal.visualization
 
 source{id: 1, supply: 10}.
+source{id: 4, supply: 10}.
 battery{id: 2, capacity: 100, initialLevel: 50}.
 sink{id: 3, demand: 15}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
+connection{from: 4, to: 2}.
 
 # === rules ===
 
@@ -42,7 +44,7 @@ currentAtSink{id: I, time: T, level: ShiftedL} :-
   sink{id: I, demand: Size} &
   math.sin{a: ShiftedT, res: Raw} &
   mul{a: Raw, b: Size, res: C} &
-  add{a: 20, b: C, res: ShiftedL}.
+  add{a: 30, b: C, res: ShiftedL}.
 
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
