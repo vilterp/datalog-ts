@@ -133,6 +133,7 @@ function extractRule(input: string, rt: RuleTree): Rule {
         })
           .replace(/\\n/, "\n")
           .replace(/\\"/, '"')
+          .replace(/\\\\/, "\\")
       );
       return theText;
     case "charRule":

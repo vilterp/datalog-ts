@@ -260,22 +260,22 @@ grammar [0-17]
   }
 }
 
-escapedQuote :- ['\', '"'].
+escapedQuote :- ['\\', '"'].
 ----
 text/plain
-grammar [0-27]
-  ruleDefn [0-27]
+grammar [0-28]
+  ruleDefn [0-28]
     ruleName: "escapedQuote" [0-12]
-    rule [16-26]
-      seq [16-26]
-        rule [17-20]
-          charRule [17-20]
-            crLiteral [17-20]
-              singleChar: "\\" [18-19]
-        rule [22-25]
-          charRule [22-25]
-            crLiteral [22-25]
-              singleChar: "\"" [23-24]
+    rule [16-27]
+      seq [16-27]
+        rule [17-21]
+          charRule [17-21]
+            crLiteral [17-21]
+              singleChar: "\\\\" [18-20]
+        rule [23-26]
+          charRule [23-26]
+            crLiteral [23-26]
+              singleChar: "\"" [24-25]
 {
   "escapedQuote": {
     "type": "Sequence",
@@ -298,30 +298,30 @@ grammar [0-27]
   }
 }
 
-stringChar :- (^'"' | ['\', '"']).
+stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
-grammar [0-34]
-  ruleDefn [0-34]
+grammar [0-35]
+  ruleDefn [0-35]
     ruleName: "stringChar" [0-10]
-    rule [14-33]
-      choice [14-33]
+    rule [14-34]
+      choice [14-34]
         rule [15-19]
           charRule [15-19]
             crNot [15-19]
               charRule [16-19]
                 crLiteral [16-19]
                   singleChar: "\"" [17-18]
-        rule [22-32]
-          seq [22-32]
-            rule [23-26]
-              charRule [23-26]
-                crLiteral [23-26]
-                  singleChar: "\\" [24-25]
-            rule [28-31]
-              charRule [28-31]
-                crLiteral [28-31]
-                  singleChar: "\"" [29-30]
+        rule [22-33]
+          seq [22-33]
+            rule [23-27]
+              charRule [23-27]
+                crLiteral [23-27]
+                  singleChar: "\\\\" [24-26]
+            rule [29-32]
+              charRule [29-32]
+                crLiteral [29-32]
+                  singleChar: "\"" [30-31]
 {
   "stringChar": {
     "type": "Choice",
@@ -401,5 +401,20 @@ grammar [0-18]
       "type": "Literal",
       "value": "\\"
     }
+  }
+}
+
+singleChar :- "here's a backslash: \\ there it was!".
+----
+text/plain
+grammar [0-53]
+  ruleDefn [0-53]
+    ruleName: "singleChar" [0-10]
+    rule [14-52]
+      text: "\"here's a backslash: \\\\ there it was!\"" [14-52]
+{
+  "singleChar": {
+    "type": "Text",
+    "value": "here's a backslash: \\ there it was!"
   }
 }
