@@ -49,8 +49,8 @@ currentAtSink{id: I, time: T, level: ShiftedL} :-
 # batteryLevel{id: I, time: T, level: L} :-
 #   batteryLevelInitial{id: I, time: T, level: L} |
 #   batteryLevelStep{id: I, time: T, level: L}.
-# batteryLevelInitial{id: I, time: 1, level: L} :-
-#   battery{id: I, initialLevel: L}.
+batteryLevelInitial{id: I, time: 1, level: L} :-
+  battery{id: I, initialLevel: L}.
 # # TODO: flexible discharge rate
 # # TODO: look at demand
 # batteryLevelStep{id: I, time: T, level: NextLevel} :-
