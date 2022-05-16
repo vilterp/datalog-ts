@@ -7,7 +7,7 @@
 .table internal.visualization
 
 source{id: 1, supply: 10}.
-source{id: 4, supply: 10}.
+source{id: 4, supply: 15}.
 battery{id: 2, capacity: 100, initialLevel: 50}.
 sink{id: 3, demand: 15}.
 connection{from: 1, to: 2}.
@@ -67,6 +67,7 @@ batteryLevelDelta{id: B, time: T, delta: Delta} :-
   batteryOutputCurrent{id: B, time: T, current: PosOutput} &
   invert{a: PosOutput, res: Output} &
   add{a: Input, b: Output, res: Delta}.
+# TODO: this is where you would need a sum.
 batteryInputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
