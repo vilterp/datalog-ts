@@ -358,3 +358,28 @@ grammar [0-34]
     ]
   }
 }
+
+commentChar :- ^'\n'.
+----
+text/plain
+grammar [0-21]
+  ruleDefn [0-21]
+    ruleName: "commentChar" [0-11]
+    rule [15-20]
+      charRule [15-20]
+        crNot [15-20]
+          charRule [16-20]
+            crLiteral [16-20]
+              singleChar: "\\n" [17-19]
+{
+  "commentChar": {
+    "type": "Char",
+    "rule": {
+      "type": "Not",
+      "rule": {
+        "type": "Literal",
+        "value": "\n"
+      }
+    }
+  }
+}
