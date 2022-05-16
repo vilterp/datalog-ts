@@ -20,7 +20,7 @@
     "serve-notebook-ui": "cd apps/notebook/public && http-server -c-1",
     "build-actors-ui": "esbuild apps/actors/main.tsx --bundle --outfile=apps/actors/public/bundle.js --sourcemap '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --external:path --external:fs --external:crypto",
     "serve-actors-ui": "cd apps/actors/public && http-server -c-1",
-    "build-language-workbench": "esbuild apps/languageWorkbench/main.tsx --bundle --outfile=apps/languageWorkbench/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto --loader:.dl=text --loader:.css=text --loader:.grammar=text",
+    "build-language-workbench": "esbuild apps/languageWorkbench/main.tsx --analyze --bundle --outfile=apps/languageWorkbench/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto --loader:.dl=text --loader:.css=text --loader:.grammar=text",
     "serve-language-workbench": "cd apps/languageWorkbench/public && http-server -c-1",
     "build-dl-parser-playground": "esbuild apps/dlParser/main.tsx --bundle --outfile=apps/dlParser/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --loader:.dl=text --sourcemap --external:path --external:fs --external:crypto",
     "serve-dl-parser-playground": "cd apps/dlParser/public && http-server -c-1",
