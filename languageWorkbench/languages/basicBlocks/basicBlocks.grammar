@@ -15,4 +15,4 @@ int :- [[0-9], repSep([0-9], "")].
 Placeholder :- "???".
 ws :- repSep((" "|"\n"), "").
 string :- ["\"", repSep(stringChar, ""), "\""].
-stringChar :- (^'"' | ['\', '"']).
+stringChar :- (^'"' | ['\\', '"']).

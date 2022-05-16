@@ -25,7 +25,7 @@ referencesKW :- "REFERENCES".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
-stringChar :- (^'"' | ['\', '"']).
+stringChar :- (^'"' | ['\\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
 alphaNum :- (alpha | num).

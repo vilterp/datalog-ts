@@ -26,7 +26,7 @@ tableKW :- ".table".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
-stringChar :- (^'"' | ['\', '"']).
+stringChar :- (^'"' | ['\\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
 alphaNum :- (alpha | num).
@@ -34,4 +34,4 @@ ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
 commaSpace :- [",", ws].
 
-commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | "," | "-" | "'" | "\"" | "/" | "?" | "&" | "|").
+commentChar :- ^'\n'.

@@ -6,4 +6,4 @@ keyValue :- [string, ":", value].
 array :- ["[", repSep(value, ","), "]"].
 null :- "null".
 string :- ["\"", repSep(stringChar, ""), "\""].
-stringChar :- (^'"' | ['\', '"']).
+stringChar :- (^'"' | ['\\', '"']).
