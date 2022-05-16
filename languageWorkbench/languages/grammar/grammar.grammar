@@ -15,7 +15,7 @@ repSepKW :- "repSep".
 charRule :- (charRange | notChar | singleChar | anyChar).
 charRange :- ["[", alphaNum, "-", alphaNum, "]"].
 notChar :- ['^', charRule].
-singleChar :- ["'", ., "'"].
+singleChar :- ["'", (['\\', 'n'] | ['\\', '\\'] | .), "'"].
 anyChar :- ".".
 
 ident :- repSep(alpha, "").
@@ -26,5 +26,5 @@ placeholder :- "???".
 alphaNum :- (alpha | num).
 alpha :- ([a-z] | [A-Z]).
 num :- [0-9].
-stringChar :- (^'"' | ['\', '"']).
-commentChar :- ([A-Z] | [a-z] | " " | ":" | "." | "=" | "{" | "}" | "," | "-" | "'" | "\"" | "/" | "?" | "&" | "|").
+stringChar :- (^'"' | ['\\', '"']).
+commentChar :- ^'\n'.
