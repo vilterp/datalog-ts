@@ -37,7 +37,12 @@ export function genExtractor(parserlibPath: string, grammar: Grammar): Program {
         "childByName",
         "childrenByName",
       ]),
-      // TODO: an exported main function
+      // TODO: const GRAMMAR = parserlib.parseGrammar("...")
+      // TODO: export function parse(input: string) {
+      //   const tree = parserlib.parse(GRAMMAR, input);
+      //   const ruleTree = parserlib.extractRuleTree(tree);
+      //   return extract_main(input, ruleTree);
+      // }
       ...mapObjToList(grammar, genRule),
     ],
   };
