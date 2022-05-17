@@ -11,7 +11,7 @@ export type CharRule = { type: "Char"; rule: SingleCharRule };
 export type ChoiceRule = { type: "Choice"; choices: Rule[] };
 export type SequenceRule = { type: "Sequence"; items: Rule[] };
 export type RepSepRule = { type: "RepSep"; rep: Rule; sep: Rule };
-export type RefRule = { type: "Ref"; name: string };
+export type RefRule = { type: "Ref"; rule: string; captureName: string | null };
 
 export function text(value: string): Rule {
   return { type: "Text", value };
@@ -33,8 +33,8 @@ export function repSep(rep: Rule, sep: Rule): Rule {
   return { type: "RepSep", rep, sep };
 }
 
-export function ref(name: string): Rule {
-  return { type: "Ref", name };
+export function ref(rule: string, captureName: string | null = null): Rule {
+  return { type: "Ref", rule, captureName };
 }
 
 export type Grammar = { [name: string]: Rule };

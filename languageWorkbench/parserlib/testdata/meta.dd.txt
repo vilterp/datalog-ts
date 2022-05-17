@@ -12,19 +12,24 @@ grammar [0-277]
   ruleDefn [0-14]
     ruleName: "main" [0-4]
     rule [8-13]
-      ref: "value" [8-13]
+      ref [8-13]
+        ruleName: "value" [8-13]
   ruleDefn [15-62]
     ruleName: "value" [15-20]
     rule [24-61]
       choice [24-61]
         rule [25-31]
-          ref: "object" [25-31]
+          ref [25-31]
+            ruleName: "object" [25-31]
         rule [34-39]
-          ref: "array" [34-39]
+          ref [34-39]
+            ruleName: "array" [34-39]
         rule [42-48]
-          ref: "intLit" [42-48]
+          ref [42-48]
+            ruleName: "intLit" [42-48]
         rule [51-60]
-          ref: "stringLit" [51-60]
+          ref [51-60]
+            ruleName: "stringLit" [51-60]
   ruleDefn [63-107]
     ruleName: "object" [63-69]
     rule [73-106]
@@ -34,7 +39,8 @@ grammar [0-277]
         rule [79-100]
           repSep [79-100]
             rule [86-94]
-              ref: "keyValue" [86-94]
+              ref [86-94]
+                ruleName: "keyValue" [86-94]
             rule [96-99]
               text: "\",\"" [96-99]
         rule [102-105]
@@ -44,17 +50,20 @@ grammar [0-277]
     rule [120-144]
       seq [120-144]
         rule [121-130]
-          ref: "stringLit" [121-130]
+          ref [121-130]
+            ruleName: "stringLit" [121-130]
         rule [132-136]
           text: "\": \"" [132-136]
         rule [138-143]
-          ref: "value" [138-143]
+          ref [138-143]
+            ruleName: "value" [138-143]
   ruleDefn [146-174]
     ruleName: "intLit" [146-152]
     rule [156-173]
       repSep [156-173]
         rule [163-168]
-          ref: "digit" [163-168]
+          ref [163-168]
+            ruleName: "digit" [163-168]
         rule [170-172]
           text: "\"\"" [170-172]
   ruleDefn [175-215]
@@ -66,7 +75,8 @@ grammar [0-277]
         rule [190-208]
           repSep [190-208]
             rule [197-202]
-              ref: "value" [197-202]
+              ref [197-202]
+                ruleName: "value" [197-202]
             rule [204-207]
               text: "\",\"" [204-207]
         rule [210-213]
@@ -98,26 +108,31 @@ grammar [0-277]
 {
   "main": {
     "type": "Ref",
-    "name": "value"
+    "rule": "value",
+    "captureName": null
   },
   "value": {
     "type": "Choice",
     "choices": [
       {
         "type": "Ref",
-        "name": "object"
+        "rule": "object",
+        "captureName": null
       },
       {
         "type": "Ref",
-        "name": "array"
+        "rule": "array",
+        "captureName": null
       },
       {
         "type": "Ref",
-        "name": "intLit"
+        "rule": "intLit",
+        "captureName": null
       },
       {
         "type": "Ref",
-        "name": "stringLit"
+        "rule": "stringLit",
+        "captureName": null
       }
     ]
   },
@@ -132,7 +147,8 @@ grammar [0-277]
         "type": "RepSep",
         "rep": {
           "type": "Ref",
-          "name": "keyValue"
+          "rule": "keyValue",
+          "captureName": null
         },
         "sep": {
           "type": "Text",
@@ -150,7 +166,8 @@ grammar [0-277]
     "items": [
       {
         "type": "Ref",
-        "name": "stringLit"
+        "rule": "stringLit",
+        "captureName": null
       },
       {
         "type": "Text",
@@ -158,7 +175,8 @@ grammar [0-277]
       },
       {
         "type": "Ref",
-        "name": "value"
+        "rule": "value",
+        "captureName": null
       }
     ]
   },
@@ -166,7 +184,8 @@ grammar [0-277]
     "type": "RepSep",
     "rep": {
       "type": "Ref",
-      "name": "digit"
+      "rule": "digit",
+      "captureName": null
     },
     "sep": {
       "type": "Text",
@@ -184,7 +203,8 @@ grammar [0-277]
         "type": "RepSep",
         "rep": {
           "type": "Ref",
-          "name": "value"
+          "rule": "value",
+          "captureName": null
         },
         "sep": {
           "type": "Text",
@@ -416,5 +436,45 @@ grammar [0-53]
   "singleChar": {
     "type": "Text",
     "value": "here's a backslash: \\ there it was!"
+  }
+}
+
+binOp :- [left:term, "==", right:term].
+----
+text/plain
+grammar [0-39]
+  ruleDefn [0-39]
+    ruleName: "binOp" [0-5]
+    rule [9-38]
+      seq [9-38]
+        rule [10-19]
+          ref [10-19]
+            captureName: "left" [10-14]
+            ruleName: "term" [15-19]
+        rule [21-25]
+          text: "\"==\"" [21-25]
+        rule [27-37]
+          ref [27-37]
+            captureName: "right" [27-32]
+            ruleName: "term" [33-37]
+{
+  "binOp": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "term",
+        "captureName": "left"
+      },
+      {
+        "type": "Text",
+        "value": "=="
+      },
+      {
+        "type": "Ref",
+        "rule": "term",
+        "captureName": "right"
+      }
+    ]
   }
 }

@@ -128,7 +128,7 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
           }),
           or([
             and([
-              rec(rule.name, {
+              rec(rule.rule, {
                 span: rec("span", { from: varr("P1"), to: varr("P2") }),
               }),
             ]),

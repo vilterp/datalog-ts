@@ -22,6 +22,7 @@ import {
   stringLit,
   spaceAround,
   whitespace,
+  opt,
 } from "./stdlib";
 import {
   RuleTree,
@@ -64,7 +65,8 @@ export const metaGrammar: Grammar = {
   ]),
   seq: block(squareBrackets, repSep(ref("rule"), commaSpace)),
   choice: block(parens, repSep(ref("rule"), spaceAround(text("|")))),
-  ref: ident,
+  ref: seq([opt(seq([ref("captureName"), text(":")])), ref("ruleName")]),
+  captureName: ident,
   text: stringLit,
   // char rules
   charRule: choice([
@@ -124,7 +126,13 @@ function extractRule(input: string, rt: RuleTree): Rule {
         rt.children.map((item) => extractRule(input, item.children[0]))
       );
     case "ref":
-      return ref(textForSpan(input, rt.span));
+      const captureName = childByName(rt, "captureName");
+      const ruleName = childByName(rt, "ruleName");
+      const captureNameText = captureName
+        ? textForSpan(input, captureName.span)
+        : null;
+      const ruleNameText = textForSpan(input, ruleName.span);
+      return ref(ruleNameText, captureNameText);
     case "text":
       const theText = text(
         textForSpan(input, {
