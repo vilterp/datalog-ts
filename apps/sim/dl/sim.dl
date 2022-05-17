@@ -68,12 +68,14 @@ batteryLevelDelta{id: B, time: T, delta: Delta} :-
   invert{a: PosOutput, res: Output} &
   add{a: Input, b: Output, res: Delta}.
 # TODO: this is where you would need a sum.
-batteryInputCurrent{id: B, time: T, current: L} :-
+batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
   time{time: T} &
   battery{id: B} &
   source{id: S} &
   connection{from: S, to: B} &
   currentAtSource{id: S, time: T, level: L}.
+batteryInputCurrent{id: B, time: T, current: L} :-
+  sum[C: batteryInputCurrentFrom{id: B, time: T, current: C}, L].
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
@@ -82,7 +84,7 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   currentAtSink{id: S, time: T, level: L}.
 
 time{time: T} :-
-  range{from: 1, to: 30, val: T}.
+  range{from: 1, to: 3, val: T}.
 
 # === visualization ===
 
