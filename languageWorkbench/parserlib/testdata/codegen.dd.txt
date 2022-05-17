@@ -9,3 +9,13 @@ string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
+function extract_array() {}
+function extract_int() {}
+function extract_keyValue() {}
+function extract_main() {}
+function extract_null() {}
+function extract_object() {}
+function extract_string() {}
+function extract_stringChar() {}
+function extract_value() {}
+

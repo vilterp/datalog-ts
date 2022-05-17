@@ -9,6 +9,7 @@ import {
   ObjectExpression,
   Statement,
   VariableDeclaration,
+  BlockStatement,
 } from "estree";
 
 export function jsIdent(name: string): Identifier {
@@ -93,7 +94,7 @@ export function jsConstAssn(
   };
 }
 
-export function jsBlock(statements: Statement[]): Statement {
+export function jsBlock(statements: Statement[]): BlockStatement {
   return { type: "BlockStatement", body: statements };
 }
 
