@@ -15,6 +15,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rule } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { genExtractorStr } from "./gen/genExtractor";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -84,6 +85,16 @@ export function parserlibTests(writeResults: boolean): Suite {
         runDDTestAtPath(
           "languageWorkbench/parserlib/testdata/datalogInput.dd.txt",
           datalogInputTest,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "codegen",
+      test() {
+        runDDTestAtPath(
+          "languageWorkbench/parserlib/testdata/codegen.dd.txt",
+          codegenTest,
           writeResults
         );
       },
@@ -196,4 +207,12 @@ function handleResults(traceTree: TraceTree, source: string): TestOutput {
       ...errors.map((err) => `error: ${formatParseError(err)}`),
     ].join("\n")
   );
+}
+
+function codegenTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const grammar = parseGrammar(input);
+    const output = genExtractorStr(grammar);
+    return plainTextOut(output);
+  });
 }

@@ -1,0 +1,11 @@
+main :- value.
+value :- (object | array | int | string | null).
+int :- [[0-9], repSep([0-9], "")].
+object :- ["{", repSep(keyValue, ","), "}"].
+keyValue :- [string, ":", value].
+array :- ["[", repSep(value, ","), "]"].
+null :- "null".
+string :- ["\"", repSep(stringChar, ""), "\""].
+stringChar :- (^'"' | ['\\', '"']).
+----
+text/plain
