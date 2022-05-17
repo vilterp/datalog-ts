@@ -43,7 +43,7 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
   // ....
   return {
     type: "FunctionDeclaration",
-    id: jsIdent(`extract_${name}`),
+    id: jsIdent(extractorName(name)),
     params: [jsIdent("input"), jsIdent("node")],
     body: jsBlock([
       {
@@ -60,7 +60,7 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
             },
             ...refs.map((name) => ({
               key: name,
-              value: jsCall(jsIdent(`extract_${name}`), [
+              value: jsCall(jsIdent(extractorName(name)), [
                 jsIdent("input"),
                 jsCall(jsIdent("childByName"), [jsIdent("node"), jsStr(name)]),
               ]),
@@ -70,4 +70,9 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
       },
     ]),
   };
+}
+
+function extractorName(ruleName: string) {
+  // TODO: make camelCase
+  return `extract_${ruleName}`;
 }
