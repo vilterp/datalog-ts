@@ -2,7 +2,7 @@ import { Grammar, Rule } from "../grammar";
 import { Program, FunctionDeclaration } from "estree";
 import { generate } from "astring";
 import { flatMap, mapListToObj, mapObjToList, uniq } from "../../../util/util";
-import { jsBlock, jsCall, jsIdent, jsObj, jsStr } from "./astHelpers";
+import { jsBlock, jsCall, jsChain, jsIdent, jsObj, jsStr } from "./astHelpers";
 
 export function genExtractorStr(grammar: Grammar) {
   const program = genExtractor(grammar);
@@ -44,13 +44,20 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
   return {
     type: "FunctionDeclaration",
     id: jsIdent(`extract_${name}`),
-    params: [jsIdent("node")],
+    params: [jsIdent("input"), jsIdent("node")],
     body: jsBlock([
       {
         type: "ReturnStatement",
         argument: jsObj(
           mapListToObj([
             { key: "__rule__", value: jsStr(name) },
+            {
+              key: "__text__",
+              value: jsCall(jsIdent("textForSpan"), [
+                jsIdent("input"),
+                jsChain(["node", "span"]),
+              ]),
+            },
             ...refs.map((name) => ({
               key: name,
               value: jsCall(jsIdent("childByName"), [
