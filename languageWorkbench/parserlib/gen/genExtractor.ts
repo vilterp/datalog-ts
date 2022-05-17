@@ -37,6 +37,7 @@ export function genExtractor(parserlibPath: string, grammar: Grammar): Program {
         "childByName",
         "childrenByName",
       ]),
+      // TODO: an exported main function
       ...mapObjToList(grammar, genRule),
     ],
   };
@@ -79,7 +80,6 @@ function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
 
 function genRule(name: string, rule: Rule): FunctionDeclaration {
   const refs = refsInRule(rule);
-  // TODO: check for dups
   const refNames = refs.map((r) => `${r.captureName}:${r.ruleName}`);
   const grouped = groupBy(refNames, (x) => x);
   const counted = mapObj(grouped, (name, refs) => refs.length);
@@ -90,7 +90,6 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
       `multiple refs from rule "${name}": ${JSON.stringify(duplicated)}`
     );
   }
-  // ....
   return {
     type: "FunctionDeclaration",
     id: jsIdent(extractorName(name)),
