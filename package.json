@@ -32,7 +32,9 @@
     "package-vscode-extension": "cd apps/vscodeExtension && vsce package"
   },
   "devDependencies": {
+    "@types/astring": "^1.7.0",
     "@types/diff": "^4.0.2",
+    "@types/estree": "^0.0.51",
     "@types/parsimmon": "^1.10.1",
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.5",
@@ -40,6 +42,7 @@
     "@types/tmp": "^0.2.3",
     "@types/vscode": "^1.66.0",
     "airtable": "^0.11.0",
+    "astring": "^1.8.3",
     "aws-sdk": "^2.906.0",
     "diff": "^4.0.2",
     "esbuild": "^0.14.38",
