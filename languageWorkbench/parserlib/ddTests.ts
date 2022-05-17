@@ -212,7 +212,7 @@ function handleResults(traceTree: TraceTree, source: string): TestOutput {
 function codegenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const grammar = parseGrammar(input);
-    const output = genExtractorStr(grammar);
+    const output = genExtractorStr(".", grammar);
     return plainTextOut(output);
   });
 }

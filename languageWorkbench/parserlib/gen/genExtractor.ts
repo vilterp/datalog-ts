@@ -21,16 +21,32 @@ import {
   jsStr,
 } from "./astHelpers";
 
-export function genExtractorStr(grammar: Grammar) {
-  const program = genExtractor(grammar);
+export function genExtractorStr(parserlibPath: string, grammar: Grammar) {
+  const program = genExtractor(parserlibPath, grammar);
   return generate(program);
 }
 
-export function genExtractor(grammar: Grammar): Program {
+export function genExtractor(parserlibPath: string, grammar: Grammar): Program {
   return {
     type: "Program",
     sourceType: "script",
-    body: mapObjToList(grammar, genRule),
+    body: [
+      {
+        type: "ImportDeclaration",
+        source: {
+          type: "Literal",
+          value: `${parserlibPath}/ruleTree`,
+        },
+        specifiers: [
+          {
+            type: "ImportSpecifier",
+            imported: jsIdent("textForSpan"),
+            local: jsIdent("textForSpan"),
+          },
+        ],
+      },
+      ...mapObjToList(grammar, genRule),
+    ],
   };
 }
 
