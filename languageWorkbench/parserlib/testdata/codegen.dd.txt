@@ -13,7 +13,7 @@ function extract_array(input, node) {
   return {
     __rule__: "array",
     __text__: textForSpan(input, node.span),
-    value: extract_value(input, childrenByName(node, "value"))
+    value: childrenByName(node, "value").map(child => extract_value(input, child))
   };
 }
 function extract_int(input, node) {
@@ -47,14 +47,14 @@ function extract_object(input, node) {
   return {
     __rule__: "object",
     __text__: textForSpan(input, node.span),
-    keyValue: extract_keyValue(input, childrenByName(node, "keyValue"))
+    keyValue: childrenByName(node, "keyValue").map(child => extract_keyValue(input, child))
   };
 }
 function extract_string(input, node) {
   return {
     __rule__: "string",
     __text__: textForSpan(input, node.span),
-    stringChar: extract_stringChar(input, childrenByName(node, "stringChar"))
+    stringChar: childrenByName(node, "stringChar").map(child => extract_stringChar(input, child))
   };
 }
 function extract_stringChar(input, node) {

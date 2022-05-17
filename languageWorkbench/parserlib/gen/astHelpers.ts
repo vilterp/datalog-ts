@@ -10,6 +10,7 @@ import {
   Statement,
   VariableDeclaration,
   BlockStatement,
+  ArrowFunctionExpression,
 } from "estree";
 
 export function jsIdent(name: string): Identifier {
@@ -116,6 +117,18 @@ export function jsLogical(
   right: Expression
 ): Expression {
   return { type: "LogicalExpression", left, operator, right };
+}
+
+export function jsArrowFunc(
+  params: string[],
+  body: Expression
+): ArrowFunctionExpression {
+  return {
+    type: "ArrowFunctionExpression",
+    expression: true,
+    params: params.map(jsIdent),
+    body,
+  };
 }
 
 export const jsContinue: ContinueStatement = { type: "ContinueStatement" };

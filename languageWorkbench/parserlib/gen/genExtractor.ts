@@ -2,7 +2,16 @@ import { Grammar, Rule } from "../grammar";
 import { Program, FunctionDeclaration } from "estree";
 import { generate } from "astring";
 import { flatMap, mapListToObj, mapObjToList, uniq } from "../../../util/util";
-import { jsBlock, jsCall, jsChain, jsIdent, jsObj, jsStr } from "./astHelpers";
+import {
+  jsArrowFunc,
+  jsBlock,
+  jsCall,
+  jsChain,
+  jsIdent,
+  jsMember,
+  jsObj,
+  jsStr,
+} from "./astHelpers";
 
 export function genExtractorStr(grammar: Grammar) {
   const program = genExtractor(grammar);
@@ -73,14 +82,34 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
               ]),
             },
             ...refs.map(({ name, repeated }) => ({
+              // TODO: pluralize if this is a repSep
               key: name,
-              value: jsCall(jsIdent(extractorName(name)), [
-                jsIdent("input"),
-                jsCall(jsIdent(repeated ? "childrenByName" : "childByName"), [
-                  jsIdent("node"),
-                  jsStr(name),
-                ]),
-              ]),
+              value: repeated
+                ? jsCall(
+                    jsMember(
+                      jsCall(jsIdent("childrenByName"), [
+                        jsIdent("node"),
+                        jsStr(name),
+                      ]),
+                      "map"
+                    ),
+                    [
+                      jsArrowFunc(
+                        ["child"],
+                        jsCall(jsIdent(extractorName(name)), [
+                          jsIdent("input"),
+                          jsIdent("child"),
+                        ])
+                      ),
+                    ]
+                  )
+                : jsCall(jsIdent(extractorName(name)), [
+                    jsIdent("input"),
+                    jsCall(jsIdent("childByName"), [
+                      jsIdent("node"),
+                      jsStr(name),
+                    ]),
+                  ]),
             })),
           ])
         ),
