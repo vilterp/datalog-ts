@@ -9,13 +9,48 @@ string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
-function extract_array() {}
-function extract_int() {}
-function extract_keyValue() {}
-function extract_main() {}
-function extract_null() {}
-function extract_object() {}
-function extract_string() {}
-function extract_stringChar() {}
-function extract_value() {}
+function extract_array(node) {
+  return {
+    value: childByName(node, "value")
+  };
+}
+function extract_int(node) {
+  return {};
+}
+function extract_keyValue(node) {
+  return {
+    string: childByName(node, "string"),
+    value: childByName(node, "value")
+  };
+}
+function extract_main(node) {
+  return {
+    value: childByName(node, "value")
+  };
+}
+function extract_null(node) {
+  return {};
+}
+function extract_object(node) {
+  return {
+    keyValue: childByName(node, "keyValue")
+  };
+}
+function extract_string(node) {
+  return {
+    stringChar: childByName(node, "stringChar")
+  };
+}
+function extract_stringChar(node) {
+  return {};
+}
+function extract_value(node) {
+  return {
+    object: childByName(node, "object"),
+    array: childByName(node, "array"),
+    int: childByName(node, "int"),
+    string: childByName(node, "string"),
+    null: childByName(node, "null")
+  };
+}
 
