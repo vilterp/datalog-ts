@@ -1,7 +1,15 @@
 import { Grammar, Rule } from "../grammar";
 import { Program, FunctionDeclaration } from "estree";
 import { generate } from "astring";
-import { flatMap, mapListToObj, mapObjToList, uniq } from "../../../util/util";
+import {
+  filterObj,
+  flatMap,
+  groupBy,
+  mapListToObj,
+  mapObj,
+  mapObjToList,
+  uniq,
+} from "../../../util/util";
 import {
   jsArrowFunc,
   jsBlock,
@@ -26,7 +34,11 @@ export function genExtractor(grammar: Grammar): Program {
   };
 }
 
-type RefInfo = { name: string; repeated: boolean };
+type RefInfo = {
+  ruleName: string;
+  captureName: string | null;
+  repeated: boolean;
+};
 
 function refsInRule(rule: Rule): RefInfo[] {
   return refsInRuleInner(rule, false);
@@ -41,7 +53,7 @@ function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
         refsInRuleInner(choice, repeated)
       );
     case "Ref":
-      return [{ name: rule.name, repeated }];
+      return [{ ruleName: rule.rule, captureName: rule.captureName, repeated }];
     case "RepSep":
       if (repeated) {
         throw new Error("can't have repSep inside repSep. define a sub rule");
@@ -60,10 +72,14 @@ function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
 function genRule(name: string, rule: Rule): FunctionDeclaration {
   const refs = refsInRule(rule);
   // TODO: check for dups
-  const refNames = refs.map((r) => r.name);
-  if (uniq(refNames).length !== refNames.length) {
-    throw new Error(
-      `refs in rule have to be unique. got ${JSON.stringify(refNames)}`
+  const refNames = refs.map((r) => `${r.captureName}:${r.ruleName}`);
+  const grouped = groupBy(refNames, (x) => x);
+  const counted = mapObj(grouped, (name, refs) => refs.length);
+  const duplicated = filterObj(counted, (name, count) => count > 1);
+  if (Object.keys(duplicated).length > 0) {
+    // TODO: mostly triggered by whitespace rules...
+    console.warn(
+      `multiple refs from rule "${name}": ${JSON.stringify(duplicated)}`
     );
   }
   // ....
@@ -84,33 +100,33 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
                 jsChain(["node", "span"]),
               ]),
             },
-            ...refs.map(({ name, repeated }) => ({
+            ...refs.map(({ ruleName, repeated, captureName }) => ({
               // TODO: pluralize if this is a repSep
-              key: name,
+              key: captureName ? captureName : ruleName,
               value: repeated
                 ? jsCall(
                     jsMember(
                       jsCall(jsIdent("childrenByName"), [
                         jsIdent("node"),
-                        jsStr(name),
+                        jsStr(ruleName),
                       ]),
                       "map"
                     ),
                     [
                       jsArrowFunc(
                         ["child"],
-                        jsCall(jsIdent(extractorName(name)), [
+                        jsCall(jsIdent(extractorName(ruleName)), [
                           jsIdent("input"),
                           jsIdent("child"),
                         ])
                       ),
                     ]
                   )
-                : jsCall(jsIdent(extractorName(name)), [
+                : jsCall(jsIdent(extractorName(ruleName)), [
                     jsIdent("input"),
                     jsCall(jsIdent("childByName"), [
                       jsIdent("node"),
-                      jsStr(name),
+                      jsStr(ruleName),
                     ]),
                   ]),
             })),
