@@ -20,23 +20,30 @@ import {
   jsMember,
   jsObj,
   jsStr,
+  prettyPrintProgramWithTypes,
+  ProgramWithTypes,
 } from "./astHelpers";
 
 export function genExtractorStr(parserlibPath: string, grammar: Grammar) {
   const program = genExtractor(parserlibPath, grammar);
-  return generate(program);
+  return prettyPrintProgramWithTypes(program);
 }
 
-export function genExtractor(parserlibPath: string, grammar: Grammar): Program {
+export function genExtractor(
+  parserlibPath: string,
+  grammar: Grammar
+): ProgramWithTypes {
   return {
-    type: "Program",
-    sourceType: "script",
-    body: [
+    type: "ProgramWithTypes",
+    imports: [
       jsImport(`${parserlibPath}/ruleTree`, [
         "textForSpan",
         "childByName",
         "childrenByName",
       ]),
+    ],
+    types: XXX,
+    declarations: [
       // TODO: const GRAMMAR = parserlib.parseGrammar("...")
       // TODO: export function parse(input: string) {
       //   const tree = parserlib.parse(GRAMMAR, input);

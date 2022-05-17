@@ -12,7 +12,20 @@ import {
   BlockStatement,
   ArrowFunctionExpression,
   ImportDeclaration,
+  Declaration,
 } from "estree";
+
+export type ProgramWithTypes = {
+  type: "ProgramWithTypes";
+  imports: ImportDeclaration[];
+  types: TsType[];
+  declarations: Declaration[];
+};
+
+export type TsType = {
+  name: string;
+  members: { name: string; type: string }[];
+};
 
 export function jsIdent(name: string): Identifier {
   return { type: "Identifier", name };
@@ -156,4 +169,8 @@ export function jsImport(path: string, idents: string[]): ImportDeclaration {
       local: jsIdent(ident),
     })),
   };
+}
+
+export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
+  return XXX;
 }
