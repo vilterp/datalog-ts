@@ -11,41 +11,53 @@ stringChar :- (^'"' | ['\\', '"']).
 text/plain
 function extract_array(node) {
   return {
+    __rule__: "array",
     value: childByName(node, "value")
   };
 }
 function extract_int(node) {
-  return {};
+  return {
+    __rule__: "int"
+  };
 }
 function extract_keyValue(node) {
   return {
+    __rule__: "keyValue",
     string: childByName(node, "string"),
     value: childByName(node, "value")
   };
 }
 function extract_main(node) {
   return {
+    __rule__: "main",
     value: childByName(node, "value")
   };
 }
 function extract_null(node) {
-  return {};
+  return {
+    __rule__: "null"
+  };
 }
 function extract_object(node) {
   return {
+    __rule__: "object",
     keyValue: childByName(node, "keyValue")
   };
 }
 function extract_string(node) {
   return {
+    __rule__: "string",
     stringChar: childByName(node, "stringChar")
   };
 }
 function extract_stringChar(node) {
-  return {};
+  return {
+    __rule__: "stringChar"
+  };
 }
 function extract_value(node) {
   return {
+    __rule__: "value",
     object: childByName(node, "object"),
     array: childByName(node, "array"),
     int: childByName(node, "int"),

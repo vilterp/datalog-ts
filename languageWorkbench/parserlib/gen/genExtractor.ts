@@ -49,15 +49,16 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
       {
         type: "ReturnStatement",
         argument: jsObj(
-          mapListToObj(
-            refs.map((name) => ({
+          mapListToObj([
+            { key: "__rule__", value: jsStr(name) },
+            ...refs.map((name) => ({
               key: name,
               value: jsCall(jsIdent("childByName"), [
                 jsIdent("node"),
                 jsStr(name),
               ]),
-            }))
-          )
+            })),
+          ])
         ),
       },
     ]),
