@@ -16,6 +16,7 @@ import {
   jsCall,
   jsChain,
   jsIdent,
+  jsImport,
   jsMember,
   jsObj,
   jsStr,
@@ -31,20 +32,11 @@ export function genExtractor(parserlibPath: string, grammar: Grammar): Program {
     type: "Program",
     sourceType: "script",
     body: [
-      {
-        type: "ImportDeclaration",
-        source: {
-          type: "Literal",
-          value: `${parserlibPath}/ruleTree`,
-        },
-        specifiers: [
-          {
-            type: "ImportSpecifier",
-            imported: jsIdent("textForSpan"),
-            local: jsIdent("textForSpan"),
-          },
-        ],
-      },
+      jsImport(`${parserlibPath}/ruleTree`, [
+        "textForSpan",
+        "childByName",
+        "childrenByName",
+      ]),
       ...mapObjToList(grammar, genRule),
     ],
   };

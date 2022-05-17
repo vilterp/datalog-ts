@@ -11,6 +11,7 @@ import {
   VariableDeclaration,
   BlockStatement,
   ArrowFunctionExpression,
+  ImportDeclaration,
 } from "estree";
 
 export function jsIdent(name: string): Identifier {
@@ -139,5 +140,20 @@ export function jsConsoleLog(tag: string, expr: Expression): Statement {
   return {
     type: "ExpressionStatement",
     expression: jsCall(jsChain(["console", "log"]), [jsStr(tag), expr]),
+  };
+}
+
+export function jsImport(path: string, idents: string[]): ImportDeclaration {
+  return {
+    type: "ImportDeclaration",
+    source: {
+      type: "Literal",
+      value: path,
+    },
+    specifiers: idents.map((ident) => ({
+      type: "ImportSpecifier",
+      imported: jsIdent(ident),
+      local: jsIdent(ident),
+    })),
   };
 }

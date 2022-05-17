@@ -1,4 +1,4 @@
-import {textForSpan} from "../languageWorkbench/parserlib/ruleTree";
+import {textForSpan, childByName, childrenByName} from "../languageWorkbench/parserlib/ruleTree";
 function extract_alpha(input, node) {
   return {
     __rule__: "alpha",
