@@ -13,7 +13,7 @@ function extract_array(input, node) {
   return {
     __rule__: "array",
     __text__: textForSpan(input, node.span),
-    value: childByName(node, "value")
+    value: extract_value(input, childByName(node, "value"))
   };
 }
 function extract_int(input, node) {
@@ -26,15 +26,15 @@ function extract_keyValue(input, node) {
   return {
     __rule__: "keyValue",
     __text__: textForSpan(input, node.span),
-    string: childByName(node, "string"),
-    value: childByName(node, "value")
+    string: extract_string(input, childByName(node, "string")),
+    value: extract_value(input, childByName(node, "value"))
   };
 }
 function extract_main(input, node) {
   return {
     __rule__: "main",
     __text__: textForSpan(input, node.span),
-    value: childByName(node, "value")
+    value: extract_value(input, childByName(node, "value"))
   };
 }
 function extract_null(input, node) {
@@ -47,14 +47,14 @@ function extract_object(input, node) {
   return {
     __rule__: "object",
     __text__: textForSpan(input, node.span),
-    keyValue: childByName(node, "keyValue")
+    keyValue: extract_keyValue(input, childByName(node, "keyValue"))
   };
 }
 function extract_string(input, node) {
   return {
     __rule__: "string",
     __text__: textForSpan(input, node.span),
-    stringChar: childByName(node, "stringChar")
+    stringChar: extract_stringChar(input, childByName(node, "stringChar"))
   };
 }
 function extract_stringChar(input, node) {
@@ -67,11 +67,11 @@ function extract_value(input, node) {
   return {
     __rule__: "value",
     __text__: textForSpan(input, node.span),
-    object: childByName(node, "object"),
-    array: childByName(node, "array"),
-    int: childByName(node, "int"),
-    string: childByName(node, "string"),
-    null: childByName(node, "null")
+    object: extract_object(input, childByName(node, "object")),
+    array: extract_array(input, childByName(node, "array")),
+    int: extract_int(input, childByName(node, "int")),
+    string: extract_string(input, childByName(node, "string")),
+    null: extract_null(input, childByName(node, "null"))
   };
 }
 

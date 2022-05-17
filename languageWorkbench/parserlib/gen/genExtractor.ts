@@ -60,9 +60,9 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
             },
             ...refs.map((name) => ({
               key: name,
-              value: jsCall(jsIdent("childByName"), [
-                jsIdent("node"),
-                jsStr(name),
+              value: jsCall(jsIdent(`extract_${name}`), [
+                jsIdent("input"),
+                jsCall(jsIdent("childByName"), [jsIdent("node"), jsStr(name)]),
               ]),
             })),
           ])
