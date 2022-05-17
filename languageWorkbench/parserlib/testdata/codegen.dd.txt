@@ -9,7 +9,7 @@ string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
-import {textForSpan} from "./ruleTree";
+import {textForSpan, childByName, childrenByName} from "./ruleTree";
 function extract_array(input, node) {
   return {
     __rule__: "array",
