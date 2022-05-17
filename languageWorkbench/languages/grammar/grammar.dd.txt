@@ -71,5 +71,5 @@ binOp :- [left:op, "==", right:op].
 scope.Var{}
 ----
 application/datalog
-scope.Var{kind: "rule", name: "left:op", scopeID: global{}, span: span{from: 10, to: 17}}
-scope.Var{kind: "rule", name: "right:op", scopeID: global{}, span: span{from: 25, to: 33}}
+scope.Var{kind: "rule", name: "op", scopeID: global{}, span: span{from: 15, to: 17}}
+scope.Var{kind: "rule", name: "op", scopeID: global{}, span: span{from: 31, to: 33}}
