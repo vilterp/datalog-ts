@@ -5,7 +5,8 @@ scope.Defn{scopeID: global{}, span: S, name: N, kind: "rule"} :-
   ast.ident{parentID: RuleID, span: S, text: N}.
 
 scope.Var{scopeID: global{}, name: N, span: S, kind: "rule"} :-
-  ast.ref{span: S, text: N}.
+  ast.ref{id: Ref} &
+  ast.ruleName{parentID: Ref, span: S, text: N}.
 
 scope.Placeholder{scopeID: global{}, span: S, kind: "rule"} :-
   ast.placeholder{span: S}.

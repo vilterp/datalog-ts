@@ -65,3 +65,11 @@ astInternal.node{id: 10, parentID: 2, rule: "alpha", span: span{from: 7, to: 8},
 astInternal.node{id: 11, parentID: 2, rule: "alpha", span: span{from: 8, to: 9}, text: "h"}
 astInternal.node{id: 12, parentID: 2, rule: "alpha", span: span{from: 9, to: 10}, text: "a"}
 astInternal.node{id: 13, parentID: 2, rule: "alpha", span: span{from: 10, to: 11}, text: "r"}
+
+grammar
+binOp :- [left:op, "==", right:op].
+scope.Var{}
+----
+application/datalog
+scope.Var{kind: "rule", name: "op", scopeID: global{}, span: span{from: 15, to: 17}}
+scope.Var{kind: "rule", name: "op", scopeID: global{}, span: span{from: 31, to: 33}}

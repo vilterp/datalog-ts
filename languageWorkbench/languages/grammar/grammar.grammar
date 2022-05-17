@@ -7,7 +7,9 @@ rule :- (seq | choice | ref | text | charRule | repSep | placeholder).
 
 seq :- ["[", repSep(rule, [ws, ",", ws]), "]"].
 choice :- ["(", repSep(rule, [ws, "|", ws]), ")"].
-ref :- ident.
+ref :- [([captureName, ":"] | ""), ruleName].
+captureName :- ident.
+ruleName :- ident.
 text :- ["\"", repSep(stringChar, ""), "\""].
 repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
 repSepKW :- "repSep".
