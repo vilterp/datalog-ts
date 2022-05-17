@@ -60,8 +60,11 @@ function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
 function genRule(name: string, rule: Rule): FunctionDeclaration {
   const refs = refsInRule(rule);
   // TODO: check for dups
-  if (uniq(refs.map((r) => r.name)).length !== refs.length) {
-    throw new Error(`refs in rule have to be unique. got ${refs}`);
+  const refNames = refs.map((r) => r.name);
+  if (uniq(refNames).length !== refNames.length) {
+    throw new Error(
+      `refs in rule have to be unique. got ${JSON.stringify(refNames)}`
+    );
   }
   // ....
   return {

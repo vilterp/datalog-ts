@@ -29,7 +29,8 @@
     "build-sim": "esbuild apps/sim/main.tsx --bundle --outfile=apps/sim/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto --loader:.dl=text",
     "serve-sim": "cd apps/sim/public && http-server -c-1",
     "build-vscode-extension": "esbuild apps/vscodeExtension/extension.ts --bundle --sourcemap --platform=node --outfile=apps/vscodeExtension/out/extension.js --external:vscode --loader:.dl=text --loader:.grammar=text --loader:.html=text && esbuild apps/vscodeExtension/webView.tsx --bundle --sourcemap '--define:process.env.NODE_ENV=\"development\"' --outfile=apps/vscodeExtension/out/webView.js --external:path --external:fs --external:crypto --loader:.dl=text --loader:.grammar=text --loader:.html=text",
-    "package-vscode-extension": "cd apps/vscodeExtension && vsce package"
+    "package-vscode-extension": "cd apps/vscodeExtension && vsce package",
+    "build-datalog-grammar": "ts-node languageWorkbench/parserlib/gen/extractorCLI.ts languageWorkbench/languages/dl/dl.grammar core/parserGen.ts"
   },
   "devDependencies": {
     "@types/astring": "^1.7.0",
