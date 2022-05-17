@@ -17,18 +17,32 @@ export function genExtractor(grammar: Grammar): Program {
   };
 }
 
-function refsInRule(rule: Rule): string[] {
+type RefInfo = { name: string; repeated: boolean };
+
+function refsInRule(rule: Rule): RefInfo[] {
+  return refsInRuleInner(rule, false);
+}
+
+function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
   switch (rule.type) {
     case "Char":
       return [];
     case "Choice":
-      return flatMap(rule.choices, refsInRule);
+      return flatMap(rule.choices, (choice) =>
+        refsInRuleInner(choice, repeated)
+      );
     case "Ref":
-      return [rule.name];
+      return [{ name: rule.name, repeated }];
     case "RepSep":
-      return [...refsInRule(rule.rep), ...refsInRule(rule.sep)];
+      if (repeated) {
+        throw new Error("can't have repSep inside repSep. define a sub rule");
+      }
+      return [
+        ...refsInRuleInner(rule.rep, true),
+        ...refsInRuleInner(rule.sep, true),
+      ];
     case "Sequence":
-      return flatMap(rule.items, refsInRule);
+      return flatMap(rule.items, (item) => refsInRuleInner(item, repeated));
     case "Text":
       return [];
   }
@@ -37,7 +51,7 @@ function refsInRule(rule: Rule): string[] {
 function genRule(name: string, rule: Rule): FunctionDeclaration {
   const refs = refsInRule(rule);
   // TODO: check for dups
-  if (uniq(refs).length !== refs.length) {
+  if (uniq(refs.map((r) => r.name)).length !== refs.length) {
     throw new Error(`refs in rule have to be unique. got ${refs}`);
   }
   // ....
@@ -58,11 +72,14 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
                 jsChain(["node", "span"]),
               ]),
             },
-            ...refs.map((name) => ({
+            ...refs.map(({ name, repeated }) => ({
               key: name,
               value: jsCall(jsIdent(extractorName(name)), [
                 jsIdent("input"),
-                jsCall(jsIdent("childByName"), [jsIdent("node"), jsStr(name)]),
+                jsCall(jsIdent(repeated ? "childrenByName" : "childByName"), [
+                  jsIdent("node"),
+                  jsStr(name),
+                ]),
               ]),
             })),
           ])
