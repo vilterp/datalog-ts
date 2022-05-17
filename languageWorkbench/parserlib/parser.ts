@@ -82,11 +82,11 @@ function doParse(
         error: { offset: startIdx, expected: [rule.value], got: next },
       };
     case "Ref":
-      const innerRule = grammar[rule.name];
+      const innerRule = grammar[rule.rule];
       const innerTrace = doParse(grammar, innerRule, startIdx, input);
       return {
         type: "RefTrace",
-        name: rule.name,
+        name: rule.rule,
         // rule,
         span: innerTrace.span,
         error: innerTrace.error,
