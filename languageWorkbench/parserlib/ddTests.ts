@@ -15,7 +15,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rule } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { genExtractorStr, Options } from "./gen/genExtractor";
+import { genExtractorStr, Options } from "./gen/generate";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {

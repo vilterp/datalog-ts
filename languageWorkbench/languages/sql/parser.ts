@@ -159,9 +159,7 @@ export type SQLWs = {
 };
 export function parse(input: string): SQLMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
-  console.log({ traceTree });
   const ruleTree = extractRuleTree(traceTree);
-  console.log({ ruleTree });
   return extractMain(input, ruleTree);
 }
 function extractAlpha(input: string, node: RuleTree): SQLAlpha {
