@@ -57,6 +57,16 @@ export function mapObjMaybe<T, V>(
   return out;
 }
 
+export function mapListToObj<V>(list: { key: string; value: V }[]): {
+  [key: string]: V;
+} {
+  const out: { [key: string]: V } = {};
+  list.forEach(({ key, value }) => {
+    out[key] = value;
+  });
+  return out;
+}
+
 export function mapObjToList<T, V>(
   obj: { [key: string]: T },
   f: (key: string, val: T) => V
@@ -388,4 +398,8 @@ export function pushAll<T>(arr: T[], items: T[]) {
   items.forEach((item) => {
     arr.push(item);
   });
+}
+
+export function capitalize(input: string): string {
+  return input[0].toUpperCase() + input.slice(1);
 }

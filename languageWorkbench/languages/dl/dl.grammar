@@ -10,7 +10,7 @@ disjunct :- repSep(conjunct, [ws, "&", ws]).
 conjunct :- (record | binExpr | negation | placeholder).
 negation :- ["!", record].
 
-binExpr :- [term, ws, binOp, ws, term].
+binExpr :- [left:term, ws, binOp, ws, right:term].
 binOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
 
 term :- (record | int | var | string | bool | array | placeholder).
@@ -18,7 +18,7 @@ var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 record :- [ident, "{", ws, recordAttrs, ws, "}"].
 recordAttrs :- repSep((keyValue | placeholder), commaSpace).
 keyValue :- [ident, ":", ws, term].
-int :- [("-" | ""), num, repSep(num, "")].
+int :- [("-" | ""), first:num, repSep(num, "")].
 bool :- ("true" | "false").
 array :- ["[", repSep(term, commaSpace), "]"].
 

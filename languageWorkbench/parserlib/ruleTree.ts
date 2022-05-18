@@ -40,6 +40,10 @@ function getChildren(tt: TraceTree): RuleTree[] {
   }
 }
 
+export function childrenByName(rt: RuleTree, name: string): RuleTree[] {
+  return rt.children.filter((c) => c.name === name);
+}
+
 export function childByName(rt: RuleTree, name: string): RuleTree {
   return rt.children.find((c) => c.name === name);
 }
