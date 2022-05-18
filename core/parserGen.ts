@@ -1,86 +1,86 @@
 import {textForSpan, childByName, childrenByName} from "../languageWorkbench/parserlib/ruleTree";
-type DLAlpha = {
+export type DLAlpha = {
 };
-type DLAlphaNum = {
+export type DLAlphaNum = {
   alpha: DLAlpha;
   num: DLNum;
 };
-type DLArray = {
+export type DLArray = {
   term: DLTerm[];
   commaSpace: DLCommaSpace[];
 };
-type DLBinExpr = {
+export type DLBinExpr = {
   left: DLTerm;
   ws: DLWs;
   binOp: DLBinOp;
   ws: DLWs;
   right: DLTerm;
 };
-type DLBinOp = {
+export type DLBinOp = {
 };
-type DLBool = {
+export type DLBool = {
 };
-type DLCommaSpace = {
+export type DLCommaSpace = {
   ws: DLWs;
 };
-type DLComment = {
+export type DLComment = {
   commentChar: DLCommentChar[];
 };
-type DLCommentChar = {
+export type DLCommentChar = {
 };
-type DLConjunct = {
+export type DLConjunct = {
   record: DLRecord;
   binExpr: DLBinExpr;
   negation: DLNegation;
   placeholder: DLPlaceholder;
 };
-type DLDisjunct = {
+export type DLDisjunct = {
   conjunct: DLConjunct[];
   ws: DLWs[];
   ws: DLWs[];
 };
-type DLFact = {
+export type DLFact = {
   record: DLRecord;
 };
-type DLIdent = {
+export type DLIdent = {
   alpha: DLAlpha;
   alphaNum: DLAlphaNum[];
 };
-type DLInt = {
+export type DLInt = {
   num: DLNum;
   num: DLNum[];
 };
-type DLKeyValue = {
+export type DLKeyValue = {
   ident: DLIdent;
   ws: DLWs;
   term: DLTerm;
 };
-type DLMain = {
+export type DLMain = {
   ws: DLWs;
   stmt: DLStmt[];
   comment: DLComment[];
   ws: DLWs[];
   ws: DLWs;
 };
-type DLNegation = {
+export type DLNegation = {
   record: DLRecord;
 };
-type DLNum = {
+export type DLNum = {
 };
-type DLPlaceholder = {
+export type DLPlaceholder = {
 };
-type DLRecord = {
+export type DLRecord = {
   ident: DLIdent;
   ws: DLWs;
   recordAttrs: DLRecordAttrs;
   ws: DLWs;
 };
-type DLRecordAttrs = {
+export type DLRecordAttrs = {
   keyValue: DLKeyValue[];
   placeholder: DLPlaceholder[];
   commaSpace: DLCommaSpace[];
 };
-type DLRule = {
+export type DLRule = {
   record: DLRecord;
   ws: DLWs;
   ws: DLWs;
@@ -88,24 +88,24 @@ type DLRule = {
   ws: DLWs[];
   ws: DLWs[];
 };
-type DLStmt = {
+export type DLStmt = {
   rule: DLRule;
   fact: DLFact;
   tableDecl: DLTableDecl;
 };
-type DLString = {
+export type DLString = {
   stringChar: DLStringChar[];
 };
-type DLStringChar = {
+export type DLStringChar = {
 };
-type DLTableDecl = {
+export type DLTableDecl = {
   tableKW: DLTableKW;
   ws: DLWs;
   ident: DLIdent;
 };
-type DLTableKW = {
+export type DLTableKW = {
 };
-type DLTerm = {
+export type DLTerm = {
   record: DLRecord;
   int: DLInt;
   var: DLVar;
@@ -114,10 +114,10 @@ type DLTerm = {
   array: DLArray;
   placeholder: DLPlaceholder;
 };
-type DLVar = {
+export type DLVar = {
   alphaNum: DLAlphaNum[];
 };
-type DLWs = {
+export type DLWs = {
 };
 function extractAlpha(input, node) {
   return {

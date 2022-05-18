@@ -176,6 +176,7 @@ function typeForRule(
   return {
     type: "TypeDeclaration",
     name: typeName(name, prefix),
+    exported: true,
     members: refs.map((ref) => {
       const inner = tsType(typeName(ref.ruleName, prefix));
       return {

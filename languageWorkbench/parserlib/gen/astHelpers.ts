@@ -27,6 +27,7 @@ export type TypeDeclaration = {
   type: "TypeDeclaration";
   name: string;
   members: { name: string; type: TypeExpr }[];
+  exported?: boolean;
 };
 
 export type TypeExpr =
@@ -193,10 +194,10 @@ export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
   ].join("\n");
 }
 
-export function prettyPrintTypeDeclaration(type_: TypeDeclaration): string {
+export function prettyPrintTypeDeclaration(decl: TypeDeclaration): string {
   return [
-    `type ${type_.name} = {`,
-    ...type_.members.map(
+    `${decl.exported ? "export " : ""}type ${decl.name} = {`,
+    ...decl.members.map(
       (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
     ),
     `};`,
