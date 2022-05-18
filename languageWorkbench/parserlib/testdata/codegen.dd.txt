@@ -11,28 +11,37 @@ stringChar :- (^'"' | ['\\', '"']).
 text/plain
 import {textForSpan, childByName, childrenByName, RuleTree} from "./ruleTree";
 export type JsonArray = {
+  type: "Array";
   value: JsonValue[];
 };
 export type JsonInt = {
+  type: "Int";
 };
 export type JsonKeyValue = {
+  type: "KeyValue";
   string: JsonString;
   value: JsonValue;
 };
 export type JsonMain = {
+  type: "Main";
   value: JsonValue;
 };
 export type JsonNull = {
+  type: "Null";
 };
 export type JsonObject = {
+  type: "Object";
   keyValue: JsonKeyValue[];
 };
 export type JsonString = {
+  type: "String";
   stringChar: JsonStringChar[];
 };
 export type JsonStringChar = {
+  type: "StringChar";
 };
 export type JsonValue = {
+  type: "Value";
   object: JsonObject;
   array: JsonArray;
   int: JsonInt;

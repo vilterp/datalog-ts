@@ -50,14 +50,19 @@ export function tsTypedParam(name: string, typeExpr: TypeExpr): TypedParam {
 
 export type TypeExpr =
   | { type: "TypeName"; name: string }
-  | { type: "ArrayType"; inner: TypeExpr };
+  | { type: "ArrayType"; inner: TypeExpr }
+  | { type: "TypeString"; str: string };
 
 export function tsArrayType(inner: TypeExpr): TypeExpr {
   return { type: "ArrayType", inner };
 }
 
-export function tsType(name: string): TypeExpr {
+export function tsTypeName(name: string): TypeExpr {
   return { type: "TypeName", name };
+}
+
+export function tsTypeString(str: string): TypeExpr {
+  return { type: "TypeString", str };
 }
 
 export function jsIdent(name: string): Identifier {
@@ -228,6 +233,8 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
       return prettyPrintTypeExpr(expr.inner) + "[]";
     case "TypeName":
       return expr.name;
+    case "TypeString":
+      return JSON.stringify(expr.str);
   }
 }
 

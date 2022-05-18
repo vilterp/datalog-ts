@@ -24,10 +24,11 @@ import {
   prettyPrintProgramWithTypes,
   ProgramWithTypes,
   tsArrayType,
-  tsType,
+  tsTypeName,
   tsTypedParam,
   TypeDeclaration,
   TypedFunctionDeclaration,
+  tsTypeString,
 } from "./astHelpers";
 
 export type Options = {
@@ -125,10 +126,10 @@ function genRule(
   return {
     type: "TypedFunctionDeclaration",
     name: extractorName(ruleName),
-    returnType: tsType(typeName(ruleName, prefix)),
+    returnType: tsTypeName(typeName(ruleName, prefix)),
     params: [
-      tsTypedParam("input", tsType("string")),
-      tsTypedParam("node", tsType("RuleTree")),
+      tsTypedParam("input", tsTypeName("string")),
+      tsTypedParam("node", tsTypeName("RuleTree")),
     ],
     body: jsBlock([
       {
@@ -181,22 +182,28 @@ function genRule(
 }
 
 function typeForRule(
-  name: string,
+  ruleName: string,
   rule: Rule,
   prefix: string
 ): TypeDeclaration {
   const refs = refsInRule(rule);
   return {
     type: "TypeDeclaration",
-    name: typeName(name, prefix),
+    name: typeName(ruleName, prefix),
     exported: true,
-    members: refs.map((ref) => {
-      const inner = tsType(typeName(ref.ruleName, prefix));
-      return {
-        name: ref.captureName ? ref.captureName : ref.ruleName,
-        type: ref.repeated ? tsArrayType(inner) : inner,
-      };
-    }),
+    members: [
+      { name: "type", type: tsTypeString(capitalize(ruleName)) },
+      { name: "text", type: tsTypeName("string") },
+      ...refs.map((ref) => {
+        const inner = tsTypeName(typeName(ref.ruleName, prefix));
+        return {
+          name: prefixToAvoidReserved(
+            ref.captureName ? ref.captureName : ref.ruleName
+          ),
+          type: ref.repeated ? tsArrayType(inner) : inner,
+        };
+      }),
+    ],
   };
 }
 
