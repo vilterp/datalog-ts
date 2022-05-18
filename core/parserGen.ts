@@ -1,5 +1,6 @@
-import {textForSpan, childByName, childrenByName, RuleTree} from "../languageWorkbench/parserlib/ruleTree";
-import {Span} from "../languageWorkbench/parserlib/grammar";
+import {textForSpan, childByName, childrenByName, RuleTree, extractRuleTree} from "../languageWorkbench/parserlib/ruleTree";
+import {Span, Grammar} from "../languageWorkbench/parserlib/grammar";
+import * as parserlib from "../languageWorkbench/parserlib/parser"
 export type DLAlpha = {
   type: "Alpha";
   text: string;
@@ -194,6 +195,11 @@ export type DLWs = {
   text: string;
   span: Span;
 };
+export function parse(input: string): DLMain {
+  const traceTree = parserlib.parse(GRAMMAR, "main", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractMain(input, ruleTree)
+}
 function extractAlpha(input: string, node: RuleTree): DLAlpha {
   return {
     type: "Alpha",
@@ -440,4 +446,721 @@ function extractVar(input: string, node: RuleTree): DLVar {
     span: node.span,
     alphaNum: childrenByName(node, "alphaNum").map(child => extractAlphaNum(input, child))
   };
+}
+const GRAMMAR: Grammar = {
+  "main": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Choice",
+          "choices": [
+            {
+              "type": "Ref",
+              "rule": "stmt",
+              "captureName": null
+            },
+            {
+              "type": "Ref",
+              "rule": "comment",
+              "captureName": null
+            }
+          ]
+        },
+        "sep": {
+          "type": "Ref",
+          "rule": "ws",
+          "captureName": null
+        }
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      }
+    ]
+  },
+  "stmt": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Ref",
+        "rule": "rule",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "fact",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "tableDecl",
+        "captureName": null
+      }
+    ]
+  },
+  "comment": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": "#"
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Ref",
+          "rule": "commentChar",
+          "captureName": null
+        },
+        "sep": {
+          "type": "Text",
+          "value": ""
+        }
+      }
+    ]
+  },
+  "tableDecl": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "tableKW",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "ident",
+        "captureName": null
+      }
+    ]
+  },
+  "fact": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "record",
+        "captureName": null
+      },
+      {
+        "type": "Text",
+        "value": "."
+      }
+    ]
+  },
+  "rule": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "record",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Text",
+        "value": ":-"
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Ref",
+          "rule": "disjunct",
+          "captureName": null
+        },
+        "sep": {
+          "type": "Sequence",
+          "items": [
+            {
+              "type": "Ref",
+              "rule": "ws",
+              "captureName": null
+            },
+            {
+              "type": "Text",
+              "value": "|"
+            },
+            {
+              "type": "Ref",
+              "rule": "ws",
+              "captureName": null
+            }
+          ]
+        }
+      },
+      {
+        "type": "Text",
+        "value": "."
+      }
+    ]
+  },
+  "disjunct": {
+    "type": "RepSep",
+    "rep": {
+      "type": "Ref",
+      "rule": "conjunct",
+      "captureName": null
+    },
+    "sep": {
+      "type": "Sequence",
+      "items": [
+        {
+          "type": "Ref",
+          "rule": "ws",
+          "captureName": null
+        },
+        {
+          "type": "Text",
+          "value": "&"
+        },
+        {
+          "type": "Ref",
+          "rule": "ws",
+          "captureName": null
+        }
+      ]
+    }
+  },
+  "conjunct": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Ref",
+        "rule": "record",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "binExpr",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "negation",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "placeholder",
+        "captureName": null
+      }
+    ]
+  },
+  "negation": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": "!"
+      },
+      {
+        "type": "Ref",
+        "rule": "record",
+        "captureName": null
+      }
+    ]
+  },
+  "binExpr": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "term",
+        "captureName": "left"
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "binOp",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "term",
+        "captureName": "right"
+      }
+    ]
+  },
+  "binOp": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Text",
+        "value": "<="
+      },
+      {
+        "type": "Text",
+        "value": ">="
+      },
+      {
+        "type": "Text",
+        "value": ">"
+      },
+      {
+        "type": "Text",
+        "value": "<"
+      },
+      {
+        "type": "Text",
+        "value": "=="
+      },
+      {
+        "type": "Text",
+        "value": "!="
+      }
+    ]
+  },
+  "term": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Ref",
+        "rule": "record",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "int",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "var",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "string",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "bool",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "array",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "placeholder",
+        "captureName": null
+      }
+    ]
+  },
+  "var": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Char",
+        "rule": {
+          "type": "Range",
+          "from": "A",
+          "to": "Z"
+        }
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Choice",
+          "choices": [
+            {
+              "type": "Char",
+              "rule": {
+                "type": "Range",
+                "from": "A",
+                "to": "Z"
+              }
+            },
+            {
+              "type": "Ref",
+              "rule": "alphaNum",
+              "captureName": null
+            }
+          ]
+        },
+        "sep": {
+          "type": "Text",
+          "value": ""
+        }
+      }
+    ]
+  },
+  "record": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "ident",
+        "captureName": null
+      },
+      {
+        "type": "Text",
+        "value": "{"
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "recordAttrs",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Text",
+        "value": "}"
+      }
+    ]
+  },
+  "recordAttrs": {
+    "type": "RepSep",
+    "rep": {
+      "type": "Choice",
+      "choices": [
+        {
+          "type": "Ref",
+          "rule": "keyValue",
+          "captureName": null
+        },
+        {
+          "type": "Ref",
+          "rule": "placeholder",
+          "captureName": null
+        }
+      ]
+    },
+    "sep": {
+      "type": "Ref",
+      "rule": "commaSpace",
+      "captureName": null
+    }
+  },
+  "keyValue": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "ident",
+        "captureName": null
+      },
+      {
+        "type": "Text",
+        "value": ":"
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "term",
+        "captureName": null
+      }
+    ]
+  },
+  "int": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Choice",
+        "choices": [
+          {
+            "type": "Text",
+            "value": "-"
+          },
+          {
+            "type": "Text",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "type": "Ref",
+        "rule": "num",
+        "captureName": "first"
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Ref",
+          "rule": "num",
+          "captureName": null
+        },
+        "sep": {
+          "type": "Text",
+          "value": ""
+        }
+      }
+    ]
+  },
+  "bool": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Text",
+        "value": "true"
+      },
+      {
+        "type": "Text",
+        "value": "false"
+      }
+    ]
+  },
+  "array": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": "["
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Ref",
+          "rule": "term",
+          "captureName": null
+        },
+        "sep": {
+          "type": "Ref",
+          "rule": "commaSpace",
+          "captureName": null
+        }
+      },
+      {
+        "type": "Text",
+        "value": "]"
+      }
+    ]
+  },
+  "tableKW": {
+    "type": "Text",
+    "value": ".table"
+  },
+  "ident": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Ref",
+        "rule": "alpha",
+        "captureName": null
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Choice",
+          "choices": [
+            {
+              "type": "Ref",
+              "rule": "alphaNum",
+              "captureName": null
+            },
+            {
+              "type": "Text",
+              "value": "."
+            }
+          ]
+        },
+        "sep": {
+          "type": "Text",
+          "value": ""
+        }
+      }
+    ]
+  },
+  "string": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": "\""
+      },
+      {
+        "type": "RepSep",
+        "rep": {
+          "type": "Ref",
+          "rule": "stringChar",
+          "captureName": null
+        },
+        "sep": {
+          "type": "Text",
+          "value": ""
+        }
+      },
+      {
+        "type": "Text",
+        "value": "\""
+      }
+    ]
+  },
+  "stringChar": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Char",
+        "rule": {
+          "type": "Not",
+          "rule": {
+            "type": "Literal",
+            "value": "\""
+          }
+        }
+      },
+      {
+        "type": "Sequence",
+        "items": [
+          {
+            "type": "Char",
+            "rule": {
+              "type": "Literal",
+              "value": "\\"
+            }
+          },
+          {
+            "type": "Char",
+            "rule": {
+              "type": "Literal",
+              "value": "\""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "alpha": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Char",
+        "rule": {
+          "type": "Range",
+          "from": "a",
+          "to": "z"
+        }
+      },
+      {
+        "type": "Char",
+        "rule": {
+          "type": "Range",
+          "from": "A",
+          "to": "Z"
+        }
+      },
+      {
+        "type": "Text",
+        "value": "_"
+      }
+    ]
+  },
+  "num": {
+    "type": "Char",
+    "rule": {
+      "type": "Range",
+      "from": "0",
+      "to": "9"
+    }
+  },
+  "alphaNum": {
+    "type": "Choice",
+    "choices": [
+      {
+        "type": "Ref",
+        "rule": "alpha",
+        "captureName": null
+      },
+      {
+        "type": "Ref",
+        "rule": "num",
+        "captureName": null
+      }
+    ]
+  },
+  "ws": {
+    "type": "RepSep",
+    "rep": {
+      "type": "Choice",
+      "choices": [
+        {
+          "type": "Text",
+          "value": " "
+        },
+        {
+          "type": "Text",
+          "value": "\n"
+        }
+      ]
+    },
+    "sep": {
+      "type": "Text",
+      "value": ""
+    }
+  },
+  "placeholder": {
+    "type": "Text",
+    "value": "???"
+  },
+  "commaSpace": {
+    "type": "Sequence",
+    "items": [
+      {
+        "type": "Text",
+        "value": ","
+      },
+      {
+        "type": "Ref",
+        "rule": "ws",
+        "captureName": null
+      }
+    ]
+  },
+  "commentChar": {
+    "type": "Char",
+    "rule": {
+      "type": "Not",
+      "rule": {
+        "type": "Literal",
+        "value": "\n"
+      }
+    }
+  }
 }

@@ -17,9 +17,10 @@ import {
 
 export type ProgramWithTypes = {
   type: "ProgramWithTypes";
-  imports: ImportDeclaration[];
+  leadingComments: string[];
+  imports: (ImportDeclaration | string)[];
   types: TypeDeclaration[];
-  declarations: TypedFunctionDeclaration[];
+  declarations: (TypedFunctionDeclaration | string)[];
 };
 
 export type TypeDeclaration = {
@@ -211,9 +212,11 @@ export function jsImport(path: string, idents: string[]): ImportDeclaration {
 
 export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
   return [
-    ...prog.imports.map((i) => generate(i)),
+    ...prog.imports.map((i) => (typeof i === "string" ? i : generate(i))),
     ...prog.types.map(prettyPrintTypeDeclaration),
-    ...prog.declarations.map((d) => prettyPrintTypedFunctionDeclaration(d)),
+    ...prog.declarations.map((d) =>
+      typeof d === "string" ? d : prettyPrintTypedFunctionDeclaration(d)
+    ),
   ].join("\n");
 }
 
