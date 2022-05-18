@@ -116,13 +116,14 @@ function genRule(
   options: Options
 ): TypedFunctionDeclaration {
   const refs = refsInRule(rule);
-  const refNames = refs.map((r) => `${r.captureName}:${r.ruleName}`);
+  const filteredRefs = refs.filter((r) => !options.ignoreRules.has(r.ruleName));
+  const refNames = filteredRefs.map((r) => `${r.captureName}:${r.ruleName}`);
   const grouped = groupBy(refNames, (x) => x);
   const counted = mapObj(grouped, (name, refs) => refs.length);
   const duplicated = filterObj(counted, (name, count) => count > 1);
   if (Object.keys(duplicated).length > 0) {
     // TODO: mostly triggered by whitespace rules...
-    console.warn(
+    throw new Error(
       `multiple refs from rule "${ruleName}": ${JSON.stringify(duplicated)}`
     );
   }
