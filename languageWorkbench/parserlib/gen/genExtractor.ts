@@ -2,6 +2,7 @@ import { Grammar, Rule } from "../grammar";
 import { Program, FunctionDeclaration } from "estree";
 import { generate } from "astring";
 import {
+  capitalize,
   filterObj,
   flatMap,
   groupBy,
@@ -22,6 +23,9 @@ import {
   jsStr,
   prettyPrintProgramWithTypes,
   ProgramWithTypes,
+  tsArrayType,
+  tsType,
+  TypeDeclaration,
 } from "./astHelpers";
 
 export function genExtractorStr(parserlibPath: string, grammar: Grammar) {
@@ -42,7 +46,7 @@ export function genExtractor(
         "childrenByName",
       ]),
     ],
-    types: XXX,
+    types: mapObjToList(grammar, typeForRule),
     declarations: [
       // TODO: const GRAMMAR = parserlib.parseGrammar("...")
       // TODO: export function parse(input: string) {
@@ -156,7 +160,19 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
   };
 }
 
+function typeForRule(name: string, rule: Rule): TypeDeclaration {
+  const refs = refsInRule(rule);
+  return {
+    type: "TypeDeclaration",
+    name: capitalize(name),
+    members: refs.map((ref) => {
+      const inner = tsType(capitalize(ref.ruleName));
+      return { name, type: ref.repeated ? tsArrayType(inner) : inner };
+    }),
+  };
+}
+
 function extractorName(ruleName: string) {
   // TODO: make camelCase
-  return `extract_${ruleName}`;
+  return `extract${capitalize(ruleName)}`;
 }

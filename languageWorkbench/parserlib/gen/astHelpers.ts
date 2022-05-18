@@ -1,3 +1,4 @@
+import { generate } from "astring";
 import {
   BinaryOperator,
   CallExpression,
@@ -18,14 +19,27 @@ import {
 export type ProgramWithTypes = {
   type: "ProgramWithTypes";
   imports: ImportDeclaration[];
-  types: TsType[];
+  types: TypeDeclaration[];
   declarations: Declaration[];
 };
 
-export type TsType = {
+export type TypeDeclaration = {
+  type: "TypeDeclaration";
   name: string;
-  members: { name: string; type: string }[];
+  members: { name: string; type: TypeExpr }[];
 };
+
+export type TypeExpr =
+  | { type: "TypeName"; name: string }
+  | { type: "ArrayType"; inner: TypeExpr };
+
+export function tsArrayType(inner: TypeExpr): TypeExpr {
+  return { type: "ArrayType", inner };
+}
+
+export function tsType(name: string): TypeExpr {
+  return { type: "TypeName", name };
+}
 
 export function jsIdent(name: string): Identifier {
   return { type: "Identifier", name };
@@ -172,5 +186,28 @@ export function jsImport(path: string, idents: string[]): ImportDeclaration {
 }
 
 export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
-  return XXX;
+  return [
+    ...prog.imports.map((i) => generate(i)),
+    ...prog.types.map(prettyPrintTypeDeclaration),
+    ...prog.declarations.map((d) => generate(d)),
+  ].join("\n");
+}
+
+export function prettyPrintTypeDeclaration(type_: TypeDeclaration): string {
+  return [
+    `type ${type_.name} = {`,
+    ...type_.members.map(
+      (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
+    ),
+    `};`,
+  ].join("\n");
+}
+
+export function prettyPrintTypeExpr(expr: TypeExpr): string {
+  switch (expr.type) {
+    case "ArrayType":
+      return prettyPrintTypeExpr(expr.inner) + "[]";
+    case "TypeName":
+      return expr.name;
+  }
 }

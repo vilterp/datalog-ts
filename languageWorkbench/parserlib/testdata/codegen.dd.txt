@@ -10,69 +10,97 @@ stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
 import {textForSpan, childByName, childrenByName} from "./ruleTree";
-function extract_array(input, node) {
+type Array = {
+  array: Value[];
+};
+type Int = {
+};
+type KeyValue = {
+  keyValue: String;
+  keyValue: Value;
+};
+type Main = {
+  main: Value;
+};
+type Null = {
+};
+type Object = {
+  object: KeyValue[];
+};
+type String = {
+  string: StringChar[];
+};
+type StringChar = {
+};
+type Value = {
+  value: Object;
+  value: Array;
+  value: Int;
+  value: String;
+  value: Null;
+};
+function extractArray(input, node) {
   return {
     __rule__: "array",
     __text__: textForSpan(input, node.span),
-    value: childrenByName(node, "value").map(child => extract_value(input, child))
+    value: childrenByName(node, "value").map(child => extractValue(input, child))
   };
 }
-function extract_int(input, node) {
+function extractInt(input, node) {
   return {
     __rule__: "int",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_keyValue(input, node) {
+function extractKeyValue(input, node) {
   return {
     __rule__: "keyValue",
     __text__: textForSpan(input, node.span),
-    string: extract_string(input, childByName(node, "string")),
-    value: extract_value(input, childByName(node, "value"))
+    string: extractString(input, childByName(node, "string")),
+    value: extractValue(input, childByName(node, "value"))
   };
 }
-function extract_main(input, node) {
+function extractMain(input, node) {
   return {
     __rule__: "main",
     __text__: textForSpan(input, node.span),
-    value: extract_value(input, childByName(node, "value"))
+    value: extractValue(input, childByName(node, "value"))
   };
 }
-function extract_null(input, node) {
+function extractNull(input, node) {
   return {
     __rule__: "null",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_object(input, node) {
+function extractObject(input, node) {
   return {
     __rule__: "object",
     __text__: textForSpan(input, node.span),
-    keyValue: childrenByName(node, "keyValue").map(child => extract_keyValue(input, child))
+    keyValue: childrenByName(node, "keyValue").map(child => extractKeyValue(input, child))
   };
 }
-function extract_string(input, node) {
+function extractString(input, node) {
   return {
     __rule__: "string",
     __text__: textForSpan(input, node.span),
-    stringChar: childrenByName(node, "stringChar").map(child => extract_stringChar(input, child))
+    stringChar: childrenByName(node, "stringChar").map(child => extractStringChar(input, child))
   };
 }
-function extract_stringChar(input, node) {
+function extractStringChar(input, node) {
   return {
     __rule__: "stringChar",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_value(input, node) {
+function extractValue(input, node) {
   return {
     __rule__: "value",
     __text__: textForSpan(input, node.span),
-    object: extract_object(input, childByName(node, "object")),
-    array: extract_array(input, childByName(node, "array")),
-    int: extract_int(input, childByName(node, "int")),
-    string: extract_string(input, childByName(node, "string")),
-    null: extract_null(input, childByName(node, "null"))
+    object: extractObject(input, childByName(node, "object")),
+    array: extractArray(input, childByName(node, "array")),
+    int: extractInt(input, childByName(node, "int")),
+    string: extractString(input, childByName(node, "string")),
+    null: extractNull(input, childByName(node, "null"))
   };
 }
-

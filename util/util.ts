@@ -399,3 +399,7 @@ export function pushAll<T>(arr: T[], items: T[]) {
     arr.push(item);
   });
 }
+
+export function capitalize(input: string): string {
+  return input[0].toUpperCase() + input.slice(1);
+}
