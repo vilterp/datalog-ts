@@ -25,7 +25,9 @@ import {
   ProgramWithTypes,
   tsArrayType,
   tsType,
+  tsTypedParam,
   TypeDeclaration,
+  TypedFunctionDeclaration,
 } from "./astHelpers";
 
 export type Options = {
@@ -49,6 +51,7 @@ export function genExtractor(
         "textForSpan",
         "childByName",
         "childrenByName",
+        "RuleTree",
       ]),
     ],
     types: mapObjToList(grammar, (name, rule) =>
@@ -61,7 +64,9 @@ export function genExtractor(
       //   const ruleTree = parserlib.extractRuleTree(tree);
       //   return extract_main(input, ruleTree);
       // }
-      ...mapObjToList(grammar, genRule),
+      ...mapObjToList(grammar, (name, rule) =>
+        genRule(name, rule, options.typePrefix)
+      ),
     ],
   };
 }
@@ -101,7 +106,11 @@ function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
   }
 }
 
-function genRule(name: string, rule: Rule): FunctionDeclaration {
+function genRule(
+  ruleName: string,
+  rule: Rule,
+  prefix: string
+): TypedFunctionDeclaration {
   const refs = refsInRule(rule);
   const refNames = refs.map((r) => `${r.captureName}:${r.ruleName}`);
   const grouped = groupBy(refNames, (x) => x);
@@ -110,19 +119,23 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
   if (Object.keys(duplicated).length > 0) {
     // TODO: mostly triggered by whitespace rules...
     console.warn(
-      `multiple refs from rule "${name}": ${JSON.stringify(duplicated)}`
+      `multiple refs from rule "${ruleName}": ${JSON.stringify(duplicated)}`
     );
   }
   return {
-    type: "FunctionDeclaration",
-    id: jsIdent(extractorName(name)),
-    params: [jsIdent("input"), jsIdent("node")],
+    type: "TypedFunctionDeclaration",
+    name: extractorName(ruleName),
+    returnType: tsType(typeName(ruleName, prefix)),
+    params: [
+      tsTypedParam("input", tsType("string")),
+      tsTypedParam("node", tsType("RuleTree")),
+    ],
     body: jsBlock([
       {
         type: "ReturnStatement",
         argument: jsObj(
           mapListToObj([
-            { key: "__rule__", value: jsStr(name) },
+            { key: "__rule__", value: jsStr(ruleName) },
             {
               key: "__text__",
               value: jsCall(jsIdent("textForSpan"), [

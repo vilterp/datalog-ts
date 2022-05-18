@@ -13,14 +13,13 @@ import {
   BlockStatement,
   ArrowFunctionExpression,
   ImportDeclaration,
-  Declaration,
 } from "estree";
 
 export type ProgramWithTypes = {
   type: "ProgramWithTypes";
   imports: ImportDeclaration[];
   types: TypeDeclaration[];
-  declarations: Declaration[];
+  declarations: TypedFunctionDeclaration[];
 };
 
 export type TypeDeclaration = {
@@ -29,6 +28,25 @@ export type TypeDeclaration = {
   members: { name: string; type: TypeExpr }[];
   exported?: boolean;
 };
+
+export type TypedFunctionDeclaration = {
+  type: "TypedFunctionDeclaration";
+  name: string;
+  params: TypedParam[];
+  returnType: TypeExpr;
+  body: BlockStatement;
+  exported?: boolean;
+};
+
+export type TypedParam = {
+  type: "TypedParam";
+  name: string;
+  typeExpr: TypeExpr;
+};
+
+export function tsTypedParam(name: string, typeExpr: TypeExpr): TypedParam {
+  return { type: "TypedParam", name, typeExpr };
+}
 
 export type TypeExpr =
   | { type: "TypeName"; name: string }
@@ -190,7 +208,7 @@ export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
   return [
     ...prog.imports.map((i) => generate(i)),
     ...prog.types.map(prettyPrintTypeDeclaration),
-    ...prog.declarations.map((d) => generate(d)),
+    ...prog.declarations.map((d) => prettyPrintTypedFunctionDeclaration(d)),
   ].join("\n");
 }
 
@@ -211,4 +229,18 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
     case "TypeName":
       return expr.name;
   }
+}
+
+export function prettyPrintTypedFunctionDeclaration(
+  decl: TypedFunctionDeclaration
+): string {
+  return `${decl.exported ? "export " : ""}function ${decl.name}(${decl.params
+    .map(prettyPrintTypedParam)
+    .join(", ")}): ${prettyPrintTypeExpr(decl.returnType)} ${generate(
+    decl.body
+  )}`;
+}
+
+function prettyPrintTypedParam(param: TypedParam): string {
+  return `${param.name}: ${prettyPrintTypeExpr(param.typeExpr)}`;
 }
