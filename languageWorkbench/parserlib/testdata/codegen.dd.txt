@@ -9,94 +9,94 @@ string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
-import {textForSpan, childByName, childrenByName} from "./ruleTree";
-type JsonArray = {
-  array: Value[];
+import {textForSpan, childByName, childrenByName, RuleTree} from "./ruleTree";
+export type JsonArray = {
+  value: JsonValue[];
 };
-type JsonInt = {
+export type JsonInt = {
 };
-type JsonKeyValue = {
-  keyValue: String;
-  keyValue: Value;
+export type JsonKeyValue = {
+  string: JsonString;
+  value: JsonValue;
 };
-type JsonMain = {
-  main: Value;
+export type JsonMain = {
+  value: JsonValue;
 };
-type JsonNull = {
+export type JsonNull = {
 };
-type JsonObject = {
-  object: KeyValue[];
+export type JsonObject = {
+  keyValue: JsonKeyValue[];
 };
-type JsonString = {
-  string: StringChar[];
+export type JsonString = {
+  stringChar: JsonStringChar[];
 };
-type JsonStringChar = {
+export type JsonStringChar = {
 };
-type JsonValue = {
-  value: Object;
-  value: Array;
-  value: Int;
-  value: String;
-  value: Null;
+export type JsonValue = {
+  object: JsonObject;
+  array: JsonArray;
+  int: JsonInt;
+  string: JsonString;
+  null: JsonNull;
 };
-function extractArray(input, node) {
+function extractArray(input: string, node: RuleTree): JsonArray {
   return {
-    __rule__: "array",
-    __text__: textForSpan(input, node.span),
+    type: "Array",
+    text: textForSpan(input, node.span),
     value: childrenByName(node, "value").map(child => extractValue(input, child))
   };
 }
-function extractInt(input, node) {
+function extractInt(input: string, node: RuleTree): JsonInt {
   return {
-    __rule__: "int",
-    __text__: textForSpan(input, node.span)
+    type: "Int",
+    text: textForSpan(input, node.span)
   };
 }
-function extractKeyValue(input, node) {
+function extractKeyValue(input: string, node: RuleTree): JsonKeyValue {
   return {
-    __rule__: "keyValue",
-    __text__: textForSpan(input, node.span),
+    type: "KeyValue",
+    text: textForSpan(input, node.span),
     string: extractString(input, childByName(node, "string")),
     value: extractValue(input, childByName(node, "value"))
   };
 }
-function extractMain(input, node) {
+function extractMain(input: string, node: RuleTree): JsonMain {
   return {
-    __rule__: "main",
-    __text__: textForSpan(input, node.span),
+    type: "Main",
+    text: textForSpan(input, node.span),
     value: extractValue(input, childByName(node, "value"))
   };
 }
-function extractNull(input, node) {
+function extractNull(input: string, node: RuleTree): JsonNull {
   return {
-    __rule__: "null",
-    __text__: textForSpan(input, node.span)
+    type: "Null",
+    text: textForSpan(input, node.span)
   };
 }
-function extractObject(input, node) {
+function extractObject(input: string, node: RuleTree): JsonObject {
   return {
-    __rule__: "object",
-    __text__: textForSpan(input, node.span),
+    type: "Object",
+    text: textForSpan(input, node.span),
     keyValue: childrenByName(node, "keyValue").map(child => extractKeyValue(input, child))
   };
 }
-function extractString(input, node) {
+function extractString(input: string, node: RuleTree): JsonString {
   return {
-    __rule__: "string",
-    __text__: textForSpan(input, node.span),
+    type: "String",
+    text: textForSpan(input, node.span),
     stringChar: childrenByName(node, "stringChar").map(child => extractStringChar(input, child))
   };
 }
-function extractStringChar(input, node) {
+function extractStringChar(input: string, node: RuleTree): JsonStringChar {
   return {
-    __rule__: "stringChar",
-    __text__: textForSpan(input, node.span)
+    type: "StringChar",
+    text: textForSpan(input, node.span)
   };
 }
-function extractValue(input, node) {
+function extractValue(input: string, node: RuleTree): JsonValue {
   return {
-    __rule__: "value",
-    __text__: textForSpan(input, node.span),
+    type: "Value",
+    text: textForSpan(input, node.span),
     object: extractObject(input, childByName(node, "object")),
     array: extractArray(input, childByName(node, "array")),
     int: extractInt(input, childByName(node, "int")),

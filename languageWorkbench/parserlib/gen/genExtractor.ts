@@ -135,9 +135,9 @@ function genRule(
         type: "ReturnStatement",
         argument: jsObj(
           mapListToObj([
-            { key: "__rule__", value: jsStr(ruleName) },
+            { key: "type", value: jsStr(capitalize(ruleName)) },
             {
-              key: "__text__",
+              key: "text",
               value: jsCall(jsIdent("textForSpan"), [
                 jsIdent("input"),
                 jsChain(["node", "span"]),
@@ -145,7 +145,7 @@ function genRule(
             },
             ...refs.map(({ ruleName, repeated, captureName }) => ({
               // TODO: pluralize if this is a repSep
-              key: captureName ? captureName : ruleName,
+              key: prefixToAvoidReserved(captureName ? captureName : ruleName),
               value: repeated
                 ? jsCall(
                     jsMember(
@@ -207,4 +207,13 @@ function typeName(ruleName: string, prefix: string) {
 function extractorName(ruleName: string) {
   // TODO: make camelCase
   return `extract${capitalize(ruleName)}`;
+}
+
+const RESERVED = new Set(["type", "text"]);
+
+function prefixToAvoidReserved(name: string): string {
+  if (RESERVED.has(name)) {
+    return `_${name}`;
+  }
+  return name;
 }
