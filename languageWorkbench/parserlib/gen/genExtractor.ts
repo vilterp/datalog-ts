@@ -30,10 +30,12 @@ import {
   TypedFunctionDeclaration,
   tsTypeString,
 } from "./astHelpers";
+import { OpenRelationsContainer } from "../../../uiCommon/explorer/openRelationsContainer";
 
 export type Options = {
   parserlibPath: string;
   typePrefix: string;
+  ignoreRules: Set<string>;
 };
 
 export function genExtractorStr(options: Options, grammar: Grammar) {
@@ -56,7 +58,7 @@ export function genExtractor(
       ]),
     ],
     types: mapObjToList(grammar, (name, rule) =>
-      typeForRule(name, rule, options.typePrefix)
+      typeForRule(name, rule, options)
     ),
     declarations: [
       // TODO: const GRAMMAR = parserlib.parseGrammar("...")
@@ -65,8 +67,9 @@ export function genExtractor(
       //   const ruleTree = parserlib.extractRuleTree(tree);
       //   return extract_main(input, ruleTree);
       // }
-      ...mapObjToList(grammar, (name, rule) =>
-        genRule(name, rule, options.typePrefix)
+      ...mapObjToList(
+        filterObj(grammar, (name) => !options.ignoreRules.has(name)),
+        (name, rule) => genRule(name, rule, options)
       ),
     ],
   };
@@ -110,7 +113,7 @@ function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
 function genRule(
   ruleName: string,
   rule: Rule,
-  prefix: string
+  options: Options
 ): TypedFunctionDeclaration {
   const refs = refsInRule(rule);
   const refNames = refs.map((r) => `${r.captureName}:${r.ruleName}`);
@@ -126,7 +129,7 @@ function genRule(
   return {
     type: "TypedFunctionDeclaration",
     name: extractorName(ruleName),
-    returnType: tsTypeName(typeName(ruleName, prefix)),
+    returnType: tsTypeName(typeName(ruleName, options.typePrefix)),
     params: [
       tsTypedParam("input", tsTypeName("string")),
       tsTypedParam("node", tsTypeName("RuleTree")),
@@ -144,36 +147,40 @@ function genRule(
                 jsChain(["node", "span"]),
               ]),
             },
-            ...refs.map(({ ruleName, repeated, captureName }) => ({
-              // TODO: pluralize if this is a repSep
-              key: prefixToAvoidReserved(captureName ? captureName : ruleName),
-              value: repeated
-                ? jsCall(
-                    jsMember(
-                      jsCall(jsIdent("childrenByName"), [
+            ...refs
+              .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+              .map(({ ruleName, repeated, captureName }) => ({
+                // TODO: pluralize if this is a repSep
+                key: prefixToAvoidReserved(
+                  captureName ? captureName : ruleName
+                ),
+                value: repeated
+                  ? jsCall(
+                      jsMember(
+                        jsCall(jsIdent("childrenByName"), [
+                          jsIdent("node"),
+                          jsStr(ruleName),
+                        ]),
+                        "map"
+                      ),
+                      [
+                        jsArrowFunc(
+                          ["child"],
+                          jsCall(jsIdent(extractorName(ruleName)), [
+                            jsIdent("input"),
+                            jsIdent("child"),
+                          ])
+                        ),
+                      ]
+                    )
+                  : jsCall(jsIdent(extractorName(ruleName)), [
+                      jsIdent("input"),
+                      jsCall(jsIdent("childByName"), [
                         jsIdent("node"),
                         jsStr(ruleName),
                       ]),
-                      "map"
-                    ),
-                    [
-                      jsArrowFunc(
-                        ["child"],
-                        jsCall(jsIdent(extractorName(ruleName)), [
-                          jsIdent("input"),
-                          jsIdent("child"),
-                        ])
-                      ),
-                    ]
-                  )
-                : jsCall(jsIdent(extractorName(ruleName)), [
-                    jsIdent("input"),
-                    jsCall(jsIdent("childByName"), [
-                      jsIdent("node"),
-                      jsStr(ruleName),
                     ]),
-                  ]),
-            })),
+              })),
           ])
         ),
       },
@@ -184,25 +191,27 @@ function genRule(
 function typeForRule(
   ruleName: string,
   rule: Rule,
-  prefix: string
+  options: Options
 ): TypeDeclaration {
   const refs = refsInRule(rule);
   return {
     type: "TypeDeclaration",
-    name: typeName(ruleName, prefix),
+    name: typeName(ruleName, options.typePrefix),
     exported: true,
     members: [
       { name: "type", type: tsTypeString(capitalize(ruleName)) },
       { name: "text", type: tsTypeName("string") },
-      ...refs.map((ref) => {
-        const inner = tsTypeName(typeName(ref.ruleName, prefix));
-        return {
-          name: prefixToAvoidReserved(
-            ref.captureName ? ref.captureName : ref.ruleName
-          ),
-          type: ref.repeated ? tsArrayType(inner) : inner,
-        };
-      }),
+      ...refs
+        .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+        .map((ref) => {
+          const inner = tsTypeName(typeName(ref.ruleName, options.typePrefix));
+          return {
+            name: prefixToAvoidReserved(
+              ref.captureName ? ref.captureName : ref.ruleName
+            ),
+            type: ref.repeated ? tsArrayType(inner) : inner,
+          };
+        }),
     ],
   };
 }
@@ -216,7 +225,7 @@ function extractorName(ruleName: string) {
   return `extract${capitalize(ruleName)}`;
 }
 
-const RESERVED = new Set(["type", "text"]);
+const RESERVED = new Set(["type", "text", "span"]);
 
 function prefixToAvoidReserved(name: string): string {
   if (RESERVED.has(name)) {

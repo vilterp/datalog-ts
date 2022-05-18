@@ -12,36 +12,45 @@ text/plain
 import {textForSpan, childByName, childrenByName, RuleTree} from "./ruleTree";
 export type JsonArray = {
   type: "Array";
+  text: string;
   value: JsonValue[];
 };
 export type JsonInt = {
   type: "Int";
+  text: string;
 };
 export type JsonKeyValue = {
   type: "KeyValue";
+  text: string;
   string: JsonString;
   value: JsonValue;
 };
 export type JsonMain = {
   type: "Main";
+  text: string;
   value: JsonValue;
 };
 export type JsonNull = {
   type: "Null";
+  text: string;
 };
 export type JsonObject = {
   type: "Object";
+  text: string;
   keyValue: JsonKeyValue[];
 };
 export type JsonString = {
   type: "String";
+  text: string;
   stringChar: JsonStringChar[];
 };
 export type JsonStringChar = {
   type: "StringChar";
+  text: string;
 };
 export type JsonValue = {
   type: "Value";
+  text: string;
   object: JsonObject;
   array: JsonArray;
   int: JsonInt;

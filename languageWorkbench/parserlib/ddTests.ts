@@ -215,6 +215,7 @@ function codegenTest(test: string[]): TestOutput[] {
     const options: Options = {
       parserlibPath: ".",
       typePrefix: "Json",
+      ignoreRules: new Set(["ws"]),
     };
     const output = genExtractorStr(options, grammar);
     return plainTextOut(output);

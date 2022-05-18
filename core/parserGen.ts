@@ -19,9 +19,7 @@ export type DLBinExpr = {
   type: "BinExpr";
   text: string;
   left: DLTerm;
-  ws: DLWs;
   binOp: DLBinOp;
-  ws: DLWs;
   right: DLTerm;
 };
 export type DLBinOp = {
@@ -35,7 +33,6 @@ export type DLBool = {
 export type DLCommaSpace = {
   type: "CommaSpace";
   text: string;
-  ws: DLWs;
 };
 export type DLComment = {
   type: "Comment";
@@ -58,8 +55,6 @@ export type DLDisjunct = {
   type: "Disjunct";
   text: string;
   conjunct: DLConjunct[];
-  ws: DLWs[];
-  ws: DLWs[];
 };
 export type DLFact = {
   type: "Fact";
@@ -82,17 +77,13 @@ export type DLKeyValue = {
   type: "KeyValue";
   text: string;
   ident: DLIdent;
-  ws: DLWs;
   term: DLTerm;
 };
 export type DLMain = {
   type: "Main";
   text: string;
-  ws: DLWs;
   stmt: DLStmt[];
   comment: DLComment[];
-  ws: DLWs[];
-  ws: DLWs;
 };
 export type DLNegation = {
   type: "Negation";
@@ -111,9 +102,7 @@ export type DLRecord = {
   type: "Record";
   text: string;
   ident: DLIdent;
-  ws: DLWs;
   recordAttrs: DLRecordAttrs;
-  ws: DLWs;
 };
 export type DLRecordAttrs = {
   type: "RecordAttrs";
@@ -126,11 +115,7 @@ export type DLRule = {
   type: "Rule";
   text: string;
   record: DLRecord;
-  ws: DLWs;
-  ws: DLWs;
   disjunct: DLDisjunct[];
-  ws: DLWs[];
-  ws: DLWs[];
 };
 export type DLStmt = {
   type: "Stmt";
@@ -152,7 +137,6 @@ export type DLTableDecl = {
   type: "TableDecl";
   text: string;
   tableKW: DLTableKW;
-  ws: DLWs;
   ident: DLIdent;
 };
 export type DLTableKW = {
@@ -206,7 +190,6 @@ function extractBinExpr(input: string, node: RuleTree): DLBinExpr {
     type: "BinExpr",
     text: textForSpan(input, node.span),
     left: extractTerm(input, childByName(node, "term")),
-    ws: extractWs(input, childByName(node, "ws")),
     binOp: extractBinOp(input, childByName(node, "binOp")),
     right: extractTerm(input, childByName(node, "term"))
   };
@@ -226,8 +209,7 @@ function extractBool(input: string, node: RuleTree): DLBool {
 function extractCommaSpace(input: string, node: RuleTree): DLCommaSpace {
   return {
     type: "CommaSpace",
-    text: textForSpan(input, node.span),
-    ws: extractWs(input, childByName(node, "ws"))
+    text: textForSpan(input, node.span)
   };
 }
 function extractComment(input: string, node: RuleTree): DLComment {
@@ -257,8 +239,7 @@ function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
   return {
     type: "Disjunct",
     text: textForSpan(input, node.span),
-    conjunct: childrenByName(node, "conjunct").map(child => extractConjunct(input, child)),
-    ws: childrenByName(node, "ws").map(child => extractWs(input, child))
+    conjunct: childrenByName(node, "conjunct").map(child => extractConjunct(input, child))
   };
 }
 function extractFact(input: string, node: RuleTree): DLFact {
@@ -288,7 +269,6 @@ function extractKeyValue(input: string, node: RuleTree): DLKeyValue {
     type: "KeyValue",
     text: textForSpan(input, node.span),
     ident: extractIdent(input, childByName(node, "ident")),
-    ws: extractWs(input, childByName(node, "ws")),
     term: extractTerm(input, childByName(node, "term"))
   };
 }
@@ -296,7 +276,6 @@ function extractMain(input: string, node: RuleTree): DLMain {
   return {
     type: "Main",
     text: textForSpan(input, node.span),
-    ws: extractWs(input, childByName(node, "ws")),
     stmt: childrenByName(node, "stmt").map(child => extractStmt(input, child)),
     comment: childrenByName(node, "comment").map(child => extractComment(input, child))
   };
@@ -325,7 +304,6 @@ function extractRecord(input: string, node: RuleTree): DLRecord {
     type: "Record",
     text: textForSpan(input, node.span),
     ident: extractIdent(input, childByName(node, "ident")),
-    ws: extractWs(input, childByName(node, "ws")),
     recordAttrs: extractRecordAttrs(input, childByName(node, "recordAttrs"))
   };
 }
@@ -343,7 +321,6 @@ function extractRule(input: string, node: RuleTree): DLRule {
     type: "Rule",
     text: textForSpan(input, node.span),
     record: extractRecord(input, childByName(node, "record")),
-    ws: childrenByName(node, "ws").map(child => extractWs(input, child)),
     disjunct: childrenByName(node, "disjunct").map(child => extractDisjunct(input, child))
   };
 }
@@ -374,7 +351,6 @@ function extractTableDecl(input: string, node: RuleTree): DLTableDecl {
     type: "TableDecl",
     text: textForSpan(input, node.span),
     tableKW: extractTableKW(input, childByName(node, "tableKW")),
-    ws: extractWs(input, childByName(node, "ws")),
     ident: extractIdent(input, childByName(node, "ident"))
   };
 }
@@ -402,11 +378,5 @@ function extractVar(input: string, node: RuleTree): DLVar {
     type: "Var",
     text: textForSpan(input, node.span),
     alphaNum: childrenByName(node, "alphaNum").map(child => extractAlphaNum(input, child))
-  };
-}
-function extractWs(input: string, node: RuleTree): DLWs {
-  return {
-    type: "Ws",
-    text: textForSpan(input, node.span)
   };
 }

@@ -7,6 +7,7 @@ type Args = {
   outputPath: string;
   parserlibPath: string;
   typePrefix: string;
+  ignoreRules: string[];
 };
 
 function main() {
@@ -16,6 +17,7 @@ function main() {
     outputPath: process.argv[3],
     parserlibPath: process.argv[4],
     typePrefix: process.argv[5],
+    ignoreRules: process.argv[6].split(","),
   };
   console.log("generating with args", args);
   generate(args);
@@ -27,6 +29,7 @@ function generate(args: Args) {
   const options: Options = {
     parserlibPath: args.parserlibPath,
     typePrefix: args.typePrefix,
+    ignoreRules: new Set(args.ignoreRules),
   };
   const code = genExtractorStr(options, grammar);
   fs.writeFileSync(args.outputPath, code);
