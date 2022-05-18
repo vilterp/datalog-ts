@@ -70,7 +70,7 @@ export type DLIdent = {
 export type DLInt = {
   type: "Int";
   text: string;
-  num: DLNum;
+  first: DLNum;
   num: DLNum[];
 };
 export type DLKeyValue = {
@@ -261,6 +261,7 @@ function extractInt(input: string, node: RuleTree): DLInt {
   return {
     type: "Int",
     text: textForSpan(input, node.span),
+    first: extractNum(input, childByName(node, "num")),
     num: childrenByName(node, "num").map(child => extractNum(input, child))
   };
 }
