@@ -212,6 +212,7 @@ export function jsImport(path: string, idents: string[]): ImportDeclaration {
 
 export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
   return [
+    ...prog.leadingComments.map((comment) => `// ${comment}`),
     ...prog.imports.map((i) => (typeof i === "string" ? i : generate(i))),
     ...prog.types.map(prettyPrintTypeDeclaration),
     ...prog.declarations.map((d) =>
