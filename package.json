@@ -87,5 +87,6 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "license": "MIT"
 }
