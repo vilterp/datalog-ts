@@ -1,230 +1,350 @@
 import {textForSpan, childByName, childrenByName} from "../languageWorkbench/parserlib/ruleTree";
-function extract_alpha(input, node) {
+type DLAlpha = {
+};
+type DLAlphaNum = {
+  alpha: DLAlpha;
+  num: DLNum;
+};
+type DLArray = {
+  term: DLTerm[];
+  commaSpace: DLCommaSpace[];
+};
+type DLBinExpr = {
+  left: DLTerm;
+  ws: DLWs;
+  binOp: DLBinOp;
+  ws: DLWs;
+  right: DLTerm;
+};
+type DLBinOp = {
+};
+type DLBool = {
+};
+type DLCommaSpace = {
+  ws: DLWs;
+};
+type DLComment = {
+  commentChar: DLCommentChar[];
+};
+type DLCommentChar = {
+};
+type DLConjunct = {
+  record: DLRecord;
+  binExpr: DLBinExpr;
+  negation: DLNegation;
+  placeholder: DLPlaceholder;
+};
+type DLDisjunct = {
+  conjunct: DLConjunct[];
+  ws: DLWs[];
+  ws: DLWs[];
+};
+type DLFact = {
+  record: DLRecord;
+};
+type DLIdent = {
+  alpha: DLAlpha;
+  alphaNum: DLAlphaNum[];
+};
+type DLInt = {
+  num: DLNum;
+  num: DLNum[];
+};
+type DLKeyValue = {
+  ident: DLIdent;
+  ws: DLWs;
+  term: DLTerm;
+};
+type DLMain = {
+  ws: DLWs;
+  stmt: DLStmt[];
+  comment: DLComment[];
+  ws: DLWs[];
+  ws: DLWs;
+};
+type DLNegation = {
+  record: DLRecord;
+};
+type DLNum = {
+};
+type DLPlaceholder = {
+};
+type DLRecord = {
+  ident: DLIdent;
+  ws: DLWs;
+  recordAttrs: DLRecordAttrs;
+  ws: DLWs;
+};
+type DLRecordAttrs = {
+  keyValue: DLKeyValue[];
+  placeholder: DLPlaceholder[];
+  commaSpace: DLCommaSpace[];
+};
+type DLRule = {
+  record: DLRecord;
+  ws: DLWs;
+  ws: DLWs;
+  disjunct: DLDisjunct[];
+  ws: DLWs[];
+  ws: DLWs[];
+};
+type DLStmt = {
+  rule: DLRule;
+  fact: DLFact;
+  tableDecl: DLTableDecl;
+};
+type DLString = {
+  stringChar: DLStringChar[];
+};
+type DLStringChar = {
+};
+type DLTableDecl = {
+  tableKW: DLTableKW;
+  ws: DLWs;
+  ident: DLIdent;
+};
+type DLTableKW = {
+};
+type DLTerm = {
+  record: DLRecord;
+  int: DLInt;
+  var: DLVar;
+  string: DLString;
+  bool: DLBool;
+  array: DLArray;
+  placeholder: DLPlaceholder;
+};
+type DLVar = {
+  alphaNum: DLAlphaNum[];
+};
+type DLWs = {
+};
+function extractAlpha(input, node) {
   return {
     __rule__: "alpha",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_alphaNum(input, node) {
+function extractAlphaNum(input, node) {
   return {
     __rule__: "alphaNum",
     __text__: textForSpan(input, node.span),
-    alpha: extract_alpha(input, childByName(node, "alpha")),
-    num: extract_num(input, childByName(node, "num"))
+    alpha: extractAlpha(input, childByName(node, "alpha")),
+    num: extractNum(input, childByName(node, "num"))
   };
 }
-function extract_array(input, node) {
+function extractArray(input, node) {
   return {
     __rule__: "array",
     __text__: textForSpan(input, node.span),
-    term: childrenByName(node, "term").map(child => extract_term(input, child)),
-    commaSpace: childrenByName(node, "commaSpace").map(child => extract_commaSpace(input, child))
+    term: childrenByName(node, "term").map(child => extractTerm(input, child)),
+    commaSpace: childrenByName(node, "commaSpace").map(child => extractCommaSpace(input, child))
   };
 }
-function extract_binExpr(input, node) {
+function extractBinExpr(input, node) {
   return {
     __rule__: "binExpr",
     __text__: textForSpan(input, node.span),
-    left: extract_term(input, childByName(node, "term")),
-    ws: extract_ws(input, childByName(node, "ws")),
-    binOp: extract_binOp(input, childByName(node, "binOp")),
-    right: extract_term(input, childByName(node, "term"))
+    left: extractTerm(input, childByName(node, "term")),
+    ws: extractWs(input, childByName(node, "ws")),
+    binOp: extractBinOp(input, childByName(node, "binOp")),
+    right: extractTerm(input, childByName(node, "term"))
   };
 }
-function extract_binOp(input, node) {
+function extractBinOp(input, node) {
   return {
     __rule__: "binOp",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_bool(input, node) {
+function extractBool(input, node) {
   return {
     __rule__: "bool",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_commaSpace(input, node) {
+function extractCommaSpace(input, node) {
   return {
     __rule__: "commaSpace",
     __text__: textForSpan(input, node.span),
-    ws: extract_ws(input, childByName(node, "ws"))
+    ws: extractWs(input, childByName(node, "ws"))
   };
 }
-function extract_comment(input, node) {
+function extractComment(input, node) {
   return {
     __rule__: "comment",
     __text__: textForSpan(input, node.span),
-    commentChar: childrenByName(node, "commentChar").map(child => extract_commentChar(input, child))
+    commentChar: childrenByName(node, "commentChar").map(child => extractCommentChar(input, child))
   };
 }
-function extract_commentChar(input, node) {
+function extractCommentChar(input, node) {
   return {
     __rule__: "commentChar",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_conjunct(input, node) {
+function extractConjunct(input, node) {
   return {
     __rule__: "conjunct",
     __text__: textForSpan(input, node.span),
-    record: extract_record(input, childByName(node, "record")),
-    binExpr: extract_binExpr(input, childByName(node, "binExpr")),
-    negation: extract_negation(input, childByName(node, "negation")),
-    placeholder: extract_placeholder(input, childByName(node, "placeholder"))
+    record: extractRecord(input, childByName(node, "record")),
+    binExpr: extractBinExpr(input, childByName(node, "binExpr")),
+    negation: extractNegation(input, childByName(node, "negation")),
+    placeholder: extractPlaceholder(input, childByName(node, "placeholder"))
   };
 }
-function extract_disjunct(input, node) {
+function extractDisjunct(input, node) {
   return {
     __rule__: "disjunct",
     __text__: textForSpan(input, node.span),
-    conjunct: childrenByName(node, "conjunct").map(child => extract_conjunct(input, child)),
-    ws: childrenByName(node, "ws").map(child => extract_ws(input, child))
+    conjunct: childrenByName(node, "conjunct").map(child => extractConjunct(input, child)),
+    ws: childrenByName(node, "ws").map(child => extractWs(input, child))
   };
 }
-function extract_fact(input, node) {
+function extractFact(input, node) {
   return {
     __rule__: "fact",
     __text__: textForSpan(input, node.span),
-    record: extract_record(input, childByName(node, "record"))
+    record: extractRecord(input, childByName(node, "record"))
   };
 }
-function extract_ident(input, node) {
+function extractIdent(input, node) {
   return {
     __rule__: "ident",
     __text__: textForSpan(input, node.span),
-    alpha: extract_alpha(input, childByName(node, "alpha")),
-    alphaNum: childrenByName(node, "alphaNum").map(child => extract_alphaNum(input, child))
+    alpha: extractAlpha(input, childByName(node, "alpha")),
+    alphaNum: childrenByName(node, "alphaNum").map(child => extractAlphaNum(input, child))
   };
 }
-function extract_int(input, node) {
+function extractInt(input, node) {
   return {
     __rule__: "int",
     __text__: textForSpan(input, node.span),
-    num: childrenByName(node, "num").map(child => extract_num(input, child))
+    num: childrenByName(node, "num").map(child => extractNum(input, child))
   };
 }
-function extract_keyValue(input, node) {
+function extractKeyValue(input, node) {
   return {
     __rule__: "keyValue",
     __text__: textForSpan(input, node.span),
-    ident: extract_ident(input, childByName(node, "ident")),
-    ws: extract_ws(input, childByName(node, "ws")),
-    term: extract_term(input, childByName(node, "term"))
+    ident: extractIdent(input, childByName(node, "ident")),
+    ws: extractWs(input, childByName(node, "ws")),
+    term: extractTerm(input, childByName(node, "term"))
   };
 }
-function extract_main(input, node) {
+function extractMain(input, node) {
   return {
     __rule__: "main",
     __text__: textForSpan(input, node.span),
-    ws: extract_ws(input, childByName(node, "ws")),
-    stmt: childrenByName(node, "stmt").map(child => extract_stmt(input, child)),
-    comment: childrenByName(node, "comment").map(child => extract_comment(input, child))
+    ws: extractWs(input, childByName(node, "ws")),
+    stmt: childrenByName(node, "stmt").map(child => extractStmt(input, child)),
+    comment: childrenByName(node, "comment").map(child => extractComment(input, child))
   };
 }
-function extract_negation(input, node) {
+function extractNegation(input, node) {
   return {
     __rule__: "negation",
     __text__: textForSpan(input, node.span),
-    record: extract_record(input, childByName(node, "record"))
+    record: extractRecord(input, childByName(node, "record"))
   };
 }
-function extract_num(input, node) {
+function extractNum(input, node) {
   return {
     __rule__: "num",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_placeholder(input, node) {
+function extractPlaceholder(input, node) {
   return {
     __rule__: "placeholder",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_record(input, node) {
+function extractRecord(input, node) {
   return {
     __rule__: "record",
     __text__: textForSpan(input, node.span),
-    ident: extract_ident(input, childByName(node, "ident")),
-    ws: extract_ws(input, childByName(node, "ws")),
-    recordAttrs: extract_recordAttrs(input, childByName(node, "recordAttrs"))
+    ident: extractIdent(input, childByName(node, "ident")),
+    ws: extractWs(input, childByName(node, "ws")),
+    recordAttrs: extractRecordAttrs(input, childByName(node, "recordAttrs"))
   };
 }
-function extract_recordAttrs(input, node) {
+function extractRecordAttrs(input, node) {
   return {
     __rule__: "recordAttrs",
     __text__: textForSpan(input, node.span),
-    keyValue: childrenByName(node, "keyValue").map(child => extract_keyValue(input, child)),
-    placeholder: childrenByName(node, "placeholder").map(child => extract_placeholder(input, child)),
-    commaSpace: childrenByName(node, "commaSpace").map(child => extract_commaSpace(input, child))
+    keyValue: childrenByName(node, "keyValue").map(child => extractKeyValue(input, child)),
+    placeholder: childrenByName(node, "placeholder").map(child => extractPlaceholder(input, child)),
+    commaSpace: childrenByName(node, "commaSpace").map(child => extractCommaSpace(input, child))
   };
 }
-function extract_rule(input, node) {
+function extractRule(input, node) {
   return {
     __rule__: "rule",
     __text__: textForSpan(input, node.span),
-    record: extract_record(input, childByName(node, "record")),
-    ws: childrenByName(node, "ws").map(child => extract_ws(input, child)),
-    disjunct: childrenByName(node, "disjunct").map(child => extract_disjunct(input, child))
+    record: extractRecord(input, childByName(node, "record")),
+    ws: childrenByName(node, "ws").map(child => extractWs(input, child)),
+    disjunct: childrenByName(node, "disjunct").map(child => extractDisjunct(input, child))
   };
 }
-function extract_stmt(input, node) {
+function extractStmt(input, node) {
   return {
     __rule__: "stmt",
     __text__: textForSpan(input, node.span),
-    rule: extract_rule(input, childByName(node, "rule")),
-    fact: extract_fact(input, childByName(node, "fact")),
-    tableDecl: extract_tableDecl(input, childByName(node, "tableDecl"))
+    rule: extractRule(input, childByName(node, "rule")),
+    fact: extractFact(input, childByName(node, "fact")),
+    tableDecl: extractTableDecl(input, childByName(node, "tableDecl"))
   };
 }
-function extract_string(input, node) {
+function extractString(input, node) {
   return {
     __rule__: "string",
     __text__: textForSpan(input, node.span),
-    stringChar: childrenByName(node, "stringChar").map(child => extract_stringChar(input, child))
+    stringChar: childrenByName(node, "stringChar").map(child => extractStringChar(input, child))
   };
 }
-function extract_stringChar(input, node) {
+function extractStringChar(input, node) {
   return {
     __rule__: "stringChar",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_tableDecl(input, node) {
+function extractTableDecl(input, node) {
   return {
     __rule__: "tableDecl",
     __text__: textForSpan(input, node.span),
-    tableKW: extract_tableKW(input, childByName(node, "tableKW")),
-    ws: extract_ws(input, childByName(node, "ws")),
-    ident: extract_ident(input, childByName(node, "ident"))
+    tableKW: extractTableKW(input, childByName(node, "tableKW")),
+    ws: extractWs(input, childByName(node, "ws")),
+    ident: extractIdent(input, childByName(node, "ident"))
   };
 }
-function extract_tableKW(input, node) {
+function extractTableKW(input, node) {
   return {
     __rule__: "tableKW",
     __text__: textForSpan(input, node.span)
   };
 }
-function extract_term(input, node) {
+function extractTerm(input, node) {
   return {
     __rule__: "term",
     __text__: textForSpan(input, node.span),
-    record: extract_record(input, childByName(node, "record")),
-    int: extract_int(input, childByName(node, "int")),
-    var: extract_var(input, childByName(node, "var")),
-    string: extract_string(input, childByName(node, "string")),
-    bool: extract_bool(input, childByName(node, "bool")),
-    array: extract_array(input, childByName(node, "array")),
-    placeholder: extract_placeholder(input, childByName(node, "placeholder"))
+    record: extractRecord(input, childByName(node, "record")),
+    int: extractInt(input, childByName(node, "int")),
+    var: extractVar(input, childByName(node, "var")),
+    string: extractString(input, childByName(node, "string")),
+    bool: extractBool(input, childByName(node, "bool")),
+    array: extractArray(input, childByName(node, "array")),
+    placeholder: extractPlaceholder(input, childByName(node, "placeholder"))
   };
 }
-function extract_var(input, node) {
+function extractVar(input, node) {
   return {
     __rule__: "var",
     __text__: textForSpan(input, node.span),
-    alphaNum: childrenByName(node, "alphaNum").map(child => extract_alphaNum(input, child))
+    alphaNum: childrenByName(node, "alphaNum").map(child => extractAlphaNum(input, child))
   };
 }
-function extract_ws(input, node) {
+function extractWs(input, node) {
   return {
     __rule__: "ws",
     __text__: textForSpan(input, node.span)

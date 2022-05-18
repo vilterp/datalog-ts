@@ -28,25 +28,32 @@ import {
   TypeDeclaration,
 } from "./astHelpers";
 
-export function genExtractorStr(parserlibPath: string, grammar: Grammar) {
-  const program = genExtractor(parserlibPath, grammar);
+export type Options = {
+  parserlibPath: string;
+  typePrefix: string;
+};
+
+export function genExtractorStr(options: Options, grammar: Grammar) {
+  const program = genExtractor(options, grammar);
   return prettyPrintProgramWithTypes(program);
 }
 
 export function genExtractor(
-  parserlibPath: string,
+  options: Options,
   grammar: Grammar
 ): ProgramWithTypes {
   return {
     type: "ProgramWithTypes",
     imports: [
-      jsImport(`${parserlibPath}/ruleTree`, [
+      jsImport(`${options.parserlibPath}/ruleTree`, [
         "textForSpan",
         "childByName",
         "childrenByName",
       ]),
     ],
-    types: mapObjToList(grammar, typeForRule),
+    types: mapObjToList(grammar, (name, rule) =>
+      typeForRule(name, rule, options.typePrefix)
+    ),
     declarations: [
       // TODO: const GRAMMAR = parserlib.parseGrammar("...")
       // TODO: export function parse(input: string) {
@@ -160,16 +167,27 @@ function genRule(name: string, rule: Rule): FunctionDeclaration {
   };
 }
 
-function typeForRule(name: string, rule: Rule): TypeDeclaration {
+function typeForRule(
+  name: string,
+  rule: Rule,
+  prefix: string
+): TypeDeclaration {
   const refs = refsInRule(rule);
   return {
     type: "TypeDeclaration",
-    name: capitalize(name),
+    name: typeName(name, prefix),
     members: refs.map((ref) => {
-      const inner = tsType(capitalize(ref.ruleName));
-      return { name, type: ref.repeated ? tsArrayType(inner) : inner };
+      const inner = tsType(typeName(ref.ruleName, prefix));
+      return {
+        name: ref.captureName ? ref.captureName : ref.ruleName,
+        type: ref.repeated ? tsArrayType(inner) : inner,
+      };
     }),
   };
+}
+
+function typeName(ruleName: string, prefix: string) {
+  return `${prefix}${capitalize(ruleName)}`;
 }
 
 function extractorName(ruleName: string) {

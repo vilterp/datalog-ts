@@ -10,29 +10,29 @@ stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
 import {textForSpan, childByName, childrenByName} from "./ruleTree";
-type Array = {
+type JsonArray = {
   array: Value[];
 };
-type Int = {
+type JsonInt = {
 };
-type KeyValue = {
+type JsonKeyValue = {
   keyValue: String;
   keyValue: Value;
 };
-type Main = {
+type JsonMain = {
   main: Value;
 };
-type Null = {
+type JsonNull = {
 };
-type Object = {
+type JsonObject = {
   object: KeyValue[];
 };
-type String = {
+type JsonString = {
   string: StringChar[];
 };
-type StringChar = {
+type JsonStringChar = {
 };
-type Value = {
+type JsonValue = {
   value: Object;
   value: Array;
   value: Int;

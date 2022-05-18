@@ -15,7 +15,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rule } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { genExtractorStr } from "./gen/genExtractor";
+import { genExtractorStr, Options } from "./gen/genExtractor";
 
 // TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
@@ -212,7 +212,11 @@ function handleResults(traceTree: TraceTree, source: string): TestOutput {
 function codegenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const grammar = parseGrammar(input);
-    const output = genExtractorStr(".", grammar);
+    const options: Options = {
+      parserlibPath: ".",
+      typePrefix: "Json",
+    };
+    const output = genExtractorStr(options, grammar);
     return plainTextOut(output);
   });
 }
