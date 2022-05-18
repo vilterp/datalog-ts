@@ -56,6 +56,7 @@ export function genExtractor(
         "childrenByName",
         "RuleTree",
       ]),
+      jsImport(`${options.parserlibPath}/grammar`, ["Span"]),
     ],
     types: mapObjToList(grammar, (name, rule) =>
       typeForRule(name, rule, options)
@@ -148,6 +149,10 @@ function genRule(
                 jsChain(["node", "span"]),
               ]),
             },
+            {
+              key: "span",
+              value: jsChain(["node", "span"]),
+            },
             ...refs
               .filter((ref) => !options.ignoreRules.has(ref.ruleName))
               .map(({ ruleName, repeated, captureName }) => ({
@@ -202,6 +207,7 @@ function typeForRule(
     members: [
       { name: "type", type: tsTypeString(capitalize(ruleName)) },
       { name: "text", type: tsTypeName("string") },
+      { name: "span", type: tsTypeName("Span") },
       ...refs
         .filter((ref) => !options.ignoreRules.has(ref.ruleName))
         .map((ref) => {
