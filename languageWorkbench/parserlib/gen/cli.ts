@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { parseGrammar } from "../meta";
-import { genExtractorStr, Options } from "./genExtractor";
+import { genExtractorStr, Options } from "./generate";
 
 type Args = {
   grammarPath: string;

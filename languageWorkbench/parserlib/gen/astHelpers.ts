@@ -13,6 +13,8 @@ import {
   BlockStatement,
   ArrowFunctionExpression,
   ImportDeclaration,
+  SwitchStatement,
+  ReturnStatement,
 } from "estree";
 
 export type ProgramWithTypes = {
@@ -26,7 +28,7 @@ export type ProgramWithTypes = {
 export type TypeDeclaration = {
   type: "TypeDeclaration";
   name: string;
-  members: { name: string; type: TypeExpr }[];
+  expr: TypeExpr;
   exported?: boolean;
 };
 
@@ -50,20 +52,28 @@ export function tsTypedParam(name: string, typeExpr: TypeExpr): TypedParam {
 }
 
 export type TypeExpr =
-  | { type: "TypeName"; name: string }
+  | { type: "NamedType"; name: string }
   | { type: "ArrayType"; inner: TypeExpr }
-  | { type: "TypeString"; str: string };
+  | { type: "StringLiteralType"; str: string }
+  | { type: "UnionType"; choices: TypeExpr[] }
+  | { type: "ObjectLiteralType"; members: ObjectLiteralTypeMember[] };
+
+export type ObjectLiteralTypeMember = { name: string; type: TypeExpr };
 
 export function tsArrayType(inner: TypeExpr): TypeExpr {
   return { type: "ArrayType", inner };
 }
 
 export function tsTypeName(name: string): TypeExpr {
-  return { type: "TypeName", name };
+  return { type: "NamedType", name };
 }
 
 export function tsTypeString(str: string): TypeExpr {
-  return { type: "TypeString", str };
+  return { type: "StringLiteralType", str };
+}
+
+export function tsUnionType(choices: TypeExpr[]): TypeExpr {
+  return { type: "UnionType", choices };
 }
 
 export function jsIdent(name: string): Identifier {
@@ -79,14 +89,16 @@ export function jsCall(callee: Expression, args: Expression[]): CallExpression {
   };
 }
 
-export function jsObj(props: { [name: string]: Expression }): ObjectExpression {
+export function jsObj(
+  props: { key: string; value: Expression }[]
+): ObjectExpression {
   return {
     type: "ObjectExpression",
-    properties: Object.keys(props).map((name) => ({
+    properties: props.map(({ key, value }) => ({
       type: "Property",
       kind: "init",
-      key: { type: "Identifier", name },
-      value: props[name],
+      key: { type: "Identifier", name: key },
+      value,
       computed: false,
       method: false,
       shorthand: false,
@@ -94,12 +106,18 @@ export function jsObj(props: { [name: string]: Expression }): ObjectExpression {
   };
 }
 
-export function jsMember(obj: Expression, member: string): MemberExpression {
+export function jsMember(
+  obj: Expression,
+  member: string | number
+): MemberExpression {
   return {
     type: "MemberExpression",
     object: obj,
-    property: { type: "Identifier", name: member },
-    computed: false,
+    property:
+      typeof member === "string"
+        ? { type: "Identifier", name: member }
+        : { type: "Literal", value: member },
+    computed: typeof member !== "string",
     optional: false,
   };
 }
@@ -108,27 +126,16 @@ export function jsStr(value: string): Expression {
   return { type: "Literal", value };
 }
 
-export function jsChain(chain: string[]): Expression {
+export function jsChain(chain: (string | number)[]): Expression {
   if (chain.length === 1) {
-    return { type: "Identifier", name: chain[0] };
+    return typeof chain[0] === "string"
+      ? { type: "Identifier", name: chain[0] }
+      : { type: "Literal", value: chain[0] };
   }
   return jsMember(
     jsChain(chain.slice(0, chain.length - 1)),
     chain[chain.length - 1]
   );
-}
-
-export function jsConstInit(name: string): VariableDeclaration {
-  return {
-    type: "VariableDeclaration",
-    kind: "const",
-    declarations: [
-      {
-        type: "VariableDeclarator",
-        id: { type: "Identifier", name },
-      },
-    ],
-  };
 }
 
 export function jsConstAssn(
@@ -154,6 +161,42 @@ export function jsBlock(statements: Statement[]): BlockStatement {
 
 export function jsIf(test: Expression, consequent: Statement): Statement {
   return { type: "IfStatement", test, consequent };
+}
+
+export function jsSwitch(
+  discriminant: Expression,
+  cases: { name: string; block: BlockStatement }[]
+): SwitchStatement {
+  return {
+    type: "SwitchStatement",
+    discriminant: discriminant,
+    cases: cases.map((switchCase) => {
+      return {
+        type: "SwitchCase",
+        test: jsStr(switchCase.name),
+        consequent: [switchCase.block],
+      };
+    }),
+  };
+}
+
+// immediately-invoked function expression
+// ugh, wish switches were expressions in JS
+export function jsIIFE(body: BlockStatement) {
+  const arrowFunc: ArrowFunctionExpression = {
+    type: "ArrowFunctionExpression",
+    body,
+    params: [],
+    expression: false,
+  };
+  return jsCall(arrowFunc, []);
+}
+
+export function jsReturn(expr: Expression): ReturnStatement {
+  return {
+    type: "ReturnStatement",
+    argument: expr,
+  };
 }
 
 export function jsBinExpr(
@@ -222,23 +265,31 @@ export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
 }
 
 export function prettyPrintTypeDeclaration(decl: TypeDeclaration): string {
-  return [
-    `${decl.exported ? "export " : ""}type ${decl.name} = {`,
-    ...decl.members.map(
-      (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
-    ),
-    `};`,
-  ].join("\n");
+  return `${decl.exported ? "export " : ""}type ${
+    decl.name
+  } = ${prettyPrintTypeExpr(decl.expr)};`;
 }
 
 export function prettyPrintTypeExpr(expr: TypeExpr): string {
   switch (expr.type) {
     case "ArrayType":
       return prettyPrintTypeExpr(expr.inner) + "[]";
-    case "TypeName":
+    case "NamedType":
       return expr.name;
-    case "TypeString":
+    case "StringLiteralType":
       return JSON.stringify(expr.str);
+    case "UnionType":
+      return expr.choices.length > 0
+        ? expr.choices.map(prettyPrintTypeExpr).join(" | ")
+        : "{}";
+    case "ObjectLiteralType":
+      return [
+        "{",
+        ...expr.members.map(
+          (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
+        ),
+        "}",
+      ].join("\n");
   }
 }
 

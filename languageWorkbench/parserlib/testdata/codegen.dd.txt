@@ -58,16 +58,13 @@ export type JsonStringChar = {
   type: "StringChar";
   text: string;
   span: Span;
+  value: {};
 };
 export type JsonValue = {
   type: "Value";
   text: string;
   span: Span;
-  object: JsonObject;
-  array: JsonArray;
-  int: JsonInt;
-  string: JsonString;
-  null: JsonNull;
+  value: JsonObject | JsonArray | JsonInt | JsonString | JsonNull;
 };
 export function parse(input: string): JsonMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input)
@@ -133,7 +130,8 @@ function extractStringChar(input: string, node: RuleTree): JsonStringChar {
   return {
     type: "StringChar",
     text: textForSpan(input, node.span),
-    span: node.span
+    span: node.span,
+    value: {}
   };
 }
 function extractValue(input: string, node: RuleTree): JsonValue {
@@ -141,11 +139,31 @@ function extractValue(input: string, node: RuleTree): JsonValue {
     type: "Value",
     text: textForSpan(input, node.span),
     span: node.span,
-    object: extractObject(input, childByName(node, "object")),
-    array: extractArray(input, childByName(node, "array")),
-    int: extractInt(input, childByName(node, "int")),
-    string: extractString(input, childByName(node, "string")),
-    null: extractNull(input, childByName(node, "null"))
+    value: (() => {
+      const child = node.children[0];
+      switch (child.name) {
+        case "object":
+          {
+            return extractObject(input, child);
+          }
+        case "array":
+          {
+            return extractArray(input, child);
+          }
+        case "int":
+          {
+            return extractInt(input, child);
+          }
+        case "string":
+          {
+            return extractString(input, child);
+          }
+        case "null":
+          {
+            return extractNull(input, child);
+          }
+      }
+    })()
   };
 }
 const GRAMMAR: Grammar = {

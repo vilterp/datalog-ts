@@ -1,6 +1,7 @@
-main :- repSep(statement, ws).
+main :- repSep(statementSemicolon, ws).
 
-statement :- [(selectStmt | createTableStmt), ";"].
+statementSemicolon :- [statement, ";"].
+statement :- (selectStmt | createTableStmt).
 
 selectStmt :- [selectKW, ws, selection, ws, fromKW, ws, tableName].
 selection :- repSep(columnName, commaWS).

@@ -29,8 +29,14 @@ import {
   TypeDeclaration,
   TypedFunctionDeclaration,
   tsTypeString,
+  tsUnionType,
+  TypeExpr,
+  ObjectLiteralTypeMember,
+  jsConstAssn,
+  jsReturn,
+  jsSwitch,
+  jsIIFE,
 } from "./astHelpers";
-import { OpenRelationsContainer } from "../../../uiCommon/explorer/openRelationsContainer";
 
 export type Options = {
   parserlibPath: string;
@@ -115,6 +121,19 @@ function genRule(
   rule: Rule,
   options: Options
 ): TypedFunctionDeclaration {
+  return {
+    type: "TypedFunctionDeclaration",
+    name: extractorName(ruleName),
+    returnType: tsTypeName(typeName(ruleName, options.typePrefix)),
+    params: [
+      tsTypedParam("input", tsTypeName("string")),
+      tsTypedParam("node", tsTypeName("RuleTree")),
+    ],
+    body: extractorBodyForRule(ruleName, rule, options),
+  };
+}
+
+function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
   const refs = refsInRule(rule);
   const filteredRefs = refs.filter((r) => !options.ignoreRules.has(r.ruleName));
   const refNames = filteredRefs.map((r) => `${r.captureName}:${r.ruleName}`);
@@ -127,70 +146,92 @@ function genRule(
       `multiple refs from rule "${ruleName}": ${JSON.stringify(duplicated)}`
     );
   }
-  return {
-    type: "TypedFunctionDeclaration",
-    name: extractorName(ruleName),
-    returnType: tsTypeName(typeName(ruleName, options.typePrefix)),
-    params: [
-      tsTypedParam("input", tsTypeName("string")),
-      tsTypedParam("node", tsTypeName("RuleTree")),
-    ],
-    body: jsBlock([
-      {
-        type: "ReturnStatement",
-        argument: jsObj(
-          mapListToObj([
-            { key: "type", value: jsStr(capitalize(ruleName)) },
-            {
-              key: "text",
-              value: jsCall(jsIdent("textForSpan"), [
-                jsIdent("input"),
-                jsChain(["node", "span"]),
-              ]),
-            },
-            {
-              key: "span",
-              value: jsChain(["node", "span"]),
-            },
-            ...refs
-              .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-              .map(({ ruleName, repeated, captureName }) => ({
-                // TODO: pluralize if this is a repSep
-                key: prefixToAvoidReserved(
-                  captureName ? captureName : ruleName
-                ),
-                value: repeated
-                  ? jsCall(
-                      jsMember(
-                        jsCall(jsIdent("childrenByName"), [
-                          jsIdent("node"),
-                          jsStr(ruleName),
-                        ]),
-                        "map"
+
+  const baseObjMembers = [
+    { key: "type", value: jsStr(capitalize(ruleName)) },
+    {
+      key: "text",
+      value: jsCall(jsIdent("textForSpan"), [
+        jsIdent("input"),
+        jsChain(["node", "span"]),
+      ]),
+    },
+    {
+      key: "span",
+      value: jsChain(["node", "span"]),
+    },
+  ];
+
+  const ruleObjMembers =
+    rule.type === "Choice"
+      ? [
+          {
+            key: "value",
+            value:
+              refs.length === 0
+                ? jsObj([])
+                : jsIIFE(
+                    jsBlock([
+                      jsConstAssn("child", jsChain(["node", "children", 0])),
+                      jsSwitch(
+                        jsChain(["child", "name"]),
+                        refs.map((ref) => {
+                          return {
+                            name: ref.ruleName,
+                            block: jsBlock([
+                              jsReturn(
+                                jsCall(jsIdent(extractorName(ref.ruleName)), [
+                                  jsIdent("input"),
+                                  jsIdent("child"),
+                                ])
+                              ),
+                            ]),
+                          };
+                        })
                       ),
-                      [
-                        jsArrowFunc(
-                          ["child"],
-                          jsCall(jsIdent(extractorName(ruleName)), [
-                            jsIdent("input"),
-                            jsIdent("child"),
-                          ])
-                        ),
-                      ]
-                    )
-                  : jsCall(jsIdent(extractorName(ruleName)), [
-                      jsIdent("input"),
-                      jsCall(jsIdent("childByName"), [
-                        jsIdent("node"),
-                        jsStr(ruleName),
-                      ]),
+                    ])
+                  ),
+          },
+        ]
+      : refs
+          .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+          .map(({ ruleName, repeated, captureName }) => ({
+            // TODO: pluralize if this is a repSep
+            key: prefixToAvoidReserved(captureName ? captureName : ruleName),
+            value: repeated
+              ? jsCall(
+                  jsMember(
+                    jsCall(jsIdent("childrenByName"), [
+                      jsIdent("node"),
+                      jsStr(ruleName),
                     ]),
-              })),
-          ])
-        ),
-      },
-    ]),
-  };
+                    "map"
+                  ),
+                  [
+                    jsArrowFunc(
+                      ["child"],
+                      jsCall(jsIdent(extractorName(ruleName)), [
+                        jsIdent("input"),
+                        jsIdent("child"),
+                      ])
+                    ),
+                  ]
+                )
+              : jsCall(jsIdent(extractorName(ruleName)), [
+                  jsIdent("input"),
+                  jsCall(jsIdent("childByName"), [
+                    jsIdent("node"),
+                    jsStr(ruleName),
+                  ]),
+                ]),
+          }));
+
+  return jsBlock([
+    {
+      type: "ReturnStatement",
+      argument: jsObj([...baseObjMembers, ...ruleObjMembers]),
+    },
+  ]);
 }
 
 function typeForRule(
@@ -198,27 +239,57 @@ function typeForRule(
   rule: Rule,
   options: Options
 ): TypeDeclaration {
-  const refs = refsInRule(rule);
   return {
     type: "TypeDeclaration",
     name: typeName(ruleName, options.typePrefix),
     exported: true,
-    members: [
-      { name: "type", type: tsTypeString(capitalize(ruleName)) },
-      { name: "text", type: tsTypeName("string") },
-      { name: "span", type: tsTypeName("Span") },
-      ...refs
-        .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-        .map((ref) => {
-          const inner = tsTypeName(typeName(ref.ruleName, options.typePrefix));
-          return {
-            name: prefixToAvoidReserved(
-              ref.captureName ? ref.captureName : ref.ruleName
+    expr: typeExprForRule(ruleName, rule, options),
+  };
+}
+
+function typeExprForRule(
+  ruleName: string,
+  rule: Rule,
+  options: Options
+): TypeExpr {
+  const refs = refsInRule(rule);
+  const baseMembers: ObjectLiteralTypeMember[] = [
+    { name: "type", type: tsTypeString(capitalize(ruleName)) },
+    { name: "text", type: tsTypeName("string") },
+    { name: "span", type: tsTypeName("Span") },
+  ];
+  const ruleMembers: ObjectLiteralTypeMember[] =
+    rule.type === "Choice"
+      ? [
+          {
+            name: "value",
+            type: tsUnionType(
+              refs.map((ref) => {
+                const inner = tsTypeName(
+                  typeName(ref.ruleName, options.typePrefix)
+                );
+                return ref.repeated ? tsArrayType(inner) : inner;
+              })
             ),
-            type: ref.repeated ? tsArrayType(inner) : inner,
-          };
-        }),
-    ],
+          },
+        ]
+      : refs
+          .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+          .map((ref) => {
+            const inner = tsTypeName(
+              typeName(ref.ruleName, options.typePrefix)
+            );
+            return {
+              name: prefixToAvoidReserved(
+                ref.captureName ? ref.captureName : ref.ruleName
+              ),
+              type: ref.repeated ? tsArrayType(inner) : inner,
+            };
+          });
+
+  return {
+    type: "ObjectLiteralType",
+    members: [...baseMembers, ...ruleMembers],
   };
 }
 
