@@ -1,15 +1,11 @@
 import {
   AndClause,
   Bindings,
-  BinExpr,
-  falseTerm,
   Res,
   Term,
-  trueTerm,
   literalTrace,
   varTrace,
   binExprTrace,
-  baseFactTrace,
   RulePathSegment,
   InvocationLocation,
   UserError,
@@ -25,17 +21,14 @@ import {
   unify,
   unifyBindings,
 } from "../unify";
-import { filterMap, flatMap, objToPairs, repeat } from "../../util/util";
-import { evalBinExpr, extractBinExprs } from "../binExpr";
-import { ppb, ppr, ppt } from "../pretty";
+import { filterMap, flatMap } from "../../util/util";
+import { evalBinExpr } from "../binExpr";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
-import { IndexedCollection } from "../../util/indexedCollection";
-import { LazyIndexedCollection } from "./lazyIndexedCollection";
-import { List } from "immutable";
 import { BUILTINS } from "../builtins";
 import { DB } from "./types";
 import { AGGREGATIONS } from "../aggregations";
+import { getForScope } from "./indexes";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -327,88 +320,6 @@ export function hasVars(t: Term): boolean {
     case "Bool":
       return false;
   }
-}
-
-function getFromIndex(
-  collection: LazyIndexedCollection,
-  scope: Bindings,
-  rec: Rec
-): List<Rec> {
-  if (!scope) {
-    return null;
-  }
-  for (const attr in rec.attrs) {
-    const val = rec.attrs[attr];
-    if (!val) {
-      continue;
-    }
-    if (val.type === "Var") {
-      const scopeVal = scope[val.name];
-      if (!scopeVal) {
-        continue;
-      }
-      if (scopeVal.type === "Var" || scopeVal.type === "Record") {
-        continue;
-      }
-      if (!collection.hasIndex(attr)) {
-        continue;
-      }
-      // console.log("chose index from scope", {
-      //   attr,
-      //   index: collection.indexes[attr]
-      //     .mapEntries(([k, v]) => [k, v.toArray().map(ppt)])
-      //     .toObject(),
-      //   val: ppt(scopeVal),
-      //   res: collection.get(attr, scopeVal).map(ppt).toArray(),
-      // });
-      return collection.get(attr, scopeVal);
-    }
-    if (val.type === "Record") {
-      continue;
-    }
-    if (!collection.hasIndex(attr)) {
-      continue;
-    }
-    // console.log("chose index from attr", attr);
-    return collection.get(attr, val);
-  }
-  return collection.all();
-}
-
-function getForScope(
-  collection: LazyIndexedCollection,
-  scope: Bindings,
-  original: Rec
-) {
-  const out: Res[] = [];
-  const records = getFromIndex(collection, scope, original);
-  // console.log({
-  //   original: ppt(original),
-  //   scope: ppb(scope),
-  //   res: records.toArray().map(ppt),
-  // });
-  for (const rec of records.toArray()) {
-    const unifyRes = unify(scope, original, rec);
-    // console.log("scan", {
-    //   scope: ppb(scope),
-    //   term: ppt(term),
-    //   rec: ppt(rec),
-    //   unifyRes: unifyRes ? ppb(unifyRes) : null,
-    // });
-    if (unifyRes === null) {
-      continue;
-    }
-    out.push({
-      term: rec,
-      bindings: unifyRes,
-      trace: {
-        type: "MatchTrace",
-        match: original,
-        fact: { term: rec, trace: baseFactTrace, bindings: {} },
-      },
-    });
-  }
-  return out;
 }
 
 type Cache = { [key: string]: Res[] };
