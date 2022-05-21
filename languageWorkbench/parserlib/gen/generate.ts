@@ -29,8 +29,9 @@ import {
   TypeDeclaration,
   TypedFunctionDeclaration,
   tsTypeString,
+  tsUnionType,
+  TypeExpr,
 } from "./astHelpers";
-import { OpenRelationsContainer } from "../../../uiCommon/explorer/openRelationsContainer";
 
 export type Options = {
   parserlibPath: string;
@@ -198,11 +199,30 @@ function typeForRule(
   rule: Rule,
   options: Options
 ): TypeDeclaration {
-  const refs = refsInRule(rule);
   return {
     type: "TypeDeclaration",
     name: typeName(ruleName, options.typePrefix),
     exported: true,
+    expr: typeExprForRule(ruleName, rule, options),
+  };
+}
+
+function typeExprForRule(
+  ruleName: string,
+  rule: Rule,
+  options: Options
+): TypeExpr {
+  const refs = refsInRule(rule);
+  if (rule.type === "Choice") {
+    return tsUnionType(
+      refs.map((ref) => {
+        const inner = tsTypeName(typeName(ref.ruleName, options.typePrefix));
+        return ref.repeated ? tsArrayType(inner) : inner;
+      })
+    );
+  }
+  return {
+    type: "ObjectLiteralType",
     members: [
       { name: "type", type: tsTypeString(capitalize(ruleName)) },
       { name: "text", type: tsTypeName("string") },
