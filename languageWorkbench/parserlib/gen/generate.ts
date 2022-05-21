@@ -117,6 +117,19 @@ function genRule(
   rule: Rule,
   options: Options
 ): TypedFunctionDeclaration {
+  return {
+    type: "TypedFunctionDeclaration",
+    name: extractorName(ruleName),
+    returnType: tsTypeName(typeName(ruleName, options.typePrefix)),
+    params: [
+      tsTypedParam("input", tsTypeName("string")),
+      tsTypedParam("node", tsTypeName("RuleTree")),
+    ],
+    body: extractorBodyForRule(ruleName, rule, options),
+  };
+}
+
+function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
   const refs = refsInRule(rule);
   const filteredRefs = refs.filter((r) => !options.ignoreRules.has(r.ruleName));
   const refNames = filteredRefs.map((r) => `${r.captureName}:${r.ruleName}`);
@@ -129,70 +142,59 @@ function genRule(
       `multiple refs from rule "${ruleName}": ${JSON.stringify(duplicated)}`
     );
   }
-  return {
-    type: "TypedFunctionDeclaration",
-    name: extractorName(ruleName),
-    returnType: tsTypeName(typeName(ruleName, options.typePrefix)),
-    params: [
-      tsTypedParam("input", tsTypeName("string")),
-      tsTypedParam("node", tsTypeName("RuleTree")),
-    ],
-    body: jsBlock([
-      {
-        type: "ReturnStatement",
-        argument: jsObj(
-          mapListToObj([
-            { key: "type", value: jsStr(capitalize(ruleName)) },
-            {
-              key: "text",
-              value: jsCall(jsIdent("textForSpan"), [
-                jsIdent("input"),
-                jsChain(["node", "span"]),
-              ]),
-            },
-            {
-              key: "span",
-              value: jsChain(["node", "span"]),
-            },
-            ...refs
-              .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-              .map(({ ruleName, repeated, captureName }) => ({
-                // TODO: pluralize if this is a repSep
-                key: prefixToAvoidReserved(
-                  captureName ? captureName : ruleName
-                ),
-                value: repeated
-                  ? jsCall(
-                      jsMember(
-                        jsCall(jsIdent("childrenByName"), [
-                          jsIdent("node"),
-                          jsStr(ruleName),
-                        ]),
-                        "map"
-                      ),
-                      [
-                        jsArrowFunc(
-                          ["child"],
-                          jsCall(jsIdent(extractorName(ruleName)), [
-                            jsIdent("input"),
-                            jsIdent("child"),
-                          ])
-                        ),
-                      ]
-                    )
-                  : jsCall(jsIdent(extractorName(ruleName)), [
-                      jsIdent("input"),
-                      jsCall(jsIdent("childByName"), [
+  return jsBlock([
+    {
+      type: "ReturnStatement",
+      argument: jsObj(
+        mapListToObj([
+          { key: "type", value: jsStr(capitalize(ruleName)) },
+          {
+            key: "text",
+            value: jsCall(jsIdent("textForSpan"), [
+              jsIdent("input"),
+              jsChain(["node", "span"]),
+            ]),
+          },
+          {
+            key: "span",
+            value: jsChain(["node", "span"]),
+          },
+          ...refs
+            .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+            .map(({ ruleName, repeated, captureName }) => ({
+              // TODO: pluralize if this is a repSep
+              key: prefixToAvoidReserved(captureName ? captureName : ruleName),
+              value: repeated
+                ? jsCall(
+                    jsMember(
+                      jsCall(jsIdent("childrenByName"), [
                         jsIdent("node"),
                         jsStr(ruleName),
                       ]),
+                      "map"
+                    ),
+                    [
+                      jsArrowFunc(
+                        ["child"],
+                        jsCall(jsIdent(extractorName(ruleName)), [
+                          jsIdent("input"),
+                          jsIdent("child"),
+                        ])
+                      ),
+                    ]
+                  )
+                : jsCall(jsIdent(extractorName(ruleName)), [
+                    jsIdent("input"),
+                    jsCall(jsIdent("childByName"), [
+                      jsIdent("node"),
+                      jsStr(ruleName),
                     ]),
-              })),
-          ])
-        ),
-      },
-    ]),
-  };
+                  ]),
+            })),
+        ])
+      ),
+    },
+  ]);
 }
 
 function typeForRule(
