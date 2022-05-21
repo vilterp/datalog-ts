@@ -1,5 +1,5 @@
-main :- [ws, repSep((stmt | comment), ws), ws].
-stmt :- (rule | fact | tableDecl).
+main :- [ws, repSep((statement | comment), ws), ws].
+statement :- (rule | fact | tableDecl).
 comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [tableKW, ws, ident].
 

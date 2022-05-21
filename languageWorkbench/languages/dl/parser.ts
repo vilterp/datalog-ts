@@ -93,7 +93,7 @@ export type DLMain = {
   type: "Main";
   text: string;
   span: Span;
-  stmt: DLStmt[];
+  statement: DLStatement[];
   comment: DLComment[];
 };
 export type DLNegation = {
@@ -134,7 +134,7 @@ export type DLRule = {
   record: DLRecord;
   disjunct: DLDisjunct[];
 };
-export type DLStmt = DLRule | DLFact | DLTableDecl;
+export type DLStatement = DLRule | DLFact | DLTableDecl;
 export type DLString = {
   type: "String";
   text: string;
@@ -330,8 +330,8 @@ function extractMain(input: string, node: RuleTree): DLMain {
     type: "Main",
     text: textForSpan(input, node.span),
     span: node.span,
-    stmt: childrenByName(node, "stmt").map((child) =>
-      extractStmt(input, child)
+    statement: childrenByName(node, "statement").map((child) =>
+      extractStatement(input, child)
     ),
     comment: childrenByName(node, "comment").map((child) =>
       extractComment(input, child)
@@ -396,7 +396,7 @@ function extractRule(input: string, node: RuleTree): DLRule {
     ),
   };
 }
-function extractStmt(input: string, node: RuleTree): DLStmt {
+function extractStatement(input: string, node: RuleTree): DLStatement {
   const child = node.children[0];
   switch (child.name) {
     case "rule": {
@@ -495,7 +495,7 @@ const GRAMMAR: Grammar = {
           choices: [
             {
               type: "Ref",
-              rule: "stmt",
+              rule: "statement",
               captureName: null,
             },
             {
@@ -518,7 +518,7 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
-  stmt: {
+  statement: {
     type: "Choice",
     choices: [
       {
