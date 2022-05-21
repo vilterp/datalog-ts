@@ -89,6 +89,18 @@ export type DLKeyValue = {
   ident: DLIdent;
   term: DLTerm;
 };
+export type DLLoadKW = {
+  type: "LoadKW";
+  text: string;
+  span: Span;
+};
+export type DLLoadStmt = {
+  type: "LoadStmt";
+  text: string;
+  span: Span;
+  loadKW: DLLoadKW;
+  path: DLPath;
+};
 export type DLMain = {
   type: "Main";
   text: string;
@@ -104,6 +116,17 @@ export type DLNegation = {
 };
 export type DLNum = {
   type: "Num";
+  text: string;
+  span: Span;
+};
+export type DLPath = {
+  type: "Path";
+  text: string;
+  span: Span;
+  pathSegment: DLPathSegment[];
+};
+export type DLPathSegment = {
+  type: "PathSegment";
   text: string;
   span: Span;
 };
@@ -134,7 +157,7 @@ export type DLRule = {
   record: DLRecord;
   disjunct: DLDisjunct[];
 };
-export type DLStatement = DLRule | DLFact | DLTableDecl;
+export type DLStatement = DLRule | DLFact | DLTableDecl | DLLoadStmt;
 export type DLString = {
   type: "String";
   text: string;
@@ -151,7 +174,7 @@ export type DLTableDecl = {
   text: string;
   span: Span;
   tableKW: DLTableKW;
-  ident: DLIdent;
+  name: DLIdent;
 };
 export type DLTableKW = {
   type: "TableKW";
@@ -325,6 +348,22 @@ function extractKeyValue(input: string, node: RuleTree): DLKeyValue {
     term: extractTerm(input, childByName(node, "term")),
   };
 }
+function extractLoadKW(input: string, node: RuleTree): DLLoadKW {
+  return {
+    type: "LoadKW",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
+function extractLoadStmt(input: string, node: RuleTree): DLLoadStmt {
+  return {
+    type: "LoadStmt",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    loadKW: extractLoadKW(input, childByName(node, "loadKW")),
+    path: extractPath(input, childByName(node, "path")),
+  };
+}
 function extractMain(input: string, node: RuleTree): DLMain {
   return {
     type: "Main",
@@ -349,6 +388,23 @@ function extractNegation(input: string, node: RuleTree): DLNegation {
 function extractNum(input: string, node: RuleTree): DLNum {
   return {
     type: "Num",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
+function extractPath(input: string, node: RuleTree): DLPath {
+  return {
+    type: "Path",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    pathSegment: childrenByName(node, "pathSegment").map((child) =>
+      extractPathSegment(input, child)
+    ),
+  };
+}
+function extractPathSegment(input: string, node: RuleTree): DLPathSegment {
+  return {
+    type: "PathSegment",
     text: textForSpan(input, node.span),
     span: node.span,
   };
@@ -408,6 +464,9 @@ function extractStatement(input: string, node: RuleTree): DLStatement {
     case "tableDecl": {
       return extractTableDecl(input, child);
     }
+    case "loadStmt": {
+      return extractLoadStmt(input, child);
+    }
   }
 }
 function extractString(input: string, node: RuleTree): DLString {
@@ -433,7 +492,7 @@ function extractTableDecl(input: string, node: RuleTree): DLTableDecl {
     text: textForSpan(input, node.span),
     span: node.span,
     tableKW: extractTableKW(input, childByName(node, "tableKW")),
-    ident: extractIdent(input, childByName(node, "ident")),
+    name: extractIdent(input, childByName(node, "ident")),
   };
 }
 function extractTableKW(input: string, node: RuleTree): DLTableKW {
@@ -536,6 +595,11 @@ const GRAMMAR: Grammar = {
         rule: "tableDecl",
         captureName: null,
       },
+      {
+        type: "Ref",
+        rule: "loadStmt",
+        captureName: null,
+      },
     ],
   },
   comment: {
@@ -575,6 +639,26 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         rule: "ident",
+        captureName: "name",
+      },
+    ],
+  },
+  loadStmt: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        rule: "loadKW",
+        captureName: null,
+      },
+      {
+        type: "Ref",
+        rule: "ws",
+        captureName: null,
+      },
+      {
+        type: "Ref",
+        rule: "path",
         captureName: null,
       },
     ],
@@ -1009,6 +1093,10 @@ const GRAMMAR: Grammar = {
     type: "Text",
     value: ".table",
   },
+  loadKW: {
+    type: "Text",
+    value: ".load",
+  },
   ident: {
     type: "Sequence",
     items: [
@@ -1184,6 +1272,75 @@ const GRAMMAR: Grammar = {
         captureName: null,
       },
     ],
+  },
+  path: {
+    type: "RepSep",
+    rep: {
+      type: "Ref",
+      rule: "pathSegment",
+      captureName: null,
+    },
+    sep: {
+      type: "Text",
+      value: "/",
+    },
+  },
+  pathSegment: {
+    type: "RepSep",
+    rep: {
+      type: "Choice",
+      choices: [
+        {
+          type: "Char",
+          rule: {
+            type: "Range",
+            from: "a",
+            to: "z",
+          },
+        },
+        {
+          type: "Char",
+          rule: {
+            type: "Range",
+            from: "a",
+            to: "Z",
+          },
+        },
+        {
+          type: "Char",
+          rule: {
+            type: "Range",
+            from: "0",
+            to: "9",
+          },
+        },
+        {
+          type: "Char",
+          rule: {
+            type: "Literal",
+            value: "_",
+          },
+        },
+        {
+          type: "Char",
+          rule: {
+            type: "Literal",
+            value: "-",
+          },
+        },
+        {
+          type: "Char",
+          rule: {
+            type: "Literal",
+            value: ".",
+          },
+        },
+      ],
+    },
+    sep: {
+      type: "Text",
+      value: "",
+    },
   },
   commentChar: {
     type: "Char",
