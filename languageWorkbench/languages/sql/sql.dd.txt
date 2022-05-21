@@ -11,8 +11,8 @@ SELECT id, ??? FROM blog_posts;
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 138, name: "id", span: span{from: 140, to: 143}, type: T}
-ide.Suggestion{id: 138, name: "body", span: span{from: 140, to: 143}, type: T}
+ide.Suggestion{id: 141, name: "id", span: span{from: 140, to: 143}, type: T}
+ide.Suggestion{id: 141, name: "body", span: span{from: 140, to: 143}, type: T}
 
 sql
 CREATE TABLE blog_posts (
