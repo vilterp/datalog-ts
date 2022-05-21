@@ -70,7 +70,7 @@ export type SQLMain = {
   type: "Main";
   text: string;
   span: Span;
-  statement: SQLStatement[];
+  statementSemicolon: SQLStatementSemicolon[];
 };
 export type SQLNum = {
   type: "Num";
@@ -120,8 +120,13 @@ export type SQLStatement = {
   type: "Statement";
   text: string;
   span: Span;
-  selectStmt: SQLSelectStmt;
-  createTableStmt: SQLCreateTableStmt;
+  value: SQLSelectStmt | SQLCreateTableStmt;
+};
+export type SQLStatementSemicolon = {
+  type: "StatementSemicolon";
+  text: string;
+  span: Span;
+  statement: SQLStatement;
 };
 export type SQLString = {
   type: "String";
@@ -272,9 +277,10 @@ function extractMain(input: string, node: RuleTree): SQLMain {
     type: "Main",
     text: textForSpan(input, node.span),
     span: node.span,
-    statement: childrenByName(node, "statement").map((child) =>
-      extractStatement(input, child)
-    ),
+    statementSemicolon: childrenByName(
+      node,
+      "statementSemicolon"
+    ).map((child) => extractStatementSemicolon(input, child)),
   };
 }
 function extractNum(input: string, node: RuleTree): SQLNum {
@@ -344,11 +350,28 @@ function extractStatement(input: string, node: RuleTree): SQLStatement {
     type: "Statement",
     text: textForSpan(input, node.span),
     span: node.span,
-    selectStmt: extractSelectStmt(input, childByName(node, "selectStmt")),
-    createTableStmt: extractCreateTableStmt(
-      input,
-      childByName(node, "createTableStmt")
-    ),
+    value: (() => {
+      const child = node.children[0];
+      switch (child.name) {
+        case "selectStmt": {
+          return extractSelectStmt(input, child);
+        }
+        case "createTableStmt": {
+          return extractCreateTableStmt(input, child);
+        }
+      }
+    })(),
+  };
+}
+function extractStatementSemicolon(
+  input: string,
+  node: RuleTree
+): SQLStatementSemicolon {
+  return {
+    type: "StatementSemicolon",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    statement: extractStatement(input, childByName(node, "statement")),
   };
 }
 function extractString(input: string, node: RuleTree): SQLString {
@@ -407,7 +430,7 @@ const GRAMMAR: Grammar = {
     type: "RepSep",
     rep: {
       type: "Ref",
-      rule: "statement",
+      rule: "statementSemicolon",
       captureName: null,
     },
     sep: {
@@ -416,27 +439,32 @@ const GRAMMAR: Grammar = {
       captureName: null,
     },
   },
-  statement: {
+  statementSemicolon: {
     type: "Sequence",
     items: [
       {
-        type: "Choice",
-        choices: [
-          {
-            type: "Ref",
-            rule: "selectStmt",
-            captureName: null,
-          },
-          {
-            type: "Ref",
-            rule: "createTableStmt",
-            captureName: null,
-          },
-        ],
+        type: "Ref",
+        rule: "statement",
+        captureName: null,
       },
       {
         type: "Text",
         value: ";",
+      },
+    ],
+  },
+  statement: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Ref",
+        rule: "selectStmt",
+        captureName: null,
+      },
+      {
+        type: "Ref",
+        rule: "createTableStmt",
+        captureName: null,
       },
     ],
   },
