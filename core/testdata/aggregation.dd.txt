@@ -3,6 +3,7 @@ current{id: 2, level: 10}.
 current{id: 2, level: 13}.
 total{level: C} :-
   sum[C: current{id: I, level: C}].
-total{}.
+total{level: C}.
 ----
 application/datalog
+total{level: C}.

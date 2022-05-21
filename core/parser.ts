@@ -53,7 +53,7 @@ export const language = P.createLanguage({
     ).map(([ident, _1, varName, _2, record]) => ({
       type: "Aggregation",
       aggregation: ident,
-      varName,
+      varName: varName.name,
       record,
     })),
   term: (r) =>
