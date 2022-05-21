@@ -282,8 +282,7 @@ function doEvaluate(
           term.record,
           cache
         );
-        const records = results.map((res) => res.term as Rec);
-        const terms = records.map((record) => record.attrs[term.varName]);
+        const terms = results.map((res) => res.bindings[term.varName]);
         if (!AGGREGATIONS[term.aggregation]) {
           throw new UserError(`no such aggregation: ${term.aggregation}`);
         }
@@ -296,7 +295,7 @@ function doEvaluate(
               [term.varName]: result,
             }),
             bindings: scope,
-            trace: { type: "AggregationTrace", aggregatedRecords: records },
+            trace: { type: "AggregationTrace", aggregatedResults: results },
           },
         ];
       }

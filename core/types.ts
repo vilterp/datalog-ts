@@ -21,7 +21,7 @@ export type Trace =
       mappings: VarMappings;
     }
   | { type: "NegationTrace"; negatedTerm: Term }
-  | { type: "AggregationTrace"; aggregatedRecords: Rec[] }
+  | { type: "AggregationTrace"; aggregatedResults: Res[] }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "VarTrace" }
