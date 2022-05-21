@@ -26,7 +26,7 @@ export type ProgramWithTypes = {
 export type TypeDeclaration = {
   type: "TypeDeclaration";
   name: string;
-  members: { name: string; type: TypeExpr }[];
+  expr: TypeExpr;
   exported?: boolean;
 };
 
@@ -50,20 +50,26 @@ export function tsTypedParam(name: string, typeExpr: TypeExpr): TypedParam {
 }
 
 export type TypeExpr =
-  | { type: "TypeName"; name: string }
+  | { type: "NamedType"; name: string }
   | { type: "ArrayType"; inner: TypeExpr }
-  | { type: "TypeString"; str: string };
+  | { type: "StringLiteralType"; str: string }
+  | { type: "UnionType"; choices: TypeExpr[] }
+  | { type: "ObjectLiteralType"; members: { name: string; type: TypeExpr }[] };
 
 export function tsArrayType(inner: TypeExpr): TypeExpr {
   return { type: "ArrayType", inner };
 }
 
 export function tsTypeName(name: string): TypeExpr {
-  return { type: "TypeName", name };
+  return { type: "NamedType", name };
 }
 
 export function tsTypeString(str: string): TypeExpr {
-  return { type: "TypeString", str };
+  return { type: "StringLiteralType", str };
+}
+
+export function tsUnionType(choices: TypeExpr[]): TypeExpr {
+  return { type: "UnionType", choices };
 }
 
 export function jsIdent(name: string): Identifier {
@@ -223,11 +229,8 @@ export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
 
 export function prettyPrintTypeDeclaration(decl: TypeDeclaration): string {
   return [
-    `${decl.exported ? "export " : ""}type ${decl.name} = {`,
-    ...decl.members.map(
-      (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
-    ),
-    `};`,
+    `${decl.exported ? "export " : ""}type ${decl.name} = `,
+    prettyPrintTypeExpr(decl.expr),
   ].join("\n");
 }
 
@@ -235,10 +238,21 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
   switch (expr.type) {
     case "ArrayType":
       return prettyPrintTypeExpr(expr.inner) + "[]";
-    case "TypeName":
+    case "NamedType":
       return expr.name;
-    case "TypeString":
+    case "StringLiteralType":
       return JSON.stringify(expr.str);
+    case "UnionType":
+      return expr.choices.map(prettyPrintTypeExpr).join(" | ");
+    case "ObjectLiteralType":
+      return [
+        "{",
+        ...expr.members.map(
+          (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
+        ),
+        ,
+        "}",
+      ].join("\n");
   }
 }
 
