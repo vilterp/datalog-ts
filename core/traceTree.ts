@@ -254,6 +254,8 @@ export function makeTermWithBindings(
         type: "NegationWithBindings",
         inner: makeTermWithBindings(term.record, bindings),
       };
+    case "Aggregation":
+      return { type: "AggregationWithBindings" };
     default:
       return { type: "Atom", term };
   }
