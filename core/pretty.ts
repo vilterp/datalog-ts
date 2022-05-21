@@ -15,15 +15,14 @@ import { mapObjToList, repeat, flatMap } from "../util/util";
 import { prettyPrintTree, Tree } from "../util/tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 import { DLStatement } from "../languageWorkbench/languages/dl/parser";
+import { parserRuleToInternal, parserTermToInternal } from "./parserToInternal";
 
 export function prettyPrintStatement(stmt: DLStatement): pp.IDoc {
   switch (stmt.type) {
-    case "Insert":
-      return [prettyPrintTerm(stmt.record), "."];
     case "Fact":
-      return [prettyPrintTerm(stmt.record), "."];
+      return [prettyPrintTerm(parserTermToInternal(stmt.record)), "."];
     case "Rule":
-      return [prettyPrintRule(stmt)];
+      return [prettyPrintRule(parserRuleToInternal(stmt))];
     case "TableDecl":
       return [".table ", stmt.name.text];
     case "LoadStmt":
