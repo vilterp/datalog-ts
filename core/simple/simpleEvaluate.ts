@@ -290,11 +290,8 @@ function doEvaluate(
         return [
           {
             // this seems weird, but idk
-            term: rec(term.record.relation, {
-              ...term.record.attrs,
-              [term.varName]: result,
-            }),
-            bindings: scope,
+            term: term.record,
+            bindings: { [term.varName]: result },
             trace: { type: "AggregationTrace", aggregatedResults: results },
           },
         ];
