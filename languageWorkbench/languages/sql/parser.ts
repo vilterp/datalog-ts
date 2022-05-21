@@ -117,13 +117,7 @@ export type SQLSelection = {
   columnName: SQLColumnName[];
   commaWS: SQLCommaWS[];
 };
-export type SQLStatement = {
-  type: "Statement";
-  text: string;
-  span: Span;
-  selectStmt: SQLSelectStmt;
-  createTableStmt: SQLCreateTableStmt;
-};
+export type SQLStatement = SQLSelectStmt | SQLCreateTableStmt;
 export type SQLString = {
   type: "String";
   text: string;
@@ -321,16 +315,13 @@ function extractSelection(input: string, node: RuleTree): SQLSelection {
   };
 }
 function extractStatement(input: string, node: RuleTree): SQLStatement {
-  return {
-    type: "Statement",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    selectStmt: extractSelectStmt(input, childByName(node, "selectStmt")),
-    createTableStmt: extractCreateTableStmt(
-      input,
-      childByName(node, "createTableStmt")
-    ),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "selectStmt":
+      return extractSelectStmt(input, child);
+    case "createTableStmt":
+      return extractCreateTableStmt(input, child);
+  }
 }
 function extractString(input: string, node: RuleTree): SQLString {
   return {
