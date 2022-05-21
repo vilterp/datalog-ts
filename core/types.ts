@@ -52,17 +52,6 @@ export function scopePathEq(left: ScopePath, right: ScopePath): boolean {
 
 export type Bindings = { [key: string]: Term };
 
-export type Program = Statement[];
-
-export type Statement =
-  | { type: "Rule"; rule: Rule }
-  | { type: "Query"; record: Rec }
-  | { type: "Insert"; record: Rec }
-  | { type: "Delete"; record: Rec }
-  | { type: "TableDecl"; name: string }
-  | { type: "LoadStmt"; path: string }
-  | { type: "Comment"; comment: string };
-
 export interface Rule {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;

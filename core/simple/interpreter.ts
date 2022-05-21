@@ -1,5 +1,5 @@
 import { Map, List } from "immutable";
-import { Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
+import { Rec, Res, rec, str, Rule, UserError } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
@@ -10,6 +10,7 @@ import {
   lazyIndexedCollectionFromList,
 } from "./lazyIndexedCollection";
 import { DB, emptyDB } from "./types";
+import { DLStatement } from "../../languageWorkbench/languages/dl/parser";
 
 export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;
@@ -21,7 +22,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
     this.loader = loader;
   }
 
-  evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
+  evalStmt(stmt: DLStatement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
       case "Query":
         return [this.evalQuery(stmt.record), this];

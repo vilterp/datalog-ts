@@ -57,7 +57,7 @@ export abstract class AbstractInterpreter {
 
   evalStr(str: string): [Res[], AbstractInterpreter] {
     const main = parse("str");
-    return this.evalStmts(main.stmt);
+    return this.evalStmts(main.statement);
   }
 
   doLoad(path: string): AbstractInterpreter {
