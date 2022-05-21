@@ -6,4 +6,4 @@ total{level: C} :-
 total{level: C}.
 ----
 application/datalog
-total{level: C}.
+total{level: 28}.
