@@ -4,6 +4,7 @@ import { LANGUAGES } from "../../languageWorkbench/languages";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import * as sqlParser from "../../languageWorkbench/languages/sql/parser";
+import ReactJson from "react-json-view";
 
 const INIT_SQL = "SELECT id, name FROM users;";
 
@@ -24,7 +25,11 @@ function Main() {
       />
 
       <h2>SQL Ast</h2>
-      <pre>{JSON.stringify(sqlAST, null, 2)}</pre>
+      <ReactJson
+        src={sqlAST}
+        displayDataTypes={false}
+        displayObjectSize={false}
+      />
     </>
   );
 }
