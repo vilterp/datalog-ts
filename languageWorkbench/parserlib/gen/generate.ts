@@ -31,6 +31,7 @@ import {
   tsTypeString,
   tsUnionType,
   TypeExpr,
+  ObjectLiteralMember,
 } from "./astHelpers";
 
 export type Options = {
@@ -213,32 +214,43 @@ function typeExprForRule(
   options: Options
 ): TypeExpr {
   const refs = refsInRule(rule);
-  if (rule.type === "Choice") {
-    return tsUnionType(
-      refs.map((ref) => {
-        const inner = tsTypeName(typeName(ref.ruleName, options.typePrefix));
-        return ref.repeated ? tsArrayType(inner) : inner;
-      })
-    );
-  }
+  const baseMembers: ObjectLiteralMember[] = [
+    { name: "type", type: tsTypeString(capitalize(ruleName)) },
+    { name: "text", type: tsTypeName("string") },
+    { name: "span", type: tsTypeName("Span") },
+  ];
+  const ruleMembers: ObjectLiteralMember[] =
+    rule.type === "Choice"
+      ? [
+          {
+            name: "value",
+            type: tsUnionType(
+              refs.map((ref) => {
+                const inner = tsTypeName(
+                  typeName(ref.ruleName, options.typePrefix)
+                );
+                return ref.repeated ? tsArrayType(inner) : inner;
+              })
+            ),
+          },
+        ]
+      : refs
+          .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+          .map((ref) => {
+            const inner = tsTypeName(
+              typeName(ref.ruleName, options.typePrefix)
+            );
+            return {
+              name: prefixToAvoidReserved(
+                ref.captureName ? ref.captureName : ref.ruleName
+              ),
+              type: ref.repeated ? tsArrayType(inner) : inner,
+            };
+          });
+
   return {
     type: "ObjectLiteralType",
-    members: [
-      { name: "type", type: tsTypeString(capitalize(ruleName)) },
-      { name: "text", type: tsTypeName("string") },
-      { name: "span", type: tsTypeName("Span") },
-      ...refs
-        .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-        .map((ref) => {
-          const inner = tsTypeName(typeName(ref.ruleName, options.typePrefix));
-          return {
-            name: prefixToAvoidReserved(
-              ref.captureName ? ref.captureName : ref.ruleName
-            ),
-            type: ref.repeated ? tsArrayType(inner) : inner,
-          };
-        }),
-    ],
+    members: [...baseMembers, ...ruleMembers],
   };
 }
 

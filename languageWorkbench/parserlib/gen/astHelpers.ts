@@ -54,7 +54,9 @@ export type TypeExpr =
   | { type: "ArrayType"; inner: TypeExpr }
   | { type: "StringLiteralType"; str: string }
   | { type: "UnionType"; choices: TypeExpr[] }
-  | { type: "ObjectLiteralType"; members: { name: string; type: TypeExpr }[] };
+  | { type: "ObjectLiteralType"; members: ObjectLiteralMember[] };
+
+export type ObjectLiteralMember = { name: string; type: TypeExpr };
 
 export function tsArrayType(inner: TypeExpr): TypeExpr {
   return { type: "ArrayType", inner };
@@ -242,7 +244,9 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
     case "StringLiteralType":
       return JSON.stringify(expr.str);
     case "UnionType":
-      return expr.choices.map(prettyPrintTypeExpr).join(" | ");
+      return expr.choices.length > 0
+        ? expr.choices.map(prettyPrintTypeExpr).join(" | ")
+        : "{}";
     case "ObjectLiteralType":
       return [
         "{",
