@@ -16,6 +16,7 @@ import {
   Rec,
   relationalTrue,
   relationalFalse,
+  rec,
 } from "../types";
 import {
   applyMappings,
@@ -34,6 +35,7 @@ import { LazyIndexedCollection } from "./lazyIndexedCollection";
 import { List } from "immutable";
 import { BUILTINS } from "../builtins";
 import { DB } from "./types";
+import { AGGREGATIONS } from "../aggregations";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -297,6 +299,33 @@ function doEvaluate(
           bindings: scope,
           trace: { type: "NegationTrace", negatedTerm: term.record },
         }));
+      case "Aggregation": {
+        const results = doEvaluate(
+          depth + 1,
+          [...path, { type: "Aggregation" }],
+          db,
+          scope,
+          term.record,
+          cache
+        );
+        const records = results.map((res) => res.term as Rec);
+        const terms = records.map((record) => record.attrs[term.var]);
+        if (!AGGREGATIONS[term.aggregation]) {
+          throw new UserError(`no such aggregation: ${term.aggregation}`);
+        }
+        const result = AGGREGATIONS[term.aggregation](terms);
+        return [
+          {
+            // this seems weird, but idk
+            term: rec(term.record.relation, {
+              ...term.record.attrs,
+              [term.var]: result,
+            }),
+            bindings: scope,
+            trace: { type: "AggregationTrace", aggregatedRecords: records },
+          },
+        ];
+      }
     }
   })();
   // console.groupEnd();
