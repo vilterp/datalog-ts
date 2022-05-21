@@ -12,13 +12,13 @@ export type DLAlpha = {
   type: "Alpha";
   text: string;
   span: Span;
+  value: {};
 };
 export type DLAlphaNum = {
   type: "AlphaNum";
   text: string;
   span: Span;
-  alpha: DLAlpha;
-  num: DLNum;
+  value: DLAlpha | DLNum;
 };
 export type DLArray = {
   type: "Array";
@@ -39,11 +39,13 @@ export type DLBinOp = {
   type: "BinOp";
   text: string;
   span: Span;
+  value: {};
 };
 export type DLBool = {
   type: "Bool";
   text: string;
   span: Span;
+  value: {};
 };
 export type DLCommaSpace = {
   type: "CommaSpace";
@@ -65,10 +67,7 @@ export type DLConjunct = {
   type: "Conjunct";
   text: string;
   span: Span;
-  record: DLRecord;
-  binExpr: DLBinExpr;
-  negation: DLNegation;
-  placeholder: DLPlaceholder;
+  value: DLRecord | DLBinExpr | DLNegation | DLPlaceholder;
 };
 export type DLDisjunct = {
   type: "Disjunct";
@@ -152,9 +151,7 @@ export type DLStmt = {
   type: "Stmt";
   text: string;
   span: Span;
-  rule: DLRule;
-  fact: DLFact;
-  tableDecl: DLTableDecl;
+  value: DLRule | DLFact | DLTableDecl;
 };
 export type DLString = {
   type: "String";
@@ -166,6 +163,7 @@ export type DLStringChar = {
   type: "StringChar";
   text: string;
   span: Span;
+  value: {};
 };
 export type DLTableDecl = {
   type: "TableDecl";
@@ -183,13 +181,7 @@ export type DLTerm = {
   type: "Term";
   text: string;
   span: Span;
-  record: DLRecord;
-  int: DLInt;
-  var: DLVar;
-  string: DLString;
-  bool: DLBool;
-  array: DLArray;
-  placeholder: DLPlaceholder;
+  value: DLRecord | DLInt | DLVar | DLString | DLBool | DLArray | DLPlaceholder;
 };
 export type DLVar = {
   type: "Var";
@@ -212,6 +204,7 @@ function extractAlpha(input: string, node: RuleTree): DLAlpha {
     type: "Alpha",
     text: textForSpan(input, node.span),
     span: node.span,
+    value: {},
   };
 }
 function extractAlphaNum(input: string, node: RuleTree): DLAlphaNum {
@@ -219,8 +212,17 @@ function extractAlphaNum(input: string, node: RuleTree): DLAlphaNum {
     type: "AlphaNum",
     text: textForSpan(input, node.span),
     span: node.span,
-    alpha: extractAlpha(input, childByName(node, "alpha")),
-    num: extractNum(input, childByName(node, "num")),
+    value: (() => {
+      const child = node.children[0];
+      switch (child.name) {
+        case "alpha": {
+          return extractAlpha(input, child);
+        }
+        case "num": {
+          return extractNum(input, child);
+        }
+      }
+    })(),
   };
 }
 function extractArray(input: string, node: RuleTree): DLArray {
@@ -251,6 +253,7 @@ function extractBinOp(input: string, node: RuleTree): DLBinOp {
     type: "BinOp",
     text: textForSpan(input, node.span),
     span: node.span,
+    value: {},
   };
 }
 function extractBool(input: string, node: RuleTree): DLBool {
@@ -258,6 +261,7 @@ function extractBool(input: string, node: RuleTree): DLBool {
     type: "Bool",
     text: textForSpan(input, node.span),
     span: node.span,
+    value: {},
   };
 }
 function extractCommaSpace(input: string, node: RuleTree): DLCommaSpace {
@@ -289,10 +293,23 @@ function extractConjunct(input: string, node: RuleTree): DLConjunct {
     type: "Conjunct",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record")),
-    binExpr: extractBinExpr(input, childByName(node, "binExpr")),
-    negation: extractNegation(input, childByName(node, "negation")),
-    placeholder: extractPlaceholder(input, childByName(node, "placeholder")),
+    value: (() => {
+      const child = node.children[0];
+      switch (child.name) {
+        case "record": {
+          return extractRecord(input, child);
+        }
+        case "binExpr": {
+          return extractBinExpr(input, child);
+        }
+        case "negation": {
+          return extractNegation(input, child);
+        }
+        case "placeholder": {
+          return extractPlaceholder(input, child);
+        }
+      }
+    })(),
   };
 }
 function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
@@ -418,9 +435,20 @@ function extractStmt(input: string, node: RuleTree): DLStmt {
     type: "Stmt",
     text: textForSpan(input, node.span),
     span: node.span,
-    rule: extractRule(input, childByName(node, "rule")),
-    fact: extractFact(input, childByName(node, "fact")),
-    tableDecl: extractTableDecl(input, childByName(node, "tableDecl")),
+    value: (() => {
+      const child = node.children[0];
+      switch (child.name) {
+        case "rule": {
+          return extractRule(input, child);
+        }
+        case "fact": {
+          return extractFact(input, child);
+        }
+        case "tableDecl": {
+          return extractTableDecl(input, child);
+        }
+      }
+    })(),
   };
 }
 function extractString(input: string, node: RuleTree): DLString {
@@ -438,6 +466,7 @@ function extractStringChar(input: string, node: RuleTree): DLStringChar {
     type: "StringChar",
     text: textForSpan(input, node.span),
     span: node.span,
+    value: {},
   };
 }
 function extractTableDecl(input: string, node: RuleTree): DLTableDecl {
@@ -461,13 +490,32 @@ function extractTerm(input: string, node: RuleTree): DLTerm {
     type: "Term",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record")),
-    int: extractInt(input, childByName(node, "int")),
-    var: extractVar(input, childByName(node, "var")),
-    string: extractString(input, childByName(node, "string")),
-    bool: extractBool(input, childByName(node, "bool")),
-    array: extractArray(input, childByName(node, "array")),
-    placeholder: extractPlaceholder(input, childByName(node, "placeholder")),
+    value: (() => {
+      const child = node.children[0];
+      switch (child.name) {
+        case "record": {
+          return extractRecord(input, child);
+        }
+        case "int": {
+          return extractInt(input, child);
+        }
+        case "var": {
+          return extractVar(input, child);
+        }
+        case "string": {
+          return extractString(input, child);
+        }
+        case "bool": {
+          return extractBool(input, child);
+        }
+        case "array": {
+          return extractArray(input, child);
+        }
+        case "placeholder": {
+          return extractPlaceholder(input, child);
+        }
+      }
+    })(),
   };
 }
 function extractVar(input: string, node: RuleTree): DLVar {

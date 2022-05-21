@@ -167,27 +167,30 @@ function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
       ? [
           {
             key: "value",
-            value: jsIIFE(
-              jsBlock([
-                jsConstAssn("child", jsChain(["node", "children", "0"])),
-                jsSwitch(
-                  jsIdent("child"),
-                  refs.map((ref) => {
-                    return {
-                      name: ref.ruleName,
-                      block: jsBlock([
-                        jsReturn(
-                          jsCall(jsIdent(extractorName(ref.ruleName)), [
-                            jsIdent("input"),
-                            jsIdent("child"),
-                          ])
-                        ),
-                      ]),
-                    };
-                  })
-                ),
-              ])
-            ),
+            value:
+              refs.length === 0
+                ? jsObj([])
+                : jsIIFE(
+                    jsBlock([
+                      jsConstAssn("child", jsChain(["node", "children", 0])),
+                      jsSwitch(
+                        jsChain(["child", "name"]),
+                        refs.map((ref) => {
+                          return {
+                            name: ref.ruleName,
+                            block: jsBlock([
+                              jsReturn(
+                                jsCall(jsIdent(extractorName(ref.ruleName)), [
+                                  jsIdent("input"),
+                                  jsIdent("child"),
+                                ])
+                              ),
+                            ]),
+                          };
+                        })
+                      ),
+                    ])
+                  ),
           },
         ]
       : refs
@@ -226,7 +229,7 @@ function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
   return jsBlock([
     {
       type: "ReturnStatement",
-      argument: jsObj(mapListToObj([...baseObjMembers, ...ruleObjMembers])),
+      argument: jsObj([...baseObjMembers, ...ruleObjMembers]),
     },
   ]);
 }

@@ -89,14 +89,16 @@ export function jsCall(callee: Expression, args: Expression[]): CallExpression {
   };
 }
 
-export function jsObj(props: { [name: string]: Expression }): ObjectExpression {
+export function jsObj(
+  props: { key: string; value: Expression }[]
+): ObjectExpression {
   return {
     type: "ObjectExpression",
-    properties: Object.keys(props).map((name) => ({
+    properties: props.map(({ key, value }) => ({
       type: "Property",
       kind: "init",
-      key: { type: "Identifier", name },
-      value: props[name],
+      key: { type: "Identifier", name: key },
+      value,
       computed: false,
       method: false,
       shorthand: false,
@@ -104,12 +106,18 @@ export function jsObj(props: { [name: string]: Expression }): ObjectExpression {
   };
 }
 
-export function jsMember(obj: Expression, member: string): MemberExpression {
+export function jsMember(
+  obj: Expression,
+  member: string | number
+): MemberExpression {
   return {
     type: "MemberExpression",
     object: obj,
-    property: { type: "Identifier", name: member },
-    computed: false,
+    property:
+      typeof member === "string"
+        ? { type: "Identifier", name: member }
+        : { type: "Literal", value: member },
+    computed: typeof member !== "string",
     optional: false,
   };
 }
@@ -118,9 +126,11 @@ export function jsStr(value: string): Expression {
   return { type: "Literal", value };
 }
 
-export function jsChain(chain: string[]): Expression {
+export function jsChain(chain: (string | number)[]): Expression {
   if (chain.length === 1) {
-    return { type: "Identifier", name: chain[0] };
+    return typeof chain[0] === "string"
+      ? { type: "Identifier", name: chain[0] }
+      : { type: "Literal", value: chain[0] };
   }
   return jsMember(
     jsChain(chain.slice(0, chain.length - 1)),
