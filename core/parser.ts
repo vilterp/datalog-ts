@@ -36,10 +36,24 @@ export const language = P.createLanguage({
     P.sepBy(r.andClauses, r.or).map((xs) => ({ type: "Or", opts: xs })),
   andClauses: (r) =>
     P.sepBy(r.clause, r.and).map((xs) => ({ type: "And", clauses: xs })),
-  clause: (r) => P.alt(r.record, r.negation, r.binExpr),
+  clause: (r) => P.alt(r.record, r.negation, r.binExpr, r.aggregation),
   negation: (r) =>
     P.seq(word("!"), r.record).map(([_, record]) => ({
       type: "Negation",
+      record,
+    })),
+  aggregation: (r) =>
+    P.seq(
+      r.recordIdentifier,
+      word("["),
+      r.var,
+      word(":"),
+      r.record,
+      word("]")
+    ).map(([ident, _1, varName, _2, record]) => ({
+      type: "Aggregation",
+      aggregation: ident,
+      varName,
       record,
     })),
   term: (r) =>

@@ -79,7 +79,7 @@ type Negation = { type: "Negation"; record: Rec };
 type Aggregation = {
   type: "Aggregation";
   aggregation: string;
-  var: string;
+  varName: string;
   record: Rec;
 };
 
@@ -174,6 +174,7 @@ export type TermWithBindings =
   | ArrayWithBindings
   | BinExprWithBindings
   | NegationWithBindings
+  | AggregationWithBindings
   | { type: "Atom"; term: Int | Bool | StringLit | Var };
 
 export type RecordWithBindings = {
@@ -199,6 +200,10 @@ export type BinExprWithBindings = {
 export type NegationWithBindings = {
   type: "NegationWithBindings";
   inner: TermWithBindings;
+};
+
+export type AggregationWithBindings = {
+  type: "AggregationWithBindings";
 };
 
 export type SituatedBinding = {

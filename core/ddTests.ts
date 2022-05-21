@@ -37,18 +37,23 @@ function coreTests(
   writeResults: boolean,
   getInterp: () => AbstractInterpreter
 ): Suite {
-  return ["simple", "family", "recurse", "literals", "negation"].map(
-    (name) => ({
-      name,
-      test() {
-        runDDTestAtPath(
-          `core/testdata/${name}.dd.txt`,
-          (test: string[]) => putThroughInterp(test, getInterp),
-          writeResults
-        );
-      },
-    })
-  );
+  return [
+    "simple",
+    "family",
+    "recurse",
+    "literals",
+    "negation",
+    "aggregation",
+  ].map((name) => ({
+    name,
+    test() {
+      runDDTestAtPath(
+        `core/testdata/${name}.dd.txt`,
+        (test: string[]) => putThroughInterp(test, getInterp),
+        writeResults
+      );
+    },
+  }));
 }
 
 export function coreTestsCommon(writeResults: boolean): Suite {

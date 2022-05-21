@@ -113,6 +113,9 @@ function getRoots(rule: Rule): NodeID[] {
       if (andClause.type === "Negation") {
         return andClause.record.relation;
       }
+      if (andClause.type === "Aggregation") {
+        return andClause.record.relation;
+      }
       return andClause.relation;
     });
   });
