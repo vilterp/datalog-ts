@@ -1,6 +1,6 @@
 import { Program, Rec, Relation, Res, Rule, Statement } from "./types";
-import { language as dlLanguage } from "./parser";
 import { Loader } from "./loaders";
+import { DLStmt, parse } from "../languageWorkbench/languages/dl/parser";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -13,7 +13,7 @@ export abstract class AbstractInterpreter {
     this.cwd = cwd;
   }
 
-  abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
+  abstract evalStmt(stmt: DLStmt): [Res[], AbstractInterpreter];
 
   // default impl that isn't bulk
   bulkInsert(records: Rec[]): AbstractInterpreter {
@@ -24,7 +24,7 @@ export abstract class AbstractInterpreter {
     return interp;
   }
 
-  evalStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
+  evalStmts(stmts: DLStmt[]): [Res[], AbstractInterpreter] {
     const results: Res[] = [];
     let interp: AbstractInterpreter = this;
     stmts.forEach((stmt) => {
@@ -56,8 +56,8 @@ export abstract class AbstractInterpreter {
   }
 
   evalStr(str: string): [Res[], AbstractInterpreter] {
-    const stmts = dlLanguage.program.tryParse(str);
-    return this.evalStmts(stmts);
+    const main = parse("str");
+    return this.evalStmts(main.stmt);
   }
 
   doLoad(path: string): AbstractInterpreter {
