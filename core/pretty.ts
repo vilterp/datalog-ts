@@ -61,6 +61,15 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
       return `${term.val}`;
     case "Negation":
       return ["!", prettyPrintTerm(term.record)];
+    case "Aggregation":
+      return [
+        term.aggregation,
+        "[",
+        term.varName,
+        ":",
+        prettyPrintTerm(term.record),
+        "]",
+      ];
   }
 }
 
