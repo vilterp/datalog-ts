@@ -17,3 +17,5 @@ hl.int{type: "int", span: S, highlight: false} :-
   ast.int{span: S}.
 hl.string{type: "string", span: S, highlight: false} :-
   ast.string{span: S}.
+batteryInputCurrent{id: B, time: T, current: L} :-
+  sum[C: batteryInputCurrentFrom{id: B, time: T, current: C}].
