@@ -21,6 +21,7 @@ export type Trace =
       mappings: VarMappings;
     }
   | { type: "NegationTrace"; negatedTerm: Term }
+  | { type: "AggregationTrace"; aggregatedRecords: Rec[] }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "VarTrace" }
@@ -39,7 +40,8 @@ export type InvocationLocation = RulePathSegment[];
 export type RulePathSegment =
   | { type: "OrOpt"; idx: number }
   | { type: "AndClause"; idx: number }
-  | { type: "Negation" };
+  | { type: "Negation" }
+  | { type: "Aggregation" };
 
 export type ScopePath = { name: string; invokeLoc: InvocationLocation }[];
 
@@ -70,9 +72,16 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type AndClause = Rec | BinExpr | Negation;
+export type AndClause = Rec | BinExpr | Negation | Aggregation;
 
 type Negation = { type: "Negation"; record: Rec };
+
+type Aggregation = {
+  type: "Aggregation";
+  aggregation: string;
+  var: string;
+  record: Rec;
+};
 
 export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
 
