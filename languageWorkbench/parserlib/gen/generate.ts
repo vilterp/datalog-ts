@@ -31,10 +31,11 @@ import {
   tsTypeString,
   tsUnionType,
   TypeExpr,
-  ObjectLiteralMember,
+  ObjectLiteralTypeMember,
   jsConstAssn,
   jsReturn,
   jsSwitch,
+  jsIIFE,
 } from "./astHelpers";
 
 export type Options = {
@@ -145,78 +146,87 @@ function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
       `multiple refs from rule "${ruleName}": ${JSON.stringify(duplicated)}`
     );
   }
-  if (rule.type === "Choice") {
-    return jsBlock([
-      jsConstAssn("child", jsChain(["node", "children", "0"])),
-      jsSwitch(
-        jsIdent("child"),
-        refs.map((ref) => {
-          return {
-            name: ref.ruleName,
-            block: jsBlock([
-              jsReturn(
-                jsCall(jsIdent(extractorName(ref.ruleName)), [
-                  jsIdent("input"),
-                  jsIdent("child"),
-                ])
-              ),
-            ]),
-          };
-        })
-      ),
-    ]);
-  }
-  return jsBlock([
+
+  const baseObjMembers = [
+    { key: "type", value: jsStr(capitalize(ruleName)) },
     {
-      type: "ReturnStatement",
-      argument: jsObj(
-        mapListToObj([
-          { key: "type", value: jsStr(capitalize(ruleName)) },
+      key: "text",
+      value: jsCall(jsIdent("textForSpan"), [
+        jsIdent("input"),
+        jsChain(["node", "span"]),
+      ]),
+    },
+    {
+      key: "span",
+      value: jsChain(["node", "span"]),
+    },
+  ];
+
+  const ruleObjMembers =
+    rule.type === "Choice"
+      ? [
           {
-            key: "text",
-            value: jsCall(jsIdent("textForSpan"), [
-              jsIdent("input"),
-              jsChain(["node", "span"]),
-            ]),
-          },
-          {
-            key: "span",
-            value: jsChain(["node", "span"]),
-          },
-          ...refs
-            .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-            .map(({ ruleName, repeated, captureName }) => ({
-              // TODO: pluralize if this is a repSep
-              key: prefixToAvoidReserved(captureName ? captureName : ruleName),
-              value: repeated
-                ? jsCall(
-                    jsMember(
-                      jsCall(jsIdent("childrenByName"), [
-                        jsIdent("node"),
-                        jsStr(ruleName),
+            key: "value",
+            value: jsIIFE(
+              jsBlock([
+                jsConstAssn("child", jsChain(["node", "children", "0"])),
+                jsSwitch(
+                  jsIdent("child"),
+                  refs.map((ref) => {
+                    return {
+                      name: ref.ruleName,
+                      block: jsBlock([
+                        jsReturn(
+                          jsCall(jsIdent(extractorName(ref.ruleName)), [
+                            jsIdent("input"),
+                            jsIdent("child"),
+                          ])
+                        ),
                       ]),
-                      "map"
-                    ),
-                    [
-                      jsArrowFunc(
-                        ["child"],
-                        jsCall(jsIdent(extractorName(ruleName)), [
-                          jsIdent("input"),
-                          jsIdent("child"),
-                        ])
-                      ),
-                    ]
-                  )
-                : jsCall(jsIdent(extractorName(ruleName)), [
-                    jsIdent("input"),
-                    jsCall(jsIdent("childByName"), [
+                    };
+                  })
+                ),
+              ])
+            ),
+          },
+        ]
+      : refs
+          .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+          .map(({ ruleName, repeated, captureName }) => ({
+            // TODO: pluralize if this is a repSep
+            key: prefixToAvoidReserved(captureName ? captureName : ruleName),
+            value: repeated
+              ? jsCall(
+                  jsMember(
+                    jsCall(jsIdent("childrenByName"), [
                       jsIdent("node"),
                       jsStr(ruleName),
                     ]),
+                    "map"
+                  ),
+                  [
+                    jsArrowFunc(
+                      ["child"],
+                      jsCall(jsIdent(extractorName(ruleName)), [
+                        jsIdent("input"),
+                        jsIdent("child"),
+                      ])
+                    ),
+                  ]
+                )
+              : jsCall(jsIdent(extractorName(ruleName)), [
+                  jsIdent("input"),
+                  jsCall(jsIdent("childByName"), [
+                    jsIdent("node"),
+                    jsStr(ruleName),
                   ]),
-            })),
-        ])
-      ),
+                ]),
+          }));
+
+  return jsBlock([
+    {
+      type: "ReturnStatement",
+      argument: jsObj(mapListToObj([...baseObjMembers, ...ruleObjMembers])),
     },
   ]);
 }
@@ -240,12 +250,12 @@ function typeExprForRule(
   options: Options
 ): TypeExpr {
   const refs = refsInRule(rule);
-  const baseMembers: ObjectLiteralMember[] = [
+  const baseMembers: ObjectLiteralTypeMember[] = [
     { name: "type", type: tsTypeString(capitalize(ruleName)) },
     { name: "text", type: tsTypeName("string") },
     { name: "span", type: tsTypeName("Span") },
   ];
-  const ruleMembers: ObjectLiteralMember[] =
+  const ruleMembers: ObjectLiteralTypeMember[] =
     rule.type === "Choice"
       ? [
           {

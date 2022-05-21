@@ -56,9 +56,9 @@ export type TypeExpr =
   | { type: "ArrayType"; inner: TypeExpr }
   | { type: "StringLiteralType"; str: string }
   | { type: "UnionType"; choices: TypeExpr[] }
-  | { type: "ObjectLiteralType"; members: ObjectLiteralMember[] };
+  | { type: "ObjectLiteralType"; members: ObjectLiteralTypeMember[] };
 
-export type ObjectLiteralMember = { name: string; type: TypeExpr };
+export type ObjectLiteralTypeMember = { name: string; type: TypeExpr };
 
 export function tsArrayType(inner: TypeExpr): TypeExpr {
   return { type: "ArrayType", inner };
@@ -168,6 +168,18 @@ export function jsSwitch(
       };
     }),
   };
+}
+
+// immediately-invoked function expression
+// ugh, wish switches were expressions in JS
+export function jsIIFE(body: BlockStatement) {
+  const arrowFunc: ArrowFunctionExpression = {
+    type: "ArrowFunctionExpression",
+    body,
+    params: [],
+    expression: false,
+  };
+  return jsCall(arrowFunc, []);
 }
 
 export function jsReturn(expr: Expression): ReturnStatement {
