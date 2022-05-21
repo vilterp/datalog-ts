@@ -1,5 +1,10 @@
 import { Grammar, Rule } from "../grammar";
-import { Program, FunctionDeclaration, Expression } from "estree";
+import {
+  Program,
+  FunctionDeclaration,
+  Expression,
+  BlockStatement,
+} from "estree";
 import { generate } from "astring";
 import {
   capitalize,
@@ -129,7 +134,7 @@ function genRule(
       tsTypedParam("input", tsTypeName("string")),
       tsTypedParam("node", tsTypeName("RuleTree")),
     ],
-    body: jsBlock([jsReturn(extractorBodyForRule(ruleName, rule, options))]),
+    body: extractorBodyForRule(ruleName, rule, options),
   };
 }
 
@@ -137,7 +142,7 @@ function extractorBodyForRule(
   ruleName: string,
   rule: Rule,
   options: Options
-): Expression {
+): BlockStatement {
   const refs = refsInRule(rule);
   const filteredRefs = refs.filter((r) => !options.ignoreRules.has(r.ruleName));
   const refNames = filteredRefs.map((r) => `${r.captureName}:${r.ruleName}`);
@@ -168,30 +173,28 @@ function extractorBodyForRule(
 
   if (rule.type === "Choice") {
     if (refs.length === 0) {
-      return jsObj(baseObjMembers);
+      return jsBlock([jsReturn(jsObj(baseObjMembers))]);
     }
 
-    return jsIIFE(
-      jsBlock([
-        jsConstAssn("child", jsChain(["node", "children", 0])),
-        jsSwitch(
-          jsChain(["child", "name"]),
-          refs.map((ref) => {
-            return {
-              name: ref.ruleName,
-              block: jsBlock([
-                jsReturn(
-                  jsCall(jsIdent(extractorName(ref.ruleName)), [
-                    jsIdent("input"),
-                    jsIdent("child"),
-                  ])
-                ),
-              ]),
-            };
-          })
-        ),
-      ])
-    );
+    return jsBlock([
+      jsConstAssn("child", jsChain(["node", "children", 0])),
+      jsSwitch(
+        jsChain(["child", "name"]),
+        refs.map((ref) => {
+          return {
+            name: ref.ruleName,
+            block: jsBlock([
+              jsReturn(
+                jsCall(jsIdent(extractorName(ref.ruleName)), [
+                  jsIdent("input"),
+                  jsIdent("child"),
+                ])
+              ),
+            ]),
+          };
+        })
+      ),
+    ]);
   }
 
   const ruleObjMembers = refs
@@ -224,7 +227,7 @@ function extractorBodyForRule(
           ]),
     }));
 
-  return jsObj([...baseObjMembers, ...ruleObjMembers]);
+  return jsBlock([jsReturn(jsObj([...baseObjMembers, ...ruleObjMembers]))]);
 }
 
 function typeForRule(

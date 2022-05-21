@@ -190,17 +190,15 @@ function extractAlpha(input: string, node: RuleTree): DLAlpha {
   };
 }
 function extractAlphaNum(input: string, node: RuleTree): DLAlphaNum {
-  return (() => {
-    const child = node.children[0];
-    switch (child.name) {
-      case "alpha": {
-        return extractAlpha(input, child);
-      }
-      case "num": {
-        return extractNum(input, child);
-      }
+  const child = node.children[0];
+  switch (child.name) {
+    case "alpha": {
+      return extractAlpha(input, child);
     }
-  })();
+    case "num": {
+      return extractNum(input, child);
+    }
+  }
 }
 function extractArray(input: string, node: RuleTree): DLArray {
   return {
@@ -264,23 +262,21 @@ function extractCommentChar(input: string, node: RuleTree): DLCommentChar {
   };
 }
 function extractConjunct(input: string, node: RuleTree): DLConjunct {
-  return (() => {
-    const child = node.children[0];
-    switch (child.name) {
-      case "record": {
-        return extractRecord(input, child);
-      }
-      case "binExpr": {
-        return extractBinExpr(input, child);
-      }
-      case "negation": {
-        return extractNegation(input, child);
-      }
-      case "placeholder": {
-        return extractPlaceholder(input, child);
-      }
+  const child = node.children[0];
+  switch (child.name) {
+    case "record": {
+      return extractRecord(input, child);
     }
-  })();
+    case "binExpr": {
+      return extractBinExpr(input, child);
+    }
+    case "negation": {
+      return extractNegation(input, child);
+    }
+    case "placeholder": {
+      return extractPlaceholder(input, child);
+    }
+  }
 }
 function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
   return {
@@ -401,20 +397,18 @@ function extractRule(input: string, node: RuleTree): DLRule {
   };
 }
 function extractStmt(input: string, node: RuleTree): DLStmt {
-  return (() => {
-    const child = node.children[0];
-    switch (child.name) {
-      case "rule": {
-        return extractRule(input, child);
-      }
-      case "fact": {
-        return extractFact(input, child);
-      }
-      case "tableDecl": {
-        return extractTableDecl(input, child);
-      }
+  const child = node.children[0];
+  switch (child.name) {
+    case "rule": {
+      return extractRule(input, child);
     }
-  })();
+    case "fact": {
+      return extractFact(input, child);
+    }
+    case "tableDecl": {
+      return extractTableDecl(input, child);
+    }
+  }
 }
 function extractString(input: string, node: RuleTree): DLString {
   return {
@@ -450,32 +444,30 @@ function extractTableKW(input: string, node: RuleTree): DLTableKW {
   };
 }
 function extractTerm(input: string, node: RuleTree): DLTerm {
-  return (() => {
-    const child = node.children[0];
-    switch (child.name) {
-      case "record": {
-        return extractRecord(input, child);
-      }
-      case "int": {
-        return extractInt(input, child);
-      }
-      case "var": {
-        return extractVar(input, child);
-      }
-      case "string": {
-        return extractString(input, child);
-      }
-      case "bool": {
-        return extractBool(input, child);
-      }
-      case "array": {
-        return extractArray(input, child);
-      }
-      case "placeholder": {
-        return extractPlaceholder(input, child);
-      }
+  const child = node.children[0];
+  switch (child.name) {
+    case "record": {
+      return extractRecord(input, child);
     }
-  })();
+    case "int": {
+      return extractInt(input, child);
+    }
+    case "var": {
+      return extractVar(input, child);
+    }
+    case "string": {
+      return extractString(input, child);
+    }
+    case "bool": {
+      return extractBool(input, child);
+    }
+    case "array": {
+      return extractArray(input, child);
+    }
+    case "placeholder": {
+      return extractPlaceholder(input, child);
+    }
+  }
 }
 function extractVar(input: string, node: RuleTree): DLVar {
   return {
