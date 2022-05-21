@@ -9,27 +9,25 @@ import {
   InvocationLocation,
   SituatedBinding,
   BinExpr,
-  Statement,
 } from "./types";
 import * as pp from "prettier-printer";
 import { mapObjToList, repeat, flatMap } from "../util/util";
-import { Tree } from "../util/tree";
+import { prettyPrintTree, Tree } from "../util/tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
+import { DLStatement } from "../languageWorkbench/languages/dl/parser";
 
-export function prettyPrintStatement(stmt: Statement): pp.IDoc {
+export function prettyPrintStatement(stmt: DLStatement): pp.IDoc {
   switch (stmt.type) {
-    case "Comment":
-      return ["#", stmt.comment];
     case "Insert":
       return [prettyPrintTerm(stmt.record), "."];
-    case "Query":
+    case "Fact":
       return [prettyPrintTerm(stmt.record), "."];
     case "Rule":
-      return [prettyPrintRule(stmt.rule)];
+      return [prettyPrintRule(stmt)];
     case "TableDecl":
-      return [".table ", stmt.name];
+      return [".table ", stmt.name.text];
     case "LoadStmt":
-      return [".load ", stmt.path];
+      return [".load ", stmt.path.text];
   }
 }
 
@@ -273,53 +271,6 @@ export function prettyPrintInvokeLoc(il: InvocationLocation): pp.IDoc {
   ];
 }
 
-type RenderNodeFn<T> = (props: { item: T; key: string; path: T[] }) => string;
-
-export function prettyPrintTree<T>(
-  tree: Tree<T>,
-  render: RenderNodeFn<T>
-): string {
-  return pptRecurse(0, tree, [tree.item], render).join("\n");
-}
-
-function pptRecurse<T>(
-  depth: number,
-  tree: Tree<T>,
-  path: T[],
-  render: RenderNodeFn<T>
-): string[] {
-  return [
-    repeat(depth, "  ") + render({ item: tree.item, key: tree.key, path }),
-    ...flatMap(tree.children, (child) =>
-      pptRecurse(depth + 1, child, [...path, child.item], render)
-    ),
-  ];
-}
-
-// export function prettyPrintTree(tree: Tree): string {
-//   return pp.render(100, prettyPrintNode(tree));
-// }
-
-// function prettyPrintNode(tree: Tree): pp.IDoc {
-//   // console.log("ppn", tree);
-//   const res = [
-//     tree.body,
-//     "X",
-//     pp.indent(2, pp.intersperse("X", tree.children.map(prettyPrintNode))),
-//     // ...(tree.children.length === 0
-//     //   ? []
-//     //   : [
-//     //       pp.line,
-//     //       pp.indent(
-//     //         2,
-//     //         pp.intersperse(pp.line)(tree.children.map(prettyPrintNode))
-//     //       ),
-//     //     ]),
-//   ];
-//   console.log("ppn", res);
-//   return res;
-// }
-
 // util
 
 export function block(pair: [pp.IDoc, pp.IDoc], docs: pp.IDoc[]): pp.IDoc {
@@ -350,6 +301,6 @@ export function ppRule(rule: Rule): string {
   return pp.render(100, prettyPrintRule(rule));
 }
 
-export function pps(stmt: Statement): string {
+export function pps(stmt: DLStatement): string {
   return pp.render(100, prettyPrintStatement(stmt));
 }

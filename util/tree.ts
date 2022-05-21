@@ -1,4 +1,4 @@
-import { flatMap, updateAtIdx } from "./util";
+import { flatMap, repeat, updateAtIdx } from "./util";
 
 export type Tree<T> = { key: string; item: T; children: Tree<T>[] };
 
@@ -77,4 +77,27 @@ export function insertAtPath<T>(
             ),
           ],
   };
+}
+
+type RenderNodeFn<T> = (props: { item: T; key: string; path: T[] }) => string;
+
+export function prettyPrintTree<T>(
+  tree: Tree<T>,
+  render: RenderNodeFn<T>
+): string {
+  return pptRecurse(0, tree, [tree.item], render).join("\n");
+}
+
+function pptRecurse<T>(
+  depth: number,
+  tree: Tree<T>,
+  path: T[],
+  render: RenderNodeFn<T>
+): string[] {
+  return [
+    repeat(depth, "  ") + render({ item: tree.item, key: tree.key, path }),
+    ...flatMap(tree.children, (child) =>
+      pptRecurse(depth + 1, child, [...path, child.item], render)
+    ),
+  ];
 }
