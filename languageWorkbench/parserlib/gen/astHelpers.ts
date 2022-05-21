@@ -13,6 +13,8 @@ import {
   BlockStatement,
   ArrowFunctionExpression,
   ImportDeclaration,
+  SwitchStatement,
+  ReturnStatement,
 } from "estree";
 
 export type ProgramWithTypes = {
@@ -126,19 +128,6 @@ export function jsChain(chain: string[]): Expression {
   );
 }
 
-export function jsConstInit(name: string): VariableDeclaration {
-  return {
-    type: "VariableDeclaration",
-    kind: "const",
-    declarations: [
-      {
-        type: "VariableDeclarator",
-        id: { type: "Identifier", name },
-      },
-    ],
-  };
-}
-
 export function jsConstAssn(
   name: string,
   expr: Expression
@@ -162,6 +151,30 @@ export function jsBlock(statements: Statement[]): BlockStatement {
 
 export function jsIf(test: Expression, consequent: Statement): Statement {
   return { type: "IfStatement", test, consequent };
+}
+
+export function jsSwitch(
+  discriminant: Expression,
+  cases: { name: string; block: BlockStatement }[]
+): SwitchStatement {
+  return {
+    type: "SwitchStatement",
+    discriminant: discriminant,
+    cases: cases.map((switchCase) => {
+      return {
+        type: "SwitchCase",
+        test: jsStr(switchCase.name),
+        consequent: [switchCase.block],
+      };
+    }),
+  };
+}
+
+export function jsReturn(expr: Expression): ReturnStatement {
+  return {
+    type: "ReturnStatement",
+    argument: expr,
+  };
 }
 
 export function jsBinExpr(

@@ -32,6 +32,9 @@ import {
   tsUnionType,
   TypeExpr,
   ObjectLiteralMember,
+  jsConstAssn,
+  jsReturn,
+  jsSwitch,
 } from "./astHelpers";
 
 export type Options = {
@@ -141,6 +144,27 @@ function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
     throw new Error(
       `multiple refs from rule "${ruleName}": ${JSON.stringify(duplicated)}`
     );
+  }
+  if (rule.type === "Choice") {
+    return jsBlock([
+      jsConstAssn("child", jsChain(["node", "children", "0"])),
+      jsSwitch(
+        jsIdent("child"),
+        refs.map((ref) => {
+          return {
+            name: ref.ruleName,
+            block: jsBlock([
+              jsReturn(
+                jsCall(jsIdent(extractorName(ref.ruleName)), [
+                  jsIdent("input"),
+                  jsIdent("child"),
+                ])
+              ),
+            ]),
+          };
+        })
+      ),
+    ]);
   }
   return jsBlock([
     {
