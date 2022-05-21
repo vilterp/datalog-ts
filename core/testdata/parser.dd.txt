@@ -921,3 +921,56 @@ application/json
     }
   }
 }
+
+rule
+total{level: C} :-
+  sum[C: current{id: I, level: C}].
+----
+application/json
+{
+  "type": "Rule",
+  "rule": {
+    "head": {
+      "type": "Record",
+      "relation": "total",
+      "attrs": {
+        "level": {
+          "type": "Var",
+          "name": "C"
+        }
+      }
+    },
+    "body": {
+      "type": "Or",
+      "opts": [
+        {
+          "type": "And",
+          "clauses": [
+            {
+              "type": "Aggregation",
+              "aggregation": "sum",
+              "varName": {
+                "type": "Var",
+                "name": "C"
+              },
+              "record": {
+                "type": "Record",
+                "relation": "current",
+                "attrs": {
+                  "id": {
+                    "type": "Var",
+                    "name": "I"
+                  },
+                  "level": {
+                    "type": "Var",
+                    "name": "C"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
