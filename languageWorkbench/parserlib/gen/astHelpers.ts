@@ -228,10 +228,9 @@ export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
 }
 
 export function prettyPrintTypeDeclaration(decl: TypeDeclaration): string {
-  return [
-    `${decl.exported ? "export " : ""}type ${decl.name} = `,
-    prettyPrintTypeExpr(decl.expr),
-  ].join("\n");
+  return `${decl.exported ? "export " : ""}type ${
+    decl.name
+  } = ${prettyPrintTypeExpr(decl.expr)};`;
 }
 
 export function prettyPrintTypeExpr(expr: TypeExpr): string {
@@ -250,7 +249,6 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
         ...expr.members.map(
           (member) => `  ${member.name}: ${prettyPrintTypeExpr(member.type)};`
         ),
-        ,
         "}",
       ].join("\n");
   }
