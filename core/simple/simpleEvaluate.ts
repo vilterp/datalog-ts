@@ -115,25 +115,6 @@ function doJoin(
   return out;
 }
 
-type Cache = { [key: string]: Res[] };
-
-// only memoizing within the execution of one query...
-function memo(
-  cache: Cache,
-  term: Rec,
-  scope: Bindings,
-  evaluate: () => Res[]
-): Res[] {
-  const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
-  const cacheRes = cache[cacheKey];
-  if (cacheRes) {
-    return cacheRes;
-  }
-  const computeRes = evaluate();
-  cache[cacheKey] = computeRes;
-  return computeRes;
-}
-
 function doEvaluate(
   depth: number,
   path: RulePathSegment[],
@@ -428,6 +409,25 @@ function getForScope(
     });
   }
   return out;
+}
+
+type Cache = { [key: string]: Res[] };
+
+// only memoizing within the execution of one query...
+function memo(
+  cache: Cache,
+  term: Rec,
+  scope: Bindings,
+  evaluate: () => Res[]
+): Res[] {
+  const cacheKey = `${fastPPT(term)} {${fastPPB(scope)}}`;
+  const cacheRes = cache[cacheKey];
+  if (cacheRes) {
+    return cacheRes;
+  }
+  const computeRes = evaluate();
+  cache[cacheKey] = computeRes;
+  return computeRes;
 }
 
 // enable marking datalog rules on the Chrome devtools performance timeline
