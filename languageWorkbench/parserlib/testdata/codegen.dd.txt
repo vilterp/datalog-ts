@@ -58,16 +58,13 @@ export type JsonStringChar = {
   type: "StringChar";
   text: string;
   span: Span;
+  value: {};
 };
 export type JsonValue = {
   type: "Value";
   text: string;
   span: Span;
-  object: JsonObject;
-  array: JsonArray;
-  int: JsonInt;
-  string: JsonString;
-  null: JsonNull;
+  value: JsonObject | JsonArray | JsonInt | JsonString | JsonNull;
 };
 export function parse(input: string): JsonMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input)
