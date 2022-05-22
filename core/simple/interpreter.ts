@@ -42,6 +42,17 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
+      case "Delete": {
+        return [
+          [],
+          this.withDB({
+            ...this.db,
+            tables: this.db.tables.update(stmt.record.relation, (tbl) =>
+              tbl.delete(stmt.record)
+            ),
+          }),
+        ];
+      }
       case "Rule": {
         const rule = stmt.rule;
         // TODO: move this to some kind of validation phase?

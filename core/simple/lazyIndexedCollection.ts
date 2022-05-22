@@ -2,6 +2,7 @@ import { List, Map } from "immutable";
 import { mapObj } from "../../util/util";
 import { fastPPT } from "../fastPPT";
 import { Rec, Term } from "../types";
+import { termEq } from "../unify";
 
 export function emptyLazyIndexedCollection() {
   return new LazyIndexedCollection(List(), {});
@@ -60,6 +61,19 @@ export class LazyIndexedCollection {
         const prevIndex = this.indexes[attr] || Map();
         return prevIndex.update(fastPPT(item.attrs[attr]), List(), (items) =>
           items.push(item)
+        );
+      })
+    );
+  }
+
+  delete(item: Rec): LazyIndexedCollection {
+    return new LazyIndexedCollection(
+      this.allRecords.filter((rec) => !termEq(item, rec)),
+      // TODO: update indexes
+      mapObj(item.attrs, (attr) => {
+        const prevIndex = this.indexes[attr];
+        return prevIndex.update(fastPPT(item.attrs[attr]), (items) =>
+          items.filter((indexItem) => !termEq(indexItem, item))
         );
       })
     );

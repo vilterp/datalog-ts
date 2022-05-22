@@ -58,6 +58,7 @@ export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Query"; record: Rec }
   | { type: "Insert"; record: Rec }
+  | { type: "Delete"; record: Rec }
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string }
   | { type: "Comment"; comment: string };
