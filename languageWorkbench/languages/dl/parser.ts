@@ -8,6 +8,15 @@ import {
 } from "../../parserlib/ruleTree";
 import { Span, Grammar } from "../../parserlib/grammar";
 import * as parserlib from "../../parserlib/parser";
+export type DLAggregation = {
+  type: "Aggregation";
+  text: string;
+  span: Span;
+  ident: DLIdent;
+  var: DLVar[];
+  commaSpace: DLCommaSpace[];
+  record: DLRecord;
+};
 export type DLAlpha = {
   type: "Alpha";
   text: string;
@@ -55,7 +64,18 @@ export type DLCommentChar = {
   text: string;
   span: Span;
 };
-export type DLConjunct = DLRecord | DLBinExpr | DLNegation | DLPlaceholder;
+export type DLConjunct =
+  | DLRecord
+  | DLBinExpr
+  | DLNegation
+  | DLAggregation
+  | DLPlaceholder;
+export type DLDeleteFact = {
+  type: "DeleteFact";
+  text: string;
+  span: Span;
+  record: DLRecord;
+};
 export type DLDisjunct = {
   type: "Disjunct";
   text: string;
@@ -157,7 +177,12 @@ export type DLRule = {
   record: DLRecord;
   disjunct: DLDisjunct[];
 };
-export type DLStatement = DLRule | DLFact | DLTableDecl | DLLoadStmt;
+export type DLStatement =
+  | DLRule
+  | DLFact
+  | DLDeleteFact
+  | DLTableDecl
+  | DLLoadStmt;
 export type DLString = {
   type: "String";
   text: string;
@@ -204,6 +229,19 @@ export function parse(input: string): DLMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractMain(input, ruleTree);
+}
+function extractAggregation(input: string, node: RuleTree): DLAggregation {
+  return {
+    type: "Aggregation",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ident: extractIdent(input, childByName(node, "ident")),
+    var: childrenByName(node, "var").map((child) => extractVar(input, child)),
+    commaSpace: childrenByName(node, "commaSpace").map((child) =>
+      extractCommaSpace(input, child)
+    ),
+    record: extractRecord(input, childByName(node, "record")),
+  };
 }
 function extractAlpha(input: string, node: RuleTree): DLAlpha {
   return {
@@ -296,10 +334,21 @@ function extractConjunct(input: string, node: RuleTree): DLConjunct {
     case "negation": {
       return extractNegation(input, child);
     }
+    case "aggregation": {
+      return extractAggregation(input, child);
+    }
     case "placeholder": {
       return extractPlaceholder(input, child);
     }
   }
+}
+function extractDeleteFact(input: string, node: RuleTree): DLDeleteFact {
+  return {
+    type: "DeleteFact",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    record: extractRecord(input, childByName(node, "record")),
+  };
 }
 function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
   return {
@@ -461,6 +510,9 @@ function extractStatement(input: string, node: RuleTree): DLStatement {
     case "fact": {
       return extractFact(input, child);
     }
+    case "deleteFact": {
+      return extractDeleteFact(input, child);
+    }
     case "tableDecl": {
       return extractTableDecl(input, child);
     }
@@ -592,6 +644,11 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
+        rule: "deleteFact",
+        captureName: null,
+      },
+      {
+        type: "Ref",
         rule: "tableDecl",
         captureName: null,
       },
@@ -666,6 +723,24 @@ const GRAMMAR: Grammar = {
   fact: {
     type: "Sequence",
     items: [
+      {
+        type: "Ref",
+        rule: "record",
+        captureName: null,
+      },
+      {
+        type: "Text",
+        value: ".",
+      },
+    ],
+  },
+  deleteFact: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Text",
+        value: "-",
+      },
       {
         type: "Ref",
         rule: "record",
@@ -779,6 +854,11 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
+        rule: "aggregation",
+        captureName: null,
+      },
+      {
+        type: "Ref",
         rule: "placeholder",
         captureName: null,
       },
@@ -795,6 +875,51 @@ const GRAMMAR: Grammar = {
         type: "Ref",
         rule: "record",
         captureName: null,
+      },
+    ],
+  },
+  aggregation: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        rule: "ident",
+        captureName: null,
+      },
+      {
+        type: "Text",
+        value: "[",
+      },
+      {
+        type: "RepSep",
+        rep: {
+          type: "Ref",
+          rule: "var",
+          captureName: null,
+        },
+        sep: {
+          type: "Ref",
+          rule: "commaSpace",
+          captureName: null,
+        },
+      },
+      {
+        type: "Text",
+        value: ":",
+      },
+      {
+        type: "Ref",
+        rule: "ws",
+        captureName: null,
+      },
+      {
+        type: "Ref",
+        rule: "record",
+        captureName: null,
+      },
+      {
+        type: "Text",
+        value: "]",
       },
     ],
   },
@@ -1071,6 +1196,11 @@ const GRAMMAR: Grammar = {
         value: "[",
       },
       {
+        type: "Ref",
+        rule: "ws",
+        captureName: null,
+      },
+      {
         type: "RepSep",
         rep: {
           type: "Ref",
@@ -1082,6 +1212,11 @@ const GRAMMAR: Grammar = {
           rule: "commaSpace",
           captureName: null,
         },
+      },
+      {
+        type: "Ref",
+        rule: "ws",
+        captureName: null,
       },
       {
         type: "Text",

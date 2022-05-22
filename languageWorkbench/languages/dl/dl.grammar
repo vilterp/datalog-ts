@@ -1,10 +1,11 @@
 main :- [ws, repSep((statement | comment), ws), ws].
-statement :- (rule | fact | tableDecl | loadStmt).
+statement :- (rule | fact | deleteFact | tableDecl | loadStmt).
 comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [tableKW, ws, name:ident].
 loadStmt :- [loadKW, ws, path].
 
 fact :- [record, "."].
+deleteFact :- ["-", record, "."].
 
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
