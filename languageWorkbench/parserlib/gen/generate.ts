@@ -76,7 +76,7 @@ export function genExtractor(
       typeForRule(name, rule, options)
     ),
     declarations: [
-      generateEntryPoint(options),
+      ...generateEntryPoints(grammar, options),
       ...mapObjToList(
         filterObj(grammar, (name) => !options.ignoreRules.has(name)),
         (name, rule) => genRule(name, rule, options)
@@ -290,18 +290,20 @@ function generateGrammarConst(grammar: Grammar): string {
   return `const GRAMMAR: Grammar = ${JSON.stringify(grammar, null, 2)}`;
 }
 
-function generateEntryPoint(options: Options): string {
-  return [
-    `export function parse(input: string): ${typeName(
-      "main",
-      options.typePrefix
-    )} {`,
-    `  const traceTree = parserlib.parse(GRAMMAR, "main", input)`,
-    // TODO: problematic if there's a rule called RuleTree
-    `  const ruleTree = extractRuleTree(traceTree)`,
-    `  return ${extractorName("main")}(input, ruleTree)`,
-    `}`,
-  ].join("\n");
+function generateEntryPoints(grammar: Grammar, options: Options): string[] {
+  return mapObjToList(grammar, (ruleName, rule) =>
+    [
+      `export function parse${typeName(
+        ruleName,
+        ""
+      )}(input: string): ${typeName(ruleName, options.typePrefix)} {`,
+      `  const traceTree = parserlib.parse(GRAMMAR, "${ruleName}", input)`,
+      // TODO: problematic if there's a rule called RuleTree
+      `  const ruleTree = extractRuleTree(traceTree)`,
+      `  return ${extractorName(ruleName)}(input, ruleTree)`,
+      `}`,
+    ].join("\n")
+  );
 }
 
 function typeName(ruleName: string, prefix: string) {
