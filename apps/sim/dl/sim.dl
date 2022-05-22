@@ -74,7 +74,7 @@ batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
   connection{from: S, to: B} &
   currentAtSource{id: S, time: T, level: L}.
 batteryInputCurrent{id: B, time: T, current: C} :-
-  sum[C: batteryInputCurrentFrom{id: B, time: T, current: C}].
+  sum[B, I, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
