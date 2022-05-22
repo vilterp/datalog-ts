@@ -255,7 +255,12 @@ export function makeTermWithBindings(
         inner: makeTermWithBindings(term.record, bindings),
       };
     case "Aggregation":
-      return { type: "AggregationWithBindings" };
+      return {
+        type: "AggregationWithBindings",
+        aggregation: term.aggregation,
+        varName: term.varName,
+        record: makeTermWithBindings(term.record, bindings),
+      };
     default:
       return { type: "Atom", term };
   }

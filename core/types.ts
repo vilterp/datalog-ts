@@ -204,6 +204,9 @@ export type NegationWithBindings = {
 
 export type AggregationWithBindings = {
   type: "AggregationWithBindings";
+  aggregation: string;
+  varName: string;
+  record: TermWithBindings;
 };
 
 export type SituatedBinding = {
