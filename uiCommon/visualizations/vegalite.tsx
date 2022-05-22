@@ -1,9 +1,8 @@
 import React from "react";
 import { VegaLite, VisualizationSpec } from "react-vega";
 import { dlToJson } from "../../util/json2dl";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Term } from "../../core/types";
-import { VizTypeSpec } from "./typeSpec";
+import { Rec } from "../../core/types";
+import { VizArgs, VizTypeSpec } from "./typeSpec";
 
 export const vegalite: VizTypeSpec = {
   name: "Vega Lite",
@@ -11,11 +10,7 @@ export const vegalite: VizTypeSpec = {
   component: VegaLiteViz,
 };
 
-function VegaLiteViz(props: {
-  interp: AbstractInterpreter;
-  spec: Rec;
-  setHighlightedTerm: (t: Term | null) => void;
-}) {
+function VegaLiteViz(props: VizArgs) {
   const spec = dlToJson(props.spec, false) as VisualizationSpec;
   const query = props.spec.attrs.query as Rec;
   let data = [];

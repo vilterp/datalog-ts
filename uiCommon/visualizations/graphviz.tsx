@@ -1,7 +1,6 @@
 import React from "react";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, StringLit, Term } from "../../core/types";
-import { VizTypeSpec } from "./typeSpec";
+import { StringLit, Term } from "../../core/types";
+import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
 import { ppt } from "../../core/pretty";
@@ -12,11 +11,7 @@ export const graphviz: VizTypeSpec = {
   component: GraphvizWrapper,
 };
 
-function GraphvizWrapper(props: {
-  interp: AbstractInterpreter;
-  spec: Rec;
-  setHighlightedTerm: (t: Term | null) => void;
-}) {
+function GraphvizWrapper(props: VizArgs) {
   // TODO: better error messages when bindings are missing
   // in theory this could be found statically...
 

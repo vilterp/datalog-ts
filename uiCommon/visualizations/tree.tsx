@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Bool, Rec, StringLit, Term } from "../../core/types";
-import { VizTypeSpec } from "./typeSpec";
+import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import {
   emptyCollapseState,
@@ -17,12 +17,7 @@ export const tree: VizTypeSpec = {
   component: TreeViz,
 };
 
-function TreeViz(props: {
-  interp: AbstractInterpreter;
-  id: string;
-  spec: Rec;
-  setHighlightedTerm: (t: Term | null) => void;
-}) {
+function TreeViz(props: VizArgs) {
   const [collapseState, setCollapseState] =
     useJSONLocalStorage<TreeCollapseState>(
       `tree-viz-${props.id}`,

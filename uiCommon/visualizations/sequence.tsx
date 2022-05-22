@@ -1,6 +1,5 @@
 import React from "react";
-import { VizTypeSpec } from "./typeSpec";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Rec, Res, StringLit, Term } from "../../core/types";
 import {
   AbsPos,
@@ -25,11 +24,7 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-function SequenceDiagram(props: {
-  interp: AbstractInterpreter;
-  spec: Rec;
-  setHighlightedTerm: (t: Term | null) => void;
-}) {
+function SequenceDiagram(props: VizArgs) {
   const actors = props.interp.queryStr(
     (props.spec.attrs.actors as StringLit).val
   );
