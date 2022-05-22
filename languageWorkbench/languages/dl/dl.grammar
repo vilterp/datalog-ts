@@ -7,8 +7,9 @@ fact :- [record, "."].
 
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
-conjunct :- (record | binExpr | negation | placeholder).
+conjunct :- (record | binExpr | negation | aggregation | placeholder).
 negation :- ["!", record].
+aggregation :- [ident, "[", var, ":", ws, record, "]"].
 
 binExpr :- [left:term, ws, binOp, ws, right:term].
 binOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").

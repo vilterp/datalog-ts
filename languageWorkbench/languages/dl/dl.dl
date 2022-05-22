@@ -87,7 +87,11 @@ scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
   |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.binExpr{id: BinExpr, parentID: Conjunct} &
-  ast.term{id: TermOrRecord, parentID: BinExpr}.
+  ast.term{id: TermOrRecord, parentID: BinExpr}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.aggregation{id: Agg, parentID: Conjunct} &
+  ast.record{id: TermOrRecord, parentID: Agg}.
 
 scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
   scope.recordVar{record: TermOrRecord, name: N, span: S} |

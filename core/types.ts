@@ -21,6 +21,7 @@ export type Trace =
       mappings: VarMappings;
     }
   | { type: "NegationTrace"; negatedTerm: Term }
+  | { type: "AggregationTrace"; aggregatedResults: Res[] }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "VarTrace" }
@@ -39,7 +40,8 @@ export type InvocationLocation = RulePathSegment[];
 export type RulePathSegment =
   | { type: "OrOpt"; idx: number }
   | { type: "AndClause"; idx: number }
-  | { type: "Negation" };
+  | { type: "Negation" }
+  | { type: "Aggregation" };
 
 export type ScopePath = { name: string; invokeLoc: InvocationLocation }[];
 
@@ -70,9 +72,16 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type AndClause = Rec | BinExpr | Negation;
+export type AndClause = Rec | BinExpr | Negation | Aggregation;
 
 type Negation = { type: "Negation"; record: Rec };
+
+type Aggregation = {
+  type: "Aggregation";
+  aggregation: string;
+  varName: string;
+  record: Rec;
+};
 
 export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
 
@@ -165,6 +174,7 @@ export type TermWithBindings =
   | ArrayWithBindings
   | BinExprWithBindings
   | NegationWithBindings
+  | AggregationWithBindings
   | { type: "Atom"; term: Int | Bool | StringLit | Var };
 
 export type RecordWithBindings = {
@@ -190,6 +200,10 @@ export type BinExprWithBindings = {
 export type NegationWithBindings = {
   type: "NegationWithBindings";
   inner: TermWithBindings;
+};
+
+export type AggregationWithBindings = {
+  type: "AggregationWithBindings";
 };
 
 export type SituatedBinding = {
