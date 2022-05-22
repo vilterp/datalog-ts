@@ -99,4 +99,4 @@ const MemoizedGraphviz = React.memo(Graphviz);
 
 // pull out this object to avoid creating it each time,
 // which defeats React.memo (and allocates unnecessarily...)
-const GRAPHVIZ_OPTIONS = { width: 500, height: 500, fit: true, zoom: false };
+const GRAPHVIZ_OPTIONS = { width: 500, height: 300, fit: true, zoom: false };
