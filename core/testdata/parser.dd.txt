@@ -949,10 +949,7 @@ application/json
             {
               "type": "Aggregation",
               "aggregation": "sum",
-              "varName": {
-                "type": "Var",
-                "name": "C"
-              },
+              "varName": "C",
               "record": {
                 "type": "Record",
                 "relation": "current",
