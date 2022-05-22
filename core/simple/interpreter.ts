@@ -11,6 +11,10 @@ import {
 } from "./lazyIndexedCollection";
 import { DB, emptyDB } from "./types";
 import { DLStatement } from "../../languageWorkbench/languages/dl/parser";
+import {
+  parserRuleToInternal,
+  parserTermToInternal,
+} from "../parserToInternal";
 
 export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;
@@ -25,7 +29,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
   evalStmt(stmt: DLStatement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
       case "Fact": {
-        const record = stmt.record;
+        const record = parserTermToInternal(stmt.record) as Rec;
         if (hasVars(record)) {
           // TODO: separate method for querying?
           return [this.evalQuery(record), this];
@@ -42,18 +46,19 @@ export class SimpleInterpreter extends AbstractInterpreter {
         ];
       }
       case "DeleteFact": {
+        const record = parserTermToInternal(stmt.record) as Rec;
         return [
           [],
           this.withDB({
             ...this.db,
-            tables: this.db.tables.update(stmt.record.relation, (tbl) =>
-              tbl.delete(stmt.record)
+            tables: this.db.tables.update(record.relation, (tbl) =>
+              tbl.delete(record)
             ),
           }),
         ];
       }
       case "Rule": {
-        const rule = stmt.rule;
+        const rule = parserRuleToInternal(stmt);
         // TODO: move this to some kind of validation phase?
         // better than silent failure tho.
         if (this.db.rules.get(rule.head.relation)) {
@@ -73,13 +78,13 @@ export class SimpleInterpreter extends AbstractInterpreter {
           this.withDB({
             ...this.db,
             tables: this.db.tables.update(
-              stmt.name,
+              stmt.name.text,
               (x = emptyLazyIndexedCollection()) => x // leave it alone if it's there
             ),
           }),
         ];
       case "LoadStmt":
-        return [[], this.doLoad(stmt.path)];
+        return [[], this.doLoad(stmt.path.text)];
     }
   }
 
