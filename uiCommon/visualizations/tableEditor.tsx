@@ -1,7 +1,8 @@
 import React from "react";
 import { ppt } from "../../core/pretty";
-import { Array, int, Rec } from "../../core/types";
+import { Array, Int, int, Rec } from "../../core/types";
 import { substitute } from "../../core/unify";
+import { max } from "../../util/util";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 
 // TODO: shouldn't the normal table just be an editor?
@@ -58,7 +59,7 @@ function TableEditor(props: VizArgs) {
             <button
               onClick={() => {
                 props.runStatements([
-                  { type: "Insert", record: withID(newRec) },
+                  { type: "Insert", record: withID(data, newRec) },
                 ]);
               }}
             >
@@ -72,12 +73,14 @@ function TableEditor(props: VizArgs) {
 }
 
 // TODO: can we do sequential numbers instead?
-function withID(rec: Rec): Rec {
+function withID(existing: Rec[], rec: Rec): Rec {
+  const ids = existing.map((rec) => (rec.attrs.id as Int).val);
+  const maxID = max(ids);
   return {
     ...rec,
     attrs: {
       ...rec.attrs,
-      id: int(Math.random()),
+      id: int(maxID + 1),
     },
   };
 }

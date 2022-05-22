@@ -403,3 +403,7 @@ export function pushAll<T>(arr: T[], items: T[]) {
 export function capitalize(input: string): string {
   return input[0].toUpperCase() + input.slice(1);
 }
+
+export function max(numbers: number[]): number {
+  return numbers.reduce((prev, cur) => Math.max(prev, cur), 0);
+}
