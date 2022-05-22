@@ -293,8 +293,9 @@ function doEvaluate(
         const aggregatedGroups = mapObjToList(groups, (key, results): Res => {
           const terms = results.map((res) => res.bindings[aggVar]);
           const aggResult = AGGREGATIONS[term.aggregation](terms);
+          const otherBindings = results.length > 0 ? results[0].bindings : {};
           const bindings = {
-            ...scope,
+            ...otherBindings,
             [aggVar]: aggResult,
           };
           const substituted = substitute(term.record, bindings);
