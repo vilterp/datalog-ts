@@ -121,3 +121,14 @@ internal.visualization{
   }
 }.
 
+internal.visualization{
+  name: "Sources",
+  spec: tableEditor{
+    query: node{},
+    new: [
+      source{id: Seq, supply: 10},
+      sink{id: Seq, demand: 10},
+      battery{id: Seq, capacity: 100, initialLevel: 50}
+    ]
+  }
+}.
