@@ -1,7 +1,8 @@
 {
   "name": "lingo",
   "displayName": "Lingo",
-  "version": "0.1.4",
+  "publisher": "lingo",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/vilterp/datalog-ts"
