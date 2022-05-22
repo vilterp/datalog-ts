@@ -21,7 +21,7 @@ import {
   unify,
   unifyBindings,
 } from "../unify";
-import { filterMap, flatMap } from "../../util/util";
+import { filterMap, flatMap, groupBy, mapObjToList } from "../../util/util";
 import { evalBinExpr } from "../binExpr";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
@@ -274,6 +274,9 @@ function doEvaluate(
           trace: { type: "NegationTrace", negatedTerm: term.record },
         }));
       case "Aggregation": {
+        if (!AGGREGATIONS[term.aggregation]) {
+          throw new UserError(`no such aggregation: ${term.aggregation}`);
+        }
         const results = doEvaluate(
           depth + 1,
           [...path, { type: "Aggregation" }],
@@ -282,19 +285,27 @@ function doEvaluate(
           term.record,
           cache
         );
-        const terms = results.map((res) => res.bindings[term.varName]);
-        if (!AGGREGATIONS[term.aggregation]) {
-          throw new UserError(`no such aggregation: ${term.aggregation}`);
-        }
-        const result = AGGREGATIONS[term.aggregation](terms);
-        return [
-          {
-            // this seems weird, but idk
-            term: term.record,
-            bindings: { [term.varName]: result },
+        const groupKey = term.varNames.slice(0, term.varNames.length - 1);
+        const aggVar = term.varNames[term.varNames.length - 1];
+        const groups = groupBy(results, (res) =>
+          groupKey.map((varName) => fastPPT(res.bindings[varName])).join(",")
+        );
+        const aggregatedGroups = mapObjToList(groups, (key, results): Res => {
+          const terms = results.map((res) => res.bindings[aggVar]);
+          const aggResult = AGGREGATIONS[term.aggregation](terms);
+          const otherBindings = results.length > 0 ? results[0].bindings : {};
+          const bindings = {
+            ...otherBindings,
+            [aggVar]: aggResult,
+          };
+          const substituted = substitute(term.record, bindings);
+          return {
+            term: substituted,
+            bindings,
             trace: { type: "AggregationTrace", aggregatedResults: results },
-          },
-        ];
+          };
+        });
+        return aggregatedGroups;
       }
     }
   })();

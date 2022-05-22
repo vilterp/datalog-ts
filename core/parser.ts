@@ -46,14 +46,14 @@ export const language = P.createLanguage({
     P.seq(
       r.recordIdentifier,
       word("["),
-      r.var,
+      P.sepBy(r.var, word(",")),
       word(":"),
       r.record,
       word("]")
-    ).map(([ident, _1, varName, _2, record]) => ({
+    ).map(([ident, _1, varNames, _2, record]) => ({
       type: "Aggregation",
       aggregation: ident,
-      varName: varName.name,
+      varNames: varNames.map((n) => n.name),
       record,
     })),
   term: (r) =>

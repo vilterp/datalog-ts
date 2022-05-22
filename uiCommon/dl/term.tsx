@@ -143,7 +143,7 @@ export function TermView(props: {
     case "AggregationWithBindings":
       return (
         <>
-          {term.aggregation}[{term.varName}:{" "}
+          {term.aggregation}[{term.varNames.join(", ")}:{" "}
           <TermView
             term={term.record}
             highlight={props.highlight}

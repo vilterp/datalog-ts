@@ -65,7 +65,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
       return [
         term.aggregation,
         "[",
-        term.varName,
+        term.varNames.join(", "),
         ":",
         prettyPrintTerm(term.record),
         "]",

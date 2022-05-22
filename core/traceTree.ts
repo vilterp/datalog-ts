@@ -258,7 +258,7 @@ export function makeTermWithBindings(
       return {
         type: "AggregationWithBindings",
         aggregation: term.aggregation,
-        varName: term.varName,
+        varNames: term.varNames,
         record: makeTermWithBindings(term.record, bindings),
       };
     default:
