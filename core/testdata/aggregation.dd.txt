@@ -7,3 +7,15 @@ total{level: C}.
 ----
 application/datalog
 total{level: 28}.
+
+currentInput{dest: 1, level: 5}.
+currentInput{dest: 1, level: 10}.
+currentInput{dest: 2, level: 13}.
+currentInput{dest: 2, level: 14}.
+groupedTotal{dest: D, level: C} :-
+  sum[D, C: currentInput{dest: D, level: C}].
+groupedTotal{level: C}.
+----
+application/datalog
+groupedTotal{dest: D, level: 15}.
+groupedTotal{dest: D, level: 27}.
