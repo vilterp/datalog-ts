@@ -924,7 +924,7 @@ application/json
 
 rule
 total{level: C} :-
-  sum[C: current{id: I, level: C}].
+  sum[T, C: current{id: I, time: T, level: C}].
 ----
 application/json
 {
@@ -949,7 +949,10 @@ application/json
             {
               "type": "Aggregation",
               "aggregation": "sum",
-              "varName": "C",
+              "varNames": [
+                "T",
+                "C"
+              ],
               "record": {
                 "type": "Record",
                 "relation": "current",
@@ -957,6 +960,10 @@ application/json
                   "id": {
                     "type": "Var",
                     "name": "I"
+                  },
+                  "time": {
+                    "type": "Var",
+                    "name": "T"
                   },
                   "level": {
                     "type": "Var",
