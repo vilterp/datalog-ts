@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { nullLoader } from "../../core/loaders";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
@@ -7,13 +7,19 @@ import { Explorer } from "../../uiCommon/explorer";
 import simDL from "./dl/sim.dl";
 
 const emptyInterp = new SimpleInterpreter(".", nullLoader);
-const interp = emptyInterp.evalStr(simDL)[1];
+const loadedInterp = emptyInterp.evalStr(simDL)[1];
 
 function Main() {
+  const [interp, setInterp] = useState(loadedInterp);
+
   return (
     <>
       <h1>Simulator</h1>
-      <Explorer interp={interp} showViz />
+      <Explorer
+        interp={interp}
+        runStatements={(stmts) => setInterp(interp.evalStmts(stmts)[1])}
+        showViz
+      />
     </>
   );
 }

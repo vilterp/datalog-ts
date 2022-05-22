@@ -1,7 +1,6 @@
 import React from "react";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, StringLit, Term } from "../../core/types";
-import { VizTypeSpec } from "./typeSpec";
+import { StringLit, Term } from "../../core/types";
+import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
 import { ppt } from "../../core/pretty";
@@ -12,11 +11,7 @@ export const graphviz: VizTypeSpec = {
   component: GraphvizWrapper,
 };
 
-function GraphvizWrapper(props: {
-  interp: AbstractInterpreter;
-  spec: Rec;
-  setHighlightedTerm: (t: Term | null) => void;
-}) {
+function GraphvizWrapper(props: VizArgs) {
   // TODO: better error messages when bindings are missing
   // in theory this could be found statically...
 
@@ -104,4 +99,4 @@ const MemoizedGraphviz = React.memo(Graphviz);
 
 // pull out this object to avoid creating it each time,
 // which defeats React.memo (and allocates unnecessarily...)
-const GRAPHVIZ_OPTIONS = { width: 500, height: 500, fit: true, zoom: false };
+const GRAPHVIZ_OPTIONS = { width: 500, height: 300, fit: true, zoom: false };
