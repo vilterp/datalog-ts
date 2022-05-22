@@ -74,7 +74,7 @@ batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
   connection{from: S, to: B} &
   currentAtSource{id: S, time: T, level: L}.
 batteryInputCurrent{id: B, time: T, current: C} :-
-  sum[B, I, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
+  sum[B, T, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time{time: T} &
   battery{id: B} &
@@ -83,7 +83,7 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   currentAtSink{id: S, time: T, level: L}.
 
 time{time: T} :-
-  range{from: 1, to: 3, val: T}.
+  range{from: 1, to: 30, val: T}.
 
 # === visualization ===
 
