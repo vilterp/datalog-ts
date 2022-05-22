@@ -24,9 +24,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
 
   evalStmt(stmt: DLStatement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
-      case "Query":
-        return [this.evalQuery(stmt.record), this];
-      case "Insert": {
+      case "Fact": {
         const record = stmt.record;
         if (hasVars(record)) {
           // TODO: separate method for querying?
@@ -43,7 +41,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
-      case "Delete": {
+      case "DeleteFact": {
         return [
           [],
           this.withDB({
@@ -82,8 +80,6 @@ export class SimpleInterpreter extends AbstractInterpreter {
         ];
       case "LoadStmt":
         return [[], this.doLoad(stmt.path)];
-      case "Comment":
-        return [[], this];
     }
   }
 
