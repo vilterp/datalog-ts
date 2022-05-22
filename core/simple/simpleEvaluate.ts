@@ -295,7 +295,7 @@ function doEvaluate(
           const aggResult = AGGREGATIONS[term.aggregation](terms);
           const bindings = {
             ...scope,
-            [term.aggregation]: aggResult,
+            [aggVar]: aggResult,
           };
           const substituted = substitute(term.record, bindings);
           return {
