@@ -39,14 +39,14 @@ function TableEditor(props: VizArgs) {
       <ul>
         {data.map((rec) => (
           <li key={ppt(rec)}>
-            <pre>{ppt(rec)}</pre>
             <button
               onClick={() => {
                 console.log("delete", rec);
               }}
             >
               x
-            </button>
+            </button>{" "}
+            <code>{ppt(rec)}</code>
           </li>
         ))}
       </ul>
