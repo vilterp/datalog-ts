@@ -39,16 +39,18 @@ function TableEditor(props: VizArgs) {
     <>
       Data
       <ul>
-        {data.map((rec) => (
-          <li key={ppt(rec)}>
+        {data.map((record) => (
+          <li key={ppt(record)}>
             <button
               onClick={() => {
-                console.log("delete", rec);
+                props.runStatements([
+                  { type: "Delete", record: record.attrs.label as Rec },
+                ]);
               }}
             >
               x
             </button>{" "}
-            <code>{ppt(rec)}</code>
+            <code>{ppt(record.attrs.label)}</code>
           </li>
         ))}
       </ul>
