@@ -21,7 +21,7 @@ recordAttrs :- repSep((keyValue | placeholder), commaSpace).
 keyValue :- [ident, ":", ws, term].
 int :- [("-" | ""), first:num, repSep(num, "")].
 bool :- ("true" | "false").
-array :- ["[", repSep(term, commaSpace), "]"].
+array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
 
 tableKW :- ".table".
 
