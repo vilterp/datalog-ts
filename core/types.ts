@@ -79,7 +79,7 @@ type Negation = { type: "Negation"; record: Rec };
 type Aggregation = {
   type: "Aggregation";
   aggregation: string;
-  varName: string;
+  varNames: string[];
   record: Rec;
 };
 
@@ -205,7 +205,7 @@ export type NegationWithBindings = {
 export type AggregationWithBindings = {
   type: "AggregationWithBindings";
   aggregation: string;
-  varName: string;
+  varNames: string[];
   record: TermWithBindings;
 };
 
