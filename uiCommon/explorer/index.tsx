@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Term } from "../../core/types";
+import { Statement, Term } from "../../core/types";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
@@ -11,6 +11,7 @@ import { RelationCollapseStates } from "./types";
 
 export function Explorer(props: {
   interp: AbstractInterpreter;
+  runStatements?: (stmts: Statement[]) => void;
   showViz?: boolean;
 }) {
   const [highlight, setHighlight] = useState(noHighlight);
@@ -70,6 +71,15 @@ export function Explorer(props: {
               term === null
                 ? setHighlight({ type: "None" })
                 : setHighlight({ type: "Term", term })
+            }
+            runStatements={
+              props.runStatements ||
+              ((stmts) => {
+                console.warn(
+                  "no handler configured for statements; dropping",
+                  stmts
+                );
+              })
             }
           />
         </div>

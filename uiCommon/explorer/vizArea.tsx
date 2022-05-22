@@ -1,12 +1,13 @@
 import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, StringLit, Term } from "../../core/types";
+import { Rec, Statement, StringLit, Term } from "../../core/types";
 import { CollapsibleWithHeading } from "../generic/collapsible";
 import { VIZ_REGISTRY } from "../visualizations";
 
 export function VizArea(props: {
   interp: AbstractInterpreter;
   setHighlightedTerm: (t: Term | null) => void;
+  runStatements: (stmts: Statement[]) => void;
 }) {
   const interp = ensureVizTable(props.interp);
   const specs = interp.queryStr(
@@ -24,6 +25,7 @@ export function VizArea(props: {
           name={(result.bindings.Name as StringLit).val}
           spec={result.bindings.Spec as Rec}
           setHighlightedTerm={props.setHighlightedTerm}
+          runStatements={props.runStatements}
         />
       ))}
     </>
@@ -35,6 +37,7 @@ function IndividualViz(props: {
   name: string;
   spec: Rec;
   setHighlightedTerm: (t: Term | null) => void;
+  runStatements: (stmts: Statement[]) => void;
 }) {
   const viz = VIZ_REGISTRY[props.spec.relation];
   return (
@@ -47,6 +50,7 @@ function IndividualViz(props: {
             interp={props.interp}
             spec={props.spec}
             setHighlightedTerm={props.setHighlightedTerm}
+            runStatements={props.runStatements}
             id={props.name}
           />
         ) : (
