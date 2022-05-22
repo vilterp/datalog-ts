@@ -291,18 +291,20 @@ function generateGrammarConst(grammar: Grammar): string {
 }
 
 function generateEntryPoints(grammar: Grammar, options: Options): string[] {
-  return mapObjToList(grammar, (ruleName, rule) =>
-    [
-      `export function parse${typeName(
-        ruleName,
-        ""
-      )}(input: string): ${typeName(ruleName, options.typePrefix)} {`,
-      `  const traceTree = parserlib.parse(GRAMMAR, "${ruleName}", input)`,
-      // TODO: problematic if there's a rule called RuleTree
-      `  const ruleTree = extractRuleTree(traceTree)`,
-      `  return ${extractorName(ruleName)}(input, ruleTree)`,
-      `}`,
-    ].join("\n")
+  return mapObjToList(
+    filterObj(grammar, (ruleName) => !options.ignoreRules.has(ruleName)),
+    (ruleName, rule) =>
+      [
+        `export function parse${typeName(
+          ruleName,
+          ""
+        )}(input: string): ${typeName(ruleName, options.typePrefix)} {`,
+        `  const traceTree = parserlib.parse(GRAMMAR, "${ruleName}", input)`,
+        // TODO: problematic if there's a rule called RuleTree
+        `  const ruleTree = extractRuleTree(traceTree)`,
+        `  return ${extractorName(ruleName)}(input, ruleTree)`,
+        `}`,
+      ].join("\n")
   );
 }
 

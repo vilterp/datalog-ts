@@ -400,11 +400,6 @@ export function parseVar(input: string): DLVar {
   const ruleTree = extractRuleTree(traceTree);
   return extractVar(input, ruleTree);
 }
-export function parseWs(input: string): DLWs {
-  const traceTree = parserlib.parse(GRAMMAR, "ws", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractWs(input, ruleTree);
-}
 function extractAggregation(input: string, node: RuleTree): DLAggregation {
   return {
     type: "Aggregation",
