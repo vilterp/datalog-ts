@@ -121,14 +121,21 @@ internal.visualization{
   }
 }.
 
+tableRow{label: L} :-
+  node{label: L} |
+  connRow{label: L}.
+connRow{label: connection{from: F, to: T}} :-
+  connection{from: F, to: T}.
+
 internal.visualization{
   name: "Sources",
   spec: tableEditor{
-    query: node{},
+    query: tableRow{},
     new: [
       source{id: "ID", supply: 10},
       sink{id: "ID", demand: 10},
-      battery{id: "ID", capacity: 100, initialLevel: 50}
+      battery{id: "ID", capacity: 100, initialLevel: 50},
+      connection{from: "ID", to: "ID"}
     ]
   }
 }.
