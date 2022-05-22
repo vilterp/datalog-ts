@@ -1,6 +1,7 @@
 import React from "react";
 import { ppt } from "../../core/pretty";
-import { Array, Rec } from "../../core/types";
+import { Array, int, Rec } from "../../core/types";
+import { substitute } from "../../core/unify";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 
 // TODO: shouldn't the normal table just be an editor?
@@ -56,7 +57,9 @@ function TableEditor(props: VizArgs) {
           <li key={ppt(newRec)}>
             <button
               onClick={() => {
-                console.log("create new", newRec);
+                props.runStatements([
+                  { type: "Insert", record: withID(newRec) },
+                ]);
               }}
             >
               {ppt(newRec)}
@@ -66,4 +69,15 @@ function TableEditor(props: VizArgs) {
       </ul>
     </>
   );
+}
+
+// TODO: can we do sequential numbers instead?
+function withID(rec: Rec): Rec {
+  return {
+    ...rec,
+    attrs: {
+      ...rec.attrs,
+      id: int(Math.random()),
+    },
+  };
 }

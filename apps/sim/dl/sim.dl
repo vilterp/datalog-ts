@@ -126,9 +126,9 @@ internal.visualization{
   spec: tableEditor{
     query: node{},
     new: [
-      source{id: Seq, supply: 10},
-      sink{id: Seq, demand: 10},
-      battery{id: Seq, capacity: 100, initialLevel: 50}
+      source{id: "ID", supply: 10},
+      sink{id: "ID", demand: 10},
+      battery{id: "ID", capacity: 100, initialLevel: 50}
     ]
   }
 }.

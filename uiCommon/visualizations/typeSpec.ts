@@ -1,5 +1,5 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Term } from "../../core/types";
+import { Rec, Statement, Term } from "../../core/types";
 
 export type VizTypeSpec = {
   name: string;
@@ -12,4 +12,5 @@ export type VizArgs = {
   spec: Rec;
   id: string; // uniquely identify this visualization instance
   setHighlightedTerm: (t: Term | null) => void;
+  runStatements: (stmts: Statement[]) => void;
 };
