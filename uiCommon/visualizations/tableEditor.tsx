@@ -40,6 +40,13 @@ function TableEditor(props: VizArgs) {
         {data.map((rec) => (
           <li key={ppt(rec)}>
             <pre>{ppt(rec)}</pre>
+            <button
+              onClick={() => {
+                console.log("delete", rec);
+              }}
+            >
+              x
+            </button>
           </li>
         ))}
       </ul>
@@ -47,7 +54,13 @@ function TableEditor(props: VizArgs) {
       <ul>
         {news.map((newRec) => (
           <li key={ppt(newRec)}>
-            <button>{ppt(newRec)}</button>
+            <button
+              onClick={() => {
+                console.log("create new", newRec);
+              }}
+            >
+              {ppt(newRec)}
+            </button>
           </li>
         ))}
       </ul>
