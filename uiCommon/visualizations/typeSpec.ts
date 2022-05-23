@@ -11,6 +11,7 @@ export type VizArgs = {
   interp: AbstractInterpreter;
   spec: Rec;
   id: string; // uniquely identify this visualization instance
+  highlightedTerm: Term | null;
   setHighlightedTerm: (t: Term | null) => void;
   runStatements: (stmts: Statement[]) => void;
 };

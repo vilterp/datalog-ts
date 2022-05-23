@@ -10,6 +10,9 @@ import {
 import { BareTerm } from "../dl/replViews";
 import { treeFromRecords } from "../generic/treeFromRecords";
 import { useJSONLocalStorage } from "../generic/hooks";
+import { HighlightProps, noHighlightProps } from "../dl/term";
+import * as styles from "../explorer/styles";
+import { termEq } from "../../core/unify";
 
 export const tree: VizTypeSpec = {
   name: "Tree",
@@ -37,18 +40,26 @@ function TreeViz(props: VizArgs) {
         setCollapseState={setCollapseState}
         hideRoot={true}
         tree={tree}
-        render={({ item }) => (
-          <span
-            onMouseEnter={() => props.setHighlightedTerm(item.term)}
-            onMouseLeave={() => props.setHighlightedTerm(null)}
-          >
-            {item.bindings.Display ? (
-              <BareTerm term={item.bindings.Display} />
-            ) : (
-              <BareTerm term={item.term} />
-            )}
-          </span>
-        )}
+        render={({ item }) => {
+          const isHighlighted =
+            props.highlightedTerm !== null &&
+            termEq(item.term, props.highlightedTerm);
+          return (
+            <span
+              onMouseEnter={() => props.setHighlightedTerm(item.term)}
+              onMouseLeave={() => props.setHighlightedTerm(null)}
+              style={{
+                backgroundColor: isHighlighted ? styles.highlightColor : "",
+              }}
+            >
+              {item.bindings.Display ? (
+                <BareTerm term={item.bindings.Display} />
+              ) : (
+                <BareTerm term={item.term} />
+              )}
+            </span>
+          );
+        }}
       />
     );
   } catch (e) {

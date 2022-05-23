@@ -67,6 +67,7 @@ export function Explorer(props: {
         <div style={{ padding: 10, border: "1px solid black" }}>
           <VizArea
             interp={props.interp}
+            highlightedTerm={highlight.type === "Term" ? highlight.term : null}
             setHighlightedTerm={(term: Term | null) =>
               term === null
                 ? setHighlight({ type: "None" })
