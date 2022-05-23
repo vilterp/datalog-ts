@@ -1,4 +1,8 @@
-import { DLRule, DLTerm } from "../languageWorkbench/languages/dl/parser";
+import {
+  DLRule,
+  DLStatement,
+  DLTerm,
+} from "../languageWorkbench/languages/dl/parser";
 import { mapListToObj } from "../util/util";
 import {
   array,
@@ -8,10 +12,41 @@ import {
   rec,
   Rec,
   Rule,
+  Statement,
   str,
   Term,
   varr,
 } from "./types";
+
+export function parserStatementToInternal(stmt: DLStatement): Statement {
+  switch (stmt.type) {
+    case "DeleteFact":
+      return {
+        type: "Delete",
+        record: parserTermToInternal(stmt.record) as Rec,
+      };
+    case "Fact":
+      return {
+        type: "Fact",
+        record: parserTermToInternal(stmt.record) as Rec,
+      };
+    case "Rule":
+      return {
+        type: "Rule",
+        rule: parserRuleToInternal(stmt),
+      };
+    case "TableDecl":
+      return {
+        type: "TableDecl",
+        name: stmt.name.text,
+      };
+    case "LoadStmt":
+      return {
+        type: "LoadStmt",
+        path: stmt.path.text,
+      };
+  }
+}
 
 export function parserRuleToInternal(term: DLRule): Rule {
   return {

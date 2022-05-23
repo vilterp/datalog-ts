@@ -1,3 +1,10 @@
+export type Statement =
+  | { type: "Rule"; rule: Rule }
+  | { type: "Fact"; record: Rec }
+  | { type: "Delete"; record: Rec }
+  | { type: "TableDecl"; name: string }
+  | { type: "LoadStmt"; path: string };
+
 // === DB Contents ===
 
 export type Relation =

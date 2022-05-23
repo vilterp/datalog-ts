@@ -1,4 +1,4 @@
-import { Rec, Relation, Res, Rule } from "./types";
+import { Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
 import {
   DLMain,
@@ -6,6 +6,10 @@ import {
   parseMain,
   parseRecord,
 } from "../languageWorkbench/languages/dl/parser";
+import {
+  parserStatementToInternal,
+  parserTermToInternal,
+} from "./translateAST";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -18,13 +22,13 @@ export abstract class AbstractInterpreter {
     this.cwd = cwd;
   }
 
-  abstract evalStmt(stmt: DLStatement): [Res[], AbstractInterpreter];
+  abstract evalStmt(stmt: Statement): [Res[], AbstractInterpreter];
 
   // default impl that isn't bulk
   bulkInsert(records: Rec[]): AbstractInterpreter {
     let interp: AbstractInterpreter = this;
     for (const record of records) {
-      interp = interp.evalStmt({ type: "Insert", record })[1];
+      interp = interp.evalStmt({ type: "Fact", record })[1];
     }
     return interp;
   }
@@ -32,7 +36,8 @@ export abstract class AbstractInterpreter {
   evalStmts(stmts: DLStatement[]): [Res[], AbstractInterpreter] {
     const results: Res[] = [];
     let interp: AbstractInterpreter = this;
-    stmts.forEach((stmt) => {
+    stmts.forEach((rawStmt) => {
+      const stmt = parserStatementToInternal(rawStmt);
       const [newResults, newInterp] = interp.evalStmt(stmt);
       newResults.forEach((res) => results.push(res));
       interp = newInterp;
@@ -53,9 +58,7 @@ export abstract class AbstractInterpreter {
     const record = parseRecord(str);
     const [res, _] = this.evalStmt({
       type: "Fact",
-      text: record.text,
-      span: record.span,
-      record,
+      record: parserTermToInternal(record) as Rec,
     });
     return res;
   }
@@ -75,7 +78,7 @@ export abstract class AbstractInterpreter {
     const program: DLMain = parseMain(contents);
     let out: AbstractInterpreter = this;
     for (const stmt of program.statement) {
-      const [_, newInterp] = out.evalStmt(stmt);
+      const [_, newInterp] = out.evalStmt(parserStatementToInternal(stmt));
       out = newInterp;
     }
     return out;

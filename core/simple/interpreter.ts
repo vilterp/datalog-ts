@@ -1,5 +1,5 @@
 import { Map, List } from "immutable";
-import { Rec, Res, rec, str, Rule, UserError } from "../types";
+import { Rec, Res, rec, str, Rule, UserError, Statement } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
@@ -11,10 +11,7 @@ import {
 } from "./lazyIndexedCollection";
 import { DB, emptyDB } from "./types";
 import { DLStatement } from "../../languageWorkbench/languages/dl/parser";
-import {
-  parserRuleToInternal,
-  parserTermToInternal,
-} from "../parserToInternal";
+import { parserRuleToInternal, parserTermToInternal } from "../translateAST";
 
 export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;
@@ -26,10 +23,10 @@ export class SimpleInterpreter extends AbstractInterpreter {
     this.loader = loader;
   }
 
-  evalStmt(stmt: DLStatement): [Res[], AbstractInterpreter] {
+  evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
       case "Fact": {
-        const record = parserTermToInternal(stmt.record) as Rec;
+        const record = stmt.record;
         if (hasVars(record)) {
           // TODO: separate method for querying?
           return [this.evalQuery(record), this];
@@ -45,8 +42,8 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
-      case "DeleteFact": {
-        const record = parserTermToInternal(stmt.record) as Rec;
+      case "Delete": {
+        const record = stmt.record;
         return [
           [],
           this.withDB({
@@ -58,7 +55,7 @@ export class SimpleInterpreter extends AbstractInterpreter {
         ];
       }
       case "Rule": {
-        const rule = parserRuleToInternal(stmt);
+        const rule = stmt.rule;
         // TODO: move this to some kind of validation phase?
         // better than silent failure tho.
         if (this.db.rules.get(rule.head.relation)) {
@@ -78,13 +75,13 @@ export class SimpleInterpreter extends AbstractInterpreter {
           this.withDB({
             ...this.db,
             tables: this.db.tables.update(
-              stmt.name.text,
+              stmt.name,
               (x = emptyLazyIndexedCollection()) => x // leave it alone if it's there
             ),
           }),
         ];
       case "LoadStmt":
-        return [[], this.doLoad(stmt.path.text)];
+        return [[], this.doLoad(stmt.path)];
     }
   }
 
