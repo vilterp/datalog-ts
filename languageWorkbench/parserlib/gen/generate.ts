@@ -81,33 +81,40 @@ export function genExtractor(
 type RefInfo = {
   ruleName: string;
   captureName: string | null;
-  repeated: boolean;
+  origin: RefOrigin;
 };
 
+type RefOrigin = {
+  repeated: boolean; // whether this was in a repSep
+  inChoice: boolean; // whether this was in a choice
+};
+
+const initialOrigin: RefOrigin = { inChoice: false, repeated: false };
+
 function refsInRule(rule: Rule): RefInfo[] {
-  return refsInRuleInner(rule, false);
+  return refsInRuleInner(rule, initialOrigin);
 }
 
-function refsInRuleInner(rule: Rule, repeated: boolean): RefInfo[] {
+function refsInRuleInner(rule: Rule, origin: RefOrigin): RefInfo[] {
   switch (rule.type) {
     case "Char":
       return [];
     case "Choice":
       return flatMap(rule.choices, (choice) =>
-        refsInRuleInner(choice, repeated)
+        refsInRuleInner(choice, { ...origin, inChoice: true })
       );
     case "Ref":
-      return [{ ruleName: rule.rule, captureName: rule.captureName, repeated }];
+      return [{ ruleName: rule.rule, captureName: rule.captureName, origin }];
     case "RepSep":
-      if (repeated) {
+      if (origin.repeated) {
         throw new Error("can't have repSep inside repSep. define a sub rule");
       }
       return [
-        ...refsInRuleInner(rule.rep, true),
-        ...refsInRuleInner(rule.sep, true),
+        ...refsInRuleInner(rule.rep, { ...origin, repeated: true }),
+        ...refsInRuleInner(rule.sep, { ...origin, repeated: true }),
       ];
     case "Sequence":
-      return flatMap(rule.items, (item) => refsInRuleInner(item, repeated));
+      return flatMap(rule.items, (item) => refsInRuleInner(item, origin));
     case "Text":
       return [];
   }
@@ -191,10 +198,10 @@ function extractorBodyForRule(
 
   const ruleObjMembers = refs
     .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-    .map(({ ruleName, repeated, captureName }) => ({
+    .map(({ ruleName, captureName, origin }) => ({
       // TODO: pluralize if this is a repSep
       key: prefixToAvoidReserved(captureName ? captureName : ruleName),
-      value: repeated
+      value: origin.repeated
         ? jsCall(
             jsMember(
               jsCall(jsIdent("childrenByName"), [
@@ -259,7 +266,7 @@ function typeExprForRule(
             const inner = tsTypeName(
               typeName(ref.ruleName, options.typePrefix)
             );
-            return ref.repeated ? tsArrayType(inner) : inner;
+            return ref.origin.repeated ? tsArrayType(inner) : inner;
           })
         );
   }
@@ -272,7 +279,7 @@ function typeExprForRule(
         name: prefixToAvoidReserved(
           ref.captureName ? ref.captureName : ref.ruleName
         ),
-        type: ref.repeated ? tsArrayType(inner) : inner,
+        type: ref.origin.repeated ? tsArrayType(inner) : inner,
       };
     });
 
