@@ -1483,7 +1483,7 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Text",
-        value: '\\"',
+        value: '"',
       },
       {
         type: "RepSep",
@@ -1499,7 +1499,7 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Text",
-        value: '\\"',
+        value: '"',
       },
     ],
   },

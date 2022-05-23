@@ -68,5 +68,5 @@ function parserCharRuleToInternal(rule: GrammarCharRule): SingleCharRule {
 }
 
 function deEscape(str: string): string {
-  return str.replace(/\\n/, "\n").replace(/\\\\/, "\\");
+  return str.replace(/\\n/, "\n").replace(/\\\\/, "\\").replace(/\\"/, '"');
 }

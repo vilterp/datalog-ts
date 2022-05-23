@@ -133,7 +133,7 @@ text/plain
     "items": [
       {
         "type": "Text",
-        "value": "\\\""
+        "value": "\""
       },
       {
         "type": "RepSep",
@@ -152,7 +152,7 @@ text/plain
       },
       {
         "type": "Text",
-        "value": "\\\""
+        "value": "\""
       }
     ]
   }
