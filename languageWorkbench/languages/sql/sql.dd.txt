@@ -81,3 +81,14 @@ scope.foreignKey{}?
 ----
 application/datalog
 scope.foreignKey{fromCol: "post_id", fromTable: "comments", toCol: "id", toTable: "blog_posts"}
+
+sql
+CREATE TABLE blog_posts (
+  id INT,
+  body TEXT
+);
+SELECT foo FROM blog_posts;
+tc.Problem{}?
+----
+application/datalog
+tc.Problem{desc: undefinedVar{name: "foo"}, span: span{from: 58, to: 61}}

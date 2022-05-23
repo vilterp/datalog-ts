@@ -113,3 +113,9 @@ ide.usageOfCurrentDefn{span: S} :-
 ide.CurrentUsageOrDefn{type: T, span: S} :-
   ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S} |
   ide.CurrentVarOrUsageOfCurrentDefn{type: T, span: S}.
+
+# === Errors ===
+
+tc.undefVarError{span: S, desc: undefinedVar{name: N}} :-
+  scope.Var{scopeID: I, name: N, span: S} &
+  !scope.Item{scopeID: I, name: N}.
