@@ -32,6 +32,7 @@ import {
   jsReturn,
   jsSwitch,
   jsNull,
+  tsOrNull,
 } from "./astHelpers";
 import { Grammar, Rule } from "../types";
 
@@ -266,7 +267,11 @@ function typeExprForRule(
             const inner = tsTypeName(
               typeName(ref.ruleName, options.typePrefix)
             );
-            return ref.origin.repeated ? tsArrayType(inner) : inner;
+            return ref.origin.repeated
+              ? tsArrayType(inner)
+              : ref.origin.inChoice
+              ? tsOrNull(inner)
+              : inner;
           })
         );
   }

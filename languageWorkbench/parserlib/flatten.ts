@@ -10,7 +10,7 @@ import {
   or,
   and,
 } from "../../core/types";
-import { Grammar } from "./grammar";
+import { Grammar } from "./types";
 import { RuleTree } from "./ruleTree";
 
 type State = {

@@ -1,14 +1,9 @@
 import { Suite } from "../../util/testBench/testing";
 import { runDDTestAtPath } from "../../util/ddTest";
-import { Grammar, seq, text, choice } from "./grammar";
 import { formatParseError, getErrors, parse, TraceTree } from "./parser";
-import { jsonGrammar } from "./examples/json";
-import { digit, intLit, stringLit } from "./stdlib";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
-import { metaGrammar, extractGrammar, parseGrammar } from "./meta";
 import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
-import { flatten } from "./flatten";
 import { ppRule, ppt } from "../../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -16,15 +11,18 @@ import { Rule } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { genExtractorStr, Options } from "./gen/generate";
+import { parseMain } from "../languages/grammar/parser";
+import { parserGrammarToInternal } from "./translateAST";
+import { Grammar, text } from "./types";
+import { digit, intLit, stringLit } from "./stdlib";
 
-// TODO: rename to stdlibGrammar? :P
 const basicGrammar: Grammar = {
-  abcSeq: seq([text("a"), text("b"), text("c")]),
-  abcChoice: choice([text("a"), text("b"), text("c")]),
+  abcSeq: { type: "Sequence", items: [text("a"), text("b"), text("c")] },
+  abcChoice: { type: "Choice", choices: [text("a"), text("b"), text("c")] },
   digit: digit,
   intLit: intLit,
   stringLit: stringLit,
-  intOrString: choice([intLit, stringLit]),
+  intOrString: { type: "Choice", choices: [intLit, stringLit] },
 };
 
 export function parserlibTests(writeResults: boolean): Suite {
@@ -40,31 +38,11 @@ export function parserlibTests(writeResults: boolean): Suite {
       },
     },
     {
-      name: "json",
-      test() {
-        runDDTestAtPath(
-          "languageWorkbench/parserlib/testdata/json.dd.txt",
-          (t) => parserTestFixedStartRule(jsonGrammar, "value", t),
-          writeResults
-        );
-      },
-    },
-    {
       name: "meta",
       test() {
         runDDTestAtPath(
           "languageWorkbench/parserlib/testdata/meta.dd.txt",
           metaTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "flatten",
-      test() {
-        runDDTestAtPath(
-          "languageWorkbench/parserlib/testdata/flatten.dd.txt",
-          flattenTest,
           writeResults
         );
       },
@@ -114,27 +92,14 @@ function parserTest(grammar: Grammar, test: string[]): TestOutput[] {
 
 function metaTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const traceTree = parse(metaGrammar, "grammar", input);
-    const ruleTree = extractRuleTree(traceTree);
-    const grammar = extractGrammar(input, ruleTree);
-    const errors = getErrors(input, traceTree);
-    if (errors.length > 0) {
-      throw new Error(`errors in metaTest: ${errors.map(formatParseError)}`);
-    }
-    return plainTextOut(
-      prettyPrintRuleTree(ruleTree, input) +
-        "\n" +
-        JSON.stringify(grammar, null, 2)
-    );
-  });
-}
-
-function flattenTest(test: string[]): TestOutput[] {
-  return test.map((input) => {
-    const traceTree = parse(jsonGrammar, "value", input);
-    const ruleTree = extractRuleTree(traceTree);
-    const flattened = flatten(ruleTree, input);
-    return datalogOut(flattened.map(ppt).join("\n"));
+    const grammarTree = parseMain(input);
+    const grammar = parserGrammarToInternal(grammarTree);
+    // TODO: get errors
+    // const errors = getErrors(input, traceTree);
+    // if (errors.length > 0) {
+    //   throw new Error(`errors in metaTest: ${errors.map(formatParseError)}`);
+    // }
+    return plainTextOut(JSON.stringify(grammar, null, 2));
   });
 }
 
@@ -145,8 +110,9 @@ function datalogTest(test: string[]): TestOutput[] {
     const firstLine = lines[0];
     const restOfInput = lines.slice(1).join("\n");
     if (firstLine === "gram") {
-      const grammarParsed = parseGrammar(restOfInput);
-      grammarRules = grammarToDL(grammarParsed);
+      const grammarParsed = parseMain(restOfInput);
+      const grammar = parserGrammarToInternal(grammarParsed);
+      grammarRules = grammarToDL(grammar);
       return datalogOut(grammarRules.map(ppRule).join(".\n") + ".");
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
@@ -211,7 +177,8 @@ function handleResults(traceTree: TraceTree, source: string): TestOutput {
 
 function codegenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const grammar = parseGrammar(input);
+    const grammarTree = parseMain(input);
+    const grammar = parserGrammarToInternal(grammarTree);
     const options: Options = {
       parserlibPath: ".",
       typePrefix: "Json",

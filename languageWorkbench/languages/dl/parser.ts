@@ -6,7 +6,7 @@ import {
   RuleTree,
   extractRuleTree,
 } from "../../parserlib/ruleTree";
-import { Span, Grammar } from "../../parserlib/grammar";
+import { Span, Grammar } from "../../parserlib/types";
 import * as parserlib from "../../parserlib/parser";
 export type DLAggregation = {
   type: "Aggregation";

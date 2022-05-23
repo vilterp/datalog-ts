@@ -56,7 +56,8 @@ export type TypeExpr =
   | { type: "ArrayType"; inner: TypeExpr }
   | { type: "StringLiteralType"; str: string }
   | { type: "UnionType"; choices: TypeExpr[] }
-  | { type: "ObjectLiteralType"; members: ObjectLiteralTypeMember[] };
+  | { type: "ObjectLiteralType"; members: ObjectLiteralTypeMember[] }
+  | { type: "Null" };
 
 export type ObjectLiteralTypeMember = { name: string; type: TypeExpr };
 
@@ -76,10 +77,13 @@ export function tsUnionType(choices: TypeExpr[]): TypeExpr {
   return { type: "UnionType", choices };
 }
 
+export function tsOrNull(expr: TypeExpr): TypeExpr {
+  return tsUnionType([expr, { type: "Null" }]);
+}
+
 export function jsIdent(name: string): Identifier {
   return { type: "Identifier", name };
 }
-
 export function jsCall(callee: Expression, args: Expression[]): CallExpression {
   return {
     type: "CallExpression",

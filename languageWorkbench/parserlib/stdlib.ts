@@ -1,14 +1,14 @@
 import {
-  text,
-  choice,
-  seq,
-  repSep,
   charRule,
-  range,
-  Rule,
-  notChar,
+  choice,
   literalChar,
-} from "./grammar";
+  notChar,
+  range,
+  repSep,
+  Rule,
+  seq,
+  text,
+} from "./types";
 
 export const alpha = choice([
   charRule(range("a", "z")),
