@@ -92,7 +92,7 @@ export type GrammarRef = {
   type: "Ref";
   text: string;
   span: Span;
-  captureName: GrammarCaptureName;
+  captureName: GrammarCaptureName | null;
   ruleName: GrammarRuleName;
 };
 export type GrammarRepSep = {
@@ -421,14 +421,14 @@ function extractPlaceholder(input: string, node: RuleTree): GrammarPlaceholder {
   };
 }
 function extractRef(input: string, node: RuleTree): GrammarRef {
+  const captureNameChild = childByName(node, "captureName", null);
   return {
     type: "Ref",
     text: textForSpan(input, node.span),
     span: node.span,
-    captureName: extractCaptureName(
-      input,
-      childByName(node, "captureName", null)
-    ),
+    captureName: captureNameChild
+      ? extractCaptureName(input, captureNameChild)
+      : null,
     ruleName: extractRuleName(input, childByName(node, "ruleName", null)),
   };
 }
