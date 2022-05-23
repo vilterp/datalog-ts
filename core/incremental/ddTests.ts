@@ -1,4 +1,3 @@
-import { language } from "../parser";
 import { toGraphviz } from "./graphviz";
 import { Rec, Statement } from "../types";
 import { formatOutput, IncrementalInterpreter } from "./interpreter";
@@ -8,6 +7,14 @@ import { Suite } from "../../util/testBench/testing";
 import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
 import { graphvizOut, jsonOut } from "../../util/ddTest/types";
 import { prettyPrintGraph } from "../../util/graphviz";
+import {
+  parseRecord,
+  parseStatement,
+} from "../../languageWorkbench/languages/dl/parser";
+import {
+  parserStatementToInternal,
+  parserTermToInternal,
+} from "../translateAST";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -39,8 +46,8 @@ export function incrTests(writeResults: boolean): Suite {
 function joinInfoTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const [left, right] = input.split("\n");
-    const leftStmt = parseRecord(left);
-    const rightStmt = parseRecord(right);
+    const leftStmt = parserTermToInternal(parseRecord(left)) as Rec;
+    const rightStmt = parserTermToInternal(parseRecord(right)) as Rec;
     const res = getJoinInfo(leftStmt, rightStmt);
     return jsonOut(res);
   });
@@ -54,7 +61,8 @@ function buildTest(test: string[]): TestOutput[] {
       .map((s) => s.trim())
       .map(parseStatement);
     let interp = new IncrementalInterpreter(".", fsLoader);
-    for (let stmt of statements) {
+    for (let rawStmt of statements) {
+      const stmt = parserStatementToInternal(rawStmt);
       interp = interp.processStmt(stmt).newInterp as IncrementalInterpreter;
     }
     return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
@@ -65,7 +73,8 @@ export function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
   let interp = new IncrementalInterpreter(".", fsLoader);
   for (let input of inputs) {
-    const stmt = parseStatement(input);
+    const rawStmt = parseStatement(input);
+    const stmt = parserStatementToInternal(rawStmt);
     // const before = Date.now();
     const { newInterp, output } = interp.processStmt(stmt);
     interp = newInterp as IncrementalInterpreter;
@@ -79,14 +88,4 @@ export function evalTest(inputs: string[]): TestOutput[] {
     );
   }
   return out;
-}
-
-// kind of reimplementing the repl here; lol
-
-function parseRecord(str: string): Rec {
-  return language.record.tryParse(str);
-}
-
-function parseStatement(str: string): Statement {
-  return language.statement.tryParse(str);
 }

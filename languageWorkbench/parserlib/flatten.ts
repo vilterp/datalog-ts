@@ -27,7 +27,7 @@ export function getAllStatements(
   return [
     ...declareTables(grammar),
     ...flatten(tree, source).map(
-      (record): Statement => ({ type: "Insert", record })
+      (record): Statement => ({ type: "Fact", record })
     ),
     { type: "Rule", rule: getUnionRule(grammar) },
   ];

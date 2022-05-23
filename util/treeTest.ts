@@ -1,6 +1,5 @@
 import { Suite, assertStringEqual } from "./testBench/testing";
-import { insertAtPath, Tree } from "./tree";
-import { prettyPrintTree } from "../core/pretty";
+import { insertAtPath, prettyPrintTree, Tree } from "./tree";
 
 export const treeTests: Suite = [
   {

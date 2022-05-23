@@ -15,7 +15,7 @@ import { mapObjToList, repeat, flatMap } from "../util/util";
 import { prettyPrintTree, Tree } from "../util/tree";
 import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 import { DLStatement } from "../languageWorkbench/languages/dl/parser";
-import { parserRuleToInternal, parserTermToInternal } from "./parserToInternal";
+import { parserRuleToInternal, parserTermToInternal } from "./translateAST";
 
 export function prettyPrintStatement(stmt: DLStatement): pp.IDoc {
   switch (stmt.type) {

@@ -34,10 +34,14 @@ export abstract class AbstractInterpreter {
   }
 
   evalStmts(stmts: DLStatement[]): [Res[], AbstractInterpreter] {
+    const rawStmts = stmts.map(parserStatementToInternal);
+    return this.evalRawStmts(rawStmts);
+  }
+
+  evalRawStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
     const results: Res[] = [];
     let interp: AbstractInterpreter = this;
-    stmts.forEach((rawStmt) => {
-      const stmt = parserStatementToInternal(rawStmt);
+    stmts.forEach((stmt) => {
       const [newResults, newInterp] = interp.evalStmt(stmt);
       newResults.forEach((res) => results.push(res));
       interp = newInterp;
