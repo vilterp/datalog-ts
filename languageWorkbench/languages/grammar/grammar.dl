@@ -22,3 +22,4 @@ hl.mapping{rule: "text", type: "string"}.
 hl.mapping{rule: "bool", type: "number"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "charRule", type: "number"}.
+hl.mapping{rule: "tokenKW", type: "keyword"}.

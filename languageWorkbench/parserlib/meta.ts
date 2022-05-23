@@ -12,6 +12,7 @@ import {
   literalChar,
   range,
   notChar,
+  notToken,
 } from "./grammar";
 import {
   ident,
@@ -46,23 +47,30 @@ export function parseGrammar(input: string): Grammar {
 
 // hardcoded grammar for parsing grammar rules
 export const metaGrammar: Grammar = {
-  grammar: repSep(choice([ref("ruleDefn"), ref("comment")]), whitespace),
-  ruleDefn: seq([
-    ref("ruleName"),
-    spaceAround(text(":-")),
-    ref("rule"),
-    text("."),
-  ]),
-  comment: seq([text("#"), repSep(ref("commentChar"), text(""))]),
-  ruleName: ident,
-  rule: choice([
-    ref("seq"),
-    ref("choice"),
-    ref("ref"),
-    ref("text"),
-    ref("charRule"),
-    ref("repSep"),
-  ]),
+  grammar: notToken(
+    repSep(choice([ref("ruleDefn"), ref("comment")]), whitespace)
+  ),
+  ruleDefn: notToken(
+    seq([
+      opt(seq([text("@token"), whitespace])),
+      ref("ruleName"),
+      spaceAround(text(":-")),
+      ref("rule"),
+      text("."),
+    ])
+  ),
+  comment: notToken(seq([text("#"), repSep(ref("commentChar"), text(""))])),
+  ruleName: notToken(ident),
+  rule: notToken(
+    choice([
+      ref("seq"),
+      ref("choice"),
+      ref("ref"),
+      ref("text"),
+      ref("charRule"),
+      ref("repSep"),
+    ])
+  ),
   seq: block(squareBrackets, repSep(ref("rule"), commaSpace)),
   choice: block(parens, repSep(ref("rule"), spaceAround(text("|")))),
   ref: seq([opt(seq([ref("captureName"), text(":")])), ref("ruleName")]),

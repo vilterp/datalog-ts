@@ -1,3 +1,15 @@
+export type Grammar = { [name: string]: RuleDefn };
+
+export type RuleDefn = { inner: Rule; isToken: boolean };
+
+export function token(rule: Rule): RuleDefn {
+  return { inner: rule, isToken: true };
+}
+
+export function notToken(rule: Rule): RuleDefn {
+  return { inner: rule, isToken: false };
+}
+
 export type Rule =
   | TextRule
   | CharRule
@@ -36,8 +48,6 @@ export function repSep(rep: Rule, sep: Rule): Rule {
 export function ref(rule: string, captureName: string | null = null): Rule {
   return { type: "Ref", rule, captureName };
 }
-
-export type Grammar = { [name: string]: Rule };
 
 // char rules
 

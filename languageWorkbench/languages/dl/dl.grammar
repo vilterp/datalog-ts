@@ -28,8 +28,8 @@ array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
 tableKW :- ".table".
 loadKW :- ".load".
 
-ident :- [alpha, repSep((alphaNum | "."), "")].
-string :- ["\"", repSep(stringChar, ""), "\""].
+@token ident :- [alpha, repSep((alphaNum | "."), "")].
+@token string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].

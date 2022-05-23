@@ -1,7 +1,7 @@
 main :- repSep((ruleDefn | comment), ws).
 
 comment :- ["#", repSep(commentChar, "")].
-ruleDefn :- [ident, ws, ":-", ws, rule, "."].
+ruleDefn :- [([tokenKW, ws] | ""), ident, ws, ":-", ws, rule, "."].
 
 rule :- (seq | choice | ref | text | charRule | repSep | placeholder).
 
@@ -30,3 +30,4 @@ alpha :- ([a-z] | [A-Z]).
 num :- [0-9].
 stringChar :- (^'"' | ['\\', '"']).
 commentChar :- ^'\n'.
+tokenKW :- "@token".
