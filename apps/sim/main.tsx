@@ -17,7 +17,7 @@ function Main() {
       <h1>Simulator</h1>
       <Explorer
         interp={interp}
-        runStatements={(stmts) => setInterp(interp.evalStmts(stmts)[1])}
+        runStatements={(stmts) => setInterp(interp.evalRawStmts(stmts)[1])}
         showViz
       />
     </>
