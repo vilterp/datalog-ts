@@ -15,7 +15,7 @@ MANY posts {
     name
   }
 };
-scope.Usage{}
+scope.Usage{}?
 ----
 application/datalog
 scope.Usage{definitionScopeID: "global", defnSpan: span{from: 13, to: 18}, kind: "table", name: "users", usageScopeID: "global", usageSpan: span{from: 163, to: 168}}
@@ -42,7 +42,7 @@ MANY posts {
     ???
   }
 };
-ide.Suggestion{}
+ide.Suggestion{}?
 ----
 application/datalog
 ide.Suggestion{id: 164, name: "id", span: span{from: 185, to: 188}, type: T}

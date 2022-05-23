@@ -6,7 +6,7 @@ foo{bar: A, baz: B} :-
   baz{???}.
 baz{time: T} :-
   time{time: T}.
-ide.Suggestion{}
+ide.Suggestion{}?
 ----
 application/datalog
 ide.Suggestion{id: 13, name: "A", span: span{from: 54, to: 57}, type: T}
@@ -19,7 +19,7 @@ ide.Suggestion{id: "baz", name: "time", span: span{from: 67, to: 70}, type: T}
 dl
 foo{a: A, b: B} :- bar{a: A, b: B}.
 baz{a: A, b: B} :- foo{aa: A, bb: B}.
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: nonexistentAttr{attr: "aa", relation: "foo"}, span: span{from: 59, to: 61}}
@@ -27,14 +27,14 @@ tc.Problem{desc: nonexistentAttr{attr: "bb", relation: "foo"}, span: span{from: 
 
 dl
 foo{a: A, b: C} :- bar{a: A, b: B}.
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: unboundVarInHead{name: "C", rule: "foo"}, span: span{from: 13, to: 14}}
 
 dl
 foo{ab: C} :- bar{bc: D}.
-scope.ruleBodyTerm{}
+scope.ruleBodyTerm{}?
 ----
 application/datalog
 scope.ruleBodyTerm{ruleID: 3, termOrRecord: 26}
@@ -44,7 +44,7 @@ foo{id: F, span: span{from: F}, spanArr: [F]} :-
   from{id: F} &
   !something{pos: F} &
   F != F.
-scope.Defn{}
+scope.Defn{}?
 ----
 application/datalog
 scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 0, to: 3}}
@@ -64,7 +64,7 @@ foo{id: F, span: span{from: F}, spanArr: [F]} :-
   from{id: F} &
   !something{pos: [F]} &
   F != F.
-scope.Var{}
+scope.Var{}?
 ----
 application/datalog
 scope.Var{kind: "relation", name: "from", scopeID: global{}, span: span{from: 51, to: 55}}
@@ -82,7 +82,7 @@ foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
   to{id: I, pos: T} &
   !something{id: I, pos: T} &
   F != T.
-scope.Usage{}
+scope.Usage{}?
 ----
 application/datalog
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 3, usageSpan: span{from: 70, to: 71}}
@@ -216,7 +216,7 @@ hl.mapping{rule: "bool", type: "bool"}.
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "letKW", type: "keyword"}.
 hl.mapping{rule: "inKW", type: "keyword"}.
-scope.Usage{}
+scope.Usage{}?
 ----
 application/datalog
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 215, to: 228}, kind: "relation", name: "scope.builtin", usageScopeID: global{}, usageSpan: span{from: 55, to: 68}}

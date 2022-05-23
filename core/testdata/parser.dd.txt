@@ -707,7 +707,7 @@ application/json
                 "type": "Negation",
                 "record": {
                   "type": "Record",
-                  "relation": "a",
+                  "relation": "b",
                   "attrs": {}
                 }
               }

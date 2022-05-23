@@ -73,7 +73,7 @@ export function parserRuleToInternal(term: DLRule): Rule {
             case "Negation":
               return {
                 type: "Negation",
-                record: parserTermToInternal(term.record) as Rec,
+                record: parserTermToInternal(conjunct.record) as Rec,
               };
             case "Placeholder":
               return parserTermToInternal(conjunct) as Rec;

@@ -1,7 +1,7 @@
 grammar
 foo :- ["bar:", ???].
 bar :- "foo".
-ide.Suggestion{}
+ide.Suggestion{}?
 ----
 application/datalog
 ide.Suggestion{id: global{}, name: "foo", span: span{from: 16, to: 19}, type: T}
@@ -9,14 +9,14 @@ ide.Suggestion{id: global{}, name: "bar", span: span{from: 16, to: 19}, type: T}
 
 grammar
 foo :- baz.
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: undefinedRule{name: "baz"}, span: span{from: 7, to: 10}}
 
 grammar
 a :- (^'"' | ['\\', '"']).
-astInternal.node{}
+astInternal.node{}?
 ----
 application/datalog
 astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 26}, text: "a :- (^'\"' | ['\\\\', '\"'])."}
@@ -43,7 +43,7 @@ astInternal.node{id: 3, parentID: 2, rule: "alpha", span: span{from: 0, to: 1}, 
 
 grammar
 commentChar :- '\n'.
-astInternal.node{}
+astInternal.node{}?
 ----
 application/datalog
 astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 20}, text: "commentChar :- '\\n'."}
@@ -68,7 +68,7 @@ astInternal.node{id: 13, parentID: 2, rule: "alpha", span: span{from: 10, to: 11
 
 grammar
 binOp :- [left:op, "==", right:op].
-scope.Var{}
+scope.Var{}?
 ----
 application/datalog
 scope.Var{kind: "rule", name: "op", scopeID: global{}, span: span{from: 15, to: 17}}

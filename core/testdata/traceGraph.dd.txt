@@ -1,4 +1,4 @@
-sibling{left: "Pete", right: R}
+sibling{left: "Pete", right: R}?
 ----
 application/graphviz
 digraph G {
