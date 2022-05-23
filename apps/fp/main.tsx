@@ -30,6 +30,7 @@ function Main() {
         editorState={editorState}
         setEditorState={setEditorState}
         langSpec={LANGUAGES.fp}
+        showKeyBindingsTable
       />
       <CollapsibleWithHeading
         heading="Facts &amp; Rules"
