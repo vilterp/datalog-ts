@@ -58,18 +58,52 @@ export type JsonStringChar = {
   type: "StringChar";
   text: string;
   span: Span;
-  value: {};
 };
-export type JsonValue = {
-  type: "Value";
-  text: string;
-  span: Span;
-  value: JsonObject | JsonArray | JsonInt | JsonString | JsonNull;
-};
-export function parse(input: string): JsonMain {
+export type JsonValue = JsonObject | JsonArray | JsonInt | JsonString | JsonNull;
+export function parseArray(input: string): JsonArray {
+  const traceTree = parserlib.parse(GRAMMAR, "array", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractArray(input, ruleTree)
+}
+export function parseInt(input: string): JsonInt {
+  const traceTree = parserlib.parse(GRAMMAR, "int", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractInt(input, ruleTree)
+}
+export function parseKeyValue(input: string): JsonKeyValue {
+  const traceTree = parserlib.parse(GRAMMAR, "keyValue", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractKeyValue(input, ruleTree)
+}
+export function parseMain(input: string): JsonMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input)
   const ruleTree = extractRuleTree(traceTree)
   return extractMain(input, ruleTree)
+}
+export function parseNull(input: string): JsonNull {
+  const traceTree = parserlib.parse(GRAMMAR, "null", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractNull(input, ruleTree)
+}
+export function parseObject(input: string): JsonObject {
+  const traceTree = parserlib.parse(GRAMMAR, "object", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractObject(input, ruleTree)
+}
+export function parseString(input: string): JsonString {
+  const traceTree = parserlib.parse(GRAMMAR, "string", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractString(input, ruleTree)
+}
+export function parseStringChar(input: string): JsonStringChar {
+  const traceTree = parserlib.parse(GRAMMAR, "stringChar", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractStringChar(input, ruleTree)
+}
+export function parseValue(input: string): JsonValue {
+  const traceTree = parserlib.parse(GRAMMAR, "value", input)
+  const ruleTree = extractRuleTree(traceTree)
+  return extractValue(input, ruleTree)
 }
 function extractArray(input: string, node: RuleTree): JsonArray {
   return {
@@ -130,41 +164,33 @@ function extractStringChar(input: string, node: RuleTree): JsonStringChar {
   return {
     type: "StringChar",
     text: textForSpan(input, node.span),
-    span: node.span,
-    value: {}
+    span: node.span
   };
 }
 function extractValue(input: string, node: RuleTree): JsonValue {
-  return {
-    type: "Value",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    value: (() => {
-      const child = node.children[0];
-      switch (child.name) {
-        case "object":
-          {
-            return extractObject(input, child);
-          }
-        case "array":
-          {
-            return extractArray(input, child);
-          }
-        case "int":
-          {
-            return extractInt(input, child);
-          }
-        case "string":
-          {
-            return extractString(input, child);
-          }
-        case "null":
-          {
-            return extractNull(input, child);
-          }
+  const child = node.children[0];
+  switch (child.name) {
+    case "object":
+      {
+        return extractObject(input, child);
       }
-    })()
-  };
+    case "array":
+      {
+        return extractArray(input, child);
+      }
+    case "int":
+      {
+        return extractInt(input, child);
+      }
+    case "string":
+      {
+        return extractString(input, child);
+      }
+    case "null":
+      {
+        return extractNull(input, child);
+      }
+  }
 }
 const GRAMMAR: Grammar = {
   "main": {
