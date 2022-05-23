@@ -100,6 +100,17 @@ export function RelationTable(props: {
                 <React.Fragment key={`${idx}-${key}`}>
                   <tr
                     onClick={toggleRowCollapsed}
+                    onMouseEnter={() =>
+                      props.highlight.setHighlight({
+                        type: "Term",
+                        term: result.term,
+                      })
+                    }
+                    onMouseLeave={() =>
+                      props.highlight.setHighlight({
+                        type: "None",
+                      })
+                    }
                     style={{
                       cursor: "pointer",
                       fontFamily: "monospace",
