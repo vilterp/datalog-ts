@@ -5,6 +5,7 @@ import {
 } from "../languageWorkbench/languages/dl/parser";
 import { mapListToObj } from "../util/util";
 import {
+  AndClause,
   array,
   bool,
   int,
@@ -55,7 +56,7 @@ export function parserRuleToInternal(term: DLRule): Rule {
       type: "Or",
       opts: term.disjunct.map((disjunct) => ({
         type: "And",
-        clauses: disjunct.conjunct.map((conjunct) => {
+        clauses: disjunct.conjunct.map((conjunct): AndClause => {
           switch (conjunct.type) {
             case "BinExpr":
               return {
@@ -73,6 +74,13 @@ export function parserRuleToInternal(term: DLRule): Rule {
               return parserTermToInternal(conjunct) as Rec;
             case "Record":
               return parserTermToInternal(conjunct) as Rec;
+            case "Aggregation":
+              return {
+                type: "Aggregation",
+                aggregation: conjunct.aggregation.text,
+                record: parserTermToInternal(conjunct.record) as Rec,
+                varNames: conjunct.var.map((dlVar) => dlVar.text),
+              };
           }
         }),
       })),

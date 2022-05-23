@@ -12,7 +12,7 @@ export type DLAggregation = {
   type: "Aggregation";
   text: string;
   span: Span;
-  ident: DLIdent;
+  aggregation: DLIdent;
   var: DLVar[];
   commaSpace: DLCommaSpace[];
   record: DLRecord;
@@ -405,7 +405,7 @@ function extractAggregation(input: string, node: RuleTree): DLAggregation {
     type: "Aggregation",
     text: textForSpan(input, node.span),
     span: node.span,
-    ident: extractIdent(input, childByName(node, "ident")),
+    aggregation: extractIdent(input, childByName(node, "ident")),
     var: childrenByName(node, "var").map((child) => extractVar(input, child)),
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
@@ -1054,7 +1054,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         rule: "ident",
-        captureName: null,
+        captureName: "aggregation",
       },
       {
         type: "Text",

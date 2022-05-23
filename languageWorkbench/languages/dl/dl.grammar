@@ -11,7 +11,7 @@ rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
 conjunct :- (record | binExpr | negation | aggregation | placeholder).
 negation :- ["!", record].
-aggregation :- [ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
+aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
 
 binExpr :- [left:term, ws, binOp, ws, right:term].
 binOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
