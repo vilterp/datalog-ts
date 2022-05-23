@@ -94,7 +94,7 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Placeholder":
       return rec("???", {});
     case "String":
-      return str(term.stringChar.map((c) => c.text).join());
+      return str(term.stringChar.map((c) => c.text).join(""));
     case "Var":
       return varr(term.text);
     case "Record":
