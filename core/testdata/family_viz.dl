@@ -11,7 +11,7 @@ familyViz.edge{from: F, to: T, label: ""} :-
 internal.visualization{
   name: "Family",
   spec: graphviz{
-    nodes: "familyViz.node{id: ID}",
-    edges: "familyViz.edge{from: From, to: To, label: Label}"
+    nodes: familyViz.node{id: ID},
+    edges: familyViz.edge{from: From, to: To, label: Label}
   }
 }.

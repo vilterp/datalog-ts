@@ -72,14 +72,14 @@ mother: [mother{child: "Steve", mother: "Jill"}; {}]
 0: [mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}]
 2: []
 
-mother{child: C, mother: M}.
+mother{child: C, mother: M}?
 ----
 application/datalog
 mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}.
 mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}.
 
-mother{child: C, mother: "Mary"}.
+mother{child: C, mother: "Mary"}?
 ----
 application/datalog
 mother{child: "Pete", mother: "Mary"}; {C: "Pete"}.

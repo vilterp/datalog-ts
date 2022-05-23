@@ -25,15 +25,9 @@ export const sequence: VizTypeSpec = {
 };
 
 function SequenceDiagram(props: VizArgs) {
-  const actors = props.interp.queryStr(
-    (props.spec.attrs.actors as StringLit).val
-  );
-  const messages = props.interp.queryStr(
-    (props.spec.attrs.messages as StringLit).val
-  );
-  const ticks = props.interp.queryStr(
-    (props.spec.attrs.ticks as StringLit).val
-  );
+  const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
+  const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
+  const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
   const ticksByID: { [id: string]: Term } = {};
   ticks.forEach((tick) => {
     ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;

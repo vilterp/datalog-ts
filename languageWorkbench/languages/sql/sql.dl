@@ -84,7 +84,7 @@ hl.mapping{rule: "refKW", type: "keyword"}.
 internal.visualization{
   name: "Foreign Key Graph",
   spec: graphviz{
-    nodes: "scope.table{name: ID}",
-    edges: "scope.foreignKey{fromTable: From, toTable: To, fromCol: Label}"
+    nodes: scope.table{name: ID},
+    edges: scope.foreignKey{fromTable: From, toTable: To, fromCol: Label}
   }
 }.
