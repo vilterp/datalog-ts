@@ -3,6 +3,7 @@ import {
   DLStatement,
   DLTerm,
 } from "../languageWorkbench/languages/dl/parser";
+import { deEscape } from "../languageWorkbench/parserlib/types";
 import { mapListToObj } from "../util/util";
 import {
   AndClause,
@@ -105,7 +106,7 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Placeholder":
       return rec("???", {});
     case "String":
-      return str(term.stringChar.map((c) => c.text).join(""));
+      return str(deEscape(term.stringChar.map((c) => c.text).join("")));
     case "Var":
       return varr(term.text);
     case "Record":
