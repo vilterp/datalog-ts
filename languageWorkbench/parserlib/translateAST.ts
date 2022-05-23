@@ -36,7 +36,7 @@ function parserRuleToInternal(rule: GrammarRule): Rule {
     case "Ref":
       return {
         type: "Ref",
-        captureName: rule.captureName.text,
+        captureName: rule.captureName ? rule.captureName.text : null,
         rule: rule.ruleName.text,
       };
     case "Placeholder":
