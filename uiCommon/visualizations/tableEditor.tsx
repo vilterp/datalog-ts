@@ -61,7 +61,7 @@ function TableEditor(props: VizArgs) {
             <button
               onClick={() => {
                 props.runStatements([
-                  { type: "Insert", record: withID(data, newRec) },
+                  { type: "Fact", record: withID(data, newRec) },
                 ]);
               }}
             >
@@ -74,9 +74,15 @@ function TableEditor(props: VizArgs) {
   );
 }
 
-// TODO: can we do sequential numbers instead?
-function withID(existing: Rec[], rec: Rec): Rec {
-  const ids = existing.map((rec) => (rec.attrs.id as Int).val);
+function withID(existingRecs: Rec[], rec: Rec): Rec {
+  const ids = existingRecs.map((existing) => {
+    const label = existing.attrs.label as Rec;
+    const idAttr = label.attrs.id;
+    if (idAttr && idAttr.type === "IntLit") {
+      return idAttr.val;
+    }
+    return 0;
+  });
   const maxID = max(ids);
   return {
     ...rec,

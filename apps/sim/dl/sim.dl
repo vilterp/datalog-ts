@@ -25,8 +25,8 @@ nodeSource{id: I, label: source{id: I, supply: S}} :-
   source{id: I, supply: S}.
 nodeSink{id: I, label: sink{id: I, demand: S}} :-
   sink{id: I, demand: S}.
-nodeBattery{id: I, label: battery{id: I, capacity: S}} :-
-  battery{id: I, capacity: S}.
+nodeBattery{id: I, label: battery{id: I, capacity: S, initialLevel: IL}} :-
+  battery{id: I, capacity: S, initialLevel: IL}.
 
 current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
