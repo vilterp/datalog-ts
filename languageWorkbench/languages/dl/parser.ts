@@ -1607,7 +1607,7 @@ const GRAMMAR: Grammar = {
           type: "Char",
           rule: {
             type: "Range",
-            from: "a",
+            from: "A",
             to: "Z",
           },
         },
