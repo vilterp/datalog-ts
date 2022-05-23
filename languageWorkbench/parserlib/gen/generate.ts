@@ -267,11 +267,7 @@ function typeExprForRule(
             const inner = tsTypeName(
               typeName(ref.ruleName, options.typePrefix)
             );
-            return ref.origin.repeated
-              ? tsArrayType(inner)
-              : ref.origin.inChoice
-              ? tsOrNull(inner)
-              : inner;
+            return ref.origin.repeated ? tsArrayType(inner) : inner;
           })
         );
   }
@@ -284,7 +280,11 @@ function typeExprForRule(
         name: prefixToAvoidReserved(
           ref.captureName ? ref.captureName : ref.ruleName
         ),
-        type: ref.origin.repeated ? tsArrayType(inner) : inner,
+        type: ref.origin.repeated
+          ? tsArrayType(inner)
+          : ref.origin.inChoice
+          ? tsOrNull(inner)
+          : inner,
       };
     });
 

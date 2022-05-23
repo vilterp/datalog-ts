@@ -294,6 +294,8 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
         ),
         "}",
       ].join("\n");
+    case "Null":
+      return "null";
   }
 }
 
