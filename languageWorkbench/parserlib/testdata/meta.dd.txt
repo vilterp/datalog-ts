@@ -168,7 +168,7 @@ text/plain
       "type": "Not",
       "rule": {
         "type": "Literal",
-        "value": "'\"'"
+        "value": "\""
       }
     }
   }
@@ -185,14 +185,14 @@ text/plain
         "type": "Char",
         "rule": {
           "type": "Literal",
-          "value": "'\\\\'"
+          "value": "\\"
         }
       },
       {
         "type": "Char",
         "rule": {
           "type": "Literal",
-          "value": "'\"'"
+          "value": "\""
         }
       }
     ]
@@ -212,7 +212,7 @@ text/plain
           "type": "Not",
           "rule": {
             "type": "Literal",
-            "value": "'\"'"
+            "value": "\""
           }
         }
       },
@@ -223,14 +223,14 @@ text/plain
             "type": "Char",
             "rule": {
               "type": "Literal",
-              "value": "'\\\\'"
+              "value": "\\"
             }
           },
           {
             "type": "Char",
             "rule": {
               "type": "Literal",
-              "value": "'\"'"
+              "value": "\""
             }
           }
         ]
@@ -249,7 +249,7 @@ text/plain
       "type": "Not",
       "rule": {
         "type": "Literal",
-        "value": "'\\n'"
+        "value": "\n"
       }
     }
   }
@@ -263,7 +263,7 @@ text/plain
     "type": "Char",
     "rule": {
       "type": "Literal",
-      "value": "'\\\\'"
+      "value": "\\"
     }
   }
 }
@@ -274,7 +274,7 @@ text/plain
 {
   "singleChar": {
     "type": "Text",
-    "value": "here's a backslash: \\\\ there it was!"
+    "value": "here's a backslash: \\ there it was!"
   }
 }
 
