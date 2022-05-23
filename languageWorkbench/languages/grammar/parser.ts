@@ -535,20 +535,20 @@ const GRAMMAR: Grammar = {
       choices: [
         {
           type: "Ref",
-          captureName: null,
           rule: "ruleDefn",
+          captureName: null,
         },
         {
           type: "Ref",
-          captureName: null,
           rule: "comment",
+          captureName: null,
         },
       ],
     },
     sep: {
       type: "Ref",
-      captureName: null,
       rule: "ws",
+      captureName: null,
     },
   },
   comment: {
@@ -562,8 +562,8 @@ const GRAMMAR: Grammar = {
         type: "RepSep",
         rep: {
           type: "Ref",
-          captureName: null,
           rule: "commentChar",
+          captureName: null,
         },
         sep: {
           type: "Text",
@@ -577,13 +577,13 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
-        captureName: null,
         rule: "ident",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "ws",
+        captureName: null,
       },
       {
         type: "Text",
@@ -591,13 +591,13 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "ws",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "rule",
+        captureName: null,
       },
       {
         type: "Text",
@@ -610,38 +610,38 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        captureName: null,
         rule: "seq",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "choice",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "ref",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "text",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "charRule",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "repSep",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "placeholder",
+        captureName: null,
       },
     ],
   },
@@ -656,16 +656,16 @@ const GRAMMAR: Grammar = {
         type: "RepSep",
         rep: {
           type: "Ref",
-          captureName: null,
           rule: "rule",
+          captureName: null,
         },
         sep: {
           type: "Sequence",
           items: [
             {
               type: "Ref",
-              captureName: null,
               rule: "ws",
+              captureName: null,
             },
             {
               type: "Text",
@@ -673,8 +673,8 @@ const GRAMMAR: Grammar = {
             },
             {
               type: "Ref",
-              captureName: null,
               rule: "ws",
+              captureName: null,
             },
           ],
         },
@@ -696,16 +696,16 @@ const GRAMMAR: Grammar = {
         type: "RepSep",
         rep: {
           type: "Ref",
-          captureName: null,
           rule: "rule",
+          captureName: null,
         },
         sep: {
           type: "Sequence",
           items: [
             {
               type: "Ref",
-              captureName: null,
               rule: "ws",
+              captureName: null,
             },
             {
               type: "Text",
@@ -713,8 +713,8 @@ const GRAMMAR: Grammar = {
             },
             {
               type: "Ref",
-              captureName: null,
               rule: "ws",
+              captureName: null,
             },
           ],
         },
@@ -736,8 +736,8 @@ const GRAMMAR: Grammar = {
             items: [
               {
                 type: "Ref",
-                captureName: null,
                 rule: "captureName",
+                captureName: null,
               },
               {
                 type: "Text",
@@ -753,34 +753,34 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "ruleName",
+        captureName: null,
       },
     ],
   },
   captureName: {
     type: "Ref",
-    captureName: null,
     rule: "ident",
+    captureName: null,
   },
   ruleName: {
     type: "Ref",
-    captureName: null,
     rule: "ident",
+    captureName: null,
   },
   text: {
     type: "Sequence",
     items: [
       {
         type: "Text",
-        value: '\\"',
+        value: '"',
       },
       {
         type: "RepSep",
         rep: {
           type: "Ref",
-          captureName: null,
           rule: "stringChar",
+          captureName: null,
         },
         sep: {
           type: "Text",
@@ -789,7 +789,7 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Text",
-        value: '\\"',
+        value: '"',
       },
     ],
   },
@@ -798,8 +798,8 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
-        captureName: null,
         rule: "repSepKW",
+        captureName: null,
       },
       {
         type: "Text",
@@ -807,18 +807,18 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
+        rule: "rule",
         captureName: "rep",
-        rule: "rule",
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "commaSpace",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: "sep",
         rule: "rule",
+        captureName: "sep",
       },
       {
         type: "Text",
@@ -835,23 +835,23 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        captureName: null,
         rule: "charRange",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "notChar",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "singleChar",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "anyChar",
+        captureName: null,
       },
     ],
   },
@@ -864,8 +864,8 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        captureName: "from",
         rule: "alphaNum",
+        captureName: "from",
       },
       {
         type: "Text",
@@ -873,8 +873,8 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        captureName: "to",
         rule: "alphaNum",
+        captureName: "to",
       },
       {
         type: "Text",
@@ -889,13 +889,13 @@ const GRAMMAR: Grammar = {
         type: "Char",
         rule: {
           type: "Literal",
-          value: "'^'",
+          value: "^",
         },
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "charRule",
+        captureName: null,
       },
     ],
   },
@@ -916,14 +916,14 @@ const GRAMMAR: Grammar = {
                 type: "Char",
                 rule: {
                   type: "Literal",
-                  value: "'\\\\'",
+                  value: "\\",
                 },
               },
               {
                 type: "Char",
                 rule: {
                   type: "Literal",
-                  value: "'n'",
+                  value: "n",
                 },
               },
             ],
@@ -935,14 +935,14 @@ const GRAMMAR: Grammar = {
                 type: "Char",
                 rule: {
                   type: "Literal",
-                  value: "'\\\\'",
+                  value: "\\",
                 },
               },
               {
                 type: "Char",
                 rule: {
                   type: "Literal",
-                  value: "'\\\\'",
+                  value: "\\",
                 },
               },
             ],
@@ -969,8 +969,8 @@ const GRAMMAR: Grammar = {
     type: "RepSep",
     rep: {
       type: "Ref",
-      captureName: null,
       rule: "alpha",
+      captureName: null,
     },
     sep: {
       type: "Text",
@@ -988,7 +988,7 @@ const GRAMMAR: Grammar = {
         },
         {
           type: "Text",
-          value: "\\n",
+          value: "\n",
         },
       ],
     },
@@ -1006,8 +1006,8 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "ws",
+        captureName: null,
       },
     ],
   },
@@ -1020,13 +1020,13 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        captureName: null,
         rule: "alpha",
+        captureName: null,
       },
       {
         type: "Ref",
-        captureName: null,
         rule: "num",
+        captureName: null,
       },
     ],
   },
@@ -1068,7 +1068,7 @@ const GRAMMAR: Grammar = {
           type: "Not",
           rule: {
             type: "Literal",
-            value: "'\"'",
+            value: '"',
           },
         },
       },
@@ -1079,14 +1079,14 @@ const GRAMMAR: Grammar = {
             type: "Char",
             rule: {
               type: "Literal",
-              value: "'\\\\'",
+              value: "\\",
             },
           },
           {
             type: "Char",
             rule: {
               type: "Literal",
-              value: "'\"'",
+              value: '"',
             },
           },
         ],
@@ -1099,7 +1099,7 @@ const GRAMMAR: Grammar = {
       type: "Not",
       rule: {
         type: "Literal",
-        value: "'\\n'",
+        value: "\n",
       },
     },
   },
