@@ -66,6 +66,9 @@ scope.table{name: N} :-
   ast.createTableStmt{id: CreateTable} &
   ast.tableName{parentID: CreateTable, text: N}.
 
+tc.Problem{span: S, desc: D} :-
+  tc.undefVarError{span: S, desc: D}.
+
 hl.mapping{rule: "intLit", type: "number"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "number"}.
