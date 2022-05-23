@@ -4,7 +4,7 @@ import {
   GrammarMain,
   GrammarRule,
 } from "../languages/grammar/parser";
-import { Grammar, Rule, SingleCharRule } from "./types";
+import { deEscape, Grammar, Rule, SingleCharRule } from "./types";
 
 export function parserGrammarToInternal(grammar: GrammarMain): Grammar {
   return mapListToObj(
@@ -65,8 +65,4 @@ function parserCharRuleToInternal(rule: GrammarCharRule): SingleCharRule {
         to: rule.to.text,
       };
   }
-}
-
-function deEscape(str: string): string {
-  return str.replace(/\\n/, "\n").replace(/\\\\/, "\\").replace(/\\"/, '"');
 }

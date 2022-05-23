@@ -77,3 +77,8 @@ export type Span = {
 export function spanLength(s: Span): number {
   return s.to - s.from;
 }
+
+// TODO: find a better home for this
+export function deEscape(str: string): string {
+  return str.replace(/\\n/, "\n").replace(/\\\\/, "\\").replace(/\\"/, '"');
+}
