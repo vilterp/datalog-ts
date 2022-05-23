@@ -4,7 +4,7 @@ import {
   GrammarMain,
   GrammarRule,
 } from "../languages/grammar/parser";
-import { CharRule, Grammar, Rule, SingleCharRule } from "./types";
+import { Grammar, Rule, SingleCharRule } from "./types";
 
 export function parserGrammarToInternal(grammar: GrammarMain): Grammar {
   return mapListToObj(
@@ -20,8 +20,7 @@ function parserRuleToInternal(rule: GrammarRule): Rule {
     case "Text":
       return {
         type: "Text",
-        // TODO: de-escape
-        value: rule.stringChar.map((sc) => sc.text).join(""),
+        value: deEscape(rule.stringChar.map((sc) => sc.text).join("")),
       };
     case "Choice":
       return { type: "Choice", choices: rule.rule.map(parserRuleToInternal) };
@@ -50,8 +49,11 @@ function parserRuleToInternal(rule: GrammarRule): Rule {
 function parserCharRuleToInternal(rule: GrammarCharRule): SingleCharRule {
   switch (rule.type) {
     case "SingleChar":
-      // TODO: de-escape
-      return { type: "Literal", value: rule.text };
+      return {
+        type: "Literal",
+        // TODO: hate to slice like this instead of using something about the rule tree...
+        value: deEscape(rule.text.slice(1, rule.text.length - 1)),
+      };
     case "NotChar":
       return { type: "Not", rule: parserCharRuleToInternal(rule.charRule) };
     case "AnyChar":
@@ -63,4 +65,8 @@ function parserCharRuleToInternal(rule: GrammarCharRule): SingleCharRule {
         to: rule.to.text,
       };
   }
+}
+
+function deEscape(str: string): string {
+  return str.replace(/\\n/, "\n").replace(/\\\\/, "\\");
 }
