@@ -23,11 +23,11 @@ export type Bindings = { [key: string]: Term };
 
 // === Rules ===
 
-export interface Rule {
+export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
   body: OrExpr;
-}
+};
 
 export type OrExpr = { type: "Or"; opts: AndExpr[] };
 

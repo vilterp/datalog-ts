@@ -3,11 +3,39 @@ import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
-import { datalogOut, graphvizOut, plainTextOut } from "../util/ddTest/types";
+import {
+  datalogOut,
+  graphvizOut,
+  jsonOut,
+  plainTextOut,
+} from "../util/ddTest/types";
 import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
 import { traceToGraph } from "./traceGraph";
 import { prettyPrintGraph } from "../util/graphviz";
+import { parseMain } from "../languageWorkbench/languages/dl/parser";
+import { parserStatementToInternal } from "./translateAST";
+
+export function parserTests(writeResults: boolean): Suite {
+  return [
+    {
+      name: "parser",
+      test() {
+        runDDTestAtPath(
+          "core/testdata/parser.dd.txt",
+          (test) => {
+            return test.map((input) => {
+              const tree = parseMain(input);
+              const output = tree.statement.map(parserStatementToInternal);
+              return jsonOut(output);
+            });
+          },
+          writeResults
+        );
+      },
+    },
+  ];
+}
 
 export function coreTestsSimple(writeResults: boolean): Suite {
   return [
