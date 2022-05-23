@@ -1,6 +1,7 @@
 export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Fact"; record: Rec }
+  | { type: "Query"; record: Rec }
   | { type: "Delete"; record: Rec }
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string };

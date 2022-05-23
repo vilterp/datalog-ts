@@ -40,7 +40,7 @@ trans_edge{from: X, to: Z} :-
 ----
 application/datalog
 
-trans_edge{from: A, to: B}.
+trans_edge{from: A, to: B}?
 ----
 application/datalog
 trans_edge{from: "A", to: "B"}.

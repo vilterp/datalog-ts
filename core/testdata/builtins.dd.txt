@@ -1,19 +1,19 @@
-add{a: 1, b: 2, res: R}.
+add{a: 1, b: 2, res: R}?
 ----
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
-add{a: 1, b: R, res: 3}.
+add{a: 1, b: R, res: 3}?
 ----
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
-add{a: R, b: 2, res: 3}.
+add{a: R, b: 2, res: 3}?
 ----
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
-mul{a: 2, b: 3, res: V}.
+mul{a: 2, b: 3, res: V}?
 ----
 application/datalog
 mul{a: 2, b: 3, res: 6}.
@@ -30,12 +30,12 @@ stepPos{time: T, y: NewPos} :-
 ----
 application/datalog
 
-pos{time: 10, y: Y}.
+pos{time: 10, y: Y}?
 ----
 application/datalog
 pos{time: 10, y: 27}.
 
-range{from: 1, to: 10, val: V}.
+range{from: 1, to: 10, val: V}?
 ----
 application/datalog
 range{from: 1, to: 10, val: 10}.
@@ -52,7 +52,7 @@ range{from: 1, to: 10, val: 9}.
 sim{time: T, pos: Y} :-
   range{from: 1, to: 10, val: T} &
   pos{time: T, y: Y}.
-sim{time: T, pos: Y}.
+sim{time: T, pos: Y}?
 ----
 application/datalog
 sim{pos: 0, time: 1}.
@@ -66,7 +66,7 @@ sim{pos: 3, time: 2}.
 sim{pos: 6, time: 3}.
 sim{pos: 9, time: 4}.
 
-concat{a: "hello ", b: "world", res: V}.
+concat{a: "hello ", b: "world", res: V}?
 ----
 application/datalog
 concat{a: "hello ", b: "world", res: "hello world"}.

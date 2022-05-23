@@ -155,6 +155,12 @@ export type DLPlaceholder = {
   text: string;
   span: Span;
 };
+export type DLQuery = {
+  type: "Query";
+  text: string;
+  span: Span;
+  record: DLRecord;
+};
 export type DLRecord = {
   type: "Record";
   text: string;
@@ -180,6 +186,7 @@ export type DLRule = {
 export type DLStatement =
   | DLRule
   | DLFact
+  | DLQuery
   | DLDeleteFact
   | DLTableDecl
   | DLLoadStmt;
@@ -349,6 +356,11 @@ export function parsePlaceholder(input: string): DLPlaceholder {
   const traceTree = parserlib.parse(GRAMMAR, "placeholder", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractPlaceholder(input, ruleTree);
+}
+export function parseQuery(input: string): DLQuery {
+  const traceTree = parserlib.parse(GRAMMAR, "query", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractQuery(input, ruleTree);
 }
 export function parseRecord(input: string): DLRecord {
   const traceTree = parserlib.parse(GRAMMAR, "record", input);
@@ -635,6 +647,14 @@ function extractPlaceholder(input: string, node: RuleTree): DLPlaceholder {
     span: node.span,
   };
 }
+function extractQuery(input: string, node: RuleTree): DLQuery {
+  return {
+    type: "Query",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    record: extractRecord(input, childByName(node, "record", null)),
+  };
+}
 function extractRecord(input: string, node: RuleTree): DLRecord {
   return {
     type: "Record",
@@ -682,6 +702,9 @@ function extractStatement(input: string, node: RuleTree): DLStatement {
     }
     case "fact": {
       return extractFact(input, child);
+    }
+    case "query": {
+      return extractQuery(input, child);
     }
     case "deleteFact": {
       return extractDeleteFact(input, child);
@@ -817,6 +840,11 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
+        rule: "query",
+        captureName: null,
+      },
+      {
+        type: "Ref",
         rule: "deleteFact",
         captureName: null,
       },
@@ -890,6 +918,20 @@ const GRAMMAR: Grammar = {
         type: "Ref",
         rule: "path",
         captureName: null,
+      },
+    ],
+  },
+  query: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        rule: "record",
+        captureName: null,
+      },
+      {
+        type: "Text",
+        value: "?",
       },
     ],
   },

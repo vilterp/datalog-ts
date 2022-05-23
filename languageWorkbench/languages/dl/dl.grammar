@@ -1,9 +1,10 @@
 main :- [ws, repSep((statement | comment), ws), ws].
-statement :- (rule | fact | deleteFact | tableDecl | loadStmt).
+statement :- (rule | fact | query | deleteFact | tableDecl | loadStmt).
 comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [tableKW, ws, name:ident].
 loadStmt :- [loadKW, ws, path].
 
+query :- [record, "?"].
 fact :- [record, "."].
 deleteFact :- ["-", record, "."].
 

@@ -27,10 +27,6 @@ export class SimpleInterpreter extends AbstractInterpreter {
     switch (stmt.type) {
       case "Fact": {
         const record = stmt.record;
-        if (hasVars(record)) {
-          // TODO: separate method for querying?
-          return [this.evalQuery(record), this];
-        }
         return [
           [],
           this.withDB({
@@ -42,6 +38,8 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
+      case "Query":
+        return [this.evalQuery(stmt.record), this];
       case "Delete": {
         const record = stmt.record;
         return [

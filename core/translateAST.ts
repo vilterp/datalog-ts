@@ -46,6 +46,11 @@ export function parserStatementToInternal(stmt: DLStatement): Statement {
         type: "LoadStmt",
         path: stmt.path.text,
       };
+    case "Query":
+      return {
+        type: "Query",
+        record: parserTermToInternal(stmt.record) as Rec,
+      };
   }
 }
 

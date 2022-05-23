@@ -3,7 +3,7 @@ current{id: 2, level: 10}.
 current{id: 2, level: 13}.
 total{level: C} :-
   sum[C: current{id: I, level: C}].
-total{level: C}.
+total{level: C}?
 ----
 application/datalog
 total{level: 28}.
@@ -14,7 +14,7 @@ currentInput{dest: 2, level: 13}.
 currentInput{dest: 2, level: 14}.
 groupedTotal{dest: D, level: C} :-
   sum[D, C: currentInput{dest: D, level: C}].
-groupedTotal{level: C}.
+groupedTotal{level: C}?
 ----
 application/datalog
 groupedTotal{dest: 1, level: 15}.
