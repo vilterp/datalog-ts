@@ -1,7 +1,7 @@
 internal.visualization{
   name: "Scope Graph",
   spec: graphviz{
-    nodes: "node{id: ID}",
-    edges: "edge{from: From, to: To, label: Label}"
+    nodes: node{id: ID},
+    edges: edge{from: From, to: To, label: Label}
   }
 }.

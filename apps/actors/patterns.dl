@@ -26,9 +26,9 @@ requestResponse{
 internal.visualization{
   name: "sequence",
   spec: sequence{
-    actors: "actor{id: ID}",
-    ticks: "tick{id: ID, actorID: ActorID}",
-    messages: "hop{fromTickID: FromTickID, fromActorID: FromActorID, toTickID: ToTickID, toActorID: ToActorID}"
+    actors: actor{id: ID},
+    ticks: tick{id: ID, actorID: ActorID},
+    messages: hop{fromTickID: FromTickID, fromActorID: FromActorID, toTickID: ToTickID, toActorID: ToActorID}
   }
 }.
 

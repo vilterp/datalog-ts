@@ -1,5 +1,5 @@
 import React from "react";
-import { StringLit, Term } from "../../core/types";
+import { Rec, StringLit, Term } from "../../core/types";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
@@ -23,8 +23,8 @@ function GraphvizWrapper(props: VizArgs) {
   let edgesErr: Error = null;
   // nodes
   try {
-    const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
-    const nodesRes = props.interp.queryStr(nodesQuery);
+    const nodesQuery = props.spec.attrs.nodes as Rec;
+    const nodesRes = props.interp.queryRec(nodesQuery);
     nodes = nodesRes.map((res) => {
       const id = specialPPT(res.bindings.ID);
       const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
@@ -40,8 +40,8 @@ function GraphvizWrapper(props: VizArgs) {
 
   // edges
   try {
-    const edgesQuery = (props.spec.attrs.edges as StringLit).val;
-    const edgesRes = props.interp.queryStr(edgesQuery);
+    const edgesQuery = props.spec.attrs.edges as Rec;
+    const edgesRes = props.interp.queryRec(edgesQuery);
     edges = edgesRes.map((res) => ({
       to: specialPPT(res.bindings.To),
       from: specialPPT(res.bindings.From),
