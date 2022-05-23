@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Bool, Rec, StringLit, Term } from "../../core/types";
+import { Bool, Rec, Res, StringLit, Term } from "../../core/types";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import {
@@ -32,18 +32,23 @@ function TreeViz(props: VizArgs) {
       return treeFromRecords(nodesRes, rootTerm, sortChildren);
     }, [props.interp]);
     return (
-      <TreeView
+      <TreeView<Res>
         collapseState={collapseState}
         setCollapseState={setCollapseState}
         hideRoot={true}
         tree={tree}
-        render={({ item }) =>
-          item.bindings.Display ? (
-            <BareTerm term={item.bindings.Display} />
-          ) : (
-            <BareTerm term={item.term} />
-          )
-        }
+        render={({ item }) => (
+          <span
+            onMouseEnter={() => props.setHighlightedTerm(item.term)}
+            onMouseLeave={() => props.setHighlightedTerm(null)}
+          >
+            {item.bindings.Display ? (
+              <BareTerm term={item.bindings.Display} />
+            ) : (
+              <BareTerm term={item.term} />
+            )}
+          </span>
+        )}
       />
     );
   } catch (e) {
