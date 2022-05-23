@@ -11,11 +11,11 @@ ref :- [([captureName, ":"] | ""), ruleName].
 captureName :- ident.
 ruleName :- ident.
 text :- ["\"", repSep(stringChar, ""), "\""].
-repSep :- [repSepKW, "(", rule, commaSpace, rule, ")"].
+repSep :- [repSepKW, "(", rep:rule, commaSpace, sep:rule, ")"].
 repSepKW :- "repSep".
 
 charRule :- (charRange | notChar | singleChar | anyChar).
-charRange :- ["[", alphaNum, "-", alphaNum, "]"].
+charRange :- ["[", from:alphaNum, "-", to:alphaNum, "]"].
 notChar :- ['^', charRule].
 singleChar :- ["'", (['\\', 'n'] | ['\\', '\\'] | .), "'"].
 anyChar :- ".".

@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import { parseGrammar } from "../meta";
+import { parseMain } from "../../languages/grammar/parser";
+import { parserGrammarToInternal } from "../translateAST";
 import { genExtractorStr, Options } from "./generate";
 
 type Args = {
@@ -25,7 +26,8 @@ function main() {
 
 function generate(args: Args) {
   const grammarStr = fs.readFileSync(args.grammarPath, "utf-8");
-  const grammar = parseGrammar(grammarStr);
+  const grammarTree = parseMain(grammarStr);
+  const grammar = parserGrammarToInternal(grammarTree);
   const options: Options = {
     parserlibPath: args.parserlibPath,
     typePrefix: args.typePrefix,

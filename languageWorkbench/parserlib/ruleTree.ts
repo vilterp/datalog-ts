@@ -1,6 +1,6 @@
-import { Span } from "./grammar";
 import { TraceTree } from "./parser";
 import { flatten } from "../../util/util";
+import { Span } from "./types";
 
 export type RuleTree = {
   name: string;

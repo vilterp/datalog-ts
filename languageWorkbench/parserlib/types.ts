@@ -1,3 +1,8 @@
+export type Grammar = { [name: string]: Rule };
+
+// === Rules ===
+
+// TODO: can we get rid of these and just use generated types?
 export type Rule =
   | TextRule
   | CharRule
@@ -13,8 +18,8 @@ export type SequenceRule = { type: "Sequence"; items: Rule[] };
 export type RepSepRule = { type: "RepSep"; rep: Rule; sep: Rule };
 export type RefRule = { type: "Ref"; rule: string; captureName: string | null };
 
-export function text(value: string): Rule {
-  return { type: "Text", value };
+export function text(str: string): TextRule {
+  return { type: "Text", value: str };
 }
 
 export function charRule(rule: SingleCharRule): Rule {
@@ -37,9 +42,7 @@ export function ref(rule: string, captureName: string | null = null): Rule {
   return { type: "Ref", rule, captureName };
 }
 
-export type Grammar = { [name: string]: Rule };
-
-// char rules
+// === Char Rules ===
 
 export type char = string; // lol
 
@@ -62,6 +65,8 @@ export function literalChar(value: char): SingleCharRule {
 }
 
 export const anyChar: SingleCharRule = { type: "AnyChar" };
+
+// === Spans ===
 
 // TODO: dedup all the Span definitions in this codebase, lol
 export type Span = {

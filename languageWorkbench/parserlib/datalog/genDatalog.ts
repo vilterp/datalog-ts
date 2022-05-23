@@ -2,11 +2,10 @@ import * as dl from "../../../core/types";
 import {
   flatMap,
   flatMapObjToList,
-  pairsToObj,
   range,
   stringToArray,
 } from "../../../util/util";
-import * as gram from "../grammar";
+import * as gram from "../types";
 import {
   BinExpr,
   binExpr,
@@ -14,12 +13,11 @@ import {
   Rec,
   rec,
   str,
-  Term,
   varr,
   or,
   and,
 } from "../../../core/types";
-import { SingleCharRule } from "../grammar";
+import { SingleCharRule } from "../types";
 
 // generate datalog rules that implement a parser for this grammar
 export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {

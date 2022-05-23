@@ -1,12 +1,12 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { LanguageSpec } from "./languages";
+import { parseMain } from "./languages/grammar/parser";
 import {
   declareTables,
   flatten,
   getAllStatements,
   getUnionRule,
 } from "./parserlib/flatten";
-import { extractGrammar, metaGrammar } from "./parserlib/meta";
 import {
   formatParseError,
   getErrors,
@@ -14,6 +14,7 @@ import {
   TraceTree,
 } from "./parserlib/parser";
 import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
+import { parserGrammarToInternal } from "./parserlib/translateAST";
 import { validateGrammar } from "./parserlib/validate";
 import { ensureRequiredRelations } from "./requiredRelations";
 
@@ -66,21 +67,11 @@ function constructInterpInner(
   let dlErrors: string[] = [];
 
   // process grammar
-  const grammarTraceTree = parse(metaGrammar, "grammar", langSpec.grammar);
-  const grammarRuleTree = extractRuleTree(grammarTraceTree);
-  const grammar = extractGrammar(langSpec.grammar, grammarRuleTree);
-  const grammarParseErrors = getErrors(langSpec.grammar, grammarTraceTree).map(
-    formatParseError
-  );
-  const grammarErrors =
-    grammarParseErrors.length === 0 ? validateGrammar(grammar) : [];
-
+  const grammarTree = parseMain(langSpec.grammar);
+  const grammar = parserGrammarToInternal(grammarTree);
   const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
-  const allGrammarErrors = [
-    ...grammarErrors,
-    ...grammarParseErrors,
-    ...noMainError,
-  ];
+  // TODO: get grammar parse errors
+  const allGrammarErrors = [...noMainError];
 
   // add datalog
   try {

@@ -8,131 +8,34 @@ digit :- [0-9].
 stringLit :- ["\"", repSep([a-z], ""), "\""].
 ----
 text/plain
-grammar [0-277]
-  ruleDefn [0-14]
-    ruleName: "main" [0-4]
-    rule [8-13]
-      ref [8-13]
-        ruleName: "value" [8-13]
-  ruleDefn [15-62]
-    ruleName: "value" [15-20]
-    rule [24-61]
-      choice [24-61]
-        rule [25-31]
-          ref [25-31]
-            ruleName: "object" [25-31]
-        rule [34-39]
-          ref [34-39]
-            ruleName: "array" [34-39]
-        rule [42-48]
-          ref [42-48]
-            ruleName: "intLit" [42-48]
-        rule [51-60]
-          ref [51-60]
-            ruleName: "stringLit" [51-60]
-  ruleDefn [63-107]
-    ruleName: "object" [63-69]
-    rule [73-106]
-      seq [73-106]
-        rule [74-77]
-          text: "\"{\"" [74-77]
-        rule [79-100]
-          repSep [79-100]
-            rule [86-94]
-              ref [86-94]
-                ruleName: "keyValue" [86-94]
-            rule [96-99]
-              text: "\",\"" [96-99]
-        rule [102-105]
-          text: "\"}\"" [102-105]
-  ruleDefn [108-145]
-    ruleName: "keyValue" [108-116]
-    rule [120-144]
-      seq [120-144]
-        rule [121-130]
-          ref [121-130]
-            ruleName: "stringLit" [121-130]
-        rule [132-136]
-          text: "\": \"" [132-136]
-        rule [138-143]
-          ref [138-143]
-            ruleName: "value" [138-143]
-  ruleDefn [146-174]
-    ruleName: "intLit" [146-152]
-    rule [156-173]
-      repSep [156-173]
-        rule [163-168]
-          ref [163-168]
-            ruleName: "digit" [163-168]
-        rule [170-172]
-          text: "\"\"" [170-172]
-  ruleDefn [175-215]
-    ruleName: "array" [175-180]
-    rule [184-214]
-      seq [184-214]
-        rule [185-188]
-          text: "\"[\"" [185-188]
-        rule [190-208]
-          repSep [190-208]
-            rule [197-202]
-              ref [197-202]
-                ruleName: "value" [197-202]
-            rule [204-207]
-              text: "\",\"" [204-207]
-        rule [210-213]
-          text: "\"]\"" [210-213]
-  ruleDefn [216-231]
-    ruleName: "digit" [216-221]
-    rule [225-230]
-      charRule [225-230]
-        crRange [225-230]
-          singleChar: "0" [226-227]
-          singleChar: "9" [228-229]
-  ruleDefn [232-277]
-    ruleName: "stringLit" [232-241]
-    rule [245-276]
-      seq [245-276]
-        rule [246-250]
-          text: "\"\\\"\"" [246-250]
-        rule [252-269]
-          repSep [252-269]
-            rule [259-264]
-              charRule [259-264]
-                crRange [259-264]
-                  singleChar: "a" [260-261]
-                  singleChar: "z" [262-263]
-            rule [266-268]
-              text: "\"\"" [266-268]
-        rule [271-275]
-          text: "\"\\\"\"" [271-275]
 {
   "main": {
     "type": "Ref",
-    "rule": "value",
-    "captureName": null
+    "captureName": null,
+    "rule": "value"
   },
   "value": {
     "type": "Choice",
     "choices": [
       {
         "type": "Ref",
-        "rule": "object",
-        "captureName": null
+        "captureName": null,
+        "rule": "object"
       },
       {
         "type": "Ref",
-        "rule": "array",
-        "captureName": null
+        "captureName": null,
+        "rule": "array"
       },
       {
         "type": "Ref",
-        "rule": "intLit",
-        "captureName": null
+        "captureName": null,
+        "rule": "intLit"
       },
       {
         "type": "Ref",
-        "rule": "stringLit",
-        "captureName": null
+        "captureName": null,
+        "rule": "stringLit"
       }
     ]
   },
@@ -147,8 +50,8 @@ grammar [0-277]
         "type": "RepSep",
         "rep": {
           "type": "Ref",
-          "rule": "keyValue",
-          "captureName": null
+          "captureName": null,
+          "rule": "keyValue"
         },
         "sep": {
           "type": "Text",
@@ -166,8 +69,8 @@ grammar [0-277]
     "items": [
       {
         "type": "Ref",
-        "rule": "stringLit",
-        "captureName": null
+        "captureName": null,
+        "rule": "stringLit"
       },
       {
         "type": "Text",
@@ -175,8 +78,8 @@ grammar [0-277]
       },
       {
         "type": "Ref",
-        "rule": "value",
-        "captureName": null
+        "captureName": null,
+        "rule": "value"
       }
     ]
   },
@@ -184,8 +87,8 @@ grammar [0-277]
     "type": "RepSep",
     "rep": {
       "type": "Ref",
-      "rule": "digit",
-      "captureName": null
+      "captureName": null,
+      "rule": "digit"
     },
     "sep": {
       "type": "Text",
@@ -203,8 +106,8 @@ grammar [0-277]
         "type": "RepSep",
         "rep": {
           "type": "Ref",
-          "rule": "value",
-          "captureName": null
+          "captureName": null,
+          "rule": "value"
         },
         "sep": {
           "type": "Text",
@@ -258,15 +161,6 @@ grammar [0-277]
 notQuote :- ^'"'.
 ----
 text/plain
-grammar [0-17]
-  ruleDefn [0-17]
-    ruleName: "notQuote" [0-8]
-    rule [12-16]
-      charRule [12-16]
-        crNot [12-16]
-          charRule [13-16]
-            crLiteral [13-16]
-              singleChar: "\"" [14-15]
 {
   "notQuote": {
     "type": "Char",
@@ -283,19 +177,6 @@ grammar [0-17]
 escapedQuote :- ['\\', '"'].
 ----
 text/plain
-grammar [0-28]
-  ruleDefn [0-28]
-    ruleName: "escapedQuote" [0-12]
-    rule [16-27]
-      seq [16-27]
-        rule [17-21]
-          charRule [17-21]
-            crLiteral [17-21]
-              singleChar: "\\\\" [18-20]
-        rule [23-26]
-          charRule [23-26]
-            crLiteral [23-26]
-              singleChar: "\"" [24-25]
 {
   "escapedQuote": {
     "type": "Sequence",
@@ -321,27 +202,6 @@ grammar [0-28]
 stringChar :- (^'"' | ['\\', '"']).
 ----
 text/plain
-grammar [0-35]
-  ruleDefn [0-35]
-    ruleName: "stringChar" [0-10]
-    rule [14-34]
-      choice [14-34]
-        rule [15-19]
-          charRule [15-19]
-            crNot [15-19]
-              charRule [16-19]
-                crLiteral [16-19]
-                  singleChar: "\"" [17-18]
-        rule [22-33]
-          seq [22-33]
-            rule [23-27]
-              charRule [23-27]
-                crLiteral [23-27]
-                  singleChar: "\\\\" [24-26]
-            rule [29-32]
-              charRule [29-32]
-                crLiteral [29-32]
-                  singleChar: "\"" [30-31]
 {
   "stringChar": {
     "type": "Choice",
@@ -382,15 +242,6 @@ grammar [0-35]
 commentChar :- ^'\n'.
 ----
 text/plain
-grammar [0-21]
-  ruleDefn [0-21]
-    ruleName: "commentChar" [0-11]
-    rule [15-20]
-      charRule [15-20]
-        crNot [15-20]
-          charRule [16-20]
-            crLiteral [16-20]
-              singleChar: "\\n" [17-19]
 {
   "commentChar": {
     "type": "Char",
@@ -407,13 +258,6 @@ grammar [0-21]
 backslash :- '\\'.
 ----
 text/plain
-grammar [0-18]
-  ruleDefn [0-18]
-    ruleName: "backslash" [0-9]
-    rule [13-17]
-      charRule [13-17]
-        crLiteral [13-17]
-          singleChar: "\\\\" [14-16]
 {
   "backslash": {
     "type": "Char",
@@ -427,11 +271,6 @@ grammar [0-18]
 singleChar :- "here's a backslash: \\ there it was!".
 ----
 text/plain
-grammar [0-53]
-  ruleDefn [0-53]
-    ruleName: "singleChar" [0-10]
-    rule [14-52]
-      text: "\"here's a backslash: \\\\ there it was!\"" [14-52]
 {
   "singleChar": {
     "type": "Text",
@@ -442,29 +281,14 @@ grammar [0-53]
 binOp :- [left:term, "==", right:term].
 ----
 text/plain
-grammar [0-39]
-  ruleDefn [0-39]
-    ruleName: "binOp" [0-5]
-    rule [9-38]
-      seq [9-38]
-        rule [10-19]
-          ref [10-19]
-            captureName: "left" [10-14]
-            ruleName: "term" [15-19]
-        rule [21-25]
-          text: "\"==\"" [21-25]
-        rule [27-37]
-          ref [27-37]
-            captureName: "right" [27-32]
-            ruleName: "term" [33-37]
 {
   "binOp": {
     "type": "Sequence",
     "items": [
       {
         "type": "Ref",
-        "rule": "term",
-        "captureName": "left"
+        "captureName": "left",
+        "rule": "term"
       },
       {
         "type": "Text",
@@ -472,8 +296,8 @@ grammar [0-39]
       },
       {
         "type": "Ref",
-        "rule": "term",
-        "captureName": "right"
+        "captureName": "right",
+        "rule": "term"
       }
     ]
   }

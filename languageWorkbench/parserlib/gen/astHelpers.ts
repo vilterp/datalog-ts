@@ -15,6 +15,7 @@ import {
   ImportDeclaration,
   SwitchStatement,
   ReturnStatement,
+  ConditionalExpression,
 } from "estree";
 
 export type ProgramWithTypes = {
@@ -56,7 +57,8 @@ export type TypeExpr =
   | { type: "ArrayType"; inner: TypeExpr }
   | { type: "StringLiteralType"; str: string }
   | { type: "UnionType"; choices: TypeExpr[] }
-  | { type: "ObjectLiteralType"; members: ObjectLiteralTypeMember[] };
+  | { type: "ObjectLiteralType"; members: ObjectLiteralTypeMember[] }
+  | { type: "Null" };
 
 export type ObjectLiteralTypeMember = { name: string; type: TypeExpr };
 
@@ -76,10 +78,13 @@ export function tsUnionType(choices: TypeExpr[]): TypeExpr {
   return { type: "UnionType", choices };
 }
 
+export function tsOrNull(expr: TypeExpr): TypeExpr {
+  return tsUnionType([expr, { type: "Null" }]);
+}
+
 export function jsIdent(name: string): Identifier {
   return { type: "Identifier", name };
 }
-
 export function jsCall(callee: Expression, args: Expression[]): CallExpression {
   return {
     type: "CallExpression",
@@ -253,6 +258,19 @@ export function jsImport(path: string, idents: string[]): ImportDeclaration {
   };
 }
 
+export function jsTernary(
+  test: Expression,
+  ifTrue: Expression,
+  ifFalse: Expression
+): ConditionalExpression {
+  return {
+    type: "ConditionalExpression",
+    test,
+    consequent: ifTrue,
+    alternate: ifFalse,
+  };
+}
+
 export function prettyPrintProgramWithTypes(prog: ProgramWithTypes): string {
   return [
     ...prog.leadingComments.map((comment) => `// ${comment}`),
@@ -290,6 +308,8 @@ export function prettyPrintTypeExpr(expr: TypeExpr): string {
         ),
         "}",
       ].join("\n");
+    case "Null":
+      return "null";
   }
 }
 

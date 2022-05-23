@@ -1,11 +1,4 @@
-import {
-  Grammar,
-  Rule,
-  Span,
-  SingleCharRule,
-  spanLength,
-  char,
-} from "./grammar";
+import { Grammar, Rule, Span, SingleCharRule, spanLength, char } from "./types";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 
 export type TraceTree = {
