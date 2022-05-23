@@ -2,7 +2,6 @@ import * as dl from "../../../core/types";
 import {
   flatMap,
   flatMapObjToList,
-  pairsToObj,
   range,
   stringToArray,
 } from "../../../util/util";
@@ -14,7 +13,6 @@ import {
   Rec,
   rec,
   str,
-  Term,
   varr,
   or,
   and,
