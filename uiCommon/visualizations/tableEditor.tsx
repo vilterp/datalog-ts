@@ -74,10 +74,10 @@ function TableEditor(props: VizArgs) {
   );
 }
 
-// TODO: can we do sequential numbers instead?
-function withID(existing: Rec[], rec: Rec): Rec {
-  const ids = existing.map((rec) => {
-    const idAttr = rec.attrs.id;
+function withID(existingRecs: Rec[], rec: Rec): Rec {
+  const ids = existingRecs.map((existing) => {
+    const label = existing.attrs.label as Rec;
+    const idAttr = label.attrs.id;
     if (idAttr && idAttr.type === "IntLit") {
       return idAttr.val;
     }
