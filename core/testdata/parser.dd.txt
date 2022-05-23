@@ -777,6 +777,21 @@ application/json
   }
 ]
 
+.load dlCommon/astViz.dl
+.table ast.node
+----
+application/json
+[
+  {
+    "type": "LoadStmt",
+    "path": "dlCommon/astViz.dl"
+  },
+  {
+    "type": "TableDecl",
+    "name": "ast.node"
+  }
+]
+
 current{id: 1, level: 5}.
 current{id: 2, level: 10}.
 current{id: 2, level: 13}.
