@@ -15,6 +15,7 @@ import {
   ImportDeclaration,
   SwitchStatement,
   ReturnStatement,
+  ConditionalExpression,
 } from "estree";
 
 export type ProgramWithTypes = {
@@ -254,6 +255,19 @@ export function jsImport(path: string, idents: string[]): ImportDeclaration {
       imported: jsIdent(ident),
       local: jsIdent(ident),
     })),
+  };
+}
+
+export function jsTernary(
+  test: Expression,
+  ifTrue: Expression,
+  ifFalse: Expression
+): ConditionalExpression {
+  return {
+    type: "ConditionalExpression",
+    test,
+    consequent: ifTrue,
+    alternate: ifFalse,
   };
 }
 
