@@ -38,6 +38,6 @@ ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
 commaSpace :- [",", ws].
 path :- repSep(pathSegment, "/").
-pathSegment :- repSep(([a-z]|[a-Z]|[0-9]|'_'|'-'|'.'), "").
+pathSegment :- repSep(([a-z]|[A-Z]|[0-9]|'_'|'-'|'.'), "").
 
 commentChar :- ^'\n'.
