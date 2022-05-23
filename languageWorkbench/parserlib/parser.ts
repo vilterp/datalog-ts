@@ -26,7 +26,12 @@ type TraceInner =
       innerTrace: TraceTree;
     }
   | { type: "RepSepTrace"; repTraces: TraceTree[]; sepTraces: TraceTree[] }
-  | { type: "RefTrace"; name: string; innerTrace: TraceTree }
+  | {
+      type: "RefTrace";
+      name: string;
+      captureName: string | null;
+      innerTrace: TraceTree;
+    }
   | { type: "TextTrace" }
   | { type: "CharTrace" }
   | { type: "SucceedTrace" };
@@ -46,6 +51,7 @@ export function parse(
     span: res.span,
     error: null,
     name: startRule,
+    captureName: null,
     innerTrace: res,
   };
 }
@@ -87,6 +93,7 @@ function doParse(
       return {
         type: "RefTrace",
         name: rule.rule,
+        captureName: rule.captureName,
         // rule,
         span: innerTrace.span,
         error: innerTrace.error,

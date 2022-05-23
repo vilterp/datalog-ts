@@ -41,6 +41,7 @@ import {
   jsReturn,
   jsSwitch,
   jsIIFE,
+  jsNull,
 } from "./astHelpers";
 
 export type Options = {
@@ -223,7 +224,11 @@ function extractorBodyForRule(
           )
         : jsCall(jsIdent(extractorName(ruleName)), [
             jsIdent("input"),
-            jsCall(jsIdent("childByName"), [jsIdent("node"), jsStr(ruleName)]),
+            jsCall(jsIdent("childByName"), [
+              jsIdent("node"),
+              jsStr(ruleName),
+              captureName ? jsStr(captureName) : jsNull,
+            ]),
           ]),
     }));
 

@@ -125,8 +125,8 @@ function extractKeyValue(input: string, node: RuleTree): JsonKeyValue {
     type: "KeyValue",
     text: textForSpan(input, node.span),
     span: node.span,
-    string: extractString(input, childByName(node, "string")),
-    value: extractValue(input, childByName(node, "value"))
+    string: extractString(input, childByName(node, "string", null)),
+    value: extractValue(input, childByName(node, "value", null))
   };
 }
 function extractMain(input: string, node: RuleTree): JsonMain {
@@ -134,7 +134,7 @@ function extractMain(input: string, node: RuleTree): JsonMain {
     type: "Main",
     text: textForSpan(input, node.span),
     span: node.span,
-    value: extractValue(input, childByName(node, "value"))
+    value: extractValue(input, childByName(node, "value", null))
   };
 }
 function extractNull(input: string, node: RuleTree): JsonNull {

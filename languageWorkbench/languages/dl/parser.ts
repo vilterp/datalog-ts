@@ -405,12 +405,12 @@ function extractAggregation(input: string, node: RuleTree): DLAggregation {
     type: "Aggregation",
     text: textForSpan(input, node.span),
     span: node.span,
-    aggregation: extractIdent(input, childByName(node, "ident")),
+    aggregation: extractIdent(input, childByName(node, "ident", "aggregation")),
     var: childrenByName(node, "var").map((child) => extractVar(input, child)),
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
     ),
-    record: extractRecord(input, childByName(node, "record")),
+    record: extractRecord(input, childByName(node, "record", null)),
   };
 }
 function extractAlpha(input: string, node: RuleTree): DLAlpha {
@@ -449,9 +449,9 @@ function extractBinExpr(input: string, node: RuleTree): DLBinExpr {
     type: "BinExpr",
     text: textForSpan(input, node.span),
     span: node.span,
-    left: extractTerm(input, childByName(node, "term")),
-    binOp: extractBinOp(input, childByName(node, "binOp")),
-    right: extractTerm(input, childByName(node, "term")),
+    left: extractTerm(input, childByName(node, "term", "left")),
+    binOp: extractBinOp(input, childByName(node, "binOp", null)),
+    right: extractTerm(input, childByName(node, "term", "right")),
   };
 }
 function extractBinOp(input: string, node: RuleTree): DLBinOp {
@@ -517,7 +517,7 @@ function extractDeleteFact(input: string, node: RuleTree): DLDeleteFact {
     type: "DeleteFact",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record")),
+    record: extractRecord(input, childByName(node, "record", null)),
   };
 }
 function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
@@ -535,7 +535,7 @@ function extractFact(input: string, node: RuleTree): DLFact {
     type: "Fact",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record")),
+    record: extractRecord(input, childByName(node, "record", null)),
   };
 }
 function extractIdent(input: string, node: RuleTree): DLIdent {
@@ -543,7 +543,7 @@ function extractIdent(input: string, node: RuleTree): DLIdent {
     type: "Ident",
     text: textForSpan(input, node.span),
     span: node.span,
-    alpha: extractAlpha(input, childByName(node, "alpha")),
+    alpha: extractAlpha(input, childByName(node, "alpha", null)),
     alphaNum: childrenByName(node, "alphaNum").map((child) =>
       extractAlphaNum(input, child)
     ),
@@ -554,7 +554,7 @@ function extractInt(input: string, node: RuleTree): DLInt {
     type: "Int",
     text: textForSpan(input, node.span),
     span: node.span,
-    first: extractNum(input, childByName(node, "num")),
+    first: extractNum(input, childByName(node, "num", "first")),
     num: childrenByName(node, "num").map((child) => extractNum(input, child)),
   };
 }
@@ -563,8 +563,8 @@ function extractKeyValue(input: string, node: RuleTree): DLKeyValue {
     type: "KeyValue",
     text: textForSpan(input, node.span),
     span: node.span,
-    ident: extractIdent(input, childByName(node, "ident")),
-    term: extractTerm(input, childByName(node, "term")),
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    term: extractTerm(input, childByName(node, "term", null)),
   };
 }
 function extractLoadKW(input: string, node: RuleTree): DLLoadKW {
@@ -579,8 +579,8 @@ function extractLoadStmt(input: string, node: RuleTree): DLLoadStmt {
     type: "LoadStmt",
     text: textForSpan(input, node.span),
     span: node.span,
-    loadKW: extractLoadKW(input, childByName(node, "loadKW")),
-    path: extractPath(input, childByName(node, "path")),
+    loadKW: extractLoadKW(input, childByName(node, "loadKW", null)),
+    path: extractPath(input, childByName(node, "path", null)),
   };
 }
 function extractMain(input: string, node: RuleTree): DLMain {
@@ -601,7 +601,7 @@ function extractNegation(input: string, node: RuleTree): DLNegation {
     type: "Negation",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record")),
+    record: extractRecord(input, childByName(node, "record", null)),
   };
 }
 function extractNum(input: string, node: RuleTree): DLNum {
@@ -640,8 +640,11 @@ function extractRecord(input: string, node: RuleTree): DLRecord {
     type: "Record",
     text: textForSpan(input, node.span),
     span: node.span,
-    ident: extractIdent(input, childByName(node, "ident")),
-    recordAttrs: extractRecordAttrs(input, childByName(node, "recordAttrs")),
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    recordAttrs: extractRecordAttrs(
+      input,
+      childByName(node, "recordAttrs", null)
+    ),
   };
 }
 function extractRecordAttrs(input: string, node: RuleTree): DLRecordAttrs {
@@ -665,7 +668,7 @@ function extractRule(input: string, node: RuleTree): DLRule {
     type: "Rule",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record")),
+    record: extractRecord(input, childByName(node, "record", null)),
     disjunct: childrenByName(node, "disjunct").map((child) =>
       extractDisjunct(input, child)
     ),
@@ -713,8 +716,8 @@ function extractTableDecl(input: string, node: RuleTree): DLTableDecl {
     type: "TableDecl",
     text: textForSpan(input, node.span),
     span: node.span,
-    tableKW: extractTableKW(input, childByName(node, "tableKW")),
-    name: extractIdent(input, childByName(node, "ident")),
+    tableKW: extractTableKW(input, childByName(node, "tableKW", null)),
+    name: extractIdent(input, childByName(node, "ident", "name")),
   };
 }
 function extractTableKW(input: string, node: RuleTree): DLTableKW {
