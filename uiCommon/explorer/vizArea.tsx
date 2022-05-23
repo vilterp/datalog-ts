@@ -6,6 +6,7 @@ import { VIZ_REGISTRY } from "../visualizations";
 
 export function VizArea(props: {
   interp: AbstractInterpreter;
+  highlightedTerm: Term | null;
   setHighlightedTerm: (t: Term | null) => void;
   runStatements: (stmts: Statement[]) => void;
 }) {
@@ -24,6 +25,7 @@ export function VizArea(props: {
           interp={props.interp}
           name={(result.bindings.Name as StringLit).val}
           spec={result.bindings.Spec as Rec}
+          highlightedTerm={props.highlightedTerm}
           setHighlightedTerm={props.setHighlightedTerm}
           runStatements={props.runStatements}
         />
@@ -36,6 +38,7 @@ function IndividualViz(props: {
   interp: AbstractInterpreter;
   name: string;
   spec: Rec;
+  highlightedTerm: Term | null;
   setHighlightedTerm: (t: Term | null) => void;
   runStatements: (stmts: Statement[]) => void;
 }) {
@@ -49,6 +52,7 @@ function IndividualViz(props: {
           <viz.component
             interp={props.interp}
             spec={props.spec}
+            highlightedTerm={props.highlightedTerm}
             setHighlightedTerm={props.setHighlightedTerm}
             runStatements={props.runStatements}
             id={props.name}
