@@ -61,14 +61,14 @@ export abstract class AbstractInterpreter {
   queryStr(str: string): Res[] {
     const record = parseRecord(str);
     const [res, _] = this.evalStmt({
-      type: "Fact",
+      type: "Query",
       record: parserTermToInternal(record) as Rec,
     });
     return res;
   }
 
   queryRec(record: Rec) {
-    const [res, _] = this.evalStmt({ type: "Fact", record });
+    const [res, _] = this.evalStmt({ type: "Query", record });
     return res;
   }
 
