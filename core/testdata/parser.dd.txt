@@ -664,7 +664,7 @@ application/json
         },
         "time": {
           "type": "IntLit",
-          "val": 11
+          "val": 1
         },
         "payload": {
           "type": "Record",
@@ -809,11 +809,11 @@ application/json
       "attrs": {
         "id": {
           "type": "IntLit",
-          "val": 11
+          "val": 1
         },
         "level": {
           "type": "IntLit",
-          "val": 55
+          "val": 5
         }
       }
     }
@@ -826,11 +826,11 @@ application/json
       "attrs": {
         "id": {
           "type": "IntLit",
-          "val": 22
+          "val": 2
         },
         "level": {
           "type": "IntLit",
-          "val": 11
+          "val": 10
         }
       }
     }
@@ -843,11 +843,11 @@ application/json
       "attrs": {
         "id": {
           "type": "IntLit",
-          "val": 22
+          "val": 2
         },
         "level": {
           "type": "IntLit",
-          "val": 11
+          "val": 13
         }
       }
     }
@@ -907,6 +907,25 @@ application/json
         "level": {
           "type": "Var",
           "name": "C"
+        }
+      }
+    }
+  }
+]
+
+foo{idx: 52}.
+----
+application/json
+[
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "foo",
+      "attrs": {
+        "idx": {
+          "type": "IntLit",
+          "val": 52
         }
       }
     }

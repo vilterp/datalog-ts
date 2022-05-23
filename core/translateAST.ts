@@ -96,9 +96,7 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Bool":
       return bool(term.text === "true");
     case "Int":
-      return int(
-        parseInt(term.first.text + term.num.map((n) => n.text).join())
-      );
+      return int(parseInt(term.text));
     case "Placeholder":
       return rec("???", {});
     case "String":
