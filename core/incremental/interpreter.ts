@@ -63,16 +63,6 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         };
       }
       case "Fact": {
-        // TODO: don't do this in insert?
-        if (hasVars(stmt.record)) {
-          return {
-            newInterp: interp,
-            output: {
-              type: "QueryResults",
-              results: doQuery(graph, stmt.record),
-            },
-          };
-        }
         const { newGraph, emissionLog } = insertFact(graph, {
           term: stmt.record,
           trace: { type: "BaseFactTrace" },
@@ -85,6 +75,15 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             newGraph
           ),
           output: { type: "EmissionLog", log: emissionLog },
+        };
+      }
+      case "Query": {
+        return {
+          newInterp: interp,
+          output: {
+            type: "QueryResults",
+            results: doQuery(graph, stmt.record),
+          },
         };
       }
       case "LoadStmt":
