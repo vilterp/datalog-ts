@@ -931,3 +931,89 @@ application/json
     }
   }
 ]
+
+sibling{left: L, right: R} :-
+  parents{child: L, mother: M, father: F} &
+  parents{child: R, mother: M, father: F} &
+  L != R.
+----
+application/json
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "sibling",
+        "attrs": {
+          "left": {
+            "type": "Var",
+            "name": "L"
+          },
+          "right": {
+            "type": "Var",
+            "name": "R"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "Var",
+                    "name": "L"
+                  },
+                  "mother": {
+                    "type": "Var",
+                    "name": "M"
+                  },
+                  "father": {
+                    "type": "Var",
+                    "name": "F"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "Var",
+                    "name": "R"
+                  },
+                  "mother": {
+                    "type": "Var",
+                    "name": "M"
+                  },
+                  "father": {
+                    "type": "Var",
+                    "name": "F"
+                  }
+                }
+              },
+              {
+                "type": "BinExpr",
+                "left": {
+                  "type": "Var",
+                  "name": "L"
+                },
+                "op": "!=",
+                "right": {
+                  "type": "Var",
+                  "name": "R"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
