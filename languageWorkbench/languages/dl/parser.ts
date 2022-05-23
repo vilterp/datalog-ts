@@ -1512,7 +1512,7 @@ const GRAMMAR: Grammar = {
           type: "Not",
           rule: {
             type: "Literal",
-            value: "'\"'",
+            value: '"',
           },
         },
       },
@@ -1523,14 +1523,14 @@ const GRAMMAR: Grammar = {
             type: "Char",
             rule: {
               type: "Literal",
-              value: "'\\\\'",
+              value: "\\",
             },
           },
           {
             type: "Char",
             rule: {
               type: "Literal",
-              value: "'\"'",
+              value: '"',
             },
           },
         ],
@@ -1596,7 +1596,7 @@ const GRAMMAR: Grammar = {
         },
         {
           type: "Text",
-          value: "\\n",
+          value: "\n",
         },
       ],
     },
@@ -1668,21 +1668,21 @@ const GRAMMAR: Grammar = {
           type: "Char",
           rule: {
             type: "Literal",
-            value: "'_'",
+            value: "_",
           },
         },
         {
           type: "Char",
           rule: {
             type: "Literal",
-            value: "'-'",
+            value: "-",
           },
         },
         {
           type: "Char",
           rule: {
             type: "Literal",
-            value: "'.'",
+            value: ".",
           },
         },
       ],
@@ -1698,7 +1698,7 @@ const GRAMMAR: Grammar = {
       type: "Not",
       rule: {
         type: "Literal",
-        value: "'\\n'",
+        value: "\n",
       },
     },
   },

@@ -33,6 +33,7 @@ import {
   jsSwitch,
   jsNull,
   tsOrNull,
+  jsTernary,
 } from "./astHelpers";
 import { Grammar, Rule } from "../types";
 
@@ -199,37 +200,49 @@ function extractorBodyForRule(
 
   const ruleObjMembers = refs
     .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-    .map(({ ruleName, captureName, origin }) => ({
-      // TODO: pluralize if this is a repSep
-      key: prefixToAvoidReserved(captureName ? captureName : ruleName),
-      value: origin.repeated
-        ? jsCall(
-            jsMember(
-              jsCall(jsIdent("childrenByName"), [
-                jsIdent("node"),
-                jsStr(ruleName),
-              ]),
-              "map"
-            ),
-            [
-              jsArrowFunc(
-                ["child"],
-                jsCall(jsIdent(extractorName(ruleName)), [
-                  jsIdent("input"),
-                  jsIdent("child"),
-                ])
+    .map(({ ruleName, captureName, origin }) => {
+      const childByNameCall = jsCall(jsIdent("childByName"), [
+        jsIdent("node"),
+        jsStr(ruleName),
+        captureName ? jsStr(captureName) : jsNull,
+      ]);
+      return {
+        // TODO: pluralize if this is a repSep
+        key: prefixToAvoidReserved(captureName ? captureName : ruleName),
+        value: origin.repeated
+          ? jsCall(
+              jsMember(
+                jsCall(jsIdent("childrenByName"), [
+                  jsIdent("node"),
+                  jsStr(ruleName),
+                ]),
+                "map"
               ),
-            ]
-          )
-        : jsCall(jsIdent(extractorName(ruleName)), [
-            jsIdent("input"),
-            jsCall(jsIdent("childByName"), [
-              jsIdent("node"),
-              jsStr(ruleName),
-              captureName ? jsStr(captureName) : jsNull,
+              [
+                jsArrowFunc(
+                  ["child"],
+                  jsCall(jsIdent(extractorName(ruleName)), [
+                    jsIdent("input"),
+                    jsIdent("child"),
+                  ])
+                ),
+              ]
+            )
+          : origin.inChoice
+          ? jsTernary(
+              childByNameCall,
+              jsCall(jsIdent(extractorName(ruleName)), [
+                jsIdent("input"),
+                childByNameCall,
+              ]),
+              jsNull
+            )
+          : jsCall(jsIdent(extractorName(ruleName)), [
+              jsIdent("input"),
+              childByNameCall,
             ]),
-          ]),
-    }));
+      };
+    });
 
   return jsBlock([jsReturn(jsObj([...baseObjMembers, ...ruleObjMembers]))]);
 }
