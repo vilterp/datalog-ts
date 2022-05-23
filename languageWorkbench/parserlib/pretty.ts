@@ -1,7 +1,6 @@
 import { SingleCharRule, Rule, Span } from "./grammar";
 import { RuleTree } from "./ruleTree";
-import { Tree } from "../../util/tree";
-import { prettyPrintTree } from "../../core/pretty";
+import { prettyPrintTree, Tree } from "../../util/tree";
 
 // supposed to be like regex syntax
 export function prettyPrintCharRule(rule: SingleCharRule): string {

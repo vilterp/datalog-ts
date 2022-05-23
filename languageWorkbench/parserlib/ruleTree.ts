@@ -6,6 +6,7 @@ export type RuleTree = {
   name: string;
   span: Span;
   children: RuleTree[];
+  captureName: string | null;
 };
 
 export function extractRuleTree(tt: TraceTree): RuleTree | null {
@@ -13,6 +14,7 @@ export function extractRuleTree(tt: TraceTree): RuleTree | null {
     case "RefTrace":
       return {
         name: tt.name,
+        captureName: tt.captureName,
         children: getChildren(tt.innerTrace),
         span: tt.span,
       };
@@ -44,8 +46,14 @@ export function childrenByName(rt: RuleTree, name: string): RuleTree[] {
   return rt.children.filter((c) => c.name === name);
 }
 
-export function childByName(rt: RuleTree, name: string): RuleTree {
-  return rt.children.find((c) => c.name === name);
+export function childByName(
+  rt: RuleTree,
+  name: string,
+  captureName: string | null = null
+): RuleTree {
+  return rt.children.find(
+    (c) => c.name === name && c.captureName === captureName
+  );
 }
 
 export function textForSpan(input: string, span: Span): string {

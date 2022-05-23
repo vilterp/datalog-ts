@@ -1,5 +1,5 @@
 import { Map, List } from "immutable";
-import { Rec, Res, Statement, rec, str, Rule, UserError } from "../types";
+import { Rec, Res, rec, str, Rule, UserError, Statement } from "../types";
 import { evaluate, hasVars } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
@@ -10,6 +10,8 @@ import {
   lazyIndexedCollectionFromList,
 } from "./lazyIndexedCollection";
 import { DB, emptyDB } from "./types";
+import { DLStatement } from "../../languageWorkbench/languages/dl/parser";
+import { parserRuleToInternal, parserTermToInternal } from "../translateAST";
 
 export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;
@@ -23,14 +25,8 @@ export class SimpleInterpreter extends AbstractInterpreter {
 
   evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
     switch (stmt.type) {
-      case "Query":
-        return [this.evalQuery(stmt.record), this];
-      case "Insert": {
+      case "Fact": {
         const record = stmt.record;
-        if (hasVars(record)) {
-          // TODO: separate method for querying?
-          return [this.evalQuery(record), this];
-        }
         return [
           [],
           this.withDB({
@@ -42,13 +38,16 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
+      case "Query":
+        return [this.evalQuery(stmt.record), this];
       case "Delete": {
+        const record = stmt.record;
         return [
           [],
           this.withDB({
             ...this.db,
-            tables: this.db.tables.update(stmt.record.relation, (tbl) =>
-              tbl.delete(stmt.record)
+            tables: this.db.tables.update(record.relation, (tbl) =>
+              tbl.delete(record)
             ),
           }),
         ];
@@ -81,8 +80,6 @@ export class SimpleInterpreter extends AbstractInterpreter {
         ];
       case "LoadStmt":
         return [[], this.doLoad(stmt.path)];
-      case "Comment":
-        return [[], this];
     }
   }
 

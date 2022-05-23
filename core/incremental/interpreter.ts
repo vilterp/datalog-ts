@@ -5,9 +5,10 @@ import { addRule, doQuery, EmissionLog, insertFact } from "./eval";
 import { hasVars } from "../simple/simpleEvaluate";
 import { ppb, ppr, ppt } from "../pretty";
 import { Loader } from "../loaders";
-import { language as dlLanguage } from "../parser";
 import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
 import { AbstractInterpreter } from "../abstractInterpreter";
+import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
+import { parserTermToInternal } from "../translateAST";
 
 export type Output =
   | { type: "EmissionLog"; log: EmissionLog }
@@ -61,15 +62,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
-      case "Query":
-        return {
-          newInterp: interp,
-          output: {
-            type: "QueryResults",
-            results: doQuery(graph, stmt.record),
-          },
-        };
-      case "Insert": {
+      case "Fact": {
         // TODO: don't do this in insert?
         if (hasVars(stmt.record)) {
           return {
@@ -94,11 +87,6 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
-      case "Comment":
-        return {
-          newInterp: interp,
-          output: ack,
-        };
       case "LoadStmt":
         return {
           newInterp: this.doLoad(stmt.path),
@@ -107,8 +95,10 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     }
   }
 
+  // TODO: shouldn't this be in AbstractInterpreter?
   queryStr(str: string): Res[] {
-    const record = dlLanguage.record.tryParse(str) as Rec;
+    const rawRecord = parseRecord(str);
+    const record = parserTermToInternal(rawRecord) as Rec;
     return doQuery(this.graph, record);
   }
 

@@ -1,5 +1,10 @@
 import { Grammar, Rule } from "../grammar";
-import { Program, FunctionDeclaration } from "estree";
+import {
+  Program,
+  FunctionDeclaration,
+  Expression,
+  BlockStatement,
+} from "estree";
 import { generate } from "astring";
 import {
   capitalize,
@@ -36,6 +41,7 @@ import {
   jsReturn,
   jsSwitch,
   jsIIFE,
+  jsNull,
 } from "./astHelpers";
 
 export type Options = {
@@ -71,7 +77,7 @@ export function genExtractor(
       typeForRule(name, rule, options)
     ),
     declarations: [
-      generateEntryPoint(options),
+      ...generateEntryPoints(grammar, options),
       ...mapObjToList(
         filterObj(grammar, (name) => !options.ignoreRules.has(name)),
         (name, rule) => genRule(name, rule, options)
@@ -133,7 +139,11 @@ function genRule(
   };
 }
 
-function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
+function extractorBodyForRule(
+  ruleName: string,
+  rule: Rule,
+  options: Options
+): BlockStatement {
   const refs = refsInRule(rule);
   const filteredRefs = refs.filter((r) => !options.ignoreRules.has(r.ruleName));
   const refNames = filteredRefs.map((r) => `${r.captureName}:${r.ruleName}`);
@@ -162,76 +172,67 @@ function extractorBodyForRule(ruleName: string, rule: Rule, options: Options) {
     },
   ];
 
-  const ruleObjMembers =
-    rule.type === "Choice"
-      ? [
-          {
-            key: "value",
-            value:
-              refs.length === 0
-                ? jsObj([])
-                : jsIIFE(
-                    jsBlock([
-                      jsConstAssn("child", jsChain(["node", "children", 0])),
-                      jsSwitch(
-                        jsChain(["child", "name"]),
-                        refs.map((ref) => {
-                          return {
-                            name: ref.ruleName,
-                            block: jsBlock([
-                              jsReturn(
-                                jsCall(jsIdent(extractorName(ref.ruleName)), [
-                                  jsIdent("input"),
-                                  jsIdent("child"),
-                                ])
-                              ),
-                            ]),
-                          };
-                        })
-                      ),
-                    ])
-                  ),
-          },
-        ]
-      : refs
-          .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-          .map(({ ruleName, repeated, captureName }) => ({
-            // TODO: pluralize if this is a repSep
-            key: prefixToAvoidReserved(captureName ? captureName : ruleName),
-            value: repeated
-              ? jsCall(
-                  jsMember(
-                    jsCall(jsIdent("childrenByName"), [
-                      jsIdent("node"),
-                      jsStr(ruleName),
-                    ]),
-                    "map"
-                  ),
-                  [
-                    jsArrowFunc(
-                      ["child"],
-                      jsCall(jsIdent(extractorName(ruleName)), [
-                        jsIdent("input"),
-                        jsIdent("child"),
-                      ])
-                    ),
-                  ]
-                )
-              : jsCall(jsIdent(extractorName(ruleName)), [
-                  jsIdent("input"),
-                  jsCall(jsIdent("childByName"), [
-                    jsIdent("node"),
-                    jsStr(ruleName),
-                  ]),
-                ]),
-          }));
+  if (rule.type === "Choice") {
+    if (refs.length === 0) {
+      return jsBlock([jsReturn(jsObj(baseObjMembers))]);
+    }
 
-  return jsBlock([
-    {
-      type: "ReturnStatement",
-      argument: jsObj([...baseObjMembers, ...ruleObjMembers]),
-    },
-  ]);
+    return jsBlock([
+      jsConstAssn("child", jsChain(["node", "children", 0])),
+      jsSwitch(
+        jsChain(["child", "name"]),
+        refs.map((ref) => {
+          return {
+            name: ref.ruleName,
+            block: jsBlock([
+              jsReturn(
+                jsCall(jsIdent(extractorName(ref.ruleName)), [
+                  jsIdent("input"),
+                  jsIdent("child"),
+                ])
+              ),
+            ]),
+          };
+        })
+      ),
+    ]);
+  }
+
+  const ruleObjMembers = refs
+    .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+    .map(({ ruleName, repeated, captureName }) => ({
+      // TODO: pluralize if this is a repSep
+      key: prefixToAvoidReserved(captureName ? captureName : ruleName),
+      value: repeated
+        ? jsCall(
+            jsMember(
+              jsCall(jsIdent("childrenByName"), [
+                jsIdent("node"),
+                jsStr(ruleName),
+              ]),
+              "map"
+            ),
+            [
+              jsArrowFunc(
+                ["child"],
+                jsCall(jsIdent(extractorName(ruleName)), [
+                  jsIdent("input"),
+                  jsIdent("child"),
+                ])
+              ),
+            ]
+          )
+        : jsCall(jsIdent(extractorName(ruleName)), [
+            jsIdent("input"),
+            jsCall(jsIdent("childByName"), [
+              jsIdent("node"),
+              jsStr(ruleName),
+              captureName ? jsStr(captureName) : jsNull,
+            ]),
+          ]),
+    }));
+
+  return jsBlock([jsReturn(jsObj([...baseObjMembers, ...ruleObjMembers]))]);
 }
 
 function typeForRule(
@@ -258,34 +259,31 @@ function typeExprForRule(
     { name: "text", type: tsTypeName("string") },
     { name: "span", type: tsTypeName("Span") },
   ];
-  const ruleMembers: ObjectLiteralTypeMember[] =
-    rule.type === "Choice"
-      ? [
-          {
-            name: "value",
-            type: tsUnionType(
-              refs.map((ref) => {
-                const inner = tsTypeName(
-                  typeName(ref.ruleName, options.typePrefix)
-                );
-                return ref.repeated ? tsArrayType(inner) : inner;
-              })
-            ),
-          },
-        ]
-      : refs
-          .filter((ref) => !options.ignoreRules.has(ref.ruleName))
-          .map((ref) => {
+
+  if (rule.type === "Choice") {
+    return refs.length === 0
+      ? { type: "ObjectLiteralType", members: baseMembers }
+      : tsUnionType(
+          refs.map((ref) => {
             const inner = tsTypeName(
               typeName(ref.ruleName, options.typePrefix)
             );
-            return {
-              name: prefixToAvoidReserved(
-                ref.captureName ? ref.captureName : ref.ruleName
-              ),
-              type: ref.repeated ? tsArrayType(inner) : inner,
-            };
-          });
+            return ref.repeated ? tsArrayType(inner) : inner;
+          })
+        );
+  }
+
+  const ruleMembers: ObjectLiteralTypeMember[] = refs
+    .filter((ref) => !options.ignoreRules.has(ref.ruleName))
+    .map((ref) => {
+      const inner = tsTypeName(typeName(ref.ruleName, options.typePrefix));
+      return {
+        name: prefixToAvoidReserved(
+          ref.captureName ? ref.captureName : ref.ruleName
+        ),
+        type: ref.repeated ? tsArrayType(inner) : inner,
+      };
+    });
 
   return {
     type: "ObjectLiteralType",
@@ -297,18 +295,22 @@ function generateGrammarConst(grammar: Grammar): string {
   return `const GRAMMAR: Grammar = ${JSON.stringify(grammar, null, 2)}`;
 }
 
-function generateEntryPoint(options: Options): string {
-  return [
-    `export function parse(input: string): ${typeName(
-      "main",
-      options.typePrefix
-    )} {`,
-    `  const traceTree = parserlib.parse(GRAMMAR, "main", input)`,
-    // TODO: problematic if there's a rule called RuleTree
-    `  const ruleTree = extractRuleTree(traceTree)`,
-    `  return ${extractorName("main")}(input, ruleTree)`,
-    `}`,
-  ].join("\n");
+function generateEntryPoints(grammar: Grammar, options: Options): string[] {
+  return mapObjToList(
+    filterObj(grammar, (ruleName) => !options.ignoreRules.has(ruleName)),
+    (ruleName, rule) =>
+      [
+        `export function parse${typeName(
+          ruleName,
+          ""
+        )}(input: string): ${typeName(ruleName, options.typePrefix)} {`,
+        `  const traceTree = parserlib.parse(GRAMMAR, "${ruleName}", input)`,
+        // TODO: problematic if there's a rule called RuleTree
+        `  const ruleTree = extractRuleTree(traceTree)`,
+        `  return ${extractorName(ruleName)}(input, ruleTree)`,
+        `}`,
+      ].join("\n")
+  );
 }
 
 function typeName(ruleName: string, prefix: string) {

@@ -1,15 +1,18 @@
-main :- [ws, repSep((stmt | comment), ws), ws].
-stmt :- (rule | fact | tableDecl).
+main :- [ws, repSep((statement | comment), ws), ws].
+statement :- (rule | fact | query | deleteFact | tableDecl | loadStmt).
 comment :- ["#", repSep(commentChar, "")].
-tableDecl :- [tableKW, ws, ident].
+tableDecl :- [tableKW, ws, name:ident].
+loadStmt :- [loadKW, ws, path].
 
+query :- [record, "?"].
 fact :- [record, "."].
+deleteFact :- ["-", record, "."].
 
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
 conjunct :- (record | binExpr | negation | aggregation | placeholder).
 negation :- ["!", record].
-aggregation :- [ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
+aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
 
 binExpr :- [left:term, ws, binOp, ws, right:term].
 binOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
@@ -24,6 +27,7 @@ bool :- ("true" | "false").
 array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
 
 tableKW :- ".table".
+loadKW :- ".load".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
@@ -34,5 +38,7 @@ alphaNum :- (alpha | num).
 ws :- repSep((" "|"\n"), "").
 placeholder :- "???".
 commaSpace :- [",", ws].
+path :- repSep(pathSegment, "/").
+pathSegment :- repSep(([a-z]|[A-Z]|[0-9]|'_'|'-'|'.'), "").
 
 commentChar :- ^'\n'.

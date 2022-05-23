@@ -9,7 +9,7 @@ equation
   v = der(h);
   der(v) = 9;
 end
-scope.Usage{}
+scope.Usage{}?
 ----
 application/datalog
 scope.Usage{definitionScopeID: 1, defnSpan: span{from: 18, to: 28}, kind: "var", name: "initHeight", usageScopeID: 1, usageSpan: span{from: 51, to: 61}}

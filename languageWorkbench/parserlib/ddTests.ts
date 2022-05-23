@@ -157,7 +157,7 @@ function datalogTest(test: string[]): TestOutput[] {
       // load parsing rules
       interp = interp.doLoad("languageWorkbench/parserlib/datalog/parse.dl");
       // insert grammar as data
-      interp = interp.evalStmts(
+      interp = interp.evalRawStmts(
         grammarRules.map((rule) => ({ type: "Rule", rule }))
       )[1];
       // insert input as data

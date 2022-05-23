@@ -102,7 +102,7 @@ function constructInterpInner(
       ruleTree = extractRuleTree(traceTree);
       const records = flatten(ruleTree, source);
       interp = interp.bulkInsert(records);
-      interp = interp.evalStmts(declareTables(grammar))[1];
+      interp = interp.evalRawStmts(declareTables(grammar))[1];
       interp = interp.evalStmt({
         type: "Rule",
         rule: getUnionRule(grammar),

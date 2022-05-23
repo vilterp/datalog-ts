@@ -1,10 +1,10 @@
 import { runSuites, Suite } from "./util/testBench/testing";
 import { unifyTests } from "./core/unifyTests";
-import { parserTests } from "./core/parserTest";
 import {
   coreTestsSimple,
   coreTestsIncremental,
   coreTestsCommon,
+  parserTests,
 } from "./core/ddTests";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";

@@ -1,273 +1,68 @@
-var
-A
-----
-application/json
-{
-  "type": "Var",
-  "name": "A"
-}
-
-term
-A
-----
-application/json
-{
-  "type": "Var",
-  "name": "A"
-}
-
-stringLit
-"hello world"
-----
-application/json
-{
-  "type": "StringLit",
-  "val": "hello world"
-}
-
-intLit
-2
-----
-application/json
-{
-  "type": "IntLit",
-  "val": 2
-}
-
-intLit
--2
-----
-application/json
-{
-  "type": "IntLit",
-  "val": -2
-}
-
-arrayLit
-["foo", Bar, 2, true]
-----
-application/json
-{
-  "type": "Array",
-  "items": [
-    {
-      "type": "StringLit",
-      "val": "foo"
-    },
-    {
-      "type": "Var",
-      "name": "Bar"
-    },
-    {
-      "type": "IntLit",
-      "val": 2
-    },
-    {
-      "type": "Bool",
-      "val": true
-    }
-  ]
-}
-
-record
-foo{bar: B, baz: "bloop"}
-----
-application/json
-{
-  "type": "Record",
-  "relation": "foo",
-  "attrs": {
-    "bar": {
-      "type": "Var",
-      "name": "B"
-    },
-    "baz": {
-      "type": "StringLit",
-      "val": "bloop"
-    }
-  }
-}
-
-binExpr
-A != B
-----
-application/json
-{
-  "type": "BinExpr",
-  "left": {
-    "type": "Var",
-    "name": "A"
-  },
-  "right": {
-    "type": "Var",
-    "name": "B"
-  },
-  "op": "!="
-}
-
-statement
-.load foo/bar.dl
-----
-application/json
-{
-  "type": "LoadStmt",
-  "path": "foo/bar.dl"
-}
-
-statement
-father{child: "Pete", father: "Paul"}.
-----
-application/json
-{
-  "type": "Insert",
-  "record": {
-    "type": "Record",
-    "relation": "father",
-    "attrs": {
-      "child": {
-        "type": "StringLit",
-        "val": "Pete"
-      },
-      "father": {
-        "type": "StringLit",
-        "val": "Paul"
-      }
-    }
-  }
-}
-
-statement
-parent{child: C, parent: P} :- mother{child: C, mother: P} | father{child: C, father: P}.
-----
-application/json
-{
-  "type": "Rule",
-  "rule": {
-    "head": {
-      "type": "Record",
-      "relation": "parent",
-      "attrs": {
-        "child": {
-          "type": "Var",
-          "name": "C"
-        },
-        "parent": {
-          "type": "Var",
-          "name": "P"
-        }
-      }
-    },
-    "body": {
-      "type": "Or",
-      "opts": [
-        {
-          "type": "And",
-          "clauses": [
-            {
-              "type": "Record",
-              "relation": "mother",
-              "attrs": {
-                "child": {
-                  "type": "Var",
-                  "name": "C"
-                },
-                "mother": {
-                  "type": "Var",
-                  "name": "P"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "type": "And",
-          "clauses": [
-            {
-              "type": "Record",
-              "relation": "father",
-              "attrs": {
-                "child": {
-                  "type": "Var",
-                  "name": "C"
-                },
-                "father": {
-                  "type": "Var",
-                  "name": "P"
-                }
-              }
-            }
-          ]
-        }
-      ]
-    }
-  }
-}
-
-statement
 grandfather{grandchild: A, grandfather: C} :-
     parent{child: A, parent: B} &
     father{child: B, father: C}.
 ----
 application/json
-{
-  "type": "Rule",
-  "rule": {
-    "head": {
-      "type": "Record",
-      "relation": "grandfather",
-      "attrs": {
-        "grandchild": {
-          "type": "Var",
-          "name": "A"
-        },
-        "grandfather": {
-          "type": "Var",
-          "name": "C"
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "grandfather",
+        "attrs": {
+          "grandchild": {
+            "type": "Var",
+            "name": "A"
+          },
+          "grandfather": {
+            "type": "Var",
+            "name": "C"
+          }
         }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Record",
+                "relation": "parent",
+                "attrs": {
+                  "child": {
+                    "type": "Var",
+                    "name": "A"
+                  },
+                  "parent": {
+                    "type": "Var",
+                    "name": "B"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "father",
+                "attrs": {
+                  "child": {
+                    "type": "Var",
+                    "name": "B"
+                  },
+                  "father": {
+                    "type": "Var",
+                    "name": "C"
+                  }
+                }
+              }
+            ]
+          }
+        ]
       }
-    },
-    "body": {
-      "type": "Or",
-      "opts": [
-        {
-          "type": "And",
-          "clauses": [
-            {
-              "type": "Record",
-              "relation": "parent",
-              "attrs": {
-                "child": {
-                  "type": "Var",
-                  "name": "A"
-                },
-                "parent": {
-                  "type": "Var",
-                  "name": "B"
-                }
-              }
-            },
-            {
-              "type": "Record",
-              "relation": "father",
-              "attrs": {
-                "child": {
-                  "type": "Var",
-                  "name": "B"
-                },
-                "father": {
-                  "type": "Var",
-                  "name": "C"
-                }
-              }
-            }
-          ]
-        }
-      ]
     }
   }
-}
+]
 
-program
 father{child: "Pete", father: "Paul"}.
 father{child: "Paul", father: "Peter"}.
 father{child: "Ann", father: "Peter"}.
@@ -300,7 +95,7 @@ sibling{left: L, right: R} :-
 application/json
 [
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "father",
@@ -317,7 +112,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "father",
@@ -334,7 +129,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "father",
@@ -351,7 +146,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "father",
@@ -368,7 +163,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "mother",
@@ -385,7 +180,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "mother",
@@ -402,7 +197,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "mother",
@@ -419,7 +214,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "mother",
@@ -436,7 +231,7 @@ application/json
     }
   },
   {
-    "type": "Insert",
+    "type": "Fact",
     "record": {
       "type": "Record",
       "relation": "mother",
@@ -843,7 +638,6 @@ application/json
   }
 ]
 
-statement
 msg{
   from: "B1", to: "S",
   time: 1,
@@ -853,84 +647,260 @@ msg{
 }.
 ----
 application/json
-{
-  "type": "Insert",
-  "record": {
-    "type": "Record",
-    "relation": "msg",
-    "attrs": {
-      "from": {
-        "type": "StringLit",
-        "val": "B1"
-      },
-      "to": {
-        "type": "StringLit",
-        "val": "S"
-      },
-      "time": {
-        "type": "IntLit",
-        "val": 1
-      },
-      "payload": {
-        "type": "Record",
-        "relation": "login",
-        "attrs": {
-          "username": {
-            "type": "StringLit",
-            "val": "vilterp@example.com"
-          },
-          "password": {
-            "type": "StringLit",
-            "val": "password"
+[
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "msg",
+      "attrs": {
+        "from": {
+          "type": "StringLit",
+          "val": "B1"
+        },
+        "to": {
+          "type": "StringLit",
+          "val": "S"
+        },
+        "time": {
+          "type": "IntLit",
+          "val": 1
+        },
+        "payload": {
+          "type": "Record",
+          "relation": "login",
+          "attrs": {
+            "username": {
+              "type": "StringLit",
+              "val": "vilterp@example.com"
+            },
+            "password": {
+              "type": "StringLit",
+              "val": "password"
+            }
           }
         }
       }
     }
   }
-}
+]
 
-rule
 a{} :- !b{}.
 ----
 application/json
-{
-  "type": "Rule",
-  "rule": {
-    "head": {
-      "type": "Record",
-      "relation": "a",
-      "attrs": {}
-    },
-    "body": {
-      "type": "Or",
-      "opts": [
-        {
-          "type": "And",
-          "clauses": [
-            {
-              "type": "Negation",
-              "record": {
-                "type": "Record",
-                "relation": "b",
-                "attrs": {}
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "a",
+        "attrs": {}
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Negation",
+                "record": {
+                  "type": "Record",
+                  "relation": "b",
+                  "attrs": {}
+                }
               }
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
+      }
     }
   }
-}
+]
 
-rule
 total{level: C} :-
   sum[T, C: current{id: I, time: T, level: C}].
 ----
 application/json
-{
-  "type": "Rule",
-  "rule": {
-    "head": {
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "total",
+        "attrs": {
+          "level": {
+            "type": "Var",
+            "name": "C"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Aggregation",
+                "aggregation": "sum",
+                "record": {
+                  "type": "Record",
+                  "relation": "current",
+                  "attrs": {
+                    "id": {
+                      "type": "Var",
+                      "name": "I"
+                    },
+                    "time": {
+                      "type": "Var",
+                      "name": "T"
+                    },
+                    "level": {
+                      "type": "Var",
+                      "name": "C"
+                    }
+                  }
+                },
+                "varNames": [
+                  "T",
+                  "C"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
+
+.load dlCommon/astViz.dl
+.table ast.node
+----
+application/json
+[
+  {
+    "type": "LoadStmt",
+    "path": "dlCommon/astViz.dl"
+  },
+  {
+    "type": "TableDecl",
+    "name": "ast.node"
+  }
+]
+
+current{id: 1, level: 5}.
+current{id: 2, level: 10}.
+current{id: 2, level: 13}.
+total{level: C} :-
+  sum[C: current{id: I, level: C}].
+total{level: C}.
+----
+application/json
+[
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "current",
+      "attrs": {
+        "id": {
+          "type": "IntLit",
+          "val": 1
+        },
+        "level": {
+          "type": "IntLit",
+          "val": 5
+        }
+      }
+    }
+  },
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "current",
+      "attrs": {
+        "id": {
+          "type": "IntLit",
+          "val": 2
+        },
+        "level": {
+          "type": "IntLit",
+          "val": 10
+        }
+      }
+    }
+  },
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "current",
+      "attrs": {
+        "id": {
+          "type": "IntLit",
+          "val": 2
+        },
+        "level": {
+          "type": "IntLit",
+          "val": 13
+        }
+      }
+    }
+  },
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "total",
+        "attrs": {
+          "level": {
+            "type": "Var",
+            "name": "C"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Aggregation",
+                "aggregation": "sum",
+                "record": {
+                  "type": "Record",
+                  "relation": "current",
+                  "attrs": {
+                    "id": {
+                      "type": "Var",
+                      "name": "I"
+                    },
+                    "level": {
+                      "type": "Var",
+                      "name": "C"
+                    }
+                  }
+                },
+                "varNames": [
+                  "C"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "Fact",
+    "record": {
       "type": "Record",
       "relation": "total",
       "attrs": {
@@ -939,42 +909,111 @@ application/json
           "name": "C"
         }
       }
-    },
-    "body": {
-      "type": "Or",
-      "opts": [
-        {
-          "type": "And",
-          "clauses": [
-            {
-              "type": "Aggregation",
-              "aggregation": "sum",
-              "varNames": [
-                "T",
-                "C"
-              ],
-              "record": {
-                "type": "Record",
-                "relation": "current",
-                "attrs": {
-                  "id": {
-                    "type": "Var",
-                    "name": "I"
-                  },
-                  "time": {
-                    "type": "Var",
-                    "name": "T"
-                  },
-                  "level": {
-                    "type": "Var",
-                    "name": "C"
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
     }
   }
-}
+]
+
+foo{idx: 52}.
+----
+application/json
+[
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "foo",
+      "attrs": {
+        "idx": {
+          "type": "IntLit",
+          "val": 52
+        }
+      }
+    }
+  }
+]
+
+sibling{left: L, right: R} :-
+  parents{child: L, mother: M, father: F} &
+  parents{child: R, mother: M, father: F} &
+  L != R.
+----
+application/json
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "sibling",
+        "attrs": {
+          "left": {
+            "type": "Var",
+            "name": "L"
+          },
+          "right": {
+            "type": "Var",
+            "name": "R"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "Var",
+                    "name": "L"
+                  },
+                  "mother": {
+                    "type": "Var",
+                    "name": "M"
+                  },
+                  "father": {
+                    "type": "Var",
+                    "name": "F"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "parents",
+                "attrs": {
+                  "child": {
+                    "type": "Var",
+                    "name": "R"
+                  },
+                  "mother": {
+                    "type": "Var",
+                    "name": "M"
+                  },
+                  "father": {
+                    "type": "Var",
+                    "name": "F"
+                  }
+                }
+              },
+              {
+                "type": "BinExpr",
+                "left": {
+                  "type": "Var",
+                  "name": "L"
+                },
+                "op": "!=",
+                "right": {
+                  "type": "Var",
+                  "name": "R"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

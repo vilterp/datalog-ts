@@ -1,6 +1,6 @@
 fp
 let x = 2 in plus2(x)
-tc.Type{id: I, type: T}
+tc.Type{id: I, type: T}?
 ----
 application/datalog
 tc.Type{id: 9, type: "int"}
@@ -10,7 +10,7 @@ tc.Type{id: 28, type: "int"}
 
 fp
 let x = 2 in ???
-ide.Suggestion{id: I, name: N, span: S, type: T}
+ide.Suggestion{id: I, name: N, span: S, type: T}?
 ----
 application/datalog
 ide.Suggestion{id: 15, name: "x", span: span{from: 13, to: 16}, type: "int"}
@@ -18,7 +18,7 @@ ide.Suggestion{id: 15, name: "plus2", span: span{from: 13, to: 16}, type: tapp{f
 
 fp
 let x = 40 in plus2(x)
-hl.Segment{}
+hl.Segment{}?
 ----
 application/datalog
 hl.Segment{highlight: false, span: span{from: 8, to: 10}, type: "number"}
@@ -32,7 +32,7 @@ fp
 let x = 2 in
 let y = plus2(x) in
 plus2(??|||?)
-ide.CurrentSuggestion{}
+ide.CurrentSuggestion{}?
 ----
 application/datalog
 ide.CurrentSuggestion{id: 56, name: "y", span: span{from: 39, to: 42}, type: "int"}
@@ -41,14 +41,14 @@ ide.CurrentSuggestion{id: 56, name: "plus2", span: span{from: 39, to: 42}, type:
 
 fp
 plus2("hello world")
-astInternal.node{id: 14}
+astInternal.node{id: 14}?
 ----
 application/datalog
 astInternal.node{id: 14, parentID: 2, rule: "expr", span: span{from: 6, to: 19}, text: "\"hello world\""}
 
 fp
 (x: int): int => ???
-ide.Suggestion{}
+ide.Suggestion{}?
 ----
 application/datalog
 ide.Suggestion{id: 26, name: "x", span: span{from: 17, to: 20}, type: "int"}
@@ -56,7 +56,7 @@ ide.Suggestion{id: 26, name: "plus2", span: span{from: 17, to: 20}, type: tapp{f
 
 fp
 (x: int): int => x
-tc.Type{}
+tc.Type{}?
 ----
 application/datalog
 tc.Type{id: 1, type: tapp{from: "int", to: "int"}}
@@ -64,28 +64,28 @@ tc.Type{id: 26, type: "int"}
 
 fp
 plus2("hello world")
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, span: span{from: 6, to: 19}}
 
 fp
 (x: string): int => plus2(x)
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: argTypeMismatch{expected: "int", got: "string"}, span: span{from: 26, to: 27}}
 
 fp
 let x = 2 in y
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: undefinedVar{name: "y"}, span: span{from: 13, to: 14}}
 
 fp
 let x = 2 in x
-tc.Problem{}
+tc.Problem{}?
 ----
 application/datalog
 
@@ -93,7 +93,7 @@ fp
 let x = 2 in
 let y = x in
 plus2(x|||)
-ide.CurrentUsageOrDefn{}
+ide.CurrentUsageOrDefn{}?
 ----
 application/datalog
 ide.CurrentUsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
@@ -104,7 +104,7 @@ fp
 let x||| = 2 in
 let y = x in
 plus2(x)
-ide.CurrentUsageOrDefn{}
+ide.CurrentUsageOrDefn{}?
 ----
 application/datalog
 ide.CurrentUsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
@@ -115,7 +115,7 @@ fp
 let z||| = 2 in
 let x = 3 in
 plus2(x)
-ide.CurrentUsageOrDefn{}
+ide.CurrentUsageOrDefn{}?
 ----
 application/datalog
 ide.CurrentUsageOrDefn{span: span{from: 4, to: 5}, type: "defn"}
@@ -124,13 +124,13 @@ fp
 let z||| = somethingUndef in
 let x = 3 in
 plus2(x)
-ide.CurrentUsageOrDefn{}
+ide.CurrentUsageOrDefn{}?
 ----
 application/datalog
 
 fp
 let x = 2 in x|||
-ide.RenameSpan{}
+ide.RenameSpan{}?
 ----
 application/datalog
 ide.RenameSpan{span: span{from: 4, to: 5}}
@@ -138,7 +138,7 @@ ide.RenameSpan{span: span{from: 13, to: 14}}
 
 fp
 let x||| = 2 in x
-ide.RenameSpan{}
+ide.RenameSpan{}?
 ----
 application/datalog
 ide.RenameSpan{span: span{from: 4, to: 5}}
@@ -146,7 +146,7 @@ ide.RenameSpan{span: span{from: 13, to: 14}}
 
 fp
 let x||| = 2 in 3
-ide.RenameSpan{}
+ide.RenameSpan{}?
 ----
 application/datalog
 ide.RenameSpan{span: span{from: 4, to: 5}}

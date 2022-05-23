@@ -1,6 +1,15 @@
-import { Program, Rec, Relation, Res, Rule, Statement } from "./types";
-import { language as dlLanguage } from "./parser";
+import { Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
+import {
+  DLMain,
+  DLStatement,
+  parseMain,
+  parseRecord,
+} from "../languageWorkbench/languages/dl/parser";
+import {
+  parserStatementToInternal,
+  parserTermToInternal,
+} from "./translateAST";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -19,12 +28,17 @@ export abstract class AbstractInterpreter {
   bulkInsert(records: Rec[]): AbstractInterpreter {
     let interp: AbstractInterpreter = this;
     for (const record of records) {
-      interp = interp.evalStmt({ type: "Insert", record })[1];
+      interp = interp.evalStmt({ type: "Fact", record })[1];
     }
     return interp;
   }
 
-  evalStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
+  evalStmts(stmts: DLStatement[]): [Res[], AbstractInterpreter] {
+    const rawStmts = stmts.map(parserStatementToInternal);
+    return this.evalRawStmts(rawStmts);
+  }
+
+  evalRawStmts(stmts: Statement[]): [Res[], AbstractInterpreter] {
     const results: Res[] = [];
     let interp: AbstractInterpreter = this;
     stmts.forEach((stmt) => {
@@ -36,7 +50,7 @@ export abstract class AbstractInterpreter {
   }
 
   insert(record: Rec): AbstractInterpreter {
-    const [_, newInterp] = this.evalStmt({ type: "Insert", record });
+    const [_, newInterp] = this.evalStmt({ type: "Fact", record });
     return newInterp;
   }
 
@@ -45,8 +59,11 @@ export abstract class AbstractInterpreter {
   }
 
   queryStr(str: string): Res[] {
-    const record = dlLanguage.record.tryParse(str) as Rec;
-    const [res, _] = this.evalStmt({ type: "Query", record });
+    const record = parseRecord(str);
+    const [res, _] = this.evalStmt({
+      type: "Query",
+      record: parserTermToInternal(record) as Rec,
+    });
     return res;
   }
 
@@ -56,16 +73,16 @@ export abstract class AbstractInterpreter {
   }
 
   evalStr(str: string): [Res[], AbstractInterpreter] {
-    const stmts = dlLanguage.program.tryParse(str);
-    return this.evalStmts(stmts);
+    const main = parseMain(str);
+    return this.evalStmts(main.statement);
   }
 
   doLoad(path: string): AbstractInterpreter {
     const contents = this.loader(this.cwd + "/" + path);
-    const program: Program = dlLanguage.program.tryParse(contents);
+    const program: DLMain = parseMain(contents);
     let out: AbstractInterpreter = this;
-    for (const stmt of program) {
-      const [_, newInterp] = out.evalStmt(stmt);
+    for (const stmt of program.statement) {
+      const [_, newInterp] = out.evalStmt(parserStatementToInternal(stmt));
       out = newInterp;
     }
     return out;
