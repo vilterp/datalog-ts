@@ -25,81 +25,27 @@ export const BUILTINS: { [name: string]: Builtin } = {
 };
 
 function eq(input: Rec): Rec[] {
-  if (
-    input.attrs.a.type !== "Var" &&
-    input.attrs.b.type !== "Var" &&
-    input.attrs.res.type === "Var"
-  ) {
-    return relationalBool(termEq(input.attrs.a, input.attrs.b));
-  }
-  if (
-    input.attrs.a.type !== "Var" &&
-    input.attrs.b.type === "Var" &&
-    input.attrs.res.type !== "Var"
-  ) {
-    return relationalBool(termEq(input.attrs.a, input.attrs.res));
-  }
-  if (
-    input.attrs.a.type === "Var" &&
-    input.attrs.b.type !== "Var" &&
-    input.attrs.res.type !== "Var"
-  ) {
-    return relationalBool(termEq(input.attrs.b, input.attrs.res));
-  }
-  throw new Error(`this case is not supported: ${ppt(input)}`);
+  return comparison(input, (n) => n === 0);
 }
 
 function neq(input: Rec): Rec[] {
-  if (
-    input.attrs.a.type !== "Var" &&
-    input.attrs.b.type !== "Var" &&
-    input.attrs.res.type === "Var"
-  ) {
-    return relationalBool(!termEq(input.attrs.a, input.attrs.b));
-  }
-  if (
-    input.attrs.a.type !== "Var" &&
-    input.attrs.b.type === "Var" &&
-    input.attrs.res.type !== "Var"
-  ) {
-    return relationalBool(!termEq(input.attrs.a, input.attrs.res));
-  }
-  if (
-    input.attrs.a.type === "Var" &&
-    input.attrs.b.type !== "Var" &&
-    input.attrs.res.type !== "Var"
-  ) {
-    return relationalBool(!termEq(input.attrs.b, input.attrs.res));
-  }
-  throw new Error(`this case is not supported: ${ppt(input)}`);
+  return comparison(input, (n) => n !== 0);
 }
 
 function lte(input: Rec): Rec[] {
-  const a = input.attrs.a;
-  const b = input.attrs.b;
-  if (a.type !== "Var" && b.type !== "Var") {
-    const res = termCmp(a, b) <= 0;
-    return res ? [rec(input.relation, { a, b })] : [];
-  }
-  throw new Error(`this case is not supported: ${ppt(input)}`);
+  return comparison(input, (n) => n <= 0);
 }
 
 function gte(input: Rec): Rec[] {
-  const a = input.attrs.a;
-  const b = input.attrs.b;
-  if (a.type !== "Var" && b.type !== "Var") {
-    const res = termCmp(a, b) >= 0;
-    return res ? [rec(input.relation, { a, b })] : [];
-  }
-  throw new Error(`this case is not supported: ${ppt(input)}`);
+  return comparison(input, (n) => n >= 0);
 }
 
 function lt(input: Rec): Rec[] {
-  return XXX;
+  return comparison(input, (n) => n < 0);
 }
 
 function gt(input: Rec): Rec[] {
-  return XXX;
+  return comparison(input, (n) => n > 0);
 }
 
 function add(input: Rec): Rec[] {
@@ -202,6 +148,31 @@ function clamp(input: Rec): Rec[] {
         res: int(util.clamp(val.val, [min.val, max.val])),
       }),
     ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
+  if (
+    input.attrs.a.type !== "Var" &&
+    input.attrs.b.type !== "Var" &&
+    input.attrs.res.type === "Var"
+  ) {
+    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
+  }
+  if (
+    input.attrs.a.type !== "Var" &&
+    input.attrs.b.type === "Var" &&
+    input.attrs.res.type !== "Var"
+  ) {
+    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.res)));
+  }
+  if (
+    input.attrs.a.type === "Var" &&
+    input.attrs.b.type !== "Var" &&
+    input.attrs.res.type !== "Var"
+  ) {
+    return relationalBool(cmp(termCmp(input.attrs.b, input.attrs.res)));
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
