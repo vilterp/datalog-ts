@@ -6,18 +6,43 @@ import * as util from "../util/util";
 export type Builtin = (rec: Rec) => Rec[];
 
 export const BUILTINS: { [name: string]: Builtin } = {
+  // comparisons
+  "base.eq": eq,
+  "base.neq": neq,
+  "base.lte": lte,
+  "base.lt": lt,
+  "base.gt": gt,
+  // arithmetic
   "base.add": add,
   "base.mul": mul,
   "base.gte": gte,
-  // TODO: lte
-  // TODO: lt
-  // TODO: gt
   "math.sin": sin,
+  // misc
   range,
   concat,
   invert,
   clamp,
 };
+
+function eq(input: Rec): Rec[] {
+  return XXX;
+}
+
+function neq(input: Rec): Rec[] {
+  return XXX;
+}
+
+function lte(input: Rec): Rec[] {
+  return XXX;
+}
+
+function lt(input: Rec): Rec[] {
+  return XXX;
+}
+
+function gt(input: Rec): Rec[] {
+  return XXX;
+}
 
 function add(input: Rec): Rec[] {
   const a = input.attrs.a;

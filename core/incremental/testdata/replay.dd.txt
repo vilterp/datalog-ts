@@ -48,17 +48,3 @@ sibling{left: L, right: R} :-
   L != R.
 ----
 text/plain
-3: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Pete", M: "Mary"}]
-5: []
-4: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Pete"}]
-5: [{F: "Paul", L: "Pete", M: "Mary", R: "Pete"}]
-6: []
-3: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", L: "Carolyn", M: "Mary"}]
-5: [{F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
-6: [{F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
-sibling: [sibling{left: "Carolyn", right: "Pete"}; {F: "Paul", L: "Carolyn", M: "Mary", R: "Pete"}]
-4: [parents{child: "Carolyn", father: "Paul", mother: "Mary"}; {F: "Paul", M: "Mary", R: "Carolyn"}]
-5: [{F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}, {F: "Paul", L: "Carolyn", M: "Mary", R: "Carolyn"}]
-6: [{F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
-6: []
-sibling: [sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Mary", R: "Carolyn"}]
