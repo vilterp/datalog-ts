@@ -86,10 +86,6 @@ scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
   ast.record{id: TermOrRecord, parentID: Negation}
   |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
-  ast.binExpr{id: BinExpr, parentID: Conjunct} &
-  ast.term{id: TermOrRecord, parentID: BinExpr}
-  |
-  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.aggregation{id: Agg, parentID: Conjunct} &
   ast.record{id: TermOrRecord, parentID: Agg}.
 
