@@ -146,7 +146,15 @@ export function addOr(
 }
 
 function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
-  const recs = clauses.filter((clause) => clause.type === "Record") as Rec[];
+  const recs = clauses.filter((clause) => {
+    if (clause.type === "Record") {
+      return true;
+    } else {
+      throw new Error(
+        `clauses of type ${clause.type} not supported in incremental interpreter`
+      );
+    }
+  }) as Rec[];
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
     const tree = getJoinTree(recs);
