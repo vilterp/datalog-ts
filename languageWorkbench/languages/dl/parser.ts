@@ -1283,6 +1283,11 @@ const GRAMMAR: Grammar = {
         rule: "term",
       },
       {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
         type: "Text",
         value: "=",
       },
