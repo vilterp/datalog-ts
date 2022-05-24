@@ -12,6 +12,7 @@ import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "../../util/indexedCollection";
 import { fastPPT } from "../fastPPT";
+import { BUILTINS } from "../builtins";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {
@@ -45,6 +46,10 @@ export function resolveUnmappedRule(
     const nodeDesc = newNode.desc;
     if (nodeDesc.type === "Match") {
       const callRec = nodeDesc.rec;
+      if (BUILTINS[callRec.relation]) {
+        resolved = true;
+        continue;
+      }
       const callNode = graph.nodes.get(callRec.relation);
       if (!callNode) {
         // not defined yet
@@ -227,11 +232,14 @@ function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
 }
 
 function addRec(graph: RuleGraph, rec: Rec): AddResult {
-  const [graph2, matchID] = addNode(graph, true, {
-    type: "Match",
-    rec,
-    mappings: {},
-  });
+  const newNodeDesc: NodeDesc = BUILTINS[rec.relation]
+    ? { type: "Builtin", rec }
+    : {
+        type: "Match",
+        rec,
+        mappings: {},
+      };
+  const [graph2, matchID] = addNode(graph, true, newNodeDesc);
   const graph3 = addEdge(graph2, rec.relation, matchID);
   return {
     newGraph: graph3,

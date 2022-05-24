@@ -15,6 +15,8 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
         nodeDesc.rec.attrs,
         (key, val) => `${key}: ${ppt(val)}`
       ).join(", ")}})`;
+    case "Builtin":
+      return `Builtin(${ppt(nodeDesc.rec)})`;
     case "Union":
       return "Union";
     case "BaseFactTable":

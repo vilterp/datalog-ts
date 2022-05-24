@@ -13,6 +13,8 @@ import {
 } from "./build";
 import Denque from "denque";
 import { ppr } from "../pretty";
+import { BUILTINS } from "../builtins";
+import { evalBuiltin } from "../evalBuiltin";
 
 export type Insertion = {
   res: Res;
@@ -79,7 +81,6 @@ function replayFacts(
   allNewNodes: Set<NodeID>,
   roots: Set<NodeID>
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  // console.log("replayFacts", roots);
   let outGraph = graph;
   let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
@@ -111,6 +112,9 @@ function getRoots(rule: Rule): NodeID[] {
       }
       if (andClause.type === "Aggregation") {
         return andClause.record.relation;
+      }
+      if (BUILTINS[andClause.relation]) {
+        return null;
       }
       return andClause.relation;
     });
@@ -281,6 +285,8 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       ];
     case "BaseFactTable":
       return [ins.res];
+    case "Builtin":
+      return evalBuiltin(ins.res.term as Rec, ins.res.bindings);
   }
 }
 

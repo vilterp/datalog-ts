@@ -48,11 +48,12 @@ export type JoinDesc = {
 };
 
 export type NodeDesc =
-  | { type: "BaseFactTable" }
   | JoinDesc
+  | { type: "BaseFactTable" }
   | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec }
-  | { type: "Union" };
+  | { type: "Union" }
+  | { type: "Builtin"; rec: Rec };
 
 export const emptyRuleGraph: RuleGraph = {
   tables: [],
