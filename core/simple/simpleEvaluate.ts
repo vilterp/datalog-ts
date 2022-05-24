@@ -22,7 +22,6 @@ import {
   unifyBindings,
 } from "../unify";
 import { filterMap, flatMap, groupBy, mapObjToList } from "../../util/util";
-import { evalBinExpr } from "../binExpr";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { BUILTINS } from "../builtins";
@@ -246,15 +245,6 @@ function doEvaluate(
       }
       case "Var":
         return [{ term: scope[term.name], bindings: scope, trace: varTrace }];
-      case "BinExpr": {
-        const res = evalBinExpr(term, scope);
-        const relationalRes = res ? relationalTrue : relationalFalse;
-        return relationalRes.map((term) => ({
-          term,
-          bindings: scope,
-          trace: binExprTrace,
-        }));
-      }
       case "Bool":
       case "StringLit":
         return [{ term: term, bindings: scope, trace: literalTrace }];
@@ -322,8 +312,6 @@ export function hasVars(t: Term): boolean {
       return true;
     case "Record":
       return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
-    case "BinExpr":
-      return hasVars(t.left) || hasVars(t.right);
     case "Bool":
       return false;
   }

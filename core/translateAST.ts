@@ -1,4 +1,6 @@
 import {
+  DLArithmetic,
+  DLComparison,
   DLRule,
   DLStatement,
   DLTerm,
@@ -10,7 +12,6 @@ import {
   array,
   bool,
   int,
-  Operator,
   rec,
   Rec,
   Rule,
@@ -64,13 +65,10 @@ export function parserRuleToInternal(term: DLRule): Rule {
         type: "And",
         clauses: disjunct.conjunct.map((conjunct): AndClause => {
           switch (conjunct.type) {
-            case "BinExpr":
-              return {
-                type: "BinExpr",
-                left: parserTermToInternal(conjunct.left),
-                op: conjunct.binOp.text as Operator,
-                right: parserTermToInternal(conjunct.right),
-              };
+            case "Arithmetic":
+              return parserArithmeticToInternal(conjunct);
+            case "Comparison":
+              return parserComparisonToInternal(conjunct);
             case "Negation":
               return {
                 type: "Negation",
@@ -94,7 +92,6 @@ export function parserRuleToInternal(term: DLRule): Rule {
   };
 }
 
-// TODO: how much better is this than writing an extractor?
 export function parserTermToInternal(term: DLTerm): Term {
   switch (term.type) {
     case "Array":
@@ -120,4 +117,50 @@ export function parserTermToInternal(term: DLTerm): Term {
         )
       );
   }
+}
+
+// some real desugaring!
+
+const ARITHMETIC_MAPPING = {
+  "+": "add",
+  "*": "mul",
+};
+
+function parserArithmeticToInternal(arithmetic: DLArithmetic): Rec {
+  const op = arithmetic.arithmeticOp.text;
+  const left = parserTermToInternal(arithmetic.left);
+  const right = parserTermToInternal(arithmetic.right);
+  const res = parserTermToInternal(arithmetic.result);
+  const mappedOp = ARITHMETIC_MAPPING[op];
+  if (!mappedOp) {
+    throw new Error(`unknown arithmetic operator: ${op}`);
+  }
+  return rec(`base.${mappedOp}`, {
+    a: left,
+    b: right,
+    res: res,
+  });
+}
+
+const COMPARISON_MAPPING = {
+  "==": "eq",
+  "!=": "neq",
+  "<": "lt",
+  ">": "gt",
+  "<=": "lte",
+  ">=": "gte",
+};
+
+function parserComparisonToInternal(comparison: DLComparison): Rec {
+  const op = comparison.comparisonOp.text;
+  const left = parserTermToInternal(comparison.left);
+  const right = parserTermToInternal(comparison.right);
+  const mappedOp = COMPARISON_MAPPING[op];
+  if (!mappedOp) {
+    throw new Error(`unknown comparison operator: ${op}`);
+  }
+  return rec(`base.${mappedOp}`, {
+    a: left,
+    b: right,
+  });
 }

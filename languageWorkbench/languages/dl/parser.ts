@@ -23,25 +23,26 @@ export type DLAlpha = {
   span: Span;
 };
 export type DLAlphaNum = DLAlpha | DLNum;
+export type DLArithmetic = {
+  type: "Arithmetic";
+  text: string;
+  span: Span;
+  left: DLTerm;
+  arithmeticOp: DLArithmeticOp;
+  right: DLTerm;
+  result: DLTerm;
+};
+export type DLArithmeticOp = {
+  type: "ArithmeticOp";
+  text: string;
+  span: Span;
+};
 export type DLArray = {
   type: "Array";
   text: string;
   span: Span;
   term: DLTerm[];
   commaSpace: DLCommaSpace[];
-};
-export type DLBinExpr = {
-  type: "BinExpr";
-  text: string;
-  span: Span;
-  left: DLTerm;
-  binOp: DLBinOp;
-  right: DLTerm;
-};
-export type DLBinOp = {
-  type: "BinOp";
-  text: string;
-  span: Span;
 };
 export type DLBool = {
   type: "Bool";
@@ -64,9 +65,23 @@ export type DLCommentChar = {
   text: string;
   span: Span;
 };
+export type DLComparison = {
+  type: "Comparison";
+  text: string;
+  span: Span;
+  left: DLTerm;
+  comparisonOp: DLComparisonOp;
+  right: DLTerm;
+};
+export type DLComparisonOp = {
+  type: "ComparisonOp";
+  text: string;
+  span: Span;
+};
 export type DLConjunct =
   | DLRecord
-  | DLBinExpr
+  | DLComparison
+  | DLArithmetic
   | DLNegation
   | DLAggregation
   | DLPlaceholder;
@@ -247,20 +262,20 @@ export function parseAlphaNum(input: string): DLAlphaNum {
   const ruleTree = extractRuleTree(traceTree);
   return extractAlphaNum(input, ruleTree);
 }
+export function parseArithmetic(input: string): DLArithmetic {
+  const traceTree = parserlib.parse(GRAMMAR, "arithmetic", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractArithmetic(input, ruleTree);
+}
+export function parseArithmeticOp(input: string): DLArithmeticOp {
+  const traceTree = parserlib.parse(GRAMMAR, "arithmeticOp", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractArithmeticOp(input, ruleTree);
+}
 export function parseArray(input: string): DLArray {
   const traceTree = parserlib.parse(GRAMMAR, "array", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractArray(input, ruleTree);
-}
-export function parseBinExpr(input: string): DLBinExpr {
-  const traceTree = parserlib.parse(GRAMMAR, "binExpr", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractBinExpr(input, ruleTree);
-}
-export function parseBinOp(input: string): DLBinOp {
-  const traceTree = parserlib.parse(GRAMMAR, "binOp", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractBinOp(input, ruleTree);
 }
 export function parseBool(input: string): DLBool {
   const traceTree = parserlib.parse(GRAMMAR, "bool", input);
@@ -281,6 +296,16 @@ export function parseCommentChar(input: string): DLCommentChar {
   const traceTree = parserlib.parse(GRAMMAR, "commentChar", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractCommentChar(input, ruleTree);
+}
+export function parseComparison(input: string): DLComparison {
+  const traceTree = parserlib.parse(GRAMMAR, "comparison", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractComparison(input, ruleTree);
+}
+export function parseComparisonOp(input: string): DLComparisonOp {
+  const traceTree = parserlib.parse(GRAMMAR, "comparisonOp", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractComparisonOp(input, ruleTree);
 }
 export function parseConjunct(input: string): DLConjunct {
   const traceTree = parserlib.parse(GRAMMAR, "conjunct", input);
@@ -443,6 +468,27 @@ function extractAlphaNum(input: string, node: RuleTree): DLAlphaNum {
     }
   }
 }
+function extractArithmetic(input: string, node: RuleTree): DLArithmetic {
+  return {
+    type: "Arithmetic",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    left: extractTerm(input, childByName(node, "term", "left")),
+    arithmeticOp: extractArithmeticOp(
+      input,
+      childByName(node, "arithmeticOp", null)
+    ),
+    right: extractTerm(input, childByName(node, "term", "right")),
+    result: extractTerm(input, childByName(node, "term", "result")),
+  };
+}
+function extractArithmeticOp(input: string, node: RuleTree): DLArithmeticOp {
+  return {
+    type: "ArithmeticOp",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
 function extractArray(input: string, node: RuleTree): DLArray {
   return {
     type: "Array",
@@ -454,23 +500,6 @@ function extractArray(input: string, node: RuleTree): DLArray {
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
     ),
-  };
-}
-function extractBinExpr(input: string, node: RuleTree): DLBinExpr {
-  return {
-    type: "BinExpr",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    left: extractTerm(input, childByName(node, "term", "left")),
-    binOp: extractBinOp(input, childByName(node, "binOp", null)),
-    right: extractTerm(input, childByName(node, "term", "right")),
-  };
-}
-function extractBinOp(input: string, node: RuleTree): DLBinOp {
-  return {
-    type: "BinOp",
-    text: textForSpan(input, node.span),
-    span: node.span,
   };
 }
 function extractBool(input: string, node: RuleTree): DLBool {
@@ -504,14 +533,37 @@ function extractCommentChar(input: string, node: RuleTree): DLCommentChar {
     span: node.span,
   };
 }
+function extractComparison(input: string, node: RuleTree): DLComparison {
+  return {
+    type: "Comparison",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    left: extractTerm(input, childByName(node, "term", "left")),
+    comparisonOp: extractComparisonOp(
+      input,
+      childByName(node, "comparisonOp", null)
+    ),
+    right: extractTerm(input, childByName(node, "term", "right")),
+  };
+}
+function extractComparisonOp(input: string, node: RuleTree): DLComparisonOp {
+  return {
+    type: "ComparisonOp",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
 function extractConjunct(input: string, node: RuleTree): DLConjunct {
   const child = node.children[0];
   switch (child.name) {
     case "record": {
       return extractRecord(input, child);
     }
-    case "binExpr": {
-      return extractBinExpr(input, child);
+    case "comparison": {
+      return extractComparison(input, child);
+    }
+    case "arithmetic": {
+      return extractArithmetic(input, child);
     }
     case "negation": {
       return extractNegation(input, child);
@@ -1060,7 +1112,12 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "binExpr",
+        rule: "comparison",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "arithmetic",
       },
       {
         type: "Ref",
@@ -1138,7 +1195,7 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
-  binExpr: {
+  comparison: {
     type: "Sequence",
     items: [
       {
@@ -1154,7 +1211,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "binOp",
+        rule: "comparisonOp",
       },
       {
         type: "Ref",
@@ -1168,7 +1225,7 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
-  binOp: {
+  comparisonOp: {
     type: "Choice",
     choices: [
       {
@@ -1194,6 +1251,67 @@ const GRAMMAR: Grammar = {
       {
         type: "Text",
         value: "!=",
+      },
+    ],
+  },
+  arithmetic: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: "left",
+        rule: "term",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "arithmeticOp",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: "right",
+        rule: "term",
+      },
+      {
+        type: "Text",
+        value: "=",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: "result",
+        rule: "term",
+      },
+    ],
+  },
+  arithmeticOp: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Text",
+        value: "+",
+      },
+      {
+        type: "Text",
+        value: "*",
+      },
+      {
+        type: "Text",
+        value: "-",
       },
     ],
   },

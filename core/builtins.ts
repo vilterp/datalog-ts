@@ -6,12 +6,15 @@ import * as util from "../util/util";
 export type Builtin = (rec: Rec) => Rec[];
 
 export const BUILTINS: { [name: string]: Builtin } = {
-  add,
-  mul,
-  gte,
+  "base.add": add,
+  "base.mul": mul,
+  "base.gte": gte,
+  // TODO: lte
+  // TODO: lt
+  // TODO: gt
+  "math.sin": sin,
   range,
   concat,
-  "math.sin": sin,
   invert,
   clamp,
 };

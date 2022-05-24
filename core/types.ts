@@ -34,7 +34,7 @@ export type OrExpr = { type: "Or"; opts: AndExpr[] };
 
 export type AndExpr = { type: "And"; clauses: AndClause[] };
 
-export type AndClause = Rec | BinExpr | Negation | Aggregation;
+export type AndClause = Rec | Negation | Aggregation;
 
 type Negation = { type: "Negation"; record: Rec };
 
@@ -55,13 +55,6 @@ export type Rec = {
   type: "Record";
   relation: string;
   attrs: { [key: string]: Term };
-};
-
-export type BinExpr = {
-  type: "BinExpr";
-  left: Term;
-  right: Term;
-  op: Operator;
 };
 
 export type Bool = { type: "Bool"; val: boolean };
@@ -111,10 +104,6 @@ export function varr(name: string): Var {
   return { type: "Var", name: name };
 }
 
-export function binExpr(left: Term, op: Operator, right: Term): BinExpr {
-  return { type: "BinExpr", left, right, op };
-}
-
 export function array(items: Term[]): Array {
   return { type: "Array", items: items };
 }
@@ -148,16 +137,13 @@ export type Trace =
   | { type: "AggregationTrace"; aggregatedResults: Res[] }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
-  | { type: "VarTrace" }
-  | { type: "BinExprTrace" };
+  | { type: "VarTrace" };
 
 export const literalTrace: Trace = { type: "LiteralTrace" };
 
 export const varTrace: Trace = { type: "VarTrace" };
 
 export const baseFactTrace: Trace = { type: "BaseFactTrace" };
-
-export const binExprTrace: Trace = { type: "BinExprTrace" };
 
 export type InvocationLocation = RulePathSegment[];
 
