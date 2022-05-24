@@ -75,15 +75,21 @@ function neq(input: Rec): Rec[] {
 }
 
 function lte(input: Rec): Rec[] {
-  return XXX;
+  const a = input.attrs.a;
+  const b = input.attrs.b;
+  if (a.type !== "Var" && b.type !== "Var") {
+    const res = termCmp(a, b) <= 0;
+    return res ? [rec(input.relation, { a, b })] : [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
 function gte(input: Rec): Rec[] {
   const a = input.attrs.a;
   const b = input.attrs.b;
   if (a.type !== "Var" && b.type !== "Var") {
-    const res = termCmp(a, b) > 0;
-    return res ? [rec("gte", { a, b })] : [];
+    const res = termCmp(a, b) >= 0;
+    return res ? [rec(input.relation, { a, b })] : [];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
