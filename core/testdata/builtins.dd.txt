@@ -1,22 +1,22 @@
-1 + 2 = R?
+base.add{a: 1, b: 2, res: R}?
 ----
 application/datalog
-add{a: 1, b: 2, res: 3}.
+base.add{a: 1, b: 2, res: 3}.
 
-1 + R = 3?
+base.add{a: 1, b: R, res: 3}?
 ----
 application/datalog
-add{a: 1, b: 2, res: 3}.
+base.add{a: 1, b: 2, res: 3}.
 
-R + 2 = 3?
+base.add{a: R, b: 2, res: 3}?
 ----
 application/datalog
-add{a: 1, b: 2, res: 3}.
+base.add{a: 1, b: 2, res: 3}.
 
-2 * 3 = V?
+base.mul{a: 2, b: 3, res: V}?
 ----
 application/datalog
-mul{a: 2, b: 3, res: 6}.
+base.mul{a: 2, b: 3, res: 6}.
 
 pos{time: T, y: Y} :-
   startPos{time: T, y: Y} |
