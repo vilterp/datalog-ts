@@ -232,14 +232,25 @@ function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
 }
 
 function addRec(graph: RuleGraph, rec: Rec): AddResult {
-  const newNodeDesc: NodeDesc = BUILTINS[rec.relation]
-    ? { type: "Builtin", rec }
-    : {
-        type: "Match",
-        rec,
-        mappings: {},
-      };
+  // TODO: probably should just add all of these globally...
+  if (BUILTINS[rec.relation]) {
+    const [graph2, builtinID] = addNode(graph, true, { type: "Builtin", rec });
+    return {
+      newGraph: graph2,
+      newNodeIDs: new Set([builtinID]),
+      rec,
+      tipID: builtinID,
+    };
+  }
+  const newNodeDesc: NodeDesc = {
+    type: "Match",
+    rec,
+    mappings: {},
+  };
   const [graph2, matchID] = addNode(graph, true, newNodeDesc);
+  if (BUILTINS[rec.relation]) {
+    console.log("add edge from", rec.relation, matchID);
+  }
   const graph3 = addEdge(graph2, rec.relation, matchID);
   return {
     newGraph: graph3,
