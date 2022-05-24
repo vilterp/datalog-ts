@@ -1,19 +1,19 @@
-add{a: 1, b: 2, res: R}?
+1 + 2 = R?
 ----
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
-add{a: 1, b: R, res: 3}?
+1 + R = 3?
 ----
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
-add{a: R, b: 2, res: 3}?
+R + 2 = 3?
 ----
 application/datalog
 add{a: 1, b: 2, res: 3}.
 
-mul{a: 2, b: 3, res: V}?
+2 * 3 = V?
 ----
 application/datalog
 mul{a: 2, b: 3, res: 6}.
@@ -23,10 +23,10 @@ pos{time: T, y: Y} :-
   stepPos{time: T, y: Y}.
 startPos{time: 1, y: 0}.
 stepPos{time: T, y: NewPos} :-
-  gte{a: T, b: 1} &
-  add{a: PrevTime, b: 1, res: T} &
+  T > 1 &
+  PrevTime + 1 = T &
   pos{time: PrevTime, y: PrevPos} &
-  add{a: PrevPos, b: 3, res: NewPos}.
+  PrevPos + 3 = NewPos.
 ----
 application/datalog
 
