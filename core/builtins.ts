@@ -10,12 +10,12 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "base.eq": eq,
   "base.neq": neq,
   "base.lte": lte,
+  "base.gte": gte,
   "base.lt": lt,
   "base.gt": gt,
   // arithmetic
   "base.add": add,
   "base.mul": mul,
-  "base.gte": gte,
   "math.sin": sin,
   // misc
   range,
@@ -25,7 +25,19 @@ export const BUILTINS: { [name: string]: Builtin } = {
 };
 
 function eq(input: Rec): Rec[] {
-  return comparison(input, (n) => n === 0);
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type === "Var") {
+    return [rec(input.relation, { a: input.attrs.a, b: input.attrs.a })];
+  }
+  if (input.attrs.a.type === "Var" && input.attrs.b.type !== "Var") {
+    return [rec(input.relation, { a: input.attrs.b, b: input.attrs.b })];
+  }
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
+    if (termEq(input.attrs.a, input.attrs.b)) {
+      return [input];
+    }
+    return [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
 function neq(input: Rec): Rec[] {
@@ -153,26 +165,14 @@ function clamp(input: Rec): Rec[] {
 }
 
 function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
-  if (
-    input.attrs.a.type !== "Var" &&
-    input.attrs.b.type !== "Var" &&
-    input.attrs.res.type === "Var"
-  ) {
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type === "Var") {
     return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
   }
-  if (
-    input.attrs.a.type !== "Var" &&
-    input.attrs.b.type === "Var" &&
-    input.attrs.res.type !== "Var"
-  ) {
-    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.res)));
+  if (input.attrs.a.type === "Var" && input.attrs.b.type !== "Var") {
+    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
   }
-  if (
-    input.attrs.a.type === "Var" &&
-    input.attrs.b.type !== "Var" &&
-    input.attrs.res.type !== "Var"
-  ) {
-    return relationalBool(cmp(termCmp(input.attrs.b, input.attrs.res)));
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
+    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
