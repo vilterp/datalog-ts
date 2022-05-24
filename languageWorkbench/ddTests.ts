@@ -61,11 +61,16 @@ export function testLangQuery(test: string[]): TestOutput[] {
       langParseError,
     } = constructInterp(INIT_INTERP, langSpec, example);
     const finalInterp = addCursor(withoutCursor, cursorPos);
-    const res = finalInterp.queryStr(query);
     if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
       return jsonOut({ allGrammarErrors, langParseError, dlErrors });
     }
-    return datalogOut(res.map((res) => ppt(res.term)).join("\n"));
+    try {
+      const res = finalInterp.queryStr(query);
+      return datalogOut(res.map((res) => ppt(res.term)).join("\n"));
+    } catch (e) {
+      console.log(e);
+      throw new Error(`failed on input "${input}"`);
+    }
   });
 }
 
