@@ -40,8 +40,16 @@ function eq(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
+// TODO: maybe this shouldn't be a builtin, but rather just
+// negation of an eq clause?
 function neq(input: Rec): Rec[] {
-  return comparison(input, (n) => n !== 0);
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
+    if (!termEq(input.attrs.a, input.attrs.b)) {
+      return [input];
+    }
+    return [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
 function lte(input: Rec): Rec[] {
