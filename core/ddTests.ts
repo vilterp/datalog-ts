@@ -41,7 +41,7 @@ export function coreTestsSimple(writeResults: boolean): Suite {
   return [
     ...coreTests(writeResults, () => new SimpleInterpreter(".", fsLoader)),
     {
-      name: "arithmetic",
+      name: "builtins",
       test() {
         runDDTestAtPath(
           "core/testdata/builtins.dd.txt",
@@ -108,17 +108,22 @@ export function putThroughInterp(
   const results: TestOutput[] = [];
 
   for (const input of test) {
-    const [stmtResult, newInterp] = interp.evalStr(input + "\n");
-    interp = newInterp;
+    try {
+      const [stmtResult, newInterp] = interp.evalStr(input + "\n");
+      interp = newInterp;
 
-    results.push(
-      datalogOut(
-        stmtResult
-          .map((res) => ppt(res.term) + ".")
-          .sort()
-          .join("\n")
-      )
-    );
+      results.push(
+        datalogOut(
+          stmtResult
+            .map((res) => ppt(res.term) + ".")
+            .sort()
+            .join("\n")
+        )
+      );
+    } catch (e) {
+      console.log(e);
+      throw new Error(`failed on input "${input}"`);
+    }
   }
 
   return results;
