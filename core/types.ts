@@ -114,9 +114,13 @@ export const falseTerm: Term = { type: "Bool", val: false };
 
 export type RelationalBool = Term[];
 
-export const relationalTrue: Term[] = [rec("", {})];
+export function relationalBool(val: boolean): Rec[] {
+  return val ? relationalTrue : relationalFalse;
+}
 
-export const relationalFalse: Term[] = [];
+export const relationalTrue: Rec[] = [rec("", {})];
+
+export const relationalFalse: Rec[] = [];
 
 // inner to outer (?)
 export type VarMappings = { [from: string]: string };

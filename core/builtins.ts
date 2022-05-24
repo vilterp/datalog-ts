@@ -1,6 +1,6 @@
 import { ppt } from "./pretty";
-import { int, rec, Rec, str } from "./types";
-import { termCmp } from "./unify";
+import { int, rec, Rec, relationalBool, str } from "./types";
+import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
 
 export type Builtin = (rec: Rec) => Rec[];
@@ -25,7 +25,28 @@ export const BUILTINS: { [name: string]: Builtin } = {
 };
 
 function eq(input: Rec): Rec[] {
-  return XXX;
+  if (
+    input.attrs.a.type !== "Var" &&
+    input.attrs.b.type !== "Var" &&
+    input.attrs.res.type === "Var"
+  ) {
+    return relationalBool(termEq(input.attrs.a, input.attrs.b));
+  }
+  if (
+    input.attrs.a.type !== "Var" &&
+    input.attrs.b.type === "Var" &&
+    input.attrs.res.type !== "Var"
+  ) {
+    return relationalBool(termEq(input.attrs.a, input.attrs.res));
+  }
+  if (
+    input.attrs.a.type === "Var" &&
+    input.attrs.b.type !== "Var" &&
+    input.attrs.res.type !== "Var"
+  ) {
+    return relationalBool(termEq(input.attrs.b, input.attrs.res));
+  }
+  throw new Error("not supported");
 }
 
 function neq(input: Rec): Rec[] {
