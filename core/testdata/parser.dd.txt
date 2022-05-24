@@ -999,15 +999,17 @@ application/json
                 }
               },
               {
-                "type": "BinExpr",
-                "left": {
-                  "type": "Var",
-                  "name": "L"
-                },
-                "op": "!=",
-                "right": {
-                  "type": "Var",
-                  "name": "R"
+                "type": "Record",
+                "relation": "base.neq",
+                "attrs": {
+                  "a": {
+                    "type": "Var",
+                    "name": "L"
+                  },
+                  "b": {
+                    "type": "Var",
+                    "name": "R"
+                  }
                 }
               }
             ]

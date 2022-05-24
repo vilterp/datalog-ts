@@ -1,12 +1,9 @@
 import { NodeAndCache, NodeDesc } from "./types";
-import { ppb, ppBE, ppt, ppVM } from "../pretty";
+import { ppt, ppVM } from "../pretty";
 import { mapObjToList } from "../../util/util";
-import { Res } from "../types";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
-    case "BinExpr":
-      return ppBE(nodeDesc.expr);
     case "Join":
       return `Join(${nodeDesc.joinVars.join(", ")})`;
     case "Match":

@@ -1,7 +1,6 @@
 import { Rule, Rec, OrExpr, AndClause, VarMappings, Res } from "../types";
 import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
 import { getMappings } from "../unify";
-import { extractBinExprs } from "../binExpr";
 import {
   combineObjects,
   filterObj,
@@ -147,7 +146,7 @@ export function addOr(
 }
 
 function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
-  const { recs, exprs } = extractBinExprs(clauses);
+  const recs = clauses.filter((clause) => clause.type === "Record") as Rec[];
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
     const tree = getJoinTree(recs);
@@ -158,23 +157,7 @@ function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
   });
   const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
 
-  let outRes = addJoinTree(graph, joinTree);
-
-  for (const expr of exprs) {
-    const [outGraph2, newExprID] = addNode(outRes.newGraph, true, {
-      type: "BinExpr",
-      expr,
-    });
-    outRes.newGraph = outGraph2;
-    outRes.newGraph = addEdge(outRes.newGraph, outRes.tipID, newExprID);
-    outRes = {
-      newGraph: outRes.newGraph,
-      tipID: newExprID,
-      rec: null, // TODO: fix
-      newNodeIDs: setAdd(outRes.newNodeIDs, newExprID),
-    };
-  }
-  return outRes;
+  return addJoinTree(graph, joinTree);
 }
 
 function addAndBinary(

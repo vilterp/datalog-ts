@@ -1,7 +1,6 @@
 import { RuleGraph, NodeID, JoinDesc } from "./types";
 import { Rec, Res, Rule, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
-import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../../util/util";
 import {
   addEdge,
@@ -107,9 +106,6 @@ function replayFacts(
 function getRoots(rule: Rule): NodeID[] {
   return flatMap(rule.body.opts, (opt) => {
     return filterMap(opt.clauses, (andClause) => {
-      if (andClause.type === "BinExpr") {
-        return null;
-      }
       if (andClause.type === "Negation") {
         return andClause.record.relation;
       }
@@ -283,9 +279,6 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
           },
         },
       ];
-    case "BinExpr":
-      const result = evalBinExpr(nodeDesc.expr, ins.res.bindings);
-      return result ? [ins.res] : [];
     case "BaseFactTable":
       return [ins.res];
   }

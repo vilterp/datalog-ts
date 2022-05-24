@@ -5,7 +5,6 @@ import {
   Term,
   literalTrace,
   varTrace,
-  binExprTrace,
   RulePathSegment,
   InvocationLocation,
   UserError,

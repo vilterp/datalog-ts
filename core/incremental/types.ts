@@ -1,4 +1,4 @@
-import { Rec, BinExpr, VarMappings, Rule, Res } from "../types";
+import { Rec, VarMappings, Rule, Res } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -52,7 +52,6 @@ export type NodeDesc =
   | JoinDesc
   | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec }
-  | { type: "BinExpr"; expr: BinExpr }
   | { type: "Union" };
 
 export const emptyRuleGraph: RuleGraph = {

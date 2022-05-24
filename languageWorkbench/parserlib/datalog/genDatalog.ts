@@ -6,17 +6,7 @@ import {
   stringToArray,
 } from "../../../util/util";
 import * as gram from "../types";
-import {
-  BinExpr,
-  binExpr,
-  int,
-  Rec,
-  rec,
-  str,
-  varr,
-  or,
-  and,
-} from "../../../core/types";
+import { int, Rec, rec, str, varr, or, and } from "../../../core/types";
 import { SingleCharRule } from "../types";
 
 // generate datalog rules that implement a parser for this grammar
@@ -199,16 +189,16 @@ function succeedRule(name: string): dl.Rule {
   );
 }
 
-function exprsForCharRule(charRule: SingleCharRule): BinExpr[] {
+function exprsForCharRule(charRule: SingleCharRule): Rec[] {
   switch (charRule.type) {
     case "AnyChar":
       return [];
     case "Literal":
-      return [binExpr(varr("C"), "==", str(charRule.value))];
+      return [rec("base.eq", { a: varr("C"), b: str(charRule.value) })];
     case "Range":
       return [
-        binExpr(str(charRule.from), "<=", varr("C")),
-        binExpr(varr("C"), "<=", str(charRule.to)),
+        rec("base.lte", { a: str(charRule.from), b: varr("C") }),
+        rec("base.lte", { a: varr("C"), b: str(charRule.to) }),
       ];
     case "Not":
       throw new Error("TODO: `not` single char rules");
