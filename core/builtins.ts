@@ -46,15 +46,46 @@ function eq(input: Rec): Rec[] {
   ) {
     return relationalBool(termEq(input.attrs.b, input.attrs.res));
   }
-  throw new Error("not supported");
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
 function neq(input: Rec): Rec[] {
-  return XXX;
+  if (
+    input.attrs.a.type !== "Var" &&
+    input.attrs.b.type !== "Var" &&
+    input.attrs.res.type === "Var"
+  ) {
+    return relationalBool(!termEq(input.attrs.a, input.attrs.b));
+  }
+  if (
+    input.attrs.a.type !== "Var" &&
+    input.attrs.b.type === "Var" &&
+    input.attrs.res.type !== "Var"
+  ) {
+    return relationalBool(!termEq(input.attrs.a, input.attrs.res));
+  }
+  if (
+    input.attrs.a.type === "Var" &&
+    input.attrs.b.type !== "Var" &&
+    input.attrs.res.type !== "Var"
+  ) {
+    return relationalBool(!termEq(input.attrs.b, input.attrs.res));
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
 function lte(input: Rec): Rec[] {
   return XXX;
+}
+
+function gte(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  const b = input.attrs.b;
+  if (a.type !== "Var" && b.type !== "Var") {
+    const res = termCmp(a, b) > 0;
+    return res ? [rec("gte", { a, b })] : [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
 function lt(input: Rec): Rec[] {
@@ -94,16 +125,6 @@ function mul(input: Rec): Rec[] {
     return [rec(input.relation, { a, b, res: int(a.val * b.val) })];
   }
   // TODO: more cases
-  throw new Error(`this case is not supported: ${ppt(input)}`);
-}
-
-function gte(input: Rec): Rec[] {
-  const a = input.attrs.a;
-  const b = input.attrs.b;
-  if (a.type !== "Var" && b.type !== "Var") {
-    const res = termCmp(a, b) > 0;
-    return res ? [rec("gte", { a, b })] : [];
-  }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
