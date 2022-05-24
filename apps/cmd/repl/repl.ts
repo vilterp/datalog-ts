@@ -99,7 +99,14 @@ export class Repl {
       return;
     }
     this.buffer = this.buffer + line;
-    if (!(line.endsWith(".") || line.startsWith(".") || line.startsWith("#"))) {
+    if (
+      !(
+        line.endsWith(".") ||
+        line.endsWith("?") ||
+        line.startsWith(".") ||
+        line.startsWith("#")
+      )
+    ) {
       return;
     }
     try {
