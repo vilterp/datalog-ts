@@ -173,12 +173,6 @@ function clamp(input: Rec): Rec[] {
 }
 
 function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
-  if (input.attrs.a.type !== "Var" && input.attrs.b.type === "Var") {
-    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
-  }
-  if (input.attrs.a.type === "Var" && input.attrs.b.type !== "Var") {
-    return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
-  }
   if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
     return relationalBool(cmp(termCmp(input.attrs.a, input.attrs.b)));
   }
