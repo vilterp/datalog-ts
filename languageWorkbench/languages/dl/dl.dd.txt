@@ -114,6 +114,16 @@ scope.Usage{definitionScopeID: 3, defnSpan: span{from: 142, to: 143}, kind: "var
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 142, to: 143}, kind: "var", name: "T", usageScopeID: 3, usageSpan: span{from: 130, to: 131}}
 
 dl
+currentAtSource{a: A, b: B, c: C} :-
+  A + B = C.
+tc.Problem{}?
+----
+application/datalog
+tc.Problem{desc: unboundVarInHead{name: "A", rule: "currentAtSource"}, span: span{from: 19, to: 20}}
+tc.Problem{desc: unboundVarInHead{name: "B", rule: "currentAtSource"}, span: span{from: 25, to: 26}}
+tc.Problem{desc: unboundVarInHead{name: "C", rule: "currentAtSource"}, span: span{from: 31, to: 32}}
+
+dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.l|||et{id: I, name: N, type: T, location: S} |
