@@ -10,8 +10,31 @@ digraph G {
   "2" [fillcolor="thistle" label="2: Join(A, B) []" shape="box" style="filled"];
   "bar" [fillcolor="lightblue" label="bar: Subst({a: A, b: B}) []" shape="box" style="filled"];
   "foo" -> "0" [];
-  "base.neq" -> "1" [];
   "1" -> "2" [];
   "0" -> "2" [];
   "2" -> "bar" [];
+}
+
+.table parents;
+sibling{left: L, right: R} :-
+  parents{child: L, mother: M, father: F} &
+  parents{child: R, mother: M, father: F} &
+  L != R.
+----
+application/graphviz
+digraph G {
+  "parents" [fillcolor="darksalmon" label="parents:  []" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" label="0: Match(parents{child: L, father: F, mother: M}; {}) [M-F]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(parents{child: R, father: F, mother: M}; {}) [M-F]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" label="2: Join(M, F) [R]" shape="box" style="filled"];
+  "3" [fillcolor="" label="3: Builtin(base.neq{a: L, b: R}) [R]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(R) []" shape="box" style="filled"];
+  "sibling" [fillcolor="lightblue" label="sibling: Subst({left: L, right: R}) []" shape="box" style="filled"];
+  "parents" -> "0" [];
+  "parents" -> "1" [];
+  "1" -> "2" [];
+  "0" -> "2" [];
+  "3" -> "4" [];
+  "2" -> "4" [];
+  "4" -> "sibling" [];
 }

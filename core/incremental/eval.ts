@@ -286,7 +286,9 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "BaseFactTable":
       return [ins.res];
     case "Builtin":
-      return evalBuiltin(ins.res.term as Rec, ins.res.bindings);
+      throw new Error(
+        "unreachable: nothing should be sending records to a builtin"
+      );
   }
 }
 
@@ -322,6 +324,9 @@ function doJoin(
   const results: Res[] = [];
   const thisVars = ins.res.bindings;
   const otherNode = graph.nodes.get(otherNodeID);
+  if (otherNode.desc.type === "Builtin") {
+    return evalBuiltin(otherNode.desc.rec as Rec, ins.res.bindings);
+  }
   // TODO: avoid this allocation
   const indexName = getIndexName(joinDesc.joinVars);
   const indexKey = getIndexKey(ins.res, joinDesc.joinVars);
