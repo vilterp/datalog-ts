@@ -34,7 +34,7 @@ function Main() {
         editorState={editorState}
         setEditorState={setEditorState}
         width={800}
-        height={1000}
+        height={700}
         lineNumbers="on"
         showKeyBindingsTable
       />
