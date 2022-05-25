@@ -1,9 +1,9 @@
 import React from "react";
 import { Rule } from "../../core/types";
 import { HighlightProps, TermView } from "./term";
-import { makeTermWithBindings } from "../../core/traceTree";
 import { intersperseIdx } from "../../util/util";
 import { ppt } from "../../core/pretty";
+import { makeTermWithBindings } from "../../core/termWithBindings";
 
 export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
   return (

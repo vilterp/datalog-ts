@@ -1,13 +1,5 @@
 import { Tree, leaf, node } from "../util/tree";
-import {
-  Res,
-  SituatedBinding,
-  ScopePath,
-  VarMappings,
-  Term,
-  Bindings,
-  TermWithBindings,
-} from "./types";
+import { Res, SituatedBinding, ScopePath, VarMappings } from "./types";
 import {
   ppt,
   prettyPrintTermWithBindings,
@@ -15,9 +7,9 @@ import {
   TracePrintOpts,
   defaultTracePrintOpts,
 } from "./pretty";
-import { flatMap, getFirst, filterMap, mapObj } from "../util/util";
+import { flatMap, getFirst } from "../util/util";
 import * as pp from "prettier-printer";
-import { jsonEq } from "../util/json";
+import { makeTermWithBindings } from "./termWithBindings";
 
 export function traceToTree(res: Res): Tree<Res> {
   const resStr = ppt(res.term);
@@ -212,53 +204,4 @@ function getParentPaths(path: PathSeg[], binding: string): SituatedBinding[] {
         ...getParentPaths(path.slice(1), mapping),
       ]
     : [{ name: binding, path: first.path }];
-}
-
-export function pathToScopePath(path: Res[]): ScopePath {
-  return filterMap(path, (res) =>
-    res.trace.type === "RefTrace"
-      ? { name: res.trace.refTerm.relation, invokeLoc: res.trace.invokeLoc }
-      : null
-  );
-}
-
-export function makeTermWithBindings(
-  term: Term,
-  bindings: Bindings
-): TermWithBindings {
-  switch (term.type) {
-    case "Record":
-      return {
-        type: "RecordWithBindings",
-        relation: term.relation,
-        attrs: mapObj(term.attrs, (_, val) => {
-          const binding = Object.keys(bindings).find((b) => {
-            return bindings[b] && jsonEq(val, bindings[b]);
-          });
-          return {
-            term: makeTermWithBindings(val, bindings),
-            binding: binding,
-          };
-        }),
-      };
-    case "Array":
-      return {
-        type: "ArrayWithBindings",
-        items: term.items.map((item) => makeTermWithBindings(item, bindings)),
-      };
-    case "Negation":
-      return {
-        type: "NegationWithBindings",
-        inner: makeTermWithBindings(term.record, bindings),
-      };
-    case "Aggregation":
-      return {
-        type: "AggregationWithBindings",
-        aggregation: term.aggregation,
-        varNames: term.varNames,
-        record: makeTermWithBindings(term.record, bindings),
-      };
-    default:
-      return { type: "Atom", term };
-  }
 }

@@ -3,7 +3,6 @@ import { Rec, rec } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
-import { makeTermWithBindings } from "../../core/traceTree";
 import { TermView, noHighlight, HighlightProps } from "../dl/term";
 import { TraceTreeView } from "../dl/trace";
 import * as styles from "./styles";
@@ -11,6 +10,7 @@ import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
+import { makeTermWithBindings } from "../../core/termWithBindings";
 
 export function RelationTable(props: {
   relation: string;

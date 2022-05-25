@@ -12,9 +12,9 @@ import {
 import * as pp from "prettier-printer";
 import { mapObjToList, repeat, flatMap } from "../util/util";
 import { prettyPrintTree, Tree } from "../util/tree";
-import { pathToScopePath, makeTermWithBindings } from "./traceTree";
 import { DLStatement } from "../languageWorkbench/languages/dl/parser";
 import { parserRuleToInternal, parserTermToInternal } from "./translateAST";
+import { makeTermWithBindings, pathToScopePath } from "./termWithBindings";
 
 export function prettyPrintStatement(stmt: DLStatement): pp.IDoc {
   switch (stmt.type) {

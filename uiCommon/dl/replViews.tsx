@@ -3,7 +3,7 @@ import { Res, Term } from "../../core/types";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";
 import { TreeCollapseState } from "../generic/treeView";
 import { TraceTreeView } from "./trace";
-import { makeTermWithBindings } from "../../core/traceTree";
+import { makeTermWithBindings } from "../../core/termWithBindings";
 
 export function IndependentTraceView(props: { res: Res }) {
   const [collapseState, setCollapseState] = useState<TreeCollapseState>({
