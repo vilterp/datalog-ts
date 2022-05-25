@@ -50,8 +50,6 @@ function getNodeColor(nodeDesc: NodeDesc): string {
       return "darkseagreen2";
     case "Join":
       return "thistle";
-    case "BinExpr":
-      return "darkseagreen1";
     case "Substitute":
       return "lightblue";
     case "Union":

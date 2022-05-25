@@ -1,4 +1,4 @@
-import { Rec, BinExpr, VarMappings, Rule, Res } from "../types";
+import { Rec, VarMappings, Rule, Res } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -48,12 +48,12 @@ export type JoinDesc = {
 };
 
 export type NodeDesc =
-  | { type: "BaseFactTable" }
   | JoinDesc
+  | { type: "BaseFactTable" }
   | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec }
-  | { type: "BinExpr"; expr: BinExpr }
-  | { type: "Union" };
+  | { type: "Union" }
+  | { type: "Builtin"; rec: Rec };
 
 export const emptyRuleGraph: RuleGraph = {
   tables: [],

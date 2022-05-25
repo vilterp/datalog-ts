@@ -5,7 +5,6 @@ import {
   Term,
   literalTrace,
   varTrace,
-  binExprTrace,
   RulePathSegment,
   InvocationLocation,
   UserError,
@@ -22,13 +21,13 @@ import {
   unifyBindings,
 } from "../unify";
 import { filterMap, flatMap, groupBy, mapObjToList } from "../../util/util";
-import { evalBinExpr } from "../binExpr";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { BUILTINS } from "../builtins";
 import { DB } from "./types";
 import { AGGREGATIONS } from "../aggregations";
 import { getForScope } from "./indexes";
+import { evalBuiltin } from "../evalBuiltin";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -133,18 +132,7 @@ function doEvaluate(
           }
           const builtin = BUILTINS[term.relation];
           if (builtin) {
-            const substituted = substitute(term, scope) as Rec;
-            const records = builtin(substituted);
-            // console.log({ substituted: ppt(substituted), res: res.map(ppr) });
-            const results = records.map(
-              (rec): Res => ({
-                term: rec,
-                bindings: unify(scope, rec, term),
-                trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
-              })
-            );
-            // console.log(results.map(ppr));
-            return results;
+            return evalBuiltin(term, scope);
           }
           const rule = db.rules.get(term.relation);
           if (rule) {
@@ -246,15 +234,6 @@ function doEvaluate(
       }
       case "Var":
         return [{ term: scope[term.name], bindings: scope, trace: varTrace }];
-      case "BinExpr": {
-        const res = evalBinExpr(term, scope);
-        const relationalRes = res ? relationalTrue : relationalFalse;
-        return relationalRes.map((term) => ({
-          term,
-          bindings: scope,
-          trace: binExprTrace,
-        }));
-      }
       case "Bool":
       case "StringLit":
         return [{ term: term, bindings: scope, trace: literalTrace }];
@@ -322,8 +301,6 @@ export function hasVars(t: Term): boolean {
       return true;
     case "Record":
       return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
-    case "BinExpr":
-      return hasVars(t.left) || hasVars(t.right);
     case "Bool":
       return false;
   }

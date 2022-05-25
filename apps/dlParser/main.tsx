@@ -7,25 +7,29 @@ import {
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { parseGrammar } from "../../languageWorkbench/parserlib/meta";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import useLocalStorage from "react-use-localstorage";
 // @ts-ignore
 import parseDL from "../../languageWorkbench/parserlib/datalog/parse.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { parseMain } from "../../languageWorkbench/languages/grammar/parser";
+import { parserGrammarToInternal } from "../../languageWorkbench/parserlib/translateAST";
+import { LingoEditor } from "../../uiCommon/ide/editor";
+import { LANGUAGES } from "../../languageWorkbench/languages";
+import { initialEditorState } from "../../uiCommon/ide/types";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 
 const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
 function Main() {
   const [source, setSource] = useLocalStorage("dl-parser-playground-source");
-  const [grammarSource, setGrammarSource] = useLocalStorage(
-    "dl-parser-playground-grammar-source",
-    INITIAL_GRAMMAR_TEXT
+  const [grammarEditorState, setGrammarEditorState] = useJSONLocalStorage(
+    "dl-parser-playground-grammar-editor-state",
+    initialEditorState(INITIAL_GRAMMAR_TEXT)
   );
 
   const interp1 = useMemo(
-    () => constructInterp(grammarSource),
-    [grammarSource]
+    () => constructInterp(grammarEditorState.source),
+    [grammarEditorState.source]
   );
 
   const { interp: interp2, error } = useMemo(
@@ -52,13 +56,10 @@ function Main() {
             </td>
             <td>
               <h3>Grammar Source</h3>
-              <textarea
-                autoFocus={true}
-                rows={10}
-                cols={80}
-                onChange={(evt) => setGrammarSource(evt.target.value)}
-                value={grammarSource}
-                spellCheck={false}
+              <LingoEditor
+                editorState={grammarEditorState}
+                setEditorState={setGrammarEditorState}
+                langSpec={LANGUAGES.grammar}
               />
             </td>
           </tr>
@@ -76,9 +77,12 @@ function constructInterp(grammarSource: string) {
     nullLoader
   ) as AbstractInterpreter;
   interp = interp.evalStr(parseDL)[1];
-  const grammarParsed = parseGrammar(grammarSource);
+  const grammarTree = parseMain(grammarSource);
+  const grammarParsed = parserGrammarToInternal(grammarTree);
   const rules = grammarToDL(grammarParsed);
-  interp = interp.evalStmts(rules.map((rule) => ({ type: "Rule", rule })))[1];
+  interp = interp.evalRawStmts(
+    rules.map((rule) => ({ type: "Rule", rule }))
+  )[1];
   return interp;
 }
 

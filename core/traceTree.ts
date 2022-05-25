@@ -52,8 +52,6 @@ export function traceToTree(res: Res): Tree<Res> {
     }
     case "VarTrace":
       return leaf(`var: ${resStr}`, res);
-    case "BinExprTrace":
-      return leaf(`bin_expr: ${resStr}`, res);
     case "BaseFactTrace":
       return leaf(`base_fact: ${resStr}`, res);
     case "LiteralTrace":
@@ -241,13 +239,6 @@ export function makeTermWithBindings(
       return {
         type: "ArrayWithBindings",
         items: term.items.map((item) => makeTermWithBindings(item, bindings)),
-      };
-    case "BinExpr":
-      return {
-        type: "BinExprWithBindings",
-        left: makeTermWithBindings(term.left, bindings),
-        op: term.op,
-        right: makeTermWithBindings(term.right, bindings),
       };
     case "Negation":
       return {

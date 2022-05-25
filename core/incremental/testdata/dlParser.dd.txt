@@ -1,0 +1,56 @@
+.table input.char
+----
+application/datalog
+
+.table input.next
+----
+application/datalog
+
+main{span: span{from: P1, to: P2}} :-
+  input.char{id: P1, char: C} &
+  input.next{left: P1, right: P2} &
+  base.lte{a: "a", b: C} &
+  base.lte{a: C, b: "z"}.
+----
+text/plain
+
+input.char{char: "END", id: -2}.
+----
+text/plain
+input.char: [input.char{char: "END", id: -2}; {}]
+1: [input.char{char: "END", id: -2}; {C: "END", P1: -2}]
+2: []
+
+input.char{char: "START", id: -1}.
+----
+text/plain
+input.char: [input.char{char: "START", id: -1}; {}]
+1: [input.char{char: "START", id: -1}; {C: "START", P1: -1}]
+2: []
+
+input.char{char: "b", id: 0}.
+----
+text/plain
+input.char: [input.char{char: "b", id: 0}; {}]
+1: [input.char{char: "b", id: 0}; {C: "b", P1: 0}]
+2: []
+
+input.next{left: -1, right: 0}.
+----
+text/plain
+input.next: [input.next{left: -1, right: 0}; {}]
+0: [input.next{left: -1, right: 0}; {P1: -1, P2: 0}]
+2: [{C: "START", P1: -1, P2: 0}]
+4: [base.lte{a: "a", b: "START"}; {C: "START", P1: -1, P2: 0}]
+6: [base.lte{a: "START", b: "z"}; {C: "START", P1: -1, P2: 0}]
+main: [main{span: span{from: -1, to: 0}}; {C: "START", P1: -1, P2: 0}]
+
+input.next{left: 0, right: -2}.
+----
+text/plain
+input.next: [input.next{left: 0, right: -2}; {}]
+0: [input.next{left: 0, right: -2}; {P1: 0, P2: -2}]
+2: [{C: "b", P1: 0, P2: -2}]
+4: [base.lte{a: "a", b: "b"}; {C: "b", P1: 0, P2: -2}]
+6: [base.lte{a: "b", b: "z"}; {C: "b", P1: 0, P2: -2}]
+main: [main{span: span{from: 0, to: -2}}; {C: "b", P1: 0, P2: -2}]

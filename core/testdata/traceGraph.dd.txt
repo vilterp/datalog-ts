@@ -9,12 +9,12 @@ digraph G {
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [label="parents|{{child|\"Carolyn\"}|{father|\"Paul\"}|{mother|\"Mary\"}}" shape="record"];
   "mother{child: \"Carolyn\", mother: \"Mary\"}" [label="mother|{{child|\"Carolyn\"}|{mother|\"Mary\"}}" shape="record"];
   "father{child: \"Carolyn\", father: \"Paul\"}" [label="father|{{child|\"Carolyn\"}|{father|\"Paul\"}}" shape="record"];
-  "{}" [label="|{}" shape="record"];
+  "base.neq{a: L@\"Pete\", b: R@\"Carolyn\"}" [label="base.neq|{{a|\"Pete\"}|{b|\"Carolyn\"}}" shape="record"];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: \"Pete\", mother: \"Mary\"}" [];
   "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: \"Pete\", father: \"Paul\"}" [];
   "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: L@\"Pete\", father: F@\"Paul\", mother: M@\"Mary\"}" [];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "mother{child: \"Carolyn\", mother: \"Mary\"}" [];
   "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" -> "father{child: \"Carolyn\", father: \"Paul\"}" [];
   "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "parents{child: R@\"Carolyn\", father: F@\"Paul\", mother: M@\"Mary\"}" [];
-  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "{}" [];
+  "sibling{left: \"Pete\", right: R@\"Carolyn\"}" -> "base.neq{a: L@\"Pete\", b: R@\"Carolyn\"}" [];
 }

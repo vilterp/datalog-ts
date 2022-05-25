@@ -1,7 +1,6 @@
 import { Rule, Rec, OrExpr, AndClause, VarMappings, Res } from "../types";
 import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
 import { getMappings } from "../unify";
-import { extractBinExprs } from "../binExpr";
 import {
   combineObjects,
   filterObj,
@@ -13,6 +12,7 @@ import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "../../util/indexedCollection";
 import { fastPPT } from "../fastPPT";
+import { BUILTINS } from "../builtins";
 
 export function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {
@@ -46,6 +46,10 @@ export function resolveUnmappedRule(
     const nodeDesc = newNode.desc;
     if (nodeDesc.type === "Match") {
       const callRec = nodeDesc.rec;
+      if (BUILTINS[callRec.relation]) {
+        resolved = true;
+        continue;
+      }
       const callNode = graph.nodes.get(callRec.relation);
       if (!callNode) {
         // not defined yet
@@ -147,7 +151,15 @@ export function addOr(
 }
 
 function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
-  const { recs, exprs } = extractBinExprs(clauses);
+  const recs = clauses.filter((clause) => {
+    if (clause.type === "Record") {
+      return true;
+    } else {
+      throw new Error(
+        `clauses of type ${clause.type} not supported in incremental interpreter`
+      );
+    }
+  }) as Rec[];
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
     const tree = getJoinTree(recs);
@@ -158,23 +170,7 @@ function addAnd(graph: RuleGraph, clauses: AndClause[]): AddResult {
   });
   const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
 
-  let outRes = addJoinTree(graph, joinTree);
-
-  for (const expr of exprs) {
-    const [outGraph2, newExprID] = addNode(outRes.newGraph, true, {
-      type: "BinExpr",
-      expr,
-    });
-    outRes.newGraph = outGraph2;
-    outRes.newGraph = addEdge(outRes.newGraph, outRes.tipID, newExprID);
-    outRes = {
-      newGraph: outRes.newGraph,
-      tipID: newExprID,
-      rec: null, // TODO: fix
-      newNodeIDs: setAdd(outRes.newNodeIDs, newExprID),
-    };
-  }
-  return outRes;
+  return addJoinTree(graph, joinTree);
 }
 
 function addAndBinary(
@@ -236,11 +232,25 @@ function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
 }
 
 function addRec(graph: RuleGraph, rec: Rec): AddResult {
-  const [graph2, matchID] = addNode(graph, true, {
+  // TODO: probably should just add all of these globally...
+  if (BUILTINS[rec.relation]) {
+    const [graph2, builtinID] = addNode(graph, true, { type: "Builtin", rec });
+    return {
+      newGraph: graph2,
+      newNodeIDs: new Set([builtinID]),
+      rec,
+      tipID: builtinID,
+    };
+  }
+  const newNodeDesc: NodeDesc = {
     type: "Match",
     rec,
     mappings: {},
-  });
+  };
+  const [graph2, matchID] = addNode(graph, true, newNodeDesc);
+  if (BUILTINS[rec.relation]) {
+    console.log("add edge from", rec.relation, matchID);
+  }
   const graph3 = addEdge(graph2, rec.relation, matchID);
   return {
     newGraph: graph3,

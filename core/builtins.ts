@@ -1,20 +1,72 @@
 import { ppt } from "./pretty";
-import { int, rec, Rec, str } from "./types";
-import { termCmp } from "./unify";
+import { int, rec, Rec, relationalBool, str } from "./types";
+import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
 
 export type Builtin = (rec: Rec) => Rec[];
 
 export const BUILTINS: { [name: string]: Builtin } = {
-  add,
-  mul,
-  gte,
+  // comparisons
+  "base.eq": eq,
+  "base.neq": neq,
+  "base.lte": lte,
+  "base.gte": gte,
+  "base.lt": lt,
+  "base.gt": gt,
+  // arithmetic
+  "base.add": add,
+  "base.mul": mul,
+  "math.sin": sin,
+  // misc
   range,
   concat,
-  "math.sin": sin,
   invert,
   clamp,
 };
+
+function eq(input: Rec): Rec[] {
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type === "Var") {
+    return [rec(input.relation, { a: input.attrs.a, b: input.attrs.a })];
+  }
+  if (input.attrs.a.type === "Var" && input.attrs.b.type !== "Var") {
+    return [rec(input.relation, { a: input.attrs.b, b: input.attrs.b })];
+  }
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
+    if (termEq(input.attrs.a, input.attrs.b)) {
+      return [input];
+    }
+    return [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+// TODO: maybe this shouldn't be a builtin, but rather just
+// negation of an eq clause?
+function neq(input: Rec): Rec[] {
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
+    if (!termEq(input.attrs.a, input.attrs.b)) {
+      return [input];
+    }
+    return [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function lte(input: Rec): Rec[] {
+  return comparison(input, (n) => n <= 0);
+}
+
+function gte(input: Rec): Rec[] {
+  return comparison(input, (n) => n >= 0);
+}
+
+function lt(input: Rec): Rec[] {
+  return comparison(input, (n) => n < 0);
+}
+
+function gt(input: Rec): Rec[] {
+  return comparison(input, (n) => n > 0);
+}
 
 function add(input: Rec): Rec[] {
   const a = input.attrs.a;
@@ -45,16 +97,6 @@ function mul(input: Rec): Rec[] {
     return [rec(input.relation, { a, b, res: int(a.val * b.val) })];
   }
   // TODO: more cases
-  throw new Error(`this case is not supported: ${ppt(input)}`);
-}
-
-function gte(input: Rec): Rec[] {
-  const a = input.attrs.a;
-  const b = input.attrs.b;
-  if (a.type !== "Var" && b.type !== "Var") {
-    const res = termCmp(a, b) > 0;
-    return res ? [rec("gte", { a, b })] : [];
-  }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
@@ -126,6 +168,14 @@ function clamp(input: Rec): Rec[] {
         res: int(util.clamp(val.val, [min.val, max.val])),
       }),
     ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
+  if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
+    const result = cmp(termCmp(input.attrs.a, input.attrs.b));
+    return result ? [input] : [];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }

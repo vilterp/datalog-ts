@@ -1,7 +1,6 @@
 import { RuleGraph, NodeID, JoinDesc } from "./types";
 import { Rec, Res, Rule, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
-import { evalBinExpr } from "../binExpr";
 import { filterMap, flatMap, mapObjToList } from "../../util/util";
 import {
   addEdge,
@@ -14,6 +13,8 @@ import {
 } from "./build";
 import Denque from "denque";
 import { ppr } from "../pretty";
+import { BUILTINS } from "../builtins";
+import { evalBuiltin } from "../evalBuiltin";
 
 export type Insertion = {
   res: Res;
@@ -80,7 +81,6 @@ function replayFacts(
   allNewNodes: Set<NodeID>,
   roots: Set<NodeID>
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  // console.log("replayFacts", roots);
   let outGraph = graph;
   let outEmissionLog: EmissionLog = [];
   for (let rootID of roots) {
@@ -107,14 +107,14 @@ function replayFacts(
 function getRoots(rule: Rule): NodeID[] {
   return flatMap(rule.body.opts, (opt) => {
     return filterMap(opt.clauses, (andClause) => {
-      if (andClause.type === "BinExpr") {
-        return null;
-      }
       if (andClause.type === "Negation") {
         return andClause.record.relation;
       }
       if (andClause.type === "Aggregation") {
         return andClause.record.relation;
+      }
+      if (BUILTINS[andClause.relation]) {
+        return null;
       }
       return andClause.relation;
     });
@@ -283,11 +283,12 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
           },
         },
       ];
-    case "BinExpr":
-      const result = evalBinExpr(nodeDesc.expr, ins.res.bindings);
-      return result ? [ins.res] : [];
     case "BaseFactTable":
       return [ins.res];
+    case "Builtin":
+      throw new Error(
+        "unreachable: nothing should be sending records to a builtin"
+      );
   }
 }
 
@@ -320,9 +321,16 @@ function doJoin(
   joinDesc: JoinDesc,
   otherNodeID: NodeID
 ): Res[] {
-  const results: Res[] = [];
   const thisVars = ins.res.bindings;
   const otherNode = graph.nodes.get(otherNodeID);
+  if (otherNode.desc.type === "Builtin") {
+    const results = evalBuiltin(otherNode.desc.rec as Rec, ins.res.bindings);
+    return results.map((res) => ({
+      trace: res.trace,
+      term: res.term,
+      bindings: unifyBindings(res.bindings, ins.res.bindings),
+    }));
+  }
   // TODO: avoid this allocation
   const indexName = getIndexName(joinDesc.joinVars);
   const indexKey = getIndexKey(ins.res, joinDesc.joinVars);
@@ -336,6 +344,7 @@ function doJoin(
   //   otherEntries,
   //   cache: otherNode.cache.toJSON(),
   // });
+  const results: Res[] = [];
   for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch.bindings;
     const unifyRes = unifyBindings(thisVars || {}, otherVars || {});

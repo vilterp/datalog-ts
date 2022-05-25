@@ -29,6 +29,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["cycles", evalTest],
     ["replay", evalTest],
     ["cyclesReplay", evalTest],
+    ["dlParser", evalTest],
     ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
