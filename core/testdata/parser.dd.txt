@@ -1019,3 +1019,121 @@ application/json
     }
   }
 ]
+
+currentAtSource{id: I, time: T, level: ShiftedL} :-
+  time{time: T} &
+  source{id: I, supply: Size} &
+  math.sin{a: T, res: Raw} &
+  Raw * Size = C &
+  30 + C = ShiftedL.
+----
+application/json
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "currentAtSource",
+        "attrs": {
+          "id": {
+            "type": "Var",
+            "name": "I"
+          },
+          "time": {
+            "type": "Var",
+            "name": "T"
+          },
+          "level": {
+            "type": "Var",
+            "name": "ShiftedL"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Record",
+                "relation": "time",
+                "attrs": {
+                  "time": {
+                    "type": "Var",
+                    "name": "T"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "source",
+                "attrs": {
+                  "id": {
+                    "type": "Var",
+                    "name": "I"
+                  },
+                  "supply": {
+                    "type": "Var",
+                    "name": "Size"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "math.sin",
+                "attrs": {
+                  "a": {
+                    "type": "Var",
+                    "name": "T"
+                  },
+                  "res": {
+                    "type": "Var",
+                    "name": "Raw"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "base.mul",
+                "attrs": {
+                  "a": {
+                    "type": "Var",
+                    "name": "Raw"
+                  },
+                  "b": {
+                    "type": "Var",
+                    "name": "Size"
+                  },
+                  "res": {
+                    "type": "Var",
+                    "name": "C"
+                  }
+                }
+              },
+              {
+                "type": "Record",
+                "relation": "base.add",
+                "attrs": {
+                  "a": {
+                    "type": "IntLit",
+                    "val": 30
+                  },
+                  "b": {
+                    "type": "Var",
+                    "name": "C"
+                  },
+                  "res": {
+                    "type": "Var",
+                    "name": "ShiftedL"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

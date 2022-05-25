@@ -23,15 +23,7 @@ export type DLAlpha = {
   span: Span;
 };
 export type DLAlphaNum = DLAlpha | DLNum;
-export type DLArithmetic = {
-  type: "Arithmetic";
-  text: string;
-  span: Span;
-  left: DLTerm;
-  arithmeticOp: DLArithmeticOp;
-  right: DLTerm;
-  result: DLTerm;
-};
+export type DLArithmetic = DLAssignmentOnLeft | DLAssignmentOnRight;
 export type DLArithmeticOp = {
   type: "ArithmeticOp";
   text: string;
@@ -43,6 +35,24 @@ export type DLArray = {
   span: Span;
   term: DLTerm[];
   commaSpace: DLCommaSpace[];
+};
+export type DLAssignmentOnLeft = {
+  type: "AssignmentOnLeft";
+  text: string;
+  span: Span;
+  result: DLTerm;
+  left: DLTerm;
+  arithmeticOp: DLArithmeticOp;
+  right: DLTerm;
+};
+export type DLAssignmentOnRight = {
+  type: "AssignmentOnRight";
+  text: string;
+  span: Span;
+  left: DLTerm;
+  arithmeticOp: DLArithmeticOp;
+  right: DLTerm;
+  result: DLTerm;
 };
 export type DLBool = {
   type: "Bool";
@@ -277,6 +287,16 @@ export function parseArray(input: string): DLArray {
   const ruleTree = extractRuleTree(traceTree);
   return extractArray(input, ruleTree);
 }
+export function parseAssignmentOnLeft(input: string): DLAssignmentOnLeft {
+  const traceTree = parserlib.parse(GRAMMAR, "assignmentOnLeft", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractAssignmentOnLeft(input, ruleTree);
+}
+export function parseAssignmentOnRight(input: string): DLAssignmentOnRight {
+  const traceTree = parserlib.parse(GRAMMAR, "assignmentOnRight", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractAssignmentOnRight(input, ruleTree);
+}
 export function parseBool(input: string): DLBool {
   const traceTree = parserlib.parse(GRAMMAR, "bool", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -469,18 +489,15 @@ function extractAlphaNum(input: string, node: RuleTree): DLAlphaNum {
   }
 }
 function extractArithmetic(input: string, node: RuleTree): DLArithmetic {
-  return {
-    type: "Arithmetic",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    left: extractTerm(input, childByName(node, "term", "left")),
-    arithmeticOp: extractArithmeticOp(
-      input,
-      childByName(node, "arithmeticOp", null)
-    ),
-    right: extractTerm(input, childByName(node, "term", "right")),
-    result: extractTerm(input, childByName(node, "term", "result")),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "assignmentOnLeft": {
+      return extractAssignmentOnLeft(input, child);
+    }
+    case "assignmentOnRight": {
+      return extractAssignmentOnRight(input, child);
+    }
+  }
 }
 function extractArithmeticOp(input: string, node: RuleTree): DLArithmeticOp {
   return {
@@ -500,6 +517,40 @@ function extractArray(input: string, node: RuleTree): DLArray {
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
     ),
+  };
+}
+function extractAssignmentOnLeft(
+  input: string,
+  node: RuleTree
+): DLAssignmentOnLeft {
+  return {
+    type: "AssignmentOnLeft",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    result: extractTerm(input, childByName(node, "term", "result")),
+    left: extractTerm(input, childByName(node, "term", "left")),
+    arithmeticOp: extractArithmeticOp(
+      input,
+      childByName(node, "arithmeticOp", null)
+    ),
+    right: extractTerm(input, childByName(node, "term", "right")),
+  };
+}
+function extractAssignmentOnRight(
+  input: string,
+  node: RuleTree
+): DLAssignmentOnRight {
+  return {
+    type: "AssignmentOnRight",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    left: extractTerm(input, childByName(node, "term", "left")),
+    arithmeticOp: extractArithmeticOp(
+      input,
+      childByName(node, "arithmeticOp", null)
+    ),
+    right: extractTerm(input, childByName(node, "term", "right")),
+    result: extractTerm(input, childByName(node, "term", "result")),
   };
 }
 function extractBool(input: string, node: RuleTree): DLBool {
@@ -1255,6 +1306,21 @@ const GRAMMAR: Grammar = {
     ],
   },
   arithmetic: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "assignmentOnLeft",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "assignmentOnRight",
+      },
+    ],
+  },
+  assignmentOnRight: {
     type: "Sequence",
     items: [
       {
@@ -1299,6 +1365,55 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "result",
+        rule: "term",
+      },
+    ],
+  },
+  assignmentOnLeft: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: "result",
+        rule: "term",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "=",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: "left",
+        rule: "term",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "arithmeticOp",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: "right",
         rule: "term",
       },
     ],
