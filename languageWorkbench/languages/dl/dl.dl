@@ -95,7 +95,13 @@ scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
   |
   scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
   ast.arithmetic{id: Arithmetic, parentID: Conjunct} &
-  ast.term{id: TermOrRecord, parentID: Arithmetic}.
+  ast.assignmentOnRight{id: Assignment, parentID: Arithmetic} &
+  ast.term{id: TermOrRecord, parentID: Assignment}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.arithmetic{id: Arithmetic, parentID: Conjunct} &
+  ast.assignmentOnLeft{id: Assignment, parentID: Arithmetic} &
+  ast.term{id: TermOrRecord, parentID: Assignment}.
 
 scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
   scope.recordVar{record: TermOrRecord, name: N, span: S} |
