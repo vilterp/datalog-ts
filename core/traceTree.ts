@@ -7,7 +7,7 @@ import {
   TracePrintOpts,
   defaultTracePrintOpts,
 } from "./pretty";
-import { flatMap, getFirst, filterMap } from "../util/util";
+import { flatMap, getFirst } from "../util/util";
 import * as pp from "prettier-printer";
 import { makeTermWithBindings } from "./termWithBindings";
 

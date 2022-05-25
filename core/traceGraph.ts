@@ -6,13 +6,10 @@ import {
   ppt,
   prettyPrintTermWithBindings,
 } from "./pretty";
-import {
-  makeTermWithBindings,
-  printTermWithBindings,
-  traceToTree,
-} from "./traceTree";
+import { printTermWithBindings, traceToTree } from "./traceTree";
 import { Res, TermWithBindings } from "./types";
 import * as pp from "prettier-printer";
+import { makeTermWithBindings } from "./termWithBindings";
 
 export function traceToGraph(res: Res): Graph {
   const tree = traceToTree(res);

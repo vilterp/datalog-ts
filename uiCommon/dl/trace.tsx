@@ -1,18 +1,14 @@
 import React from "react";
 import { Res, VarMappings, ScopePath } from "../../core/types";
-import { TermView, VarC, HighlightProps } from "./term";
-import {
-  makeTermWithBindings,
-  traceToTree,
-  getRelatedPaths,
-  pathToScopePath,
-} from "../../core/traceTree";
+import { VarC, HighlightProps } from "./term";
+import { traceToTree, getRelatedPaths } from "../../core/traceTree";
 import { intersperse, mapObjToListUnordered } from "../../util/util";
 import { TreeView, TreeCollapseState } from "../generic/treeView";
 import Graphviz from "graphviz-react";
 import { prettyPrintGraph } from "../../util/graphviz";
 import { traceToGraph } from "../../core/traceGraph";
 import { BareTerm } from "./replViews";
+import { pathToScopePath } from "../../core/termWithBindings";
 
 const MemoizedGraphviz = React.memo(Graphviz);
 
