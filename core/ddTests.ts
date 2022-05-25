@@ -3,12 +3,7 @@ import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
 import { fsLoader } from "./fsLoader";
-import {
-  datalogOut,
-  graphvizOut,
-  jsonOut,
-  plainTextOut,
-} from "../util/ddTest/types";
+import { datalogOut, graphvizOut, jsonOut } from "../util/ddTest/types";
 import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
 import { traceToGraph } from "./traceGraph";

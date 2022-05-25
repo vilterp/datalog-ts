@@ -17,7 +17,9 @@ aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
 
-arithmetic :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, result:term].
+arithmetic :- (assignmentOnLeft | assignmentOnRight).
+assignmentOnRight :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, result:term].
+assignmentOnLeft :- [result:term, ws, "=", ws, left:term, ws, arithmeticOp, ws, right:term].
 arithmeticOp :- ("+" | "*" | "-").
 
 term :- (record | int | var | string | bool | array | placeholder).

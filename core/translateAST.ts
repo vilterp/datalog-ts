@@ -65,7 +65,8 @@ export function parserRuleToInternal(term: DLRule): Rule {
         type: "And",
         clauses: disjunct.conjunct.map((conjunct): AndClause => {
           switch (conjunct.type) {
-            case "Arithmetic":
+            case "AssignmentOnLeft":
+            case "AssignmentOnRight":
               return parserArithmeticToInternal(conjunct);
             case "Comparison":
               return parserComparisonToInternal(conjunct);
