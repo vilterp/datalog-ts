@@ -321,7 +321,6 @@ function doJoin(
   joinDesc: JoinDesc,
   otherNodeID: NodeID
 ): Res[] {
-  const results: Res[] = [];
   const thisVars = ins.res.bindings;
   const otherNode = graph.nodes.get(otherNodeID);
   if (otherNode.desc.type === "Builtin") {
@@ -340,6 +339,7 @@ function doJoin(
   //   otherEntries,
   //   cache: otherNode.cache.toJSON(),
   // });
+  const results: Res[] = [];
   for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch.bindings;
     const unifyRes = unifyBindings(thisVars || {}, otherVars || {});
