@@ -114,6 +114,13 @@ scope.Usage{definitionScopeID: 3, defnSpan: span{from: 142, to: 143}, kind: "var
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 142, to: 143}, kind: "var", name: "T", usageScopeID: 3, usageSpan: span{from: 130, to: 131}}
 
 dl
+currentAtSource{a: A, b: B, c: C} :-
+  A + B = C.
+tc.Problem{}?
+----
+application/datalog
+
+dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.l|||et{id: I, name: N, type: T, location: S} |
