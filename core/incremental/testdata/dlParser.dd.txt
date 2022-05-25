@@ -34,3 +34,23 @@ text/plain
 input.char: [input.char{char: "b", id: 0}; {}]
 1: [input.char{char: "b", id: 0}; {C: "b", P1: 0}]
 2: []
+
+input.next{left: -1, right: 0}.
+----
+text/plain
+input.next: [input.next{left: -1, right: 0}; {}]
+0: [input.next{left: -1, right: 0}; {P1: -1, P2: 0}]
+2: [{C: "START", P1: -1, P2: 0}]
+4: [base.lte{a: "a", b: "START"}; {C: "START"}]
+6: [base.lte{a: "START", b: "z"}; {C: "START"}]
+main: [main{span: span{from: P1, to: P2}}; {C: "START"}]
+
+input.next{left: 0, right: -2}.
+----
+text/plain
+input.next: [input.next{left: 0, right: -2}; {}]
+0: [input.next{left: 0, right: -2}; {P1: 0, P2: -2}]
+2: [{C: "b", P1: 0, P2: -2}]
+4: [base.lte{a: "a", b: "b"}; {C: "b"}]
+6: [base.lte{a: "b", b: "z"}; {C: "b"}]
+main: [main{span: span{from: P1, to: P2}}; {C: "b"}]
