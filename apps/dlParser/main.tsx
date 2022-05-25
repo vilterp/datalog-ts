@@ -7,12 +7,12 @@ import {
 import { Explorer } from "../../uiCommon/explorer";
 import { nullLoader } from "../../core/loaders";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { parseGrammar } from "../../languageWorkbench/parserlib/meta";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import useLocalStorage from "react-use-localstorage";
 // @ts-ignore
 import parseDL from "../../languageWorkbench/parserlib/datalog/parse.dl";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { parseMain } from "../../languageWorkbench/languages/grammar/parser";
+import { parserGrammarToInternal } from "../../languageWorkbench/parserlib/translateAST";
 
 const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
@@ -76,9 +76,12 @@ function constructInterp(grammarSource: string) {
     nullLoader
   ) as AbstractInterpreter;
   interp = interp.evalStr(parseDL)[1];
-  const grammarParsed = parseGrammar(grammarSource);
+  const grammarTree = parseMain(grammarSource);
+  const grammarParsed = parserGrammarToInternal(grammarTree);
   const rules = grammarToDL(grammarParsed);
-  interp = interp.evalStmts(rules.map((rule) => ({ type: "Rule", rule })))[1];
+  interp = interp.evalRawStmts(
+    rules.map((rule) => ({ type: "Rule", rule }))
+  )[1];
   return interp;
 }
 
