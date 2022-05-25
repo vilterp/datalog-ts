@@ -59,7 +59,11 @@ export function traceToTree(res: Res): Tree<Res> {
     case "NegationTrace":
       return leaf("negation", res);
     case "AggregationTrace":
-      return leaf("aggregation", res);
+      return node(
+        "aggregation",
+        res,
+        res.trace.aggregatedResults.map(traceToTree)
+      );
   }
 }
 
