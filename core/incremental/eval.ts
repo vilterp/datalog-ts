@@ -324,7 +324,12 @@ function doJoin(
   const thisVars = ins.res.bindings;
   const otherNode = graph.nodes.get(otherNodeID);
   if (otherNode.desc.type === "Builtin") {
-    return evalBuiltin(otherNode.desc.rec as Rec, ins.res.bindings);
+    const results = evalBuiltin(otherNode.desc.rec as Rec, ins.res.bindings);
+    return results.map((res) => ({
+      trace: res.trace,
+      term: res.term,
+      bindings: unifyBindings(res.bindings, ins.res.bindings),
+    }));
   }
   // TODO: avoid this allocation
   const indexName = getIndexName(joinDesc.joinVars);
