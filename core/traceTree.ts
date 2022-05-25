@@ -58,6 +58,12 @@ export function traceToTree(res: Res): Tree<Res> {
       return leaf(`literal: ${resStr}`, res);
     case "NegationTrace":
       return leaf("negation", res);
+    case "AggregationTrace":
+      return node(
+        "aggregation",
+        res,
+        res.trace.aggregatedResults.map(traceToTree)
+      );
   }
 }
 
