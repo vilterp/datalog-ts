@@ -4,20 +4,8 @@ import { VarC, HighlightProps } from "./term";
 import { traceToTree, getRelatedPaths } from "../../core/traceTree";
 import { intersperse, mapObjToListUnordered } from "../../util/util";
 import { TreeView, TreeCollapseState } from "../generic/treeView";
-import Graphviz from "graphviz-react";
-import { prettyPrintGraph } from "../../util/graphviz";
-import { traceToGraph } from "../../core/traceGraph";
 import { BareTerm } from "./replViews";
 import { pathToScopePath } from "../../core/termWithBindings";
-
-const MemoizedGraphviz = React.memo(Graphviz);
-
-const GRAPHVIZ_OPTIONS = { width: 1000, height: 500, fit: true, zoom: false };
-
-export function TraceGraphView(props: { result: Res }) {
-  const dot = prettyPrintGraph(traceToGraph(props.result));
-  return <MemoizedGraphviz dot={dot} options={GRAPHVIZ_OPTIONS} />;
-}
 
 export function TraceTreeView(props: {
   result: Res;
