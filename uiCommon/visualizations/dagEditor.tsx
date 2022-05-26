@@ -10,6 +10,8 @@ import ReactFlow, {
   NodeChange,
   Connection,
 } from "react-flow-renderer";
+import { Int, Rec, StringLit } from "../../core/types";
+import { fastPPT } from "../../core/fastPPT";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
@@ -18,42 +20,77 @@ export const dagEditor: VizTypeSpec = {
 };
 
 function DAGEditor(props: VizArgs) {
-  const [nodes, setNodes] = useState(INITIAL_NODES);
-  const [edges, setEdges] = useState(initialEdges);
+  // const [nodes, setNodes] = useState(INITIAL_NODES);
+  // const [edges, setEdges] = useState(initialEdges);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       console.log("nodes changes", changes);
-      setNodes((nds) => applyNodeChanges(changes, nds));
+      // setNodes((nds) => applyNodeChanges(changes, nds));
     },
-    [setNodes]
+    []
+    // [setNodes]
   );
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       console.log("edges changes", changes);
-      setEdges((eds) => applyEdgeChanges(changes, eds));
+      // setEdges((eds) => applyEdgeChanges(changes, eds));
     },
-    [setEdges]
+    []
+    // [setEdges]
   );
   const onConnect = useCallback(
     (connection: Connection) => {
       console.log("onConnect", connection);
-      setEdges((eds) => addEdge(connection, eds));
+      // setEdges((eds) => addEdge(connection, eds));
     },
-    [setEdges]
+    []
+    // [setEdges]
   );
 
-  return (
-    <div style={{ width: 500, height: 400 }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-      />
-    </div>
-  );
+  try {
+    const nodesQuery = props.spec.attrs.nodes as Rec;
+    const edgesQuery = props.spec.attrs.edges as Rec;
+
+    const rawNodes = props.interp.queryRec(nodesQuery);
+    const rawEdges = props.interp.queryRec(edgesQuery);
+
+    const nodes: Node[] = rawNodes.map((rawNode) => {
+      const rec = rawNode.term as Rec;
+      return {
+        id: fastPPT(rec.attrs.id),
+        data: { label: (rec.attrs.label as StringLit).val },
+        position: {
+          x: (rec.attrs.x as Int).val,
+          y: (rec.attrs.y as Int).val,
+        },
+      };
+    });
+    const edges: Edge[] = rawEdges.map((rawEdge) => {
+      const rec = rawEdge.term as Rec;
+      return {
+        id: fastPPT(rec.attrs.id),
+        source: fastPPT(rec.attrs.from),
+        target: fastPPT(rec.attrs.to),
+      };
+    });
+
+    console.log("DagEditor", { nodes, edges });
+
+    return (
+      <div style={{ width: 500, height: 400 }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+        />
+      </div>
+    );
+  } catch (e) {
+    return <pre style={{ color: "red" }}>Error: {e.toString()}</pre>;
+  }
 }
 
 const INITIAL_NODES: Node[] = [
