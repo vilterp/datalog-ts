@@ -12,7 +12,11 @@ function DAGEditor(props: VizArgs) {
   const [nodes, setNodes] = useState(INITIAL_NODES);
   const [edges, setEdges] = useState(initialEdges);
 
-  return <ReactFlow nodes={nodes} edges={edges} fitView />;
+  return (
+    <div style={{ width: 500, height: 400 }}>
+      <ReactFlow nodes={nodes} edges={edges} />
+    </div>
+  );
 }
 
 const INITIAL_NODES = [
