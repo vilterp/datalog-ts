@@ -1,0 +1,13 @@
+node{id: 1, x: 10, y: 20, label: "foo"}.
+node{id: 2, x: 10, y: 100, label: "bar"}.
+node{id: 3, x: 10, y: 200, label: "baz"}.
+edge{id: "1-2", from: 1, to: 2}.
+edge{id: "2-3", from: 2, to: 3}.
+
+internal.visualization{
+  name: "Editor",
+  spec: dagEditor{
+    nodes: node{},
+    edges: edge{},
+  },
+}.
