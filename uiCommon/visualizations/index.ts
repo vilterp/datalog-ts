@@ -4,6 +4,7 @@ import { graphviz } from "./graphviz";
 import { tree } from "./tree";
 import { vegalite } from "./vegalite";
 import { tableEditor } from "./tableEditor";
+import { dagEditor } from "./dagEditor";
 
 export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   sequence,
@@ -11,4 +12,5 @@ export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   tree,
   vegalite,
   tableEditor,
+  dagEditor,
 };
