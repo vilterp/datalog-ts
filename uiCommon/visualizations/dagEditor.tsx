@@ -6,6 +6,9 @@ import ReactFlow, {
   Node,
   Edge,
   addEdge,
+  EdgeChange,
+  NodeChange,
+  Connection,
 } from "react-flow-renderer";
 
 export const dagEditor: VizTypeSpec = {
@@ -19,15 +22,24 @@ function DAGEditor(props: VizArgs) {
   const [edges, setEdges] = useState(initialEdges);
 
   const onNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    (changes: NodeChange[]) => {
+      console.log("nodes changes", changes);
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
     [setNodes]
   );
   const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    (changes: EdgeChange[]) => {
+      console.log("edges changes", changes);
+      setEdges((eds) => applyEdgeChanges(changes, eds));
+    },
     [setEdges]
   );
   const onConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
+    (connection: Connection) => {
+      console.log("onConnect", connection);
+      setEdges((eds) => addEdge(connection, eds));
+    },
     [setEdges]
   );
 
