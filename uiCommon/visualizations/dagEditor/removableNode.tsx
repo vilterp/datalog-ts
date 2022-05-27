@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
 import { RemovableNodeData } from "./types";
 
