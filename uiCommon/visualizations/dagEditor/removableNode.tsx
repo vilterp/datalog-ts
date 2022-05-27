@@ -4,12 +4,21 @@ import { RemovableNodeData } from "./types";
 
 export function RemovableNode(props: NodeProps<RemovableNodeData>) {
   return (
-    <>
+    <div
+      style={{
+        fontSize: 12,
+        background: "#eee",
+        border: "1px solid #555",
+        borderRadius: 5,
+        textAlign: "center",
+        padding: 10,
+        width: 150,
+      }}
+    >
       <Handle
         type="target"
         // @ts-ignore
         position="top"
-        // style={{ background: "#555" }}
         onConnect={(params) => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
@@ -19,9 +28,8 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         // @ts-ignore
         position="bottom"
         id="b"
-        // style={{ bottom: 10, top: "auto", background: "#555" }}
         isConnectable={props.isConnectable}
       />
-    </>
+    </div>
   );
 }

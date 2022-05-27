@@ -24,7 +24,6 @@ import { statementsForNodeChange, withID } from "./util";
 import { RemovableEdge } from "./removableEdge";
 import { RemovableNode } from "./removableNode";
 import { RemovableEdgeData, RemovableNodeData } from "./types";
-import "./index.css";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
