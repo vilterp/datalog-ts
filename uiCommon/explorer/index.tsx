@@ -8,6 +8,7 @@ import { VizArea } from "./vizArea";
 import { ensurePresent } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
 import { RelationCollapseStates } from "./types";
+import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 
 export function Explorer(props: {
   interp: AbstractInterpreter;
@@ -36,6 +37,58 @@ export function Explorer(props: {
   };
 
   return (
+    <ReflexContainer>
+      <ReflexElement>
+        <RelationTree
+          interp={props.interp}
+          highlight={highlightProps}
+          openRelations={openRelations}
+          setOpenRelations={setOpenRelations}
+        />
+      </ReflexElement>
+      <ReflexSplitter />
+      <ReflexElement>
+        <OpenRelationsContainer
+          interp={props.interp}
+          highlight={highlightProps}
+          collapseStates={relationCollapseStates}
+          setCollapseStates={setRelationCollapseStates}
+          open={openRelations}
+          setOpen={setOpenRelations}
+        />
+      </ReflexElement>
+
+      {props.showViz ? (
+        <>
+          <ReflexSplitter />
+          <ReflexElement>
+            <VizArea
+              interp={props.interp}
+              highlightedTerm={
+                highlight.type === "Term" ? highlight.term : null
+              }
+              setHighlightedTerm={(term: Term | null) =>
+                term === null
+                  ? setHighlight({ type: "None" })
+                  : setHighlight({ type: "Term", term })
+              }
+              runStatements={
+                props.runStatements ||
+                ((stmts) => {
+                  console.warn(
+                    "no handler configured for statements; dropping",
+                    stmts
+                  );
+                })
+              }
+            />
+          </ReflexElement>
+        </>
+      ) : null}
+    </ReflexContainer>
+  );
+
+  return (
     <div style={{ display: "flex" }}>
       <div
         style={{
@@ -46,22 +99,10 @@ export function Explorer(props: {
           width: 275, // TODO: make the divider draggable
         }}
       >
-        <RelationTree
-          interp={props.interp}
-          highlight={highlightProps}
-          openRelations={openRelations}
-          setOpenRelations={setOpenRelations}
-        />
+        XXXX
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
-        <OpenRelationsContainer
-          interp={props.interp}
-          highlight={highlightProps}
-          collapseStates={relationCollapseStates}
-          setCollapseStates={setRelationCollapseStates}
-          open={openRelations}
-          setOpen={setOpenRelations}
-        />
+        XXXX
       </div>
       {props.showViz ? (
         <div style={{ padding: 10, border: "1px solid black" }}>
