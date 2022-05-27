@@ -7,6 +7,7 @@ import ReactFlow, {
   NodeChange,
   Connection,
   EdgeProps,
+  NodeProps,
 } from "react-flow-renderer";
 import {
   int,
@@ -21,6 +22,9 @@ import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
 import { statementsForNodeChange, withID } from "./util";
 import { RemovableEdge } from "./removableEdge";
+import { RemovableNode } from "./removableNode";
+import { RemovableEdgeData, RemovableNodeData } from "./types";
+import "./index.css";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
@@ -100,7 +104,14 @@ function DAGEditor(props: VizArgs) {
   const nodes: Node[] = nodeRecords.map((rec) => {
     return {
       id: fastPPT(rec.attrs.id),
-      data: { label: (rec.attrs.label as StringLit).val },
+      type: "removableNode",
+      data: {
+        label: (rec.attrs.label as StringLit).val,
+        onClick: () => {
+          // TODO: also remove edges
+          props.runStatements([{ type: "Delete", record: rec }]);
+        },
+      },
       position: {
         x: (rec.attrs.x as Int).val,
         y: (rec.attrs.y as Int).val,
@@ -125,12 +136,13 @@ function DAGEditor(props: VizArgs) {
     <>
       <div style={{ width: 500, height: 300 }}>
         <ReactFlow
+          edgeTypes={EDGE_TYPES}
+          nodeTypes={NODE_TYPES}
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          edgeTypes={EDGE_TYPES}
         />
       </div>
       <button onClick={onAddNode}>Add Node</button>
@@ -138,6 +150,14 @@ function DAGEditor(props: VizArgs) {
   );
 }
 
-const EDGE_TYPES: { [name: string]: ComponentType<EdgeProps> } = {
+const EDGE_TYPES: {
+  [name: string]: ComponentType<EdgeProps<RemovableEdgeData>>;
+} = {
   removableEdge: RemovableEdge,
+};
+
+const NODE_TYPES: {
+  [name: string]: ComponentType<NodeProps<RemovableNodeData>>;
+} = {
+  removableNode: RemovableNode,
 };
