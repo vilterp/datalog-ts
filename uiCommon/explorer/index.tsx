@@ -50,9 +50,9 @@ export function Explorer(props: {
         </div>
       </ReflexElement>
 
-      <ReflexSplitter />
+      <ReflexSplitter propagate />
 
-      <ReflexElement className="middle-pane">
+      <ReflexElement className="middle-pane" minSize={200} maxSize={800}>
         <div className="pane-content">
           <OpenRelationsContainer
             interp={props.interp}
@@ -65,7 +65,7 @@ export function Explorer(props: {
         </div>
       </ReflexElement>
 
-      <ReflexSplitter />
+      <ReflexSplitter propagate />
 
       <ReflexElement className="right-pane">
         <div className="pane-content">
