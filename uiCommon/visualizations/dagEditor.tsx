@@ -20,7 +20,7 @@ import {
   StringLit,
 } from "../../core/types";
 import { fastPPT } from "../../core/fastPPT";
-import { flatMap } from "../../util/util";
+import { flatMap, max } from "../../util/util";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
@@ -81,6 +81,21 @@ function DAGEditor(props: VizArgs) {
     },
     [props.spec, props.runStatements]
   );
+  const onAddNode = () => {
+    const template = props.spec.attrs.newNode as Rec;
+    const recWithPos = rec(template.relation, {
+      x: int(50),
+      y: int(50),
+      label: str("new node"), // TODO: parameterize somehow
+    });
+    const newRec = withID(nodeRecords, recWithPos);
+    props.runStatements([
+      {
+        type: "Fact",
+        record: newRec,
+      },
+    ]);
+  };
 
   const nodes: Node[] = nodeRecords.map((rec) => {
     return {
@@ -101,15 +116,18 @@ function DAGEditor(props: VizArgs) {
   });
 
   return (
-    <div style={{ width: 500, height: 400 }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-      />
-    </div>
+    <>
+      <div style={{ width: 500, height: 300 }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+        />
+      </div>
+      <button onClick={onAddNode}>Add Node</button>
+    </>
   );
 }
 
@@ -141,4 +159,22 @@ function statementsForNodeChange(
     { type: "Delete", record: rec },
     { type: "Fact", record: updatedRec },
   ];
+}
+
+function withID(existingRecs: Rec[], rec: Rec): Rec {
+  const existingIDs = existingRecs.map((existing) => {
+    const idAttr = existing.attrs.id;
+    if (idAttr && idAttr.type === "IntLit") {
+      return idAttr.val;
+    }
+    return 0;
+  });
+  const maxID = max(existingIDs);
+  return {
+    ...rec,
+    attrs: {
+      ...rec.attrs,
+      id: int(maxID + 1),
+    },
+  };
 }
