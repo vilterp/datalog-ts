@@ -9,6 +9,7 @@ import { ensurePresent } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
 import { RelationCollapseStates } from "./types";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
+import "react-reflex/styles.css";
 
 export function Explorer(props: {
   interp: AbstractInterpreter;
@@ -37,54 +38,57 @@ export function Explorer(props: {
   };
 
   return (
-    <ReflexContainer>
-      <ReflexElement>
-        <RelationTree
-          interp={props.interp}
-          highlight={highlightProps}
-          openRelations={openRelations}
-          setOpenRelations={setOpenRelations}
-        />
-      </ReflexElement>
-      <ReflexSplitter />
-      <ReflexElement>
-        <OpenRelationsContainer
-          interp={props.interp}
-          highlight={highlightProps}
-          collapseStates={relationCollapseStates}
-          setCollapseStates={setRelationCollapseStates}
-          open={openRelations}
-          setOpen={setOpenRelations}
-        />
+    <ReflexContainer orientation="vertical">
+      <ReflexElement className="left-pane">
+        <div className="pane-content">
+          <RelationTree
+            interp={props.interp}
+            highlight={highlightProps}
+            openRelations={openRelations}
+            setOpenRelations={setOpenRelations}
+          />
+        </div>
       </ReflexElement>
 
-      {props.showViz ? (
-        <>
-          <ReflexSplitter />
-          <ReflexElement>
-            <VizArea
-              interp={props.interp}
-              highlightedTerm={
-                highlight.type === "Term" ? highlight.term : null
-              }
-              setHighlightedTerm={(term: Term | null) =>
-                term === null
-                  ? setHighlight({ type: "None" })
-                  : setHighlight({ type: "Term", term })
-              }
-              runStatements={
-                props.runStatements ||
-                ((stmts) => {
-                  console.warn(
-                    "no handler configured for statements; dropping",
-                    stmts
-                  );
-                })
-              }
-            />
-          </ReflexElement>
-        </>
-      ) : null}
+      <ReflexSplitter />
+
+      <ReflexElement className="middle-pane">
+        <div className="pane-content">
+          <OpenRelationsContainer
+            interp={props.interp}
+            highlight={highlightProps}
+            collapseStates={relationCollapseStates}
+            setCollapseStates={setRelationCollapseStates}
+            open={openRelations}
+            setOpen={setOpenRelations}
+          />
+        </div>
+      </ReflexElement>
+
+      <ReflexSplitter />
+
+      <ReflexElement className="right-pane">
+        <div className="pane-content">
+          <VizArea
+            interp={props.interp}
+            highlightedTerm={highlight.type === "Term" ? highlight.term : null}
+            setHighlightedTerm={(term: Term | null) =>
+              term === null
+                ? setHighlight({ type: "None" })
+                : setHighlight({ type: "Term", term })
+            }
+            runStatements={
+              props.runStatements ||
+              ((stmts) => {
+                console.warn(
+                  "no handler configured for statements; dropping",
+                  stmts
+                );
+              })
+            }
+          />
+        </div>
+      </ReflexElement>
     </ReflexContainer>
   );
 }
