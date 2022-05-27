@@ -139,3 +139,19 @@ internal.visualization{
     ]
   }
 }.
+
+testNode{id: 1, x: 10, y: 20, label: "foo"}.
+testNode{id: 2, x: 10, y: 100, label: "bar"}.
+testNode{id: 3, x: 10, y: 200, label: "baz"}.
+testEdge{id: "1-2", from: 1, to: 2}.
+testEdge{id: "2-3", from: 2, to: 3}.
+
+internal.visualization{
+  name: "Editor",
+  spec: dagEditor{
+    nodes: testNode{},
+    edges: testEdge{},
+    newEdge: testEdge{},
+    newNode: testNode{},
+  },
+}.

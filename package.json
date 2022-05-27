@@ -53,11 +53,11 @@
     "esbuild": "^0.14.38",
     "http-server": "^0.12.3",
     "prettier": "^2.0.4",
+    "tmp": "^0.2.1",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.2",
     "v8-profiler-node8": "^6.3.0",
-    "vsce": "^2.7.0",
-    "tmp": "^0.2.1"
+    "vsce": "^2.7.0"
   },
   "dependencies": {
     "@hookeasy/use-title": "^1.0.2",
@@ -65,7 +65,6 @@
     "@react-hook/window-size": "^3.0.7",
     "classnames": "^2.3.1",
     "denque": "^2.0.1",
-    "graphviz-react": "^1.2.0",
     "immutable": "^4.0.0-rc.12",
     "monaco-editor": "^0.33.0",
     "path-browserify": "^1.0.1",
@@ -73,6 +72,7 @@
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.2",
+    "react-flow-renderer": "^10.3.2",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^5.2.0",
     "react-textarea-autosize": "^8.3.2",

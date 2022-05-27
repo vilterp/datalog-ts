@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import { Bool, Rec, Res, StringLit, Term } from "../../core/types";
+import { Bool, Rec, Res, StringLit } from "../../core/types";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import {
   emptyCollapseState,
   TreeCollapseState,
@@ -10,7 +9,6 @@ import {
 import { BareTerm } from "../dl/replViews";
 import { treeFromRecords } from "../generic/treeFromRecords";
 import { useJSONLocalStorage } from "../generic/hooks";
-import { HighlightProps, noHighlightProps } from "../dl/term";
 import * as styles from "../explorer/styles";
 import { termEq } from "../../core/unify";
 
