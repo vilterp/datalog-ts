@@ -8,17 +8,16 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
       <Handle
         type="target"
         position="top"
-        style={{ background: "#555" }}
+        // style={{ background: "#555" }}
         onConnect={(params) => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
-      {props.data.label}
-      <button onClick={() => props.data.onClick()}>×</button>
+      {props.data.label} <button onClick={() => props.data.onClick()}>×</button>
       <Handle
         type="source"
         position="bottom"
         id="b"
-        style={{ bottom: 10, top: "auto", background: "#555" }}
+        // style={{ bottom: 10, top: "auto", background: "#555" }}
         isConnectable={props.isConnectable}
       />
     </>
