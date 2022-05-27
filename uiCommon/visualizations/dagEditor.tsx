@@ -39,32 +39,9 @@ function DAGEditor(props: VizArgs) {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      const statements: Statement[] = flatMap(changes, (change) => {
-        if (change.type !== "position") {
-          console.warn("change type not supported:", change);
-          return [];
-        }
-        if (!change.position) {
-          return [];
-        }
-        const rec = nodeRecords.find(
-          (rec) => change.id === fastPPT(rec.attrs.id)
-        );
-        if (!rec) {
-          throw new Error(`node not found for change ${change.id}`);
-        }
-        const updatedRec: Rec = {
-          ...rec,
-          attrs: {
-            x: int(change.position.x),
-            y: int(change.position.y),
-          },
-        };
-        return [
-          { type: "Delete", record: rec },
-          { type: "Fact", record: updatedRec },
-        ];
-      });
+      const statements: Statement[] = flatMap(changes, (change) =>
+        statementsForNodeChange(nodeRecords, change)
+      );
       console.log("nodes changes", changes);
       // setNodes((nds) => applyNodeChanges(changes, nds));
       props.runStatements(statements);
@@ -85,6 +62,8 @@ function DAGEditor(props: VizArgs) {
     },
     [props.runStatements]
   );
+
+  console.log("DagEditor", { nodeRecords, edgeRecords });
 
   const nodes: Node[] = nodeRecords.map((rec) => {
     return {
@@ -117,29 +96,32 @@ function DAGEditor(props: VizArgs) {
   );
 }
 
-const INITIAL_NODES: Node[] = [
-  {
-    id: "1",
-    type: "input",
-    data: { label: "Input Node" },
-    position: { x: 250, y: 25 },
-  },
-
-  {
-    id: "2",
-    // you can also pass a React component as a label
-    data: { label: <div>Default Node</div> },
-    position: { x: 100, y: 125 },
-  },
-  {
-    id: "3",
-    type: "output",
-    data: { label: "Output Node" },
-    position: { x: 250, y: 250 },
-  },
-];
-
-const initialEdges: Edge[] = [
-  { id: "e1-2", source: "1", target: "2" },
-  { id: "e2-3", source: "2", target: "3", animated: true },
-];
+function statementsForNodeChange(
+  nodeRecords: Rec[],
+  change: NodeChange
+): Statement[] {
+  if (change.type !== "position") {
+    console.warn("change type not supported:", change);
+    return [];
+  }
+  if (!change.position) {
+    return [];
+  }
+  const rec = nodeRecords.find((rec) => change.id === fastPPT(rec.attrs.id));
+  if (!rec) {
+    throw new Error(`node not found for change ${change.id}`);
+  }
+  // TODO: helper function for record updates?
+  const updatedRec: Rec = {
+    ...rec,
+    attrs: {
+      ...rec.attrs,
+      x: int(change.position.x),
+      y: int(change.position.y),
+    },
+  };
+  return [
+    { type: "Delete", record: rec },
+    { type: "Fact", record: updatedRec },
+  ];
+}
