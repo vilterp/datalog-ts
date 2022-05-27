@@ -1,14 +1,12 @@
-import React, { useCallback, useState } from "react";
-import { VizArgs, VizTypeSpec } from "./typeSpec";
+import React, { ComponentType, useCallback } from "react";
+import { VizArgs, VizTypeSpec } from "../typeSpec";
 import ReactFlow, {
-  applyEdgeChanges,
-  applyNodeChanges,
   Node,
   Edge,
-  addEdge,
   EdgeChange,
   NodeChange,
   Connection,
+  EdgeProps,
 } from "react-flow-renderer";
 import {
   int,
@@ -18,9 +16,11 @@ import {
   Statement,
   str,
   StringLit,
-} from "../../core/types";
-import { fastPPT } from "../../core/fastPPT";
-import { flatMap, max } from "../../util/util";
+} from "../../../core/types";
+import { fastPPT } from "../../../core/fastPPT";
+import { flatMap } from "../../../util/util";
+import { statementsForNodeChange, withID } from "./util";
+import { RemovableEdge } from "./removableEdge";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
@@ -112,6 +112,12 @@ function DAGEditor(props: VizArgs) {
       id: fastPPT(rec.attrs.id),
       source: fastPPT(rec.attrs.from),
       target: fastPPT(rec.attrs.to),
+      type: "removableEdge",
+      data: {
+        onClick: () => {
+          props.runStatements([{ type: "Delete", record: rec }]);
+        },
+      },
     };
   });
 
@@ -124,6 +130,7 @@ function DAGEditor(props: VizArgs) {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          edgeTypes={EDGE_TYPES}
         />
       </div>
       <button onClick={onAddNode}>Add Node</button>
@@ -131,50 +138,6 @@ function DAGEditor(props: VizArgs) {
   );
 }
 
-function statementsForNodeChange(
-  nodeRecords: Rec[],
-  change: NodeChange
-): Statement[] {
-  if (change.type !== "position") {
-    console.warn("change type not supported:", change);
-    return [];
-  }
-  if (!change.position) {
-    return [];
-  }
-  const rec = nodeRecords.find((rec) => change.id === fastPPT(rec.attrs.id));
-  if (!rec) {
-    throw new Error(`node not found for change ${change.id}`);
-  }
-  // TODO: helper function for record updates?
-  const updatedRec: Rec = {
-    ...rec,
-    attrs: {
-      ...rec.attrs,
-      x: int(change.position.x),
-      y: int(change.position.y),
-    },
-  };
-  return [
-    { type: "Delete", record: rec },
-    { type: "Fact", record: updatedRec },
-  ];
-}
-
-function withID(existingRecs: Rec[], rec: Rec): Rec {
-  const existingIDs = existingRecs.map((existing) => {
-    const idAttr = existing.attrs.id;
-    if (idAttr && idAttr.type === "IntLit") {
-      return idAttr.val;
-    }
-    return 0;
-  });
-  const maxID = max(existingIDs);
-  return {
-    ...rec,
-    attrs: {
-      ...rec.attrs,
-      id: int(maxID + 1),
-    },
-  };
-}
+const EDGE_TYPES: { [name: string]: ComponentType<EdgeProps> } = {
+  removableEdge: RemovableEdge,
+};
