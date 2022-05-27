@@ -10,7 +10,15 @@ import ReactFlow, {
   NodeChange,
   Connection,
 } from "react-flow-renderer";
-import { int, Int, Rec, Statement, StringLit } from "../../core/types";
+import {
+  int,
+  Int,
+  rec,
+  Rec,
+  Statement,
+  str,
+  StringLit,
+} from "../../core/types";
 import { fastPPT } from "../../core/fastPPT";
 import { flatMap } from "../../util/util";
 
@@ -53,17 +61,26 @@ function DAGEditor(props: VizArgs) {
       console.log("edges changes", changes);
       // setEdges((eds) => applyEdgeChanges(changes, eds));
     },
-    [props.runStatements]
+    [edgeRecords, props.runStatements]
   );
   const onConnect = useCallback(
     (connection: Connection) => {
       console.log("onConnect", connection);
+      const edgeRelation = (props.spec.attrs.newEdge as Rec).relation;
       // setEdges((eds) => addEdge(connection, eds));
+      props.runStatements([
+        {
+          type: "Fact",
+          record: rec(edgeRelation, {
+            id: str(`${connection.source}-${connection.target}`),
+            from: str(connection.source),
+            to: str(connection.target),
+          }),
+        },
+      ]);
     },
-    [props.runStatements]
+    [props.spec, props.runStatements]
   );
-
-  console.log("DagEditor", { nodeRecords, edgeRecords });
 
   const nodes: Node[] = nodeRecords.map((rec) => {
     return {
