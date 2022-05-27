@@ -87,45 +87,4 @@ export function Explorer(props: {
       ) : null}
     </ReflexContainer>
   );
-
-  return (
-    <div style={{ display: "flex" }}>
-      <div
-        style={{
-          border: "1px solid black",
-          overflow: "scroll",
-          paddingTop: 10,
-          paddingBottom: 10,
-          width: 275, // TODO: make the divider draggable
-        }}
-      >
-        XXXX
-      </div>
-      <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
-        XXXX
-      </div>
-      {props.showViz ? (
-        <div style={{ padding: 10, border: "1px solid black" }}>
-          <VizArea
-            interp={props.interp}
-            highlightedTerm={highlight.type === "Term" ? highlight.term : null}
-            setHighlightedTerm={(term: Term | null) =>
-              term === null
-                ? setHighlight({ type: "None" })
-                : setHighlight({ type: "Term", term })
-            }
-            runStatements={
-              props.runStatements ||
-              ((stmts) => {
-                console.warn(
-                  "no handler configured for statements; dropping",
-                  stmts
-                );
-              })
-            }
-          />
-        </div>
-      ) : null}
-    </div>
-  );
 }
