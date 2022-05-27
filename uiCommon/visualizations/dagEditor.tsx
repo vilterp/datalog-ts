@@ -73,8 +73,8 @@ function DAGEditor(props: VizArgs) {
           type: "Fact",
           record: rec(edgeRelation, {
             id: str(`${connection.source}-${connection.target}`),
-            from: str(connection.source),
-            to: str(connection.target),
+            from: int(parseInt(connection.source)),
+            to: int(parseInt(connection.target)),
           }),
         },
       ]);
