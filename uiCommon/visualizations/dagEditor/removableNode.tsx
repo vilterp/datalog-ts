@@ -7,6 +7,7 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
     <>
       <Handle
         type="target"
+        // @ts-ignore
         position="top"
         // style={{ background: "#555" }}
         onConnect={(params) => console.log("handle onConnect", params)}
@@ -15,6 +16,7 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
       {props.data.label} <button onClick={() => props.data.onClick()}>×</button>
       <Handle
         type="source"
+        // @ts-ignore
         position="bottom"
         id="b"
         // style={{ bottom: 10, top: "auto", background: "#555" }}
