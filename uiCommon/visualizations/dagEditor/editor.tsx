@@ -55,7 +55,7 @@ function DAGEditor(props: VizArgs) {
         id: fastPPT(rec.attrs.id),
         type: "removableNode",
         data: {
-          label: (rec.attrs.label as StringLit).val,
+          label: fastPPT(rec.attrs.label),
           onClick: () => {
             // TODO: also remove edges
             props.runStatements([{ type: "Delete", record: rec }]);
@@ -81,6 +81,8 @@ function DAGEditor(props: VizArgs) {
         },
       };
     });
+
+    console.log("DAGEditor", { nodes, edges });
 
     newNodeTemplates = (props.spec.attrs.newNodes as Array).items;
   } catch (e) {
