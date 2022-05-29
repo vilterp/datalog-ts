@@ -6,27 +6,27 @@
 .table connection
 .table internal.visualization
 
-source{id: 1, supply: 10}.
-source{id: 4, supply: 15}.
-battery{id: 2, capacity: 100, initialLevel: 50}.
-sink{id: 3, demand: 15}.
+source{id: 1, supply: 10, x: 10, y: 20}.
+source{id: 4, supply: 15, x: 100, y: 20}.
+battery{id: 2, capacity: 100, initialLevel: 50, x: 60, y: 120}.
+sink{id: 3, demand: 15, x: 60, y: 300}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
 
 # === rules ===
 
-node{id: I, label: L} :-
-  nodeSource{id: I, label: L} |
-  nodeSink{id: I, label: L} |
-  nodeBattery{id: I, label: L}.
+node{id: I, label: L, x: X, y: Y} :-
+  nodeSource{id: I, label: L, x: X, y: Y} |
+  nodeSink{id: I, label: L, x: X, y: Y} |
+  nodeBattery{id: I, label: L, x: X, y: Y}.
 
-nodeSource{id: I, label: source{id: I, supply: S}} :-
-  source{id: I, supply: S}.
-nodeSink{id: I, label: sink{id: I, demand: S}} :-
-  sink{id: I, demand: S}.
-nodeBattery{id: I, label: battery{id: I, capacity: S, initialLevel: IL}} :-
-  battery{id: I, capacity: S, initialLevel: IL}.
+nodeSource{id: I, label: source{id: I, supply: S}, x: X, y: Y} :-
+  source{id: I, supply: S, x: X, y: Y}.
+nodeSink{id: I, label: sink{id: I, demand: S}, x: X, y: Y} :-
+  sink{id: I, demand: S, x: X, y: Y}.
+nodeBattery{id: I, label: battery{id: I, capacity: S, initialLevel: IL}, x: X, y: Y} :-
+  battery{id: I, capacity: S, initialLevel: IL, x: X, y: Y}.
 
 current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
@@ -113,14 +113,6 @@ internal.visualization{
   }
 }.
 
-internal.visualization{
-  name: "Layout",
-  spec: graphviz{
-    nodes: node{id: ID, label: Label},
-    edges: connection{from: From, to: To}
-  }
-}.
-
 tableRow{label: L} :-
   node{label: L} |
   connRow{label: L}.
@@ -149,8 +141,8 @@ testEdge{id: "2-3", from: 2, to: 3}.
 internal.visualization{
   name: "Editor",
   spec: dagEditor{
-    nodes: testNode{},
-    edges: testEdge{},
+    nodes: node{},
+    edges: connection{},
     newEdge: testEdge{},
     newNode: testNode{},
   },
