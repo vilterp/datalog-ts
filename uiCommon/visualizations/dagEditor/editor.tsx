@@ -57,9 +57,24 @@ function DAGEditor(props: VizArgs) {
         data: {
           label: fastPPT(rec.attrs.label),
           onClick: () => {
-            // TODO: also remove edges
+            const edges: Res[] = [
+              ...props.interp.queryRec({
+                ...edgesQuery,
+                attrs: { ...edgesQuery.attrs, from: rec.attrs.id },
+              }),
+              ...props.interp.queryRec({
+                ...edgesQuery,
+                attrs: { ...edgesQuery.attrs, to: rec.attrs.id },
+              }),
+            ];
             props.runStatements([
               { type: "Delete", record: getBaseRecord(res) },
+              ...edges.map(
+                (edgeRes): Statement => ({
+                  type: "Delete",
+                  record: getBaseRecord(edgeRes),
+                })
+              ),
             ]);
           },
         },
