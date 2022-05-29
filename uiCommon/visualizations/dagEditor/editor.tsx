@@ -18,6 +18,8 @@ import {
   Statement,
   str,
   StringLit,
+  Array,
+  Term,
 } from "../../../core/types";
 import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
@@ -37,6 +39,7 @@ function DAGEditor(props: VizArgs) {
   let edgeResults: Res[] = [];
   let nodes: Node[] = [];
   let edges: Edge[] = [];
+  let newNodeTemplates: Term[] = [];
   let error: string | null = null;
 
   try {
@@ -78,6 +81,8 @@ function DAGEditor(props: VizArgs) {
         },
       };
     });
+
+    newNodeTemplates = (props.spec.attrs.newNodes as Array).items;
   } catch (e) {
     error = e.toString();
     console.error(e);
@@ -116,12 +121,10 @@ function DAGEditor(props: VizArgs) {
     },
     [props.spec, props.runStatements]
   );
-  const onAddNode = () => {
-    const template = props.spec.attrs.newNode as Rec;
+  const onAddNode = (template: Rec) => {
     const recWithPos = rec(template.relation, {
       x: int(50),
       y: int(50),
-      label: str("new node"), // TODO: parameterize somehow
     });
     const newRec = withID(
       nodeResults.map((res) => res.term as Rec),
@@ -150,7 +153,11 @@ function DAGEditor(props: VizArgs) {
           onConnect={onConnect}
         />
       </div>
-      <button onClick={onAddNode}>Add Node</button>
+      {newNodeTemplates.map((template) => (
+        <button onClick={() => onAddNode(template as Rec)}>
+          +{fastPPT(template)}
+        </button>
+      ))}
     </>
   );
 }
