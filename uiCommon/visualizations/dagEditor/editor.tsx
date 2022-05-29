@@ -36,6 +36,8 @@ function DAGEditor(props: VizArgs) {
   // const [edges, setEdges] = useState(initialEdges);
   let nodeRecords: Rec[] = [];
   let edgeRecords: Rec[] = [];
+  let nodes: Node[] = [];
+  let edges: Edge[] = [];
   let error: string | null = null;
 
   try {
@@ -44,8 +46,40 @@ function DAGEditor(props: VizArgs) {
 
     nodeRecords = props.interp.queryRec(nodesQuery).map((r) => r.term as Rec);
     edgeRecords = props.interp.queryRec(edgesQuery).map((r) => r.term as Rec);
+
+    nodes = nodeRecords.map((rec) => {
+      return {
+        id: fastPPT(rec.attrs.id),
+        type: "removableNode",
+        data: {
+          label: (rec.attrs.label as StringLit).val,
+          onClick: () => {
+            // TODO: also remove edges
+            props.runStatements([{ type: "Delete", record: rec }]);
+          },
+        },
+        position: {
+          x: (rec.attrs.x as Int).val,
+          y: (rec.attrs.y as Int).val,
+        },
+      };
+    });
+    edges = edgeRecords.map((rec) => {
+      return {
+        id: fastPPT(rec.attrs.id),
+        source: fastPPT(rec.attrs.from),
+        target: fastPPT(rec.attrs.to),
+        type: "removableEdge",
+        data: {
+          onClick: () => {
+            props.runStatements([{ type: "Delete", record: rec }]);
+          },
+        },
+      };
+    });
   } catch (e) {
     error = e.toString();
+    console.error(e);
   }
 
   const onNodesChange = useCallback(
@@ -100,38 +134,9 @@ function DAGEditor(props: VizArgs) {
     ]);
   };
 
-  const nodes: Node[] = nodeRecords.map((rec) => {
-    return {
-      id: fastPPT(rec.attrs.id),
-      type: "removableNode",
-      data: {
-        label: (rec.attrs.label as StringLit).val,
-        onClick: () => {
-          // TODO: also remove edges
-          props.runStatements([{ type: "Delete", record: rec }]);
-        },
-      },
-      position: {
-        x: (rec.attrs.x as Int).val,
-        y: (rec.attrs.y as Int).val,
-      },
-    };
-  });
-  const edges: Edge[] = edgeRecords.map((rec) => {
-    return {
-      id: fastPPT(rec.attrs.id),
-      source: fastPPT(rec.attrs.from),
-      target: fastPPT(rec.attrs.to),
-      type: "removableEdge",
-      data: {
-        onClick: () => {
-          props.runStatements([{ type: "Delete", record: rec }]);
-        },
-      },
-    };
-  });
-
-  return (
+  return error !== null ? (
+    <pre style={{ color: "red" }}>{error}</pre>
+  ) : (
     <>
       <div style={{ width: 500, height: 300 }}>
         <ReactFlow
