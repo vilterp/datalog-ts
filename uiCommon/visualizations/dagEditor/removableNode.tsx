@@ -1,6 +1,5 @@
 import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
-import { fastPPT } from "../../../core/fastPPT";
 import { Rec } from "../../../core/types";
 import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
@@ -10,6 +9,7 @@ import { getSpecForAttr } from "./util";
 
 export function RemovableNode(props: NodeProps<RemovableNodeData>) {
   const rec = props.data.res.term as Rec;
+  const label = rec.attrs.label as Rec;
 
   return (
     <div
@@ -18,7 +18,6 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         background: "#eee",
         border: "1px solid #555",
         borderRadius: 5,
-        textAlign: "center",
         padding: 10,
         width: 150,
       }}
@@ -30,10 +29,9 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         onConnect={(params) => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
-      {fastPPT(rec.attrs.label)}{" "}
       <button onClick={() => props.data.onClick()}>×</button>
       <ul>
-        {mapObjToList(rec.attrs, (attr, val) => {
+        {mapObjToList(label.attrs, (attr, val) => {
           const attrEditorSpec = getSpecForAttr(
             props.data.editors,
             rec.relation,
