@@ -40,7 +40,7 @@ export function Explorer(props: {
   return (
     <div style={{ height: 1000 }}>
       <ReflexContainer orientation="vertical">
-        <ReflexElement className="left-pane">
+        <ReflexElement className="left-pane" flex={0.15}>
           <div className="pane-content">
             <RelationTree
               interp={props.interp}
