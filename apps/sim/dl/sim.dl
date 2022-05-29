@@ -113,6 +113,28 @@ internal.visualization{
   }
 }.
 
+# TODO: move these editor declarations into some standard lib?
+internal.attrEditor{
+  relation: "source",
+  attr: "supply",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "sink",
+  attr: "demand",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "capacity",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "initialLevel",
+  editor: slider{min: 0, max: 100},
+}.
+
 internal.visualization{
   name: "Editor",
   spec: dagEditor{
