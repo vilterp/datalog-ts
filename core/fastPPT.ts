@@ -11,7 +11,7 @@ export function fastPPB(bindings: Bindings) {
 export function fastPPT(term: Term): string {
   switch (term.type) {
     case "Array":
-      return `[${term.items.map(fastPPT).join(",")}]`;
+      return `[${term.items.map(fastPPT).join(", ")}]`;
     case "Bool":
       return term.val.toString();
     case "StringLit":
@@ -23,7 +23,7 @@ export function fastPPT(term: Term): string {
     case "Record":
       return `${term.relation}{${mapObjToListUnordered(
         term.attrs,
-        (k, v) => `${k}:${fastPPT(v)}`
-      )}}`;
+        (k, v) => `${k}: ${fastPPT(v)}`
+      ).join(", ")}}`;
   }
 }
