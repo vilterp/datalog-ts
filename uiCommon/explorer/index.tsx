@@ -38,57 +38,61 @@ export function Explorer(props: {
   };
 
   return (
-    <ReflexContainer orientation="vertical">
-      <ReflexElement className="left-pane">
-        <div className="pane-content">
-          <RelationTree
-            interp={props.interp}
-            highlight={highlightProps}
-            openRelations={openRelations}
-            setOpenRelations={setOpenRelations}
-          />
-        </div>
-      </ReflexElement>
+    <div style={{ height: 1000 }}>
+      <ReflexContainer orientation="vertical">
+        <ReflexElement className="left-pane">
+          <div className="pane-content">
+            <RelationTree
+              interp={props.interp}
+              highlight={highlightProps}
+              openRelations={openRelations}
+              setOpenRelations={setOpenRelations}
+            />
+          </div>
+        </ReflexElement>
 
-      <ReflexSplitter propagate />
+        <ReflexSplitter propagate />
 
-      <ReflexElement className="middle-pane" minSize={200} maxSize={800}>
-        <div className="pane-content">
-          <OpenRelationsContainer
-            interp={props.interp}
-            highlight={highlightProps}
-            collapseStates={relationCollapseStates}
-            setCollapseStates={setRelationCollapseStates}
-            open={openRelations}
-            setOpen={setOpenRelations}
-          />
-        </div>
-      </ReflexElement>
+        <ReflexElement className="middle-pane" minSize={200} maxSize={800}>
+          <div className="pane-content">
+            <OpenRelationsContainer
+              interp={props.interp}
+              highlight={highlightProps}
+              collapseStates={relationCollapseStates}
+              setCollapseStates={setRelationCollapseStates}
+              open={openRelations}
+              setOpen={setOpenRelations}
+            />
+          </div>
+        </ReflexElement>
 
-      <ReflexSplitter propagate />
+        <ReflexSplitter propagate />
 
-      <ReflexElement className="right-pane">
-        <div className="pane-content">
-          <VizArea
-            interp={props.interp}
-            highlightedTerm={highlight.type === "Term" ? highlight.term : null}
-            setHighlightedTerm={(term: Term | null) =>
-              term === null
-                ? setHighlight({ type: "None" })
-                : setHighlight({ type: "Term", term })
-            }
-            runStatements={
-              props.runStatements ||
-              ((stmts) => {
-                console.warn(
-                  "no handler configured for statements; dropping",
-                  stmts
-                );
-              })
-            }
-          />
-        </div>
-      </ReflexElement>
-    </ReflexContainer>
+        <ReflexElement className="right-pane">
+          <div className="pane-content">
+            <VizArea
+              interp={props.interp}
+              highlightedTerm={
+                highlight.type === "Term" ? highlight.term : null
+              }
+              setHighlightedTerm={(term: Term | null) =>
+                term === null
+                  ? setHighlight({ type: "None" })
+                  : setHighlight({ type: "Term", term })
+              }
+              runStatements={
+                props.runStatements ||
+                ((stmts) => {
+                  console.warn(
+                    "no handler configured for statements; dropping",
+                    stmts
+                  );
+                })
+              }
+            />
+          </div>
+        </ReflexElement>
+      </ReflexContainer>
+    </div>
   );
 }
