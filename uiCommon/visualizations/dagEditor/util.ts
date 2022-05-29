@@ -55,7 +55,7 @@ export function withID(existingRecs: Rec[], rec: Rec): Rec {
 }
 
 // TODO: extract this to a more generic place
-function getBaseRecord(res: Res): Rec {
+export function getBaseRecord(res: Res): Rec {
   switch (res.trace.type) {
     case "AndTrace": {
       const length = res.trace.sources.length;
