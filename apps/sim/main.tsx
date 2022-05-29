@@ -18,7 +18,6 @@ function Main() {
       <Explorer
         interp={interp}
         runStatements={(stmts) => {
-          console.log("Main", "running statements", stmts);
           setInterp(interp.evalRawStmts(stmts)[1]);
         }}
         showViz
