@@ -1,5 +1,7 @@
+import { Res } from "../../../core/types";
+
 export type RemovableNodeData = {
-  label: string;
+  res: Res;
   onClick: () => void;
 };
 

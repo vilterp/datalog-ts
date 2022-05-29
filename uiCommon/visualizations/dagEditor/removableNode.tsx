@@ -1,8 +1,12 @@
 import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
+import { fastPPT } from "../../../core/fastPPT";
+import { Rec } from "../../../core/types";
 import { RemovableNodeData } from "./types";
 
 export function RemovableNode(props: NodeProps<RemovableNodeData>) {
+  const rec = props.data.res.term as Rec;
+
   return (
     <div
       style={{
@@ -22,7 +26,8 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         onConnect={(params) => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
-      {props.data.label} <button onClick={() => props.data.onClick()}>×</button>
+      {fastPPT(rec.attrs.label)}{" "}
+      <button onClick={() => props.data.onClick()}>×</button>
       <Handle
         type="source"
         // @ts-ignore

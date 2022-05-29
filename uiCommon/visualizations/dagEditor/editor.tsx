@@ -17,7 +17,6 @@ import {
   Res,
   Statement,
   str,
-  StringLit,
   Array,
   Term,
 } from "../../../core/types";
@@ -37,8 +36,8 @@ export const dagEditor: VizTypeSpec = {
 function DAGEditor(props: VizArgs) {
   let nodeResults: Res[] = [];
   let edgeResults: Res[] = [];
-  let nodes: Node[] = [];
-  let edges: Edge[] = [];
+  let nodes: Node<RemovableNodeData>[] = [];
+  let edges: Edge<RemovableEdgeData>[] = [];
   let newNodeTemplates: Term[] = [];
   let error: string | null = null;
 
@@ -55,7 +54,7 @@ function DAGEditor(props: VizArgs) {
         id: fastPPT(rec.attrs.id),
         type: "removableNode",
         data: {
-          label: fastPPT(rec.attrs.label),
+          res: res,
           onClick: () => {
             const edges: Res[] = [
               ...props.interp.queryRec({
@@ -98,8 +97,6 @@ function DAGEditor(props: VizArgs) {
         },
       };
     });
-
-    console.log("DAGEditor", { nodes, edges });
 
     newNodeTemplates = (props.spec.attrs.newNodes as Array).items;
   } catch (e) {
