@@ -171,7 +171,10 @@ function DAGEditor(props: VizArgs) {
         />
       </div>
       {newNodeTemplates.map((template) => (
-        <button onClick={() => onAddNode(template as Rec)}>
+        <button
+          key={fastPPT(template)}
+          onClick={() => onAddNode(template as Rec)}
+        >
           +{fastPPT(template)}
         </button>
       ))}
