@@ -2,7 +2,11 @@ import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
 import { fastPPT } from "../../../core/fastPPT";
 import { Rec } from "../../../core/types";
+import { mapObjToList } from "../../../util/util";
+import { BareTerm } from "../../dl/replViews";
+import { TermEditor } from "./editors";
 import { RemovableNodeData } from "./types";
+import { getSpecForAttr } from "./util";
 
 export function RemovableNode(props: NodeProps<RemovableNodeData>) {
   const rec = props.data.res.term as Rec;
@@ -28,6 +32,31 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
       />
       {fastPPT(rec.attrs.label)}{" "}
       <button onClick={() => props.data.onClick()}>×</button>
+      <ul>
+        {mapObjToList(rec.attrs, (attr, val) => {
+          const attrEditorSpec = getSpecForAttr(
+            props.data.editors,
+            rec.relation,
+            attr
+          );
+          return (
+            <li key={attr}>
+              {attr}:{" "}
+              {attrEditorSpec ? (
+                <TermEditor
+                  spec={attrEditorSpec.editor}
+                  term={val}
+                  onChange={(newTerm) => {
+                    console.log("TODO: handle new term", newTerm);
+                  }}
+                />
+              ) : (
+                <BareTerm term={val} />
+              )}
+            </li>
+          );
+        })}
+      </ul>
       <Handle
         type="source"
         // @ts-ignore

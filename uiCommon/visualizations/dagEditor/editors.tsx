@@ -1,5 +1,6 @@
 import React from "React";
 import { Int, Term } from "../../../core/types";
+import { BareTerm } from "../../dl/replViews";
 import { SliderSpec, TermEditorSpec } from "./types";
 
 export function TermEditor(props: {
@@ -7,6 +8,10 @@ export function TermEditor(props: {
   term: Term;
   onChange: (newTerm: Term) => void;
 }) {
+  if (!props.spec) {
+    // TODO: really need a simple version of this
+    return <BareTerm term={props.term} />;
+  }
   switch (props.spec.type) {
     case "Slider":
       return <Slider spec={props.spec} value={(props.term as Int).val} />;

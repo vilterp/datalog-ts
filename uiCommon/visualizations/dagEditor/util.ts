@@ -128,3 +128,13 @@ function getTermEditorSpec(rec: Rec): TermEditorSpec {
       throw new Error(`unknown editor type: ${rec.relation}`);
   }
 }
+
+export function getSpecForAttr(
+  specs: AttributeEditorSpec[],
+  relation: string,
+  attr: string
+): AttributeEditorSpec | undefined {
+  return specs.find(
+    (spec) => spec.attribute === attr && spec.relation === relation
+  );
+}
