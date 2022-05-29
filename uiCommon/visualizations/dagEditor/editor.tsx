@@ -23,7 +23,7 @@ import {
 } from "../../../core/types";
 import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
-import { statementsForNodeChange, withID } from "./util";
+import { getBaseRecord, statementsForNodeChange, withID } from "./util";
 import { RemovableEdge } from "./removableEdge";
 import { RemovableNode } from "./removableNode";
 import { RemovableEdgeData, RemovableNodeData } from "./types";
@@ -58,7 +58,9 @@ function DAGEditor(props: VizArgs) {
           label: fastPPT(rec.attrs.label),
           onClick: () => {
             // TODO: also remove edges
-            props.runStatements([{ type: "Delete", record: rec }]);
+            props.runStatements([
+              { type: "Delete", record: getBaseRecord(res) },
+            ]);
           },
         },
         position: {
