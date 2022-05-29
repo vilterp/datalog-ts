@@ -88,8 +88,6 @@ function DAGEditor(props: VizArgs) {
       const statements: Statement[] = flatMap(changes, (change) =>
         statementsForNodeChange(nodeResults, change)
       );
-      console.log("nodes changes", changes);
-      // setNodes((nds) => applyNodeChanges(changes, nds));
       props.runStatements(statements);
     },
     [nodeResults, props.runStatements]
@@ -97,7 +95,6 @@ function DAGEditor(props: VizArgs) {
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       console.log("edges changes", changes);
-      // setEdges((eds) => applyEdgeChanges(changes, eds));
     },
     [edgeResults, props.runStatements]
   );
@@ -142,7 +139,7 @@ function DAGEditor(props: VizArgs) {
     <pre style={{ color: "red" }}>{error}</pre>
   ) : (
     <>
-      <div style={{ width: 500, height: 300 }}>
+      <div style={{ width: 500, height: 400 }}>
         <ReactFlow
           edgeTypes={EDGE_TYPES}
           nodeTypes={NODE_TYPES}
