@@ -7,7 +7,7 @@
 .table internal.visualization
 
 source{id: 1, supply: 10, x: 10, y: 20}.
-source{id: 4, supply: 15, x: 100, y: 20}.
+source{id: 4, supply: 15, x: 200, y: 20}.
 battery{id: 2, capacity: 100, initialLevel: 50, x: 60, y: 120}.
 sink{id: 3, demand: 15, x: 60, y: 300}.
 connection{from: 1, to: 2}.
@@ -143,7 +143,11 @@ internal.visualization{
   spec: dagEditor{
     nodes: node{},
     edges: connection{},
-    newEdge: testEdge{},
-    newNode: testNode{},
+    newEdge: connection{},
+    newNodes: [
+      source{supply: 10},
+      sink{demand: 15},
+      battery{capacity: 100, initialLevel: 50},
+    ],
   },
 }.
