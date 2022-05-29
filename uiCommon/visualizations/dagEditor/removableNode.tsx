@@ -5,11 +5,11 @@ import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
 import { TermEditor } from "./editors";
 import { RemovableNodeData } from "./types";
-import { getSpecForAttr } from "./util";
+import { getBaseRecord, getSpecForAttr } from "./util";
 
 export function RemovableNode(props: NodeProps<RemovableNodeData>) {
-  const rec = props.data.res.term as Rec;
-  const label = rec.attrs.label as Rec;
+  const rawRec = props.data.res.term as Rec;
+  const rec = getBaseRecord(props.data.res);
 
   return (
     <div
@@ -31,12 +31,19 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
       />
       <button onClick={() => props.data.onClick()}>×</button>
       <ul>
-        {mapObjToList(label.attrs, (attr, val) => {
+        {mapObjToList(rec.attrs, (attr, val) => {
           const attrEditorSpec = getSpecForAttr(
             props.data.editors,
             rec.relation,
             attr
           );
+          console.log("RemovableNode", {
+            relation: rec.relation,
+            attr,
+            val,
+            attrEditorSpec,
+            editors: props.data.editors,
+          });
           return (
             <li key={attr}>
               {attr}:{" "}
