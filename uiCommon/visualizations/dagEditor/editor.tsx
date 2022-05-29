@@ -22,10 +22,19 @@ import {
 } from "../../../core/types";
 import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
-import { getBaseRecord, statementsForNodeChange, withID } from "./util";
+import {
+  deleteNodeAndConnectedEdges,
+  getEditorSpecs,
+  statementsForNodeChange,
+  withID,
+} from "./util";
 import { RemovableEdge } from "./removableEdge";
 import { RemovableNode } from "./removableNode";
-import { RemovableEdgeData, RemovableNodeData } from "./types";
+import {
+  AttributeEditorSpec,
+  RemovableEdgeData,
+  RemovableNodeData,
+} from "./types";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
@@ -39,6 +48,7 @@ function DAGEditor(props: VizArgs) {
   let nodes: Node<RemovableNodeData>[] = [];
   let edges: Edge<RemovableEdgeData>[] = [];
   let newNodeTemplates: Term[] = [];
+  let attrEditorSpecs: AttributeEditorSpec[] = [];
   let error: string | null = null;
 
   try {
@@ -47,6 +57,11 @@ function DAGEditor(props: VizArgs) {
 
     nodeResults = props.interp.queryRec(nodesQuery);
     edgeResults = props.interp.queryRec(edgesQuery);
+    attrEditorSpecs = getEditorSpecs(
+      props.interp
+        .queryStr("internal.attrEditor{}?")
+        .map((res) => res.term as Rec)
+    );
 
     nodes = nodeResults.map((res) => {
       const rec = res.term as Rec;
@@ -55,26 +70,11 @@ function DAGEditor(props: VizArgs) {
         type: "removableNode",
         data: {
           res: res,
+          editors: attrEditorSpecs,
           onClick: () => {
-            const edges: Res[] = [
-              ...props.interp.queryRec({
-                ...edgesQuery,
-                attrs: { ...edgesQuery.attrs, from: rec.attrs.id },
-              }),
-              ...props.interp.queryRec({
-                ...edgesQuery,
-                attrs: { ...edgesQuery.attrs, to: rec.attrs.id },
-              }),
-            ];
-            props.runStatements([
-              { type: "Delete", record: getBaseRecord(res) },
-              ...edges.map(
-                (edgeRes): Statement => ({
-                  type: "Delete",
-                  record: getBaseRecord(edgeRes),
-                })
-              ),
-            ]);
+            props.runStatements(
+              deleteNodeAndConnectedEdges(props.interp, edgesQuery, res)
+            );
           },
         },
         position: {
