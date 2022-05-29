@@ -14,6 +14,7 @@ import {
   Int,
   rec,
   Rec,
+  Res,
   Statement,
   str,
   StringLit,
@@ -32,10 +33,8 @@ export const dagEditor: VizTypeSpec = {
 };
 
 function DAGEditor(props: VizArgs) {
-  // const [nodes, setNodes] = useState(INITIAL_NODES);
-  // const [edges, setEdges] = useState(initialEdges);
-  let nodeRecords: Rec[] = [];
-  let edgeRecords: Rec[] = [];
+  let nodeResults: Res[] = [];
+  let edgeResults: Res[] = [];
   let nodes: Node[] = [];
   let edges: Edge[] = [];
   let error: string | null = null;
@@ -44,10 +43,11 @@ function DAGEditor(props: VizArgs) {
     const nodesQuery = props.spec.attrs.nodes as Rec;
     const edgesQuery = props.spec.attrs.edges as Rec;
 
-    nodeRecords = props.interp.queryRec(nodesQuery).map((r) => r.term as Rec);
-    edgeRecords = props.interp.queryRec(edgesQuery).map((r) => r.term as Rec);
+    nodeResults = props.interp.queryRec(nodesQuery);
+    edgeResults = props.interp.queryRec(edgesQuery);
 
-    nodes = nodeRecords.map((rec) => {
+    nodes = nodeResults.map((res) => {
+      const rec = res.term as Rec;
       return {
         id: fastPPT(rec.attrs.id),
         type: "removableNode",
@@ -64,7 +64,8 @@ function DAGEditor(props: VizArgs) {
         },
       };
     });
-    edges = edgeRecords.map((rec) => {
+    edges = edgeResults.map((res) => {
+      const rec = res.term as Rec;
       return {
         id: `${fastPPT(rec.attrs.from)}-${fastPPT(rec.attrs.to)}`,
         source: fastPPT(rec.attrs.from),
@@ -85,20 +86,20 @@ function DAGEditor(props: VizArgs) {
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       const statements: Statement[] = flatMap(changes, (change) =>
-        statementsForNodeChange(nodeRecords, change)
+        statementsForNodeChange(nodeResults, change)
       );
       console.log("nodes changes", changes);
       // setNodes((nds) => applyNodeChanges(changes, nds));
       props.runStatements(statements);
     },
-    [nodeRecords, props.runStatements]
+    [nodeResults, props.runStatements]
   );
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       console.log("edges changes", changes);
       // setEdges((eds) => applyEdgeChanges(changes, eds));
     },
-    [edgeRecords, props.runStatements]
+    [edgeResults, props.runStatements]
   );
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -125,7 +126,10 @@ function DAGEditor(props: VizArgs) {
       y: int(50),
       label: str("new node"), // TODO: parameterize somehow
     });
-    const newRec = withID(nodeRecords, recWithPos);
+    const newRec = withID(
+      nodeResults.map((res) => res.term as Rec),
+      recWithPos
+    );
     props.runStatements([
       {
         type: "Fact",
