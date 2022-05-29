@@ -66,7 +66,7 @@ function DAGEditor(props: VizArgs) {
     });
     edges = edgeRecords.map((rec) => {
       return {
-        id: fastPPT(rec.attrs.id),
+        id: `${fastPPT(rec.attrs.from)}-${fastPPT(rec.attrs.to)}`,
         source: fastPPT(rec.attrs.from),
         target: fastPPT(rec.attrs.to),
         type: "removableEdge",
