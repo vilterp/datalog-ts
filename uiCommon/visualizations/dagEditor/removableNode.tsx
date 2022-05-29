@@ -37,13 +37,13 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
             rec.relation,
             attr
           );
-          console.log("RemovableNode", {
-            relation: rec.relation,
-            attr,
-            val,
-            attrEditorSpec,
-            editors: props.data.editors,
-          });
+          // console.log("RemovableNode", {
+          //   relation: rec.relation,
+          //   attr,
+          //   val,
+          //   attrEditorSpec,
+          //   editors: props.data.editors,
+          // });
           return (
             <li key={attr}>
               {attr}:{" "}
