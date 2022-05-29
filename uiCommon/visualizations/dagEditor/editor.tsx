@@ -127,6 +127,7 @@ function DAGEditor(props: VizArgs) {
   );
   const onAddNode = (template: Rec) => {
     const recWithPos = rec(template.relation, {
+      ...template.attrs,
       x: int(50),
       y: int(50),
     });
