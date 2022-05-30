@@ -153,7 +153,7 @@ internal.visualization{
     edges: connection{},
     newEdge: connection{},
     newNodes: [
-      source{supply: 10},
+      source{baseline: 10, amplitude: 10},
       sink{demand: 15},
       battery{capacity: 100, initialLevel: 50},
     ],
