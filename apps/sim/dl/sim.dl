@@ -32,12 +32,13 @@ current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
   currentAtSink{id: I, time: T, level: L}.
 
-currentAtSource{id: I, time: T, level: ShiftedL} :-
+currentAtSource{id: I, time: T, level: Clamped} :-
   time{time: T} &
   source{id: I, supply: Size} &
   math.sin{a: T, res: Raw} &
   Raw * Size = C &
-  30 + C = ShiftedL.
+  30 + C = ShiftedL &
+  clamp{min: 0, max: 1000, val: ShiftedL, res: Clamped}.
 currentAtSink{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
   T + 2 = ShiftedT &
