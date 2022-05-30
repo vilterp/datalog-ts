@@ -34,16 +34,18 @@ function Slider(props: {
   onChange: (newVal: number) => void;
 }) {
   return (
-    <input
-      type="range"
-      min={props.spec.min}
-      max={props.spec.max}
-      value={props.value}
-      onChange={(evt) => {
-        evt.stopPropagation();
-        evt.preventDefault();
-        props.onChange(parseInt(evt.target.value));
-      }}
-    />
+    <>
+      <input
+        type="range"
+        min={props.spec.min}
+        max={props.spec.max}
+        step={0.1}
+        value={props.value}
+        onChange={(evt) => {
+          props.onChange(parseInt(evt.target.value));
+        }}
+      />
+      <BareTerm term={int(props.value)} />
+    </>
   );
 }
