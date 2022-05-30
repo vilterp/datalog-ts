@@ -17,16 +17,25 @@ import {
   Res,
   Statement,
   str,
-  StringLit,
   Array,
   Term,
 } from "../../../core/types";
 import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
-import { getBaseRecord, statementsForNodeChange, withID } from "./util";
+import {
+  deleteNodeAndConnectedEdges,
+  getBaseRecord,
+  getEditorSpecs,
+  statementsForNodeChange,
+  withID,
+} from "./util";
 import { RemovableEdge } from "./removableEdge";
 import { RemovableNode } from "./removableNode";
-import { RemovableEdgeData, RemovableNodeData } from "./types";
+import {
+  AttributeEditorSpec,
+  RemovableEdgeData,
+  RemovableNodeData,
+} from "./types";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",
@@ -37,9 +46,10 @@ export const dagEditor: VizTypeSpec = {
 function DAGEditor(props: VizArgs) {
   let nodeResults: Res[] = [];
   let edgeResults: Res[] = [];
-  let nodes: Node[] = [];
-  let edges: Edge[] = [];
+  let nodes: Node<RemovableNodeData>[] = [];
+  let edges: Edge<RemovableEdgeData>[] = [];
   let newNodeTemplates: Term[] = [];
+  let attrEditorSpecs: AttributeEditorSpec[] = [];
   let error: string | null = null;
 
   try {
@@ -48,33 +58,30 @@ function DAGEditor(props: VizArgs) {
 
     nodeResults = props.interp.queryRec(nodesQuery);
     edgeResults = props.interp.queryRec(edgesQuery);
+    attrEditorSpecs = getEditorSpecs(
+      props.interp
+        .queryStr("internal.attrEditor{}?")
+        .map((res) => res.term as Rec)
+    );
 
     nodes = nodeResults.map((res) => {
       const rec = res.term as Rec;
+      const baseRec = getBaseRecord(res);
       return {
         id: fastPPT(rec.attrs.id),
         type: "removableNode",
         data: {
-          label: fastPPT(rec.attrs.label),
+          res: res,
+          editors: attrEditorSpecs,
           onClick: () => {
-            const edges: Res[] = [
-              ...props.interp.queryRec({
-                ...edgesQuery,
-                attrs: { ...edgesQuery.attrs, from: rec.attrs.id },
-              }),
-              ...props.interp.queryRec({
-                ...edgesQuery,
-                attrs: { ...edgesQuery.attrs, to: rec.attrs.id },
-              }),
-            ];
+            props.runStatements(
+              deleteNodeAndConnectedEdges(props.interp, edgesQuery, res)
+            );
+          },
+          onChange: (newTerm) => {
             props.runStatements([
-              { type: "Delete", record: getBaseRecord(res) },
-              ...edges.map(
-                (edgeRes): Statement => ({
-                  type: "Delete",
-                  record: getBaseRecord(edgeRes),
-                })
-              ),
+              { type: "Delete", record: baseRec },
+              { type: "Fact", record: newTerm as Rec },
             ]);
           },
         },
@@ -98,8 +105,6 @@ function DAGEditor(props: VizArgs) {
         },
       };
     });
-
-    console.log("DAGEditor", { nodes, edges });
 
     newNodeTemplates = (props.spec.attrs.newNodes as Array).items;
   } catch (e) {
@@ -162,7 +167,7 @@ function DAGEditor(props: VizArgs) {
     <pre style={{ color: "red" }}>{error}</pre>
   ) : (
     <>
-      <div style={{ width: 500, height: 400 }}>
+      <div style={{ width: 700, height: 600 }}>
         <ReactFlow
           edgeTypes={EDGE_TYPES}
           nodeTypes={NODE_TYPES}
@@ -174,7 +179,10 @@ function DAGEditor(props: VizArgs) {
         />
       </div>
       {newNodeTemplates.map((template) => (
-        <button onClick={() => onAddNode(template as Rec)}>
+        <button
+          key={fastPPT(template)}
+          onClick={() => onAddNode(template as Rec)}
+        >
           +{fastPPT(template)}
         </button>
       ))}

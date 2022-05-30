@@ -7,9 +7,9 @@
 .table internal.visualization
 
 source{id: 1, supply: 10, x: 10, y: 20}.
-source{id: 4, supply: 15, x: 200, y: 20}.
-battery{id: 2, capacity: 100, initialLevel: 50, x: 60, y: 120}.
-sink{id: 3, demand: 15, x: 60, y: 300}.
+source{id: 4, supply: 15, x: 330, y: 20}.
+battery{id: 2, capacity: 100, initialLevel: 50, x: 170, y: 250}.
+sink{id: 3, demand: 15, x: 170, y: 450}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
@@ -111,6 +111,28 @@ internal.visualization{
     },
     query: batteryLevel{}
   }
+}.
+
+# TODO: move these editor declarations into some standard lib?
+internal.attrEditor{
+  relation: "source",
+  attr: "supply",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "sink",
+  attr: "demand",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "capacity",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "initialLevel",
+  editor: slider{min: 0, max: 100},
 }.
 
 internal.visualization{

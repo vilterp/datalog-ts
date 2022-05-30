@@ -1,7 +1,9 @@
 import { NodeChange } from "react-flow-renderer";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { fastPPT } from "../../../core/fastPPT";
-import { int, Rec, Res, Statement } from "../../../core/types";
+import { Int, int, Rec, Res, Statement, StringLit } from "../../../core/types";
 import { max } from "../../../util/util";
+import { AttributeEditorSpec, TermEditorSpec } from "./types";
 
 export function statementsForNodeChange(
   nodeResults: Res[],
@@ -33,6 +35,34 @@ export function statementsForNodeChange(
   return [
     { type: "Delete", record: baseRec },
     { type: "Fact", record: updatedRec },
+  ];
+}
+
+export function deleteNodeAndConnectedEdges(
+  interp: AbstractInterpreter,
+  edgesQuery: Rec,
+  res: Res
+): Statement[] {
+  const rec = res.term as Rec;
+  const id = rec.attrs.id;
+  const edges: Res[] = [
+    ...interp.queryRec({
+      ...edgesQuery,
+      attrs: { ...edgesQuery.attrs, from: id },
+    }),
+    ...interp.queryRec({
+      ...edgesQuery,
+      attrs: { ...edgesQuery.attrs, to: id },
+    }),
+  ];
+  return [
+    { type: "Delete", record: getBaseRecord(res) },
+    ...edges.map(
+      (edgeRes): Statement => ({
+        type: "Delete",
+        record: getBaseRecord(edgeRes),
+      })
+    ),
   ];
 }
 
@@ -76,4 +106,35 @@ export function getBaseRecord(res: Res): Rec {
     default:
       throw new Error(`not supported: ${res.trace.type}`);
   }
+}
+
+export function getEditorSpecs(records: Rec[]): AttributeEditorSpec[] {
+  return records.map((rec) => ({
+    relation: (rec.attrs.relation as StringLit).val,
+    attribute: (rec.attrs.attr as StringLit).val,
+    editor: getTermEditorSpec(rec.attrs.editor as Rec),
+  }));
+}
+
+function getTermEditorSpec(rec: Rec): TermEditorSpec {
+  switch (rec.relation) {
+    case "slider":
+      return {
+        type: "Slider",
+        min: (rec.attrs.min as Int).val,
+        max: (rec.attrs.max as Int).val,
+      };
+    default:
+      throw new Error(`unknown editor type: ${rec.relation}`);
+  }
+}
+
+export function getSpecForAttr(
+  specs: AttributeEditorSpec[],
+  relation: string,
+  attr: string
+): AttributeEditorSpec | undefined {
+  return specs.find(
+    (spec) => spec.attribute === attr && spec.relation === relation
+  );
 }
