@@ -28,7 +28,10 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         onConnect={(params) => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
-      <button onClick={() => props.data.onClick()}>×</button>
+      <div>
+        <button onClick={() => props.data.onClick()}>×</button>{" "}
+        <strong>{rec.relation}</strong>
+      </div>
       <div>
         {mapObjToList(rec.attrs, (attr, val) => {
           const attrEditorSpec = getSpecForAttr(
