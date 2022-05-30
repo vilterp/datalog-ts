@@ -1,4 +1,4 @@
-import React from "React";
+import React from "react";
 import { int, Int, Term } from "../../../core/types";
 import { BareTerm } from "../../dl/replViews";
 import { SliderSpec, TermEditorSpec } from "./types";
