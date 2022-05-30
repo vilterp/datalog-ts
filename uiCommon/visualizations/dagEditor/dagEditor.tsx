@@ -28,6 +28,7 @@ import {
   dlToPos,
   getBaseRecord,
   getEditorSpecs,
+  posToDL,
   statementsForNodeChange,
   withID,
 } from "./util";
@@ -161,10 +162,7 @@ function DAGEditor(props: VizArgs) {
   const onAddNode = (template: Rec) => {
     const recWithPos = rec(template.relation, {
       ...template.attrs,
-      pos: rec("pos", {
-        x: int(50),
-        y: int(50),
-      }),
+      pos: posToDL({ x: 50, y: 50 }),
     });
     const newRec = withID(
       nodeResults.map((res) => res.term as Rec),

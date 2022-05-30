@@ -36,10 +36,7 @@ export function statementsForNodeChange(
     ...baseRec,
     attrs: {
       ...baseRec.attrs,
-      pos: rec("pos", {
-        x: int(change.position.x),
-        y: int(change.position.y),
-      }),
+      pos: posToDL(change.position),
     },
   };
   return [
@@ -154,4 +151,11 @@ export function dlToPos(rec: Rec): XYPosition {
     x: (rec.attrs.x as Int).val,
     y: (rec.attrs.y as Int).val,
   };
+}
+
+export function posToDL(pos: XYPosition): Rec {
+  return rec("pos", {
+    x: int(pos.x),
+    y: int(pos.y),
+  });
 }
