@@ -70,6 +70,7 @@ function DAGEditor(props: VizArgs) {
       return {
         id: fastPPT(rec.attrs.id),
         type: "editorNode",
+        dragHandle: ".custom-drag-handle",
         data: {
           res: res,
           editors: attrEditorSpecs,
@@ -176,6 +177,7 @@ function DAGEditor(props: VizArgs) {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          zoomOnScroll={false}
         />
       </div>
       {newNodeTemplates.map((template) => (

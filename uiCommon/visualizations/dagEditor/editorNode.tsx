@@ -19,6 +19,7 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
         padding: 10,
         width: 250,
         fontFamily: "monospace",
+        cursor: "default",
       }}
     >
       <Handle
@@ -28,7 +29,10 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
         onConnect={(params) => console.log("handle onConnect", params)}
         isConnectable={props.isConnectable}
       />
-      <div>
+      <div
+        className="custom-drag-handle"
+        style={{ cursor: props.dragging ? "grabbing" : "grab" }}
+      >
         <button onClick={() => props.data.onDelete()}>×</button>{" "}
         <strong>{rec.relation}</strong>
       </div>
