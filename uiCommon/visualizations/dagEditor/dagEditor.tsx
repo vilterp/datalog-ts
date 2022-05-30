@@ -19,11 +19,13 @@ import {
   str,
   Array,
   Term,
+  StringLit,
 } from "../../../core/types";
 import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
 import {
   deleteNodeAndConnectedEdges,
+  dlToPos,
   getBaseRecord,
   getEditorSpecs,
   statementsForNodeChange,
@@ -35,6 +37,7 @@ import {
   AttributeEditorSpec,
   RemovableEdgeData,
   EditorNodeData,
+  NodeVisualizationSpec,
 } from "./types";
 
 export const dagEditor: VizTypeSpec = {
@@ -50,6 +53,7 @@ function DAGEditor(props: VizArgs) {
   let edges: Edge<RemovableEdgeData>[] = [];
   let newNodeTemplates: Term[] = [];
   let attrEditorSpecs: AttributeEditorSpec[] = [];
+  let nodeVisualizations: NodeVisualizationSpec[] = [];
   let error: string | null = null;
 
   try {
@@ -64,6 +68,16 @@ function DAGEditor(props: VizArgs) {
         .map((res) => res.term as Rec)
     );
 
+    nodeVisualizations = props.interp
+      .queryStr("internal.dagEditor.nodeViz{}?")
+      .map((res) => {
+        const rec = res.term as Rec;
+        return {
+          relation: (rec.attrs.relation as StringLit).val,
+          vizSpec: rec.attrs.viz as Rec,
+        };
+      });
+
     nodes = nodeResults.map((res) => {
       const rec = res.term as Rec;
       const baseRec = getBaseRecord(res);
@@ -74,6 +88,7 @@ function DAGEditor(props: VizArgs) {
         data: {
           res: res,
           editors: attrEditorSpecs,
+          nodeVizSpecs: nodeVisualizations,
           onDelete: () => {
             props.runStatements(
               deleteNodeAndConnectedEdges(props.interp, edgesQuery, res)
@@ -86,10 +101,7 @@ function DAGEditor(props: VizArgs) {
             ]);
           },
         },
-        position: {
-          x: (rec.attrs.x as Int).val,
-          y: (rec.attrs.y as Int).val,
-        },
+        position: dlToPos(rec.attrs.pos as Rec),
       };
     });
     edges = edgeResults.map((res) => {
@@ -149,8 +161,10 @@ function DAGEditor(props: VizArgs) {
   const onAddNode = (template: Rec) => {
     const recWithPos = rec(template.relation, {
       ...template.attrs,
-      x: int(50),
-      y: int(50),
+      pos: rec("pos", {
+        x: int(50),
+        y: int(50),
+      }),
     });
     const newRec = withID(
       nodeResults.map((res) => res.term as Rec),

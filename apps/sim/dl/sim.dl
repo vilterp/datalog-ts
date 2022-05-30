@@ -6,10 +6,10 @@
 .table connection
 .table internal.visualization
 
-source{id: 1, phaseShift: 0, baseline: 30, amplitude: 10, x: 10, y: 20}.
-source{id: 4, phaseShift: 0, baseline: 30, amplitude: 15, x: 330, y: 20}.
-battery{id: 2, capacity: 100, initialLevel: 50, x: 170, y: 250}.
-sink{id: 3, demand: 15, x: 170, y: 450}.
+source{id: 1, phaseShift: 0, baseline: 30, amplitude: 10, pos: pos{x: 10, y: 20}}.
+source{id: 4, phaseShift: 0, baseline: 30, amplitude: 15, pos: pos{x: 330, y: 20}}.
+battery{id: 2, capacity: 100, initialLevel: 50, pos: pos{x: 170, y: 250}}.
+sink{id: 3, demand: 15, pos: pos{x: 170, y: 450}}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
@@ -47,17 +47,17 @@ internal.attrEditor{
 
 # === rules ===
 
-node{id: I, label: L, x: X, y: Y} :-
-  nodeSource{id: I, label: L, x: X, y: Y} |
-  nodeSink{id: I, label: L, x: X, y: Y} |
-  nodeBattery{id: I, label: L, x: X, y: Y}.
+node{id: I, label: L, pos: Pos} :-
+  nodeSource{id: I, label: L, pos: Pos} |
+  nodeSink{id: I, label: L, pos: Pos} |
+  nodeBattery{id: I, label: L, pos: Pos}.
 
-nodeSource{id: I, label: source{id: I, supply: S}, x: X, y: Y} :-
-  source{id: I, supply: S, x: X, y: Y}.
-nodeSink{id: I, label: sink{id: I, demand: S}, x: X, y: Y} :-
-  sink{id: I, demand: S, x: X, y: Y}.
-nodeBattery{id: I, label: battery{id: I, capacity: S, initialLevel: IL}, x: X, y: Y} :-
-  battery{id: I, capacity: S, initialLevel: IL, x: X, y: Y}.
+nodeSource{id: I, label: source{id: I, supply: S}, pos: Pos} :-
+  source{id: I, supply: S, pos: Pos}.
+nodeSink{id: I, label: sink{id: I, demand: S}, pos: Pos} :-
+  sink{id: I, demand: S, pos: Pos}.
+nodeBattery{id: I, label: battery{id: I, capacity: S, initialLevel: IL}, pos: Pos} :-
+  battery{id: I, capacity: S, initialLevel: IL, pos: Pos}.
 
 current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |

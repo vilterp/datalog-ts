@@ -1,7 +1,15 @@
-import { NodeChange } from "react-flow-renderer";
+import { NodeChange, XYPosition } from "react-flow-renderer";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { fastPPT } from "../../../core/fastPPT";
-import { Int, int, Rec, Res, Statement, StringLit } from "../../../core/types";
+import {
+  Int,
+  int,
+  rec,
+  Rec,
+  Res,
+  Statement,
+  StringLit,
+} from "../../../core/types";
 import { max } from "../../../util/util";
 import { AttributeEditorSpec, TermEditorSpec } from "./types";
 
@@ -28,8 +36,10 @@ export function statementsForNodeChange(
     ...baseRec,
     attrs: {
       ...baseRec.attrs,
-      x: int(change.position.x),
-      y: int(change.position.y),
+      pos: rec("pos", {
+        x: int(change.position.x),
+        y: int(change.position.y),
+      }),
     },
   };
   return [
@@ -137,4 +147,11 @@ export function getSpecForAttr(
   return specs.find(
     (spec) => spec.attribute === attr && spec.relation === relation
   );
+}
+
+export function dlToPos(rec: Rec): XYPosition {
+  return {
+    x: (rec.attrs.x as Int).val,
+    y: (rec.attrs.y as Int).val,
+  };
 }
