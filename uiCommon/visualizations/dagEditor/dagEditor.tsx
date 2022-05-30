@@ -101,6 +101,7 @@ function DAGEditor(props: VizArgs) {
               { type: "Fact", record: newTerm as Rec },
             ]);
           },
+          overallSpec: props,
         },
         position: dlToPos(rec.attrs.pos as Rec),
       };

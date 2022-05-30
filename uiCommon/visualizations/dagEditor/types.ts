@@ -1,4 +1,5 @@
 import { Rec, Res, Term } from "../../../core/types";
+import { VizArgs } from "../typeSpec";
 
 export type AttributeEditorSpec = {
   relation: string;
@@ -16,11 +17,14 @@ export type NodeVisualizationSpec = {
 };
 
 export type EditorNodeData = {
+  // specific to this node
   res: Res;
   editors: AttributeEditorSpec[];
   nodeVizSpecs: NodeVisualizationSpec[];
   onDelete: () => void;
   onChange: (newTerm: Term) => void;
+  // for embedding visualizations
+  overallSpec: VizArgs;
 };
 
 export type RemovableEdgeData = {

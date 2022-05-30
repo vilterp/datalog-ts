@@ -1,5 +1,6 @@
 import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
+import { IndividualViz } from "..";
 import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
 import { TermEditor } from "./editors";
@@ -8,7 +9,7 @@ import { getBaseRecord, getSpecForAttr } from "./util";
 
 export function EditorNode(props: NodeProps<EditorNodeData>) {
   const baseRec = getBaseRecord(props.data.res);
-  const viz = props.data.nodeVizSpecs.find(
+  const vizSpec = props.data.nodeVizSpecs.find(
     (spec) => spec.relation === baseRec.relation
   );
 
@@ -57,23 +58,35 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
           //   editors: props.data.editors,
           // });
           return (
-            <div key={attr}>
-              {attr}:{" "}
-              {attrEditorSpec ? (
-                <TermEditor
-                  spec={attrEditorSpec.editor}
-                  term={val}
-                  onChange={(newTerm) => {
-                    props.data.onChange({
-                      ...baseRec,
-                      attrs: { ...baseRec.attrs, [attr]: newTerm },
-                    });
-                  }}
+            <>
+              {vizSpec ? (
+                <IndividualViz
+                  interp={props.data.overallSpec.interp}
+                  name={`${props.data.overallSpec.id}-${props.id}`}
+                  spec={vizSpec.vizSpec}
+                  highlightedTerm={props.data.overallSpec.highlightedTerm}
+                  setHighlightedTerm={props.data.overallSpec.setHighlightedTerm}
+                  runStatements={props.data.overallSpec.runStatements}
                 />
-              ) : (
-                <BareTerm term={val} />
-              )}
-            </div>
+              ) : null}
+              <div key={attr}>
+                {attr}:{" "}
+                {attrEditorSpec ? (
+                  <TermEditor
+                    spec={attrEditorSpec.editor}
+                    term={val}
+                    onChange={(newTerm) => {
+                      props.data.onChange({
+                        ...baseRec,
+                        attrs: { ...baseRec.attrs, [attr]: newTerm },
+                      });
+                    }}
+                  />
+                ) : (
+                  <BareTerm term={val} />
+                )}
+              </div>
+            </>
           );
         })}
       </div>
