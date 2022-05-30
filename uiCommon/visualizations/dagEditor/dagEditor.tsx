@@ -73,7 +73,7 @@ function DAGEditor(props: VizArgs) {
         data: {
           res: res,
           editors: attrEditorSpecs,
-          onClick: () => {
+          onDelete: () => {
             props.runStatements(
               deleteNodeAndConnectedEdges(props.interp, edgesQuery, res)
             );

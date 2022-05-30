@@ -29,7 +29,7 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         isConnectable={props.isConnectable}
       />
       <div>
-        <button onClick={() => props.data.onClick()}>×</button>{" "}
+        <button onClick={() => props.data.onDelete()}>×</button>{" "}
         <strong>{rec.relation}</strong>
       </div>
       <div>
