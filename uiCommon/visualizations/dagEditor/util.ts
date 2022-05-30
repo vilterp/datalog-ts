@@ -1,7 +1,16 @@
-import { NodeChange } from "react-flow-renderer";
+import { NodeChange, XYPosition } from "react-flow-renderer";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { fastPPT } from "../../../core/fastPPT";
-import { Int, int, Rec, Res, Statement, StringLit } from "../../../core/types";
+import {
+  Int,
+  int,
+  rec,
+  Rec,
+  Res,
+  Statement,
+  StringLit,
+  Term,
+} from "../../../core/types";
 import { max } from "../../../util/util";
 import { AttributeEditorSpec, TermEditorSpec } from "./types";
 
@@ -28,8 +37,7 @@ export function statementsForNodeChange(
     ...baseRec,
     attrs: {
       ...baseRec.attrs,
-      x: int(change.position.x),
-      y: int(change.position.y),
+      pos: posToDL(change.position),
     },
   };
   return [
@@ -137,4 +145,35 @@ export function getSpecForAttr(
   return specs.find(
     (spec) => spec.attribute === attr && spec.relation === relation
   );
+}
+
+// I guess this only really works for Vegalite specs, doesn't it...
+export function insertIDIntoSpec(spec: Rec, id: Term): Rec {
+  return {
+    ...spec,
+    attrs: {
+      ...spec.attrs,
+      query: {
+        ...(spec.attrs.query as Rec),
+        attrs: {
+          ...(spec.attrs.query as Rec).attrs,
+          id,
+        },
+      },
+    },
+  };
+}
+
+export function dlToPos(rec: Rec): XYPosition {
+  return {
+    x: (rec.attrs.x as Int).val,
+    y: (rec.attrs.y as Int).val,
+  };
+}
+
+export function posToDL(pos: XYPosition): Rec {
+  return rec("pos", {
+    x: int(pos.x),
+    y: int(pos.y),
+  });
 }

@@ -1,13 +1,21 @@
 import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
+import { IndividualViz } from "..";
+import { int } from "../../../core/types";
 import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
 import { TermEditor } from "./editors";
 import { EditorNodeData } from "./types";
-import { getBaseRecord, getSpecForAttr } from "./util";
+import { getBaseRecord, getSpecForAttr, insertIDIntoSpec } from "./util";
 
 export function EditorNode(props: NodeProps<EditorNodeData>) {
-  const rec = getBaseRecord(props.data.res);
+  const baseRec = getBaseRecord(props.data.res);
+  const vizSpec = props.data.nodeVizSpecs.find(
+    (spec) => spec.relation === baseRec.relation
+  );
+  const specForThisNode = vizSpec
+    ? insertIDIntoSpec(vizSpec.vizSpec, int(parseInt(props.id)))
+    : null;
 
   return (
     <div
@@ -34,13 +42,26 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
         style={{ cursor: props.dragging ? "grabbing" : "grab" }}
       >
         <button onClick={() => props.data.onDelete()}>×</button>{" "}
-        <strong>{rec.relation}</strong>
+        <strong>{baseRec.relation}</strong>
       </div>
+      {vizSpec ? (
+        <IndividualViz
+          interp={props.data.overallSpec.interp}
+          name={`${props.data.overallSpec.id}-${props.id}`}
+          spec={specForThisNode}
+          highlightedTerm={props.data.overallSpec.highlightedTerm}
+          setHighlightedTerm={props.data.overallSpec.setHighlightedTerm}
+          runStatements={props.data.overallSpec.runStatements}
+        />
+      ) : null}
       <div>
-        {mapObjToList(rec.attrs, (attr, val) => {
+        {mapObjToList(baseRec.attrs, (attr, val) => {
+          if (attr == "pos") {
+            return null;
+          }
           const attrEditorSpec = getSpecForAttr(
             props.data.editors,
-            rec.relation,
+            baseRec.relation,
             attr
           );
           // console.log("RemovableNode", {
@@ -59,8 +80,8 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
                   term={val}
                   onChange={(newTerm) => {
                     props.data.onChange({
-                      ...rec,
-                      attrs: { ...rec.attrs, [attr]: newTerm },
+                      ...baseRec,
+                      attrs: { ...baseRec.attrs, [attr]: newTerm },
                     });
                   }}
                 />
