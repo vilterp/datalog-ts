@@ -27,7 +27,8 @@ scope.defnInnerVar{scopeID: I, name: N, span: S, kind: "var"} :-
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
   scope.varTerm{scopeID: I, name: N, span: S, kind: K} |
-  scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varFact{scopeID: I, name: N, span: S, kind: K}.
 scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
   scope.ruleBodyTerm{ruleID: RuleID, termOrRecord: RecordID} &
@@ -44,6 +45,10 @@ scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
   ast.recordAttrs{id: Attrs, parentID: Rec} &
   ast.keyValue{id: KV, parentID: Attrs} &
   ast.ident{id: I, parentID: KV, text: N, span: S}.
+scope.varFact{scopeID: global{}, name: N, span: S, kind: "relation"} :-
+  ast.fact{id: Fact} &
+  ast.record{id: Rec, parentID: Fact} &
+  ast.ident{parentID: Rec, text: N, span: S}.
 
 # TODO: get placeholders in nested terms
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
