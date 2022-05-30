@@ -114,6 +114,14 @@ scope.Usage{definitionScopeID: 3, defnSpan: span{from: 142, to: 143}, kind: "var
 scope.Usage{definitionScopeID: 3, defnSpan: span{from: 142, to: 143}, kind: "var", name: "T", usageScopeID: 3, usageSpan: span{from: 130, to: 131}}
 
 dl
+.table foo
+foo{id: 1}.
+scope.Usage{}?
+----
+application/datalog
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 7, to: 10}, kind: "relation", name: "foo", usageScopeID: global{}, usageSpan: span{from: 11, to: 14}}
+
+dl
 currentAtSource{a: A, b: B, c: C} :-
   A + B = C.
 tc.Problem{}?
