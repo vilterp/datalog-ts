@@ -24,6 +24,7 @@ import { fastPPT } from "../../../core/fastPPT";
 import { flatMap } from "../../../util/util";
 import {
   deleteNodeAndConnectedEdges,
+  getBaseRecord,
   getEditorSpecs,
   statementsForNodeChange,
   withID,
@@ -65,6 +66,7 @@ function DAGEditor(props: VizArgs) {
 
     nodes = nodeResults.map((res) => {
       const rec = res.term as Rec;
+      const baseRec = getBaseRecord(res);
       return {
         id: fastPPT(rec.attrs.id),
         type: "removableNode",
@@ -75,6 +77,12 @@ function DAGEditor(props: VizArgs) {
             props.runStatements(
               deleteNodeAndConnectedEdges(props.interp, edgesQuery, res)
             );
+          },
+          onChange: (newTerm) => {
+            props.runStatements([
+              { type: "Delete", record: baseRec },
+              { type: "Fact", record: newTerm as Rec },
+            ]);
           },
         },
         position: {

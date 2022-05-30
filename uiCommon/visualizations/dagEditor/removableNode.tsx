@@ -1,6 +1,5 @@
 import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
-import { Rec } from "../../../core/types";
 import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
 import { TermEditor } from "./editors";
@@ -8,7 +7,6 @@ import { RemovableNodeData } from "./types";
 import { getBaseRecord, getSpecForAttr } from "./util";
 
 export function RemovableNode(props: NodeProps<RemovableNodeData>) {
-  const rawRec = props.data.res.term as Rec;
   const rec = getBaseRecord(props.data.res);
 
   return (
@@ -30,7 +28,7 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         isConnectable={props.isConnectable}
       />
       <button onClick={() => props.data.onClick()}>×</button>
-      <ul>
+      <div>
         {mapObjToList(rec.attrs, (attr, val) => {
           const attrEditorSpec = getSpecForAttr(
             props.data.editors,
@@ -45,23 +43,26 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
           //   editors: props.data.editors,
           // });
           return (
-            <li key={attr}>
+            <div key={attr}>
               {attr}:{" "}
               {attrEditorSpec ? (
                 <TermEditor
                   spec={attrEditorSpec.editor}
                   term={val}
                   onChange={(newTerm) => {
-                    console.log("TODO: handle new term", newTerm);
+                    props.data.onChange({
+                      ...rec,
+                      attrs: { ...rec.attrs, [attr]: newTerm },
+                    });
                   }}
                 />
               ) : (
                 <BareTerm term={val} />
               )}
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
       <Handle
         type="source"
         // @ts-ignore

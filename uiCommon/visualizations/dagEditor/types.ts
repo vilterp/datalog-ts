@@ -1,4 +1,4 @@
-import { Res } from "../../../core/types";
+import { Res, Term } from "../../../core/types";
 
 export type AttributeEditorSpec = {
   relation: string;
@@ -14,6 +14,7 @@ export type RemovableNodeData = {
   res: Res;
   editors: AttributeEditorSpec[];
   onClick: () => void;
+  onChange: (newTerm: Term) => void;
 };
 
 export type RemovableEdgeData = {
