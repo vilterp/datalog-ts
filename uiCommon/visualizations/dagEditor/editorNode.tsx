@@ -3,10 +3,10 @@ import { NodeProps, Handle } from "react-flow-renderer";
 import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
 import { TermEditor } from "./editors";
-import { RemovableNodeData } from "./types";
+import { EditorNodeData } from "./types";
 import { getBaseRecord, getSpecForAttr } from "./util";
 
-export function RemovableNode(props: NodeProps<RemovableNodeData>) {
+export function EditorNode(props: NodeProps<EditorNodeData>) {
   const rec = getBaseRecord(props.data.res);
 
   return (
