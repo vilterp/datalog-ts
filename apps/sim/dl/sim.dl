@@ -6,13 +6,39 @@
 .table connection
 .table internal.visualization
 
-source{id: 1, supply: 10, x: 10, y: 20}.
-source{id: 4, supply: 15, x: 330, y: 20}.
+source{id: 1, phaseShift: 0, supply: 10, x: 10, y: 20}.
+source{id: 4, phaseShift: 0, supply: 15, x: 330, y: 20}.
 battery{id: 2, capacity: 100, initialLevel: 50, x: 170, y: 250}.
 sink{id: 3, demand: 15, x: 170, y: 450}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
+
+internal.attrEditor{
+  relation: "source",
+  attr: "supply",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "sink",
+  attr: "demand",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "source",
+  attr: "phaseShift",
+  editor: slider{min: 0, max: 5},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "capacity",
+  editor: slider{min: 0, max: 300},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "initialLevel",
+  editor: slider{min: 0, max: 100},
+}.
 
 # === rules ===
 
@@ -34,8 +60,9 @@ current{id: I, time: T, level: L} :-
 
 currentAtSource{id: I, time: T, level: Clamped} :-
   time{time: T} &
-  source{id: I, supply: Size} &
-  math.sin{a: T, res: Raw} &
+  source{id: I, supply: Size, phaseShift: PhaseShift} &
+  T + PhaseShift = ShiftedT &
+  math.sin{a: ShiftedT, res: Raw} &
   Raw * Size = C &
   30 + C = ShiftedL &
   clamp{min: 0, max: 1000, val: ShiftedL, res: Clamped}.
@@ -112,28 +139,6 @@ internal.visualization{
     },
     query: batteryLevel{}
   }
-}.
-
-# TODO: move these editor declarations into some standard lib?
-internal.attrEditor{
-  relation: "source",
-  attr: "supply",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "sink",
-  attr: "demand",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "battery",
-  attr: "capacity",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "battery",
-  attr: "initialLevel",
-  editor: slider{min: 0, max: 100},
 }.
 
 internal.visualization{
