@@ -7,7 +7,10 @@ import { EditorNodeData } from "./types";
 import { getBaseRecord, getSpecForAttr } from "./util";
 
 export function EditorNode(props: NodeProps<EditorNodeData>) {
-  const rec = getBaseRecord(props.data.res);
+  const baseRec = getBaseRecord(props.data.res);
+  const viz = props.data.nodeVizSpecs.find(
+    (spec) => spec.relation === baseRec.relation
+  );
 
   return (
     <div
@@ -34,13 +37,16 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
         style={{ cursor: props.dragging ? "grabbing" : "grab" }}
       >
         <button onClick={() => props.data.onDelete()}>×</button>{" "}
-        <strong>{rec.relation}</strong>
+        <strong>{baseRec.relation}</strong>
       </div>
       <div>
-        {mapObjToList(rec.attrs, (attr, val) => {
+        {mapObjToList(baseRec.attrs, (attr, val) => {
+          if (attr == "pos") {
+            return null;
+          }
           const attrEditorSpec = getSpecForAttr(
             props.data.editors,
-            rec.relation,
+            baseRec.relation,
             attr
           );
           // console.log("RemovableNode", {
@@ -59,8 +65,8 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
                   term={val}
                   onChange={(newTerm) => {
                     props.data.onChange({
-                      ...rec,
-                      attrs: { ...rec.attrs, [attr]: newTerm },
+                      ...baseRec,
+                      attrs: { ...baseRec.attrs, [attr]: newTerm },
                     });
                   }}
                 />
