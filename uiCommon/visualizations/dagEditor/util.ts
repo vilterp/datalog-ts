@@ -9,6 +9,7 @@ import {
   Res,
   Statement,
   StringLit,
+  Term,
 } from "../../../core/types";
 import { max } from "../../../util/util";
 import { AttributeEditorSpec, TermEditorSpec } from "./types";
@@ -144,6 +145,23 @@ export function getSpecForAttr(
   return specs.find(
     (spec) => spec.attribute === attr && spec.relation === relation
   );
+}
+
+// I guess this only really works for Vegalite specs, doesn't it...
+export function insertIDIntoSpec(spec: Rec, id: Term): Rec {
+  return {
+    ...spec,
+    attrs: {
+      ...spec.attrs,
+      query: {
+        ...(spec.attrs.query as Rec),
+        attrs: {
+          ...(spec.attrs.query as Rec).attrs,
+          id,
+        },
+      },
+    },
+  };
 }
 
 export function dlToPos(rec: Rec): XYPosition {

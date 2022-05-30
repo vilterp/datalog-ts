@@ -1,17 +1,21 @@
 import React from "react";
 import { NodeProps, Handle } from "react-flow-renderer";
 import { IndividualViz } from "..";
+import { int } from "../../../core/types";
 import { mapObjToList } from "../../../util/util";
 import { BareTerm } from "../../dl/replViews";
 import { TermEditor } from "./editors";
 import { EditorNodeData } from "./types";
-import { getBaseRecord, getSpecForAttr } from "./util";
+import { getBaseRecord, getSpecForAttr, insertIDIntoSpec } from "./util";
 
 export function EditorNode(props: NodeProps<EditorNodeData>) {
   const baseRec = getBaseRecord(props.data.res);
   const vizSpec = props.data.nodeVizSpecs.find(
     (spec) => spec.relation === baseRec.relation
   );
+  const specForThisNode = vizSpec
+    ? insertIDIntoSpec(vizSpec.vizSpec, int(parseInt(props.id)))
+    : null;
 
   return (
     <div
@@ -44,7 +48,7 @@ export function EditorNode(props: NodeProps<EditorNodeData>) {
         <IndividualViz
           interp={props.data.overallSpec.interp}
           name={`${props.data.overallSpec.id}-${props.id}`}
-          spec={vizSpec.vizSpec}
+          spec={specForThisNode}
           highlightedTerm={props.data.overallSpec.highlightedTerm}
           setHighlightedTerm={props.data.overallSpec.setHighlightedTerm}
           runStatements={props.data.overallSpec.runStatements}
