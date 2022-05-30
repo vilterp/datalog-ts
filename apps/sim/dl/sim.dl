@@ -159,3 +159,29 @@ internal.visualization{
     ],
   },
 }.
+
+# `id` attribute gets put into the query
+internal.dagEditor.nodeViz{
+  relation: "source",
+  viz: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+    },
+    query: current{}
+  },
+}.
+
+# `id` attribute gets put into the query
+internal.dagEditor.nodeViz{
+  relation: "battery",
+  viz: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+    },
+    query: batteryLevel{}
+  },
+}.
