@@ -23,11 +23,11 @@ export function VizArea(props: {
         const name = (result.bindings.Name as StringLit).val;
         return (
           <CollapsibleWithHeading
+            key={`viz-${name}`}
             heading={name}
             storageKey={`viz-${name}`}
             content={
               <IndividualViz
-                key={idx}
                 interp={props.interp}
                 name={name}
                 spec={result.bindings.Spec as Rec}
