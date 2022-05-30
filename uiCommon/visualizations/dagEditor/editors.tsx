@@ -41,6 +41,7 @@ function Slider(props: {
       value={props.value}
       onChange={(evt) => {
         evt.stopPropagation();
+        evt.preventDefault();
         props.onChange(parseInt(evt.target.value));
       }}
     />

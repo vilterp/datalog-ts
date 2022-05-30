@@ -17,7 +17,8 @@ export function RemovableNode(props: NodeProps<RemovableNodeData>) {
         border: "1px solid #555",
         borderRadius: 5,
         padding: 10,
-        width: 150,
+        width: 250,
+        fontFamily: "monospace",
       }}
     >
       <Handle
