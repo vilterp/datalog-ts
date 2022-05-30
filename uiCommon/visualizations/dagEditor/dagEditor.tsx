@@ -181,7 +181,7 @@ function DAGEditor(props: VizArgs) {
     <pre style={{ color: "red" }}>{error}</pre>
   ) : (
     <>
-      <div style={{ width: 700, height: 600 }}>
+      <div style={{ width: 1100, height: 900 }}>
         <ReactFlow
           edgeTypes={EDGE_TYPES}
           nodeTypes={NODE_TYPES}
