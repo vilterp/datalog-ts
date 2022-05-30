@@ -30,11 +30,11 @@ import {
   withID,
 } from "./util";
 import { RemovableEdge } from "./removableEdge";
-import { RemovableNode } from "./removableNode";
+import { EditorNode } from "./editorNode";
 import {
   AttributeEditorSpec,
   RemovableEdgeData,
-  RemovableNodeData,
+  EditorNodeData,
 } from "./types";
 
 export const dagEditor: VizTypeSpec = {
@@ -46,7 +46,7 @@ export const dagEditor: VizTypeSpec = {
 function DAGEditor(props: VizArgs) {
   let nodeResults: Res[] = [];
   let edgeResults: Res[] = [];
-  let nodes: Node<RemovableNodeData>[] = [];
+  let nodes: Node<EditorNodeData>[] = [];
   let edges: Edge<RemovableEdgeData>[] = [];
   let newNodeTemplates: Term[] = [];
   let attrEditorSpecs: AttributeEditorSpec[] = [];
@@ -69,11 +69,11 @@ function DAGEditor(props: VizArgs) {
       const baseRec = getBaseRecord(res);
       return {
         id: fastPPT(rec.attrs.id),
-        type: "removableNode",
+        type: "editorNode",
         data: {
           res: res,
           editors: attrEditorSpecs,
-          onClick: () => {
+          onDelete: () => {
             props.runStatements(
               deleteNodeAndConnectedEdges(props.interp, edgesQuery, res)
             );
@@ -197,7 +197,7 @@ const EDGE_TYPES: {
 };
 
 const NODE_TYPES: {
-  [name: string]: ComponentType<NodeProps<RemovableNodeData>>;
+  [name: string]: ComponentType<NodeProps<EditorNodeData>>;
 } = {
-  removableNode: RemovableNode,
+  editorNode: EditorNode,
 };

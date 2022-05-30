@@ -10,10 +10,10 @@ export type TermEditorSpec = SliderSpec;
 
 export type SliderSpec = { type: "Slider"; min: number; max: number };
 
-export type RemovableNodeData = {
+export type EditorNodeData = {
   res: Res;
   editors: AttributeEditorSpec[];
-  onClick: () => void;
+  onDelete: () => void;
   onChange: (newTerm: Term) => void;
 };
 
