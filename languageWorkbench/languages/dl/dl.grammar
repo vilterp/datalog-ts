@@ -22,11 +22,13 @@ assignmentOnRight :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, 
 assignmentOnLeft :- [result:term, ws, "=", ws, left:term, ws, arithmeticOp, ws, right:term].
 arithmeticOp :- ("+" | "*" | "-").
 
-term :- (record | int | var | string | bool | array | placeholder).
+term :- (record | int | var | string | bool | array | dict | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 record :- [ident, "{", ws, recordAttrs, ws, "}"].
-recordAttrs :- repSep((keyValue | placeholder), commaSpace).
-keyValue :- [ident, ":", ws, term].
+dict :- ["{", repSep(dictKeyValue, commaSpace), "}"].
+dictKeyValue :- [key:term, ":", ws, value:term].
+recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
+recordKeyValue :- [ident, ":", ws, term].
 int :- [("-" | ""), first:num, repSep(num, "")].
 bool :- ("true" | "false").
 array :- ["[", ws, repSep(term, commaSpace), ws, "]"].

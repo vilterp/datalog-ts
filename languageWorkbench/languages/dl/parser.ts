@@ -101,6 +101,20 @@ export type DLDeleteFact = {
   span: Span;
   record: DLRecord;
 };
+export type DLDict = {
+  type: "Dict";
+  text: string;
+  span: Span;
+  dictKeyValue: DLDictKeyValue[];
+  commaSpace: DLCommaSpace[];
+};
+export type DLDictKeyValue = {
+  type: "DictKeyValue";
+  text: string;
+  span: Span;
+  key: DLTerm;
+  value: DLTerm;
+};
 export type DLDisjunct = {
   type: "Disjunct";
   text: string;
@@ -126,13 +140,6 @@ export type DLInt = {
   span: Span;
   first: DLNum;
   num: DLNum[];
-};
-export type DLKeyValue = {
-  type: "KeyValue";
-  text: string;
-  span: Span;
-  ident: DLIdent;
-  term: DLTerm;
 };
 export type DLLoadKW = {
   type: "LoadKW";
@@ -197,9 +204,16 @@ export type DLRecordAttrs = {
   type: "RecordAttrs";
   text: string;
   span: Span;
-  keyValue: DLKeyValue[];
+  recordKeyValue: DLRecordKeyValue[];
   placeholder: DLPlaceholder[];
   commaSpace: DLCommaSpace[];
+};
+export type DLRecordKeyValue = {
+  type: "RecordKeyValue";
+  text: string;
+  span: Span;
+  ident: DLIdent;
+  term: DLTerm;
 };
 export type DLRule = {
   type: "Rule";
@@ -245,6 +259,7 @@ export type DLTerm =
   | DLString
   | DLBool
   | DLArray
+  | DLDict
   | DLPlaceholder;
 export type DLVar = {
   type: "Var";
@@ -337,6 +352,16 @@ export function parseDeleteFact(input: string): DLDeleteFact {
   const ruleTree = extractRuleTree(traceTree);
   return extractDeleteFact(input, ruleTree);
 }
+export function parseDict(input: string): DLDict {
+  const traceTree = parserlib.parse(GRAMMAR, "dict", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractDict(input, ruleTree);
+}
+export function parseDictKeyValue(input: string): DLDictKeyValue {
+  const traceTree = parserlib.parse(GRAMMAR, "dictKeyValue", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractDictKeyValue(input, ruleTree);
+}
 export function parseDisjunct(input: string): DLDisjunct {
   const traceTree = parserlib.parse(GRAMMAR, "disjunct", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -356,11 +381,6 @@ export function parseInt(input: string): DLInt {
   const traceTree = parserlib.parse(GRAMMAR, "int", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractInt(input, ruleTree);
-}
-export function parseKeyValue(input: string): DLKeyValue {
-  const traceTree = parserlib.parse(GRAMMAR, "keyValue", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractKeyValue(input, ruleTree);
 }
 export function parseLoadKW(input: string): DLLoadKW {
   const traceTree = parserlib.parse(GRAMMAR, "loadKW", input);
@@ -416,6 +436,11 @@ export function parseRecordAttrs(input: string): DLRecordAttrs {
   const traceTree = parserlib.parse(GRAMMAR, "recordAttrs", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRecordAttrs(input, ruleTree);
+}
+export function parseRecordKeyValue(input: string): DLRecordKeyValue {
+  const traceTree = parserlib.parse(GRAMMAR, "recordKeyValue", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractRecordKeyValue(input, ruleTree);
 }
 export function parseRule(input: string): DLRule {
   const traceTree = parserlib.parse(GRAMMAR, "rule", input);
@@ -635,6 +660,28 @@ function extractDeleteFact(input: string, node: RuleTree): DLDeleteFact {
     record: extractRecord(input, childByName(node, "record", null)),
   };
 }
+function extractDict(input: string, node: RuleTree): DLDict {
+  return {
+    type: "Dict",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    dictKeyValue: childrenByName(node, "dictKeyValue").map((child) =>
+      extractDictKeyValue(input, child)
+    ),
+    commaSpace: childrenByName(node, "commaSpace").map((child) =>
+      extractCommaSpace(input, child)
+    ),
+  };
+}
+function extractDictKeyValue(input: string, node: RuleTree): DLDictKeyValue {
+  return {
+    type: "DictKeyValue",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    key: extractTerm(input, childByName(node, "term", "key")),
+    value: extractTerm(input, childByName(node, "term", "value")),
+  };
+}
 function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
   return {
     type: "Disjunct",
@@ -671,15 +718,6 @@ function extractInt(input: string, node: RuleTree): DLInt {
     span: node.span,
     first: extractNum(input, childByName(node, "num", "first")),
     num: childrenByName(node, "num").map((child) => extractNum(input, child)),
-  };
-}
-function extractKeyValue(input: string, node: RuleTree): DLKeyValue {
-  return {
-    type: "KeyValue",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
-    term: extractTerm(input, childByName(node, "term", null)),
   };
 }
 function extractLoadKW(input: string, node: RuleTree): DLLoadKW {
@@ -775,8 +813,8 @@ function extractRecordAttrs(input: string, node: RuleTree): DLRecordAttrs {
     type: "RecordAttrs",
     text: textForSpan(input, node.span),
     span: node.span,
-    keyValue: childrenByName(node, "keyValue").map((child) =>
-      extractKeyValue(input, child)
+    recordKeyValue: childrenByName(node, "recordKeyValue").map((child) =>
+      extractRecordKeyValue(input, child)
     ),
     placeholder: childrenByName(node, "placeholder").map((child) =>
       extractPlaceholder(input, child)
@@ -784,6 +822,18 @@ function extractRecordAttrs(input: string, node: RuleTree): DLRecordAttrs {
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
     ),
+  };
+}
+function extractRecordKeyValue(
+  input: string,
+  node: RuleTree
+): DLRecordKeyValue {
+  return {
+    type: "RecordKeyValue",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    term: extractTerm(input, childByName(node, "term", null)),
   };
 }
 function extractRule(input: string, node: RuleTree): DLRule {
@@ -873,6 +923,9 @@ function extractTerm(input: string, node: RuleTree): DLTerm {
     }
     case "array": {
       return extractArray(input, child);
+    }
+    case "dict": {
+      return extractDict(input, child);
     }
     case "placeholder": {
       return extractPlaceholder(input, child);
@@ -1471,6 +1524,11 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
+        rule: "dict",
+      },
+      {
+        type: "Ref",
+        captureName: null,
         rule: "placeholder",
       },
     ],
@@ -1546,6 +1604,56 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
+  dict: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Text",
+        value: "{",
+      },
+      {
+        type: "RepSep",
+        rep: {
+          type: "Ref",
+          captureName: null,
+          rule: "dictKeyValue",
+        },
+        sep: {
+          type: "Ref",
+          captureName: null,
+          rule: "commaSpace",
+        },
+      },
+      {
+        type: "Text",
+        value: "}",
+      },
+    ],
+  },
+  dictKeyValue: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: "key",
+        rule: "term",
+      },
+      {
+        type: "Text",
+        value: ":",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: "value",
+        rule: "term",
+      },
+    ],
+  },
   recordAttrs: {
     type: "RepSep",
     rep: {
@@ -1554,7 +1662,7 @@ const GRAMMAR: Grammar = {
         {
           type: "Ref",
           captureName: null,
-          rule: "keyValue",
+          rule: "recordKeyValue",
         },
         {
           type: "Ref",
@@ -1569,7 +1677,7 @@ const GRAMMAR: Grammar = {
       rule: "commaSpace",
     },
   },
-  keyValue: {
+  recordKeyValue: {
     type: "Sequence",
     items: [
       {

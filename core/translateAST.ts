@@ -111,7 +111,7 @@ export function parserTermToInternal(term: DLTerm): Term {
       return rec(
         term.ident.text,
         mapListToObj(
-          term.recordAttrs.keyValue.map((keyValue) => ({
+          term.recordAttrs.recordKeyValue.map((keyValue) => ({
             key: keyValue.ident.text,
             value: parserTermToInternal(keyValue.term),
           }))
