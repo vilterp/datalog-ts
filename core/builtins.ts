@@ -22,6 +22,10 @@ export const BUILTINS: { [name: string]: Builtin } = {
   concat,
   invert,
   clamp,
+  // dict
+  "dict.add": dictAdd,
+  "dict.get": dictGet,
+  "dict.remove": dictRemove,
 };
 
 function eq(input: Rec): Rec[] {
@@ -176,6 +180,34 @@ function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
   if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
     const result = cmp(termCmp(input.attrs.a, input.attrs.b));
     return result ? [input] : [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function dictAdd(input: Rec): Rec[] {
+  const dictInput = input.attrs.dict;
+  const key = input.attrs.key;
+  const val = input.attrs.key;
+  const dictOutput = input.attrs.out;
+
+  if (
+    dictInput.type === "Dict" &&
+    key.type === "StringLit" &&
+    val.type !== "Var" &&
+    dictOutput.type === "Var"
+  ) {
+    const foundVal = dictInput.map[key.val];
+    return foundVal
+      ? [
+          {
+            ...input,
+            attrs: {
+              ...input.attrs,
+              out: foundVal,
+            },
+          },
+        ]
+      : [];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
