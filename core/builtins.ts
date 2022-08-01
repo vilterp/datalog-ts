@@ -28,7 +28,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "dict.item": dictItem,
   "dict.remove": dictRemove,
   // array
-  append,
+  "array.append": arrayAppend,
 };
 
 function eq(input: Rec): Rec[] {
@@ -271,7 +271,7 @@ function dictRemove(input: Rec): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-function append(input: Rec): Rec[] {
+function arrayAppend(input: Rec): Rec[] {
   const arrayInput = input.attrs.in;
   const value = input.attrs.value;
   const arrayOutput = input.attrs.out;
