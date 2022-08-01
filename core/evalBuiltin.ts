@@ -6,7 +6,10 @@ export function evalBuiltin(term: Rec, scope: Bindings) {
   const builtin = BUILTINS[term.relation];
   const substituted = substitute(term, scope) as Rec;
   const records = builtin(substituted);
-  // console.log({ substituted: ppt(substituted), res: res.map(ppr) });
+  // console.log("evalBuiltin", {
+  //   substituted: ppt(substituted),
+  //   res: records.map(ppt),
+  // });
   const results = records.map(
     (rec): Res => ({
       term: rec,
@@ -14,6 +17,6 @@ export function evalBuiltin(term: Rec, scope: Bindings) {
       trace: { type: "BaseFactTrace" }, // TODO: BuiltinTrace?
     })
   );
-  // console.log(results.map(ppr));
+  // console.log("evalBuiltin", "results", results);
   return results;
 }
