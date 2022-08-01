@@ -112,7 +112,7 @@ export type DLDictKeyValue = {
   type: "DictKeyValue";
   text: string;
   span: Span;
-  key: DLTerm;
+  key: DLString;
   value: DLTerm;
 };
 export type DLDisjunct = {
@@ -678,7 +678,7 @@ function extractDictKeyValue(input: string, node: RuleTree): DLDictKeyValue {
     type: "DictKeyValue",
     text: textForSpan(input, node.span),
     span: node.span,
-    key: extractTerm(input, childByName(node, "term", "key")),
+    key: extractString(input, childByName(node, "string", "key")),
     value: extractTerm(input, childByName(node, "term", "value")),
   };
 }
@@ -1636,7 +1636,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "key",
-        rule: "term",
+        rule: "string",
       },
       {
         type: "Text",

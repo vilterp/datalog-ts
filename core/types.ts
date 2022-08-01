@@ -1,5 +1,3 @@
-import * as immutable from "immutable";
-
 export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Fact"; record: Rec }
@@ -69,7 +67,7 @@ export type Rec = {
 
 export type Dict = {
   type: "Dict";
-  map: immutable.Map<Term, Term>;
+  map: { [key: string]: Term };
 };
 
 export type Bool = { type: "Bool"; val: boolean };
@@ -183,6 +181,7 @@ export function scopePathEq(left: ScopePath, right: ScopePath): boolean {
 export type TermWithBindings =
   | RecordWithBindings
   | ArrayWithBindings
+  | DictWithBindings
   | BinExprWithBindings
   | NegationWithBindings
   | AggregationWithBindings
@@ -199,6 +198,11 @@ export type RecordWithBindings = {
 export type ArrayWithBindings = {
   type: "ArrayWithBindings";
   items: TermWithBindings[];
+};
+
+export type DictWithBindings = {
+  type: "DictWithBindings";
+  map: { [key: string]: TermWithBindings };
 };
 
 export type BinExprWithBindings = {

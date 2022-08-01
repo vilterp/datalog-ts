@@ -1,5 +1,6 @@
 import { array, Bindings, rec, str, Term, VarMappings } from "./types";
 import { mapObj, mapObjToList } from "../util/util";
+import { jsonEq } from "../util/json";
 
 export function unify(
   prior: Bindings,
@@ -93,10 +94,10 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
       switch (right.type) {
         case "Dict": {
           let accum = {};
-          for (const key of left.map.keySeq()) {
+          for (const key of Object.keys(left.map)) {
             // TODO: do bindings fold across keys... how would that be ordered...
-            const leftVal = left.map.get(key);
-            const rightVal = right.map.get(key);
+            const leftVal = left.map[key];
+            const rightVal = right.map[key];
             if (!rightVal) {
               continue;
             }
@@ -121,7 +122,7 @@ export function termSameType(left: Term, right: Term): boolean {
 }
 
 export function termEq(left: Term, right: Term): boolean {
-  return termCmp(left, right) === 0;
+  return jsonEq(left, right);
 }
 
 // 0: equal
@@ -175,24 +176,20 @@ export function termCmp(left: Term, right: Term): number {
       switch (right.type) {
         case "Dict": {
           // TODO: do this comparison without materializing both left and right arrays
-          const leftArr: Term[] = left.map
-            .entrySeq()
-            .map(
-              ([key, val]): Term => ({
-                type: "Array",
-                items: [key, val],
-              })
-            )
-            .toArray();
-          const rightArr: Term[] = right.map
-            .entrySeq()
-            .map(
-              ([key, val]): Term => ({
-                type: "Array",
-                items: [key, val],
-              })
-            )
-            .toArray();
+          const leftArr: Term[] = mapObjToList(
+            left.map,
+            (key, val): Term => ({
+              type: "Array",
+              items: [str(key), val],
+            })
+          );
+          const rightArr: Term[] = mapObjToList(
+            right.map,
+            (key, val): Term => ({
+              type: "Array",
+              items: [str(key), val],
+            })
+          );
           return lexicographical(leftArr, rightArr);
         }
         default:

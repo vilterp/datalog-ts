@@ -26,7 +26,7 @@ term :- (record | int | var | string | bool | array | dict | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 record :- [ident, "{", ws, recordAttrs, ws, "}"].
 dict :- ["{", repSep(dictKeyValue, commaSpace), "}"].
-dictKeyValue :- [key:term, ":", ws, value:term].
+dictKeyValue :- [key:string, ":", ws, value:term].
 recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
 recordKeyValue :- [ident, ":", ws, term].
 int :- [("-" | ""), first:num, repSep(num, "")].
