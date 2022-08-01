@@ -1,3 +1,5 @@
+import * as immutable from "immutable";
+
 export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Fact"; record: Rec }
@@ -47,7 +49,15 @@ type Aggregation = {
 
 // === Terms ===
 
-export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
+export type Term =
+  | Rec
+  | Dict
+  | StringLit
+  | Var
+  | AndClause
+  | Bool
+  | Int
+  | Array;
 
 export type Var = { type: "Var"; name: string };
 
@@ -55,6 +65,11 @@ export type Rec = {
   type: "Record";
   relation: string;
   attrs: { [key: string]: Term };
+};
+
+export type Dict = {
+  type: "Dict";
+  map: immutable.Map<Term, Term>;
 };
 
 export type Bool = { type: "Bool"; val: boolean };
