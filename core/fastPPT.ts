@@ -25,5 +25,10 @@ export function fastPPT(term: Term): string {
         term.attrs,
         (k, v) => `${k}: ${fastPPT(v)}`
       ).join(", ")}}`;
+    case "Dict":
+      return `${mapObjToListUnordered(
+        term.map,
+        (key, value) => `${key}: ${fastPPT(value)}`
+      ).join(", ")}}`;
   }
 }

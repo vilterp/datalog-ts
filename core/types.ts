@@ -47,7 +47,15 @@ type Aggregation = {
 
 // === Terms ===
 
-export type Term = Rec | StringLit | Var | AndClause | Bool | Int | Array;
+export type Term =
+  | Rec
+  | Dict
+  | StringLit
+  | Var
+  | AndClause
+  | Bool
+  | Int
+  | Array;
 
 export type Var = { type: "Var"; name: string };
 
@@ -55,6 +63,11 @@ export type Rec = {
   type: "Record";
   relation: string;
   attrs: { [key: string]: Term };
+};
+
+export type Dict = {
+  type: "Dict";
+  map: { [key: string]: Term };
 };
 
 export type Bool = { type: "Bool"; val: boolean };
@@ -106,6 +119,10 @@ export function varr(name: string): Var {
 
 export function array(items: Term[]): Array {
   return { type: "Array", items: items };
+}
+
+export function dict(map: { [key: string]: Term }): Dict {
+  return { type: "Dict", map };
 }
 
 export const trueTerm: Term = { type: "Bool", val: true };
@@ -168,6 +185,7 @@ export function scopePathEq(left: ScopePath, right: ScopePath): boolean {
 export type TermWithBindings =
   | RecordWithBindings
   | ArrayWithBindings
+  | DictWithBindings
   | BinExprWithBindings
   | NegationWithBindings
   | AggregationWithBindings
@@ -184,6 +202,11 @@ export type RecordWithBindings = {
 export type ArrayWithBindings = {
   type: "ArrayWithBindings";
   items: TermWithBindings[];
+};
+
+export type DictWithBindings = {
+  type: "DictWithBindings";
+  map: { [key: string]: TermWithBindings };
 };
 
 export type BinExprWithBindings = {

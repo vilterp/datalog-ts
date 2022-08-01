@@ -26,6 +26,13 @@ export function makeTermWithBindings(
         type: "ArrayWithBindings",
         items: term.items.map((item) => makeTermWithBindings(item, bindings)),
       };
+    case "Dict":
+      return {
+        type: "DictWithBindings",
+        map: mapObj(term.map, (key, value) =>
+          makeTermWithBindings(value, bindings)
+        ),
+      };
     case "Negation":
       return {
         type: "NegationWithBindings",

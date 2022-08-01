@@ -12,6 +12,7 @@ import {
   relationalTrue,
   relationalFalse,
   rec,
+  baseFactTrace,
 } from "../types";
 import {
   applyMappings,
@@ -286,6 +287,8 @@ function doEvaluate(
         });
         return aggregatedGroups;
       }
+      default:
+        return [{ term, bindings: {}, trace: baseFactTrace }];
     }
   })();
   // console.groupEnd();

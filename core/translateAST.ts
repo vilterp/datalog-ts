@@ -3,14 +3,16 @@ import {
   DLComparison,
   DLRule,
   DLStatement,
+  DLString,
   DLTerm,
 } from "../languageWorkbench/languages/dl/parser";
 import { deEscape } from "../languageWorkbench/parserlib/types";
-import { mapListToObj } from "../util/util";
+import { mapListToObj, pairsToObj } from "../util/util";
 import {
   AndClause,
   array,
   bool,
+  dict,
   int,
   rec,
   Rec,
@@ -97,6 +99,15 @@ export function parserTermToInternal(term: DLTerm): Term {
   switch (term.type) {
     case "Array":
       return array(term.term.map(parserTermToInternal));
+    case "Dict":
+      return dict(
+        pairsToObj(
+          term.dictKeyValue.map((kv) => ({
+            key: parserStrToInternal(kv.key),
+            val: parserTermToInternal(kv.value),
+          }))
+        )
+      );
     case "Bool":
       return bool(term.text === "true");
     case "Int":
@@ -104,20 +115,24 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Placeholder":
       return rec("???", {});
     case "String":
-      return str(deEscape(term.stringChar.map((c) => c.text).join("")));
+      return str(parserStrToInternal(term));
     case "Var":
       return varr(term.text);
     case "Record":
       return rec(
         term.ident.text,
         mapListToObj(
-          term.recordAttrs.keyValue.map((keyValue) => ({
+          term.recordAttrs.recordKeyValue.map((keyValue) => ({
             key: keyValue.ident.text,
             value: parserTermToInternal(keyValue.term),
           }))
         )
       );
   }
+}
+
+function parserStrToInternal(term: DLString): string {
+  return deEscape(term.stringChar.map((c) => c.text).join(""));
 }
 
 // some real desugaring!
