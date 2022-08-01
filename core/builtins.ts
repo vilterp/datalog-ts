@@ -24,8 +24,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   invert,
   clamp,
   // dict
-  "dict.add": dictAdd,
-  "dict.get": dictGet,
+  "dict.set": dictSet,
+  "dict.item": dictItem,
   "dict.remove": dictRemove,
   // array
   append,
@@ -189,60 +189,63 @@ function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
 
 // === Dicts ===
 
-function dictAdd(input: Rec): Rec[] {
+function dictSet(input: Rec): Rec[] {
   const dictInput = input.attrs.in;
   const key = input.attrs.key;
-  const val = input.attrs.value;
+  const value = input.attrs.value;
   const dictOutput = input.attrs.out;
 
   if (
     dictInput.type === "Dict" &&
     key.type === "StringLit" &&
-    val.type !== "Var" &&
+    value.type !== "Var" &&
     dictOutput.type === "Var"
   ) {
     return [
-      {
-        ...input,
-        attrs: {
-          ...input.attrs,
-          out: {
-            ...dictInput,
-            map: {
-              ...dictInput.map,
-              [key.val]: val,
-            },
-          },
-        },
-      },
+      rec(input.relation, {
+        in: dictInput,
+        key,
+        value,
+        out: dict({
+          ...dictInput.map,
+          [key.val]: value,
+        }),
+      }),
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-function dictGet(input: Rec): Rec[] {
+function dictItem(input: Rec): Rec[] {
   const dictInput = input.attrs.dict;
   const key = input.attrs.key;
-  const val = input.attrs.value;
+  const value = input.attrs.value;
 
   if (
     dictInput.type === "Dict" &&
     key.type === "StringLit" &&
-    val.type === "Var"
+    value.type === "Var"
   ) {
     const foundVal = dictInput.map[key.val];
     if (!foundVal) {
       return [];
     }
     return [
-      {
-        ...input,
-        attrs: {
-          ...input.attrs,
-          value: foundVal,
-        },
-      },
+      rec(input.relation, {
+        dict: dictInput,
+        key,
+        value: foundVal,
+      }),
     ];
+  }
+  if (dictInput.type === "Dict" && key.type === "Var" && value.type === "Var") {
+    return util.mapObjToList(dictInput.map, (dictKey, dictVal) =>
+      rec(input.relation, {
+        dict: dictInput,
+        key: str(dictKey),
+        value: dictVal,
+      })
+    );
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }

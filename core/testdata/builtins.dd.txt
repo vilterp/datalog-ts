@@ -71,15 +71,21 @@ concat{a: "hello ", b: "world", res: V}?
 application/datalog
 concat{a: "hello ", b: "world", res: "hello world"}.
 
-dict.add{in: {}, key: "foo", value: 2, out: D}?
+dict.set{in: {}, key: "foo", value: 2, out: D}?
 ----
 application/datalog
-dict.add{in: {}, key: "foo", out: {"foo": 2}, value: 2}.
+dict.set{in: {}, key: "foo", out: {"foo": 2}, value: 2}.
 
-dict.get{dict: {"foo": 2}, key: "foo", value: V}?
+dict.item{dict: {"foo": 2}, key: "foo", value: V}?
 ----
 application/datalog
-dict.get{dict: {"foo": 2}, key: "foo", value: 2}.
+dict.item{dict: {"foo": 2}, key: "foo", value: 2}.
+
+dict.item{dict: {"foo": 2, "bar": 3}, key: K, value: V}?
+----
+application/datalog
+dict.item{dict: {"bar": 3, "foo": 2}, key: "bar", value: 3}.
+dict.item{dict: {"bar": 3, "foo": 2}, key: "foo", value: 2}.
 
 dict.remove{in: {"foo": 2}, key: "foo", out: D}?
 ----
