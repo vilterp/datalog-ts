@@ -1,6 +1,5 @@
 import { array, Bindings, rec, str, Term, VarMappings } from "./types";
 import { mapObj, mapObjToList } from "../util/util";
-import { jsonEq } from "../util/json";
 
 export function unify(
   prior: Bindings,
@@ -153,7 +152,7 @@ export function termCmp(left: Term, right: Term): number {
       }
     case "Record":
       switch (right.type) {
-        case "Record":
+        case "Record": {
           const relCmp = left.relation.localeCompare(right.relation);
           if (relCmp !== 0) {
             return relCmp;
@@ -168,11 +167,39 @@ export function termCmp(left: Term, right: Term): number {
             items: [str(key), val],
           }));
           return lexicographical(leftArr, rightArr);
+        }
+        default:
+          throw new Error(`not comparable: ${left.type} ${right.type}`);
+      }
+    case "Dict":
+      switch (right.type) {
+        case "Dict": {
+          // TODO: do this comparison without materializing both left and right arrays
+          const leftArr: Term[] = left.map
+            .entrySeq()
+            .map(
+              ([key, val]): Term => ({
+                type: "Array",
+                items: [key, val],
+              })
+            )
+            .toArray();
+          const rightArr: Term[] = right.map
+            .entrySeq()
+            .map(
+              ([key, val]): Term => ({
+                type: "Array",
+                items: [key, val],
+              })
+            )
+            .toArray();
+          return lexicographical(leftArr, rightArr);
+        }
         default:
           throw new Error(`not comparable: ${left.type} ${right.type}`);
       }
     default:
-      throw new Error(`unimplemented: ${left} ${right}`);
+      throw new Error(`not comparable: ${left.type} ${right.type}`);
   }
 }
 
