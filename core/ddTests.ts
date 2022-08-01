@@ -67,6 +67,7 @@ function coreTests(
     "literals",
     "negation",
     "aggregation",
+    "paths",
   ].map((name) => ({
     name,
     test() {

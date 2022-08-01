@@ -1,0 +1,21 @@
+edge{from: 1, to: 2}.
+edge{from: 2, to: 3}.
+edge{from: 3, to: 4}.
+path{from: A, to: B, path: P} :-
+  oneEdge{from: A, to: B, path: P} |
+  multipleEdges{from: A, to: B, path: P}.
+oneEdge{from: A, to: B, path: [A, B]} :-
+  edge{from: A, to: B}.
+multipleEdges{from: A, to: B, path: P} :-
+  edge{from: A, to: C} &
+  path{from: C, to: B, path: Rest} &
+  array.prepend{value: A, in: Rest, out: P}.
+path{}?
+----
+application/datalog
+path{from: 1, path: [1,2,3,4], to: 4}.
+path{from: 1, path: [1,2,3], to: 3}.
+path{from: 1, path: [1,2], to: 2}.
+path{from: 2, path: [2,3,4], to: 4}.
+path{from: 2, path: [2,3], to: 3}.
+path{from: 3, path: [3,4], to: 4}.
