@@ -1,0 +1,19 @@
+instr{pc: 1, op: print{msg: "hello"}}.
+instr{pc: 2, op: spawn{}}.
+instr{pc: 3, op: print{msg: "world"}}.
+
+state{time: T, state: S} :-
+  initialState{time: T, state: S} |
+  state{time: T, state: S}.
+
+initialState{time: 0, state: {"1": 0}}.
+
+step{time: T, state: S} :-
+  PrevT = T - 1 &
+  state{time: PrevT, state: PrevState} &
+  dict.get{dict: PrevState, key: ThreadID, val: ThreadState} &
+  stepThread{before: ThreadState, after: NewThreadState} &
+  dict.set{in: PrevState, key: ThreadID, value: NewThreadState, out: S}.
+
+stepThread{before: B, after: A} :-
+  instr{pc: 1, op: Op}.
