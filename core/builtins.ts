@@ -276,6 +276,11 @@ function append(input: Rec): Rec[] {
   const value = input.attrs.value;
   const arrayOutput = input.attrs.out;
 
+  console.log("append", {
+    input: input.attrs.in.type,
+    value: input.attrs.value.type,
+    output: input.attrs.out.type,
+  });
   if (
     arrayInput.type === "Array" &&
     value.type !== "Var" &&
@@ -286,6 +291,23 @@ function append(input: Rec): Rec[] {
         in: arrayInput,
         value,
         out: array([...arrayInput.items, value]),
+      }),
+    ];
+  }
+  if (
+    arrayInput.type === "Var" &&
+    value.type === "Var" &&
+    arrayOutput.type === "Array"
+  ) {
+    const items = arrayOutput.items;
+    if (items.length === 0) {
+      return [];
+    }
+    return [
+      rec(input.relation, {
+        in: array(items.slice(0, items.length - 1)),
+        value: items[items.length - 1],
+        out: arrayOutput,
       }),
     ];
   }

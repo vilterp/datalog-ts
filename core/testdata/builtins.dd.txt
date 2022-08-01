@@ -96,3 +96,8 @@ append{in: [1,2,3], value: 4, out: V}?
 ----
 application/datalog
 append{in: [1,2,3], out: [1,2,3,4], value: 4}.
+
+append{in: AllButLast, value: Last, out: [1,2,3]}?
+----
+application/datalog
+append{in: [1,2], out: [1,2,3], value: 3}.
