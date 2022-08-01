@@ -1,7 +1,8 @@
 import { ppt } from "./pretty";
-import { int, rec, Rec, relationalBool, str } from "./types";
+import { dict, int, rec, Rec, relationalBool, str } from "./types";
 import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
+import { removeKey } from "../util/util";
 
 export type Builtin = (rec: Rec) => Rec[];
 
@@ -184,10 +185,12 @@ function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
+// === Dicts ===
+
 function dictAdd(input: Rec): Rec[] {
   const dictInput = input.attrs.dict;
   const key = input.attrs.key;
-  const val = input.attrs.key;
+  const val = input.attrs.val;
   const dictOutput = input.attrs.out;
 
   if (
@@ -196,18 +199,71 @@ function dictAdd(input: Rec): Rec[] {
     val.type !== "Var" &&
     dictOutput.type === "Var"
   ) {
-    const foundVal = dictInput.map[key.val];
-    return foundVal
-      ? [
-          {
-            ...input,
-            attrs: {
-              ...input.attrs,
-              out: foundVal,
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          out: {
+            ...dictInput,
+            map: {
+              ...dictInput.map,
+              [key.val]: val,
             },
           },
-        ]
-      : [];
+        },
+      },
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function dictGet(input: Rec): Rec[] {
+  const dictInput = input.attrs.dict;
+  const key = input.attrs.key;
+  const val = input.attrs.val;
+
+  if (
+    dictInput.type === "Dict" &&
+    key.type === "StringLit" &&
+    val.type === "Var"
+  ) {
+    const foundVal = dictInput.map[key.val];
+    if (!foundVal) {
+      return [];
+    }
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          val: foundVal,
+        },
+      },
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function dictRemove(input: Rec): Rec[] {
+  const dictInput = input.attrs.dict;
+  const key = input.attrs.key;
+  const dictOutput = input.attrs.out;
+
+  if (
+    dictInput.type === "Dict" &&
+    key.type === "StringLit" &&
+    dictOutput.type === "Var"
+  ) {
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          out: dict(removeKey(dictInput.map, key.val)),
+        },
+      },
+    ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }

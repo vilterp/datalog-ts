@@ -148,6 +148,15 @@ export function remove<T>(arr: T[], item: T): T[] {
   return arr.filter((thing) => item !== thing);
 }
 
+export function removeKey<T>(
+  obj: { [key: string]: T },
+  key: string
+): { [key: string]: T } {
+  const out = { ...obj };
+  delete out[key];
+  return out;
+}
+
 export function toggle<T>(arr: T[], item: T): T[] {
   return contains(arr, item) ? remove(arr, item) : [...arr, item];
 }
