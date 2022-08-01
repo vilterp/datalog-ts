@@ -1,5 +1,5 @@
 import { ppt } from "./pretty";
-import { dict, int, rec, Rec, relationalBool, str } from "./types";
+import { array, dict, int, rec, Rec, str } from "./types";
 import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
 import { removeKey } from "../util/util";
@@ -28,7 +28,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "dict.item": dictItem,
   "dict.remove": dictRemove,
   // array
-  append,
+  "array.append": arrayAppend,
+  "array.prepend": arrayPrepend,
 };
 
 function eq(input: Rec): Rec[] {
@@ -261,19 +262,17 @@ function dictRemove(input: Rec): Rec[] {
     dictOutput.type === "Var"
   ) {
     return [
-      {
-        ...input,
-        attrs: {
-          ...input.attrs,
-          out: dict(removeKey(dictInput.map, key.val)),
-        },
-      },
+      rec(input.relation, {
+        in: dictInput,
+        key,
+        out: dict(removeKey(dictInput.map, key.val)),
+      }),
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
 
-function append(input: Rec): Rec[] {
+function arrayAppend(input: Rec): Rec[] {
   const arrayInput = input.attrs.in;
   const value = input.attrs.value;
   const arrayOutput = input.attrs.out;
@@ -284,16 +283,66 @@ function append(input: Rec): Rec[] {
     arrayOutput.type === "Var"
   ) {
     return [
-      {
-        ...input,
-        attrs: {
-          ...input.attrs,
-          out: {
-            ...arrayInput,
-            items: [...arrayInput.items, value],
-          },
-        },
-      },
+      rec(input.relation, {
+        in: arrayInput,
+        value,
+        out: array([...arrayInput.items, value]),
+      }),
+    ];
+  }
+  if (
+    arrayInput.type === "Var" &&
+    value.type === "Var" &&
+    arrayOutput.type === "Array"
+  ) {
+    const items = arrayOutput.items;
+    if (items.length === 0) {
+      return [];
+    }
+    return [
+      rec(input.relation, {
+        in: array(items.slice(0, items.length - 1)),
+        value: items[items.length - 1],
+        out: arrayOutput,
+      }),
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function arrayPrepend(input: Rec): Rec[] {
+  const arrayInput = input.attrs.in;
+  const value = input.attrs.value;
+  const arrayOutput = input.attrs.out;
+
+  if (
+    arrayInput.type === "Array" &&
+    value.type !== "Var" &&
+    arrayOutput.type === "Var"
+  ) {
+    return [
+      rec(input.relation, {
+        in: arrayInput,
+        value,
+        out: array([value, ...arrayInput.items]),
+      }),
+    ];
+  }
+  if (
+    arrayInput.type === "Var" &&
+    value.type === "Var" &&
+    arrayOutput.type === "Array"
+  ) {
+    const items = arrayOutput.items;
+    if (items.length === 0) {
+      return [];
+    }
+    return [
+      rec(input.relation, {
+        in: array(items.slice(1)),
+        value: items[0],
+        out: arrayOutput,
+      }),
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
