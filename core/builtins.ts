@@ -1,5 +1,5 @@
 import { ppt } from "./pretty";
-import { dict, int, rec, Rec, relationalBool, str } from "./types";
+import { array, dict, int, rec, Rec, str } from "./types";
 import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
 import { removeKey } from "../util/util";
@@ -261,13 +261,11 @@ function dictRemove(input: Rec): Rec[] {
     dictOutput.type === "Var"
   ) {
     return [
-      {
-        ...input,
-        attrs: {
-          ...input.attrs,
-          out: dict(removeKey(dictInput.map, key.val)),
-        },
-      },
+      rec(input.relation, {
+        in: dictInput,
+        key,
+        out: dict(removeKey(dictInput.map, key.val)),
+      }),
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
@@ -284,16 +282,11 @@ function append(input: Rec): Rec[] {
     arrayOutput.type === "Var"
   ) {
     return [
-      {
-        ...input,
-        attrs: {
-          ...input.attrs,
-          out: {
-            ...arrayInput,
-            items: [...arrayInput.items, value],
-          },
-        },
-      },
+      rec(input.relation, {
+        in: arrayInput,
+        value,
+        out: array([...arrayInput.items, value]),
+      }),
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
