@@ -27,6 +27,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "dict.add": dictAdd,
   "dict.get": dictGet,
   "dict.remove": dictRemove,
+  // array
+  append,
 };
 
 function eq(input: Rec): Rec[] {
@@ -261,6 +263,32 @@ function dictRemove(input: Rec): Rec[] {
         attrs: {
           ...input.attrs,
           out: dict(removeKey(dictInput.map, key.val)),
+        },
+      },
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function append(input: Rec): Rec[] {
+  const arrayInput = input.attrs.in;
+  const value = input.attrs.value;
+  const arrayOutput = input.attrs.out;
+
+  if (
+    arrayInput.type === "Array" &&
+    value.type !== "Var" &&
+    arrayOutput.type === "Var"
+  ) {
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          out: {
+            ...arrayInput,
+            items: [...arrayInput.items, value],
+          },
         },
       },
     ];

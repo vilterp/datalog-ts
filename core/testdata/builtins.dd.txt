@@ -85,3 +85,8 @@ dict.remove{in: {"foo": 2}, key: "foo", out: D}?
 ----
 application/datalog
 dict.remove{in: {"foo": 2}, key: "foo", out: {}}.
+
+append{in: [1,2,3], value: 4, out: V}?
+----
+application/datalog
+append{in: [1,2,3], out: [1,2,3,4], value: 4}.
