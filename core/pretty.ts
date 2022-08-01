@@ -43,6 +43,19 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
       ];
     case "Array":
       return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
+    case "Dict":
+      return [
+        "{",
+        pp.intersperse(
+          ", ",
+          mapObjToList(term.map, (key, value) => [
+            `"${escapeString(key)}"`,
+            ": ",
+            prettyPrintTerm(value),
+          ])
+        ),
+        "}",
+      ];
     case "StringLit":
       return `"${escapeString(term.val)}"`;
     case "Bool":

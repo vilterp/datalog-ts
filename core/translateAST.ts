@@ -3,6 +3,7 @@ import {
   DLComparison,
   DLRule,
   DLStatement,
+  DLString,
   DLTerm,
 } from "../languageWorkbench/languages/dl/parser";
 import { deEscape } from "../languageWorkbench/parserlib/types";
@@ -102,7 +103,7 @@ export function parserTermToInternal(term: DLTerm): Term {
       return dict(
         pairsToObj(
           term.dictKeyValue.map((kv) => ({
-            key: kv.key.text,
+            key: parserStrToInternal(kv.key),
             val: parserTermToInternal(kv.value),
           }))
         )
@@ -114,7 +115,7 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Placeholder":
       return rec("???", {});
     case "String":
-      return str(deEscape(term.stringChar.map((c) => c.text).join("")));
+      return str(parserStrToInternal(term));
     case "Var":
       return varr(term.text);
     case "Record":
@@ -128,6 +129,10 @@ export function parserTermToInternal(term: DLTerm): Term {
         )
       );
   }
+}
+
+function parserStrToInternal(term: DLString): string {
+  return deEscape(term.stringChar.map((c) => c.text).join(""));
 }
 
 // some real desugaring!

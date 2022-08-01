@@ -6,7 +6,11 @@ import {
   SituatedBinding,
   Term,
 } from "../../core/types";
-import { intersperse, mapObjToListUnordered } from "../../util/util";
+import {
+  intersperse,
+  mapObjToList,
+  mapObjToListUnordered,
+} from "../../util/util";
 import { escapeString } from "../../core/pretty";
 
 export type Highlight =
@@ -150,6 +154,27 @@ export function TermView(props: {
             scopePath={props.scopePath}
           />
           ]
+        </>
+      );
+    case "DictWithBindings":
+      return (
+        <>
+          {"{"}
+          {intersperse(
+            <>, </>,
+            mapObjToList(term.map, (key, val) => (
+              <React.Fragment key={key}>
+                <span style={{ color: "green" }}>"{escapeString(key)}"</span>
+                :&nbsp;
+                <TermView
+                  term={val}
+                  highlight={props.highlight}
+                  scopePath={props.scopePath}
+                />
+              </React.Fragment>
+            ))
+          )}
+          {"}"}
         </>
       );
     case "Atom":
