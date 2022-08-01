@@ -6,11 +6,12 @@ import {
   DLTerm,
 } from "../languageWorkbench/languages/dl/parser";
 import { deEscape } from "../languageWorkbench/parserlib/types";
-import { mapListToObj } from "../util/util";
+import { mapListToObj, pairsToObj } from "../util/util";
 import {
   AndClause,
   array,
   bool,
+  dict,
   int,
   rec,
   Rec,
@@ -97,6 +98,15 @@ export function parserTermToInternal(term: DLTerm): Term {
   switch (term.type) {
     case "Array":
       return array(term.term.map(parserTermToInternal));
+    case "Dict":
+      return dict(
+        pairsToObj(
+          term.dictKeyValue.map((kv) => ({
+            key: kv.key.text,
+            val: parserTermToInternal(kv.value),
+          }))
+        )
+      );
     case "Bool":
       return bool(term.text === "true");
     case "Int":

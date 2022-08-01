@@ -121,6 +121,10 @@ export function array(items: Term[]): Array {
   return { type: "Array", items: items };
 }
 
+export function dict(map: { [key: string]: Term }): Dict {
+  return { type: "Dict", map };
+}
+
 export const trueTerm: Term = { type: "Bool", val: true };
 
 export const falseTerm: Term = { type: "Bool", val: false };
