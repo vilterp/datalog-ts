@@ -1,7 +1,8 @@
 import { ppt } from "./pretty";
-import { int, rec, Rec, relationalBool, str } from "./types";
+import { dict, int, rec, Rec, relationalBool, str } from "./types";
 import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
+import { removeKey } from "../util/util";
 
 export type Builtin = (rec: Rec) => Rec[];
 
@@ -22,6 +23,12 @@ export const BUILTINS: { [name: string]: Builtin } = {
   concat,
   invert,
   clamp,
+  // dict
+  "dict.add": dictAdd,
+  "dict.get": dictGet,
+  "dict.remove": dictRemove,
+  // array
+  append,
 };
 
 function eq(input: Rec): Rec[] {
@@ -176,6 +183,115 @@ function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
   if (input.attrs.a.type !== "Var" && input.attrs.b.type !== "Var") {
     const result = cmp(termCmp(input.attrs.a, input.attrs.b));
     return result ? [input] : [];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+// === Dicts ===
+
+function dictAdd(input: Rec): Rec[] {
+  const dictInput = input.attrs.in;
+  const key = input.attrs.key;
+  const val = input.attrs.value;
+  const dictOutput = input.attrs.out;
+
+  if (
+    dictInput.type === "Dict" &&
+    key.type === "StringLit" &&
+    val.type !== "Var" &&
+    dictOutput.type === "Var"
+  ) {
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          out: {
+            ...dictInput,
+            map: {
+              ...dictInput.map,
+              [key.val]: val,
+            },
+          },
+        },
+      },
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function dictGet(input: Rec): Rec[] {
+  const dictInput = input.attrs.dict;
+  const key = input.attrs.key;
+  const val = input.attrs.value;
+
+  if (
+    dictInput.type === "Dict" &&
+    key.type === "StringLit" &&
+    val.type === "Var"
+  ) {
+    const foundVal = dictInput.map[key.val];
+    if (!foundVal) {
+      return [];
+    }
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          value: foundVal,
+        },
+      },
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function dictRemove(input: Rec): Rec[] {
+  const dictInput = input.attrs.in;
+  const key = input.attrs.key;
+  const dictOutput = input.attrs.out;
+
+  if (
+    dictInput.type === "Dict" &&
+    key.type === "StringLit" &&
+    dictOutput.type === "Var"
+  ) {
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          out: dict(removeKey(dictInput.map, key.val)),
+        },
+      },
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function append(input: Rec): Rec[] {
+  const arrayInput = input.attrs.in;
+  const value = input.attrs.value;
+  const arrayOutput = input.attrs.out;
+
+  if (
+    arrayInput.type === "Array" &&
+    value.type !== "Var" &&
+    arrayOutput.type === "Var"
+  ) {
+    return [
+      {
+        ...input,
+        attrs: {
+          ...input.attrs,
+          out: {
+            ...arrayInput,
+            items: [...arrayInput.items, value],
+          },
+        },
+      },
+    ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }
