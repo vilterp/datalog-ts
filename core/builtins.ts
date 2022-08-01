@@ -188,9 +188,9 @@ function comparison(input: Rec, cmp: (number: number) => boolean): Rec[] {
 // === Dicts ===
 
 function dictAdd(input: Rec): Rec[] {
-  const dictInput = input.attrs.dict;
+  const dictInput = input.attrs.in;
   const key = input.attrs.key;
-  const val = input.attrs.val;
+  const val = input.attrs.value;
   const dictOutput = input.attrs.out;
 
   if (
@@ -221,7 +221,7 @@ function dictAdd(input: Rec): Rec[] {
 function dictGet(input: Rec): Rec[] {
   const dictInput = input.attrs.dict;
   const key = input.attrs.key;
-  const val = input.attrs.val;
+  const val = input.attrs.value;
 
   if (
     dictInput.type === "Dict" &&
@@ -237,7 +237,7 @@ function dictGet(input: Rec): Rec[] {
         ...input,
         attrs: {
           ...input.attrs,
-          val: foundVal,
+          value: foundVal,
         },
       },
     ];
@@ -246,7 +246,7 @@ function dictGet(input: Rec): Rec[] {
 }
 
 function dictRemove(input: Rec): Rec[] {
-  const dictInput = input.attrs.dict;
+  const dictInput = input.attrs.in;
   const key = input.attrs.key;
   const dictOutput = input.attrs.out;
 
