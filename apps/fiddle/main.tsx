@@ -24,6 +24,7 @@ function Main() {
     interp = interp.evalStr(editorState.source)[1];
   } catch (e) {
     error = e.toString();
+    console.error(e);
   }
 
   return (
