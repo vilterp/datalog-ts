@@ -29,6 +29,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "dict.remove": dictRemove,
   // array
   "array.append": arrayAppend,
+  "array.prepend": arrayPrepend,
 };
 
 function eq(input: Rec): Rec[] {
@@ -276,11 +277,6 @@ function arrayAppend(input: Rec): Rec[] {
   const value = input.attrs.value;
   const arrayOutput = input.attrs.out;
 
-  console.log("append", {
-    input: input.attrs.in.type,
-    value: input.attrs.value.type,
-    output: input.attrs.out.type,
-  });
   if (
     arrayInput.type === "Array" &&
     value.type !== "Var" &&
@@ -307,6 +303,44 @@ function arrayAppend(input: Rec): Rec[] {
       rec(input.relation, {
         in: array(items.slice(0, items.length - 1)),
         value: items[items.length - 1],
+        out: arrayOutput,
+      }),
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function arrayPrepend(input: Rec): Rec[] {
+  const arrayInput = input.attrs.in;
+  const value = input.attrs.value;
+  const arrayOutput = input.attrs.out;
+
+  if (
+    arrayInput.type === "Array" &&
+    value.type !== "Var" &&
+    arrayOutput.type === "Var"
+  ) {
+    return [
+      rec(input.relation, {
+        in: arrayInput,
+        value,
+        out: array([value, ...arrayInput.items]),
+      }),
+    ];
+  }
+  if (
+    arrayInput.type === "Var" &&
+    value.type === "Var" &&
+    arrayOutput.type === "Array"
+  ) {
+    const items = arrayOutput.items;
+    if (items.length === 0) {
+      return [];
+    }
+    return [
+      rec(input.relation, {
+        in: array(items.slice(1)),
+        value: items[0],
         out: arrayOutput,
       }),
     ];

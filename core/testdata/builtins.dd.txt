@@ -101,3 +101,13 @@ array.append{in: AllButLast, value: Last, out: [1,2,3]}?
 ----
 application/datalog
 array.append{in: [1,2], out: [1,2,3], value: 3}.
+
+array.prepend{in: [2,3,4], value: 1, out: V}?
+----
+application/datalog
+array.prepend{in: [2,3,4], out: [1,2,3,4], value: 1}.
+
+array.prepend{in: AllButFirst, value: First, out: [1,2,3]}?
+----
+application/datalog
+array.prepend{in: [2,3], out: [1,2,3], value: 1}.
