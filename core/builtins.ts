@@ -30,7 +30,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   // array
   "array.append": arrayAppend,
   "array.prepend": arrayPrepend,
-  // value tests
+  "array.item": arrayItem,
+  // type tests
   "base.int": isInt,
 };
 
@@ -344,6 +345,44 @@ function arrayPrepend(input: Rec): Rec[] {
         in: array(items.slice(1)),
         value: items[0],
         out: arrayOutput,
+      }),
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function arrayItem(input: Rec): Rec[] {
+  const arrayInput = input.attrs.array;
+  const index = input.attrs.index;
+  const value = input.attrs.value;
+
+  if (
+    arrayInput.type === "Array" &&
+    index.type === "Var" &&
+    value.type === "Var"
+  ) {
+    return arrayInput.items.map((item, idx) =>
+      rec(input.relation, {
+        array: arrayInput,
+        index: int(idx),
+        value: item,
+      })
+    );
+  }
+  if (
+    arrayInput.type === "Array" &&
+    index.type === "IntLit" &&
+    value.type === "Var"
+  ) {
+    const idx = index.val;
+    if (arrayInput.items.length >= idx) {
+      return [];
+    }
+    return [
+      rec(input.relation, {
+        array: arrayInput,
+        index,
+        value: arrayInput.items[idx],
       }),
     ];
   }

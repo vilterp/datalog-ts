@@ -111,3 +111,14 @@ array.prepend{in: AllButFirst, value: First, out: [1,2,3]}?
 ----
 application/datalog
 array.prepend{in: [2,3], out: [1,2,3], value: 1}.
+
+array.item{array: ["a","b","c"], index: I, value: V}?
+----
+application/datalog
+array.item{array: ["a","b","c"], index: 0, value: "a"}.
+array.item{array: ["a","b","c"], index: 1, value: "b"}.
+array.item{array: ["a","b","c"], index: 2, value: "c"}.
+
+array.item{array: ["a","b","c"], index: 1, value: V}?
+----
+application/datalog
