@@ -375,7 +375,7 @@ function arrayItem(input: Rec): Rec[] {
     value.type === "Var"
   ) {
     const idx = index.val;
-    if (arrayInput.items.length >= idx) {
+    if (idx >= arrayInput.items.length) {
       return [];
     }
     return [

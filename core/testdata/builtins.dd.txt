@@ -119,6 +119,11 @@ array.item{array: ["a","b","c"], index: 0, value: "a"}.
 array.item{array: ["a","b","c"], index: 1, value: "b"}.
 array.item{array: ["a","b","c"], index: 2, value: "c"}.
 
-array.item{array: ["a","b","c"], index: 1, value: V}?
+array.item{array: ["a","b","c"], index: 2, value: V}?
+----
+application/datalog
+array.item{array: ["a","b","c"], index: 2, value: "c"}.
+
+array.item{array: ["a","b","c"], index: 3, value: V}?
 ----
 application/datalog
