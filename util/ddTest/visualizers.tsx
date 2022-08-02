@@ -1,5 +1,4 @@
 import React from "react";
-import { Graphviz } from "graphviz-react";
 import ReactJson from "react-json-view";
 import { useWindowWidth } from "@react-hook/window-size";
 import { TestOutput } from "./types";
@@ -25,7 +24,8 @@ export const VISUALIZERS = {
   "text/plain": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
   // TODO: syntax highlight using TermView?
   "application/datalog": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
-  "application/graphviz": (text) => <GraphvizVisualizer dot={text} />,
+  // TODO: reinstate an actual graphviz viewer
+  "application/graphviz": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
   "application/json": (text) => (
     <ReactJson
       name={null}
