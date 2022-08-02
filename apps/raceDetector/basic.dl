@@ -11,17 +11,18 @@
 # instr{idx: 5, op: stop{}}.
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
-instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: stop{}}.
+# instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 1, op: stop{}}.
 
 state{time: T, state: S} :-
   initialState{time: T, state: S} |
   laterState{time: T, state: S}.
 
-initialState{state: state{time: 0, vars: {}, pc: 0, done: false}}.
+initialState{time: 0, state: state{vars: {}, pc: 0, done: false}}.
 
 # how do we get the op
 laterState{time: T, state: NextState} :-
+  range{from: 0, to: 5, val: T} &
   T = PrevT + 1 &
   state{time: PrevT, state: PrevState} &
   stepOp{fromState: PrevState, toState: NextState}.
@@ -65,7 +66,7 @@ stepStop{
   fromState: state{pc: PC, vars: FromVars},
   toState: state{pc: PC, vars: ToVars, done: true}
 } :-
-  instr{idx: PC} &
+  instr{idx: PC, op: stop{}} &
   base.eq{a: FromVars, b: ToVars}.
 
 eval{vars: FromVars, expr: Expr, value: Value} :-
