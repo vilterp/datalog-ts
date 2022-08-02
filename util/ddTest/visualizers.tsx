@@ -1,6 +1,5 @@
 import React from "react";
 import ReactJson from "react-json-view";
-import { useWindowWidth } from "@react-hook/window-size";
 import { TestOutput } from "./types";
 
 export type SuiteSpec = {
@@ -9,16 +8,6 @@ export type SuiteSpec = {
   inputs: string[];
   visualizers: { [mimeType: string]: (output: string) => React.ReactNode };
 };
-
-function GraphvizVisualizer(props: { dot: string }) {
-  const width = useWindowWidth() - 300;
-  return (
-    <Graphviz
-      dot={props.dot}
-      options={{ width, height: 800, fit: true, zoom: false }}
-    />
-  );
-}
 
 export const VISUALIZERS = {
   "text/plain": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
