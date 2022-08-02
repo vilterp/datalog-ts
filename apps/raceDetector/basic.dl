@@ -1,14 +1,18 @@
-instr{idx: 0, op: store{var: "x", val: 0}}.
-instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 10}}}.
-instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
-instr{idx: 5, op: stop{}}.
-
 # 0: x = 1
 # 1: x += 1
 # 2: y = x > 10
 # 3: goto 0 if y
 # 4: print "foo"
+
+# instr{idx: 0, op: store{var: "x", val: 0}}.
+# instr{idx: 1, op: increment{var: "x"}}.
+# instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 10}}}.
+# instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
+# instr{idx: 5, op: stop{}}.
+
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: stop{}}.
 
 state{time: T, state: S} :-
   initialState{time: T, state: S} |
@@ -65,8 +69,12 @@ stepStop{
   base.eq{a: FromVars, b: ToVars}.
 
 eval{vars: FromVars, expr: Expr, value: Value} :-
-  evalGt{vars: FromVars, expr: Expr, value: Value}.
+  evalGt{vars: FromVars, expr: Expr, value: Value} |
+  evalIntLit{expr: Expr, value: Value}.
 
 evalGt{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: Value} :-
   dict.item{dict: FromVars, key: Var, value: VarVal} &
   base.gt{a: VarVal, b: LiteralVal, out: Value}.
+evalIntLit{expr: Expr, value: Value} :-
+  base.int{a: Expr} &
+  base.eq{a: Value, b: true}.
