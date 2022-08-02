@@ -1,4 +1,7 @@
+import { ppr, ppRule, ppt } from "../../core/pretty";
+import { Res, Rule, Term } from "../../core/types";
 import { Json } from "../json";
+import { joinLinesWithTrailing } from "../util";
 
 export type Archive = { [path: string]: DDTest };
 
@@ -41,9 +44,23 @@ export function jsonOut(content: Json): TestOutput {
   };
 }
 
-export function datalogOut(content: string): TestOutput {
+export function datalogOut(terms: Term[]): TestOutput {
   return {
-    content,
+    content: joinLinesWithTrailing(".", terms.map(ppt)),
+    mimeType: "application/datalog",
+  };
+}
+
+export function datalogOutResults(terms: Res[]): TestOutput {
+  return {
+    content: joinLinesWithTrailing(".", terms.map(ppr)),
+    mimeType: "application/datalog-results",
+  };
+}
+
+export function datalogOutRules(terms: Rule[]): TestOutput {
+  return {
+    content: joinLinesWithTrailing(".", terms.map(ppRule)),
     mimeType: "application/datalog",
   };
 }

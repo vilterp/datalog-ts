@@ -4,7 +4,7 @@ application/datalog
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/plain
+incremental-datalog/trace
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
 4: [mother{child: "Pete", mother: "Mary"}; {B: "Pete", C: "Mary"}]
 10: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]

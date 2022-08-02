@@ -32,6 +32,11 @@ export function intersperse<T>(sep: T, arr: T[]): T[] {
   return out;
 }
 
+export function joinLinesWithTrailing(sep: string, arr: string[]): string {
+  const sepNewline = `${sep}\n`;
+  return arr.length === 0 ? "" : arr.join(sepNewline) + sep;
+}
+
 export function intersperseIdx<T>(sep: (idx: number) => T, arr: T[]): T[] {
   const out: T[] = [];
   for (let i = 0; i < arr.length; i++) {
