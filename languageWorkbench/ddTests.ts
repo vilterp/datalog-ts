@@ -66,7 +66,7 @@ export function testLangQuery(test: string[]): TestOutput[] {
     }
     try {
       const res = finalInterp.queryStr(query);
-      return datalogOut(res.map((res) => ppt(res.term)).join("\n"));
+      return datalogOut(res.map((res) => res.term));
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);

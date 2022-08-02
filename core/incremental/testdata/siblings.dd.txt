@@ -10,25 +10,25 @@ parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
   father{child: C, father: F}.
 ----
-text/plain
+incremental-datalog/trace
 
 sibling{left: L, right: R} :-
   parents{child: L, mother: M, father: F} &
   parents{child: R, mother: M, father: F} &
   L != R.
 ----
-text/plain
+incremental-datalog/trace
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/plain
+incremental-datalog/trace
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
 0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}]
 2: []
 
 father{child: "Pete", father: "Paul"}.
 ----
-text/plain
+incremental-datalog/trace
 father: [father{child: "Pete", father: "Paul"}; {}]
 1: [father{child: "Pete", father: "Paul"}; {C: "Pete", F: "Paul"}]
 2: [{C: "Pete", F: "Paul", M: "Mary"}]
@@ -42,14 +42,14 @@ parents: [parents{child: "Pete", father: "Paul", mother: "Mary"}; {C: "Pete", F:
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/plain
+incremental-datalog/trace
 mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
 0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}]
 2: []
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-text/plain
+incremental-datalog/trace
 father: [father{child: "Carolyn", father: "Paul"}; {}]
 1: [father{child: "Carolyn", father: "Paul"}; {C: "Carolyn", F: "Paul"}]
 2: [{C: "Carolyn", F: "Paul", M: "Mary"}]
@@ -67,20 +67,20 @@ sibling: [sibling{left: "Pete", right: "Carolyn"}; {F: "Paul", L: "Pete", M: "Ma
 
 mother{child: "Steve", mother: "Jill"}.
 ----
-text/plain
+incremental-datalog/trace
 mother: [mother{child: "Steve", mother: "Jill"}; {}]
 0: [mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}]
 2: []
 
 mother{child: C, mother: M}?
 ----
-application/datalog
+application/datalog-results
 mother{child: "Pete", mother: "Mary"}; {C: "Pete", M: "Mary"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", M: "Mary"}.
 mother{child: "Steve", mother: "Jill"}; {C: "Steve", M: "Jill"}.
 
 mother{child: C, mother: "Mary"}?
 ----
-application/datalog
+application/datalog-results
 mother{child: "Pete", mother: "Mary"}; {C: "Pete"}.
 mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn"}.

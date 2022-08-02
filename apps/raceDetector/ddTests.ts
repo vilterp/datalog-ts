@@ -30,7 +30,6 @@ function getResults(inputs: string[]): TestOutput[] {
     interp = interp.doLoad("basic.dl");
     interp = interp.evalStr(input)[1];
     const results = interp.queryStr("state{}");
-    // TODO: datalogOut should take Res[] or Term[]
-    return datalogOut(results.map((res) => ppt(res.term)).join(".\n"));
+    return datalogOut(results.map((res) => res.term));
   });
 }

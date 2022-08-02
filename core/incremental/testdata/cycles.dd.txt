@@ -6,11 +6,11 @@ edge{from: F, to: T} :-
   baseEdge{from: F, to: T} |
   baseEdge{from: F, to: I} & edge{from: I, to: T}.
 ----
-text/plain
+incremental-datalog/trace
 
 baseEdge{from: "A", to: "B"}.
 ----
-text/plain
+incremental-datalog/trace
 baseEdge: [baseEdge{from: "A", to: "B"}; {}]
 1: [baseEdge{from: "A", to: "B"}; {F: "A", T: "B"}]
 2: [baseEdge{from: "A", to: "B"}; {F: "A", I: "B"}]
@@ -22,7 +22,7 @@ edge: [edge{from: "A", to: "B"}; {F: "A", T: "B"}]
 
 baseEdge{from: "C", to: "D"}.
 ----
-text/plain
+incremental-datalog/trace
 baseEdge: [baseEdge{from: "C", to: "D"}; {}]
 1: [baseEdge{from: "C", to: "D"}; {F: "C", T: "D"}]
 2: [baseEdge{from: "C", to: "D"}; {F: "C", I: "D"}]
@@ -34,7 +34,7 @@ edge: [edge{from: "C", to: "D"}; {F: "C", T: "D"}]
 
 baseEdge{from: "B", to: "C"}.
 ----
-text/plain
+incremental-datalog/trace
 baseEdge: [baseEdge{from: "B", to: "C"}; {}]
 1: [baseEdge{from: "B", to: "C"}; {F: "B", T: "C"}]
 2: [baseEdge{from: "B", to: "C"}; {F: "B", I: "C"}]
@@ -58,7 +58,7 @@ edge: [edge{from: "A", to: "D"}; {F: "A", I: "B", T: "D"}]
 
 edge{from: F, to: T}?
 ----
-application/datalog
+application/datalog-results
 edge{from: "A", to: "B"}; {F: "A", T: "B"}.
 edge{from: "C", to: "D"}; {F: "C", T: "D"}.
 edge{from: "B", to: "C"}; {F: "B", T: "C"}.

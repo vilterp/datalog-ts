@@ -9,17 +9,17 @@ application/datalog
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-text/plain
+incremental-datalog/trace
 
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
-text/plain
+incremental-datalog/trace
 
 father{child: "Mary", father: "Mark"}.
 ----
-text/plain
+incremental-datalog/trace
 father: [father{child: "Mary", father: "Mark"}; {}]
 2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
 0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
@@ -31,7 +31,7 @@ parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-text/plain
+incremental-datalog/trace
 mother: [mother{child: "Pete", mother: "Mary"}; {}]
 1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
 0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
@@ -44,7 +44,7 @@ grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", 
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-text/plain
+incremental-datalog/trace
 mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
 1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
 0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]

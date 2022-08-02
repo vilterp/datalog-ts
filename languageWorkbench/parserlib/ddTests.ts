@@ -3,7 +3,12 @@ import { runDDTestAtPath } from "../../util/ddTest";
 import { formatParseError, getErrors, parse, TraceTree } from "./parser";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
-import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
+import {
+  datalogOut,
+  datalogOutRules,
+  plainTextOut,
+  TestOutput,
+} from "../../util/ddTest/types";
 import { ppRule, ppt } from "../../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -113,7 +118,7 @@ function datalogTest(test: string[]): TestOutput[] {
       const grammarParsed = parseMain(restOfInput);
       const grammar = parserGrammarToInternal(grammarParsed);
       grammarRules = grammarToDL(grammar);
-      return datalogOut(grammarRules.map(ppRule).join(".\n") + ".");
+      return datalogOutRules(grammarRules);
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
       let interp = new IncrementalInterpreter(
@@ -133,7 +138,7 @@ function datalogTest(test: string[]): TestOutput[] {
       // TODO: insert grammar interpreter
       try {
         const results = interp.queryStr(`main{span: span{from: 0, to: -2}}`);
-        return datalogOut(results.map((res) => ppt(res.term) + ".").join("\n"));
+        return datalogOut(results.map((res) => res.term));
       } catch (e) {
         return plainTextOut(`${e}`);
       }
@@ -145,22 +150,7 @@ function datalogTest(test: string[]): TestOutput[] {
 
 function datalogInputTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    return datalogOut(
-      inputToDL(input)
-        .map((rec) => ppt(rec) + ".")
-        .join("\n")
-    );
-  });
-}
-
-function parserTestFixedStartRule(
-  grammar: Grammar,
-  startRule: string,
-  test: string[]
-): TestOutput[] {
-  return test.map((input) => {
-    const tree = parse(grammar, startRule, input);
-    return handleResults(tree, input);
+    return datalogOut(inputToDL(input));
   });
 }
 

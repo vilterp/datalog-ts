@@ -5,10 +5,16 @@ import { addRule, doQuery, EmissionLog, insertFact } from "./eval";
 import { hasVars } from "../simple/simpleEvaluate";
 import { ppb, ppr, ppt } from "../pretty";
 import { Loader } from "../loaders";
-import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
+import {
+  datalogOut,
+  datalogOutResults,
+  plainTextOut,
+  TestOutput,
+} from "../../util/ddTest/types";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
 import { parserTermToInternal } from "../translateAST";
+import { flatMap } from "../../util/util";
 
 export type Output =
   | { type: "EmissionLog"; log: EmissionLog }
@@ -124,40 +130,37 @@ export function formatOutput(
 ): TestOutput {
   switch (output.type) {
     case "Acknowledge":
-      return datalogOut("");
+      return datalogOut([]);
     case "EmissionLog":
       if (opts.emissionLogMode === "test") {
-        return plainTextOut(
-          output.log
+        return {
+          mimeType: "incremental-datalog/trace",
+          content: output.log
             .map(
               ({ fromID, output }) =>
                 `${fromID}: [${output
                   .map((res) => (res.term ? ppr(res) : ppb(res.bindings)))
                   .join(", ")}]`
             )
-            .join("\n")
-        );
+            .join("\n"),
+        };
       } else {
         return datalogOut(
-          output.log
-            .filter((emissionBatch) => {
+          flatMap(
+            output.log.filter((emissionBatch) => {
               const fromNode = graph.nodes.get(emissionBatch.fromID);
               return (
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );
-            })
-            .map(({ output }) =>
-              output.map((res) => `${ppt(res.term)}.`).join("\n")
-            )
-            .join("\n")
+            }),
+            ({ output }) => output.map((res) => res.term)
+          )
         );
       }
     case "QueryResults":
-      return datalogOut(
-        output.results
-          .map((res) => `${opts.showBindings ? ppr(res) : ppt(res.term)}.`)
-          .join("\n")
-      );
+      return opts.showBindings
+        ? datalogOutResults(output.results)
+        : datalogOut(output.results.map((res) => res.term));
     case "Trace":
       return {
         content: JSON.stringify(output.logAndGraph),

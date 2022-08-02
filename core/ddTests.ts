@@ -108,14 +108,7 @@ export function putThroughInterp(
       const [stmtResult, newInterp] = interp.evalStr(input + "\n");
       interp = newInterp;
 
-      results.push(
-        datalogOut(
-          stmtResult
-            .map((res) => ppt(res.term) + ".")
-            .sort()
-            .join("\n")
-        )
-      );
+      results.push(datalogOut(stmtResult.map((res) => res.term)));
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);

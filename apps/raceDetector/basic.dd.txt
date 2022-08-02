@@ -15,4 +15,4 @@ state{state: state{done: false, pc: 3, vars: {"x": 2, "y": false}}, time: 6}.
 state{state: state{done: false, pc: 4, vars: {"x": 2, "y": false}}, time: 7}.
 state{state: state{done: true, pc: 4, vars: {"x": 2, "y": false}}, time: 8}.
 state{state: state{done: true, pc: 4, vars: {"x": 2, "y": false}}, time: 9}.
-state{state: state{done: true, pc: 4, vars: {"x": 2, "y": false}}, time: 10}
+state{state: state{done: true, pc: 4, vars: {"x": 2, "y": false}}, time: 10}.
