@@ -8,15 +8,17 @@
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
 instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 2}}}.
+instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 2}}}.
 instr{idx: 3, op: conditionalGoto{dest: 1, var: "y"}}.
-instr{idx: 5, op: stop{}}.
+instr{idx: 4, op: stop{}}.
 
 # instr{idx: 0, op: store{var: "x", val: 0}}.
 # instr{idx: 1, op: increment{var: "x"}}.
 # instr{idx: 2, op: stop{}}.
 
-timeLimit{limit: 20}.
+timeLimit{limit: 10}.
+
+# Overall control flow
 
 state{time: T, state: S} :-
   initialState{time: T, state: S} |
@@ -24,13 +26,17 @@ state{time: T, state: S} :-
 
 initialState{time: 0, state: state{vars: {}, pc: 0, done: false}}.
 
-# how do we get the op
 laterState{time: T, state: NextState} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
   state{time: PrevT, state: PrevState} &
   stepOp{fromState: PrevState, toState: NextState}.
+
+finalState{vars: V, time: T} :-
+  state{time: T, state: state{vars: V, done: true}}.
+
+# Individual ops
 
 stepOp{fromState: FromState, toState: ToState} :-
   stepStore{fromState: FromState, toState: ToState} |
@@ -86,20 +92,22 @@ stepStop{
   instr{idx: PC, op: stop{}} &
   base.eq{a: FromVars, b: ToVars}.
 
+# Expressions
+
 eval{vars: FromVars, expr: Expr, value: Value} :-
-  evalGt{vars: FromVars, expr: Expr, value: Value} |
+  evalLt{vars: FromVars, expr: Expr, value: Value} |
   evalIntLit{expr: Expr, value: Value}.
 
-evalGt{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: true} :-
-  evalGtTrue{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: V} |
-  evalGtFalse{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: V}.
+evalLt{vars: FromVars, expr: Expr, value: V} :-
+  evalLtTrue{vars: FromVars, expr: Expr, value: V} |
+  evalLtFalse{vars: FromVars, expr: Expr, value: V}.
 # this pattern is so wonky lol
-evalGtTrue{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: true} :-
+evalLtTrue{vars: FromVars, expr: lt{var: Var, val: LiteralVal}, value: true} :-
   dict.item{dict: FromVars, key: Var, value: VarVal} &
-  VarVal > LiteralVal.
-evalGtFalse{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: false} :-
+  VarVal < LiteralVal.
+evalLtFalse{vars: FromVars, expr: lt{var: Var, val: LiteralVal}, value: false} :-
   dict.item{dict: FromVars, key: Var, value: VarVal} &
-  VarVal <= LiteralVal.
+  VarVal >= LiteralVal.
 evalIntLit{expr: Expr, value: Value} :-
   base.int{a: Expr} &
   base.eq{a: Expr, b: Value}.
@@ -112,5 +120,5 @@ storeGtTest{pc: PC, resVar: ResVar, gtVar: GtVar, gtVal: GtVal, vars: Vars, gtVa
   dict.item{dict: Vars, key: GtVar, value: GtVarVal} &
   base.gt{a: GtVarVal, b: GtVal}.
 
-evalGtTest{value: Value} :-
-  evalGt{vars: {"x": 10}, expr: gt{var: "x", val: 3}, value: Value}.
+evalLtTest{value: Value} :-
+  evalLt{vars: {"x": 10}, expr: gt{var: "x", val: 3}, value: Value}.
