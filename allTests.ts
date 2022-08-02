@@ -27,12 +27,12 @@ const suites: { [name: string]: Suite } = {
   // coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
   incrTests: incrTests(writeResults),
-  lwbTests: lwbTests(writeResults),
   prettyPrintTests,
   treeTests,
   parserlibTests: parserlibTests(writeResults),
   sourcePositionsTests,
   raceDetector: raceDetectorTests(writeResults),
+  lwbTests: lwbTests(writeResults),
 };
 
 try {

@@ -1,21 +1,5 @@
 .table instr
 
-# 0: x = 1
-# 1: x += 1
-# 2: y = x > 10
-# 3: goto 0 if y
-# 4: print "foo"
-
-instr{idx: 0, op: store{var: "x", val: 0}}.
-instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 2}}}.
-instr{idx: 3, op: conditionalGoto{dest: 1, var: "y"}}.
-instr{idx: 4, op: stop{}}.
-
-# instr{idx: 0, op: store{var: "x", val: 0}}.
-# instr{idx: 1, op: increment{var: "x"}}.
-# instr{idx: 2, op: stop{}}.
-
 timeLimit{limit: 10}.
 
 # Overall control flow
