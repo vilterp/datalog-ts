@@ -1137,3 +1137,103 @@ application/json
     }
   }
 ]
+
+lt{a: A, b: B} :-
+  A < B.
+----
+application/json
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "lt",
+        "attrs": {
+          "a": {
+            "type": "Var",
+            "name": "A"
+          },
+          "b": {
+            "type": "Var",
+            "name": "B"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Record",
+                "relation": "base.lt",
+                "attrs": {
+                  "a": {
+                    "type": "Var",
+                    "name": "A"
+                  },
+                  "b": {
+                    "type": "Var",
+                    "name": "B"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
+
+eq{a: A, b: B} :-
+  A = B.
+----
+application/json
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "eq",
+        "attrs": {
+          "a": {
+            "type": "Var",
+            "name": "A"
+          },
+          "b": {
+            "type": "Var",
+            "name": "B"
+          }
+        }
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              {
+                "type": "Record",
+                "relation": "base.eq",
+                "attrs": {
+                  "a": {
+                    "type": "Var",
+                    "name": "A"
+                  },
+                  "b": {
+                    "type": "Var",
+                    "name": "B"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
