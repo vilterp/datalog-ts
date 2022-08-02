@@ -61,8 +61,7 @@ stepConditionalGoto{
   instr{idx: FromPC, op: conditionalGoto{var: Var, dest: ToPC}} &
   dict.item{dict: FromVars, key: Var, value: Val} &
   base.eq{a: Val, b: true} &
-  base.eq{a: FromVars, b: ToVars} &
-  ToPC = FromPC + 1.
+  base.eq{a: FromVars, b: ToVars}.
 
 stepStop{
   fromState: state{pc: PC, vars: FromVars},
