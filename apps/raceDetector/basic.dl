@@ -1,0 +1,59 @@
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 10}}}.
+instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
+instr{idx: 4, op: println{msg: "hello"}}.
+instr{idx: 5, op: stop{}}.
+
+# 0: x = 1
+# 1: x += 1
+# 2: y = x > 10
+# 3: goto 0 if y
+# 4: print "foo"
+
+state{time: T, state: S} :-
+  initialState{time: T, state: S} |
+  laterState{time: T, state: S}.
+
+initialState{state: state{time: 0, vars: {}, pc: 0, done: false}}.
+
+# how do we get the op
+laterState{time: T, state: NextState} :-
+  PrevT = T - 1 &
+  state{time: PrevT, state: PrevState} &
+  stepOp{fromState: PrevState, toState: NextState}.
+
+stepOp{fromState: FromState, toState: ToState} :-
+  stepStore{fromState: FromState, toState: ToState} |
+  stepIncrement{fromState: FromState, toState: ToState} |
+  stepConditionalGoto{fromState: FromState, toState: ToState} |
+  stepPrintln{fromState: FromState, toState: ToState} |
+  stepStop{fromState: FromState, toState: ToState}.
+
+stepStore{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: store{var: Var, val: Value}} &
+  dict.set{in: FromVars, key: Var, value: Value, out: ToVars} &
+  ToPC = FromPC + 1.
+
+stepIncrement{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: increment{var: Var}} &
+  dict.item{dict: FromVars, key: Var, value: OldVal} &
+  NewValue = OldValue + 1 &
+  dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
+  ToPC = FromPC + 1.
+
+stepIncrement{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: increment{var: Var}} &
+  dict.item{dict: FromVars, key: Var, value: OldVal} &
+  NewValue = OldValue + 1 &
+  dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
+  ToPC = FromPC + 1.
