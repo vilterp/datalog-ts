@@ -195,6 +195,19 @@ export function prettyPrintTermWithBindings(
         ),
         "]",
       ];
+    case "DictWithBindings":
+      return [
+        "{",
+        pp.intersperse(
+          ",",
+          mapObjToList(term.map, (k, t) => [
+            k,
+            ": ",
+            prettyPrintTermWithBindings(t, scopePath, opts),
+          ])
+        ),
+        "}",
+      ];
     case "BinExprWithBindings":
       return [
         prettyPrintTermWithBindings(term.left, scopePath, opts),

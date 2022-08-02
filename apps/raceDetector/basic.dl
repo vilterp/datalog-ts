@@ -1,0 +1,124 @@
+.table instr
+
+# 0: x = 1
+# 1: x += 1
+# 2: y = x > 10
+# 3: goto 0 if y
+# 4: print "foo"
+
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 2}}}.
+instr{idx: 3, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 4, op: stop{}}.
+
+# instr{idx: 0, op: store{var: "x", val: 0}}.
+# instr{idx: 1, op: increment{var: "x"}}.
+# instr{idx: 2, op: stop{}}.
+
+timeLimit{limit: 10}.
+
+# Overall control flow
+
+state{time: T, state: S} :-
+  initialState{time: T, state: S} |
+  laterState{time: T, state: S}.
+
+initialState{time: 0, state: state{vars: {}, pc: 0, done: false}}.
+
+laterState{time: T, state: NextState} :-
+  timeLimit{limit: Limit} &
+  range{from: 0, to: Limit, val: T} &
+  T = PrevT + 1 &
+  state{time: PrevT, state: PrevState} &
+  stepOp{fromState: PrevState, toState: NextState}.
+
+finalState{vars: V, time: T} :-
+  state{time: T, state: state{vars: V, done: true}}.
+
+# Individual ops
+
+stepOp{fromState: FromState, toState: ToState} :-
+  stepStore{fromState: FromState, toState: ToState} |
+  stepIncrement{fromState: FromState, toState: ToState} |
+  stepConditionalGoto{fromState: FromState, toState: ToState} |
+  stepStop{fromState: FromState, toState: ToState}.
+
+stepStore{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: store{var: Var, val: Expr}} &
+  eval{vars: FromVars, expr: Expr, value: Value} &
+  dict.set{in: FromVars, key: Var, value: Value, out: ToVars} &
+  ToPC = FromPC + 1.
+
+stepIncrement{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: increment{var: Var}} &
+  dict.item{dict: FromVars, key: Var, value: OldValue} &
+  NewValue = OldValue + 1 &
+  dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
+  ToPC = FromPC + 1.
+
+stepConditionalGoto{fromState: FromState, toState: ToState} :-
+  stepConditionalGotoYes{fromState: FromState, toState: ToState} |
+  stepConditionalGotoNo{fromState: FromState, toState: ToState}.
+
+stepConditionalGotoYes{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: conditionalGoto{var: Var, dest: ToPC}} &
+  dict.item{dict: FromVars, key: Var, value: Val} &
+  base.eq{a: Val, b: true} &
+  base.eq{a: FromVars, b: ToVars}.
+stepConditionalGotoNo{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: conditionalGoto{var: Var, dest: Dest}} &
+  dict.item{dict: FromVars, key: Var, value: Val} &
+  base.neq{a: Val, b: true} &
+  base.eq{a: FromVars, b: ToVars} &
+  ToPC = FromPC + 1.
+
+stepStop{
+  fromState: state{pc: PC, vars: FromVars},
+  toState: state{pc: PC, vars: ToVars, done: true}
+} :-
+  instr{idx: PC, op: stop{}} &
+  base.eq{a: FromVars, b: ToVars}.
+
+# Expressions
+
+eval{vars: FromVars, expr: Expr, value: Value} :-
+  evalLt{vars: FromVars, expr: Expr, value: Value} |
+  evalIntLit{expr: Expr, value: Value}.
+
+evalLt{vars: FromVars, expr: Expr, value: V} :-
+  evalLtTrue{vars: FromVars, expr: Expr, value: V} |
+  evalLtFalse{vars: FromVars, expr: Expr, value: V}.
+# this pattern is so wonky lol
+evalLtTrue{vars: FromVars, expr: lt{var: Var, val: LiteralVal}, value: true} :-
+  dict.item{dict: FromVars, key: Var, value: VarVal} &
+  VarVal < LiteralVal.
+evalLtFalse{vars: FromVars, expr: lt{var: Var, val: LiteralVal}, value: false} :-
+  dict.item{dict: FromVars, key: Var, value: VarVal} &
+  VarVal >= LiteralVal.
+evalIntLit{expr: Expr, value: Value} :-
+  base.int{a: Expr} &
+  base.eq{a: Expr, b: Value}.
+
+# debugging
+
+storeGtTest{pc: PC, resVar: ResVar, gtVar: GtVar, gtVal: GtVal, vars: Vars, gtVarVal: GtVarVal, value: true} :-
+  instr{idx: PC, op: store{var: ResVar, val: gt{var: GtVar, val: GtVal}}} &
+  base.eq{a: Vars, b: {"x": 10}} &
+  dict.item{dict: Vars, key: GtVar, value: GtVarVal} &
+  base.gt{a: GtVarVal, b: GtVal}.
+
+evalLtTest{value: Value} :-
+  evalLt{vars: {"x": 10}, expr: gt{var: "x", val: 3}, value: Value}.

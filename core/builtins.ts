@@ -30,6 +30,9 @@ export const BUILTINS: { [name: string]: Builtin } = {
   // array
   "array.append": arrayAppend,
   "array.prepend": arrayPrepend,
+  "array.item": arrayItem,
+  // type tests
+  "base.int": isInt,
 };
 
 function eq(input: Rec): Rec[] {
@@ -346,4 +349,47 @@ function arrayPrepend(input: Rec): Rec[] {
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function arrayItem(input: Rec): Rec[] {
+  const arrayInput = input.attrs.array;
+  const index = input.attrs.index;
+  const value = input.attrs.value;
+
+  if (
+    arrayInput.type === "Array" &&
+    index.type === "Var" &&
+    value.type === "Var"
+  ) {
+    return arrayInput.items.map((item, idx) =>
+      rec(input.relation, {
+        array: arrayInput,
+        index: int(idx),
+        value: item,
+      })
+    );
+  }
+  if (
+    arrayInput.type === "Array" &&
+    index.type === "IntLit" &&
+    value.type === "Var"
+  ) {
+    const idx = index.val;
+    if (idx >= arrayInput.items.length) {
+      return [];
+    }
+    return [
+      rec(input.relation, {
+        array: arrayInput,
+        index,
+        value: arrayInput.items[idx],
+      }),
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function isInt(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  return a.type === "IntLit" ? [rec(input.relation, { a })] : [];
 }

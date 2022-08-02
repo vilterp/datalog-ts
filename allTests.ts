@@ -12,6 +12,7 @@ import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
 import { lwbTests } from "./languageWorkbench/ddTests";
 import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
+import { raceDetectorTests } from "./apps/raceDetector/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -31,6 +32,7 @@ const suites: { [name: string]: Suite } = {
   treeTests,
   parserlibTests: parserlibTests(writeResults),
   sourcePositionsTests,
+  raceDetector: raceDetectorTests(writeResults),
 };
 
 try {
