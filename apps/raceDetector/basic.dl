@@ -78,4 +78,4 @@ evalGt{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: Value} :-
   base.gt{a: VarVal, b: LiteralVal, out: Value}.
 evalIntLit{expr: Expr, value: Value} :-
   base.int{a: Expr} &
-  base.eq{a: Value, b: true}.
+  base.eq{a: Expr, b: Value}.
