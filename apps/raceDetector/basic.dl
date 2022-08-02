@@ -1,20 +1,22 @@
+.table instr
+
 # 0: x = 1
 # 1: x += 1
 # 2: y = x > 10
 # 3: goto 0 if y
 # 4: print "foo"
 
-.table instr
-
 instr{idx: 0, op: store{var: "x", val: 0}}.
 instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 3}}}.
-instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
+instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 2}}}.
+instr{idx: 3, op: conditionalGoto{dest: 1, var: "y"}}.
 instr{idx: 5, op: stop{}}.
 
 # instr{idx: 0, op: store{var: "x", val: 0}}.
 # instr{idx: 1, op: increment{var: "x"}}.
 # instr{idx: 2, op: stop{}}.
+
+timeLimit{limit: 20}.
 
 state{time: T, state: S} :-
   initialState{time: T, state: S} |
@@ -24,7 +26,8 @@ initialState{time: 0, state: state{vars: {}, pc: 0, done: false}}.
 
 # how do we get the op
 laterState{time: T, state: NextState} :-
-  range{from: 0, to: 5, val: T} &
+  timeLimit{limit: Limit} &
+  range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
   state{time: PrevT, state: PrevState} &
   stepOp{fromState: PrevState, toState: NextState}.
@@ -54,7 +57,11 @@ stepIncrement{
   dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
   ToPC = FromPC + 1.
 
-stepConditionalGoto{
+stepConditionalGoto{fromState: FromState, toState: ToState} :-
+  stepConditionalGotoYes{fromState: FromState, toState: ToState} |
+  stepConditionalGotoNo{fromState: FromState, toState: ToState}.
+
+stepConditionalGotoYes{
   fromState: state{pc: FromPC, vars: FromVars},
   toState: state{pc: ToPC, vars: ToVars, done: false}
 } :-
@@ -62,6 +69,15 @@ stepConditionalGoto{
   dict.item{dict: FromVars, key: Var, value: Val} &
   base.eq{a: Val, b: true} &
   base.eq{a: FromVars, b: ToVars}.
+stepConditionalGotoNo{
+  fromState: state{pc: FromPC, vars: FromVars},
+  toState: state{pc: ToPC, vars: ToVars, done: false}
+} :-
+  instr{idx: FromPC, op: conditionalGoto{var: Var, dest: Dest}} &
+  dict.item{dict: FromVars, key: Var, value: Val} &
+  base.neq{a: Val, b: true} &
+  base.eq{a: FromVars, b: ToVars} &
+  ToPC = FromPC + 1.
 
 stepStop{
   fromState: state{pc: PC, vars: FromVars},
