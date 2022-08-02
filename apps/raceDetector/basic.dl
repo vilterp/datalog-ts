@@ -4,15 +4,17 @@
 # 3: goto 0 if y
 # 4: print "foo"
 
-# instr{idx: 0, op: store{var: "x", val: 0}}.
-# instr{idx: 1, op: increment{var: "x"}}.
-# instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 10}}}.
-# instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
-# instr{idx: 5, op: stop{}}.
+.table instr
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
 instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: stop{}}.
+instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 3}}}.
+instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
+instr{idx: 5, op: stop{}}.
+
+# instr{idx: 0, op: store{var: "x", val: 0}}.
+# instr{idx: 1, op: increment{var: "x"}}.
+# instr{idx: 2, op: stop{}}.
 
 state{time: T, state: S} :-
   initialState{time: T, state: S} |
@@ -73,9 +75,27 @@ eval{vars: FromVars, expr: Expr, value: Value} :-
   evalGt{vars: FromVars, expr: Expr, value: Value} |
   evalIntLit{expr: Expr, value: Value}.
 
-evalGt{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: Value} :-
+evalGt{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: true} :-
+  evalGtTrue{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: V} |
+  evalGtFalse{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: V}.
+# this pattern is so wonky lol
+evalGtTrue{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: true} :-
   dict.item{dict: FromVars, key: Var, value: VarVal} &
-  base.gt{a: VarVal, b: LiteralVal, out: Value}.
+  VarVal > LiteralVal.
+evalGtFalse{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: false} :-
+  dict.item{dict: FromVars, key: Var, value: VarVal} &
+  VarVal <= LiteralVal.
 evalIntLit{expr: Expr, value: Value} :-
   base.int{a: Expr} &
   base.eq{a: Expr, b: Value}.
+
+# debugging
+
+storeGtTest{pc: PC, resVar: ResVar, gtVar: GtVar, gtVal: GtVal, vars: Vars, gtVarVal: GtVarVal, value: true} :-
+  instr{idx: PC, op: store{var: ResVar, val: gt{var: GtVar, val: GtVal}}} &
+  base.eq{a: Vars, b: {"x": 10}} &
+  dict.item{dict: Vars, key: GtVar, value: GtVarVal} &
+  base.gt{a: GtVarVal, b: GtVal}.
+
+evalGtTest{value: Value} :-
+  evalGt{vars: {"x": 10}, expr: gt{var: "x", val: 3}, value: Value}.
