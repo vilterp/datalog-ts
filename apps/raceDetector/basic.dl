@@ -11,8 +11,8 @@
 # instr{idx: 5, op: stop{}}.
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
-# instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 1, op: stop{}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: stop{}}.
 
 state{time: T, state: S} :-
   initialState{time: T, state: S} |
@@ -47,7 +47,7 @@ stepIncrement{
   toState: state{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: increment{var: Var}} &
-  dict.item{dict: FromVars, key: Var, value: OldVal} &
+  dict.item{dict: FromVars, key: Var, value: OldValue} &
   NewValue = OldValue + 1 &
   dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
   ToPC = FromPC + 1.
