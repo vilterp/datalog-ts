@@ -15,7 +15,7 @@ negation :- ["!", record].
 aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
 
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
-comparisonOp :- ("<=" | ">=" | ">" | "<" | "==" | "!=").
+comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
 
 arithmetic :- (assignmentOnLeft | assignmentOnRight).
 assignmentOnRight :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, result:term].

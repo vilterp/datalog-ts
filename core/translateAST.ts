@@ -159,7 +159,7 @@ function parserArithmeticToInternal(arithmetic: DLArithmetic): Rec {
 }
 
 const COMPARISON_MAPPING = {
-  "==": "eq",
+  "=": "eq",
   "!=": "neq",
   "<": "lt",
   ">": "gt",

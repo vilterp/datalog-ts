@@ -1350,7 +1350,7 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Text",
-        value: "==",
+        value: "=",
       },
       {
         type: "Text",
