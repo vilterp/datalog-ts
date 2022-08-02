@@ -2,7 +2,6 @@ instr{idx: 0, op: store{var: "x", val: 0}}.
 instr{idx: 1, op: increment{var: "x"}}.
 instr{idx: 2, op: store{var: "y", val: gt{var: "x", val: 10}}}.
 instr{idx: 3, op: conditionalGoto{dest: 0, var: "y"}}.
-instr{idx: 4, op: println{msg: "hello"}}.
 instr{idx: 5, op: stop{}}.
 
 # 0: x = 1
@@ -19,7 +18,7 @@ initialState{state: state{time: 0, vars: {}, pc: 0, done: false}}.
 
 # how do we get the op
 laterState{time: T, state: NextState} :-
-  PrevT = T - 1 &
+  T = PrevT + 1 &
   state{time: PrevT, state: PrevState} &
   stepOp{fromState: PrevState, toState: NextState}.
 
@@ -27,14 +26,14 @@ stepOp{fromState: FromState, toState: ToState} :-
   stepStore{fromState: FromState, toState: ToState} |
   stepIncrement{fromState: FromState, toState: ToState} |
   stepConditionalGoto{fromState: FromState, toState: ToState} |
-  stepPrintln{fromState: FromState, toState: ToState} |
   stepStop{fromState: FromState, toState: ToState}.
 
 stepStore{
   fromState: state{pc: FromPC, vars: FromVars},
   toState: state{pc: ToPC, vars: ToVars, done: false}
 } :-
-  instr{idx: FromPC, op: store{var: Var, val: Value}} &
+  instr{idx: FromPC, op: store{var: Var, val: Expr}} &
+  eval{vars: FromVars, expr: Expr, value: Value} &
   dict.set{in: FromVars, key: Var, value: Value, out: ToVars} &
   ToPC = FromPC + 1.
 
@@ -48,12 +47,26 @@ stepIncrement{
   dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
   ToPC = FromPC + 1.
 
-stepIncrement{
+stepConditionalGoto{
   fromState: state{pc: FromPC, vars: FromVars},
   toState: state{pc: ToPC, vars: ToVars, done: false}
 } :-
-  instr{idx: FromPC, op: increment{var: Var}} &
-  dict.item{dict: FromVars, key: Var, value: OldVal} &
-  NewValue = OldValue + 1 &
-  dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
+  instr{idx: FromPC, op: conditionalGoto{var: Var, dest: ToPC}} &
+  dict.item{dict: FromVars, key: Var, value: Val} &
+  base.eq{a: Val, b: true} &
+  base.eq{a: FromVars, b: ToVars} &
   ToPC = FromPC + 1.
+
+stepStop{
+  fromState: state{pc: PC, vars: FromVars},
+  toState: state{pc: PC, vars: ToVars, done: true}
+} :-
+  instr{idx: PC} &
+  base.eq{a: FromVars, b: ToVars}.
+
+eval{vars: FromVars, expr: Expr, value: Value} :-
+  evalGt{vars: FromVars, expr: Expr, value: Value}.
+
+evalGt{vars: FromVars, expr: gt{var: Var, val: LiteralVal}, value: Value} :-
+  dict.item{dict: FromVars, key: Var, value: VarVal} &
+  base.gt{a: VarVal, b: LiteralVal, out: Value}.
