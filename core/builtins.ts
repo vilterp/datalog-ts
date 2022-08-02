@@ -30,6 +30,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   // array
   "array.append": arrayAppend,
   "array.prepend": arrayPrepend,
+  // value tests
+  "base.int": isInt,
 };
 
 function eq(input: Rec): Rec[] {
@@ -346,4 +348,9 @@ function arrayPrepend(input: Rec): Rec[] {
     ];
   }
   throw new Error(`this case is not supported: ${ppt(input)}`);
+}
+
+function isInt(input: Rec): Rec[] {
+  const a = input.attrs.a;
+  return a.type === "IntLit" ? [rec(input.relation, { a })] : [];
 }
