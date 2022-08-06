@@ -34,7 +34,24 @@ finalState{vars: V, time: T} :-
 
 # Individual ops
 
-stepState{
+stepState{fromState: FromState, toState: ToState} :-
+  stepStateNormal{fromState: FromState, toState: ToState} |
+  stepStateFork{fromState: FromState, toState: ToState}.
+
+stepStateFork{
+  fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
+  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
+} :-
+  dict.item{dict: FromThreadStates, key: ThreadID, value: threadState{pc: FromPC, vars: FromVars}} &
+  instr{idx: FromPC, op: fork{var: ForkVar}} &
+  ToNextThreadID = FromNextThreadID + 1 &
+  dict.set{in: FromVars, key: ForkVar, value: false, out: OrigThreadVars} &
+  dict.set{in: FromVars, key: ForkVar, value: true, out: NewThreadVars} &
+  NewPC = FromPC + 1 &
+  dict.set{in: FromThreadStates, key: ThreadID, value: threadState{pc: NewPC, vars: OrigThreadVars, done: false}, out: IntermediateThreadStates} &
+  dict.set{in: IntermediateThreadStates, key: FromNextThreadID, value: threadState{pc: NewPC, vars: NewThreadVars, done: false}, out: ToThreadStates}.
+
+stepStateNormal{
   fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
   toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
 } :-
