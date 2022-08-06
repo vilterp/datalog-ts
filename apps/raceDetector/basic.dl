@@ -22,18 +22,24 @@ initialState{
   }
 }.
 
-laterState{time: T, state: NewState} :-
+laterState{time: T, state: ToState} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
-  state{time: PrevT, state: state{threads: FromThreadStates, nextThreadID: NextThreadID}} &
-  stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} &
-  NewState = state{threads: ToThreadStates, nextThreadID: NextThreadID}.
+  state{time: PrevT, state: FromState} &
+  stepState{fromState: FromState, toState: ToState}.
 
 finalState{vars: V, time: T} :-
   state{time: T, state: state{vars: V, done: true}}.
 
 # Individual ops
+
+stepState{
+  fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
+  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
+} :-
+  stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} &
+  ToNextThreadID = FromNextThreadID.
 
 stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} :-
   dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &

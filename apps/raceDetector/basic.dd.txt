@@ -7,3 +7,12 @@ instr{idx: 4, op: stop{}}.
 application/datalog
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 0, vars: {}}}}, time: 0}.
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 1, vars: {"x": 0}}}}, time: 1}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 2, vars: {"x": 1}}}}, time: 2}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}}}, time: 3}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 1, vars: {"x": 1, "y": true}}}}, time: 4}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 2, vars: {"x": 2, "y": true}}}}, time: 5}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 3, vars: {"x": 2, "y": false}}}}, time: 6}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 4, vars: {"x": 2, "y": false}}}}, time: 7}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}}}, time: 8}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}}}, time: 9}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}}}, time: 10}.
