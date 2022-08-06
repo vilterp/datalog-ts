@@ -22,14 +22,15 @@ initialState{
   }
 }.
 
-laterState{time: T, state: state{threads: NewThreadStates, nextThreadID: NextThreadID}} :-
+laterState{time: T, state: NewState} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
   state{time: PrevT, state: state{threads: ThreadStates, nextThreadID: NextThreadID}} &
   dict.item{dict: ThreadStates, key: ThreadID, value: FromThreadState} &
   stepOp{fromState: FromThreadState, toState: ToThreadState} &
-  dict.set{in: ThreadStates, key: ThreadID, value: ToThreadState, out: NewThreadStates}.
+  dict.set{in: ThreadStates, key: ThreadID, value: ToThreadState, out: NewThreadStates} &
+  NewState = state{threads: NewThreadStates, nextThreadID: NextThreadID}.
 
 finalState{vars: V, time: T} :-
   state{time: T, state: state{vars: V, done: true}}.
@@ -43,8 +44,8 @@ stepOp{fromState: FromState, toState: ToState} :-
   stepStop{fromState: FromState, toState: ToState}.
 
 stepStore{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: store{var: Var, val: Expr}} &
   eval{vars: FromVars, expr: Expr, value: Value} &
@@ -52,8 +53,8 @@ stepStore{
   ToPC = FromPC + 1.
 
 stepIncrement{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: increment{var: Var}} &
   dict.item{dict: FromVars, key: Var, value: OldValue} &
@@ -66,16 +67,16 @@ stepConditionalGoto{fromState: FromState, toState: ToState} :-
   stepConditionalGotoNo{fromState: FromState, toState: ToState}.
 
 stepConditionalGotoYes{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: conditionalGoto{var: Var, dest: ToPC}} &
   dict.item{dict: FromVars, key: Var, value: Val} &
   Val = true &
   FromVars = ToVars.
 stepConditionalGotoNo{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: conditionalGoto{var: Var, dest: Dest}} &
   dict.item{dict: FromVars, key: Var, value: Val} &
@@ -84,15 +85,15 @@ stepConditionalGotoNo{
   ToPC = FromPC + 1.
 
 stepFork{
-  fromState: state{pc: PC, vars: FromVars},
-  toState: state{pc: PC, vars: ToVars, done: true}
+  fromState: threadState{pc: PC, vars: FromVars},
+  toState: threadState{pc: PC, vars: ToVars, done: true}
 } :-
   instr{idx: PC, op: fork{var: V}} &
   FromVars = ToVars.
 
 stepStop{
-  fromState: state{pc: PC, vars: FromVars},
-  toState: state{pc: PC, vars: ToVars, done: true}
+  fromState: threadState{pc: PC, vars: FromVars},
+  toState: threadState{pc: PC, vars: ToVars, done: true}
 } :-
   instr{idx: PC, op: stop{}} &
   FromVars = ToVars.
