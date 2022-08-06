@@ -8,14 +8,28 @@ state{time: T, state: S} :-
   initialState{time: T, state: S} |
   laterState{time: T, state: S}.
 
-initialState{time: 0, state: state{vars: {}, pc: 0, done: false}}.
+initialState{
+  time: 0,
+  state: state{
+    threads: {
+      "1": threadState{
+        vars: {},
+        pc: 0,
+        done: false
+      }
+    },
+    nextThreadID: 2
+  }
+}.
 
-laterState{time: T, state: NextState} :-
+laterState{time: T, state: state{threads: NewThreadStates, nextThreadID: NextThreadID}} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
-  state{time: PrevT, state: PrevState} &
-  stepOp{fromState: PrevState, toState: NextState}.
+  state{time: PrevT, state: state{threads: ThreadStates, nextThreadID: NextThreadID}} &
+  dict.item{dict: ThreadStates, key: ThreadID, value: FromThreadState} &
+  stepOp{fromState: FromThreadState, toState: ToThreadState} &
+  dict.set{in: ThreadStates, key: ThreadID, value: ToThreadState, out: NewThreadStates}.
 
 finalState{vars: V, time: T} :-
   state{time: T, state: state{vars: V, done: true}}.
@@ -68,6 +82,13 @@ stepConditionalGotoNo{
   Val != true &
   FromVars = ToVars &
   ToPC = FromPC + 1.
+
+stepFork{
+  fromState: state{pc: PC, vars: FromVars},
+  toState: state{pc: PC, vars: ToVars, done: true}
+} :-
+  instr{idx: PC, op: fork{var: V}} &
+  FromVars = ToVars.
 
 stepStop{
   fromState: state{pc: PC, vars: FromVars},
