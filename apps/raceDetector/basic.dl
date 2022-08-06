@@ -26,16 +26,19 @@ laterState{time: T, state: NewState} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
-  state{time: PrevT, state: state{threads: ThreadStates, nextThreadID: NextThreadID}} &
-  dict.item{dict: ThreadStates, key: ThreadID, value: FromThreadState} &
-  stepOp{fromState: FromThreadState, toState: ToThreadState} &
-  dict.set{in: ThreadStates, key: ThreadID, value: ToThreadState, out: NewThreadStates} &
-  NewState = state{threads: NewThreadStates, nextThreadID: NextThreadID}.
+  state{time: PrevT, state: state{threads: FromThreadStates, nextThreadID: NextThreadID}} &
+  stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} &
+  NewState = state{threads: ToThreadStates, nextThreadID: NextThreadID}.
 
 finalState{vars: V, time: T} :-
   state{time: T, state: state{vars: V, done: true}}.
 
 # Individual ops
+
+stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} :-
+  dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
+  stepOp{fromState: FromThreadState, toState: ToThreadState} &
+  dict.set{in: FromThreadStates, key: ThreadID, value: ToThreadState, out: ToThreadStates}.
 
 stepOp{fromState: FromState, toState: ToState} :-
   stepStore{fromState: FromState, toState: ToState} |
@@ -120,11 +123,8 @@ evalIntLit{expr: Expr, value: Value} :-
 
 # debugging
 
-storeGtTest{pc: PC, resVar: ResVar, gtVar: GtVar, gtVal: GtVal, vars: Vars, gtVarVal: GtVarVal, value: true} :-
-  instr{idx: PC, op: store{var: ResVar, val: gt{var: GtVar, val: GtVal}}} &
-  Vars = {"x": 10} &
-  dict.item{dict: Vars, key: GtVar, value: GtVarVal} &
-  GtVarVal > GtVal.
+stepOpTest{afterThreadState: TS} :-
+  stepOp{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
 
-evalLtTest{value: Value} :-
-  evalLt{vars: {"x": 10}, expr: gt{var: "x", val: 3}, value: Value}.
+stepIncrementTest{afterThreadState: TS} :-
+  stepIncrement{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
