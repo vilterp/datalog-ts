@@ -127,3 +127,13 @@ array.item{array: ["a","b","c"], index: 2, value: "c"}.
 array.item{array: ["a","b","c"], index: 3, value: V}?
 ----
 application/datalog
+
+intToString{int: A, string: "123"}?
+----
+application/datalog
+intToString{int: 123, string: "123"}.
+
+intToString{int: 123, string: S}?
+----
+application/datalog
+intToString{int: 123, string: "123"}.
