@@ -8,19 +8,68 @@ state{time: T, state: S} :-
   initialState{time: T, state: S} |
   laterState{time: T, state: S}.
 
-initialState{time: 0, state: state{vars: {}, pc: 0, done: false}}.
+initialState{
+  time: 0,
+  state: state{
+    threads: {
+      "1": threadState{
+        vars: {},
+        pc: 0,
+        done: false
+      }
+    },
+    nextThreadID: 2
+  }
+}.
 
-laterState{time: T, state: NextState} :-
+laterState{time: T, state: ToState} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
-  state{time: PrevT, state: PrevState} &
-  stepOp{fromState: PrevState, toState: NextState}.
+  state{time: PrevT, state: FromState} &
+  stepState{fromState: FromState, toState: ToState}.
 
 finalState{vars: V, time: T} :-
   state{time: T, state: state{vars: V, done: true}}.
 
 # Individual ops
+
+stepState{fromState: FromState, toState: ToState} :-
+  stepStateNormal{fromState: FromState, toState: ToState} |
+  stepStateFork{fromState: FromState, toState: ToState}.
+
+stepStateFork{
+  fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
+  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
+} :-
+  intToString{int: FromNextThreadID, string: NextThreadIDStr} &
+  dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
+  stepThreadsFork{fromThreadState: FromThreadState, nextThreadOrig: Orig, nextThreadForked: Forked} &
+  dict.set{in: FromThreadStates, key: ThreadID, value: Orig, out: IntermediateThreadStates} &
+  dict.set{in: IntermediateThreadStates, key: NextThreadIDStr, value: Forked, out: ToThreadStates} &
+  ToNextThreadID = FromNextThreadID + 1.
+
+stepThreadsFork{
+  fromThreadState: threadState{vars: FromVars, pc: FromPC},
+  nextThreadOrig: threadState{vars: OrigVars, pc: ToPC, done: false},
+  nextThreadForked: threadState{vars: ForkedVars, pc: ToPC, done: false}
+} :-
+  instr{idx: FromPC, op: fork{var: ForkVar}} &
+  dict.set{in: FromVars, key: ForkVar, value: false, out: OrigVars} &
+  dict.set{in: FromVars, key: ForkVar, value: true, out: ForkedVars} &
+  ToPC = FromPC + 1.
+
+stepStateNormal{
+  fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
+  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
+} :-
+  stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} &
+  ToNextThreadID = FromNextThreadID.
+
+stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} :-
+  dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
+  stepOp{fromState: FromThreadState, toState: ToThreadState} &
+  dict.set{in: FromThreadStates, key: ThreadID, value: ToThreadState, out: ToThreadStates}.
 
 stepOp{fromState: FromState, toState: ToState} :-
   stepStore{fromState: FromState, toState: ToState} |
@@ -29,8 +78,8 @@ stepOp{fromState: FromState, toState: ToState} :-
   stepStop{fromState: FromState, toState: ToState}.
 
 stepStore{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: store{var: Var, val: Expr}} &
   eval{vars: FromVars, expr: Expr, value: Value} &
@@ -38,8 +87,8 @@ stepStore{
   ToPC = FromPC + 1.
 
 stepIncrement{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: increment{var: Var}} &
   dict.item{dict: FromVars, key: Var, value: OldValue} &
@@ -52,16 +101,16 @@ stepConditionalGoto{fromState: FromState, toState: ToState} :-
   stepConditionalGotoNo{fromState: FromState, toState: ToState}.
 
 stepConditionalGotoYes{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: conditionalGoto{var: Var, dest: ToPC}} &
   dict.item{dict: FromVars, key: Var, value: Val} &
   Val = true &
   FromVars = ToVars.
 stepConditionalGotoNo{
-  fromState: state{pc: FromPC, vars: FromVars},
-  toState: state{pc: ToPC, vars: ToVars, done: false}
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars, done: false}
 } :-
   instr{idx: FromPC, op: conditionalGoto{var: Var, dest: Dest}} &
   dict.item{dict: FromVars, key: Var, value: Val} &
@@ -69,9 +118,16 @@ stepConditionalGotoNo{
   FromVars = ToVars &
   ToPC = FromPC + 1.
 
+stepFork{
+  fromState: threadState{pc: PC, vars: FromVars},
+  toState: threadState{pc: PC, vars: ToVars, done: true}
+} :-
+  instr{idx: PC, op: fork{var: V}} &
+  FromVars = ToVars.
+
 stepStop{
-  fromState: state{pc: PC, vars: FromVars},
-  toState: state{pc: PC, vars: ToVars, done: true}
+  fromState: threadState{pc: PC, vars: FromVars},
+  toState: threadState{pc: PC, vars: ToVars, done: true}
 } :-
   instr{idx: PC, op: stop{}} &
   FromVars = ToVars.
@@ -98,11 +154,20 @@ evalIntLit{expr: Expr, value: Value} :-
 
 # debugging
 
-storeGtTest{pc: PC, resVar: ResVar, gtVar: GtVar, gtVal: GtVal, vars: Vars, gtVarVal: GtVarVal, value: true} :-
-  instr{idx: PC, op: store{var: ResVar, val: gt{var: GtVar, val: GtVal}}} &
-  Vars = {"x": 10} &
-  dict.item{dict: Vars, key: GtVar, value: GtVarVal} &
-  GtVarVal > GtVal.
+stepStateForkTest{toState: ToState} :-
+  stepStateFork{
+    fromState: state{
+      threads: {"1": threadState{vars: {}, pc: 1, done: false}},
+      nextThreadID: 2,
+    },
+    toState: ToState
+  }.
 
-evalLtTest{value: Value} :-
-  evalLt{vars: {"x": 10}, expr: gt{var: "x", val: 3}, value: Value}.
+stepThreadsTest{toThreads: ToThreads} :-
+  stepThreads{fromThreads: {"1": threadState{pc: 1, vars: {"x": 0}, done: false}}, toThreads: ToThreads}.
+
+stepOpTest{afterThreadState: TS} :-
+  stepOp{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
+
+stepIncrementTest{afterThreadState: TS} :-
+  stepIncrement{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.

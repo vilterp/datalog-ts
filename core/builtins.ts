@@ -33,6 +33,8 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "array.item": arrayItem,
   // type tests
   "base.int": isInt,
+  // conversions
+  intToString: intToString,
 };
 
 function eq(input: Rec): Rec[] {
@@ -392,4 +394,26 @@ function arrayItem(input: Rec): Rec[] {
 function isInt(input: Rec): Rec[] {
   const a = input.attrs.a;
   return a.type === "IntLit" ? [rec(input.relation, { a })] : [];
+}
+
+function intToString(input: Rec): Rec[] {
+  const intInput = input.attrs.int;
+  const strInput = input.attrs.string;
+  if (intInput.type === "Var" && strInput.type === "StringLit") {
+    return [
+      rec(input.relation, {
+        int: int(parseInt(strInput.val)),
+        string: strInput,
+      }),
+    ];
+  }
+  if (intInput.type === "IntLit" && strInput.type === "Var") {
+    return [
+      rec(input.relation, {
+        int: intInput,
+        string: str(intInput.val.toString()),
+      }),
+    ];
+  }
+  throw new Error(`this case is not supported: ${ppt(input)}`);
 }
