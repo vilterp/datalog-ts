@@ -1612,6 +1612,11 @@ const GRAMMAR: Grammar = {
         value: "{",
       },
       {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
         type: "RepSep",
         rep: {
           type: "Ref",
@@ -1623,6 +1628,11 @@ const GRAMMAR: Grammar = {
           captureName: null,
           rule: "commaSpace",
         },
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
       },
       {
         type: "Text",

@@ -1237,3 +1237,55 @@ application/json
     }
   }
 ]
+
+foo{bar: {"0": 1}}.
+----
+application/json
+[
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "foo",
+      "attrs": {
+        "bar": {
+          "type": "Dict",
+          "map": {
+            "0": {
+              "type": "IntLit",
+              "val": 1
+            }
+          }
+        }
+      }
+    }
+  }
+]
+
+foo{
+  bar: {
+    "0": 1
+  }
+}.
+----
+application/json
+[
+  {
+    "type": "Fact",
+    "record": {
+      "type": "Record",
+      "relation": "foo",
+      "attrs": {
+        "bar": {
+          "type": "Dict",
+          "map": {
+            "0": {
+              "type": "IntLit",
+              "val": 1
+            }
+          }
+        }
+      }
+    }
+  }
+]
