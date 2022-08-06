@@ -123,6 +123,9 @@ evalIntLit{expr: Expr, value: Value} :-
 
 # debugging
 
+stepThreadsTest{toThreads: ToThreads} :-
+  stepThreads{fromThreads: {"1": threadState{pc: 1, vars: {"x": 0}, done: false}}, toThreads: ToThreads}.
+
 stepOpTest{afterThreadState: TS} :-
   stepOp{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
 
