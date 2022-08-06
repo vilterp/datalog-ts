@@ -42,10 +42,11 @@ stepStateFork{
   fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
   toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
 } :-
+  intToString{int: FromNextThreadID, string: NextThreadIDStr} &
   dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
   stepThreadsFork{fromThreadState: FromThreadState, nextThreadOrig: Orig, nextThreadForked: Forked} &
   dict.set{in: FromThreadStates, key: ThreadID, value: Orig, out: IntermediateThreadStates} &
-  dict.set{in: IntermediateThreadStates, key: FromNextThreadID, value: Forked, out: ToThreadStates} &
+  dict.set{in: IntermediateThreadStates, key: NextThreadIDStr, value: Forked, out: ToThreadStates} &
   ToNextThreadID = FromNextThreadID + 1.
 
 stepThreadsFork{
@@ -54,7 +55,6 @@ stepThreadsFork{
   nextThreadForked: threadState{vars: ForkedVars, pc: ToPC, done: false}
 } :-
   instr{idx: FromPC, op: fork{var: ForkVar}} &
-  ToNextThreadID = FromNextThreadID + 1 &
   dict.set{in: FromVars, key: ForkVar, value: false, out: OrigVars} &
   dict.set{in: FromVars, key: ForkVar, value: true, out: ForkedVars} &
   ToPC = FromPC + 1.
@@ -153,6 +153,15 @@ evalIntLit{expr: Expr, value: Value} :-
   Expr = Value.
 
 # debugging
+
+stepStateForkTest{toState: ToState} :-
+  stepStateFork{
+    fromState: state{
+      threads: {"1": threadState{vars: {}, pc: 1, done: false}},
+      nextThreadID: 2,
+    },
+    toState: ToState
+  }.
 
 stepThreadsTest{toThreads: ToThreads} :-
   stepThreads{fromThreads: {"1": threadState{pc: 1, vars: {"x": 0}, done: false}}, toThreads: ToThreads}.

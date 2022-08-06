@@ -22,3 +22,5 @@ instr{idx: 1, op: fork{var: "x"}}.
 ----
 application/datalog
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 0, vars: {}}}}, time: 0}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 1, vars: {"y": 1}}}}, time: 1}.
+state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 2, vars: {"x": false, "y": 1}}, "2": threadState{done: false, pc: 2, vars: {"x": true, "y": 1}}}}, time: 2}.
