@@ -16,3 +16,9 @@ state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}}}, time: 8}.
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}}}, time: 9}.
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}}}, time: 10}.
+
+instr{idx: 0, op: store{var: "y", val: 1}}.
+instr{idx: 1, op: fork{var: "x"}}.
+----
+application/datalog
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 0, vars: {}}}}, time: 0}.

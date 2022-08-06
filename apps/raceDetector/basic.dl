@@ -42,14 +42,22 @@ stepStateFork{
   fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
   toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
 } :-
-  dict.item{dict: FromThreadStates, key: ThreadID, value: threadState{pc: FromPC, vars: FromVars}} &
+  dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
+  stepThreadsFork{fromThreadState: FromThreadState, nextThreadOrig: Orig, nextThreadForked: Forked} &
+  dict.set{in: FromThreadStates, key: ThreadID, value: Orig, out: IntermediateThreadStates} &
+  dict.set{in: IntermediateThreadStates, key: FromNextThreadID, value: Forked, out: ToThreadStates} &
+  ToNextThreadID = FromNextThreadID + 1.
+
+stepThreadsFork{
+  fromThreadState: threadState{vars: FromVars, pc: FromPC},
+  nextThreadOrig: threadState{vars: OrigVars, pc: ToPC, done: false},
+  nextThreadForked: threadState{vars: ForkedVars, pc: ToPC, done: false}
+} :-
   instr{idx: FromPC, op: fork{var: ForkVar}} &
   ToNextThreadID = FromNextThreadID + 1 &
-  dict.set{in: FromVars, key: ForkVar, value: false, out: OrigThreadVars} &
-  dict.set{in: FromVars, key: ForkVar, value: true, out: NewThreadVars} &
-  NewPC = FromPC + 1 &
-  dict.set{in: FromThreadStates, key: ThreadID, value: threadState{pc: NewPC, vars: OrigThreadVars, done: false}, out: IntermediateThreadStates} &
-  dict.set{in: IntermediateThreadStates, key: FromNextThreadID, value: threadState{pc: NewPC, vars: NewThreadVars, done: false}, out: ToThreadStates}.
+  dict.set{in: FromVars, key: ForkVar, value: false, out: OrigVars} &
+  dict.set{in: FromVars, key: ForkVar, value: true, out: ForkedVars} &
+  ToPC = FromPC + 1.
 
 stepStateNormal{
   fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
