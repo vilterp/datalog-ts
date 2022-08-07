@@ -1,6 +1,6 @@
 .table instr
 
-timeLimit{limit: 5}.
+timeLimit{limit: 10}.
 
 # Overall control flow
 
@@ -18,57 +18,50 @@ initialState{
   }
 }.
 
-laterState{time: T, threadID: J, state: ToState} :-
+laterState{time: T, threadID: I, state: ToState} :-
   timeLimit{limit: Limit} &
   range{from: 0, to: Limit, val: T} &
   T = PrevT + 1 &
   state{time: PrevT, threadID: I, state: FromState} &
-  stepState{fromState: FromState, toState: ToState, fromThreadID: I, toThreadID: J}.
+  stepState{fromState: FromState, toState: ToState}.
 
 finalState{vars: V, time: T} :-
   state{time: T, state: state{vars: V, done: true}}.
 
 # Individual ops
 
-stepState{fromState: FromState, toState: ToState, fromThreadID: FT, toThreadID: TT} :-
-  stepStateNormal{fromState: FromState, toState: ToState, fromThreadID: FT, toThreadID: TT} |
-  stepStateFork{fromState: FromState, toState: ToState, fromThreadID: FT, toThreadID: TT}.
+stepState{fromState: FromState, toState: ToState, forked: F} :-
+  stepStateNormal{fromState: FromState, toState: ToState, forked: F} |
+  stepStateFork{fromState: FromState, toState: ToState, forked: F}.
 
-stepStateFork{fromState: FromState, toState: ToState, fromThreadID: FT, toThreadID: TT} :-
-  stepForkOrig{fromState: FromState, toState: ToState, fromThreadID: FT, toThreadID: TT} |
-  stepForkForked{fromState: FromState, toState: ToState, fromThreadID: FT, toThreadID: TT}.
+stepStateFork{fromState: FromState, toState: ToState, forked: F} :-
+  stepForkOrig{fromState: FromState, toState: ToState, forked: F} |
+  stepForkForked{fromState: FromState, toState: ToState, forked: F}.
 
 stepForkOrig{
   fromState: threadState{pc: FromPC, vars: FromVars},
   toState: threadState{pc: ToPC, vars: ToVars},
-  fromThreadID: FT,
-  toThreadID: TT
+  forked: false
 } :-
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
   ToPC = GotoPC &
-  ToVars = FromVars &
-  FT = TT.
+  ToVars = FromVars.
 
 stepForkForked{
   fromState: threadState{pc: FromPC, vars: FromVars},
   toState: threadState{pc: ToPC, vars: ToVars},
-  fromThreadID: FT,
-  toThreadID: TT
+  forked: true
 } :-
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
   ToPC = FromPC + 1 &
-  ToVars = FromVars &
-  TT = FT + 1.
-# TODO: better id strategy
+  ToVars = FromVars.
 
 stepStateNormal{
   fromState: FromState,
   toState: ToState,
-  fromThreadID: FT,
-  toThreadID: TT
+  forked: false
 } :-
-  stepOp{fromState: FromState, toState: ToState} &
-  FT = TT.
+  stepOp{fromState: FromState, toState: ToState}.
 
 stepOp{fromState: FromState, toState: ToState} :-
   stepStore{fromState: FromState, toState: ToState} |
@@ -146,23 +139,13 @@ evalIntLit{expr: Expr, value: Value} :-
 
 # debugging
 
-stepStateForkTest{toState: ToState} :-
-  stepStateFork{
-    fromState: state{
-      threads: {"1": threadState{vars: {}, pc: 1, done: false}},
-      nextThreadID: 2,
-    },
-    toState: ToState
+stepStateNormalTest{toState: ToState, forked: F} :-
+  initialState{state: S} &
+  stepState{
+    fromState: S,
+    toState: ToState,
+    forked: F
   }.
-
-stepThreadsTest{toThreads: ToThreads} :-
-  stepThreads{fromThreads: {"1": threadState{pc: 1, vars: {"x": 0}, done: false}}, toThreads: ToThreads}.
-
-stepOpTest{afterThreadState: TS} :-
-  stepOp{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
-
-stepIncrementTest{afterThreadState: TS} :-
-  stepIncrement{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
 
 # viz
 
