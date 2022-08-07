@@ -1,6 +1,6 @@
 .table instr
 
-timeLimit{limit: 10}.
+timeLimit{limit: 20}.
 threadLimit{limit: 10}.
 
 # Overall control flow
@@ -157,12 +157,11 @@ viz.threadNode{id: I, parentID: P, display: thread{id: I, spawnedAt: T}} :-
   viz.childThreadNode{id: I, parentID: P, spawnedAt: T}.
 
 viz.initialThreadNode{id: I, parentID: -1, spawnedAt: T} :-
-  initialState{time: T, state: state{threads: Threads}} &
-  dict.item{dict: Threads, key: I, value: V}.
+  initialState{time: T, threadID: I}.
 
 viz.childThreadNode{id: I, parentID: P, spawnedAt: T} :-
   state{time: T, state: S, threadID: P} &
-  stepForkForked{fromState: S, fromThreadID: P, toThreadID: I}.
+  stepForkForked{fromState: S, fromThread: P, toThread: I}.
 
 internal.visualization{
   name: "Thread Tree",
@@ -171,8 +170,3 @@ internal.visualization{
     rootTerm: -1
   }
 }.
-
-# TODO: delete
-instr{idx: 0, op: store{var: "y", val: 1}}.
-instr{idx: 1, op: fork{goto: 2}}.
-instr{idx: 2, op: increment{var: "y"}}.
