@@ -40,7 +40,9 @@ stepState{fromState: FromState, toState: ToState} :-
 
 stepStateFork{
   fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
-  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
+  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID},
+  origThreadID: ThreadID,
+  forkedThreadID: NextThreadIDStr
 } :-
   intToString{int: FromNextThreadID, string: NextThreadIDStr} &
   dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
@@ -118,13 +120,6 @@ stepConditionalGotoNo{
   FromVars = ToVars &
   ToPC = FromPC + 1.
 
-stepFork{
-  fromState: threadState{pc: PC, vars: FromVars},
-  toState: threadState{pc: PC, vars: ToVars, done: true}
-} :-
-  instr{idx: PC, op: fork{var: V}} &
-  FromVars = ToVars.
-
 stepStop{
   fromState: threadState{pc: PC, vars: FromVars},
   toState: threadState{pc: PC, vars: ToVars, done: true}
@@ -171,3 +166,24 @@ stepOpTest{afterThreadState: TS} :-
 
 stepIncrementTest{afterThreadState: TS} :-
   stepIncrement{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
+
+# viz
+
+viz.threadNode{id: I, parentID: P, display: I} :-
+  viz.initialThreadNode{id: I, parentID: P, display: I} |
+  viz.childThreadNode{id: I, parentID: P, display: I}.
+
+viz.initialThreadNode{id: I, parentID: -1, display: I} :-
+  initialState{state: state{threads: Threads}} &
+  dict.item{dict: Threads, key: I, value: V}.
+
+viz.childThreadNode{id: I, parentID: P, display: I} :-
+  stepStateFork{forkedThreadID: I, origThreadID: P}.
+
+internal.visualization{
+  name: "Thread Tree",
+  spec: tree{
+    nodes: viz.threadNode{id: ID, parentID: ParentID, display: Display},
+    rootTerm: 1
+  }
+}.
