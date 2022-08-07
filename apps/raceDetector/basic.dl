@@ -1,7 +1,6 @@
 .table instr
 
 timeLimit{limit: 20}.
-threadLimit{limit: 10}.
 
 # Overall control flow
 
@@ -21,9 +20,7 @@ initialState{
 
 laterState{time: T, threadID: TT, state: ToState} :-
   timeLimit{limit: TimeLimit} &
-  threadLimit{limit: ThreadLimit} &
   range{from: 0, to: TimeLimit, val: T} &
-  range{from: 0, to: ThreadLimit, val: FT} &
   T = PrevT + 1 &
   state{time: PrevT, threadID: FT, state: FromState} &
   stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
@@ -57,7 +54,8 @@ stepForkForked{
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
   ToPC = GotoPC &
   ToVars = FromVars &
-  TT = spawned{fromThread: FT, time: T}.
+  ShiftedFT = FT + 100 &
+  TT = ShiftedFT + T.
 # ughhh
 
 stepStateNormal{
@@ -148,10 +146,13 @@ debug.stepStateNormalTest{toState: ToState, toThread: TT} :-
   initialState{state: S} &
   stepState{fromState: S, toState: ToState, fromThread: I, toThread: TT}.
 
-debug.threadIDStringTest{out: S} :-
-  threadIDString{spawnTime: 0, spawnThread: 1, out: S}.
+debug.threadIDStringTest{threadID: I} :-
+  state{time: T, threadID: spawned{fromThread: I}}.
 
-# viz
+debug.threadIDStringTest2{threadID: I} :-
+  state{time: T, threadID: I}.
+
+# tree viz
 
 finalState{vars: V, threadID: I, time: T} :-
   state{time: T, threadID: I, state: threadState{vars: V, done: true}}.
@@ -175,16 +176,10 @@ internal.visualization{
   }
 }.
 
-viz.programCounter{time: T, threadID: ThreadDisplay, pc: PC} :-
-  state{time: T, threadID: ThreadDisplay, state: threadState{pc: PC}} &
-  base.int{a: ThreadDisplay} |
-  state{time: T, threadID: spawned{time: SpawnTime, fromThread: SpawnThread}, state: threadState{pc: PC}} &
-  threadIDString{spawnTime: SpawnTime, spawnThread: SpawnThread, out: ThreadDisplay}.
+# chart viz
 
-threadIDString{spawnTime: SpawnTime, spawnThread: SpawnThread, out: S} :-
-  intToString{int: SpawnTime, string: SpawnTimeString} &
-  intToString{int: SpawnThread, string: FromThreadString} &
-  concat{a: SpawnTimeString, b: FromThreadString, res: S}.
+viz.programCounter{time: T, threadID: I, pc: PC} :-
+  state{time: T, threadID: I, state: threadState{pc: PC}}.
 
 internal.visualization{
   name: "Program Counter over Time",
@@ -205,3 +200,5 @@ instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
 instr{idx: 3, op: fork{goto: 5}}.
 instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
 instr{idx: 5, op: increment{var: "x"}}.
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
