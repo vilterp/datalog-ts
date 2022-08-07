@@ -1,77 +1,71 @@
 .table instr
 
-timeLimit{limit: 10}.
+timeLimit{limit: 20}.
 
 # Overall control flow
 
-state{time: T, state: S} :-
-  initialState{time: T, state: S} |
-  laterState{time: T, state: S}.
+state{time: T, threadID: I, state: S} :-
+  initialState{time: T, threadID: I, state: S} |
+  laterState{time: T, threadID: I, state: S}.
 
 initialState{
   time: 0,
-  state: state{
-    threads: {
-      "1": threadState{
-        vars: {},
-        pc: 0,
-        done: false
-      }
-    },
-    nextThreadID: 2
+  threadID: 1,
+  state: threadState{
+    vars: {},
+    pc: 0,
+    done: false
   }
 }.
 
-laterState{time: T, state: ToState} :-
-  timeLimit{limit: Limit} &
-  range{from: 0, to: Limit, val: T} &
+laterState{time: T, threadID: TT, state: ToState} :-
+  timeLimit{limit: TimeLimit} &
+  range{from: 0, to: TimeLimit, val: T} &
   T = PrevT + 1 &
-  state{time: PrevT, state: FromState} &
-  stepState{fromState: FromState, toState: ToState}.
-
-finalState{vars: V, time: T} :-
-  state{time: T, state: state{vars: V, done: true}}.
+  state{time: PrevT, threadID: FT, state: FromState} &
+  stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
 # Individual ops
 
-stepState{fromState: FromState, toState: ToState} :-
-  stepStateNormal{fromState: FromState, toState: ToState} |
-  stepStateFork{fromState: FromState, toState: ToState}.
+stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
+  stepStateNormal{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} |
+  stepStateFork{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
-stepStateFork{
-  fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
-  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID},
-  origThreadID: ThreadID,
-  forkedThreadID: NextThreadIDStr
-} :-
-  intToString{int: FromNextThreadID, string: NextThreadIDStr} &
-  dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
-  stepThreadsFork{fromThreadState: FromThreadState, nextThreadOrig: Orig, nextThreadForked: Forked} &
-  dict.set{in: FromThreadStates, key: ThreadID, value: Orig, out: IntermediateThreadStates} &
-  dict.set{in: IntermediateThreadStates, key: NextThreadIDStr, value: Forked, out: ToThreadStates} &
-  ToNextThreadID = FromNextThreadID + 1.
+stepStateFork{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
+  stepForkOrig{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} |
+  stepForkForked{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
-stepThreadsFork{
-  fromThreadState: threadState{vars: FromVars, pc: FromPC},
-  nextThreadOrig: threadState{vars: OrigVars, pc: ToPC, done: false},
-  nextThreadForked: threadState{vars: ForkedVars, pc: ToPC, done: false}
+stepForkOrig{
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars},
+  fromThread: FT, toThread: TT
 } :-
-  instr{idx: FromPC, op: fork{var: ForkVar}} &
-  dict.set{in: FromVars, key: ForkVar, value: false, out: OrigVars} &
-  dict.set{in: FromVars, key: ForkVar, value: true, out: ForkedVars} &
-  ToPC = FromPC + 1.
+  instr{idx: FromPC, op: fork{goto: GotoPC}} &
+  ToPC = FromPC + 1 &
+  ToVars = FromVars &
+  FT = TT.
+
+stepForkForked{
+  time: T,
+  fromState: threadState{pc: FromPC, vars: FromVars},
+  toState: threadState{pc: ToPC, vars: ToVars},
+  fromThread: FT,
+  toThread: TT
+} :-
+  instr{idx: FromPC, op: fork{goto: GotoPC}} &
+  ToPC = GotoPC &
+  ToVars = FromVars &
+  ShiftedFT = FT + 100 &
+  TT = ShiftedFT + T.
+# ughhh
 
 stepStateNormal{
-  fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
-  toState: state{threads: ToThreadStates, nextThreadID: ToNextThreadID}
+  fromState: FromState,
+  toState: ToState,
+  fromThread: FT, toThread: TT
 } :-
-  stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} &
-  ToNextThreadID = FromNextThreadID.
-
-stepThreads{fromThreads: FromThreadStates, toThreads: ToThreadStates} :-
-  dict.item{dict: FromThreadStates, key: ThreadID, value: FromThreadState} &
-  stepOp{fromState: FromThreadState, toState: ToThreadState} &
-  dict.set{in: FromThreadStates, key: ThreadID, value: ToThreadState, out: ToThreadStates}.
+  stepOp{fromState: FromState, toState: ToState} &
+  FT = TT.
 
 stepOp{fromState: FromState, toState: ToState} :-
   stepStore{fromState: FromState, toState: ToState} |
@@ -149,42 +143,51 @@ evalIntLit{expr: Expr, value: Value} :-
 
 # debugging
 
-stepStateForkTest{toState: ToState} :-
-  stepStateFork{
-    fromState: state{
-      threads: {"1": threadState{vars: {}, pc: 1, done: false}},
-      nextThreadID: 2,
-    },
-    toState: ToState
-  }.
+debug.stepStateNormalTest{toState: ToState, toThread: TT} :-
+  initialState{state: S} &
+  stepState{fromState: S, toState: ToState, fromThread: I, toThread: TT}.
 
-stepThreadsTest{toThreads: ToThreads} :-
-  stepThreads{fromThreads: {"1": threadState{pc: 1, vars: {"x": 0}, done: false}}, toThreads: ToThreads}.
+debug.threadIDStringTest{threadID: I} :-
+  state{time: T, threadID: spawned{fromThread: I}}.
 
-stepOpTest{afterThreadState: TS} :-
-  stepOp{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
+debug.threadIDStringTest2{threadID: I} :-
+  state{time: T, threadID: I}.
 
-stepIncrementTest{afterThreadState: TS} :-
-  stepIncrement{fromState: threadState{pc: 1, vars: {"x": 0}, done: false}, toState: TS}.
+# tree viz
 
-# viz
+viz.threadNode{id: I, parentID: P, display: I} :-
+  viz.initialThreadNode{id: I, parentID: P} |
+  viz.childThreadNode{id: I, parentID: P}.
 
-viz.threadNode{id: I, parentID: P, display: thread{id: I, spawnedAt: T}} :-
-  viz.initialThreadNode{id: I, parentID: P, spawnedAt: T} |
-  viz.childThreadNode{id: I, parentID: P, spawnedAt: T}.
+viz.initialThreadNode{id: I, parentID: -1} :-
+  initialState{time: T, threadID: I}.
 
-viz.initialThreadNode{id: I, parentID: -1, spawnedAt: T} :-
-  initialState{time: T, state: state{threads: Threads}} &
-  dict.item{dict: Threads, key: I, value: V}.
-
-viz.childThreadNode{id: I, parentID: P, spawnedAt: T} :-
-  state{time: T, state: S} &
-  stepStateFork{fromState: S, forkedThreadID: I, origThreadID: P}.
+viz.childThreadNode{id: I, parentID: P} :-
+  state{time: T, state: S, threadID: P} &
+  stepForkForked{time: T, fromState: S, fromThread: P, toThread: I}.
 
 internal.visualization{
   name: "Thread Tree",
   spec: tree{
     nodes: viz.threadNode{id: ID, parentID: ParentID, display: Display},
     rootTerm: -1
+  }
+}.
+
+# chart viz
+
+viz.programCounter{time: T, threadID: I, pc: PC} :-
+  state{time: T, threadID: I, state: threadState{pc: PC}}.
+
+internal.visualization{
+  name: "Program Counter over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "pc", type: "quantitative"},
+      color: mapping{field: "threadID"}
+    },
+    query: viz.programCounter{}
   }
 }.
