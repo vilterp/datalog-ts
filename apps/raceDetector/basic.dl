@@ -49,7 +49,8 @@ stepForkForked{
   time: T,
   fromState: threadState{pc: FromPC, vars: FromVars},
   toState: threadState{pc: ToPC, vars: ToVars},
-  fromThread: FT, toThread: TT
+  fromThread: FT,
+  toThread: TT
 } :-
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
   ToPC = GotoPC &
@@ -154,9 +155,6 @@ debug.threadIDStringTest2{threadID: I} :-
 
 # tree viz
 
-finalState{vars: V, threadID: I, time: T} :-
-  state{time: T, threadID: I, state: threadState{vars: V, done: true}}.
-
 viz.threadNode{id: I, parentID: P, display: I} :-
   viz.initialThreadNode{id: I, parentID: P} |
   viz.childThreadNode{id: I, parentID: P}.
@@ -166,7 +164,7 @@ viz.initialThreadNode{id: I, parentID: -1} :-
 
 viz.childThreadNode{id: I, parentID: P} :-
   state{time: T, state: S, threadID: P} &
-  stepForkForked{fromState: S, fromThread: P, toThread: I}.
+  stepForkForked{time: T, fromState: S, fromThread: P, toThread: I}.
 
 internal.visualization{
   name: "Thread Tree",
