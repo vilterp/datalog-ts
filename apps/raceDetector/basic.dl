@@ -44,7 +44,7 @@ stepForkOrig{
   fromThread: FT, toThread: TT
 } :-
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
-  ToPC = GotoPC &
+  ToPC = FromPC + 1 &
   ToVars = FromVars &
   FT = TT.
 
@@ -54,7 +54,7 @@ stepForkForked{
   fromThread: FT, toThread: TT
 } :-
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
-  ToPC = FromPC + 1 &
+  ToPC = GotoPC &
   ToVars = FromVars &
   TT = FT + 1.
 # ughhh
@@ -170,3 +170,20 @@ internal.visualization{
     rootTerm: -1
   }
 }.
+
+viz.programCounter{time: T, threadID: I, pc: PC} :-
+  state{time: T, threadID: I, state: threadState{pc: PC}}.
+
+internal.visualization{
+  name: "Program Counter over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "pc", type: "quantitative"},
+      color: mapping{field: "threadID"}
+    },
+    query: viz.programCounter{}
+  }
+}.
+
