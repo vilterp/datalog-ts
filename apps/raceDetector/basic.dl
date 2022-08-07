@@ -26,17 +26,17 @@ laterState{time: T, threadID: TT, state: ToState} :-
   range{from: 0, to: ThreadLimit, val: FT} &
   T = PrevT + 1 &
   state{time: PrevT, threadID: FT, state: FromState} &
-  stepState{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
+  stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
 # Individual ops
 
-stepState{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
+stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
   stepStateNormal{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} |
-  stepStateFork{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
+  stepStateFork{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
-stepStateFork{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
+stepStateFork{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
   stepForkOrig{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} |
-  stepForkForked{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
+  stepForkForked{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
 stepForkOrig{
   fromState: threadState{pc: FromPC, vars: FromVars},
@@ -49,6 +49,7 @@ stepForkOrig{
   FT = TT.
 
 stepForkForked{
+  time: T,
   fromState: threadState{pc: FromPC, vars: FromVars},
   toState: threadState{pc: ToPC, vars: ToVars},
   fromThread: FT, toThread: TT
@@ -56,7 +57,7 @@ stepForkForked{
   instr{idx: FromPC, op: fork{goto: GotoPC}} &
   ToPC = GotoPC &
   ToVars = FromVars &
-  TT = FT + 1.
+  TT = spawned{fromThread: FT, time: T}.
 # ughhh
 
 stepStateNormal{
@@ -143,23 +144,26 @@ evalIntLit{expr: Expr, value: Value} :-
 
 # debugging
 
-stepStateNormalTest{toState: ToState, toThread: TT} :-
+debug.stepStateNormalTest{toState: ToState, toThread: TT} :-
   initialState{state: S} &
   stepState{fromState: S, toState: ToState, fromThread: I, toThread: TT}.
+
+debug.threadIDStringTest{out: S} :-
+  threadIDString{spawnTime: 0, spawnThread: 1, out: S}.
 
 # viz
 
 finalState{vars: V, threadID: I, time: T} :-
   state{time: T, threadID: I, state: threadState{vars: V, done: true}}.
 
-viz.threadNode{id: I, parentID: P, display: thread{id: I, spawnedAt: T}} :-
-  viz.initialThreadNode{id: I, parentID: P, spawnedAt: T} |
-  viz.childThreadNode{id: I, parentID: P, spawnedAt: T}.
+viz.threadNode{id: I, parentID: P, display: I} :-
+  viz.initialThreadNode{id: I, parentID: P} |
+  viz.childThreadNode{id: I, parentID: P}.
 
-viz.initialThreadNode{id: I, parentID: -1, spawnedAt: T} :-
+viz.initialThreadNode{id: I, parentID: -1} :-
   initialState{time: T, threadID: I}.
 
-viz.childThreadNode{id: I, parentID: P, spawnedAt: T} :-
+viz.childThreadNode{id: I, parentID: P} :-
   state{time: T, state: S, threadID: P} &
   stepForkForked{fromState: S, fromThread: P, toThread: I}.
 
@@ -171,8 +175,16 @@ internal.visualization{
   }
 }.
 
-viz.programCounter{time: T, threadID: I, pc: PC} :-
-  state{time: T, threadID: I, state: threadState{pc: PC}}.
+viz.programCounter{time: T, threadID: ThreadDisplay, pc: PC} :-
+  state{time: T, threadID: ThreadDisplay, state: threadState{pc: PC}} &
+  base.int{a: ThreadDisplay} |
+  state{time: T, threadID: spawned{time: SpawnTime, fromThread: SpawnThread}, state: threadState{pc: PC}} &
+  threadIDString{spawnTime: SpawnTime, spawnThread: SpawnThread, out: ThreadDisplay}.
+
+threadIDString{spawnTime: SpawnTime, spawnThread: SpawnThread, out: S} :-
+  intToString{int: SpawnTime, string: SpawnTimeString} &
+  intToString{int: SpawnThread, string: FromThreadString} &
+  concat{a: SpawnTimeString, b: FromThreadString, res: S}.
 
 internal.visualization{
   name: "Program Counter over Time",
@@ -187,3 +199,9 @@ internal.visualization{
   }
 }.
 
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
+instr{idx: 3, op: fork{goto: 5}}.
+instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 5, op: increment{var: "x"}}.
