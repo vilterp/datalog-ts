@@ -193,12 +193,3 @@ internal.visualization{
     query: viz.programCounter{}
   }
 }.
-
-instr{idx: 0, op: store{var: "x", val: 0}}.
-instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
-instr{idx: 3, op: fork{goto: 5}}.
-instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
-instr{idx: 5, op: increment{var: "x"}}.
-instr{idx: 6, op: increment{var: "x"}}.
-instr{idx: 7, op: increment{var: "x"}}.

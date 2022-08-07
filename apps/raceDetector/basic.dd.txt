@@ -37,18 +37,9 @@ application/datalog
 state{state: threadState{done: false, pc: 0, vars: {}}, threadID: 1, time: 0}.
 state{state: threadState{done: false, pc: 1, vars: {"y": 1}}, threadID: 1, time: 1}.
 state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 1, time: 2}.
-state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 2, time: 2}.
+state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 103, time: 2}.
 state{state: threadState{done: false, pc: 3, vars: {"y": 2}}, threadID: 1, time: 3}.
-state{state: threadState{done: false, pc: 3, vars: {"y": 2}}, threadID: 2, time: 3}.
-
-instr{idx: 0, op: store{var: "y", val: 1}}.
-instr{idx: 1, op: fork{goto: 2}}.
-instr{idx: 2, op: stop{}}.
-viz.threadNode{}?
-----
-application/datalog
-viz.threadNode{display: thread{id: 1, spawnedAt: 0}, id: 1, parentID: -1}.
-viz.threadNode{display: thread{id: 2, spawnedAt: 1}, id: 2, parentID: 1}.
+state{state: threadState{done: false, pc: 3, vars: {"y": 2}}, threadID: 103, time: 3}.
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
 instr{idx: 1, op: increment{var: "x"}}.
@@ -56,12 +47,46 @@ instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
 instr{idx: 3, op: fork{goto: 5}}.
 instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
 instr{idx: 5, op: increment{var: "x"}}.
-viz.threadNode{}?
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
+state{}?
 ----
 application/datalog
-viz.threadNode{display: thread{id: 1, spawnedAt: 0}, id: 1, parentID: -1}.
-viz.threadNode{display: thread{id: 2, spawnedAt: 3}, id: 2, parentID: 1}.
-viz.threadNode{display: thread{id: 3, spawnedAt: 7}, id: 3, parentID: 2}.
-viz.threadNode{display: thread{id: 4, spawnedAt: 11}, id: 4, parentID: 3}.
-viz.threadNode{display: thread{id: 5, spawnedAt: 15}, id: 5, parentID: 4}.
-viz.threadNode{display: thread{id: 6, spawnedAt: 19}, id: 6, parentID: 5}.
+state{state: threadState{done: false, pc: 0, vars: {}}, threadID: 1, time: 0}.
+state{state: threadState{done: false, pc: 1, vars: {"x": 0}}, threadID: 1, time: 1}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 1}}, threadID: 1, time: 2}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}, threadID: 1, time: 3}.
+state{state: threadState{pc: 4, vars: {"x": 1, "y": true}}, threadID: 1, time: 4}.
+state{state: threadState{pc: 5, vars: {"x": 1, "y": true}}, threadID: 105, time: 4}.
+state{state: threadState{done: false, pc: 1, vars: {"x": 1, "y": true}}, threadID: 1, time: 5}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 2, "y": true}}, threadID: 105, time: 5}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 2, "y": true}}, threadID: 1, time: 6}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 3, "y": true}}, threadID: 105, time: 6}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 2, "y": true}}, threadID: 1, time: 7}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 4, "y": true}}, threadID: 105, time: 7}.
+state{state: threadState{pc: 4, vars: {"x": 2, "y": true}}, threadID: 1, time: 8}.
+state{state: threadState{pc: 5, vars: {"x": 2, "y": true}}, threadID: 109, time: 8}.
+state{state: threadState{done: false, pc: 1, vars: {"x": 2, "y": true}}, threadID: 1, time: 9}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 3, "y": true}}, threadID: 109, time: 9}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 3, "y": true}}, threadID: 1, time: 10}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 4, "y": true}}, threadID: 109, time: 10}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 3, "y": true}}, threadID: 1, time: 11}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 5, "y": true}}, threadID: 109, time: 11}.
+state{state: threadState{pc: 4, vars: {"x": 3, "y": true}}, threadID: 1, time: 12}.
+state{state: threadState{pc: 5, vars: {"x": 3, "y": true}}, threadID: 113, time: 12}.
+state{state: threadState{done: false, pc: 1, vars: {"x": 3, "y": true}}, threadID: 1, time: 13}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 4, "y": true}}, threadID: 113, time: 13}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 4, "y": true}}, threadID: 1, time: 14}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 5, "y": true}}, threadID: 113, time: 14}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 4, "y": true}}, threadID: 1, time: 15}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 6, "y": true}}, threadID: 113, time: 15}.
+state{state: threadState{pc: 4, vars: {"x": 4, "y": true}}, threadID: 1, time: 16}.
+state{state: threadState{pc: 5, vars: {"x": 4, "y": true}}, threadID: 117, time: 16}.
+state{state: threadState{done: false, pc: 1, vars: {"x": 4, "y": true}}, threadID: 1, time: 17}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 5, "y": true}}, threadID: 117, time: 17}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 5, "y": true}}, threadID: 1, time: 18}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 6, "y": true}}, threadID: 117, time: 18}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 5, "y": false}}, threadID: 1, time: 19}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 7, "y": true}}, threadID: 117, time: 19}.
+state{state: threadState{pc: 4, vars: {"x": 5, "y": false}}, threadID: 1, time: 20}.
+state{state: threadState{pc: 5, vars: {"x": 5, "y": false}}, threadID: 121, time: 20}.
