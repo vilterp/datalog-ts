@@ -90,3 +90,21 @@ state{state: threadState{done: false, pc: 3, vars: {"x": 5, "y": false}}, thread
 state{state: threadState{done: false, pc: 8, vars: {"x": 7, "y": true}}, threadID: 117, time: 19}.
 state{state: threadState{pc: 4, vars: {"x": 5, "y": false}}, threadID: 1, time: 20}.
 state{state: threadState{pc: 5, vars: {"x": 5, "y": false}}, threadID: 121, time: 20}.
+
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
+instr{idx: 3, op: fork{goto: 5}}.
+instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 5, op: increment{var: "x"}}.
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
+viz.threadNode{}?
+----
+application/datalog
+viz.threadNode{display: 1, id: 1, parentID: -1}.
+viz.threadNode{display: 104, id: 104, parentID: 1}.
+viz.threadNode{display: 108, id: 108, parentID: 1}.
+viz.threadNode{display: 112, id: 112, parentID: 1}.
+viz.threadNode{display: 116, id: 116, parentID: 1}.
+viz.threadNode{display: 120, id: 120, parentID: 1}.
