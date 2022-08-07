@@ -1,6 +1,6 @@
 .table instr
 
-timeLimit{limit: 10}.
+timeLimit{limit: 3}.
 
 # Overall control flow
 
@@ -53,13 +53,12 @@ stepStateFork{
 
 stepThreadsFork{
   fromThreadState: threadState{vars: FromVars, pc: FromPC},
-  nextThreadOrig: threadState{vars: OrigVars, pc: ToPC, done: false},
-  nextThreadForked: threadState{vars: ForkedVars, pc: ToPC, done: false}
+  nextThreadOrig: threadState{vars: ToVars, pc: ToPC, done: false},
+  nextThreadForked: threadState{vars: ToVars, pc: GotoPC, done: false}
 } :-
-  instr{idx: FromPC, op: fork{var: ForkVar}} &
-  dict.set{in: FromVars, key: ForkVar, value: false, out: OrigVars} &
-  dict.set{in: FromVars, key: ForkVar, value: true, out: ForkedVars} &
-  ToPC = FromPC + 1.
+  instr{idx: FromPC, op: fork{goto: GotoPC}} &
+  ToPC = FromPC + 1 &
+  ToVars = FromVars.
 
 stepStateNormal{
   fromState: state{threads: FromThreadStates, nextThreadID: FromNextThreadID},
