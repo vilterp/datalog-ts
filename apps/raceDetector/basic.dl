@@ -25,9 +25,6 @@ laterState{time: T, threadID: I, state: ToState} :-
   state{time: PrevT, threadID: I, state: FromState} &
   stepState{fromState: FromState, toState: ToState}.
 
-finalState{vars: V, time: T} :-
-  state{time: T, state: state{vars: V, done: true}}.
-
 # Individual ops
 
 stepState{fromState: FromState, toState: ToState, forked: F} :-
@@ -141,13 +138,12 @@ evalIntLit{expr: Expr, value: Value} :-
 
 stepStateNormalTest{toState: ToState, forked: F} :-
   initialState{state: S} &
-  stepState{
-    fromState: S,
-    toState: ToState,
-    forked: F
-  }.
+  stepState{fromState: S, toState: ToState, forked: F}.
 
 # viz
+
+finalState{vars: V, threadID: I, time: T} :-
+  state{time: T, threadID: I, state: threadState{vars: V, done: true}}.
 
 viz.threadNode{id: I, parentID: P, display: thread{id: I, spawnedAt: T}} :-
   viz.initialThreadNode{id: I, parentID: P, spawnedAt: T} |
