@@ -1,6 +1,6 @@
 .table instr
 
-timeLimit{limit: 3}.
+timeLimit{limit: 5}.
 
 # Overall control flow
 

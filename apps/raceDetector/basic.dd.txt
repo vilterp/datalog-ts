@@ -10,6 +10,8 @@ state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 1, vars: {"x": 0}}}}, time: 1}.
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 2, vars: {"x": 1}}}}, time: 2}.
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}}}, time: 3}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 1, vars: {"x": 1, "y": true}}}}, time: 4}.
+state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 2, vars: {"x": 2, "y": true}}}}, time: 5}.
 
 instr{idx: 0, op: store{var: "y", val: 1}}.
 instr{idx: 1, op: fork{goto: 2}}.
@@ -22,6 +24,8 @@ state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 
 state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 2, vars: {"y": 1}}, "2": threadState{done: false, pc: 2, vars: {"y": 1}}}}, time: 2}.
 state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 3, vars: {"y": 2}}, "2": threadState{done: false, pc: 2, vars: {"y": 1}}}}, time: 3}.
 state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 2, vars: {"y": 1}}, "2": threadState{done: false, pc: 3, vars: {"y": 2}}}}, time: 3}.
+state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 3, vars: {"y": 2}}, "2": threadState{done: false, pc: 3, vars: {"y": 2}}}}, time: 4}.
+state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 3, vars: {"y": 2}}, "2": threadState{done: false, pc: 3, vars: {"y": 2}}}}, time: 4}.
 
 instr{idx: 0, op: store{var: "y", val: 1}}.
 instr{idx: 1, op: fork{goto: "x"}}.
