@@ -25,10 +25,10 @@ function TreeViz(props: VizArgs) {
       emptyCollapseState
     );
   try {
-    const nodesQuery = (props.spec.attrs.nodes as StringLit).val;
+    const nodesQuery = props.spec.attrs.nodes as Rec;
     const sortChildren = (props.spec.attrs.sortChildren as Bool)?.val;
     const tree = useMemo(() => {
-      const nodesRes = props.interp.queryStr(nodesQuery);
+      const nodesRes = props.interp.queryRec(nodesQuery);
       const rootTerm = props.spec.attrs.rootTerm;
       return treeFromRecords(nodesRes, rootTerm, sortChildren);
     }, [props.interp]);
