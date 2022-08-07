@@ -178,12 +178,13 @@ viz.initialThreadNode{id: I, parentID: -1, display: I} :-
   dict.item{dict: Threads, key: I, value: V}.
 
 viz.childThreadNode{id: I, parentID: P, display: I} :-
-  stepStateFork{forkedThreadID: I, origThreadID: P}.
+  state{time: T, state: S} &
+  stepStateFork{fromState: S, forkedThreadID: I, origThreadID: P}.
 
 internal.visualization{
   name: "Thread Tree",
   spec: tree{
     nodes: viz.threadNode{id: ID, parentID: ParentID, display: Display},
-    rootTerm: 1
+    rootTerm: -1
   }
 }.
