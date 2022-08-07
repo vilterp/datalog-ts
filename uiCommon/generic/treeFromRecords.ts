@@ -12,7 +12,7 @@ export function treeFromRecords(
 ): Tree<Res> {
   const graph: TermGraph = {};
   records.forEach((res) => {
-    const parentID = (res.bindings.ParentID as Int).val;
+    const parentID = ppt(res.bindings.ParentID);
     const newChildren = [...(graph[parentID] || []), res];
     graph[parentID] = newChildren;
   });
