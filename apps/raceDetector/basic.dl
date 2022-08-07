@@ -169,15 +169,15 @@ stepIncrementTest{afterThreadState: TS} :-
 
 # viz
 
-viz.threadNode{id: I, parentID: P, display: I} :-
-  viz.initialThreadNode{id: I, parentID: P, display: I} |
-  viz.childThreadNode{id: I, parentID: P, display: I}.
+viz.threadNode{id: I, parentID: P, display: thread{id: I, spawnedAt: T}} :-
+  viz.initialThreadNode{id: I, parentID: P, spawnedAt: T} |
+  viz.childThreadNode{id: I, parentID: P, spawnedAt: T}.
 
-viz.initialThreadNode{id: I, parentID: -1, display: I} :-
-  initialState{state: state{threads: Threads}} &
+viz.initialThreadNode{id: I, parentID: -1, spawnedAt: T} :-
+  initialState{time: T, state: state{threads: Threads}} &
   dict.item{dict: Threads, key: I, value: V}.
 
-viz.childThreadNode{id: I, parentID: P, display: I} :-
+viz.childThreadNode{id: I, parentID: P, spawnedAt: T} :-
   state{time: T, state: S} &
   stepStateFork{fromState: S, forkedThreadID: I, origThreadID: P}.
 

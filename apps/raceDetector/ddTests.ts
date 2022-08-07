@@ -28,8 +28,7 @@ function getResults(inputs: string[]): TestOutput[] {
       fsLoader
     );
     interp = interp.doLoad("basic.dl");
-    interp = interp.evalStr(input)[1];
-    const results = interp.queryStr("state{}");
+    const results = interp.evalStr(input)[0];
     return datalogOut(results.map((res) => res.term));
   });
 }

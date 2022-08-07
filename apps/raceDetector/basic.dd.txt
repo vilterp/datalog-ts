@@ -3,6 +3,7 @@ instr{idx: 1, op: increment{var: "x"}}.
 instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 2}}}.
 instr{idx: 3, op: conditionalGoto{dest: 1, var: "y"}}.
 instr{idx: 4, op: stop{}}.
+state{}?
 ----
 application/datalog
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 0, vars: {}}}}, time: 0}.
@@ -19,8 +20,17 @@ state{state: state{nextThreadID: 2, threads: {"1": threadState{done: true, pc: 4
 
 instr{idx: 0, op: store{var: "y", val: 1}}.
 instr{idx: 1, op: fork{var: "x"}}.
+state{}?
 ----
 application/datalog
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 0, vars: {}}}}, time: 0}.
 state{state: state{nextThreadID: 2, threads: {"1": threadState{done: false, pc: 1, vars: {"y": 1}}}}, time: 1}.
 state{state: state{nextThreadID: 3, threads: {"1": threadState{done: false, pc: 2, vars: {"x": false, "y": 1}}, "2": threadState{done: false, pc: 2, vars: {"x": true, "y": 1}}}}, time: 2}.
+
+instr{idx: 0, op: store{var: "y", val: 1}}.
+instr{idx: 1, op: fork{var: "x"}}.
+viz.threadNode{}?
+----
+application/datalog
+viz.threadNode{display: thread{id: "1", spawnedAt: 0}, id: "1", parentID: -1}.
+viz.threadNode{display: thread{id: "2", spawnedAt: 1}, id: "2", parentID: "1"}.
