@@ -1528,7 +1528,7 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Text",
-        value: "->",
+        value: ":-",
       },
       {
         type: "Ref",

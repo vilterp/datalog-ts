@@ -3,25 +3,25 @@
 .table ast.var
 .table ast.int
 
-hl.Segment = {type: T, span: S, highlight: HH} ->
+hl.Segment = {type: T, span: S, highlight: HH} :-
   hl.ident{type: T, span: S, highlight: H} |
   ??? |
   hl.int{???, span: S, highlightt: H} |
   hl.string{type: T, span: S, highlight: ???}.
 
-hl.ident = {type: "ident", span: S, highlight: false} ->
+hl.ident = {type: "ident", span: S, highlight: false} :-
   ast.ident{span: S}.
-hl.var = {type: "var", span: S, highlight: false} ->
+hl.var = {type: "var", span: S, highlight: false} :-
   ast.var{span: S}.
-hl.int = {type: "int", span: S, highlight: false} ->
+hl.int = {type: "int", span: S, highlight: false} :-
   ast.int{span: S}.
-hl.string = {type: "string", span: S, highlight: false} ->
+hl.string = {type: "string", span: S, highlight: false} :-
   ast.string{span: S}.
-batteryInputCurrent = {id: B, time: T, current: L} ->
+batteryInputCurrent = {id: B, time: T, current: L} :-
   sum[C: batteryInputCurrentFrom{id: B, time: T, current: C}].
 foo = {
   {a: 2, b: 3},
   {a: 2, b: 3}
 }.
-greeting = {name: N, greeting: G} ->
+greeting = {name: N, greeting: G} :-
   G = concat[a: "hello", b: concat[a: G, b: "!"]].
