@@ -19,7 +19,8 @@ relationLiteral :- ["{", ws, repSep(record, commaSpace), ws, "}"].
 anonymousRelation :- [record, ws, "->", ws, relationExpr].
 
 recordCall :- [ident, record].
-# todo: better name?
+# TODO: better name?
+# TODO: how to distinguish this from aggregation syntax?
 functionCall :- [ident, "[", repSep(recordAttrs, commaSpace), "]"].
 
 comparison :- [left:scalarExpr, ws, comparisonOp, ws, right:scalarExpr].
