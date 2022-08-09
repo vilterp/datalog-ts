@@ -15,7 +15,7 @@ export type DLAggregation = {
   aggregation: DLIdent;
   var: DLVar[];
   commaSpace: DLCommaSpace[];
-  recordCall: DLRecordCall;
+  relationExpr: DLRelationExpr;
 };
 export type DLAlpha = {
   type: "Alpha";
@@ -40,26 +40,26 @@ export type DLArray = {
   type: "Array";
   text: string;
   span: Span;
-  term: DLTerm[];
+  scalarExpr: DLScalarExpr[];
   commaSpace: DLCommaSpace[];
 };
 export type DLAssignmentOnLeft = {
   type: "AssignmentOnLeft";
   text: string;
   span: Span;
-  result: DLTerm;
-  left: DLTerm;
+  result: DLScalarExpr;
+  left: DLScalarExpr;
   arithmeticOp: DLArithmeticOp;
-  right: DLTerm;
+  right: DLScalarExpr;
 };
 export type DLAssignmentOnRight = {
   type: "AssignmentOnRight";
   text: string;
   span: Span;
-  left: DLTerm;
+  left: DLScalarExpr;
   arithmeticOp: DLArithmeticOp;
-  right: DLTerm;
-  result: DLTerm;
+  right: DLScalarExpr;
+  result: DLScalarExpr;
 };
 export type DLBool = {
   type: "Bool";
@@ -86,9 +86,9 @@ export type DLComparison = {
   type: "Comparison";
   text: string;
   span: Span;
-  left: DLTerm;
+  left: DLScalarExpr;
   comparisonOp: DLComparisonOp;
-  right: DLTerm;
+  right: DLScalarExpr;
 };
 export type DLComparisonOp = {
   type: "ComparisonOp";
@@ -119,7 +119,7 @@ export type DLDictKeyValue = {
   text: string;
   span: Span;
   key: DLString;
-  value: DLTerm;
+  value: DLScalarExpr;
 };
 export type DLDisjunct = {
   type: "Disjunct";
@@ -138,6 +138,14 @@ export type DLFact = {
   text: string;
   span: Span;
   record: DLRecord;
+};
+export type DLFunctionCall = {
+  type: "FunctionCall";
+  text: string;
+  span: Span;
+  ident: DLIdent;
+  recordAttrs: DLRecordAttrs[];
+  commaSpace: DLCommaSpace[];
 };
 export type DLIdent = {
   type: "Ident";
@@ -231,7 +239,7 @@ export type DLRecordKeyValue = {
   text: string;
   span: Span;
   ident: DLIdent;
-  term: DLTerm;
+  scalarExpr: DLScalarExpr;
 };
 export type DLRelationExpr =
   | DLDisjuncts
@@ -252,6 +260,16 @@ export type DLRule = {
   ident: DLIdent;
   relationExpr: DLRelationExpr;
 };
+export type DLScalarExpr =
+  | DLRecord
+  | DLFunctionCall
+  | DLInt
+  | DLVar
+  | DLString
+  | DLBool
+  | DLArray
+  | DLDict
+  | DLPlaceholder;
 export type DLStatement =
   | DLRule
   | DLFact
@@ -282,15 +300,6 @@ export type DLTableKW = {
   text: string;
   span: Span;
 };
-export type DLTerm =
-  | DLRecord
-  | DLInt
-  | DLVar
-  | DLString
-  | DLBool
-  | DLArray
-  | DLDict
-  | DLPlaceholder;
 export type DLVar = {
   type: "Var";
   text: string;
@@ -412,6 +421,11 @@ export function parseFact(input: string): DLFact {
   const ruleTree = extractRuleTree(traceTree);
   return extractFact(input, ruleTree);
 }
+export function parseFunctionCall(input: string): DLFunctionCall {
+  const traceTree = parserlib.parse(GRAMMAR, "functionCall", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractFunctionCall(input, ruleTree);
+}
 export function parseIdent(input: string): DLIdent {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -502,6 +516,11 @@ export function parseRule(input: string): DLRule {
   const ruleTree = extractRuleTree(traceTree);
   return extractRule(input, ruleTree);
 }
+export function parseScalarExpr(input: string): DLScalarExpr {
+  const traceTree = parserlib.parse(GRAMMAR, "scalarExpr", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractScalarExpr(input, ruleTree);
+}
 export function parseStatement(input: string): DLStatement {
   const traceTree = parserlib.parse(GRAMMAR, "statement", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -527,11 +546,6 @@ export function parseTableKW(input: string): DLTableKW {
   const ruleTree = extractRuleTree(traceTree);
   return extractTableKW(input, ruleTree);
 }
-export function parseTerm(input: string): DLTerm {
-  const traceTree = parserlib.parse(GRAMMAR, "term", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractTerm(input, ruleTree);
-}
 export function parseVar(input: string): DLVar {
   const traceTree = parserlib.parse(GRAMMAR, "var", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -547,7 +561,10 @@ function extractAggregation(input: string, node: RuleTree): DLAggregation {
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
     ),
-    recordCall: extractRecordCall(input, childByName(node, "recordCall", null)),
+    relationExpr: extractRelationExpr(
+      input,
+      childByName(node, "relationExpr", null)
+    ),
   };
 }
 function extractAlpha(input: string, node: RuleTree): DLAlpha {
@@ -606,8 +623,8 @@ function extractArray(input: string, node: RuleTree): DLArray {
     type: "Array",
     text: textForSpan(input, node.span),
     span: node.span,
-    term: childrenByName(node, "term").map((child) =>
-      extractTerm(input, child)
+    scalarExpr: childrenByName(node, "scalarExpr").map((child) =>
+      extractScalarExpr(input, child)
     ),
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
@@ -622,13 +639,13 @@ function extractAssignmentOnLeft(
     type: "AssignmentOnLeft",
     text: textForSpan(input, node.span),
     span: node.span,
-    result: extractTerm(input, childByName(node, "term", "result")),
-    left: extractTerm(input, childByName(node, "term", "left")),
+    result: extractScalarExpr(input, childByName(node, "scalarExpr", "result")),
+    left: extractScalarExpr(input, childByName(node, "scalarExpr", "left")),
     arithmeticOp: extractArithmeticOp(
       input,
       childByName(node, "arithmeticOp", null)
     ),
-    right: extractTerm(input, childByName(node, "term", "right")),
+    right: extractScalarExpr(input, childByName(node, "scalarExpr", "right")),
   };
 }
 function extractAssignmentOnRight(
@@ -639,13 +656,13 @@ function extractAssignmentOnRight(
     type: "AssignmentOnRight",
     text: textForSpan(input, node.span),
     span: node.span,
-    left: extractTerm(input, childByName(node, "term", "left")),
+    left: extractScalarExpr(input, childByName(node, "scalarExpr", "left")),
     arithmeticOp: extractArithmeticOp(
       input,
       childByName(node, "arithmeticOp", null)
     ),
-    right: extractTerm(input, childByName(node, "term", "right")),
-    result: extractTerm(input, childByName(node, "term", "result")),
+    right: extractScalarExpr(input, childByName(node, "scalarExpr", "right")),
+    result: extractScalarExpr(input, childByName(node, "scalarExpr", "result")),
   };
 }
 function extractBool(input: string, node: RuleTree): DLBool {
@@ -684,12 +701,12 @@ function extractComparison(input: string, node: RuleTree): DLComparison {
     type: "Comparison",
     text: textForSpan(input, node.span),
     span: node.span,
-    left: extractTerm(input, childByName(node, "term", "left")),
+    left: extractScalarExpr(input, childByName(node, "scalarExpr", "left")),
     comparisonOp: extractComparisonOp(
       input,
       childByName(node, "comparisonOp", null)
     ),
-    right: extractTerm(input, childByName(node, "term", "right")),
+    right: extractScalarExpr(input, childByName(node, "scalarExpr", "right")),
   };
 }
 function extractComparisonOp(input: string, node: RuleTree): DLComparisonOp {
@@ -746,7 +763,7 @@ function extractDictKeyValue(input: string, node: RuleTree): DLDictKeyValue {
     text: textForSpan(input, node.span),
     span: node.span,
     key: extractString(input, childByName(node, "string", "key")),
-    value: extractTerm(input, childByName(node, "term", "value")),
+    value: extractScalarExpr(input, childByName(node, "scalarExpr", "value")),
   };
 }
 function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
@@ -775,6 +792,20 @@ function extractFact(input: string, node: RuleTree): DLFact {
     text: textForSpan(input, node.span),
     span: node.span,
     record: extractRecord(input, childByName(node, "record", null)),
+  };
+}
+function extractFunctionCall(input: string, node: RuleTree): DLFunctionCall {
+  return {
+    type: "FunctionCall",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    recordAttrs: childrenByName(node, "recordAttrs").map((child) =>
+      extractRecordAttrs(input, child)
+    ),
+    commaSpace: childrenByName(node, "commaSpace").map((child) =>
+      extractCommaSpace(input, child)
+    ),
   };
 }
 function extractIdent(input: string, node: RuleTree): DLIdent {
@@ -918,7 +949,7 @@ function extractRecordKeyValue(
     text: textForSpan(input, node.span),
     span: node.span,
     ident: extractIdent(input, childByName(node, "ident", null)),
-    term: extractTerm(input, childByName(node, "term", null)),
+    scalarExpr: extractScalarExpr(input, childByName(node, "scalarExpr", null)),
   };
 }
 function extractRelationExpr(input: string, node: RuleTree): DLRelationExpr {
@@ -965,6 +996,38 @@ function extractRule(input: string, node: RuleTree): DLRule {
       childByName(node, "relationExpr", null)
     ),
   };
+}
+function extractScalarExpr(input: string, node: RuleTree): DLScalarExpr {
+  const child = node.children[0];
+  switch (child.name) {
+    case "record": {
+      return extractRecord(input, child);
+    }
+    case "functionCall": {
+      return extractFunctionCall(input, child);
+    }
+    case "int": {
+      return extractInt(input, child);
+    }
+    case "var": {
+      return extractVar(input, child);
+    }
+    case "string": {
+      return extractString(input, child);
+    }
+    case "bool": {
+      return extractBool(input, child);
+    }
+    case "array": {
+      return extractArray(input, child);
+    }
+    case "dict": {
+      return extractDict(input, child);
+    }
+    case "placeholder": {
+      return extractPlaceholder(input, child);
+    }
+  }
 }
 function extractStatement(input: string, node: RuleTree): DLStatement {
   const child = node.children[0];
@@ -1021,35 +1084,6 @@ function extractTableKW(input: string, node: RuleTree): DLTableKW {
     text: textForSpan(input, node.span),
     span: node.span,
   };
-}
-function extractTerm(input: string, node: RuleTree): DLTerm {
-  const child = node.children[0];
-  switch (child.name) {
-    case "record": {
-      return extractRecord(input, child);
-    }
-    case "int": {
-      return extractInt(input, child);
-    }
-    case "var": {
-      return extractVar(input, child);
-    }
-    case "string": {
-      return extractString(input, child);
-    }
-    case "bool": {
-      return extractBool(input, child);
-    }
-    case "array": {
-      return extractArray(input, child);
-    }
-    case "dict": {
-      return extractDict(input, child);
-    }
-    case "placeholder": {
-      return extractPlaceholder(input, child);
-    }
-  }
 }
 function extractVar(input: string, node: RuleTree): DLVar {
   return {
@@ -1435,7 +1469,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "recordCall",
+        rule: "relationExpr",
       },
       {
         type: "Text",
@@ -1523,13 +1557,44 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
+  functionCall: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ident",
+      },
+      {
+        type: "Text",
+        value: "[",
+      },
+      {
+        type: "RepSep",
+        rep: {
+          type: "Ref",
+          captureName: null,
+          rule: "recordAttrs",
+        },
+        sep: {
+          type: "Ref",
+          captureName: null,
+          rule: "commaSpace",
+        },
+      },
+      {
+        type: "Text",
+        value: "]",
+      },
+    ],
+  },
   comparison: {
     type: "Sequence",
     items: [
       {
         type: "Ref",
         captureName: "left",
-        rule: "term",
+        rule: "scalarExpr",
       },
       {
         type: "Ref",
@@ -1549,7 +1614,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "right",
-        rule: "term",
+        rule: "scalarExpr",
       },
     ],
   },
@@ -1603,7 +1668,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "left",
-        rule: "term",
+        rule: "scalarExpr",
       },
       {
         type: "Ref",
@@ -1623,7 +1688,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "right",
-        rule: "term",
+        rule: "scalarExpr",
       },
       {
         type: "Ref",
@@ -1642,7 +1707,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "result",
-        rule: "term",
+        rule: "scalarExpr",
       },
     ],
   },
@@ -1652,7 +1717,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "result",
-        rule: "term",
+        rule: "scalarExpr",
       },
       {
         type: "Ref",
@@ -1671,7 +1736,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "left",
-        rule: "term",
+        rule: "scalarExpr",
       },
       {
         type: "Ref",
@@ -1691,7 +1756,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "right",
-        rule: "term",
+        rule: "scalarExpr",
       },
     ],
   },
@@ -1712,13 +1777,18 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
-  term: {
+  scalarExpr: {
     type: "Choice",
     choices: [
       {
         type: "Ref",
         captureName: null,
         rule: "record",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "functionCall",
       },
       {
         type: "Ref",
@@ -1879,7 +1949,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "value",
-        rule: "term",
+        rule: "scalarExpr",
       },
     ],
   },
@@ -1926,7 +1996,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "term",
+        rule: "scalarExpr",
       },
     ],
   },
@@ -1995,7 +2065,7 @@ const GRAMMAR: Grammar = {
         rep: {
           type: "Ref",
           captureName: null,
-          rule: "term",
+          rule: "scalarExpr",
         },
         sep: {
           type: "Ref",

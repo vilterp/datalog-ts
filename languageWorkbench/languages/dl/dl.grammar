@@ -14,7 +14,7 @@ disjuncts :- repSep(disjunct, [ws, "|", ws]).
 disjunct :- repSep(conjunct, [ws, "&", ws]).
 conjunct :- (recordCall | comparison | arithmetic | negation | placeholder).
 negation :- ["!", record].
-aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, recordCall, "]"].
+aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, relationExpr, "]"].
 relationLiteral :- ["{", ws, repSep(record, commaSpace), ws, "}"].
 anonymousRelation :- [record, ws, "->", ws, relationExpr].
 
