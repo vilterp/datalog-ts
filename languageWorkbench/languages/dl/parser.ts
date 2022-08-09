@@ -15,7 +15,7 @@ export type DLAggregation = {
   aggregation: DLIdent;
   var: DLVar[];
   commaSpace: DLCommaSpace[];
-  record: DLRecord;
+  recordCall: DLRecordCall;
 };
 export type DLAlpha = {
   type: "Alpha";
@@ -23,6 +23,13 @@ export type DLAlpha = {
   span: Span;
 };
 export type DLAlphaNum = DLAlpha | DLNum;
+export type DLAnonymousRelation = {
+  type: "AnonymousRelation";
+  text: string;
+  span: Span;
+  record: DLRecord;
+  relationExpr: DLRelationExpr;
+};
 export type DLArithmetic = DLAssignmentOnLeft | DLAssignmentOnRight;
 export type DLArithmeticOp = {
   type: "ArithmeticOp";
@@ -89,11 +96,10 @@ export type DLComparisonOp = {
   span: Span;
 };
 export type DLConjunct =
-  | DLRecord
+  | DLRecordCall
   | DLComparison
   | DLArithmetic
   | DLNegation
-  | DLAggregation
   | DLPlaceholder;
 export type DLDeleteFact = {
   type: "DeleteFact";
@@ -120,6 +126,12 @@ export type DLDisjunct = {
   text: string;
   span: Span;
   conjunct: DLConjunct[];
+};
+export type DLDisjuncts = {
+  type: "Disjuncts";
+  text: string;
+  span: Span;
+  disjunct: DLDisjunct[];
 };
 export type DLFact = {
   type: "Fact";
@@ -197,7 +209,6 @@ export type DLRecord = {
   type: "Record";
   text: string;
   span: Span;
-  ident: DLIdent;
   recordAttrs: DLRecordAttrs;
 };
 export type DLRecordAttrs = {
@@ -208,6 +219,13 @@ export type DLRecordAttrs = {
   placeholder: DLPlaceholder[];
   commaSpace: DLCommaSpace[];
 };
+export type DLRecordCall = {
+  type: "RecordCall";
+  text: string;
+  span: Span;
+  ident: DLIdent;
+  record: DLRecord;
+};
 export type DLRecordKeyValue = {
   type: "RecordKeyValue";
   text: string;
@@ -215,12 +233,24 @@ export type DLRecordKeyValue = {
   ident: DLIdent;
   term: DLTerm;
 };
+export type DLRelationExpr =
+  | DLDisjuncts
+  | DLRelationLiteral
+  | DLAnonymousRelation
+  | DLAggregation;
+export type DLRelationLiteral = {
+  type: "RelationLiteral";
+  text: string;
+  span: Span;
+  record: DLRecord[];
+  commaSpace: DLCommaSpace[];
+};
 export type DLRule = {
   type: "Rule";
   text: string;
   span: Span;
-  record: DLRecord;
-  disjunct: DLDisjunct[];
+  ident: DLIdent;
+  relationExpr: DLRelationExpr;
 };
 export type DLStatement =
   | DLRule
@@ -286,6 +316,11 @@ export function parseAlphaNum(input: string): DLAlphaNum {
   const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractAlphaNum(input, ruleTree);
+}
+export function parseAnonymousRelation(input: string): DLAnonymousRelation {
+  const traceTree = parserlib.parse(GRAMMAR, "anonymousRelation", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractAnonymousRelation(input, ruleTree);
 }
 export function parseArithmetic(input: string): DLArithmetic {
   const traceTree = parserlib.parse(GRAMMAR, "arithmetic", input);
@@ -367,6 +402,11 @@ export function parseDisjunct(input: string): DLDisjunct {
   const ruleTree = extractRuleTree(traceTree);
   return extractDisjunct(input, ruleTree);
 }
+export function parseDisjuncts(input: string): DLDisjuncts {
+  const traceTree = parserlib.parse(GRAMMAR, "disjuncts", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractDisjuncts(input, ruleTree);
+}
 export function parseFact(input: string): DLFact {
   const traceTree = parserlib.parse(GRAMMAR, "fact", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -437,10 +477,25 @@ export function parseRecordAttrs(input: string): DLRecordAttrs {
   const ruleTree = extractRuleTree(traceTree);
   return extractRecordAttrs(input, ruleTree);
 }
+export function parseRecordCall(input: string): DLRecordCall {
+  const traceTree = parserlib.parse(GRAMMAR, "recordCall", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractRecordCall(input, ruleTree);
+}
 export function parseRecordKeyValue(input: string): DLRecordKeyValue {
   const traceTree = parserlib.parse(GRAMMAR, "recordKeyValue", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRecordKeyValue(input, ruleTree);
+}
+export function parseRelationExpr(input: string): DLRelationExpr {
+  const traceTree = parserlib.parse(GRAMMAR, "relationExpr", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractRelationExpr(input, ruleTree);
+}
+export function parseRelationLiteral(input: string): DLRelationLiteral {
+  const traceTree = parserlib.parse(GRAMMAR, "relationLiteral", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractRelationLiteral(input, ruleTree);
 }
 export function parseRule(input: string): DLRule {
   const traceTree = parserlib.parse(GRAMMAR, "rule", input);
@@ -492,7 +547,7 @@ function extractAggregation(input: string, node: RuleTree): DLAggregation {
     commaSpace: childrenByName(node, "commaSpace").map((child) =>
       extractCommaSpace(input, child)
     ),
-    record: extractRecord(input, childByName(node, "record", null)),
+    recordCall: extractRecordCall(input, childByName(node, "recordCall", null)),
   };
 }
 function extractAlpha(input: string, node: RuleTree): DLAlpha {
@@ -512,6 +567,21 @@ function extractAlphaNum(input: string, node: RuleTree): DLAlphaNum {
       return extractNum(input, child);
     }
   }
+}
+function extractAnonymousRelation(
+  input: string,
+  node: RuleTree
+): DLAnonymousRelation {
+  return {
+    type: "AnonymousRelation",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    record: extractRecord(input, childByName(node, "record", null)),
+    relationExpr: extractRelationExpr(
+      input,
+      childByName(node, "relationExpr", null)
+    ),
+  };
 }
 function extractArithmetic(input: string, node: RuleTree): DLArithmetic {
   const child = node.children[0];
@@ -632,8 +702,8 @@ function extractComparisonOp(input: string, node: RuleTree): DLComparisonOp {
 function extractConjunct(input: string, node: RuleTree): DLConjunct {
   const child = node.children[0];
   switch (child.name) {
-    case "record": {
-      return extractRecord(input, child);
+    case "recordCall": {
+      return extractRecordCall(input, child);
     }
     case "comparison": {
       return extractComparison(input, child);
@@ -643,9 +713,6 @@ function extractConjunct(input: string, node: RuleTree): DLConjunct {
     }
     case "negation": {
       return extractNegation(input, child);
-    }
-    case "aggregation": {
-      return extractAggregation(input, child);
     }
     case "placeholder": {
       return extractPlaceholder(input, child);
@@ -689,6 +756,16 @@ function extractDisjunct(input: string, node: RuleTree): DLDisjunct {
     span: node.span,
     conjunct: childrenByName(node, "conjunct").map((child) =>
       extractConjunct(input, child)
+    ),
+  };
+}
+function extractDisjuncts(input: string, node: RuleTree): DLDisjuncts {
+  return {
+    type: "Disjuncts",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    disjunct: childrenByName(node, "disjunct").map((child) =>
+      extractDisjunct(input, child)
     ),
   };
 }
@@ -801,7 +878,6 @@ function extractRecord(input: string, node: RuleTree): DLRecord {
     type: "Record",
     text: textForSpan(input, node.span),
     span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
     recordAttrs: extractRecordAttrs(
       input,
       childByName(node, "recordAttrs", null)
@@ -824,6 +900,15 @@ function extractRecordAttrs(input: string, node: RuleTree): DLRecordAttrs {
     ),
   };
 }
+function extractRecordCall(input: string, node: RuleTree): DLRecordCall {
+  return {
+    type: "RecordCall",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    record: extractRecord(input, childByName(node, "record", null)),
+  };
+}
 function extractRecordKeyValue(
   input: string,
   node: RuleTree
@@ -836,14 +921,48 @@ function extractRecordKeyValue(
     term: extractTerm(input, childByName(node, "term", null)),
   };
 }
+function extractRelationExpr(input: string, node: RuleTree): DLRelationExpr {
+  const child = node.children[0];
+  switch (child.name) {
+    case "disjuncts": {
+      return extractDisjuncts(input, child);
+    }
+    case "relationLiteral": {
+      return extractRelationLiteral(input, child);
+    }
+    case "anonymousRelation": {
+      return extractAnonymousRelation(input, child);
+    }
+    case "aggregation": {
+      return extractAggregation(input, child);
+    }
+  }
+}
+function extractRelationLiteral(
+  input: string,
+  node: RuleTree
+): DLRelationLiteral {
+  return {
+    type: "RelationLiteral",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    record: childrenByName(node, "record").map((child) =>
+      extractRecord(input, child)
+    ),
+    commaSpace: childrenByName(node, "commaSpace").map((child) =>
+      extractCommaSpace(input, child)
+    ),
+  };
+}
 function extractRule(input: string, node: RuleTree): DLRule {
   return {
     type: "Rule",
     text: textForSpan(input, node.span),
     span: node.span,
-    record: extractRecord(input, childByName(node, "record", null)),
-    disjunct: childrenByName(node, "disjunct").map((child) =>
-      extractDisjunct(input, child)
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    relationExpr: extractRelationExpr(
+      input,
+      childByName(node, "relationExpr", null)
     ),
   };
 }
@@ -1129,7 +1248,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "record",
+        rule: "ident",
       },
       {
         type: "Ref",
@@ -1138,7 +1257,7 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Text",
-        value: ":-",
+        value: "=",
       },
       {
         type: "Ref",
@@ -1146,37 +1265,67 @@ const GRAMMAR: Grammar = {
         rule: "ws",
       },
       {
-        type: "RepSep",
-        rep: {
-          type: "Ref",
-          captureName: null,
-          rule: "disjunct",
-        },
-        sep: {
-          type: "Sequence",
-          items: [
-            {
-              type: "Ref",
-              captureName: null,
-              rule: "ws",
-            },
-            {
-              type: "Text",
-              value: "|",
-            },
-            {
-              type: "Ref",
-              captureName: null,
-              rule: "ws",
-            },
-          ],
-        },
+        type: "Ref",
+        captureName: null,
+        rule: "relationExpr",
       },
       {
         type: "Text",
         value: ".",
       },
     ],
+  },
+  relationExpr: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "disjuncts",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "relationLiteral",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "anonymousRelation",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "aggregation",
+      },
+    ],
+  },
+  disjuncts: {
+    type: "RepSep",
+    rep: {
+      type: "Ref",
+      captureName: null,
+      rule: "disjunct",
+    },
+    sep: {
+      type: "Sequence",
+      items: [
+        {
+          type: "Ref",
+          captureName: null,
+          rule: "ws",
+        },
+        {
+          type: "Text",
+          value: "|",
+        },
+        {
+          type: "Ref",
+          captureName: null,
+          rule: "ws",
+        },
+      ],
+    },
   },
   disjunct: {
     type: "RepSep",
@@ -1211,7 +1360,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "record",
+        rule: "recordCall",
       },
       {
         type: "Ref",
@@ -1227,11 +1376,6 @@ const GRAMMAR: Grammar = {
         type: "Ref",
         captureName: null,
         rule: "negation",
-      },
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "aggregation",
       },
       {
         type: "Ref",
@@ -1291,11 +1435,91 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "record",
+        rule: "recordCall",
       },
       {
         type: "Text",
         value: "]",
+      },
+    ],
+  },
+  relationLiteral: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Text",
+        value: "{",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "RepSep",
+        rep: {
+          type: "Ref",
+          captureName: null,
+          rule: "record",
+        },
+        sep: {
+          type: "Ref",
+          captureName: null,
+          rule: "commaSpace",
+        },
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "}",
+      },
+    ],
+  },
+  anonymousRelation: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "record",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "->",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "relationExpr",
+      },
+    ],
+  },
+  recordCall: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ident",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "record",
       },
     ],
   },
@@ -1574,11 +1798,6 @@ const GRAMMAR: Grammar = {
   record: {
     type: "Sequence",
     items: [
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "ident",
-      },
       {
         type: "Text",
         value: "{",

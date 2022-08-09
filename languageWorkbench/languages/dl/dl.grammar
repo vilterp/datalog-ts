@@ -8,11 +8,17 @@ query :- [record, "?"].
 fact :- [record, "."].
 deleteFact :- ["-", record, "."].
 
-rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
+rule :- [ident, ws, "=", ws, relationExpr, "."].
+relationExpr :- (disjuncts | relationLiteral | anonymousRelation | aggregation).
+disjuncts :- repSep(disjunct, [ws, "|", ws]).
 disjunct :- repSep(conjunct, [ws, "&", ws]).
-conjunct :- (record | comparison | arithmetic | negation | aggregation | placeholder).
+conjunct :- (recordCall | comparison | arithmetic | negation | placeholder).
 negation :- ["!", record].
-aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
+aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, recordCall, "]"].
+relationLiteral :- ["{", ws, repSep(record, commaSpace), ws, "}"].
+anonymousRelation :- [record, ws, "->", ws, relationExpr].
+
+recordCall :- [ident, record].
 
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
@@ -24,7 +30,7 @@ arithmeticOp :- ("+" | "*" | "-").
 
 term :- (record | int | var | string | bool | array | dict | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
-record :- [ident, "{", ws, recordAttrs, ws, "}"].
+record :- ["{", ws, recordAttrs, ws, "}"].
 dict :- ["{", ws, repSep(dictKeyValue, commaSpace), ws, "}"].
 dictKeyValue :- [key:string, ":", ws, value:term].
 recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
