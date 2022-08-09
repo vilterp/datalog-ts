@@ -26,7 +26,7 @@ export type Bindings = { [key: string]: Term };
 
 export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
-  head: Rec;
+  name: string; // not sure if this should be here
   body: RelationExpr;
 };
 
@@ -88,8 +88,8 @@ export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 
 // rule helpers
 
-export function rule(head: Rec, body: Disjuncts): Rule {
-  return { head, body };
+export function rule(name: string, body: Disjuncts): Rule {
+  return { name, body };
 }
 
 export function or(opts: Conjuncts[]): Disjuncts {
