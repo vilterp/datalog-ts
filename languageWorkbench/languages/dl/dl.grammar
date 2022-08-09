@@ -19,25 +19,27 @@ relationLiteral :- ["{", ws, repSep(record, commaSpace), ws, "}"].
 anonymousRelation :- [record, ws, "->", ws, relationExpr].
 
 recordCall :- [ident, record].
+# todo: better name?
+functionCall :- [ident, "[", repSep(recordAttrs, commaSpace), "]"].
 
-comparison :- [left:term, ws, comparisonOp, ws, right:term].
+comparison :- [left:scalarExpr, ws, comparisonOp, ws, right:scalarExpr].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
 
 arithmetic :- (assignmentOnLeft | assignmentOnRight).
-assignmentOnRight :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, result:term].
-assignmentOnLeft :- [result:term, ws, "=", ws, left:term, ws, arithmeticOp, ws, right:term].
+assignmentOnRight :- [left:scalarExpr, ws, arithmeticOp, ws, right:scalarExpr, ws, "=", ws, result:scalarExpr].
+assignmentOnLeft :- [result:scalarExpr, ws, "=", ws, left:scalarExpr, ws, arithmeticOp, ws, right:scalarExpr].
 arithmeticOp :- ("+" | "*" | "-").
 
-term :- (record | int | var | string | bool | array | dict | placeholder).
+scalarExpr :- (record | functionCall | int | var | string | bool | array | dict | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 record :- ["{", ws, recordAttrs, ws, "}"].
 dict :- ["{", ws, repSep(dictKeyValue, commaSpace), ws, "}"].
-dictKeyValue :- [key:string, ":", ws, value:term].
+dictKeyValue :- [key:string, ":", ws, value:scalarExpr].
 recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
-recordKeyValue :- [ident, ":", ws, term].
+recordKeyValue :- [ident, ":", ws, scalarExpr].
 int :- [("-" | ""), first:num, repSep(num, "")].
 bool :- ("true" | "false").
-array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
+array :- ["[", ws, repSep(scalarExpr, commaSpace), ws, "]"].
 
 tableKW :- ".table".
 loadKW :- ".load".
