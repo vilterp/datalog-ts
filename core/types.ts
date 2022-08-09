@@ -27,42 +27,47 @@ export type Bindings = { [key: string]: Term };
 export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
-  body: OrExpr;
+  body: RelationExpr;
 };
 
-export type OrExpr = { type: "Or"; opts: AndExpr[] };
+export type RelationExpr = Aggregation | AnonymousRelation | Disjuncts;
 
-export type AndExpr = { type: "And"; clauses: AndClause[] };
+export type AnonymousRelation = {
+  type: "AnonymousRelation";
+  head: Rec;
+  body: RelationExpr;
+};
 
-export type AndClause = Rec | Negation | Aggregation;
+export type Disjuncts = { type: "Or"; opts: Conjuncts[] };
 
-type Negation = { type: "Negation"; record: Rec };
+export type Conjuncts = { type: "And"; clauses: Conjunct[] };
+
+export type Conjunct = RecCall | Negation;
+
+type Negation = { type: "Negation"; record: RecCall };
 
 type Aggregation = {
   type: "Aggregation";
   aggregation: string;
   varNames: string[];
-  record: Rec;
+  record: RecCall;
 };
 
 // === Terms ===
 
-export type Term =
-  | Rec
-  | Dict
-  | StringLit
-  | Var
-  | AndClause
-  | Bool
-  | Int
-  | Array;
+export type Term = Rec | Dict | Array | StringLit | Var | Bool | Int;
 
 export type Var = { type: "Var"; name: string };
 
 export type Rec = {
   type: "Record";
-  relation: string;
   attrs: { [key: string]: Term };
+};
+
+export type RecCall = {
+  type: "RecordCall";
+  relation: string;
+  record: Rec;
 };
 
 export type Dict = {
@@ -83,15 +88,15 @@ export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 
 // rule helpers
 
-export function rule(head: Rec, body: OrExpr): Rule {
+export function rule(head: Rec, body: Disjuncts): Rule {
   return { head, body };
 }
 
-export function or(opts: AndExpr[]): OrExpr {
+export function or(opts: Conjuncts[]): Disjuncts {
   return { type: "Or", opts };
 }
 
-export function and(clauses: AndClause[]): AndExpr {
+export function and(clauses: Conjunct[]): Conjuncts {
   return { type: "And", clauses };
 }
 
@@ -109,8 +114,12 @@ export function bool(val: boolean): Bool {
   return { type: "Bool", val };
 }
 
-export function rec(relation: string, attrs: { [key: string]: Term }): Rec {
-  return { type: "Record", relation, attrs };
+export function rec(attrs: { [key: string]: Term }): Rec {
+  return { type: "Record", attrs };
+}
+
+export function recCall(relation: string, record: Rec): RecCall {
+  return { type: "RecordCall", relation, record };
 }
 
 export function varr(name: string): Var {
@@ -135,7 +144,7 @@ export function relationalBool(val: boolean): Rec[] {
   return val ? relationalTrue : relationalFalse;
 }
 
-export const relationalTrue: Rec[] = [rec("", {})];
+export const relationalTrue: Rec[] = [rec({})];
 
 export const relationalFalse: Rec[] = [];
 
