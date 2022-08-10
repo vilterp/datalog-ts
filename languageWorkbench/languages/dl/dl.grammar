@@ -8,7 +8,9 @@ query :- [record, "?"].
 fact :- [record, "."].
 deleteFact :- ["-", record, "."].
 
-rule :- [ident, ws, "=", ws, relationExpr, "."].
+rule :- (attachedRule | detachedRule).
+attachedRule :- [recordCall, ws, ":-", ws, relationExpr, "."].
+detachedRule :- [ident, ws, "=", ws, relationExpr, "."].
 relationExpr :- (disjuncts | relationLiteral | anonymousRelation | aggregation).
 disjuncts :- repSep(disjunct, [ws, "|", ws]).
 disjunct :- repSep(conjunct, [ws, "&", ws]).

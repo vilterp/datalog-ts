@@ -9,9 +9,11 @@ hl.Segment = {type: T, span: S, highlight: HH} :-
   hl.int{???, span: S, highlightt: H} |
   hl.string{type: T, span: S, highlight: ???}.
 
+# one syntax for declaration: "detached"
 hl.ident = {type: "ident", span: S, highlight: false} :-
   ast.ident{span: S}.
-hl.var = {type: "var", span: S, highlight: false} :-
+# and another: "attached"
+hl.var{type: "var", span: S, highlight: false} :-
   ast.var{span: S}.
 hl.int = {type: "int", span: S, highlight: false} :-
   ast.int{span: S}.
