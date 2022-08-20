@@ -652,6 +652,11 @@ const GRAMMAR: Grammar = {
         value: "[",
       },
       {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
         type: "RepSep",
         rep: {
           type: "Ref",
@@ -679,6 +684,11 @@ const GRAMMAR: Grammar = {
         },
       },
       {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
         type: "Text",
         value: "]",
       },
@@ -690,6 +700,11 @@ const GRAMMAR: Grammar = {
       {
         type: "Text",
         value: "(",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
       },
       {
         type: "RepSep",
@@ -717,6 +732,11 @@ const GRAMMAR: Grammar = {
             },
           ],
         },
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
       },
       {
         type: "Text",
