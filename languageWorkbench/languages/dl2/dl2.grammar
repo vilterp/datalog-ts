@@ -17,7 +17,7 @@ assertion :- [relExpr, "(", repSep(scalarExpr, commaSpace), ")"].
 relExpr :- (
     ident |
     relationLiteral |
-    ["(", abstraction, ")"]
+    abstraction
 ).
 
 relationLiteral :- [
