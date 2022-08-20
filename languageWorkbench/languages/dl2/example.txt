@@ -3,3 +3,4 @@ bar = [X] :- add[X,2].
 baz = [X] :- add[X,add[3,2]].
 boop = (X) :- foo(2,add[2,X]).
 boop = [X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2].
+boop = {(1,2),(3,4)}.
