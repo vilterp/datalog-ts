@@ -1,8 +1,8 @@
 export type Statement =
   | { type: "Rule"; rule: Rule }
-  | { type: "Fact"; record: RecCallExpr }
-  | { type: "Query"; record: RecCallExpr }
-  | { type: "Delete"; record: RecCallExpr }
+  | { type: "Fact"; record: Atom }
+  | { type: "Query"; record: Atom }
+  | { type: "Delete"; record: Atom }
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string };
 
@@ -30,21 +30,28 @@ export type Rule = {
   body: RelationExpr;
 };
 
-export type RelationExpr = Aggregation | AnonymousRelation | Disjuncts;
+// TODO: put agg back in
+export type RelationExpr = AnonymousRelation;
 
 export type AnonymousRelation = {
   type: "AnonymousRelation";
   head: Rec;
-  body: RelationExpr;
+  body: Formula;
 };
 
-export type Disjuncts = { type: "Or"; opts: Conjuncts[] };
+export type Formula =
+  | Atom
+  | { type: "Disjunction"; disjuncts: Formula[] }
+  | { type: "Conjunction"; conjucts: Formula[] }
+  | { type: "Negation"; inner: Formula };
 
-export type Conjuncts = { type: "And"; clauses: Conjunct[] };
+export type Atom = {
+  type: "Atom";
+  relation: string;
+  attrs: { [key: string]: Term };
+};
 
-export type Conjunct = ScalarExpr | Negation;
-
-type Negation = { type: "Negation"; record: RecCallExpr };
+type Term = Var | Value;
 
 type Aggregation = {
   type: "Aggregation";
@@ -53,42 +60,7 @@ type Aggregation = {
   expr: RelationExpr;
 };
 
-// TODO: do we really need to split exprs and vals?
-// currently doing it for half of these
-export type ScalarExpr =
-  | ArrayExpr
-  | RecCallExpr
-  | RecExpr
-  | DictExpr
-  // TODO: split exprs and vals for ints too?
-  | Var
-  | StringVal
-  | Bool
-  | IntVal;
-
 export type Var = { type: "Var"; name: string };
-
-export type ArrayExpr = { type: "ArrayExpr"; items: ScalarExpr[] };
-
-export type RecExpr = {
-  type: "RecExpr";
-  attrs: { [key: string]: ScalarExpr };
-};
-
-export type RecCallExpr = {
-  type: "RecCallExpr";
-  relation: string;
-  attrs: { [key: string]: ScalarExpr };
-};
-
-export type DictExpr = {
-  type: "DictExpr";
-  items: { [key: string]: ScalarExpr };
-};
-
-export function recExpr(attrs: { [key: string]: ScalarExpr }): RecExpr {
-  return { type: "RecExpr", attrs };
-}
 
 // === Values ===
 
@@ -115,20 +87,6 @@ export type Array = { type: "Array"; items: Value[] };
 // TODO: moar, argument types, etc.
 export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 
-// rule helpers
-
-export function rule(name: string, body: Disjuncts): Rule {
-  return { name, body };
-}
-
-export function or(opts: Conjuncts[]): Disjuncts {
-  return { type: "Or", opts };
-}
-
-export function and(clauses: Conjunct[]): Conjuncts {
-  return { type: "And", clauses };
-}
-
 // term helpers
 
 export function str(val: string): StringVal {
@@ -145,13 +103,6 @@ export function bool(val: boolean): Bool {
 
 export function rec(attrs: { [key: string]: Value }): Rec {
   return { type: "Record", attrs };
-}
-
-export function recCall(
-  relation: string,
-  attrs: { [key: string]: ScalarExpr }
-): RecCallExpr {
-  return { type: "RecCallExpr", relation, attrs };
 }
 
 export function varr(name: string): Var {
