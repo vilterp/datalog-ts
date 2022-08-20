@@ -1,4 +1,6 @@
-main :- repSep(decl, ws).
+main :- file.
+
+file :- repSep(decl, ws).
 
 decl :- [
     ident, ws, "=", ws, relExpr, "."
@@ -10,7 +12,7 @@ disjunct :- repSep(conjunct, [ws, "and", ws]).
 conjunct :- (negation | assertion).
 negation :- ["!", assertion].
 
-assertion :- [relExpr, repSep(scalarExpr, commaSpace)].
+assertion :- [relExpr, "(", repSep(scalarExpr, commaSpace), ")"].
 
 relExpr :- (
     ident |
