@@ -4,19 +4,13 @@ decl :- [
     ident, ws, "=", ws, relExpr, "."
 ].
 
-formula :- (
-    assertion |
-    disjunction |
-    conjunction |
-    negation
-).
+formula :- disjunction.
+disjunction :- repSep(disjunct, [ws, "or", ws]).
+disjunct :- repSep(conjunct, [ws, "and", ws]).
+conjunct :- (negation | assertion).
+negation :- ["!", assertion].
 
 assertion :- [relExpr, repSep(scalarExpr, commaSpace)].
-
-# TODO: this is left-recursive now...
-disjunction :- repSep(formula, " and ").
-conjunction :- repSep(formula, " or ").
-negation :- ["!", formula].
 
 relExpr :- (
     ident |
@@ -34,11 +28,11 @@ abstraction :- (
 ).
 
 pointwiseAbstraction :- [
-    "(", repSep(ident, commaSpace), ")", ":-", formula
+    "(", repSep(ident, commaSpace), ")", ws, ":-", ws, formula
 ].
 
 pointFreeAbstraction :- [
-    "[", repSep(ident, commaSpace), "]", ":-", scalarExpr
+    "[", repSep(ident, commaSpace), "]", ws, ":-", ws, scalarExpr
 ].
 
 scalarExpr :- (
