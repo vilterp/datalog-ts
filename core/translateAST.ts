@@ -106,7 +106,7 @@ function relationExprToInternal(relationExpr: DLRelationExpr): RelationExpr {
         opts: relationExpr.disjunct.map(
           (disjunct): Conjuncts => ({
             type: "And",
-            clauses: disjunct.conjunct.map(conjunctToInternal),
+            clauses: disjunct.conjunct.map(parserConjunctToInternal),
           })
         ),
       };
@@ -118,7 +118,7 @@ function relationExprToInternal(relationExpr: DLRelationExpr): RelationExpr {
   }
 }
 
-function conjunctToInternal(conjunct: DLConjunct): Conjunct {
+function parserConjunctToInternal(conjunct: DLConjunct): Conjunct {
   switch (conjunct.type) {
     case "AssignmentOnLeft":
     case "AssignmentOnRight":
@@ -134,18 +134,6 @@ function conjunctToInternal(conjunct: DLConjunct): Conjunct {
       return parserScalarToInternal(conjunct) as RecCallExpr;
     case "RecordCall":
       return parserScalarToInternal(conjunct) as RecCallExpr;
-  }
-}
-
-export function parserConjunctToInternal(term: DLConjunct): Conjunct {
-  switch (term.type) {
-    case "Negation":
-      return {
-        type: "Negation",
-        record: recCall(),
-      };
-    default:
-      throw new Error("TODO");
   }
 }
 
