@@ -1,7 +1,7 @@
 main :- repSep(decl, ws).
 
 decl :- [
-    ident, "=", relExpr, "."
+    ident, ws, "=", ws, relExpr, "."
 ].
 
 formula :- (
@@ -11,7 +11,7 @@ formula :- (
     negation
 ).
 
-assertion :- [relExpr, repSep(scalarExpr, ",")].
+assertion :- [relExpr, repSep(scalarExpr, commaSpace)].
 
 # TODO: this is left-recursive now...
 disjunction :- repSep(formula, " and ").
@@ -25,7 +25,7 @@ relExpr :- (
 ).
 
 relationLiteral :- [
-    "{", repSep(term, ","), "}"
+    "{", ws, repSep(term, commaSpace), ws, "}"
 ].
 
 abstraction :- (
@@ -34,11 +34,11 @@ abstraction :- (
 ).
 
 pointwiseAbstraction :- [
-    "{", repSep(ident, ","), "}", ":-", formula
+    "(", repSep(ident, commaSpace), ")", ":-", formula
 ].
 
 pointFreeAbstraction :- [
-    "[", repSep(ident, ","), "]", ":-", scalarExpr
+    "[", repSep(ident, commaSpace), "]", ":-", scalarExpr
 ].
 
 scalarExpr :- (
@@ -47,7 +47,7 @@ scalarExpr :- (
 ).
 
 application :- [
-    relExpr, "[", repSep(scalarExpr, ","), "]"
+    relExpr, "[", repSep(scalarExpr, commaSpace), "]"
 ].
 
 term :- (
