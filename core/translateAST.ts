@@ -27,6 +27,7 @@ import {
   recCall,
   ScalarExpr,
   RecCallExpr,
+  recExpr,
 } from "./types";
 
 export function parserStatementToInternal(stmt: DLStatement): Statement {
@@ -143,42 +144,58 @@ export function parserConjunctToInternal(term: DLConjunct): Conjunct {
         type: "Negation",
         record: recCall(),
       };
-    case "Array":
-      return array(term.term.map(parserTermToInternal));
-    case "Dict":
-      return dict(
-        pairsToObj(
-          term.dictKeyValue.map((kv) => ({
-            key: parserStrToInternal(kv.key),
-            val: parserTermToInternal(kv.value),
-          }))
-        )
-      );
-    case "Bool":
-      return bool(term.text === "true");
-    case "Int":
-      return int(parseInt(term.text));
-    case "Placeholder":
-      return recCall("???", rec({}));
-    case "String":
-      return str(parserStrToInternal(term));
-    case "Var":
-      return varr(term.text);
-    case "Record":
-      return rec(
-        term.ident.text,
-        mapListToObj(
-          term.recordAttrs.recordKeyValue.map((keyValue) => ({
-            key: keyValue.ident.text,
-            value: parserTermToInternal(keyValue.term),
-          }))
-        )
-      );
+    default:
+      throw new Error("TODO");
   }
 }
 
 function parserScalarToInternal(scalar: DLScalarExpr): ScalarExpr {
   switch (scalar.type) {
+    case "Array":
+      return {
+        type: "ArrayExpr",
+        items: scalar.scalarExpr.map(parserScalarToInternal),
+      };
+    case "Dict":
+      return {
+        type: "DictExpr",
+        items: pairsToObj(
+          scalar.dictKeyValue.map((kv) => ({
+            key: parserStrToInternal(kv.key),
+            val: parserScalarToInternal(kv.value),
+          }))
+        ),
+      };
+    case "Bool":
+      return bool(scalar.text === "true");
+    case "Int":
+      return int(parseInt(scalar.text));
+    case "Placeholder":
+      return recCall("???", {});
+    case "String":
+      return str(parserStrToInternal(scalar));
+    case "Var":
+      return varr(scalar.text);
+    case "Record":
+      return recExpr(
+        mapListToObj(
+          scalar.recordAttrs.recordKeyValue.map((keyValue) => ({
+            key: keyValue.ident.text,
+            value: parserScalarToInternal(keyValue.scalarExpr),
+          }))
+        )
+      );
+    case "RecordCall":
+      return {
+        type: "RecCallExpr",
+        relation: scalar.ident.text,
+        attrs: mapListToObj(
+          scalar.record.recordAttrs.recordKeyValue.map((keyValue) => ({
+            key: keyValue.ident.text,
+            value: parserScalarToInternal(keyValue.scalarExpr),
+          }))
+        ),
+      };
   }
 }
 

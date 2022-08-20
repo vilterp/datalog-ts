@@ -53,12 +53,15 @@ type Aggregation = {
   expr: RelationExpr;
 };
 
+// TODO: do we really need to split exprs and vals?
+// currently doing it for half of these
 export type ScalarExpr =
-  | Var
   | ArrayExpr
   | RecCallExpr
   | RecExpr
   | DictExpr
+  // TODO: split exprs and vals for ints too?
+  | Var
   | StringVal
   | Bool
   | IntVal;
@@ -78,7 +81,10 @@ export type RecCallExpr = {
   attrs: { [key: string]: ScalarExpr };
 };
 
-export type DictExpr = { type: "DictExpr"; items: ScalarExpr[] };
+export type DictExpr = {
+  type: "DictExpr";
+  items: { [key: string]: ScalarExpr };
+};
 
 export function recExpr(attrs: { [key: string]: ScalarExpr }): RecExpr {
   return { type: "RecExpr", attrs };
