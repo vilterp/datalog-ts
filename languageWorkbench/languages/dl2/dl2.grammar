@@ -21,8 +21,9 @@ relExpr :- (
 ).
 
 relationLiteral :- [
-    "{", ws, repSep(term, commaSpace), ws, "}"
+    "{", ws, repSep(tuple, commaSpace), ws, "}"
 ].
+tuple :- ["(", ws, repSep(term, commaSpace), ws, ")"].
 
 abstraction :- (
     pointwiseAbstraction |
