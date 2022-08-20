@@ -1,0 +1,76 @@
+decl :- [
+    ident, relExpr
+].
+
+formula :- (
+    assertion |
+    disjunction |
+    conjunction |
+    negation
+).
+
+assertion :- [relExpr, repSep(scalarExpr, ",")].
+
+# TODO: this is left-recursive now...
+disjunction :- repSep(formula, " and ").
+conjunction :- repSep(formula, " or ").
+negation :- ["!", formula].
+
+relExpr :- (
+    ident |
+    relationLiteral |
+    abstraction
+).
+
+relationLiteral :- [
+    "{", repSep(term, ","), "}"
+].
+
+abstraction :- (
+    pointwiseAbstraction |
+    pointFreeAbstraction
+).
+
+pointwiseAbstraction :- [
+    "{", repSep(ident, ","), "}", ":-", formula
+].
+
+pointFreeAbstraction :- [
+    "[", repSep(ident, ","), "]", ":-", scalarExpr
+].
+
+scalarExpr :- (
+    term |
+    application
+).
+
+application :- [
+    relExpr, "[", repSep(scalarExpr, ","), "]"
+].
+
+term :- (
+    var |
+    scalarLiteral
+).
+
+scalarLiteral :- (
+    intLit |
+    stringLit
+).
+
+# scalar literals
+
+intLit :- [("-" | ""), first:num, repSep(num, "")].
+ident :- [alpha, repSep((alphaNum | "."), "")].
+stringLit :- ["\"", repSep(stringChar, ""), "\""].
+var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
+
+# primitives
+
+stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep((" "|"\n"), "").
+placeholder :- "???".
+commaSpace :- [",", ws].
