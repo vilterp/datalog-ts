@@ -61,6 +61,13 @@ export type DLAssignmentOnRight = {
   right: DLScalarExpr;
   result: DLScalarExpr;
 };
+export type DLAttachedRule = {
+  type: "AttachedRule";
+  text: string;
+  span: Span;
+  recordCall: DLRecordCall;
+  relationExpr: DLRelationExpr;
+};
 export type DLBool = {
   type: "Bool";
   text: string;
@@ -106,6 +113,13 @@ export type DLDeleteFact = {
   text: string;
   span: Span;
   record: DLRecord;
+};
+export type DLDetachedRule = {
+  type: "DetachedRule";
+  text: string;
+  span: Span;
+  ident: DLIdent;
+  relationExpr: DLRelationExpr;
 };
 export type DLDict = {
   type: "Dict";
@@ -253,14 +267,9 @@ export type DLRelationLiteral = {
   record: DLRecord[];
   commaSpace: DLCommaSpace[];
 };
-export type DLRule = {
-  type: "Rule";
-  text: string;
-  span: Span;
-  ident: DLIdent;
-  relationExpr: DLRelationExpr;
-};
+export type DLRule = DLAttachedRule | DLDetachedRule;
 export type DLScalarExpr =
+  | DLRecordCall
   | DLRecord
   | DLFunctionCall
   | DLInt
@@ -356,6 +365,11 @@ export function parseAssignmentOnRight(input: string): DLAssignmentOnRight {
   const ruleTree = extractRuleTree(traceTree);
   return extractAssignmentOnRight(input, ruleTree);
 }
+export function parseAttachedRule(input: string): DLAttachedRule {
+  const traceTree = parserlib.parse(GRAMMAR, "attachedRule", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractAttachedRule(input, ruleTree);
+}
 export function parseBool(input: string): DLBool {
   const traceTree = parserlib.parse(GRAMMAR, "bool", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -395,6 +409,11 @@ export function parseDeleteFact(input: string): DLDeleteFact {
   const traceTree = parserlib.parse(GRAMMAR, "deleteFact", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractDeleteFact(input, ruleTree);
+}
+export function parseDetachedRule(input: string): DLDetachedRule {
+  const traceTree = parserlib.parse(GRAMMAR, "detachedRule", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractDetachedRule(input, ruleTree);
 }
 export function parseDict(input: string): DLDict {
   const traceTree = parserlib.parse(GRAMMAR, "dict", input);
@@ -665,6 +684,18 @@ function extractAssignmentOnRight(
     result: extractScalarExpr(input, childByName(node, "scalarExpr", "result")),
   };
 }
+function extractAttachedRule(input: string, node: RuleTree): DLAttachedRule {
+  return {
+    type: "AttachedRule",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    recordCall: extractRecordCall(input, childByName(node, "recordCall", null)),
+    relationExpr: extractRelationExpr(
+      input,
+      childByName(node, "relationExpr", null)
+    ),
+  };
+}
 function extractBool(input: string, node: RuleTree): DLBool {
   return {
     type: "Bool",
@@ -742,6 +773,18 @@ function extractDeleteFact(input: string, node: RuleTree): DLDeleteFact {
     text: textForSpan(input, node.span),
     span: node.span,
     record: extractRecord(input, childByName(node, "record", null)),
+  };
+}
+function extractDetachedRule(input: string, node: RuleTree): DLDetachedRule {
+  return {
+    type: "DetachedRule",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ident: extractIdent(input, childByName(node, "ident", null)),
+    relationExpr: extractRelationExpr(
+      input,
+      childByName(node, "relationExpr", null)
+    ),
   };
 }
 function extractDict(input: string, node: RuleTree): DLDict {
@@ -986,20 +1029,22 @@ function extractRelationLiteral(
   };
 }
 function extractRule(input: string, node: RuleTree): DLRule {
-  return {
-    type: "Rule",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
-    relationExpr: extractRelationExpr(
-      input,
-      childByName(node, "relationExpr", null)
-    ),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "attachedRule": {
+      return extractAttachedRule(input, child);
+    }
+    case "detachedRule": {
+      return extractDetachedRule(input, child);
+    }
+  }
 }
 function extractScalarExpr(input: string, node: RuleTree): DLScalarExpr {
   const child = node.children[0];
   switch (child.name) {
+    case "recordCall": {
+      return extractRecordCall(input, child);
+    }
     case "record": {
       return extractRecord(input, child);
     }
@@ -1277,6 +1322,54 @@ const GRAMMAR: Grammar = {
     ],
   },
   rule: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "attachedRule",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "detachedRule",
+      },
+    ],
+  },
+  attachedRule: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "recordCall",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: ":-",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "relationExpr",
+      },
+      {
+        type: "Text",
+        value: ".",
+      },
+    ],
+  },
+  detachedRule: {
     type: "Sequence",
     items: [
       {
@@ -1780,6 +1873,11 @@ const GRAMMAR: Grammar = {
   scalarExpr: {
     type: "Choice",
     choices: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "recordCall",
+      },
       {
         type: "Ref",
         captureName: null,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Statement, Term } from "../../core/types";
+import { Statement, Value } from "../../core/types";
 import { noHighlight, HighlightProps } from "../dl/term";
 import { useJSONLocalStorage } from "../generic/hooks";
 import { RelationTree } from "./relationTree";
@@ -68,7 +68,7 @@ export function Explorer(props: {
           <VizArea
             interp={props.interp}
             highlightedTerm={highlight.type === "Term" ? highlight.term : null}
-            setHighlightedTerm={(term: Term | null) =>
+            setHighlightedTerm={(term: Value | null) =>
               term === null
                 ? setHighlight({ type: "None" })
                 : setHighlight({ type: "Term", term })

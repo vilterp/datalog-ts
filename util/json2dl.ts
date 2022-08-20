@@ -1,9 +1,9 @@
-import { rec, str, Rec, array, int, Term, bool } from "../core/types";
+import { rec, str, Rec, array, int, Value, bool } from "../core/types";
 import { Json } from "./json";
 
 type ADT = { type: string; [more: string]: Json };
 
-export function jsonToDL(json: Json): Term {
+export function jsonToDL(json: Json): Value {
   switch (typeof json) {
     case "number":
       return int(json);
@@ -19,7 +19,7 @@ export function jsonToDL(json: Json): Term {
       if (json.hasOwnProperty("type") && typeof json.type === "string") {
         return adtToRec(json as ADT);
       }
-      const out: { [key: string]: Term } = {};
+      const out: { [key: string]: Value } = {};
       for (const key in json) {
         out[key] = jsonToDL(json[key]);
       }
@@ -35,7 +35,7 @@ export function adtToRec(adt: ADT): Rec {
   return rec(adt.type, (jsonToDL(copy) as Rec).attrs);
 }
 
-export function dlToJson(term: Term, addTypeTags: boolean = true): Json {
+export function dlToJson(term: Value, addTypeTags: boolean = true): Json {
   switch (term.type) {
     case "StringLit":
       return term.val;

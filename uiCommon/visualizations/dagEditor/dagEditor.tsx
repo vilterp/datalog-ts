@@ -18,7 +18,7 @@ import {
   Statement,
   str,
   Array,
-  Term,
+  Value,
   StringLit,
 } from "../../../core/types";
 import { fastPPT } from "../../../core/fastPPT";
@@ -52,7 +52,7 @@ function DAGEditor(props: VizArgs) {
   let edgeResults: Res[] = [];
   let nodes: Node<EditorNodeData>[] = [];
   let edges: Edge<RemovableEdgeData>[] = [];
-  let newNodeTemplates: Term[] = [];
+  let newNodeTemplates: Value[] = [];
   let attrEditorSpecs: AttributeEditorSpec[] = [];
   let nodeVisualizations: NodeVisualizationSpec[] = [];
   let error: string | null = null;

@@ -9,7 +9,7 @@ import {
   Res,
   Statement,
   StringLit,
-  Term,
+  Value,
 } from "../../../core/types";
 import { max } from "../../../util/util";
 import { AttributeEditorSpec, TermEditorSpec } from "./types";
@@ -148,7 +148,7 @@ export function getSpecForAttr(
 }
 
 // I guess this only really works for Vegalite specs, doesn't it...
-export function insertIDIntoSpec(spec: Rec, id: Term): Rec {
+export function insertIDIntoSpec(spec: Rec, id: Value): Rec {
   return {
     ...spec,
     attrs: {

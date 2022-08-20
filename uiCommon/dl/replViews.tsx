@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Res, Term } from "../../core/types";
+import { Res, Value } from "../../core/types";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";
 import { TreeCollapseState } from "../generic/treeView";
 import { TraceTreeView } from "./trace";
@@ -27,7 +27,7 @@ export function IndependentTraceView(props: { res: Res }) {
   );
 }
 
-export function BareTerm(props: { term: Term }) {
+export function BareTerm(props: { term: Value }) {
   return (
     <span style={{ fontFamily: "monospace" }}>
       <TermView

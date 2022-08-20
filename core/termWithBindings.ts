@@ -1,9 +1,9 @@
 import { jsonEq } from "../util/json";
 import { filterMap, mapObj } from "../util/util";
-import { Bindings, Res, ScopePath, Term, TermWithBindings } from "./types";
+import { Bindings, Res, ScopePath, Value, TermWithBindings } from "./types";
 
 export function makeTermWithBindings(
-  term: Term,
+  term: Value,
   bindings: Bindings
 ): TermWithBindings {
   switch (term.type) {

@@ -1289,3 +1289,31 @@ application/json
     }
   }
 ]
+
+foo{} :-
+  {1, 2, 3}.
+----
+application/json
+[
+  {
+    "type": "Rule",
+    "rule": {
+      "head": {
+        "type": "Record",
+        "relation": "foo",
+        "attrs": {}
+      },
+      "body": {
+        "type": "Or",
+        "opts": [
+          {
+            "type": "And",
+            "clauses": [
+              null
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,15 +1,17 @@
 import {
   DLArithmetic,
   DLComparison,
+  DLConjunct,
+  DLRelationExpr,
   DLRule,
+  DLScalarExpr,
   DLStatement,
   DLString,
-  DLTerm,
 } from "../languageWorkbench/languages/dl/parser";
 import { deEscape } from "../languageWorkbench/parserlib/types";
 import { mapListToObj, pairsToObj } from "../util/util";
 import {
-  AndClause,
+  Conjunct,
   array,
   bool,
   dict,
@@ -19,8 +21,12 @@ import {
   Rule,
   Statement,
   str,
-  Term,
   varr,
+  RelationExpr,
+  Conjuncts,
+  recCall,
+  ScalarExpr,
+  RecCallExpr,
 } from "./types";
 
 export function parserStatementToInternal(stmt: DLStatement): Statement {
@@ -28,12 +34,12 @@ export function parserStatementToInternal(stmt: DLStatement): Statement {
     case "DeleteFact":
       return {
         type: "Delete",
-        record: parserTermToInternal(stmt.record) as Rec,
+        record: parserScalarToInternal(stmt.record) as RecCallExpr,
       };
     case "Fact":
       return {
         type: "Fact",
-        record: parserTermToInternal(stmt.record) as Rec,
+        record: parserScalarToInternal(stmt.record) as RecCallExpr,
       };
     case "Rule":
       return {
@@ -53,50 +59,71 @@ export function parserStatementToInternal(stmt: DLStatement): Statement {
     case "Query":
       return {
         type: "Query",
-        record: parserTermToInternal(stmt.record) as Rec,
+        record: parserScalarToInternal(stmt.record) as RecCallExpr,
       };
   }
 }
 
-export function parserRuleToInternal(term: DLRule): Rule {
+export function parserRuleToInternal(rule: DLRule): Rule {
   return {
-    head: parserTermToInternal(term.record) as Rec,
-    body: {
-      type: "Or",
-      opts: term.disjunct.map((disjunct) => ({
-        type: "And",
-        clauses: disjunct.conjunct.map((conjunct): AndClause => {
-          switch (conjunct.type) {
-            case "AssignmentOnLeft":
-            case "AssignmentOnRight":
-              return parserArithmeticToInternal(conjunct);
-            case "Comparison":
-              return parserComparisonToInternal(conjunct);
-            case "Negation":
-              return {
-                type: "Negation",
-                record: parserTermToInternal(conjunct.record) as Rec,
-              };
-            case "Placeholder":
-              return parserTermToInternal(conjunct) as Rec;
-            case "Record":
-              return parserTermToInternal(conjunct) as Rec;
-            case "Aggregation":
-              return {
-                type: "Aggregation",
-                aggregation: conjunct.aggregation.text,
-                record: parserTermToInternal(conjunct.record) as Rec,
-                varNames: conjunct.var.map((dlVar) => dlVar.text),
-              };
-          }
-        }),
-      })),
-    },
+    name: rule.ident.text,
+    body: relationExprToInternal(rule.relationExpr),
   };
 }
 
-export function parserTermToInternal(term: DLTerm): Term {
+function relationExprToInternal(relationExpr: DLRelationExpr): RelationExpr {
+  switch (relationExpr.type) {
+    case "Aggregation":
+      return {
+        type: "Aggregation",
+        aggregation: relationExpr.aggregation.text,
+        varNames: relationExpr.var.map((dlVar) => dlVar.text),
+        expr: relationExprToInternal(relationExpr.relationExpr),
+      };
+    case "Disjuncts":
+      return {
+        type: "Or",
+        opts: relationExpr.disjunct.map(
+          (disjunct): Conjuncts => ({
+            type: "And",
+            clauses: disjunct.conjunct.map(conjunctToInternal),
+          })
+        ),
+      };
+    case "RelationLiteral":
+      // TODO: desugar into like
+      // {x: A} :- A = 1 or A = 2 or A = 3
+      // but what is the x?
+      throw new Error("TODO");
+  }
+}
+
+function conjunctToInternal(conjunct: DLConjunct): Conjunct {
+  switch (conjunct.type) {
+    case "AssignmentOnLeft":
+    case "AssignmentOnRight":
+      return parserArithmeticToInternal(conjunct);
+    case "Comparison":
+      return parserComparisonToInternal(conjunct);
+    case "Negation":
+      return {
+        type: "Negation",
+        record: parserScalarToInternal(conjunct.record) as RecCallExpr,
+      };
+    case "Placeholder":
+      return parserScalarToInternal(conjunct) as RecCallExpr;
+    case "RecordCall":
+      return parserScalarToInternal(conjunct) as RecCallExpr;
+  }
+}
+
+export function parserConjunctToInternal(term: DLConjunct): Conjunct {
   switch (term.type) {
+    case "Negation":
+      return {
+        type: "Negation",
+        record: recCall(term.)
+      }
     case "Array":
       return array(term.term.map(parserTermToInternal));
     case "Dict":
@@ -113,7 +140,7 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Int":
       return int(parseInt(term.text));
     case "Placeholder":
-      return rec("???", {});
+      return recCall("???", rec({}));
     case "String":
       return str(parserStrToInternal(term));
     case "Var":
@@ -131,6 +158,12 @@ export function parserTermToInternal(term: DLTerm): Term {
   }
 }
 
+function parserScalarToInternal(scalar: DLScalarExpr): ScalarExpr {
+  switch (scalar.type) {
+    XXXX,
+  }
+}
+
 function parserStrToInternal(term: DLString): string {
   return deEscape(term.stringChar.map((c) => c.text).join(""));
 }
@@ -142,7 +175,7 @@ const ARITHMETIC_MAPPING = {
   "*": "mul",
 };
 
-function parserArithmeticToInternal(arithmetic: DLArithmetic): Rec {
+function parserArithmeticToInternal(arithmetic: DLArithmetic): RecCall {
   const op = arithmetic.arithmeticOp.text;
   const left = parserTermToInternal(arithmetic.left);
   const right = parserTermToInternal(arithmetic.right);
@@ -151,11 +184,14 @@ function parserArithmeticToInternal(arithmetic: DLArithmetic): Rec {
   if (!mappedOp) {
     throw new Error(`unknown arithmetic operator: ${op}`);
   }
-  return rec(`base.${mappedOp}`, {
-    a: left,
-    b: right,
-    res: res,
-  });
+  return recCall(
+    `base.${mappedOp}`,
+    rec({
+      a: left,
+      b: right,
+      res: res,
+    })
+  );
 }
 
 const COMPARISON_MAPPING = {
@@ -167,7 +203,7 @@ const COMPARISON_MAPPING = {
   ">=": "gte",
 };
 
-function parserComparisonToInternal(comparison: DLComparison): Rec {
+function parserComparisonToInternal(comparison: DLComparison): RecCall {
   const op = comparison.comparisonOp.text;
   const left = parserTermToInternal(comparison.left);
   const right = parserTermToInternal(comparison.right);
@@ -175,8 +211,11 @@ function parserComparisonToInternal(comparison: DLComparison): Rec {
   if (!mappedOp) {
     throw new Error(`unknown comparison operator: ${op}`);
   }
-  return rec(`base.${mappedOp}`, {
-    a: left,
-    b: right,
-  });
+  return recCall(
+    `base.${mappedOp}`,
+    rec({
+      a: left,
+      b: right,
+    })
+  );
 }

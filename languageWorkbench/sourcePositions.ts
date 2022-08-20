@@ -1,4 +1,4 @@
-import { Int, Rec, Term } from "../core/types";
+import { Int, Rec, Value } from "../core/types";
 
 export type LineAndCol = {
   line: number; // zero-indexed
@@ -14,7 +14,7 @@ export function dlToSpan(rec: Rec): Span {
   };
 }
 
-function dlToPos(term: Term): number {
+function dlToPos(term: Value): number {
   return (term as Int).val;
 }
 

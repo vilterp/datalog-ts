@@ -1,7 +1,7 @@
 import { List, Map } from "immutable";
 import { mapObj } from "../../util/util";
 import { fastPPT } from "../fastPPT";
-import { Rec, Term } from "../types";
+import { Rec, Value } from "../types";
 import { termEq } from "../unify";
 
 export function emptyLazyIndexedCollection() {
@@ -87,7 +87,7 @@ export class LazyIndexedCollection {
     return !!this.indexes[indexName];
   }
 
-  get(indexName: string, key: Term): List<Rec> {
+  get(indexName: string, key: Value): List<Rec> {
     return this.indexes[indexName].get(fastPPT(key), List());
   }
 }

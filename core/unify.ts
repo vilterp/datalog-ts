@@ -1,11 +1,11 @@
-import { array, Bindings, rec, str, Term, VarMappings } from "./types";
+import { array, Bindings, rec, str, Value, VarMappings } from "./types";
 import { mapObj, mapObjToList } from "../util/util";
 import { jsonEq } from "../util/json";
 
 export function unify(
   prior: Bindings,
-  left: Term,
-  right: Term
+  left: Value,
+  right: Value
 ): Bindings | null {
   // console.group("unify", {
   //   prior: ppb(prior),
@@ -18,7 +18,7 @@ export function unify(
   return res;
 }
 
-function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
+function doUnify(prior: Bindings, left: Value, right: Value): Bindings | null {
   switch (left.type) {
     case "StringLit":
     case "IntLit":
@@ -120,18 +120,18 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
   }
 }
 
-export function termSameType(left: Term, right: Term): boolean {
+export function termSameType(left: Value, right: Value): boolean {
   return left.type === right.type;
 }
 
-export function termEq(left: Term, right: Term): boolean {
+export function termEq(left: Value, right: Value): boolean {
   return jsonEq(left, right);
 }
 
 // 0: equal
 // <0: less than
 // >0: greater than
-export function termCmp(left: Term, right: Term): number {
+export function termCmp(left: Value, right: Value): number {
   switch (left.type) {
     case "IntLit":
       switch (right.type) {
@@ -162,11 +162,11 @@ export function termCmp(left: Term, right: Term): number {
             return relCmp;
           }
           // TODO: do this comparison without materializing both left and right arrays
-          const leftArr: Term[] = mapObjToList(left.attrs, (key, val) => ({
+          const leftArr: Value[] = mapObjToList(left.attrs, (key, val) => ({
             type: "Array",
             items: [str(key), val],
           }));
-          const rightArr: Term[] = mapObjToList(right.attrs, (key, val) => ({
+          const rightArr: Value[] = mapObjToList(right.attrs, (key, val) => ({
             type: "Array",
             items: [str(key), val],
           }));
@@ -179,16 +179,16 @@ export function termCmp(left: Term, right: Term): number {
       switch (right.type) {
         case "Dict": {
           // TODO: do this comparison without materializing both left and right arrays
-          const leftArr: Term[] = mapObjToList(
+          const leftArr: Value[] = mapObjToList(
             left.map,
-            (key, val): Term => ({
+            (key, val): Value => ({
               type: "Array",
               items: [str(key), val],
             })
           );
-          const rightArr: Term[] = mapObjToList(
+          const rightArr: Value[] = mapObjToList(
             right.map,
-            (key, val): Term => ({
+            (key, val): Value => ({
               type: "Array",
               items: [str(key), val],
             })
@@ -203,7 +203,7 @@ export function termCmp(left: Term, right: Term): number {
   }
 }
 
-function lexicographical(left: Term[], right: Term[]): number {
+function lexicographical(left: Value[], right: Value[]): number {
   if (left.length === 0 && right.length === 0) {
     return 0;
   }
@@ -220,7 +220,7 @@ function lexicographical(left: Term[], right: Term[]): number {
   return lexicographical(left.slice(1), right.slice(1));
 }
 
-export function termLT(left: Term, right: Term): boolean {
+export function termLT(left: Value, right: Value): boolean {
   return termCmp(left, right) < 0;
 }
 
@@ -250,7 +250,7 @@ export function unifyBindings(
   return res;
 }
 
-export function substitute(term: Term, bindings: Bindings): Term {
+export function substitute(term: Value, bindings: Bindings): Value {
   switch (term.type) {
     case "Record":
       return rec(
@@ -282,8 +282,8 @@ export function applyMappings(
 }
 
 export function getMappings(
-  head: { [p: string]: Term },
-  call: { [p: string]: Term }
+  head: { [p: string]: Value },
+  call: { [p: string]: Value }
 ): VarMappings {
   const out: VarMappings = {};
   // TODO: detect parameter mismatch!

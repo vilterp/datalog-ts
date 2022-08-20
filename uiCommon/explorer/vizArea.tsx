@@ -1,13 +1,13 @@
 import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Statement, StringLit, Term } from "../../core/types";
+import { Rec, Statement, StringLit, Value } from "../../core/types";
 import { CollapsibleWithHeading } from "../generic/collapsible";
 import { IndividualViz } from "../visualizations";
 
 export function VizArea(props: {
   interp: AbstractInterpreter;
-  highlightedTerm: Term | null;
-  setHighlightedTerm: (t: Term | null) => void;
+  highlightedTerm: Value | null;
+  setHighlightedTerm: (t: Value | null) => void;
   runStatements: (stmts: Statement[]) => void;
 }) {
   const interp = ensureVizTable(props.interp);

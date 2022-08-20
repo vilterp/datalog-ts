@@ -1,5 +1,5 @@
 import { ppr, ppRule, ppt } from "../../core/pretty";
-import { Res, Rule, Term } from "../../core/types";
+import { Res, Rule, Value } from "../../core/types";
 import { Json } from "../json";
 import { joinLinesWithTrailing } from "../util";
 
@@ -44,7 +44,7 @@ export function jsonOut(content: Json): TestOutput {
   };
 }
 
-export function datalogOut(terms: Term[]): TestOutput {
+export function datalogOut(terms: Value[]): TestOutput {
   return {
     content: joinLinesWithTrailing(".", terms.map(ppt)),
     mimeType: "application/datalog",

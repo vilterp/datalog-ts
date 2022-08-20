@@ -1,12 +1,12 @@
 import React from "react";
-import { int, Int, Term } from "../../../core/types";
+import { int, Int, Value } from "../../../core/types";
 import { BareTerm } from "../../dl/replViews";
 import { SliderSpec, TermEditorSpec } from "./types";
 
 export function TermEditor(props: {
   spec: TermEditorSpec;
-  term: Term;
-  onChange: (newTerm: Term) => void;
+  term: Value;
+  onChange: (newTerm: Value) => void;
 }) {
   if (!props.spec) {
     // TODO: really need a simple version of this

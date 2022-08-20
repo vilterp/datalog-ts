@@ -1,9 +1,9 @@
-import { int, Term } from "./types";
+import { int, Value } from "./types";
 
-type Aggregation = (terms: Term[]) => Term;
+type Aggregation = (terms: Value[]) => Value;
 
 export const AGGREGATIONS: { [name: string]: Aggregation } = {
-  sum: (terms: Term[]) => {
+  sum: (terms: Value[]) => {
     let result = 0;
     terms.forEach((term) => {
       if (term.type === "IntLit") {

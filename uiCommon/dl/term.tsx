@@ -4,7 +4,7 @@ import {
   ScopePath,
   scopePathEq,
   SituatedBinding,
-  Term,
+  Value,
 } from "../../core/types";
 import {
   intersperse,
@@ -16,7 +16,7 @@ import { escapeString } from "../../core/pretty";
 export type Highlight =
   | { type: "Relation"; name: string }
   | { type: "Binding"; binding: SituatedBinding } // TODO: need to scope this to a "rule path"
-  | { type: "Term"; term: Term }
+  | { type: "Term"; term: Value }
   | { type: "None" };
 
 export const noHighlight: Highlight = { type: "None" };

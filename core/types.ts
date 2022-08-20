@@ -1,8 +1,8 @@
 export type Statement =
   | { type: "Rule"; rule: Rule }
-  | { type: "Fact"; record: Rec }
-  | { type: "Query"; record: Rec }
-  | { type: "Delete"; record: Rec }
+  | { type: "Fact"; record: RecCallExpr }
+  | { type: "Query"; record: RecCallExpr }
+  | { type: "Delete"; record: RecCallExpr }
   | { type: "TableDecl"; name: string }
   | { type: "LoadStmt"; path: string };
 
@@ -15,12 +15,12 @@ export type Relation =
 // === Results ===
 
 export interface Res {
-  term: Term;
+  term: Value;
   bindings: Bindings;
   trace: Trace;
 }
 
-export type Bindings = { [key: string]: Term };
+export type Bindings = { [key: string]: Value };
 
 // === Rules ===
 
@@ -42,46 +42,59 @@ export type Disjuncts = { type: "Or"; opts: Conjuncts[] };
 
 export type Conjuncts = { type: "And"; clauses: Conjunct[] };
 
-export type Conjunct = RecCall | Negation;
+export type Conjunct = ScalarExpr | Negation;
 
-type Negation = { type: "Negation"; record: RecCall };
+type Negation = { type: "Negation"; record: RecCallExpr };
 
 type Aggregation = {
   type: "Aggregation";
   aggregation: string;
   varNames: string[];
-  record: RecCall;
+  expr: RelationExpr;
 };
 
-// === Terms ===
-
-export type Term = Rec | Dict | Array | StringLit | Var | Bool | Int;
+export type ScalarExpr =
+  | Var
+  | ArrayExpr
+  | RecCallExpr
+  | DictExpr
+  | StringVal
+  | Bool
+  | IntVal;
 
 export type Var = { type: "Var"; name: string };
 
-export type Rec = {
-  type: "Record";
-  attrs: { [key: string]: Term };
+export type ArrayExpr = { type: "ArrayExpr"; items: ScalarExpr[] };
+
+export type RecCallExpr = {
+  type: "RecCallExpr";
+  relation: string;
+  attrs: { [key: string]: ScalarExpr };
 };
 
-export type RecCall = {
-  type: "RecordCall";
-  relation: string;
-  record: Rec;
+export type DictExpr = { type: "DictExpr"; items: ScalarExpr[] };
+
+// === Values ===
+
+export type Value = Rec | Dict | Array | StringVal | Bool | IntVal;
+
+export type Rec = {
+  type: "Record";
+  attrs: { [key: string]: Value };
 };
 
 export type Dict = {
   type: "Dict";
-  map: { [key: string]: Term };
+  map: { [key: string]: Value };
 };
 
 export type Bool = { type: "Bool"; val: boolean };
 
-export type Int = { type: "IntLit"; val: number };
+export type IntVal = { type: "IntVal"; val: number };
 
-export type StringLit = { type: "StringLit"; val: string };
+export type StringVal = { type: "StringVal"; val: string };
 
-export type Array = { type: "Array"; items: Term[] };
+export type Array = { type: "Array"; items: Value[] };
 
 // TODO: moar, argument types, etc.
 export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
@@ -102,43 +115,46 @@ export function and(clauses: Conjunct[]): Conjuncts {
 
 // term helpers
 
-export function str(val: string): StringLit {
-  return { type: "StringLit", val };
+export function str(val: string): StringVal {
+  return { type: "StringVal", val };
 }
 
-export function int(val: number): Int {
-  return { type: "IntLit", val };
+export function int(val: number): IntVal {
+  return { type: "IntVal", val };
 }
 
 export function bool(val: boolean): Bool {
   return { type: "Bool", val };
 }
 
-export function rec(attrs: { [key: string]: Term }): Rec {
+export function rec(attrs: { [key: string]: Value }): Rec {
   return { type: "Record", attrs };
 }
 
-export function recCall(relation: string, record: Rec): RecCall {
-  return { type: "RecordCall", relation, record };
+export function recCall(
+  relation: string,
+  attrs: { [key: string]: ScalarExpr }
+): RecCallExpr {
+  return { type: "RecCallExpr", relation, attrs };
 }
 
 export function varr(name: string): Var {
   return { type: "Var", name: name };
 }
 
-export function array(items: Term[]): Array {
+export function array(items: Value[]): Array {
   return { type: "Array", items: items };
 }
 
-export function dict(map: { [key: string]: Term }): Dict {
+export function dict(map: { [key: string]: Value }): Dict {
   return { type: "Dict", map };
 }
 
-export const trueTerm: Term = { type: "Bool", val: true };
+export const trueTerm: Value = { type: "Bool", val: true };
 
-export const falseTerm: Term = { type: "Bool", val: false };
+export const falseTerm: Value = { type: "Bool", val: false };
 
-export type RelationalBool = Term[];
+export type RelationalBool = Value[];
 
 export function relationalBool(val: boolean): Rec[] {
   return val ? relationalTrue : relationalFalse;
@@ -163,7 +179,7 @@ export type Trace =
       innerRes: Res;
       mappings: VarMappings;
     }
-  | { type: "NegationTrace"; negatedTerm: Term }
+  | { type: "NegationTrace"; negatedTerm: Value }
   | { type: "AggregationTrace"; aggregatedResults: Res[] }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
@@ -198,7 +214,7 @@ export type TermWithBindings =
   | BinExprWithBindings
   | NegationWithBindings
   | AggregationWithBindings
-  | { type: "Atom"; term: Int | Bool | StringLit | Var };
+  | { type: "Atom"; term: IntVal | Bool | StringVal | Var };
 
 export type RecordWithBindings = {
   type: "RecordWithBindings";

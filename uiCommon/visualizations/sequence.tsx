@@ -1,6 +1,6 @@
 import React from "react";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
-import { Rec, Res, StringLit, Term } from "../../core/types";
+import { Rec, Res, StringLit, Value } from "../../core/types";
 import {
   AbsPos,
   Circle,
@@ -28,7 +28,7 @@ function SequenceDiagram(props: VizArgs) {
   const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
   const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
   const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
-  const ticksByID: { [id: string]: Term } = {};
+  const ticksByID: { [id: string]: Value } = {};
   ticks.forEach((tick) => {
     ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;
   });
@@ -36,7 +36,7 @@ function SequenceDiagram(props: VizArgs) {
   return (
     <div>
       <div>
-        <Diagram<Term>
+        <Diagram<Value>
           diagram={sequenceDiagram(
             makeSequenceSpec(actors, messages, ticksByID)
           )}
@@ -52,7 +52,7 @@ function SequenceDiagram(props: VizArgs) {
 function makeSequenceSpec(
   actors: Res[],
   messages: Res[],
-  ticksByID: { [id: string]: Term }
+  ticksByID: { [id: string]: Value }
 ): Sequence {
   return {
     locations: actors.map((actor) => ({
@@ -79,12 +79,12 @@ export type Location = string;
 export type Time = number;
 
 export interface Sequence {
-  locations: { loc: Location; term: Term }[];
+  locations: { loc: Location; term: Value }[];
   hops: Hop[];
 }
 
 export interface Hop {
-  term: Term;
+  term: Value;
   from: TimeAndPlace;
   to: TimeAndPlace;
 }
@@ -92,20 +92,20 @@ export interface Hop {
 interface TimeAndPlace {
   location: Location;
   time: Time;
-  term: Term;
+  term: Value;
 }
 
 function yForTime(t: Time): number {
   return t * 10;
 }
 
-export function sequenceDiagram(seq: Sequence): Diag<Term> {
+export function sequenceDiagram(seq: Sequence): Diag<Value> {
   const maxTime = seq.hops.reduce(
     (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
     0
   );
 
-  const locationLines: Diag<Term> = AbsPos(
+  const locationLines: Diag<Value> = AbsPos(
     { x: 40, y: 20 },
     HLayout(
       seq.locations.map((loc) =>
@@ -159,7 +159,7 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       );
     })
   );
-  return ZLayout<Term>([hops, locationLines]);
+  return ZLayout<Value>([hops, locationLines]);
 }
 
 function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {

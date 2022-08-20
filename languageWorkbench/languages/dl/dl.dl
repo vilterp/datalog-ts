@@ -64,7 +64,8 @@ scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.placeholder{parentID: ValueTermID, span: S}.
 scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
   ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
+  ast.relation{id: RelationID, parentID: RuleID} &
+  ast.disjunct{id: DisjunctID, parentID: RelationID} &
   ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
   ast.placeholder{parentID: ConjunctID, span: S}.
 scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
@@ -78,7 +79,8 @@ scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
 
 scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
   ast.rule{id: Rule} &
-  ast.disjunct{id: Disjunct, parentID: Rule} &
+  ast.relation{id: Relation, parentID: Rule} &
+  ast.disjunct{id: Disjunct, parentID: Relation} &
   ast.conjunct{id: Conjunct, parentID: Disjunct}.
 # it's kind of an issue that some of them are records
 # and some of them are terms

@@ -2,7 +2,7 @@ import {
   Bindings,
   Res,
   Rule,
-  Term,
+  Value,
   VarMappings,
   TermWithBindings,
   ScopePath,
@@ -29,7 +29,7 @@ export function prettyPrintStatement(stmt: DLStatement): pp.IDoc {
   }
 }
 
-export function prettyPrintTerm(term: Term): pp.IDoc {
+export function prettyPrintTerm(term: Value): pp.IDoc {
   switch (term.type) {
     case "Var":
       return term.name;
@@ -113,7 +113,7 @@ export function prettyPrintResults(results: Res[]): pp.IDoc {
 
 // compact convenience functions, straight to string
 
-export function ppt(t: Term): string {
+export function ppt(t: Value): string {
   return pp.render(100, prettyPrintTerm(t));
 }
 

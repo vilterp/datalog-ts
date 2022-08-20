@@ -1,5 +1,5 @@
 import { ppt } from "../../core/pretty";
-import { Int, Rec, Res, Term } from "../../core/types";
+import { Int, Rec, Res, Value } from "../../core/types";
 import { termCmp, termLT } from "../../core/unify";
 import { Tree } from "../../util/tree";
 
@@ -7,7 +7,7 @@ type TermGraph = { [parentTerm: string]: Res[] };
 
 export function treeFromRecords(
   records: Res[],
-  rootTerm: Term,
+  rootTerm: Value,
   sortChildren: boolean
 ): Tree<Res> {
   const graph: TermGraph = {};
@@ -21,7 +21,7 @@ export function treeFromRecords(
 
 function mkTree(
   termGraph: TermGraph,
-  curID: Term,
+  curID: Value,
   curRes: Res | null,
   sortChildren: boolean
 ): Tree<Res> {
@@ -43,7 +43,7 @@ function mkTree(
   };
 }
 
-function getDisplay(t: Term) {
+function getDisplay(t: Value) {
   const rec = t as Rec;
   return rec.attrs.display;
 }

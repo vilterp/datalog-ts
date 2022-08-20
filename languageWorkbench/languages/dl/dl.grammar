@@ -33,7 +33,7 @@ assignmentOnRight :- [left:scalarExpr, ws, arithmeticOp, ws, right:scalarExpr, w
 assignmentOnLeft :- [result:scalarExpr, ws, "=", ws, left:scalarExpr, ws, arithmeticOp, ws, right:scalarExpr].
 arithmeticOp :- ("+" | "*" | "-").
 
-scalarExpr :- (record | functionCall | int | var | string | bool | array | dict | placeholder).
+scalarExpr :- (recordCall | record | functionCall | int | var | string | bool | array | dict | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 record :- ["{", ws, recordAttrs, ws, "}"].
 dict :- ["{", ws, repSep(dictKeyValue, commaSpace), ws, "}"].

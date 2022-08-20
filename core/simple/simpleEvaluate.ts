@@ -1,8 +1,8 @@
 import {
-  AndClause,
+  Conjunct,
   Bindings,
   Res,
-  Term,
+  Value,
   literalTrace,
   varTrace,
   RulePathSegment,
@@ -30,7 +30,7 @@ import { AGGREGATIONS } from "../aggregations";
 import { getForScope } from "./indexes";
 import { evalBuiltin } from "../evalBuiltin";
 
-export function evaluate(db: DB, term: Term): Res[] {
+export function evaluate(db: DB, term: Value): Res[] {
   const cache: Cache = {};
   const res = doEvaluate(0, [], db, {}, term, cache);
   // console.log({ cache });
@@ -42,7 +42,7 @@ function doJoin(
   invokeLoc: InvocationLocation,
   db: DB,
   scope: Bindings,
-  clauses: AndClause[],
+  clauses: Conjunct[],
   cache: Cache
 ): Res[] {
   if (clauses.length === 0) {
@@ -113,7 +113,7 @@ function doEvaluate(
   path: RulePathSegment[],
   db: DB,
   scope: Bindings,
-  term: Term,
+  term: Value,
   cache: Cache
 ): Res[] {
   // console.group("doEvaluate", ppt(term), ppb(scope));
@@ -296,7 +296,7 @@ function doEvaluate(
   return bigRes;
 }
 
-export function hasVars(t: Term): boolean {
+export function hasVars(t: Value): boolean {
   switch (t.type) {
     case "StringLit":
       return false;
