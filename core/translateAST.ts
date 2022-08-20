@@ -175,22 +175,22 @@ const ARITHMETIC_MAPPING = {
   "*": "mul",
 };
 
-function parserArithmeticToInternal(arithmetic: DLArithmetic): RecCall {
+function parserArithmeticToInternal(arithmetic: DLArithmetic): RecCallExpr {
   const op = arithmetic.arithmeticOp.text;
-  const left = parserTermToInternal(arithmetic.left);
-  const right = parserTermToInternal(arithmetic.right);
-  const res = parserTermToInternal(arithmetic.result);
+  const left = parserScalarToInternal(arithmetic.left);
+  const right = parserScalarToInternal(arithmetic.right);
+  const res = parserScalarToInternal(arithmetic.result);
   const mappedOp = ARITHMETIC_MAPPING[op];
   if (!mappedOp) {
     throw new Error(`unknown arithmetic operator: ${op}`);
   }
   return recCall(
     `base.${mappedOp}`,
-    rec({
+    {
       a: left,
       b: right,
       res: res,
-    })
+    }
   );
 }
 
@@ -203,19 +203,19 @@ const COMPARISON_MAPPING = {
   ">=": "gte",
 };
 
-function parserComparisonToInternal(comparison: DLComparison): RecCall {
+function parserComparisonToInternal(comparison: DLComparison): RecCallExpr {
   const op = comparison.comparisonOp.text;
-  const left = parserTermToInternal(comparison.left);
-  const right = parserTermToInternal(comparison.right);
+  const left = parserScalarToInternal(comparison.left);
+  const right = parserScalarToInternal(comparison.right);
   const mappedOp = COMPARISON_MAPPING[op];
   if (!mappedOp) {
     throw new Error(`unknown comparison operator: ${op}`);
   }
   return recCall(
     `base.${mappedOp}`,
-    rec({
+    {
       a: left,
       b: right,
-    })
+    }
   );
 }

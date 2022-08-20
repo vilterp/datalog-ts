@@ -57,6 +57,7 @@ export type ScalarExpr =
   | Var
   | ArrayExpr
   | RecCallExpr
+  | RecExpr
   | DictExpr
   | StringVal
   | Bool
@@ -66,6 +67,11 @@ export type Var = { type: "Var"; name: string };
 
 export type ArrayExpr = { type: "ArrayExpr"; items: ScalarExpr[] };
 
+export type RecExpr = {
+  type: "RecExpr";
+  attrs: { [key: string]: ScalarExpr };
+};
+
 export type RecCallExpr = {
   type: "RecCallExpr";
   relation: string;
@@ -73,6 +79,10 @@ export type RecCallExpr = {
 };
 
 export type DictExpr = { type: "DictExpr"; items: ScalarExpr[] };
+
+export function recExpr(attrs: { [key: string]: ScalarExpr }): RecExpr {
+  return { type: "RecExpr", attrs };
+}
 
 // === Values ===
 
