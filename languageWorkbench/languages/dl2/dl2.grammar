@@ -1,5 +1,7 @@
+main :- repSep(decl, ws).
+
 decl :- [
-    ident, relExpr
+    ident, "=", relExpr, "."
 ].
 
 formula :- (
