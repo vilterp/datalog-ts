@@ -12,7 +12,10 @@ disjunct :- repSep(conjunct, [ws, "and", ws]).
 conjunct :- (negation | assertion).
 negation :- ["!", assertion].
 
-assertion :- [relExpr, "(", repSep(scalarExpr, commaSpace), ")"].
+assertion :- [
+    (relExpr | ["(", relExpr, ")"]),
+    "(", repSep(scalarExpr, commaSpace), ")"
+].
 
 relExpr :- (
     ident |
