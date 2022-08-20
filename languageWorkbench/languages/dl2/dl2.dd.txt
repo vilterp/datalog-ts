@@ -1,0 +1,25 @@
+dl2
+foo = (X,Y) :- bar(X,Y).
+astInternal.node{}?
+----
+
+dl2
+bar = [X] :- add[X,2].
+astInternal.node{}?
+----
+
+dl2
+baz = [X] :- add[X,add[3,2]].
+astInternal.node{}?
+----
+
+dl2
+boop = (X) :- foo(2,add[2,X]).
+astInternal.node{}?
+----
+
+dl2
+boop = [X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2].
+astInternal.node{}?
+----
+
