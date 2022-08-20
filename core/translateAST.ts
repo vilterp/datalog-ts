@@ -41,7 +41,12 @@ export function parserStatementToInternal(stmt: DLStatement): Statement {
         type: "Fact",
         record: parserScalarToInternal(stmt.record) as RecCallExpr,
       };
-    case "Rule":
+    case "AttachedRule":
+      return {
+        type: "Rule",
+        rule: parserRuleToInternal(stmt),
+      };
+    case "DetachedRule":
       return {
         type: "Rule",
         rule: parserRuleToInternal(stmt),
@@ -65,10 +70,24 @@ export function parserStatementToInternal(stmt: DLStatement): Statement {
 }
 
 export function parserRuleToInternal(rule: DLRule): Rule {
-  return {
-    name: rule.ident.text,
-    body: relationExprToInternal(rule.relationExpr),
-  };
+  switch (rule.type) {
+    case "AttachedRule":
+      return {
+        name: rule.recordCall.ident.text,
+        body: relationExprToInternal({
+          type: "AnonymousRelation",
+          record: rule.recordCall.record,
+          relationExpr: rule.relationExpr,
+          span: rule.relationExpr.span,
+          text: rule.relationExpr.text,
+        }),
+      };
+    case "DetachedRule":
+      return {
+        name: rule.ident.text,
+        body: relationExprToInternal(rule.relationExpr),
+      };
+  }
 }
 
 function relationExprToInternal(relationExpr: DLRelationExpr): RelationExpr {
@@ -122,8 +141,8 @@ export function parserConjunctToInternal(term: DLConjunct): Conjunct {
     case "Negation":
       return {
         type: "Negation",
-        record: recCall(term.)
-      }
+        record: recCall(),
+      };
     case "Array":
       return array(term.term.map(parserTermToInternal));
     case "Dict":
@@ -160,7 +179,6 @@ export function parserConjunctToInternal(term: DLConjunct): Conjunct {
 
 function parserScalarToInternal(scalar: DLScalarExpr): ScalarExpr {
   switch (scalar.type) {
-    XXXX,
   }
 }
 
@@ -184,14 +202,11 @@ function parserArithmeticToInternal(arithmetic: DLArithmetic): RecCallExpr {
   if (!mappedOp) {
     throw new Error(`unknown arithmetic operator: ${op}`);
   }
-  return recCall(
-    `base.${mappedOp}`,
-    {
-      a: left,
-      b: right,
-      res: res,
-    }
-  );
+  return recCall(`base.${mappedOp}`, {
+    a: left,
+    b: right,
+    res: res,
+  });
 }
 
 const COMPARISON_MAPPING = {
@@ -211,11 +226,8 @@ function parserComparisonToInternal(comparison: DLComparison): RecCallExpr {
   if (!mappedOp) {
     throw new Error(`unknown comparison operator: ${op}`);
   }
-  return recCall(
-    `base.${mappedOp}`,
-    {
-      a: left,
-      b: right,
-    }
-  );
+  return recCall(`base.${mappedOp}`, {
+    a: left,
+    b: right,
+  });
 }
