@@ -10,10 +10,12 @@ import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./languages";
 
 export function lwbTests(writeResults: boolean): Suite {
+  // TODO: just import the language object
   return [
     "fp",
     "sql",
     "dl",
+    "dl2",
     "grammar",
     "modelica",
     "treeSQL",
