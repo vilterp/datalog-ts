@@ -44,7 +44,7 @@ scalarExpr :- (
 ).
 
 application :- [
-    (relExpr | ["(", relExpr, ")"]),
+    (expr:relExpr | ["(", parenExpr:relExpr, ")"]),
     "[", repSep(scalarExpr, commaSpace), "]"
 ].
 
