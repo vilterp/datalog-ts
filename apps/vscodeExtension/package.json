@@ -19,13 +19,29 @@
     "languages": [
       {
         "id": "datalog",
+        "aliases": [
+          "Datalog"
+        ],
         "extensions": [
           ".dl"
         ],
         "configuration": "./dl-language-configuration.json"
       },
       {
+        "id": "datalog2",
+        "aliases": [
+          "Datalog2"
+        ],
+        "extensions": [
+          ".dl2"
+        ],
+        "configuration": "./dl-language-configuration.json"
+      },
+      {
         "id": "grammar",
+        "aliases": [
+          "Grammar"
+        ],
         "extensions": [
           ".grammar"
         ],
