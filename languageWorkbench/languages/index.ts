@@ -7,6 +7,15 @@ import datalogGrammar from "./dl/dl.grammar";
 // @ts-ignore
 import datalogExample from "./dl/example.txt";
 
+// DL2
+
+// @ts-ignore
+import datalog2DL from "./dl2/dl2.dl";
+// @ts-ignore
+import datalog2Grammar from "./dl2/dl2.grammar";
+// @ts-ignore
+import datalog2Example from "./dl2/example.txt";
+
 // JSON
 
 // @ts-ignore
@@ -82,6 +91,12 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
     datalog: datalogDL,
     grammar: datalogGrammar,
     example: datalogExample,
+  },
+  datalog2: {
+    name: "datalog2",
+    datalog: datalog2DL,
+    grammar: datalog2Grammar,
+    example: datalog2Example,
   },
   json: {
     name: "json",

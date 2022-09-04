@@ -1,0 +1,305 @@
+dl2
+foo = (X,Y) :- bar(X,Y).
+astInternal.node{}?
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 24}, text: "foo = (X,Y) :- bar(X,Y)."}.
+astInternal.node{id: 1, parentID: 0, rule: "file", span: span{from: 0, to: 24}, text: "foo = (X,Y) :- bar(X,Y)."}.
+astInternal.node{id: 2, parentID: 1, rule: "decl", span: span{from: 0, to: 24}, text: "foo = (X,Y) :- bar(X,Y)."}.
+astInternal.node{id: 20, parentID: 13, rule: "formula", span: span{from: 15, to: 23}, text: "bar(X,Y)"}.
+astInternal.node{id: 21, parentID: 20, rule: "disjunction", span: span{from: 15, to: 23}, text: "bar(X,Y)"}.
+astInternal.node{id: 22, parentID: 21, rule: "disjunct", span: span{from: 15, to: 23}, text: "bar(X,Y)"}.
+astInternal.node{id: 23, parentID: 22, rule: "conjunct", span: span{from: 15, to: 23}, text: "bar(X,Y)"}.
+astInternal.node{id: 24, parentID: 23, rule: "assertion", span: span{from: 15, to: 23}, text: "bar(X,Y)"}.
+astInternal.node{id: 11, parentID: 2, rule: "relExpr", span: span{from: 6, to: 23}, text: "(X,Y) :- bar(X,Y)"}.
+astInternal.node{id: 12, parentID: 11, rule: "abstraction", span: span{from: 6, to: 23}, text: "(X,Y) :- bar(X,Y)"}.
+astInternal.node{id: 13, parentID: 12, rule: "pointwiseAbstraction", span: span{from: 6, to: 23}, text: "(X,Y) :- bar(X,Y)"}.
+astInternal.node{id: 31, parentID: 24, rule: "scalarExpr", span: span{from: 19, to: 20}, text: "X"}.
+astInternal.node{id: 34, parentID: 24, rule: "scalarExpr", span: span{from: 21, to: 22}, text: "Y"}.
+astInternal.node{id: 32, parentID: 31, rule: "term", span: span{from: 19, to: 20}, text: "X"}.
+astInternal.node{id: 35, parentID: 34, rule: "term", span: span{from: 21, to: 22}, text: "Y"}.
+astInternal.node{id: 3, parentID: 2, rule: "ident", span: span{from: 0, to: 3}, text: "foo"}.
+astInternal.node{id: 14, parentID: 13, rule: "ident", span: span{from: 7, to: 8}, text: "X"}.
+astInternal.node{id: 16, parentID: 13, rule: "ident", span: span{from: 9, to: 10}, text: "Y"}.
+astInternal.node{id: 25, parentID: 24, rule: "ident", span: span{from: 15, to: 18}, text: "bar"}.
+astInternal.node{id: 33, parentID: 32, rule: "var", span: span{from: 19, to: 20}, text: "X"}.
+astInternal.node{id: 36, parentID: 35, rule: "var", span: span{from: 21, to: 22}, text: "Y"}.
+astInternal.node{id: 4, parentID: 3, rule: "alpha", span: span{from: 0, to: 1}, text: "f"}.
+astInternal.node{id: 6, parentID: 5, rule: "alpha", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 8, parentID: 7, rule: "alpha", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 15, parentID: 14, rule: "alpha", span: span{from: 7, to: 8}, text: "X"}.
+astInternal.node{id: 17, parentID: 16, rule: "alpha", span: span{from: 9, to: 10}, text: "Y"}.
+astInternal.node{id: 26, parentID: 25, rule: "alpha", span: span{from: 15, to: 16}, text: "b"}.
+astInternal.node{id: 28, parentID: 27, rule: "alpha", span: span{from: 16, to: 17}, text: "a"}.
+astInternal.node{id: 30, parentID: 29, rule: "alpha", span: span{from: 17, to: 18}, text: "r"}.
+astInternal.node{id: 5, parentID: 3, rule: "alphaNum", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 7, parentID: 3, rule: "alphaNum", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 27, parentID: 25, rule: "alphaNum", span: span{from: 16, to: 17}, text: "a"}.
+astInternal.node{id: 29, parentID: 25, rule: "alphaNum", span: span{from: 17, to: 18}, text: "r"}.
+astInternal.node{id: 9, parentID: 2, rule: "ws", span: span{from: 3, to: 4}, text: " "}.
+astInternal.node{id: 10, parentID: 2, rule: "ws", span: span{from: 5, to: 6}, text: " "}.
+astInternal.node{id: 18, parentID: 13, rule: "ws", span: span{from: 11, to: 12}, text: " "}.
+astInternal.node{id: 19, parentID: 13, rule: "ws", span: span{from: 14, to: 15}, text: " "}.
+
+dl2
+bar = [X] :- add[X,2].
+astInternal.node{}?
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 22}, text: "bar = [X] :- add[X,2]."}.
+astInternal.node{id: 1, parentID: 0, rule: "file", span: span{from: 0, to: 22}, text: "bar = [X] :- add[X,2]."}.
+astInternal.node{id: 2, parentID: 1, rule: "decl", span: span{from: 0, to: 22}, text: "bar = [X] :- add[X,2]."}.
+astInternal.node{id: 20, parentID: 19, rule: "relExpr", span: span{from: 13, to: 16}, text: "add"}.
+astInternal.node{id: 11, parentID: 2, rule: "relExpr", span: span{from: 6, to: 21}, text: "[X] :- add[X,2]"}.
+astInternal.node{id: 12, parentID: 11, rule: "abstraction", span: span{from: 6, to: 21}, text: "[X] :- add[X,2]"}.
+astInternal.node{id: 13, parentID: 12, rule: "pointFreeAbstraction", span: span{from: 6, to: 21}, text: "[X] :- add[X,2]"}.
+astInternal.node{id: 27, parentID: 19, rule: "scalarExpr", span: span{from: 17, to: 18}, text: "X"}.
+astInternal.node{id: 30, parentID: 19, rule: "scalarExpr", span: span{from: 19, to: 20}, text: "2"}.
+astInternal.node{id: 18, parentID: 13, rule: "scalarExpr", span: span{from: 13, to: 21}, text: "add[X,2]"}.
+astInternal.node{id: 19, parentID: 18, rule: "application", span: span{from: 13, to: 21}, text: "add[X,2]"}.
+astInternal.node{id: 28, parentID: 27, rule: "term", span: span{from: 17, to: 18}, text: "X"}.
+astInternal.node{id: 31, parentID: 30, rule: "term", span: span{from: 19, to: 20}, text: "2"}.
+astInternal.node{id: 32, parentID: 31, rule: "scalarLiteral", span: span{from: 19, to: 20}, text: "2"}.
+astInternal.node{id: 33, parentID: 32, rule: "intLit", span: span{from: 19, to: 20}, text: "2"}.
+astInternal.node{id: 3, parentID: 2, rule: "ident", span: span{from: 0, to: 3}, text: "bar"}.
+astInternal.node{id: 14, parentID: 13, rule: "ident", span: span{from: 7, to: 8}, text: "X"}.
+astInternal.node{id: 21, parentID: 20, rule: "ident", span: span{from: 13, to: 16}, text: "add"}.
+astInternal.node{id: 29, parentID: 28, rule: "var", span: span{from: 17, to: 18}, text: "X"}.
+astInternal.node{id: 4, parentID: 3, rule: "alpha", span: span{from: 0, to: 1}, text: "b"}.
+astInternal.node{id: 6, parentID: 5, rule: "alpha", span: span{from: 1, to: 2}, text: "a"}.
+astInternal.node{id: 8, parentID: 7, rule: "alpha", span: span{from: 2, to: 3}, text: "r"}.
+astInternal.node{id: 15, parentID: 14, rule: "alpha", span: span{from: 7, to: 8}, text: "X"}.
+astInternal.node{id: 22, parentID: 21, rule: "alpha", span: span{from: 13, to: 14}, text: "a"}.
+astInternal.node{id: 24, parentID: 23, rule: "alpha", span: span{from: 14, to: 15}, text: "d"}.
+astInternal.node{id: 26, parentID: 25, rule: "alpha", span: span{from: 15, to: 16}, text: "d"}.
+astInternal.node{id: 34, parentID: 33, rule: "num", span: span{from: 19, to: 20}, text: "2"}.
+astInternal.node{id: 5, parentID: 3, rule: "alphaNum", span: span{from: 1, to: 2}, text: "a"}.
+astInternal.node{id: 7, parentID: 3, rule: "alphaNum", span: span{from: 2, to: 3}, text: "r"}.
+astInternal.node{id: 23, parentID: 21, rule: "alphaNum", span: span{from: 14, to: 15}, text: "d"}.
+astInternal.node{id: 25, parentID: 21, rule: "alphaNum", span: span{from: 15, to: 16}, text: "d"}.
+astInternal.node{id: 9, parentID: 2, rule: "ws", span: span{from: 3, to: 4}, text: " "}.
+astInternal.node{id: 10, parentID: 2, rule: "ws", span: span{from: 5, to: 6}, text: " "}.
+astInternal.node{id: 16, parentID: 13, rule: "ws", span: span{from: 9, to: 10}, text: " "}.
+astInternal.node{id: 17, parentID: 13, rule: "ws", span: span{from: 12, to: 13}, text: " "}.
+
+dl2
+baz = [X] :- add[X,add[3,2]].
+astInternal.node{}?
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 29}, text: "baz = [X] :- add[X,add[3,2]]."}.
+astInternal.node{id: 1, parentID: 0, rule: "file", span: span{from: 0, to: 29}, text: "baz = [X] :- add[X,add[3,2]]."}.
+astInternal.node{id: 2, parentID: 1, rule: "decl", span: span{from: 0, to: 29}, text: "baz = [X] :- add[X,add[3,2]]."}.
+astInternal.node{id: 20, parentID: 19, rule: "relExpr", span: span{from: 13, to: 16}, text: "add"}.
+astInternal.node{id: 32, parentID: 31, rule: "relExpr", span: span{from: 19, to: 22}, text: "add"}.
+astInternal.node{id: 11, parentID: 2, rule: "relExpr", span: span{from: 6, to: 28}, text: "[X] :- add[X,add[3,2]]"}.
+astInternal.node{id: 12, parentID: 11, rule: "abstraction", span: span{from: 6, to: 28}, text: "[X] :- add[X,add[3,2]]"}.
+astInternal.node{id: 13, parentID: 12, rule: "pointFreeAbstraction", span: span{from: 6, to: 28}, text: "[X] :- add[X,add[3,2]]"}.
+astInternal.node{id: 27, parentID: 19, rule: "scalarExpr", span: span{from: 17, to: 18}, text: "X"}.
+astInternal.node{id: 39, parentID: 31, rule: "scalarExpr", span: span{from: 23, to: 24}, text: "3"}.
+astInternal.node{id: 44, parentID: 31, rule: "scalarExpr", span: span{from: 25, to: 26}, text: "2"}.
+astInternal.node{id: 30, parentID: 19, rule: "scalarExpr", span: span{from: 19, to: 27}, text: "add[3,2]"}.
+astInternal.node{id: 18, parentID: 13, rule: "scalarExpr", span: span{from: 13, to: 28}, text: "add[X,add[3,2]]"}.
+astInternal.node{id: 31, parentID: 30, rule: "application", span: span{from: 19, to: 27}, text: "add[3,2]"}.
+astInternal.node{id: 19, parentID: 18, rule: "application", span: span{from: 13, to: 28}, text: "add[X,add[3,2]]"}.
+astInternal.node{id: 28, parentID: 27, rule: "term", span: span{from: 17, to: 18}, text: "X"}.
+astInternal.node{id: 40, parentID: 39, rule: "term", span: span{from: 23, to: 24}, text: "3"}.
+astInternal.node{id: 45, parentID: 44, rule: "term", span: span{from: 25, to: 26}, text: "2"}.
+astInternal.node{id: 41, parentID: 40, rule: "scalarLiteral", span: span{from: 23, to: 24}, text: "3"}.
+astInternal.node{id: 46, parentID: 45, rule: "scalarLiteral", span: span{from: 25, to: 26}, text: "2"}.
+astInternal.node{id: 42, parentID: 41, rule: "intLit", span: span{from: 23, to: 24}, text: "3"}.
+astInternal.node{id: 47, parentID: 46, rule: "intLit", span: span{from: 25, to: 26}, text: "2"}.
+astInternal.node{id: 3, parentID: 2, rule: "ident", span: span{from: 0, to: 3}, text: "baz"}.
+astInternal.node{id: 14, parentID: 13, rule: "ident", span: span{from: 7, to: 8}, text: "X"}.
+astInternal.node{id: 21, parentID: 20, rule: "ident", span: span{from: 13, to: 16}, text: "add"}.
+astInternal.node{id: 33, parentID: 32, rule: "ident", span: span{from: 19, to: 22}, text: "add"}.
+astInternal.node{id: 29, parentID: 28, rule: "var", span: span{from: 17, to: 18}, text: "X"}.
+astInternal.node{id: 4, parentID: 3, rule: "alpha", span: span{from: 0, to: 1}, text: "b"}.
+astInternal.node{id: 6, parentID: 5, rule: "alpha", span: span{from: 1, to: 2}, text: "a"}.
+astInternal.node{id: 8, parentID: 7, rule: "alpha", span: span{from: 2, to: 3}, text: "z"}.
+astInternal.node{id: 15, parentID: 14, rule: "alpha", span: span{from: 7, to: 8}, text: "X"}.
+astInternal.node{id: 22, parentID: 21, rule: "alpha", span: span{from: 13, to: 14}, text: "a"}.
+astInternal.node{id: 24, parentID: 23, rule: "alpha", span: span{from: 14, to: 15}, text: "d"}.
+astInternal.node{id: 26, parentID: 25, rule: "alpha", span: span{from: 15, to: 16}, text: "d"}.
+astInternal.node{id: 34, parentID: 33, rule: "alpha", span: span{from: 19, to: 20}, text: "a"}.
+astInternal.node{id: 36, parentID: 35, rule: "alpha", span: span{from: 20, to: 21}, text: "d"}.
+astInternal.node{id: 38, parentID: 37, rule: "alpha", span: span{from: 21, to: 22}, text: "d"}.
+astInternal.node{id: 43, parentID: 42, rule: "num", span: span{from: 23, to: 24}, text: "3"}.
+astInternal.node{id: 48, parentID: 47, rule: "num", span: span{from: 25, to: 26}, text: "2"}.
+astInternal.node{id: 5, parentID: 3, rule: "alphaNum", span: span{from: 1, to: 2}, text: "a"}.
+astInternal.node{id: 7, parentID: 3, rule: "alphaNum", span: span{from: 2, to: 3}, text: "z"}.
+astInternal.node{id: 23, parentID: 21, rule: "alphaNum", span: span{from: 14, to: 15}, text: "d"}.
+astInternal.node{id: 25, parentID: 21, rule: "alphaNum", span: span{from: 15, to: 16}, text: "d"}.
+astInternal.node{id: 35, parentID: 33, rule: "alphaNum", span: span{from: 20, to: 21}, text: "d"}.
+astInternal.node{id: 37, parentID: 33, rule: "alphaNum", span: span{from: 21, to: 22}, text: "d"}.
+astInternal.node{id: 9, parentID: 2, rule: "ws", span: span{from: 3, to: 4}, text: " "}.
+astInternal.node{id: 10, parentID: 2, rule: "ws", span: span{from: 5, to: 6}, text: " "}.
+astInternal.node{id: 16, parentID: 13, rule: "ws", span: span{from: 9, to: 10}, text: " "}.
+astInternal.node{id: 17, parentID: 13, rule: "ws", span: span{from: 12, to: 13}, text: " "}.
+
+dl2
+boop = (X) :- foo(2,add[2,X]).
+astInternal.node{}?
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 30}, text: "boop = (X) :- foo(2,add[2,X])."}.
+astInternal.node{id: 1, parentID: 0, rule: "file", span: span{from: 0, to: 30}, text: "boop = (X) :- foo(2,add[2,X])."}.
+astInternal.node{id: 2, parentID: 1, rule: "decl", span: span{from: 0, to: 30}, text: "boop = (X) :- foo(2,add[2,X])."}.
+astInternal.node{id: 20, parentID: 15, rule: "formula", span: span{from: 14, to: 29}, text: "foo(2,add[2,X])"}.
+astInternal.node{id: 21, parentID: 20, rule: "disjunction", span: span{from: 14, to: 29}, text: "foo(2,add[2,X])"}.
+astInternal.node{id: 22, parentID: 21, rule: "disjunct", span: span{from: 14, to: 29}, text: "foo(2,add[2,X])"}.
+astInternal.node{id: 23, parentID: 22, rule: "conjunct", span: span{from: 14, to: 29}, text: "foo(2,add[2,X])"}.
+astInternal.node{id: 24, parentID: 23, rule: "assertion", span: span{from: 14, to: 29}, text: "foo(2,add[2,X])"}.
+astInternal.node{id: 38, parentID: 37, rule: "relExpr", span: span{from: 20, to: 23}, text: "add"}.
+astInternal.node{id: 13, parentID: 2, rule: "relExpr", span: span{from: 7, to: 29}, text: "(X) :- foo(2,add[2,X])"}.
+astInternal.node{id: 14, parentID: 13, rule: "abstraction", span: span{from: 7, to: 29}, text: "(X) :- foo(2,add[2,X])"}.
+astInternal.node{id: 15, parentID: 14, rule: "pointwiseAbstraction", span: span{from: 7, to: 29}, text: "(X) :- foo(2,add[2,X])"}.
+astInternal.node{id: 31, parentID: 24, rule: "scalarExpr", span: span{from: 18, to: 19}, text: "2"}.
+astInternal.node{id: 45, parentID: 37, rule: "scalarExpr", span: span{from: 24, to: 25}, text: "2"}.
+astInternal.node{id: 50, parentID: 37, rule: "scalarExpr", span: span{from: 26, to: 27}, text: "X"}.
+astInternal.node{id: 36, parentID: 24, rule: "scalarExpr", span: span{from: 20, to: 28}, text: "add[2,X]"}.
+astInternal.node{id: 37, parentID: 36, rule: "application", span: span{from: 20, to: 28}, text: "add[2,X]"}.
+astInternal.node{id: 32, parentID: 31, rule: "term", span: span{from: 18, to: 19}, text: "2"}.
+astInternal.node{id: 46, parentID: 45, rule: "term", span: span{from: 24, to: 25}, text: "2"}.
+astInternal.node{id: 51, parentID: 50, rule: "term", span: span{from: 26, to: 27}, text: "X"}.
+astInternal.node{id: 33, parentID: 32, rule: "scalarLiteral", span: span{from: 18, to: 19}, text: "2"}.
+astInternal.node{id: 47, parentID: 46, rule: "scalarLiteral", span: span{from: 24, to: 25}, text: "2"}.
+astInternal.node{id: 34, parentID: 33, rule: "intLit", span: span{from: 18, to: 19}, text: "2"}.
+astInternal.node{id: 48, parentID: 47, rule: "intLit", span: span{from: 24, to: 25}, text: "2"}.
+astInternal.node{id: 3, parentID: 2, rule: "ident", span: span{from: 0, to: 4}, text: "boop"}.
+astInternal.node{id: 16, parentID: 15, rule: "ident", span: span{from: 8, to: 9}, text: "X"}.
+astInternal.node{id: 25, parentID: 24, rule: "ident", span: span{from: 14, to: 17}, text: "foo"}.
+astInternal.node{id: 39, parentID: 38, rule: "ident", span: span{from: 20, to: 23}, text: "add"}.
+astInternal.node{id: 52, parentID: 51, rule: "var", span: span{from: 26, to: 27}, text: "X"}.
+astInternal.node{id: 4, parentID: 3, rule: "alpha", span: span{from: 0, to: 1}, text: "b"}.
+astInternal.node{id: 6, parentID: 5, rule: "alpha", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 8, parentID: 7, rule: "alpha", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 10, parentID: 9, rule: "alpha", span: span{from: 3, to: 4}, text: "p"}.
+astInternal.node{id: 17, parentID: 16, rule: "alpha", span: span{from: 8, to: 9}, text: "X"}.
+astInternal.node{id: 26, parentID: 25, rule: "alpha", span: span{from: 14, to: 15}, text: "f"}.
+astInternal.node{id: 28, parentID: 27, rule: "alpha", span: span{from: 15, to: 16}, text: "o"}.
+astInternal.node{id: 30, parentID: 29, rule: "alpha", span: span{from: 16, to: 17}, text: "o"}.
+astInternal.node{id: 40, parentID: 39, rule: "alpha", span: span{from: 20, to: 21}, text: "a"}.
+astInternal.node{id: 42, parentID: 41, rule: "alpha", span: span{from: 21, to: 22}, text: "d"}.
+astInternal.node{id: 44, parentID: 43, rule: "alpha", span: span{from: 22, to: 23}, text: "d"}.
+astInternal.node{id: 35, parentID: 34, rule: "num", span: span{from: 18, to: 19}, text: "2"}.
+astInternal.node{id: 49, parentID: 48, rule: "num", span: span{from: 24, to: 25}, text: "2"}.
+astInternal.node{id: 5, parentID: 3, rule: "alphaNum", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 7, parentID: 3, rule: "alphaNum", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 9, parentID: 3, rule: "alphaNum", span: span{from: 3, to: 4}, text: "p"}.
+astInternal.node{id: 27, parentID: 25, rule: "alphaNum", span: span{from: 15, to: 16}, text: "o"}.
+astInternal.node{id: 29, parentID: 25, rule: "alphaNum", span: span{from: 16, to: 17}, text: "o"}.
+astInternal.node{id: 41, parentID: 39, rule: "alphaNum", span: span{from: 21, to: 22}, text: "d"}.
+astInternal.node{id: 43, parentID: 39, rule: "alphaNum", span: span{from: 22, to: 23}, text: "d"}.
+astInternal.node{id: 11, parentID: 2, rule: "ws", span: span{from: 4, to: 5}, text: " "}.
+astInternal.node{id: 12, parentID: 2, rule: "ws", span: span{from: 6, to: 7}, text: " "}.
+astInternal.node{id: 18, parentID: 15, rule: "ws", span: span{from: 10, to: 11}, text: " "}.
+astInternal.node{id: 19, parentID: 15, rule: "ws", span: span{from: 13, to: 14}, text: " "}.
+
+dl2
+boop = [X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2].
+astInternal.node{}?
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 43}, text: "boop = [X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2]."}.
+astInternal.node{id: 1, parentID: 0, rule: "file", span: span{from: 0, to: 43}, text: "boop = [X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2]."}.
+astInternal.node{id: 2, parentID: 1, rule: "decl", span: span{from: 0, to: 43}, text: "boop = [X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2]."}.
+astInternal.node{id: 33, parentID: 24, rule: "formula", span: span{from: 26, to: 36}, text: "add(X,Y,Z)"}.
+astInternal.node{id: 34, parentID: 33, rule: "disjunction", span: span{from: 26, to: 36}, text: "add(X,Y,Z)"}.
+astInternal.node{id: 35, parentID: 34, rule: "disjunct", span: span{from: 26, to: 36}, text: "add(X,Y,Z)"}.
+astInternal.node{id: 36, parentID: 35, rule: "conjunct", span: span{from: 26, to: 36}, text: "add(X,Y,Z)"}.
+astInternal.node{id: 37, parentID: 36, rule: "assertion", span: span{from: 26, to: 36}, text: "add(X,Y,Z)"}.
+astInternal.node{id: 22, parentID: 21, rule: "relExpr", span: span{from: 15, to: 36}, text: "(X,Y,Z) :- add(X,Y,Z)"}.
+astInternal.node{id: 13, parentID: 2, rule: "relExpr", span: span{from: 7, to: 42}, text: "[X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2]"}.
+astInternal.node{id: 23, parentID: 22, rule: "abstraction", span: span{from: 15, to: 36}, text: "(X,Y,Z) :- add(X,Y,Z)"}.
+astInternal.node{id: 14, parentID: 13, rule: "abstraction", span: span{from: 7, to: 42}, text: "[X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2]"}.
+astInternal.node{id: 24, parentID: 23, rule: "pointwiseAbstraction", span: span{from: 15, to: 36}, text: "(X,Y,Z) :- add(X,Y,Z)"}.
+astInternal.node{id: 15, parentID: 14, rule: "pointFreeAbstraction", span: span{from: 7, to: 42}, text: "[X] :- ((X,Y,Z) :- add(X,Y,Z))[X,2]"}.
+astInternal.node{id: 44, parentID: 37, rule: "scalarExpr", span: span{from: 30, to: 31}, text: "X"}.
+astInternal.node{id: 47, parentID: 37, rule: "scalarExpr", span: span{from: 32, to: 33}, text: "Y"}.
+astInternal.node{id: 50, parentID: 37, rule: "scalarExpr", span: span{from: 34, to: 35}, text: "Z"}.
+astInternal.node{id: 53, parentID: 21, rule: "scalarExpr", span: span{from: 38, to: 39}, text: "X"}.
+astInternal.node{id: 56, parentID: 21, rule: "scalarExpr", span: span{from: 40, to: 41}, text: "2"}.
+astInternal.node{id: 20, parentID: 15, rule: "scalarExpr", span: span{from: 14, to: 42}, text: "((X,Y,Z) :- add(X,Y,Z))[X,2]"}.
+astInternal.node{id: 21, parentID: 20, rule: "application", span: span{from: 14, to: 42}, text: "((X,Y,Z) :- add(X,Y,Z))[X,2]"}.
+astInternal.node{id: 45, parentID: 44, rule: "term", span: span{from: 30, to: 31}, text: "X"}.
+astInternal.node{id: 48, parentID: 47, rule: "term", span: span{from: 32, to: 33}, text: "Y"}.
+astInternal.node{id: 51, parentID: 50, rule: "term", span: span{from: 34, to: 35}, text: "Z"}.
+astInternal.node{id: 54, parentID: 53, rule: "term", span: span{from: 38, to: 39}, text: "X"}.
+astInternal.node{id: 57, parentID: 56, rule: "term", span: span{from: 40, to: 41}, text: "2"}.
+astInternal.node{id: 58, parentID: 57, rule: "scalarLiteral", span: span{from: 40, to: 41}, text: "2"}.
+astInternal.node{id: 59, parentID: 58, rule: "intLit", span: span{from: 40, to: 41}, text: "2"}.
+astInternal.node{id: 3, parentID: 2, rule: "ident", span: span{from: 0, to: 4}, text: "boop"}.
+astInternal.node{id: 16, parentID: 15, rule: "ident", span: span{from: 8, to: 9}, text: "X"}.
+astInternal.node{id: 25, parentID: 24, rule: "ident", span: span{from: 16, to: 17}, text: "X"}.
+astInternal.node{id: 27, parentID: 24, rule: "ident", span: span{from: 18, to: 19}, text: "Y"}.
+astInternal.node{id: 29, parentID: 24, rule: "ident", span: span{from: 20, to: 21}, text: "Z"}.
+astInternal.node{id: 38, parentID: 37, rule: "ident", span: span{from: 26, to: 29}, text: "add"}.
+astInternal.node{id: 46, parentID: 45, rule: "var", span: span{from: 30, to: 31}, text: "X"}.
+astInternal.node{id: 49, parentID: 48, rule: "var", span: span{from: 32, to: 33}, text: "Y"}.
+astInternal.node{id: 52, parentID: 51, rule: "var", span: span{from: 34, to: 35}, text: "Z"}.
+astInternal.node{id: 55, parentID: 54, rule: "var", span: span{from: 38, to: 39}, text: "X"}.
+astInternal.node{id: 4, parentID: 3, rule: "alpha", span: span{from: 0, to: 1}, text: "b"}.
+astInternal.node{id: 6, parentID: 5, rule: "alpha", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 8, parentID: 7, rule: "alpha", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 10, parentID: 9, rule: "alpha", span: span{from: 3, to: 4}, text: "p"}.
+astInternal.node{id: 17, parentID: 16, rule: "alpha", span: span{from: 8, to: 9}, text: "X"}.
+astInternal.node{id: 26, parentID: 25, rule: "alpha", span: span{from: 16, to: 17}, text: "X"}.
+astInternal.node{id: 28, parentID: 27, rule: "alpha", span: span{from: 18, to: 19}, text: "Y"}.
+astInternal.node{id: 30, parentID: 29, rule: "alpha", span: span{from: 20, to: 21}, text: "Z"}.
+astInternal.node{id: 39, parentID: 38, rule: "alpha", span: span{from: 26, to: 27}, text: "a"}.
+astInternal.node{id: 41, parentID: 40, rule: "alpha", span: span{from: 27, to: 28}, text: "d"}.
+astInternal.node{id: 43, parentID: 42, rule: "alpha", span: span{from: 28, to: 29}, text: "d"}.
+astInternal.node{id: 60, parentID: 59, rule: "num", span: span{from: 40, to: 41}, text: "2"}.
+astInternal.node{id: 5, parentID: 3, rule: "alphaNum", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 7, parentID: 3, rule: "alphaNum", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 9, parentID: 3, rule: "alphaNum", span: span{from: 3, to: 4}, text: "p"}.
+astInternal.node{id: 40, parentID: 38, rule: "alphaNum", span: span{from: 27, to: 28}, text: "d"}.
+astInternal.node{id: 42, parentID: 38, rule: "alphaNum", span: span{from: 28, to: 29}, text: "d"}.
+astInternal.node{id: 11, parentID: 2, rule: "ws", span: span{from: 4, to: 5}, text: " "}.
+astInternal.node{id: 12, parentID: 2, rule: "ws", span: span{from: 6, to: 7}, text: " "}.
+astInternal.node{id: 18, parentID: 15, rule: "ws", span: span{from: 10, to: 11}, text: " "}.
+astInternal.node{id: 19, parentID: 15, rule: "ws", span: span{from: 13, to: 14}, text: " "}.
+astInternal.node{id: 31, parentID: 24, rule: "ws", span: span{from: 22, to: 23}, text: " "}.
+astInternal.node{id: 32, parentID: 24, rule: "ws", span: span{from: 25, to: 26}, text: " "}.
+
+dl2
+boop = {(1,2),(3,4)}.
+astInternal.node{}?
+----
+application/datalog
+astInternal.node{id: 0, parentID: -1, rule: "main", span: span{from: 0, to: 21}, text: "boop = {(1,2),(3,4)}."}.
+astInternal.node{id: 1, parentID: 0, rule: "file", span: span{from: 0, to: 21}, text: "boop = {(1,2),(3,4)}."}.
+astInternal.node{id: 2, parentID: 1, rule: "decl", span: span{from: 0, to: 21}, text: "boop = {(1,2),(3,4)}."}.
+astInternal.node{id: 13, parentID: 2, rule: "relExpr", span: span{from: 7, to: 20}, text: "{(1,2),(3,4)}"}.
+astInternal.node{id: 14, parentID: 13, rule: "relationLiteral", span: span{from: 7, to: 20}, text: "{(1,2),(3,4)}"}.
+astInternal.node{id: 16, parentID: 14, rule: "tuple", span: span{from: 8, to: 13}, text: "(1,2)"}.
+astInternal.node{id: 25, parentID: 14, rule: "tuple", span: span{from: 14, to: 19}, text: "(3,4)"}.
+astInternal.node{id: 18, parentID: 16, rule: "scalarLiteral", span: span{from: 9, to: 10}, text: "1"}.
+astInternal.node{id: 21, parentID: 16, rule: "scalarLiteral", span: span{from: 11, to: 12}, text: "2"}.
+astInternal.node{id: 27, parentID: 25, rule: "scalarLiteral", span: span{from: 15, to: 16}, text: "3"}.
+astInternal.node{id: 30, parentID: 25, rule: "scalarLiteral", span: span{from: 17, to: 18}, text: "4"}.
+astInternal.node{id: 19, parentID: 18, rule: "intLit", span: span{from: 9, to: 10}, text: "1"}.
+astInternal.node{id: 22, parentID: 21, rule: "intLit", span: span{from: 11, to: 12}, text: "2"}.
+astInternal.node{id: 28, parentID: 27, rule: "intLit", span: span{from: 15, to: 16}, text: "3"}.
+astInternal.node{id: 31, parentID: 30, rule: "intLit", span: span{from: 17, to: 18}, text: "4"}.
+astInternal.node{id: 3, parentID: 2, rule: "ident", span: span{from: 0, to: 4}, text: "boop"}.
+astInternal.node{id: 4, parentID: 3, rule: "alpha", span: span{from: 0, to: 1}, text: "b"}.
+astInternal.node{id: 6, parentID: 5, rule: "alpha", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 8, parentID: 7, rule: "alpha", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 10, parentID: 9, rule: "alpha", span: span{from: 3, to: 4}, text: "p"}.
+astInternal.node{id: 20, parentID: 19, rule: "num", span: span{from: 9, to: 10}, text: "1"}.
+astInternal.node{id: 23, parentID: 22, rule: "num", span: span{from: 11, to: 12}, text: "2"}.
+astInternal.node{id: 29, parentID: 28, rule: "num", span: span{from: 15, to: 16}, text: "3"}.
+astInternal.node{id: 32, parentID: 31, rule: "num", span: span{from: 17, to: 18}, text: "4"}.
+astInternal.node{id: 5, parentID: 3, rule: "alphaNum", span: span{from: 1, to: 2}, text: "o"}.
+astInternal.node{id: 7, parentID: 3, rule: "alphaNum", span: span{from: 2, to: 3}, text: "o"}.
+astInternal.node{id: 9, parentID: 3, rule: "alphaNum", span: span{from: 3, to: 4}, text: "p"}.
+astInternal.node{id: 11, parentID: 2, rule: "ws", span: span{from: 4, to: 5}, text: " "}.
+astInternal.node{id: 12, parentID: 2, rule: "ws", span: span{from: 6, to: 7}, text: " "}.
+astInternal.node{id: 15, parentID: 14, rule: "ws", span: span{from: 8, to: 8}, text: ""}.
+astInternal.node{id: 17, parentID: 16, rule: "ws", span: span{from: 9, to: 9}, text: ""}.
+astInternal.node{id: 24, parentID: 16, rule: "ws", span: span{from: 12, to: 12}, text: ""}.
+astInternal.node{id: 26, parentID: 25, rule: "ws", span: span{from: 15, to: 15}, text: ""}.
+astInternal.node{id: 33, parentID: 25, rule: "ws", span: span{from: 18, to: 18}, text: ""}.
+astInternal.node{id: 34, parentID: 14, rule: "ws", span: span{from: 19, to: 19}, text: ""}.

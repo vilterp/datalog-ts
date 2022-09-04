@@ -1,0 +1,76 @@
+main :- file.
+
+file :- repSep(decl, ws).
+
+decl :- [
+    ident, ws, "=", ws, relExpr, "."
+].
+
+formula :- disjunction.
+disjunction :- repSep(disjunct, [ws, "or", ws]).
+disjunct :- repSep(conjunct, [ws, "and", ws]).
+conjunct :- (negation | assertion).
+negation :- ["!", assertion].
+
+assertion :- [ident, "(", repSep(scalarExpr, commaSpace), ")"].
+
+relExpr :- (
+    ident |
+    relationLiteral |
+    abstraction
+).
+
+relationLiteral :- [
+    "{", ws, repSep(tuple, commaSpace), ws, "}"
+].
+tuple :- ["(", ws, repSep(scalarLiteral, commaSpace), ws, ")"].
+
+abstraction :- (
+    pointwiseAbstraction |
+    pointFreeAbstraction
+).
+
+pointwiseAbstraction :- [
+    "(", repSep(ident, commaSpace), ")", ws, ":-", ws, formula
+].
+
+pointFreeAbstraction :- [
+    "[", repSep(ident, commaSpace), "]", ws, ":-", ws, scalarExpr
+].
+
+scalarExpr :- (
+    term |
+    application
+).
+
+application :- [
+    (expr:relExpr | ["(", parenExpr:relExpr, ")"]),
+    "[", repSep(scalarExpr, commaSpace), "]"
+].
+
+term :- (
+    var |
+    scalarLiteral
+).
+
+scalarLiteral :- (
+    intLit |
+    stringLit
+).
+
+# scalar literals
+
+intLit :- [("-" | ""), first:num, repSep(num, "")].
+ident :- [alpha, repSep((alphaNum | "."), "")].
+stringLit :- ["\"", repSep(stringChar, ""), "\""].
+var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
+
+# primitives
+
+stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep((" "|"\n"), "").
+placeholder :- "???".
+commaSpace :- [",", ws].

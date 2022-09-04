@@ -1,0 +1,4 @@
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "var", type: "typeParameter"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "intLit", type: "number"}.

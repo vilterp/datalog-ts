@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   registerExplorerWebView(context);
 
-  [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
+  [LANGUAGES.datalog, LANGUAGES.grammar, LANGUAGES.datalog2].forEach((spec) => {
     registerLanguageSupport(spec).forEach((sub) => {
       context.subscriptions.push(sub);
     });
