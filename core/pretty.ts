@@ -78,8 +78,8 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
 
 export function prettyPrintRule(rule: Rule): pp.IDoc {
   const oneLine = pp.intersperse(" | ")(
-    rule.body.opts.map((ae) =>
-      pp.intersperse(" & ")(ae.clauses.map(prettyPrintTerm))
+    rule.body.disjuncts.map((ae) =>
+      pp.intersperse(" & ")(ae.conjuncts.map(prettyPrintTerm))
     )
   );
   const splitUp = [
@@ -87,8 +87,8 @@ export function prettyPrintRule(rule: Rule): pp.IDoc {
     pp.indent(
       2,
       pp.intersperse([" |", pp.line])(
-        rule.body.opts.map((ae) =>
-          pp.intersperse([" &", pp.line])(ae.clauses.map(prettyPrintTerm))
+        rule.body.disjuncts.map((ae) =>
+          pp.intersperse([" &", pp.line])(ae.conjuncts.map(prettyPrintTerm))
         )
       )
     ),
