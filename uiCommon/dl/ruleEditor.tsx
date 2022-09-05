@@ -110,8 +110,8 @@ function ConjunctionEditor(props: {
         </tr>
       </thead>
       <tbody>
-        {props.conjunction.conjuncts.map((conjunct, idx) => (
-          <tr key={idx}>
+        {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => (
+          <tr key={conjunctIdx}>
             <td>
               {/* TODO: maybe negation checkbox? */}
               {conjunct.type === "Record"
@@ -120,8 +120,8 @@ function ConjunctionEditor(props: {
                 ? `!${conjunct.record.relation}`
                 : "TODO: aggs"}
             </td>
-            {vars.map((varName) => {
-              const path = pathToVar(conjunct, vars[idx]);
+            {vars.map((varName, varIdx) => {
+              const path = pathToVar(conjunct, vars[varIdx]);
               return <td key={varName}>{path ? path.join(".") : ""}</td>;
             })}
           </tr>
