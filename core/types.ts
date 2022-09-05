@@ -30,11 +30,11 @@ export type Rule = {
   body: Disjunction;
 };
 
-export type Disjunction = { type: "Disjunction"; opts: Conjunction[] };
+export type Disjunction = { type: "Disjunction"; disjuncts: Conjunction[] };
 
-export type Conjunction = { type: "Conjunction"; clauses: AndClause[] };
+export type Conjunction = { type: "Conjunction"; conjuncts: Conjunct[] };
 
-export type AndClause = Rec | Negation | Aggregation;
+export type Conjunct = Rec | Negation | Aggregation;
 
 type Negation = { type: "Negation"; record: Rec };
 
@@ -47,15 +47,7 @@ type Aggregation = {
 
 // === Terms ===
 
-export type Term =
-  | Rec
-  | Dict
-  | StringLit
-  | Var
-  | AndClause
-  | Bool
-  | Int
-  | Array;
+export type Term = Rec | Dict | StringLit | Var | Conjunct | Bool | Int | Array;
 
 export type Var = { type: "Var"; name: string };
 
@@ -88,11 +80,11 @@ export function rule(head: Rec, body: Disjunction): Rule {
 }
 
 export function or(opts: Conjunction[]): Disjunction {
-  return { type: "Disjunction", opts };
+  return { type: "Disjunction", disjuncts: opts };
 }
 
-export function and(clauses: AndClause[]): Conjunction {
-  return { type: "Conjunction", clauses };
+export function and(clauses: Conjunct[]): Conjunction {
+  return { type: "Conjunction", conjuncts: clauses };
 }
 
 // term helpers
