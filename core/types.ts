@@ -27,12 +27,12 @@ export type Bindings = { [key: string]: Term };
 export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
-  body: OrExpr;
+  body: Disjunction;
 };
 
-export type OrExpr = { type: "Or"; opts: AndExpr[] };
+export type Disjunction = { type: "Disjunction"; opts: Conjunction[] };
 
-export type AndExpr = { type: "And"; clauses: AndClause[] };
+export type Conjunction = { type: "Conjunction"; clauses: AndClause[] };
 
 export type AndClause = Rec | Negation | Aggregation;
 
@@ -83,16 +83,16 @@ export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 
 // rule helpers
 
-export function rule(head: Rec, body: OrExpr): Rule {
+export function rule(head: Rec, body: Disjunction): Rule {
   return { head, body };
 }
 
-export function or(opts: AndExpr[]): OrExpr {
-  return { type: "Or", opts };
+export function or(opts: Conjunction[]): Disjunction {
+  return { type: "Disjunction", opts };
 }
 
-export function and(clauses: AndClause[]): AndExpr {
-  return { type: "And", clauses };
+export function and(clauses: AndClause[]): Conjunction {
+  return { type: "Conjunction", clauses };
 }
 
 // term helpers

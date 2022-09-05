@@ -62,9 +62,9 @@ export function parserRuleToInternal(term: DLRule): Rule {
   return {
     head: parserTermToInternal(term.record) as Rec,
     body: {
-      type: "Or",
+      type: "Disjunction",
       opts: term.disjunct.map((disjunct) => ({
-        type: "And",
+        type: "Conjunction",
         clauses: disjunct.conjunct.map((conjunct): AndClause => {
           switch (conjunct.type) {
             case "AssignmentOnLeft":
