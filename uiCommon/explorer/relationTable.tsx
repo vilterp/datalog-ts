@@ -167,15 +167,7 @@ function RelationContents(props: {
                   <td />
                 )}
                 {fields.map((field) => (
-                  <td
-                    key={field}
-                    style={{
-                      paddingLeft: 5,
-                      paddingRight: 5,
-                      borderLeft: "1px solid lightgrey",
-                      borderRight: "1px solid lightgrey",
-                    }}
-                  >
+                  <td key={field} style={styles.TD_STYLES}>
                     <TermView
                       term={makeTermWithBindings(
                         (result.term as Rec).attrs[field],
