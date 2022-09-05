@@ -4,11 +4,13 @@ import {
   Conjunct,
   Conjunction,
   Disjunction,
+  Rec,
   rec,
   Relation,
   Rule,
 } from "../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../util/util";
+import { TD_STYLES } from "../explorer/styles";
 
 // === Rule ===
 
@@ -24,6 +26,7 @@ export function RuleEditor(props: {
           {props.rule.body.disjuncts.map((opt, idx) => (
             <td key={idx}>
               <ConjunctionEditor
+                head={props.rule.head}
                 conjunction={opt}
                 dispatch={(action) =>
                   props.dispatch({
@@ -104,6 +107,7 @@ function disjunctionReducer(
 // === Conjunction ===
 
 function ConjunctionEditor(props: {
+  head: Rec;
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
   relations: Relation[];
@@ -113,6 +117,17 @@ function ConjunctionEditor(props: {
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
+        <tr>
+          <th />
+          {vars.map((varName) => {
+            const path = pathToVar(props.head, varName);
+            return (
+              <th key={varName} style={TD_STYLES}>
+                {path ? path.join(".") : ""}
+              </th>
+            );
+          })}
+        </tr>
         <tr style={{ borderBottom: "1px solid black" }}>
           <th />
           {vars.map((varName) => (
@@ -169,13 +184,6 @@ function ConjunctionEditor(props: {
     </table>
   );
 }
-
-const TD_STYLES = {
-  paddingLeft: 5,
-  paddingRight: 5,
-  borderLeft: "1px solid lightgrey",
-  borderRight: "1px solid lightgrey",
-};
 
 type ConjunctionAction =
   | { type: "AddConjunct"; conjunct: Conjunct }
