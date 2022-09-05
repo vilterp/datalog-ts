@@ -1,6 +1,13 @@
 import React, { useReducer } from "react";
 import { gatherVars, pathToVar } from "../../core/gatherVars";
-import { Conjunction, Disjunction, rec, Rule } from "../../core/types";
+import {
+  Conjunct,
+  Conjunction,
+  Disjunction,
+  rec,
+  Relation,
+  Rule,
+} from "../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../util/util";
 
 // === Rule ===
@@ -8,6 +15,7 @@ import { removeAtIdx, updateAtIdx } from "../../util/util";
 export function RuleEditor(props: {
   rule: Rule;
   dispatch: (a: RuleAction) => void;
+  relations: Relation[];
 }) {
   return (
     <table>
@@ -23,6 +31,7 @@ export function RuleEditor(props: {
                     action: { type: "EditDisjunct", idx, action },
                   })
                 }
+                relations={props.relations}
               />
             </td>
           ))}
@@ -97,6 +106,7 @@ function disjunctionReducer(
 function ConjunctionEditor(props: {
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
+  relations: Relation[];
 }) {
   const vars = gatherVars(props.conjunction.conjuncts);
   return (
@@ -136,9 +146,19 @@ function ConjunctionEditor(props: {
         ))}
         <tr>
           <td>
-            <button onClick={() => props.dispatch({ type: "AddConjunct" })}>
-              +
-            </button>
+            <select
+              onChange={(evt) =>
+                props.dispatch({
+                  type: "AddConjunct",
+                  conjunct: rec(evt.target.value, {}),
+                })
+              }
+            >
+              <option>+</option>
+              {props.relations.map((relation) => (
+                <option key={relation.name}>{relation.name}</option>
+              ))}
+            </select>
           </td>
           <td colSpan={vars.length}></td>
         </tr>
@@ -155,7 +175,7 @@ const TD_STYLES = {
 };
 
 type ConjunctionAction =
-  | { type: "AddConjunct" }
+  | { type: "AddConjunct"; conjunct: Conjunct }
   | { type: "RemoveConjunct"; idx: number }
   | { type: "EditConjunct"; idx: number };
 
@@ -163,5 +183,11 @@ function conjunctionReducer(
   state: Conjunction,
   action: ConjunctionAction
 ): Conjunction {
-  return state;
+  switch (action.type) {
+    case "AddConjunct":
+      return {
+        type: "Conjunction",
+        conjuncts: [...state.conjuncts, action.conjunct],
+      };
+  }
 }

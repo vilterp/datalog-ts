@@ -28,7 +28,11 @@ export function RelationTable(props: {
   return (
     <>
       {relation.type === "Rule" ? (
-        <RuleDisplay rule={relation.rule} highlight={props.highlight} />
+        <RuleDisplay
+          rule={relation.rule}
+          highlight={props.highlight}
+          relations={props.interp.getRelations()}
+        />
       ) : null}
       <RelationContents
         collapseState={props.collapseState}
@@ -41,13 +45,21 @@ export function RelationTable(props: {
   );
 }
 
-function RuleDisplay(props: { rule: Rule; highlight: HighlightProps }) {
+function RuleDisplay(props: {
+  rule: Rule;
+  highlight: HighlightProps;
+  relations: Relation[];
+}) {
   const [rule, dispatch] = useReducer(ruleReducer, props.rule);
 
   return (
     <>
       <RuleC highlight={props.highlight} rule={rule} />
-      <RuleEditor rule={rule} dispatch={(action) => dispatch(action)} />
+      <RuleEditor
+        rule={rule}
+        dispatch={(action) => dispatch(action)}
+        relations={props.relations}
+      />
     </>
   );
 }
