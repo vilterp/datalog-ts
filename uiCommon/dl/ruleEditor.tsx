@@ -1,4 +1,5 @@
 import React, { useReducer } from "react";
+import { gatherVars, pathToVar } from "../../core/gatherVars";
 import { Conjunction, Disjunction, rec, Rule } from "../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../util/util";
 
@@ -12,7 +13,7 @@ export function RuleEditor(props: {
     <table>
       <tbody>
         <tr>
-          {props.rule.body.opts.map((opt, idx) => (
+          {props.rule.body.disjuncts.map((opt, idx) => (
             <td key={idx}>
               <ConjunctionEditor
                 conjunction={opt}
@@ -71,17 +72,20 @@ function disjunctionReducer(
     case "AddDisjunct":
       return {
         type: "Disjunction",
-        opts: [...disjunction.opts, { type: "Conjunction", clauses: [] }],
+        disjuncts: [
+          ...disjunction.disjuncts,
+          { type: "Conjunction", conjuncts: [] },
+        ],
       };
     case "RemoveDisjunct":
       return {
         type: "Disjunction",
-        opts: removeAtIdx(disjunction.opts, action.idx),
+        disjuncts: removeAtIdx(disjunction.disjuncts, action.idx),
       };
     case "EditDisjunct":
       return {
         type: "Disjunction",
-        opts: updateAtIdx(disjunction.opts, action.idx, (conj) =>
+        disjuncts: updateAtIdx(disjunction.disjuncts, action.idx, (conj) =>
           conjunctionReducer(conj, action.action)
         ),
       };
@@ -94,7 +98,45 @@ function ConjunctionEditor(props: {
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
 }) {
-  return <p>Hello world</p>;
+  const vars = gatherVars(props.conjunction.conjuncts);
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th />
+          {vars.map((varName) => (
+            <th key={varName}>{varName}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {props.conjunction.conjuncts.map((conjunct, idx) => (
+          <tr key={idx}>
+            <td>
+              {/* TODO: maybe negation checkbox? */}
+              {conjunct.type === "Record"
+                ? conjunct.relation
+                : conjunct.type === "Negation"
+                ? `!${conjunct.record.relation}`
+                : "TODO: aggs"}
+            </td>
+            {vars.map((varName) => {
+              const path = pathToVar(conjunct, vars[idx]);
+              return <td key={varName}>{path ? path.join(".") : ""}</td>;
+            })}
+          </tr>
+        ))}
+        <tr>
+          <td>
+            <button onClick={() => props.dispatch({ type: "AddConjunct" })}>
+              +
+            </button>
+          </td>
+          <td colSpan={vars.length}></td>
+        </tr>
+      </tbody>
+    </table>
+  );
 }
 
 type ConjunctionAction =
