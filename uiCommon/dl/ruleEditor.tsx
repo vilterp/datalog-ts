@@ -100,29 +100,37 @@ function ConjunctionEditor(props: {
 }) {
   const vars = gatherVars(props.conjunction.conjuncts);
   return (
-    <table>
+    <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
-        <tr>
+        <tr style={{ borderBottom: "1px solid black" }}>
           <th />
           {vars.map((varName) => (
-            <th key={varName}>{varName}</th>
+            <th key={varName} style={TD_STYLES}>
+              {varName}
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
         {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => (
           <tr key={conjunctIdx}>
-            <td>
+            <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
-              {conjunct.type === "Record"
-                ? conjunct.relation
-                : conjunct.type === "Negation"
-                ? `!${conjunct.record.relation}`
-                : "TODO: aggs"}
+              <strong>
+                {conjunct.type === "Record"
+                  ? conjunct.relation
+                  : conjunct.type === "Negation"
+                  ? `!${conjunct.record.relation}`
+                  : "TODO: aggs"}
+              </strong>
             </td>
             {vars.map((varName, varIdx) => {
               const path = pathToVar(conjunct, vars[varIdx]);
-              return <td key={varName}>{path ? path.join(".") : ""}</td>;
+              return (
+                <td key={varName} style={TD_STYLES}>
+                  {path ? path.join(".") : ""}
+                </td>
+              );
             })}
           </tr>
         ))}
@@ -138,6 +146,13 @@ function ConjunctionEditor(props: {
     </table>
   );
 }
+
+const TD_STYLES = {
+  paddingLeft: 5,
+  paddingRight: 5,
+  borderLeft: "1px solid lightgrey",
+  borderRight: "1px solid lightgrey",
+};
 
 type ConjunctionAction =
   | { type: "AddConjunct" }
