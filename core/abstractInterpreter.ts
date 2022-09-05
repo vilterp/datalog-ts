@@ -100,6 +100,26 @@ export abstract class AbstractInterpreter {
     return null;
   }
 
+  getRelations(): Relation[] {
+    return [
+      ...this.getRules().map(
+        (rule) =>
+          ({
+            type: "Rule",
+            name: rule.head.relation,
+            rule,
+          } as Relation)
+      ),
+      ...this.getTables().map(
+        (table) =>
+          ({
+            type: "Table",
+            name: table,
+          } as Relation)
+      ),
+    ];
+  }
+
   // TODO: do these two with queries to virtual tables
   abstract getRules(): Rule[];
   abstract getTables(): string[];
