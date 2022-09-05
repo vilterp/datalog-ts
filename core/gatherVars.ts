@@ -47,15 +47,23 @@ export function pathToVar(term: Term, varName: string): string[] {
       );
     case "Dict":
       return (
-        mapObjToList(term.map, (_, subTerm) =>
-          pathToVar(subTerm, varName)
-        ).find((r) => r !== null) || null
+        mapObjToList(term.map, (key, subTerm) => {
+          const res = pathToVar(subTerm, varName);
+          if (!res) {
+            return null;
+          }
+          return [key, ...res];
+        }).find((r) => r !== null) || null
       );
     case "Record":
       return (
-        mapObjToList(term.attrs, (_, subTerm) =>
-          pathToVar(subTerm, varName)
-        ).find((r) => r !== null) || null
+        mapObjToList(term.attrs, (key, subTerm) => {
+          const res = pathToVar(subTerm, varName);
+          if (!res) {
+            return null;
+          }
+          return [key, ...res];
+        }).find((r) => r !== null) || null
       );
     // TODO: these probably shouldn't be terms, but alas...
     case "Aggregation":
