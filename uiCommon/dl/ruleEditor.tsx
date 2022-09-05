@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { gatherVars, pathToVar } from "../../core/gatherVars";
 import {
   Conjunct,
@@ -108,6 +108,7 @@ function ConjunctionEditor(props: {
   dispatch: (a: ConjunctionAction) => void;
   relations: Relation[];
 }) {
+  const [selectedToAdd, setSelectedToAdd] = useState("+");
   const vars = gatherVars(props.conjunction.conjuncts);
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
@@ -147,12 +148,14 @@ function ConjunctionEditor(props: {
         <tr>
           <td>
             <select
-              onChange={(evt) =>
+              value={selectedToAdd}
+              onChange={(evt) => {
                 props.dispatch({
                   type: "AddConjunct",
                   conjunct: rec(evt.target.value, {}),
-                })
-              }
+                });
+                setSelectedToAdd("+");
+              }}
             >
               <option>+</option>
               {props.relations.map((relation) => (
