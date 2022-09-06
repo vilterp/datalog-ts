@@ -11,10 +11,11 @@ import {
 import { Conjunct, rec, Relation, Rule, Term, varr } from "./types";
 
 export function gatherVars(rule: Rule): string[] {
-  const all = flatMap(rule.body.disjuncts, (disjunct) =>
+  const fromBody = flatMap(rule.body.disjuncts, (disjunct) =>
     flatMap(disjunct.conjuncts, (conj) => gatherVarsTerm(conj))
   );
-  return uniq(all);
+  const fromHead = gatherVarsTerm(rule.head);
+  return uniq([...fromHead, ...fromBody]);
 }
 
 function gatherVarsTerm(term: Term): string[] {

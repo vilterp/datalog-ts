@@ -37,7 +37,7 @@ export function RuleEditor(props: {
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
-        <tr>
+        <tr key="attrs">
           <th />
           {vars.map((varName) => {
             const path = pathToVar(props.rule.head, varName);
@@ -62,7 +62,7 @@ export function RuleEditor(props: {
             );
           })}
         </tr>
-        <tr style={{ borderBottom: "1px solid black" }}>
+        <tr key="vars" style={{ borderBottom: "1px solid black" }}>
           <th />
           {vars.map((varName) => (
             <th key={varName} style={TD_STYLES}>
