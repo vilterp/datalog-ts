@@ -142,6 +142,13 @@ function ConjunctionEditor(props: {
           <tr key={conjunctIdx}>
             <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
+              <button
+                onClick={() =>
+                  props.dispatch({ type: "RemoveConjunct", idx: conjunctIdx })
+                }
+              >
+                x
+              </button>{" "}
               <strong>
                 {conjunct.type === "Record"
                   ? conjunct.relation
@@ -200,5 +207,13 @@ function conjunctionReducer(
         type: "Conjunction",
         conjuncts: [...state.conjuncts, action.conjunct],
       };
+    case "RemoveConjunct":
+      return {
+        type: "Conjunction",
+        conjuncts: removeAtIdx(state.conjuncts, action.idx),
+      };
+    case "EditConjunct":
+      console.warn("TODO", action);
+      return state;
   }
 }
