@@ -118,13 +118,7 @@ export abstract class AbstractInterpreter {
             rule,
           } as Relation)
       ),
-      ...this.getTables().map(
-        (table) =>
-          ({
-            type: "Table",
-            name: table,
-          } as Relation)
-      ),
+      ...this.getTables().map((table) => this.getRelation(table)),
     ];
   }
 
