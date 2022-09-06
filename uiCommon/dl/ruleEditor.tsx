@@ -49,7 +49,8 @@ export function RuleEditor(props: {
       <thead>
         <tr style={{ borderBottom: "1px solid black" }}>
           <th /> {/* 'or' control */}
-          <th /> {/* relation name */}
+          <th /> {/* delete conjunct button */}
+          <th /> {/* conjunct name */}
           {order.map((pair, idx) => {
             return (
               <th key={idx} style={TD_STYLES}>
@@ -139,7 +140,7 @@ export function RuleEditor(props: {
           ))
         )}
         <tr>
-          <td colSpan={vars.length + 2}>
+          <td colSpan={vars.length + 3} style={TD_STYLES}>
             <button
               onClick={() =>
                 props.dispatch({
@@ -284,8 +285,15 @@ function ConjunctionEditor(props: {
       {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => {
         const name = conjunctName(conjunct);
         return (
-          <tr key={conjunctIdx}>
-            <td>{conjunctIdx === 0 ? <>{removeButton}</> : null}</td>
+          <tr
+            key={conjunctIdx}
+            style={
+              conjunctIdx === 0 ? { marginTop: "1px solid lightgrey" } : {}
+            }
+          >
+            <td style={TD_STYLES}>
+              {conjunctIdx === 0 ? <>{removeButton}</> : null}
+            </td>
             <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
               <button
@@ -296,6 +304,8 @@ function ConjunctionEditor(props: {
               >
                 x
               </button>{" "}
+            </td>
+            <td style={TD_STYLES}>
               <strong>
                 {conjunct.type === "Record"
                   ? conjunct.relation
@@ -335,9 +345,10 @@ function ConjunctionEditor(props: {
         );
       })}
       <tr>
-        <td>
+        <td style={TD_STYLES}>
           {props.conjunction.conjuncts.length === 0 ? removeButton : null}
         </td>
+        <td style={TD_STYLES} /> {/* delete conjunct button */}
         <td>
           <select
             value={selectedToAdd}
@@ -359,7 +370,7 @@ function ConjunctionEditor(props: {
             ))}
           </select>
         </td>
-        <td colSpan={props.vars.length}></td>
+        <td colSpan={props.vars.length} style={TD_STYLES}></td>
       </tr>
     </>
   );
