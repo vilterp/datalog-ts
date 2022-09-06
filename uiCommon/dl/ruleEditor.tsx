@@ -187,12 +187,10 @@ export function headReducer(head: Rec, action: HeadAction): Rec {
         varName: pair.varName,
         attr: action.newAttr,
       }));
-      const pairs = newOrder
-        .filter((p) => p.attr.length > 0)
-        .map(({ varName, attr }) => ({
-          key: attr,
-          val: varr(varName),
-        }));
+      const pairs = newOrder.map(({ varName, attr }) => ({
+        key: attr,
+        val: varr(varName),
+      }));
       return rec(head.relation, pairsToObj(pairs));
     }
     case "EditVar":
@@ -200,12 +198,10 @@ export function headReducer(head: Rec, action: HeadAction): Rec {
         varName: action.newVar,
         attr: pair.attr,
       }));
-      const pairs = newOrder
-        .filter((p) => p.attr.length > 0)
-        .map(({ varName, attr }) => ({
-          key: attr,
-          val: varr(varName),
-        }));
+      const pairs = newOrder.map(({ varName, attr }) => ({
+        key: attr,
+        val: varr(varName),
+      }));
       return rec(head.relation, pairsToObj(pairs));
   }
 }
