@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { gatherVars, pathToVar } from "../../core/gatherVars";
+import { ppt } from "../../core/pretty";
+import {
+  conjunctName,
+  gatherVars,
+  nextVar,
+  pathToVar,
+  relationColumns,
+} from "../../core/schemaUtils";
 import {
   Conjunct,
   Conjunction,
@@ -8,6 +15,7 @@ import {
   rec,
   Relation,
   Rule,
+  Term,
   varr,
 } from "../../core/types";
 import {
@@ -215,7 +223,11 @@ function ConjunctionEditor(props: {
               onChange={(evt) => {
                 props.dispatch({
                   type: "AddConjunct",
-                  conjunct: newConjunct(evt.target.value, props.relations),
+                  conjunct: newConjunct(
+                    evt.target.value,
+                    props.conjunction.conjuncts,
+                    props.relations
+                  ),
                 });
                 setSelectedToAdd("+");
               }}
@@ -233,37 +245,26 @@ function ConjunctionEditor(props: {
   );
 }
 
-function newConjunct(name: string, relations: Relation[]): Conjunct {
+function newConjunct(
+  name: string,
+  conjuncts: Conjunct[],
+  relations: Relation[]
+): Conjunct {
   const relation = relations.find((r) => r.name === name);
   const columns = relationColumns(relation);
-  return rec(
-    name,
-    pairsToObj(
-      columns.map((col) => ({ key: col, val: varr(col.toUpperCase()) }))
-    )
-  );
-}
-
-function conjunctName(conjunct: Conjunct): string {
-  switch (conjunct.type) {
-    case "Record":
-      return conjunct.relation;
-    case "Negation":
-      return conjunct.record.relation;
-    case "Aggregation":
-      return conjunct.record.relation;
-  }
-}
-
-// TODO: move to core utils...?
-function relationColumns(relation: Relation): string[] {
-  console.log("relationColumns", relation);
-  switch (relation.type) {
-    case "Rule":
-      return Object.keys(relation.rule.head.attrs);
-    case "Table":
-      return relation.columns;
-  }
+  const pairs: { key: string; val: Term }[] = [];
+  const existingVars = gatherVars(conjuncts);
+  columns.forEach((col) => {
+    const newVar = nextVar(existingVars);
+    existingVars.push(newVar);
+    pairs.push({
+      key: col,
+      val: varr(newVar),
+    });
+  });
+  console.log("newConjunct", { name, pairs });
+  const res = rec(name, pairsToObj(pairs));
+  return res;
 }
 
 type ConjunctionAction =

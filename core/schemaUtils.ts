@@ -3,6 +3,7 @@ import {
   flatMapObjToList,
   mapObj,
   mapObjToList,
+  maxOfStrings,
   uniq,
 } from "../util/util";
 import { ppt } from "./pretty";
@@ -83,5 +84,39 @@ export function varsForRelation(relation: Relation): string[] {
     case "Table":
       // TODO: get columns for table
       return [];
+  }
+}
+
+const ALPHABET = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+
+// TODO: something more robust...
+export function nextVar(existingVars: string[]) {
+  if (existingVars.length === 0) {
+    return ALPHABET[0];
+  }
+  const highestExisting = maxOfStrings(existingVars);
+  const idx = ALPHABET.indexOf(highestExisting[0]);
+  console.log("nextVar", { highestExisting, idx });
+  return ALPHABET[idx + 1];
+}
+
+export function conjunctName(conjunct: Conjunct): string {
+  switch (conjunct.type) {
+    case "Record":
+      return conjunct.relation;
+    case "Negation":
+      return conjunct.record.relation;
+    case "Aggregation":
+      return conjunct.record.relation;
+  }
+}
+
+// TODO: move to core utils...?
+export function relationColumns(relation: Relation): string[] {
+  switch (relation.type) {
+    case "Rule":
+      return Object.keys(relation.rule.head.attrs);
+    case "Table":
+      return relation.columns;
   }
 }
