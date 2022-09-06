@@ -8,6 +8,7 @@ import {
   rec,
   Relation,
   Rule,
+  varr,
 } from "../../core/types";
 import { intersperse, removeAtIdx, updateAtIdx } from "../../util/util";
 import { TD_STYLES } from "../explorer/styles";
@@ -177,7 +178,6 @@ function ConjunctionEditor(props: {
                 const columns = relationColumns(
                   props.relations.find((r) => r.name === name)
                 );
-                console.log({ name, varName, columns });
                 return (
                   <td key={varName} style={TD_STYLES}>
                     <select
@@ -186,7 +186,7 @@ function ConjunctionEditor(props: {
                         props.dispatch({
                           type: "EditConjunct",
                           conjunctIdx,
-                          varIdx,
+                          varName,
                           attr: evt.target.value,
                         })
                       }
@@ -253,7 +253,12 @@ function relationColumns(relation: Relation): string[] {
 type ConjunctionAction =
   | { type: "AddConjunct"; conjunct: Conjunct }
   | { type: "RemoveConjunct"; idx: number }
-  | { type: "EditConjunct"; conjunctIdx: number; varIdx: number; attr: string };
+  | {
+      type: "EditConjunct";
+      conjunctIdx: number;
+      varName: string;
+      attr: string;
+    };
 
 function conjunctionReducer(
   state: Conjunction,
@@ -271,7 +276,17 @@ function conjunctionReducer(
         conjuncts: removeAtIdx(state.conjuncts, action.idx),
       };
     case "EditConjunct":
-      console.warn("TODO", action);
-      return state;
+      return {
+        type: "Conjunction",
+        conjuncts: updateAtIdx(state.conjuncts, action.conjunctIdx, (conj) => {
+          switch (conj.type) {
+            case "Record":
+              return rec(conj.relation, {
+                ...conj.attrs,
+                [action.attr]: varr(action.varName),
+              });
+          }
+        }),
+      };
   }
 }
