@@ -3,6 +3,7 @@ import {
   conjunctName,
   gatherVars,
   newConjunct,
+  nextVar,
   pathToVar,
   relationColumns,
 } from "../../core/schemaUtils";
@@ -61,6 +62,17 @@ export function RuleEditor(props: {
               </th>
             );
           })}
+          <th>
+            <button
+              onClick={() =>
+                props.dispatch({
+                  type: "AddAttr",
+                })
+              }
+            >
+              +
+            </button>
+          </th>
         </tr>
         <tr key="vars" style={{ borderBottom: "1px solid black" }}>
           <th />
@@ -140,7 +152,8 @@ export function RuleEditor(props: {
 
 type RuleAction =
   | { type: "EditHead"; action: HeadAction }
-  | { type: "EditBody"; action: DisjunctionAction };
+  | { type: "EditBody"; action: DisjunctionAction }
+  | { type: "AddAttr" };
 
 export function ruleReducer(rule: Rule, action: RuleAction): Rule {
   switch (action.type) {
@@ -148,6 +161,17 @@ export function ruleReducer(rule: Rule, action: RuleAction): Rule {
       return { ...rule, body: disjunctionReducer(rule.body, action.action) };
     case "EditHead":
       return { ...rule, head: headReducer(rule.head, action.action) };
+    // kind of just editing the head, but it needs to look at the body
+    case "AddAttr":
+      const existingVars = gatherVars(rule);
+      const newVar = nextVar(existingVars);
+      return {
+        ...rule,
+        head: rec(rule.head.relation, {
+          ...rule.head.attrs,
+          foo: varr(newVar),
+        }),
+      };
   }
 }
 
