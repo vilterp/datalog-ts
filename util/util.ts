@@ -421,3 +421,14 @@ export function capitalize(input: string): string {
 export function max(numbers: number[]): number {
   return numbers.reduce((prev, cur) => Math.max(prev, cur), 0);
 }
+
+export function maxOfStrings(strings: string[]): string {
+  let cur = strings[0];
+  for (var i = 0; i < strings.length; i++) {
+    const next = strings[i];
+    if (next > cur) {
+      cur = next;
+    }
+  }
+  return cur;
+}
