@@ -134,8 +134,8 @@ function ConjunctionEditor(props: {
   head: Rec;
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
-  relations: Relation[];
   removeDisjunct: () => void;
+  relations: Relation[];
 }) {
   const [selectedToAdd, setSelectedToAdd] = useState("+");
   const vars = gatherVars(props.conjunction.conjuncts);
@@ -146,9 +146,10 @@ function ConjunctionEditor(props: {
           <th />
           {vars.map((varName) => {
             const path = pathToVar(props.head, varName);
+            const pathStr = path ? path.join(".") : "";
             return (
               <th key={varName} style={TD_STYLES}>
-                {path ? path.join(".") : ""}
+                <input size={Math.max(1, pathStr.length)} value={pathStr} />
               </th>
             );
           })}
@@ -262,7 +263,6 @@ function newConjunct(
       val: varr(newVar),
     });
   });
-  console.log("newConjunct", { name, pairs });
   const res = rec(name, pairsToObj(pairs));
   return res;
 }
