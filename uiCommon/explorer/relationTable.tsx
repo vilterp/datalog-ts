@@ -8,7 +8,7 @@ import { TraceTreeView } from "../dl/trace";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
-import { TableCollapseState } from "./types";
+import { Action, TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleEditor, ruleReducer } from "../dl/ruleEditor";
@@ -19,6 +19,7 @@ export function RelationTable(props: {
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
+  dispatch: (action: Action) => void;
 }) {
   const relation = props.interp.getRelation(props.relation);
   if (relation === null) {
@@ -32,6 +33,7 @@ export function RelationTable(props: {
           rule={relation.rule}
           highlight={props.highlight}
           relations={props.interp.getRelations()}
+          dispatch={props.dispatch}
         />
       ) : null}
       <RelationContents
@@ -49,15 +51,19 @@ function RuleDisplay(props: {
   rule: Rule;
   highlight: HighlightProps;
   relations: Relation[];
+  dispatch: (action: Action) => void;
 }) {
-  const [rule, dispatch] = useReducer(ruleReducer, props.rule);
-
   return (
     <>
-      <RuleC highlight={props.highlight} rule={rule} />
+      <RuleC highlight={props.highlight} rule={props.rule} />
       <RuleEditor
-        rule={rule}
-        dispatch={(action) => dispatch(action)}
+        rule={props.rule}
+        dispatch={(action) =>
+          props.dispatch({
+            type: "EditRule",
+            newRule: ruleReducer(props.rule, action),
+          })
+        }
         relations={props.relations}
       />
     </>
