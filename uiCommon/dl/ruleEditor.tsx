@@ -67,11 +67,21 @@ export function RuleEditor(props: {
                     })
                   }
                 />
+                <button
+                  onClick={() =>
+                    props.dispatch({
+                      type: "EditHead",
+                      action: { type: "DeleteColumn", order, idx },
+                    })
+                  }
+                >
+                  x
+                </button>
               </th>
             );
           })}
         </tr>
-        <tr style={{ borderBottom: "1px solid black" }}>
+        {/* <tr style={{ borderBottom: "1px solid black" }}>
           <th />
           {order.map((pair, idx) => (
             <th key={idx} style={TD_STYLES}>
@@ -90,19 +100,9 @@ export function RuleEditor(props: {
                   })
                 }
               />
-              <button
-                onClick={() =>
-                  props.dispatch({
-                    type: "EditHead",
-                    action: { type: "DeleteColumn", order, idx },
-                  })
-                }
-              >
-                x
-              </button>
             </th>
           ))}
-        </tr>
+        </tr> */}
       </thead>
       <tbody>
         {intersperseIdx(
