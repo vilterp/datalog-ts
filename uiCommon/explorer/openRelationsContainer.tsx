@@ -3,7 +3,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { remove } from "../../util/util";
 import { HighlightProps } from "../dl/term";
 import { RelationTable } from "./relationTable";
-import { RelationCollapseStates, TableCollapseState } from "./types";
+import { Action, RelationCollapseStates, TableCollapseState } from "./types";
 
 export function OpenRelationsContainer(props: {
   interp: AbstractInterpreter;
@@ -12,6 +12,7 @@ export function OpenRelationsContainer(props: {
   highlight: HighlightProps;
   open: string[];
   setOpen: (p: string[]) => void;
+  dispatch: (action: Action) => void;
 }) {
   return (
     <>
@@ -35,6 +36,7 @@ export function OpenRelationsContainer(props: {
             }
             highlight={props.highlight}
             interp={props.interp}
+            dispatch={props.dispatch}
           />
         </div>
       ))}

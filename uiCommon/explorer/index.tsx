@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Statement, Term } from "../../core/types";
 import { noHighlight, HighlightProps } from "../dl/term";
@@ -7,13 +7,15 @@ import { RelationTree } from "./relationTree";
 import { VizArea } from "./vizArea";
 import { ensurePresent } from "../../util/util";
 import { OpenRelationsContainer } from "./openRelationsContainer";
-import { RelationCollapseStates } from "./types";
+import { Action, RelationCollapseStates } from "./types";
 
 export function Explorer(props: {
   interp: AbstractInterpreter;
   runStatements?: (stmts: Statement[]) => void;
   showViz?: boolean;
 }) {
+  const [interp, dispatch] = useReducer(explorerReducer, props.interp);
+
   const [highlight, setHighlight] = useState(noHighlight);
 
   const [relationCollapseStates, setRelationCollapseStates] =
@@ -47,7 +49,7 @@ export function Explorer(props: {
         }}
       >
         <RelationTree
-          interp={props.interp}
+          interp={interp}
           highlight={highlightProps}
           openRelations={openRelations}
           setOpenRelations={setOpenRelations}
@@ -55,18 +57,19 @@ export function Explorer(props: {
       </div>
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
         <OpenRelationsContainer
-          interp={props.interp}
+          interp={interp}
           highlight={highlightProps}
           collapseStates={relationCollapseStates}
           setCollapseStates={setRelationCollapseStates}
           open={openRelations}
           setOpen={setOpenRelations}
+          dispatch={dispatch}
         />
       </div>
       {props.showViz ? (
         <div style={{ padding: 10, border: "1px solid black" }}>
           <VizArea
-            interp={props.interp}
+            interp={interp}
             highlightedTerm={highlight.type === "Term" ? highlight.term : null}
             setHighlightedTerm={(term: Term | null) =>
               term === null
@@ -87,4 +90,14 @@ export function Explorer(props: {
       ) : null}
     </div>
   );
+}
+
+function explorerReducer(
+  state: AbstractInterpreter,
+  action: Action
+): AbstractInterpreter {
+  switch (action.type) {
+    case "EditRule":
+      return state.evalStmt({ type: "Rule", rule: action.newRule })[1];
+  }
 }
