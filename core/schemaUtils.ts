@@ -1,16 +1,17 @@
 import {
   flatMap,
   flatMapObjToList,
-  mapObj,
   mapObjToList,
   maxOfStrings,
+  pairsToObj,
   uniq,
 } from "../util/util";
-import { ppt } from "./pretty";
-import { Conjunct, Relation, Term } from "./types";
+import { Conjunct, rec, Relation, Rule, Term, varr } from "./types";
 
-export function gatherVars(conjuncts: Conjunct[]): string[] {
-  const all = flatMap(conjuncts, (conj) => gatherVarsTerm(conj));
+export function gatherVars(rule: Rule): string[] {
+  const all = flatMap(rule.body.disjuncts, (disjunct) =>
+    flatMap(disjunct.conjuncts, (conj) => gatherVarsTerm(conj))
+  );
   return uniq(all);
 }
 
@@ -119,4 +120,25 @@ export function relationColumns(relation: Relation): string[] {
     case "Table":
       return relation.columns;
   }
+}
+
+export function newConjunct(
+  name: string,
+  rule: Rule,
+  relations: Relation[]
+): Conjunct {
+  const relation = relations.find((r) => r.name === name);
+  const columns = relationColumns(relation);
+  const pairs: { key: string; val: Term }[] = [];
+  const existingVars = gatherVars(rule);
+  columns.forEach((col) => {
+    const newVar = nextVar(existingVars);
+    existingVars.push(newVar);
+    pairs.push({
+      key: col,
+      val: varr(newVar),
+    });
+  });
+  const res = rec(name, pairsToObj(pairs));
+  return res;
 }
