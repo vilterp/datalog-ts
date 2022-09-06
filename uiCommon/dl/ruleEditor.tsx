@@ -9,7 +9,7 @@ import {
   Relation,
   Rule,
 } from "../../core/types";
-import { removeAtIdx, updateAtIdx } from "../../util/util";
+import { intersperse, removeAtIdx, updateAtIdx } from "../../util/util";
 import { TD_STYLES } from "../explorer/styles";
 
 // === Rule ===
@@ -20,24 +20,28 @@ export function RuleEditor(props: {
   relations: Relation[];
 }) {
   return (
-    <table>
+    <table style={{ fontFamily: "monospace" }}>
       <tbody>
         <tr>
-          {props.rule.body.disjuncts.map((opt, idx) => (
-            <td key={idx}>
-              <ConjunctionEditor
-                head={props.rule.head}
-                conjunction={opt}
-                dispatch={(action) =>
-                  props.dispatch({
-                    type: "EditBody",
-                    action: { type: "EditDisjunct", idx, action },
-                  })
-                }
-                relations={props.relations}
-              />
-            </td>
-          ))}
+          {intersperse(
+            <td>or</td>,
+            props.rule.body.disjuncts.map((opt, idx) => (
+              <td key={idx}>
+                <ConjunctionEditor
+                  head={props.rule.head}
+                  conjunction={opt}
+                  dispatch={(action) =>
+                    props.dispatch({
+                      type: "EditBody",
+                      action: { type: "EditDisjunct", idx, action },
+                    })
+                  }
+                  relations={props.relations}
+                />
+              </td>
+            ))
+          )}
+          <td>or</td>
           <td>
             <button
               onClick={() =>
