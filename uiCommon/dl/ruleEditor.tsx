@@ -47,7 +47,7 @@ export function RuleEditor(props: {
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
-        <tr>
+        <tr style={{ borderBottom: "1px solid black" }}>
           <th /> {/* 'or' control */}
           <th /> {/* relation name */}
           {order.map((pair, idx) => {
@@ -140,7 +140,6 @@ export function RuleEditor(props: {
         )}
         <tr>
           <td colSpan={vars.length + 2}>
-            or{" "}
             <button
               onClick={() =>
                 props.dispatch({
