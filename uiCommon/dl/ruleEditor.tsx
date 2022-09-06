@@ -19,7 +19,9 @@ import {
 import {
   intersperse,
   intersperseIdx,
+  mapListToObj,
   mapObj,
+  pairsToObj,
   removeAtIdx,
   updateAtIdx,
 } from "../../util/util";
@@ -33,26 +35,33 @@ export function RuleEditor(props: {
   relations: Relation[];
 }) {
   const vars = gatherVars(props.rule).sort();
+  const order = vars.map((varName) => {
+    const path = pathToVar(props.rule.head, varName);
+    const pathStr = path ? path.join(".") : "";
+    return {
+      varName: varName,
+      attr: pathStr,
+    };
+  });
 
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
-        <tr key="attrs">
+        <tr>
           <th />
-          {vars.map((varName) => {
-            const path = pathToVar(props.rule.head, varName);
-            const pathStr = path ? path.join(".") : "";
+          {order.map((pair, varIdx) => {
             return (
-              <th key={pathStr} style={TD_STYLES}>
+              <th key={pair.attr} style={TD_STYLES}>
                 <input
-                  size={Math.max(1, pathStr.length)}
-                  value={pathStr}
+                  size={Math.max(1, pair.attr.length)}
+                  value={pair.attr}
                   onChange={(evt) =>
                     props.dispatch({
                       type: "EditHead",
                       action: {
                         type: "EditAttr",
-                        attr: pathStr,
+                        idx: varIdx,
+                        order,
                         newAttr: evt.target.value,
                       },
                     })
@@ -62,19 +71,20 @@ export function RuleEditor(props: {
             );
           })}
         </tr>
-        <tr key="vars" style={{ borderBottom: "1px solid black" }}>
+        <tr style={{ borderBottom: "1px solid black" }}>
           <th />
-          {vars.map((varName) => (
-            <th key={varName} style={TD_STYLES}>
+          {order.map((pair, idx) => (
+            <th key={pair.varName} style={TD_STYLES}>
               <input
-                size={Math.max(1, varName.length)}
-                value={varName}
+                size={Math.max(1, pair.varName.length)}
+                value={pair.varName}
                 onChange={(evt) =>
                   props.dispatch({
                     type: "EditHead",
                     action: {
                       type: "EditVar",
-                      var: varName,
+                      order,
+                      idx,
                       newVar: evt.target.value,
                     },
                   })
@@ -153,28 +163,45 @@ export function ruleReducer(rule: Rule, action: RuleAction): Rule {
 
 type HeadAction =
   | { type: "EditName"; name: string }
-  | { type: "EditVar"; var: string; newVar: string }
-  | { type: "EditAttr"; attr: string; newAttr: string };
+  | {
+      type: "EditVar";
+      idx: number;
+      order: { varName: string; attr: string }[];
+      newVar: string;
+    }
+  | {
+      type: "EditAttr";
+      idx: number;
+      order: { varName: string; attr: string }[];
+      newAttr: string;
+    };
 
 export function headReducer(head: Rec, action: HeadAction): Rec {
   switch (action.type) {
     case "EditName":
       return rec(action.name, head.attrs);
+    // TODO: DRY these two up
     case "EditAttr": {
-      const newAttrs = { ...head.attrs };
-      newAttrs[action.newAttr] = newAttrs[action.attr];
-      delete newAttrs[action.attr];
-      return rec(head.relation, newAttrs);
+      const newOrder = updateAtIdx(action.order, action.idx, (pair) => ({
+        varName: pair.varName,
+        attr: action.newAttr,
+      }));
+      const pairs = newOrder.map(({ varName, attr }) => ({
+        key: attr,
+        val: varr(varName),
+      }));
+      return rec(head.relation, pairsToObj(pairs));
     }
     case "EditVar":
-      return rec(
-        head.relation,
-        mapObj(head.attrs, (_, term) =>
-          term.type === "Var" && term.name === action.var
-            ? varr(action.newVar)
-            : term
-        )
-      );
+      const newOrder = updateAtIdx(action.order, action.idx, (pair) => ({
+        varName: action.newVar,
+        attr: pair.attr,
+      }));
+      const pairs = newOrder.map(({ varName, attr }) => ({
+        key: attr,
+        val: varr(varName),
+      }));
+      return rec(head.relation, pairsToObj(pairs));
   }
 }
 
