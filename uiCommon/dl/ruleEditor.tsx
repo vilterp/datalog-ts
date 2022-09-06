@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useState } from "react";
 import { gatherVars, pathToVar } from "../../core/gatherVars";
 import {
   Conjunct,
@@ -151,35 +151,58 @@ function ConjunctionEditor(props: {
         </tr>
       </thead>
       <tbody>
-        {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => (
-          <tr key={conjunctIdx}>
-            <td style={TD_STYLES}>
-              {/* TODO: maybe negation checkbox? */}
-              <button
-                onClick={() =>
-                  props.dispatch({ type: "RemoveConjunct", idx: conjunctIdx })
-                }
-              >
-                x
-              </button>{" "}
-              <strong>
-                {conjunct.type === "Record"
-                  ? conjunct.relation
-                  : conjunct.type === "Negation"
-                  ? `!${conjunct.record.relation}`
-                  : "TODO: aggs"}
-              </strong>
-            </td>
-            {vars.map((varName, varIdx) => {
-              const path = pathToVar(conjunct, vars[varIdx]);
-              return (
-                <td key={varName} style={TD_STYLES}>
-                  {path ? path.join(".") : ""}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
+        {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => {
+          const name = conjunctName(conjunct);
+          return (
+            <tr key={conjunctIdx}>
+              <td style={TD_STYLES}>
+                {/* TODO: maybe negation checkbox? */}
+                <button
+                  onClick={() =>
+                    props.dispatch({ type: "RemoveConjunct", idx: conjunctIdx })
+                  }
+                >
+                  x
+                </button>{" "}
+                <strong>
+                  {conjunct.type === "Record"
+                    ? conjunct.relation
+                    : conjunct.type === "Negation"
+                    ? `!${conjunct.record.relation}`
+                    : "TODO: aggs"}
+                </strong>
+              </td>
+              {vars.map((varName, varIdx) => {
+                const path = pathToVar(conjunct, vars[varIdx]);
+                const columns = relationColumns(
+                  props.relations.find((r) => r.name === name)
+                );
+                console.log({ name, varName, columns });
+                return (
+                  <td key={varName} style={TD_STYLES}>
+                    <select
+                      value={path ? path.join(".") : ""}
+                      onChange={(evt) =>
+                        props.dispatch({
+                          type: "EditConjunct",
+                          conjunctIdx,
+                          varIdx,
+                          attr: evt.target.value,
+                        })
+                      }
+                    >
+                      <option></option>
+                      {/* TODO: make relations a dict */}
+                      {columns.map((colName) => (
+                        <option key={colName}>{colName}</option>
+                      ))}
+                    </select>
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
         <tr>
           <td>
             <select
@@ -205,10 +228,32 @@ function ConjunctionEditor(props: {
   );
 }
 
+function conjunctName(conjunct: Conjunct): string {
+  switch (conjunct.type) {
+    case "Record":
+      return conjunct.relation;
+    case "Negation":
+      return conjunct.record.relation;
+    case "Aggregation":
+      return conjunct.record.relation;
+  }
+}
+
+// TODO: move to core utils...?
+function relationColumns(relation: Relation): string[] {
+  console.log("relationColumns", relation);
+  switch (relation.type) {
+    case "Rule":
+      return Object.keys(relation.rule.head.attrs);
+    case "Table":
+      return relation.columns;
+  }
+}
+
 type ConjunctionAction =
   | { type: "AddConjunct"; conjunct: Conjunct }
   | { type: "RemoveConjunct"; idx: number }
-  | { type: "EditConjunct"; idx: number };
+  | { type: "EditConjunct"; conjunctIdx: number; varIdx: number; attr: string };
 
 function conjunctionReducer(
   state: Conjunction,
