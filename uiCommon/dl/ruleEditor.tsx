@@ -49,9 +49,9 @@ export function RuleEditor(props: {
       <thead>
         <tr>
           <th />
-          {order.map((pair, varIdx) => {
+          {order.map((pair, idx) => {
             return (
-              <th key={pair.varName} style={TD_STYLES}>
+              <th key={idx} style={TD_STYLES}>
                 <input
                   size={Math.max(1, pair.attr.length)}
                   value={pair.attr}
@@ -60,7 +60,7 @@ export function RuleEditor(props: {
                       type: "EditHead",
                       action: {
                         type: "EditAttr",
-                        idx: varIdx,
+                        idx,
                         order,
                         newAttr: evt.target.value,
                       },
@@ -74,7 +74,7 @@ export function RuleEditor(props: {
         <tr style={{ borderBottom: "1px solid black" }}>
           <th />
           {order.map((pair, idx) => (
-            <th key={pair.attr} style={TD_STYLES}>
+            <th key={idx} style={TD_STYLES}>
               <input
                 size={Math.max(1, pair.varName.length)}
                 value={pair.varName}
@@ -177,6 +177,7 @@ type HeadAction =
     };
 
 export function headReducer(head: Rec, action: HeadAction): Rec {
+  console.log("headReducer", { head, action });
   switch (action.type) {
     case "EditName":
       return rec(action.name, head.attrs);
@@ -186,10 +187,12 @@ export function headReducer(head: Rec, action: HeadAction): Rec {
         varName: pair.varName,
         attr: action.newAttr,
       }));
-      const pairs = newOrder.map(({ varName, attr }) => ({
-        key: attr,
-        val: varr(varName),
-      }));
+      const pairs = newOrder
+        .filter((p) => p.attr.length > 0)
+        .map(({ varName, attr }) => ({
+          key: attr,
+          val: varr(varName),
+        }));
       return rec(head.relation, pairsToObj(pairs));
     }
     case "EditVar":
@@ -197,10 +200,12 @@ export function headReducer(head: Rec, action: HeadAction): Rec {
         varName: action.newVar,
         attr: pair.attr,
       }));
-      const pairs = newOrder.map(({ varName, attr }) => ({
-        key: attr,
-        val: varr(varName),
-      }));
+      const pairs = newOrder
+        .filter((p) => p.attr.length > 0)
+        .map(({ varName, attr }) => ({
+          key: attr,
+          val: varr(varName),
+        }));
       return rec(head.relation, pairsToObj(pairs));
   }
 }
