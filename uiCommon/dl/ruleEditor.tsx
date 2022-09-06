@@ -274,6 +274,11 @@ function ConjunctionEditor(props: {
   removeDisjunct: () => void;
 }) {
   const [selectedToAdd, setSelectedToAdd] = useState("+");
+  const removeButton = (
+    <button onClick={() => props.removeDisjunct()} title="Remove Disjunct">
+      x
+    </button>
+  );
 
   return (
     <>
@@ -281,18 +286,7 @@ function ConjunctionEditor(props: {
         const name = conjunctName(conjunct);
         return (
           <tr key={conjunctIdx}>
-            <td>
-              {conjunctIdx === 0 ? (
-                <>
-                  <button
-                    onClick={() => props.removeDisjunct()}
-                    title="Remove Disjunct"
-                  >
-                    x
-                  </button>
-                </>
-              ) : null}
-            </td>
+            <td>{conjunctIdx === 0 ? <>{removeButton}</> : null}</td>
             <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
               <button
@@ -342,7 +336,9 @@ function ConjunctionEditor(props: {
         );
       })}
       <tr>
-        <td />
+        <td>
+          {props.conjunction.conjuncts.length === 0 ? removeButton : null}
+        </td>
         <td>
           <select
             value={selectedToAdd}
