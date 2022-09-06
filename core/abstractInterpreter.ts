@@ -1,4 +1,4 @@
-import { Rec, Relation, Res, Rule, Statement } from "./types";
+import { rec, Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
 import {
   DLMain,
@@ -91,7 +91,15 @@ export abstract class AbstractInterpreter {
   getRelation(name: string): Relation | null {
     const table = this.getTables().find((t) => t === name);
     if (table) {
-      return { type: "Table", name: table };
+      const contents = this.queryRec(rec(name, {}));
+      return {
+        type: "Table",
+        name,
+        columns:
+          contents.length > 0
+            ? Object.keys((contents[0].term as Rec).attrs)
+            : [],
+      };
     }
     const rule = this.getRules().find((r) => r.head.relation === name);
     if (rule) {
