@@ -15,7 +15,9 @@ export function gatherVars(rule: Rule): string[] {
     flatMap(disjunct.conjuncts, (conj) => gatherVarsTerm(conj))
   );
   const fromHead = gatherVarsTerm(rule.head);
-  return uniq([...fromHead, ...fromBody]);
+  const all = [...fromHead, ...fromBody];
+  console.log("gatherVars", { all });
+  return uniq(all);
 }
 
 function gatherVarsTerm(term: Term): string[] {
