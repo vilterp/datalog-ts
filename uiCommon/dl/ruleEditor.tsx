@@ -37,6 +37,12 @@ export function RuleEditor(props: {
                     })
                   }
                   relations={props.relations}
+                  removeDisjunct={() =>
+                    props.dispatch({
+                      type: "EditBody",
+                      action: { type: "RemoveDisjunct", idx },
+                    })
+                  }
                 />
               </td>
             ))
@@ -115,6 +121,7 @@ function ConjunctionEditor(props: {
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
   relations: Relation[];
+  removeDisjunct: () => void;
 }) {
   const [selectedToAdd, setSelectedToAdd] = useState("+");
   const vars = gatherVars(props.conjunction.conjuncts);
@@ -133,7 +140,9 @@ function ConjunctionEditor(props: {
           })}
         </tr>
         <tr style={{ borderBottom: "1px solid black" }}>
-          <th />
+          <th>
+            <button onClick={() => props.removeDisjunct()}>x</button>
+          </th>
           {vars.map((varName) => (
             <th key={varName} style={TD_STYLES}>
               {varName}
