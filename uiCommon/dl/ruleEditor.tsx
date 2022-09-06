@@ -10,6 +10,7 @@ import {
   Conjunct,
   Conjunction,
   Disjunction,
+  Rec,
   rec,
   Relation,
   Rule,
@@ -18,6 +19,7 @@ import {
 import {
   intersperse,
   intersperseIdx,
+  mapObj,
   removeAtIdx,
   updateAtIdx,
 } from "../../util/util";
@@ -41,8 +43,21 @@ export function RuleEditor(props: {
             const path = pathToVar(props.rule.head, varName);
             const pathStr = path ? path.join(".") : "";
             return (
-              <th key={varName} style={TD_STYLES}>
-                <input size={Math.max(1, pathStr.length)} value={pathStr} />
+              <th key={pathStr} style={TD_STYLES}>
+                <input
+                  size={Math.max(1, pathStr.length)}
+                  value={pathStr}
+                  onChange={(evt) =>
+                    props.dispatch({
+                      type: "EditHead",
+                      action: {
+                        type: "EditAttr",
+                        attr: pathStr,
+                        newAttr: evt.target.value,
+                      },
+                    })
+                  }
+                />
               </th>
             );
           })}
@@ -51,7 +66,20 @@ export function RuleEditor(props: {
           <th />
           {vars.map((varName) => (
             <th key={varName} style={TD_STYLES}>
-              {varName}
+              <input
+                size={Math.max(1, varName.length)}
+                value={varName}
+                onChange={(evt) =>
+                  props.dispatch({
+                    type: "EditHead",
+                    action: {
+                      type: "EditVar",
+                      var: varName,
+                      newVar: evt.target.value,
+                    },
+                  })
+                }
+              />
             </th>
           ))}
         </tr>
@@ -111,15 +139,42 @@ export function RuleEditor(props: {
 }
 
 type RuleAction =
-  | { type: "EditName"; name: string }
+  | { type: "EditHead"; action: HeadAction }
   | { type: "EditBody"; action: DisjunctionAction };
 
 export function ruleReducer(rule: Rule, action: RuleAction): Rule {
   switch (action.type) {
     case "EditBody":
       return { ...rule, body: disjunctionReducer(rule.body, action.action) };
+    case "EditHead":
+      return { ...rule, head: headReducer(rule.head, action.action) };
+  }
+}
+
+type HeadAction =
+  | { type: "EditName"; name: string }
+  | { type: "EditVar"; var: string; newVar: string }
+  | { type: "EditAttr"; attr: string; newAttr: string };
+
+export function headReducer(head: Rec, action: HeadAction): Rec {
+  switch (action.type) {
     case "EditName":
-      return { ...rule, head: rec(action.name, rule.head.attrs) };
+      return rec(action.name, head.attrs);
+    case "EditAttr": {
+      const newAttrs = { ...head.attrs };
+      newAttrs[action.newAttr] = newAttrs[action.attr];
+      delete newAttrs[action.attr];
+      return rec(head.relation, newAttrs);
+    }
+    case "EditVar":
+      return rec(
+        head.relation,
+        mapObj(head.attrs, (_, term) =>
+          term.type === "Var" && term.name === action.var
+            ? varr(action.newVar)
+            : term
+        )
+      );
   }
 }
 
