@@ -15,7 +15,12 @@ import {
   Rule,
   varr,
 } from "../../core/types";
-import { intersperse, removeAtIdx, updateAtIdx } from "../../util/util";
+import {
+  intersperse,
+  intersperseIdx,
+  removeAtIdx,
+  updateAtIdx,
+} from "../../util/util";
 import { TD_STYLES } from "../explorer/styles";
 
 // === Rule ===
@@ -25,7 +30,7 @@ export function RuleEditor(props: {
   dispatch: (a: RuleAction) => void;
   relations: Relation[];
 }) {
-  const vars = gatherVars(props.rule);
+  const vars = gatherVars(props.rule).sort();
 
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
@@ -43,6 +48,7 @@ export function RuleEditor(props: {
           })}
         </tr>
         <tr style={{ borderBottom: "1px solid black" }}>
+          <th />
           {vars.map((varName) => (
             <th key={varName} style={TD_STYLES}>
               {varName}
@@ -51,12 +57,27 @@ export function RuleEditor(props: {
         </tr>
       </thead>
       <tbody>
-        {intersperse(
-          <tr>
-            <td colSpan={vars.length + 1}>or</td>
-          </tr>,
+        {intersperseIdx(
+          (idx) => (
+            <tr key={`sep${idx}`}>
+              <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
+                or{" "}
+                <button
+                  onClick={() =>
+                    props.dispatch({
+                      type: "EditBody",
+                      action: { type: "RemoveDisjunct", idx: idx + 1 },
+                    })
+                  }
+                >
+                  x
+                </button>
+              </td>
+            </tr>
+          ),
           props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
             <ConjunctionEditor
+              key={`disjunct${disjunctIdx}`}
               vars={vars}
               rule={props.rule}
               conjunction={conjunction}
@@ -71,7 +92,7 @@ export function RuleEditor(props: {
           ))
         )}
         <tr>
-          <td>
+          <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
             <button
               onClick={() =>
                 props.dispatch({
