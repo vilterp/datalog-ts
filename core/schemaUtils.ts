@@ -1,7 +1,9 @@
+import { alphabetToNum, numToAlphabet } from "../util/alphabet";
 import {
   flatMap,
   flatMapObjToList,
   mapObjToList,
+  max,
   maxOfStrings,
   pairsToObj,
   uniq,
@@ -88,17 +90,10 @@ export function varsForRelation(relation: Relation): string[] {
   }
 }
 
-const ALPHABET = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
-
 // TODO: something more robust...
 export function nextVar(existingVars: string[]) {
-  if (existingVars.length === 0) {
-    return ALPHABET[0];
-  }
-  const highestExisting = maxOfStrings(existingVars);
-  const idx = ALPHABET.indexOf(highestExisting[0]);
-  console.log("nextVar", { highestExisting, idx });
-  return ALPHABET[idx + 1];
+  const nums = existingVars.map(alphabetToNum);
+  return numToAlphabet(max(nums) + 1);
 }
 
 export function conjunctName(conjunct: Conjunct): string {
