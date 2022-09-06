@@ -10,7 +10,12 @@ import {
   Rule,
   varr,
 } from "../../core/types";
-import { intersperse, removeAtIdx, updateAtIdx } from "../../util/util";
+import {
+  intersperse,
+  pairsToObj,
+  removeAtIdx,
+  updateAtIdx,
+} from "../../util/util";
 import { TD_STYLES } from "../explorer/styles";
 
 // === Rule ===
@@ -210,7 +215,7 @@ function ConjunctionEditor(props: {
               onChange={(evt) => {
                 props.dispatch({
                   type: "AddConjunct",
-                  conjunct: rec(evt.target.value, {}),
+                  conjunct: newConjunct(evt.target.value, props.relations),
                 });
                 setSelectedToAdd("+");
               }}
@@ -225,6 +230,17 @@ function ConjunctionEditor(props: {
         </tr>
       </tbody>
     </table>
+  );
+}
+
+function newConjunct(name: string, relations: Relation[]): Conjunct {
+  const relation = relations.find((r) => r.name === name);
+  const columns = relationColumns(relation);
+  return rec(
+    name,
+    pairsToObj(
+      columns.map((col) => ({ key: col, val: varr(col.toUpperCase()) }))
+    )
   );
 }
 
