@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { ppt } from "../../core/pretty";
 import {
   conjunctName,
   gatherVars,
-  nextVar,
+  newConjunct,
   pathToVar,
   relationColumns,
 } from "../../core/schemaUtils";
@@ -11,19 +10,12 @@ import {
   Conjunct,
   Conjunction,
   Disjunction,
-  Rec,
   rec,
   Relation,
   Rule,
-  Term,
   varr,
 } from "../../core/types";
-import {
-  intersperse,
-  pairsToObj,
-  removeAtIdx,
-  updateAtIdx,
-} from "../../util/util";
+import { intersperse, removeAtIdx, updateAtIdx } from "../../util/util";
 import { TD_STYLES } from "../explorer/styles";
 
 // === Rule ===
@@ -33,35 +25,52 @@ export function RuleEditor(props: {
   dispatch: (a: RuleAction) => void;
   relations: Relation[];
 }) {
+  const vars = gatherVars(props.rule);
+
   return (
-    <table style={{ fontFamily: "monospace" }}>
-      <tbody>
+    <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
+      <thead>
         <tr>
-          {intersperse(
-            <td>or</td>,
-            props.rule.body.disjuncts.map((opt, idx) => (
-              <td key={idx}>
-                <ConjunctionEditor
-                  head={props.rule.head}
-                  conjunction={opt}
-                  dispatch={(action) =>
-                    props.dispatch({
-                      type: "EditBody",
-                      action: { type: "EditDisjunct", idx, action },
-                    })
-                  }
-                  relations={props.relations}
-                  removeDisjunct={() =>
-                    props.dispatch({
-                      type: "EditBody",
-                      action: { type: "RemoveDisjunct", idx },
-                    })
-                  }
-                />
-              </td>
-            ))
-          )}
-          <td>or</td>
+          <th />
+          {vars.map((varName) => {
+            const path = pathToVar(props.rule.head, varName);
+            const pathStr = path ? path.join(".") : "";
+            return (
+              <th key={varName} style={TD_STYLES}>
+                <input size={Math.max(1, pathStr.length)} value={pathStr} />
+              </th>
+            );
+          })}
+        </tr>
+        <tr style={{ borderBottom: "1px solid black" }}>
+          {vars.map((varName) => (
+            <th key={varName} style={TD_STYLES}>
+              {varName}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {intersperse(
+          <tr>
+            <td colSpan={vars.length + 1}>or</td>
+          </tr>,
+          props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
+            <ConjunctionEditor
+              vars={vars}
+              rule={props.rule}
+              conjunction={conjunction}
+              dispatch={(action) =>
+                props.dispatch({
+                  type: "EditBody",
+                  action: { type: "EditDisjunct", idx: disjunctIdx, action },
+                })
+              }
+              relations={props.relations}
+            />
+          ))
+        )}
+        <tr>
           <td>
             <button
               onClick={() =>
@@ -131,140 +140,93 @@ function disjunctionReducer(
 // === Conjunction ===
 
 function ConjunctionEditor(props: {
-  head: Rec;
+  vars: string[];
+  rule: Rule;
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
-  removeDisjunct: () => void;
   relations: Relation[];
 }) {
   const [selectedToAdd, setSelectedToAdd] = useState("+");
-  const vars = gatherVars(props.conjunction.conjuncts);
-  return (
-    <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
-      <thead>
-        <tr>
-          <th />
-          {vars.map((varName) => {
-            const path = pathToVar(props.head, varName);
-            const pathStr = path ? path.join(".") : "";
-            return (
-              <th key={varName} style={TD_STYLES}>
-                <input size={Math.max(1, pathStr.length)} value={pathStr} />
-              </th>
-            );
-          })}
-        </tr>
-        <tr style={{ borderBottom: "1px solid black" }}>
-          <th>
-            <button onClick={() => props.removeDisjunct()}>x</button>
-          </th>
-          {vars.map((varName) => (
-            <th key={varName} style={TD_STYLES}>
-              {varName}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => {
-          const name = conjunctName(conjunct);
-          return (
-            <tr key={conjunctIdx}>
-              <td style={TD_STYLES}>
-                {/* TODO: maybe negation checkbox? */}
-                <button
-                  onClick={() =>
-                    props.dispatch({ type: "RemoveConjunct", idx: conjunctIdx })
-                  }
-                >
-                  x
-                </button>{" "}
-                <strong>
-                  {conjunct.type === "Record"
-                    ? conjunct.relation
-                    : conjunct.type === "Negation"
-                    ? `!${conjunct.record.relation}`
-                    : "TODO: aggs"}
-                </strong>
-              </td>
-              {vars.map((varName, varIdx) => {
-                const path = pathToVar(conjunct, vars[varIdx]);
-                const columns = relationColumns(
-                  props.relations.find((r) => r.name === name)
-                );
-                return (
-                  <td key={varName} style={TD_STYLES}>
-                    <select
-                      value={path ? path.join(".") : ""}
-                      onChange={(evt) =>
-                        props.dispatch({
-                          type: "EditConjunct",
-                          conjunctIdx,
-                          varName,
-                          attr: evt.target.value,
-                        })
-                      }
-                    >
-                      <option></option>
-                      {/* TODO: make relations a dict */}
-                      {columns.map((colName) => (
-                        <option key={colName}>{colName}</option>
-                      ))}
-                    </select>
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-        <tr>
-          <td>
-            <select
-              value={selectedToAdd}
-              onChange={(evt) => {
-                props.dispatch({
-                  type: "AddConjunct",
-                  conjunct: newConjunct(
-                    evt.target.value,
-                    props.conjunction.conjuncts,
-                    props.relations
-                  ),
-                });
-                setSelectedToAdd("+");
-              }}
-            >
-              <option>+</option>
-              {props.relations.map((relation) => (
-                <option key={relation.name}>{relation.name}</option>
-              ))}
-            </select>
-          </td>
-          <td colSpan={vars.length}></td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
 
-function newConjunct(
-  name: string,
-  conjuncts: Conjunct[],
-  relations: Relation[]
-): Conjunct {
-  const relation = relations.find((r) => r.name === name);
-  const columns = relationColumns(relation);
-  const pairs: { key: string; val: Term }[] = [];
-  const existingVars = gatherVars(conjuncts);
-  columns.forEach((col) => {
-    const newVar = nextVar(existingVars);
-    existingVars.push(newVar);
-    pairs.push({
-      key: col,
-      val: varr(newVar),
-    });
-  });
-  const res = rec(name, pairsToObj(pairs));
-  return res;
+  return (
+    <>
+      {props.conjunction.conjuncts.map((conjunct, conjunctIdx) => {
+        const name = conjunctName(conjunct);
+        return (
+          <tr key={conjunctIdx}>
+            <td style={TD_STYLES}>
+              {/* TODO: maybe negation checkbox? */}
+              <button
+                onClick={() =>
+                  props.dispatch({ type: "RemoveConjunct", idx: conjunctIdx })
+                }
+              >
+                x
+              </button>{" "}
+              <strong>
+                {conjunct.type === "Record"
+                  ? conjunct.relation
+                  : conjunct.type === "Negation"
+                  ? `!${conjunct.record.relation}`
+                  : "TODO: aggs"}
+              </strong>
+            </td>
+            {props.vars.map((varName, varIdx) => {
+              const path = pathToVar(conjunct, props.vars[varIdx]);
+              const columns = relationColumns(
+                props.relations.find((r) => r.name === name)
+              );
+              return (
+                <td key={varName} style={TD_STYLES}>
+                  <select
+                    value={path ? path.join(".") : ""}
+                    onChange={(evt) =>
+                      props.dispatch({
+                        type: "EditConjunct",
+                        conjunctIdx,
+                        varName,
+                        attr: evt.target.value,
+                      })
+                    }
+                  >
+                    <option></option>
+                    {/* TODO: make relations a dict */}
+                    {columns.map((colName) => (
+                      <option key={colName}>{colName}</option>
+                    ))}
+                  </select>
+                </td>
+              );
+            })}
+          </tr>
+        );
+      })}
+      <tr>
+        <td>
+          <select
+            value={selectedToAdd}
+            onChange={(evt) => {
+              props.dispatch({
+                type: "AddConjunct",
+                conjunct: newConjunct(
+                  evt.target.value,
+                  props.rule,
+                  props.relations
+                ),
+              });
+              setSelectedToAdd("+");
+            }}
+          >
+            <option>+</option>
+            {props.relations.map((relation) => (
+              <option key={relation.name}>{relation.name}</option>
+            ))}
+          </select>
+        </td>
+        <td colSpan={props.vars.length}></td>
+      </tr>
+    </>
+  );
 }
 
 type ConjunctionAction =
