@@ -51,7 +51,7 @@ export function RuleEditor(props: {
           <th />
           {order.map((pair, varIdx) => {
             return (
-              <th key={pair.attr} style={TD_STYLES}>
+              <th key={pair.varName} style={TD_STYLES}>
                 <input
                   size={Math.max(1, pair.attr.length)}
                   value={pair.attr}
@@ -74,7 +74,7 @@ export function RuleEditor(props: {
         <tr style={{ borderBottom: "1px solid black" }}>
           <th />
           {order.map((pair, idx) => (
-            <th key={pair.varName} style={TD_STYLES}>
+            <th key={pair.attr} style={TD_STYLES}>
               <input
                 size={Math.max(1, pair.varName.length)}
                 value={pair.varName}
