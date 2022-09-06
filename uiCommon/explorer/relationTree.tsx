@@ -1,6 +1,6 @@
 import React, { CSSProperties, useMemo } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { UserError } from "../../core/types";
+import { Rec, rec, UserError } from "../../core/types";
 import { filterTree, insertAtPath, node, Tree } from "../../util/tree";
 import { contains, lastItem, sortBy, toggle } from "../../util/util";
 import { HighlightProps, noHighlight } from "../dl/term";
@@ -139,6 +139,7 @@ function Status(props: { status: RelationStatus; highlighted: boolean }) {
   }
 }
 
+// TODO: this should probably be in AbstractInterpreter
 function getRulesAndTables(interp: AbstractInterpreter): {
   rules: RelationWithStatus[];
   tables: RelationWithStatus[];
@@ -147,22 +148,19 @@ function getRulesAndTables(interp: AbstractInterpreter): {
     interp.getRules(),
     (r) => r.head.relation
   ).map((rule) => ({
-    relation: { type: "Rule", name: rule.head.relation, rule },
+    relation: interp.getRelation(rule.head.relation),
     status: getStatus(interp, rule.head.relation),
   }));
   const allTables: RelationWithStatus[] = [
     ...interp
       .getTables()
       .sort()
-      .map(
-        (name): RelationWithStatus => ({
-          relation: {
-            type: "Table",
-            name,
-          },
+      .map((name): RelationWithStatus => {
+        return {
+          relation: interp.getRelation(name),
           status: getStatus(interp, name),
-        })
-      ),
+        };
+      }),
     // TODO: virtual tables
   ];
   return { rules: allRules, tables: allTables };

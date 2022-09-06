@@ -6,7 +6,7 @@ import {
   uniq,
 } from "../util/util";
 import { ppt } from "./pretty";
-import { Conjunct, Term } from "./types";
+import { Conjunct, Relation, Term } from "./types";
 
 export function gatherVars(conjuncts: Conjunct[]): string[] {
   const all = flatMap(conjuncts, (conj) => gatherVarsTerm(conj));
@@ -79,4 +79,14 @@ export function pathToVar(term: Term, varName: string): string[] {
   })();
   console.log("pathToVar", { term: ppt(term), varName, res });
   return res;
+}
+
+export function varsForRelation(relation: Relation): string[] {
+  switch (relation.type) {
+    case "Rule":
+      return gatherVarsTerm(relation.rule.head);
+    case "Table":
+      // TODO: get columns for table
+      return [];
+  }
 }
