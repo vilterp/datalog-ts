@@ -48,7 +48,8 @@ export function RuleEditor(props: {
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
         <tr>
-          <th />
+          <th /> {/* 'or' control */}
+          <th /> {/* relation name */}
           {order.map((pair, idx) => {
             return (
               <th key={idx} style={TD_STYLES}>
@@ -109,17 +110,7 @@ export function RuleEditor(props: {
           (idx) => (
             <tr key={`sep${idx}`}>
               <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
-                or{" "}
-                <button
-                  onClick={() =>
-                    props.dispatch({
-                      type: "EditBody",
-                      action: { type: "RemoveDisjunct", idx: idx + 1 },
-                    })
-                  }
-                >
-                  x
-                </button>
+                {" "}
               </td>
             </tr>
           ),
@@ -136,11 +127,19 @@ export function RuleEditor(props: {
                 })
               }
               relations={props.relations}
+              removeDisjunct={() =>
+                props.dispatch({
+                  type: "EditBody",
+                  action: { type: "RemoveDisjunct", idx: disjunctIdx },
+                })
+              }
+              disjunctIdx={disjunctIdx}
             />
           ))
         )}
         <tr>
-          <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
+          <td colSpan={vars.length + 2}>
+            or{" "}
             <button
               onClick={() =>
                 props.dispatch({
@@ -269,6 +268,8 @@ function ConjunctionEditor(props: {
   conjunction: Conjunction;
   dispatch: (a: ConjunctionAction) => void;
   relations: Relation[];
+  disjunctIdx: number;
+  removeDisjunct: () => void;
 }) {
   const [selectedToAdd, setSelectedToAdd] = useState("+");
 
@@ -278,6 +279,17 @@ function ConjunctionEditor(props: {
         const name = conjunctName(conjunct);
         return (
           <tr key={conjunctIdx}>
+            <td>
+              {conjunctIdx === 0 ? (
+                props.disjunctIdx > 0 ? (
+                  <>
+                    <button onClick={() => props.removeDisjunct()}>x</button> or
+                  </>
+                ) : null
+              ) : (
+                ""
+              )}
+            </td>
             <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
               <button
@@ -326,6 +338,7 @@ function ConjunctionEditor(props: {
         );
       })}
       <tr>
+        <td />
         <td>
           <select
             value={selectedToAdd}
