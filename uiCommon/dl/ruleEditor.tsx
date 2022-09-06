@@ -90,6 +90,16 @@ export function RuleEditor(props: {
                   })
                 }
               />
+              <button
+                onClick={() =>
+                  props.dispatch({
+                    type: "EditHead",
+                    action: { type: "DeleteColumn", order, idx },
+                  })
+                }
+              >
+                x
+              </button>
             </th>
           ))}
         </tr>
@@ -161,20 +171,23 @@ export function ruleReducer(rule: Rule, action: RuleAction): Rule {
   }
 }
 
+type Order = { varName: string; attr: string }[];
+
 type HeadAction =
   | { type: "EditName"; name: string }
   | {
       type: "EditVar";
       idx: number;
-      order: { varName: string; attr: string }[];
+      order: Order;
       newVar: string;
     }
   | {
       type: "EditAttr";
       idx: number;
-      order: { varName: string; attr: string }[];
+      order: Order;
       newAttr: string;
-    };
+    }
+  | { type: "DeleteColumn"; order: Order; idx: number };
 
 export function headReducer(head: Rec, action: HeadAction): Rec {
   console.log("headReducer", { head, action });
@@ -187,23 +200,30 @@ export function headReducer(head: Rec, action: HeadAction): Rec {
         varName: pair.varName,
         attr: action.newAttr,
       }));
-      const pairs = newOrder.map(({ varName, attr }) => ({
-        key: attr,
-        val: varr(varName),
-      }));
-      return rec(head.relation, pairsToObj(pairs));
+      return helper(head.relation, newOrder);
     }
-    case "EditVar":
+    case "EditVar": {
       const newOrder = updateAtIdx(action.order, action.idx, (pair) => ({
         varName: action.newVar,
         attr: pair.attr,
       }));
-      const pairs = newOrder.map(({ varName, attr }) => ({
-        key: attr,
-        val: varr(varName),
-      }));
-      return rec(head.relation, pairsToObj(pairs));
+      return helper(head.relation, newOrder);
+    }
+    case "DeleteColumn": {
+      const newOrder = removeAtIdx(action.order, action.idx);
+      return helper(head.relation, newOrder);
+    }
   }
+}
+
+function helper(relation: string, newOrder: Order): Rec {
+  const pairs = newOrder
+    .filter((p) => p.attr != "")
+    .map(({ varName, attr }) => ({
+      key: attr,
+      val: varr(varName),
+    }));
+  return rec(relation, pairsToObj(pairs));
 }
 
 // === Disjunction ===
