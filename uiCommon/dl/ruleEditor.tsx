@@ -75,6 +75,7 @@ export function RuleEditor(props: {
                       action: { type: "DeleteColumn", order, idx },
                     })
                   }
+                  title="Delete Column"
                 >
                   x
                 </button>
@@ -147,6 +148,7 @@ export function RuleEditor(props: {
                   action: { type: "AddDisjunct" },
                 })
               }
+              title="Add Disjunct"
             >
               +
             </button>
@@ -281,14 +283,15 @@ function ConjunctionEditor(props: {
           <tr key={conjunctIdx}>
             <td>
               {conjunctIdx === 0 ? (
-                props.disjunctIdx > 0 ? (
-                  <>
-                    <button onClick={() => props.removeDisjunct()}>x</button> or
-                  </>
-                ) : null
-              ) : (
-                ""
-              )}
+                <>
+                  <button
+                    onClick={() => props.removeDisjunct()}
+                    title="Remove Disjunct"
+                  >
+                    x
+                  </button>
+                </>
+              ) : null}
             </td>
             <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
@@ -296,6 +299,7 @@ function ConjunctionEditor(props: {
                 onClick={() =>
                   props.dispatch({ type: "RemoveConjunct", idx: conjunctIdx })
                 }
+                title="Remove Conjunct"
               >
                 x
               </button>{" "}
