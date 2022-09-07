@@ -4,37 +4,37 @@ import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
 import { removeKey } from "../util/util";
 
-export type Builtin = (rec: Rec) => Rec[];
+export type Builtin = { head: Rec; fun: (rec: Rec) => Rec[] };
 
 export const BUILTINS: { [name: string]: Builtin } = {
   // comparisons
-  "base.eq": eq,
-  "base.neq": neq,
-  "base.lte": lte,
-  "base.gte": gte,
-  "base.lt": lt,
-  "base.gt": gt,
+  "base.eq": { head: rec("base.eq", {}), fun: eq },
+  "base.neq": { head: rec("base.neq", {}), fun: neq },
+  "base.lte": { head: rec("base.lte", {}), fun: lte },
+  "base.gte": { head: rec("base.gte", {}), fun: gte },
+  "base.lt": { head: rec("base.lt", {}), fun: lt },
+  "base.gt": { head: rec("base.gt", {}), fun: gt },
   // arithmetic
-  "base.add": add,
-  "base.mul": mul,
-  "math.sin": sin,
+  "base.add": { head: rec("base.add", {}), fun: add },
+  "base.mul": { head: rec("base.mul", {}), fun: mul },
+  "math.sin": { head: rec("math.sin", {}), fun: sin },
   // misc
-  range,
-  concat,
-  invert,
-  clamp,
+  range: { head: rec("range", {}), fun: range },
+  concat: { head: rec("concat", {}), fun: concat },
+  invert: { head: rec("invert", {}), fun: invert },
+  clamp: { head: rec("clamp", {}), fun: clamp },
   // dict
-  "dict.set": dictSet,
-  "dict.item": dictItem,
-  "dict.remove": dictRemove,
+  "dict.set": { head: rec("dict.set", {}), fun: dictSet },
+  "dict.item": { head: rec("dict.item", {}), fun: dictItem },
+  "dict.remove": { head: rec("dict.remove", {}), fun: dictRemove },
   // array
-  "array.append": arrayAppend,
-  "array.prepend": arrayPrepend,
-  "array.item": arrayItem,
+  "array.append": { head: rec("array.append", {}), fun: arrayAppend },
+  "array.prepend": { head: rec("array.prepend", {}), fun: arrayPrepend },
+  "array.item": { head: rec("array.item", {}), fun: arrayItem },
   // type tests
-  "base.int": isInt,
+  "base.int": { head: rec("base.int", {}), fun: isInt },
   // conversions
-  intToString: intToString,
+  intToString: { head: rec("intToString", {}), fun: intToString },
 };
 
 function eq(input: Rec): Rec[] {

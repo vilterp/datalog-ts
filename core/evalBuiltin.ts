@@ -5,7 +5,7 @@ import { substitute, unify } from "./unify";
 export function evalBuiltin(term: Rec, scope: Bindings) {
   const builtin = BUILTINS[term.relation];
   const substituted = substitute(term, scope) as Rec;
-  const records = builtin(substituted);
+  const records = builtin.fun(substituted);
   // console.log("evalBuiltin", {
   //   substituted: ppt(substituted),
   //   res: records.map(ppt),
