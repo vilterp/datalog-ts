@@ -87,6 +87,8 @@ function RelationContents(props: {
               bindings: {},
               trace: { type: "BaseFactTrace", fact: res.term },
             }))
+          : relation.type === "Builtin"
+          ? []
           : props.interp.queryRec(relation.rule.head);
       return [results, ""];
     } catch (e) {

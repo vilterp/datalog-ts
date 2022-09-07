@@ -17,10 +17,7 @@ import {
   varr,
 } from "../../core/types";
 import {
-  intersperse,
   intersperseIdx,
-  mapListToObj,
-  mapObj,
   pairsToObj,
   removeAtIdx,
   updateAtIdx,
@@ -48,9 +45,12 @@ export function RuleEditor(props: {
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
         <tr style={{ borderBottom: "1px solid black" }}>
-          <th /> {/* 'or' control */}
-          <th /> {/* delete conjunct button */}
-          <th /> {/* conjunct name */}
+          {/* 'or' control */}
+          <th />
+          {/* delete conjunct button */}
+          <th />
+          {/* conjunct name */}
+          <th />
           {order.map((pair, idx) => {
             return (
               <th key={idx} style={TD_STYLE}>
@@ -316,9 +316,8 @@ function ConjunctionEditor(props: {
             </td>
             {props.vars.map((varName, varIdx) => {
               const path = pathToVar(conjunct, props.vars[varIdx]);
-              const columns = relationColumns(
-                props.relations.find((r) => r.name === name)
-              );
+              const relation = props.relations.find((r) => r.name === name);
+              const columns = relationColumns(relation);
               return (
                 <td key={varName} style={TD_STYLE}>
                   <select

@@ -4,7 +4,6 @@ import {
   flatMapObjToList,
   mapObjToList,
   max,
-  maxOfStrings,
   pairsToObj,
   uniq,
 } from "../util/util";
@@ -116,6 +115,8 @@ export function relationColumns(relation: Relation): string[] {
     case "Rule":
       return Object.keys(relation.rule.head.attrs);
     case "Table":
+      return relation.columns;
+    case "Builtin":
       return relation.columns;
   }
 }
