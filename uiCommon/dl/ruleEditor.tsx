@@ -86,8 +86,10 @@ export function RuleEditor(props: {
         </tr>
         {/* <tr style={{ borderBottom: "1px solid black" }}>
           <th />
+          <th />
+          <th />
           {order.map((pair, idx) => (
-            <th key={idx} style={TD_STYLES}>
+            <th key={idx} style={TD_STYLE}>
               <input
                 size={Math.max(1, pair.varName.length)}
                 value={pair.varName}
@@ -191,7 +193,6 @@ type HeadAction =
   | { type: "DeleteColumn"; order: Order; idx: number };
 
 export function headReducer(head: Rec, action: HeadAction): Rec {
-  console.log("headReducer", { head, action });
   switch (action.type) {
     case "EditName":
       return rec(action.name, head.attrs);
@@ -348,7 +349,8 @@ function ConjunctionEditor(props: {
         <td style={{ borderLeft: "1px solid lightgrey" }}>
           {props.conjunction.conjuncts.length === 0 ? removeButton : null}
         </td>
-        <td /> {/* delete conjunct button */}
+        {/* delete conjunct button */}
+        <td />
         <td style={TD_STYLE}>
           <select
             value={selectedToAdd}
