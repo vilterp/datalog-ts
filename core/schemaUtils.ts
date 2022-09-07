@@ -78,7 +78,7 @@ export function pathToVar(term: Term, varName: string): string[] {
     case "Negation":
       return pathToVar(term.record, varName);
     default:
-      return [];
+      return null;
   }
 }
 
