@@ -27,14 +27,14 @@ export type Bindings = { [key: string]: Term };
 export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
-  body: OrExpr;
+  body: Disjunction;
 };
 
-export type OrExpr = { type: "Or"; opts: AndExpr[] };
+export type Disjunction = { type: "Disjunction"; disjuncts: Conjunction[] };
 
-export type AndExpr = { type: "And"; clauses: AndClause[] };
+export type Conjunction = { type: "Conjunction"; conjuncts: Conjunct[] };
 
-export type AndClause = Rec | Negation | Aggregation;
+export type Conjunct = Rec | Negation | Aggregation;
 
 type Negation = { type: "Negation"; record: Rec };
 
@@ -47,15 +47,7 @@ type Aggregation = {
 
 // === Terms ===
 
-export type Term =
-  | Rec
-  | Dict
-  | StringLit
-  | Var
-  | AndClause
-  | Bool
-  | Int
-  | Array;
+export type Term = Rec | Dict | StringLit | Var | Conjunct | Bool | Int | Array;
 
 export type Var = { type: "Var"; name: string };
 
@@ -83,16 +75,16 @@ export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 
 // rule helpers
 
-export function rule(head: Rec, body: OrExpr): Rule {
+export function rule(head: Rec, body: Disjunction): Rule {
   return { head, body };
 }
 
-export function or(opts: AndExpr[]): OrExpr {
-  return { type: "Or", opts };
+export function or(opts: Conjunction[]): Disjunction {
+  return { type: "Disjunction", disjuncts: opts };
 }
 
-export function and(clauses: AndClause[]): AndExpr {
-  return { type: "And", clauses };
+export function and(clauses: Conjunct[]): Conjunction {
+  return { type: "Conjunction", conjuncts: clauses };
 }
 
 // term helpers

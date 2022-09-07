@@ -105,8 +105,8 @@ function replayFacts(
 }
 
 function getRoots(rule: Rule): NodeID[] {
-  return flatMap(rule.body.opts, (opt) => {
-    return filterMap(opt.clauses, (andClause) => {
+  return flatMap(rule.body.disjuncts, (opt) => {
+    return filterMap(opt.conjuncts, (andClause) => {
       if (andClause.type === "Negation") {
         return andClause.record.relation;
       }

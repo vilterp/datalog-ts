@@ -22,11 +22,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "parent",
@@ -265,11 +265,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "parent",
@@ -336,11 +336,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "parent",
@@ -393,11 +393,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "child",
@@ -450,11 +450,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "parent",
@@ -507,11 +507,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "mother",
@@ -529,8 +529,8 @@ application/json
             ]
           },
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "father",
@@ -569,11 +569,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "mother",
@@ -698,11 +698,11 @@ application/json
         "attrs": {}
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Negation",
                 "record": {
@@ -738,11 +738,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Aggregation",
                 "aggregation": "sum",
@@ -866,11 +866,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Aggregation",
                 "aggregation": "sum",
@@ -957,11 +957,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "parents",
@@ -1051,11 +1051,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "time",
@@ -1161,11 +1161,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "base.lt",
@@ -1211,11 +1211,11 @@ application/json
         }
       },
       "body": {
-        "type": "Or",
-        "opts": [
+        "type": "Disjunction",
+        "disjuncts": [
           {
-            "type": "And",
-            "clauses": [
+            "type": "Conjunction",
+            "conjuncts": [
               {
                 "type": "Record",
                 "relation": "base.eq",

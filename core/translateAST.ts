@@ -9,7 +9,7 @@ import {
 import { deEscape } from "../languageWorkbench/parserlib/types";
 import { mapListToObj, pairsToObj } from "../util/util";
 import {
-  AndClause,
+  Conjunct,
   array,
   bool,
   dict,
@@ -62,10 +62,10 @@ export function parserRuleToInternal(term: DLRule): Rule {
   return {
     head: parserTermToInternal(term.record) as Rec,
     body: {
-      type: "Or",
-      opts: term.disjunct.map((disjunct) => ({
-        type: "And",
-        clauses: disjunct.conjunct.map((conjunct): AndClause => {
+      type: "Disjunction",
+      disjuncts: term.disjunct.map((disjunct) => ({
+        type: "Conjunction",
+        conjuncts: disjunct.conjunct.map((conjunct): Conjunct => {
           switch (conjunct.type) {
             case "AssignmentOnLeft":
             case "AssignmentOnRight":

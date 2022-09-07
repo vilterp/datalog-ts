@@ -1,40 +1,133 @@
 import { ppt } from "./pretty";
-import { array, dict, int, rec, Rec, str } from "./types";
+import { array, dict, int, rec, Rec, str, varr } from "./types";
 import { termCmp, termEq } from "./unify";
 import * as util from "../util/util";
 import { removeKey } from "../util/util";
 
-export type Builtin = (rec: Rec) => Rec[];
+export type Builtin = { head: Rec; fun: (rec: Rec) => Rec[] };
 
 export const BUILTINS: { [name: string]: Builtin } = {
   // comparisons
-  "base.eq": eq,
-  "base.neq": neq,
-  "base.lte": lte,
-  "base.gte": gte,
-  "base.lt": lt,
-  "base.gt": gt,
+  "base.eq": { head: rec("base.eq", { a: varr("A"), b: varr("B") }), fun: eq },
+  "base.neq": {
+    head: rec("base.neq", { a: varr("A"), b: varr("B") }),
+    fun: neq,
+  },
+  "base.lte": {
+    head: rec("base.lte", { a: varr("A"), b: varr("B") }),
+    fun: lte,
+  },
+  "base.gte": {
+    head: rec("base.gte", { a: varr("A"), b: varr("B") }),
+    fun: gte,
+  },
+  "base.lt": { head: rec("base.lt", { a: varr("A"), b: varr("B") }), fun: lt },
+  "base.gt": { head: rec("base.gt", { a: varr("A"), b: varr("B") }), fun: gt },
   // arithmetic
-  "base.add": add,
-  "base.mul": mul,
-  "math.sin": sin,
+  "base.add": {
+    head: rec("base.add", { a: varr("A"), b: varr("B"), res: varr("Res") }),
+    fun: add,
+  },
+  "base.mul": {
+    head: rec("base.mul", { a: varr("A"), b: varr("B"), res: varr("Res") }),
+    fun: mul,
+  },
+  "math.sin": {
+    head: rec("math.sin", { a: varr("A"), b: varr("B"), res: varr("Res") }),
+    fun: sin,
+  },
   // misc
-  range,
-  concat,
-  invert,
-  clamp,
+  range: {
+    head: rec("range", {
+      from: varr("From"),
+      to: varr("To"),
+      res: varr("Res"),
+    }),
+    fun: range,
+  },
+  concat: {
+    head: rec("concat", { a: varr("A"), b: varr("B"), res: varr("Res") }),
+    fun: concat,
+  },
+  invert: {
+    head: rec("invert", { a: varr("A"), res: varr("Res") }),
+    fun: invert,
+  },
+  clamp: {
+    head: rec("clamp", {
+      min: varr("Min"),
+      max: varr("Max"),
+      val: varr("Val"),
+      res: varr("Res"),
+    }),
+    fun: clamp,
+  },
   // dict
-  "dict.set": dictSet,
-  "dict.item": dictItem,
-  "dict.remove": dictRemove,
+  "dict.set": {
+    head: rec("dict.set", {
+      in: varr("In"),
+      key: varr("Key"),
+      value: varr("Value"),
+      out: varr("Out"),
+    }),
+    fun: dictSet,
+  },
+  "dict.item": {
+    head: rec("dict.item", {
+      dict: varr("Dict"),
+      key: varr("Key"),
+      value: varr("Value"),
+    }),
+    fun: dictItem,
+  },
+  "dict.remove": {
+    head: rec("dict.remove", {
+      in: varr("In"),
+      key: varr("Key"),
+      out: varr("Out"),
+    }),
+    fun: dictRemove,
+  },
   // array
-  "array.append": arrayAppend,
-  "array.prepend": arrayPrepend,
-  "array.item": arrayItem,
+  "array.append": {
+    head: rec("array.append", {
+      in: varr("In"),
+      value: varr("Value"),
+      out: varr("Out"),
+    }),
+    fun: arrayAppend,
+  },
+  "array.prepend": {
+    head: rec("array.prepend", {
+      in: varr("In"),
+      value: varr("Value"),
+      out: varr("Out"),
+    }),
+    fun: arrayPrepend,
+  },
+  "array.item": {
+    head: rec("array.item", {
+      array: varr("Array"),
+      index: varr("Index"),
+      value: varr("Value"),
+    }),
+    fun: arrayItem,
+  },
   // type tests
-  "base.int": isInt,
+  "base.int": {
+    head: rec("base.int", {
+      a: varr("A"),
+    }),
+    fun: isInt,
+  },
   // conversions
-  intToString: intToString,
+  intToString: {
+    head: rec("intToString", {
+      int: varr("Int"),
+      string: varr("String"),
+    }),
+    fun: intToString,
+  },
 };
 
 function eq(input: Rec): Rec[] {

@@ -1,5 +1,5 @@
 import {
-  AndClause,
+  Conjunct,
   Bindings,
   Res,
   Term,
@@ -42,7 +42,7 @@ function doJoin(
   invokeLoc: InvocationLocation,
   db: DB,
   scope: Bindings,
-  clauses: AndClause[],
+  clauses: Conjunct[],
   cache: Cache
 ): Res[] {
   if (clauses.length === 0) {
@@ -171,16 +171,19 @@ function doEvaluate(
             //   newScope: ppb(newScope),
             // });
             const mappings = getMappings(rule.head.attrs, term.attrs);
-            const rawResults = flatMap(rule.body.opts, (andExpr, optIdx) => {
-              return doJoin(
-                depth,
-                [{ type: "OrOpt", idx: optIdx }],
-                db,
-                newScope,
-                andExpr.clauses,
-                cache
-              );
-            });
+            const rawResults = flatMap(
+              rule.body.disjuncts,
+              (andExpr, optIdx) => {
+                return doJoin(
+                  depth,
+                  [{ type: "OrOpt", idx: optIdx }],
+                  db,
+                  newScope,
+                  andExpr.conjuncts,
+                  cache
+                );
+              }
+            );
             // console.groupEnd();
             // console.log("rawResults", rawResults.map(ppr));
             const finalRes = filterMap(rawResults, (res) => {

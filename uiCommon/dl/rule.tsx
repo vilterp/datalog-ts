@@ -25,7 +25,7 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
               <br />
             </React.Fragment>
           ),
-          props.rule.body.opts.map((opt, idx) => (
+          props.rule.body.disjuncts.map((opt, idx) => (
             <React.Fragment key={idx}>
               {intersperseIdx(
                 (idx) => (
@@ -34,7 +34,7 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
                     <br />
                   </React.Fragment>
                 ),
-                opt.clauses.map((clause) => (
+                opt.conjuncts.map((clause) => (
                   <TermView
                     key={ppt(clause)}
                     highlight={props.highlight}
