@@ -41,7 +41,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
     head: rec("range", {
       from: varr("From"),
       to: varr("To"),
-      res: varr("Res"),
+      val: varr("Val"),
     }),
     fun: range,
   },
