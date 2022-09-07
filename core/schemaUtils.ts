@@ -15,7 +15,6 @@ export function gatherVars(rule: Rule): string[] {
   );
   const fromHead = gatherVarsTerm(rule.head);
   const all = [...fromHead, ...fromBody];
-  console.log("gatherVars", { all });
   return uniq(all);
 }
 

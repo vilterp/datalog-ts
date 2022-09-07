@@ -130,7 +130,6 @@ export abstract class AbstractInterpreter {
           } as Relation)
       ),
     ];
-    console.log("getRelations", relations);
     return relations;
   }
 
