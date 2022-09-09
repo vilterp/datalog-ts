@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import {
   conjunctName,
   gatherVars,
@@ -23,6 +24,7 @@ import {
   updateAtIdx,
 } from "../../util/util";
 import { TD_STYLES as TD_STYLE } from "../explorer/styles";
+import { BareTerm } from "../dl/replViews";
 
 // === Rule ===
 
@@ -30,6 +32,7 @@ export function RuleEditor(props: {
   rule: Rule;
   dispatch: (a: RuleAction) => void;
   relations: Relation[];
+  interp: AbstractInterpreter;
 }) {
   const vars = gatherVars(props.rule).sort();
   const order = vars.map((varName) => {
@@ -40,6 +43,7 @@ export function RuleEditor(props: {
       attr: pathStr,
     };
   });
+  const results = props.interp.queryRec(props.rule.head);
 
   return (
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
@@ -156,6 +160,18 @@ export function RuleEditor(props: {
             </button>
           </td>
         </tr>
+        {results.map((result, idx) => {
+          console.log("ResultTable", { result, vars });
+          return (
+            <tr key={idx}>
+              {vars.map((varName) => (
+                <td key={varName}>
+                  <BareTerm term={result.bindings[varName]} />
+                </td>
+              ))}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

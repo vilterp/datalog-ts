@@ -1,3 +1,4 @@
+// TODO: rename this file
 import React, { useState } from "react";
 import { Res, Term } from "../../core/types";
 import { noHighlightProps, Highlight, HighlightProps, TermView } from "./term";

@@ -34,6 +34,7 @@ export function RelationTable(props: {
           highlight={props.highlight}
           relations={props.interp.getRelations()}
           dispatch={props.dispatch}
+          interp={props.interp}
         />
       ) : null}
       <RelationContents
@@ -52,6 +53,7 @@ function RuleDisplay(props: {
   highlight: HighlightProps;
   relations: Relation[];
   dispatch: (action: Action) => void;
+  interp: AbstractInterpreter;
 }) {
   return (
     <>
@@ -65,6 +67,7 @@ function RuleDisplay(props: {
           })
         }
         relations={props.relations}
+        interp={props.interp}
       />
     </>
   );
