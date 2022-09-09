@@ -1,0 +1,6 @@
+.git
+node_modules
+.env
+dist
+bundle.js
+bundle.js.map
