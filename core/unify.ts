@@ -225,6 +225,7 @@ export function termLT(left: Term, right: Term): boolean {
 }
 
 export function unifyBindings(
+  relation: string,
   left: Bindings,
   right: Bindings
 ): Bindings | null {
@@ -247,6 +248,7 @@ export function unifyBindings(
   for (const key of onlyInRight) {
     res[key] = right[key];
   }
+  console.log("unifyBindings", { relation, left, right, res });
   return res;
 }
 

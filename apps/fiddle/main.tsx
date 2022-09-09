@@ -30,7 +30,7 @@ function Main() {
   return (
     <div>
       <h1>Datalog Fiddle</h1>
-      <LingoEditor
+      {/* <LingoEditor
         langSpec={LANGUAGES.datalog}
         editorState={editorState}
         setEditorState={setEditorState}
@@ -38,7 +38,7 @@ function Main() {
         height={700}
         lineNumbers="on"
         showKeyBindingsTable
-      />
+      /> */}
       <br />
       {error ? (
         <>

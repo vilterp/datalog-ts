@@ -164,11 +164,15 @@ export function RuleEditor(props: {
           console.log("ResultTable", { result, vars });
           return (
             <tr key={idx}>
-              {vars.map((varName) => (
-                <td key={varName}>
-                  <BareTerm term={result.bindings[varName]} />
-                </td>
-              ))}
+              <td colSpan={3} />
+              {vars.map((varName) => {
+                const value = result.bindings[varName];
+                return (
+                  <td key={varName}>
+                    {value ? <BareTerm term={value} /> : "missing"}
+                  </td>
+                );
+              })}
             </tr>
           );
         })}

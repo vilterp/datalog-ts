@@ -43,7 +43,8 @@ function doJoin(
   db: DB,
   scope: Bindings,
   clauses: Conjunct[],
-  cache: Cache
+  cache: Cache,
+  relationName: string
 ): Res[] {
   if (clauses.length === 0) {
     return [];
@@ -73,7 +74,7 @@ function doJoin(
   // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
-    const nextScope = unifyBindings(scope, leftRes.bindings);
+    const nextScope = unifyBindings(relationName, scope, leftRes.bindings);
     // console.log({
     //   leftResBindings: ppb(leftRes.bindings),
     //   scope: ppb(scope),
@@ -86,12 +87,17 @@ function doJoin(
       db,
       nextScope,
       clauses.slice(1),
-      cache
+      cache,
+      relationName
     );
     // console.groupEnd();
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
-      const unifyRes = unifyBindings(leftRes.bindings, rightRes.bindings);
+      const unifyRes = unifyBindings(
+        relationName,
+        leftRes.bindings,
+        rightRes.bindings
+      );
       if (unifyRes === null) {
         continue;
       }
@@ -180,7 +186,8 @@ function doEvaluate(
                   db,
                   newScope,
                   andExpr.conjuncts,
-                  cache
+                  cache,
+                  term.relation
                 );
               }
             );
