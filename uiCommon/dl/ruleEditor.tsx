@@ -49,12 +49,8 @@ export function RuleEditor(props: {
     <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
       <thead>
         <tr style={{ borderBottom: "1px solid black" }}>
-          {/* 'or' control */}
-          <th />
-          {/* delete conjunct button */}
-          <th />
-          {/* conjunct name */}
-          <th />
+          {/* 'or' control, delete conjunct button, conjunct name */}
+          <th colSpan={3} />
           {order.map((pair, idx) => {
             return (
               <th key={idx} style={TD_STYLE}>
@@ -89,9 +85,7 @@ export function RuleEditor(props: {
           })}
         </tr>
         {/* <tr style={{ borderBottom: "1px solid black" }}>
-          <th />
-          <th />
-          <th />
+          <th colSpan={3} />
           {order.map((pair, idx) => (
             <th key={idx} style={TD_STYLE}>
               <input
