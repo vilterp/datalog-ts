@@ -202,23 +202,23 @@ export function headReducer(head: Rec, action: HeadAction): Rec {
         varName: pair.varName,
         attr: action.newAttr,
       }));
-      return helper(head.relation, newOrder);
+      return buildRuleHead(head.relation, newOrder);
     }
     case "EditVar": {
       const newOrder = updateAtIdx(action.order, action.idx, (pair) => ({
         varName: action.newVar,
         attr: pair.attr,
       }));
-      return helper(head.relation, newOrder);
+      return buildRuleHead(head.relation, newOrder);
     }
     case "DeleteColumn": {
       const newOrder = removeAtIdx(action.order, action.idx);
-      return helper(head.relation, newOrder);
+      return buildRuleHead(head.relation, newOrder);
     }
   }
 }
 
-function helper(relation: string, newOrder: Order): Rec {
+function buildRuleHead(relation: string, newOrder: Order): Rec {
   const pairs = newOrder
     .filter((p) => p.attr != "")
     .map(({ varName, attr }) => ({
