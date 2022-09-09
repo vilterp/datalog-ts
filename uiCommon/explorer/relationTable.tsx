@@ -36,14 +36,15 @@ export function RelationTable(props: {
           dispatch={props.dispatch}
           interp={props.interp}
         />
-      ) : null}
-      <RelationContents
-        collapseState={props.collapseState}
-        setCollapseState={props.setCollapseState}
-        highlight={props.highlight}
-        interp={props.interp}
-        relation={relation}
-      />
+      ) : (
+        <RelationContents
+          collapseState={props.collapseState}
+          setCollapseState={props.setCollapseState}
+          highlight={props.highlight}
+          interp={props.interp}
+          relation={relation}
+        />
+      )}
     </>
   );
 }
