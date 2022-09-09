@@ -49,6 +49,7 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
             return null;
           }
           let accum = {};
+          // TODO: use `for..in` instead of `Object.keys`?
           for (const key of Object.keys(left.attrs)) {
             // TODO: do bindings fold across keys... how would that be ordered...
             const leftVal = left.attrs[key];
@@ -61,6 +62,12 @@ function doUnify(prior: Bindings, left: Term, right: Term): Bindings | null {
               return null; // TODO: error message here would be nice saying what we can't unify
             }
             accum = { ...accum, ...res };
+          }
+          // Pass through extra vars. Is this correct??
+          for (const key of Object.keys(prior)) {
+            if (!accum[key]) {
+              accum[key] = prior[key];
+            }
           }
           return accum;
         case "Var":
@@ -225,7 +232,7 @@ export function termLT(left: Term, right: Term): boolean {
 }
 
 export function unifyBindings(
-  relation: string,
+  // relation: string,
   left: Bindings,
   right: Bindings
 ): Bindings | null {
@@ -248,7 +255,7 @@ export function unifyBindings(
   for (const key of onlyInRight) {
     res[key] = right[key];
   }
-  console.log("unifyBindings", { relation, left, right, res });
+  // console.log("unifyBindings", { left, right, res });
   return res;
 }
 
@@ -270,16 +277,22 @@ export function substitute(term: Term, bindings: Bindings): Term {
 
 export function applyMappings(
   headToCaller: VarMappings,
-  bindings: Bindings
+  bindings: Bindings,
+  relation: string
 ): Bindings {
   const out: Bindings = {};
   for (const key in bindings) {
     const callerKey = headToCaller[key];
     if (!callerKey) {
-      continue;
+      out[key] = bindings[key];
+      // continue;
+    } else {
+      out[callerKey] = bindings[key];
     }
-    out[callerKey] = bindings[key];
   }
+  // if (relation === "ancestor") {
+  //   console.log("applyMappings", { headToCaller, bindings, out });
+  // }
   return out;
 }
 

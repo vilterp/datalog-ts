@@ -163,7 +163,7 @@ export function RuleEditor(props: {
                 const value = result.bindings[varName];
                 return (
                   <td key={varName}>
-                    {value ? <BareTerm term={value} /> : "missing"}
+                    {value ? <BareTerm term={value} /> : null}
                   </td>
                 );
               })}

@@ -233,7 +233,11 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       }
     }
     case "Match": {
-      const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
+      const mappedBindings = applyMappings(
+        nodeDesc.mappings,
+        ins.res.bindings,
+        nodeDesc.rec.relation
+      );
       const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
       if (bindings === null) {
         return [];

@@ -167,4 +167,25 @@ export const unifyTests = [
       assertDeepEqual(unifyRes, null);
     },
   },
+  {
+    name: "extra variables",
+    test() {
+      const unifyRes = unify(
+        { X: str("Pete"), Y: str("Paul"), Z: str("Peter") },
+        rec("ancestor", {
+          from: varr("X"),
+          to: varr("Z"),
+        }),
+        rec("bar", {
+          from: varr("X"),
+          to: varr("Z"),
+        })
+      );
+      assertDeepEqual(unifyRes, {
+        X: str("Pete"),
+        Y: str("Paul"),
+        Z: str("Peter"),
+      });
+    },
+  },
 ];

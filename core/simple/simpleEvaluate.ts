@@ -29,6 +29,7 @@ import { DB } from "./types";
 import { AGGREGATIONS } from "../aggregations";
 import { getForScope } from "./indexes";
 import { evalBuiltin } from "../evalBuiltin";
+import { ppt } from "../pretty";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -74,7 +75,7 @@ function doJoin(
   // console.log("doJoin: left results", leftResults.map(ppr));
   const out: Res[] = [];
   for (const leftRes of leftResults) {
-    const nextScope = unifyBindings(relationName, scope, leftRes.bindings);
+    const nextScope = unifyBindings(/*relationName,*/ scope, leftRes.bindings);
     // console.log({
     //   leftResBindings: ppb(leftRes.bindings),
     //   scope: ppb(scope),
@@ -94,13 +95,16 @@ function doJoin(
     // console.log("right results", rightResults);
     for (const rightRes of rightResults) {
       const unifyRes = unifyBindings(
-        relationName,
+        // relationName,
         leftRes.bindings,
         rightRes.bindings
       );
       if (unifyRes === null) {
         continue;
       }
+      // if (relationName === "ancestor") {
+      //   console.log("doJoin", unifyRes);
+      // }
       out.push({
         term: leftRes.term, // ???
         bindings: unifyRes,
@@ -194,7 +198,11 @@ function doEvaluate(
             // console.groupEnd();
             // console.log("rawResults", rawResults.map(ppr));
             const finalRes = filterMap(rawResults, (res) => {
-              const mappedBindings = applyMappings(mappings, res.bindings);
+              const mappedBindings = applyMappings(
+                mappings,
+                res.bindings,
+                term.relation
+              );
               const nextTerm = substitute(rule.head, res.bindings);
               const unif = unify(mappedBindings, term, nextTerm);
               // console.log("unify", {
@@ -216,6 +224,18 @@ function doEvaluate(
               //   unifRaw: unif,
               //   unif: unif ? ppb(unif) : null,
               // });
+              // if (term.relation === "ancestor") {
+              //   console.log("doEvaluate", term.relation, {
+              //     resBindings: res.bindings,
+              //     mappings,
+              //     unify: {
+              //       mappedBindings,
+              //       term: ppt(term),
+              //       nextTerm: ppt(term),
+              //       res: unif,
+              //     },
+              //   });
+              // }
               const outerRes: Res = {
                 bindings: unif,
                 term: nextTerm,
