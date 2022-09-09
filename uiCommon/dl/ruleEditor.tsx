@@ -23,7 +23,7 @@ import {
   removeAtIdx,
   updateAtIdx,
 } from "../../util/util";
-import { TD_STYLES as TD_STYLE } from "../explorer/styles";
+import { TD_STYLES } from "../explorer/styles";
 import { BareTerm } from "../dl/replViews";
 
 // === Rule ===
@@ -53,7 +53,7 @@ export function RuleEditor(props: {
           <th colSpan={3} />
           {order.map((pair, idx) => {
             return (
-              <th key={idx} style={TD_STYLE}>
+              <th key={idx} style={TD_STYLES}>
                 <input
                   size={Math.max(1, pair.attr.length)}
                   value={pair.attr}
@@ -87,7 +87,7 @@ export function RuleEditor(props: {
         {/* <tr style={{ borderBottom: "1px solid black" }}>
           <th colSpan={3} />
           {order.map((pair, idx) => (
-            <th key={idx} style={TD_STYLE}>
+            <th key={idx} style={TD_STYLES}>
               <input
                 size={Math.max(1, pair.varName.length)}
                 value={pair.varName}
@@ -140,7 +140,7 @@ export function RuleEditor(props: {
           ))
         )}
         <tr style={{ borderTop: "1px solid lightgrey" }}>
-          <td colSpan={vars.length + 3} style={TD_STYLE}>
+          <td colSpan={vars.length + 3} style={TD_STYLES}>
             <button
               onClick={() =>
                 props.dispatch({
@@ -162,7 +162,7 @@ export function RuleEditor(props: {
               {vars.map((varName) => {
                 const value = result.bindings[varName];
                 return (
-                  <td key={varName}>
+                  <td key={varName} style={TD_STYLES}>
                     {value ? <BareTerm term={value} /> : null}
                   </td>
                 );
@@ -306,10 +306,10 @@ function ConjunctionEditor(props: {
               conjunctIdx === 0 ? { borderTop: "1px solid lightgrey" } : {}
             }
           >
-            <td style={TD_STYLE}>
+            <td style={TD_STYLES}>
               {conjunctIdx === 0 ? <>{removeButton}</> : null}
             </td>
-            <td style={TD_STYLE}>
+            <td style={TD_STYLES}>
               {/* TODO: maybe negation checkbox? */}
               <button
                 onClick={() =>
@@ -320,7 +320,7 @@ function ConjunctionEditor(props: {
                 x
               </button>{" "}
             </td>
-            <td style={TD_STYLE}>
+            <td style={TD_STYLES}>
               <strong>
                 {conjunct.type === "Record"
                   ? conjunct.relation
@@ -334,7 +334,7 @@ function ConjunctionEditor(props: {
               const relation = props.relations.find((r) => r.name === name);
               const columns = relationColumns(relation);
               return (
-                <td key={varName} style={TD_STYLE}>
+                <td key={varName} style={TD_STYLES}>
                   <select
                     value={path ? path.join(".") : ""}
                     onChange={(evt) =>
@@ -365,7 +365,7 @@ function ConjunctionEditor(props: {
         </td>
         {/* delete conjunct button */}
         <td />
-        <td style={TD_STYLE}>
+        <td style={TD_STYLES}>
           <select
             value={selectedToAdd}
             onChange={(evt) => {
