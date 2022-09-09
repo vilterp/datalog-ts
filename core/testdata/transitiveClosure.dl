@@ -1,0 +1,7 @@
+edge{from: "A", to: "B"}.
+edge{from: "B", to: "C"}.
+edge{from: "C", to: "D"}.
+path{from: X, to: Z} :-
+  edge{from: X, to: Z} |
+  edge{from: X, to: Y} &
+  path{from: Y, to: Z}.
