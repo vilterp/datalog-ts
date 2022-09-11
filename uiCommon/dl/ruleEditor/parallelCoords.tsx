@@ -1,6 +1,7 @@
 import React from "react";
 import { ppt } from "../../../core/pretty";
 import { Res, Rule, Term } from "../../../core/types";
+import { range } from "../../../languageWorkbench/parserlib/types";
 import {
   adjacentPairs,
   filterMap,
@@ -13,6 +14,7 @@ export function ResultsParallelCoordsOverlay(props: {
   rule: Rule;
   results: Res[];
   grid: Grid;
+  posMap: PositionMap;
 }) {
   const varPairs = adjacentPairs(props.grid.vars);
   const baseCoords = beginningCoords(props.rule);
@@ -97,5 +99,36 @@ function beginningCoords(rule: Rule): { row: number; col: number } {
   const numConjuncts = sum(
     rule.body.disjuncts.map((dj) => dj.conjuncts.length)
   );
-  return { col: 3, row: numConjuncts + numDisjuncts };
+  return {
+    col: 1, // skip fist 3-colspan td
+    row: numConjuncts + numDisjuncts + 1, // 1 for 'add disjunct' row
+  };
+}
+
+type Point = { x: number; y: number };
+
+export type PositionMap = { [varName: string]: Point[] };
+
+export function getPositionMap(
+  rule: Rule,
+  grid: Grid,
+  table: HTMLTableElement
+): PositionMap {
+  const { row: startRow, col: startCol } = beginningCoords(rule);
+  const out: PositionMap = {};
+  grid.vars.forEach((varName, varIdx) => {
+    out[varName] = [];
+    grid.grid[varName].forEach((_, termIdx) => {
+      const rowIdx = startRow + termIdx;
+      const colIdx = startCol + varIdx;
+      const tbody = table.children[1];
+      const el = tbody.children[rowIdx].children[colIdx];
+      const rect = el.getBoundingClientRect();
+      out[varName].push({
+        x: rect.x + rect.width / 2,
+        y: rect.y + rect.height / 2,
+      });
+    });
+  });
+  return out;
 }

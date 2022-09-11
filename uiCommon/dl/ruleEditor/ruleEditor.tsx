@@ -1,10 +1,15 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { gatherVars, pathToVar } from "./schemaUtils";
 import { Disjunction, Relation, Rule } from "../../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../../util/util";
 import { TD_STYLES } from "../../explorer/styles";
-import { buildGrid, ResultsParallelCoordsOverlay } from "./parallelCoords";
+import {
+  buildGrid,
+  getPositionMap,
+  PositionMap,
+  ResultsParallelCoordsOverlay,
+} from "./parallelCoords";
 import { DisjunctionAction, RuleAction } from "./types";
 import { headReducer, TableHead } from "./head";
 import { ConjunctionEditor, conjunctionReducer } from "./conjunction";
@@ -27,12 +32,14 @@ export function RuleEditor(props: {
       attr: pathStr,
     };
   });
+  const [posMap, setPosMap] = useState<PositionMap>({});
   const results = props.interp.queryRec(props.rule.head);
 
   const outputTable = useRef(null);
   useLayoutEffect(() => {
-    console.log("layout effect", outputTable);
-  });
+    const posMap = getPositionMap(props.rule, grid, outputTable.current);
+    console.log("posMap", posMap);
+  }, [results]);
 
   const grid = buildGrid(vars, results);
 
@@ -101,6 +108,7 @@ export function RuleEditor(props: {
         rule={props.rule}
         grid={grid}
         results={results}
+        posMap={posMap}
       />
     </div>
   );
