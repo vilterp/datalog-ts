@@ -1,14 +1,59 @@
 import React from "react";
 import { ppt } from "../../../core/pretty";
 import { Res, Rule, Term } from "../../../core/types";
-import { adjacentPairs, filterMap, sum, uniqBy } from "../../../util/util";
+import {
+  adjacentPairs,
+  filterMap,
+  flatMap,
+  groupBy,
+  range,
+  sum,
+} from "../../../util/util";
+import { TD_STYLES } from "../../explorer/styles";
+import { BareTerm } from "../replViews";
+
+export function ResultsParallelCoordsView(props: {
+  grid: Grid;
+  hoveredResults: Res[];
+  setHoveredResults: (results: Res[]) => void;
+}) {
+  return (
+    <>
+      {range(props.grid.longest).map((idx) => {
+        return (
+          <tr key={idx}>
+            <td colSpan={3} />
+            {props.grid.vars.map((varName) => {
+              const item = props.grid.grid[varName][idx];
+              return (
+                <td
+                  style={TD_STYLES}
+                  key={varName}
+                  onMouseOver={() =>
+                    props.setHoveredResults(item ? item.results : [])
+                  }
+                >
+                  {item ? <BareTerm term={item.term} /> : null}
+                </td>
+              );
+            })}
+          </tr>
+        );
+      })}
+    </>
+  );
+}
 
 export function ResultsParallelCoordsOverlay(props: {
   rule: Rule;
   results: Res[];
   grid: Grid;
   posMap: PositionMap;
+  hoveredResults: Res[];
 }) {
+  console.log("ResultsParallelCoordsOverlay", {
+    hoveredResults: props.hoveredResults,
+  });
   const varPairs = adjacentPairs(props.grid.vars);
   if (Object.keys(props.posMap.cells).length === 0) {
     return <svg></svg>;
@@ -53,7 +98,7 @@ export function ResultsParallelCoordsOverlay(props: {
 }
 
 export type Grid = {
-  grid: { [varName: string]: Term[] };
+  grid: { [varName: string]: { term: Term; results: Res[] }[] };
   reverseIndex: { [varName: string]: ValToIdx };
   vars: string[];
   longest: number;
@@ -62,7 +107,7 @@ export type Grid = {
 type ValToIdx = { [val: string]: number };
 
 export function buildGrid(vars: string[], results: Res[]): Grid {
-  const grid: { [varName: string]: Term[] } = {};
+  const grid: { [varName: string]: { term: Term; results: Res[] }[] } = {};
   const reverseIndex: { [varName: string]: ValToIdx } = {};
   vars.forEach((varName) => {
     grid[varName] = [];
@@ -73,22 +118,25 @@ export function buildGrid(vars: string[], results: Res[]): Grid {
       if (!term) {
         return;
       }
-      grid[varName].push(term);
+      grid[varName].push({ term, results: [res] });
     });
   });
   let longest = 0;
   vars.forEach((varName) => {
-    const unique = uniqBy(ppt, grid[varName]);
-    grid[varName] = unique;
+    const grouped = groupBy(grid[varName], (item) => ppt(item.term));
+    grid[varName] = Object.values(grouped).map((items) => ({
+      term: items[0].term,
+      results: flatMap(items, (item) => item.results),
+    }));
     // update longest
-    if (unique.length > longest) {
-      longest = unique.length;
+    const length = Object.keys(grouped).length;
+    if (length > longest) {
+      longest = length;
     }
     // update reverse index
     const idxForVar: ValToIdx = {};
     reverseIndex[varName] = idxForVar;
-    unique.forEach((val, idx) => {
-      const printed = ppt(val);
+    Object.keys(grouped).forEach((printed, idx) => {
       idxForVar[printed] = idx;
     });
   });

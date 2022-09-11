@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { gatherVars, pathToVar } from "./schemaUtils";
-import { Disjunction, Relation, Rule } from "../../../core/types";
+import { Disjunction, Relation, Res, Rule } from "../../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../../util/util";
 import { TD_STYLES } from "../../explorer/styles";
 import {
@@ -10,11 +10,11 @@ import {
   getPositionMap,
   PositionMap,
   ResultsParallelCoordsOverlay,
+  ResultsParallelCoordsView,
 } from "./parallelCoords";
 import { DisjunctionAction, RuleAction } from "./types";
 import { headReducer, TableHead } from "./head";
 import { ConjunctionEditor, conjunctionReducer } from "./conjunction";
-import { ResultsNormalView, ResultsParallelCoordsView } from "./results";
 
 // === Rule ===
 
@@ -34,6 +34,7 @@ export function RuleEditor(props: {
     };
   });
   const [posMap, setPosMap] = useState<PositionMap>(emptyPositionMap);
+  const [hoveredResults, setHoveredResults] = useState<Res[]>([]);
   const results = props.interp.queryRec(props.rule.head);
 
   const outputTable = useRef(null);
@@ -96,7 +97,11 @@ export function RuleEditor(props: {
               </td>
             </tr>
             {/* Results */}
-            <ResultsParallelCoordsView grid={grid} />
+            <ResultsParallelCoordsView
+              grid={grid}
+              hoveredResults={hoveredResults}
+              setHoveredResults={setHoveredResults}
+            />
             {/* Results normal view */}
             {/* <tr>
               <td
@@ -108,12 +113,13 @@ export function RuleEditor(props: {
           </tbody>
         </table>
       </div>
-      <div style={{ gridRow: 1, gridColumn: 1 }}>
+      <div style={{ gridRow: 1, gridColumn: 1, pointerEvents: "none" }}>
         <ResultsParallelCoordsOverlay
           rule={props.rule}
           grid={grid}
           results={results}
           posMap={posMap}
+          hoveredResults={hoveredResults}
         />
       </div>
     </div>
