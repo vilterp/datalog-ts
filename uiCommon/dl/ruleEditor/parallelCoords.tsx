@@ -63,46 +63,63 @@ export function ResultsParallelCoordsOverlay(props: {
   return (
     <svg width={props.posMap.tableWidth} height={props.posMap.tableHeight}>
       {props.results.map((res, resIdx) => {
-        const resultVars = props.grid.vars.filter(
-          (varName) => !!res.bindings[varName]
-        );
         const selected = props.hoveredResults.map(ppr).indexOf(ppr(res)) !== -1;
-        const varPairs = adjacentPairs(resultVars);
         return (
-          <g key={resIdx}>
-            {filterMap(varPairs, (varPair) => {
-              const fromVal = res.bindings[varPair.from];
-              const toVal = res.bindings[varPair.to];
-
-              if (!fromVal || !toVal) {
-                return null;
-              }
-
-              const fromRow =
-                props.grid.reverseIndex[varPair.from][ppt(fromVal)];
-              const toRow = props.grid.reverseIndex[varPair.to][ppt(toVal)];
-
-              const fromPoint = props.posMap.cells[varPair.from][fromRow];
-              const toPoint = props.posMap.cells[varPair.to][toRow];
-
-              return (
-                <line
-                  key={`${resIdx}-${varPair.from}-${varPair.to}`}
-                  x1={fromPoint.x}
-                  y1={fromPoint.y}
-                  x2={toPoint.x}
-                  y2={toPoint.y}
-                  style={{
-                    stroke: selected ? "red" : "lightgrey",
-                    strokeWidth: 2,
-                  }}
-                />
-              );
-            })}
-          </g>
+          <OverlayLine
+            key={resIdx}
+            grid={props.grid}
+            res={res}
+            selected={selected}
+            posMap={props.posMap}
+          />
         );
       })}
     </svg>
+  );
+}
+
+function OverlayLine(props: {
+  grid: Grid;
+  res: Res;
+  selected: boolean;
+  posMap: PositionMap;
+}) {
+  const res = props.res;
+  const resultVars = props.grid.vars.filter(
+    (varName) => !!res.bindings[varName]
+  );
+  const varPairs = adjacentPairs(resultVars);
+  return (
+    <g>
+      {filterMap(varPairs, (varPair) => {
+        const fromVal = res.bindings[varPair.from];
+        const toVal = res.bindings[varPair.to];
+
+        if (!fromVal || !toVal) {
+          return null;
+        }
+
+        const fromRow = props.grid.reverseIndex[varPair.from][ppt(fromVal)];
+        const toRow = props.grid.reverseIndex[varPair.to][ppt(toVal)];
+
+        const fromPoint = props.posMap.cells[varPair.from][fromRow];
+        const toPoint = props.posMap.cells[varPair.to][toRow];
+
+        return (
+          <line
+            key={`${varPair.from}-${varPair.to}`}
+            x1={fromPoint.x}
+            y1={fromPoint.y}
+            x2={toPoint.x}
+            y2={toPoint.y}
+            style={{
+              stroke: props.selected ? "red" : "lightgrey",
+              strokeWidth: 2,
+            }}
+          />
+        );
+      })}
+    </g>
   );
 }
 
