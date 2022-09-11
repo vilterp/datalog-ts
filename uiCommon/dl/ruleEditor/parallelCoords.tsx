@@ -16,6 +16,7 @@ export function ResultsParallelCoordsOverlay(props: {
   grid: Grid;
   posMap: PositionMap;
 }) {
+  console.log("ResultsParallelCoordsOverlay", { posMap: props.posMap });
   const varPairs = adjacentPairs(props.grid.vars);
   if (Object.keys(props.posMap).length === 0) {
     return <svg style={{ gridRow: 1, gridColumn: 1 }}></svg>;
@@ -119,6 +120,7 @@ export function getPositionMap(
 ): PositionMap {
   const { row: startRow, col: startCol } = beginningCoords(rule);
   const out: PositionMap = {};
+  const tablePos = table.getBoundingClientRect();
   grid.vars.forEach((varName, varIdx) => {
     out[varName] = [];
     grid.grid[varName].forEach((_, termIdx) => {
@@ -127,9 +129,11 @@ export function getPositionMap(
       const tbody = table.children[1];
       const el = tbody.children[rowIdx].children[colIdx];
       const rect = el.getBoundingClientRect();
+      const x = rect.x - tablePos.x + window.scrollX;
+      const y = rect.y - tablePos.y + window.scrollY;
       out[varName].push({
-        x: rect.x + rect.width / 2,
-        y: rect.y + rect.height / 2,
+        x: x + rect.width / 2,
+        y: y + rect.height / 2,
       });
     });
   });
