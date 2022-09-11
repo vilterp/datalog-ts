@@ -49,6 +49,15 @@ export function RuleEditor(props: {
 
   return (
     <div style={{ display: "grid" }}>
+      <div style={{ gridRow: 1, gridColumn: 1, pointerEvents: "none" }}>
+        <ResultsParallelCoordsOverlay
+          rule={props.rule}
+          grid={grid}
+          results={results}
+          posMap={posMap}
+          hoveredResults={hoveredResults}
+        />
+      </div>
       <div style={{ gridRow: 1, gridColumn: 1 }}>
         <table
           ref={outputTable}
@@ -112,15 +121,6 @@ export function RuleEditor(props: {
             <ResultsNormalView vars={vars} results={results} /> */}
           </tbody>
         </table>
-      </div>
-      <div style={{ gridRow: 1, gridColumn: 1, pointerEvents: "none" }}>
-        <ResultsParallelCoordsOverlay
-          rule={props.rule}
-          grid={grid}
-          results={results}
-          posMap={posMap}
-          hoveredResults={hoveredResults}
-        />
       </div>
     </div>
   );
