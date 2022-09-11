@@ -1,6 +1,6 @@
-import { ppt } from "../../core/pretty";
-import { Res, Term } from "../../core/types";
-import { uniqBy } from "../../util/util";
+import { ppt } from "../../../core/pretty";
+import { Res, Term } from "../../../core/types";
+import { uniqBy } from "../../../util/util";
 
 export type Grid = {
   grid: { [varName: string]: Term[] };
@@ -8,7 +8,6 @@ export type Grid = {
   longest: number;
 };
 
-// row, then col
 export function buildGrid(vars: string[], results: Res[]): Grid {
   const grid: { [varName: string]: Term[] } = {};
   vars.forEach((varName) => {

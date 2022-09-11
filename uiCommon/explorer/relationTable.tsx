@@ -11,7 +11,7 @@ import { groupBy, objToPairs } from "../../util/util";
 import { Action, TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
-import { RuleEditor, ruleReducer } from "../dl/ruleEditor";
+import { RuleEditor, ruleReducer } from "../dl/ruleEditor/ruleEditor";
 
 export function RelationTable(props: {
   relation: string;
