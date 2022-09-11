@@ -48,71 +48,73 @@ export function RuleEditor(props: {
 
   return (
     <div style={{ display: "grid" }}>
-      <table
-        ref={outputTable}
-        style={{
-          borderCollapse: "collapse",
-          fontFamily: "monospace",
-          gridRow: 1,
-          gridColumn: 1,
-        }}
-      >
-        <TableHead dispatch={props.dispatch} order={order} />
-        <tbody>
-          {props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
-            <ConjunctionEditor
-              key={`disjunct${disjunctIdx}`}
-              vars={vars}
-              rule={props.rule}
-              conjunction={conjunction}
-              dispatch={(action) =>
-                props.dispatch({
-                  type: "EditBody",
-                  action: { type: "EditDisjunct", idx: disjunctIdx, action },
-                })
-              }
-              relations={props.relations}
-              removeDisjunct={() =>
-                props.dispatch({
-                  type: "EditBody",
-                  action: { type: "RemoveDisjunct", idx: disjunctIdx },
-                })
-              }
-              disjunctIdx={disjunctIdx}
-            />
-          ))}
-          <tr style={{ borderTop: "1px solid lightgrey" }}>
-            <td colSpan={vars.length + 3} style={TD_STYLES}>
-              <button
-                onClick={() =>
+      <div style={{ gridRow: 1, gridColumn: 1 }}>
+        <table
+          ref={outputTable}
+          style={{
+            borderCollapse: "collapse",
+            fontFamily: "monospace",
+          }}
+        >
+          <TableHead dispatch={props.dispatch} order={order} />
+          <tbody>
+            {props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
+              <ConjunctionEditor
+                key={`disjunct${disjunctIdx}`}
+                vars={vars}
+                rule={props.rule}
+                conjunction={conjunction}
+                dispatch={(action) =>
                   props.dispatch({
                     type: "EditBody",
-                    action: { type: "AddDisjunct" },
+                    action: { type: "EditDisjunct", idx: disjunctIdx, action },
                   })
                 }
-                title="Add Disjunct"
-              >
-                +
-              </button>
-            </td>
-          </tr>
-          {/* Results */}
-          <ResultsParallelCoordsView grid={grid} />
-          <tr>
-            <td
-              colSpan={3 + vars.length}
-              style={{ height: 1, backgroundColor: "black" }}
-            ></td>
-          </tr>
-          <ResultsNormalView vars={vars} results={results} />
-        </tbody>
-      </table>
-      <ResultsParallelCoordsOverlay
-        rule={props.rule}
-        grid={grid}
-        results={results}
-        posMap={posMap}
-      />
+                relations={props.relations}
+                removeDisjunct={() =>
+                  props.dispatch({
+                    type: "EditBody",
+                    action: { type: "RemoveDisjunct", idx: disjunctIdx },
+                  })
+                }
+                disjunctIdx={disjunctIdx}
+              />
+            ))}
+            <tr style={{ borderTop: "1px solid lightgrey" }}>
+              <td colSpan={vars.length + 3} style={TD_STYLES}>
+                <button
+                  onClick={() =>
+                    props.dispatch({
+                      type: "EditBody",
+                      action: { type: "AddDisjunct" },
+                    })
+                  }
+                  title="Add Disjunct"
+                >
+                  +
+                </button>
+              </td>
+            </tr>
+            {/* Results */}
+            <ResultsParallelCoordsView grid={grid} />
+            <tr>
+              <td
+                colSpan={3 + vars.length}
+                style={{ height: 1, backgroundColor: "black" }}
+              ></td>
+            </tr>
+            <ResultsNormalView vars={vars} results={results} />
+          </tbody>
+        </table>
+      </div>
+      <div style={{ gridRow: 1, gridColumn: 1 }}>
+        <ResultsParallelCoordsOverlay
+          rule={props.rule}
+          grid={grid}
+          results={results}
+          posMap={posMap}
+        />
+      </div>
     </div>
   );
 }

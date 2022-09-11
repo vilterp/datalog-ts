@@ -18,15 +18,11 @@ export function ResultsParallelCoordsOverlay(props: {
 }) {
   const varPairs = adjacentPairs(props.grid.vars);
   if (Object.keys(props.posMap.cells).length === 0) {
-    return <svg style={{ gridRow: 1, gridColumn: 1 }}></svg>;
+    return <svg></svg>;
   }
 
   return (
-    <svg
-      style={{ gridRow: 1, gridColumn: 1 }}
-      width={props.posMap.tableWidth}
-      height={props.posMap.tableHeight}
-    >
+    <svg width={props.posMap.tableWidth} height={props.posMap.tableHeight}>
       {props.results.map((res, resIdx) => {
         return filterMap(varPairs, (varPair) => {
           const fromVal = res.bindings[varPair.from];
