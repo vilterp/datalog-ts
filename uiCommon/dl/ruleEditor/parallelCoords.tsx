@@ -1,14 +1,7 @@
 import React from "react";
 import { ppt } from "../../../core/pretty";
 import { Res, Rule, Term } from "../../../core/types";
-import { range } from "../../../languageWorkbench/parserlib/types";
-import {
-  adjacentPairs,
-  filterMap,
-  flatMap,
-  sum,
-  uniqBy,
-} from "../../../util/util";
+import { adjacentPairs, filterMap, sum, uniqBy } from "../../../util/util";
 
 export function ResultsParallelCoordsOverlay(props: {
   rule: Rule;
