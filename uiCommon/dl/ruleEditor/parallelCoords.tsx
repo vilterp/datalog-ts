@@ -147,8 +147,8 @@ export function getPositionMap(
       const tbody = table.children[1];
       const el = tbody.children[rowIdx].children[colIdx];
       const rect = el.getBoundingClientRect();
-      const x = rect.x - tableRect.x + window.scrollX;
-      const y = rect.y - tableRect.y + window.scrollY;
+      const x = rect.x - tableRect.x;
+      const y = rect.y - tableRect.y;
       out.cells[varName].push({
         x: x + rect.width / 2,
         y: y + rect.height / 2,
