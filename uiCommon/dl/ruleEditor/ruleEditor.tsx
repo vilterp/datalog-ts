@@ -1,36 +1,11 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import {
-  conjunctName,
-  gatherVars,
-  newConjunct,
-  pathToVar,
-  relationColumns,
-} from "./schemaUtils";
-import {
-  Conjunct,
-  Conjunction,
-  Disjunction,
-  Rec,
-  rec,
-  Relation,
-  Res,
-  Rule,
-  varr,
-} from "../../../core/types";
-import {
-  intersperseIdx,
-  pairsToObj,
-  range,
-  removeAtIdx,
-  updateAtIdx,
-} from "../../../util/util";
+import { gatherVars, pathToVar } from "./schemaUtils";
+import { Disjunction, Relation, Rule } from "../../../core/types";
+import { removeAtIdx, updateAtIdx } from "../../../util/util";
 import { TD_STYLES } from "../../explorer/styles";
-import { BareTerm } from "../replViews";
-import { VegaLite } from "react-vega";
-import { ppt } from "../../../core/pretty";
-import { buildGrid, Grid } from "./parallelCoords";
-import { DisjunctionAction, HeadAction, RuleAction } from "./types";
+import { buildGrid } from "./parallelCoords";
+import { DisjunctionAction, RuleAction } from "./types";
 import { headReducer, TableHead } from "./head";
 import { ConjunctionEditor, conjunctionReducer } from "./conjunction";
 import { ResultsParallelCoordsView } from "./results";
