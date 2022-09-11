@@ -9,15 +9,18 @@ export function mapObj<T, V>(
   return out;
 }
 
-export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
+export function filterMap<T, U>(
+  arr: T[],
+  f: (t: T, idx: number) => U | null
+): U[] {
   const out: U[] = [];
-  for (const item of arr) {
-    const res = f(item);
+  arr.forEach((item, idx) => {
+    const res = f(item, idx);
     if (!res) {
-      continue;
+      return;
     }
     out.push(res);
-  }
+  });
   return out;
 }
 
@@ -431,4 +434,19 @@ export function maxOfStrings(strings: string[]): string {
     }
   }
   return cur;
+}
+
+export function sum(numbers: number[]): number {
+  return numbers.reduce((prev, cur) => prev + cur, 0);
+}
+
+export function adjacentPairs<T>(items: T[]): { from: T; to: T }[] {
+  const out: { from: T; to: T }[] = [];
+  items.forEach((varName, idx) => {
+    if (idx === items.length - 1) {
+      return;
+    }
+    out.push({ from: varName, to: items[idx + 1] });
+  });
+  return out;
 }

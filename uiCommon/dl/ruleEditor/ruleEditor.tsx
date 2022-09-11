@@ -4,11 +4,11 @@ import { gatherVars, pathToVar } from "./schemaUtils";
 import { Disjunction, Relation, Rule } from "../../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../../util/util";
 import { TD_STYLES } from "../../explorer/styles";
-import { buildGrid } from "./parallelCoords";
+import { buildGrid, ResultsParallelCoordsOverlay } from "./parallelCoords";
 import { DisjunctionAction, RuleAction } from "./types";
 import { headReducer, TableHead } from "./head";
 import { ConjunctionEditor, conjunctionReducer } from "./conjunction";
-import { ResultsParallelCoordsView } from "./results";
+import { ResultsNormalView, ResultsParallelCoordsView } from "./results";
 
 // === Rule ===
 
@@ -88,17 +88,20 @@ export function RuleEditor(props: {
           </tr>
           {/* Results */}
           <ResultsParallelCoordsView grid={grid} />
+          <tr>
+            <td
+              colSpan={3 + vars.length}
+              style={{ height: 1, backgroundColor: "black" }}
+            ></td>
+          </tr>
+          <ResultsNormalView vars={vars} results={results} />
         </tbody>
       </table>
-      <svg style={{ gridRow: 1, gridColumn: 1 }}>
-        <line
-          x1="0"
-          y1="0"
-          x2="200"
-          y2="200"
-          style={{ stroke: "rgb(255,0,0)", strokeWidth: 2 }}
-        />
-      </svg>
+      <ResultsParallelCoordsOverlay
+        rule={props.rule}
+        grid={grid}
+        results={results}
+      />
     </div>
   );
 }
