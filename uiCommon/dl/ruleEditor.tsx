@@ -129,37 +129,28 @@ export function RuleEditor(props: {
         </tr> */}
         </thead>
         <tbody>
-          {intersperseIdx(
-            (idx) => (
-              <tr key={`sep${idx}`}>
-                <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
-                  {" "}
-                </td>
-              </tr>
-            ),
-            props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
-              <ConjunctionEditor
-                key={`disjunct${disjunctIdx}`}
-                vars={vars}
-                rule={props.rule}
-                conjunction={conjunction}
-                dispatch={(action) =>
-                  props.dispatch({
-                    type: "EditBody",
-                    action: { type: "EditDisjunct", idx: disjunctIdx, action },
-                  })
-                }
-                relations={props.relations}
-                removeDisjunct={() =>
-                  props.dispatch({
-                    type: "EditBody",
-                    action: { type: "RemoveDisjunct", idx: disjunctIdx },
-                  })
-                }
-                disjunctIdx={disjunctIdx}
-              />
-            ))
-          )}
+          {props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
+            <ConjunctionEditor
+              key={`disjunct${disjunctIdx}`}
+              vars={vars}
+              rule={props.rule}
+              conjunction={conjunction}
+              dispatch={(action) =>
+                props.dispatch({
+                  type: "EditBody",
+                  action: { type: "EditDisjunct", idx: disjunctIdx, action },
+                })
+              }
+              relations={props.relations}
+              removeDisjunct={() =>
+                props.dispatch({
+                  type: "EditBody",
+                  action: { type: "RemoveDisjunct", idx: disjunctIdx },
+                })
+              }
+              disjunctIdx={disjunctIdx}
+            />
+          ))}
           <tr style={{ borderTop: "1px solid lightgrey" }}>
             <td colSpan={vars.length + 3} style={TD_STYLES}>
               <button
