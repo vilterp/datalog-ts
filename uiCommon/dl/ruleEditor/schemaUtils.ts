@@ -1,4 +1,4 @@
-import { alphabetToNum, numToAlphabet } from "../util/alphabet";
+import { alphabetToNum, numToAlphabet } from "../../../util/alphabet";
 import {
   flatMap,
   flatMapObjToList,
@@ -6,8 +6,8 @@ import {
   max,
   pairsToObj,
   uniq,
-} from "../util/util";
-import { Conjunct, rec, Relation, Rule, Term, varr } from "./types";
+} from "../../../util/util";
+import { Conjunct, rec, Relation, Rule, Term, varr } from "../../../core/types";
 
 export function gatherVars(rule: Rule): string[] {
   const fromBody = flatMap(rule.body.disjuncts, (disjunct) =>

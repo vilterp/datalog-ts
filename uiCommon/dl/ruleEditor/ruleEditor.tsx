@@ -6,7 +6,7 @@ import {
   newConjunct,
   pathToVar,
   relationColumns,
-} from "../../../core/schemaUtils";
+} from "./schemaUtils";
 import {
   Conjunct,
   Conjunction,

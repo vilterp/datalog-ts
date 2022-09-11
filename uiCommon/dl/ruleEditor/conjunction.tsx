@@ -5,7 +5,7 @@ import {
   newConjunct,
   pathToVar,
   relationColumns,
-} from "../../../core/schemaUtils";
+} from "./schemaUtils";
 import { Conjunction, rec, Relation, Rule, varr } from "../../../core/types";
 import { removeAtIdx, updateAtIdx } from "../../../util/util";
 import { TD_STYLES } from "../../explorer/styles";
