@@ -62,18 +62,30 @@ export function ResultsParallelCoordsOverlay(props: {
 
   return (
     <svg width={props.posMap.tableWidth} height={props.posMap.tableHeight}>
-      {props.results.map((res, resIdx) => {
-        const selected = props.hoveredResults.map(ppr).indexOf(ppr(res)) !== -1;
-        return (
+      <g>
+        {props.results.map((res, resIdx) => {
+          return (
+            <OverlayLine
+              key={resIdx}
+              grid={props.grid}
+              res={res}
+              selected={false}
+              posMap={props.posMap}
+            />
+          );
+        })}
+      </g>
+      <g className="selected">
+        {props.hoveredResults.map((res, resIdx) => (
           <OverlayLine
             key={resIdx}
             grid={props.grid}
             res={res}
-            selected={selected}
             posMap={props.posMap}
+            selected
           />
-        );
-      })}
+        ))}
+      </g>
     </svg>
   );
 }
