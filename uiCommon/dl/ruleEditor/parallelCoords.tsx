@@ -27,8 +27,8 @@ export function ResultsParallelCoordsOverlay(props: {
       width={props.posMap.tableWidth}
       height={props.posMap.tableHeight}
     >
-      {props.results.map((res) => {
-        return filterMap(varPairs, (varPair, varIdx) => {
+      {props.results.map((res, resIdx) => {
+        return filterMap(varPairs, (varPair) => {
           const fromVal = res.bindings[varPair.from];
           const toVal = res.bindings[varPair.to];
 
@@ -44,6 +44,7 @@ export function ResultsParallelCoordsOverlay(props: {
 
           return (
             <line
+              key={`${resIdx}-${varPair.from}-${varPair.to}`}
               x1={fromPoint.x}
               y1={fromPoint.y}
               x2={toPoint.x}

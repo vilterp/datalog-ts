@@ -11,12 +11,12 @@ export function ResultsParallelCoordsView(props: { grid: Grid }) {
     <>
       {range(props.grid.longest).map((idx) => {
         return (
-          <tr>
+          <tr key={idx}>
             <td colSpan={3} />
             {props.grid.vars.map((varName) => {
               const value = props.grid.grid[varName][idx];
               return (
-                <td style={TD_STYLES}>
+                <td style={TD_STYLES} key={varName}>
                   {value ? <BareTerm term={value} /> : null}
                 </td>
               );
