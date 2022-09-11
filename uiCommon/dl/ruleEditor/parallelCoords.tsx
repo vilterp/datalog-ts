@@ -1,5 +1,5 @@
 import React from "react";
-import { ppt } from "../../../core/pretty";
+import { ppr, ppt } from "../../../core/pretty";
 import { Res, Rule, Term } from "../../../core/types";
 import {
   adjacentPairs,
@@ -51,9 +51,7 @@ export function ResultsParallelCoordsOverlay(props: {
   posMap: PositionMap;
   hoveredResults: Res[];
 }) {
-  console.log("ResultsParallelCoordsOverlay", {
-    hoveredResults: props.hoveredResults,
-  });
+  console.log("ResultsParallelCoordsOverlay", props.hoveredResults.map(ppr));
   const varPairs = adjacentPairs(props.grid.vars);
   if (Object.keys(props.posMap.cells).length === 0) {
     return <svg></svg>;
@@ -79,6 +77,9 @@ export function ResultsParallelCoordsOverlay(props: {
               const fromPoint = props.posMap.cells[varPair.from][fromRow];
               const toPoint = props.posMap.cells[varPair.to][toRow];
 
+              const selected =
+                props.hoveredResults.map(ppr).indexOf(ppr(res)) !== -1;
+
               return (
                 <line
                   key={`${resIdx}-${varPair.from}-${varPair.to}`}
@@ -86,7 +87,10 @@ export function ResultsParallelCoordsOverlay(props: {
                   y1={fromPoint.y}
                   x2={toPoint.x}
                   y2={toPoint.y}
-                  style={{ stroke: "rgb(255,0,0)", strokeWidth: 2 }}
+                  style={{
+                    stroke: selected ? "red" : "lightgrey",
+                    strokeWidth: 2,
+                  }}
                 />
               );
             })}
