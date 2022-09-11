@@ -68,66 +68,7 @@ export function RuleEditor(props: {
           gridColumn: 1,
         }}
       >
-        <thead>
-          <tr style={{ borderBottom: "1px solid black" }}>
-            {/* 'or' control, delete conjunct button, conjunct name */}
-            <th colSpan={3} />
-            {order.map((pair, idx) => {
-              return (
-                <th key={idx} style={TD_STYLES}>
-                  <input
-                    size={Math.max(1, pair.attr.length)}
-                    value={pair.attr}
-                    onChange={(evt) =>
-                      props.dispatch({
-                        type: "EditHead",
-                        action: {
-                          type: "EditAttr",
-                          idx,
-                          order,
-                          newAttr: evt.target.value,
-                        },
-                      })
-                    }
-                  />
-                  <button
-                    onClick={() =>
-                      props.dispatch({
-                        type: "EditHead",
-                        action: { type: "DeleteColumn", order, idx },
-                      })
-                    }
-                    title="Delete Column"
-                  >
-                    x
-                  </button>
-                </th>
-              );
-            })}
-          </tr>
-          {/* <tr style={{ borderBottom: "1px solid black" }}>
-          <th colSpan={3} />
-          {order.map((pair, idx) => (
-            <th key={idx} style={TD_STYLES}>
-              <input
-                size={Math.max(1, pair.varName.length)}
-                value={pair.varName}
-                onChange={(evt) =>
-                  props.dispatch({
-                    type: "EditHead",
-                    action: {
-                      type: "EditVar",
-                      order,
-                      idx,
-                      newVar: evt.target.value,
-                    },
-                  })
-                }
-              />
-            </th>
-          ))}
-        </tr> */}
-        </thead>
+        <TableHead dispatch={props.dispatch} order={order} />
         <tbody>
           {props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
             <ConjunctionEditor
@@ -180,6 +121,73 @@ export function RuleEditor(props: {
         />
       </svg>
     </div>
+  );
+}
+
+function TableHead(props: { order: Order; dispatch: (a: RuleAction) => void }) {
+  const order = props.order;
+
+  return (
+    <thead>
+      <tr style={{ borderBottom: "1px solid black" }}>
+        {/* 'or' control, delete conjunct button, conjunct name */}
+        <th colSpan={3} />
+        {order.map((pair, idx) => {
+          return (
+            <th key={idx} style={TD_STYLES}>
+              <input
+                size={Math.max(1, pair.attr.length)}
+                value={pair.attr}
+                onChange={(evt) =>
+                  props.dispatch({
+                    type: "EditHead",
+                    action: {
+                      type: "EditAttr",
+                      idx,
+                      order,
+                      newAttr: evt.target.value,
+                    },
+                  })
+                }
+              />
+              <button
+                onClick={() =>
+                  props.dispatch({
+                    type: "EditHead",
+                    action: { type: "DeleteColumn", order, idx },
+                  })
+                }
+                title="Delete Column"
+              >
+                x
+              </button>
+            </th>
+          );
+        })}
+      </tr>
+      {/* <tr style={{ borderBottom: "1px solid black" }}>
+          <th colSpan={3} />
+          {order.map((pair, idx) => (
+            <th key={idx} style={TD_STYLES}>
+              <input
+                size={Math.max(1, pair.varName.length)}
+                value={pair.varName}
+                onChange={(evt) =>
+                  props.dispatch({
+                    type: "EditHead",
+                    action: {
+                      type: "EditVar",
+                      order,
+                      idx,
+                      newVar: evt.target.value,
+                    },
+                  })
+                }
+              />
+            </th>
+          ))}
+        </tr> */}
+    </thead>
   );
 }
 
