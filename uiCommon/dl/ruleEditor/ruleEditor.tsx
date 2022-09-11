@@ -39,12 +39,10 @@ export function RuleEditor(props: {
   const outputTable = useRef(null);
   useLayoutEffect(() => {
     const newPosMap = getPositionMap(props.rule, grid, outputTable.current);
-    console.log("getPositionMap", { posMap, newPosMap });
     if (JSON.stringify(posMap) !== JSON.stringify(newPosMap)) {
       setPosMap(newPosMap);
     }
   }, [results]);
-  console.log("RuleEditor", { posMap });
 
   const grid = buildGrid(vars, results);
 

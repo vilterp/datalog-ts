@@ -16,7 +16,6 @@ export function ResultsParallelCoordsOverlay(props: {
   grid: Grid;
   posMap: PositionMap;
 }) {
-  console.log("ResultsParallelCoordsOverlay", { posMap: props.posMap });
   const varPairs = adjacentPairs(props.grid.vars);
   if (Object.keys(props.posMap.cells).length === 0) {
     return <svg style={{ gridRow: 1, gridColumn: 1 }}></svg>;
