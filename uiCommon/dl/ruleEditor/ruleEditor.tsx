@@ -15,6 +15,7 @@ import {
 import { DisjunctionAction, RuleAction } from "./types";
 import { headReducer, TableHead } from "./head";
 import { ConjunctionEditor, conjunctionReducer } from "./conjunction";
+import { ResultsNormalView } from "./results";
 
 // === Rule ===
 

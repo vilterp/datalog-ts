@@ -29,9 +29,14 @@ export function ResultsParallelCoordsView(props: {
                 <td
                   style={TD_STYLES}
                   key={varName}
-                  onMouseOver={() =>
-                    props.setHoveredResults(item ? item.results : [])
-                  }
+                  onMouseOver={() => {
+                    console.log(
+                      "setHoveredResults",
+                      (item ? item.results : []).map(ppr)
+                    );
+                    props.setHoveredResults(item ? item.results : []);
+                  }}
+                  onMouseOut={() => props.setHoveredResults([])}
                 >
                   {item ? <BareTerm term={item.term} /> : null}
                 </td>
@@ -51,8 +56,6 @@ export function ResultsParallelCoordsOverlay(props: {
   posMap: PositionMap;
   hoveredResults: Res[];
 }) {
-  console.log("ResultsParallelCoordsOverlay", props.hoveredResults.map(ppr));
-  const varPairs = adjacentPairs(props.grid.vars);
   if (Object.keys(props.posMap.cells).length === 0) {
     return <svg></svg>;
   }
@@ -60,6 +63,11 @@ export function ResultsParallelCoordsOverlay(props: {
   return (
     <svg width={props.posMap.tableWidth} height={props.posMap.tableHeight}>
       {props.results.map((res, resIdx) => {
+        const resultVars = props.grid.vars.filter(
+          (varName) => !!res.bindings[varName]
+        );
+        const selected = props.hoveredResults.map(ppr).indexOf(ppr(res)) !== -1;
+        const varPairs = adjacentPairs(resultVars);
         return (
           <g key={resIdx}>
             {filterMap(varPairs, (varPair) => {
@@ -76,9 +84,6 @@ export function ResultsParallelCoordsOverlay(props: {
 
               const fromPoint = props.posMap.cells[varPair.from][fromRow];
               const toPoint = props.posMap.cells[varPair.to][toRow];
-
-              const selected =
-                props.hoveredResults.map(ppr).indexOf(ppr(res)) !== -1;
 
               return (
                 <line
@@ -144,7 +149,9 @@ export function buildGrid(vars: string[], results: Res[]): Grid {
       idxForVar[printed] = idx;
     });
   });
-  return { grid, longest, vars, reverseIndex };
+  const res = { grid, longest, vars, reverseIndex };
+  console.log("grid", res);
+  return res;
 }
 
 // starting at (0, 0)
