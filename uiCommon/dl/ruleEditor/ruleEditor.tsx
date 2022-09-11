@@ -97,13 +97,14 @@ export function RuleEditor(props: {
             </tr>
             {/* Results */}
             <ResultsParallelCoordsView grid={grid} />
-            <tr>
+            {/* Results normal view */}
+            {/* <tr>
               <td
                 colSpan={3 + vars.length}
                 style={{ height: 1, backgroundColor: "black" }}
               ></td>
             </tr>
-            <ResultsNormalView vars={vars} results={results} />
+            <ResultsNormalView vars={vars} results={results} /> */}
           </tbody>
         </table>
       </div>
