@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import {
   conjunctName,
@@ -14,17 +14,22 @@ import {
   Rec,
   rec,
   Relation,
+  Res,
   Rule,
   varr,
 } from "../../core/types";
 import {
   intersperseIdx,
   pairsToObj,
+  range,
   removeAtIdx,
   updateAtIdx,
 } from "../../util/util";
 import { TD_STYLES } from "../explorer/styles";
 import { BareTerm } from "../dl/replViews";
+import { VegaLite } from "react-vega";
+import { ppt } from "../../core/pretty";
+import { buildGrid } from "./parallelCoords";
 
 // === Rule ===
 
@@ -45,8 +50,16 @@ export function RuleEditor(props: {
   });
   const results = props.interp.queryRec(props.rule.head);
 
+  const outputTable = useRef(null);
+  useLayoutEffect(() => {
+    console.log("layout effect", outputTable);
+  });
+
   return (
-    <table style={{ borderCollapse: "collapse", fontFamily: "monospace" }}>
+    <table
+      ref={outputTable}
+      style={{ borderCollapse: "collapse", fontFamily: "monospace" }}
+    >
       <thead>
         <tr style={{ borderBottom: "1px solid black" }}>
           {/* 'or' control, delete conjunct button, conjunct name */}
@@ -154,24 +167,61 @@ export function RuleEditor(props: {
             </button>
           </td>
         </tr>
-        {results.map((result, idx) => {
-          console.log("ResultTable", { result, vars });
-          return (
-            <tr key={idx}>
-              <td colSpan={3} />
-              {vars.map((varName) => {
-                const value = result.bindings[varName];
-                return (
-                  <td key={varName} style={TD_STYLES}>
-                    {value ? <BareTerm term={value} /> : null}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
+        {/* Results */}
+        <ResultsParallelCoordsView vars={vars} results={results} />
       </tbody>
     </table>
+  );
+}
+
+function ResultsParallelCoordsView(props: { vars: string[]; results: Res[] }) {
+  const grid = buildGrid(props.vars, props.results);
+
+  return (
+    <>
+      {range(grid.longest).map((idx) => {
+        return (
+          <tr>
+            <td colSpan={3} />
+            {props.vars.map((varName) => {
+              const value = grid.grid[varName][idx];
+              return (
+                <td style={TD_STYLES}>
+                  {value ? <BareTerm term={value} /> : null}
+                </td>
+              );
+            })}
+          </tr>
+        );
+      })}
+    </>
+  );
+}
+
+function ResultsNormalView(props: { vars: string[]; results: Res[] }) {
+  return (
+    <>
+      {props.results.map((result, idx) => {
+        return (
+          <tr key={idx}>
+            <td colSpan={3} />
+            {props.vars.map((varName) => {
+              const value = result.bindings[varName];
+              return (
+                <td
+                  key={varName}
+                  style={TD_STYLES}
+                  data-var={varName}
+                  data-val={value ? ppt(value) : null}
+                >
+                  {value ? <BareTerm term={value} /> : null}
+                </td>
+              );
+            })}
+          </tr>
+        );
+      })}
+    </>
   );
 }
 
