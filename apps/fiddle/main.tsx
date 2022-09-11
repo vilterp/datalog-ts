@@ -3,6 +3,10 @@ import ReactDOM from "react-dom";
 import { nullLoader } from "../../core/loaders";
 // @ts-ignore
 import transitiveClosureDL from "../../core/testdata/transitiveClosure.dl";
+// @ts-ignore
+import familyRulesDL from "../../core/testdata/family_rules.dl";
+// @ts-ignore
+import familyFactsDL from "../../core/testdata/family_facts.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -15,7 +19,7 @@ import { LingoEditor } from "../../uiCommon/ide/editor";
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
     "datalog-fiddle-editor-state",
-    initialEditorState(transitiveClosureDL)
+    initialEditorState(familyFactsDL + familyRulesDL)
   );
 
   let error = null;
