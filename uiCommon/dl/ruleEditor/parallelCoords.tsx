@@ -17,7 +17,9 @@ export function ResultsParallelCoordsOverlay(props: {
   posMap: PositionMap;
 }) {
   const varPairs = adjacentPairs(props.grid.vars);
-  const baseCoords = beginningCoords(props.rule);
+  if (Object.keys(props.posMap).length === 0) {
+    return <svg style={{ gridRow: 1, gridColumn: 1 }}></svg>;
+  }
 
   return (
     <svg style={{ gridRow: 1, gridColumn: 1 }}>
@@ -31,16 +33,17 @@ export function ResultsParallelCoordsOverlay(props: {
           }
 
           const fromRow = props.grid.reverseIndex[varPair.from][ppt(fromVal)];
-          const fromCol = varIdx;
           const toRow = props.grid.reverseIndex[varPair.to][ppt(toVal)];
-          const toCol = varIdx + 1;
+
+          const fromPoint = props.posMap[varPair.from][fromRow];
+          const toPoint = props.posMap[varPair.to][toRow];
 
           return (
             <line
-              x1={fromCol * 10}
-              y1={fromRow * 10}
-              x2={toCol * 10}
-              y2={toRow * 10}
+              x1={fromPoint.x}
+              y1={fromPoint.y}
+              x2={toPoint.x}
+              y2={toPoint.y}
               style={{ stroke: "rgb(255,0,0)", strokeWidth: 2 }}
             />
           );
