@@ -29,7 +29,7 @@ import { TD_STYLES } from "../explorer/styles";
 import { BareTerm } from "../dl/replViews";
 import { VegaLite } from "react-vega";
 import { ppt } from "../../core/pretty";
-import { buildGrid } from "./parallelCoords";
+import { buildGrid, Grid } from "./parallelCoords";
 
 // === Rule ===
 
@@ -55,49 +55,57 @@ export function RuleEditor(props: {
     console.log("layout effect", outputTable);
   });
 
+  const grid = buildGrid(vars, results);
+
   return (
-    <table
-      ref={outputTable}
-      style={{ borderCollapse: "collapse", fontFamily: "monospace" }}
-    >
-      <thead>
-        <tr style={{ borderBottom: "1px solid black" }}>
-          {/* 'or' control, delete conjunct button, conjunct name */}
-          <th colSpan={3} />
-          {order.map((pair, idx) => {
-            return (
-              <th key={idx} style={TD_STYLES}>
-                <input
-                  size={Math.max(1, pair.attr.length)}
-                  value={pair.attr}
-                  onChange={(evt) =>
-                    props.dispatch({
-                      type: "EditHead",
-                      action: {
-                        type: "EditAttr",
-                        idx,
-                        order,
-                        newAttr: evt.target.value,
-                      },
-                    })
-                  }
-                />
-                <button
-                  onClick={() =>
-                    props.dispatch({
-                      type: "EditHead",
-                      action: { type: "DeleteColumn", order, idx },
-                    })
-                  }
-                  title="Delete Column"
-                >
-                  x
-                </button>
-              </th>
-            );
-          })}
-        </tr>
-        {/* <tr style={{ borderBottom: "1px solid black" }}>
+    <div style={{ display: "grid" }}>
+      <table
+        ref={outputTable}
+        style={{
+          borderCollapse: "collapse",
+          fontFamily: "monospace",
+          gridRow: 1,
+          gridColumn: 1,
+        }}
+      >
+        <thead>
+          <tr style={{ borderBottom: "1px solid black" }}>
+            {/* 'or' control, delete conjunct button, conjunct name */}
+            <th colSpan={3} />
+            {order.map((pair, idx) => {
+              return (
+                <th key={idx} style={TD_STYLES}>
+                  <input
+                    size={Math.max(1, pair.attr.length)}
+                    value={pair.attr}
+                    onChange={(evt) =>
+                      props.dispatch({
+                        type: "EditHead",
+                        action: {
+                          type: "EditAttr",
+                          idx,
+                          order,
+                          newAttr: evt.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <button
+                    onClick={() =>
+                      props.dispatch({
+                        type: "EditHead",
+                        action: { type: "DeleteColumn", order, idx },
+                      })
+                    }
+                    title="Delete Column"
+                  >
+                    x
+                  </button>
+                </th>
+              );
+            })}
+          </tr>
+          {/* <tr style={{ borderBottom: "1px solid black" }}>
           <th colSpan={3} />
           {order.map((pair, idx) => (
             <th key={idx} style={TD_STYLES}>
@@ -119,72 +127,80 @@ export function RuleEditor(props: {
             </th>
           ))}
         </tr> */}
-      </thead>
-      <tbody>
-        {intersperseIdx(
-          (idx) => (
-            <tr key={`sep${idx}`}>
-              <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
-                {" "}
-              </td>
-            </tr>
-          ),
-          props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
-            <ConjunctionEditor
-              key={`disjunct${disjunctIdx}`}
-              vars={vars}
-              rule={props.rule}
-              conjunction={conjunction}
-              dispatch={(action) =>
-                props.dispatch({
-                  type: "EditBody",
-                  action: { type: "EditDisjunct", idx: disjunctIdx, action },
-                })
-              }
-              relations={props.relations}
-              removeDisjunct={() =>
-                props.dispatch({
-                  type: "EditBody",
-                  action: { type: "RemoveDisjunct", idx: disjunctIdx },
-                })
-              }
-              disjunctIdx={disjunctIdx}
-            />
-          ))
-        )}
-        <tr style={{ borderTop: "1px solid lightgrey" }}>
-          <td colSpan={vars.length + 3} style={TD_STYLES}>
-            <button
-              onClick={() =>
-                props.dispatch({
-                  type: "EditBody",
-                  action: { type: "AddDisjunct" },
-                })
-              }
-              title="Add Disjunct"
-            >
-              +
-            </button>
-          </td>
-        </tr>
-        {/* Results */}
-        <ResultsParallelCoordsView vars={vars} results={results} />
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {intersperseIdx(
+            (idx) => (
+              <tr key={`sep${idx}`}>
+                <td colSpan={vars.length + 1} style={{ textAlign: "center" }}>
+                  {" "}
+                </td>
+              </tr>
+            ),
+            props.rule.body.disjuncts.map((conjunction, disjunctIdx) => (
+              <ConjunctionEditor
+                key={`disjunct${disjunctIdx}`}
+                vars={vars}
+                rule={props.rule}
+                conjunction={conjunction}
+                dispatch={(action) =>
+                  props.dispatch({
+                    type: "EditBody",
+                    action: { type: "EditDisjunct", idx: disjunctIdx, action },
+                  })
+                }
+                relations={props.relations}
+                removeDisjunct={() =>
+                  props.dispatch({
+                    type: "EditBody",
+                    action: { type: "RemoveDisjunct", idx: disjunctIdx },
+                  })
+                }
+                disjunctIdx={disjunctIdx}
+              />
+            ))
+          )}
+          <tr style={{ borderTop: "1px solid lightgrey" }}>
+            <td colSpan={vars.length + 3} style={TD_STYLES}>
+              <button
+                onClick={() =>
+                  props.dispatch({
+                    type: "EditBody",
+                    action: { type: "AddDisjunct" },
+                  })
+                }
+                title="Add Disjunct"
+              >
+                +
+              </button>
+            </td>
+          </tr>
+          {/* Results */}
+          <ResultsParallelCoordsView grid={grid} />
+        </tbody>
+      </table>
+      <svg style={{ gridRow: 1, gridColumn: 1 }}>
+        <line
+          x1="0"
+          y1="0"
+          x2="200"
+          y2="200"
+          style={{ stroke: "rgb(255,0,0)", strokeWidth: 2 }}
+        />
+      </svg>
+    </div>
   );
 }
 
-function ResultsParallelCoordsView(props: { vars: string[]; results: Res[] }) {
-  const grid = buildGrid(props.vars, props.results);
-
+function ResultsParallelCoordsView(props: { grid: Grid }) {
   return (
     <>
-      {range(grid.longest).map((idx) => {
+      {range(props.grid.longest).map((idx) => {
         return (
           <tr>
             <td colSpan={3} />
-            {props.vars.map((varName) => {
-              const value = grid.grid[varName][idx];
+            {props.grid.vars.map((varName) => {
+              const value = props.grid.grid[varName][idx];
               return (
                 <td style={TD_STYLES}>
                   {value ? <BareTerm term={value} /> : null}

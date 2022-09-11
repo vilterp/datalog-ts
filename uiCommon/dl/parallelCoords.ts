@@ -1,12 +1,15 @@
 import { ppt } from "../../core/pretty";
 import { Res, Term } from "../../core/types";
-import { uniq, uniqBy } from "../../util/util";
+import { uniqBy } from "../../util/util";
+
+export type Grid = {
+  grid: { [varName: string]: Term[] };
+  vars: string[];
+  longest: number;
+};
 
 // row, then col
-export function buildGrid(
-  vars: string[],
-  results: Res[]
-): { grid: { [varName: string]: Term[] }; longest: number } {
+export function buildGrid(vars: string[], results: Res[]): Grid {
   const grid: { [varName: string]: Term[] } = {};
   vars.forEach((varName) => {
     grid[varName] = [];
@@ -28,6 +31,5 @@ export function buildGrid(
       longest = unique.length;
     }
   });
-  console.log("buildGrid", grid, longest);
-  return { grid, longest };
+  return { grid, longest, vars };
 }
