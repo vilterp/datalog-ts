@@ -17,31 +17,36 @@ export function ResultsParallelCoordsOverlay(props: {
   return (
     <svg width={props.posMap.tableWidth} height={props.posMap.tableHeight}>
       {props.results.map((res, resIdx) => {
-        return filterMap(varPairs, (varPair) => {
-          const fromVal = res.bindings[varPair.from];
-          const toVal = res.bindings[varPair.to];
+        return (
+          <g key={resIdx}>
+            {filterMap(varPairs, (varPair) => {
+              const fromVal = res.bindings[varPair.from];
+              const toVal = res.bindings[varPair.to];
 
-          if (!fromVal || !toVal) {
-            return null;
-          }
+              if (!fromVal || !toVal) {
+                return null;
+              }
 
-          const fromRow = props.grid.reverseIndex[varPair.from][ppt(fromVal)];
-          const toRow = props.grid.reverseIndex[varPair.to][ppt(toVal)];
+              const fromRow =
+                props.grid.reverseIndex[varPair.from][ppt(fromVal)];
+              const toRow = props.grid.reverseIndex[varPair.to][ppt(toVal)];
 
-          const fromPoint = props.posMap.cells[varPair.from][fromRow];
-          const toPoint = props.posMap.cells[varPair.to][toRow];
+              const fromPoint = props.posMap.cells[varPair.from][fromRow];
+              const toPoint = props.posMap.cells[varPair.to][toRow];
 
-          return (
-            <line
-              key={`${resIdx}-${varPair.from}-${varPair.to}`}
-              x1={fromPoint.x}
-              y1={fromPoint.y}
-              x2={toPoint.x}
-              y2={toPoint.y}
-              style={{ stroke: "rgb(255,0,0)", strokeWidth: 2 }}
-            />
-          );
-        });
+              return (
+                <line
+                  key={`${resIdx}-${varPair.from}-${varPair.to}`}
+                  x1={fromPoint.x}
+                  y1={fromPoint.y}
+                  x2={toPoint.x}
+                  y2={toPoint.y}
+                  style={{ stroke: "rgb(255,0,0)", strokeWidth: 2 }}
+                />
+              );
+            })}
+          </g>
+        );
       })}
     </svg>
   );
