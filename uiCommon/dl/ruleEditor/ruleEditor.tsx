@@ -6,6 +6,7 @@ import { removeAtIdx, updateAtIdx } from "../../../util/util";
 import { TD_STYLES } from "../../explorer/styles";
 import {
   buildGrid,
+  emptyPositionMap,
   getPositionMap,
   PositionMap,
   ResultsParallelCoordsOverlay,
@@ -32,7 +33,7 @@ export function RuleEditor(props: {
       attr: pathStr,
     };
   });
-  const [posMap, setPosMap] = useState<PositionMap>({});
+  const [posMap, setPosMap] = useState<PositionMap>(emptyPositionMap);
   const results = props.interp.queryRec(props.rule.head);
 
   const outputTable = useRef(null);

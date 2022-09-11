@@ -18,12 +18,16 @@ export function ResultsParallelCoordsOverlay(props: {
 }) {
   console.log("ResultsParallelCoordsOverlay", { posMap: props.posMap });
   const varPairs = adjacentPairs(props.grid.vars);
-  if (Object.keys(props.posMap).length === 0) {
+  if (Object.keys(props.posMap.cells).length === 0) {
     return <svg style={{ gridRow: 1, gridColumn: 1 }}></svg>;
   }
 
   return (
-    <svg style={{ gridRow: 1, gridColumn: 1 }}>
+    <svg
+      style={{ gridRow: 1, gridColumn: 1 }}
+      width={props.posMap.tableWidth}
+      height={props.posMap.tableHeight}
+    >
       {props.results.map((res) => {
         return filterMap(varPairs, (varPair, varIdx) => {
           const fromVal = res.bindings[varPair.from];
@@ -36,8 +40,8 @@ export function ResultsParallelCoordsOverlay(props: {
           const fromRow = props.grid.reverseIndex[varPair.from][ppt(fromVal)];
           const toRow = props.grid.reverseIndex[varPair.to][ppt(toVal)];
 
-          const fromPoint = props.posMap[varPair.from][fromRow];
-          const toPoint = props.posMap[varPair.to][toRow];
+          const fromPoint = props.posMap.cells[varPair.from][fromRow];
+          const toPoint = props.posMap.cells[varPair.to][toRow];
 
           return (
             <line
@@ -111,7 +115,17 @@ function beginningCoords(rule: Rule): { row: number; col: number } {
 
 type Point = { x: number; y: number };
 
-export type PositionMap = { [varName: string]: Point[] };
+export type PositionMap = {
+  tableWidth: number;
+  tableHeight: number;
+  cells: { [varName: string]: Point[] };
+};
+
+export const emptyPositionMap: PositionMap = {
+  cells: {},
+  tableHeight: 0,
+  tableWidth: 0,
+};
 
 export function getPositionMap(
   rule: Rule,
@@ -119,19 +133,23 @@ export function getPositionMap(
   table: HTMLTableElement
 ): PositionMap {
   const { row: startRow, col: startCol } = beginningCoords(rule);
-  const out: PositionMap = {};
-  const tablePos = table.getBoundingClientRect();
+  const tableRect = table.getBoundingClientRect();
+  const out: PositionMap = {
+    cells: {},
+    tableHeight: tableRect.height,
+    tableWidth: tableRect.width,
+  };
   grid.vars.forEach((varName, varIdx) => {
-    out[varName] = [];
+    out.cells[varName] = [];
     grid.grid[varName].forEach((_, termIdx) => {
       const rowIdx = startRow + termIdx;
       const colIdx = startCol + varIdx;
       const tbody = table.children[1];
       const el = tbody.children[rowIdx].children[colIdx];
       const rect = el.getBoundingClientRect();
-      const x = rect.x - tablePos.x + window.scrollX;
-      const y = rect.y - tablePos.y + window.scrollY;
-      out[varName].push({
+      const x = rect.x - tableRect.x + window.scrollX;
+      const y = rect.y - tableRect.y + window.scrollY;
+      out.cells[varName].push({
         x: x + rect.width / 2,
         y: y + rect.height / 2,
       });
