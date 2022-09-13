@@ -39,7 +39,7 @@ export function getOverlappingJoinVars(graph: RuleGraph, id: string): string[] {
       ([curID, curNode]) =>
         id !== curID &&
         curNode.desc.type === "JoinVar" &&
-        distance(fromNode.pos, curNode.pos) < JOIN_VAR_NODE_RADIUS
+        distance(fromNode.pos, curNode.pos) < JOIN_VAR_NODE_RADIUS * 2
     )
     .map(([id, _]) => id);
 }

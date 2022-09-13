@@ -8,7 +8,6 @@ import {
   combineNodes,
   JOIN_VAR_NODE_RADIUS,
 } from "./model";
-import { distance } from "../../../util/geom";
 
 export function RuleGraphEditor(props: {
   ruleGraph: RuleGraph;
@@ -16,14 +15,8 @@ export function RuleGraphEditor(props: {
 }) {
   const svgRef = useRef();
   const [draggingID, setDraggingID] = useState<string | null>(null);
-  const draggingNode = draggingID ? props.ruleGraph.nodes[draggingID] : null;
-  const nodesOverlappingDraggingNode = draggingNode
-    ? Object.entries(props.ruleGraph.nodes)
-        .filter(
-          ([id, node]) =>
-            distance(draggingNode.pos, node.pos) < JOIN_VAR_NODE_RADIUS
-        )
-        .map(([id, node]) => id)
+  const nodesOverlappingDraggingNode = draggingID
+    ? getOverlappingJoinVars(props.ruleGraph, draggingID)
     : [];
 
   return (
