@@ -7,6 +7,7 @@ import {
   getOverlappingJoinVars,
   combineNodes,
   JOIN_VAR_NODE_RADIUS,
+  GraphNode,
 } from "./model";
 import { Point } from "../../../util/geom";
 
@@ -72,35 +73,52 @@ export function RuleGraphEditor(props: {
       </g>
       <g>
         {Object.entries(props.ruleGraph.nodes).map(([id, node]) => {
-          const dragging = dragState && dragState.nodeID === id;
-          const draggedNodeOverlappingThis =
-            nodesOverlappingDraggingNode.indexOf(id) !== -1;
-          const thisDraggedOverSomeNode =
-            dragging && nodesOverlappingDraggingNode.length > 0;
-          const overlapping =
-            draggedNodeOverlappingThis || thisDraggedOverSomeNode;
-          return (
-            <g
-              key={id}
-              transform={`translate(${node.pos.x} ${node.pos.y})`}
-              style={{ cursor: dragging ? "grabbing" : "grab" }}
-              onMouseDown={(evt) =>
-                setDragState({
-                  nodeID: id,
-                  offset: { x: evt.clientX, y: evt.clientY },
-                })
-              }
-            >
-              <NodeDescView
-                nodeDesc={node.desc}
-                dragging={dragging}
-                overlapping={overlapping}
-              />
-            </g>
-          );
+          <NodeView
+            id={id}
+            node={node}
+            nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
+            dragState={dragState}
+            setDragState={setDragState}
+          />;
         })}
       </g>
     </svg>
+  );
+}
+
+function NodeView(props: {
+  id: string;
+  node: GraphNode;
+  nodesOverlappingDraggingNode: string[];
+  dragState: DragState;
+  setDragState: (ds: DragState) => void;
+}) {
+  const { id, node, dragState, setDragState, nodesOverlappingDraggingNode } =
+    props;
+  const dragging = dragState && dragState.nodeID === id;
+  const draggedNodeOverlappingThis =
+    nodesOverlappingDraggingNode.indexOf(id) !== -1;
+  const thisDraggedOverSomeNode =
+    dragging && nodesOverlappingDraggingNode.length > 0;
+  const overlapping = draggedNodeOverlappingThis || thisDraggedOverSomeNode;
+  return (
+    <g
+      key={id}
+      transform={`translate(${node.pos.x} ${node.pos.y})`}
+      style={{ cursor: dragging ? "grabbing" : "grab" }}
+      onMouseDown={(evt) => {
+        setDragState({
+          nodeID: id,
+          offset: { x: evt.clientX, y: evt.clientY },
+        });
+      }}
+    >
+      <NodeDescView
+        nodeDesc={node.desc}
+        dragging={dragging}
+        overlapping={overlapping}
+      />
+    </g>
   );
 }
 

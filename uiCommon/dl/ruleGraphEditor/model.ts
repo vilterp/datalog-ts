@@ -6,7 +6,7 @@ export type RuleGraph = {
   edges: { fromID: string; toID: string }[];
 };
 
-type GraphNode = {
+export type GraphNode = {
   pos: Point;
   desc: NodeDesc;
 };
