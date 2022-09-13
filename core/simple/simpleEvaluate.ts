@@ -13,6 +13,7 @@ import {
   relationalFalse,
   rec,
   baseFactTrace,
+  Conjunct,
 } from "../types";
 import {
   applyMappings,
@@ -42,7 +43,7 @@ function doJoin(
   invokeLoc: InvocationLocation,
   db: DB,
   scope: Bindings,
-  clauses: ConjunctInner[],
+  clauses: Conjunct[],
   cache: Cache,
   relationName: string
 ): Res[] {
@@ -57,7 +58,7 @@ function doJoin(
       [...invokeLoc, { type: "AndClause", idx: 0 }],
       db,
       scope,
-      clauses[0],
+      clauses[0].inner,
       cache
     );
   }
@@ -67,7 +68,7 @@ function doJoin(
     [...invokeLoc, { type: "AndClause", idx: 0 }],
     db,
     scope,
-    clauses[0],
+    clauses[0].inner,
     cache
   );
   // console.groupEnd();

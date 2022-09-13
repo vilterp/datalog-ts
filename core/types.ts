@@ -1,3 +1,5 @@
+import { Point } from "../util/geom";
+
 export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Fact"; record: Rec }
@@ -32,7 +34,9 @@ export type Rule = {
 
 export type Disjunction = { type: "Disjunction"; disjuncts: Conjunction[] };
 
-export type Conjunction = { type: "Conjunction"; conjuncts: ConjunctInner[] };
+export type Conjunction = { type: "Conjunction"; conjuncts: Conjunct[] };
+
+export type Conjunct = { pos: Point; inner: ConjunctInner };
 
 export type ConjunctInner = Rec | Negation | Aggregation;
 
@@ -91,7 +95,7 @@ export function or(opts: Conjunction[]): Disjunction {
   return { type: "Disjunction", disjuncts: opts };
 }
 
-export function and(clauses: ConjunctInner[]): Conjunction {
+export function and(clauses: Conjunct[]): Conjunction {
   return { type: "Conjunction", conjuncts: clauses };
 }
 
