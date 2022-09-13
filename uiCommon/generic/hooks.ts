@@ -1,5 +1,12 @@
 import useLocalStorage from "react-use-localstorage";
-import { useEffect, useReducer } from "react";
+import {
+  Ref,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 export function useBoolLocalStorage(
   key: string,
@@ -49,4 +56,22 @@ export function useEffectfulReducer<S, A>(
     effects.map((eff) => eff.then(dispatch));
   }, [effects]);
   return [state, dispatch];
+}
+
+// TODO: make more generic...
+export function useSVGTextBoundingBox(
+  deps: any[]
+): [Ref<SVGTextElement>, DOMRect] {
+  const ref = useRef<SVGTextElement>();
+  const [bbox, setBBox] = useState<DOMRect>(null);
+  useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const newBBox = ref.current.getBBox();
+    if (JSON.stringify(newBBox) !== JSON.stringify(bbox)) {
+      setBBox(newBBox);
+    }
+  }, deps);
+  return [ref, bbox];
 }

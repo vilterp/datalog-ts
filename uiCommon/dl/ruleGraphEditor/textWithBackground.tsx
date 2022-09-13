@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { CSSProperties } from "react";
+import { useSVGTextBoundingBox } from "../../generic/hooks";
 
 export function TextWithBackground(props: {
   text: string;
@@ -7,20 +8,9 @@ export function TextWithBackground(props: {
   backgroundStyle: CSSProperties;
   padding: number;
 }) {
-  const ref = useRef<SVGTextElement>();
-  const [bbox, setBBox] = useState<DOMRect>(null);
-  useLayoutEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-    const newBBox = ref.current.getBBox();
-    if (JSON.stringify(newBBox) !== JSON.stringify(bbox)) {
-      setBBox(newBBox);
-    }
-  }, [props.text, props.textStyle]);
+  const [ref, bbox] = useSVGTextBoundingBox([props.text, props.textStyle]);
   const paddedWidth = bbox ? bbox.width + props.padding : 0;
   const paddedHeight = bbox ? bbox.height + props.padding : 0;
-
   return (
     <g>
       <rect
