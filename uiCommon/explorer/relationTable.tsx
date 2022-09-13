@@ -16,7 +16,7 @@ import {
   INITIAL_GRAPH,
   RuleGraph,
   RuleGraphEditor,
-} from "../dl/ruleEditor/ruleGraphEditor";
+} from "../dl/ruleGraphEditor/ruleGraphEditor";
 
 export function RelationTable(props: {
   relation: string;
