@@ -95,8 +95,11 @@ export function or(opts: Conjunction[]): Disjunction {
   return { type: "Disjunction", disjuncts: opts };
 }
 
-export function and(clauses: Conjunct[]): Conjunction {
-  return { type: "Conjunction", conjuncts: clauses };
+export function and(clauses: ConjunctInner[]): Conjunction {
+  return {
+    type: "Conjunction",
+    conjuncts: clauses.map((inner) => ({ inner, pos: { x: 0, y: 0 } })),
+  };
 }
 
 // term helpers

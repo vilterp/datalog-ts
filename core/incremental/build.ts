@@ -5,6 +5,7 @@ import {
   ConjunctInner,
   VarMappings,
   Res,
+  Conjunct,
 } from "../types";
 import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
 import { getMappings } from "../unify";
@@ -157,16 +158,18 @@ export function addOr(
   };
 }
 
-function addAnd(graph: RuleGraph, clauses: ConjunctInner[]): AddResult {
-  const recs = clauses.filter((clause) => {
-    if (clause.type === "Record") {
-      return true;
-    } else {
-      throw new Error(
-        `clauses of type ${clause.type} not supported in incremental interpreter`
-      );
-    }
-  }) as Rec[];
+function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
+  const recs = clauses
+    .map((c) => c.inner)
+    .filter((clause) => {
+      if (clause.type === "Record") {
+        return true;
+      } else {
+        throw new Error(
+          `clauses of type ${clause.type} not supported in incremental interpreter`
+        );
+      }
+    }) as Rec[];
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
     const tree = getJoinTree(recs);

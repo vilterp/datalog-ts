@@ -1,6 +1,7 @@
 import {
   DLArithmetic,
   DLComparison,
+  DLConjunct,
   DLRule,
   DLStatement,
   DLString,
@@ -21,6 +22,7 @@ import {
   str,
   Term,
   varr,
+  Conjunct,
 } from "./types";
 
 export function parserStatementToInternal(stmt: DLStatement): Statement {
@@ -65,34 +67,42 @@ export function parserRuleToInternal(term: DLRule): Rule {
       type: "Disjunction",
       disjuncts: term.disjunct.map((disjunct) => ({
         type: "Conjunction",
-        conjuncts: disjunct.conjunct.map((conjunct): ConjunctInner => {
-          switch (conjunct.type) {
-            case "AssignmentOnLeft":
-            case "AssignmentOnRight":
-              return parserArithmeticToInternal(conjunct);
-            case "Comparison":
-              return parserComparisonToInternal(conjunct);
-            case "Negation":
-              return {
-                type: "Negation",
-                record: parserTermToInternal(conjunct.record) as Rec,
-              };
-            case "Placeholder":
-              return parserTermToInternal(conjunct) as Rec;
-            case "Record":
-              return parserTermToInternal(conjunct) as Rec;
-            case "Aggregation":
-              return {
-                type: "Aggregation",
-                aggregation: conjunct.aggregation.text,
-                record: parserTermToInternal(conjunct.record) as Rec,
-                varNames: conjunct.var.map((dlVar) => dlVar.text),
-              };
-          }
+        conjuncts: disjunct.conjunct.map((conjunct): Conjunct => {
+          const inner = parserConjunctToInner(conjunct);
+          return {
+            inner,
+            pos: { x: 0, y: 0 },
+          };
         }),
       })),
     },
   };
+}
+
+function parserConjunctToInner(conjunct: DLConjunct): ConjunctInner {
+  switch (conjunct.type) {
+    case "AssignmentOnLeft":
+    case "AssignmentOnRight":
+      return parserArithmeticToInternal(conjunct);
+    case "Comparison":
+      return parserComparisonToInternal(conjunct);
+    case "Negation":
+      return {
+        type: "Negation",
+        record: parserTermToInternal(conjunct.record) as Rec,
+      };
+    case "Placeholder":
+      return parserTermToInternal(conjunct) as Rec;
+    case "Record":
+      return parserTermToInternal(conjunct) as Rec;
+    case "Aggregation":
+      return {
+        type: "Aggregation",
+        aggregation: conjunct.aggregation.text,
+        record: parserTermToInternal(conjunct.record) as Rec,
+        varNames: conjunct.var.map((dlVar) => dlVar.text),
+      };
+  }
 }
 
 export function parserTermToInternal(term: DLTerm): Term {

@@ -36,10 +36,10 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
                 ),
                 opt.conjuncts.map((clause) => (
                   <TermView
-                    key={ppt(clause)}
+                    key={ppt(clause.inner)}
                     highlight={props.highlight}
                     scopePath={[]}
-                    term={makeTermWithBindings(clause, {})}
+                    term={makeTermWithBindings(clause.inner, {})}
                   />
                 ))
               )}

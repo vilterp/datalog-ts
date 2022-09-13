@@ -140,11 +140,11 @@ function virtualReferences(db: DB): Rec[] {
   return flatMapObjToList(db.rules.toJSON(), (ruleName, rule) =>
     flatMap(rule.body.disjuncts, (opt) =>
       flatMap(opt.conjuncts, (clause) =>
-        clause.type === "Record"
+        clause.inner.type === "Record"
           ? [
               rec("internal.RelationReference", {
                 from: str(ruleName),
-                to: str(clause.relation),
+                to: str(clause.inner.relation),
               }),
             ]
           : []
