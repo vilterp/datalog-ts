@@ -11,7 +11,9 @@ type GraphNode = {
   desc: NodeDesc;
 };
 
-export type NodeDesc = { type: "JoinVar" } | { type: "Relation"; name: string };
+export type NodeDesc =
+  | { type: "JoinVar" }
+  | { type: "Relation"; name: string; isHead: boolean };
 
 export function updatePos(
   graph: RuleGraph,

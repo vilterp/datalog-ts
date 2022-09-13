@@ -73,8 +73,12 @@ export function RuleGraphEditor(props: {
       <g>
         {Object.entries(props.ruleGraph.nodes).map(([id, node]) => {
           const dragging = draggingID === id;
+          const draggedNodeOverlappingThis =
+            nodesOverlappingDraggingNode.indexOf(id) !== -1;
+          const thisDraggedOverSomeNode =
+            dragging && nodesOverlappingDraggingNode.length > 0;
           const overlapping =
-            !dragging && nodesOverlappingDraggingNode.indexOf(id) !== -1;
+            draggedNodeOverlappingThis || thisDraggedOverSomeNode;
           return (
             <g
               key={id}
@@ -113,7 +117,9 @@ function NodeDesc(props: {
         <TextWithBackground
           text={props.nodeDesc.name}
           textStyle={{ fontFamily: "monospace" }}
-          backgroundStyle={{ fill: "white" }}
+          backgroundStyle={{
+            fill: props.nodeDesc.isHead ? "lightblue" : "white",
+          }}
           padding={3}
         />
       );

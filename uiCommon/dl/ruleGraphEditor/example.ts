@@ -8,7 +8,7 @@ export const INITIAL_GRAPH: RuleGraph = {
         x: 100,
         y: 70,
       },
-      desc: { type: "Relation", name: "parent" },
+      desc: { type: "Relation", name: "parent", isHead: false },
     },
     1: {
       pos: {
@@ -30,7 +30,7 @@ export const INITIAL_GRAPH: RuleGraph = {
         x: 100,
         y: 120,
       },
-      desc: { type: "Relation", name: "ancestor" },
+      desc: { type: "Relation", name: "ancestor", isHead: false },
     },
     4: {
       pos: {
@@ -52,7 +52,7 @@ export const INITIAL_GRAPH: RuleGraph = {
         x: 100,
         y: 30,
       },
-      desc: { type: "Relation", name: "ancestor" },
+      desc: { type: "Relation", name: "ancestor", isHead: true },
     },
     7: {
       pos: {
