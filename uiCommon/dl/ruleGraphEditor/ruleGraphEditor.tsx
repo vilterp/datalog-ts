@@ -1,6 +1,13 @@
 import React, { useRef, useState } from "react";
 import { TextWithBackground } from "./textWithBackground";
-import { RuleGraph, NodeDesc, Point } from "./types";
+import {
+  RuleGraph,
+  NodeDesc,
+  updatePos,
+  getOverlapping,
+  combineNodes,
+  JOIN_VAR_NODE_RADIUS,
+} from "./model";
 
 export function RuleGraphEditor(props: {
   ruleGraph: RuleGraph;
@@ -26,7 +33,18 @@ export function RuleGraphEditor(props: {
           );
         }
       }}
-      onMouseUp={() => setDraggingID(null)}
+      onMouseUp={() => {
+        setDraggingID(null);
+        const overlappingIDs = getOverlapping(props.ruleGraph, draggingID);
+        console.log("overlappingIDs", overlappingIDs);
+        const newGraph = overlappingIDs.reduce(
+          (graph, overlappingID) =>
+            combineNodes(graph, draggingID, overlappingID),
+          props.ruleGraph
+        );
+        console.log("newGraph", newGraph);
+        props.setRuleGraph(newGraph);
+      }}
     >
       <g>
         {props.ruleGraph.edges.map((edge) => {
@@ -69,7 +87,12 @@ export function RuleGraphEditor(props: {
 function NodeDesc(props: { nodeDesc: NodeDesc; dragging: boolean }) {
   switch (props.nodeDesc.type) {
     case "JoinVar":
-      return <circle r={10} fill={props.dragging ? "red" : "blue"} />;
+      return (
+        <circle
+          r={JOIN_VAR_NODE_RADIUS}
+          fill={props.dragging ? "red" : "blue"}
+        />
+      );
     case "Relation": {
       return (
         <TextWithBackground
@@ -81,17 +104,4 @@ function NodeDesc(props: { nodeDesc: NodeDesc; dragging: boolean }) {
       );
     }
   }
-}
-
-function updatePos(graph: RuleGraph, nodeID: string, newPos: Point): RuleGraph {
-  return {
-    ...graph,
-    nodes: {
-      ...graph.nodes,
-      [nodeID]: {
-        ...graph.nodes[nodeID],
-        pos: newPos,
-      },
-    },
-  };
 }

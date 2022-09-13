@@ -14,7 +14,7 @@ import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleEditor, ruleReducer } from "../dl/ruleEditor/ruleEditor";
 import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
 import { INITIAL_GRAPH } from "../dl/ruleGraphEditor/example";
-import { RuleGraph } from "../dl/ruleGraphEditor/types";
+import { RuleGraph } from "../dl/ruleGraphEditor/model";
 
 export function RelationTable(props: {
   relation: string;
