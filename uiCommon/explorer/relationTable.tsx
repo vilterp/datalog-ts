@@ -12,11 +12,9 @@ import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleEditor, ruleReducer } from "../dl/ruleEditor/ruleEditor";
-import {
-  INITIAL_GRAPH,
-  RuleGraph,
-  RuleGraphEditor,
-} from "../dl/ruleGraphEditor/ruleGraphEditor";
+import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
+import { INITIAL_GRAPH } from "../dl/ruleGraphEditor/example";
+import { RuleGraph } from "../dl/ruleGraphEditor/types";
 
 export function RelationTable(props: {
   relation: string;
