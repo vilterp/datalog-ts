@@ -133,7 +133,7 @@ function doEvaluate(
   const bigRes = ((): Res[] => {
     switch (term.type) {
       case "Record": {
-        return memo(cache, term, scope, (): Res[] => {
+        return memo(cache, term, scope || {}, (): Res[] => {
           const table = db.tables.get(term.relation);
           // const virtual = db.virtualTables.get(term.relation);
           // const records = table ? table : virtual ? virtual(db) : null;

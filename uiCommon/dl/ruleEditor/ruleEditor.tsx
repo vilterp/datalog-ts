@@ -36,7 +36,13 @@ export function RuleEditor(props: {
   });
   const [posMap, setPosMap] = useState<PositionMap>(emptyPositionMap);
   const [hoveredResults, setHoveredResults] = useState<Res[]>([]);
-  const results = props.interp.queryRec(props.rule.head);
+  let error = "";
+  let results: Res[] = [];
+  try {
+    results = props.interp.queryRec(props.rule.head);
+  } catch (e) {
+    error = e.toString();
+  }
 
   const outputTable = useRef(null);
   useLayoutEffect(() => {
@@ -123,6 +129,7 @@ export function RuleEditor(props: {
           </tbody>
         </table>
       </div>
+      <div>{error ? <pre style={{ color: "red" }}>{error}</pre> : null}</div>
     </div>
   );
 }

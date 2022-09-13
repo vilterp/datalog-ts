@@ -237,7 +237,7 @@ export function unifyBindings(
   right: Bindings
 ): Bindings | null {
   const res: Bindings = {};
-  for (const leftVar of Object.keys(left)) {
+  for (const leftVar of Object.keys(left || {})) {
     const leftTerm = left[leftVar];
     const rightTerm = right[leftVar];
     // console.log("unifyvars", leftTerm, leftVal, rightTerm);
@@ -251,7 +251,7 @@ export function unifyBindings(
       res[leftVar] = leftTerm;
     }
   }
-  const onlyInRight = Object.keys(right).filter((key) => !left[key]);
+  const onlyInRight = Object.keys(right).filter((key) => !(left || {})[key]);
   for (const key of onlyInRight) {
     res[key] = right[key];
   }
@@ -264,7 +264,7 @@ export function substitute(term: Term, bindings: Bindings): Term {
     case "Record":
       return rec(
         term.relation,
-        mapObj(term.attrs, (k, t) => substitute(t, bindings))
+        mapObj(term.attrs, (k, t) => substitute(t, bindings || {}))
       );
     case "Var":
       return bindings[term.name] ? bindings[term.name] : term; // TODO: handling missing. lol
