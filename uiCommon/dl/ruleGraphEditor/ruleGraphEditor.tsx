@@ -1,22 +1,25 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, MouseEvent, Ref } from "react";
 import { TextWithBackground } from "./textWithBackground";
 import {
   RuleGraph,
-  NodeDesc,
+  NodeDesc as NodeDescView,
   updatePos,
   getOverlappingJoinVars,
   combineNodes,
   JOIN_VAR_NODE_RADIUS,
 } from "./model";
+import { Point } from "../../../util/geom";
+
+type DragState = { nodeID: string; offset: Point } | null;
 
 export function RuleGraphEditor(props: {
   ruleGraph: RuleGraph;
   setRuleGraph: (g: RuleGraph) => void;
 }) {
   const svgRef = useRef();
-  const [draggingID, setDraggingID] = useState<string | null>(null);
-  const nodesOverlappingDraggingNode = draggingID
-    ? getOverlappingJoinVars(props.ruleGraph, draggingID)
+  const [dragState, setDragState] = useState<DragState>(null);
+  const nodesOverlappingDraggingNode = dragState
+    ? getOverlappingJoinVars(props.ruleGraph, dragState.nodeID)
     : [];
 
   return (
@@ -24,28 +27,25 @@ export function RuleGraphEditor(props: {
       ref={svgRef}
       width={500}
       onMouseMove={(evt) => {
-        if (draggingID) {
-          // @ts-ignore
-          const rect = svgRef.current.getBoundingClientRect();
-          const x = evt.clientX - rect.left;
-          const y = evt.clientY - rect.top;
+        if (dragState) {
           props.setRuleGraph(
-            updatePos(props.ruleGraph, draggingID, {
-              x,
-              y,
-            })
+            updatePos(
+              props.ruleGraph,
+              dragState.nodeID,
+              mouseRelativeToSVG(svgRef, evt)
+            )
           );
         }
       }}
       onMouseUp={() => {
-        setDraggingID(null);
+        setDragState(null);
         const overlappingIDs = getOverlappingJoinVars(
           props.ruleGraph,
-          draggingID
+          dragState.nodeID
         );
         const newGraph = overlappingIDs.reduce(
           (graph, overlappingID) =>
-            combineNodes(graph, draggingID, overlappingID),
+            combineNodes(graph, dragState.nodeID, overlappingID),
           props.ruleGraph
         );
         props.setRuleGraph(newGraph);
@@ -72,7 +72,7 @@ export function RuleGraphEditor(props: {
       </g>
       <g>
         {Object.entries(props.ruleGraph.nodes).map(([id, node]) => {
-          const dragging = draggingID === id;
+          const dragging = dragState && dragState.nodeID === id;
           const draggedNodeOverlappingThis =
             nodesOverlappingDraggingNode.indexOf(id) !== -1;
           const thisDraggedOverSomeNode =
@@ -84,9 +84,14 @@ export function RuleGraphEditor(props: {
               key={id}
               transform={`translate(${node.pos.x} ${node.pos.y})`}
               style={{ cursor: dragging ? "grabbing" : "grab" }}
-              onMouseDown={() => setDraggingID(id)}
+              onMouseDown={(evt) =>
+                setDragState({
+                  nodeID: id,
+                  offset: { x: evt.clientX, y: evt.clientY },
+                })
+              }
             >
-              <NodeDesc
+              <NodeDescView
                 nodeDesc={node.desc}
                 dragging={dragging}
                 overlapping={overlapping}
@@ -99,8 +104,8 @@ export function RuleGraphEditor(props: {
   );
 }
 
-function NodeDesc(props: {
-  nodeDesc: NodeDesc;
+function NodeDescView(props: {
+  nodeDesc: NodeDescView;
   dragging: boolean;
   overlapping: boolean;
 }) {
@@ -125,4 +130,12 @@ function NodeDesc(props: {
       );
     }
   }
+}
+
+function mouseRelativeToSVG(svgRef: Ref<SVGElement>, evt: MouseEvent): Point {
+  // @ts-ignore
+  const svgRect = svgRef.current.getBoundingClientRect();
+  const x = evt.clientX - svgRect.left;
+  const y = evt.clientY - svgRect.top;
+  return { x, y };
 }
