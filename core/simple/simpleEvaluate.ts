@@ -1,5 +1,5 @@
 import {
-  Conjunct,
+  ConjunctInner,
   Bindings,
   Res,
   Term,
@@ -42,8 +42,9 @@ function doJoin(
   invokeLoc: InvocationLocation,
   db: DB,
   scope: Bindings,
-  clauses: Conjunct[],
-  cache: Cache
+  clauses: ConjunctInner[],
+  cache: Cache,
+  relationName: string
 ): Res[] {
   if (clauses.length === 0) {
     return [];

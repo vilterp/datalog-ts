@@ -1,4 +1,11 @@
-import { Rule, Rec, Disjunction, Conjunct, VarMappings, Res } from "../types";
+import {
+  Rule,
+  Rec,
+  Disjunction,
+  ConjunctInner,
+  VarMappings,
+  Res,
+} from "../types";
 import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
 import { getMappings } from "../unify";
 import {
@@ -150,7 +157,7 @@ export function addOr(
   };
 }
 
-function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
+function addAnd(graph: RuleGraph, clauses: ConjunctInner[]): AddResult {
   const recs = clauses.filter((clause) => {
     if (clause.type === "Record") {
       return true;

@@ -9,7 +9,7 @@ import {
 import { deEscape } from "../languageWorkbench/parserlib/types";
 import { mapListToObj, pairsToObj } from "../util/util";
 import {
-  Conjunct,
+  ConjunctInner,
   array,
   bool,
   dict,
@@ -65,7 +65,7 @@ export function parserRuleToInternal(term: DLRule): Rule {
       type: "Disjunction",
       disjuncts: term.disjunct.map((disjunct) => ({
         type: "Conjunction",
-        conjuncts: disjunct.conjunct.map((conjunct): Conjunct => {
+        conjuncts: disjunct.conjunct.map((conjunct): ConjunctInner => {
           switch (conjunct.type) {
             case "AssignmentOnLeft":
             case "AssignmentOnRight":
