@@ -32,12 +32,13 @@ export function updatePos(
 
 export const JOIN_VAR_NODE_RADIUS = 10;
 
-export function getOverlapping(graph: RuleGraph, id: string): string[] {
+export function getOverlappingJoinVars(graph: RuleGraph, id: string): string[] {
   const fromNode = graph.nodes[id];
   return Object.entries(graph.nodes)
     .filter(
       ([curID, curNode]) =>
         id !== curID &&
+        curNode.desc.type === "JoinVar" &&
         distance(fromNode.pos, curNode.pos) < JOIN_VAR_NODE_RADIUS
     )
     .map(([id, _]) => id);

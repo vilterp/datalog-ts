@@ -4,7 +4,7 @@ import {
   RuleGraph,
   NodeDesc,
   updatePos,
-  getOverlapping,
+  getOverlappingJoinVars,
   combineNodes,
   JOIN_VAR_NODE_RADIUS,
 } from "./model";
@@ -45,7 +45,10 @@ export function RuleGraphEditor(props: {
       }}
       onMouseUp={() => {
         setDraggingID(null);
-        const overlappingIDs = getOverlapping(props.ruleGraph, draggingID);
+        const overlappingIDs = getOverlappingJoinVars(
+          props.ruleGraph,
+          draggingID
+        );
         const newGraph = overlappingIDs.reduce(
           (graph, overlappingID) =>
             combineNodes(graph, draggingID, overlappingID),
