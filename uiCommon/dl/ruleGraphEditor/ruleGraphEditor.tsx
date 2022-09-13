@@ -9,7 +9,7 @@ import {
   JOIN_VAR_NODE_RADIUS,
   GraphNode,
 } from "./model";
-import { Point } from "../../../util/geom";
+import { minusPoint, plusPoint, Point, rectCenter } from "../../../util/geom";
 
 type DragState = { nodeID: string; offset: Point } | null;
 
@@ -28,18 +28,20 @@ export function RuleGraphEditor(props: {
       ref={svgRef}
       width={500}
       onMouseMove={(evt) => {
+        evt.preventDefault();
         if (dragState) {
+          const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
+          const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
           props.setRuleGraph(
-            updatePos(
-              props.ruleGraph,
-              dragState.nodeID,
-              mouseRelativeToSVG(svgRef, evt)
-            )
+            updatePos(props.ruleGraph, dragState.nodeID, mouseMinusOffset)
           );
         }
       }}
       onMouseUp={() => {
         setDragState(null);
+        if (!dragState) {
+          return;
+        }
         const overlappingIDs = getOverlappingJoinVars(
           props.ruleGraph,
           dragState.nodeID
@@ -72,15 +74,19 @@ export function RuleGraphEditor(props: {
         })}
       </g>
       <g>
-        {Object.entries(props.ruleGraph.nodes).map(([id, node]) => {
+        {Object.entries(props.ruleGraph.nodes).map(([id, node]) => (
           <NodeView
+            key={id}
             id={id}
             node={node}
             nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
             dragState={dragState}
-            setDragState={setDragState}
-          />;
-        })}
+            setDragState={(ds) => {
+              console.log("setDragState", ds);
+              setDragState(ds);
+            }}
+          />
+        ))}
       </g>
     </svg>
   );
@@ -101,15 +107,16 @@ function NodeView(props: {
   const thisDraggedOverSomeNode =
     dragging && nodesOverlappingDraggingNode.length > 0;
   const overlapping = draggedNodeOverlappingThis || thisDraggedOverSomeNode;
+  const ref = useRef<SVGGraphicsElement>();
   return (
     <g
-      key={id}
+      ref={ref}
       transform={`translate(${node.pos.x} ${node.pos.y})`}
       style={{ cursor: dragging ? "grabbing" : "grab" }}
       onMouseDown={(evt) => {
         setDragState({
           nodeID: id,
-          offset: { x: evt.clientX, y: evt.clientY },
+          offset: mouseRelativeToElementCenter(ref, evt),
         });
       }}
     >
@@ -150,10 +157,25 @@ function NodeDescView(props: {
   }
 }
 
-function mouseRelativeToSVG(svgRef: Ref<SVGElement>, evt: MouseEvent): Point {
+function mouseRelativeToElementTopLeft(
+  svgRef: Ref<SVGElement>,
+  evt: MouseEvent
+): Point {
   // @ts-ignore
   const svgRect = svgRef.current.getBoundingClientRect();
   const x = evt.clientX - svgRect.left;
   const y = evt.clientY - svgRect.top;
+  return { x, y };
+}
+
+function mouseRelativeToElementCenter(
+  svgRef: Ref<SVGElement>,
+  evt: MouseEvent
+): Point {
+  // @ts-ignore
+  const svgRect = svgRef.current.getBoundingClientRect();
+  const center = rectCenter(svgRect);
+  const x = evt.clientX - center.x;
+  const y = evt.clientY - center.y;
   return { x, y };
 }
