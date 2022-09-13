@@ -34,6 +34,9 @@ export const JOIN_VAR_NODE_RADIUS = 10;
 
 export function getOverlappingJoinVars(graph: RuleGraph, id: string): string[] {
   const fromNode = graph.nodes[id];
+  if (fromNode.desc.type !== "JoinVar") {
+    return [];
+  }
   return Object.entries(graph.nodes)
     .filter(
       ([curID, curNode]) =>

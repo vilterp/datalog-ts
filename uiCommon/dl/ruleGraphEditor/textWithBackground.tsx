@@ -34,7 +34,7 @@ export function TextWithBackground(props: {
         ref={ref}
         textAnchor="middle"
         alignmentBaseline="middle"
-        style={{ fontFamily: "monospace" }}
+        style={{ fontFamily: "monospace", pointerEvents: "none" }}
       >
         {props.text}
       </text>

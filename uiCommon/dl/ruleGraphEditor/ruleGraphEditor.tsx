@@ -22,6 +22,7 @@ export function RuleGraphEditor(props: {
   return (
     <svg
       ref={svgRef}
+      width={500}
       onMouseMove={(evt) => {
         if (draggingID) {
           // @ts-ignore
@@ -104,7 +105,7 @@ function NodeDesc(props: {
       return (
         <circle
           r={JOIN_VAR_NODE_RADIUS}
-          fill={props.dragging ? "red" : props.overlapping ? "orange" : "blue"}
+          fill={props.overlapping ? "orange" : "blue"}
         />
       );
     case "Relation": {
