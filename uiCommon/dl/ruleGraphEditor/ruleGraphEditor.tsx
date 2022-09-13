@@ -36,13 +36,11 @@ export function RuleGraphEditor(props: {
       onMouseUp={() => {
         setDraggingID(null);
         const overlappingIDs = getOverlapping(props.ruleGraph, draggingID);
-        console.log("overlappingIDs", overlappingIDs);
         const newGraph = overlappingIDs.reduce(
           (graph, overlappingID) =>
             combineNodes(graph, draggingID, overlappingID),
           props.ruleGraph
         );
-        console.log("newGraph", newGraph);
         props.setRuleGraph(newGraph);
       }}
     >
