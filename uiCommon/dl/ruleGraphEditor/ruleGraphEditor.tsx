@@ -1,4 +1,4 @@
-import React, { useRef, useState, MouseEvent, Ref } from "react";
+import React, { useRef, useState } from "react";
 import { TextWithBackground } from "./textWithBackground";
 import {
   RuleGraph,
@@ -9,7 +9,11 @@ import {
   JOIN_VAR_NODE_RADIUS,
   GraphNode,
 } from "./model";
-import { minusPoint, plusPoint, Point, rectCenter } from "../../../util/geom";
+import { minusPoint, Point } from "../../../util/geom";
+import {
+  mouseRelativeToElementCenter,
+  mouseRelativeToElementTopLeft,
+} from "./mouseUtil";
 
 type DragState = { nodeID: string; offset: Point } | null;
 
@@ -155,27 +159,4 @@ function NodeDescView(props: {
       );
     }
   }
-}
-
-function mouseRelativeToElementTopLeft(
-  svgRef: Ref<SVGElement>,
-  evt: MouseEvent
-): Point {
-  // @ts-ignore
-  const svgRect = svgRef.current.getBoundingClientRect();
-  const x = evt.clientX - svgRect.left;
-  const y = evt.clientY - svgRect.top;
-  return { x, y };
-}
-
-function mouseRelativeToElementCenter(
-  svgRef: Ref<SVGElement>,
-  evt: MouseEvent
-): Point {
-  // @ts-ignore
-  const svgRect = svgRef.current.getBoundingClientRect();
-  const center = rectCenter(svgRect);
-  const x = evt.clientX - center.x;
-  const y = evt.clientY - center.y;
-  return { x, y };
 }
