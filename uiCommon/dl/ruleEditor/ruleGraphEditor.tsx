@@ -1,5 +1,4 @@
-import React, { useRef, useState } from "react";
-import { node } from "../../../util/tree";
+import React, { CSSProperties, useLayoutEffect, useRef, useState } from "react";
 
 export type RuleGraph = {
   nodes: { [id: string]: GraphNode };
@@ -83,17 +82,56 @@ function NodeDesc(props: { nodeDesc: NodeDesc; dragging: boolean }) {
   switch (props.nodeDesc.type) {
     case "JoinVar":
       return <circle r={10} fill={props.dragging ? "red" : "blue"} />;
-    case "Relation":
+    case "Relation": {
       return (
-        <text
-          textAnchor="middle"
-          alignmentBaseline="middle"
-          style={{ backgroundColor: "white", fontFamily: "monospace" }}
-        >
-          {props.nodeDesc.name}
-        </text>
+        <TextWithBackground
+          text={props.nodeDesc.name}
+          textStyle={{ fontFamily: "monospace" }}
+          backgroundStyle={{ fill: "white" }}
+        />
       );
+    }
   }
+}
+
+function TextWithBackground(props: {
+  text: string;
+  textStyle: CSSProperties;
+  backgroundStyle: CSSProperties;
+}) {
+  const ref = useRef<SVGTextElement>();
+  const [bbox, setBBox] = useState<DOMRect>(null);
+  useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const newBBox = ref.current.getBBox();
+    if (JSON.stringify(newBBox) !== JSON.stringify(bbox)) {
+      setBBox(newBBox);
+    }
+  }, [props.text, props.textStyle]);
+
+  return (
+    <g>
+      {bbox ? (
+        <rect
+          width={bbox.width}
+          height={bbox.height}
+          style={props.backgroundStyle}
+          x={-bbox.width / 2}
+          y={-bbox.height / 2}
+        />
+      ) : null}
+      <text
+        ref={ref}
+        textAnchor="middle"
+        alignmentBaseline="middle"
+        style={{ fontFamily: "monospace" }}
+      >
+        {props.text}
+      </text>
+    </g>
+  );
 }
 
 function updatePos(graph: RuleGraph, nodeID: string, newPos: Point): RuleGraph {
