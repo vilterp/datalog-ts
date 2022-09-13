@@ -88,6 +88,7 @@ function NodeDesc(props: { nodeDesc: NodeDesc; dragging: boolean }) {
           text={props.nodeDesc.name}
           textStyle={{ fontFamily: "monospace" }}
           backgroundStyle={{ fill: "white" }}
+          padding={3}
         />
       );
     }
@@ -98,6 +99,7 @@ function TextWithBackground(props: {
   text: string;
   textStyle: CSSProperties;
   backgroundStyle: CSSProperties;
+  padding: number;
 }) {
   const ref = useRef<SVGTextElement>();
   const [bbox, setBBox] = useState<DOMRect>(null);
@@ -110,18 +112,18 @@ function TextWithBackground(props: {
       setBBox(newBBox);
     }
   }, [props.text, props.textStyle]);
+  const paddedWidth = bbox ? bbox.width + props.padding : 0;
+  const paddedHeight = bbox ? bbox.height + props.padding : 0;
 
   return (
     <g>
-      {bbox ? (
-        <rect
-          width={bbox.width}
-          height={bbox.height}
-          style={props.backgroundStyle}
-          x={-bbox.width / 2}
-          y={-bbox.height / 2}
-        />
-      ) : null}
+      <rect
+        width={paddedWidth}
+        height={paddedHeight}
+        x={-paddedWidth / 2}
+        y={-paddedHeight / 2}
+        style={props.backgroundStyle}
+      />
       <text
         ref={ref}
         textAnchor="middle"
