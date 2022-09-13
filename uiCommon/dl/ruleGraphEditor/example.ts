@@ -1,4 +1,4 @@
-import { RuleGraph } from "./types";
+import { RuleGraph } from "./model";
 
 export const INITIAL_GRAPH: RuleGraph = {
   nodes: {
@@ -49,6 +49,6 @@ export const INITIAL_GRAPH: RuleGraph = {
     { fromID: "0", toID: "1" },
     { fromID: "0", toID: "2" },
     { fromID: "3", toID: "4" },
-    { fromID: "4", toID: "5" },
+    { fromID: "3", toID: "5" },
   ],
 };
