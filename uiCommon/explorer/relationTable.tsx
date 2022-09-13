@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Rec, rec } from "../../core/types";
+import React, { useMemo, useReducer, useState } from "react";
+import { Rec, rec, Relation, Rule } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
@@ -11,6 +11,12 @@ import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
+import { RuleEditor, ruleReducer } from "../dl/ruleEditor/ruleEditor";
+import {
+  INITIAL_GRAPH,
+  RuleGraph,
+  RuleGraphEditor,
+} from "../dl/ruleEditor/ruleGraphEditor";
 
 export function RelationTable(props: {
   relation: string;
@@ -23,6 +29,66 @@ export function RelationTable(props: {
   if (relation === null) {
     return <em>{props.relation} not found.</em>;
   }
+
+  return (
+    <>
+      {relation.type === "Rule" ? (
+        <RuleDisplay
+          rule={relation.rule}
+          highlight={props.highlight}
+          relations={props.interp.getRelations()}
+          dispatch={props.dispatch}
+          interp={props.interp}
+        />
+      ) : (
+        <RelationContents
+          collapseState={props.collapseState}
+          setCollapseState={props.setCollapseState}
+          highlight={props.highlight}
+          interp={props.interp}
+          relation={relation}
+        />
+      )}
+    </>
+  );
+}
+
+function RuleDisplay(props: {
+  rule: Rule;
+  highlight: HighlightProps;
+  relations: Relation[];
+  dispatch: (action: Action) => void;
+  interp: AbstractInterpreter;
+}) {
+  const [ruleGraph, setRuleGraph] = useState<RuleGraph>(INITIAL_GRAPH);
+
+  return (
+    <>
+      <RuleC highlight={props.highlight} rule={props.rule} />
+      {/* <RuleEditor
+        rule={props.rule}
+        dispatch={(action) =>
+          props.dispatch({
+            type: "EditRule",
+            newRule: ruleReducer(props.rule, action),
+          })
+        }
+        relations={props.relations}
+        interp={props.interp}
+      /> */}
+      <RuleGraphEditor ruleGraph={ruleGraph} setRuleGraph={setRuleGraph} />
+    </>
+  );
+}
+
+function RelationContents(props: {
+  relation: Relation;
+  interp: AbstractInterpreter;
+  collapseState: TableCollapseState;
+  setCollapseState: (c: TableCollapseState) => void;
+  highlight: HighlightProps;
+}) {
+  const relation = props.relation;
   const [results, error] = useMemo(() => {
     try {
       const results =
