@@ -30,7 +30,7 @@ export function disjunctToGraph(
   conjunction: Conjunction
 ): RuleGraph {
   const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
-    const { graph: conjunctGraph, id } = termToGraph(conjunct.inner, [
+    const { graph: conjunctGraph, id } = termToGraph(conjunct, [
       idx.toString(),
     ]);
     return combineGraphs(graph, conjunctGraph);
@@ -141,10 +141,7 @@ function graphToConjunction(graph: RuleGraph): Conjunction {
       break;
     }
     const { term, pos } = graphToTerm(graph, i.toString());
-    conjuncts.push({
-      inner: term as Rec,
-      pos,
-    });
+    conjuncts.push(term as Rec);
   }
   return { type: "Conjunction", conjuncts };
 }
