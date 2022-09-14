@@ -36,12 +36,6 @@ export function RuleGraphEditor(props: {
         if (dragState) {
           const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
           const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
-          console.log(
-            "drag handler",
-            "updatePos",
-            dragState.nodeID,
-            mouseMinusOffset
-          );
           props.setRuleGraph(
             updatePos(props.ruleGraph, dragState.nodeID, mouseMinusOffset)
           );

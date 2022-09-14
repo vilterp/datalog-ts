@@ -9,7 +9,7 @@ import {
   varr,
 } from "../../../core/types";
 import { Point } from "../../../util/geom";
-import { arrayEq, mapObj, mapObjToList, updateAtIdx } from "../../../util/util";
+import { mapObj, mapObjToList, updateAtIdx } from "../../../util/util";
 import {
   Edge,
   edgesFromNode,
@@ -31,7 +31,6 @@ export function disjunctToGraph(
   posMap: PositionMap,
   conjunction: Conjunction
 ): RuleGraph {
-  console.log("disjunctToGraph", { head, posMap, conjunction });
   const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
     const { graph: conjunctGraph, id } = termToGraph(
       conjunct,
@@ -78,7 +77,6 @@ function termToGraph(
       });
       const attrsGraph = attrGraphs.reduce(combineGraphs, EMPTY_RULE_GRAPH);
       const isHead = curID === "head";
-      console.log("termToGraph", { curID, pos: posMap[curID], posMap });
       return {
         graph: addNode(attrsGraph, curID, {
           desc: { type: "Relation", isHead, name: term.relation },
@@ -142,7 +140,6 @@ export function editDisjunct(
       ...mapObj(newGraph.nodes, (id, node) => node.pos),
     },
   };
-  console.log("editDisjunct", { newRule, newGraph });
   return newRule;
 }
 

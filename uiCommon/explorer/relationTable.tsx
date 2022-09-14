@@ -55,7 +55,6 @@ function RuleDisplay(props: {
   interp: AbstractInterpreter;
 }) {
   const [rule, setRule] = useState(props.rule);
-  console.log("RuleDisplay", rule.positionMap);
 
   return (
     <>
