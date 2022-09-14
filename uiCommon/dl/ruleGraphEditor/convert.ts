@@ -119,19 +119,20 @@ export type RuleAction = {
   newGraph: RuleGraph;
 };
 
-export function graphEditorReducer(rule: Rule, action: RuleAction): Rule {
-  switch (action.type) {
-    case "EditDisjunct":
-      return {
-        ...rule,
-        body: {
-          type: "Disjunction",
-          disjuncts: updateAtIdx(rule.body.disjuncts, action.index, () =>
-            graphToConjunction(action.newGraph)
-          ),
-        },
-      };
-  }
+export function editDisjunct(
+  rule: Rule,
+  index: number,
+  newGraph: RuleGraph
+): Rule {
+  return {
+    ...rule,
+    body: {
+      type: "Disjunction",
+      disjuncts: updateAtIdx(rule.body.disjuncts, index, () =>
+        graphToConjunction(newGraph)
+      ),
+    },
+  };
 }
 
 function graphToConjunction(graph: RuleGraph): Conjunction {

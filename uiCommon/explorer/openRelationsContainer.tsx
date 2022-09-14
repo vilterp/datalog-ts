@@ -36,7 +36,6 @@ export function OpenRelationsContainer(props: {
             }
             highlight={props.highlight}
             interp={props.interp}
-            setRule={XXXX}
           />
         </div>
       ))}

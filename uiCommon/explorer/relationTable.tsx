@@ -12,7 +12,7 @@ import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
-import { disjunctToGraph } from "../dl/ruleGraphEditor/convert";
+import { disjunctToGraph, editDisjunct } from "../dl/ruleGraphEditor/convert";
 
 export function RelationTable(props: {
   relation: string;
@@ -20,7 +20,6 @@ export function RelationTable(props: {
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
-  setRule: (rule: Rule) => void;
 }) {
   const relation = props.interp.getRelation(props.relation);
   if (relation === null) {
@@ -34,7 +33,6 @@ export function RelationTable(props: {
           rule={relation.rule}
           highlight={props.highlight}
           relations={props.interp.getRelations()}
-          setRule={props.setRule}
           interp={props.interp}
         />
       ) : (
@@ -54,9 +52,10 @@ function RuleDisplay(props: {
   rule: Rule;
   highlight: HighlightProps;
   relations: Relation[];
-  setRule: (rule: Rule) => void;
   interp: AbstractInterpreter;
 }) {
+  const [rule, setRule] = useState(props.rule);
+
   return (
     <>
       <RuleC highlight={props.highlight} rule={props.rule} />
@@ -73,11 +72,13 @@ function RuleDisplay(props: {
       /> */}
       {/* TODO: map back; show disjunctions */}
       <div>
-        {props.rule.body.disjuncts.map((disjunct, idx) => (
+        {rule.body.disjuncts.map((disjunct, idx) => (
           <div key={idx}>
             <RuleGraphEditor
               ruleGraph={disjunctToGraph(props.rule.head, disjunct)}
-              setRuleGraph={() => props.setRule(XXXX)}
+              setRuleGraph={(newGraph) =>
+                setRule(editDisjunct(rule, idx, newGraph))
+              }
             />
           </div>
         ))}
