@@ -27,3 +27,10 @@ export function rectCenter(rect: DOMRect): Point {
     y: rect.y + rect.height / 2,
   };
 }
+
+export function midpoint(a: Point, b: Point): Point {
+  return {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2,
+  };
+}
