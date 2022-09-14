@@ -17,6 +17,8 @@ import {
   RuleGraph,
 } from "./model";
 
+// Rule => Graph
+
 export function ruleToRuleGraphs(rule: Rule): RuleGraph[] {
   return rule.body.disjuncts.map((disjunct) =>
     disjunctToGraph(rule.head, disjunct)
@@ -111,20 +113,14 @@ function addNode(graph: RuleGraph, id: string, node: GraphNode): RuleGraph {
   return combineGraphs(graph, { nodes: { [id]: node }, edges: [] });
 }
 
-// reducer
-
-export type RuleAction = {
-  type: "EditDisjunct";
-  index: number;
-  newGraph: RuleGraph;
-};
+// Graph => Rule
 
 export function editDisjunct(
   rule: Rule,
   index: number,
   newGraph: RuleGraph
 ): Rule {
-  return {
+  const newRule: Rule = {
     ...rule,
     body: {
       type: "Disjunction",
@@ -133,6 +129,8 @@ export function editDisjunct(
       ),
     },
   };
+  console.log("editDisjunct", "newRule", newRule);
+  return newRule;
 }
 
 function graphToConjunction(graph: RuleGraph): Conjunction {
@@ -168,9 +166,8 @@ function graphToTerm(
         const attrs: { [attr: string]: Term } = {};
         outEdges.forEach((edge) => {
           const term = graphToTerm(graph, edge.toID);
-          const attr = edge.toID.slice(pathStr.length);
           // actually should capture the pos here...
-          attrs[attr] = term.term;
+          attrs[edge.label] = term.term;
         });
         return rec(desc.name, attrs);
       }

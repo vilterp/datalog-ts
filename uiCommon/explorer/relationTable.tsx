@@ -58,7 +58,7 @@ function RuleDisplay(props: {
 
   return (
     <>
-      <RuleC highlight={props.highlight} rule={props.rule} />
+      <RuleC highlight={props.highlight} rule={rule} />
       {/* <RuleEditor
         rule={props.rule}
         dispatch={(action) =>
