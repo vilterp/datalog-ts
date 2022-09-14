@@ -103,7 +103,7 @@ function disjuctToGraph(head: Rec, conjunction: Conjunction): RuleGraph {
     ]);
     return combineGraphs(graph, conjunctGraph);
   }, EMPTY_RULE_GRAPH);
-  const { graph: headGraph, id } = termToGraph(head, ["head"]);
+  const { graph: headGraph } = termToGraph(head, ["head"]);
   return combineGraphs(bodyGraph, headGraph);
 }
 
@@ -134,9 +134,10 @@ function termToGraph(
         });
       });
       const attrsGraph = attrGraphs.reduce(combineGraphs, EMPTY_RULE_GRAPH);
+      const isHead = path.length === 1 && path[0] === "head";
       return {
         graph: addNode(attrsGraph, curID, {
-          desc: { type: "Relation", isHead: false, name: term.relation },
+          desc: { type: "Relation", isHead, name: term.relation },
           pos: { x: 20, y: 20 },
         }),
         id: curID,
