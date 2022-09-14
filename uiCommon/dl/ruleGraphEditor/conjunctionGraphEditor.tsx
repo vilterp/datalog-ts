@@ -18,7 +18,7 @@ import {
 
 type DragState = { nodeID: string; offset: Point } | null;
 
-export function RuleGraphEditor(props: {
+export function ConjunctionGraphEditor(props: {
   ruleGraph: RuleGraph;
   setRuleGraph: (g: RuleGraph) => void;
 }) {

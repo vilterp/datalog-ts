@@ -11,7 +11,7 @@ import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
-import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
+import { ConjunctionGraphEditor } from "../dl/ruleGraphEditor/conjunctionGraphEditor";
 import {
   addDisjunct,
   disjunctToGraph,
@@ -87,12 +87,18 @@ function RuleDisplay(props: {
                 <button>x</button>
               </td>
               <td style={styles.TD_STYLES}>
-                <RuleGraphEditor
+                <ConjunctionGraphEditor
                   ruleGraph={disjunctToGraph(rule, idx)}
                   setRuleGraph={(newGraph) =>
                     setRule(editDisjunct(rule, idx, newGraph))
                   }
                 />
+                <select>
+                  <option>+</option>
+                  {props.relations.map((relation, idx) => (
+                    <option key={idx}>{relation.name}</option>
+                  ))}
+                </select>
               </td>
             </tr>
           ))}
