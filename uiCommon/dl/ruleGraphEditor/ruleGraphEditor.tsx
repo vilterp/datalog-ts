@@ -8,6 +8,7 @@ import {
   combineNodes,
   JOIN_VAR_NODE_RADIUS,
   GraphNode,
+  Edge,
 } from "./model";
 import { midpoint, minusPoint, Point } from "../../../util/geom";
 import {
@@ -60,32 +61,7 @@ export function RuleGraphEditor(props: {
     >
       <g>
         {props.ruleGraph.edges.map((edge) => {
-          const fromNode = props.ruleGraph.nodes[edge.fromID];
-          const toNode = props.ruleGraph.nodes[edge.toID];
-          const edgeMidpoint = midpoint(fromNode.pos, toNode.pos);
-          return (
-            <g>
-              <line
-                key={`${edge.fromID}-${edge.toID}`}
-                x1={fromNode.pos.x}
-                y1={fromNode.pos.y}
-                x2={toNode.pos.x}
-                y2={toNode.pos.y}
-                style={{
-                  stroke: "black",
-                  strokeWidth: 2,
-                }}
-              />
-              <g transform={`translate(${edgeMidpoint.x} ${edgeMidpoint.y})`}>
-                <TextWithBackground
-                  padding={5}
-                  rectStyle={{ fill: "white" }}
-                  textStyle={{ fontFamily: "monospace", cursor: "default" }}
-                  text={edge.label}
-                />
-              </g>
-            </g>
-          );
+          return <EdgeView ruleGraph={props.ruleGraph} edge={edge} />;
         })}
       </g>
       <g>
@@ -103,6 +79,36 @@ export function RuleGraphEditor(props: {
         ))}
       </g>
     </svg>
+  );
+}
+
+function EdgeView(props: { ruleGraph: RuleGraph; edge: Edge }) {
+  const edge = props.edge;
+  const fromNode = props.ruleGraph.nodes[edge.fromID];
+  const toNode = props.ruleGraph.nodes[edge.toID];
+  const edgeMidpoint = midpoint(fromNode.pos, toNode.pos);
+  return (
+    <g>
+      <line
+        key={`${edge.fromID}-${edge.toID}`}
+        x1={fromNode.pos.x}
+        y1={fromNode.pos.y}
+        x2={toNode.pos.x}
+        y2={toNode.pos.y}
+        style={{
+          stroke: "black",
+          strokeWidth: 2,
+        }}
+      />
+      <g transform={`translate(${edgeMidpoint.x} ${edgeMidpoint.y})`}>
+        <TextWithBackground
+          padding={5}
+          rectStyle={{ fill: "white" }}
+          textStyle={{ fontFamily: "monospace", cursor: "default" }}
+          text={edge.label}
+        />
+      </g>
+    </g>
   );
 }
 
