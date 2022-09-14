@@ -1,6 +1,7 @@
 import {
   Conjunct,
   Conjunction,
+  PositionMap,
   rec,
   Rec,
   Rule,
@@ -21,27 +22,33 @@ import {
 
 export function ruleToRuleGraphs(rule: Rule): RuleGraph[] {
   return rule.body.disjuncts.map((disjunct) =>
-    disjunctToGraph(rule.head, disjunct)
+    disjunctToGraph(rule.head, rule.positionMap, disjunct)
   );
 }
 
 export function disjunctToGraph(
   head: Rec,
+  posMap: PositionMap,
   conjunction: Conjunction
 ): RuleGraph {
   const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
-    const { graph: conjunctGraph, id } = termToGraph(conjunct, [
-      idx.toString(),
-    ]);
+    const { graph: conjunctGraph, id } = termToGraph(
+      conjunct,
+      [idx.toString()],
+      posMap
+    );
     return combineGraphs(graph, conjunctGraph);
   }, EMPTY_RULE_GRAPH);
-  const { graph: headGraph } = termToGraph(head, ["head"]);
+  const { graph: headGraph } = termToGraph(head, ["head"], posMap);
   return combineGraphs(bodyGraph, headGraph);
 }
 
+const DEFAULT_POINT: Point = { x: 20, y: 20 };
+
 function termToGraph(
   term: Term,
-  path: string[]
+  path: string[],
+  posMap: PositionMap
 ): { graph: RuleGraph; id: string } {
   switch (term.type) {
     case "Var": {
@@ -50,7 +57,7 @@ function termToGraph(
         nodes: {
           [id]: {
             desc: { type: "JoinVar", name: term.name },
-            pos: { x: 20, y: 20 },
+            pos: posMap[id] || DEFAULT_POINT,
           },
         },
         edges: [],
@@ -61,7 +68,7 @@ function termToGraph(
       const curID = path.join("/");
       const attrGraphs = mapObjToList(term.attrs, (attrName, val) => {
         const newPath = [...path, attrName];
-        const { graph, id } = termToGraph(val, newPath);
+        const { graph, id } = termToGraph(val, newPath, posMap);
         return addEdge(graph, {
           fromID: path.join("/"),
           toID: id,
@@ -73,7 +80,7 @@ function termToGraph(
       return {
         graph: addNode(attrsGraph, curID, {
           desc: { type: "Relation", isHead, name: term.relation },
-          pos: { x: 20, y: 20 },
+          pos: posMap[curID] || DEFAULT_POINT,
         }),
         id: curID,
       };
@@ -85,7 +92,7 @@ function termToGraph(
       return {
         graph: addNode(EMPTY_RULE_GRAPH, id, {
           desc: { type: "Literal", value: term },
-          pos: { x: 20, y: 20 },
+          pos: posMap[id] || DEFAULT_POINT,
         }),
         id,
       };

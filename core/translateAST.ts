@@ -61,6 +61,8 @@ export function parserStatementToInternal(stmt: DLStatement): Statement {
 export function parserRuleToInternal(term: DLRule): Rule {
   return {
     head: parserTermToInternal(term.record) as Rec,
+    // TODO: grab position map from comment
+    positionMap: {},
     body: {
       type: "Disjunction",
       disjuncts: term.disjunct.map((disjunct) => ({
