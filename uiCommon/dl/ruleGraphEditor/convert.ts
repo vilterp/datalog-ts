@@ -8,7 +8,7 @@ import {
   varr,
 } from "../../../core/types";
 import { Point } from "../../../util/geom";
-import { arrayEq, mapObjToList, updateAtIdx } from "../../../util/util";
+import { arrayEq, mapObj, mapObjToList, updateAtIdx } from "../../../util/util";
 import {
   Edge,
   edgesFromNode,
@@ -127,6 +127,10 @@ export function editDisjunct(
       disjuncts: updateAtIdx(rule.body.disjuncts, index, () =>
         graphToConjunction(newGraph)
       ),
+    },
+    positionMap: {
+      ...rule.positionMap,
+      ...mapObj(newGraph.nodes, (id, node) => node.pos),
     },
   };
   console.log("editDisjunct", "newRule", newRule);

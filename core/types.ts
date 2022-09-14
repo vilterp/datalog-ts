@@ -1,3 +1,5 @@
+import { Point } from "../util/geom";
+
 export type Statement =
   | { type: "Rule"; rule: Rule }
   | { type: "Fact"; record: Rec }
@@ -29,7 +31,11 @@ export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
   body: Disjunction;
+  positionMap: PositionMap;
 };
+
+// TODO: attach positions to individual elements in the rule tree
+export type PositionMap = { [nodeID: string]: Point };
 
 export type Disjunction = { type: "Disjunction"; disjuncts: Conjunction[] };
 
@@ -79,7 +85,7 @@ export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 // rule helpers
 
 export function rule(head: Rec, body: Disjunction): Rule {
-  return { head, body };
+  return { head, body, positionMap: {} };
 }
 
 export function or(opts: Conjunction[]): Disjunction {
