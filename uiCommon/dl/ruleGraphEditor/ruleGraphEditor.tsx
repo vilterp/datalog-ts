@@ -140,10 +140,19 @@ function NodeDescView(props: {
   switch (props.nodeDesc.type) {
     case "JoinVar":
       return (
-        <circle
-          r={JOIN_VAR_NODE_RADIUS}
-          fill={props.overlapping ? "orange" : "blue"}
-        />
+        <g>
+          <circle
+            r={JOIN_VAR_NODE_RADIUS}
+            fill={props.overlapping ? "orange" : "blue"}
+          />
+          <text
+            style={{ fill: "white", fontFamily: "monospace" }}
+            textAnchor="middle"
+            alignmentBaseline="middle"
+          >
+            {props.nodeDesc.name}
+          </text>
+        </g>
       );
     case "Relation": {
       return (
