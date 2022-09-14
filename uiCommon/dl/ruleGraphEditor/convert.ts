@@ -21,25 +21,29 @@ import {
 // Rule => Graph
 
 export function ruleToRuleGraphs(rule: Rule): RuleGraph[] {
-  return rule.body.disjuncts.map((disjunct) =>
-    disjunctToGraph(rule.head, rule.positionMap, disjunct)
+  return rule.body.disjuncts.map((disjunct, disjunctIndex) =>
+    disjunctToGraph(rule, disjunctIndex)
   );
 }
 
-export function disjunctToGraph(
-  head: Rec,
-  posMap: PositionMap,
-  conjunction: Conjunction
-): RuleGraph {
-  const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
-    const { graph: conjunctGraph, id } = termToGraph(
-      conjunct,
-      [idx.toString()],
-      posMap
-    );
-    return combineGraphs(graph, conjunctGraph);
-  }, EMPTY_RULE_GRAPH);
-  const { graph: headGraph } = termToGraph(head, ["head"], posMap);
+export function disjunctToGraph(rule: Rule, disjunctIndex: number): RuleGraph {
+  const conjunction = rule.body.disjuncts[disjunctIndex];
+  const bodyGraph = conjunction.conjuncts.reduce(
+    (graph, conjunct, conjunctIndex) => {
+      const { graph: conjunctGraph, id } = termToGraph(
+        conjunct,
+        [disjunctIndex.toString(), conjunctIndex.toString()],
+        rule.positionMap
+      );
+      return combineGraphs(graph, conjunctGraph);
+    },
+    EMPTY_RULE_GRAPH
+  );
+  const { graph: headGraph } = termToGraph(
+    rule.head,
+    ["head"],
+    rule.positionMap
+  );
   return combineGraphs(bodyGraph, headGraph);
 }
 

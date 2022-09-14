@@ -75,7 +75,7 @@ function RuleDisplay(props: {
         {rule.body.disjuncts.map((disjunct, idx) => (
           <div key={idx}>
             <RuleGraphEditor
-              ruleGraph={disjunctToGraph(rule.head, rule.positionMap, disjunct)}
+              ruleGraph={disjunctToGraph(rule, idx)}
               setRuleGraph={(newGraph) =>
                 setRule(editDisjunct(rule, idx, newGraph))
               }
