@@ -27,8 +27,6 @@ function Main() {
     console.error(e);
   }
 
-  console.log("FiddleMain", interp);
-
   return (
     <div>
       <h1>Datalog Fiddle</h1>

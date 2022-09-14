@@ -31,15 +31,21 @@ export type Rule = {
   // should maybe be an Or of multiple (head, And[]) pairs
   head: Rec;
   body: Disjunction;
-  positionMap: PositionMap;
 };
 
 // TODO: attach positions to individual elements in the rule tree
 export type PositionMap = { [nodeID: string]: Point };
 
-export type Disjunction = { type: "Disjunction"; disjuncts: Conjunction[] };
+export type Disjunction = {
+  type: "Disjunction";
+  disjuncts: Conjunction[];
+};
 
-export type Conjunction = { type: "Conjunction"; conjuncts: Conjunct[] };
+export type Conjunction = {
+  type: "Conjunction";
+  conjuncts: Conjunct[];
+  positionMap: PositionMap;
+};
 
 export type Conjunct = Rec | Negation | Aggregation;
 
@@ -85,7 +91,7 @@ export type Operator = "==" | "!=" | ">=" | "<=" | "<" | ">";
 // rule helpers
 
 export function rule(head: Rec, body: Disjunction): Rule {
-  return { head, body, positionMap: {} };
+  return { head, body };
 }
 
 export function or(opts: Conjunction[]): Disjunction {
@@ -93,7 +99,7 @@ export function or(opts: Conjunction[]): Disjunction {
 }
 
 export function and(clauses: Conjunct[]): Conjunction {
-  return { type: "Conjunction", conjuncts: clauses };
+  return { type: "Conjunction", conjuncts: clauses, positionMap: {} };
 }
 
 // term helpers

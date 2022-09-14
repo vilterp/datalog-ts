@@ -1,3 +1,4 @@
+import { ppt } from "../../../core/pretty";
 import {
   Conjunct,
   Conjunction,
@@ -33,7 +34,7 @@ export function disjunctToGraph(rule: Rule, disjunctIndex: number): RuleGraph {
       const { graph: conjunctGraph, id } = termToGraph(
         conjunct,
         [disjunctIndex.toString(), conjunctIndex.toString()],
-        rule.positionMap
+        conjunction.positionMap
       );
       return combineGraphs(graph, conjunctGraph);
     },
@@ -42,7 +43,7 @@ export function disjunctToGraph(rule: Rule, disjunctIndex: number): RuleGraph {
   const { graph: headGraph } = termToGraph(
     rule.head,
     ["head"],
-    rule.positionMap
+    conjunction.positionMap
   );
   return combineGraphs(bodyGraph, headGraph);
 }
@@ -136,28 +137,32 @@ export function editDisjunct(
     body: {
       type: "Disjunction",
       disjuncts: updateAtIdx(rule.body.disjuncts, index, () =>
-        graphToConjunction(newGraph)
+        graphToConjunction(index, newGraph)
       ),
-    },
-    positionMap: {
-      ...rule.positionMap,
-      ...mapObj(newGraph.nodes, (id, node) => node.pos),
     },
   };
   return newRule;
 }
 
-function graphToConjunction(graph: RuleGraph): Conjunction {
+function graphToConjunction(
+  disjunctIndex: number,
+  graph: RuleGraph
+): Conjunction {
   const conjuncts: Conjunct[] = [];
-  for (let i = 0; ; i++) {
-    const node = graph.nodes[i];
+  for (let conjunctIndex = 0; ; conjunctIndex++) {
+    const path = `${disjunctIndex}/${conjunctIndex}`;
+    const node = graph.nodes[path];
     if (!node) {
       break;
     }
-    const term = graphToTerm(graph, i.toString());
+    const term = graphToTerm(graph, path);
     conjuncts.push(term as Rec);
   }
-  return { type: "Conjunction", conjuncts };
+  return {
+    type: "Conjunction",
+    conjuncts,
+    positionMap: mapObj(graph.nodes, (id, node) => node.pos),
+  };
 }
 
 function graphToTerm(graph: RuleGraph, pathStr: string): Term {
