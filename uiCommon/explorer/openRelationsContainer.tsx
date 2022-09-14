@@ -1,5 +1,6 @@
 import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { Rule } from "../../core/types";
 import { remove } from "../../util/util";
 import { HighlightProps } from "../dl/term";
 import { RelationTable } from "./relationTable";
@@ -35,6 +36,7 @@ export function OpenRelationsContainer(props: {
             }
             highlight={props.highlight}
             interp={props.interp}
+            setRule={XXXX}
           />
         </div>
       ))}

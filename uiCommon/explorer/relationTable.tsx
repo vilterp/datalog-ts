@@ -8,12 +8,11 @@ import { TraceTreeView } from "../dl/trace";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
-import { Action, TableCollapseState } from "./types";
+import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
-import { INITIAL_GRAPH } from "../dl/ruleGraphEditor/example";
-import { RuleGraph, ruleToRuleGraphs } from "../dl/ruleGraphEditor/model";
+import { disjunctToGraph } from "../dl/ruleGraphEditor/convert";
 
 export function RelationTable(props: {
   relation: string;
@@ -21,7 +20,7 @@ export function RelationTable(props: {
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
-  dispatch: (a: Action) => void;
+  setRule: (rule: Rule) => void;
 }) {
   const relation = props.interp.getRelation(props.relation);
   if (relation === null) {
@@ -35,7 +34,7 @@ export function RelationTable(props: {
           rule={relation.rule}
           highlight={props.highlight}
           relations={props.interp.getRelations()}
-          dispatch={props.dispatch}
+          setRule={props.setRule}
           interp={props.interp}
         />
       ) : (
@@ -55,13 +54,9 @@ function RuleDisplay(props: {
   rule: Rule;
   highlight: HighlightProps;
   relations: Relation[];
-  dispatch: (action: Action) => void;
+  setRule: (rule: Rule) => void;
   interp: AbstractInterpreter;
 }) {
-  const initRuleGraph = ruleToRuleGraphs(props.rule)[0];
-  const [ruleGraph, setRuleGraph] = useState(initRuleGraph);
-  console.log("initRuleGraph", initRuleGraph);
-
   return (
     <>
       <RuleC highlight={props.highlight} rule={props.rule} />
@@ -77,7 +72,16 @@ function RuleDisplay(props: {
         interp={props.interp}
       /> */}
       {/* TODO: map back; show disjunctions */}
-      <RuleGraphEditor ruleGraph={ruleGraph} setRuleGraph={setRuleGraph} />
+      <div>
+        {props.rule.body.disjuncts.map((disjunct, idx) => (
+          <div key={idx}>
+            <RuleGraphEditor
+              ruleGraph={disjunctToGraph(props.rule.head, disjunct)}
+              setRuleGraph={() => props.setRule(XXXX)}
+            />
+          </div>
+        ))}
+      </div>
     </>
   );
 }
