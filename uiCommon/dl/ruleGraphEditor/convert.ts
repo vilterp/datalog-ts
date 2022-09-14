@@ -10,7 +10,12 @@ import {
   varr,
 } from "../../../core/types";
 import { Point } from "../../../util/geom";
-import { mapObj, mapObjToList, updateAtIdx } from "../../../util/util";
+import {
+  mapObj,
+  mapObjToList,
+  removeAtIdx,
+  updateAtIdx,
+} from "../../../util/util";
 import {
   Edge,
   edgesFromNode,
@@ -142,6 +147,26 @@ export function editDisjunct(
     },
   };
   return newRule;
+}
+
+export function removeDisjunct(rule: Rule, index: number): Rule {
+  return {
+    ...rule,
+    body: { ...rule.body, disjuncts: removeAtIdx(rule.body.disjuncts, index) },
+  };
+}
+
+export function addDisjunct(rule: Rule): Rule {
+  return {
+    ...rule,
+    body: {
+      ...rule.body,
+      disjuncts: [
+        ...rule.body.disjuncts,
+        { type: "Conjunction", conjuncts: [], positionMap: {} },
+      ],
+    },
+  };
 }
 
 function graphToConjunction(

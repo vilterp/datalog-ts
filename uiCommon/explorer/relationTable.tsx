@@ -12,7 +12,12 @@ import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
-import { disjunctToGraph, editDisjunct } from "../dl/ruleGraphEditor/convert";
+import {
+  addDisjunct,
+  disjunctToGraph,
+  editDisjunct,
+  removeDisjunct,
+} from "../dl/ruleGraphEditor/convert";
 
 export function RelationTable(props: {
   relation: string;
@@ -71,18 +76,37 @@ function RuleDisplay(props: {
         interp={props.interp}
       /> */}
       {/* TODO: map back; show disjunctions */}
-      <div>
-        {rule.body.disjuncts.map((disjunct, idx) => (
-          <div key={idx}>
-            <RuleGraphEditor
-              ruleGraph={disjunctToGraph(rule, idx)}
-              setRuleGraph={(newGraph) =>
-                setRule(editDisjunct(rule, idx, newGraph))
-              }
-            />
-          </div>
-        ))}
-      </div>
+      <table style={{ borderCollapse: "collapse" }}>
+        <tbody>
+          {rule.body.disjuncts.map((disjunct, idx) => (
+            <tr key={idx} style={{ borderTop: "1px solid lightgrey" }}>
+              <td
+                onClick={() => setRule(removeDisjunct(rule, idx))}
+                style={styles.TD_STYLES}
+                valign="top"
+              >
+                <button>x</button>
+              </td>
+              <td style={styles.TD_STYLES}>
+                <RuleGraphEditor
+                  ruleGraph={disjunctToGraph(rule, idx)}
+                  setRuleGraph={(newGraph) =>
+                    setRule(editDisjunct(rule, idx, newGraph))
+                  }
+                />
+              </td>
+            </tr>
+          ))}
+          <tr>
+            <td
+              colSpan={2}
+              style={{ ...styles.TD_STYLES, borderTop: "1px solid lightgrey" }}
+            >
+              <button onClick={() => setRule(addDisjunct(rule))}>+</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </>
   );
 }
@@ -199,15 +223,7 @@ function RelationContents(props: {
                       <td />
                     )}
                     {fields.map((field) => (
-                      <td
-                        key={field}
-                        style={{
-                          paddingLeft: 5,
-                          paddingRight: 5,
-                          borderLeft: "1px solid lightgrey",
-                          borderRight: "1px solid lightgrey",
-                        }}
-                      >
+                      <td key={field} style={styles.TD_STYLES}>
                         <TermView
                           term={makeTermWithBindings(
                             (result.term as Rec).attrs[field],
