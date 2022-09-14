@@ -31,6 +31,7 @@ export function disjunctToGraph(
   posMap: PositionMap,
   conjunction: Conjunction
 ): RuleGraph {
+  console.log("disjunctToGraph", { head, posMap, conjunction });
   const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
     const { graph: conjunctGraph, id } = termToGraph(
       conjunct,
@@ -76,7 +77,8 @@ function termToGraph(
         });
       });
       const attrsGraph = attrGraphs.reduce(combineGraphs, EMPTY_RULE_GRAPH);
-      const isHead = path.length === 1 && path[0] === "head";
+      const isHead = curID === "head";
+      console.log("termToGraph", { curID, pos: posMap[curID], posMap });
       return {
         graph: addNode(attrsGraph, curID, {
           desc: { type: "Relation", isHead, name: term.relation },
@@ -140,7 +142,7 @@ export function editDisjunct(
       ...mapObj(newGraph.nodes, (id, node) => node.pos),
     },
   };
-  console.log("editDisjunct", "newRule", newRule);
+  console.log("editDisjunct", { newRule, newGraph });
   return newRule;
 }
 
@@ -151,16 +153,13 @@ function graphToConjunction(graph: RuleGraph): Conjunction {
     if (!node) {
       break;
     }
-    const { term, pos } = graphToTerm(graph, i.toString());
+    const term = graphToTerm(graph, i.toString());
     conjuncts.push(term as Rec);
   }
   return { type: "Conjunction", conjuncts };
 }
 
-function graphToTerm(
-  graph: RuleGraph,
-  pathStr: string
-): { term: Term; pos: Point } {
+function graphToTerm(graph: RuleGraph, pathStr: string): Term {
   const curNode = graph.nodes[pathStr];
   const desc = curNode.desc;
   const term = (() => {
@@ -175,11 +174,11 @@ function graphToTerm(
         outEdges.forEach((edge) => {
           const term = graphToTerm(graph, edge.toID);
           // actually should capture the pos here...
-          attrs[edge.label] = term.term;
+          attrs[edge.label] = term;
         });
         return rec(desc.name, attrs);
       }
     }
   })();
-  return { term, pos: curNode.pos };
+  return term;
 }

@@ -21,7 +21,6 @@ export function RuleGraphEditor(props: {
   ruleGraph: RuleGraph;
   setRuleGraph: (g: RuleGraph) => void;
 }) {
-  console.log("RuleGraphEditor", "graph", props.ruleGraph);
   const svgRef = useRef();
   const [dragState, setDragState] = useState<DragState>(null);
   const nodesOverlappingDraggingNode = dragState
@@ -37,6 +36,12 @@ export function RuleGraphEditor(props: {
         if (dragState) {
           const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
           const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
+          console.log(
+            "drag handler",
+            "updatePos",
+            dragState.nodeID,
+            mouseMinusOffset
+          );
           props.setRuleGraph(
             updatePos(props.ruleGraph, dragState.nodeID, mouseMinusOffset)
           );

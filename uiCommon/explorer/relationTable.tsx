@@ -55,6 +55,7 @@ function RuleDisplay(props: {
   interp: AbstractInterpreter;
 }) {
   const [rule, setRule] = useState(props.rule);
+  console.log("RuleDisplay", rule.positionMap);
 
   return (
     <>
@@ -75,11 +76,7 @@ function RuleDisplay(props: {
         {rule.body.disjuncts.map((disjunct, idx) => (
           <div key={idx}>
             <RuleGraphEditor
-              ruleGraph={disjunctToGraph(
-                props.rule.head,
-                props.rule.positionMap,
-                disjunct
-              )}
+              ruleGraph={disjunctToGraph(rule.head, rule.positionMap, disjunct)}
               setRuleGraph={(newGraph) =>
                 setRule(editDisjunct(rule, idx, newGraph))
               }
