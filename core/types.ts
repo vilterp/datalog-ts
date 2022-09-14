@@ -10,7 +10,8 @@ export type Statement =
 
 export type Relation =
   | { type: "Table"; name: string }
-  | { type: "Rule"; name: string; rule: Rule };
+  | { type: "Rule"; name: string; rule: Rule }
+  | { type: "Builtin"; name: string; columns: string[] };
 
 // === Results ===
 

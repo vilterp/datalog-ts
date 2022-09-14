@@ -8,10 +8,9 @@ import { TraceTreeView } from "../dl/trace";
 import * as styles from "./styles";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
-import { TableCollapseState } from "./types";
+import { Action, TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
-import { RuleEditor, ruleReducer } from "../dl/ruleTableEditor/ruleEditor";
 import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
 import { INITIAL_GRAPH } from "../dl/ruleGraphEditor/example";
 import { RuleGraph } from "../dl/ruleGraphEditor/model";
@@ -22,6 +21,7 @@ export function RelationTable(props: {
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
+  dispatch: (a: Action) => void;
 }) {
   const relation = props.interp.getRelation(props.relation);
   if (relation === null) {
@@ -96,6 +96,8 @@ function RelationContents(props: {
               bindings: {},
               trace: { type: "BaseFactTrace", fact: res.term },
             }))
+          : relation.type === "Builtin"
+          ? []
           : props.interp.queryRec(relation.rule.head);
       return [results, ""];
     } catch (e) {

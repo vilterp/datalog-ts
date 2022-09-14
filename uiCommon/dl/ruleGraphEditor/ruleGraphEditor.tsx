@@ -86,7 +86,6 @@ export function RuleGraphEditor(props: {
             nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
             dragState={dragState}
             setDragState={(ds) => {
-              console.log("setDragState", ds);
               setDragState(ds);
             }}
           />

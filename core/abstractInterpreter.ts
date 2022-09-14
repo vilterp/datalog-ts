@@ -10,6 +10,7 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "./translateAST";
+import { BUILTINS } from "./builtins";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -98,6 +99,30 @@ export abstract class AbstractInterpreter {
       return { type: "Rule", name, rule };
     }
     return null;
+  }
+
+  // TODO: return as a dict
+  getRelations(): Relation[] {
+    const relations = [
+      ...this.getRules().map(
+        (rule) =>
+          ({
+            type: "Rule",
+            name: rule.head.relation,
+            rule,
+          } as Relation)
+      ),
+      ...this.getTables().map((table) => this.getRelation(table)),
+      ...Object.values(BUILTINS).map(
+        (builtin) =>
+          ({
+            type: "Builtin",
+            name: builtin.head.relation,
+            columns: Object.keys(builtin.head.attrs),
+          } as Relation)
+      ),
+    ];
+    return relations;
   }
 
   // TODO: do these two with queries to virtual tables
