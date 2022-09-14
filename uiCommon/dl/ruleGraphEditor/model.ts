@@ -1,4 +1,11 @@
-import { Rec, Rule, Conjunct, Conjunction, Term } from "../../../core/types";
+import {
+  Rec,
+  Rule,
+  Conjunct,
+  Conjunction,
+  Term,
+  Literal,
+} from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
 import {
   filterMap,
@@ -9,7 +16,7 @@ import {
 
 export type RuleGraph = {
   nodes: { [id: string]: GraphNode };
-  edges: { fromID: string; toID: string }[];
+  edges: Edge[];
 };
 
 export const EMPTY_RULE_GRAPH: RuleGraph = {
@@ -22,9 +29,12 @@ export type GraphNode = {
   desc: NodeDesc;
 };
 
+type Edge = { fromID: string; toID: string; label: string };
+
 export type NodeDesc =
   | { type: "JoinVar" }
-  | { type: "Relation"; name: string; isHead: boolean };
+  | { type: "Relation"; name: string; isHead: boolean }
+  | { type: "Literal"; value: Literal };
 
 export function updatePos(
   graph: RuleGraph,
@@ -75,6 +85,7 @@ export function combineNodes(
     edges: graph.edges.map((edge) => ({
       fromID: edge.fromID === overlappingID ? draggingID : edge.fromID,
       toID: edge.toID === overlappingID ? draggingID : edge.toID,
+      label: edge.label,
     })),
   };
 }
@@ -87,40 +98,64 @@ export function ruleToRuleGraphs(rule: Rule): RuleGraph[] {
 
 function disjuctToGraph(head: Rec, conjunction: Conjunction): RuleGraph {
   const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
-    const conjunctGraph = termToGraph(conjunct.inner, [idx.toString()]);
+    const { graph: conjunctGraph, id } = termToGraph(conjunct.inner, [
+      idx.toString(),
+    ]);
     return combineGraphs(graph, conjunctGraph);
   }, EMPTY_RULE_GRAPH);
-  const headGraph = termToGraph(head, ["head"]);
+  const { graph: headGraph, id } = termToGraph(head, ["head"]);
   return combineGraphs(bodyGraph, headGraph);
 }
 
-function termToGraph(term: Term, path: string[]): RuleGraph {
+function termToGraph(
+  term: Term,
+  path: string[]
+): { graph: RuleGraph; id: string } {
   switch (term.type) {
-    case "Var":
-      return {
+    case "Var": {
+      const id = term.name;
+      const graph: RuleGraph = {
         nodes: {
-          [term.name]: { desc: { type: "JoinVar" }, pos: { x: 20, y: 20 } },
+          [id]: { desc: { type: "JoinVar" }, pos: { x: 20, y: 20 } },
         },
-        edges: [{ fromID: path.join("/"), toID: term.name }],
+        edges: [],
       };
+      return { id, graph };
+    }
     case "Record": {
-      const attrGraphs = mapObjToList(term.attrs, (key, val) =>
-        termToGraph(val, [...path, key])
-      );
+      const curID = path.join("/");
+      const attrGraphs = mapObjToList(term.attrs, (attrName, val) => {
+        const newPath = [...path, attrName];
+        const { graph, id } = termToGraph(val, newPath);
+        return addEdge(graph, {
+          fromID: path.join("/"),
+          toID: id,
+          label: attrName,
+        });
+      });
       const attrsGraph = attrGraphs.reduce(combineGraphs, EMPTY_RULE_GRAPH);
       return {
-        nodes: {
-          ...attrsGraph.nodes,
-          [path.join("/")]: {
-            desc: { type: "Relation", isHead: false, name: term.relation },
-            pos: { x: 20, y: 20 },
-          },
-        },
-        edges: attrsGraph.edges,
+        graph: addNode(attrsGraph, curID, {
+          desc: { type: "Relation", isHead: false, name: term.relation },
+          pos: { x: 20, y: 20 },
+        }),
+        id: curID,
+      };
+    }
+    case "IntLit":
+    case "StringLit":
+    case "Bool": {
+      const id = path.join("/");
+      return {
+        graph: addNode(EMPTY_RULE_GRAPH, id, {
+          desc: { type: "Literal", value: term },
+          pos: { x: 20, y: 20 },
+        }),
+        id,
       };
     }
     default:
-      return EMPTY_RULE_GRAPH;
+      throw new Error(`case not supported: ${term.type}`);
   }
 }
 
@@ -132,4 +167,12 @@ function combineGraphs(left: RuleGraph, right: RuleGraph): RuleGraph {
     },
     edges: [...left.edges, ...right.edges],
   };
+}
+
+function addEdge(graph: RuleGraph, edge: Edge): RuleGraph {
+  return combineGraphs(graph, { nodes: {}, edges: [edge] });
+}
+
+function addNode(graph: RuleGraph, id: string, node: GraphNode): RuleGraph {
+  return combineGraphs(graph, { nodes: { [id]: node }, edges: [] });
 }

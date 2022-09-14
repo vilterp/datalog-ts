@@ -48,7 +48,9 @@ type Aggregation = {
 
 // === Terms ===
 
-export type Term = Rec | Dict | StringLit | Var | Conjunct | Bool | Int | Array;
+export type Term = Rec | Dict | Var | Conjunct | Array | Literal;
+
+export type Literal = Int | Bool | StringLit;
 
 export type Var = { type: "Var"; name: string };
 
