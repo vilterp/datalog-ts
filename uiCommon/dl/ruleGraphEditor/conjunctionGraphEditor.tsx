@@ -61,7 +61,13 @@ export function ConjunctionGraphEditor(props: {
     >
       <g>
         {props.ruleGraph.edges.map((edge) => {
-          return <EdgeView ruleGraph={props.ruleGraph} edge={edge} />;
+          return (
+            <EdgeView
+              key={`${edge.fromID}-${edge.toID}`}
+              ruleGraph={props.ruleGraph}
+              edge={edge}
+            />
+          );
         })}
       </g>
       <g>
@@ -90,7 +96,6 @@ function EdgeView(props: { ruleGraph: RuleGraph; edge: Edge }) {
   return (
     <g>
       <line
-        key={`${edge.fromID}-${edge.toID}`}
         x1={fromNode.pos.x}
         y1={fromNode.pos.y}
         x2={toNode.pos.x}
