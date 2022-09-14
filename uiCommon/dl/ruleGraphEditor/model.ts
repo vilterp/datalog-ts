@@ -1,9 +1,20 @@
+import { Rec, Rule, Conjunct, Conjunction, Term } from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
-import { filterMap, filterMapObj, mapObj } from "../../../util/util";
+import {
+  filterMap,
+  filterMapObj,
+  mapObj,
+  mapObjToList,
+} from "../../../util/util";
 
 export type RuleGraph = {
   nodes: { [id: string]: GraphNode };
   edges: { fromID: string; toID: string }[];
+};
+
+export const EMPTY_RULE_GRAPH: RuleGraph = {
+  edges: [],
+  nodes: {},
 };
 
 export type GraphNode = {
@@ -65,5 +76,60 @@ export function combineNodes(
       fromID: edge.fromID === overlappingID ? draggingID : edge.fromID,
       toID: edge.toID === overlappingID ? draggingID : edge.toID,
     })),
+  };
+}
+
+export function ruleToRuleGraphs(rule: Rule): RuleGraph[] {
+  return rule.body.disjuncts.map((disjunct) =>
+    disjuctToGraph(rule.head, disjunct)
+  );
+}
+
+function disjuctToGraph(head: Rec, conjunction: Conjunction): RuleGraph {
+  const bodyGraph = conjunction.conjuncts.reduce((graph, conjunct, idx) => {
+    const conjunctGraph = termToGraph(conjunct.inner, [idx.toString()]);
+    return combineGraphs(graph, conjunctGraph);
+  }, EMPTY_RULE_GRAPH);
+  const headGraph = termToGraph(head, ["head"]);
+  return combineGraphs(bodyGraph, headGraph);
+}
+
+function termToGraph(term: Term, path: string[]): RuleGraph {
+  switch (term.type) {
+    case "Var":
+      return {
+        nodes: {
+          [term.name]: { desc: { type: "JoinVar" }, pos: { x: 20, y: 20 } },
+        },
+        edges: [{ fromID: path.join("/"), toID: term.name }],
+      };
+    case "Record": {
+      const attrGraphs = mapObjToList(term.attrs, (key, val) =>
+        termToGraph(val, [...path, key])
+      );
+      const attrsGraph = attrGraphs.reduce(combineGraphs, EMPTY_RULE_GRAPH);
+      return {
+        nodes: {
+          ...attrsGraph.nodes,
+          [path.join("/")]: {
+            desc: { type: "Relation", isHead: false, name: term.relation },
+            pos: { x: 20, y: 20 },
+          },
+        },
+        edges: attrsGraph.edges,
+      };
+    }
+    default:
+      return EMPTY_RULE_GRAPH;
+  }
+}
+
+function combineGraphs(left: RuleGraph, right: RuleGraph): RuleGraph {
+  return {
+    nodes: {
+      ...left.nodes,
+      ...right.nodes,
+    },
+    edges: [...left.edges, ...right.edges],
   };
 }

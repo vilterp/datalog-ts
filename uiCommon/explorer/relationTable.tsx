@@ -13,7 +13,7 @@ import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
 import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
 import { INITIAL_GRAPH } from "../dl/ruleGraphEditor/example";
-import { RuleGraph } from "../dl/ruleGraphEditor/model";
+import { RuleGraph, ruleToRuleGraphs } from "../dl/ruleGraphEditor/model";
 
 export function RelationTable(props: {
   relation: string;
@@ -58,7 +58,9 @@ function RuleDisplay(props: {
   dispatch: (action: Action) => void;
   interp: AbstractInterpreter;
 }) {
-  const [ruleGraph, setRuleGraph] = useState<RuleGraph>(INITIAL_GRAPH);
+  const initRuleGraph = ruleToRuleGraphs(props.rule)[0];
+  const [ruleGraph, setRuleGraph] = useState(initRuleGraph);
+  console.log("initRuleGraph", initRuleGraph);
 
   return (
     <>
@@ -74,6 +76,7 @@ function RuleDisplay(props: {
         relations={props.relations}
         interp={props.interp}
       /> */}
+      {/* TODO: map back; show disjunctions */}
       <RuleGraphEditor ruleGraph={ruleGraph} setRuleGraph={setRuleGraph} />
     </>
   );
