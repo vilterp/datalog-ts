@@ -40,15 +40,14 @@ export function RelationTable(props: {
           relations={props.interp.getRelations()}
           interp={props.interp}
         />
-      ) : (
-        <RelationContents
-          collapseState={props.collapseState}
-          setCollapseState={props.setCollapseState}
-          highlight={props.highlight}
-          interp={props.interp}
-          relation={relation}
-        />
-      )}
+      ) : null}
+      <RelationContents
+        collapseState={props.collapseState}
+        setCollapseState={props.setCollapseState}
+        highlight={props.highlight}
+        interp={props.interp}
+        relation={relation}
+      />
     </>
   );
 }
@@ -146,9 +145,6 @@ function RelationContents(props: {
   //   all have the same fields.
   return (
     <>
-      {relation.type === "Rule" ? (
-        <RuleC highlight={props.highlight} rule={relation.rule} />
-      ) : null}
       {results.length === 0 ? (
         error === "" ? (
           <div style={{ fontStyle: "italic" }}>No results</div>
