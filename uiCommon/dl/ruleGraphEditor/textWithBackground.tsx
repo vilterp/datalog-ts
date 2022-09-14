@@ -1,11 +1,11 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React from "react";
 import { CSSProperties } from "react";
 import { useSVGTextBoundingBox } from "../../generic/hooks";
 
 export function TextWithBackground(props: {
   text: string;
   textStyle: CSSProperties;
-  backgroundStyle: CSSProperties;
+  rectStyle: CSSProperties;
   padding: number;
 }) {
   const [ref, bbox] = useSVGTextBoundingBox([props.text, props.textStyle]);
@@ -18,13 +18,13 @@ export function TextWithBackground(props: {
         height={paddedHeight}
         x={-paddedWidth / 2}
         y={-paddedHeight / 2}
-        style={props.backgroundStyle}
+        style={props.rectStyle}
       />
       <text
         ref={ref}
         textAnchor="middle"
         alignmentBaseline="middle"
-        style={{ fontFamily: "monospace", pointerEvents: "none" }}
+        style={props.textStyle}
       >
         {props.text}
       </text>

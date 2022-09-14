@@ -143,10 +143,11 @@ function NodeDescView(props: {
         <g>
           <circle
             r={JOIN_VAR_NODE_RADIUS}
-            fill={props.overlapping ? "orange" : "blue"}
+            fill={props.overlapping ? "orange" : "white"}
+            stroke="black"
           />
           <text
-            style={{ fill: "white", fontFamily: "monospace" }}
+            style={{ fill: "orange", fontFamily: "monospace" }}
             textAnchor="middle"
             alignmentBaseline="middle"
           >
@@ -158,11 +159,16 @@ function NodeDescView(props: {
       return (
         <TextWithBackground
           text={props.nodeDesc.name}
-          textStyle={{ fontFamily: "monospace" }}
-          backgroundStyle={{
-            fill: props.nodeDesc.isHead ? "lightblue" : "white",
+          textStyle={{
+            fontFamily: "monospace",
+            pointerEvents: "none",
+            fill: "purple",
           }}
-          padding={3}
+          rectStyle={{
+            fill: props.nodeDesc.isHead ? "lightblue" : "white",
+            stroke: "black",
+          }}
+          padding={5}
         />
       );
     }
