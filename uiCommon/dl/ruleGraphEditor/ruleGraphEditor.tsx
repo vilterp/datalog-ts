@@ -25,9 +25,14 @@ export function RuleGraphEditor(props: {
               <ConjunctionGraphEditor
                 rule={props.rule}
                 conjunction={disjunct}
-                setConjunction={(newConjunction) =>
-                  props.setRule(editDisjunct(props.rule, idx, newConjunction))
-                }
+                setConjunction={(newConjunction) => {
+                  console.log(
+                    "RuleGraphEditor",
+                    "setConjunction",
+                    newConjunction
+                  );
+                  props.setRule(editDisjunct(props.rule, idx, newConjunction));
+                }}
                 relations={props.relations}
               />
             </td>

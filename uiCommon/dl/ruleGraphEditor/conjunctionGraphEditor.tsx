@@ -45,6 +45,7 @@ export function ConjunctionGraphEditor(props: {
     : [];
 
   const dispatch = (a: NodeAction) => {
+    // TODO: consolidate into an actual reducer?
     handleAction(
       a,
       graph,
@@ -257,8 +258,10 @@ function handleAction(
   setConjunction: (conj: Conjunction) => void,
   setDragState: (ds: DragState) => void
 ) {
+  console.log("handleAction", action);
   switch (action.type) {
     case "Delete": {
+      setDragState(null); // otherwise the node re-appears
       const node = graph.nodes[action.id];
       switch (node.desc.type) {
         case "Relation":
@@ -271,6 +274,7 @@ function handleAction(
           console.error("TODO: join var");
           break;
       }
+      break;
     }
     case "Drop": {
       setDragState(null);
