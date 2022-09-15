@@ -32,7 +32,8 @@ import {
   forceY,
   forceManyBody,
 } from "d3-force";
-import { filterMapObj, mapObj } from "../../../util/util";
+import { filterMapObj, mapObj, mapObjToList } from "../../../util/util";
+import { ppt } from "../../../core/pretty";
 
 type Context = { rule: Rule; relations: Relation[] };
 
@@ -97,6 +98,15 @@ export function ConjunctionGraphEditor(props: {
     }
   };
 
+  // compute where join vars want to be
+  const joinVardesiredPositions = filterMapObj(graph.nodes, (id, node) => {
+    if (node.desc.type !== "JoinVar") {
+      return null;
+    }
+    return desiredJoinVarPosition(graph, id);
+  });
+  console.log("joinVarDesiredPositions", joinVardesiredPositions);
+
   useEffect(() => {
     const simulation = forceSimulation<D3Point>();
 
@@ -129,14 +139,6 @@ export function ConjunctionGraphEditor(props: {
         }),
       });
     });
-
-    const joinVardesiredPositions = filterMapObj(graph.nodes, (id, node) => {
-      if (node.desc.type !== "JoinVar") {
-        return null;
-      }
-      return desiredJoinVarPosition(graph, id);
-    });
-    console.log("joinVarDesiredPositions", joinVardesiredPositions);
 
     const linksForce = forceLink();
     linksForce
@@ -201,6 +203,11 @@ export function ConjunctionGraphEditor(props: {
             dispatch({ type: "Drop" });
           }}
         >
+          <g>
+            {mapObjToList(joinVardesiredPositions, (id, point) => {
+              <circle cx={point.x} cy={point.y} r={2} />;
+            })}
+          </g>
           <g>
             {graph.edges.map((edge) => {
               return (
@@ -360,6 +367,27 @@ function NodeDescView(props: {
           rectStyle={{
             fill: props.nodeDesc.isHead ? "lightblue" : "white",
             stroke: "black",
+          }}
+          padding={5}
+        />
+      );
+    }
+    case "Literal": {
+      const value = props.nodeDesc.value;
+      return (
+        <TextWithBackground
+          onContextMenu={(evt) => {
+            evt.preventDefault();
+            props.dispatchDelete();
+          }}
+          text={ppt(value)}
+          textStyle={{
+            fontFamily: "monospace",
+            pointerEvents: "none",
+            fill: value.type === "StringLit" ? "green" : "blue",
+          }}
+          rectStyle={{
+            fill: "white",
           }}
           padding={5}
         />
