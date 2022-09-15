@@ -19,7 +19,11 @@ import {
   mouseRelativeToElementTopLeft,
 } from "./mouseUtil";
 import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
-import { conjunctionToGraph, graphToConjunction } from "./convert";
+import {
+  conjunctionToGraph,
+  DEFAULT_POINT,
+  graphToConjunction,
+} from "./convert";
 import {
   forceSimulation,
   forceLink,
@@ -105,6 +109,10 @@ export function ConjunctionGraphEditor(props: {
         d3Node.fx = dragState.position.x;
         d3Node.fy = dragState.position.y;
       }
+      if (node.desc.type === "Relation" && node.desc.isHead) {
+        d3Node.fx = DEFAULT_POINT.x;
+        d3Node.fy = 20;
+      }
       d3NodesByID[id] = d3Node;
     });
 
@@ -116,7 +124,7 @@ export function ConjunctionGraphEditor(props: {
           const d3Node = d3NodesByID[id];
           return {
             ...node,
-            pos: { x: d3Node.x, y: d3Node.y },
+            pos: { x: Math.round(d3Node.x), y: Math.round(d3Node.y) },
           };
         }),
       });
@@ -131,11 +139,11 @@ export function ConjunctionGraphEditor(props: {
         }))
       )
       .distance(100)
-      .strength(10);
+      .strength(5);
 
     simulation.force("links", linksForce);
-    simulation.force("x", forceX(200));
-    simulation.force("y", forceY(50));
+    simulation.force("x", forceX(DEFAULT_POINT.x));
+    simulation.force("y", forceY(DEFAULT_POINT.y));
     simulation.force("charge", forceManyBody().strength(-50));
 
     // copy nodes into simulation

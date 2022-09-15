@@ -55,7 +55,7 @@ export function conjunctionToGraph(
   return combineGraphs(bodyGraph, headGraph);
 }
 
-const DEFAULT_POINT: Point = { x: 20, y: 20 };
+export const DEFAULT_POINT: Point = { x: 200, y: 50 };
 
 function termToGraph(
   term: Term,
