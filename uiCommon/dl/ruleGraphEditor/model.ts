@@ -28,10 +28,17 @@ export type GraphNode = {
 
 export type Edge = { fromID: string; toID: string; label: string };
 
-export type NodeDesc =
-  | { type: "JoinVar"; name: string }
-  | { type: "Relation"; name: string; isHead: boolean }
-  | { type: "Literal"; value: Literal };
+export type NodeDesc = JoinVarNodeDesc | RelationNodeDesc | LiteralNodeDesc;
+
+export type JoinVarNodeDesc = { type: "JoinVar"; name: string };
+
+export type RelationNodeDesc = {
+  type: "Relation";
+  name: string;
+  isHead: boolean;
+};
+
+export type LiteralNodeDesc = { type: "Literal"; value: Literal };
 
 export function updatePos(
   graph: RuleGraph,

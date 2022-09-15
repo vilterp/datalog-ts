@@ -10,6 +10,7 @@ import {
   GraphNode,
   Edge,
   addConjunct,
+  JoinVarNodeDesc,
 } from "./model";
 import { midpoint, minusPoint, Point } from "../../../util/geom";
 import {
@@ -18,6 +19,9 @@ import {
 } from "./mouseUtil";
 import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
 import { conjunctionToGraph, graphToConjunction } from "./convert";
+import { Menu, Item, useContextMenu } from "react-contexify";
+// @ts-ignore
+import * as styles from "react-contexify/dist/ReactContexify.css";
 
 type DragState = { nodeID: string; offset: Point } | null;
 
@@ -196,6 +200,7 @@ function NodeView(props: {
       }}
     >
       <NodeDescView
+        id={props.id}
         nodeDesc={node.desc}
         dragging={dragging}
         overlapping={overlapping}
@@ -205,6 +210,7 @@ function NodeView(props: {
 }
 
 function NodeDescView(props: {
+  id: string;
   nodeDesc: NodeDescView;
   dragging: boolean;
   overlapping: boolean;
@@ -212,20 +218,11 @@ function NodeDescView(props: {
   switch (props.nodeDesc.type) {
     case "JoinVar":
       return (
-        <g>
-          <circle
-            r={JOIN_VAR_NODE_RADIUS}
-            fill={props.overlapping ? "orange" : "white"}
-            stroke="black"
-          />
-          <text
-            style={{ fill: "orange", fontFamily: "monospace" }}
-            textAnchor="middle"
-            alignmentBaseline="middle"
-          >
-            {props.nodeDesc.name}
-          </text>
-        </g>
+        <JoinVarView
+          id={props.id}
+          desc={props.nodeDesc}
+          overlapping={props.overlapping}
+        />
       );
     case "Relation": {
       return (
@@ -245,4 +242,52 @@ function NodeDescView(props: {
       );
     }
   }
+}
+
+const MENU_ID = "join-var-menu";
+
+function JoinVarView(props: {
+  id: string;
+  desc: JoinVarNodeDesc;
+  overlapping: boolean;
+}) {
+  const { show } = useContextMenu({
+    id: MENU_ID,
+  });
+
+  const handleContextMenu = (evt) => {
+    console.log("handleContextMenu");
+    evt.preventDefault();
+    show(evt);
+  };
+
+  return (
+    <g>
+      <g onContextMenu={handleContextMenu}>
+        <circle
+          r={JOIN_VAR_NODE_RADIUS}
+          fill={props.overlapping ? "orange" : "white"}
+          stroke="black"
+        />
+        <text
+          style={{ fill: "orange", fontFamily: "monospace" }}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+        >
+          {props.desc.name}
+        </text>
+      </g>
+      <foreignObject width={100} height={100}>
+        <Menu id={MENU_ID}>
+          <Item
+            onClick={() => {
+              console.log("split", props.id);
+            }}
+          >
+            Split
+          </Item>
+        </Menu>
+      </foreignObject>
+    </g>
+  );
 }
