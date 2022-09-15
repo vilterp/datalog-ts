@@ -260,7 +260,6 @@ function handleAction(
   setConjunction: (conj: Conjunction) => void,
   setDragState: (ds: DragState) => void
 ) {
-  console.log("handleAction", action);
   switch (action.type) {
     case "Delete": {
       setDragState(null); // otherwise the node re-appears
