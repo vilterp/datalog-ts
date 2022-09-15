@@ -124,10 +124,10 @@ export function addConjunct(
 ): Conjunction {
   const conjunctToAdd = newConjunct(relationName, rule, relations);
   const newID = conjunction.conjuncts.length;
-  // what about the position of the child nodes?
+  // TODO: set position of child nodes?
   return {
     type: "Conjunction",
     conjuncts: [...conjunction.conjuncts, conjunctToAdd],
-    positionMap: { ...conjunction.positionMap, [newID]: { x: 20, y: 20 } },
+    positionMap: { ...conjunction.positionMap, [newID]: { x: 250, y: 100 } },
   };
 }

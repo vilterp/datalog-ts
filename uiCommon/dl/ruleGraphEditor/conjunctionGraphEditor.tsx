@@ -29,11 +29,13 @@ export function ConjunctionGraphEditor(props: {
 }) {
   const svgRef = useRef();
   const [dragState, setDragState] = useState<DragState>(null);
-  const graph = conjunctionToGraph(props.rule.head, props.conjunction);
+  const [selectorOption, setSelectorOption] = useState<string>("+");
+  const [graph, setGraph] = useState<RuleGraph>(
+    conjunctionToGraph(props.rule.head, props.conjunction)
+  );
   const nodesOverlappingDraggingNode = dragState
     ? getOverlappingJoinVars(graph, dragState.nodeID)
     : [];
-  const [selectorOption, setSelectorOption] = useState<string>("+");
 
   return (
     <>
@@ -51,7 +53,7 @@ export function ConjunctionGraphEditor(props: {
                 dragState.nodeID,
                 mouseMinusOffset
               );
-              props.setConjunction(graphToConjunction(newGraph));
+              setGraph(newGraph);
             }
           }}
           onMouseUp={() => {
@@ -70,18 +72,11 @@ export function ConjunctionGraphEditor(props: {
                   dragState.nodeID,
                   overlappingID
                 );
-                console.log("reduce", {
-                  combined,
-                  curGraph,
-                  overlappingID,
-                  dragged: dragState.nodeID,
-                });
                 return combined;
               },
               graph
             );
             const newConj = graphToConjunction(newGraph);
-            console.log("onMouseUp", { newGraph, overlappingIDs, newConj });
             props.setConjunction(newConj);
           }}
         >
