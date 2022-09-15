@@ -96,7 +96,7 @@ export function ConjunctionGraphEditor(props: {
   useEffect(() => {
     const simulation = forceSimulation();
 
-    const nodeObjectsByID: {
+    const d3NodesByID: {
       [id: string]: D3Point;
     } = {};
     Object.entries(graph.nodes).forEach(([id, node]) => {
@@ -104,19 +104,21 @@ export function ConjunctionGraphEditor(props: {
       if (dragState && dragState.nodeID === id) {
         d3Node.fx = dragState.position.x;
         d3Node.fy = dragState.position.y;
-        console.log("useEffect", "dragging", d3Node);
       }
-      nodeObjectsByID[id] = d3Node;
+      d3NodesByID[id] = d3Node;
     });
 
     // update state on every frame
     simulation.on("tick", () => {
       setGraph({
         ...graph,
-        nodes: mapObj(graph.nodes, (id, node) => ({
-          ...node,
-          pos: nodeObjectsByID[id],
-        })),
+        nodes: mapObj(graph.nodes, (id, node) => {
+          const d3Node = d3NodesByID[id];
+          return {
+            ...node,
+            pos: { x: d3Node.x, y: d3Node.y },
+          };
+        }),
       });
     });
 
@@ -124,8 +126,8 @@ export function ConjunctionGraphEditor(props: {
     linksForce
       .links(
         graph.edges.map((edge) => ({
-          source: nodeObjectsByID[edge.fromID],
-          target: nodeObjectsByID[edge.toID],
+          source: d3NodesByID[edge.fromID],
+          target: d3NodesByID[edge.toID],
         }))
       )
       .distance(100)
@@ -137,7 +139,7 @@ export function ConjunctionGraphEditor(props: {
     simulation.force("charge", forceManyBody().strength(-50));
 
     // copy nodes into simulation
-    simulation.nodes(Object.values(nodeObjectsByID));
+    simulation.nodes(Object.values(d3NodesByID));
     // slow down with a small alpha
     simulation.alpha(0.1).restart();
 
