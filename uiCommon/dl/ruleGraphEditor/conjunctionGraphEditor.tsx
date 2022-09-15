@@ -48,6 +48,7 @@ export function ConjunctionGraphEditor(props: {
     // TODO: consolidate into an actual reducer?
     handleAction(
       a,
+      props.rule.head,
       graph,
       props.conjunction,
       dragState,
@@ -251,6 +252,7 @@ function NodeDescView(props: {
 
 function handleAction(
   action: NodeAction,
+  head: Rec,
   graph: RuleGraph,
   conjunction: Conjunction,
   dragState: DragState,
@@ -263,17 +265,21 @@ function handleAction(
     case "Delete": {
       setDragState(null); // otherwise the node re-appears
       const node = graph.nodes[action.id];
-      switch (node.desc.type) {
-        case "Relation":
-          if (node.desc.isHead) {
-            return;
-          }
-          setConjunction(removeConjunct(conjunction, parseInt(action.id)));
-          break;
-        case "JoinVar":
-          console.error("TODO: join var");
-          break;
-      }
+      const newConj: Conjunction = (() => {
+        switch (node.desc.type) {
+          case "Relation":
+            if (node.desc.isHead) {
+              return;
+            }
+            return removeConjunct(conjunction, parseInt(action.id));
+          case "JoinVar":
+            console.error("TODO: join var");
+            return conjunction;
+        }
+      })();
+      // getting a bit tricky to keep these in sync
+      setConjunction(newConj);
+      setGraph(conjunctionToGraph(head, newConj));
       break;
     }
     case "Drop": {
