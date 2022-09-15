@@ -1,3 +1,5 @@
+import { avg } from "./util";
+
 export type Point = { x: number; y: number };
 
 export function distance(a: Point, b: Point): number {
@@ -32,5 +34,12 @@ export function midpoint(a: Point, b: Point): Point {
   return {
     x: (a.x + b.x) / 2,
     y: (a.y + b.y) / 2,
+  };
+}
+
+export function averagePoint(points: Point[]): Point {
+  return {
+    x: avg(points.map((pt) => pt.x)),
+    y: avg(points.map((pt) => pt.y)),
   };
 }

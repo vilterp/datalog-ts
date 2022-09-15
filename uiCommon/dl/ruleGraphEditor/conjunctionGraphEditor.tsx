@@ -12,6 +12,7 @@ import {
   addConjunct,
   removeConjunct,
   splitUpVar,
+  desiredJoinVarPosition,
 } from "./model";
 import { midpoint, minusPoint, Point } from "../../../util/geom";
 import {
@@ -31,7 +32,7 @@ import {
   forceY,
   forceManyBody,
 } from "d3-force";
-import { mapObj } from "../../../util/util";
+import { filterMapObj, mapObj } from "../../../util/util";
 
 type Context = { rule: Rule; relations: Relation[] };
 
@@ -96,9 +97,8 @@ export function ConjunctionGraphEditor(props: {
     }
   };
 
-  // re-create animation every time nodes change
   useEffect(() => {
-    const simulation = forceSimulation();
+    const simulation = forceSimulation<D3Point>();
 
     const d3NodesByID: {
       [id: string]: D3Point;
@@ -130,6 +130,14 @@ export function ConjunctionGraphEditor(props: {
       });
     });
 
+    const joinVardesiredPositions = filterMapObj(graph.nodes, (id, node) => {
+      if (node.desc.type !== "JoinVar") {
+        return null;
+      }
+      return desiredJoinVarPosition(graph, id);
+    });
+    console.log("joinVarDesiredPositions", joinVardesiredPositions);
+
     const linksForce = forceLink();
     linksForce
       .links(
@@ -141,10 +149,28 @@ export function ConjunctionGraphEditor(props: {
       .distance(100)
       .strength(5);
 
-    simulation.force("links", linksForce);
-    simulation.force("x", forceX(DEFAULT_POINT.x));
-    simulation.force("y", forceY(DEFAULT_POINT.y));
-    simulation.force("charge", forceManyBody().strength(-50));
+    // simulation.force("links", linksForce);
+    simulation.force(
+      "x",
+      forceX((node) => {
+        const desired = joinVardesiredPositions[node.id];
+        if (desired) {
+          return desired.x;
+        }
+        return DEFAULT_POINT.x;
+      })
+    );
+    simulation.force(
+      "y",
+      forceY((node) => {
+        const desired = joinVardesiredPositions[node.id];
+        if (desired) {
+          return desired.y;
+        }
+        return DEFAULT_POINT.y;
+      })
+    );
+    // simulation.force("charge", forceManyBody().strength(-50));
 
     // copy nodes into simulation
     simulation.nodes(Object.values(d3NodesByID));

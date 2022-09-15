@@ -1,7 +1,8 @@
 import { Conjunction, Literal, Relation, Rule } from "../../../core/types";
 import { alphabetToNum, numToAlphabet } from "../../../util/alphabet";
-import { distance, Point } from "../../../util/geom";
+import { averagePoint, distance, plusPoint, Point } from "../../../util/geom";
 import {
+  filterMap,
   filterMapObj,
   pairsToObj,
   removeAtIdx,
@@ -184,5 +185,48 @@ export function splitUpVar(
       ...newNodes,
     },
     edges: replacementEdges,
+  };
+}
+
+// TODO: avoid looping over edges a zillion times
+export function desiredJoinVarPosition(
+  graph: RuleGraph,
+  joinVarID: string
+): Point {
+  const edgesTo = graph.edges.filter((e) => e.toID === joinVarID);
+  const desiredPositions = edgesTo.map((edge) =>
+    desiredPositionRelativeTo(graph, edge.fromID, joinVarID)
+  );
+  return averagePoint(desiredPositions);
+}
+
+function desiredPositionRelativeTo(
+  graph: RuleGraph,
+  relationID: string,
+  joinVarID: string
+): Point {
+  const fromNode = graph.nodes[relationID];
+  const labelsFromFromNode = graph.edges
+    .filter((e) => e.fromID === relationID)
+    .map((e) => e.label);
+  const label = graph.edges.filter((e) => e.toID === joinVarID)[0].label;
+  const index = labelsFromFromNode.indexOf(label);
+  const angle = angleForIndex(index, labelsFromFromNode.length);
+  const pos = positionForAngle(angle);
+  return plusPoint(fromNode.pos, pos);
+}
+
+function angleForIndex(idx: number, total: number) {
+  const sliceDegrees = 360 / total;
+  const startOffset = 90;
+  return startOffset + sliceDegrees * idx;
+}
+
+const JOIN_VAR_DISTANCE = 75;
+
+function positionForAngle(angle: number): Point {
+  return {
+    x: Math.cos(angle) * JOIN_VAR_DISTANCE,
+    y: Math.sin(angle) * JOIN_VAR_DISTANCE,
   };
 }
