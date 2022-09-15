@@ -27,7 +27,8 @@ type NodeAction =
   | { type: "Delete"; id: string }
   | { type: "StartDrag"; id: string; offset: Point }
   | { type: "Drag"; pos: Point }
-  | { type: "Drop" };
+  | { type: "Drop" }
+  | { type: "AddConjunct"; relationName: string };
 
 export function ConjunctionGraphEditor(props: {
   rule: Rule; // TODO: get away with passing less?
@@ -50,12 +51,15 @@ export function ConjunctionGraphEditor(props: {
     handleAction(
       a,
       props.rule,
+      props.relations,
       graph,
-      props.conjunction,
-      dragState,
       setGraph,
+      props.conjunction,
       props.setConjunction,
-      setDragState
+      dragState,
+      setDragState,
+      selectorOption,
+      setSelectorOption
     );
   };
 
@@ -107,15 +111,7 @@ export function ConjunctionGraphEditor(props: {
           value={selectorOption}
           onChange={(evt) => {
             const relationName = evt.target.value;
-            props.setConjunction(
-              addConjunct(
-                props.conjunction,
-                props.rule,
-                props.relations,
-                relationName
-              )
-            );
-            setSelectorOption("+");
+            dispatch({ type: "AddConjunct", relationName });
           }}
         >
           <option>+</option>
@@ -254,12 +250,15 @@ function NodeDescView(props: {
 function handleAction(
   action: NodeAction,
   rule: Rule,
+  relations: Relation[],
   graph: RuleGraph,
-  conjunction: Conjunction,
-  dragState: DragState,
   setGraph: (g: RuleGraph) => void,
+  conjunction: Conjunction,
   setConjunction: (conj: Conjunction) => void,
-  setDragState: (ds: DragState) => void
+  dragState: DragState,
+  setDragState: (ds: DragState) => void,
+  selectorOption: string,
+  setSelectorOption: (o: string) => void
 ) {
   switch (action.type) {
     case "Delete": {
@@ -307,6 +306,18 @@ function handleAction(
     case "Drag": {
       const newGraph = updatePos(graph, dragState.nodeID, action.pos);
       setGraph(newGraph);
+      break;
+    }
+    case "AddConjunct": {
+      const newConjunction = addConjunct(
+        conjunction,
+        rule,
+        relations,
+        action.relationName
+      );
+      setConjunction(newConjunction);
+      setGraph(conjunctionToGraph(rule.head, newConjunction));
+      setSelectorOption("+");
       break;
     }
   }
