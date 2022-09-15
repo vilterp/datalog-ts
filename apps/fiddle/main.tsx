@@ -7,17 +7,15 @@ import familyRulesDL from "../../core/testdata/family_rules.dl";
 import familyFactsDL from "../../core/testdata/family_facts.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { useInMemoryDB } from "../../uiCommon/dl/hooks";
 
-function getInitInterp(): AbstractInterpreter {
-  const initInterp = new SimpleInterpreter(".", nullLoader);
-  return initInterp.evalStr(familyRulesDL + familyFactsDL)[1];
-}
+const initInterp = new SimpleInterpreter(".", nullLoader).evalStr(
+  familyRulesDL + familyFactsDL
+)[1];
 
 function Main() {
-  const [interp, dispatchStatements] = useInMemoryDB(getInitInterp());
+  const [interp, dispatchStatements] = useInMemoryDB(initInterp);
 
   return (
     <div>
