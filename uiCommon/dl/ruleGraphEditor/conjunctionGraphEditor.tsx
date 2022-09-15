@@ -37,85 +37,89 @@ export function ConjunctionGraphEditor(props: {
 
   return (
     <>
-      <svg
-        ref={svgRef}
-        width={500}
-        onMouseMove={(evt) => {
-          evt.preventDefault();
-          if (dragState) {
-            const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
-            const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
-            const newGraph = updatePos(
+      <div>
+        <svg
+          ref={svgRef}
+          width={500}
+          onMouseMove={(evt) => {
+            evt.preventDefault();
+            if (dragState) {
+              const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
+              const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
+              const newGraph = updatePos(
+                graph,
+                dragState.nodeID,
+                mouseMinusOffset
+              );
+              props.setConjunction(graphToConjunction(newGraph));
+            }
+          }}
+          onMouseUp={() => {
+            setDragState(null);
+            if (!dragState) {
+              return;
+            }
+            const overlappingIDs = getOverlappingJoinVars(
               graph,
-              dragState.nodeID,
-              mouseMinusOffset
+              dragState.nodeID
+            );
+            const newGraph = overlappingIDs.reduce(
+              (graph, overlappingID) =>
+                combineNodes(graph, dragState.nodeID, overlappingID),
+              graph
             );
             props.setConjunction(graphToConjunction(newGraph));
-          }
-        }}
-        onMouseUp={() => {
-          setDragState(null);
-          if (!dragState) {
-            return;
-          }
-          const overlappingIDs = getOverlappingJoinVars(
-            graph,
-            dragState.nodeID
-          );
-          const newGraph = overlappingIDs.reduce(
-            (graph, overlappingID) =>
-              combineNodes(graph, dragState.nodeID, overlappingID),
-            graph
-          );
-          props.setConjunction(graphToConjunction(newGraph));
-        }}
-      >
-        <g>
-          {graph.edges.map((edge) => {
-            return (
-              <EdgeView
-                key={`${edge.fromID}-${edge.toID}`}
-                ruleGraph={graph}
-                edge={edge}
+          }}
+        >
+          <g>
+            {graph.edges.map((edge) => {
+              return (
+                <EdgeView
+                  key={`${edge.fromID}-${edge.toID}`}
+                  ruleGraph={graph}
+                  edge={edge}
+                />
+              );
+            })}
+          </g>
+          <g>
+            {Object.entries(graph.nodes).map(([id, node]) => (
+              <NodeView
+                key={id}
+                id={id}
+                node={node}
+                nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
+                dragState={dragState}
+                setDragState={(ds) => {
+                  setDragState(ds);
+                }}
               />
+            ))}
+          </g>
+        </svg>
+      </div>
+      <div>
+        <select
+          value={selectorOption}
+          onChange={(evt) => {
+            const relationName = evt.target.value;
+            props.setConjunction(
+              addConjunct(
+                props.conjunction,
+                props.rule,
+                props.relations,
+                relationName
+              )
             );
-          })}
-        </g>
-        <g>
-          {Object.entries(graph.nodes).map(([id, node]) => (
-            <NodeView
-              key={id}
-              id={id}
-              node={node}
-              nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
-              dragState={dragState}
-              setDragState={(ds) => {
-                setDragState(ds);
-              }}
-            />
+            setSelectorOption("+");
+          }}
+        >
+          <option>+</option>
+          {props.relations.map((relation, idx) => (
+            <option key={idx}>{relation.name}</option>
           ))}
-        </g>
-      </svg>
-      <select
-        value={selectorOption}
-        onChange={(evt) => {
-          const relationName = evt.target.value;
-          props.setConjunction(
-            addConjunct(
-              props.conjunction,
-              props.rule,
-              props.relations,
-              relationName
-            )
-          );
-          setSelectorOption("+");
-        }}
-      >
-        <option>+</option>
-        {props.relations.map((relation, idx) => (
-          <option key={idx}>{relation.name}</option>
-        ))}
-      </select>
+        </select>
+      </div>
     </>
   );
 }
