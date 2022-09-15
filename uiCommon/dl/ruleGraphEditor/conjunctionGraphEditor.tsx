@@ -22,6 +22,12 @@ import { conjunctionToGraph, graphToConjunction } from "./convert";
 
 type DragState = { nodeID: string; offset: Point } | null;
 
+type NodeAction =
+  | { type: "Delete"; id: string }
+  | { type: "StartDrag"; id: string; offset: Point }
+  | { type: "Drag"; pos: Point }
+  | { type: "Drop" };
+
 export function ConjunctionGraphEditor(props: {
   rule: Rule; // TODO: get away with passing less?
   conjunction: Conjunction;
@@ -56,6 +62,33 @@ export function ConjunctionGraphEditor(props: {
             break;
         }
       }
+      case "Drop": {
+        setDragState(null);
+        if (!dragState) {
+          return;
+        }
+        const overlappingIDs = getOverlappingJoinVars(graph, dragState.nodeID);
+        const newGraph = overlappingIDs.reduce((curGraph, overlappingID) => {
+          const combined = combineNodes(
+            curGraph,
+            dragState.nodeID,
+            overlappingID
+          );
+          return combined;
+        }, graph);
+        const newConj = graphToConjunction(newGraph);
+        props.setConjunction(newConj);
+        break;
+      }
+      case "StartDrag": {
+        setDragState({ nodeID: action.id, offset: action.offset });
+        break;
+      }
+      case "Drag": {
+        const newGraph = updatePos(graph, dragState.nodeID, action.pos);
+        setGraph(newGraph);
+        break;
+      }
     }
   };
 
@@ -70,36 +103,11 @@ export function ConjunctionGraphEditor(props: {
             if (dragState) {
               const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
               const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
-              const newGraph = updatePos(
-                graph,
-                dragState.nodeID,
-                mouseMinusOffset
-              );
-              setGraph(newGraph);
+              handleAction({ type: "Drag", pos: mouseMinusOffset });
             }
           }}
           onMouseUp={() => {
-            setDragState(null);
-            if (!dragState) {
-              return;
-            }
-            const overlappingIDs = getOverlappingJoinVars(
-              graph,
-              dragState.nodeID
-            );
-            const newGraph = overlappingIDs.reduce(
-              (curGraph, overlappingID) => {
-                const combined = combineNodes(
-                  curGraph,
-                  dragState.nodeID,
-                  overlappingID
-                );
-                return combined;
-              },
-              graph
-            );
-            const newConj = graphToConjunction(newGraph);
-            props.setConjunction(newConj);
+            handleAction({ type: "Drop" });
           }}
         >
           <g>
@@ -121,9 +129,6 @@ export function ConjunctionGraphEditor(props: {
                 node={node}
                 nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
                 dragState={dragState}
-                setDragState={(ds) => {
-                  setDragState(ds);
-                }}
                 dispatch={handleAction}
               />
             ))}
@@ -185,18 +190,14 @@ function EdgeView(props: { ruleGraph: RuleGraph; edge: Edge }) {
   );
 }
 
-type NodeAction = { type: "Delete"; id: string };
-
 function NodeView(props: {
   id: string;
   node: GraphNode;
   nodesOverlappingDraggingNode: string[];
   dragState: DragState;
-  setDragState: (ds: DragState) => void;
   dispatch: (action: NodeAction) => void;
 }) {
-  const { id, node, dragState, setDragState, nodesOverlappingDraggingNode } =
-    props;
+  const { id, node, dragState, nodesOverlappingDraggingNode } = props;
   const dragging = dragState && dragState.nodeID === id;
   const draggedNodeOverlappingThis =
     nodesOverlappingDraggingNode.indexOf(id) !== -1;
@@ -215,8 +216,9 @@ function NodeView(props: {
       transform={`translate(${node.pos.x} ${node.pos.y})`}
       style={{ cursor: dragging ? "grabbing" : "grab" }}
       onMouseDown={(evt) => {
-        setDragState({
-          nodeID: id,
+        props.dispatch({
+          type: "StartDrag",
+          id,
           offset: mouseRelativeToElementCenter(ref, evt),
         });
       }}
