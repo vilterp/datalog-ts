@@ -38,14 +38,16 @@ type State = {
   dragState: DragState;
 };
 
-type DragState = { nodeID: string; offset: Point } | null;
+type DragState = { nodeID: string; offset: Point; position: Point } | null;
 
 type NodeAction =
   | { type: "Delete"; id: string }
-  | { type: "StartDrag"; id: string; offset: Point }
+  | { type: "StartDrag"; id: string; offset: Point; position: Point }
   | { type: "Drag"; pos: Point }
   | { type: "Drop" }
   | { type: "AddConjunct"; relationName: string };
+
+type D3Point = Point & { id: string; fx?: number; fy?: number };
 
 export function ConjunctionGraphEditor(props: {
   rule: Rule; // TODO: get away with passing less?
@@ -94,9 +96,17 @@ export function ConjunctionGraphEditor(props: {
   useEffect(() => {
     const simulation = forceSimulation();
 
-    const nodeObjectsByID: { [id: string]: Point & { id: string } } = {};
+    const nodeObjectsByID: {
+      [id: string]: D3Point;
+    } = {};
     Object.entries(graph.nodes).forEach(([id, node]) => {
-      nodeObjectsByID[id] = { ...node.pos, id };
+      const d3Node: D3Point = { ...node.pos, id };
+      if (dragState && dragState.nodeID === id) {
+        d3Node.fx = dragState.position.x;
+        d3Node.fy = dragState.position.y;
+        console.log("useEffect", "dragging", d3Node);
+      }
+      nodeObjectsByID[id] = d3Node;
     });
 
     // update state on every frame
@@ -135,7 +145,7 @@ export function ConjunctionGraphEditor(props: {
     return () => {
       simulation.stop();
     };
-  }, [props.rule]);
+  }, [props.rule, dragState]);
 
   return (
     <>
@@ -257,6 +267,7 @@ function NodeView(props: {
           type: "StartDrag",
           id,
           offset: mouseRelativeToElementCenter(ref, evt),
+          position: node.pos,
         });
       }}
     >
@@ -371,13 +382,18 @@ function reducer(action: NodeAction, context: Context, state: State): State {
     case "StartDrag": {
       return {
         ...state,
-        dragState: { nodeID: action.id, offset: action.offset },
+        dragState: {
+          nodeID: action.id,
+          offset: action.offset,
+          position: action.position,
+        },
       };
     }
     case "Drag": {
       return {
         ...state,
         graph: updatePos(state.graph, state.dragState.nodeID, action.pos),
+        dragState: { ...state.dragState, position: action.pos },
       };
     }
     case "AddConjunct": {
