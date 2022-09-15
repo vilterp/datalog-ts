@@ -121,11 +121,11 @@ export function relationColumns(relation: Relation): string[] {
 }
 
 export function newConjunct(
-  name: string,
+  relationName: string,
   rule: Rule,
   relations: Relation[]
 ): Conjunct {
-  const relation = relations.find((r) => r.name === name);
+  const relation = relations.find((r) => r.name === relationName);
   const columns = relationColumns(relation);
   const pairs: { key: string; val: Term }[] = [];
   const existingVars = gatherVars(rule);
@@ -137,6 +137,6 @@ export function newConjunct(
       val: varr(newVar),
     });
   });
-  const res = rec(name, pairsToObj(pairs));
+  const res = rec(relationName, pairsToObj(pairs));
   return res;
 }

@@ -27,18 +27,20 @@ import {
 // Rule => Graph
 
 export function ruleToRuleGraphs(rule: Rule): RuleGraph[] {
-  return rule.body.disjuncts.map((disjunct, disjunctIndex) =>
-    disjunctToGraph(rule, disjunctIndex)
+  return rule.body.disjuncts.map((disjunct) =>
+    conjunctionToGraph(rule.head, disjunct)
   );
 }
 
-export function disjunctToGraph(rule: Rule, disjunctIndex: number): RuleGraph {
-  const conjunction = rule.body.disjuncts[disjunctIndex];
+export function conjunctionToGraph(
+  head: Rec,
+  conjunction: Conjunction
+): RuleGraph {
   const bodyGraph = conjunction.conjuncts.reduce(
     (graph, conjunct, conjunctIndex) => {
       const { graph: conjunctGraph, id } = termToGraph(
         conjunct,
-        [disjunctIndex.toString(), conjunctIndex.toString()],
+        [conjunctIndex.toString()],
         conjunction.positionMap
       );
       return combineGraphs(graph, conjunctGraph);
@@ -46,7 +48,7 @@ export function disjunctToGraph(rule: Rule, disjunctIndex: number): RuleGraph {
     EMPTY_RULE_GRAPH
   );
   const { graph: headGraph } = termToGraph(
-    rule.head,
+    head,
     ["head"],
     conjunction.positionMap
   );
@@ -117,15 +119,13 @@ function termToGraph(
 export function editDisjunct(
   rule: Rule,
   index: number,
-  newGraph: RuleGraph
+  newConjunction: Conjunction
 ): Rule {
   const newRule: Rule = {
     ...rule,
     body: {
       type: "Disjunction",
-      disjuncts: updateAtIdx(rule.body.disjuncts, index, () =>
-        graphToConjunction(index, newGraph)
-      ),
+      disjuncts: updateAtIdx(rule.body.disjuncts, index, () => newConjunction),
     },
   };
   return newRule;
@@ -151,13 +151,10 @@ export function addDisjunct(rule: Rule): Rule {
   };
 }
 
-function graphToConjunction(
-  disjunctIndex: number,
-  graph: RuleGraph
-): Conjunction {
+export function graphToConjunction(graph: RuleGraph): Conjunction {
   const conjuncts: Conjunct[] = [];
   for (let conjunctIndex = 0; ; conjunctIndex++) {
-    const path = `${disjunctIndex}/${conjunctIndex}`;
+    const path = conjunctIndex.toString();
     const node = graph.nodes[path];
     if (!node) {
       break;

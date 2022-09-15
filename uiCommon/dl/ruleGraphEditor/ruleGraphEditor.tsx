@@ -4,7 +4,7 @@ import * as styles from "../../explorer/styles";
 import { ConjunctionGraphEditor } from "./conjunctionGraphEditor";
 import {
   addDisjunct,
-  disjunctToGraph,
+  conjunctionToGraph,
   editDisjunct,
   removeDisjunct,
 } from "./convert";
@@ -28,9 +28,10 @@ export function RuleGraphEditor(props: {
             </td>
             <td style={styles.TD_STYLES}>
               <ConjunctionGraphEditor
-                ruleGraph={disjunctToGraph(props.rule, idx)}
-                setRuleGraph={(newGraph) =>
-                  props.setRule(editDisjunct(props.rule, idx, newGraph))
+                rule={props.rule}
+                conjunction={disjunct}
+                setConjunction={(newConjunction) =>
+                  props.setRule(editDisjunct(props.rule, idx, newConjunction))
                 }
                 relations={props.relations}
               />

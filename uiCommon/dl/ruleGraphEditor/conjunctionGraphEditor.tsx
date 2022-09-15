@@ -16,19 +16,22 @@ import {
   mouseRelativeToElementCenter,
   mouseRelativeToElementTopLeft,
 } from "./mouseUtil";
-import { Relation } from "../../../core/types";
+import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
+import { conjunctionToGraph, graphToConjunction } from "./convert";
 
 type DragState = { nodeID: string; offset: Point } | null;
 
 export function ConjunctionGraphEditor(props: {
-  ruleGraph: RuleGraph;
-  setRuleGraph: (g: RuleGraph) => void;
+  rule: Rule; // TODO: get away with passing less?
+  conjunction: Conjunction;
+  setConjunction: (c: Conjunction) => void;
   relations: Relation[];
 }) {
   const svgRef = useRef();
   const [dragState, setDragState] = useState<DragState>(null);
+  const graph = conjunctionToGraph(props.rule.head, props.conjunction);
   const nodesOverlappingDraggingNode = dragState
-    ? getOverlappingJoinVars(props.ruleGraph, dragState.nodeID)
+    ? getOverlappingJoinVars(graph, dragState.nodeID)
     : [];
   const [selectorOption, setSelectorOption] = useState<string>("+");
 
@@ -42,9 +45,12 @@ export function ConjunctionGraphEditor(props: {
           if (dragState) {
             const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
             const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
-            props.setRuleGraph(
-              updatePos(props.ruleGraph, dragState.nodeID, mouseMinusOffset)
+            const newGraph = updatePos(
+              graph,
+              dragState.nodeID,
+              mouseMinusOffset
             );
+            props.setConjunction(graphToConjunction(newGraph));
           }
         }}
         onMouseUp={() => {
@@ -53,30 +59,30 @@ export function ConjunctionGraphEditor(props: {
             return;
           }
           const overlappingIDs = getOverlappingJoinVars(
-            props.ruleGraph,
+            graph,
             dragState.nodeID
           );
           const newGraph = overlappingIDs.reduce(
             (graph, overlappingID) =>
               combineNodes(graph, dragState.nodeID, overlappingID),
-            props.ruleGraph
+            graph
           );
-          props.setRuleGraph(newGraph);
+          props.setConjunction(graphToConjunction(newGraph));
         }}
       >
         <g>
-          {props.ruleGraph.edges.map((edge) => {
+          {graph.edges.map((edge) => {
             return (
               <EdgeView
                 key={`${edge.fromID}-${edge.toID}`}
-                ruleGraph={props.ruleGraph}
+                ruleGraph={graph}
                 edge={edge}
               />
             );
           })}
         </g>
         <g>
-          {Object.entries(props.ruleGraph.nodes).map(([id, node]) => (
+          {Object.entries(graph.nodes).map(([id, node]) => (
             <NodeView
               key={id}
               id={id}
@@ -94,8 +100,14 @@ export function ConjunctionGraphEditor(props: {
         value={selectorOption}
         onChange={(evt) => {
           const relationName = evt.target.value;
-          const relation = props.relations.find((f) => f.name === relationName);
-          props.setRuleGraph(addConjunct(props.ruleGraph, relation));
+          props.setConjunction(
+            addConjunct(
+              props.conjunction,
+              props.rule,
+              props.relations,
+              relationName
+            )
+          );
           setSelectorOption("+");
         }}
       >
@@ -109,9 +121,9 @@ export function ConjunctionGraphEditor(props: {
 }
 
 function EdgeView(props: { ruleGraph: RuleGraph; edge: Edge }) {
-  const edge = props.edge;
-  const fromNode = props.ruleGraph.nodes[edge.fromID];
-  const toNode = props.ruleGraph.nodes[edge.toID];
+  const { edge, ruleGraph } = props;
+  const fromNode = ruleGraph.nodes[edge.fromID];
+  const toNode = ruleGraph.nodes[edge.toID];
   const edgeMidpoint = midpoint(fromNode.pos, toNode.pos);
   return (
     <g>

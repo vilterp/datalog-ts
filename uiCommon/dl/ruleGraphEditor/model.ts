@@ -1,6 +1,15 @@
-import { Literal, Relation } from "../../../core/types";
+import {
+  Conjunction,
+  Literal,
+  Rec,
+  rec,
+  Relation,
+  Rule,
+  varr,
+} from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
-import { filterMapObj } from "../../../util/util";
+import { filterMapObj, pairsToObj } from "../../../util/util";
+import { newConjunct } from "./schemaUtils";
 
 export type RuleGraph = {
   nodes: { [id: string]: GraphNode };
@@ -105,18 +114,17 @@ export function edgesFromNode(graph: RuleGraph, id: string): Edge[] {
 }
 
 export function addConjunct(
-  ruleGraph: RuleGraph,
-  relation: Relation
-): RuleGraph {
-  // new join vars...
-  const newID = XXXX;
-  const g: RuleGraph = {
-    nodes: {
-      [newID]: XXX,
-    },
-    edges: {
-      XXXX,
-    },
+  conjunction: Conjunction,
+  rule: Rule,
+  relations: Relation[],
+  relationName: string
+): Conjunction {
+  const conjunctToAdd = newConjunct(relationName, rule, relations);
+  const newID = conjunction.conjuncts.length;
+  // what about the position of the child nodes?
+  return {
+    type: "Conjunction",
+    conjuncts: [...conjunction.conjuncts, conjunctToAdd],
+    positionMap: { ...conjunction.positionMap, [newID]: { x: 20, y: 20 } },
   };
-  return combineGraphs(ruleGraph, g);
 }
