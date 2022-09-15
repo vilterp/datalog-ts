@@ -11,6 +11,7 @@ import {
   Edge,
   addConjunct,
   removeConjunct,
+  splitUpVar,
 } from "./model";
 import { midpoint, minusPoint, Point } from "../../../util/geom";
 import {
@@ -48,7 +49,7 @@ export function ConjunctionGraphEditor(props: {
     // TODO: consolidate into an actual reducer?
     handleAction(
       a,
-      props.rule.head,
+      props.rule,
       graph,
       props.conjunction,
       dragState,
@@ -252,7 +253,7 @@ function NodeDescView(props: {
 
 function handleAction(
   action: NodeAction,
-  head: Rec,
+  rule: Rule,
   graph: RuleGraph,
   conjunction: Conjunction,
   dragState: DragState,
@@ -272,13 +273,13 @@ function handleAction(
             }
             return removeConjunct(conjunction, parseInt(action.id));
           case "JoinVar":
-            console.error("TODO: join var");
-            return conjunction;
+            const newGraph = splitUpVar(rule, graph, action.id);
+            return graphToConjunction(newGraph);
         }
       })();
       // getting a bit tricky to keep these in sync
       setConjunction(newConj);
-      setGraph(conjunctionToGraph(head, newConj));
+      setGraph(conjunctionToGraph(rule.head, newConj));
       break;
     }
     case "Drop": {

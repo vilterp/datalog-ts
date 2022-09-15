@@ -1,7 +1,7 @@
 import { Conjunction, Literal, Relation, Rule } from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
-import { filterMapObj, removeAtIdx } from "../../../util/util";
-import { newConjunct } from "./schemaUtils";
+import { filterMapObj, removeAtIdx, removeKey } from "../../../util/util";
+import { gatherVars, newConjunct, nextVar } from "./schemaUtils";
 
 export type RuleGraph = {
   nodes: { [id: string]: GraphNode };
@@ -132,4 +132,37 @@ export function removeConjunct(
   return { ...conjunction, conjuncts: removeAtIdx(conjunction.conjuncts, idx) };
 }
 
-export function splitUpVar() {}
+export function splitUpVar(
+  rule: Rule,
+  graph: RuleGraph,
+  toSplitID: string
+): RuleGraph {
+  const oldNode = graph.nodes[toSplitID];
+  const existingVars = gatherVars(rule);
+  const newVar = nextVar(existingVars);
+  return {
+    nodes: {
+      ...graph.nodes,
+      [toSplitID]: {
+        ...oldNode,
+        pos: { x: oldNode.pos.x, y: oldNode.pos.y - 15 },
+      },
+      [newVar]: {
+        desc: { type: "JoinVar", name: newVar },
+        pos: { x: oldNode.pos.x, y: oldNode.pos.y + 15 },
+      },
+    },
+    // keep edges from head to the var
+    edges: graph.edges.map((edge) => {
+      if (edge.toID === toSplitID) {
+        const fromNode = graph.nodes[edge.fromID];
+        if (fromNode.desc.type === "Relation" && fromNode.desc.isHead) {
+          return { ...edge, toID: toSplitID };
+        } else {
+          return { ...edge, toID: newVar };
+        }
+      }
+      return edge;
+    }),
+  };
+}
