@@ -1,5 +1,5 @@
 import { Conjunction, Literal, Relation, Rule } from "../../../core/types";
-import { alphabetToNum } from "../../../util/alphabet";
+import { alphabetToNum, numToAlphabet } from "../../../util/alphabet";
 import { distance, Point } from "../../../util/geom";
 import {
   filterMapObj,
@@ -143,32 +143,46 @@ export function splitUpVar(
   graph: RuleGraph,
   toSplitID: string
 ): RuleGraph {
+  // TODO: don't touch head var
   const oldNode = graph.nodes[toSplitID];
   const existingVars = gatherVars(rule);
   const nextVarNum = alphabetToNum(nextVar(existingVars));
-  const edgesToSplitNode = graph.edges.filter((edge) => edge.toID === toSplitID);
-  const newNodes = edgesToSplitNode.map(())
+  const edgesToSplitNode = graph.edges.filter(
+    (edge) => edge.toID === toSplitID
+  );
+  const newVars = edgesToSplitNode.map((edge, idx) =>
+    numToAlphabet(nextVarNum + idx)
+  );
+  const newNodes: { [id: string]: GraphNode } = pairsToObj(
+    newVars.map((newVar, idx) => ({
+      key: newVar,
+      val: {
+        desc: { type: "JoinVar", name: newVar },
+        pos: { x: oldNode.pos.x, y: oldNode.pos.y - 15 + idx * 30 },
+      },
+    }))
+  );
+  const newEdges: Edge[] = newVars.map((newVar, idx) => ({
+    fromID: edgesToSplitNode[idx].fromID,
+    toID: newVar,
+    label: edgesToSplitNode[idx].label,
+  }));
+  let replacementEdges: Edge[] = [];
+  let newEdgeIdx = 0;
+  for (let i = 0; i < graph.edges.length; i++) {
+    const oldEdge = graph.edges[i];
+    if (oldEdge.toID === toSplitID) {
+      replacementEdges.push(newEdges[newEdgeIdx]);
+      newEdgeIdx++;
+    } else {
+      replacementEdges.push(oldEdge);
+    }
+  }
   return {
     nodes: {
       ...graph.nodes,
-      [toSplitID]: {
-        ...oldNode,
-        pos: { x: oldNode.pos.x, y: oldNode.pos.y - 15 },
-      },
       ...newNodes,
     },
-    // keep edges from head to the var
-    edges: graph.edges.map((edge) => {
-      // new var for each?
-      if (edge.toID === toSplitID) {
-        const fromNode = graph.nodes[edge.fromID];
-        if (fromNode.desc.type === "Relation" && fromNode.desc.isHead) {
-          return { ...edge, toID: toSplitID };
-        } else {
-          return { ...edge, toID: newVar };
-        }
-      }
-      return edge;
-    }),
+    edges: replacementEdges,
   };
 }
