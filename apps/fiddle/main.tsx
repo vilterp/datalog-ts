@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { nullLoader } from "../../core/loaders";
 // @ts-ignore
@@ -9,7 +9,7 @@ import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-import { Statement } from "../../core/types";
+import { useInMemoryDB } from "../../uiCommon/dl/hooks";
 
 function getInitInterp(): AbstractInterpreter {
   const initInterp = new SimpleInterpreter(".", nullLoader);
@@ -17,11 +17,7 @@ function getInitInterp(): AbstractInterpreter {
 }
 
 function Main() {
-  // TODO: persist to local storage
-  const [interp, dispatchStatements] = useReducer(
-    runStmtReducer,
-    getInitInterp()
-  );
+  const [interp, dispatchStatements] = useInMemoryDB(getInitInterp());
 
   return (
     <div>
@@ -38,13 +34,6 @@ function Main() {
       />
     </div>
   );
-}
-
-function runStmtReducer(
-  interp: AbstractInterpreter,
-  statements: Statement[]
-): AbstractInterpreter {
-  return interp.evalRawStmts(statements)[1];
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
