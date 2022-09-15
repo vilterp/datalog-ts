@@ -64,11 +64,25 @@ export function ConjunctionGraphEditor(props: {
               dragState.nodeID
             );
             const newGraph = overlappingIDs.reduce(
-              (graph, overlappingID) =>
-                combineNodes(graph, dragState.nodeID, overlappingID),
+              (curGraph, overlappingID) => {
+                const combined = combineNodes(
+                  curGraph,
+                  dragState.nodeID,
+                  overlappingID
+                );
+                console.log("reduce", {
+                  combined,
+                  curGraph,
+                  overlappingID,
+                  dragged: dragState.nodeID,
+                });
+                return combined;
+              },
               graph
             );
-            props.setConjunction(graphToConjunction(newGraph));
+            const newConj = graphToConjunction(newGraph);
+            console.log("onMouseUp", { newGraph, overlappingIDs, newConj });
+            props.setConjunction(newConj);
           }}
         >
           <g>

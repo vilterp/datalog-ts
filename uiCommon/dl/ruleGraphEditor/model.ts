@@ -72,16 +72,19 @@ export function combineNodes(
   draggingID: string,
   overlappingID: string
 ): RuleGraph {
+  const [winningNode, losingNode] = draggingID.startsWith("head")
+    ? [draggingID, overlappingID]
+    : [overlappingID, draggingID];
   return {
     nodes: filterMapObj(graph.nodes, (key, val) => {
-      if (key === overlappingID) {
+      if (key === losingNode) {
         return null;
       }
       return val;
     }),
     edges: graph.edges.map((edge) => ({
-      fromID: edge.fromID === overlappingID ? draggingID : edge.fromID,
-      toID: edge.toID === overlappingID ? draggingID : edge.toID,
+      fromID: edge.fromID === losingNode ? winningNode : edge.fromID,
+      toID: edge.toID === losingNode ? winningNode : edge.toID,
       label: edge.label,
     })),
   };
