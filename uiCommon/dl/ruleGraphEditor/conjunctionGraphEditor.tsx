@@ -297,6 +297,7 @@ function handleAction(
       }, graph);
       const newConj = graphToConjunction(newGraph);
       setConjunction(newConj);
+      setGraph(newGraph);
       break;
     }
     case "StartDrag": {
