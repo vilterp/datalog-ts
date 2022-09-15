@@ -34,6 +34,7 @@ export function RelationTable(props: {
           highlight={props.highlight}
           relations={props.interp.getRelations()}
           interp={props.interp}
+          runStatements={props.runStatements}
         />
       ) : null}
       <RelationContents
@@ -52,12 +53,11 @@ function RuleDisplay(props: {
   highlight: HighlightProps;
   relations: Relation[];
   interp: AbstractInterpreter;
+  runStatements: (stmts: Statement[]) => void;
 }) {
-  const [rule, setRule] = useState(props.rule);
-
   return (
     <>
-      <RuleC highlight={props.highlight} rule={rule} />
+      <RuleC highlight={props.highlight} rule={props.rule} />
       {/* <RuleEditor
         rule={props.rule}
         dispatch={(action) =>
@@ -71,8 +71,13 @@ function RuleDisplay(props: {
       /> */}
       {/* TODO: map back; show disjunctions */}
       <RuleGraphEditor
-        rule={rule}
-        setRule={setRule}
+        rule={props.rule}
+        setRule={(rule) =>
+          props.runStatements([
+            { type: "DeleteRule", name: props.rule.head.relation },
+            { type: "Rule", rule },
+          ])
+        }
         relations={props.relations}
       />
     </>

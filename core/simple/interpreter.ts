@@ -52,6 +52,13 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
+      // TODO: generalize to DeleteTable?
+      case "DeleteRule": {
+        return [
+          [],
+          this.withDB({ ...this.db, rules: this.db.rules.delete(stmt.name) }),
+        ];
+      }
       case "Rule": {
         const rule = stmt.rule;
         // TODO: move this to some kind of validation phase?

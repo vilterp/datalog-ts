@@ -2,6 +2,7 @@ import { Point } from "../util/geom";
 
 export type Statement =
   | { type: "Rule"; rule: Rule }
+  | { type: "DeleteRule"; name: string }
   | { type: "Fact"; record: Rec }
   | { type: "Query"; record: Rec }
   | { type: "Delete"; record: Rec }
