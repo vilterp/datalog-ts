@@ -1,6 +1,6 @@
 import React from "react";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rule } from "../../core/types";
+import { Rule, Statement } from "../../core/types";
 import { remove } from "../../util/util";
 import { HighlightProps } from "../dl/term";
 import { RelationTable } from "./relationTable";
@@ -8,6 +8,7 @@ import { RelationCollapseStates, TableCollapseState } from "./types";
 
 export function OpenRelationsContainer(props: {
   interp: AbstractInterpreter;
+  runStatements: (stmts: Statement[]) => void;
   collapseStates: RelationCollapseStates;
   setCollapseStates: (c: RelationCollapseStates) => void;
   highlight: HighlightProps;
@@ -36,6 +37,7 @@ export function OpenRelationsContainer(props: {
             }
             highlight={props.highlight}
             interp={props.interp}
+            runStatements={props.runStatements}
           />
         </div>
       ))}

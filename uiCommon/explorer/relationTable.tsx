@@ -1,5 +1,5 @@
 import React, { useMemo, useReducer, useState } from "react";
-import { Rec, rec, Relation, Rule } from "../../core/types";
+import { Rec, rec, Relation, Rule, Statement } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
@@ -16,6 +16,7 @@ import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
 export function RelationTable(props: {
   relation: string;
   interp: AbstractInterpreter;
+  runStatements: (stmts: Statement[]) => void;
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;

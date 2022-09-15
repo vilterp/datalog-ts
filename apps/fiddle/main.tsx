@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useReducer } from "react";
 import ReactDOM from "react-dom";
 import { nullLoader } from "../../core/loaders";
 // @ts-ignore
@@ -8,52 +8,43 @@ import familyFactsDL from "../../core/testdata/family_facts.dl";
 import { Explorer } from "../../uiCommon/explorer";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES } from "../../languageWorkbench/languages";
-import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-import { LingoEditor } from "../../uiCommon/ide/editor";
+import { Statement } from "../../core/types";
+
+function getInitInterp(): AbstractInterpreter {
+  const initInterp = new SimpleInterpreter(".", nullLoader);
+  return initInterp.evalStr(familyRulesDL + familyFactsDL)[1];
+}
 
 function Main() {
-  const [editorState, setEditorState] = useJSONLocalStorage(
-    "datalog-fiddle-editor-state",
-    initialEditorState(familyRulesDL + familyFactsDL)
+  // TODO: persist to local storage
+  const [interp, dispatchStatements] = useReducer(
+    runStmtReducer,
+    getInitInterp()
   );
-
-  let error = null;
-  let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
-  try {
-    interp = interp.evalStr(editorState.source)[1];
-  } catch (e) {
-    error = e.toString();
-    console.error(e);
-  }
 
   return (
     <div>
       <h1>Datalog Fiddle</h1>
-      {/* <LingoEditor
-        langSpec={LANGUAGES.datalog}
-        editorState={editorState}
-        setEditorState={setEditorState}
-        width={800}
-        height={700}
-        lineNumbers="on"
-        showKeyBindingsTable
-      />
-      <br /> */}
-      {error ? (
-        <>
-          <h3>Error</h3>
-          <pre style={{ fontFamily: "monospace", color: "red" }}>{error}</pre>
-        </>
-      ) : null}
       <CollapsibleWithHeading
         heading="Explore"
-        content={<Explorer interp={interp} showViz />}
+        content={
+          <Explorer
+            interp={interp}
+            runStatements={dispatchStatements}
+            showViz
+          />
+        }
       />
     </div>
   );
+}
+
+function runStmtReducer(
+  interp: AbstractInterpreter,
+  statements: Statement[]
+): AbstractInterpreter {
+  return interp.evalRawStmts(statements)[1];
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
