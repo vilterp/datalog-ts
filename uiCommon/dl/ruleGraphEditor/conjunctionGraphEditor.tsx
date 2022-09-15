@@ -44,52 +44,16 @@ export function ConjunctionGraphEditor(props: {
     ? getOverlappingJoinVars(graph, dragState.nodeID)
     : [];
 
-  const handleAction = (action: NodeAction) => {
-    switch (action.type) {
-      case "Delete": {
-        const node = graph.nodes[action.id];
-        switch (node.desc.type) {
-          case "Relation":
-            if (node.desc.isHead) {
-              return;
-            }
-            props.setConjunction(
-              removeConjunct(props.conjunction, parseInt(action.id))
-            );
-            break;
-          case "JoinVar":
-            console.error("TODO: join var");
-            break;
-        }
-      }
-      case "Drop": {
-        setDragState(null);
-        if (!dragState) {
-          return;
-        }
-        const overlappingIDs = getOverlappingJoinVars(graph, dragState.nodeID);
-        const newGraph = overlappingIDs.reduce((curGraph, overlappingID) => {
-          const combined = combineNodes(
-            curGraph,
-            dragState.nodeID,
-            overlappingID
-          );
-          return combined;
-        }, graph);
-        const newConj = graphToConjunction(newGraph);
-        props.setConjunction(newConj);
-        break;
-      }
-      case "StartDrag": {
-        setDragState({ nodeID: action.id, offset: action.offset });
-        break;
-      }
-      case "Drag": {
-        const newGraph = updatePos(graph, dragState.nodeID, action.pos);
-        setGraph(newGraph);
-        break;
-      }
-    }
+  const dispatch = (a: NodeAction) => {
+    handleAction(
+      a,
+      graph,
+      props.conjunction,
+      dragState,
+      setGraph,
+      props.setConjunction,
+      setDragState
+    );
   };
 
   return (
@@ -103,11 +67,11 @@ export function ConjunctionGraphEditor(props: {
             if (dragState) {
               const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
               const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
-              handleAction({ type: "Drag", pos: mouseMinusOffset });
+              dispatch({ type: "Drag", pos: mouseMinusOffset });
             }
           }}
           onMouseUp={() => {
-            handleAction({ type: "Drop" });
+            dispatch({ type: "Drop" });
           }}
         >
           <g>
@@ -129,7 +93,7 @@ export function ConjunctionGraphEditor(props: {
                 node={node}
                 nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
                 dragState={dragState}
-                dispatch={handleAction}
+                dispatch={dispatch}
               />
             ))}
           </g>
@@ -280,6 +244,60 @@ function NodeDescView(props: {
           padding={5}
         />
       );
+    }
+  }
+}
+
+function handleAction(
+  action: NodeAction,
+  graph: RuleGraph,
+  conjunction: Conjunction,
+  dragState: DragState,
+  setGraph: (g: RuleGraph) => void,
+  setConjunction: (conj: Conjunction) => void,
+  setDragState: (ds: DragState) => void
+) {
+  switch (action.type) {
+    case "Delete": {
+      const node = graph.nodes[action.id];
+      switch (node.desc.type) {
+        case "Relation":
+          if (node.desc.isHead) {
+            return;
+          }
+          setConjunction(removeConjunct(conjunction, parseInt(action.id)));
+          break;
+        case "JoinVar":
+          console.error("TODO: join var");
+          break;
+      }
+    }
+    case "Drop": {
+      setDragState(null);
+      if (!dragState) {
+        return;
+      }
+      const overlappingIDs = getOverlappingJoinVars(graph, dragState.nodeID);
+      const newGraph = overlappingIDs.reduce((curGraph, overlappingID) => {
+        const combined = combineNodes(
+          curGraph,
+          dragState.nodeID,
+          overlappingID
+        );
+        return combined;
+      }, graph);
+      const newConj = graphToConjunction(newGraph);
+      setConjunction(newConj);
+      break;
+    }
+    case "StartDrag": {
+      setDragState({ nodeID: action.id, offset: action.offset });
+      break;
+    }
+    case "Drag": {
+      const newGraph = updatePos(graph, dragState.nodeID, action.pos);
+      setGraph(newGraph);
+      break;
     }
   }
 }
