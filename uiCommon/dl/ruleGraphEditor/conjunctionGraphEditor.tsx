@@ -20,7 +20,14 @@ import {
 } from "./mouseUtil";
 import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
 import { conjunctionToGraph, graphToConjunction } from "./convert";
-import { forceSimulation, forceLink, forceX, forceY } from "d3-force";
+import {
+  forceSimulation,
+  forceLink,
+  forceX,
+  forceY,
+  forceManyBody,
+} from "d3-force";
+import { mapObj } from "../../../util/util";
 
 type Context = { rule: Rule; relations: Relation[] };
 
@@ -87,28 +94,37 @@ export function ConjunctionGraphEditor(props: {
   useEffect(() => {
     const simulation = forceSimulation();
 
-    // update state on every frame
-    simulation.on("tick", () => {
-      console.log("tick", simulation.nodes());
-      // setGraph({ ...graph, nodes: XXXX });
+    const nodeObjectsByID: { [id: string]: Point & { id: string } } = {};
+    Object.entries(graph.nodes).forEach(([id, node]) => {
+      nodeObjectsByID[id] = { ...node.pos, id };
     });
 
-    const nodeObjectsByID: { [id: string]: Point } = {};
-    Object.entries(graph.nodes).forEach(([id, node]) => {
-      nodeObjectsByID[id] = node.pos;
+    // update state on every frame
+    simulation.on("tick", () => {
+      setGraph({
+        ...graph,
+        nodes: mapObj(graph.nodes, (id, node) => ({
+          ...node,
+          pos: nodeObjectsByID[id],
+        })),
+      });
     });
 
     const linksForce = forceLink();
-    linksForce.links(
-      graph.edges.map((edge) => ({
-        source: nodeObjectsByID[edge.fromID],
-        target: nodeObjectsByID[edge.toID],
-      }))
-    );
+    linksForce
+      .links(
+        graph.edges.map((edge) => ({
+          source: nodeObjectsByID[edge.fromID],
+          target: nodeObjectsByID[edge.toID],
+        }))
+      )
+      .distance(100)
+      .strength(10);
 
     simulation.force("links", linksForce);
     simulation.force("x", forceX(200));
-    simulation.force("y", forceY(150));
+    simulation.force("y", forceY(50));
+    simulation.force("charge", forceManyBody().strength(-50));
 
     // copy nodes into simulation
     simulation.nodes(Object.values(nodeObjectsByID));
@@ -119,7 +135,7 @@ export function ConjunctionGraphEditor(props: {
     return () => {
       simulation.stop();
     };
-  }, [graph]);
+  }, [props.rule]);
 
   return (
     <>
