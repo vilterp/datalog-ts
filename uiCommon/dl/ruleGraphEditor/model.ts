@@ -1,4 +1,4 @@
-import { Literal } from "../../../core/types";
+import { Literal, Relation } from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
 import { filterMapObj } from "../../../util/util";
 
@@ -78,6 +78,45 @@ export function combineNodes(
   };
 }
 
+export function combineGraphs(left: RuleGraph, right: RuleGraph): RuleGraph {
+  return {
+    nodes: {
+      ...left.nodes,
+      ...right.nodes,
+    },
+    edges: [...left.edges, ...right.edges],
+  };
+}
+
+export function addEdge(graph: RuleGraph, edge: Edge): RuleGraph {
+  return combineGraphs(graph, { nodes: {}, edges: [edge] });
+}
+
+export function addNode(
+  graph: RuleGraph,
+  id: string,
+  node: GraphNode
+): RuleGraph {
+  return combineGraphs(graph, { nodes: { [id]: node }, edges: [] });
+}
+
 export function edgesFromNode(graph: RuleGraph, id: string): Edge[] {
   return graph.edges.filter((e) => e.fromID === id);
+}
+
+export function addConjunct(
+  ruleGraph: RuleGraph,
+  relation: Relation
+): RuleGraph {
+  // new join vars...
+  const newID = XXXX;
+  const g: RuleGraph = {
+    nodes: {
+      [newID]: XXX,
+    },
+    edges: {
+      XXXX,
+    },
+  };
+  return combineGraphs(ruleGraph, g);
 }

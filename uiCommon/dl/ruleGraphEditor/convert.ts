@@ -1,4 +1,3 @@
-import { ppt } from "../../../core/pretty";
 import {
   Conjunct,
   Conjunction,
@@ -17,10 +16,11 @@ import {
   updateAtIdx,
 } from "../../../util/util";
 import {
-  Edge,
+  addEdge,
+  addNode,
+  combineGraphs,
   edgesFromNode,
   EMPTY_RULE_GRAPH,
-  GraphNode,
   RuleGraph,
 } from "./model";
 
@@ -110,24 +110,6 @@ function termToGraph(
     default:
       throw new Error(`case not supported: ${term.type}`);
   }
-}
-
-function combineGraphs(left: RuleGraph, right: RuleGraph): RuleGraph {
-  return {
-    nodes: {
-      ...left.nodes,
-      ...right.nodes,
-    },
-    edges: [...left.edges, ...right.edges],
-  };
-}
-
-function addEdge(graph: RuleGraph, edge: Edge): RuleGraph {
-  return combineGraphs(graph, { nodes: {}, edges: [edge] });
-}
-
-function addNode(graph: RuleGraph, id: string, node: GraphNode): RuleGraph {
-  return combineGraphs(graph, { nodes: { [id]: node }, edges: [] });
 }
 
 // Graph => Rule

@@ -32,13 +32,8 @@ export function RuleGraphEditor(props: {
                 setRuleGraph={(newGraph) =>
                   props.setRule(editDisjunct(props.rule, idx, newGraph))
                 }
+                relations={props.relations}
               />
-              <select>
-                <option>+</option>
-                {props.relations.map((relation, idx) => (
-                  <option key={idx}>{relation.name}</option>
-                ))}
-              </select>
             </td>
           </tr>
         ))}

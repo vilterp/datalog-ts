@@ -9,82 +9,102 @@ import {
   JOIN_VAR_NODE_RADIUS,
   GraphNode,
   Edge,
+  addConjunct,
 } from "./model";
 import { midpoint, minusPoint, Point } from "../../../util/geom";
 import {
   mouseRelativeToElementCenter,
   mouseRelativeToElementTopLeft,
 } from "./mouseUtil";
+import { Relation } from "../../../core/types";
 
 type DragState = { nodeID: string; offset: Point } | null;
 
 export function ConjunctionGraphEditor(props: {
   ruleGraph: RuleGraph;
   setRuleGraph: (g: RuleGraph) => void;
+  relations: Relation[];
 }) {
   const svgRef = useRef();
   const [dragState, setDragState] = useState<DragState>(null);
   const nodesOverlappingDraggingNode = dragState
     ? getOverlappingJoinVars(props.ruleGraph, dragState.nodeID)
     : [];
+  const [selectorOption, setSelectorOption] = useState<string>("+");
 
   return (
-    <svg
-      ref={svgRef}
-      width={500}
-      onMouseMove={(evt) => {
-        evt.preventDefault();
-        if (dragState) {
-          const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
-          const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
-          props.setRuleGraph(
-            updatePos(props.ruleGraph, dragState.nodeID, mouseMinusOffset)
+    <>
+      <svg
+        ref={svgRef}
+        width={500}
+        onMouseMove={(evt) => {
+          evt.preventDefault();
+          if (dragState) {
+            const mousePos = mouseRelativeToElementTopLeft(svgRef, evt);
+            const mouseMinusOffset = minusPoint(mousePos, dragState.offset);
+            props.setRuleGraph(
+              updatePos(props.ruleGraph, dragState.nodeID, mouseMinusOffset)
+            );
+          }
+        }}
+        onMouseUp={() => {
+          setDragState(null);
+          if (!dragState) {
+            return;
+          }
+          const overlappingIDs = getOverlappingJoinVars(
+            props.ruleGraph,
+            dragState.nodeID
           );
-        }
-      }}
-      onMouseUp={() => {
-        setDragState(null);
-        if (!dragState) {
-          return;
-        }
-        const overlappingIDs = getOverlappingJoinVars(
-          props.ruleGraph,
-          dragState.nodeID
-        );
-        const newGraph = overlappingIDs.reduce(
-          (graph, overlappingID) =>
-            combineNodes(graph, dragState.nodeID, overlappingID),
-          props.ruleGraph
-        );
-        props.setRuleGraph(newGraph);
-      }}
-    >
-      <g>
-        {props.ruleGraph.edges.map((edge) => {
-          return (
-            <EdgeView
-              key={`${edge.fromID}-${edge.toID}`}
-              ruleGraph={props.ruleGraph}
-              edge={edge}
+          const newGraph = overlappingIDs.reduce(
+            (graph, overlappingID) =>
+              combineNodes(graph, dragState.nodeID, overlappingID),
+            props.ruleGraph
+          );
+          props.setRuleGraph(newGraph);
+        }}
+      >
+        <g>
+          {props.ruleGraph.edges.map((edge) => {
+            return (
+              <EdgeView
+                key={`${edge.fromID}-${edge.toID}`}
+                ruleGraph={props.ruleGraph}
+                edge={edge}
+              />
+            );
+          })}
+        </g>
+        <g>
+          {Object.entries(props.ruleGraph.nodes).map(([id, node]) => (
+            <NodeView
+              key={id}
+              id={id}
+              node={node}
+              nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
+              dragState={dragState}
+              setDragState={(ds) => {
+                setDragState(ds);
+              }}
             />
-          );
-        })}
-      </g>
-      <g>
-        {Object.entries(props.ruleGraph.nodes).map(([id, node]) => (
-          <NodeView
-            key={id}
-            id={id}
-            node={node}
-            nodesOverlappingDraggingNode={nodesOverlappingDraggingNode}
-            dragState={dragState}
-            setDragState={(ds) => {
-              setDragState(ds);
-            }}
-          />
+          ))}
+        </g>
+      </svg>
+      <select
+        value={selectorOption}
+        onChange={(evt) => {
+          const relationName = evt.target.value;
+          const relation = props.relations.find((f) => f.name === relationName);
+          props.setRuleGraph(addConjunct(props.ruleGraph, relation));
+          setSelectorOption("+");
+        }}
+      >
+        <option>+</option>
+        {props.relations.map((relation, idx) => (
+          <option key={idx}>{relation.name}</option>
         ))}
-      </g>
-    </svg>
+      </select>
+    </>
   );
 }
 
