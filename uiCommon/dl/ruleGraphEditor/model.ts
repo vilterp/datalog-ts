@@ -31,6 +31,12 @@ export type NodeDesc =
   | { type: "Relation"; name: string; isHead: boolean }
   | { type: "Literal"; value: Literal };
 
+export type DragState = {
+  nodeID: string;
+  offset: Point;
+  position: Point;
+} | null;
+
 export function updatePos(
   graph: RuleGraph,
   nodeID: string,
