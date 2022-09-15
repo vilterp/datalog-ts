@@ -20,3 +20,7 @@ export function numToAlphabet(num: number): string {
     ALPHABET[(num - 1) % ALPHABET.length]
   );
 }
+
+export function nextLetter(alpha: string): string {
+  return numToAlphabet(alphabetToNum(alpha) + 1);
+}
