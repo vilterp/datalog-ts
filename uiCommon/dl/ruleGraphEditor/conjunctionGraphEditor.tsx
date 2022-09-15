@@ -31,7 +31,8 @@ import {
   forceY,
   forceManyBody,
 } from "d3-force";
-import { mapObj } from "../../../util/util";
+import { filterMapObj, mapObj, mapObjToList } from "../../../util/util";
+import { ppt } from "../../../core/pretty";
 
 type Context = { rule: Rule; relations: Relation[] };
 
@@ -334,6 +335,27 @@ function NodeDescView(props: {
           rectStyle={{
             fill: props.nodeDesc.isHead ? "lightblue" : "white",
             stroke: "black",
+          }}
+          padding={5}
+        />
+      );
+    }
+    case "Literal": {
+      const value = props.nodeDesc.value;
+      return (
+        <TextWithBackground
+          onContextMenu={(evt) => {
+            evt.preventDefault();
+            props.dispatchDelete();
+          }}
+          text={ppt(value)}
+          textStyle={{
+            fontFamily: "monospace",
+            pointerEvents: "none",
+            fill: value.type === "StringLit" ? "green" : "blue",
+          }}
+          rectStyle={{
+            fill: "white",
           }}
           padding={5}
         />
