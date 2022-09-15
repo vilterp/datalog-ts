@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TextWithBackground } from "./textWithBackground";
 import {
   RuleGraph,
@@ -20,6 +20,7 @@ import {
 } from "./mouseUtil";
 import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
 import { conjunctionToGraph, graphToConjunction } from "./convert";
+import { forceSimulation, forceLink, forceX, forceY } from "d3-force";
 
 type Context = { rule: Rule; relations: Relation[] };
 
@@ -81,6 +82,44 @@ export function ConjunctionGraphEditor(props: {
       setSelectorOption(newState.selectorOption);
     }
   };
+
+  // re-create animation every time nodes change
+  useEffect(() => {
+    const simulation = forceSimulation();
+
+    // update state on every frame
+    simulation.on("tick", () => {
+      console.log("tick", simulation.nodes());
+      // setGraph({ ...graph, nodes: XXXX });
+    });
+
+    const nodeObjectsByID: { [id: string]: Point } = {};
+    Object.entries(graph.nodes).forEach(([id, node]) => {
+      nodeObjectsByID[id] = node.pos;
+    });
+
+    const linksForce = forceLink();
+    linksForce.links(
+      graph.edges.map((edge) => ({
+        source: nodeObjectsByID[edge.fromID],
+        target: nodeObjectsByID[edge.toID],
+      }))
+    );
+
+    simulation.force("links", linksForce);
+    simulation.force("x", forceX(200));
+    simulation.force("y", forceY(150));
+
+    // copy nodes into simulation
+    simulation.nodes(Object.values(nodeObjectsByID));
+    // slow down with a small alpha
+    simulation.alpha(0.1).restart();
+
+    // stop simulation on unmount
+    return () => {
+      simulation.stop();
+    };
+  }, [graph]);
 
   return (
     <>
