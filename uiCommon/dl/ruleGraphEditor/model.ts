@@ -1,14 +1,6 @@
-import {
-  Conjunction,
-  Literal,
-  Rec,
-  rec,
-  Relation,
-  Rule,
-  varr,
-} from "../../../core/types";
+import { Conjunction, Literal, Relation, Rule } from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
-import { filterMapObj, pairsToObj } from "../../../util/util";
+import { filterMapObj } from "../../../util/util";
 import { newConjunct } from "./schemaUtils";
 
 export type RuleGraph = {
