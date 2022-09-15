@@ -10,6 +10,7 @@ import {
   GraphNode,
   Edge,
   addConjunct,
+  removeConjunct,
 } from "./model";
 import { midpoint, minusPoint, Point } from "../../../util/geom";
 import {
@@ -36,6 +37,27 @@ export function ConjunctionGraphEditor(props: {
   const nodesOverlappingDraggingNode = dragState
     ? getOverlappingJoinVars(graph, dragState.nodeID)
     : [];
+
+  const handleAction = (action: NodeAction) => {
+    switch (action.type) {
+      case "Delete": {
+        const node = graph.nodes[action.id];
+        switch (node.desc.type) {
+          case "Relation":
+            if (node.desc.isHead) {
+              return;
+            }
+            props.setConjunction(
+              removeConjunct(props.conjunction, parseInt(action.id))
+            );
+            break;
+          case "JoinVar":
+            console.error("TODO: join var");
+            break;
+        }
+      }
+    }
+  };
 
   return (
     <>
@@ -102,6 +124,7 @@ export function ConjunctionGraphEditor(props: {
                 setDragState={(ds) => {
                   setDragState(ds);
                 }}
+                dispatch={handleAction}
               />
             ))}
           </g>
@@ -162,12 +185,15 @@ function EdgeView(props: { ruleGraph: RuleGraph; edge: Edge }) {
   );
 }
 
+type NodeAction = { type: "Delete"; id: string };
+
 function NodeView(props: {
   id: string;
   node: GraphNode;
   nodesOverlappingDraggingNode: string[];
   dragState: DragState;
   setDragState: (ds: DragState) => void;
+  dispatch: (action: NodeAction) => void;
 }) {
   const { id, node, dragState, setDragState, nodesOverlappingDraggingNode } =
     props;
@@ -178,6 +204,11 @@ function NodeView(props: {
     dragging && nodesOverlappingDraggingNode.length > 0;
   const overlapping = draggedNodeOverlappingThis || thisDraggedOverSomeNode;
   const ref = useRef<SVGGraphicsElement>();
+
+  const handleDelete = () => {
+    props.dispatch({ type: "Delete", id });
+  };
+
   return (
     <g
       ref={ref}
@@ -192,8 +223,8 @@ function NodeView(props: {
     >
       <NodeDescView
         nodeDesc={node.desc}
-        dragging={dragging}
         overlapping={overlapping}
+        dispatchDelete={handleDelete}
       />
     </g>
   );
@@ -201,13 +232,18 @@ function NodeView(props: {
 
 function NodeDescView(props: {
   nodeDesc: NodeDescView;
-  dragging: boolean;
   overlapping: boolean;
+  dispatchDelete: () => void;
 }) {
   switch (props.nodeDesc.type) {
     case "JoinVar":
       return (
-        <g>
+        <g
+          onContextMenu={(evt) => {
+            evt.preventDefault();
+            props.dispatchDelete();
+          }}
+        >
           <circle
             r={JOIN_VAR_NODE_RADIUS}
             fill={props.overlapping ? "orange" : "white"}
@@ -225,6 +261,10 @@ function NodeDescView(props: {
     case "Relation": {
       return (
         <TextWithBackground
+          onContextMenu={(evt) => {
+            evt.preventDefault();
+            props.dispatchDelete();
+          }}
           text={props.nodeDesc.name}
           textStyle={{
             fontFamily: "monospace",

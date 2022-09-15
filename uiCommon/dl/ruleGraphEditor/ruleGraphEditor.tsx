@@ -2,12 +2,7 @@ import React from "react";
 import { Relation, Rule } from "../../../core/types";
 import * as styles from "../../explorer/styles";
 import { ConjunctionGraphEditor } from "./conjunctionGraphEditor";
-import {
-  addDisjunct,
-  conjunctionToGraph,
-  editDisjunct,
-  removeDisjunct,
-} from "./convert";
+import { addDisjunct, editDisjunct, removeDisjunct } from "./convert";
 
 export function RuleGraphEditor(props: {
   rule: Rule;

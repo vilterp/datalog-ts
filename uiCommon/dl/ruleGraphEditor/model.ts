@@ -1,6 +1,6 @@
 import { Conjunction, Literal, Relation, Rule } from "../../../core/types";
 import { distance, Point } from "../../../util/geom";
-import { filterMapObj } from "../../../util/util";
+import { filterMapObj, removeAtIdx } from "../../../util/util";
 import { newConjunct } from "./schemaUtils";
 
 export type RuleGraph = {
@@ -123,3 +123,13 @@ export function addConjunct(
     positionMap: { ...conjunction.positionMap, [newID]: { x: 250, y: 100 } },
   };
 }
+
+export function removeConjunct(
+  conjunction: Conjunction,
+  idx: number
+): Conjunction {
+  // TODO: remove from position map
+  return { ...conjunction, conjuncts: removeAtIdx(conjunction.conjuncts, idx) };
+}
+
+export function splitUpVar() {}
