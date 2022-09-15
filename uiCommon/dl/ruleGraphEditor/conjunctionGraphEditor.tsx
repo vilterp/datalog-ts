@@ -21,6 +21,15 @@ import {
 import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
 import { conjunctionToGraph, graphToConjunction } from "./convert";
 
+type Context = { rule: Rule; relations: Relation[] };
+
+type State = {
+  conjunction: Conjunction;
+  graph: RuleGraph;
+  selectorOption: string;
+  dragState: DragState;
+};
+
 type DragState = { nodeID: string; offset: Point } | null;
 
 type NodeAction =
@@ -46,21 +55,31 @@ export function ConjunctionGraphEditor(props: {
     ? getOverlappingJoinVars(graph, dragState.nodeID)
     : [];
 
-  const dispatch = (a: NodeAction) => {
-    // TODO: consolidate into an actual reducer?
-    handleAction(
-      a,
-      props.rule,
-      props.relations,
+  // TODO: this is kinda clumsy...
+  const dispatch = (action: NodeAction) => {
+    const context: Context = {
+      relations: props.relations,
+      rule: props.rule,
+    };
+    const state: State = {
+      conjunction: props.conjunction,
+      dragState: dragState,
       graph,
-      setGraph,
-      props.conjunction,
-      props.setConjunction,
-      dragState,
-      setDragState,
       selectorOption,
-      setSelectorOption
-    );
+    };
+    const newState = reducer(action, context, state);
+    if (newState.conjunction !== state.conjunction) {
+      props.setConjunction(newState.conjunction);
+    }
+    if (newState.dragState !== state.dragState) {
+      setDragState(newState.dragState);
+    }
+    if (newState.graph !== state.graph) {
+      setGraph(newState.graph);
+    }
+    if (newState.selectorOption !== state.selectorOption) {
+      setSelectorOption(newState.selectorOption);
+    }
   };
 
   return (
@@ -247,79 +266,78 @@ function NodeDescView(props: {
   }
 }
 
-function handleAction(
-  action: NodeAction,
-  rule: Rule,
-  relations: Relation[],
-  graph: RuleGraph,
-  setGraph: (g: RuleGraph) => void,
-  conjunction: Conjunction,
-  setConjunction: (conj: Conjunction) => void,
-  dragState: DragState,
-  setDragState: (ds: DragState) => void,
-  selectorOption: string,
-  setSelectorOption: (o: string) => void
-) {
+function reducer(action: NodeAction, context: Context, state: State): State {
   switch (action.type) {
     case "Delete": {
-      setDragState(null); // otherwise the node re-appears
-      const node = graph.nodes[action.id];
+      const node = state.graph.nodes[action.id];
       const newConj: Conjunction = (() => {
         switch (node.desc.type) {
           case "Relation":
             if (node.desc.isHead) {
               return;
             }
-            return removeConjunct(conjunction, parseInt(action.id));
+            return removeConjunct(state.conjunction, parseInt(action.id));
           case "JoinVar":
-            const newGraph = splitUpVar(rule, graph, action.id);
+            const newGraph = splitUpVar(context.rule, state.graph, action.id);
             return graphToConjunction(newGraph);
         }
       })();
-      // getting a bit tricky to keep these in sync
-      setConjunction(newConj);
-      setGraph(conjunctionToGraph(rule.head, newConj));
-      break;
+      return {
+        ...state,
+        graph: conjunctionToGraph(context.rule.head, newConj),
+        conjunction: newConj,
+        dragState: null, // otherwise the node re-appears
+      };
     }
     case "Drop": {
-      setDragState(null);
-      if (!dragState) {
-        return;
+      if (!state.dragState) {
+        return state;
       }
-      const overlappingIDs = getOverlappingJoinVars(graph, dragState.nodeID);
+      const overlappingIDs = getOverlappingJoinVars(
+        state.graph,
+        state.dragState.nodeID
+      );
       const newGraph = overlappingIDs.reduce((curGraph, overlappingID) => {
         const combined = combineNodes(
           curGraph,
-          dragState.nodeID,
+          state.dragState.nodeID,
           overlappingID
         );
         return combined;
-      }, graph);
+      }, state.graph);
       const newConj = graphToConjunction(newGraph);
-      setConjunction(newConj);
-      setGraph(newGraph);
-      break;
+      return {
+        ...state,
+        dragState: null,
+        conjunction: newConj,
+        graph: newGraph,
+      };
     }
     case "StartDrag": {
-      setDragState({ nodeID: action.id, offset: action.offset });
-      break;
+      return {
+        ...state,
+        dragState: { nodeID: action.id, offset: action.offset },
+      };
     }
     case "Drag": {
-      const newGraph = updatePos(graph, dragState.nodeID, action.pos);
-      setGraph(newGraph);
-      break;
+      return {
+        ...state,
+        graph: updatePos(state.graph, state.dragState.nodeID, action.pos),
+      };
     }
     case "AddConjunct": {
       const newConjunction = addConjunct(
-        conjunction,
-        rule,
-        relations,
+        state.conjunction,
+        context.rule,
+        context.relations,
         action.relationName
       );
-      setConjunction(newConjunction);
-      setGraph(conjunctionToGraph(rule.head, newConjunction));
-      setSelectorOption("+");
-      break;
+      return {
+        ...state,
+        selectorOption: "+",
+        graph: conjunctionToGraph(context.rule.head, newConjunction),
+        conjunction: newConjunction,
+      };
     }
   }
 }
