@@ -11,7 +11,7 @@ export type Statement =
 // === DB Contents ===
 
 export type Relation =
-  | { type: "Table"; name: string }
+  | { type: "Table"; name: string; columns: string[] }
   | { type: "Rule"; name: string; rule: Rule }
   | { type: "Builtin"; name: string; columns: string[] };
 
