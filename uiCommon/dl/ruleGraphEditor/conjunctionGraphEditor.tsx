@@ -176,7 +176,9 @@ export function ConjunctionGraphEditor(props: {
         return DEFAULT_POINT.y;
       }).strength(2)
     );
-    // simulation.force("charge", forceManyBody().strength(-50));
+    if (!dragState || graph.nodes[dragState.nodeID].desc.type !== "JoinVar") {
+      simulation.force("charge", forceManyBody().strength(-1000));
+    }
 
     // copy nodes into simulation
     simulation.nodes(Object.values(d3NodesByID));

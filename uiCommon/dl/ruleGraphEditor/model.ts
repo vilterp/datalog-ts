@@ -194,10 +194,11 @@ export function desiredJoinVarPosition(
   joinVarID: string
 ): Point {
   const edgesTo = graph.edges.filter((e) => e.toID === joinVarID);
-  const desiredPositions = edgesTo.map((edge) =>
-    desiredPositionRelativeTo(graph, edge.fromID, joinVarID)
-  );
-  return averagePoint(desiredPositions);
+  const nodesFrom = edgesTo.map((e) => graph.nodes[e.fromID]);
+  if (nodesFrom.length === 1) {
+    return desiredPositionRelativeTo(graph, edgesTo[0].fromID, joinVarID);
+  }
+  return averagePoint(nodesFrom.map((n) => n.pos));
 }
 
 function desiredPositionRelativeTo(
