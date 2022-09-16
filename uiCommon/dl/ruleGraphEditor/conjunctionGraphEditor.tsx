@@ -105,7 +105,6 @@ export function ConjunctionGraphEditor(props: {
     }
     return desiredJoinVarPosition(graph, id);
   });
-  console.log("joinVarDesiredPositions", joinVardesiredPositions);
 
   useEffect(() => {
     const simulation = forceSimulation<D3Point>();
@@ -160,22 +159,22 @@ export function ConjunctionGraphEditor(props: {
     simulation.force(
       "x",
       forceX((node) => {
-        const desired = joinVardesiredPositions[node.id];
+        const desired = joinVardesiredPositions[(node as D3Point).id];
         if (desired) {
           return desired.x;
         }
         return DEFAULT_POINT.x;
-      })
+      }).strength(2)
     );
     simulation.force(
       "y",
       forceY((node) => {
-        const desired = joinVardesiredPositions[node.id];
+        const desired = joinVardesiredPositions[(node as D3Point).id];
         if (desired) {
           return desired.y;
         }
         return DEFAULT_POINT.y;
-      })
+      }).strength(2)
     );
     // simulation.force("charge", forceManyBody().strength(-50));
 
@@ -208,13 +207,13 @@ export function ConjunctionGraphEditor(props: {
             dispatch({ type: "Drop" });
           }}
         >
-          <g className="desired-positions">
+          {/* <g className="desired-positions">
             {mapObjToList(joinVardesiredPositions, (id, point) => (
               <text key={id} x={point.x} y={point.y} fill="red">
                 {id}
               </text>
             ))}
-          </g>
+          </g> */}
           <g>
             {graph.edges.map((edge) => {
               return (

@@ -222,7 +222,7 @@ function angleForIndex(idx: number, total: number) {
   return sliceDegrees * idx;
 }
 
-const JOIN_VAR_DISTANCE = 75;
+const JOIN_VAR_DISTANCE = 100;
 
 function positionForAngle(angle: number): Point {
   return {
