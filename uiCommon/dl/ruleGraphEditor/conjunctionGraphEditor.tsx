@@ -119,9 +119,14 @@ export function ConjunctionGraphEditor(props: {
         d3Node.fx = dragState.position.x;
         d3Node.fy = dragState.position.y;
       }
-      if (node.desc.type === "Relation" && node.desc.isHead) {
-        d3Node.fx = DEFAULT_POINT.x;
-        d3Node.fy = 20;
+      if (node.desc.type === "Relation") {
+        if (node.desc.isHead) {
+          d3Node.fx = DEFAULT_POINT.x;
+          d3Node.fy = 20;
+        } else {
+          d3Node.fx = node.pos.x;
+          d3Node.fy = node.pos.y;
+        }
       }
       d3NodesByID[id] = d3Node;
     });
@@ -203,10 +208,10 @@ export function ConjunctionGraphEditor(props: {
             dispatch({ type: "Drop" });
           }}
         >
-          <g>
-            {mapObjToList(joinVardesiredPositions, (id, point) => {
-              <circle cx={point.x} cy={point.y} r={2} />;
-            })}
+          <g className="desired-positions">
+            {mapObjToList(joinVardesiredPositions, (id, point) => (
+              <circle key={id} cx={point.x} cy={point.y} r={2} fill="red" />
+            ))}
           </g>
           <g>
             {graph.edges.map((edge) => {
