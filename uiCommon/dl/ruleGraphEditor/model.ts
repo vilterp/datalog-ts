@@ -217,9 +217,9 @@ function desiredPositionRelativeTo(
 }
 
 function angleForIndex(idx: number, total: number) {
-  const sliceDegrees = 360 / total;
-  const startOffset = 90;
-  return startOffset + sliceDegrees * idx;
+  const sliceDegrees = (2 * Math.PI) / total;
+  // 0 is to right
+  return sliceDegrees * idx;
 }
 
 const JOIN_VAR_DISTANCE = 75;

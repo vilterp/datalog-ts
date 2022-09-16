@@ -210,7 +210,9 @@ export function ConjunctionGraphEditor(props: {
         >
           <g className="desired-positions">
             {mapObjToList(joinVardesiredPositions, (id, point) => (
-              <circle key={id} cx={point.x} cy={point.y} r={2} fill="red" />
+              <text key={id} x={point.x} y={point.y} fill="red">
+                {id}
+              </text>
             ))}
           </g>
           <g>
