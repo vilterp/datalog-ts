@@ -55,7 +55,12 @@ export function conjunctionToGraph(
   return combineGraphs(bodyGraph, headGraph);
 }
 
-export const DEFAULT_POINT: Point = { x: 200, y: 50 };
+export const CANVAS_WIDTH = 750;
+export const CANVAS_HEIGHT = 400;
+export const DEFAULT_POINT: Point = {
+  x: CANVAS_WIDTH / 2,
+  y: CANVAS_HEIGHT / 2,
+};
 
 function termToGraph(
   term: Term,

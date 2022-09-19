@@ -19,8 +19,10 @@ import {
   mouseRelativeToElementCenter,
   mouseRelativeToElementTopLeft,
 } from "./mouseUtil";
-import { Conjunction, Rec, Relation, Rule } from "../../../core/types";
+import { Conjunction, Relation, Rule } from "../../../core/types";
 import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
   conjunctionToGraph,
   DEFAULT_POINT,
   graphToConjunction,
@@ -32,7 +34,7 @@ import {
   forceY,
   forceManyBody,
 } from "d3-force";
-import { filterMapObj, mapObj, mapObjToList } from "../../../util/util";
+import { filterMapObj, mapObj } from "../../../util/util";
 import { ppt } from "../../../core/pretty";
 
 type Context = { rule: Rule; relations: Relation[] };
@@ -196,7 +198,8 @@ export function ConjunctionGraphEditor(props: {
       <div>
         <svg
           ref={svgRef}
-          width={500}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
           onMouseMove={(evt) => {
             evt.preventDefault();
             if (dragState) {
