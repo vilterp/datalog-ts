@@ -102,7 +102,7 @@ interface Tick {
 }
 
 function yForTime(t: Time): number {
-  return t * 10;
+  return t * 20;
 }
 
 export function sequenceDiagram(seq: Sequence): Diag<Term> {
