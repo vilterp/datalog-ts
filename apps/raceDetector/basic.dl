@@ -199,19 +199,22 @@ viz.message{fromTickID: FromTickID, toTickID: ToTickID} :-
   viz.continueMessage{fromTickID: FromTickID, toTickID: ToTickID}.
 
 viz.spawnMessage{
-  fromTickID: tick{time: Time, place: FT},
-  toTickID: tick{time: Time, place: TT},
+  fromTickID: viz.tick{time: Time, place: FT},
+  toTickID: viz.tick{time: Time, place: TT},
 } :-
   state{time: Time, state: S, threadID: FT} &
   stepForkForked{time: Time, fromState: S, fromThread: FT, toThread: TT}.
 
 viz.continueMessage{
-  fromTickID: tick{time: FT, place: Thread},
-  toTickID: tick{time: TT, place: Thread},
+  fromTickID: viz.tick{time: FT, place: Thread},
+  toTickID: viz.tick{time: TT, place: Thread},
 } :-
   state{time: FT, threadID: Thread} &
   state{time: TT, threadID: Thread} &
   TT = FT + 1.
+
+viz.tick{time: T, place: P} :-
+  state{threadID: P, time: T}.
 
 # actors: threads
 # ticks: thread states
