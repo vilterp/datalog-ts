@@ -163,8 +163,10 @@ viz.initialThreadNode{id: I, parentID: -1} :-
   initialState{time: T, threadID: I}.
 
 viz.childThreadNode{id: I, parentID: P} :-
-  state{time: T, state: S, threadID: P} &
-  stepForkForked{time: T, fromState: S, fromThread: P, toThread: I}.
+  viz.spawnMessage{
+    fromTickID: viz.tick{place: P},
+    toTickID: viz.tick{place: I},
+  }.
 
 internal.visualization{
   name: "Thread Tree",
@@ -199,11 +201,12 @@ viz.message{fromTickID: FromTickID, toTickID: ToTickID} :-
   viz.continueMessage{fromTickID: FromTickID, toTickID: ToTickID}.
 
 viz.spawnMessage{
-  fromTickID: viz.tick{time: Time, place: FT},
-  toTickID: viz.tick{time: Time, place: TT},
+  fromTickID: viz.tick{time: FromTime, place: FT},
+  toTickID: viz.tick{time: ToTime, place: TT},
 } :-
-  state{time: Time, state: S, threadID: FT} &
-  stepForkForked{time: Time, fromState: S, fromThread: FT, toThread: TT}.
+  state{time: FromTime, state: FromState, threadID: FT} &
+  state{time: ToTime, state: ToState, threadID: TT} &
+  stepForkForked{time: ToTime, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
 
 viz.continueMessage{
   fromTickID: viz.tick{time: FT, place: Thread},
