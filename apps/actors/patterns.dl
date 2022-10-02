@@ -22,13 +22,11 @@ requestResponse{
   message{id: RespID, fromTickID: RespondTick, toActorID: ClientActor, payload: Resp} &
   tick{id: HandleResponseTick, actorID: ClientActor, initiator: messageReceived{messageID: RespID}}.
 
-# TODO: don't really like these being quoted, but...
 internal.visualization{
   name: "sequence",
   spec: sequence{
     actors: actor{id: ID},
-    ticks: tick{id: ID, actorID: ActorID},
-    messages: hop{fromTickID: FromTickID, fromActorID: FromActorID, toTickID: ToTickID, toActorID: ToActorID}
+    messages: hop{fromTickID: FromTickID, toTickID: ToTickID},
   }
 }.
 
@@ -37,16 +35,12 @@ messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Pa
   tick{id: FromTick, actorID: FromActor}.
 
 hop{
-  messageID: MessageID,
-  message: Payload,
-  fromTickID: FromTickID,
-  fromActorID: FromActorID,
-  toTickID: ToTickID,
-  toActorID: ToActorID
+  fromTickID: tick{time: FromTickID, place: FromActorID},
+  toTickID: tick{time: ToTickID, place: ToActorID},
 } :-
   message{id: MessageID, fromTickID: FromTickID, toActorID: ToActorID, payload: Payload} &
   tick{id: FromTickID, actorID: FromActorID} &
-  tick{id: ToTickID, initiator: messageReceived{messageID: MessageID}}.
+  tick{id: ToTickID, actorID: ToActorID, initiator: messageReceived{messageID: MessageID}}.
 
 savePush{saveMessageID: SaveMsgID, todo: T, from: FromID, to: ToID} :-
   tick{id: FromTick, actorID: FromID} &
