@@ -12,7 +12,7 @@ export function raceDetectorTests(writeResults: boolean): Suite {
       name: "raceDetector",
       test() {
         runDDTestAtPath(
-          "apps/raceDetector/basic.dd.txt",
+          "apps/raceDetector/execution.dd.txt",
           getResults,
           writeResults
         );
@@ -27,7 +27,7 @@ function getResults(inputs: string[]): TestOutput[] {
       "apps/raceDetector",
       fsLoader
     );
-    interp = interp.doLoad("basic.dl");
+    interp = interp.doLoad("execution.dl");
     const results = interp.evalStr(input)[0];
     return datalogOut(results.map((res) => res.term));
   });
