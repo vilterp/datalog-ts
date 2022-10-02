@@ -25,26 +25,34 @@ export const sequence: VizTypeSpec = {
 };
 
 function SequenceDiagram(props: VizArgs) {
-  const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
-  const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
-  const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
-  const ticksByID: { [id: string]: Term } = {};
-  ticks.forEach((tick) => {
-    ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;
-  });
+  try {
+    const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
+    const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
+    const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
+    const ticksByID: { [id: string]: Term } = {};
+    ticks.forEach((tick) => {
+      ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;
+    });
 
-  return (
-    <div>
+    return (
       <div>
-        <Diagram<Term>
-          diagram={sequenceDiagram(
-            makeSequenceSpec(actors, messages, ticksByID)
-          )}
-          onMouseOver={(term) => props.setHighlightedTerm?.(term)}
-        />
+        <div>
+          <Diagram<Term>
+            diagram={sequenceDiagram(
+              makeSequenceSpec(actors, messages, ticksByID)
+            )}
+            onMouseOver={(term) => props.setHighlightedTerm?.(term)}
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (e) {
+    return (
+      <pre style={{ color: "red", fontFamily: "monospace" }}>
+        {e.toString()}
+      </pre>
+    );
+  }
 }
 
 // TODO: maybe integrate this into one of the above functions??
