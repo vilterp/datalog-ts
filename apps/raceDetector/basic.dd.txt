@@ -103,8 +103,8 @@ viz.threadNode{}?
 ----
 application/datalog
 viz.threadNode{display: 1, id: 1, parentID: -1}.
-viz.threadNode{display: 104, id: 104, parentID: 1}.
-viz.threadNode{display: 108, id: 108, parentID: 1}.
-viz.threadNode{display: 112, id: 112, parentID: 1}.
-viz.threadNode{display: 116, id: 116, parentID: 1}.
-viz.threadNode{display: 120, id: 120, parentID: 1}.
+viz.threadNode{display: 105, id: 105, parentID: 1}.
+viz.threadNode{display: 109, id: 109, parentID: 1}.
+viz.threadNode{display: 113, id: 113, parentID: 1}.
+viz.threadNode{display: 117, id: 117, parentID: 1}.
+viz.threadNode{display: 121, id: 121, parentID: 1}.
