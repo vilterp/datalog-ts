@@ -103,8 +103,57 @@ viz.threadNode{}?
 ----
 application/datalog
 viz.threadNode{display: 1, id: 1, parentID: -1}.
-viz.threadNode{display: 104, id: 104, parentID: 1}.
-viz.threadNode{display: 108, id: 108, parentID: 1}.
-viz.threadNode{display: 112, id: 112, parentID: 1}.
-viz.threadNode{display: 116, id: 116, parentID: 1}.
-viz.threadNode{display: 120, id: 120, parentID: 1}.
+viz.threadNode{display: 105, id: 105, parentID: 1}.
+viz.threadNode{display: 109, id: 109, parentID: 1}.
+viz.threadNode{display: 113, id: 113, parentID: 1}.
+viz.threadNode{display: 117, id: 117, parentID: 1}.
+viz.threadNode{display: 121, id: 121, parentID: 1}.
+
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
+instr{idx: 3, op: fork{goto: 5}}.
+instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 5, op: increment{var: "x"}}.
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
+viz.message{}?
+----
+application/datalog
+viz.message{fromTickID: viz.tick{place: 1, time: 3}, toTickID: viz.tick{place: 105, time: 4}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 7}, toTickID: viz.tick{place: 109, time: 8}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 11}, toTickID: viz.tick{place: 113, time: 12}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 15}, toTickID: viz.tick{place: 117, time: 16}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 19}, toTickID: viz.tick{place: 121, time: 20}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 0}, toTickID: viz.tick{place: 1, time: 1}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 1}, toTickID: viz.tick{place: 1, time: 2}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 2}, toTickID: viz.tick{place: 1, time: 3}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 3}, toTickID: viz.tick{place: 1, time: 4}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 4}, toTickID: viz.tick{place: 1, time: 5}}.
+viz.message{fromTickID: viz.tick{place: 105, time: 4}, toTickID: viz.tick{place: 105, time: 5}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 5}, toTickID: viz.tick{place: 1, time: 6}}.
+viz.message{fromTickID: viz.tick{place: 105, time: 5}, toTickID: viz.tick{place: 105, time: 6}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 6}, toTickID: viz.tick{place: 1, time: 7}}.
+viz.message{fromTickID: viz.tick{place: 105, time: 6}, toTickID: viz.tick{place: 105, time: 7}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 7}, toTickID: viz.tick{place: 1, time: 8}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 8}, toTickID: viz.tick{place: 1, time: 9}}.
+viz.message{fromTickID: viz.tick{place: 109, time: 8}, toTickID: viz.tick{place: 109, time: 9}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 9}, toTickID: viz.tick{place: 1, time: 10}}.
+viz.message{fromTickID: viz.tick{place: 109, time: 9}, toTickID: viz.tick{place: 109, time: 10}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 10}, toTickID: viz.tick{place: 1, time: 11}}.
+viz.message{fromTickID: viz.tick{place: 109, time: 10}, toTickID: viz.tick{place: 109, time: 11}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 11}, toTickID: viz.tick{place: 1, time: 12}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 12}, toTickID: viz.tick{place: 1, time: 13}}.
+viz.message{fromTickID: viz.tick{place: 113, time: 12}, toTickID: viz.tick{place: 113, time: 13}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 13}, toTickID: viz.tick{place: 1, time: 14}}.
+viz.message{fromTickID: viz.tick{place: 113, time: 13}, toTickID: viz.tick{place: 113, time: 14}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 14}, toTickID: viz.tick{place: 1, time: 15}}.
+viz.message{fromTickID: viz.tick{place: 113, time: 14}, toTickID: viz.tick{place: 113, time: 15}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 15}, toTickID: viz.tick{place: 1, time: 16}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 16}, toTickID: viz.tick{place: 1, time: 17}}.
+viz.message{fromTickID: viz.tick{place: 117, time: 16}, toTickID: viz.tick{place: 117, time: 17}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 17}, toTickID: viz.tick{place: 1, time: 18}}.
+viz.message{fromTickID: viz.tick{place: 117, time: 17}, toTickID: viz.tick{place: 117, time: 18}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 18}, toTickID: viz.tick{place: 1, time: 19}}.
+viz.message{fromTickID: viz.tick{place: 117, time: 18}, toTickID: viz.tick{place: 117, time: 19}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 19}, toTickID: viz.tick{place: 1, time: 20}}.

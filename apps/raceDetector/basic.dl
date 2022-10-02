@@ -163,8 +163,10 @@ viz.initialThreadNode{id: I, parentID: -1} :-
   initialState{time: T, threadID: I}.
 
 viz.childThreadNode{id: I, parentID: P} :-
-  state{time: T, state: S, threadID: P} &
-  stepForkForked{time: T, fromState: S, fromThread: P, toThread: I}.
+  viz.spawnMessage{
+    fromTickID: viz.tick{place: P},
+    toTickID: viz.tick{place: I},
+  }.
 
 internal.visualization{
   name: "Thread Tree",
@@ -190,4 +192,43 @@ internal.visualization{
     },
     query: viz.programCounter{}
   }
+}.
+
+# seq diagram viz
+
+viz.message{fromTickID: FromTickID, toTickID: ToTickID} :-
+  viz.spawnMessage{fromTickID: FromTickID, toTickID: ToTickID} |
+  viz.continueMessage{fromTickID: FromTickID, toTickID: ToTickID}.
+
+viz.spawnMessage{
+  fromTickID: viz.tick{time: FromTime, place: FT},
+  toTickID: viz.tick{time: ToTime, place: TT},
+} :-
+  state{time: FromTime, state: FromState, threadID: FT} &
+  state{time: ToTime, state: ToState, threadID: TT} &
+  stepForkForked{time: ToTime, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
+
+viz.continueMessage{
+  fromTickID: viz.tick{time: FT, place: Thread},
+  toTickID: viz.tick{time: TT, place: Thread},
+} :-
+  state{time: FT, threadID: Thread} &
+  state{time: TT, threadID: Thread} &
+  TT = FT + 1.
+
+viz.tick{time: T, place: P} :-
+  state{threadID: P, time: T}.
+
+# actors: threads
+# ticks: thread states
+# messages:
+# - thread state advances
+# - thread spawns another thread
+internal.visualization{
+  name: "Overview",
+  spec: sequence{
+    actors: viz.threadNode{id: ID},
+    ticks: state{time: Time, threadID: Place},
+    messages: viz.message{fromTickID: FromTickID, toTickID: ToTickID},
+  },
 }.

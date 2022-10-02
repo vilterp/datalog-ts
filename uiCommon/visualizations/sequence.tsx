@@ -1,6 +1,6 @@
 import React from "react";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
-import { Rec, Res, StringLit, Term } from "../../core/types";
+import { Int, Rec, Res, StringLit, Term } from "../../core/types";
 import {
   AbsPos,
   Circle,
@@ -25,53 +25,59 @@ export const sequence: VizTypeSpec = {
 };
 
 function SequenceDiagram(props: VizArgs) {
-  const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
-  const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
-  const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
-  const ticksByID: { [id: string]: Term } = {};
-  ticks.forEach((tick) => {
-    ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;
-  });
+  try {
+    const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
+    const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
 
-  return (
-    <div>
+    return (
       <div>
-        <Diagram<Term>
-          diagram={sequenceDiagram(
-            makeSequenceSpec(actors, messages, ticksByID)
-          )}
-          onMouseOver={(term) => props.setHighlightedTerm?.(term)}
-        />
+        <div>
+          <Diagram<Term>
+            diagram={sequenceDiagram(makeSequenceSpec(actors, messages))}
+            onMouseOver={(term) => props.setHighlightedTerm?.(term)}
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (e) {
+    console.error("while evaluating sequence diagram:", e);
+    return (
+      <pre style={{ color: "red", fontFamily: "monospace" }}>
+        {e.toString()}
+      </pre>
+    );
+  }
 }
 
 // TODO: maybe integrate this into one of the above functions??
 //   or not
-function makeSequenceSpec(
-  actors: Res[],
-  messages: Res[],
-  ticksByID: { [id: string]: Term }
-): Sequence {
+function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
+  // TODO: don't we already know that a certain tick belongs to
+  // a certain actor?
   return {
     locations: actors.map((actor) => ({
       loc: (actor.bindings.ID as StringLit).val,
       term: actor.term,
     })),
-    hops: messages.map((message) => ({
-      term: message.term,
-      from: {
-        location: (message.bindings.FromActorID as StringLit).val,
-        time: parseInt((message.bindings.FromTickID as StringLit).val),
-        term: ticksByID[(message.bindings.FromTickID as StringLit).val],
-      },
-      to: {
-        location: (message.bindings.ToActorID as StringLit).val,
-        time: parseInt((message.bindings.ToTickID as StringLit).val),
-        term: ticksByID[(message.bindings.ToTickID as StringLit).val],
-      },
-    })),
+    hops: messages.map((message) => {
+      const fromTickRec = message.bindings.FromTickID as Rec;
+      const fromTick: Tick = {
+        time: (fromTickRec.attrs.time as Int).val,
+        place: (fromTickRec.attrs.place as StringLit).val,
+        term: fromTickRec,
+      };
+      const toTickRec = message.bindings.ToTickID as Rec;
+      const toTick: Tick = {
+        time: (toTickRec.attrs.time as Int).val,
+        place: (toTickRec.attrs.place as StringLit).val,
+        term: toTickRec,
+      };
+      return {
+        term: message.term,
+        from: fromTick,
+        to: toTick,
+      };
+    }),
   };
 }
 
@@ -85,18 +91,18 @@ export interface Sequence {
 
 export interface Hop {
   term: Term;
-  from: TimeAndPlace;
-  to: TimeAndPlace;
+  from: Tick;
+  to: Tick;
 }
 
-interface TimeAndPlace {
-  location: Location;
+interface Tick {
+  place: Location;
   time: Time;
   term: Term;
 }
 
 function yForTime(t: Time): number {
-  return t * 10;
+  return t * 20;
 }
 
 export function sequenceDiagram(seq: Sequence): Diag<Term> {
@@ -162,13 +168,13 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
   return ZLayout<Term>([hops, locationLines]);
 }
 
-function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {
+function pointsForLocation(loc: Location, hops: Hop[]): Tick[] {
   return flatMap(hops, (hop) => {
-    const out: TimeAndPlace[] = [];
-    if (hop.to.location === loc) {
+    const out: Tick[] = [];
+    if (hop.to.place === loc) {
       out.push(hop.to);
     }
-    if (hop.from.location === loc) {
+    if (hop.from.place === loc) {
       out.push(hop.from);
     }
     return out;
