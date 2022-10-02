@@ -191,3 +191,37 @@ internal.visualization{
     query: viz.programCounter{}
   }
 }.
+
+# seq diagram viz
+
+viz.message{fromTickID: FromTickID, toTickID: ToTickID} :-
+  viz.spawnMessage{fromTickID: FromTickID, toTickID: ToTickID} |
+  viz.continueMessage{fromTickID: FromTickID, toTickID: ToTickID}.
+
+viz.spawnMessage{
+  fromTickID: tick{time: Time, place: FT},
+  toTickID: tick{time: Time, place: TT},
+} :-
+  stepForkForked{time: Time, fromThread: FT, toThread: TT}.
+
+viz.continueMessage{
+  fromTickID: tick{time: FT, place: Thread},
+  toTickID: tick{time: TT, place: Thread},
+} :-
+  state{time: FT, threadID: Thread} &
+  state{time: TT, threadID: Thread} &
+  TT = FT + 1.
+
+# actors: threads
+# ticks: thread states
+# messages:
+# - thread state advances
+# - thread spawns another thread
+internal.visualization{
+  name: "Overview",
+  spec: sequence{
+    actors: viz.threadNode{id: ID},
+    ticks: state{time: Time, threadID: Place},
+    messages: viz.message{fromTickID: FromTickID, toTickID: ToTickID},
+  },
+}.
