@@ -202,7 +202,8 @@ viz.spawnMessage{
   fromTickID: tick{time: Time, place: FT},
   toTickID: tick{time: Time, place: TT},
 } :-
-  stepForkForked{time: Time, fromThread: FT, toThread: TT}.
+  state{time: Time, state: S, threadID: FT} &
+  stepForkForked{time: Time, fromState: S, fromThread: FT, toThread: TT}.
 
 viz.continueMessage{
   fromTickID: tick{time: FT, place: Thread},
