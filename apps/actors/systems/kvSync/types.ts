@@ -1,4 +1,5 @@
 import { Json } from "../../../../util/json";
+import { UIProps } from "../../types";
 import { MutationDefn } from "./mutation";
 
 export type VersionedValue = {
@@ -67,8 +68,6 @@ type KeyUpdate =
       newVersion: number;
     }
   | { type: "Deleted"; key: string };
-
-// full SSA for mutations? or just JS?
 
 export type MutationInvocation = {
   name: string;

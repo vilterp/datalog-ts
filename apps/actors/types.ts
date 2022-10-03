@@ -28,10 +28,7 @@ export type UpdateFn<ActorState, Msg> = (
 export type System<ActorState, Msg> = {
   name: string;
   id: string;
-  ui: (props: {
-    state: ActorState;
-    sendUserInput: (input: Msg) => void;
-  }) => React.ReactElement;
+  ui: (props: UIProps<ActorState, Msg>) => React.ReactElement;
   update: UpdateFn<ActorState, Msg>;
   // TODO: something about all these initial states
   initialState: Trace<ActorState>;

@@ -2,10 +2,10 @@ import { spawnInitialActors } from "../../step";
 import * as effects from "../../effects";
 import { ActorResp, LoadedTickInitiator, System } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
-import { bankMutations } from "./examples/bank";
 import { initialServerState, ServerState, updateServer } from "./server";
-import { MsgToClient, MsgToServer, UserInput } from "./types";
-import { KVSyncUI } from "./ui";
+import { MsgToClient, MsgToServer } from "./types";
+import { EXAMPLES } from "./examples";
+import { KVApp } from "./examples/types";
 
 type State = ServerState | ClientState | { type: "UserState" };
 
@@ -31,14 +31,19 @@ function update(
   }
 }
 
-export const kvSync: System<State, Msg> = {
-  name: "KV Sync",
-  id: "kv-sync",
-  ui: KVSyncUI,
-  update,
-  initialState: spawnInitialActors(update, { server: initialServerState }),
-  // TODO: generate ID deterministically
-  initialClientState: () =>
-    initialClientState(Math.random().toString(), bankMutations),
-  initialUserState: () => ({ type: "UserState" }),
-};
+// instantiated to the bank example
+export const kvSync: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
+
+function makeActorSystem(app: KVApp): System<State, Msg> {
+  return {
+    name: "KV Sync",
+    id: "kv-sync",
+    ui: app.ui,
+    update,
+    initialState: spawnInitialActors(update, { server: initialServerState }),
+    // TODO: generate ID deterministically
+    initialClientState: () =>
+      initialClientState(Math.random().toString(), app.mutations),
+    initialUserState: () => ({ type: "UserState" }),
+  };
+}

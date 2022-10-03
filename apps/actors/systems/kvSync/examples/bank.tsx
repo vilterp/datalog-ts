@@ -1,3 +1,6 @@
+import React, { useEffect } from "react";
+import { UIProps } from "../../../types";
+import { ClientState } from "../client";
 import {
   apply,
   read,
@@ -10,9 +13,10 @@ import {
   write,
   doExpr,
 } from "../mutation";
-import { MutationDefns } from "../types";
+import { MutationDefns, UserInput } from "../types";
+import { KVApp } from "./types";
 
-export const bankMutations: MutationDefns = {
+const mutations: MutationDefns = {
   deposit: lambda(
     ["toAccount", "amount"],
     letExpr(
@@ -57,3 +61,16 @@ export const bankMutations: MutationDefns = {
     )
   ),
 };
+
+function BankUI(props: UIProps<ClientState, UserInput>) {
+  useEffect(() => {
+    props.sendUserInput({
+      type: "RegisterQuery",
+      query: { fromKey: "", toKey: "" }, // TODO: begin and end keys?
+    });
+  }, []);
+
+  return <p>Hello world</p>;
+}
+
+export const bank: KVApp = { mutations, ui: BankUI };
