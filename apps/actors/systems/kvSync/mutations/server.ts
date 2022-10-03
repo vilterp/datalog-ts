@@ -187,7 +187,7 @@ function runMutationExpr(
       // TODO: check aborted
       const builtin = BUILTINS[expr.name];
       if (builtin) {
-        return [builtin(expr.args), "Commit", state, traceSoFar];
+        return [builtin(argValues), "Commit", state, traceSoFar];
       }
       // TODO: look in scope for lambdas
       console.error("missing builtin", expr.name);
