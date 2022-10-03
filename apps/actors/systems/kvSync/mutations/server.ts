@@ -44,6 +44,13 @@ function runMutationExpr(
       }
       // TODO: actually assert string
       const val = state.data[keyRes as string];
+      if (!val) {
+        const newTrace2: Trace = [
+          ...newTrace,
+          { key: keyRes as string, version: -1 },
+        ];
+        return [expr.default, "Commit", newState, newTrace2];
+      }
       const newTrace2: Trace = [
         ...newTrace,
         { key: keyRes as string, version: val.version },
@@ -79,7 +86,7 @@ function runMutationExpr(
           ...state2.data,
           [keyRes as string]: {
             value: valRes as string,
-            version: val.version + 1,
+            version: val ? val.version + 1 : 1,
             serverTimestamp: null,
           },
         },

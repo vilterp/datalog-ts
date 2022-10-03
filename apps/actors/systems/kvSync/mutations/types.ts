@@ -5,7 +5,7 @@ export type Lambda = { type: "Lambda"; args: string[]; body: Expr };
 export type Expr =
   | Lambda
   | { type: "Do"; ops: Expr[] }
-  | { type: "Read"; key: Expr }
+  | { type: "Read"; key: Expr; default: Json }
   | { type: "Write"; key: Expr; val: Expr }
   | { type: "Let"; bindings: { varName: string; val: Expr }[]; body: Expr }
   | {
@@ -34,8 +34,8 @@ export function letExpr(
   return { type: "Let", bindings, body };
 }
 
-export function read(key: Expr): Expr {
-  return { type: "Read", key };
+export function read(key: Expr, defaultt: Json): Expr {
+  return { type: "Read", key, default: defaultt };
 }
 
 export function write(key: Expr, val: Expr): Expr {

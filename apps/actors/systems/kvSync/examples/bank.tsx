@@ -18,11 +18,12 @@ import {
 import { MutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
 
+// TODO: is default=0 correct for everything here?
 const mutations: MutationDefns = {
   deposit: lambda(
     ["toAccount", "amount"],
     letExpr(
-      [{ varName: "balanceBefore", val: read(varr("toAccount")) }],
+      [{ varName: "balanceBefore", val: read(varr("toAccount"), 0) }],
       write(
         varr("toAccount"),
         apply("+", [varr("balanceBefore"), varr("amount")])
@@ -32,7 +33,7 @@ const mutations: MutationDefns = {
   withdraw: lambda(
     ["fromAccount", "amount"],
     letExpr(
-      [{ varName: "balanceBefore", val: read(varr("fromAccount")) }],
+      [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
       write(
         varr("fromAccount"),
         apply("-", [varr("balanceBefore"), varr("amount")])
@@ -43,8 +44,8 @@ const mutations: MutationDefns = {
     ["fromAccount", "toAccount", "amount"],
     letExpr(
       [
-        { varName: "fromBalance", val: read(varr("fromAccount")) },
-        { varName: "toBalance", val: read(varr("toAccount")) },
+        { varName: "fromBalance", val: read(varr("fromAccount"), 0) },
+        { varName: "toBalance", val: read(varr("toAccount"), 0) },
       ],
       ifExpr(
         apply(">", [varr("amount"), varr("fromBalance")]),
@@ -176,7 +177,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
           {mapObjToList(props.state.data, (key, value) => (
             <tr key={key}>
               <td>{key}</td>
-              <td>{value}</td>
+              <td>{value.value}</td>
             </tr>
           ))}
         </tbody>
