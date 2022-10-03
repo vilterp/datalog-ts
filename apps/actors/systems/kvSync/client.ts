@@ -1,6 +1,5 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
-  ConflictingKeys,
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
@@ -11,6 +10,7 @@ import {
   MutationRequest,
   MutationResponse,
   Query,
+  Trace,
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj } from "../../../../util/util";
@@ -49,13 +49,14 @@ type ClientValue = {
 
 // rename "TransactionState"?
 type MutationState = {
-  mutation: MutationInvocation;
+  invocation: MutationInvocation;
   state:
     | { type: "Pending" }
     | { type: "Applied"; serverTimestamp: number }
     | {
         type: "Rejected";
-        conflictingKeys: ConflictingKeys;
+        clientTrace: Trace;
+        serverTrace: Trace;
       };
 };
 
@@ -63,10 +64,18 @@ function processMutationResponse(
   state: ClientState,
   response: MutationResponse
 ): [ClientState, MutationRequest | null] {
-  // update state in mutations list
-  // if accepted, apply kv updates
-  // if conflict, retry
-  return XXX;
+  // TODO: update mutation state
+  const payload = response.payload;
+  switch (payload.type) {
+    case "Aborted":
+      // roll back?
+      return [state, null];
+    case "Reject":
+      // roll back & retry?
+      return [state, null];
+    case "Accept":
+      return [state, null];
+  }
 }
 
 function processLiveQueryUpdate(
@@ -93,7 +102,7 @@ function runMutationOnClient(
     ...state1,
     mutations: [
       ...state1.mutations,
-      { mutation: invocation, state: { type: "Pending" } },
+      { invocation: invocation, state: { type: "Pending" } },
     ],
   };
   const req: MutationRequest = {
