@@ -1,6 +1,6 @@
 export type MutationDefn = Expr;
 
-type Expr =
+export type Expr =
   | { type: "Lambda"; args: string[]; body: Expr }
   | { type: "Do"; ops: Expr[] }
   | { type: "Read"; key: Expr }

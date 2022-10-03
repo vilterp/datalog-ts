@@ -14,7 +14,7 @@ import {
   str,
   write,
   doExpr,
-} from "../mutation";
+} from "../mutationTypes";
 import { MutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
 

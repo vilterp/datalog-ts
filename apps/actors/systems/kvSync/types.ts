@@ -1,6 +1,6 @@
 import { Json } from "../../../../util/json";
 import { UIProps } from "../../types";
-import { MutationDefn } from "./mutation";
+import { MutationDefn } from "./mutationTypes";
 
 export type ServerValue = {
   version: number;
