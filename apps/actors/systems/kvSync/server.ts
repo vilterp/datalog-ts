@@ -1,7 +1,10 @@
+import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
+  MsgToClient,
+  MsgToServer,
   MutationDefns,
   MutationRequest,
   MutationResponse,
@@ -40,4 +43,11 @@ function runMutationOnServer(
   // send accept response
   // send live query updates
   return XXX;
+}
+
+export function updateServer(
+  state: ServerState,
+  init: LoadedTickInitiator<ServerState, MsgToServer>
+): ActorResp<ServerState, MsgToClient> {
+  return XXXX;
 }

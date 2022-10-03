@@ -1,8 +1,11 @@
+import { ActorResp, LoadedTickInitiator } from "../../types";
 import { MutationDefn } from "./mutation";
 import {
   ConflictingKeys,
   LiveQueryResponse,
   LiveQueryUpdate,
+  MsgToClient,
+  MsgToServer,
   MutationDefns,
   MutationInvocation,
   MutationRequest,
@@ -85,5 +88,12 @@ function processLiveQueryResponse(
   state: ClientState,
   resp: LiveQueryResponse
 ): ClientState {
+  return XXX;
+}
+
+export function updateClient(
+  state: ClientState,
+  init: LoadedTickInitiator<ClientState, MsgToClient>
+): ActorResp<ClientState, MsgToServer> {
   return XXX;
 }

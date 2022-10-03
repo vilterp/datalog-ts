@@ -1,8 +1,9 @@
 import { spawnInitialActors } from "../../step";
+import * as effects from "../../effects";
 import { ActorResp, LoadedTickInitiator, System } from "../../types";
-import { ClientState, initialClientState } from "./client";
+import { ClientState, initialClientState, updateClient } from "./client";
 import { bankMutations } from "./examples/bank";
-import { initialServerState, ServerState } from "./server";
+import { initialServerState, ServerState, updateServer } from "./server";
 import { MsgToClient, MsgToServer } from "./types";
 import { KVSyncUI } from "./ui";
 
@@ -14,7 +15,20 @@ function update(
   state: State,
   init: LoadedTickInitiator<State, Msg>
 ): ActorResp<State, Msg> {
-  return XXX;
+  switch (state.type) {
+    case "ClientState":
+      return updateClient(
+        state,
+        init as LoadedTickInitiator<ClientState, MsgToClient>
+      );
+    case "ServerState":
+      return updateServer(
+        state,
+        init as LoadedTickInitiator<ServerState, MsgToServer>
+      );
+    case "UserState":
+      return effects.updateState(state);
+  }
 }
 
 export const kvSync: System<State, Msg> = {
