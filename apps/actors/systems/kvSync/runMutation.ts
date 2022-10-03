@@ -29,13 +29,30 @@ function runMutationExpr(
   expr: Expr
 ): [Value, Outcome, ClientState, Trace] {
   switch (expr.type) {
-    case "Lambda":
-      return XXXX;
-    case "Do":
-      return XXXX;
-    case "Read":
-      return XXXX;
+    case "Read": {
+      const [keyRes, outcome, newState, newTrace] = runMutationExpr(
+        state,
+        traceSoFar,
+        scope,
+        expr.key
+      );
+      if (outcome === "Abort") {
+        return [null, "Abort", newState, newTrace];
+      }
+      // TODO: actually assert string
+      const val = state.data[keyRes as string];
+      const newTrace2: Trace = [
+        ...newTrace,
+        { key: keyRes as string, version: val.version },
+      ];
+      return [val, "Commit", newState, newTrace2];
+    }
     case "Write":
+      return XXXX;
+    case "Lambda":
+      // TODO: closure??
+      return [expr, "Commit", state, traceSoFar];
+    case "Do":
       return XXXX;
     case "Let": {
       const newScope = { ...scope };
