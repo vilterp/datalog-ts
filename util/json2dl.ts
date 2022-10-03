@@ -4,6 +4,9 @@ import { Json } from "./json";
 type ADT = { type: string; [more: string]: Json };
 
 export function jsonToDL(json: Json): Term {
+  if (json === null) {
+    return rec("null", {});
+  }
   switch (typeof json) {
     case "number":
       return int(json);
@@ -44,6 +47,9 @@ export function dlToJson(term: Term, addTypeTags: boolean = true): Json {
     case "IntLit":
       return term.val;
     case "Record":
+      if (term.relation === "null" && Object.keys(term.attrs).length === 0) {
+        return null;
+      }
       const out: Json = {};
       for (const key in term.attrs) {
         out[key] = dlToJson(term.attrs[key], addTypeTags);
