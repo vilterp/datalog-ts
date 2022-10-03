@@ -61,7 +61,10 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
       <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
 
       <h2>State</h2>
-      <ReactJson src={props.systemInstance.trace.latestStates} />
+      <ReactJson
+        src={props.systemInstance.trace.latestStates}
+        displayDataTypes={false}
+      />
     </>
   );
 }

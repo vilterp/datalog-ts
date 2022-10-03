@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { END_KEY, START_KEY } from "../../../../../core/types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import {
@@ -66,7 +67,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
   useEffect(() => {
     props.sendUserInput({
       type: "RegisterQuery",
-      query: { fromKey: "", toKey: "" }, // TODO: begin and end keys?
+      query: { fromKey: START_KEY, toKey: END_KEY },
     });
   }, []);
 
