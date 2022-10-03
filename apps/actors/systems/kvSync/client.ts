@@ -14,6 +14,7 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj } from "../../../../util/util";
+import { runMutation } from "./runMutation";
 
 export type ClientState = {
   type: "ClientState";
@@ -78,9 +79,15 @@ function processLiveQueryUpdate(
 
 function runMutationOnClient(
   state: ClientState,
-  mutation: MutationInvocation
-): [ClientState, MutationRequest] {
-  // apply to client
+  invocations: MutationInvocation
+): [ClientState, MutationRequest | null] {
+  const [newState, outcome, trace] = runMutation(
+    state,
+    state.mutationDefns[invocations.name],
+    invocations.args
+  );
+  // check aborted??
+
   // put mutation in list with state Pending
   // return mutation request
   return XXX;

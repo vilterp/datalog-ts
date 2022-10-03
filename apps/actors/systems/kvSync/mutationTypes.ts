@@ -1,6 +1,6 @@
 import { Json } from "../../../../util/json";
 
-export type MutationDefn = Expr;
+export type MutationDefn = Lambda;
 
 export type Lambda = { type: "Lambda"; args: string[]; body: Expr };
 

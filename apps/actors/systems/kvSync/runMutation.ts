@@ -1,4 +1,5 @@
 import { Json } from "../../../../util/json";
+import { pairsToObj } from "../../../../util/util";
 import { ClientState } from "./client";
 import { Expr, MutationDefn, Value } from "./mutationTypes";
 
@@ -6,12 +7,19 @@ export type Trace = { key: string; version: number }[];
 
 export function runMutation(
   clientState: ClientState, // TODO: need to abstract this
-  mutation: MutationDefn
+  mutation: MutationDefn,
+  args: Value[]
 ): [ClientState, Outcome, Trace] {
+  const scope: Scope = pairsToObj(
+    args.map((arg, idx) => ({
+      key: mutation.args[idx],
+      value: arg,
+    }))
+  );
   const [resVal, outcome, newState, trace] = runMutationExpr(
     clientState,
     [],
-    {},
+    scope,
     mutation
   );
   // TODO: check out
