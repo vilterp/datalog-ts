@@ -148,4 +148,5 @@ export type ActorResp<ActorState, Message> =
   | { type: "sleep"; durationMS: number; state: ActorState }
   | { type: "exit" };
 
+// TODO: add "responding to" message id?
 export type OutgoingMessage<T> = { msg: T; to: ActorID };

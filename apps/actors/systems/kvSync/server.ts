@@ -1,4 +1,4 @@
-import { ActorResp, LoadedTickInitiator } from "../../types";
+import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
   LiveQueryRequest,
   LiveQueryResponse,
@@ -11,6 +11,7 @@ import {
   Query,
   VersionedValue,
 } from "./types";
+import * as effects from "../../effects";
 
 export type ServerState = {
   type: "ServerState";
@@ -49,5 +50,33 @@ export function updateServer(
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, MsgToClient> {
-  return XXXX;
+  switch (init.type) {
+    case "messageReceived": {
+      const msg = init.payload;
+      switch (msg.type) {
+        case "LiveQueryRequest": {
+          const [newState, resp] = processLiveQueryRequest(state, msg);
+          return effects.updateAndSend(newState, [
+            { to: init.from, msg: resp },
+          ]);
+        }
+        case "MutationRequest": {
+          const [newState, mutationResp, updates] = runMutationOnServer(
+            state,
+            msg
+          );
+          const outgoing: OutgoingMessage<MsgToClient>[] = [
+            { to: init.from, msg: mutationResp },
+            ...updates.map((update) => ({
+              to: update.clientID,
+              msg: update,
+            })),
+          ];
+          return effects.updateAndSend(newState, outgoing);
+        }
+      }
+    }
+    default:
+      return effects.updateState(state);
+  }
 }

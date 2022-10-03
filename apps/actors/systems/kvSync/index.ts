@@ -37,6 +37,7 @@ export const kvSync: System<State, Msg> = {
   ui: KVSyncUI,
   update,
   initialState: spawnInitialActors(update, { server: initialServerState }),
+  // TODO: generate ID deterministically
   initialClientState: () =>
     initialClientState(Math.random().toString(), bankMutations),
   initialUserState: () => ({ type: "UserState" }),

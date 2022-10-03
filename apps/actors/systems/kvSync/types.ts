@@ -18,10 +18,12 @@ export type MutationDefns = { [name: string]: MutationDefn };
 export type Query = { fromKey: string; toKey: string };
 
 export type LiveQueryRequest = {
+  type: "LiveQueryRequest";
   query: Query;
 };
 
 export type MutationRequest = {
+  type: "MutationRequest";
   mutation: MutationInvocation;
   readKeys: { key: string; version: number }[];
 };
@@ -41,11 +43,13 @@ export type MutationResponse =
     };
 
 export type LiveQueryUpdate = {
+  type: "LiveQueryUpdate";
   clientID: string;
   updates: KeyUpdate[];
 };
 
 export type LiveQueryResponse = {
+  type: "LiveQueryResponse";
   results: { [key: string]: VersionedValue };
 };
 
