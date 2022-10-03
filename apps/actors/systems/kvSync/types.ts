@@ -32,15 +32,18 @@ export type ConflictingKeys = {
   [key: string]: { sentVersion: number; found: VersionedValue };
 };
 
-export type MutationResponse =
-  | {
-      type: "Accept";
-      newKeys: { [key: string]: VersionedValue };
-    }
-  | {
-      type: "Reject";
-      conflictingKeys: ConflictingKeys;
-    };
+export type MutationResponse = {
+  type: "MutationResponse";
+  payload:
+    | {
+        type: "Accept";
+        newKeys: { [key: string]: VersionedValue };
+      }
+    | {
+        type: "Reject";
+        conflictingKeys: ConflictingKeys;
+      };
+};
 
 export type LiveQueryUpdate = {
   type: "LiveQueryUpdate";

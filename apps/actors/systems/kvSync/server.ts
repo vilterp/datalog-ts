@@ -46,6 +46,7 @@ function runMutationOnServer(
   return XXX;
 }
 
+// TODO: maybe move this out to index.ts? idk
 export function updateServer(
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
@@ -56,9 +57,7 @@ export function updateServer(
       switch (msg.type) {
         case "LiveQueryRequest": {
           const [newState, resp] = processLiveQueryRequest(state, msg);
-          return effects.updateAndSend(newState, [
-            { to: init.from, msg: resp },
-          ]);
+          return effects.reply(init, newState, resp);
         }
         case "MutationRequest": {
           const [newState, mutationResp, updates] = runMutationOnServer(

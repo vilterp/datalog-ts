@@ -1,5 +1,4 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
-import { MutationDefn } from "./mutation";
 import {
   ConflictingKeys,
   LiveQueryResponse,
@@ -12,6 +11,7 @@ import {
   MutationResponse,
   Query,
 } from "./types";
+import * as effects from "../../effects";
 
 export type ClientState = {
   type: "ClientState";
@@ -91,9 +91,31 @@ function processLiveQueryResponse(
   return XXX;
 }
 
+// TODO: maybe move this out to index.ts? idk
 export function updateClient(
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
-  return XXX;
+  switch (init.type) {
+    case "messageReceived": {
+      const msg = init.payload;
+      switch (msg.type) {
+        case "MutationResponse": {
+          const [newState, resp] = processMutationResponse(state, msg);
+          if (resp == null) {
+            return effects.updateState(newState);
+          }
+          return effects.reply(init, newState, resp);
+        }
+        case "LiveQueryResponse": {
+          return effects.updateState(processLiveQueryResponse(state, msg));
+        }
+        case "LiveQueryUpdate": {
+          return effects.updateState(processLiveQueryUpdate(state, msg));
+        }
+      }
+    }
+    default:
+      return effects.updateState(state);
+  }
 }
