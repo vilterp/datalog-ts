@@ -1,4 +1,3 @@
-import { Json } from "../../../../../util/json";
 import { pairsToObj } from "../../../../../util/util";
 import { ClientState } from "../client";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
@@ -56,7 +55,7 @@ function runMutationExpr(
         ...newTrace,
         { key: keyRes as string, version: val.version },
       ];
-      return [val, "Commit", newState, newTrace2];
+      return [val.value, "Commit", newState, newTrace2];
     }
     case "Write": {
       // key expr

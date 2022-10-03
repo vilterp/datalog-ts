@@ -43,7 +43,8 @@ function runMutationExpr(
         return [null, "Abort", newState, newTrace];
       }
       // TODO: actually assert string
-      const val = state.data[keyRes as string];
+      const entry = state.data.find((kv) => kv.key === (keyRes as string));
+      const val = entry ? entry.value : null;
       if (!val) {
         const newTrace2: Trace = [
           ...newTrace,
@@ -55,7 +56,7 @@ function runMutationExpr(
         ...newTrace,
         { key: keyRes as string, version: val.version },
       ];
-      return [val, "Commit", newState, newTrace2];
+      return [val.value, "Commit", newState, newTrace2];
     }
     case "Write": {
       // key expr
@@ -80,16 +81,21 @@ function runMutationExpr(
       }
       // TODO: actually assert string
       const curVal = state.data[keyRes as string];
+      // TODO: use sorted map
       const state3: ServerState = {
         ...state2,
-        data: {
-          ...state2.data,
-          [keyRes as string]: {
-            value: valRes as string,
-            version: curVal ? curVal.version + 1 : 1,
-            serverTimestamp: null,
+        data: [
+          ...state2.data.filter((kv) => kv.key <= keyRes),
+          {
+            key: keyRes as string,
+            value: {
+              value: valRes as string,
+              version: curVal ? curVal.version + 1 : 1,
+              serverTimestamp: null,
+            },
           },
-        },
+          ...state2.data.filter((kv) => kv.key > keyRes),
+        ],
       };
       return [valRes, "Commit", state3, trace2];
     }
