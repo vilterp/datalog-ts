@@ -47,8 +47,42 @@ function runMutationExpr(
       ];
       return [val, "Commit", newState, newTrace2];
     }
-    case "Write":
-      return XXXX;
+    case "Write": {
+      // key expr
+      const [keyRes, keyOutcome, state1, trace1] = runMutationExpr(
+        state,
+        traceSoFar,
+        scope,
+        expr.key
+      );
+      if (keyOutcome === "Abort") {
+        return [null, "Abort", state1, trace1];
+      }
+      // val expr
+      const [valRes, valOutcome, state2, trace2] = runMutationExpr(
+        state1,
+        trace1,
+        scope,
+        expr.val
+      );
+      if (valOutcome === "Abort") {
+        return [null, "Abort", state2, trace2];
+      }
+      // TODO: actually assert string
+      const val = state.data[keyRes as string];
+      const state3: ClientState = {
+        ...state2,
+        data: {
+          ...state2.data,
+          [keyRes as string]: {
+            value: valRes as string,
+            version: val.version + 1,
+            serverTimestamp: null,
+          },
+        },
+      };
+      return [val, "Commit", state3, trace2];
+    }
     case "Lambda":
       // TODO: closure??
       return [expr, "Commit", state, traceSoFar];
