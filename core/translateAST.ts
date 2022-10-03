@@ -7,7 +7,7 @@ import {
   DLTerm,
 } from "../languageWorkbench/languages/dl/parser";
 import { deEscape } from "../languageWorkbench/parserlib/types";
-import { mapListToObj, pairsToObj } from "../util/util";
+import { pairsToObj } from "../util/util";
 import {
   Conjunct,
   array,
@@ -104,7 +104,7 @@ export function parserTermToInternal(term: DLTerm): Term {
         pairsToObj(
           term.dictKeyValue.map((kv) => ({
             key: parserStrToInternal(kv.key),
-            val: parserTermToInternal(kv.value),
+            value: parserTermToInternal(kv.value),
           }))
         )
       );
@@ -121,7 +121,7 @@ export function parserTermToInternal(term: DLTerm): Term {
     case "Record":
       return rec(
         term.ident.text,
-        mapListToObj(
+        pairsToObj(
           term.recordAttrs.recordKeyValue.map((keyValue) => ({
             key: keyValue.ident.text,
             value: parserTermToInternal(keyValue.term),

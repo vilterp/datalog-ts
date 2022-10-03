@@ -62,16 +62,6 @@ export function mapObjMaybe<T, V>(
   return out;
 }
 
-export function mapListToObj<V>(list: { key: string; value: V }[]): {
-  [key: string]: V;
-} {
-  const out: { [key: string]: V } = {};
-  list.forEach(({ key, value }) => {
-    out[key] = value;
-  });
-  return out;
-}
-
 export function mapObjToList<T, V>(
   obj: { [key: string]: T },
   f: (key: string, val: T) => V
@@ -220,12 +210,12 @@ export function groupBy<T>(
 export function pairsToObj<T>(
   arr: {
     key: string;
-    val: T;
+    value: T;
   }[]
 ): { [key: string]: T } {
   const out: { [key: string]: T } = {};
-  arr.forEach(({ key, val }) => {
-    out[key] = val;
+  arr.forEach(({ key, value }) => {
+    out[key] = value;
   });
   return out;
 }
