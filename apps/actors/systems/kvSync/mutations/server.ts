@@ -79,19 +79,19 @@ function runMutationExpr(
         return [null, "Abort", state2, trace2];
       }
       // TODO: actually assert string
-      const val = state.data[keyRes as string];
+      const curVal = state.data[keyRes as string];
       const state3: ServerState = {
         ...state2,
         data: {
           ...state2.data,
           [keyRes as string]: {
             value: valRes as string,
-            version: val ? val.version + 1 : 1,
+            version: curVal ? curVal.version + 1 : 1,
             serverTimestamp: null,
           },
         },
       };
-      return [val, "Commit", state3, trace2];
+      return [valRes, "Commit", state3, trace2];
     }
     case "Lambda":
       // TODO: closure??
@@ -159,6 +159,26 @@ function runMutationExpr(
     case "StringLit":
       return [expr.val, "Commit", state, traceSoFar];
     case "Apply": {
+      // evaluate args
+      const argValues: Value = [];
+      let curState = state;
+      let curTrace = traceSoFar;
+      let outcome: Outcome = "Commit";
+      let curRes: Value = null;
+      for (const arg of expr.args) {
+        const [stepRes, newOutcome, newState, newTrace] = runMutationExpr(
+          curState,
+          curTrace,
+          scope,
+          arg
+        );
+        curState = newState;
+        curTrace = newTrace;
+        outcome = newOutcome;
+        curRes = stepRes;
+        argValues.push(stepRes);
+      }
+      // TODO: check aborted
       const builtin = BUILTINS[expr.name];
       if (builtin) {
         return [builtin(expr.args), "Commit", state, traceSoFar];

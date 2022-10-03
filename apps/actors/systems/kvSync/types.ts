@@ -3,7 +3,7 @@ import { Lambda } from "./mutations/types";
 
 export type ServerValue = {
   version: number;
-  value: string;
+  value: Json;
   serverTimestamp: number;
 };
 

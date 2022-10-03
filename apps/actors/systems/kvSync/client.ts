@@ -15,6 +15,7 @@ import {
 import * as effects from "../../effects";
 import { mapObj } from "../../../../util/util";
 import { runMutationClient } from "./mutations/client";
+import { Json } from "../../../../util/json";
 
 export type ClientState = {
   type: "ClientState";
@@ -43,7 +44,7 @@ export function initialClientState(
 
 type ClientValue = {
   version: number;
-  value: string;
+  value: Json;
   serverTimestamp: number | null;
 };
 
