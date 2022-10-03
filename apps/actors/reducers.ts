@@ -152,6 +152,7 @@ function traceReducer<St extends Json, Msg extends Json>(
 function dispatchInits<St, Msg>(
   inits: AddressedTickInitiator<St>[]
 ): Promise<TraceAction<St, Msg>>[] {
+  console.log("dispatchInits", inits);
   return inits.map((init) =>
     sleep(latency(init)).then(() => ({ type: "Step", init }))
   );

@@ -184,6 +184,8 @@ function runMutationExpr(
       if (builtin) {
         return [builtin(argValues), "Commit", curState, traceSoFar];
       }
+      // TODO: look in scope for lambdas
+      console.error("missing builtin", expr.name);
     }
   }
 }

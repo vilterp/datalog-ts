@@ -12,4 +12,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   "<": (args) => {
     return args[0] < args[1];
   },
+  ">": (args) => {
+    return args[0] > args[1];
+  },
 };
