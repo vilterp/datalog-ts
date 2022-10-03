@@ -1,13 +1,39 @@
+import { MutationDefn } from "./mutation";
 import {
   ConflictingKeys,
   LiveQueryResponse,
   LiveQueryUpdate,
-  MutationDefn,
+  MutationDefns,
   MutationInvocation,
   MutationRequest,
   MutationResponse,
   Query,
 } from "./types";
+
+export type ClientState = {
+  type: "ClientState";
+  id: string;
+  data: { [key: string]: ClientValue };
+  liveQueries: Query[];
+  nextMutationID: number;
+  mutations: MutationState[]; // TODO: index
+  mutationDefns: MutationDefns;
+};
+
+export function initialClientState(
+  id: string,
+  mutationDefns: MutationDefns
+): ClientState {
+  return {
+    type: "ClientState",
+    data: {},
+    id,
+    liveQueries: [],
+    mutationDefns,
+    mutations: [],
+    nextMutationID: 0,
+  };
+}
 
 type ClientValue = {
   version: number;
@@ -15,19 +41,9 @@ type ClientValue = {
   serverTimestamp: number | null;
 };
 
-type ClientState = {
-  type: "ClientState";
-  id: string;
-  data: { [key: string]: ClientValue };
-  liveQueries: Query[];
-  nextMutationID: number;
-  mutations: MutationState[]; // TODO: index
-  mutationDefns: { [name: string]: MutationDefn };
-};
-
 // rename "TransactionState"?
 type MutationState = {
-  id: number;
+  id: string;
   mutation: MutationInvocation;
   state:
     | { type: "Pending" }

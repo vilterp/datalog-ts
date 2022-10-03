@@ -2,7 +2,7 @@ import {
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
-  MutationDefn,
+  MutationDefns,
   MutationRequest,
   MutationResponse,
   Query,
@@ -13,7 +13,14 @@ export type ServerState = {
   type: "ServerState";
   data: { [key: string]: VersionedValue };
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
-  mutationDefns: { [name: string]: MutationDefn };
+  mutationDefns: MutationDefns;
+};
+
+export const initialServerState: ServerState = {
+  type: "ServerState",
+  data: {},
+  liveQueries: [],
+  mutationDefns: {},
 };
 
 function processLiveQueryRequest(

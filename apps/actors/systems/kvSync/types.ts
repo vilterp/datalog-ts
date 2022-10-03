@@ -1,15 +1,19 @@
 import { Json } from "../../../../util/json";
+import { MutationDefn } from "./mutation";
 
 export type VersionedValue = {
   version: number;
   value: string;
 };
 
-export type MutationDefn = XXX; // JS function or IR?
+export type MsgToServer = LiveQueryRequest | MutationRequest;
 
-type MsgToServer = LiveQueryRequest | MutationRequest;
+export type MsgToClient =
+  | MutationResponse
+  | LiveQueryUpdate
+  | LiveQueryResponse;
 
-type MsgToClient = MutationResponse | LiveQueryUpdate | LiveQueryResponse;
+export type MutationDefns = { [name: string]: MutationDefn };
 
 export type Query = { fromKey: string; toKey: string };
 
