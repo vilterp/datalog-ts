@@ -39,6 +39,11 @@ export type System<ActorState, Msg> = {
   initialUserState: ActorState;
 };
 
+export type UIProps<ClientState, UserInput> = {
+  state: ClientState;
+  sendUserInput: (msg: UserInput) => void;
+};
+
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
   trace: Trace<ActorState>;

@@ -6,6 +6,7 @@ import {
   OutgoingMessage,
   System,
   Trace,
+  UIProps,
   UpdateFn,
 } from "../types";
 import * as effects from "../effects";
@@ -286,10 +287,7 @@ export const update: UpdateFn<State, Msg> = (
 
 // ui
 
-export function ClientServerUI(props: {
-  state: ClientState;
-  sendUserInput: (msg: UserInput) => void;
-}) {
+export function ClientServerUI(props: UIProps<ClientState, UserInput>) {
   return (
     <>
       <h2>TodoMVC</h2>
