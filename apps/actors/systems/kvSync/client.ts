@@ -1,6 +1,7 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
   ConflictingKeys,
+  LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
   MsgToClient,
@@ -84,6 +85,13 @@ function runMutationOnClient(
   return XXX;
 }
 
+function registerLiveQuery(
+  state: ClientState,
+  query: Query
+): [ClientState, LiveQueryRequest] {
+  return XXX;
+}
+
 function processLiveQueryResponse(
   state: ClientState,
   resp: LiveQueryResponse
@@ -100,6 +108,7 @@ export function updateClient(
     case "messageReceived": {
       const msg = init.payload;
       switch (msg.type) {
+        // from server
         case "MutationResponse": {
           const [newState, resp] = processMutationResponse(state, msg);
           if (resp == null) {
@@ -112,6 +121,23 @@ export function updateClient(
         }
         case "LiveQueryUpdate": {
           return effects.updateState(processLiveQueryUpdate(state, msg));
+        }
+        // user input
+        case "RegisterQuery": {
+          const [newState, req] = registerLiveQuery(state, msg.query);
+          return effects.updateAndSend(newState, [{ to: "server", msg: req }]);
+        }
+        case "RunMutation": {
+          const [newState, req] = runMutationOnClient(state, {
+            name: msg.name,
+            args: msg.args,
+          });
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: req,
+            },
+          ]);
         }
       }
     }

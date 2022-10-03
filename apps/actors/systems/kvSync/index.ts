@@ -4,7 +4,7 @@ import { ActorResp, LoadedTickInitiator, System } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { bankMutations } from "./examples/bank";
 import { initialServerState, ServerState, updateServer } from "./server";
-import { MsgToClient, MsgToServer } from "./types";
+import { MsgToClient, MsgToServer, UserInput } from "./types";
 import { KVSyncUI } from "./ui";
 
 type State = ServerState | ClientState | { type: "UserState" };

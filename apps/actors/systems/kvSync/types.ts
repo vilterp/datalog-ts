@@ -6,12 +6,15 @@ export type VersionedValue = {
   value: string;
 };
 
+export type UserInput =
+  | { type: "RunMutation"; name: string; args: Json[] }
+  | { type: "RegisterQuery"; query: Query };
+
 export type MsgToServer = LiveQueryRequest | MutationRequest;
 
-export type MsgToClient =
-  | MutationResponse
-  | LiveQueryUpdate
-  | LiveQueryResponse;
+export type MsgToClient = MsgFromServer | UserInput;
+
+type MsgFromServer = MutationResponse | LiveQueryUpdate | LiveQueryResponse;
 
 export type MutationDefns = { [name: string]: MutationDefn };
 
