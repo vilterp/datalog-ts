@@ -9,13 +9,14 @@ import {
   MutationRequest,
   MutationResponse,
   Query,
-  VersionedValue,
+  ServerValue,
 } from "./types";
 import * as effects from "../../effects";
+import { pairsToObj } from "../../../../util/util";
 
 export type ServerState = {
   type: "ServerState";
-  data: { key: string; value: VersionedValue }[]; // TODO: ordered map of some kind
+  data: { key: string; value: ServerValue }[]; // TODO: ordered map of some kind
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   mutationDefns: MutationDefns;
 };
@@ -39,7 +40,10 @@ function processLiveQueryRequest(
   const results = state.data.filter(
     (kv) => kv.key >= req.query.fromKey && kv.key <= req.query.toKey
   );
-  return [newState, { type: "LiveQueryResponse", results: results }];
+  return [
+    newState,
+    { type: "LiveQueryResponse", results: pairsToObj(results) },
+  ];
 }
 
 function runMutationOnServer(

@@ -13,6 +13,7 @@ import {
   Query,
 } from "./types";
 import * as effects from "../../effects";
+import { mapObj } from "../../../../util/util";
 
 export type ClientState = {
   type: "ClientState";
@@ -100,7 +101,17 @@ function processLiveQueryResponse(
   state: ClientState,
   resp: LiveQueryResponse
 ): ClientState {
-  return XXX;
+  return {
+    ...state,
+    data: {
+      ...state.data,
+      ...mapObj(resp.results, (key, value) => ({
+        version: value.version,
+        value: value.value,
+        serverTimestamp: value.serverTimestamp,
+      })),
+    },
+  };
 }
 
 // TODO: maybe move this out to index.ts? idk

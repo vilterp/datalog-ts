@@ -2,6 +2,12 @@ import { Json } from "../../../../util/json";
 import { UIProps } from "../../types";
 import { MutationDefn } from "./mutation";
 
+export type ServerValue = {
+  version: number;
+  value: string;
+  serverTimestamp: number;
+};
+
 export type VersionedValue = {
   version: number;
   value: string;
@@ -57,7 +63,7 @@ export type LiveQueryUpdate = {
 
 export type LiveQueryResponse = {
   type: "LiveQueryResponse";
-  results: { key: string; value: VersionedValue }[];
+  results: { [key: string]: ServerValue };
 };
 
 type KeyUpdate =
