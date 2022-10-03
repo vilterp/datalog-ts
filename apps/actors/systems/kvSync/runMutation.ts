@@ -86,8 +86,25 @@ function runMutationExpr(
     case "Lambda":
       // TODO: closure??
       return [expr, "Commit", state, traceSoFar];
-    case "Do":
-      return XXXX;
+    case "Do": {
+      let curState = state;
+      let curTrace = traceSoFar;
+      let outcome: Outcome = "Commit";
+      let curRes: Value = null;
+      for (const step of expr.ops) {
+        const [stepRes, newOutcome, newState, newTrace] = runMutationExpr(
+          curState,
+          curTrace,
+          scope,
+          step
+        );
+        curState = newState;
+        curTrace = newTrace;
+        outcome = newOutcome;
+        curRes = stepRes;
+      }
+      return [curRes, outcome, curState, curTrace];
+    }
     case "Let": {
       const newScope = { ...scope };
       let curState = state;
