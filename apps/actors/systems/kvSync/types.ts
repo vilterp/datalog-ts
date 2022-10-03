@@ -1,6 +1,6 @@
 import { Json } from "../../../../util/json";
 import { UIProps } from "../../types";
-import { MutationDefn } from "./mutationTypes";
+import { MutationDefn } from "./mutations/types";
 
 export type ServerValue = {
   version: number;
@@ -36,24 +36,21 @@ export type Trace = { key: string; version: number }[];
 
 export type MutationRequest = {
   type: "MutationRequest";
-  mutation: MutationInvocation;
+  invocation: MutationInvocation;
   trace: Trace;
-};
-
-export type ConflictingKeys = {
-  [key: string]: { sentVersion: number; found: VersionedValue };
 };
 
 export type MutationResponse = {
   type: "MutationResponse";
   payload:
+    | { type: "Aborted" }
     | {
         type: "Accept";
-        newKeys: { [key: string]: VersionedValue };
+        // TODO: new keys? with server timestamps?
       }
     | {
         type: "Reject";
-        conflictingKeys: ConflictingKeys;
+        serverTrace: Trace;
       };
 };
 

@@ -14,7 +14,7 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj } from "../../../../util/util";
-import { runMutation } from "./runMutation";
+import { runMutationClient } from "./mutations/client";
 
 export type ClientState = {
   type: "ClientState";
@@ -80,7 +80,7 @@ function runMutationOnClient(
   state: ClientState,
   invocation: MutationInvocation
 ): [ClientState, MutationRequest | null] {
-  const [state1, outcome, trace] = runMutation(
+  const [state1, outcome, trace] = runMutationClient(
     state,
     state.mutationDefns[invocation.name],
     invocation.args
@@ -98,7 +98,7 @@ function runMutationOnClient(
   };
   const req: MutationRequest = {
     type: "MutationRequest",
-    mutation: invocation,
+    invocation: invocation,
     trace: trace,
   };
   return [state2, req];

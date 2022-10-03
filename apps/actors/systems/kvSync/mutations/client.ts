@@ -1,10 +1,11 @@
-import { Json } from "../../../../util/json";
-import { pairsToObj } from "../../../../util/util";
-import { ClientState } from "./client";
-import { Expr, MutationDefn, Value } from "./mutationTypes";
-import { Trace } from "./types";
+import { Json } from "../../../../../util/json";
+import { pairsToObj } from "../../../../../util/util";
+import { ClientState } from "../client";
+import { Expr, MutationDefn, Outcome, Scope, Value } from "./types";
+import { Trace } from "../types";
+import { BUILTINS } from "./builtins";
 
-export function runMutation(
+export function runMutationClient(
   clientState: ClientState, // TODO: need to abstract this
   mutation: MutationDefn,
   args: Value[]
@@ -24,10 +25,6 @@ export function runMutation(
   // TODO: check out
   return [newState, outcome, trace];
 }
-
-type Scope = { [name: string]: Json };
-
-type Outcome = "Commit" | "Abort";
 
 function runMutationExpr(
   state: ClientState, // TODO: need to abstract this
@@ -163,17 +160,3 @@ function runMutationExpr(
     }
   }
 }
-
-type Builtin = (args: Value[]) => Value;
-
-const BUILTINS: { [name: string]: Builtin } = {
-  "+": (args) => {
-    return (args[0] as number) + (args[1] as number);
-  },
-  "-": (args) => {
-    return (args[0] as number) - (args[1] as number);
-  },
-  "<": (args) => {
-    return args[0] < args[1];
-  },
-};

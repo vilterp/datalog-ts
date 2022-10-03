@@ -13,6 +13,7 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import { pairsToObj } from "../../../../util/util";
+import { runMutationServer } from "./mutations/server";
 
 export type ServerState = {
   type: "ServerState";
@@ -48,14 +49,38 @@ function processLiveQueryRequest(
 
 function runMutationOnServer(
   state: ServerState,
-  mutation: MutationRequest
+  req: MutationRequest
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
-  // run mutation
-  // if conflict, send conflict response
-  // if accept
-  // send accept response
-  // send live query updates
-  return XXX;
+  const [newState, outcome, trace] = runMutationServer(
+    state,
+    state.mutationDefns[req.invocation.name],
+    req.invocation.args
+  );
+  if (outcome === "Abort") {
+    return [
+      newState,
+      { type: "MutationResponse", payload: { type: "Aborted" } },
+      [],
+    ];
+  }
+  if (JSON.stringify(trace) !== JSON.stringify(req.trace)) {
+    return [
+      newState,
+      {
+        type: "MutationResponse",
+        payload: { type: "Reject", serverTrace: trace },
+      },
+      [],
+    ];
+  }
+  return [
+    newState,
+    {
+      type: "MutationResponse",
+      payload: { type: "Accept" },
+    },
+    [], // TODO: live query updates
+  ];
 }
 
 // TODO: maybe move this out to index.ts? idk

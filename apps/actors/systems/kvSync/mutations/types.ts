@@ -1,4 +1,4 @@
-import { Json } from "../../../../util/json";
+import { Json } from "../../../../../util/json";
 
 export type MutationDefn = Lambda;
 
@@ -65,3 +65,7 @@ export function str(val: string): Expr {
 }
 
 export type Value = Json | Lambda;
+
+export type Scope = { [name: string]: Json };
+
+export type Outcome = "Commit" | "Abort";
