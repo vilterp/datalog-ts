@@ -57,7 +57,7 @@ export type LiveQueryUpdate = {
 
 export type LiveQueryResponse = {
   type: "LiveQueryResponse";
-  results: { [key: string]: VersionedValue };
+  results: { key: string; value: VersionedValue }[];
 };
 
 type KeyUpdate =

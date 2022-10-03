@@ -63,12 +63,12 @@ const mutations: MutationDefns = {
 };
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
-  // useEffect(() => {
-  //   props.sendUserInput({
-  //     type: "RegisterQuery",
-  //     query: { fromKey: "", toKey: "" }, // TODO: begin and end keys?
-  //   });
-  // }, []);
+  useEffect(() => {
+    props.sendUserInput({
+      type: "RegisterQuery",
+      query: { fromKey: "", toKey: "" }, // TODO: begin and end keys?
+    });
+  }, []);
 
   return <p>Hello world</p>;
 }

@@ -15,23 +15,31 @@ import * as effects from "../../effects";
 
 export type ServerState = {
   type: "ServerState";
-  data: { [key: string]: VersionedValue };
+  data: { key: string; value: VersionedValue }[]; // TODO: ordered map of some kind
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   mutationDefns: MutationDefns;
 };
 
 export const initialServerState: ServerState = {
   type: "ServerState",
-  data: {},
+  data: [],
   liveQueries: [],
   mutationDefns: {},
 };
 
 function processLiveQueryRequest(
   state: ServerState,
+  clientID: string,
   req: LiveQueryRequest
 ): [ServerState, LiveQueryResponse] {
-  return XXX;
+  const newState: ServerState = {
+    ...state,
+    liveQueries: [...state.liveQueries, { clientID, query: req.query }],
+  };
+  const results = state.data.filter(
+    (kv) => kv.key >= req.query.fromKey && kv.key <= req.query.toKey
+  );
+  return [newState, { type: "LiveQueryResponse", results: results }];
 }
 
 function runMutationOnServer(
@@ -56,7 +64,11 @@ export function updateServer(
       const msg = init.payload;
       switch (msg.type) {
         case "LiveQueryRequest": {
-          const [newState, resp] = processLiveQueryRequest(state, msg);
+          const [newState, resp] = processLiveQueryRequest(
+            state,
+            init.from,
+            msg
+          );
           return effects.reply(init, newState, resp);
         }
         case "MutationRequest": {

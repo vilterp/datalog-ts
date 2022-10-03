@@ -89,7 +89,11 @@ function registerLiveQuery(
   state: ClientState,
   query: Query
 ): [ClientState, LiveQueryRequest] {
-  return XXX;
+  const newState: ClientState = {
+    ...state,
+    liveQueries: [...state.liveQueries, query],
+  };
+  return [newState, { type: "LiveQueryRequest", query }];
 }
 
 function processLiveQueryResponse(
