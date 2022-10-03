@@ -1,7 +1,11 @@
+import { Json } from "../../../../util/json";
+
 export type MutationDefn = Expr;
 
+export type Lambda = { type: "Lambda"; args: string[]; body: Expr };
+
 export type Expr =
-  | { type: "Lambda"; args: string[]; body: Expr }
+  | Lambda
   | { type: "Do"; ops: Expr[] }
   | { type: "Read"; key: Expr }
   | { type: "Write"; key: Expr; val: Expr }
@@ -59,3 +63,5 @@ export function abort(reason: Expr): Expr {
 export function str(val: string): Expr {
   return { type: "StringLit", val };
 }
+
+export type Value = Json | Lambda;

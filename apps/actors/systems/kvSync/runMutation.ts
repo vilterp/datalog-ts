@@ -1,6 +1,6 @@
 import { Json } from "../../../../util/json";
 import { ClientState } from "./client";
-import { Expr, MutationDefn } from "./mutationTypes";
+import { Expr, MutationDefn, Value } from "./mutationTypes";
 
 export type Trace = { key: string; version: number }[];
 
@@ -27,7 +27,7 @@ function runMutationExpr(
   traceSoFar: Trace,
   scope: Scope,
   expr: Expr
-): [Json, Outcome, ClientState, Trace] {
+): [Value, Outcome, ClientState, Trace] {
   switch (expr.type) {
     case "Lambda":
       return XXXX;
@@ -37,8 +37,26 @@ function runMutationExpr(
       return XXXX;
     case "Write":
       return XXXX;
-    case "Let":
-      return XXXX;
+    case "Let": {
+      const newScope = { ...scope };
+      let curState = state;
+      let curTrace = traceSoFar;
+      for (const binding of expr.bindings) {
+        const [res, outcome, newState, newTrace] = runMutationExpr(
+          curState,
+          curTrace,
+          scope,
+          binding.val
+        );
+        if (outcome === "Abort") {
+          return [null, "Abort", curState, curTrace];
+        }
+        newScope[binding.varName] = res;
+        curState = newState;
+        curTrace = newTrace;
+      }
+      return runMutationExpr(curState, curTrace, newScope, expr.body);
+    }
     case "If": {
       const [condRes, condOutcome, clientState1, trace1] = runMutationExpr(
         state,
@@ -71,13 +89,13 @@ function runMutationExpr(
   }
 }
 
-type Builtin = (args: Json[]) => Json;
+type Builtin = (args: Value[]) => Value;
 
 const BUILTINS: { [name: string]: Builtin } = {
   "+": (args) => {
     return (args[0] as number) + (args[1] as number);
   },
-  "-": (args: Json[]) => {
+  "-": (args) => {
     return (args[0] as number) - (args[1] as number);
   },
   "<": (args) => {
