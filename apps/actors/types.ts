@@ -35,8 +35,8 @@ export type System<ActorState, Msg> = {
   update: UpdateFn<ActorState, Msg>;
   // TODO: something about all these initial states
   initialState: Trace<ActorState>;
-  initialClientState: ActorState;
-  initialUserState: ActorState;
+  initialClientState: () => ActorState;
+  initialUserState: () => ActorState;
 };
 
 export type UIProps<ClientState, UserInput> = {
