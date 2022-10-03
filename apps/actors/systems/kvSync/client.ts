@@ -49,7 +49,6 @@ type ClientValue = {
 
 // rename "TransactionState"?
 type MutationState = {
-  id: string;
   mutation: MutationInvocation;
   state:
     | { type: "Pending" }
@@ -79,18 +78,30 @@ function processLiveQueryUpdate(
 
 function runMutationOnClient(
   state: ClientState,
-  invocations: MutationInvocation
+  invocation: MutationInvocation
 ): [ClientState, MutationRequest | null] {
-  const [newState, outcome, trace] = runMutation(
+  const [state1, outcome, trace] = runMutation(
     state,
-    state.mutationDefns[invocations.name],
-    invocations.args
+    state.mutationDefns[invocation.name],
+    invocation.args
   );
-  // check aborted??
-
-  // put mutation in list with state Pending
-  // return mutation request
-  return XXX;
+  if (outcome === "Abort") {
+    console.warn("aborted on client side");
+    return [state1, null];
+  }
+  const state2: ClientState = {
+    ...state1,
+    mutations: [
+      ...state1.mutations,
+      { mutation: invocation, state: { type: "Pending" } },
+    ],
+  };
+  const req: MutationRequest = {
+    type: "MutationRequest",
+    mutation: invocation,
+    trace: trace,
+  };
+  return [state2, req];
 }
 
 function registerLiveQuery(

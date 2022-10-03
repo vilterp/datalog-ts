@@ -2,8 +2,7 @@ import { Json } from "../../../../util/json";
 import { pairsToObj } from "../../../../util/util";
 import { ClientState } from "./client";
 import { Expr, MutationDefn, Value } from "./mutationTypes";
-
-export type Trace = { key: string; version: number }[];
+import { Trace } from "./types";
 
 export function runMutation(
   clientState: ClientState, // TODO: need to abstract this

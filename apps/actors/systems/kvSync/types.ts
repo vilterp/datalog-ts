@@ -32,10 +32,12 @@ export type LiveQueryRequest = {
   query: Query;
 };
 
+export type Trace = { key: string; version: number }[];
+
 export type MutationRequest = {
   type: "MutationRequest";
   mutation: MutationInvocation;
-  readKeys: { key: string; version: number }[];
+  trace: Trace;
 };
 
 export type ConflictingKeys = {
