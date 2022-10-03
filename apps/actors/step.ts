@@ -10,7 +10,6 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { sleep } from "../../util/util";
 
 // TODO: get rid of this
 export function stepAll<ActorState extends Json, Msg extends Json>(
