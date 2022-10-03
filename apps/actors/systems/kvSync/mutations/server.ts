@@ -1,4 +1,3 @@
-import { Json } from "../../../../../util/json";
 import { pairsToObj } from "../../../../../util/util";
 import { ServerState } from "../server";
 import { Trace } from "../types";

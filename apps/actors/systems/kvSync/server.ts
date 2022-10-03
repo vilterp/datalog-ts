@@ -22,12 +22,14 @@ export type ServerState = {
   mutationDefns: MutationDefns;
 };
 
-export const initialServerState: ServerState = {
-  type: "ServerState",
-  data: [],
-  liveQueries: [],
-  mutationDefns: {},
-};
+export function initialServerState(mutationDefns: MutationDefns): ServerState {
+  return {
+    type: "ServerState",
+    data: [],
+    liveQueries: [],
+    mutationDefns,
+  };
+}
 
 function processLiveQueryRequest(
   state: ServerState,

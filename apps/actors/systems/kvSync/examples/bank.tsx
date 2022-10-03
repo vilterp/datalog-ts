@@ -14,7 +14,7 @@ import {
   str,
   write,
   doExpr,
-} from "../mutationTypes";
+} from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
 
@@ -92,8 +92,8 @@ function WithdrawForm(props: UIProps<ClientState, UserInput>) {
 }
 
 function DepositForm(props: UIProps<ClientState, UserInput>) {
-  const [account, setAccount] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [account, setAccount] = useState("foo");
+  const [amount, setAmount] = useState(10);
 
   return (
     <form

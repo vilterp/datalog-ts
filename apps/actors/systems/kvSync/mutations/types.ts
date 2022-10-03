@@ -21,7 +21,7 @@ export type Expr =
   | { type: "StringLit"; val: string }
   | { type: "Apply"; name: string; args: Expr[] };
 
-export function lambda(args: string[], body: Expr): Expr {
+export function lambda(args: string[], body: Expr): Lambda {
   return { type: "Lambda", args, body };
 }
 

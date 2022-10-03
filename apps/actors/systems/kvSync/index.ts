@@ -40,7 +40,9 @@ function makeActorSystem(app: KVApp): System<State, Msg> {
     id: `kv-${app.name}`,
     ui: app.ui,
     update,
-    initialState: spawnInitialActors(update, { server: initialServerState }),
+    initialState: spawnInitialActors(update, {
+      server: initialServerState(app.mutations),
+    }),
     // TODO: generate ID deterministically
     initialClientState: () =>
       initialClientState(Math.random().toString(), app.mutations),
