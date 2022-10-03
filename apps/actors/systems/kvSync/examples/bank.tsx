@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { END_KEY, START_KEY } from "../../../../../core/types";
+import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import {
@@ -63,6 +64,116 @@ const mutations: MutationDefns = {
   ),
 };
 
+function WithdrawForm(props: UIProps<ClientState, UserInput>) {
+  const [account, setAccount] = useState("");
+  const [amount, setAmount] = useState(0);
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.sendUserInput({
+          type: "RunMutation",
+          name: "withdraw",
+          args: [account, amount],
+        });
+      }}
+    >
+      <p>
+        Account:{" "}
+        <input
+          value={account}
+          onChange={(evt) => setAccount(evt.target.value)}
+        />
+      </p>
+      <p>
+        Amount:{" "}
+        <input
+          value={amount}
+          onChange={(evt) => setAmount(parseInt(evt.target.value))}
+        />
+      </p>
+      <button>Withdraw</button>
+    </form>
+  );
+}
+
+function DepositForm(props: UIProps<ClientState, UserInput>) {
+  const [account, setAccount] = useState("");
+  const [amount, setAmount] = useState(0);
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.sendUserInput({
+          type: "RunMutation",
+          name: "deposit",
+          args: [account, amount],
+        });
+      }}
+    >
+      <p>
+        Account:{" "}
+        <input
+          value={account}
+          onChange={(evt) => setAccount(evt.target.value)}
+        />
+      </p>
+      <p>
+        Amount:{" "}
+        <input
+          value={amount}
+          onChange={(evt) => setAmount(parseInt(evt.target.value))}
+        />
+      </p>
+      <button>Deposit</button>
+    </form>
+  );
+}
+
+function MoveForm(props: UIProps<ClientState, UserInput>) {
+  const [fromAccount, setFromAccount] = useState("");
+  const [toAccount, setToAccount] = useState("");
+  const [amount, setAmount] = useState(0);
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.sendUserInput({
+          type: "RunMutation",
+          name: "move",
+          args: [fromAccount, toAccount, amount],
+        });
+      }}
+    >
+      <p>
+        From Account:{" "}
+        <input
+          value={fromAccount}
+          onChange={(evt) => setFromAccount(evt.target.value)}
+        />
+      </p>
+      <p>
+        To Account:{" "}
+        <input
+          value={toAccount}
+          onChange={(evt) => setToAccount(evt.target.value)}
+        />
+      </p>
+      <p>
+        Amount:{" "}
+        <input
+          value={amount}
+          onChange={(evt) => setAmount(parseInt(evt.target.value))}
+        />
+      </p>
+      <button>Deposit</button>
+    </form>
+  );
+}
+
 function BankUI(props: UIProps<ClientState, UserInput>) {
   useEffect(() => {
     props.sendUserInput({
@@ -71,7 +182,29 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
     });
   }, []);
 
-  return <p>Hello world</p>;
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Account</th>
+            <td>Balance</td>
+          </tr>
+        </thead>
+        <tbody>
+          {mapObjToList(props.state.data, (key, value) => (
+            <tr key={key}>
+              <td>{key}</td>
+              <td>{value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <WithdrawForm sendUserInput={props.sendUserInput} state={props.state} />
+      <DepositForm sendUserInput={props.sendUserInput} state={props.state} />
+      <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
+    </div>
+  );
 }
 
 export const bank: KVApp = { name: "Bank", mutations, ui: BankUI };
