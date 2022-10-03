@@ -1,6 +1,5 @@
 import { Json } from "../../../../util/json";
-import { UIProps } from "../../types";
-import { MutationDefn } from "./mutations/types";
+import { Lambda } from "./mutations/types";
 
 export type ServerValue = {
   version: number;
@@ -23,7 +22,7 @@ export type MsgToClient = MsgFromServer | UserInput;
 
 type MsgFromServer = MutationResponse | LiveQueryUpdate | LiveQueryResponse;
 
-export type MutationDefns = { [name: string]: MutationDefn };
+export type MutationDefns = { [name: string]: Lambda };
 
 export type Query = { fromKey: string; toKey: string };
 

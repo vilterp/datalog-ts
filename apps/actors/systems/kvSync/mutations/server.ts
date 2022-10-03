@@ -2,16 +2,16 @@ import { pairsToObj } from "../../../../../util/util";
 import { ServerState } from "../server";
 import { Trace } from "../types";
 import { BUILTINS } from "./builtins";
-import { Expr, MutationDefn, Outcome, Scope, Value } from "./types";
+import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 
 export function runMutationServer(
   clientState: ServerState, // TODO: need to abstract this
-  mutation: MutationDefn,
+  lambda: Lambda,
   args: Value[]
 ): [ServerState, Outcome, Trace] {
   const scope: Scope = pairsToObj(
     args.map((arg, idx) => ({
-      key: mutation.args[idx],
+      key: lambda.args[idx],
       value: arg,
     }))
   );
@@ -19,7 +19,7 @@ export function runMutationServer(
     clientState,
     [],
     scope,
-    mutation
+    lambda.body
   );
   // TODO: check out
   return [newState, outcome, trace];

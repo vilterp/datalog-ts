@@ -1,18 +1,18 @@
 import { Json } from "../../../../../util/json";
 import { pairsToObj } from "../../../../../util/util";
 import { ClientState } from "../client";
-import { Expr, MutationDefn, Outcome, Scope, Value } from "./types";
+import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 import { Trace } from "../types";
 import { BUILTINS } from "./builtins";
 
 export function runMutationClient(
   clientState: ClientState, // TODO: need to abstract this
-  mutation: MutationDefn,
+  lambda: Lambda,
   args: Value[]
 ): [ClientState, Outcome, Trace] {
   const scope: Scope = pairsToObj(
     args.map((arg, idx) => ({
-      key: mutation.args[idx],
+      key: lambda.args[idx],
       value: arg,
     }))
   );
@@ -20,7 +20,7 @@ export function runMutationClient(
     clientState,
     [],
     scope,
-    mutation
+    lambda.body
   );
   // TODO: check out
   return [newState, outcome, trace];
