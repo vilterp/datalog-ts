@@ -79,20 +79,13 @@ function WithdrawForm(props: UIProps<ClientState, UserInput>) {
         });
       }}
     >
-      <p>
-        Account:{" "}
-        <input
-          value={account}
-          onChange={(evt) => setAccount(evt.target.value)}
-        />
-      </p>
-      <p>
-        Amount:{" "}
-        <input
-          value={amount}
-          onChange={(evt) => setAmount(parseInt(evt.target.value))}
-        />
-      </p>
+      Account:{" "}
+      <input value={account} onChange={(evt) => setAccount(evt.target.value)} />
+      Amount:{" "}
+      <input
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />
       <button>Withdraw</button>
     </form>
   );
@@ -113,20 +106,13 @@ function DepositForm(props: UIProps<ClientState, UserInput>) {
         });
       }}
     >
-      <p>
-        Account:{" "}
-        <input
-          value={account}
-          onChange={(evt) => setAccount(evt.target.value)}
-        />
-      </p>
-      <p>
-        Amount:{" "}
-        <input
-          value={amount}
-          onChange={(evt) => setAmount(parseInt(evt.target.value))}
-        />
-      </p>
+      Account:{" "}
+      <input value={account} onChange={(evt) => setAccount(evt.target.value)} />
+      Amount:{" "}
+      <input
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />
       <button>Deposit</button>
     </form>
   );
@@ -148,28 +134,22 @@ function MoveForm(props: UIProps<ClientState, UserInput>) {
         });
       }}
     >
-      <p>
-        From Account:{" "}
-        <input
-          value={fromAccount}
-          onChange={(evt) => setFromAccount(evt.target.value)}
-        />
-      </p>
-      <p>
-        To Account:{" "}
-        <input
-          value={toAccount}
-          onChange={(evt) => setToAccount(evt.target.value)}
-        />
-      </p>
-      <p>
-        Amount:{" "}
-        <input
-          value={amount}
-          onChange={(evt) => setAmount(parseInt(evt.target.value))}
-        />
-      </p>
-      <button>Deposit</button>
+      From Account:{" "}
+      <input
+        value={fromAccount}
+        onChange={(evt) => setFromAccount(evt.target.value)}
+      />
+      To Account:{" "}
+      <input
+        value={toAccount}
+        onChange={(evt) => setToAccount(evt.target.value)}
+      />
+      Amount:{" "}
+      <input
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />
+      <button>Move</button>
     </form>
   );
 }
@@ -184,11 +164,12 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
 
   return (
     <div>
+      <h3>MyBank</h3>
       <table>
         <thead>
           <tr>
             <th>Account</th>
-            <td>Balance</td>
+            <th>Balance</th>
           </tr>
         </thead>
         <tbody>
@@ -200,9 +181,23 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
           ))}
         </tbody>
       </table>
-      <WithdrawForm sendUserInput={props.sendUserInput} state={props.state} />
-      <DepositForm sendUserInput={props.sendUserInput} state={props.state} />
-      <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
+      <ul>
+        <li>
+          <WithdrawForm
+            sendUserInput={props.sendUserInput}
+            state={props.state}
+          />
+        </li>
+        <li>
+          <DepositForm
+            sendUserInput={props.sendUserInput}
+            state={props.state}
+          />
+        </li>
+        <li>
+          <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
+        </li>
+      </ul>
     </div>
   );
 }
