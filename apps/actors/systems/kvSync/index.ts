@@ -36,8 +36,8 @@ export const kvSync: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
 
 function makeActorSystem(app: KVApp): System<State, Msg> {
   return {
-    name: "KV Sync",
-    id: "kv-sync",
+    name: `KV: ${app.name}`,
+    id: `kv-${app.name}`,
     ui: app.ui,
     update,
     initialState: spawnInitialActors(update, { server: initialServerState }),
