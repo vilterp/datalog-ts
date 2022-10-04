@@ -69,10 +69,12 @@ function processMutationResponse(
   const payload = response.payload;
   switch (payload.type) {
     case "Aborted":
-      // roll back?
+      console.warn("processMutationResponse: aborted on server", payload);
+      // TODO: roll back?
       return [state, null];
     case "Reject":
-      // roll back & retry?
+      console.warn("processMutationResponse: rejected on server", payload);
+      // TODO: roll back & retry?
       return [state, null];
     case "Accept":
       return [state, null];

@@ -16,6 +16,7 @@ import {
 import * as effects from "../../effects";
 import { filterMap, flatMap, pairsToObj } from "../../../../util/util";
 import { runMutationServer } from "./mutations/server";
+import { jsonEq } from "../../../../util/json";
 
 export type ServerState = {
   type: "ServerState";
@@ -65,7 +66,7 @@ function runMutationOnServer(
       [],
     ];
   }
-  if (JSON.stringify(trace) !== JSON.stringify(req.trace)) {
+  if (!jsonEq(trace, req.trace)) {
     return [
       newState,
       {
@@ -75,16 +76,13 @@ function runMutationOnServer(
       [],
     ];
   }
+  // live query updates
   const writes: WriteOp[] = trace.filter(
     (op) => op.type === "Write"
   ) as WriteOp[];
-  return [
-    newState,
-    {
-      type: "MutationResponse",
-      payload: { type: "Accept" },
-    },
-    filterMap(state.liveQueries, (liveQuery) => {
+  const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
+    state.liveQueries,
+    (liveQuery) => {
       const matchingWrites = writes.filter((write) =>
         keyInQuery(write.key, liveQuery.query)
       );
@@ -101,7 +99,16 @@ function runMutationOnServer(
           newVersion: write.newVersion,
         })),
       };
-    }),
+    }
+  );
+  console.log("runMutationOnServer", { liveQueryUpdates });
+  return [
+    newState,
+    {
+      type: "MutationResponse",
+      payload: { type: "Accept" },
+    },
+    liveQueryUpdates,
   ];
 }
 
