@@ -31,7 +31,18 @@ export type LiveQueryRequest = {
   query: Query;
 };
 
-export type Trace = { key: string; version: number }[];
+export type Trace = TraceOp[];
+
+type TraceOp = ReadOp | WriteOp;
+
+export type ReadOp = { type: "Read"; key: string; version: number };
+
+export type WriteOp = {
+  type: "Write";
+  key: string;
+  value: Json;
+  newVersion: number;
+};
 
 export type MutationRequest = {
   type: "MutationRequest";
@@ -68,7 +79,7 @@ type KeyUpdate =
   | {
       type: "Updated";
       key: string;
-      value: string;
+      value: Json;
       newVersion: number;
     }
   | { type: "Deleted"; key: string };
@@ -77,3 +88,9 @@ export type MutationInvocation = {
   name: string;
   args: Json[];
 };
+
+// utils
+
+export function keyInQuery(key: string, query: Query): boolean {
+  return key >= query.fromKey && key <= query.toKey;
+}

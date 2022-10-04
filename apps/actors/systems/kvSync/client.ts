@@ -175,6 +175,9 @@ export function updateClient(
             name: msg.name,
             args: msg.args,
           });
+          if (req === null) {
+            return effects.updateState(newState);
+          }
           return effects.updateAndSend(newState, [
             {
               to: "server",

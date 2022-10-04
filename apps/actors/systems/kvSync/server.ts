@@ -1,5 +1,6 @@
 import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
+  keyInQuery,
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
@@ -10,9 +11,10 @@ import {
   MutationResponse,
   Query,
   ServerValue,
+  WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { pairsToObj } from "../../../../util/util";
+import { filterMap, flatMap, pairsToObj } from "../../../../util/util";
 import { runMutationServer } from "./mutations/server";
 
 export type ServerState = {
@@ -40,9 +42,7 @@ function processLiveQueryRequest(
     ...state,
     liveQueries: [...state.liveQueries, { clientID, query: req.query }],
   };
-  const results = state.data.filter(
-    (kv) => kv.key >= req.query.fromKey && kv.key <= req.query.toKey
-  );
+  const results = state.data.filter((kv) => keyInQuery(kv.key, req.query));
   return [
     newState,
     { type: "LiveQueryResponse", results: pairsToObj(results) },
@@ -75,13 +75,33 @@ function runMutationOnServer(
       [],
     ];
   }
+  const writes: WriteOp[] = trace.filter(
+    (op) => op.type === "Write"
+  ) as WriteOp[];
   return [
     newState,
     {
       type: "MutationResponse",
       payload: { type: "Accept" },
     },
-    [], // TODO: live query updates
+    filterMap(state.liveQueries, (liveQuery) => {
+      const matchingWrites = writes.filter((write) =>
+        keyInQuery(write.key, liveQuery.query)
+      );
+      if (matchingWrites.length === 0) {
+        return null;
+      }
+      return {
+        type: "LiveQueryUpdate",
+        clientID: liveQuery.clientID,
+        updates: matchingWrites.map((write) => ({
+          type: "Updated",
+          key: write.key,
+          value: write.value,
+          newVersion: write.newVersion,
+        })),
+      };
+    }),
   ];
 }
 
