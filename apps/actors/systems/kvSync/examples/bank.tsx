@@ -18,52 +18,38 @@ import {
 import { MutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
 
-// TODO: is default=0 correct for everything here?
-const mutations: MutationDefns = {
-  deposit: lambda(
-    ["toAccount", "amount"],
-    letExpr(
-      [{ varName: "balanceBefore", val: read(varr("toAccount"), 0) }],
-      write(
-        varr("toAccount"),
-        apply("+", [varr("balanceBefore"), varr("amount")])
-      )
-    )
-  ),
-  withdraw: lambda(
-    ["fromAccount", "amount"],
-    letExpr(
-      [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
-      write(
-        varr("fromAccount"),
-        apply("-", [varr("balanceBefore"), varr("amount")])
-      )
-    )
-  ),
-  move: lambda(
-    ["fromAccount", "toAccount", "amount"],
-    letExpr(
-      [
-        { varName: "fromBalance", val: read(varr("fromAccount"), 0) },
-        { varName: "toBalance", val: read(varr("toAccount"), 0) },
-      ],
-      ifExpr(
-        apply(">", [varr("amount"), varr("fromBalance")]),
-        abort(str("balance not high enough")),
-        doExpr([
-          write(
-            varr("fromAccount"),
-            apply("-", [varr("fromBalance"), varr("amount")])
-          ),
-          write(
-            varr("toAccount"),
-            apply("+", [varr("toBalance"), varr("amount")])
-          ),
-        ])
-      )
-    )
-  ),
-};
+function BankUI(props: UIProps<ClientState, UserInput>) {
+  useEffect(() => {
+    props.sendUserInput({
+      type: "RegisterQuery",
+      query: { fromKey: START_KEY, toKey: END_KEY },
+    });
+  }, []);
+
+  return (
+    <div>
+      <h3>MyBank</h3>
+      <BalanceTable state={props.state} />
+      <ul>
+        <li>
+          <WithdrawForm
+            sendUserInput={props.sendUserInput}
+            state={props.state}
+          />
+        </li>
+        <li>
+          <DepositForm
+            sendUserInput={props.sendUserInput}
+            state={props.state}
+          />
+        </li>
+        <li>
+          <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
+        </li>
+      </ul>
+    </div>
+  );
+}
 
 function WithdrawForm(props: UIProps<ClientState, UserInput>) {
   const [account, setAccount] = useState("");
@@ -182,37 +168,51 @@ function BalanceTable(props: { state: ClientState }) {
   );
 }
 
-function BankUI(props: UIProps<ClientState, UserInput>) {
-  useEffect(() => {
-    props.sendUserInput({
-      type: "RegisterQuery",
-      query: { fromKey: START_KEY, toKey: END_KEY },
-    });
-  }, []);
-
-  return (
-    <div>
-      <h3>MyBank</h3>
-      <BalanceTable state={props.state} />
-      <ul>
-        <li>
-          <WithdrawForm
-            sendUserInput={props.sendUserInput}
-            state={props.state}
-          />
-        </li>
-        <li>
-          <DepositForm
-            sendUserInput={props.sendUserInput}
-            state={props.state}
-          />
-        </li>
-        <li>
-          <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
-        </li>
-      </ul>
-    </div>
-  );
-}
+// TODO: is default=0 correct for everything here?
+const mutations: MutationDefns = {
+  deposit: lambda(
+    ["toAccount", "amount"],
+    letExpr(
+      [{ varName: "balanceBefore", val: read(varr("toAccount"), 0) }],
+      write(
+        varr("toAccount"),
+        apply("+", [varr("balanceBefore"), varr("amount")])
+      )
+    )
+  ),
+  withdraw: lambda(
+    ["fromAccount", "amount"],
+    letExpr(
+      [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
+      write(
+        varr("fromAccount"),
+        apply("-", [varr("balanceBefore"), varr("amount")])
+      )
+    )
+  ),
+  move: lambda(
+    ["fromAccount", "toAccount", "amount"],
+    letExpr(
+      [
+        { varName: "fromBalance", val: read(varr("fromAccount"), 0) },
+        { varName: "toBalance", val: read(varr("toAccount"), 0) },
+      ],
+      ifExpr(
+        apply(">", [varr("amount"), varr("fromBalance")]),
+        abort(str("balance not high enough")),
+        doExpr([
+          write(
+            varr("fromAccount"),
+            apply("-", [varr("fromBalance"), varr("amount")])
+          ),
+          write(
+            varr("toAccount"),
+            apply("+", [varr("toBalance"), varr("amount")])
+          ),
+        ])
+      )
+    )
+  ),
+};
 
 export const bank: KVApp = { name: "Bank", mutations, ui: BankUI };
