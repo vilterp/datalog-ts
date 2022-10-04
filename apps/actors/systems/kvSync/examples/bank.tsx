@@ -155,6 +155,33 @@ function MoveForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
+function BalanceTable(props: { state: ClientState }) {
+  // TODO: use a query API instead of mapping over the raw data
+  // useLiveQuery would be good
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Balance</th>
+          <th>_version</th>
+          <th>_serverTimestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {mapObjToList(props.state.data, (key, value) => (
+          <tr key={key}>
+            <td>{key}</td>
+            <td>{value.value}</td>
+            <td>{value.version}</td>
+            <td>{value.serverTimestamp}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 function BankUI(props: UIProps<ClientState, UserInput>) {
   useEffect(() => {
     props.sendUserInput({
@@ -166,22 +193,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
   return (
     <div>
       <h3>MyBank</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Account</th>
-            <th>Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mapObjToList(props.state.data, (key, value) => (
-            <tr key={key}>
-              <td>{key}</td>
-              <td>{value.value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <BalanceTable state={props.state} />
       <ul>
         <li>
           <WithdrawForm
