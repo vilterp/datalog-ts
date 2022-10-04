@@ -13,7 +13,7 @@ import {
   Trace,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj } from "../../../../util/util";
+import { mapObj, pairsToObj } from "../../../../util/util";
 import { runMutationClient } from "./mutations/client";
 import { Json } from "../../../../util/json";
 
@@ -85,7 +85,29 @@ function processLiveQueryUpdate(
   state: ClientState,
   update: LiveQueryUpdate
 ): ClientState {
-  return XXX;
+  return {
+    ...state,
+    data: {
+      ...state.data,
+      ...pairsToObj(
+        update.updates.map((update) => {
+          switch (update.type) {
+            case "Updated":
+              return {
+                key: update.key,
+                value: {
+                  version: update.newVersion,
+                  value: update.value,
+                  serverTimestamp: null, // TODO: sort these out
+                },
+              };
+            default:
+              console.warn("unsupported update type:", update);
+          }
+        })
+      ),
+    },
+  };
 }
 
 function runMutationOnClient(
