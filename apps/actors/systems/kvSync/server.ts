@@ -14,13 +14,18 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { filterMap, flatMap, pairsToObj } from "../../../../util/util";
+import {
+  filterMap,
+  filterObj,
+  flatMap,
+  pairsToObj,
+} from "../../../../util/util";
 import { runMutationServer } from "./mutations/server";
 import { jsonEq } from "../../../../util/json";
 
 export type ServerState = {
   type: "ServerState";
-  data: { key: string; value: VersionedValue }[]; // TODO: ordered map of some kind
+  data: { [key: string]: VersionedValue };
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   mutationDefns: MutationDefns;
 };
@@ -28,7 +33,7 @@ export type ServerState = {
 export function initialServerState(mutationDefns: MutationDefns): ServerState {
   return {
     type: "ServerState",
-    data: [],
+    data: {},
     liveQueries: [],
     mutationDefns,
   };
@@ -43,11 +48,11 @@ function processLiveQueryRequest(
     ...state,
     liveQueries: [...state.liveQueries, { clientID, query: req.query }],
   };
-  const results = state.data.filter((kv) => keyInQuery(kv.key, req.query));
-  return [
-    newState,
-    { type: "LiveQueryResponse", id: req.id, results: pairsToObj(results) },
-  ];
+  // TODO: dedup with useQuery
+  const results = filterObj(state.data, (key, value) =>
+    keyInQuery(key, req.query)
+  );
+  return [newState, { type: "LiveQueryResponse", id: req.id, results }];
 }
 
 function runMutationOnServer(
