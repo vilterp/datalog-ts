@@ -75,7 +75,10 @@ function processMutationResponse(
   const payload = response.payload;
   switch (payload.type) {
     case "Reject":
-      console.warn("processMutationResponse: rejected on server", payload);
+      console.warn(
+        "CLIENT: processMutationResponse: rejected on server",
+        payload
+      );
       // TODO: roll back & retry?
       return [state1, null];
     case "Accept":
@@ -100,7 +103,7 @@ function processLiveQueryUpdate(
                 value: update.value,
               };
             default:
-              console.warn("unsupported update type:", update);
+              console.warn("CLIENT: unsupported update type:", update);
           }
         })
       ),
@@ -120,7 +123,7 @@ function runMutationOnClient(
     invocation.args
   );
   if (outcome === "Abort") {
-    console.warn("aborted on client side");
+    console.warn("CLIENT: txn aborted client side");
     return [state1, null];
   }
   const state2: ClientState = {

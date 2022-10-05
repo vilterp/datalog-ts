@@ -91,7 +91,6 @@ function runMutationExpr(
         return [null, "Abort", state2, trace2];
       }
       // TODO: actually assert string
-      const curVal = state.data[keyRes as string];
       const state3: ClientState = {
         ...state2,
         data: {

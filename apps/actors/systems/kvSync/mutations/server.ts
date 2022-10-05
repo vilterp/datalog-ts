@@ -90,8 +90,6 @@ function runMutationExpr(
         return [null, "Abort", state2, trace2];
       }
       // TODO: actually assert string
-      const curVal = state.data[keyRes as string];
-      const newVersion = curVal ? curVal.version + 1 : 1;
       // TODO: use sorted map
       const state3: ServerState = {
         ...state2,
