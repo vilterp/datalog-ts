@@ -28,7 +28,7 @@ export type System<ActorState, Msg> = {
   update: UpdateFn<ActorState, Msg>;
   // TODO: something about all these initial states
   getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
-  initialClientState: () => ActorState;
+  initialClientState: ActorState;
   initialUserState: () => ActorState;
 };
 

@@ -21,24 +21,24 @@ export type QueryStatus = "Loading" | "Online";
 
 export type ClientState = {
   type: "ClientState";
-  id: string;
   data: { [key: string]: VersionedValue };
   liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
+  randSeed: number;
 };
 
 export function initialClientState(
-  id: string,
-  mutationDefns: MutationDefns
+  mutationDefns: MutationDefns,
+  randSeed: number
 ): ClientState {
   return {
     type: "ClientState",
     data: {},
-    id,
     liveQueries: {},
     mutationDefns,
     transactions: {},
+    randSeed,
   };
 }
 
