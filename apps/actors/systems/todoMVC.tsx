@@ -12,6 +12,7 @@ import {
 import * as effects from "../effects";
 import { spawnInitialActors } from "../step";
 import { mapObj, mapObjToList } from "../../../util/util";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 
 // states
 
@@ -84,8 +85,8 @@ type PutTodoResp = { type: "putTodoResp"; todo: Todo };
 
 // initial state
 
-export function getInitialState(): Trace<State> {
-  return spawnInitialActors(update, {
+export function getInitialState(interp: AbstractInterpreter): Trace<State> {
+  return spawnInitialActors(update, interp, {
     server: {
       type: "serverState",
       todos: {},
@@ -344,7 +345,7 @@ export const todoMVC: System<State, Msg> = {
   id: "todo-mvc",
   ui: ClientServerUI,
   update,
-  initialState: getInitialState(),
+  getInitialState,
   initialClientState: () => initialClientState as State,
   initialUserState: () => ({
     type: "userState",

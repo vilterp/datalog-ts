@@ -1,8 +1,4 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { makeMemoryLoader } from "../../core/loaders";
-// @ts-ignore
-import patterns from "./patterns.dl";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import React from "react";
 
 // === overall ui model ===
@@ -31,7 +27,7 @@ export type System<ActorState, Msg> = {
   ui: (props: UIProps<ActorState, Msg>) => React.ReactElement;
   update: UpdateFn<ActorState, Msg>;
   // TODO: something about all these initial states
-  initialState: Trace<ActorState>;
+  getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
   initialClientState: () => ActorState;
   initialUserState: () => ActorState;
 };
@@ -78,13 +74,9 @@ export type Trace<ActorState> = {
   latestStates: { [actorID: string]: ActorState };
 };
 
-export function initialTrace<ActorState>(): Trace<ActorState> {
-  const interp = new IncrementalInterpreter(
-    ".",
-    makeMemoryLoader({
-      "./patterns.dl": patterns,
-    })
-  );
+export function initialTrace<ActorState>(
+  interp: AbstractInterpreter
+): Trace<ActorState> {
   const interp2 = interp.doLoad("patterns.dl");
   return {
     latestStates: {},

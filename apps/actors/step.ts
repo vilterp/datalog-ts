@@ -10,6 +10,7 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
@@ -122,12 +123,13 @@ export function step<ActorState extends Json, Msg extends Json>(
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
+  interp: AbstractInterpreter,
   initialStates: { [actorID: string]: ActorState }
 ): Trace<ActorState> {
   return Object.entries(initialStates).reduce(
     (trace, [actorID, actorState]) =>
       spawnSync(trace, update, actorID, actorState),
-    initialTrace<ActorState>()
+    initialTrace<ActorState>(interp)
   );
 }
 

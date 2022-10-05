@@ -12,17 +12,29 @@ import {
 } from "./types";
 import { Json } from "../../util/json";
 import { insertUserInput, spawnInitiator, step } from "./step";
+// @ts-ignore
+import patternsDL from "./patterns.dl";
+import { makeMemoryLoader } from "../../core/loaders";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
 ): State<St, Msg> {
   return {
-    systemInstances: systems.map((system) => ({
-      system,
-      trace: system.initialState,
-      clientIDs: [],
-      nextClientID: 0,
-    })),
+    systemInstances: systems.map((system) => {
+      const interp = new IncrementalInterpreter(
+        ".",
+        makeMemoryLoader({
+          "./patterns.dl": patternsDL,
+        })
+      );
+      return {
+        system,
+        trace: system.getInitialState(interp),
+        clientIDs: [],
+        nextClientID: 0,
+      };
+    }),
   };
 }
 
