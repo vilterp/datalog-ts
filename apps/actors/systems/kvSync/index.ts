@@ -34,7 +34,7 @@ export function update(
 // instantiated to the bank example
 export const kvSync: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
 
-function makeActorSystem(app: KVApp): System<State, Msg> {
+export function makeActorSystem(app: KVApp): System<State, Msg> {
   return {
     name: `KV: ${app.name}`,
     id: `kv-${app.name}`,

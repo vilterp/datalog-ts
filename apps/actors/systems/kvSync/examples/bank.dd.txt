@@ -1,6 +1,6 @@
-addClient{id: "client0"}.
-runMutation{from: "client0", name: "deposit", args: ["foo", 10]}.
-runMutation{from: "client0", name: "deposit", args: ["bar", 10]}.
-runMutation{from: "client0", name: "move", args: ["foo", "bar", 5]}.
-runMutation{from: "client0", name: "move", args: ["foo", "bar", 5]}.
+addClient{id: ""}.
+runMutation{from: "0", name: "deposit", args: ["foo", 10]}.
+runMutation{from: "0", name: "deposit", args: ["bar", 10]}.
+runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
+runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 ----

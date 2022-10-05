@@ -4,32 +4,37 @@ import { Json } from "./json";
 type ADT = { type: string; [more: string]: Json };
 
 export function jsonToDL(json: Json): Term {
-  if (json === null) {
-    return rec("null", {});
-  }
-  switch (typeof json) {
-    case "number":
-      return int(json);
-    case "string":
-      return str(json);
-    case "boolean":
-      return bool(json);
-    case "object":
-      if (Array.isArray(json)) {
-        return array(json.map(jsonToDL));
-      }
-      // this might not always be desired... but meh
-      if (json.hasOwnProperty("type") && typeof json.type === "string") {
-        return adtToRec(json as ADT);
-      }
-      const out: { [key: string]: Term } = {};
-      for (const key in json) {
-        out[key] = jsonToDL(json[key]);
-      }
-      return rec("", out);
-    default:
-      throw new Error(`unsupported value: ${json}`);
-  }
+  console.group("dlToJson", json);
+  const res = (() => {
+    if (json === null) {
+      return rec("null", {});
+    }
+    switch (typeof json) {
+      case "number":
+        return int(json);
+      case "string":
+        return str(json);
+      case "boolean":
+        return bool(json);
+      case "object":
+        if (Array.isArray(json)) {
+          return array(json.map(jsonToDL));
+        }
+        // this might not always be desired... but meh
+        if (json.hasOwnProperty("type") && typeof json.type === "string") {
+          return adtToRec(json as ADT);
+        }
+        const out: { [key: string]: Term } = {};
+        for (const key in json) {
+          out[key] = jsonToDL(json[key]);
+        }
+        return rec("", out);
+      default:
+        throw new Error(`unsupported value: ${json}`);
+    }
+  })();
+  console.groupEnd();
+  return res;
 }
 
 export function adtToRec(adt: ADT): Rec {

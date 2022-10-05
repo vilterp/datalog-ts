@@ -1,4 +1,4 @@
-import { State, update } from ".";
+import { makeActorSystem, State, update } from ".";
 import { IncrementalInterpreter } from "../../../../core/incremental/interpreter";
 import { makeMemoryLoader } from "../../../../core/loaders";
 import { parserTermToInternal } from "../../../../core/translateAST";
@@ -8,7 +8,13 @@ import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
 import { datalogOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
-import { insertUserInput, spawnSync, stepAll } from "../../step";
+import {
+  insertUserInput,
+  spawnInitiator,
+  spawnSync,
+  step,
+  stepAll,
+} from "../../step";
 import { initialTrace } from "../../types";
 import { initialClientState } from "./client";
 import { bank } from "./examples/bank";
@@ -32,6 +38,7 @@ export function kvSyncTests(writeResults: boolean): Suite {
 }
 
 function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
+  const system = makeActorSystem(app);
   return testCases.map((testCase) => {
     const interp = new IncrementalInterpreter("apps/actors", fsLoader);
     let trace = initialTrace<State>(interp);
@@ -41,13 +48,19 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
       const record = parserTermToInternal(rawRec) as Rec;
       switch (record.relation) {
         case "addClient": {
+          // TODO: DRY this up with reducers.ts
           const clientID = (record.attrs.id as StringLit).val;
-          trace = spawnSync(
+          const { newTrace: trace2, newInits: newInits1 } = step(
             trace,
             update,
-            clientID,
-            initialClientState(clientID, app.mutations)
+            spawnInitiator(`user${clientID}`, system.initialUserState())
           );
+          const { newTrace: trace3, newInits: newInits2 } = step(
+            trace2,
+            update,
+            spawnInitiator(`client${clientID}`, system.initialUserState())
+          );
+          trace = stepAll(trace3, update, [...newInits1, ...newInits2]);
           break;
         }
         case "runMutation": {
@@ -65,7 +78,7 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
           trace = stepAll(trace1, update, [
             {
               from: `user${clientID}`,
-              to: clientID,
+              to: `client${clientID}`,
               init: {
                 type: "messageReceived",
                 messageID: newMessageID.toString(),
