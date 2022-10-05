@@ -3,6 +3,7 @@ import { END_KEY, START_KEY } from "../../../../../core/types";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
+import { useLiveQuery } from "../hooks";
 import {
   apply,
   read,
@@ -19,17 +20,10 @@ import { MutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
-  useEffect(() => {
-    props.sendUserInput({
-      type: "RegisterQuery",
-      query: { fromKey: START_KEY, toKey: END_KEY },
-    });
-  }, []);
-
   return (
     <div>
       <h3>MyBank</h3>
-      <BalanceTable state={props.state} />
+      <BalanceTable state={props.state} sendUserInput={props.sendUserInput} />
       <ul>
         <li>
           <WithdrawForm
@@ -141,9 +135,22 @@ function MoveForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function BalanceTable(props: { state: ClientState }) {
-  // TODO: use a query API instead of mapping over the raw data
-  // useLiveQuery would be good
+function BalanceTable(props: UIProps<ClientState, UserInput>) {
+  const [queryResults, queryState] = useLiveQuery(
+    props.state,
+    "list-accounts",
+    { fromKey: START_KEY, toKey: END_KEY },
+    props.sendUserInput
+  );
+
+  if (queryState === "Loading") {
+    return (
+      <div>
+        <em>Loading...</em>
+      </div>
+    );
+  }
+
   return (
     <table>
       <thead>
@@ -154,7 +161,7 @@ function BalanceTable(props: { state: ClientState }) {
         </tr>
       </thead>
       <tbody>
-        {mapObjToList(props.state.data, (key, value) => {
+        {mapObjToList(queryResults, (key, value) => {
           const txn = props.state.transactions[value.transactionID];
           return (
             <tr key={key}>

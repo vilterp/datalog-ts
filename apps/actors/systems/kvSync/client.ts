@@ -17,11 +17,13 @@ import * as effects from "../../effects";
 import { mapObj, pairsToObj } from "../../../../util/util";
 import { runMutationClient } from "./mutations/client";
 
+export type QueryStatus = "Loading" | "Online";
+
 export type ClientState = {
   type: "ClientState";
   id: string;
   data: { [key: string]: VersionedValue };
-  liveQueries: Query[];
+  liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
   transactions: { [id: string]: TransactionState };
   mutationDefns: MutationDefns;
 };
@@ -34,7 +36,7 @@ export function initialClientState(
     type: "ClientState",
     data: {},
     id,
-    liveQueries: [],
+    liveQueries: {},
     mutationDefns,
     transactions: {},
   };
@@ -139,21 +141,30 @@ function runMutationOnClient(
 
 function registerLiveQuery(
   state: ClientState,
+  id: string,
   query: Query
 ): [ClientState, LiveQueryRequest] {
   const newState: ClientState = {
     ...state,
-    liveQueries: [...state.liveQueries, query],
+    liveQueries: { ...state.liveQueries, [id]: { query, status: "Loading" } },
   };
-  return [newState, { type: "LiveQueryRequest", query }];
+  return [newState, { type: "LiveQueryRequest", id, query }];
 }
 
 function processLiveQueryResponse(
   state: ClientState,
   resp: LiveQueryResponse
 ): ClientState {
+  const query = state.liveQueries[resp.id];
   return {
     ...state,
+    liveQueries: {
+      ...state.liveQueries,
+      [resp.id]: {
+        ...query,
+        status: "Online",
+      },
+    },
     data: {
       ...state.data,
       ...resp.results,
@@ -186,7 +197,7 @@ export function updateClient(
         }
         // user input
         case "RegisterQuery": {
-          const [newState, req] = registerLiveQuery(state, msg.query);
+          const [newState, req] = registerLiveQuery(state, msg.id, msg.query);
           return effects.updateAndSend(newState, [{ to: "server", msg: req }]);
         }
         case "RunMutation": {

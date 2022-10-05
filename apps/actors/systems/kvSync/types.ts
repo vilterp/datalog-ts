@@ -8,7 +8,7 @@ export type VersionedValue = {
 
 export type UserInput =
   | { type: "RunMutation"; name: string; args: Json[] }
-  | { type: "RegisterQuery"; query: Query };
+  | { type: "RegisterQuery"; id: string; query: Query };
 
 export type MsgToServer = LiveQueryRequest | MutationRequest;
 
@@ -22,6 +22,7 @@ export type Query = { fromKey: string; toKey: string };
 
 export type LiveQueryRequest = {
   type: "LiveQueryRequest";
+  id: string;
   query: Query;
 };
 
@@ -67,6 +68,7 @@ export type LiveQueryUpdate = {
 
 export type LiveQueryResponse = {
   type: "LiveQueryResponse";
+  id: string;
   results: { [key: string]: VersionedValue };
 };
 

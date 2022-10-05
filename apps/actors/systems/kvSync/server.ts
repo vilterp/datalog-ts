@@ -46,7 +46,7 @@ function processLiveQueryRequest(
   const results = state.data.filter((kv) => keyInQuery(kv.key, req.query));
   return [
     newState,
-    { type: "LiveQueryResponse", results: pairsToObj(results) },
+    { type: "LiveQueryResponse", id: req.id, results: pairsToObj(results) },
   ];
 }
 
