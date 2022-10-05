@@ -1,6 +1,11 @@
-addClient{id: ""}.
+addClient{id: "0"}.
 runMutation{from: "0", name: "deposit", args: ["foo", 10]}.
 runMutation{from: "0", name: "deposit", args: ["bar", 10]}.
 runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 ----
+application/datalog
+message{fromTickID: "2", id: "2", payload: RunMutation{args: ["foo",10], name: "deposit"}, toActorID: "0"}.
+message{fromTickID: "5", id: "5", payload: RunMutation{args: ["bar",10], name: "deposit"}, toActorID: "0"}.
+message{fromTickID: "8", id: "8", payload: RunMutation{args: ["foo","bar",5], name: "move"}, toActorID: "0"}.
+message{fromTickID: "11", id: "11", payload: RunMutation{args: ["foo","bar",5], name: "move"}, toActorID: "0"}.

@@ -171,6 +171,12 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
 
   const newTickID = trace.nextID;
   newTrace.nextID++;
+  const latestState = trace.latestStates[from];
+  console.log("insertUserInput", {
+    latestStates: trace.latestStates,
+    from,
+    latestState,
+  });
   newTrace.interp = trace.interp.insert(
     rec("tick", {
       id: str(newTickID.toString()),
@@ -178,7 +184,7 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
       resp: adtToRec({
         type: "continue",
-        state: trace.latestStates[from],
+        state: latestState,
         messages: [
           {
             to: to,

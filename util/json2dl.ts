@@ -4,7 +4,7 @@ import { Json } from "./json";
 type ADT = { type: string; [more: string]: Json };
 
 export function jsonToDL(json: Json): Term {
-  console.group("dlToJson", json);
+  // console.group("dlToJson", json);
   const res = (() => {
     if (json === null) {
       return rec("null", {});
@@ -33,7 +33,7 @@ export function jsonToDL(json: Json): Term {
         throw new Error(`unsupported value: ${json}`);
     }
   })();
-  console.groupEnd();
+  // console.groupEnd();
   return res;
 }
 
