@@ -40,14 +40,14 @@ export type WriteOp = {
 
 export type MutationRequest = {
   type: "MutationRequest";
-  id: string;
+  txnID: string;
   invocation: MutationInvocation;
   trace: Trace;
 };
 
 export type MutationResponse = {
   type: "MutationResponse";
-  id: string;
+  txnID: string;
   payload:
     | {
         type: "Accept";

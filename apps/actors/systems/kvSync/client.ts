@@ -59,7 +59,7 @@ function processMutationResponse(
   state: ClientState,
   response: MutationResponse
 ): [ClientState, MutationRequest | null] {
-  const txn = state.transactions[response.id];
+  const txn = state.transactions[response.txnID];
   const payload = response.payload;
   const newTxnState: TransactionState =
     payload.type === "Accept"
@@ -69,7 +69,7 @@ function processMutationResponse(
     ...state,
     transactions: {
       ...state.transactions,
-      [response.id]: {
+      [response.txnID]: {
         ...txn,
         state: newTxnState,
       },
@@ -139,7 +139,7 @@ function runMutationOnClient(
   };
   const req: MutationRequest = {
     type: "MutationRequest",
-    id: txnID,
+    txnID,
     invocation: invocation,
     trace: trace,
   };

@@ -56,7 +56,7 @@ function runMutationOnServer(
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const [newState, outcome, trace] = runMutationServer(
     state,
-    req.id,
+    req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args
   );
@@ -65,7 +65,7 @@ function runMutationOnServer(
       state,
       {
         type: "MutationResponse",
-        id: req.id,
+        txnID: req.txnID,
         // TODO: include abort reason?
         payload: { type: "Reject", serverTrace: trace, reason: "txn aborted" },
       },
@@ -81,7 +81,7 @@ function runMutationOnServer(
       state,
       {
         type: "MutationResponse",
-        id: req.id,
+        txnID: req.txnID,
         payload: {
           type: "Reject",
           serverTrace: trace,
@@ -112,7 +112,7 @@ function runMutationOnServer(
           key: write.key,
           value: {
             value: write.value,
-            transactionID: req.id,
+            transactionID: req.txnID,
           },
         })),
       };
@@ -122,7 +122,7 @@ function runMutationOnServer(
     newState,
     {
       type: "MutationResponse",
-      id: req.id,
+      txnID: req.txnID,
       payload: { type: "Accept" },
     },
     liveQueryUpdates,
