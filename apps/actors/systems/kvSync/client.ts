@@ -14,7 +14,7 @@ import {
   VersionedValue,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, pairsToObj } from "../../../../util/util";
+import { mapObj, pairsToObj, randStep } from "../../../../util/util";
 import { runMutationClient } from "./mutations/client";
 
 export type QueryStatus = "Loading" | "Online";
@@ -117,7 +117,8 @@ function runMutationOnClient(
   state: ClientState,
   invocation: MutationInvocation
 ): [ClientState, MutationRequest | null] {
-  const txnID = Math.random().toString();
+  const randNum = randStep(state.randSeed);
+  const txnID = randNum.toString();
   const [state1, outcome, trace] = runMutationClient(
     state,
     txnID,
@@ -130,6 +131,7 @@ function runMutationOnClient(
   }
   const state2: ClientState = {
     ...state1,
+    randSeed: randNum,
     transactions: {
       ...state1.transactions,
       [txnID]: { invocation: invocation, state: { type: "Pending" } },

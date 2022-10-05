@@ -411,3 +411,8 @@ export function capitalize(input: string): string {
 export function max(numbers: number[]): number {
   return numbers.reduce((prev, cur) => Math.max(prev, cur), 0);
 }
+
+// TODO: something more 'random'
+export function randStep(num: number) {
+  return (num * 234 - 534) % 5235255;
+}
