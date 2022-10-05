@@ -74,7 +74,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   // hoo that is a big type
   dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
-  const sendInput = (clientID: number, input: Msg) => {
+  const sendInput = (clientID: string, input: Msg) => {
     props.dispatch({
       type: "UpdateTrace",
       action: {
@@ -118,7 +118,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
             type: "UpdateTrace",
             action: {
               type: "SpawnClient",
-              id: props.systemInstance.nextClientID,
+              id: props.systemInstance.nextClientID.toString(),
               initialUserState: props.systemInstance.system.initialUserState(),
               initialClientState:
                 props.systemInstance.system.initialClientState(),

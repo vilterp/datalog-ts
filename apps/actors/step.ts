@@ -159,7 +159,7 @@ export function spawnInitiator<St>(
 
 export function insertUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  clientID: number,
+  clientID: string,
   payload: Msg
 ): { newTrace: Trace<ActorState>; newMessageID: number } {
   const newTrace = {

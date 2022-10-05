@@ -107,7 +107,10 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
       return [
         {
           ...systemInstance,
-          clientIDs: [...systemInstance.clientIDs, systemInstance.nextClientID],
+          clientIDs: [
+            ...systemInstance.clientIDs,
+            systemInstance.nextClientID.toString(),
+          ],
           nextClientID: systemInstance.nextClientID + 1,
         },
         [],

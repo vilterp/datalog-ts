@@ -40,7 +40,7 @@ export type UIProps<ClientState, UserInput> = {
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
   trace: Trace<ActorState>;
-  clientIDs: number[];
+  clientIDs: string[];
   nextClientID: number;
 };
 
@@ -50,19 +50,19 @@ export type SystemInstanceAction<St, Msg> =
       action: TraceAction<St, Msg>;
     }
   | { type: "AllocateClientID" }
-  | { type: "ExitClient"; clientID: number };
+  | { type: "ExitClient"; clientID: string };
 
 // === trace model ===
 
 export type TraceAction<ActorState, Msg> =
   | {
       type: "SpawnClient";
-      id: number;
+      id: string;
       // TODO: this is a bit awkward, since these both exist on System...
       initialUserState: ActorState;
       initialClientState: ActorState;
     }
-  | { type: "SendUserInput"; clientID: number; input: Msg }
+  | { type: "SendUserInput"; clientID: string; input: Msg }
   | { type: "Step"; init: AddressedTickInitiator<ActorState> };
 
 export type Trace<ActorState> = {
