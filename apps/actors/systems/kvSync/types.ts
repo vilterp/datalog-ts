@@ -6,6 +6,8 @@ export type VersionedValue = {
   transactionID: string;
 };
 
+export type KVData = { [key: string]: VersionedValue };
+
 export type UserInput =
   | { type: "RunMutation"; name: string; args: Json[] }
   | { type: "RegisterQuery"; id: string; query: Query };

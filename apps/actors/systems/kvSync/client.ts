@@ -1,5 +1,6 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
+  KVData,
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
@@ -11,17 +12,16 @@ import {
   MutationResponse,
   Query,
   Trace,
-  VersionedValue,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, pairsToObj, randStep } from "../../../../util/util";
-import { runMutationClient } from "./mutations/client";
+import { pairsToObj, randStep } from "../../../../util/util";
+import { runMutation } from "./mutations/run";
 
 export type QueryStatus = "Loading" | "Online";
 
 export type ClientState = {
   type: "ClientState";
-  data: { [key: string]: VersionedValue };
+  data: KVData;
   liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
@@ -119,12 +119,13 @@ function runMutationOnClient(
 ): [ClientState, MutationRequest | null] {
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
-  const [state1, outcome, trace] = runMutationClient(
-    state,
+  const [data1, outcome, trace] = runMutation(
+    state.data,
     txnID,
     state.mutationDefns[invocation.name],
     invocation.args
   );
+  const state1: ClientState = { ...state, data: data1 };
   if (outcome === "Abort") {
     console.warn("CLIENT: txn aborted client side");
     return [state1, null];

@@ -1,15 +1,15 @@
 import { pairsToObj } from "../../../../../util/util";
-import { ServerState } from "../server";
-import { Trace } from "../types";
-import { BUILTINS } from "./builtins";
+import { ClientState } from "../client";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
+import { KVData, Trace } from "../types";
+import { BUILTINS } from "./builtins";
 
-export function runMutationServer(
-  clientState: ServerState, // TODO: need to abstract this
+export function runMutation(
+  data: KVData,
   transactionID: string,
   lambda: Lambda,
   args: Value[]
-): [ServerState, Outcome, Trace] {
+): [KVData, Outcome, Trace] {
   const scope: Scope = pairsToObj(
     args.map((arg, idx) => ({
       key: lambda.args[idx],
@@ -17,7 +17,7 @@ export function runMutationServer(
     }))
   );
   const [resVal, outcome, newState, trace] = runMutationExpr(
-    clientState,
+    data,
     transactionID,
     [],
     scope,
@@ -28,16 +28,16 @@ export function runMutationServer(
 }
 
 function runMutationExpr(
-  state: ServerState, // TODO: need to abstract this
+  data: KVData,
   transactionID: string,
   traceSoFar: Trace,
   scope: Scope,
   expr: Expr
-): [Value, Outcome, ServerState, Trace] {
+): [Value, Outcome, KVData, Trace] {
   switch (expr.type) {
     case "Read": {
       const [keyRes, outcome, newState, newTrace] = runMutationExpr(
-        state,
+        data,
         transactionID,
         traceSoFar,
         scope,
@@ -47,11 +47,12 @@ function runMutationExpr(
         return [null, "Abort", newState, newTrace];
       }
       // TODO: actually assert string
-      const entry = state.data[keyRes as string];
-      const val = entry ? entry.value : null;
+      const val = data[keyRes as string];
       if (!val) {
         const newTrace2: Trace = [
           ...newTrace,
+          // TODO: get rid of defaulting...
+          // reading a nonexistent key should just abort
           { type: "Read", key: keyRes as string, transactionID: "-1" },
         ];
         return [expr.default, "Commit", newState, newTrace2];
@@ -61,15 +62,15 @@ function runMutationExpr(
         {
           type: "Read",
           key: keyRes as string,
-          transactionID: entry.transactionID,
+          transactionID: val.transactionID,
         },
       ];
-      return [val, "Commit", newState, newTrace2];
+      return [val.value, "Commit", newState, newTrace2];
     }
     case "Write": {
       // key expr
       const [keyRes, keyOutcome, state1, trace1] = runMutationExpr(
-        state,
+        data,
         transactionID,
         traceSoFar,
         scope,
@@ -90,8 +91,7 @@ function runMutationExpr(
         return [null, "Abort", state2, trace2];
       }
       // TODO: actually assert string
-      // TODO: use sorted map
-      const state3: ServerState = {
+      const state3: KVData = {
         ...state2,
         data: {
           ...state2.data,
@@ -109,48 +109,48 @@ function runMutationExpr(
     }
     case "Lambda":
       // TODO: closure??
-      return [expr, "Commit", state, traceSoFar];
+      return [expr, "Commit", data, traceSoFar];
     case "Do": {
-      let curState = state;
+      let curData = data;
       let curTrace = traceSoFar;
       let outcome: Outcome = "Commit";
       let curRes: Value = null;
       for (const step of expr.ops) {
-        const [stepRes, newOutcome, newState, newTrace] = runMutationExpr(
-          curState,
+        const [stepRes, newOutcome, newData, newTrace] = runMutationExpr(
+          curData,
           transactionID,
           curTrace,
           scope,
           step
         );
-        curState = newState;
+        curData = newData;
         curTrace = newTrace;
         outcome = newOutcome;
         curRes = stepRes;
       }
-      return [curRes, outcome, curState, curTrace];
+      return [curRes, outcome, curData, curTrace];
     }
     case "Let": {
       const newScope = { ...scope };
-      let curState = state;
+      let curData = data;
       let curTrace = traceSoFar;
       for (const binding of expr.bindings) {
-        const [res, outcome, newState, newTrace] = runMutationExpr(
-          curState,
+        const [res, outcome, newData, newTrace] = runMutationExpr(
+          curData,
           transactionID,
           curTrace,
           scope,
           binding.val
         );
         if (outcome === "Abort") {
-          return [null, "Abort", curState, curTrace];
+          return [null, "Abort", curData, curTrace];
         }
         newScope[binding.varName] = res;
-        curState = newState;
+        curData = newData;
         curTrace = newTrace;
       }
       return runMutationExpr(
-        curState,
+        curData,
         transactionID,
         curTrace,
         newScope,
@@ -159,7 +159,7 @@ function runMutationExpr(
     }
     case "If": {
       const [condRes, condOutcome, clientState1, trace1] = runMutationExpr(
-        state,
+        data,
         transactionID,
         traceSoFar,
         scope,
@@ -177,27 +177,27 @@ function runMutationExpr(
       );
     }
     case "Abort":
-      return [null, "Abort", state, traceSoFar];
+      return [null, "Abort", data, traceSoFar];
     case "Var":
-      return [scope[expr.name], "Commit", state, traceSoFar];
+      return [scope[expr.name], "Commit", data, traceSoFar];
     case "StringLit":
-      return [expr.val, "Commit", state, traceSoFar];
+      return [expr.val, "Commit", data, traceSoFar];
     case "Apply": {
       // evaluate args
       const argValues: Value = [];
-      let curState = state;
+      let curData = data;
       let curTrace = traceSoFar;
       let outcome: Outcome = "Commit";
       let curRes: Value = null;
       for (const arg of expr.args) {
-        const [stepRes, newOutcome, newState, newTrace] = runMutationExpr(
-          curState,
+        const [stepRes, newOutcome, newData, newTrace] = runMutationExpr(
+          curData,
           transactionID,
           curTrace,
           scope,
           arg
         );
-        curState = newState;
+        curData = newData;
         curTrace = newTrace;
         outcome = newOutcome;
         curRes = stepRes;
@@ -206,7 +206,7 @@ function runMutationExpr(
       // TODO: check aborted
       const builtin = BUILTINS[expr.name];
       if (builtin) {
-        return [builtin(argValues), "Commit", state, traceSoFar];
+        return [builtin(argValues), "Commit", curData, traceSoFar];
       }
       // TODO: look in scope for lambdas
       console.error("missing builtin", expr.name);

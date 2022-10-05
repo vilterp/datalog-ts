@@ -1,6 +1,7 @@
 import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
   keyInQuery,
+  KVData,
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
@@ -10,22 +11,16 @@ import {
   MutationRequest,
   MutationResponse,
   Query,
-  VersionedValue,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import {
-  filterMap,
-  filterObj,
-  flatMap,
-  pairsToObj,
-} from "../../../../util/util";
-import { runMutationServer } from "./mutations/server";
+import { filterMap, filterObj } from "../../../../util/util";
 import { jsonEq } from "../../../../util/json";
+import { runMutation } from "./mutations/run";
 
 export type ServerState = {
   type: "ServerState";
-  data: { [key: string]: VersionedValue };
+  data: KVData;
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   mutationDefns: MutationDefns;
 };
@@ -59,12 +54,13 @@ function runMutationOnServer(
   state: ServerState,
   req: MutationRequest
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
-  const [newState, outcome, trace] = runMutationServer(
-    state,
+  const [newData, outcome, trace] = runMutation(
+    state.data,
     req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args
   );
+  const newState: ServerState = { ...state, data: newData };
   if (outcome === "Abort") {
     return [
       state,
