@@ -11,7 +11,6 @@ import {
   UpdateFn,
 } from "./types";
 
-// TODO: get rid of this
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,

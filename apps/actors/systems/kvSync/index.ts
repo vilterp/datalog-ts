@@ -11,7 +11,7 @@ export type State = ServerState | ClientState | { type: "UserState" };
 
 export type Msg = MsgToServer | MsgToClient;
 
-function update(
+export function update(
   state: State,
   init: LoadedTickInitiator<State, Msg>
 ): ActorResp<State, Msg> {

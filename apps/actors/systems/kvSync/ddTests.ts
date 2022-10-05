@@ -1,4 +1,4 @@
-import { Msg, State } from ".";
+import { Msg, State, update } from ".";
 import { parserTermToInternal } from "../../../../core/translateAST";
 import { Array, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
@@ -6,6 +6,8 @@ import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
 import { datalogOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
+import { spawnSync, stepAll } from "../../step";
+import { AddressedTickInitiator, initialTrace } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { bank } from "./examples/bank";
 import { KVApp } from "./examples/types";
@@ -28,10 +30,7 @@ export function kvSyncTests(writeResults: boolean): Suite {
 
 function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   return testCases.map((testCase) => {
-    const actorStates: { [id: string]: State } = {
-      server: initialServerState(app.mutations),
-    };
-    const trace: Rec[] = [];
+    let trace = initialTrace<State>();
     // TODO: parse it as a program? idk
     testCase.split("\n").forEach((line) => {
       const rawRec = parseRecord(line);
@@ -39,34 +38,33 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
       switch (record.relation) {
         case "addClient": {
           const clientID = (record.attrs.id as StringLit).val;
-          actorStates[clientID] = initialClientState(clientID, app.mutations);
+          trace = spawnSync(
+            trace,
+            update,
+            clientID,
+            initialClientState(clientID, app.mutations)
+          );
           break;
         }
         case "runMutation": {
-          const messageQueue: Msg[] = [
-            { type: "RunMutation", name: XXX, args: XXX },
-          ];
-
           const clientID = (record.attrs.from as StringLit).val;
-          const clientState = actorStates[clientID] as ClientState;
-          const actorResp = updateClient(clientState, {
-            type: "messageReceived",
-            from: "user",
-            payload: {
-              type: "RunMutation",
-              name: (record.attrs.name as StringLit).val,
-              args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
+          const inits: AddressedTickInitiator<State>[] = [
+            {
+              from: "user",
+              to: clientID,
+              init: {
+                type: "messageReceived",
+                // where the hell do I get this?
+                messageID: XXX,
+              },
             },
-          });
-          if (actorResp.type === "continue") {
-            actorStates[clientID] = actorResp.state;
-            const messages = actorResp.messages;
-            messages.forEach((msg) => messageQueue.push(msg));
-          }
-          break;
+          ];
+          trace = stepAll(trace, update, inits);
         }
       }
     });
-    return datalogOut(trace);
+    return datalogOut(
+      trace.interp.evalStr("message{}?")[0].map((res) => res.term)
+    );
   });
 }
