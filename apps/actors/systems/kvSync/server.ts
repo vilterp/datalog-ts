@@ -10,7 +10,7 @@ import {
   MutationRequest,
   MutationResponse,
   Query,
-  ServerValue,
+  VersionedValue,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
@@ -20,7 +20,7 @@ import { jsonEq } from "../../../../util/json";
 
 export type ServerState = {
   type: "ServerState";
-  data: { key: string; value: ServerValue }[]; // TODO: ordered map of some kind
+  data: { key: string; value: VersionedValue }[]; // TODO: ordered map of some kind
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   mutationDefns: MutationDefns;
 };
@@ -56,13 +56,19 @@ function runMutationOnServer(
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const [newState, outcome, trace] = runMutationServer(
     state,
+    req.id,
     state.mutationDefns[req.invocation.name],
     req.invocation.args
   );
   if (outcome === "Abort") {
     return [
       newState,
-      { type: "MutationResponse", payload: { type: "Aborted" } },
+      {
+        type: "MutationResponse",
+        id: req.id,
+        // TODO: include abort reason?
+        payload: { type: "Reject", serverTrace: trace },
+      },
       [],
     ];
   }
@@ -71,6 +77,7 @@ function runMutationOnServer(
       newState,
       {
         type: "MutationResponse",
+        id: req.id,
         payload: { type: "Reject", serverTrace: trace },
       },
       [],
@@ -95,8 +102,10 @@ function runMutationOnServer(
         updates: matchingWrites.map((write) => ({
           type: "Updated",
           key: write.key,
-          value: write.value,
-          newVersion: write.newVersion,
+          value: {
+            value: write.value,
+            transactionID: req.id,
+          },
         })),
       };
     }
@@ -106,6 +115,7 @@ function runMutationOnServer(
     newState,
     {
       type: "MutationResponse",
+      id: req.id,
       payload: { type: "Accept" },
     },
     liveQueryUpdates,

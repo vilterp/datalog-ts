@@ -1,15 +1,9 @@
 import { Json } from "../../../../util/json";
 import { Lambda } from "./mutations/types";
 
-export type ServerValue = {
-  version: number;
-  value: Json;
-  serverTimestamp: number;
-};
-
 export type VersionedValue = {
-  version: number;
-  value: string;
+  value: Json;
+  transactionID: string;
 };
 
 export type UserInput =
@@ -35,25 +29,25 @@ export type Trace = TraceOp[];
 
 type TraceOp = ReadOp | WriteOp;
 
-export type ReadOp = { type: "Read"; key: string; version: number };
+export type ReadOp = { type: "Read"; key: string; transactionID: string };
 
 export type WriteOp = {
   type: "Write";
   key: string;
   value: Json;
-  newVersion: number;
 };
 
 export type MutationRequest = {
   type: "MutationRequest";
+  id: string;
   invocation: MutationInvocation;
   trace: Trace;
 };
 
 export type MutationResponse = {
   type: "MutationResponse";
+  id: string;
   payload:
-    | { type: "Aborted" }
     | {
         type: "Accept";
         // TODO: new keys? with server timestamps?
@@ -72,15 +66,14 @@ export type LiveQueryUpdate = {
 
 export type LiveQueryResponse = {
   type: "LiveQueryResponse";
-  results: { [key: string]: ServerValue };
+  results: { [key: string]: VersionedValue };
 };
 
 type KeyUpdate =
   | {
       type: "Updated";
       key: string;
-      value: Json;
-      newVersion: number;
+      value: VersionedValue;
     }
   | { type: "Deleted"; key: string };
 

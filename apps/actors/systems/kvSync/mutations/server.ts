@@ -6,6 +6,7 @@ import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 
 export function runMutationServer(
   clientState: ServerState, // TODO: need to abstract this
+  transactionID: string,
   lambda: Lambda,
   args: Value[]
 ): [ServerState, Outcome, Trace] {
@@ -17,6 +18,7 @@ export function runMutationServer(
   );
   const [resVal, outcome, newState, trace] = runMutationExpr(
     clientState,
+    transactionID,
     [],
     scope,
     lambda.body
@@ -27,6 +29,7 @@ export function runMutationServer(
 
 function runMutationExpr(
   state: ServerState, // TODO: need to abstract this
+  transactionID: string,
   traceSoFar: Trace,
   scope: Scope,
   expr: Expr
@@ -35,6 +38,7 @@ function runMutationExpr(
     case "Read": {
       const [keyRes, outcome, newState, newTrace] = runMutationExpr(
         state,
+        transactionID,
         traceSoFar,
         scope,
         expr.key
@@ -48,13 +52,17 @@ function runMutationExpr(
       if (!val) {
         const newTrace2: Trace = [
           ...newTrace,
-          { type: "Read", key: keyRes as string, version: -1 },
+          { type: "Read", key: keyRes as string, transactionID: "-1" },
         ];
         return [expr.default, "Commit", newState, newTrace2];
       }
       const newTrace2: Trace = [
         ...newTrace,
-        { type: "Read", key: keyRes as string, version: val.version },
+        {
+          type: "Read",
+          key: keyRes as string,
+          transactionID: val.transactionID,
+        },
       ];
       return [val.value, "Commit", newState, newTrace2];
     }
@@ -62,6 +70,7 @@ function runMutationExpr(
       // key expr
       const [keyRes, keyOutcome, state1, trace1] = runMutationExpr(
         state,
+        transactionID,
         traceSoFar,
         scope,
         expr.key
@@ -72,6 +81,7 @@ function runMutationExpr(
       // val expr
       const [valRes, valOutcome, state2, trace2] = runMutationExpr(
         state1,
+        transactionID,
         trace1,
         scope,
         expr.val
@@ -91,8 +101,7 @@ function runMutationExpr(
             key: keyRes as string,
             value: {
               value: valRes as string,
-              version: newVersion,
-              serverTimestamp: null,
+              transactionID,
             },
           },
           ...state2.data.filter((kv) => kv.key > keyRes),
@@ -100,7 +109,7 @@ function runMutationExpr(
       };
       const trace3: Trace = [
         ...trace2,
-        { type: "Write", key: keyRes as string, value: valRes, newVersion },
+        { type: "Write", key: keyRes as string, value: valRes },
       ];
       return [valRes, "Commit", state3, trace3];
     }
@@ -115,6 +124,7 @@ function runMutationExpr(
       for (const step of expr.ops) {
         const [stepRes, newOutcome, newState, newTrace] = runMutationExpr(
           curState,
+          transactionID,
           curTrace,
           scope,
           step
@@ -133,6 +143,7 @@ function runMutationExpr(
       for (const binding of expr.bindings) {
         const [res, outcome, newState, newTrace] = runMutationExpr(
           curState,
+          transactionID,
           curTrace,
           scope,
           binding.val
@@ -144,11 +155,18 @@ function runMutationExpr(
         curState = newState;
         curTrace = newTrace;
       }
-      return runMutationExpr(curState, curTrace, newScope, expr.body);
+      return runMutationExpr(
+        curState,
+        transactionID,
+        curTrace,
+        newScope,
+        expr.body
+      );
     }
     case "If": {
       const [condRes, condOutcome, clientState1, trace1] = runMutationExpr(
         state,
+        transactionID,
         traceSoFar,
         scope,
         expr.cond
@@ -158,6 +176,7 @@ function runMutationExpr(
       }
       return runMutationExpr(
         clientState1,
+        transactionID,
         trace1,
         scope,
         condRes ? expr.ifTrue : expr.ifFalse
@@ -179,6 +198,7 @@ function runMutationExpr(
       for (const arg of expr.args) {
         const [stepRes, newOutcome, newState, newTrace] = runMutationExpr(
           curState,
+          transactionID,
           curTrace,
           scope,
           arg

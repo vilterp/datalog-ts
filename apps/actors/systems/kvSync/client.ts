@@ -11,19 +11,18 @@ import {
   MutationResponse,
   Query,
   Trace,
+  VersionedValue,
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj, pairsToObj } from "../../../../util/util";
 import { runMutationClient } from "./mutations/client";
-import { Json } from "../../../../util/json";
 
 export type ClientState = {
   type: "ClientState";
   id: string;
-  data: { [key: string]: ClientValue };
+  data: { [key: string]: VersionedValue };
   liveQueries: Query[];
-  nextMutationID: number;
-  mutations: MutationState[]; // TODO: index
+  transactions: { [id: string]: TransactionState };
   mutationDefns: MutationDefns;
 };
 
@@ -37,26 +36,17 @@ export function initialClientState(
     id,
     liveQueries: [],
     mutationDefns,
-    mutations: [],
-    nextMutationID: 0,
+    transactions: {},
   };
 }
 
-type ClientValue = {
-  version: number;
-  value: Json;
-  serverTimestamp: number | null;
-};
-
-// rename "TransactionState"?
-type MutationState = {
+type TransactionState = {
   invocation: MutationInvocation;
   state:
     | { type: "Pending" }
-    | { type: "Applied"; serverTimestamp: number }
+    | { type: "Committed" }
     | {
-        type: "Rejected";
-        clientTrace: Trace;
+        type: "Aborted";
         serverTrace: Trace;
       };
 };
@@ -65,19 +55,28 @@ function processMutationResponse(
   state: ClientState,
   response: MutationResponse
 ): [ClientState, MutationRequest | null] {
-  // TODO: update mutation state
+  const txn = state.transactions[response.id];
+  const outcome = response.payload.type;
+  const state1: ClientState = {
+    ...state,
+    transactions: {
+      [response.id]: {
+        ...txn,
+        state:
+          outcome === "Accept"
+            ? { type: "Committed" }
+            : { type: "Aborted", serverTrace: response.payload.serverTrace },
+      },
+    },
+  };
   const payload = response.payload;
   switch (payload.type) {
-    case "Aborted":
-      console.warn("processMutationResponse: aborted on server", payload);
-      // TODO: roll back?
-      return [state, null];
     case "Reject":
       console.warn("processMutationResponse: rejected on server", payload);
       // TODO: roll back & retry?
-      return [state, null];
+      return [state1, null];
     case "Accept":
-      return [state, null];
+      return [state1, null];
   }
 }
 
@@ -95,11 +94,7 @@ function processLiveQueryUpdate(
             case "Updated":
               return {
                 key: update.key,
-                value: {
-                  version: update.newVersion,
-                  value: update.value,
-                  serverTimestamp: null, // TODO: sort these out
-                },
+                value: update.value,
               };
             default:
               console.warn("unsupported update type:", update);
@@ -114,8 +109,10 @@ function runMutationOnClient(
   state: ClientState,
   invocation: MutationInvocation
 ): [ClientState, MutationRequest | null] {
+  const txnID = Math.random().toString();
   const [state1, outcome, trace] = runMutationClient(
     state,
+    txnID,
     state.mutationDefns[invocation.name],
     invocation.args
   );
@@ -125,13 +122,14 @@ function runMutationOnClient(
   }
   const state2: ClientState = {
     ...state1,
-    mutations: [
-      ...state1.mutations,
-      { invocation: invocation, state: { type: "Pending" } },
-    ],
+    transactions: {
+      ...state1.transactions,
+      [txnID]: { invocation: invocation, state: { type: "Pending" } },
+    },
   };
   const req: MutationRequest = {
     type: "MutationRequest",
+    id: txnID,
     invocation: invocation,
     trace: trace,
   };
@@ -157,11 +155,7 @@ function processLiveQueryResponse(
     ...state,
     data: {
       ...state.data,
-      ...mapObj(resp.results, (key, value) => ({
-        version: value.version,
-        value: value.value,
-        serverTimestamp: value.serverTimestamp,
-      })),
+      ...resp.results,
     },
   };
 }

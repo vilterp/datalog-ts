@@ -150,19 +150,22 @@ function BalanceTable(props: { state: ClientState }) {
         <tr>
           <th>Account</th>
           <th>Balance</th>
-          <th>_version</th>
-          <th>_serverTimestamp</th>
+          <th>(txn state)</th>
         </tr>
       </thead>
       <tbody>
-        {mapObjToList(props.state.data, (key, value) => (
-          <tr key={key}>
-            <td>{key}</td>
-            <td>{value.value}</td>
-            <td>{value.version}</td>
-            <td>{value.serverTimestamp}</td>
-          </tr>
-        ))}
+        {mapObjToList(props.state.data, (key, value) => {
+          const txn = props.state.transactions[value.transactionID];
+          return (
+            <tr key={key}>
+              <td>{key}</td>
+              <td>{value.value}</td>
+              <td>
+                <pre>{txn ? JSON.stringify(txn.state) : null}</pre>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
