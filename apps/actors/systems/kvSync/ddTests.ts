@@ -1,5 +1,4 @@
 import { makeActorSystem, update } from ".";
-import { IncrementalInterpreter } from "../../../../core/incremental/interpreter";
 import { parserTermToInternal } from "../../../../core/translateAST";
 import { Array, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
@@ -12,6 +11,7 @@ import { bank } from "./examples/bank";
 import { KVApp } from "./examples/types";
 import { UserInput } from "./types";
 import { fsLoader } from "../../../../core/fsLoader";
+import { SimpleInterpreter } from "../../../../core/simple/interpreter";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -31,7 +31,7 @@ export function kvSyncTests(writeResults: boolean): Suite {
 function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   const system = makeActorSystem(app);
   return testCases.map((testCase) => {
-    const interp = new IncrementalInterpreter("apps/actors", fsLoader);
+    const interp = new SimpleInterpreter("apps/actors", fsLoader);
     let trace = system.getInitialState(interp);
     // TODO: parse it as a program? idk
     testCase.split("\n").forEach((line) => {
