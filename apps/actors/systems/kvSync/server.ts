@@ -62,7 +62,7 @@ function runMutationOnServer(
   );
   if (outcome === "Abort") {
     return [
-      newState,
+      state,
       {
         type: "MutationResponse",
         id: req.id,
@@ -74,7 +74,7 @@ function runMutationOnServer(
   }
   if (!jsonEq(trace, req.trace)) {
     return [
-      newState,
+      state,
       {
         type: "MutationResponse",
         id: req.id,
