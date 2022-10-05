@@ -60,6 +60,7 @@ function processMutationResponse(
   const state1: ClientState = {
     ...state,
     transactions: {
+      ...state.transactions,
       [response.id]: {
         ...txn,
         state:
