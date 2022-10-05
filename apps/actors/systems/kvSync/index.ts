@@ -46,6 +46,6 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
       }),
     // TODO: generate ID deterministically
     initialClientState: initialClientState(app.mutations, 10),
-    initialUserState: () => ({ type: "UserState" }),
+    initialUserState: { type: "UserState" },
   };
 }

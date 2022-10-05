@@ -162,6 +162,6 @@ export const simpleCounter: System<State, Msg> = {
   ui: ClientServerUI,
   update,
   getInitialState,
-  initialClientState: () => initialClientState as State,
-  initialUserState: () => ({ type: "UserState" }),
+  initialClientState: initialClientState as State,
+  initialUserState: { type: "UserState" },
 };

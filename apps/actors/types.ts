@@ -29,7 +29,7 @@ export type System<ActorState, Msg> = {
   // TODO: something about all these initial states
   getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
   initialClientState: ActorState;
-  initialUserState: () => ActorState;
+  initialUserState: ActorState;
 };
 
 export type UIProps<ClientState, UserInput> = {

@@ -347,7 +347,7 @@ export const todoMVC: System<State, Msg> = {
   update,
   getInitialState,
   initialClientState,
-  initialUserState: () => ({
+  initialUserState: {
     type: "userState",
-  }),
+  },
 };

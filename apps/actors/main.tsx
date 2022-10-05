@@ -119,7 +119,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
             action: {
               type: "SpawnClient",
               id: props.systemInstance.nextClientID.toString(),
-              initialUserState: props.systemInstance.system.initialUserState(),
+              initialUserState: props.systemInstance.system.initialUserState,
               initialClientState:
                 props.systemInstance.system.initialClientState,
             },

@@ -44,7 +44,7 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
           const { newTrace: trace2, newInits: newInits1 } = step(
             trace,
             update,
-            spawnInitiator(`user${clientID}`, system.initialUserState())
+            spawnInitiator(`user${clientID}`, system.initialUserState)
           );
           const { newTrace: trace3, newInits: newInits2 } = step(
             trace2,
