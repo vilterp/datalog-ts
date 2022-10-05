@@ -12,9 +12,7 @@ export type VersionedValue = {
   value: string;
 };
 
-export type UserInput =
-  | { type: "RunMutation"; name: string; args: Json[] }
-  | { type: "RegisterQuery"; query: Query };
+export type UserInput = { type: "MsgToServer"; msg: MsgToServer };
 
 export type MsgToServer = LiveQueryRequest | MutationRequest;
 
@@ -94,3 +92,9 @@ export type MutationInvocation = {
 export function keyInQuery(key: string, query: Query): boolean {
   return key >= query.fromKey && key <= query.toKey;
 }
+
+// TODO: more robust
+
+export const START_KEY = "   ";
+
+export const END_KEY = "~~~~";

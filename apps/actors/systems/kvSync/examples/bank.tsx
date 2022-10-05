@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { END_KEY, START_KEY } from "../../../../../core/types";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState } from "../client";
+import { Client, ClientState } from "../client";
+import { useLiveQuery } from "../hooks";
 import {
   apply,
   read,
@@ -15,16 +15,16 @@ import {
   write,
   doExpr,
 } from "../mutations/types";
-import { MutationDefns, UserInput } from "../types";
+import { END_KEY, MutationDefns, START_KEY, UserInput } from "../types";
 import { KVApp } from "./types";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
-  useEffect(() => {
-    props.sendUserInput({
-      type: "RegisterQuery",
-      query: { fromKey: START_KEY, toKey: END_KEY },
-    });
-  }, []);
+  const client: Client = {
+    state: props.state,
+    transport: (msg) => {
+      props.sendUserInput({ type: "MsgToServer", msg });
+    },
+  };
 
   return (
     <div>
@@ -32,26 +32,20 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
       <BalanceTable state={props.state} />
       <ul>
         <li>
-          <WithdrawForm
-            sendUserInput={props.sendUserInput}
-            state={props.state}
-          />
+          <WithdrawForm state={props.state} />
         </li>
         <li>
-          <DepositForm
-            sendUserInput={props.sendUserInput}
-            state={props.state}
-          />
+          <DepositForm state={props.state} />
         </li>
         <li>
-          <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
+          <MoveForm state={props.state} />
         </li>
       </ul>
     </div>
   );
 }
 
-function WithdrawForm(props: UIProps<ClientState, UserInput>) {
+function WithdrawForm(props: { client: Client }) {
   const [account, setAccount] = useState("");
   const [amount, setAmount] = useState(0);
 
@@ -78,7 +72,7 @@ function WithdrawForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function DepositForm(props: UIProps<ClientState, UserInput>) {
+function DepositForm(props: { client: Client }) {
   const [account, setAccount] = useState("foo");
   const [amount, setAmount] = useState(10);
 
@@ -105,7 +99,7 @@ function DepositForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function MoveForm(props: UIProps<ClientState, UserInput>) {
+function MoveForm(props: { client: Client }) {
   const [fromAccount, setFromAccount] = useState("");
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState(0);
@@ -141,9 +135,12 @@ function MoveForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function BalanceTable(props: { state: ClientState }) {
-  // TODO: use a query API instead of mapping over the raw data
-  // useLiveQuery would be good
+function BalanceTable(props: { client: Client }) {
+  const data = useLiveQuery(props.client, {
+    fromKey: START_KEY,
+    toKey: END_KEY,
+  });
+
   return (
     <table>
       <thead>
@@ -155,7 +152,7 @@ function BalanceTable(props: { state: ClientState }) {
         </tr>
       </thead>
       <tbody>
-        {mapObjToList(props.state.data, (key, value) => (
+        {mapObjToList(data, (key, value) => (
           <tr key={key}>
             <td>{key}</td>
             <td>{value.value}</td>

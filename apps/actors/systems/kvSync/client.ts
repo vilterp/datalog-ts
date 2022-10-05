@@ -17,6 +17,16 @@ import { mapObj, pairsToObj } from "../../../../util/util";
 import { runMutationClient } from "./mutations/client";
 import { Json } from "../../../../util/json";
 
+export type Client = {
+  state: ClientState;
+  runMutation: (mut: MutationInvocation) => void;
+};
+
+function makeClient(
+  state: ClientState,
+  transport: (msg: MsgToServer) => void
+) {}
+
 export type ClientState = {
   type: "ClientState";
   id: string;
@@ -42,7 +52,7 @@ export function initialClientState(
   };
 }
 
-type ClientValue = {
+export type ClientValue = {
   version: number;
   value: Json;
   serverTimestamp: number | null;
