@@ -1,4 +1,4 @@
-import { Msg, State, update } from ".";
+import { State, update } from ".";
 import { IncrementalInterpreter } from "../../../../core/incremental/interpreter";
 import { makeMemoryLoader } from "../../../../core/loaders";
 import { parserTermToInternal } from "../../../../core/translateAST";
@@ -9,12 +9,12 @@ import { datalogOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
 import { insertUserInput, spawnSync, stepAll } from "../../step";
-import { AddressedTickInitiator, initialTrace } from "../../types";
-import { ClientState, initialClientState, updateClient } from "./client";
+import { initialTrace } from "../../types";
+import { initialClientState } from "./client";
 import { bank } from "./examples/bank";
 import { KVApp } from "./examples/types";
-import { initialServerState } from "./server";
 import { UserInput } from "./types";
+import { fsLoader } from "../../../../core/fsLoader";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -33,7 +33,7 @@ export function kvSyncTests(writeResults: boolean): Suite {
 
 function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   return testCases.map((testCase) => {
-    const interp = new IncrementalInterpreter(".", makeMemoryLoader({}));
+    const interp = new IncrementalInterpreter("apps/actors", fsLoader);
     let trace = initialTrace<State>(interp);
     // TODO: parse it as a program? idk
     testCase.split("\n").forEach((line) => {
@@ -54,8 +54,8 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
           const clientID = (record.attrs.from as StringLit).val;
           const msg: UserInput = {
             type: "RunMutation",
-            args: XXX,
-            name: XXX,
+            name: (record.attrs.name as StringLit).val,
+            args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
           };
           const { newTrace: trace1, newMessageID } = insertUserInput(
             trace,

@@ -24,7 +24,7 @@ export type ClientState = {
   id: string;
   data: { [key: string]: VersionedValue };
   liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
-  transactions: { [id: string]: TransactionState };
+  transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
 };
 
@@ -42,15 +42,17 @@ export function initialClientState(
   };
 }
 
-type TransactionState = {
+export type TransactionState =
+  | { type: "Pending" }
+  | { type: "Committed" }
+  | {
+      type: "Aborted";
+      serverTrace: Trace;
+    };
+
+type TransactionRecord = {
   invocation: MutationInvocation;
-  state:
-    | { type: "Pending" }
-    | { type: "Committed" }
-    | {
-        type: "Aborted";
-        serverTrace: Trace;
-      };
+  state: TransactionState;
 };
 
 function processMutationResponse(
@@ -58,21 +60,21 @@ function processMutationResponse(
   response: MutationResponse
 ): [ClientState, MutationRequest | null] {
   const txn = state.transactions[response.id];
-  const outcome = response.payload.type;
+  const payload = response.payload;
+  const newTxnState: TransactionState =
+    payload.type === "Accept"
+      ? { type: "Committed" }
+      : { type: "Aborted", serverTrace: payload.serverTrace };
   const state1: ClientState = {
     ...state,
     transactions: {
       ...state.transactions,
       [response.id]: {
         ...txn,
-        state:
-          outcome === "Accept"
-            ? { type: "Committed" }
-            : { type: "Aborted", serverTrace: response.payload.serverTrace },
+        state: newTxnState,
       },
     },
   };
-  const payload = response.payload;
   switch (payload.type) {
     case "Reject":
       console.warn(

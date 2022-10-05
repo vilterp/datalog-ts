@@ -167,7 +167,7 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
   };
 
   const from = `user${clientID}`;
-  const to = `client${clientID}`;
+  const to = clientID;
 
   const newTickID = trace.nextID;
   newTrace.nextID++;
