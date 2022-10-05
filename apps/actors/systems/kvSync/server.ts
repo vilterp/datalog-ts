@@ -67,7 +67,7 @@ function runMutationOnServer(
         type: "MutationResponse",
         id: req.id,
         // TODO: include abort reason?
-        payload: { type: "Reject", serverTrace: trace },
+        payload: { type: "Reject", serverTrace: trace, reason: "txn aborted" },
       },
       [],
     ];
@@ -78,7 +78,11 @@ function runMutationOnServer(
       {
         type: "MutationResponse",
         id: req.id,
-        payload: { type: "Reject", serverTrace: trace },
+        payload: {
+          type: "Reject",
+          serverTrace: trace,
+          reason: "trace not equal",
+        },
       },
       [],
     ];

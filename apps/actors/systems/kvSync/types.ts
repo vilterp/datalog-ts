@@ -55,6 +55,7 @@ export type MutationResponse = {
     | {
         type: "Reject";
         serverTrace: Trace;
+        reason: string;
       };
 };
 
