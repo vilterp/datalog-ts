@@ -79,10 +79,6 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
         }
       }
     });
-    return datalogOut([
-      ...trace.interp.evalStr("actor{}?")[0].map((res) => res.term),
-      ...trace.interp.evalStr("message{}?")[0].map((res) => res.term),
-      ...trace.interp.evalStr("tick{}?")[0].map((res) => res.term),
-    ]);
+    return datalogOut(trace.interp.evalStr("hop{}?")[0].map((res) => res.term));
   });
 }

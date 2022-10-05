@@ -37,6 +37,7 @@ messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Pa
 hop{
   fromTickID: tick{time: FromTickID, place: FromActorID},
   toTickID: tick{time: ToTickID, place: ToActorID},
+  message: Payload,
 } :-
   message{id: MessageID, fromTickID: FromTickID, toActorID: ToActorID, payload: Payload} &
   tick{id: FromTickID, actorID: FromActorID} &
