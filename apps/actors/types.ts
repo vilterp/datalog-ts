@@ -124,7 +124,7 @@ export type MessageID = string;
 
 export type TimerID = string;
 
-export type TickID = string;
+export type TickID = number;
 
 // === effects and messages ===
 
