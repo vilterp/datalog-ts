@@ -184,7 +184,6 @@ export function updateClient(
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
-  console.log("client received init", init);
   switch (init.type) {
     case "messageReceived": {
       const msg = init.payload;
