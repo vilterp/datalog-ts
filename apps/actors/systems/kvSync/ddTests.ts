@@ -1,4 +1,6 @@
 import { Msg, State, update } from ".";
+import { IncrementalInterpreter } from "../../../../core/incremental/interpreter";
+import { makeMemoryLoader } from "../../../../core/loaders";
 import { parserTermToInternal } from "../../../../core/translateAST";
 import { Array, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
@@ -6,12 +8,13 @@ import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
 import { datalogOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
-import { spawnSync, stepAll } from "../../step";
+import { insertUserInput, spawnSync, stepAll } from "../../step";
 import { AddressedTickInitiator, initialTrace } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { bank } from "./examples/bank";
 import { KVApp } from "./examples/types";
 import { initialServerState } from "./server";
+import { UserInput } from "./types";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -30,7 +33,8 @@ export function kvSyncTests(writeResults: boolean): Suite {
 
 function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   return testCases.map((testCase) => {
-    let trace = initialTrace<State>();
+    const interp = new IncrementalInterpreter(".", makeMemoryLoader({}));
+    let trace = initialTrace<State>(interp);
     // TODO: parse it as a program? idk
     testCase.split("\n").forEach((line) => {
       const rawRec = parseRecord(line);
@@ -48,18 +52,26 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
         }
         case "runMutation": {
           const clientID = (record.attrs.from as StringLit).val;
-          const inits: AddressedTickInitiator<State>[] = [
+          const msg: UserInput = {
+            type: "RunMutation",
+            args: XXX,
+            name: XXX,
+          };
+          const { newTrace: trace1, newMessageID } = insertUserInput(
+            trace,
+            clientID,
+            msg
+          );
+          trace = stepAll(trace1, update, [
             {
-              from: "user",
+              from: `user${clientID}`,
               to: clientID,
               init: {
                 type: "messageReceived",
-                // where the hell do I get this?
-                messageID: XXX,
+                messageID: newMessageID.toString(),
               },
             },
-          ];
-          trace = stepAll(trace, update, inits);
+          ]);
         }
       }
     });
