@@ -7,9 +7,9 @@ import { MsgToClient, MsgToServer } from "./types";
 import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
 
-type State = ServerState | ClientState | { type: "UserState" };
+export type State = ServerState | ClientState | { type: "UserState" };
 
-type Msg = MsgToServer | MsgToClient;
+export type Msg = MsgToServer | MsgToClient;
 
 function update(
   state: State,
