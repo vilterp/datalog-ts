@@ -69,7 +69,7 @@ function runMutationExpr(
     }
     case "Write": {
       // key expr
-      const [keyRes, keyOutcome, state1, trace1] = runMutationExpr(
+      const [keyRes, keyOutcome, data1, trace1] = runMutationExpr(
         data,
         transactionID,
         traceSoFar,
@@ -77,35 +77,32 @@ function runMutationExpr(
         expr.key
       );
       if (keyOutcome === "Abort") {
-        return [null, "Abort", state1, trace1];
+        return [null, "Abort", data1, trace1];
       }
       // val expr
-      const [valRes, valOutcome, state2, trace2] = runMutationExpr(
-        state1,
+      const [valRes, valOutcome, data2, trace2] = runMutationExpr(
+        data1,
         transactionID,
         trace1,
         scope,
         expr.val
       );
       if (valOutcome === "Abort") {
-        return [null, "Abort", state2, trace2];
+        return [null, "Abort", data2, trace2];
       }
       // TODO: actually assert string
-      const state3: KVData = {
-        ...state2,
-        data: {
-          ...state2.data,
-          [keyRes as string]: {
-            value: valRes as string,
-            transactionID,
-          },
+      const data3: KVData = {
+        ...data2,
+        [keyRes as string]: {
+          value: valRes as string,
+          transactionID,
         },
       };
       const trace3: Trace = [
         ...trace2,
         { type: "Write", key: keyRes as string, value: valRes },
       ];
-      return [valRes, "Commit", state3, trace3];
+      return [valRes, "Commit", data3, trace3];
     }
     case "Lambda":
       // TODO: closure??
