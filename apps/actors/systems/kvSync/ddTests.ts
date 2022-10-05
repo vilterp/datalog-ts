@@ -1,6 +1,5 @@
-import { makeActorSystem, State, update } from ".";
+import { makeActorSystem, update } from ".";
 import { IncrementalInterpreter } from "../../../../core/incremental/interpreter";
-import { makeMemoryLoader } from "../../../../core/loaders";
 import { parserTermToInternal } from "../../../../core/translateAST";
 import { Array, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
@@ -8,15 +7,7 @@ import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
 import { datalogOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
-import {
-  insertUserInput,
-  spawnInitiator,
-  spawnSync,
-  step,
-  stepAll,
-} from "../../step";
-import { initialTrace } from "../../types";
-import { initialClientState } from "./client";
+import { insertUserInput, spawnInitiator, step, stepAll } from "../../step";
 import { bank } from "./examples/bank";
 import { KVApp } from "./examples/types";
 import { UserInput } from "./types";
