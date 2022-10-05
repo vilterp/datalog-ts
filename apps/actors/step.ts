@@ -158,7 +158,6 @@ export function spawnInitiator<St>(
 
 export function insertUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
   clientID: number,
   payload: Msg
 ): { newTrace: Trace<ActorState>; newMessageID: number } {

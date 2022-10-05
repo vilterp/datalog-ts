@@ -115,7 +115,6 @@ function traceReducer<St extends Json, Msg extends Json>(
     case "SendUserInput": {
       const { newTrace: trace2, newMessageID } = insertUserInput(
         trace,
-        update,
         action.clientID,
         action.input
       );
