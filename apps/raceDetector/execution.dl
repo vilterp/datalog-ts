@@ -229,6 +229,6 @@ internal.visualization{
   spec: sequence{
     actors: viz.threadNode{id: ID},
     ticks: state{time: Time, threadID: Place},
-    messages: viz.message{fromTickID: FromTickID, toTickID: ToTickID},
+    messages: viz.message{fromTickID: FromTick, toTickID: ToTick},
   },
 }.

@@ -52,21 +52,19 @@ function SequenceDiagram(props: VizArgs) {
 // TODO: maybe integrate this into one of the above functions??
 //   or not
 function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
-  // TODO: don't we already know that a certain tick belongs to
-  // a certain actor?
   return {
     locations: actors.map((actor) => ({
       loc: (actor.bindings.ID as StringLit).val,
       term: actor.term,
     })),
     hops: messages.map((message) => {
-      const fromTickRec = message.bindings.FromTickID as Rec;
+      const fromTickRec = message.bindings.FromTick as Rec;
       const fromTick: Tick = {
         time: (fromTickRec.attrs.time as Int).val,
         place: (fromTickRec.attrs.place as StringLit).val,
         term: fromTickRec,
       };
-      const toTickRec = message.bindings.ToTickID as Rec;
+      const toTickRec = message.bindings.ToTick as Rec;
       const toTick: Tick = {
         time: (toTickRec.attrs.time as Int).val,
         place: (toTickRec.attrs.place as StringLit).val,

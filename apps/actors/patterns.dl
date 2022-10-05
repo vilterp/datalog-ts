@@ -26,7 +26,7 @@ internal.visualization{
   name: "sequence",
   spec: sequence{
     actors: actor{id: ID},
-    messages: hop{from: FromTickID, to: ToTickID},
+    messages: hop{from: FromTick, to: ToTick},
   }
 }.
 
@@ -54,9 +54,11 @@ tickState{tickID: TickID, actorID: ActorID, state: State} :-
 
 concurrentRequests{
   tick1: tick{place: Client1, time: TC1},
-  tick2: tick{place: Client2, time: TC2}
+  message1: M1,
+  tick2: tick{place: Client2, time: TC2},
+  message2: M2,
 } :-
-  hop{from: tick{place: Client1, time: TC1}, to: tick{time: TS1, place: "server"}} &
-  hop{from: tick{place: Client2, time: TC2}, to: tick{time: TS2, place: "server"}} &
+  hop{from: tick{place: Client1, time: TC1}, to: tick{time: TS1, place: "server"}, message: M1} &
+  hop{from: tick{place: Client2, time: TC2}, to: tick{time: TS2, place: "server"}, message: M2} &
   TC1 < TC2 &
   TC2 < TS1.
