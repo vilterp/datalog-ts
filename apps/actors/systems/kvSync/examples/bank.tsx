@@ -161,7 +161,9 @@ function BalanceTable(props: { state: ClientState }) {
               <td>{key}</td>
               <td>{value.value}</td>
               <td>
-                <pre>{txn ? JSON.stringify(txn.state) : null}</pre>
+                <code>
+                  {JSON.stringify(txn ? txn.state : { type: "FromServer" })}
+                </code>
               </td>
             </tr>
           );
