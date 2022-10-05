@@ -41,7 +41,7 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   const system = makeActorSystem(app);
   return testCases.map((testCase) => {
     const interp = new IncrementalInterpreter("apps/actors", fsLoader);
-    let trace = initialTrace<State>(interp);
+    let trace = system.getInitialState(interp);
     // TODO: parse it as a program? idk
     testCase.split("\n").forEach((line) => {
       const rawRec = parseRecord(line);
@@ -88,8 +88,10 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
         }
       }
     });
-    return datalogOut(
-      trace.interp.evalStr("message{}?")[0].map((res) => res.term)
-    );
+    return datalogOut([
+      ...trace.interp.evalStr("actor{}?")[0].map((res) => res.term),
+      ...trace.interp.evalStr("message{}?")[0].map((res) => res.term),
+      ...trace.interp.evalStr("tick{}?")[0].map((res) => res.term),
+    ]);
   });
 }

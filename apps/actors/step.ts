@@ -172,11 +172,6 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
   const newTickID = trace.nextID;
   newTrace.nextID++;
   const latestState = trace.latestStates[from];
-  console.log("insertUserInput", {
-    latestStates: trace.latestStates,
-    from,
-    latestState,
-  });
   newTrace.interp = trace.interp.insert(
     rec("tick", {
       id: str(newTickID.toString()),
