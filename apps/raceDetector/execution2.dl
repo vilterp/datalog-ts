@@ -84,8 +84,7 @@ state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
 state.Var{thread: TH, time: T, var: Var, value: Val} :-
   state.var.store{thread: TH, time: T, var: Var, value: Val} |
   state.var.increment{thread: TH, time: T, var: Var, value: Val} |
-  state.var.stay.fork{thread: TH, time: T, var: Var, value: Val} |
-  state.var.stay.condGoto{thread: TH, time: T, var: Var, value: Val}.
+  state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
 state.var.store{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
@@ -98,11 +97,42 @@ state.var.increment{thread: TH, time: T, var: Var, value: Val} :-
   instr{idx: C, op: increment{var: Var}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
   Val = PrevVal + 1.
+
+# == stay
+state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal}.
+# store & increment
+state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: store{var: OtherVar}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  OtherVar != Var.
+state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: increment{var: OtherVar}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  OtherVar != Var.
+# fork
 state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal}.
+state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
   instr{idx: C, op: fork{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: NewTH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: fork{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  NewTH = TH + 100.
+# condGoto
 state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
@@ -143,5 +173,19 @@ internal.visualization{
       color: mapping{field: "thread"}
     },
     query: state.ProgramCounter{}
+  }
+}.
+
+# TODO: another encoding channel for thread
+internal.visualization{
+  name: "Variables Over over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "value", type: "quantitative"},
+      color: mapping{field: "var"}
+    },
+    query: state.Var{}
   }
 }.
