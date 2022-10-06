@@ -24,7 +24,8 @@ state.threadState.init{thread: 1, time: 0, state: "Running"}.
 state.ProgramCounter{thread: TH, time: T, counter: C} :-
   state.programCounter.init{thread: TH, time: T, counter: C} |
   state.programCounter.store{thread: TH, time: T, counter: C} |
-  state.programCounter.increment{thread: TH, time: T, counter: C}.
+  state.programCounter.increment{thread: TH, time: T, counter: C} |
+  state.programCounter.fork{thread: TH, time: T, counter: C}.
 
 state.programCounter.init{thread: 1, time: 0, counter: 0}.
 
@@ -40,6 +41,22 @@ state.programCounter.increment{thread: TH, time: T, counter: C} :-
   T = PrevT + 1 &
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+
+state.programCounter.fork{thread: TH, time: T, counter: C} :-
+  state.programCounter.fork.orig{thread: TH, time: T, counter: C} |
+  state.programCounter.fork.new{thread: TH, time: T, counter: C}.
+state.programCounter.fork.orig{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: fork{goto: ForkC}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.fork.new{thread: TH, time: T, counter: ForkC} :-
+  time{time: T} &
+  instr{idx: PrevC, op: fork{goto: ForkC}} &
+  T = PrevT + 1 &
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC} &
+  TH = PrevTH + 100.
 
 # === Var ===
 
