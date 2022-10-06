@@ -12,7 +12,7 @@ import {
   resolveUnmappedRules,
 } from "./build";
 import Denque from "denque";
-import { ppr } from "../pretty";
+import { ppr, ppt } from "../pretty";
 import { BUILTINS } from "../builtins";
 import { evalBuiltin } from "../evalBuiltin";
 
@@ -180,6 +180,7 @@ function stepIteratorAll(
   graph: RuleGraph,
   iter: InsertionIterator
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+  console.log("stepIteratorAll", iter.queue.toArray());
   const emissionLog: EmissionLog = [];
   let newGraph = graph;
   while (iter.queue.length > 0) {
@@ -187,6 +188,11 @@ function stepIteratorAll(
       throw new Error("max queue size exceeded");
     }
     const emissions = stepIterator(iter);
+    console.log(
+      "emissions:",
+      emissions.fromID,
+      emissions.output.map((r) => (r.term ? ppt(r.term) : null))
+    );
     emissionLog.push(emissions);
     newGraph = iter.graph;
   }
