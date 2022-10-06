@@ -12,6 +12,8 @@ import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { toGraphviz } from "../../core/incremental/graphviz";
+import { prettyPrintGraph } from "../../util/graphviz";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -23,6 +25,9 @@ function Main() {
   let interp: AbstractInterpreter = new IncrementalInterpreter(".", nullLoader);
   try {
     interp = interp.evalStr(editorState.source)[1];
+    console.log(
+      prettyPrintGraph(toGraphviz((interp as IncrementalInterpreter).graph))
+    );
   } catch (e) {
     error = e.toString();
     console.error(e);
