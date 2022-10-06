@@ -1,0 +1,58 @@
+instr{idx: 0, op: store{var: "x", val: 0}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", val: lt{var: "x", val: 5}}}.
+instr{idx: 3, op: fork{goto: 5}}.
+instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 5, op: increment{var: "x"}}.
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
+
+time{time: T} :-
+  range{from: 1, to: 10, val: T}.
+
+state.Var{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.store{thread: TH, time: T, var: Var, value: Val} |
+  state.var.increment{thread: TH, time: T, var: Var, value: Val}.
+
+# state.threadState{thread: TH, time: T, state: S} :-
+#   state.threadState.init{thread: TH, time: T, state: S} |
+#   state.threadState{thread: TH, time: PrevT, state: PrevS} &
+#   state.threadState.step{thread: TH, time: T, state: S} &
+#   T = PrevT + 1.
+
+state.ProgramCounter{thread: TH, time: T, counter: C} :-
+  state.programCounter.init{thread: TH, time: T, counter: C} |
+  state.programCounter.step.store{thread: TH, time: T, counter: C} |
+  state.programCounter.step.increment{thread: TH, time: T, counter: C}.
+
+# init
+state.threadState.init{thread: 1, time: 0, state: "Running"}.
+state.programCounter.init{thread: 1, time: 0, counter: 0}.
+
+# === Program Counter ===
+
+state.programCounter.step.store{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: store{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.step.increment{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: increment{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+
+# === Var ===
+
+state.var.store{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: Val}} &
+  T = PrevT + 1.
+state.var.increment{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: increment{var: Var}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  Val = PrevVal + 1.
