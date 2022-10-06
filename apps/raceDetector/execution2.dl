@@ -10,26 +10,23 @@ instr{idx: 7, op: increment{var: "x"}}.
 time{time: T} :-
   range{from: 1, to: 10, val: T}.
 
-state.Var{thread: TH, time: T, var: Var, value: Val} :-
-  state.var.store{thread: TH, time: T, var: Var, value: Val} |
-  state.var.increment{thread: TH, time: T, var: Var, value: Val}.
-
 # state.threadState{thread: TH, time: T, state: S} :-
 #   state.threadState.init{thread: TH, time: T, state: S} |
 #   state.threadState{thread: TH, time: PrevT, state: PrevS} &
 #   state.threadState.step{thread: TH, time: T, state: S} &
 #   T = PrevT + 1.
 
+# init
+state.threadState.init{thread: 1, time: 0, state: "Running"}.
+
+# === Program Counter ===
+
 state.ProgramCounter{thread: TH, time: T, counter: C} :-
   state.programCounter.init{thread: TH, time: T, counter: C} |
   state.programCounter.step.store{thread: TH, time: T, counter: C} |
   state.programCounter.step.increment{thread: TH, time: T, counter: C}.
 
-# init
-state.threadState.init{thread: 1, time: 0, state: "Running"}.
 state.programCounter.init{thread: 1, time: 0, counter: 0}.
-
-# === Program Counter ===
 
 state.programCounter.step.store{thread: TH, time: T, counter: C} :-
   time{time: T} &
@@ -46,6 +43,10 @@ state.programCounter.step.increment{thread: TH, time: T, counter: C} :-
 
 # === Var ===
 
+state.Var{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.store{thread: TH, time: T, var: Var, value: Val} |
+  state.var.increment{thread: TH, time: T, var: Var, value: Val}.
+
 state.var.store{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: Val}} &
@@ -56,3 +57,18 @@ state.var.increment{thread: TH, time: T, var: Var, value: Val} :-
   instr{idx: C, op: increment{var: Var}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
   Val = PrevVal + 1.
+
+# === Viz ===
+
+internal.visualization{
+  name: "Program Counter over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "counter", type: "quantitative"},
+      color: mapping{field: "thread"}
+    },
+    query: state.ProgramCounter{}
+  }
+}.
