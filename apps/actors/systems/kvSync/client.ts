@@ -12,6 +12,7 @@ import {
   MutationResponse,
   Query,
   Trace,
+  TransactionMetadata,
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj, pairsToObj, randStep } from "../../../../util/util";
@@ -94,6 +95,10 @@ function processLiveQueryUpdate(
 ): ClientState {
   return {
     ...state,
+    transactions: {
+      ...state.transactions,
+      ...getNewTransactions(update.transactionMetadata),
+    },
     data: {
       ...state.data,
       ...pairsToObj(
@@ -159,11 +164,27 @@ function registerLiveQuery(
   return [newState, { type: "LiveQueryRequest", id, query }];
 }
 
+function getNewTransactions(metadata: TransactionMetadata): {
+  [id: string]: TransactionRecord;
+} {
+  return mapObj(
+    metadata,
+    (txnid, metadata): TransactionRecord => ({
+      state: {
+        type: "Committed",
+        serverTimestamp: metadata.serverTimestamp,
+      },
+      invocation: metadata.invocation,
+    })
+  );
+}
+
 function processLiveQueryResponse(
   state: ClientState,
   resp: LiveQueryResponse
 ): ClientState {
   const query = state.liveQueries[resp.id];
+  const newTransactions = getNewTransactions(resp.transactionMetadata);
   return {
     ...state,
     liveQueries: {
@@ -179,16 +200,7 @@ function processLiveQueryResponse(
     },
     transactions: {
       ...state.transactions,
-      ...mapObj(
-        resp.transactionMetadata,
-        (txnid, metadata): TransactionRecord => ({
-          state: {
-            type: "Committed",
-            serverTimestamp: metadata.serverTimestamp,
-          },
-          invocation: metadata.invocation,
-        })
-      ),
+      ...newTransactions,
     },
   };
 }
