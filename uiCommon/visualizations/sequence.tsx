@@ -16,7 +16,7 @@ import {
 } from "../../util/diagrams/types";
 import { Diagram } from "../../util/diagrams/render";
 import { getCoords } from "../../util/diagrams/getCoords";
-import { flatMap } from "../../util/util";
+import { flatMap, uniqBy } from "../../util/util";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -53,10 +53,13 @@ function SequenceDiagram(props: VizArgs) {
 //   or not
 function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
   return {
-    locations: actors.map((actor) => ({
-      loc: (actor.bindings.ID as StringLit).val,
-      term: actor.term,
-    })),
+    locations: uniqBy(
+      (item) => item.loc,
+      actors.map((actor) => ({
+        loc: (actor.bindings.ID as StringLit).val,
+        term: actor.term,
+      }))
+    ),
     hops: messages.map((message) => {
       const fromTickRec = message.bindings.FromTick as Rec;
       const fromTick: Tick = {
