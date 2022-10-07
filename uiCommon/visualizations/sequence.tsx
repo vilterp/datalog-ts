@@ -17,6 +17,7 @@ import {
 import { Diagram } from "../../util/diagrams/render";
 import { getCoords } from "../../util/diagrams/getCoords";
 import { flatMap } from "../../util/util";
+import { jsonEq } from "../../util/json";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -33,7 +34,10 @@ function SequenceDiagram(props: VizArgs) {
       <div>
         <div>
           <Diagram<Term>
-            diagram={sequenceDiagram(makeSequenceSpec(actors, messages))}
+            diagram={sequenceDiagram(
+              makeSequenceSpec(actors, messages),
+              props.highlightedTerm
+            )}
             onMouseOver={(term) => props.setHighlightedTerm?.(term)}
           />
         </div>
@@ -103,7 +107,7 @@ function yForTime(t: Time): number {
   return t * 10;
 }
 
-export function sequenceDiagram(seq: Sequence): Diag<Term> {
+export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
   const maxTime = seq.hops.reduce(
     (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
     0
@@ -152,10 +156,12 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       if (fromCoords === null || toCoords === null) {
         return EMPTY_DIAGRAM;
       }
+      console.log("highlighted", { left: hop.term, right: highlight });
+      const highlighted = jsonEq(hop.term, highlight);
       return Tag(
         hop.term,
         Line({
-          stroke: "blue",
+          stroke: highlighted ? "orange" : "blue",
           width: 3,
           start: fromCoords,
           end: toCoords,
