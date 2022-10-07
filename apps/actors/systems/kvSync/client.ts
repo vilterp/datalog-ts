@@ -14,7 +14,7 @@ import {
   Trace,
 } from "./types";
 import * as effects from "../../effects";
-import { pairsToObj, randStep } from "../../../../util/util";
+import { mapObj, pairsToObj, randStep } from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 
 export type QueryStatus = "Loading" | "Online";
@@ -176,6 +176,19 @@ function processLiveQueryResponse(
     data: {
       ...state.data,
       ...resp.results,
+    },
+    transactions: {
+      ...state.transactions,
+      ...mapObj(
+        resp.transactionMetadata,
+        (txnid, metadata): TransactionRecord => ({
+          state: {
+            type: "Committed",
+            serverTimestamp: metadata.serverTimestamp,
+          },
+          invocation: metadata.invocation,
+        })
+      ),
     },
   };
 }
