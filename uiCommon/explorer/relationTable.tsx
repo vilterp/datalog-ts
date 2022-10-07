@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Rec, rec } from "../../core/types";
+import { Rec, rec, Res } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { TreeCollapseState } from "../generic/treeView";
 import { RuleC } from "../dl/rule";
@@ -11,6 +11,10 @@ import { groupBy, objToPairs } from "../../util/util";
 import { TableCollapseState } from "./types";
 import { ppr } from "../../core/pretty";
 import { makeTermWithBindings } from "../../core/termWithBindings";
+import { useJSONLocalStorage } from "../generic/hooks";
+import { termLT } from "../../core/unify";
+
+type Ordering = { col: string; order: "Asc" | "Desc" };
 
 export function RelationTable(props: {
   relation: string;
@@ -19,6 +23,14 @@ export function RelationTable(props: {
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
 }) {
+  const [ordering, setOrdering] = useJSONLocalStorage<Ordering | null>(
+    `explorer-ordering-${props.relation}`,
+    null
+  );
+  const toggleOrdering = (name: string) => {
+    toggleOrd(ordering, setOrdering, name);
+  };
+
   const relation = props.interp.getRelation(props.relation);
   if (relation === null) {
     return <em>{props.relation} not found.</em>;
@@ -44,6 +56,8 @@ export function RelationTable(props: {
       : relation.type === "Rule"
       ? Object.keys(relation.rule.head.attrs)
       : Object.keys((results[0].term as Rec).attrs);
+  const groupedResults = objToPairs(groupBy(results, ppr));
+  const sortedGroupedResults = sortResults(groupedResults, ordering);
   // TODO: make this more resilient in the face of records that don't
   //   all have the same fields.
   return (
@@ -63,18 +77,36 @@ export function RelationTable(props: {
             <tr style={{ borderBottom: "1px solid black" }}>
               {/* expander */}
               <th />
-              {fields.map((name) => (
-                <th key={name} style={{ paddingLeft: 5, paddingRight: 5 }}>
-                  <code>{name}</code>
-                </th>
-              ))}
+              {fields.map((name) => {
+                const orderInd =
+                  ordering === null || ordering.col !== name
+                    ? ""
+                    : ordering.order === "Asc"
+                    ? "^ "
+                    : "v ";
+                return (
+                  <th
+                    key={name}
+                    style={{
+                      paddingLeft: 5,
+                      paddingRight: 5,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => toggleOrdering(name)}
+                  >
+                    <code>
+                      {orderInd}
+                      {name}
+                    </code>
+                  </th>
+                );
+              })}
               {/* count */}
               <th />
             </tr>
           </thead>
           <tbody>
-            {/* TODO: preserve order? */}
-            {objToPairs(groupBy(results, ppr)).map(([_, results], idx) => {
+            {sortedGroupedResults.map(([_, results], idx) => {
               const result = results[0];
               const sameResultCount = results.length;
               const key = JSON.stringify(result);
@@ -177,5 +209,43 @@ export function RelationTable(props: {
         </table>
       )}
     </>
+  );
+}
+
+function toggleOrd(
+  ordering: Ordering,
+  setOrdering: (o: Ordering) => void,
+  name: string
+) {
+  if (ordering === null || name !== ordering.col) {
+    setOrdering({ col: name, order: "Desc" });
+    return;
+  }
+  if (ordering.order === "Desc") {
+    setOrdering({
+      col: name,
+      order: "Asc",
+    });
+    return;
+  }
+  setOrdering(null);
+}
+
+function sortResults(
+  groupedResults: [string, Res[]][],
+  ordering: Ordering | null
+) {
+  if (ordering === null) {
+    return groupedResults;
+  }
+  return groupedResults.sort(
+    ([leftKey, leftResults], [rightKey, rightResults]) => {
+      const leftRes = leftResults[0] as Res;
+      const rightRes = rightResults[0] as Res;
+      const leftTerm = (leftRes.term as Rec).attrs[ordering.col];
+      const rightTerm = (rightRes.term as Rec).attrs[ordering.col];
+      const res = termLT(leftTerm, rightTerm) ? 1 : -1;
+      return ordering.order === "Desc" ? res : res * -1;
+    }
   );
 }
