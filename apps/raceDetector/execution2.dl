@@ -115,19 +115,32 @@ state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
   T = PrevT + 1 &
   instr{idx: C, op: fork{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
-state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: PrevVal} :-
-  state.ProgramCounter{thread: NewTH, time: PrevT, counter: C} &
+state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
+  common.fork{origTH: OrigTH, newTH: NewTH, postForkTime: T} &
   T = PrevT + 1 &
-  instr{idx: C, op: fork{}} &
-  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
-  ShiftedT = T + 100 &
-  NewTH = TH + ShiftedT.
+  state.Var{thread: OrigTH, time: PrevT, var: Var, value: Val}.
 # condGoto
 state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
   instr{idx: C, op: conditionalGoto{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+
+# === Common ===
+
+common.fork{
+  origTH: OrigTH,
+  newTH: NewTH,
+  postForkTime: T,
+  forkCounter: ForkC,
+  continueCounter: ContinueC,
+  forkCounter: ForkedC
+} :-
+  state.ProgramCounter{thread: OrigTH, time: T, counter: ForkedC} &
+  state.ProgramCounter{thread: NewTH, time: T, counter: ContinueC} &
+  state.ProgramCounter{thread: OrigTH, time: PrevT, counter: ForkC} &
+  T = PrevT + 1 &
+  instr{idx: ForkC, op: fork{goto: ForkedC}}.
 
 # === Eval ===
 
