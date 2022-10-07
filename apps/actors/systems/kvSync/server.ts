@@ -23,6 +23,7 @@ export type ServerState = {
   data: KVData;
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   mutationDefns: MutationDefns;
+  time: number;
 };
 
 export function initialServerState(mutationDefns: MutationDefns): ServerState {
@@ -31,6 +32,7 @@ export function initialServerState(mutationDefns: MutationDefns): ServerState {
     data: {},
     liveQueries: [],
     mutationDefns,
+    time: 0,
   };
 }
 
@@ -120,11 +122,11 @@ function runMutationOnServer(
     }
   );
   return [
-    newState,
+    { ...newState, time: newState.time + 1 },
     {
       type: "MutationResponse",
       txnID: req.txnID,
-      payload: { type: "Accept" },
+      payload: { type: "Accept", timestamp: newState.time },
     },
     liveQueryUpdates,
   ];

@@ -44,7 +44,7 @@ export function initialClientState(
 
 export type TransactionState =
   | { type: "Pending" }
-  | { type: "Committed" }
+  | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
       serverTrace: Trace;
@@ -63,7 +63,7 @@ function processMutationResponse(
   const payload = response.payload;
   const newTxnState: TransactionState =
     payload.type === "Accept"
-      ? { type: "Committed" }
+      ? { type: "Committed", serverTimestamp: payload.timestamp }
       : { type: "Aborted", serverTrace: payload.serverTrace };
   const state1: ClientState = {
     ...state,
@@ -178,6 +178,15 @@ function processLiveQueryResponse(
       ...resp.results,
     },
   };
+}
+
+export function getStateForKey(
+  state: ClientState,
+  key: string
+): TransactionState {
+  const value = state.data[key];
+  const txn = state.transactions[value.transactionID];
+  return txn.state;
 }
 
 // TODO: maybe move this out to index.ts? idk

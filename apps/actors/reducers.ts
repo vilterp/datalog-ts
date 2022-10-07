@@ -118,7 +118,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
   }
 }
 
-const NETWORK_LATENCY = 2000;
+const NETWORK_LATENCY = 1000;
 
 // TODO: returns traces that still need to be stepped...
 function traceReducer<St extends Json, Msg extends Json>(

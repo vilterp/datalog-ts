@@ -53,6 +53,7 @@ export type MutationResponse = {
   payload:
     | {
         type: "Accept";
+        timestamp: number;
         // TODO: new keys? with server timestamps?
       }
     | {

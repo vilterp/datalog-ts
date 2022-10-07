@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { END_KEY, START_KEY } from "../../../../../core/types";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState } from "../client";
+import { ClientState, getStateForKey, TransactionState } from "../client";
 import { useLiveQuery } from "../hooks";
 import {
   apply,
@@ -157,20 +157,18 @@ function BalanceTable(props: UIProps<ClientState, UserInput>) {
         <tr>
           <th>Account</th>
           <th>Balance</th>
-          <th>(txn state)</th>
+          <th>Committed At</th>
         </tr>
       </thead>
       <tbody>
         {mapObjToList(queryResults, (key, value) => {
-          const txn = props.state.transactions[value.transactionID];
+          const txnState = getStateForKey(props.state, key);
           return (
             <tr key={key}>
               <td>{key}</td>
               <td>{value.value}</td>
               <td>
-                <code>
-                  {JSON.stringify(txn ? txn.state : { type: "FromServer" })}
-                </code>
+                <TxnState state={txnState} />
               </td>
             </tr>
           );
@@ -178,6 +176,17 @@ function BalanceTable(props: UIProps<ClientState, UserInput>) {
       </tbody>
     </table>
   );
+}
+
+function TxnState(props: { state: TransactionState }) {
+  switch (props.state.type) {
+    case "Pending":
+      return <></>;
+    case "Committed":
+      return <>{props.state.serverTimestamp}</>;
+    case "Aborted":
+      return <>(!)</>;
+  }
 }
 
 // TODO: is default=0 correct for everything here?
