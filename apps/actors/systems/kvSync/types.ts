@@ -53,7 +53,7 @@ export type MutationResponse = {
   payload:
     | {
         type: "Accept";
-        // TODO: new keys? with server timestamps?
+        timestamp: number;
       }
     | {
         type: "Reject";
@@ -62,9 +62,14 @@ export type MutationResponse = {
       };
 };
 
+export type TransactionMetadata = {
+  [id: string]: { serverTimestamp: number; invocation: MutationInvocation };
+};
+
 export type LiveQueryUpdate = {
   type: "LiveQueryUpdate";
   clientID: string;
+  transactionMetadata: TransactionMetadata;
   updates: KeyUpdate[];
 };
 
@@ -72,6 +77,7 @@ export type LiveQueryResponse = {
   type: "LiveQueryResponse";
   id: string;
   results: { [key: string]: VersionedValue };
+  transactionMetadata: TransactionMetadata;
 };
 
 type KeyUpdate =

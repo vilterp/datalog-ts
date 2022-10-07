@@ -11,10 +11,11 @@ import {
   MutationRequest,
   MutationResponse,
   Query,
+  TransactionMetadata,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { filterMap, filterObj } from "../../../../util/util";
+import { filterMap, filterObj, groupBy } from "../../../../util/util";
 import { jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 
@@ -22,7 +23,9 @@ export type ServerState = {
   type: "ServerState";
   data: KVData;
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
+  transactionMetadata: TransactionMetadata;
   mutationDefns: MutationDefns;
+  time: number;
 };
 
 export function initialServerState(mutationDefns: MutationDefns): ServerState {
@@ -30,7 +33,9 @@ export function initialServerState(mutationDefns: MutationDefns): ServerState {
     type: "ServerState",
     data: {},
     liveQueries: [],
+    transactionMetadata: {},
     mutationDefns,
+    time: 0,
   };
 }
 
@@ -47,7 +52,20 @@ function processLiveQueryRequest(
   const results = filterObj(state.data, (key, value) =>
     keyInQuery(key, req.query)
   );
-  return [newState, { type: "LiveQueryResponse", id: req.id, results }];
+  const transactionTimestamps: TransactionMetadata = {};
+  Object.values(results).forEach((vv) => {
+    transactionTimestamps[vv.transactionID] =
+      state.transactionMetadata[vv.transactionID];
+  });
+  return [
+    newState,
+    {
+      type: "LiveQueryResponse",
+      id: req.id,
+      results,
+      transactionMetadata: transactionTimestamps,
+    },
+  ];
 }
 
 function runMutationOnServer(
@@ -60,7 +78,16 @@ function runMutationOnServer(
     state.mutationDefns[req.invocation.name],
     req.invocation.args
   );
-  const newState: ServerState = { ...state, data: newData };
+  const txnTime = state.time;
+  const newState: ServerState = {
+    ...state,
+    time: state.time + 1,
+    transactionMetadata: {
+      ...state.transactionMetadata,
+      [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
+    },
+    data: newData,
+  };
   if (outcome === "Abort") {
     return [
       state,
@@ -108,6 +135,9 @@ function runMutationOnServer(
       return {
         type: "LiveQueryUpdate",
         clientID: liveQuery.clientID,
+        transactionMetadata: {
+          [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
+        },
         updates: matchingWrites.map((write) => ({
           type: "Updated",
           key: write.key,
@@ -124,7 +154,7 @@ function runMutationOnServer(
     {
       type: "MutationResponse",
       txnID: req.txnID,
-      payload: { type: "Accept" },
+      payload: { type: "Accept", timestamp: txnTime },
     },
     liveQueryUpdates,
   ];

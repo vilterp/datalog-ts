@@ -7,13 +7,13 @@ runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 application/datalog
 hop{from: tick{place: "user0", time: 3}, message: RunMutation{args: ["foo",10], name: "deposit"}, to: tick{place: "client0", time: 5}}.
 hop{from: tick{place: "client0", time: 5}, message: MutationRequest{invocation: {args: ["foo",10], name: "deposit"}, trace: [Read{key: "foo", transactionID: "-1"},Write{key: "foo", value: 10}], txnID: "1806"}, to: tick{place: "server", time: 7}}.
-hop{from: tick{place: "server", time: 7}, message: MutationResponse{payload: Accept{}, txnID: "1806"}, to: tick{place: "client0", time: 9}}.
+hop{from: tick{place: "server", time: 7}, message: MutationResponse{payload: Accept{timestamp: 0}, txnID: "1806"}, to: tick{place: "client0", time: 9}}.
 hop{from: tick{place: "user0", time: 10}, message: RunMutation{args: ["bar",10], name: "deposit"}, to: tick{place: "client0", time: 12}}.
 hop{from: tick{place: "client0", time: 12}, message: MutationRequest{invocation: {args: ["bar",10], name: "deposit"}, trace: [Read{key: "bar", transactionID: "-1"},Write{key: "bar", value: 10}], txnID: "422070"}, to: tick{place: "server", time: 14}}.
-hop{from: tick{place: "server", time: 14}, message: MutationResponse{payload: Accept{}, txnID: "422070"}, to: tick{place: "client0", time: 16}}.
+hop{from: tick{place: "server", time: 14}, message: MutationResponse{payload: Accept{timestamp: 1}, txnID: "422070"}, to: tick{place: "client0", time: 16}}.
 hop{from: tick{place: "user0", time: 17}, message: RunMutation{args: ["foo","bar",5], name: "move"}, to: tick{place: "client0", time: 19}}.
 hop{from: tick{place: "client0", time: 19}, message: MutationRequest{invocation: {args: ["foo","bar",5], name: "move"}, trace: [Read{key: "foo", transactionID: "1806"},Read{key: "bar", transactionID: "422070"},Write{key: "foo", value: 5},Write{key: "bar", value: 15}], txnID: "4529256"}, to: tick{place: "server", time: 21}}.
-hop{from: tick{place: "server", time: 21}, message: MutationResponse{payload: Accept{}, txnID: "4529256"}, to: tick{place: "client0", time: 23}}.
+hop{from: tick{place: "server", time: 21}, message: MutationResponse{payload: Accept{timestamp: 2}, txnID: "4529256"}, to: tick{place: "client0", time: 23}}.
 hop{from: tick{place: "user0", time: 24}, message: RunMutation{args: ["foo","bar",5], name: "move"}, to: tick{place: "client0", time: 26}}.
 hop{from: tick{place: "client0", time: 26}, message: MutationRequest{invocation: {args: ["foo","bar",5], name: "move"}, trace: [Read{key: "foo", transactionID: "4529256"},Read{key: "bar", transactionID: "4529256"},Write{key: "foo", value: 0},Write{key: "bar", value: 20}], txnID: "2323860"}, to: tick{place: "server", time: 28}}.
-hop{from: tick{place: "server", time: 28}, message: MutationResponse{payload: Accept{}, txnID: "2323860"}, to: tick{place: "client0", time: 30}}.
+hop{from: tick{place: "server", time: 28}, message: MutationResponse{payload: Accept{timestamp: 3}, txnID: "2323860"}, to: tick{place: "client0", time: 30}}.

@@ -12,9 +12,10 @@ import {
   MutationResponse,
   Query,
   Trace,
+  TransactionMetadata,
 } from "./types";
 import * as effects from "../../effects";
-import { pairsToObj, randStep } from "../../../../util/util";
+import { mapObj, pairsToObj, randStep } from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 
 export type QueryStatus = "Loading" | "Online";
@@ -44,7 +45,7 @@ export function initialClientState(
 
 export type TransactionState =
   | { type: "Pending" }
-  | { type: "Committed" }
+  | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
       serverTrace: Trace;
@@ -63,7 +64,7 @@ function processMutationResponse(
   const payload = response.payload;
   const newTxnState: TransactionState =
     payload.type === "Accept"
-      ? { type: "Committed" }
+      ? { type: "Committed", serverTimestamp: payload.timestamp }
       : { type: "Aborted", serverTrace: payload.serverTrace };
   const state1: ClientState = {
     ...state,
@@ -94,6 +95,10 @@ function processLiveQueryUpdate(
 ): ClientState {
   return {
     ...state,
+    transactions: {
+      ...state.transactions,
+      ...getNewTransactions(update.transactionMetadata),
+    },
     data: {
       ...state.data,
       ...pairsToObj(
@@ -159,11 +164,27 @@ function registerLiveQuery(
   return [newState, { type: "LiveQueryRequest", id, query }];
 }
 
+function getNewTransactions(metadata: TransactionMetadata): {
+  [id: string]: TransactionRecord;
+} {
+  return mapObj(
+    metadata,
+    (txnid, metadata): TransactionRecord => ({
+      state: {
+        type: "Committed",
+        serverTimestamp: metadata.serverTimestamp,
+      },
+      invocation: metadata.invocation,
+    })
+  );
+}
+
 function processLiveQueryResponse(
   state: ClientState,
   resp: LiveQueryResponse
 ): ClientState {
   const query = state.liveQueries[resp.id];
+  const newTransactions = getNewTransactions(resp.transactionMetadata);
   return {
     ...state,
     liveQueries: {
@@ -177,7 +198,20 @@ function processLiveQueryResponse(
       ...state.data,
       ...resp.results,
     },
+    transactions: {
+      ...state.transactions,
+      ...newTransactions,
+    },
   };
+}
+
+export function getStateForKey(
+  state: ClientState,
+  key: string
+): TransactionState {
+  const value = state.data[key];
+  const txn = state.transactions[value.transactionID];
+  return txn.state;
 }
 
 // TODO: maybe move this out to index.ts? idk
