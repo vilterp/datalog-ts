@@ -198,6 +198,22 @@ internal.visualization{
   }
 }.
 
+viz.message{
+  fromTick: tick{time: FromT, place: FromTH},
+  toTick: tick{time: ToT, place: ToTH}
+} :-
+  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
+  ToT = FromT + 1.
+
+internal.visualization{
+  name: "Spawning Sequence",
+  spec: sequence{
+    actors: state.ProgramCounter{thread: Thread},
+    ticks: state.ProgramCounter{time: Time, thread: Place},
+    messages: viz.message{fromTick: FromTick, toTick: ToTick},
+  },
+}.
+
 # insertion
 
 state.programCounter.init{thread: 1, time: 1, counter: 0}.
