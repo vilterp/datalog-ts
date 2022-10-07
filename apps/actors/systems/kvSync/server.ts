@@ -154,7 +154,7 @@ function runMutationOnServer(
     {
       type: "MutationResponse",
       txnID: req.txnID,
-      payload: { type: "Accept", timestamp: newState.time },
+      payload: { type: "Accept", timestamp: txnTime },
     },
     liveQueryUpdates,
   ];
