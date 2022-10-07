@@ -187,19 +187,14 @@ function stepIteratorAll(
     if (iter.queue.length > MAX_QUEUE_SIZE) {
       throw new Error("max queue size exceeded");
     }
-    const emissions = stepIterator(iter);
-    console.log(
-      "emissions:",
-      emissions.fromID,
-      emissions.output.map((r) => (r.term ? ppt(r.term) : null))
-    );
-    emissionLog.push(emissions);
+    stepIterator(iter);
+    // emissionLog.push(emissions);
     newGraph = iter.graph;
   }
   return { newGraph, emissionLog };
 }
 
-function stepIterator(iter: InsertionIterator): EmissionBatch {
+function stepIterator(iter: InsertionIterator): void {
   let newGraph = iter.graph;
   const insertingNow = iter.queue.shift();
   const curNodeID = insertingNow.destination;
@@ -218,7 +213,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
     }
   }
   iter.graph = newGraph;
-  return { fromID: curNodeID, output: results };
+  // return { fromID: curNodeID, output: results };
 }
 
 // caller adds resulting facts
