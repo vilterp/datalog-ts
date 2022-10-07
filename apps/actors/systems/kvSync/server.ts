@@ -11,6 +11,7 @@ import {
   MutationRequest,
   MutationResponse,
   Query,
+  TransactionTimestamps,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
@@ -22,6 +23,7 @@ export type ServerState = {
   type: "ServerState";
   data: KVData;
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
+  transactionTimestamps: TransactionTimestamps;
   mutationDefns: MutationDefns;
   time: number;
 };
@@ -31,6 +33,7 @@ export function initialServerState(mutationDefns: MutationDefns): ServerState {
     type: "ServerState",
     data: {},
     liveQueries: [],
+    transactionTimestamps: {},
     mutationDefns,
     time: 0,
   };

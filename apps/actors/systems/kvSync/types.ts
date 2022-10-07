@@ -63,9 +63,12 @@ export type MutationResponse = {
       };
 };
 
+export type TransactionTimestamps = { [id: string]: number };
+
 export type LiveQueryUpdate = {
   type: "LiveQueryUpdate";
   clientID: string;
+  transactionTimestamps: TransactionTimestamps;
   updates: KeyUpdate[];
 };
 
@@ -73,6 +76,7 @@ export type LiveQueryResponse = {
   type: "LiveQueryResponse";
   id: string;
   results: { [key: string]: VersionedValue };
+  transactionTimestamps: TransactionTimestamps;
 };
 
 type KeyUpdate =
