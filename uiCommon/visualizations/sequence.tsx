@@ -132,18 +132,19 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
               start: ORIGIN,
               end: { x: 0, y: yForTime(maxTime) + 20 },
             }),
-            ...pointsForLocation(loc.loc, seq.hops).map((tp) =>
-              AbsPos(
+            ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
+              const highlighted = jsonEq(tp.term, highlight);
+              return AbsPos(
                 { x: 0, y: yForTime(tp.time) },
                 Tag(
                   tp.term,
                   Circle({
                     radius: 5,
-                    fill: "red",
+                    fill: highlighted ? "orange" : "red",
                   })
                 )
-              )
-            ),
+              );
+            }),
           ]),
         ])
       )
