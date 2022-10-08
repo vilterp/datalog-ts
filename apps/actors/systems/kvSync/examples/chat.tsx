@@ -46,45 +46,65 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
         <tbody>
           <tr>
             <td>
-              <ul>
-                {EXAMPLE_THREADS.map((thread) => (
-                  <li
-                    key={thread}
-                    onClick={() => setCurThread(thread)}
-                    style={{
-                      cursor: "pointer",
-                      fontWeight: thread == curThread ? "bold" : "normal",
-                    }}
-                  >
-                    {thread}
-                  </li>
-                ))}
-              </ul>
+              <ThreadList
+                curThread={curThread}
+                setCurThread={setCurThread}
+                threads={EXAMPLE_THREADS}
+              />
             </td>
             <td>
-              <table>
-                <thead>
-                  <th>Sender</th>
-                  <th>Message</th>
-                  <th>State</th>
-                </thead>
-                <tbody>
-                  {messages.map((message) => (
-                    <tr key={message.id}>
-                      <td>{message.sender}</td>
-                      <td>{message.message}</td>
-                      <td>
-                        <TxnState state={message.state} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <MessageTable messages={messages} />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+  );
+}
+
+function MessageTable(props: { messages: Message[] }) {
+  return (
+    <table>
+      <thead>
+        <th>Sender</th>
+        <th>Message</th>
+        <th>State</th>
+      </thead>
+      <tbody>
+        {props.messages.map((message) => (
+          <tr key={message.id}>
+            <td>{message.sender}</td>
+            <td>{message.message}</td>
+            <td>
+              <TxnState state={message.state} />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function ThreadList(props: {
+  threads: string[];
+  curThread: string;
+  setCurThread: (th: string) => void;
+}) {
+  return (
+    <ul>
+      {props.threads.map((thread) => (
+        <li
+          key={thread}
+          onClick={() => props.setCurThread(thread)}
+          style={{
+            cursor: "pointer",
+            fontWeight: thread == props.curThread ? "bold" : "normal",
+          }}
+        >
+          {thread}
+        </li>
+      ))}
+    </ul>
   );
 }
 
