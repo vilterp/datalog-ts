@@ -17,6 +17,7 @@ import {
   doExpr,
 } from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
+import { TxnState } from "./common";
 import { KVApp } from "./types";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
@@ -176,17 +177,6 @@ function BalanceTable(props: UIProps<ClientState, UserInput>) {
       </tbody>
     </table>
   );
-}
-
-function TxnState(props: { state: TransactionState }) {
-  switch (props.state.type) {
-    case "Pending":
-      return <></>;
-    case "Committed":
-      return <>{props.state.serverTimestamp}</>;
-    case "Aborted":
-      return <>(!)</>;
-  }
 }
 
 // TODO: is default=0 correct for everything here?
