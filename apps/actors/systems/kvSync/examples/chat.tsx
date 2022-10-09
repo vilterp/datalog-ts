@@ -126,13 +126,21 @@ function ThreadList(props: {
   setCurThread: (th: string) => void;
 }) {
   // TODO: this should be only for chats that this user is in
-  const latestMessages = useLiveQuery(props.client, "latest-message", {
-    prefix: "/latestMessage",
-  });
-  const latestMessagesRead = useLiveQuery(props.client, "latest-message", {
-    prefix: `/latestMessageRead/${props.client.state.id}`,
-  });
-  console.log({ latestMessages, latestMessagesRead });
+  const [latestMessages, latestMessagesStatus] = useLiveQuery(
+    props.client,
+    "latest-messages",
+    {
+      prefix: "/latestMessage",
+    }
+  );
+  const [latestMessagesRead, latestMessagesReadStatus] = useLiveQuery(
+    props.client,
+    "latest-messages-read",
+    {
+      prefix: `/latestMessageRead/${props.client.state.id}`,
+    }
+  );
+  // console.log("ThreadList", { latestMessages, latestMessagesRead });
 
   return (
     <ul>
