@@ -100,7 +100,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
           setMessage("");
           props.client.runMutation({
             name: "sendMessage",
-            args: [props.threadID, messages],
+            args: [props.threadID, message],
           });
         }}
       >
@@ -144,10 +144,12 @@ const mutations: MutationDefns = {
       [
         {
           varName: "latestSeqNo",
-          val: read(
-            apply("concat", [str("/latestMessage/"), varr("threadID")]),
-            0
-          ),
+          val: apply("parseInt", [
+            read(
+              apply("concat", [str("/latestMessage/"), varr("threadID")]),
+              0
+            ),
+          ]),
         },
         {
           varName: "newSeqNo",

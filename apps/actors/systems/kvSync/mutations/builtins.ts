@@ -18,4 +18,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   concat: (args) => {
     return args.join("");
   },
+  parseInt: (args) => {
+    return parseInt(args[0] as string);
+  },
 };

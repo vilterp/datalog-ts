@@ -17,7 +17,7 @@ export function runMutation(
         value: arg,
       }))
     ),
-    user: userID,
+    curUser: userID,
   };
   const [resVal, outcome, newState, trace] = runMutationExpr(
     data,
@@ -139,7 +139,7 @@ function runMutationExpr(
           curData,
           transactionID,
           curTrace,
-          scope,
+          newScope,
           binding.val
         );
         if (outcome === "Abort") {
@@ -190,7 +190,6 @@ function runMutationExpr(
       let curData = data;
       let curTrace = traceSoFar;
       let outcome: Outcome = "Commit";
-      let curRes: Value = null;
       for (const arg of expr.args) {
         const [stepRes, newOutcome, newData, newTrace] = runMutationExpr(
           curData,
@@ -202,13 +201,12 @@ function runMutationExpr(
         curData = newData;
         curTrace = newTrace;
         outcome = newOutcome;
-        curRes = stepRes;
         argValues.push(stepRes);
       }
       // TODO: check aborted
       const builtin = BUILTINS[expr.name];
       if (builtin) {
-        return [builtin(argValues), "Commit", curData, traceSoFar];
+        return [builtin(argValues), "Commit", curData, curTrace];
       }
       // TODO: look in scope for lambdas
       console.error("missing builtin", expr.name);
