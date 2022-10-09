@@ -80,10 +80,8 @@ export function useEffectfulReducer<S, A>(
     innerDispatch({ type: "OutsideAction", action });
   };
   useEffect(() => {
-    console.log("need to dispatch", effRedState.promises);
     Object.entries(effRedState.promises).forEach(([id, promise]) => {
       promise.then((action) => {
-        console.log("inner: dispatching", action);
         innerDispatch({ type: "OutsideAction", action });
       });
       innerDispatch({ type: "MarkPromiseDispatched", id });

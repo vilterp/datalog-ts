@@ -51,7 +51,6 @@ export function reducer<St extends Json, Msg extends Json>(
         instance,
         action.action
       );
-      console.log("reducers.reducer", { promises });
       return [
         {
           ...state,
@@ -170,7 +169,7 @@ function promisesWithLatency<St, Msg>(
 ): Promise<TraceAction<St, Msg>>[] {
   return inits.map((init) => {
     const hopLatency = latency(init);
-    console.log("latency for", init, ":", hopLatency);
+    // console.log("latency for", init, ":", hopLatency);
     return sleep(hopLatency).then(() => ({ type: "Step", init }));
   });
 }
