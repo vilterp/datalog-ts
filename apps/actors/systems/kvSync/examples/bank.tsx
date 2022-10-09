@@ -153,18 +153,15 @@ function BalanceTable(props: { client: Client }) {
         </tr>
       </thead>
       <tbody>
-        {mapObjToList(queryResults, (key, value) => {
-          const txnState = getStateForKey(props.client.state, key);
-          return (
-            <tr key={key}>
-              <td>{key}</td>
-              <td>{value.value}</td>
-              <td>
-                <TxnState state={txnState} />
-              </td>
-            </tr>
-          );
-        })}
+        {mapObjToList(queryResults, (key, value) => (
+          <tr key={key}>
+            <td>{key}</td>
+            <td>{value.value}</td>
+            <td>
+              <TxnState client={props.client} txnID={value.transactionID} />
+            </td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );

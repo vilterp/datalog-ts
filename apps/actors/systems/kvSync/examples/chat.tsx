@@ -88,7 +88,10 @@ function MessageTable(props: { threadID: string; client: Client }) {
                 <td>{msg.sender}</td>
                 <td>{msg.message}</td>
                 <td>
-                  <TxnState state={msg.state} />
+                  <TxnState
+                    client={props.client}
+                    txnID={message.transactionID}
+                  />
                 </td>
               </tr>
             );

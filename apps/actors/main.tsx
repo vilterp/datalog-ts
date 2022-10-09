@@ -114,6 +114,8 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       <button
         onClick={() => {
           props.dispatch({ type: "AllocateClientID" });
+          // TODO: DRY this up with other place client id is constructed
+          const clientID = `client${props.systemInstance.nextClientID}`;
           props.dispatch({
             type: "UpdateTrace",
             action: {
@@ -121,9 +123,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               id: props.systemInstance.nextClientID.toString(),
               initialUserState: props.systemInstance.system.initialUserState,
               initialClientState:
-                props.systemInstance.system.initialClientState(
-                  props.systemInstance.nextClientID.toString()
-                ),
+                props.systemInstance.system.initialClientState(clientID),
             },
           });
         }}
