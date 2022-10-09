@@ -15,7 +15,12 @@ import {
   TransactionMetadata,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, pairsToObj, randStep } from "../../../../util/util";
+import {
+  hashString,
+  mapObj,
+  pairsToObj,
+  randStep,
+} from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 
 export type QueryStatus = "Loading" | "Online";
@@ -42,7 +47,7 @@ export function initialClientState(
     liveQueries: {},
     mutationDefns,
     transactions: {},
-    randSeed,
+    randSeed: hashString(clientID),
   };
 }
 
