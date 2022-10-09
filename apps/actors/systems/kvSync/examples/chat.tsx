@@ -178,7 +178,7 @@ const mutations: MutationDefns = {
             str("/"),
             varr("newSeqNo"),
           ]),
-          obj({ sender: varr("user"), message: varr("message") })
+          obj({ sender: varr("curUser"), message: varr("message") })
         ),
       ])
     )

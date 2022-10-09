@@ -178,8 +178,14 @@ function runMutationExpr(
     }
     case "Abort":
       return [null, "Abort", data, traceSoFar];
-    case "Var":
+    case "Var": {
+      const val = scope[expr.name];
+      if (!val) {
+        // TODO: pass error message through
+        return [val, "Abort", data, traceSoFar];
+      }
       return [scope[expr.name], "Commit", data, traceSoFar];
+    }
     case "StringLit":
       return [expr.val, "Commit", data, traceSoFar];
     case "IntLit":
