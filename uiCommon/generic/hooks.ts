@@ -40,23 +40,8 @@ export function useEffectfulReducer<S, A>(
   reducer: (state: S, action: A) => [S, Promise<A>[]],
   initialState: S
 ): [S, (a: A) => void] {
-  const myReducer = (
-    prevState: EffectfulReducerState<S, A>,
-    action: EffectfulReducerAction<A>
-  ): EffectfulReducerState<S, A> => {
-    switch (action.type) {
-      case "OutsideAction": {
-        const [newState, newPromises] = reducer(prevState.state, action.action);
-        return {
-          state: newState,
-          promises: [...prevState.promises, ...newPromises],
-        };
-      }
-      case "MarkPromisesDispatched":
-        return { ...prevState, promises: [] };
-    }
-  };
-  const [effRedState, innerDispatch] = useReducer(myReducer, {
+  const myInnerReducer = (s: S, a: A) => innerReducer(reducer, s, a);
+  const [effRedState, innerDispatch] = useReducer(myInnerReducer, {
     state: initialState,
     promises: [],
   });
@@ -74,4 +59,25 @@ export function useEffectfulReducer<S, A>(
     });
   }, [effRedState]);
   return [effRedState.state, outerDispatch];
+}
+
+function innerReducer<S, A>(
+  effectfulReducer: (state: S, action: A) => [S, Promise<A>[]],
+  prevState: EffectfulReducerState<S, A>,
+  action: EffectfulReducerAction<A>
+): EffectfulReducerState<S, A> {
+  switch (action.type) {
+    case "OutsideAction": {
+      const [newState, newPromises] = effectfulReducer(
+        prevState.state,
+        action.action
+      );
+      return {
+        state: newState,
+        promises: [...prevState.promises, ...newPromises],
+      };
+    }
+    case "MarkPromisesDispatched":
+      return { ...prevState, promises: [] };
+  }
 }
