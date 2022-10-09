@@ -126,41 +126,47 @@ function traceReducer<St extends Json, Msg extends Json>(
   update: UpdateFn<St, Msg>,
   action: TraceAction<St, Msg>
 ): [Trace<St>, Promise<TraceAction<St, Msg>>[]] {
-  switch (action.type) {
-    case "SendUserInput": {
-      const { newTrace: trace2, newMessageID } = insertUserInput(
-        trace,
-        action.clientID,
-        action.input
-      );
-      const { newTrace: trace3, newInits } = step(trace2, update, {
-        from: `user${action.clientID}`,
-        to: `client${action.clientID}`,
-        init: {
-          type: "messageReceived",
-          messageID: newMessageID.toString(),
-        },
-      });
-      return [trace3, dispatchInits(newInits)];
-    }
-    case "SpawnClient": {
-      const { newTrace: trace2, newInits: newInits1 } = step(
-        trace,
-        update,
-        spawnInitiator(`user${action.id}`, action.initialUserState)
-      );
-      const { newTrace: trace3, newInits: newInits2 } = step(
-        trace2,
-        update,
-        spawnInitiator(`client${action.id}`, action.initialClientState)
-      );
-      return [trace3, dispatchInits([...newInits1, ...newInits2])];
-    }
-    case "Step": {
-      const { newTrace, newInits } = step(trace, update, action.init);
-      return [newTrace, dispatchInits(newInits)];
-    }
-  }
+  const [newTrace, promise]: [Trace<St>, Promise<TraceAction<St, Msg>>[]] =
+    (() => {
+      switch (action.type) {
+        case "SendUserInput": {
+          const { newTrace: trace2, newMessageID } = insertUserInput(
+            trace,
+            action.clientID,
+            action.input
+          );
+          const { newTrace: trace3, newInits } = step(trace2, update, {
+            from: `user${action.clientID}`,
+            to: `client${action.clientID}`,
+            init: {
+              type: "messageReceived",
+              messageID: newMessageID.toString(),
+            },
+          });
+          // console.log("traceReducer", "dispatchInits", newInits);
+          return [trace3, dispatchInits(newInits)];
+        }
+        case "SpawnClient": {
+          const { newTrace: trace2, newInits: newInits1 } = step(
+            trace,
+            update,
+            spawnInitiator(`user${action.id}`, action.initialUserState)
+          );
+          const { newTrace: trace3, newInits: newInits2 } = step(
+            trace2,
+            update,
+            spawnInitiator(`client${action.id}`, action.initialClientState)
+          );
+          return [trace3, dispatchInits([...newInits1, ...newInits2])];
+        }
+        case "Step": {
+          const { newTrace, newInits } = step(trace, update, action.init);
+          return [newTrace, dispatchInits(newInits)];
+        }
+      }
+    })();
+  console.log("traceReducer", { trace, action }, "=>", { newTrace, promise });
+  return [newTrace, promise];
 }
 
 function dispatchInits<St, Msg>(
