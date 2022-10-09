@@ -38,6 +38,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
           <tr>
             <td>
               <ThreadList
+                client={client}
                 curThread={curThread}
                 setCurThread={setCurThread}
                 threads={EXAMPLE_THREADS}
@@ -119,24 +120,41 @@ function MessageTable(props: { threadID: string; client: Client }) {
 }
 
 function ThreadList(props: {
+  client: Client;
   threads: string[];
   curThread: string;
   setCurThread: (th: string) => void;
 }) {
+  // TODO: this should be only for chats that this user is in
+  const latestMessages = useLiveQuery(props.client, "latest-message", {
+    prefix: "/latestMessage",
+  });
+  const latestMessagesRead = useLiveQuery(props.client, "latest-message", {
+    prefix: `/latestMessageRead/${props.client.state.id}`,
+  });
+  console.log({ latestMessages, latestMessagesRead });
+
   return (
     <ul>
-      {props.threads.map((thread) => (
-        <li
-          key={thread}
-          onClick={() => props.setCurThread(thread)}
-          style={{
-            cursor: "pointer",
-            fontWeight: thread == props.curThread ? "bold" : "normal",
-          }}
-        >
-          {thread}
-        </li>
-      ))}
+      {props.threads.map((threadID) => {
+        // TODO: need full keys
+        const latestMessageInThread = latestMessages[threadID];
+        const latestMessageReadInThread = latestMessagesRead[threadID];
+        const hasUnread = latestMessageInThread > latestMessageReadInThread;
+        return (
+          <li
+            key={threadID}
+            onClick={() => props.setCurThread(threadID)}
+            style={{
+              cursor: "pointer",
+              fontWeight: threadID == props.curThread ? "bold" : "normal",
+            }}
+          >
+            {hasUnread ? "* " : ""}
+            {threadID}
+          </li>
+        );
+      })}
     </ul>
   );
 }
