@@ -29,36 +29,49 @@ export function useIntLocalStorage(
   return [parseInt(val), (v: number) => setVal(`${v}`)];
 }
 
+type EffectfulReducerAction<A> =
+  | { type: "OutsideAction"; action: A }
+  | { type: "MarkPromisesDispatched" };
+
+type EffectfulReducerState<S, A> = { state: S; promises: Promise<A>[] };
+
 // inspired by the Elm architecture
 export function useEffectfulReducer<S, A>(
   reducer: (state: S, action: A) => [S, Promise<A>[]],
   initialState: S
 ): [S, (a: A) => void] {
   const myReducer = (
-    prevPair: [S, Promise<A>[]],
-    action: A
-  ): [S, Promise<A>[]] => {
-    const [prevState, _] = prevPair;
-    const [newState, promise] = reducer(prevState, action);
-    // console.log(
-    //   "useEffectfulReducer",
-    //   [prevState, action],
-    //   [newState, promise]
-    // );
-    return [newState, promise];
+    prevState: EffectfulReducerState<S, A>,
+    action: EffectfulReducerAction<A>
+  ): EffectfulReducerState<S, A> => {
+    switch (action.type) {
+      case "OutsideAction": {
+        const [newState, newPromises] = reducer(prevState.state, action.action);
+        return {
+          state: newState,
+          promises: [...prevState.promises, ...newPromises],
+        };
+      }
+      case "MarkPromisesDispatched":
+        return { ...prevState, promises: [] };
+    }
   };
-  const [[state, effects], dispatch] = useReducer(myReducer, [
-    initialState,
-    [],
-  ]);
+  const [effRedState, innerDispatch] = useReducer(myReducer, {
+    state: initialState,
+    promises: [],
+  });
+  const outerDispatch = (action: A) => {
+    innerDispatch({ type: "OutsideAction", action });
+  };
   useEffect(() => {
-    console.log("need to dispatch", effects);
-    effects.forEach((eff) => {
-      eff.then((eff2) => {
-        console.log("inner: dispatching", eff2);
-        dispatch(eff2);
+    console.log("need to dispatch", effRedState.promises);
+    effRedState.promises.forEach((eff) => {
+      eff.then((action) => {
+        console.log("inner: dispatching", action);
+        innerDispatch({ type: "OutsideAction", action });
       });
+      innerDispatch({ type: "MarkPromisesDispatched" });
     });
-  }, [effects, dispatch, myReducer]);
-  return [state, dispatch];
+  }, [effRedState]);
+  return [effRedState.state, outerDispatch];
 }
