@@ -15,4 +15,7 @@ export const BUILTINS: { [name: string]: Builtin } = {
   ">": (args) => {
     return args[0] > args[1];
   },
+  concat: (args) => {
+    return args.join("");
+  },
 };

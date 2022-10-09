@@ -72,9 +72,11 @@ function MessageTable(props: { threadID: string; client: Client }) {
     <>
       <table>
         <thead>
-          <th>Sender</th>
-          <th>Message</th>
-          <th>State</th>
+          <tr>
+            <th>Sender</th>
+            <th>Message</th>
+            <th>State</th>
+          </tr>
         </thead>
         <tbody>
           {/* sort by date? */}
@@ -95,6 +97,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
       <form
         onSubmit={(evt) => {
           evt.preventDefault();
+          setMessage("");
           props.client.runMutation({
             name: "sendMessage",
             args: [props.threadID, messages],
@@ -177,27 +180,6 @@ const mutations: MutationDefns = {
       ])
     )
   ),
-};
-
-const EXAMPLE_MESSAGES: {
-  [room: string]: Message[];
-} = {
-  foo: [
-    {
-      id: 1,
-      message: "hello world",
-      sender: "Pete",
-      state: { type: "Committed", serverTimestamp: 2 },
-    },
-  ],
-  bar: [
-    {
-      id: 1,
-      message: "goodbye world",
-      sender: "RePete",
-      state: { type: "Committed", serverTimestamp: 2 },
-    },
-  ],
 };
 
 const EXAMPLE_THREADS = ["foo", "bar"];

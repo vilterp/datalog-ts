@@ -157,7 +157,6 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
       if (fromCoords === null || toCoords === null) {
         return EMPTY_DIAGRAM;
       }
-      console.log("highlighted", { left: hop.term, right: highlight });
       const highlighted = jsonEq(hop.term, highlight);
       return Tag(
         hop.term,

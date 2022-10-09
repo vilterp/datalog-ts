@@ -244,8 +244,8 @@ export function updateClient(
         }
         case "RunMutation": {
           const [newState, req] = runMutationOnClient(state, {
-            name: msg.name,
-            args: msg.args,
+            name: msg.invocation.name,
+            args: msg.invocation.args,
           });
           if (req === null) {
             return effects.updateState(newState);
