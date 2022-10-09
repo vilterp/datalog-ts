@@ -154,14 +154,16 @@ function ThreadList(props: {
 
         const key = `/latestMessageRead/${props.client.state.id}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
-        console.log("ThreadList item", {
-          latestMessageRead,
-          key,
-          latestMessageReadInThread,
-        });
-
         const hasUnread =
-          latestMessageInThread?.value > latestMessageReadInThread?.value;
+          latestMessageInThread?.value >
+          (latestMessageReadInThread?.value || -1);
+        // console.log(
+        //   "ThreadList item hasUnread",
+        //   props.client.state.id,
+        //   latestMessageInThread,
+        //   ">",
+        //   latestMessageReadInThread
+        // );
         return (
           <li
             key={threadID}
