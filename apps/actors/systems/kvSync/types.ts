@@ -68,7 +68,7 @@ export type TransactionMetadata = {
 
 export type LiveQueryUpdate = {
   type: "LiveQueryUpdate";
-  clientID: string;
+  clientID: string; // TODO: this shouldn't be part of the payload
   transactionMetadata: TransactionMetadata;
   updates: KeyUpdate[];
 };
