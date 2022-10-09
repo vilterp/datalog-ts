@@ -18,7 +18,8 @@ export type Expr =
   | { type: "Var"; name: string }
   | { type: "StringLit"; val: string }
   | { type: "IntLit"; val: number }
-  | { type: "Apply"; name: string; args: Expr[] };
+  | { type: "Apply"; name: string; args: Expr[] }
+  | { type: "ObjectLit"; object: { [key: string]: Expr } };
 
 export function lambda(args: string[], body: Expr): Lambda {
   return { type: "Lambda", args, body };
@@ -65,6 +66,10 @@ export function str(val: string): Expr {
 
 export function int(val: number): Expr {
   return { type: "IntLit", val };
+}
+
+export function obj(object: { [key: string]: Expr }): Expr {
+  return { type: "ObjectLit", object };
 }
 
 export type Value = Json | Lambda;

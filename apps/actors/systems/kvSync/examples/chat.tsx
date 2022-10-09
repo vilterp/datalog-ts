@@ -8,6 +8,7 @@ import {
   int,
   lambda,
   letExpr,
+  obj,
   read,
   str,
   varr,
@@ -177,7 +178,7 @@ const mutations: MutationDefns = {
             str("/"),
             varr("newSeqNo"),
           ]),
-          varr("message")
+          obj({ sender: varr("user"), message: varr("message") })
         ),
       ])
     )

@@ -210,6 +210,28 @@ function runMutationExpr(
       }
       // TODO: look in scope for lambdas
       console.error("missing builtin", expr.name);
+      return [null, "Abort", data, curTrace];
+    }
+    case "ObjectLit": {
+      // evaluate args
+      const values: { [key: string]: Value } = {};
+      let curData = data;
+      let curTrace = traceSoFar;
+      let outcome: Outcome = "Commit";
+      Object.entries(expr.object).forEach(([key, valExpr]) => {
+        const [valRes, newOutcome, newData, newTrace] = runMutationExpr(
+          curData,
+          transactionID,
+          curTrace,
+          scope,
+          valExpr
+        );
+        curData = newData;
+        curTrace = newTrace;
+        outcome = newOutcome;
+        values[key] = valRes;
+      });
+      return [values, outcome, curData, curTrace];
     }
   }
 }

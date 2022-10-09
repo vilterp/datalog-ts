@@ -2,13 +2,8 @@ import { useEffect } from "react";
 import { filterObj } from "../../../../util/util";
 import { UIProps } from "../../types";
 import { ClientState, QueryStatus } from "./client";
-import {
-  keyInQuery,
-  MutationInvocation,
-  Query,
-  UserInput,
-  VersionedValue,
-} from "./types";
+import { runQuery } from "./query";
+import { MutationInvocation, Query, UserInput, VersionedValue } from "./types";
 
 export type QueryResults = { [key: string]: VersionedValue };
 
@@ -41,13 +36,8 @@ export function useLiveQuery(
     client.registerLiveQuery(id, query);
   }, []);
 
-  const results = runQuery(client.state, query);
+  const results = runQuery(client.state.data, query);
   const queryMetadata = client.state.liveQueries[id];
   const status: QueryStatus = queryMetadata ? queryMetadata.status : "Loading";
   return [results, status];
-}
-
-// TODO: find a better home for this
-function runQuery(state: ClientState, query: Query): QueryResults {
-  return filterObj(state.data, (k, v) => keyInQuery(k, query));
 }

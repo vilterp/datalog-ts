@@ -92,9 +92,3 @@ export type MutationInvocation = {
   name: string;
   args: Json[];
 };
-
-// utils
-
-export function keyInQuery(key: string, query: Query): boolean {
-  return key.startsWith(query.prefix);
-}
