@@ -17,6 +17,11 @@ export function makeClient(props: UIProps<ClientState, UserInput>): Client {
     props.sendUserInput({ type: "RunMutation", invocation: mutation });
   };
   const registerLiveQuery = (id: string, query: Query) => {
+    // don't register duplicate query
+    // TODO: key these on query itself; get rid of id
+    if (props.state.liveQueries[id]) {
+      return;
+    }
     props.sendUserInput({ type: "RegisterQuery", id, query });
   };
   return {
