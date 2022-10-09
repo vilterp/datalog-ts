@@ -36,7 +36,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
       <table>
         <tbody>
           <tr>
-            <td>
+            <td valign="top">
               <ThreadList
                 client={client}
                 curThread={curThread}
