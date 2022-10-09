@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { END_KEY, START_KEY } from "../../../../../core/types";
+import React, { useState } from "react";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, getStateForKey, TransactionState } from "../client";
-import { useLiveQuery } from "../hooks";
+import { ClientState, getStateForKey } from "../client";
+import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
   read,
@@ -21,32 +20,28 @@ import { TxnState } from "./common";
 import { KVApp } from "./types";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
+  const client = makeClient(props);
+
   return (
     <div>
       <h3>MyBank</h3>
-      <BalanceTable state={props.state} sendUserInput={props.sendUserInput} />
+      <BalanceTable client={client} />
       <ul>
         <li>
-          <WithdrawForm
-            sendUserInput={props.sendUserInput}
-            state={props.state}
-          />
+          <WithdrawForm client={client} />
         </li>
         <li>
-          <DepositForm
-            sendUserInput={props.sendUserInput}
-            state={props.state}
-          />
+          <DepositForm client={client} />
         </li>
         <li>
-          <MoveForm sendUserInput={props.sendUserInput} state={props.state} />
+          <MoveForm client={client} />
         </li>
       </ul>
     </div>
   );
 }
 
-function WithdrawForm(props: UIProps<ClientState, UserInput>) {
+function WithdrawForm(props: { client: Client }) {
   const [account, setAccount] = useState("");
   const [amount, setAmount] = useState(0);
 
@@ -54,8 +49,7 @@ function WithdrawForm(props: UIProps<ClientState, UserInput>) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.sendUserInput({
-          type: "RunMutation",
+        props.client.runMutation({
           name: "withdraw",
           args: [account, amount],
         });
@@ -73,7 +67,7 @@ function WithdrawForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function DepositForm(props: UIProps<ClientState, UserInput>) {
+function DepositForm(props: { client: Client }) {
   const [account, setAccount] = useState("foo");
   const [amount, setAmount] = useState(10);
 
@@ -81,8 +75,7 @@ function DepositForm(props: UIProps<ClientState, UserInput>) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.sendUserInput({
-          type: "RunMutation",
+        props.client.runMutation({
           name: "deposit",
           args: [account, amount],
         });
@@ -100,7 +93,7 @@ function DepositForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function MoveForm(props: UIProps<ClientState, UserInput>) {
+function MoveForm(props: { client: Client }) {
   const [fromAccount, setFromAccount] = useState("");
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState(0);
@@ -109,8 +102,7 @@ function MoveForm(props: UIProps<ClientState, UserInput>) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.sendUserInput({
-          type: "RunMutation",
+        props.client.runMutation({
           name: "move",
           args: [fromAccount, toAccount, amount],
         });
@@ -136,12 +128,11 @@ function MoveForm(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function BalanceTable(props: UIProps<ClientState, UserInput>) {
+function BalanceTable(props: { client: Client }) {
   const [queryResults, queryState] = useLiveQuery(
-    props.state,
+    props.client,
     "list-accounts",
-    { fromKey: START_KEY, toKey: END_KEY },
-    props.sendUserInput
+    { prefix: "" }
   );
 
   if (queryState === "Loading") {
@@ -163,7 +154,7 @@ function BalanceTable(props: UIProps<ClientState, UserInput>) {
       </thead>
       <tbody>
         {mapObjToList(queryResults, (key, value) => {
-          const txnState = getStateForKey(props.state, key);
+          const txnState = getStateForKey(props.client.state, key);
           return (
             <tr key={key}>
               <td>{key}</td>

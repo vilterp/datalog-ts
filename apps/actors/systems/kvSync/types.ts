@@ -9,7 +9,7 @@ export type VersionedValue = {
 export type KVData = { [key: string]: VersionedValue };
 
 export type UserInput =
-  | { type: "RunMutation"; name: string; args: Json[] }
+  | { type: "RunMutation"; invocation: MutationInvocation }
   | { type: "RegisterQuery"; id: string; query: Query };
 
 export type MsgToServer = LiveQueryRequest | MutationRequest;
@@ -20,7 +20,7 @@ type MsgFromServer = MutationResponse | LiveQueryUpdate | LiveQueryResponse;
 
 export type MutationDefns = { [name: string]: Lambda };
 
-export type Query = { fromKey: string; toKey: string };
+export type Query = { prefix: string };
 
 export type LiveQueryRequest = {
   type: "LiveQueryRequest";
@@ -96,5 +96,5 @@ export type MutationInvocation = {
 // utils
 
 export function keyInQuery(key: string, query: Query): boolean {
-  return key >= query.fromKey && key <= query.toKey;
+  return key.startsWith(query.prefix);
 }

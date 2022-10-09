@@ -1,5 +1,4 @@
 import { pairsToObj } from "../../../../../util/util";
-import { ClientState } from "../client";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 import { KVData, Trace } from "../types";
 import { BUILTINS } from "./builtins";
@@ -178,6 +177,8 @@ function runMutationExpr(
     case "Var":
       return [scope[expr.name], "Commit", data, traceSoFar];
     case "StringLit":
+      return [expr.val, "Commit", data, traceSoFar];
+    case "IntLit":
       return [expr.val, "Commit", data, traceSoFar];
     case "Apply": {
       // evaluate args

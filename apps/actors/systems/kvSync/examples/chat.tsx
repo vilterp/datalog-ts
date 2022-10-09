@@ -1,6 +1,18 @@
 import React, { useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, TransactionState } from "../client";
+import { Client, makeClient, useLiveQuery } from "../hooks";
+import {
+  apply,
+  doExpr,
+  int,
+  lambda,
+  letExpr,
+  read,
+  str,
+  varr,
+  write,
+} from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common";
 import { KVApp } from "./types";
@@ -12,32 +24,10 @@ type Message = {
   state: TransactionState;
 };
 
-const EXAMPLE_MESSAGES: {
-  [room: string]: Message[];
-} = {
-  foo: [
-    {
-      id: 1,
-      message: "hello world",
-      sender: "Pete",
-      state: { type: "Committed", serverTimestamp: 2 },
-    },
-  ],
-  bar: [
-    {
-      id: 1,
-      message: "goodbye world",
-      sender: "RePete",
-      state: { type: "Committed", serverTimestamp: 2 },
-    },
-  ],
-};
-
-const EXAMPLE_THREADS = ["foo", "bar"];
-
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const [curThread, setCurThread] = useState("foo");
-  const messages = EXAMPLE_MESSAGES[curThread];
+
+  const client = makeClient(props);
 
   return (
     <div>
@@ -53,7 +43,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
               />
             </td>
             <td>
-              <MessageTable messages={messages} />
+              <MessageTable threadID={curThread} client={client} />
             </td>
           </tr>
         </tbody>
@@ -62,26 +52,62 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function MessageTable(props: { messages: Message[] }) {
+function MessageTable(props: { threadID: string; client: Client }) {
+  const [messages, messagesStatus] = useLiveQuery(
+    props.client,
+    `messages-${props.threadID}`,
+    { prefix: `/messages/${props.threadID}` }
+  );
+  const [message, setMessage] = useState("");
+
+  if (messagesStatus === "Loading") {
+    return (
+      <p>
+        <em>Loading...</em>
+      </p>
+    );
+  }
+
   return (
-    <table>
-      <thead>
-        <th>Sender</th>
-        <th>Message</th>
-        <th>State</th>
-      </thead>
-      <tbody>
-        {props.messages.map((message) => (
-          <tr key={message.id}>
-            <td>{message.sender}</td>
-            <td>{message.message}</td>
-            <td>
-              <TxnState state={message.state} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+      <table>
+        <thead>
+          <th>Sender</th>
+          <th>Message</th>
+          <th>State</th>
+        </thead>
+        <tbody>
+          {/* sort by date? */}
+          {Object.values(messages).map((message) => {
+            const msg = message.value as Message;
+            return (
+              <tr key={message.transactionID}>
+                <td>{msg.sender}</td>
+                <td>{msg.message}</td>
+                <td>
+                  <TxnState state={msg.state} />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <form
+        onSubmit={(evt) => {
+          evt.preventDefault();
+          props.client.runMutation({
+            name: "sendMessage",
+            args: [props.threadID, messages],
+          });
+        }}
+      >
+        <input
+          onChange={(evt) => setMessage(evt.target.value)}
+          value={message}
+        />
+        <button>Send</button>
+      </form>
+    </>
   );
 }
 
@@ -108,6 +134,72 @@ function ThreadList(props: {
   );
 }
 
-const mutations: MutationDefns = {};
+const mutations: MutationDefns = {
+  sendMessage: lambda(
+    ["threadID", "message"],
+    letExpr(
+      [
+        {
+          varName: "latestSeqNo",
+          val: read(
+            apply("concat", [str("/latestMessage/"), varr("threadID")]),
+            0
+          ),
+        },
+        {
+          varName: "newSeqNo",
+          val: apply("+", [varr("latestSeqNo"), int(1)]),
+        },
+      ],
+      doExpr([
+        write(
+          apply("concat", [str("/latestMessage/"), varr("threadID")]),
+          varr("newSeqNo")
+        ),
+        write(
+          apply("concat", [
+            str("/latestMessageRead/"),
+            varr("curUser"),
+            str("/"),
+            varr("threadID"),
+          ]),
+          varr("newSeqNo")
+        ),
+        write(
+          apply("concat", [
+            str("/messages/"),
+            varr("threadID"),
+            str("/"),
+            varr("newSeqNo"),
+          ]),
+          varr("message")
+        ),
+      ])
+    )
+  ),
+};
+
+const EXAMPLE_MESSAGES: {
+  [room: string]: Message[];
+} = {
+  foo: [
+    {
+      id: 1,
+      message: "hello world",
+      sender: "Pete",
+      state: { type: "Committed", serverTimestamp: 2 },
+    },
+  ],
+  bar: [
+    {
+      id: 1,
+      message: "goodbye world",
+      sender: "RePete",
+      state: { type: "Committed", serverTimestamp: 2 },
+    },
+  ],
+};
+
+const EXAMPLE_THREADS = ["foo", "bar"];
 
 export const chat: KVApp = { name: "Chat", mutations, ui: ChatUI };
