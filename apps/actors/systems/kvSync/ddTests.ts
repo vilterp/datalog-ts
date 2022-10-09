@@ -49,7 +49,10 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
           const { newTrace: trace3, newInits: newInits2 } = step(
             trace2,
             update,
-            spawnInitiator(`client${clientID}`, system.initialClientState)
+            spawnInitiator(
+              `client${clientID}`,
+              system.initialClientState(clientID)
+            )
           );
           trace = stepAll(trace3, update, [...newInits1, ...newInits2]);
           break;
@@ -58,8 +61,10 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
           const clientID = (record.attrs.from as StringLit).val;
           const msg: UserInput = {
             type: "RunMutation",
-            name: (record.attrs.name as StringLit).val,
-            args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
+            invocation: {
+              name: (record.attrs.name as StringLit).val,
+              args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
+            },
           };
           const { newTrace: trace1, newMessageID } = insertUserInput(
             trace,
