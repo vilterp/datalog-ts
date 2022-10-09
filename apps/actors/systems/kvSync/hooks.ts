@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { filterObj } from "../../../../util/util";
 import { UIProps } from "../../types";
 import { ClientState, QueryStatus } from "./client";
 import { runQuery } from "./query";
