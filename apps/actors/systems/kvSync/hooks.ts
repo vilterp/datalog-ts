@@ -31,9 +31,10 @@ export function useLiveQuery(
   id: string,
   query: Query
 ): [QueryResults, QueryStatus] {
+  // TODO: try to get rid of id; usse query itself as key
   useEffect(() => {
     client.registerLiveQuery(id, query);
-  }, []);
+  }, [id]);
 
   const results = runQuery(client.state.data, query);
   const queryMetadata = client.state.liveQueries[id];
