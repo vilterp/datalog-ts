@@ -18,6 +18,7 @@ import { Diagram } from "../../util/diagrams/render";
 import { getCoords } from "../../util/diagrams/getCoords";
 import { flatMap } from "../../util/util";
 import { jsonEq } from "../../util/json";
+import { termEq } from "../../core/unify";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -120,9 +121,11 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
         VLayout([
           Tag(
             loc.term,
+            // TODO: cursor: pointer
             Text({
               text: loc.loc,
               fontSize: 10,
+              fontWeight: termEq(loc.term, highlight) ? "bold" : "normal",
             })
           ),
           ZLayout([
