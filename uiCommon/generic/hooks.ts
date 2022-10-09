@@ -1,5 +1,6 @@
 import useLocalStorage from "react-use-localstorage";
 import { useEffect, useReducer } from "react";
+import { pairsToObj, range } from "../../util/util";
 
 export function useBoolLocalStorage(
   key: string,
@@ -31,9 +32,13 @@ export function useIntLocalStorage(
 
 type EffectfulReducerAction<A> =
   | { type: "OutsideAction"; action: A }
-  | { type: "MarkPromisesDispatched" };
+  | { type: "MarkPromiseDispatched"; id: string };
 
-type EffectfulReducerState<S, A> = { state: S; promises: Promise<A>[] };
+type EffectfulReducerState<S, A> = {
+  state: S;
+  nextPromiseID: number;
+  promises: { [id: string]: Promise<A> };
+};
 
 // inspired by the Elm architecture
 export function useEffectfulReducer<S, A>(
@@ -47,30 +52,41 @@ export function useEffectfulReducer<S, A>(
     switch (action.type) {
       case "OutsideAction": {
         const [newState, newPromises] = reducer(prevState.state, action.action);
+        const newPromisesObj = pairsToObj(
+          newPromises.map((newPromise, idx) => ({
+            key: (prevState.nextPromiseID + idx).toString(),
+            value: newPromise,
+          }))
+        );
         return {
           state: newState,
-          promises: [...prevState.promises, ...newPromises],
+          nextPromiseID: prevState.nextPromiseID + newPromises.length,
+          promises: { ...prevState.promises, ...newPromisesObj },
         };
       }
-      case "MarkPromisesDispatched":
-        return { ...prevState, promises: [] };
+      case "MarkPromiseDispatched": {
+        const newPromises = { ...prevState.promises };
+        delete newPromises[action.id];
+        return { ...prevState, promises: newPromises };
+      }
     }
   };
   const [effRedState, innerDispatch] = useReducer(myReducer, {
     state: initialState,
-    promises: [],
+    nextPromiseID: 0,
+    promises: {},
   });
   const outerDispatch = (action: A) => {
     innerDispatch({ type: "OutsideAction", action });
   };
   useEffect(() => {
     console.log("need to dispatch", effRedState.promises);
-    effRedState.promises.forEach((eff) => {
-      eff.then((action) => {
+    Object.entries(effRedState.promises).forEach(([id, promise]) => {
+      promise.then((action) => {
         console.log("inner: dispatching", action);
         innerDispatch({ type: "OutsideAction", action });
       });
-      innerDispatch({ type: "MarkPromisesDispatched" });
+      innerDispatch({ type: "MarkPromiseDispatched", id });
     });
   }, [effRedState]);
   return [effRedState.state, outerDispatch];
