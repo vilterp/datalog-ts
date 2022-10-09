@@ -46,6 +46,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
             </td>
             <td>
               <MessageTable threadID={curThread} client={client} />
+              <SendBox threadID={curThread} client={client} />
             </td>
           </tr>
         </tbody>
@@ -60,7 +61,6 @@ function MessageTable(props: { threadID: string; client: Client }) {
     `messages-${props.threadID}`,
     { prefix: `/messages/${props.threadID}` }
   );
-  const [message, setMessage] = useState("");
 
   if (messagesStatus === "Loading") {
     return (
@@ -99,23 +99,27 @@ function MessageTable(props: { threadID: string; client: Client }) {
           })}
         </tbody>
       </table>
-      <form
-        onSubmit={(evt) => {
-          evt.preventDefault();
-          setMessage("");
-          props.client.runMutation({
-            name: "sendMessage",
-            args: [props.threadID, message],
-          });
-        }}
-      >
-        <input
-          onChange={(evt) => setMessage(evt.target.value)}
-          value={message}
-        />
-        <button>Send</button>
-      </form>
     </>
+  );
+}
+
+function SendBox(props: { threadID: string; client: Client }) {
+  const [message, setMessage] = useState("");
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        setMessage("");
+        props.client.runMutation({
+          name: "sendMessage",
+          args: [props.threadID, message],
+        });
+      }}
+    >
+      <input onChange={(evt) => setMessage(evt.target.value)} value={message} />
+      <button>Send</button>
+    </form>
   );
 }
 
@@ -126,29 +130,38 @@ function ThreadList(props: {
   setCurThread: (th: string) => void;
 }) {
   // TODO: this should be only for chats that this user is in
-  const [latestMessages, latestMessagesStatus] = useLiveQuery(
+  const [latestMessage, latestMessageStatus] = useLiveQuery(
     props.client,
     "latest-messages",
     {
       prefix: "/latestMessage",
     }
   );
-  const [latestMessagesRead, latestMessagesReadStatus] = useLiveQuery(
+  const [latestMessageRead, latestMessageReadStatus] = useLiveQuery(
     props.client,
-    "latest-messages-read",
+    "latest-message-read",
     {
       prefix: `/latestMessageRead/${props.client.state.id}`,
     }
   );
-  // console.log("ThreadList", { latestMessages, latestMessagesRead });
 
   return (
     <ul>
       {props.threads.map((threadID) => {
         // TODO: need full keys
-        const latestMessageInThread = latestMessages[threadID];
-        const latestMessageReadInThread = latestMessagesRead[threadID];
-        const hasUnread = latestMessageInThread > latestMessageReadInThread;
+        const latestMessageInThread =
+          latestMessage[`/latestMessage/${threadID}`];
+
+        const key = `/latestMessageRead/${props.client.state.id}/${threadID}`;
+        const latestMessageReadInThread = latestMessageRead[key];
+        console.log("ThreadList item", {
+          latestMessageRead,
+          key,
+          latestMessageReadInThread,
+        });
+
+        const hasUnread =
+          latestMessageInThread?.value > latestMessageReadInThread?.value;
         return (
           <li
             key={threadID}
