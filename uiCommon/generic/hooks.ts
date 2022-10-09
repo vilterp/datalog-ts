@@ -39,14 +39,26 @@ export function useEffectfulReducer<S, A>(
     action: A
   ): [S, Promise<A>[]] => {
     const [prevState, _] = prevPair;
-    return reducer(prevState, action);
+    const [newState, promise] = reducer(prevState, action);
+    // console.log(
+    //   "useEffectfulReducer",
+    //   [prevState, action],
+    //   [newState, promise]
+    // );
+    return [newState, promise];
   };
   const [[state, effects], dispatch] = useReducer(myReducer, [
     initialState,
     [],
   ]);
   useEffect(() => {
-    effects.map((eff) => eff.then(dispatch));
-  }, [effects]);
+    console.log("need to dispatch", effects);
+    effects.forEach((eff) => {
+      eff.then((eff2) => {
+        console.log("inner: dispatching", eff2);
+        dispatch(eff2);
+      });
+    });
+  }, [effects, dispatch, myReducer]);
   return [state, dispatch];
 }

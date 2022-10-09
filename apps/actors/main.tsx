@@ -19,7 +19,7 @@ function Main() {
 
   return (
     <>
-      <h1>Communicating Processes Viz</h1>
+      <h1>Actor System Viz</h1>
 
       <Tabs
         setTabID={setSelectedSystemInstanceID}
@@ -64,6 +64,7 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
       <ReactJson
         src={props.systemInstance.trace.latestStates}
         displayDataTypes={false}
+        collapsed
       />
     </>
   );
