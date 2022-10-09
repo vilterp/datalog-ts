@@ -40,7 +40,11 @@ type ServerResp = "ack";
 
 // initial state
 
-const initialClientState = { type: "ClientState", value: 0, status: "steady" };
+const initialClientState: State = {
+  type: "ClientState",
+  value: 0,
+  status: "steady",
+};
 
 export function getInitialState(interp: AbstractInterpreter): Trace<State> {
   return spawnInitialActors(update, interp, {
@@ -162,6 +166,6 @@ export const simpleCounter: System<State, Msg> = {
   ui: ClientServerUI,
   update,
   getInitialState,
-  initialClientState: initialClientState as State,
+  initialClientState: () => initialClientState,
   initialUserState: { type: "UserState" },
 };

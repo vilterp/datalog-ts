@@ -70,13 +70,15 @@ function processLiveQueryRequest(
 
 function runMutationOnServer(
   state: ServerState,
-  req: MutationRequest
+  req: MutationRequest,
+  clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const [newData, outcome, trace] = runMutation(
     state.data,
     req.txnID,
     state.mutationDefns[req.invocation.name],
-    req.invocation.args
+    req.invocation.args,
+    clientID
   );
   const txnTime = state.time;
   const newState: ServerState = {
@@ -180,7 +182,8 @@ export function updateServer(
         case "MutationRequest": {
           const [newState, mutationResp, updates] = runMutationOnServer(
             state,
-            msg
+            msg,
+            init.from
           );
           const outgoing: OutgoingMessage<MsgToClient>[] = [
             { to: init.from, msg: mutationResp },

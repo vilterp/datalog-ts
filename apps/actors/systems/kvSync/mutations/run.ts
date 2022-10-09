@@ -7,14 +7,18 @@ export function runMutation(
   data: KVData,
   transactionID: string,
   lambda: Lambda,
-  args: Value[]
+  args: Value[],
+  userID: string
 ): [KVData, Outcome, Trace] {
-  const scope: Scope = pairsToObj(
-    args.map((arg, idx) => ({
-      key: lambda.args[idx],
-      value: arg,
-    }))
-  );
+  const scope: Scope = {
+    ...pairsToObj(
+      args.map((arg, idx) => ({
+        key: lambda.args[idx],
+        value: arg,
+      }))
+    ),
+    user: userID,
+  };
   const [resVal, outcome, newState, trace] = runMutationExpr(
     data,
     transactionID,
