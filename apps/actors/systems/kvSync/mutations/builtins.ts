@@ -15,4 +15,10 @@ export const BUILTINS: { [name: string]: Builtin } = {
   ">": (args) => {
     return args[0] > args[1];
   },
+  concat: (args) => {
+    return args.join("");
+  },
+  parseInt: (args) => {
+    return parseInt(args[0] as string);
+  },
 };

@@ -31,8 +31,9 @@ export function update(
   }
 }
 
-// instantiated to the bank example
-export const kvSync: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
+export const kvSyncBank: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
+
+export const kvSyncChat: System<State, Msg> = makeActorSystem(EXAMPLES.chat);
 
 export function makeActorSystem(app: KVApp): System<State, Msg> {
   return {
@@ -45,7 +46,8 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
         server: initialServerState(app.mutations),
       }),
     // TODO: generate ID deterministically
-    initialClientState: initialClientState(app.mutations, 10),
+    initialClientState: (id: string) =>
+      initialClientState(id, app.mutations, 10),
     initialUserState: { type: "UserState" },
   };
 }

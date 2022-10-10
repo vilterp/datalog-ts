@@ -233,9 +233,3 @@ export class UserError extends Error {
     super(message);
   }
 }
-
-// TODO: more robust
-
-export const START_KEY = "   ";
-
-export const END_KEY = "~~~~";

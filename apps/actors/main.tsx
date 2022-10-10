@@ -19,7 +19,7 @@ function Main() {
 
   return (
     <>
-      <h1>Communicating Processes Viz</h1>
+      <h1>Actor System Viz</h1>
 
       <Tabs
         setTabID={setSelectedSystemInstanceID}
@@ -64,6 +64,7 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
       <ReactJson
         src={props.systemInstance.trace.latestStates}
         displayDataTypes={false}
+        collapsed
       />
     </>
   );
@@ -114,6 +115,8 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       <button
         onClick={() => {
           props.dispatch({ type: "AllocateClientID" });
+          // TODO: DRY this up with other place client id is constructed
+          const clientID = `client${props.systemInstance.nextClientID}`;
           props.dispatch({
             type: "UpdateTrace",
             action: {
@@ -121,7 +124,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               id: props.systemInstance.nextClientID.toString(),
               initialUserState: props.systemInstance.system.initialUserState,
               initialClientState:
-                props.systemInstance.system.initialClientState,
+                props.systemInstance.system.initialClientState(clientID),
             },
           });
         }}

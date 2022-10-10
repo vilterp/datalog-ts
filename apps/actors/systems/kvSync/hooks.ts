@@ -1,31 +1,48 @@
 import { useEffect } from "react";
-import { filterObj } from "../../../../util/util";
+import { UIProps } from "../../types";
 import { ClientState, QueryStatus } from "./client";
-import { keyInQuery, Query, UserInput, VersionedValue } from "./types";
+import { runQuery } from "./query";
+import { MutationInvocation, Query, UserInput, VersionedValue } from "./types";
 
 export type QueryResults = { [key: string]: VersionedValue };
 
-export function useLiveQuery(
-  state: ClientState,
-  id: string,
-  query: Query,
-  sendUserInput: (i: UserInput) => void
-): [QueryResults, QueryStatus] {
-  useEffect(() => {
-    sendUserInput({
-      type: "RegisterQuery",
-      id,
-      query: query,
-    });
-  }, []);
+export type Client = {
+  state: ClientState;
+  runMutation: (mut: MutationInvocation) => void;
+  registerLiveQuery: (id: string, query: Query) => void;
+};
 
-  const results = runQuery(state, query);
-  const queryMetadata = state.liveQueries[id];
-  const status: QueryStatus = queryMetadata ? queryMetadata.status : "Loading";
-  return [results, status];
+export function makeClient(props: UIProps<ClientState, UserInput>): Client {
+  const runMutation = (mutation: MutationInvocation) => {
+    props.sendUserInput({ type: "RunMutation", invocation: mutation });
+  };
+  const registerLiveQuery = (id: string, query: Query) => {
+    // don't register duplicate query
+    // TODO: key these on query itself; get rid of id
+    if (props.state.liveQueries[id]) {
+      return;
+    }
+    props.sendUserInput({ type: "RegisterQuery", id, query });
+  };
+  return {
+    state: props.state,
+    runMutation,
+    registerLiveQuery,
+  };
 }
 
-// TODO: find a better home for this
-function runQuery(state: ClientState, query: Query): QueryResults {
-  return filterObj(state.data, (k, v) => keyInQuery(k, query));
+export function useLiveQuery(
+  client: Client,
+  id: string,
+  query: Query
+): [QueryResults, QueryStatus] {
+  // TODO: try to get rid of id; usse query itself as key
+  useEffect(() => {
+    client.registerLiveQuery(id, query);
+  }, [id]);
+
+  const results = runQuery(client.state.data, query);
+  const queryMetadata = client.state.liveQueries[id];
+  const status: QueryStatus = queryMetadata ? queryMetadata.status : "Loading";
+  return [results, status];
 }

@@ -1,6 +1,5 @@
 import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
-  keyInQuery,
   KVData,
   LiveQueryRequest,
   LiveQueryResponse,
@@ -18,6 +17,7 @@ import * as effects from "../../effects";
 import { filterMap, filterObj, groupBy } from "../../../../util/util";
 import { jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
+import { keyInQuery, runQuery } from "./query";
 
 export type ServerState = {
   type: "ServerState";
@@ -49,9 +49,7 @@ function processLiveQueryRequest(
     liveQueries: [...state.liveQueries, { clientID, query: req.query }],
   };
   // TODO: dedup with useQuery
-  const results = filterObj(state.data, (key, value) =>
-    keyInQuery(key, req.query)
-  );
+  const results = runQuery(state.data, req.query);
   const transactionTimestamps: TransactionMetadata = {};
   Object.values(results).forEach((vv) => {
     transactionTimestamps[vv.transactionID] =
@@ -70,13 +68,15 @@ function processLiveQueryRequest(
 
 function runMutationOnServer(
   state: ServerState,
-  req: MutationRequest
+  req: MutationRequest,
+  clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const [newData, outcome, trace] = runMutation(
     state.data,
     req.txnID,
     state.mutationDefns[req.invocation.name],
-    req.invocation.args
+    req.invocation.args,
+    clientID
   );
   const txnTime = state.time;
   const newState: ServerState = {
@@ -180,7 +180,8 @@ export function updateServer(
         case "MutationRequest": {
           const [newState, mutationResp, updates] = runMutationOnServer(
             state,
-            msg
+            msg,
+            init.from
           );
           const outgoing: OutgoingMessage<MsgToClient>[] = [
             { to: init.from, msg: mutationResp },

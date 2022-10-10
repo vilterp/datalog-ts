@@ -15,13 +15,19 @@ import {
   TransactionMetadata,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, pairsToObj, randStep } from "../../../../util/util";
+import {
+  hashString,
+  mapObj,
+  pairsToObj,
+  randStep,
+} from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 
 export type QueryStatus = "Loading" | "Online";
 
 export type ClientState = {
   type: "ClientState";
+  id: string;
   data: KVData;
   liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
   transactions: { [id: string]: TransactionRecord };
@@ -30,16 +36,18 @@ export type ClientState = {
 };
 
 export function initialClientState(
+  clientID: string,
   mutationDefns: MutationDefns,
   randSeed: number
 ): ClientState {
   return {
     type: "ClientState",
+    id: clientID,
     data: {},
     liveQueries: {},
     mutationDefns,
     transactions: {},
-    randSeed,
+    randSeed: hashString(clientID),
   };
 }
 
@@ -120,7 +128,8 @@ function processLiveQueryUpdate(
 
 function runMutationOnClient(
   state: ClientState,
-  invocation: MutationInvocation
+  invocation: MutationInvocation,
+  clientID: string
 ): [ClientState, MutationRequest | null] {
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
@@ -128,7 +137,8 @@ function runMutationOnClient(
     state.data,
     txnID,
     state.mutationDefns[invocation.name],
-    invocation.args
+    invocation.args,
+    clientID
   );
   const state1: ClientState = { ...state, data: data1 };
   if (outcome === "Abort") {
@@ -243,10 +253,14 @@ export function updateClient(
           return effects.updateAndSend(newState, [{ to: "server", msg: req }]);
         }
         case "RunMutation": {
-          const [newState, req] = runMutationOnClient(state, {
-            name: msg.name,
-            args: msg.args,
-          });
+          const [newState, req] = runMutationOnClient(
+            state,
+            {
+              name: msg.invocation.name,
+              args: msg.invocation.args,
+            },
+            state.id
+          );
           if (req === null) {
             return effects.updateState(newState);
           }

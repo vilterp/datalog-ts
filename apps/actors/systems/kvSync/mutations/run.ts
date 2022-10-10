@@ -1,5 +1,4 @@
 import { pairsToObj } from "../../../../../util/util";
-import { ClientState } from "../client";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 import { KVData, Trace } from "../types";
 import { BUILTINS } from "./builtins";
@@ -8,14 +7,18 @@ export function runMutation(
   data: KVData,
   transactionID: string,
   lambda: Lambda,
-  args: Value[]
+  args: Value[],
+  userID: string
 ): [KVData, Outcome, Trace] {
-  const scope: Scope = pairsToObj(
-    args.map((arg, idx) => ({
-      key: lambda.args[idx],
-      value: arg,
-    }))
-  );
+  const scope: Scope = {
+    ...pairsToObj(
+      args.map((arg, idx) => ({
+        key: lambda.args[idx],
+        value: arg,
+      }))
+    ),
+    curUser: userID,
+  };
   const [resVal, outcome, newState, trace] = runMutationExpr(
     data,
     transactionID,
@@ -136,7 +139,7 @@ function runMutationExpr(
           curData,
           transactionID,
           curTrace,
-          scope,
+          newScope,
           binding.val
         );
         if (outcome === "Abort") {
@@ -175,9 +178,17 @@ function runMutationExpr(
     }
     case "Abort":
       return [null, "Abort", data, traceSoFar];
-    case "Var":
+    case "Var": {
+      const val = scope[expr.name];
+      if (!val) {
+        // TODO: pass error message through
+        return [val, "Abort", data, traceSoFar];
+      }
       return [scope[expr.name], "Commit", data, traceSoFar];
+    }
     case "StringLit":
+      return [expr.val, "Commit", data, traceSoFar];
+    case "IntLit":
       return [expr.val, "Commit", data, traceSoFar];
     case "Apply": {
       // evaluate args
@@ -185,7 +196,6 @@ function runMutationExpr(
       let curData = data;
       let curTrace = traceSoFar;
       let outcome: Outcome = "Commit";
-      let curRes: Value = null;
       for (const arg of expr.args) {
         const [stepRes, newOutcome, newData, newTrace] = runMutationExpr(
           curData,
@@ -197,16 +207,37 @@ function runMutationExpr(
         curData = newData;
         curTrace = newTrace;
         outcome = newOutcome;
-        curRes = stepRes;
         argValues.push(stepRes);
       }
       // TODO: check aborted
       const builtin = BUILTINS[expr.name];
       if (builtin) {
-        return [builtin(argValues), "Commit", curData, traceSoFar];
+        return [builtin(argValues), "Commit", curData, curTrace];
       }
       // TODO: look in scope for lambdas
       console.error("missing builtin", expr.name);
+      return [null, "Abort", data, curTrace];
+    }
+    case "ObjectLit": {
+      // evaluate args
+      const values: { [key: string]: Value } = {};
+      let curData = data;
+      let curTrace = traceSoFar;
+      let outcome: Outcome = "Commit";
+      Object.entries(expr.object).forEach(([key, valExpr]) => {
+        const [valRes, newOutcome, newData, newTrace] = runMutationExpr(
+          curData,
+          transactionID,
+          curTrace,
+          scope,
+          valExpr
+        );
+        curData = newData;
+        curTrace = newTrace;
+        outcome = newOutcome;
+        values[key] = valRes;
+      });
+      return [values, outcome, curData, curTrace];
     }
   }
 }
