@@ -105,6 +105,8 @@ function MessageTable(props: { threadID: string; client: Client }) {
 
 function SendBox(props: { threadID: string; client: Client }) {
   const [message, setMessage] = useState("");
+  const latestSeqNo =
+    props.client.state.data[`/latestMessage/${props.threadID}`];
 
   return (
     <form
@@ -117,7 +119,18 @@ function SendBox(props: { threadID: string; client: Client }) {
         });
       }}
     >
-      <input onChange={(evt) => setMessage(evt.target.value)} value={message} />
+      <input
+        onChange={(evt) => setMessage(evt.target.value)}
+        value={message}
+        onFocus={() => {
+          if (latestSeqNo) {
+            props.client.runMutation({
+              name: "markRead",
+              args: [props.threadID, latestSeqNo.value],
+            });
+          }
+        }}
+      />
       <button>Send</button>
     </form>
   );
@@ -226,6 +239,20 @@ const mutations: MutationDefns = {
         ),
       ])
     )
+  ),
+  markRead: lambda(
+    ["threadID", "seqNo"],
+    doExpr([
+      write(
+        apply("concat", [
+          str("/latestMessageRead/"),
+          varr("curUser"),
+          str("/"),
+          varr("threadID"),
+        ]),
+        varr("seqNo")
+      ),
+    ])
   ),
 };
 
