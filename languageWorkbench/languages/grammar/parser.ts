@@ -11,24 +11,24 @@ import * as parserlib from "../../parserlib/parser";
 export type GrammarAlpha = {
   type: "Alpha";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarAlphaNum = GrammarAlpha | GrammarNum;
 export type GrammarAnyChar = {
   type: "AnyChar";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarCaptureName = {
   type: "CaptureName";
   text: string;
-  span: Span;
+  width: number;
   ident: GrammarIdent;
 };
 export type GrammarCharRange = {
   type: "CharRange";
   text: string;
-  span: Span;
+  width: number;
   from: GrammarAlphaNum;
   to: GrammarAlphaNum;
 };
@@ -40,65 +40,65 @@ export type GrammarCharRule =
 export type GrammarChoice = {
   type: "Choice";
   text: string;
-  span: Span;
+  width: number;
   rule: GrammarRule[];
 };
 export type GrammarCommaSpace = {
   type: "CommaSpace";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarComment = {
   type: "Comment";
   text: string;
-  span: Span;
+  width: number;
   commentChar: GrammarCommentChar[];
 };
 export type GrammarCommentChar = {
   type: "CommentChar";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarIdent = {
   type: "Ident";
   text: string;
-  span: Span;
+  width: number;
   alpha: GrammarAlpha[];
 };
 export type GrammarMain = {
   type: "Main";
   text: string;
-  span: Span;
+  width: number;
   ruleDefn: GrammarRuleDefn[];
   comment: GrammarComment[];
 };
 export type GrammarNotChar = {
   type: "NotChar";
   text: string;
-  span: Span;
+  width: number;
   charRule: GrammarCharRule;
 };
 export type GrammarNum = {
   type: "Num";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarPlaceholder = {
   type: "Placeholder";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarRef = {
   type: "Ref";
   text: string;
-  span: Span;
+  width: number;
   captureName: GrammarCaptureName | null;
   ruleName: GrammarRuleName;
 };
 export type GrammarRepSep = {
   type: "RepSep";
   text: string;
-  span: Span;
+  width: number;
   repSepKW: GrammarRepSepKW;
   rep: GrammarRule;
   commaSpace: GrammarCommaSpace;
@@ -107,7 +107,7 @@ export type GrammarRepSep = {
 export type GrammarRepSepKW = {
   type: "RepSepKW";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarRule =
   | GrammarSeq
@@ -120,409 +120,489 @@ export type GrammarRule =
 export type GrammarRuleDefn = {
   type: "RuleDefn";
   text: string;
-  span: Span;
+  width: number;
   ident: GrammarIdent;
   rule: GrammarRule;
 };
 export type GrammarRuleName = {
   type: "RuleName";
   text: string;
-  span: Span;
+  width: number;
   ident: GrammarIdent;
 };
 export type GrammarSeq = {
   type: "Seq";
   text: string;
-  span: Span;
+  width: number;
   rule: GrammarRule[];
 };
 export type GrammarSingleChar = {
   type: "SingleChar";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarStringChar = {
   type: "StringChar";
   text: string;
-  span: Span;
+  width: number;
 };
 export type GrammarText = {
   type: "Text";
   text: string;
-  span: Span;
+  width: number;
   stringChar: GrammarStringChar[];
 };
 export type GrammarWs = {
   type: "Ws";
   text: string;
-  span: Span;
+  width: number;
 };
 export function parseAlpha(input: string): GrammarAlpha {
   const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractAlpha(input, ruleTree);
+  return extractAlpha(input, 0, ruleTree);
 }
 export function parseAlphaNum(input: string): GrammarAlphaNum {
   const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractAlphaNum(input, ruleTree);
+  return extractAlphaNum(input, 0, ruleTree);
 }
 export function parseAnyChar(input: string): GrammarAnyChar {
   const traceTree = parserlib.parse(GRAMMAR, "anyChar", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractAnyChar(input, ruleTree);
+  return extractAnyChar(input, 0, ruleTree);
 }
 export function parseCaptureName(input: string): GrammarCaptureName {
   const traceTree = parserlib.parse(GRAMMAR, "captureName", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractCaptureName(input, ruleTree);
+  return extractCaptureName(input, 0, ruleTree);
 }
 export function parseCharRange(input: string): GrammarCharRange {
   const traceTree = parserlib.parse(GRAMMAR, "charRange", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractCharRange(input, ruleTree);
+  return extractCharRange(input, 0, ruleTree);
 }
 export function parseCharRule(input: string): GrammarCharRule {
   const traceTree = parserlib.parse(GRAMMAR, "charRule", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractCharRule(input, ruleTree);
+  return extractCharRule(input, 0, ruleTree);
 }
 export function parseChoice(input: string): GrammarChoice {
   const traceTree = parserlib.parse(GRAMMAR, "choice", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractChoice(input, ruleTree);
+  return extractChoice(input, 0, ruleTree);
 }
 export function parseCommaSpace(input: string): GrammarCommaSpace {
   const traceTree = parserlib.parse(GRAMMAR, "commaSpace", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractCommaSpace(input, ruleTree);
+  return extractCommaSpace(input, 0, ruleTree);
 }
 export function parseComment(input: string): GrammarComment {
   const traceTree = parserlib.parse(GRAMMAR, "comment", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractComment(input, ruleTree);
+  return extractComment(input, 0, ruleTree);
 }
 export function parseCommentChar(input: string): GrammarCommentChar {
   const traceTree = parserlib.parse(GRAMMAR, "commentChar", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractCommentChar(input, ruleTree);
+  return extractCommentChar(input, 0, ruleTree);
 }
 export function parseIdent(input: string): GrammarIdent {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractIdent(input, ruleTree);
+  return extractIdent(input, 0, ruleTree);
 }
 export function parseMain(input: string): GrammarMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractMain(input, ruleTree);
+  return extractMain(input, 0, ruleTree);
 }
 export function parseNotChar(input: string): GrammarNotChar {
   const traceTree = parserlib.parse(GRAMMAR, "notChar", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractNotChar(input, ruleTree);
+  return extractNotChar(input, 0, ruleTree);
 }
 export function parseNum(input: string): GrammarNum {
   const traceTree = parserlib.parse(GRAMMAR, "num", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractNum(input, ruleTree);
+  return extractNum(input, 0, ruleTree);
 }
 export function parsePlaceholder(input: string): GrammarPlaceholder {
   const traceTree = parserlib.parse(GRAMMAR, "placeholder", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractPlaceholder(input, ruleTree);
+  return extractPlaceholder(input, 0, ruleTree);
 }
 export function parseRef(input: string): GrammarRef {
   const traceTree = parserlib.parse(GRAMMAR, "ref", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractRef(input, ruleTree);
+  return extractRef(input, 0, ruleTree);
 }
 export function parseRepSep(input: string): GrammarRepSep {
   const traceTree = parserlib.parse(GRAMMAR, "repSep", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractRepSep(input, ruleTree);
+  return extractRepSep(input, 0, ruleTree);
 }
 export function parseRepSepKW(input: string): GrammarRepSepKW {
   const traceTree = parserlib.parse(GRAMMAR, "repSepKW", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractRepSepKW(input, ruleTree);
+  return extractRepSepKW(input, 0, ruleTree);
 }
 export function parseRule(input: string): GrammarRule {
   const traceTree = parserlib.parse(GRAMMAR, "rule", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractRule(input, ruleTree);
+  return extractRule(input, 0, ruleTree);
 }
 export function parseRuleDefn(input: string): GrammarRuleDefn {
   const traceTree = parserlib.parse(GRAMMAR, "ruleDefn", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractRuleDefn(input, ruleTree);
+  return extractRuleDefn(input, 0, ruleTree);
 }
 export function parseRuleName(input: string): GrammarRuleName {
   const traceTree = parserlib.parse(GRAMMAR, "ruleName", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractRuleName(input, ruleTree);
+  return extractRuleName(input, 0, ruleTree);
 }
 export function parseSeq(input: string): GrammarSeq {
   const traceTree = parserlib.parse(GRAMMAR, "seq", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractSeq(input, ruleTree);
+  return extractSeq(input, 0, ruleTree);
 }
 export function parseSingleChar(input: string): GrammarSingleChar {
   const traceTree = parserlib.parse(GRAMMAR, "singleChar", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractSingleChar(input, ruleTree);
+  return extractSingleChar(input, 0, ruleTree);
 }
 export function parseStringChar(input: string): GrammarStringChar {
   const traceTree = parserlib.parse(GRAMMAR, "stringChar", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractStringChar(input, ruleTree);
+  return extractStringChar(input, 0, ruleTree);
 }
 export function parseText(input: string): GrammarText {
   const traceTree = parserlib.parse(GRAMMAR, "text", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractText(input, ruleTree);
+  return extractText(input, 0, ruleTree);
 }
-function extractAlpha(input: string, node: RuleTree): GrammarAlpha {
+function extractAlpha(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarAlpha {
   return {
     type: "Alpha",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractAlphaNum(input: string, node: RuleTree): GrammarAlphaNum {
+function extractAlphaNum(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarAlphaNum {
   const child = node.children[0];
   switch (child.name) {
     case "alpha": {
-      return extractAlpha(input, child);
+      return extractAlpha(input, pos, child);
     }
     case "num": {
-      return extractNum(input, child);
+      return extractNum(input, pos, child);
     }
   }
 }
-function extractAnyChar(input: string, node: RuleTree): GrammarAnyChar {
+function extractAnyChar(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarAnyChar {
   return {
     type: "AnyChar",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractCaptureName(input: string, node: RuleTree): GrammarCaptureName {
+function extractCaptureName(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarCaptureName {
   return {
     type: "CaptureName",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
+    ident: extractIdent(input, pos, childByName(node, "ident", null)),
   };
 }
-function extractCharRange(input: string, node: RuleTree): GrammarCharRange {
+function extractCharRange(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarCharRange {
   return {
     type: "CharRange",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    from: extractAlphaNum(input, childByName(node, "alphaNum", "from")),
-    to: extractAlphaNum(input, childByName(node, "alphaNum", "to")),
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
+    from: extractAlphaNum(input, pos, childByName(node, "alphaNum", "from")),
+    to: extractAlphaNum(input, pos, childByName(node, "alphaNum", "to")),
   };
 }
-function extractCharRule(input: string, node: RuleTree): GrammarCharRule {
+function extractCharRule(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarCharRule {
   const child = node.children[0];
   switch (child.name) {
     case "charRange": {
-      return extractCharRange(input, child);
+      return extractCharRange(input, pos, child);
     }
     case "notChar": {
-      return extractNotChar(input, child);
+      return extractNotChar(input, pos, child);
     }
     case "singleChar": {
-      return extractSingleChar(input, child);
+      return extractSingleChar(input, pos, child);
     }
     case "anyChar": {
-      return extractAnyChar(input, child);
+      return extractAnyChar(input, pos, child);
     }
   }
 }
-function extractChoice(input: string, node: RuleTree): GrammarChoice {
+function extractChoice(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarChoice {
   return {
     type: "Choice",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     rule: childrenByName(node, "rule").map((child) =>
-      extractRule(input, child)
+      extractRule(input, pos, child)
     ),
   };
 }
-function extractCommaSpace(input: string, node: RuleTree): GrammarCommaSpace {
+function extractCommaSpace(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarCommaSpace {
   return {
     type: "CommaSpace",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractComment(input: string, node: RuleTree): GrammarComment {
+function extractComment(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarComment {
   return {
     type: "Comment",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     commentChar: childrenByName(node, "commentChar").map((child) =>
-      extractCommentChar(input, child)
+      extractCommentChar(input, pos, child)
     ),
   };
 }
-function extractCommentChar(input: string, node: RuleTree): GrammarCommentChar {
+function extractCommentChar(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarCommentChar {
   return {
     type: "CommentChar",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractIdent(input: string, node: RuleTree): GrammarIdent {
+function extractIdent(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarIdent {
   return {
     type: "Ident",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     alpha: childrenByName(node, "alpha").map((child) =>
-      extractAlpha(input, child)
+      extractAlpha(input, pos, child)
     ),
   };
 }
-function extractMain(input: string, node: RuleTree): GrammarMain {
+function extractMain(input: string, pos: number, node: RuleTree): GrammarMain {
   return {
     type: "Main",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     ruleDefn: childrenByName(node, "ruleDefn").map((child) =>
-      extractRuleDefn(input, child)
+      extractRuleDefn(input, pos, child)
     ),
     comment: childrenByName(node, "comment").map((child) =>
-      extractComment(input, child)
+      extractComment(input, pos, child)
     ),
   };
 }
-function extractNotChar(input: string, node: RuleTree): GrammarNotChar {
+function extractNotChar(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarNotChar {
   return {
     type: "NotChar",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    charRule: extractCharRule(input, childByName(node, "charRule", null)),
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
+    charRule: extractCharRule(input, pos, childByName(node, "charRule", null)),
   };
 }
-function extractNum(input: string, node: RuleTree): GrammarNum {
+function extractNum(input: string, pos: number, node: RuleTree): GrammarNum {
   return {
     type: "Num",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractPlaceholder(input: string, node: RuleTree): GrammarPlaceholder {
+function extractPlaceholder(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarPlaceholder {
   return {
     type: "Placeholder",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractRef(input: string, node: RuleTree): GrammarRef {
+function extractRef(input: string, pos: number, node: RuleTree): GrammarRef {
   return {
     type: "Ref",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     captureName: childByName(node, "captureName", null)
-      ? extractCaptureName(input, childByName(node, "captureName", null))
+      ? extractCaptureName(input, pos, childByName(node, "captureName", null))
       : null,
-    ruleName: extractRuleName(input, childByName(node, "ruleName", null)),
+    ruleName: extractRuleName(input, pos, childByName(node, "ruleName", null)),
   };
 }
-function extractRepSep(input: string, node: RuleTree): GrammarRepSep {
+function extractRepSep(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarRepSep {
   return {
     type: "RepSep",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    repSepKW: extractRepSepKW(input, childByName(node, "repSepKW", null)),
-    rep: extractRule(input, childByName(node, "rule", "rep")),
-    commaSpace: extractCommaSpace(input, childByName(node, "commaSpace", null)),
-    sep: extractRule(input, childByName(node, "rule", "sep")),
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
+    repSepKW: extractRepSepKW(input, pos, childByName(node, "repSepKW", null)),
+    rep: extractRule(input, pos, childByName(node, "rule", "rep")),
+    commaSpace: extractCommaSpace(
+      input,
+      pos,
+      childByName(node, "commaSpace", null)
+    ),
+    sep: extractRule(input, pos, childByName(node, "rule", "sep")),
   };
 }
-function extractRepSepKW(input: string, node: RuleTree): GrammarRepSepKW {
+function extractRepSepKW(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarRepSepKW {
   return {
     type: "RepSepKW",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractRule(input: string, node: RuleTree): GrammarRule {
+function extractRule(input: string, pos: number, node: RuleTree): GrammarRule {
   const child = node.children[0];
   switch (child.name) {
     case "seq": {
-      return extractSeq(input, child);
+      return extractSeq(input, pos, child);
     }
     case "choice": {
-      return extractChoice(input, child);
+      return extractChoice(input, pos, child);
     }
     case "ref": {
-      return extractRef(input, child);
+      return extractRef(input, pos, child);
     }
     case "text": {
-      return extractText(input, child);
+      return extractText(input, pos, child);
     }
     case "charRule": {
-      return extractCharRule(input, child);
+      return extractCharRule(input, pos, child);
     }
     case "repSep": {
-      return extractRepSep(input, child);
+      return extractRepSep(input, pos, child);
     }
     case "placeholder": {
-      return extractPlaceholder(input, child);
+      return extractPlaceholder(input, pos, child);
     }
   }
 }
-function extractRuleDefn(input: string, node: RuleTree): GrammarRuleDefn {
+function extractRuleDefn(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarRuleDefn {
   return {
     type: "RuleDefn",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
-    rule: extractRule(input, childByName(node, "rule", null)),
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
+    ident: extractIdent(input, pos, childByName(node, "ident", null)),
+    rule: extractRule(input, pos, childByName(node, "rule", null)),
   };
 }
-function extractRuleName(input: string, node: RuleTree): GrammarRuleName {
+function extractRuleName(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarRuleName {
   return {
     type: "RuleName",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
+    ident: extractIdent(input, pos, childByName(node, "ident", null)),
   };
 }
-function extractSeq(input: string, node: RuleTree): GrammarSeq {
+function extractSeq(input: string, pos: number, node: RuleTree): GrammarSeq {
   return {
     type: "Seq",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     rule: childrenByName(node, "rule").map((child) =>
-      extractRule(input, child)
+      extractRule(input, pos, child)
     ),
   };
 }
-function extractSingleChar(input: string, node: RuleTree): GrammarSingleChar {
+function extractSingleChar(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarSingleChar {
   return {
     type: "SingleChar",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractStringChar(input: string, node: RuleTree): GrammarStringChar {
+function extractStringChar(
+  input: string,
+  pos: number,
+  node: RuleTree
+): GrammarStringChar {
   return {
     type: "StringChar",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
   };
 }
-function extractText(input: string, node: RuleTree): GrammarText {
+function extractText(input: string, pos: number, node: RuleTree): GrammarText {
   return {
     type: "Text",
-    text: textForSpan(input, node.span),
-    span: node.span,
+    text: input.substring(pos, pos + node.width),
+    width: node.width,
     stringChar: childrenByName(node, "stringChar").map((child) =>
-      extractStringChar(input, child)
+      extractStringChar(input, pos, child)
     ),
   };
 }
