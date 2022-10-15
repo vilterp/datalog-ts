@@ -2,16 +2,12 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
-import { GRAMMAR } from "../../languageWorkbench/languages/grammar/parser";
+// import { GRAMMAR } from "../../languageWorkbench/languages/grammar/parser";
 import { parse, TraceTree } from "../../languageWorkbench/parserlib/parser";
+import { Grammar } from "../../languageWorkbench/parserlib/types";
 
 function Main() {
-  const [text, setText] = useLocalStorage("parserlib-playground-source", "");
-  const [tree, setTree] = useState<TraceTree>({
-    type: "SucceedTrace",
-    width: 0,
-    error: null,
-  });
+  const [text, tree, setText] = useParser(GRAMMAR, "main");
 
   return (
     <>
@@ -23,7 +19,6 @@ function Main() {
         value={text}
         onChange={(evt) => {
           setText(evt.target.value);
-          setTree(parse(GRAMMAR, "main", text));
         }}
       />
 
@@ -35,5 +30,18 @@ function Main() {
     </>
   );
 }
+
+function useParser(
+  grammar: Grammar,
+  rule: string
+): [string, TraceTree, (text: string) => void] {
+  const [text, setText] = useState("");
+  const tree = parse(grammar, rule, text);
+  return [text, tree, setText];
+}
+
+const GRAMMAR: Grammar = {
+  main: { type: "Text", value: "foo" },
+};
 
 ReactDOM.render(<Main />, document.getElementById("main"));
