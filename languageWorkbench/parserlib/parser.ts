@@ -141,7 +141,7 @@ function doParse(
           const itemTrace = doParse(grammar, rule, accum.pos, input);
           return {
             itemTraces: [...accum.itemTraces, itemTrace],
-            pos: startIdx + itemTrace.width,
+            pos: accum.pos + itemTrace.width,
             error: itemTrace.error,
           };
         },
