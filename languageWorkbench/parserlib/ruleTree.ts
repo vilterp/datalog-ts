@@ -4,7 +4,7 @@ import { Span } from "./types";
 
 export type RuleTree = {
   name: string;
-  span: Span;
+  width: number;
   children: RuleTree[];
   captureName: string | null;
 };
@@ -16,7 +16,7 @@ export function extractRuleTree(tt: TraceTree): RuleTree | null {
         name: tt.name,
         captureName: tt.captureName,
         children: getChildren(tt.innerTrace),
-        span: tt.span,
+        width: tt.width,
       };
     default:
       throw new Error(`have to start with ref trace; got ${tt.type}`);
