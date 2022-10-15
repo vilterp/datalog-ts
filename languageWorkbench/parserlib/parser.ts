@@ -2,7 +2,7 @@ import { Grammar, Rule, Span, SingleCharRule, spanLength, char } from "./types";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 
 export type TraceTree = {
-  span: Span;
+  width: number;
   error: ParseError | null;
 } & TraceInner;
 
@@ -41,7 +41,7 @@ export function parse(
   const res = doParse(grammar, rule, 0, input);
   return {
     type: "RefTrace",
-    span: res.span,
+    width: res.width,
     error: null,
     name: startRule,
     captureName: null,
@@ -59,7 +59,7 @@ function doParse(
     return {
       type: "TextTrace", // this is messed up... what to return here?
       error: { offset: startIdx, expected: ["something"], got: "EOF" },
-      span: { from: startIdx, to: startIdx },
+      width: 0,
     };
   }
   switch (rule.type) {
@@ -70,14 +70,14 @@ function doParse(
         return {
           type: "TextTrace",
           // rule,
-          span: { from: startIdx, to: startIdx + rule.value.length },
+          width: rule.value.length,
           error: null,
         };
       }
       return {
         type: "TextTrace",
         // rule,
-        span: { from: startIdx, to: startIdx },
+        width: 0,
         error: { offset: startIdx, expected: [rule.value], got: next },
       };
     case "Ref":
@@ -88,7 +88,7 @@ function doParse(
         name: rule.rule,
         captureName: rule.captureName,
         // rule,
-        span: innerTrace.span,
+        width: innerTrace.width,
         error: innerTrace.error,
         innerTrace,
       };
@@ -107,7 +107,7 @@ function doParse(
             got: input.slice(startIdx, startIdx + 5), // lol
           },
           // TODO: these should only be set on success
-          span: { from: startIdx, to: startIdx },
+          width: 0,
           innerTrace: null,
           optIdx: -1,
         };
@@ -118,7 +118,7 @@ function doParse(
         trace: TraceTree;
       }>(
         (accum, trace, idx) => {
-          const length = spanLength(trace.span);
+          const length = trace.width;
           return length > accum.length ? { idx, length, trace } : accum;
         },
         { idx: -1, length: -1, trace: null }
@@ -129,7 +129,7 @@ function doParse(
         error: null,
         innerTrace: longest.trace,
         optIdx: longest.idx,
-        span: longest.trace.span,
+        width: longest.trace.width,
       };
     case "Sequence":
       const accum = rule.items.reduce<SequenceSt>(
@@ -141,7 +141,7 @@ function doParse(
           const itemTrace = doParse(grammar, rule, accum.pos, input);
           return {
             itemTraces: [...accum.itemTraces, itemTrace],
-            pos: itemTrace.span.to,
+            pos: startIdx + itemTrace.width,
             error: itemTrace.error,
           };
         },
@@ -151,20 +151,20 @@ function doParse(
         type: "SeqTrace",
         // rule,
         itemTraces: accum.itemTraces,
-        span: { from: startIdx, to: accum.pos },
+        width: accum.pos - startIdx,
         error: accum.error,
       };
     case "Char":
       if (matchesCharRule(rule.rule, input[startIdx])) {
         return {
           type: "CharTrace",
-          span: { from: startIdx, to: startIdx + 1 },
+          width: 1,
           error: null,
         };
       }
       return {
         type: "CharTrace",
-        span: { from: startIdx, to: startIdx },
+        width: 0,
         error: {
           offset: startIdx,
           expected: [prettyPrintCharRule(rule.rule)],
@@ -181,7 +181,7 @@ function doParse(
         repTraces,
         sepTraces,
         error: error,
-        span: { from: startIdx, to: curIdx },
+        width: curIdx - startIdx,
       });
       // TODO: DRY up
       while (true) {
@@ -192,7 +192,7 @@ function doParse(
           }
           repTraces.push(res);
           mode = "sep";
-          curIdx = res.span.to;
+          curIdx += res.width;
         } else {
           const res = doParse(grammar, rule.sep, curIdx, input);
           if (res.error) {
@@ -202,7 +202,7 @@ function doParse(
           }
           sepTraces.push(res);
           mode = "rep";
-          curIdx = res.span.to;
+          curIdx += res.width;
         }
       }
   }
@@ -268,12 +268,12 @@ export function getErrors(input: string, tree: TraceTree): ParseError[] {
       out.push(node.error);
     }
   });
-  if (out.length === 0 && tree.span.to !== input.length) {
+  if (out.length === 0 && tree.width !== input.length) {
     out.push({
-      offset: tree.span.to,
+      offset: tree.width,
       // TODO: make this into a different type of parse error
       expected: ["end of file"],
-      got: input.slice(tree.span.to),
+      got: input.slice(tree.width),
     });
   }
   return out;
