@@ -44,11 +44,7 @@ export function ruleTreeToTree(tree: RuleTree, source: string): Tree<RuleTree> {
 }
 
 export function renderRuleNode(n: RuleTree, source: string): string {
-  return `${n.name}${
-    n.children.length === 0
-      ? `: ${JSON.stringify(source.substring(n.span.from, n.span.to))}`
-      : ""
-  } ${spanToString(n.span)}`;
+  return `${n.name} (${n.width})`;
 }
 
 function spanToString(span: Span): string {
