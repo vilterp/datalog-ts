@@ -35,7 +35,9 @@
     "package-vscode-extension": "cd apps/vscodeExtension && vsce package",
     "generate-datalog-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/dl/dl.grammar languageWorkbench/languages/dl/parser.ts ../../parserlib DL ws && prettier --write languageWorkbench/languages/dl/parser.ts",
     "generate-sql-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/sql/sql.grammar languageWorkbench/languages/sql/parser.ts ../../parserlib SQL ws && prettier --write languageWorkbench/languages/sql/parser.ts",
-    "generate-grammar-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/grammar/grammar.grammar languageWorkbench/languages/grammar/parser.ts ../../parserlib Grammar ws && prettier --write languageWorkbench/languages/grammar/parser.ts"
+    "generate-grammar-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/grammar/grammar.grammar languageWorkbench/languages/grammar/parser.ts ../../parserlib Grammar ws && prettier --write languageWorkbench/languages/grammar/parser.ts",
+    "build-parserlib-playground": "esbuild apps/parserlibPlayground/main.tsx --bundle --outfile=apps/parserlibPlayground/public/bundle.js '--define:process.env.NODE_ENV=\"development\"' --sourcemap --external:path --external:fs --external:crypto",
+    "serve-parserlib-playground": "cd apps/parserlibPlayground/public && http-server -c-1"
   },
   "devDependencies": {
     "@types/astring": "^1.7.0",
