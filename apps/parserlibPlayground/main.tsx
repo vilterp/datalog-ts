@@ -41,7 +41,21 @@ function useParser(
 }
 
 const GRAMMAR: Grammar = {
-  main: { type: "Text", value: "foo" },
+  main: {
+    type: "RepSep",
+    rep: { type: "Ref", rule: "fooOrBar", captureName: null },
+    sep: { type: "Ref", rule: "comma", captureName: null },
+  },
+  fooOrBar: {
+    type: "Choice",
+    choices: [
+      { type: "Ref", rule: "foo", captureName: null },
+      { type: "Ref", rule: "bar", captureName: null },
+    ],
+  },
+  foo: { type: "Text", value: "foo" },
+  bar: { type: "Text", value: "bar" },
+  comma: { type: "Text", value: "," },
 };
 
 ReactDOM.render(<Main />, document.getElementById("main"));
