@@ -606,7 +606,7 @@ function extractText(input: string, pos: number, node: RuleTree): GrammarText {
     ),
   };
 }
-const GRAMMAR: Grammar = {
+export const GRAMMAR: Grammar = {
   main: {
     type: "RepSep",
     rep: {

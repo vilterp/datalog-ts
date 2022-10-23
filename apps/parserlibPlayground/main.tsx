@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import ReactJson from "react-json-view";
 import useLocalStorage from "react-use-localstorage";
-// import { GRAMMAR } from "../../languageWorkbench/languages/grammar/parser";
+import { GRAMMAR } from "../../languageWorkbench/languages/grammar/parser";
 import { parse, TraceTree } from "../../languageWorkbench/parserlib/parser";
 import { Grammar } from "../../languageWorkbench/parserlib/types";
 
@@ -35,12 +35,12 @@ function useParser(
   grammar: Grammar,
   rule: string
 ): [string, TraceTree, (text: string) => void] {
-  const [text, setText] = useState("");
+  const [text, setText] = useLocalStorage("parserlib-playground-text", "");
   const tree = parse(grammar, rule, text);
   return [text, tree, setText];
 }
 
-const GRAMMAR: Grammar = {
+const testGrammar: Grammar = {
   main: {
     type: "RepSep",
     rep: { type: "Ref", rule: "fooOrBar", captureName: null },

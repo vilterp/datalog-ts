@@ -133,6 +133,7 @@ function genRule(
     returnType: tsTypeName(typeName(ruleName, options.typePrefix)),
     params: [
       tsTypedParam("input", tsTypeName("string")),
+      tsTypedParam("pos", tsTypeName("number")),
       tsTypedParam("node", tsTypeName("RuleTree")),
     ],
     body: extractorBodyForRule(ruleName, rule, options),
@@ -163,12 +164,12 @@ function extractorBodyForRule(
       key: "text",
       value: jsCall(jsIdent("textForSpan"), [
         jsIdent("input"),
-        jsChain(["node", "span"]),
+        jsChain(["node", "width"]),
       ]),
     },
     {
-      key: "span",
-      value: jsChain(["node", "span"]),
+      key: "width",
+      value: jsChain(["node", "width"]),
     },
   ];
 
@@ -269,7 +270,7 @@ function typeExprForRule(
   const baseMembers: ObjectLiteralTypeMember[] = [
     { name: "type", type: tsTypeString(capitalize(ruleName)) },
     { name: "text", type: tsTypeName("string") },
-    { name: "span", type: tsTypeName("Span") },
+    { name: "width", type: tsTypeName("number") },
   ];
 
   if (rule.type === "Choice") {
@@ -308,7 +309,7 @@ function typeExprForRule(
 }
 
 function generateGrammarConst(grammar: Grammar): string {
-  return `const GRAMMAR: Grammar = ${JSON.stringify(grammar, null, 2)}`;
+  return `export const GRAMMAR: Grammar = ${JSON.stringify(grammar, null, 2)}`;
 }
 
 function generateEntryPoints(grammar: Grammar, options: Options): string[] {
@@ -323,7 +324,7 @@ function generateEntryPoints(grammar: Grammar, options: Options): string[] {
         `  const traceTree = parserlib.parse(GRAMMAR, "${ruleName}", input)`,
         // TODO: problematic if there's a rule called RuleTree
         `  const ruleTree = extractRuleTree(traceTree)`,
-        `  return ${extractorName(ruleName)}(input, ruleTree)`,
+        `  return ${extractorName(ruleName)}(input, 0, ruleTree)`,
         `}`,
       ].join("\n")
   );
@@ -338,7 +339,7 @@ function extractorName(ruleName: string) {
   return `extract${capitalize(ruleName)}`;
 }
 
-const RESERVED = new Set(["type", "text", "span"]);
+const RESERVED = new Set(["type", "text", "width"]);
 
 function prefixToAvoidReserved(name: string): string {
   if (RESERVED.has(name)) {
