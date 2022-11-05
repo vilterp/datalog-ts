@@ -10,19 +10,19 @@ paymentTo{actor: A, time: T, balance: B} :-
   time{time: T} &
   T = PrevT + 1 &
   balance{actor: A, time: PrevT, balance: PrevB} &
-  payment{from: A, time: PrevT, amount: Amt} &
+  payment{from: A, time: T, amount: Amt} &
   PrevB = B + Amt.
 paymentFrom{actor: A, time: T, balance: B} :-
   time{time: T} &
   T = PrevT + 1 &
   balance{actor: A, time: PrevT, balance: PrevB} &
-  payment{to: A, time: PrevT, amount: Amt} &
+  payment{to: A, time: T, amount: Amt} &
   B = PrevB + Amt.
 balanceStay{actor: A, time: T, balance: B} :-
   time{time: T} &
   actor{actor: A} &
   T = PrevT + 1 &
-  payment{time: PrevT, from: A1, to: A2} &
+  payment{time: T, from: A1, to: A2} &
   A != A1 &
   A != A2 &
   balance{actor: A, time: PrevT, balance: B}.
