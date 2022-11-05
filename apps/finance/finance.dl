@@ -1,0 +1,38 @@
+balance{actor: A, time: T, balance: B} :-
+  initBalance{actor: A, time: T, balance: B} |
+  balanceStay{actor: A, time: T, balance: B} |
+  paymentTo{actor: A, time: T, balance: B} |
+  paymentFrom{actor: A, time: T, balance: B}.
+
+initBalance{actor: A, time: T, balance: 0} :-
+  actorEnter{actor: A, time: T}.
+paymentTo{actor: A, time: T, balance: B} :-
+  time{time: T} &
+  PrevB = B + Amt &
+  T = PrevT + 1 &
+  payment{from: A, time: PrevT, amount: Amt} &
+  balance{actor: A, time: PrevT, balance: PrevB}.
+paymentFrom{actor: A, time: T, balance: B} :-
+  time{time: T} &
+  B = PrevB + Amt &
+  T = PrevT + 1 &
+  payment{to: A, time: PrevT, amount: Amt} &
+  balance{actor: A, time: PrevT, balance: PrevB}.
+balanceStay{actor: A, time: T, balance: B} :-
+  time{time: T} &
+  actorEnter{actor: A} &
+  T = PrevT + 1 &
+  payment{time: PrevT, from: A1, to: A2} &
+  A != A1 &
+  A != A2 &
+  balance{actor: A, time: PrevT, balance: B}.
+
+time{time: 0}.
+time{time: 1}.
+time{time: 2}.
+time{time: 3}.
+time{time: 4}.
+
+actorEnter{actor: "Pete", time: 0}.
+actorEnter{actor: "Paul", time: 1}.
+payment{from: "Paul", to: "Pete", amount: 10, time: 2}.
