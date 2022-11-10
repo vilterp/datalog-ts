@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UIProps } from "../../../types";
-import { ClientState, TransactionState } from "../client";
+import { ClientState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -19,10 +19,9 @@ import { TxnState } from "./common";
 import { KVApp } from "./types";
 
 type Message = {
-  id: number;
+  seqNo: number;
   sender: string;
   message: string;
-  state: TransactionState;
 };
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
@@ -61,14 +60,32 @@ function MessageTable(props: { threadID: string; client: Client }) {
     `messages-${props.threadID}`,
     { prefix: `/messages/${props.threadID}` }
   );
+  const [latestMessageSeen, latestMessageSeenStatus] = useLiveQuery(
+    props.client,
+    `latest-seen-by-${props.threadID}`,
+    { prefix: `/latestMessageRead/byThread/${props.threadID}` }
+  );
 
   if (messagesStatus === "Loading") {
-    return (
-      <p>
-        <em>Loading...</em>
-      </p>
-    );
+    return <em>Loading...</em>;
   }
+
+  // build index from message to users seen
+  // TODO: should the DB be maintaining this index?
+  const usersSeenBySeqNo: { [seqNo: string]: string[] } = {};
+  Object.entries(latestMessageSeen).forEach(([key, seqNoVal]) => {
+    const [_1, _2, _3, threadID, userID] = key.split("/");
+    const seqNo = seqNoVal.value as string;
+    const users = usersSeenBySeqNo[seqNo] || [];
+    users.push(userID);
+    usersSeenBySeqNo[seqNo] = users;
+  });
+
+  console.log("MessageTable", {
+    messages,
+    latestMessageSeen,
+    usersSeenBySeqNo,
+  });
 
   return (
     <>
@@ -78,6 +95,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
             <th>Sender</th>
             <th>Message</th>
             <th>State</th>
+            <th>Seen By</th>
           </tr>
         </thead>
         <tbody>
@@ -93,6 +111,14 @@ function MessageTable(props: { threadID: string; client: Client }) {
                     client={props.client}
                     txnID={message.transactionID}
                   />
+                </td>
+                <td>
+                  {(usersSeenBySeqNo[msg.seqNo] || [])
+                    .filter(
+                      (user) =>
+                        user !== props.client.state.id && user !== msg.sender
+                    )
+                    .join(", ")}
                 </td>
               </tr>
             );
@@ -154,7 +180,7 @@ function ThreadList(props: {
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/${props.client.state.id}`,
+      prefix: `/latestMessageRead/byUser/${props.client.state.id}`,
     }
   );
 
@@ -165,7 +191,7 @@ function ThreadList(props: {
         const latestMessageInThread =
           latestMessage[`/latestMessage/${threadID}`];
 
-        const key = `/latestMessageRead/${props.client.state.id}/${threadID}`;
+        const key = `/latestMessageRead/byUser/${props.client.state.id}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
         const hasUnread =
           latestMessageInThread?.value >
@@ -219,12 +245,22 @@ const mutations: MutationDefns = {
           apply("concat", [str("/latestMessage/"), varr("threadID")]),
           varr("newSeqNo")
         ),
+        // TODO: call markRead?
         write(
           apply("concat", [
-            str("/latestMessageRead/"),
+            str("/latestMessageRead/byUser/"),
             varr("curUser"),
             str("/"),
             varr("threadID"),
+          ]),
+          varr("newSeqNo")
+        ),
+        write(
+          apply("concat", [
+            str("/latestMessageRead/byThread/"),
+            varr("threadID"),
+            str("/"),
+            varr("curUser"),
           ]),
           varr("newSeqNo")
         ),
@@ -235,7 +271,11 @@ const mutations: MutationDefns = {
             str("/"),
             varr("newSeqNo"),
           ]),
-          obj({ sender: varr("curUser"), message: varr("message") })
+          obj({
+            seqNo: varr("newSeqNo"),
+            sender: varr("curUser"),
+            message: varr("message"),
+          })
         ),
       ])
     )
@@ -245,10 +285,19 @@ const mutations: MutationDefns = {
     doExpr([
       write(
         apply("concat", [
-          str("/latestMessageRead/"),
+          str("/latestMessageRead/byUser/"),
           varr("curUser"),
           str("/"),
           varr("threadID"),
+        ]),
+        varr("seqNo")
+      ),
+      write(
+        apply("concat", [
+          str("/latestMessageRead/byThread/"),
+          varr("threadID"),
+          str("/"),
+          varr("curUser"),
         ]),
         varr("seqNo")
       ),

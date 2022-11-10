@@ -1,5 +1,4 @@
 import React from "react";
-import { TransactionState } from "../client";
 import { Client } from "../hooks";
 
 export function TxnState(props: { client: Client; txnID: string }) {
@@ -10,7 +9,7 @@ export function TxnState(props: { client: Client; txnID: string }) {
   const txnState = txnRecord.state;
   switch (txnState.type) {
     case "Pending":
-      return <></>;
+      return <>...</>;
     case "Committed":
       return <>{txnState.serverTimestamp}</>;
     case "Aborted":

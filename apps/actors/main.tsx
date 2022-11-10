@@ -102,6 +102,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
               >
                 x
               </button>
+              <span> client{clientID}</span>
               {clientState ? (
                 <props.systemInstance.system.ui
                   state={clientState}
