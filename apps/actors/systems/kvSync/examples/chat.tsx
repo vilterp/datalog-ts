@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UIProps } from "../../../types";
-import { ClientState, TransactionState } from "../client";
+import { ClientState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -19,10 +19,9 @@ import { TxnState } from "./common";
 import { KVApp } from "./types";
 
 type Message = {
-  id: number;
+  seqNo: number;
   sender: string;
   message: string;
-  state: TransactionState;
 };
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
@@ -75,11 +74,17 @@ function MessageTable(props: { threadID: string; client: Client }) {
   // TODO: should the DB be maintaining this index?
   const usersSeenBySeqNo: { [seqNo: string]: string[] } = {};
   Object.entries(latestMessageSeen).forEach(([key, seqNoVal]) => {
-    const [_1, _2, threadID, userID] = key.split("/");
+    const [_1, _2, _3, threadID, userID] = key.split("/");
     const seqNo = seqNoVal.value as string;
     const users = usersSeenBySeqNo[seqNo] || [];
     users.push(userID);
     usersSeenBySeqNo[seqNo] = users;
+  });
+
+  console.log("MessageTable", {
+    messages,
+    latestMessageSeen,
+    usersSeenBySeqNo,
   });
 
   return (
@@ -107,8 +112,14 @@ function MessageTable(props: { threadID: string; client: Client }) {
                     txnID={message.transactionID}
                   />
                 </td>
-                {/* do messages not know their seq no? */}
-                <td>{(usersSeenBySeqNo[msg.id] || []).join(", ")}</td>
+                <td>
+                  {(usersSeenBySeqNo[msg.seqNo] || [])
+                    .filter(
+                      (user) =>
+                        user !== props.client.state.id && user !== msg.sender
+                    )
+                    .join(", ")}
+                </td>
               </tr>
             );
           })}
@@ -260,7 +271,11 @@ const mutations: MutationDefns = {
             str("/"),
             varr("newSeqNo"),
           ]),
-          obj({ sender: varr("curUser"), message: varr("message") })
+          obj({
+            seqNo: varr("newSeqNo"),
+            sender: varr("curUser"),
+            message: varr("message"),
+          })
         ),
       ])
     )
