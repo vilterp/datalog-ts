@@ -209,10 +209,10 @@ function ThreadList(props: {
             onClick={() => props.setCurThread(threadID)}
             style={{
               cursor: "pointer",
-              fontWeight: threadID == props.curThread ? "bold" : "normal",
+              backgroundColor: threadID == props.curThread ? "lightblue" : "",
+              fontWeight: hasUnread ? "bold" : "normal",
             }}
           >
-            {hasUnread ? "* " : ""}
             {threadID}
           </li>
         );
