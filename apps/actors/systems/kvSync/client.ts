@@ -279,6 +279,7 @@ export function updateClient(
           return effects.updateState({
             ...state,
             // TODO: this rolls back inserts, but what about updates?
+            // will have to keep old versions to roll back to
             data: filterObj(
               state.data,
               (key, val) => val.transactionID !== msg.id
