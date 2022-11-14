@@ -88,12 +88,18 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
 
   return (
     <>
-      <table>
+      <table style={{ borderCollapse: "collapse" }}>
         <thead>
           <tr>
             {props.systemInstance.clientIDs.map((clientID) => {
               return (
-                <th>
+                <th
+                  style={{
+                    borderLeft: "1px solid lightgrey",
+                    borderRight: "1px solid lightgrey",
+                    borderBottom: "1px solid black",
+                  }}
+                >
                   <button
                     onClick={() => {
                       props.dispatch({ type: "ExitClient", clientID });
@@ -114,7 +120,13 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                 props.systemInstance.trace.latestStates[`client${clientID}`];
 
               return (
-                <td key={clientID}>
+                <td
+                  key={clientID}
+                  style={{
+                    borderLeft: "1px solid lightgrey",
+                    borderRight: "1px solid lightgrey",
+                  }}
+                >
                   {clientState ? (
                     <props.systemInstance.system.ui
                       state={clientState}
