@@ -113,10 +113,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
                   </td>
                   <td>
                     {(usersSeenBySeqNo[msg.seqNo] || [])
-                      .filter(
-                        (user) =>
-                          user !== props.client.state.id && user !== msg.sender
-                      )
+                      .filter((user) => user !== props.client.state.id)
                       .join(", ")}
                   </td>
                 </tr>
