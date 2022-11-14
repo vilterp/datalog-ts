@@ -96,13 +96,26 @@ function MessageTable(props: { threadID: string; client: Client }) {
 
   return (
     <>
-      <table>
+      <style>{`
+      table.messages {
+        border-collapse: collapse;
+      }
+      table.messages th, table.messages td {
+        border-left: 1px solid lightgrey;
+        border-right: 1px solid lightgrey;
+        text-align: left;
+      }
+      table.messages thead tr {
+        border-bottom: 1px solid black;
+      }
+      `}</style>
+      <table className="messages">
         <thead>
           <tr>
             <th>Sender</th>
             <th style={{ width: 150 }}>Message</th>
             <th>State</th>
-            <th>Seen By</th>
+            <th style={{ width: 100 }}>Seen By</th>
           </tr>
         </thead>
         <tbody>
