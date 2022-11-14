@@ -21,14 +21,14 @@ export function TxnState(props: { client: Client; txnID: string }) {
               props.client.retryTransaction(props.txnID);
             }}
           >
-            (retry)
+            retry
           </button>
           <button
             onClick={() => {
               props.client.cancelTransaction(props.txnID);
             }}
           >
-            (cancel)
+            cancel
           </button>
         </>
       );
