@@ -15,7 +15,7 @@ import {
   write,
 } from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
-import { TxnState } from "./common";
+import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 
 type Message = {

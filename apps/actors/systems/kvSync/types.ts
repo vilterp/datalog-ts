@@ -11,7 +11,8 @@ export type KVData = { [key: string]: VersionedValue };
 
 export type UserInput =
   | { type: "RunMutation"; invocation: MutationInvocation }
-  | { type: "RegisterQuery"; id: string; query: Query };
+  | { type: "RegisterQuery"; id: string; query: Query }
+  | { type: "CancelTransaction"; id: string };
 
 export type MsgToServer = LiveQueryRequest | MutationRequest;
 

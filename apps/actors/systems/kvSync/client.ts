@@ -16,6 +16,7 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import {
+  filterObj,
   hashString,
   mapObj,
   pairsToObj,
@@ -274,6 +275,14 @@ export function updateClient(
             },
           ]);
         }
+        case "CancelTransaction":
+          return effects.updateState({
+            ...state,
+            data: filterObj(
+              state.data,
+              (key, val) => val.transactionID !== msg.id
+            ),
+          });
       }
     }
     default:
