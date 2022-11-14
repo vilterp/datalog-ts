@@ -45,7 +45,9 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
               />
             </td>
             <td>
-              <MessageTable threadID={curThread} client={client} />
+              <div style={{ width: 300, height: 200, overflowY: "scroll" }}>
+                <MessageTable threadID={curThread} client={client} />
+              </div>
               <SendBox threadID={curThread} client={client} />
             </td>
           </tr>
