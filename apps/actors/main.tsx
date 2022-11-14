@@ -113,6 +113,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
             {props.systemInstance.clientIDs.map((clientID) => {
               return (
                 <th
+                  key={clientID}
                   style={{
                     borderLeft: "1px solid lightgrey",
                     borderRight: "1px solid lightgrey",
