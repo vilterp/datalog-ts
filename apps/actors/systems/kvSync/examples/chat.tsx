@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Ref, useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
@@ -27,8 +27,15 @@ type Message = {
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const [curThread, setCurThread] = useState("foo");
+  const scrollRef = useRef<HTMLDivElement>();
 
   const client = makeClient(props);
+
+  useLayoutEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  });
 
   return (
     <div>
@@ -45,7 +52,10 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
               />
             </td>
             <td>
-              <div style={{ width: 300, height: 200, overflowY: "scroll" }}>
+              <div
+                ref={scrollRef}
+                style={{ width: 400, height: 200, overflowY: "scroll" }}
+              >
                 <MessageTable threadID={curThread} client={client} />
               </div>
               <SendBox threadID={curThread} client={client} />
@@ -90,7 +100,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
         <thead>
           <tr>
             <th>Sender</th>
-            <th>Message</th>
+            <th style={{ width: 150 }}>Message</th>
             <th>State</th>
             <th>Seen By</th>
           </tr>
