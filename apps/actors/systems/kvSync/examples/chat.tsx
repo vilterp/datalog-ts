@@ -19,6 +19,7 @@ import { TxnState } from "./common";
 import { KVApp } from "./types";
 
 type Message = {
+  id: number;
   seqNo: number;
   sender: string;
   message: string;
@@ -99,30 +100,34 @@ function MessageTable(props: { threadID: string; client: Client }) {
           </tr>
         </thead>
         <tbody>
-          {/* sort by date? */}
-          {Object.values(messages).map((message) => {
-            const msg = message.value as Message;
-            return (
-              <tr key={message.transactionID}>
-                <td>{msg.sender}</td>
-                <td>{msg.message}</td>
-                <td>
-                  <TxnState
-                    client={props.client}
-                    txnID={message.transactionID}
-                  />
-                </td>
-                <td>
-                  {(usersSeenBySeqNo[msg.seqNo] || [])
-                    .filter(
-                      (user) =>
-                        user !== props.client.state.id && user !== msg.sender
-                    )
-                    .join(", ")}
-                </td>
-              </tr>
-            );
-          })}
+          {/* TODO: index by seq no so we don't have to do this here? */}
+          {Object.values(messages)
+            .sort(
+              (a, b) => (a.value as Message).seqNo - (b.value as Message).seqNo
+            )
+            .map((message) => {
+              const msg = message.value as Message;
+              return (
+                <tr key={message.transactionID}>
+                  <td>{msg.sender}</td>
+                  <td>{msg.message}</td>
+                  <td>
+                    <TxnState
+                      client={props.client}
+                      txnID={message.transactionID}
+                    />
+                  </td>
+                  <td>
+                    {(usersSeenBySeqNo[msg.seqNo] || [])
+                      .filter(
+                        (user) =>
+                          user !== props.client.state.id && user !== msg.sender
+                      )
+                      .join(", ")}
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </>
@@ -239,6 +244,10 @@ const mutations: MutationDefns = {
           varName: "newSeqNo",
           val: apply("+", [varr("latestSeqNo"), int(1)]),
         },
+        {
+          varName: "newID",
+          val: apply("rand", []),
+        },
       ],
       doExpr([
         write(
@@ -269,9 +278,10 @@ const mutations: MutationDefns = {
             str("/messages/"),
             varr("threadID"),
             str("/"),
-            varr("newSeqNo"),
+            varr("newID"),
           ]),
           obj({
+            id: varr("newID"),
             seqNo: varr("newSeqNo"),
             sender: varr("curUser"),
             message: varr("message"),

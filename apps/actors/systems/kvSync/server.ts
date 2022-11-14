@@ -14,7 +14,7 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { filterMap, filterObj, groupBy } from "../../../../util/util";
+import { filterMap } from "../../../../util/util";
 import { jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
@@ -71,8 +71,9 @@ function runMutationOnServer(
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
-  const [newData, outcome, trace] = runMutation(
+  const [newData, newInterpState, outcome, trace] = runMutation(
     state.data,
+    req.interpState,
     req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args,

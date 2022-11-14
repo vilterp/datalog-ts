@@ -88,6 +88,25 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
 
   return (
     <>
+      <button
+        onClick={() => {
+          props.dispatch({ type: "AllocateClientID" });
+          // TODO: DRY this up with other place client id is constructed
+          const clientID = `client${props.systemInstance.nextClientID}`;
+          props.dispatch({
+            type: "UpdateTrace",
+            action: {
+              type: "SpawnClient",
+              id: props.systemInstance.nextClientID.toString(),
+              initialUserState: props.systemInstance.system.initialUserState,
+              initialClientState:
+                props.systemInstance.system.initialClientState(clientID),
+            },
+          });
+        }}
+      >
+        Add Client
+      </button>
       <table style={{ borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -125,6 +144,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                   style={{
                     borderLeft: "1px solid lightgrey",
                     borderRight: "1px solid lightgrey",
+                    verticalAlign: "top",
                   }}
                 >
                   {clientState ? (
@@ -139,25 +159,6 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
           </tr>
         </tbody>
       </table>
-      <button
-        onClick={() => {
-          props.dispatch({ type: "AllocateClientID" });
-          // TODO: DRY this up with other place client id is constructed
-          const clientID = `client${props.systemInstance.nextClientID}`;
-          props.dispatch({
-            type: "UpdateTrace",
-            action: {
-              type: "SpawnClient",
-              id: props.systemInstance.nextClientID.toString(),
-              initialUserState: props.systemInstance.system.initialUserState,
-              initialClientState:
-                props.systemInstance.system.initialClientState(clientID),
-            },
-          });
-        }}
-      >
-        Add Client
-      </button>
     </>
   );
 }
