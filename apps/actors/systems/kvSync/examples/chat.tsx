@@ -272,6 +272,7 @@ const mutations: MutationDefns = {
             varr("newSeqNo"),
           ]),
           obj({
+            id: apply("rand", []),
             seqNo: varr("newSeqNo"),
             sender: varr("curUser"),
             message: varr("message"),

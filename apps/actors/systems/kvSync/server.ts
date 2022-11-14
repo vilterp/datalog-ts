@@ -14,7 +14,7 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { filterMap, filterObj, groupBy } from "../../../../util/util";
+import { filterMap } from "../../../../util/util";
 import { jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
