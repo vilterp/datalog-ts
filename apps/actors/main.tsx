@@ -120,6 +120,7 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                     borderBottom: "1px solid black",
                   }}
                 >
+                  <span> client{clientID}</span>
                   <button
                     onClick={() => {
                       props.dispatch({ type: "ExitClient", clientID });
@@ -127,7 +128,6 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                   >
                     x
                   </button>
-                  <span> client{clientID}</span>
                 </th>
               );
             })}
