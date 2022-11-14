@@ -9,6 +9,10 @@ import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
 import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
+import {
+  Collapsible,
+  CollapsibleWithHeading,
+} from "../../uiCommon/generic/collapsible";
 
 const initialSystemsState = initialState(SYSTEMS);
 
@@ -60,7 +64,12 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
         dispatch={props.dispatch}
       />
 
-      <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
+      <CollapsibleWithHeading
+        heading="Explorer"
+        content={
+          <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
+        }
+      />
 
       <h2>State</h2>
       <ReactJson
