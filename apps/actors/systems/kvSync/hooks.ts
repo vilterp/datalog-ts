@@ -10,6 +10,8 @@ export type Client = {
   state: ClientState;
   runMutation: (mut: MutationInvocation) => void;
   registerLiveQuery: (id: string, query: Query) => void;
+  cancelTransaction: (id: string) => void;
+  retryTransaction: (id: string) => void;
 };
 
 export function makeClient(props: UIProps<ClientState, UserInput>): Client {
@@ -24,10 +26,20 @@ export function makeClient(props: UIProps<ClientState, UserInput>): Client {
     }
     props.sendUserInput({ type: "RegisterQuery", id, query });
   };
+  const cancelTransaction = (id: string) => {
+    props.sendUserInput({ type: "CancelTransaction", id });
+  };
+  const retryTransaction = (id: string) => {
+    const invocation = props.state.transactions[id].invocation;
+    props.sendUserInput({ type: "CancelTransaction", id });
+    props.sendUserInput({ type: "RunMutation", invocation });
+  };
   return {
     state: props.state,
     runMutation,
     registerLiveQuery,
+    cancelTransaction,
+    retryTransaction,
   };
 }
 

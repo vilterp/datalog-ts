@@ -16,6 +16,7 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import {
+  filterObj,
   hashString,
   mapObj,
   pairsToObj,
@@ -274,6 +275,16 @@ export function updateClient(
             },
           ]);
         }
+        case "CancelTransaction":
+          return effects.updateState({
+            ...state,
+            // TODO: this rolls back inserts, but what about updates?
+            // will have to keep old versions to roll back to
+            data: filterObj(
+              state.data,
+              (key, val) => val.transactionID !== msg.id
+            ),
+          });
       }
     }
     default:

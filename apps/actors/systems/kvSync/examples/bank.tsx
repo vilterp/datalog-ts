@@ -16,7 +16,7 @@ import {
   doExpr,
 } from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
-import { TxnState } from "./common";
+import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
