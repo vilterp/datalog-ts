@@ -10,8 +10,10 @@ import useHashParam from "use-hash-param";
 import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 
+const initialSystemsState = initialState(SYSTEMS);
+
 function Main() {
-  const [state, dispatch] = useEffectfulReducer(reducer, initialState(SYSTEMS));
+  const [state, dispatch] = useEffectfulReducer(reducer, initialSystemsState);
   const [selectedSystemInstanceID, setSelectedSystemInstanceID] = useHashParam(
     "systemInstance",
     SYSTEMS[0].id
