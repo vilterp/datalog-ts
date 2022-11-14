@@ -88,31 +88,57 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
 
   return (
     <>
-      <ul>
-        {props.systemInstance.clientIDs.map((clientID) => {
-          const clientState =
-            props.systemInstance.trace.latestStates[`client${clientID}`];
+      <table style={{ borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            {props.systemInstance.clientIDs.map((clientID) => {
+              return (
+                <th
+                  style={{
+                    borderLeft: "1px solid lightgrey",
+                    borderRight: "1px solid lightgrey",
+                    borderBottom: "1px solid black",
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      props.dispatch({ type: "ExitClient", clientID });
+                    }}
+                  >
+                    x
+                  </button>
+                  <span> client{clientID}</span>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {props.systemInstance.clientIDs.map((clientID) => {
+              const clientState =
+                props.systemInstance.trace.latestStates[`client${clientID}`];
 
-          return (
-            <li key={clientID}>
-              <button
-                onClick={() => {
-                  props.dispatch({ type: "ExitClient", clientID });
-                }}
-              >
-                x
-              </button>
-              <span> client{clientID}</span>
-              {clientState ? (
-                <props.systemInstance.system.ui
-                  state={clientState}
-                  sendUserInput={(input) => sendInput(clientID, input)}
-                />
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
+              return (
+                <td
+                  key={clientID}
+                  style={{
+                    borderLeft: "1px solid lightgrey",
+                    borderRight: "1px solid lightgrey",
+                  }}
+                >
+                  {clientState ? (
+                    <props.systemInstance.system.ui
+                      state={clientState}
+                      sendUserInput={(input) => sendInput(clientID, input)}
+                    />
+                  ) : null}
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
       <button
         onClick={() => {
           props.dispatch({ type: "AllocateClientID" });
