@@ -62,3 +62,22 @@ concurrentRequests{
   hop{from: tick{place: Client2, time: TC2}, to: tick{time: TS2, place: "server"}, message: M2} &
   TC1 < TC2 &
   TC2 < TS1.
+
+kvSync.aborts{
+  fromActorID: ClientActor,
+  toActorID: ServerActor,
+  request: Req,
+  txnID: TxnID,
+  sendTick: SendTick,
+  respondTick: RespondTick,
+  handleResponseTick: HandleResponseTick
+} :-
+  requestResponse{
+    fromActorID: ClientActor,
+    toActorID: ServerActor,
+    request: Req,
+    response: MutationResponse{txnID: TxnID, response: Abort{}},
+    sendTick: SendTick,
+    respondTick: RespondTick,
+    handleResponseTick: HandleResponseTick
+  }.
