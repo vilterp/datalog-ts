@@ -278,6 +278,7 @@ export function updateClient(
         case "CancelTransaction":
           return effects.updateState({
             ...state,
+            // TODO: this rolls back inserts, but what about updates?
             data: filterObj(
               state.data,
               (key, val) => val.transactionID !== msg.id
