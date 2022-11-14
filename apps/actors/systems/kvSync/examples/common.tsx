@@ -13,7 +13,18 @@ export function TxnState(props: { client: Client; txnID: string }) {
     case "Committed":
       return <>{txnState.serverTimestamp}</>;
     case "Aborted":
-      // TODO: cancel or try again
-      return <span>(!)</span>;
+      // TODO: cancel
+      return (
+        <span
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            const invocation =
+              props.client.state.transactions[props.txnID].invocation;
+            props.client.runMutation(invocation);
+          }}
+        >
+          (retry)
+        </span>
+      );
   }
 }
