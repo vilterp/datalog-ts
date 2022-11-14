@@ -82,12 +82,6 @@ function MessageTable(props: { threadID: string; client: Client }) {
     usersSeenBySeqNo[seqNo] = users;
   });
 
-  console.log("MessageTable", {
-    messages,
-    latestMessageSeen,
-    usersSeenBySeqNo,
-  });
-
   return (
     <>
       <table>

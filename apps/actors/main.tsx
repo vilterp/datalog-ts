@@ -9,9 +9,15 @@ import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
 import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
+import {
+  Collapsible,
+  CollapsibleWithHeading,
+} from "../../uiCommon/generic/collapsible";
+
+const initialSystemsState = initialState(SYSTEMS);
 
 function Main() {
-  const [state, dispatch] = useEffectfulReducer(reducer, initialState(SYSTEMS));
+  const [state, dispatch] = useEffectfulReducer(reducer, initialSystemsState);
   const [selectedSystemInstanceID, setSelectedSystemInstanceID] = useHashParam(
     "systemInstance",
     SYSTEMS[0].id
@@ -58,7 +64,12 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
         dispatch={props.dispatch}
       />
 
-      <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
+      <CollapsibleWithHeading
+        heading="Explorer"
+        content={
+          <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
+        }
+      />
 
       <h2>State</h2>
       <ReactJson
@@ -113,12 +124,14 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
             {props.systemInstance.clientIDs.map((clientID) => {
               return (
                 <th
+                  key={clientID}
                   style={{
                     borderLeft: "1px solid lightgrey",
                     borderRight: "1px solid lightgrey",
                     borderBottom: "1px solid black",
                   }}
                 >
+                  <span> client{clientID}</span>
                   <button
                     onClick={() => {
                       props.dispatch({ type: "ExitClient", clientID });
@@ -126,7 +139,6 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
                   >
                     x
                   </button>
-                  <span> client{clientID}</span>
                 </th>
               );
             })}
