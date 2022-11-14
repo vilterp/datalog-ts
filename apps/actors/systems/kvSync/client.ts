@@ -133,8 +133,10 @@ function runMutationOnClient(
 ): [ClientState, MutationRequest | null] {
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
-  const [data1, outcome, trace] = runMutation(
+  const initialInterpState = { randSeed: randStep(randNum) };
+  const [data1, newInterpState, outcome, trace] = runMutation(
     state.data,
+    initialInterpState,
     txnID,
     state.mutationDefns[invocation.name],
     invocation.args,
@@ -147,7 +149,7 @@ function runMutationOnClient(
   }
   const state2: ClientState = {
     ...state1,
-    randSeed: randNum,
+    randSeed: newInterpState.randSeed,
     transactions: {
       ...state1.transactions,
       [txnID]: { invocation: invocation, state: { type: "Pending" } },
@@ -156,6 +158,7 @@ function runMutationOnClient(
   const req: MutationRequest = {
     type: "MutationRequest",
     txnID,
+    interpState: initialInterpState,
     invocation: invocation,
     trace: trace,
   };

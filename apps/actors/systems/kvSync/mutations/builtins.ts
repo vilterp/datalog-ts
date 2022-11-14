@@ -3,7 +3,6 @@ import { Value } from "./types";
 
 export type InterpreterState = {
   randSeed: number;
-  timestamp: number;
 };
 
 // mutates InterpreterState

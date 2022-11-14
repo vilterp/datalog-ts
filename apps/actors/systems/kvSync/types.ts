@@ -1,4 +1,5 @@
 import { Json } from "../../../../util/json";
+import { InterpreterState } from "./mutations/builtins";
 import { Lambda } from "./mutations/types";
 
 export type VersionedValue = {
@@ -43,6 +44,7 @@ export type WriteOp = {
 export type MutationRequest = {
   type: "MutationRequest";
   txnID: string;
+  interpState: InterpreterState;
   invocation: MutationInvocation;
   trace: Trace;
 };
