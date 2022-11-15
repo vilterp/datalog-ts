@@ -196,11 +196,12 @@ function runMutationExpr(
     case "Abort":
       return [null, "Abort", state, kvData, traceSoFar];
     case "Var": {
-      const val = scope[expr.name];
-      if (!val) {
+      if (!scope.hasOwnProperty(expr.name)) {
         // TODO: pass error message through
-        return [val, "Abort", state, kvData, traceSoFar];
+        console.warn("missing variable", expr.name);
+        return [null, "Abort", state, kvData, traceSoFar];
       }
+      const val = scope[expr.name];
       return [scope[expr.name], "Commit", state, kvData, traceSoFar];
     }
     case "StringLit":

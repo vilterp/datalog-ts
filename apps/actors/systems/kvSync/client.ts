@@ -145,7 +145,7 @@ function runMutationOnClient(
   );
   const state1: ClientState = { ...state, data: data1 };
   if (outcome === "Abort") {
-    console.warn("CLIENT: txn aborted client side");
+    console.warn("CLIENT: txn aborted client side", { invocation });
     return [state1, null];
   }
   const state2: ClientState = {
