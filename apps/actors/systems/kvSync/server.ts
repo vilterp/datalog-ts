@@ -133,6 +133,10 @@ function runMutationOnServer(
       if (matchingWrites.length === 0) {
         return null;
       }
+      // skip originating client
+      if (liveQuery.clientID === clientID) {
+        return null;
+      }
       return {
         type: "LiveQueryUpdate",
         clientID: liveQuery.clientID,
