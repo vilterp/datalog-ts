@@ -25,10 +25,10 @@ paymentInCompliance{id: I} :-
 
 # tree structure
 
-contract.node{id: I, parentID: P, display: D} :-
-  andNode{id: I, parentID: P, display: D} |
-  delayNode{id: I, parentID: P, display: D} |
-  paymentNode{id: I, parentID: P, display: D}.
+contract.node{id: A, parentID: B, display: C} :-
+  paymentNode{id: A, parentID: B, display: C} |
+  andNode{id: A, parentID: B, display: C} |
+  delayNode{id: A, parentID: B, display: C}.
 andNode{id: I, parentID: P, display: and{}} :-
   contract.And{id: I, parentID: P}.
 delayNode{id: I, parentID: P, display: delay{duration: D}} :-
