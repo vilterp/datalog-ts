@@ -1,3 +1,8 @@
+.table contract.And
+.table contract.Payment
+.table contract.Delay
+.table contract.Contract
+
 # Contract Rules
 
 contract.InCompliance{contractID: I} :-
