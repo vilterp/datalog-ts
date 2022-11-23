@@ -19,3 +19,13 @@ groupedTotal{level: C}?
 application/datalog
 groupedTotal{dest: 1, level: 15}.
 groupedTotal{dest: 2, level: 27}.
+
+foo{id: 1}.
+foo{id: 2}.
+foo{id: 3}.
+countFoo{count: I} :-
+  count[I: foo{id: I}].
+countFoo{count: I}?
+----
+application/datalog
+countFoo{count: 3}.

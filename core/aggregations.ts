@@ -12,4 +12,7 @@ export const AGGREGATIONS: { [name: string]: Aggregation } = {
     });
     return int(result);
   },
+  count: (terms: Term[]) => {
+    return int(terms.length);
+  },
 };
