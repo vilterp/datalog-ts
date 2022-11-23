@@ -29,3 +29,16 @@ countFoo{count: I}?
 ----
 application/datalog
 countFoo{count: 3}.
+
+bar{id: 1, parentID: 1}.
+bar{id: 2, parentID: 1}.
+bar{id: 3, parentID: 1}.
+bar{id: 4, parentID: 2}.
+bar{id: 5, parentID: 2}.
+countBarByParent{parentID: P, count: I} :-
+  count[P, I: bar{id: I, parentID: P}].
+countBarByParent{parentID: P, count: I}?
+----
+application/datalog
+countBarByParent{count: 3, parentID: 1}.
+countBarByParent{count: 2, parentID: 2}.
