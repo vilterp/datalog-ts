@@ -1,39 +1,89 @@
-balance{actor: A, time: T, balance: B} :-
-  initBalance{actor: A, time: T, balance: B} |
-  balanceStay{actor: A, time: T, balance: B} |
-  paymentTo{actor: A, time: T, balance: B} |
-  paymentFrom{actor: A, time: T, balance: B}.
+.table contract.And
+.table contract.Payment
+.table contract.Delay
+.table contract.Contract
 
-initBalance{actor: A, time: 0, balance: 0} :-
-  actor{actor: A}.
-paymentTo{actor: A, time: T, balance: B} :-
-  time{time: T} &
-  T = PrevT + 1 &
-  balance{actor: A, time: PrevT, balance: PrevB} &
-  payment{from: A, time: T, amount: Amt} &
-  PrevB = B + Amt.
-paymentFrom{actor: A, time: T, balance: B} :-
-  time{time: T} &
-  T = PrevT + 1 &
-  balance{actor: A, time: PrevT, balance: PrevB} &
-  payment{to: A, time: T, amount: Amt} &
-  B = PrevB + Amt.
-balanceStay{actor: A, time: T, balance: B} :-
-  time{time: T} &
-  actor{actor: A} &
-  T = PrevT + 1 &
-  payment{time: T, from: A1, to: A2} &
-  A != A1 &
-  A != A2 &
-  balance{actor: A, time: PrevT, balance: B}.
+# Contract Rules
 
-time{time: 0}.
-time{time: 1}.
-time{time: 2}.
-time{time: 3}.
-time{time: 4}.
+contract.InCompliance{contractID: I, time: T} :-
+  range{from: 0, to: 100, val: T} &
+  contract.Contract{id: I} &
+  contract.parent{id: N, parentID: I} &
+  contract.nodeInCompliance{id: N, time: T}.
 
-actor{actor: "Pete"}.
-actor{actor: "Paul"}.
-actor{actor: "Steve"}.
-payment{from: "Paul", to: "Pete", amount: 10, time: 1}.
+contract.nodeInCompliance{id: I, time: T} :-
+  range{from: 0, to: 100, val: T} &
+  andInCompliance{id: I, time: T} |
+  delayInCompliance{id: I, time: T} |
+  paymentInCompliance{id: I, time: T}.
+
+andInCompliance{id: I, time: T} :-
+  range{from: 0, to: 100, val: T} &
+  contract.And{id: I} &
+  childrenInCompliance{parentID: I, count: C1, time: T} &
+  numChildren{parentID: I, count: C2} &
+  C1 = C2.
+delayInCompliance{id: I, time: T} :-
+  range{from: 0, to: 100, val: T} &
+  contract.Delay{id: I, duration: D} &
+  contract.parent{parentID: I, id: C} &
+  LaterT = T + D &
+  contract.nodeInCompliance{id: C, time: LaterT}.
+# TODO: on or before T?
+paymentInCompliance{id: I, time: T} :-
+  range{from: 0, to: 100, val: T} &
+  contract.Payment{id: I, from: From, to: To, amount: A} &
+  payment{from: From, to: To, amount: A, time: T}.
+
+childrenInCompliance{parentID: P, count: I, time: T} :-
+  count[P, I: childInCompliance{id: I, parentID: P, time: T}].
+childInCompliance{id: I, parentID: P, time: T} :-
+  range{from: 0, to: 100, val: T} &
+  contract.parent{id: I, parentID: P} &
+  contract.nodeInCompliance{id: I, time: T}.
+
+numChildren{parentID: P, count: I} :-
+  count[P, I: contract.parent{id: I, parentID: P}].
+
+# tree structure
+
+contract.node{id: A, parentID: B, display: C} :-
+  paymentNode{id: A, parentID: B, display: C} |
+  andNode{id: A, parentID: B, display: C} |
+  delayNode{id: A, parentID: B, display: C}.
+andNode{id: I, parentID: P, display: [I, and{}]} :-
+  contract.And{id: I, parentID: P}.
+delayNode{id: I, parentID: P, display: [I, delay{duration: D}]} :-
+  contract.Delay{id: I, parentID: P, duration: D}.
+paymentNode{id: I, parentID: P, display: [I, payment{from: F, to: T, amount: A}]} :-
+  contract.Payment{id: I, parentID: P, from: F, to: T, amount: A}.
+
+contract.parent{id: I, parentID: P} :-
+  contract.And{id: I, parentID: P} |
+  contract.Delay{id: I, parentID: P} |
+  contract.Payment{id: I, parentID: P}.
+
+# Viz
+
+internal.visualization{
+  name: "Contract",
+  spec: tree{
+    nodes: contract.node{id: ID, parentID: ParentID, display: Display},
+    rootTerm: 1,
+    sortChildren: false
+  }
+}.
+
+# Example contract
+
+# TODO: parameterize
+contract.Contract{id: 1, name: "loan"}.
+contract.Party{contractID: 1, name: "Alice"}.
+contract.Party{contractID: 1, name: "Bob"}.
+contract.And{id: 2, parentID: 1}.
+contract.Payment{id: 3, parentID: 2, from: "Alice", to: "Bob", amount: 100}.
+contract.Delay{id: 4, parentID: 2, duration: 30}.
+contract.Payment{id: 5, parentID: 4, from: "Bob", to: "Alice", amount: 110}.
+
+payment{from: "Alice", to: "Bob", amount: 100, time: 0}.
+payment{from: "Bob", to: "Alice", amount: 110, time: 30}.
