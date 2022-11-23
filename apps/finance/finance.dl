@@ -1,3 +1,5 @@
+# Contract Rules
+
 contract.InCompliance{contractID: I} :-
   contract.Contract{id: I} &
   contract.parent{id: N, parentID: I} &
@@ -21,12 +23,37 @@ paymentInCompliance{id: I} :-
   contract.Payment{id: I, from: F, to: T, amount: A} &
   payment{from: F, to: T, amount: A}.
 
+# tree structure
+
+contract.node{id: I, parentID: P, display: D} :-
+  andNode{id: I, parentID: P, display: D} |
+  delayNode{id: I, parentID: P, display: D} |
+  paymentNode{id: I, parentID: P, display: D}.
+andNode{id: I, parentID: P, display: and{}} :-
+  contract.And{id: I, parentID: P}.
+delayNode{id: I, parentID: P, display: delay{duration: D}} :-
+  contract.Delay{id: I, parentID: P, duration: D}.
+paymentNode{id: I, parentID: P, display: payment{from: F, to: T, amount: A}} :-
+  contract.Payment{id: I, parentID: P, from: F, to: T, amount: A}.
+
 contract.parent{id: I, parentID: P} :-
   contract.And{id: I, parentID: P} |
   contract.Delay{id: I, parentID: P} |
   contract.Payment{id: I, parentID: P}.
 
-# a contract
+# Viz
+
+internal.visualization{
+  name: "Contract",
+  spec: tree{
+    nodes: contract.node{id: ID, parentID: ParentID, display: Display},
+    rootTerm: 1,
+    sortChildren: false
+  }
+}.
+
+# Example contract
+
 # TODO: parameterize
 contract.Contract{id: 1, name: "loan"}.
 contract.Party{contractID: 1, name: "Alice"}.
