@@ -69,4 +69,4 @@ contract.Delay{id: 4, parentID: 2, duration: 30}.
 contract.Payment{id: 5, parentID: 4, from: "Bob", to: "Alice", amount: 110}.
 
 payment{from: "Alice", to: "Bob", amount: 100, time: 0}.
-payment{from: "Bob", to: "Alice", amount: 100, time: 30}.
+payment{from: "Bob", to: "Alice", amount: 110, time: 30}.
