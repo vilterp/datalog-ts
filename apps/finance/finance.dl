@@ -1,39 +1,40 @@
-balance{actor: A, time: T, balance: B} :-
-  initBalance{actor: A, time: T, balance: B} |
-  balanceStay{actor: A, time: T, balance: B} |
-  paymentTo{actor: A, time: T, balance: B} |
-  paymentFrom{actor: A, time: T, balance: B}.
+contract.InCompliance{contractID: I} :-
+  contract.Contract{id: I} &
+  contract.parent{id: N, parentID: I} &
+  contract.nodeInCompliance{id: N}.
 
-initBalance{actor: A, time: 0, balance: 0} :-
-  actor{actor: A}.
-paymentTo{actor: A, time: T, balance: B} :-
-  time{time: T} &
-  T = PrevT + 1 &
-  balance{actor: A, time: PrevT, balance: PrevB} &
-  payment{from: A, time: T, amount: Amt} &
-  PrevB = B + Amt.
-paymentFrom{actor: A, time: T, balance: B} :-
-  time{time: T} &
-  T = PrevT + 1 &
-  balance{actor: A, time: PrevT, balance: PrevB} &
-  payment{to: A, time: T, amount: Amt} &
-  B = PrevB + Amt.
-balanceStay{actor: A, time: T, balance: B} :-
-  time{time: T} &
-  actor{actor: A} &
-  T = PrevT + 1 &
-  payment{time: T, from: A1, to: A2} &
-  A != A1 &
-  A != A2 &
-  balance{actor: A, time: PrevT, balance: B}.
+contract.nodeInCompliance{id: I} :-
+  andInCompliance{id: I} |
+  delayInCompliance{id: I} |
+  paymentInCompliance{id: I}.
 
-time{time: 0}.
-time{time: 1}.
-time{time: 2}.
-time{time: 3}.
-time{time: 4}.
+# TODO: all child nodes need to be in compliance, not just one
+andInCompliance{id: I} :-
+  contract.And{id: I} &
+  contract.parent{parentID: I, id: C} &
+  contract.nodeInCompliance{id: C}.
+delayInCompliance{id: I} :-
+  contract.Delay{id: I, duration: D} &
+  contract.parent{parentID: I, id: C} &
+  contract.nodeInCompliance{id: C}.
+paymentInCompliance{id: I} :-
+  contract.Payment{id: I, from: F, to: T, amount: A} &
+  payment{from: F, to: T, amount: A}.
 
-actor{actor: "Pete"}.
-actor{actor: "Paul"}.
-actor{actor: "Steve"}.
-payment{from: "Paul", to: "Pete", amount: 10, time: 1}.
+contract.parent{id: I, parentID: P} :-
+  contract.And{id: I, parentID: P} |
+  contract.Delay{id: I, parentID: P} |
+  contract.Payment{id: I, parentID: P}.
+
+# a contract
+# TODO: parameterize
+contract.Contract{id: 1, name: "loan"}.
+contract.Party{contractID: 1, name: "Alice"}.
+contract.Party{contractID: 1, name: "Bob"}.
+contract.And{id: 2, parentID: 1}.
+contract.Payment{id: 3, parentID: 2, from: "Alice", to: "Bob", amount: 100}.
+contract.Delay{id: 4, parentID: 2, duration: 30}.
+contract.Payment{id: 5, parentID: 4, from: "Bob", to: "Alice", amount: 110}.
+
+payment{from: "Alice", to: "Bob", amount: 100, time: 0}.
+payment{from: "Bob", to: "Alice", amount: 100, time: 30}.
