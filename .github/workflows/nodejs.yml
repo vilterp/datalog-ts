@@ -33,26 +33,26 @@ jobs:
       - run: yarn run build-fp-ui
       - run: yarn run build-vscode-extension
       - run: yarn run package-vscode-extension
-  # benchmark:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node-version: [14]
-  #   steps:
-  #     # setup
-  #     - uses: actions/checkout@v2
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - run: yarn global add ts-node --prefix=.
-  #     # install deps
-  #     - run: yarn
-  #     - run: yarn benchmark
-  #       env:
-  #         AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-  #         AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-  #         BENCHMARK_ENV: github-actions
-  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         AWS_ACCESS_KEY_SECRET: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-  #         PROFILES_S3_BUCKET_NAME: datalog-ts-profiles
+  benchmark:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14]
+    steps:
+      # setup
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn global add ts-node --prefix=.
+      # install deps
+      - run: yarn
+      - run: yarn benchmark
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          BENCHMARK_ENV: github-actions
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_SECRET: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          PROFILES_S3_BUCKET_NAME: datalog-ts-profiles
