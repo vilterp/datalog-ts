@@ -15,11 +15,11 @@ contract.nodeInCompliance{id: I} :-
   delayInCompliance{id: I} |
   paymentInCompliance{id: I}.
 
-# TODO: all child nodes need to be in compliance, not just one
 andInCompliance{id: I} :-
   contract.And{id: I} &
-  childrenInCompliance{parentID: I, count: C} &
-  numChildren{parentID: I, count: C}.
+  childrenInCompliance{parentID: I, count: C1} &
+  numChildren{parentID: I, count: C2} &
+  C1 = C2.
 delayInCompliance{id: I} :-
   contract.Delay{id: I, duration: D} &
   contract.parent{parentID: I, id: C} &
