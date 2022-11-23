@@ -5,34 +5,36 @@
 
 # Contract Rules
 
-contract.InCompliance{contractID: I} :-
+contract.InCompliance{contractID: I, time: T} :-
   contract.Contract{id: I} &
   contract.parent{id: N, parentID: I} &
-  contract.nodeInCompliance{id: N}.
+  contract.nodeInCompliance{id: N, time: T}.
 
-contract.nodeInCompliance{id: I} :-
-  andInCompliance{id: I} |
-  delayInCompliance{id: I} |
-  paymentInCompliance{id: I}.
+contract.nodeInCompliance{id: I, time: T} :-
+  andInCompliance{id: I, time: T} |
+  delayInCompliance{id: I, time: T} |
+  paymentInCompliance{id: I, time: T}.
 
-andInCompliance{id: I} :-
+andInCompliance{id: I, time: T} :-
   contract.And{id: I} &
-  childrenInCompliance{parentID: I, count: C1} &
+  childrenInCompliance{parentID: I, count: C1, time: T} &
   numChildren{parentID: I, count: C2} &
   C1 = C2.
-delayInCompliance{id: I} :-
+delayInCompliance{id: I, time: T} :-
   contract.Delay{id: I, duration: D} &
   contract.parent{parentID: I, id: C} &
-  contract.nodeInCompliance{id: C}.
-paymentInCompliance{id: I} :-
-  contract.Payment{id: I, from: F, to: T, amount: A} &
-  payment{from: F, to: T, amount: A}.
+  LaterT = T + D &
+  contract.nodeInCompliance{id: C, time: LaterT}.
+# TODO: on or before T?
+paymentInCompliance{id: I, time: T} :-
+  contract.Payment{id: I, from: From, to: To, amount: A} &
+  payment{from: From, to: To, amount: A, time: T}.
 
-childrenInCompliance{parentID: P, count: I} :-
-  count[P, I: childInCompliance{id: I, parentID: P}].
-childInCompliance{id: I, parentID: P} :-
+childrenInCompliance{parentID: P, count: I, time: T} :-
+  count[P, I: childInCompliance{id: I, parentID: P, time: T}].
+childInCompliance{id: I, parentID: P, time: T} :-
   contract.parent{id: I, parentID: P} &
-  contract.nodeInCompliance{id: I}.
+  contract.nodeInCompliance{id: I, time: T}.
 
 numChildren{parentID: P, count: I} :-
   count[P, I: contract.parent{id: I, parentID: P}].
