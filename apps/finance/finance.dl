@@ -30,9 +30,10 @@ delayInCompliance{id: I, time: T} :-
   LaterT = T + D &
   contract.nodeInCompliance{id: C, time: LaterT}.
 # TODO: on or before T?
-paymentInCompliance{id: I, time: T, contractID: CID} :-
+paymentInCompliance{id: I, time: T} :-
   range{from: 0, to: 100, val: T} &
   contract.Payment{id: I, from: From, to: To, amount: A} &
+  contract.member{contractID: CID, nodeID: I} &
   payment{contractID: CID, from: From, to: To, amount: A, time: T}.
 
 childrenInCompliance{parentID: P, count: I, time: T} :-
