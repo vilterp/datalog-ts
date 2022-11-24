@@ -118,8 +118,8 @@ contract.Party{contractID: 6, name: "Alice"}.
 contract.Party{contractID: 6, name: "Bob"}.
 contract.And{id: 7, parentID: 6}.
 contract.Payment{id: 8, parentID: 7, from: "Alice", to: "Bob", amount: 100}.
-contract.Delay{id: 9, parentID: 8, duration: 30}.
-contract.Payment{id: 10, parentID: 7, from: "Bob", to: "Alice", amount: 110}.
+contract.Delay{id: 9, parentID: 7, duration: 30}.
+contract.Payment{id: 10, parentID: 9, from: "Bob", to: "Alice", amount: 110}.
 
 payment{contractID: 1, from: "Alice", to: "Bob", amount: 100, time: 0}.
 payment{contractID: 1, from: "Bob", to: "Alice", amount: 110, time: 30}.
