@@ -1,6 +1,6 @@
 import React from "react";
 import { ppt } from "../../core/pretty";
-import { Array, int, Rec } from "../../core/types";
+import { Array, int, Rec, Res } from "../../core/types";
 import { max } from "../../util/util";
 import { BareTerm } from "../dl/replViews";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
@@ -15,10 +15,10 @@ export const tableEditor: VizTypeSpec = {
 function TableEditor(props: VizArgs) {
   // get data
   let dataError: string | null = null;
-  let data: Rec[] = [];
+  let data: Res[] = [];
   try {
     const recordsQuery = props.spec.attrs.query as Rec;
-    data = props.interp.queryRec(recordsQuery).map((res) => res.term as Rec);
+    data = props.interp.queryRec(recordsQuery);
   } catch (e) {
     dataError = e.toString();
   }
@@ -37,22 +37,25 @@ function TableEditor(props: VizArgs) {
 
   return (
     <>
-      Data
       <ul>
-        {data.map((record) => (
-          <li key={ppt(record)}>
-            <button
-              onClick={() => {
-                props.runStatements([{ type: "Delete", record: record }]);
-              }}
-            >
-              x
-            </button>{" "}
-            <BareTerm term={record} />
+        {data.map((res) => (
+          <li key={ppt(res.term)}>
+            {res.trace.type === "BaseFactTrace" ? (
+              <button
+                onClick={() => {
+                  props.runStatements([
+                    { type: "Delete", record: res.term as Rec },
+                  ]);
+                }}
+              >
+                x
+              </button>
+            ) : null}
+            <BareTerm term={res.term} />
           </li>
         ))}
       </ul>
-      Create new:
+      {news.length > 0 ? <>Create new:</> : null}
       <ul>
         {news.map((newRec) => (
           <li key={ppt(newRec)}>
@@ -72,9 +75,9 @@ function TableEditor(props: VizArgs) {
   );
 }
 
-function withID(existingRecs: Rec[], rec: Rec): Rec {
-  const ids = existingRecs.map((existing) => {
-    const label = existing.attrs.label as Rec;
+function withID(existingResults: Res[], rec: Rec): Rec {
+  const ids = existingResults.map((existing) => {
+    const label = (existing.term as Rec).attrs.label as Rec;
     const idAttr = label.attrs.id;
     if (idAttr && idAttr.type === "IntLit") {
       return idAttr.val;
