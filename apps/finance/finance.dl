@@ -74,6 +74,20 @@ internal.visualization{
   }
 }.
 
+paymentHop{
+  from: tick{time: T, place: FP},
+  to: tick{time: T, place: TP},
+} :-
+  payment{from: FP, to: TP, time: T}.
+
+internal.visualization{
+  name: "Payments",
+  spec: sequence{
+    actors: contract.Party{name: ID},
+    messages: paymentHop{from: FromTick, to: ToTick},
+  }
+}.
+
 # Example contract
 
 # TODO: parameterize
