@@ -108,8 +108,24 @@ internal.visualization{
 }.
 
 internal.visualization{
-  name: "Contracts",
-  spec: paramSlider{},
+  name: "Contracts Slider",
+  spec: paramSlider{
+    var: T,
+    min: 0,
+    max: 100,
+    inner: tableEditor{
+      query: contract.nodeInCompliance{time: T},
+      new: []
+    }
+  },
+}.
+
+internal.visualization{
+  name: "Editor",
+  spec: tableEditor{
+    query: contract.nodeInCompliance{},
+    new: []
+  },
 }.
 
 # Example contract
