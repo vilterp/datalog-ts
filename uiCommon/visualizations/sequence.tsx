@@ -16,9 +16,10 @@ import {
 } from "../../util/diagrams/types";
 import { Diagram } from "../../util/diagrams/render";
 import { getCoords } from "../../util/diagrams/getCoords";
-import { flatMap } from "../../util/util";
+import { flatMap, uniqBy } from "../../util/util";
 import { jsonEq } from "../../util/json";
 import { termEq } from "../../core/unify";
+import { ppt } from "../../core/pretty";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -57,8 +58,9 @@ function SequenceDiagram(props: VizArgs) {
 // TODO: maybe integrate this into one of the above functions??
 //   or not
 function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
+  const locations = uniqBy((res) => ppt(res.bindings.ID), actors);
   return {
-    locations: actors.map((actor) => ({
+    locations: locations.map((actor) => ({
       loc: (actor.bindings.ID as StringLit).val,
       term: actor.term,
     })),
