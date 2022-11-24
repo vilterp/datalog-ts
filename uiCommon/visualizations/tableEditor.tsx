@@ -1,8 +1,8 @@
 import React from "react";
 import { ppt } from "../../core/pretty";
-import { Array, Int, int, Rec } from "../../core/types";
-import { substitute } from "../../core/unify";
+import { Array, int, Rec } from "../../core/types";
 import { max } from "../../util/util";
+import { BareTerm } from "../dl/replViews";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 
 // TODO: shouldn't the normal table just be an editor?
@@ -48,7 +48,7 @@ function TableEditor(props: VizArgs) {
             >
               x
             </button>{" "}
-            <code>{ppt(record)}</code>
+            <BareTerm term={record} />
           </li>
         ))}
       </ul>
