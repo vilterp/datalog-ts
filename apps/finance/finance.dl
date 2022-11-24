@@ -30,10 +30,10 @@ delayInCompliance{id: I, time: T} :-
   LaterT = T + D &
   contract.nodeInCompliance{id: C, time: LaterT}.
 # TODO: on or before T?
-paymentInCompliance{id: I, time: T} :-
+paymentInCompliance{id: I, time: T, contractID: CID} :-
   range{from: 0, to: 100, val: T} &
   contract.Payment{id: I, from: From, to: To, amount: A} &
-  payment{from: From, to: To, amount: A, time: T}.
+  payment{contractID: CID, from: From, to: To, amount: A, time: T}.
 
 childrenInCompliance{parentID: P, count: I, time: T} :-
   count[P, I: childInCompliance{id: I, parentID: P, time: T}].
@@ -49,10 +49,12 @@ numChildren{parentID: P, count: I} :-
 
 contract.node{id: A, parentID: B, display: C} :-
   rootNode{id: A, parentID: B, display: C} |
+  contractNode{id: A, parentID: B, display: C} |
   paymentNode{id: A, parentID: B, display: C} |
   andNode{id: A, parentID: B, display: C} |
   delayNode{id: A, parentID: B, display: C}.
-rootNode{id: I, parentID: -1, display: [I, contract{name: N}]} :-
+rootNode{id: "root", parentID: -1, display: root{}}.
+contractNode{id: I, parentID: "root", display: [I, contract{name: N}]} :-
   contract.Contract{id: I, name: N}.
 andNode{id: I, parentID: P, display: [I, and{}]} :-
   contract.And{id: I, parentID: P}.
@@ -110,6 +112,14 @@ contract.And{id: 2, parentID: 1}.
 contract.Payment{id: 3, parentID: 2, from: "Alice", to: "Bob", amount: 100}.
 contract.Delay{id: 4, parentID: 2, duration: 30}.
 contract.Payment{id: 5, parentID: 4, from: "Bob", to: "Alice", amount: 110}.
+
+contract.Contract{id: 6, name: "loan"}.
+contract.Party{contractID: 6, name: "Alice"}.
+contract.Party{contractID: 6, name: "Bob"}.
+contract.And{id: 7, parentID: 6}.
+contract.Payment{id: 8, parentID: 7, from: "Alice", to: "Bob", amount: 100}.
+contract.Delay{id: 9, parentID: 8, duration: 30}.
+contract.Payment{id: 10, parentID: 7, from: "Bob", to: "Alice", amount: 110}.
 
 payment{contractID: 1, from: "Alice", to: "Bob", amount: 100, time: 0}.
 payment{contractID: 1, from: "Bob", to: "Alice", amount: 110, time: 30}.
