@@ -43,14 +43,12 @@ function TableEditor(props: VizArgs) {
           <li key={ppt(record)}>
             <button
               onClick={() => {
-                props.runStatements([
-                  { type: "Delete", record: record.attrs.label as Rec },
-                ]);
+                props.runStatements([{ type: "Delete", record: record }]);
               }}
             >
               x
             </button>{" "}
-            <code>{ppt(record.attrs.label)}</code>
+            <code>{ppt(record)}</code>
           </li>
         ))}
       </ul>
