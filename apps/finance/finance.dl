@@ -48,9 +48,12 @@ numChildren{parentID: P, count: I} :-
 # tree structure
 
 contract.node{id: A, parentID: B, display: C} :-
+  rootNode{id: A, parentID: B, display: C} |
   paymentNode{id: A, parentID: B, display: C} |
   andNode{id: A, parentID: B, display: C} |
   delayNode{id: A, parentID: B, display: C}.
+rootNode{id: I, parentID: -1, display: [I, contract{name: N}]} :-
+  contract.Contract{id: I, name: N}.
 andNode{id: I, parentID: P, display: [I, and{}]} :-
   contract.And{id: I, parentID: P}.
 delayNode{id: I, parentID: P, display: [I, delay{duration: D}]} :-
@@ -63,13 +66,22 @@ contract.parent{id: I, parentID: P} :-
   contract.Delay{id: I, parentID: P} |
   contract.Payment{id: I, parentID: P}.
 
+# node membership in contracts
+contract.ancestor{ancestor: I, descendant: N} :-
+  contract.parent{parentID: I, id: N} |
+  contract.parent{parentID: B, id: N} &
+  contract.ancestor{ancestor: I, descendant: B}.
+contract.member{contractID: I, nodeID: N} :-
+  contract.Contract{id: I} &
+  contract.ancestor{ancestor: I, descendant: N}.
+
 # Viz
 
 internal.visualization{
   name: "Contract",
   spec: tree{
     nodes: contract.node{id: ID, parentID: ParentID, display: Display},
-    rootTerm: 1,
+    rootTerm: -1,
     sortChildren: false
   }
 }.
@@ -99,5 +111,5 @@ contract.Payment{id: 3, parentID: 2, from: "Alice", to: "Bob", amount: 100}.
 contract.Delay{id: 4, parentID: 2, duration: 30}.
 contract.Payment{id: 5, parentID: 4, from: "Bob", to: "Alice", amount: 110}.
 
-payment{from: "Alice", to: "Bob", amount: 100, time: 0}.
-payment{from: "Bob", to: "Alice", amount: 110, time: 30}.
+payment{contractID: 1, from: "Alice", to: "Bob", amount: 100, time: 0}.
+payment{contractID: 1, from: "Bob", to: "Alice", amount: 110, time: 30}.
