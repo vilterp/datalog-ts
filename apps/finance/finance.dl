@@ -85,7 +85,7 @@ contract.member{contractID: I, nodeID: N} :-
 # Viz
 
 internal.visualization{
-  name: "Contract",
+  name: "Contracts",
   spec: tree{
     nodes: contract.node{id: ID, parentID: ParentID, display: Display},
     rootTerm: -1,
@@ -105,6 +105,11 @@ internal.visualization{
     actors: contract.Party{name: ID},
     messages: paymentHop{from: FromTick, to: ToTick},
   }
+}.
+
+internal.visualization{
+  name: "Contracts",
+  spec: paramSlider{},
 }.
 
 # Example contract
