@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { IndividualViz } from ".";
 import { Int, int, Rec, Var } from "../../core/types";
 import { substitute } from "../../core/unify";
+import { BareTerm } from "../dl/replViews";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 
 export const paramSlider: VizTypeSpec = {
@@ -20,7 +21,6 @@ function ParamSlider(props: VizArgs) {
 
   return (
     <div>
-      Value: {paramValue}
       <input
         type="range"
         min={0}
@@ -28,6 +28,11 @@ function ParamSlider(props: VizArgs) {
         value={paramValue}
         onChange={(evt) => setParamValue(parseFloat(evt.target.value))}
       />
+      <span>
+        <BareTerm term={props.spec.attrs.var} />
+        <code>: </code>
+        <BareTerm term={int(paramValue)} />
+      </span>
       <IndividualViz
         name={`${props.id}-inner`}
         interp={props.interp}
