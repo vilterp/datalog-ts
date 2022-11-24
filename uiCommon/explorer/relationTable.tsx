@@ -6,6 +6,8 @@ import { HighlightProps } from "../dl/term";
 import { TableCollapseState } from "./types";
 import { ResultsTable } from "./resultsTable";
 
+type RelationIssue = { type: "Error"; message: string } | { type: "NotFound" };
+
 export function RelationTable(props: {
   relation: string;
   interp: AbstractInterpreter;
@@ -14,11 +16,11 @@ export function RelationTable(props: {
   highlight: HighlightProps;
 }) {
   const relation = props.interp.getRelation(props.relation);
-  if (relation === null) {
-    return <em>{props.relation} not found.</em>;
-  }
-  const [results, error] = useMemo((): [Res[], string] => {
+  const [results, issue] = useMemo((): [Res[], RelationIssue | null] => {
     try {
+      if (relation === null) {
+        return [[], { type: "NotFound" }];
+      }
       const results =
         relation.type === "Table"
           ? props.interp.queryRec(rec(relation.name, {})).map(
@@ -29,19 +31,19 @@ export function RelationTable(props: {
               })
             )
           : props.interp.queryRec(relation.rule.head);
-      return [results, ""];
+      return [results, null];
     } catch (e) {
-      return [[], e.toString()];
+      return [[], { type: "Error", message: e.toString() }];
     }
   }, [props.interp, props.relation]);
-  // TODO: make this more resilient in the face of records that don't
+  // TODO: make this more resilient in the case of records that don't
   //   all have the same fields.
   return (
     <>
-      {relation.type === "Rule" ? (
+      {relation && relation.type === "Rule" ? (
         <RuleC highlight={props.highlight} rule={relation.rule} />
       ) : null}
-      {error !== "" ? (
+      {issue === null ? (
         <ResultsTable
           results={results}
           highlight={props.highlight}
@@ -49,8 +51,10 @@ export function RelationTable(props: {
           relation={relation}
           setCollapseState={props.setCollapseState}
         />
+      ) : issue.type === "NotFound" ? (
+        <em>{props.relation} not found.</em>
       ) : (
-        <pre style={{ color: "red" }}>{error}</pre>
+        <pre style={{ color: "red" }}>{issue.message}</pre>
       )}
     </>
   );
