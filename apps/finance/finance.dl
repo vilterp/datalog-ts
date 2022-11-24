@@ -120,14 +120,6 @@ internal.visualization{
   },
 }.
 
-internal.visualization{
-  name: "Editor",
-  spec: tableEditor{
-    query: contract.nodeInCompliance{},
-    new: []
-  },
-}.
-
 # Example contract
 
 # TODO: parameterize
