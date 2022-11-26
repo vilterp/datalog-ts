@@ -121,10 +121,14 @@ internal.visualization{
 }.
 
 # TODO: due date
-owe{creditor: C, debtor: B, amount: A, contractID: CID} :-
-  contract.Payment{id: N, from: B, to: C, amount: A} &
-  !payment{from: B, to: C, amount: A, countractID: CID} &
+owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.Payment{id: N, from: D, to: C, amount: A} &
+  !payment{from: D, to: C, amount: A, countractID: CID} &
   contract.member{contractID: CID, nodeID: N}.
+
+# TODO: fix aggregation syntax
+balance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: owe{creditor: C, debtor: D, amount: A}].
 
 # Example contract
 
