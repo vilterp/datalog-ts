@@ -120,6 +120,7 @@ internal.visualization{
   },
 }.
 
+# TODO: due date
 owe{creditor: C, debtor: B, amount: A, contractID: CID} :-
   contract.Payment{id: N, from: B, to: C, amount: A} &
   !payment{from: B, to: C, amount: A, countractID: CID} &
