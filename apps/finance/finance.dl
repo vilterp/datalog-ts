@@ -120,6 +120,11 @@ internal.visualization{
   },
 }.
 
+owe{creditor: C, debtor: B, amount: A, contractID: CID} :-
+  contract.Payment{id: N, from: B, to: C, amount: A} &
+  !payment{from: B, to: C, amount: A, countractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+
 # Example contract
 
 # TODO: parameterize
@@ -140,4 +145,4 @@ contract.Delay{id: 9, parentID: 7, duration: 30}.
 contract.Payment{id: 10, parentID: 9, from: "Bob", to: "Alice", amount: 110}.
 
 payment{contractID: 1, from: "Alice", to: "Bob", amount: 100, time: 0}.
-payment{contractID: 1, from: "Bob", to: "Alice", amount: 110, time: 30}.
+# payment{contractID: 1, from: "Bob", to: "Alice", amount: 110, time: 30}.
