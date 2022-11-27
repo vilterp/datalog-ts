@@ -42,7 +42,8 @@ stringChar :- (^'"' | ['\\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
 alphaNum :- (alpha | num).
-ws :- repSep((" "|"\n"), "").
+ws :- [justWs, (comment | ""), justWs].
+justWs :- repSep((" "|"\n"), "").
 placeholder :- "???".
 commaSpace :- [",", ws].
 path :- repSep(pathSegment, "/").
