@@ -268,8 +268,8 @@ function doEvaluate(
           term.record,
           cache
         );
-        const groupKey = term.varNames.slice(0, term.varNames.length - 1);
-        const aggVar = term.varNames[term.varNames.length - 1];
+        const aggVar = term.varName;
+        const groupKey = gatherVars(term.record) - aggVar;
         const groups = groupBy(results, (res) =>
           groupKey.map((varName) => fastPPT(res.bindings[varName])).join(",")
         );
