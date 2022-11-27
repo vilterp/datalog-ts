@@ -86,7 +86,7 @@ export function parserRuleToInternal(term: DLRule): Rule {
                 type: "Aggregation",
                 aggregation: conjunct.aggregation.text,
                 record: parserTermToInternal(conjunct.record) as Rec,
-                varNames: conjunct.var.map((dlVar) => dlVar.text),
+                varName: conjunct.var.text,
               };
           }
         }),

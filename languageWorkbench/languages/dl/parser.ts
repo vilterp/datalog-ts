@@ -13,8 +13,7 @@ export type DLAggregation = {
   text: string;
   span: Span;
   aggregation: DLIdent;
-  var: DLVar[];
-  commaSpace: DLCommaSpace[];
+  var: DLVar;
   record: DLRecord;
 };
 export type DLAlpha = {
@@ -488,10 +487,7 @@ function extractAggregation(input: string, node: RuleTree): DLAggregation {
     text: textForSpan(input, node.span),
     span: node.span,
     aggregation: extractIdent(input, childByName(node, "ident", "aggregation")),
-    var: childrenByName(node, "var").map((child) => extractVar(input, child)),
-    commaSpace: childrenByName(node, "commaSpace").map((child) =>
-      extractCommaSpace(input, child)
-    ),
+    var: extractVar(input, childByName(node, "var", null)),
     record: extractRecord(input, childByName(node, "record", null)),
   };
 }
@@ -1267,17 +1263,9 @@ const GRAMMAR: Grammar = {
         value: "[",
       },
       {
-        type: "RepSep",
-        rep: {
-          type: "Ref",
-          captureName: null,
-          rule: "var",
-        },
-        sep: {
-          type: "Ref",
-          captureName: null,
-          rule: "commaSpace",
-        },
+        type: "Ref",
+        captureName: null,
+        rule: "var",
       },
       {
         type: "Text",

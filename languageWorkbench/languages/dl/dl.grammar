@@ -12,7 +12,7 @@ rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
 conjunct :- (record | comparison | arithmetic | negation | aggregation | placeholder).
 negation :- ["!", record].
-aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
+aggregation :- [aggregation:ident, "[", var, ":", ws, record, "]"].
 
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").

@@ -41,7 +41,7 @@ type Negation = { type: "Negation"; record: Rec };
 type Aggregation = {
   type: "Aggregation";
   aggregation: string;
-  varNames: string[];
+  varName: string;
   record: Rec;
 };
 
