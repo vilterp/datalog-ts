@@ -7,6 +7,14 @@ hl.mapping{rule: "paymentKW", type: "keyword"}.
 hl.mapping{rule: "contractKW", type: "keyword"}.
 
 # mapping into DL
+
+contract.PaymentNode{id: I, parentID: P, from: F, to: T, amount: A} :-
+  ast.funcCall{id: I} &
+  ast.varExpr{parentID: I, text: "pay"} &
+  ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
+  ast.namedFuncArg{callID: I, name: "to", exprID: ToExpr} &
+  ast.namedFuncArg{callID: I, name: "amount", exprID: AmtExpr}.
+
 contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
   ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
@@ -30,6 +38,8 @@ contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, 
   
   astInternal.node{id: TimeExpr, text: TText} &
   intToString{string: TText, int: T}.
+
+# helpers
 
 ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
   ast.funcArgs{id: Args, parentID: Call} &
