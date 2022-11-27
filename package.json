@@ -65,6 +65,7 @@
     "@react-hook/window-size": "^3.0.7",
     "classnames": "^2.3.1",
     "denque": "^2.0.1",
+    "graphviz-react": "^1.2.5",
     "immutable": "^4.0.0-rc.12",
     "monaco-editor": "^0.33.0",
     "path-browserify": "^1.0.1",
