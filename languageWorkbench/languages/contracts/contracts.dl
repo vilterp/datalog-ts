@@ -14,7 +14,13 @@ payment{id: I, contractID: CID, from: From, to: To, amount: A, time: T} :-
   ast.namedFuncArg{callID: Payment, name: "from", exprID: FromExpr} &
   ast.namedFuncArg{callID: Payment, name: "to", exprID: ToExpr} &
   ast.namedFuncArg{callID: Payment, name: "amount", exprID: AmountExpr} &
-  ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr}.
+  ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr} &
+  astInternal.node{id: PaymentIDExpr, text: I} &
+  astInternal.node{id: ContractExpr, text: CID} &
+  astInternal.node{id: FromExpr, text: From} &
+  astInternal.node{id: ToExpr, text: To} &
+  astInternal.node{id: AmountExpr, text: A} &
+  astInternal.node{id: TimeExpr, text: T}.
 
 ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
   ast.funcArgs{id: Args, parentID: Call} &
