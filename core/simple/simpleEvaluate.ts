@@ -11,7 +11,6 @@ import {
   Rec,
   relationalTrue,
   relationalFalse,
-  rec,
   baseFactTrace,
 } from "../types";
 import {
@@ -29,6 +28,7 @@ import { DB } from "./types";
 import { AGGREGATIONS } from "../aggregations";
 import { getForScope } from "./indexes";
 import { evalBuiltin } from "../evalBuiltin";
+import { gatherVarsInTerm } from "../utils";
 
 export function evaluate(db: DB, term: Term): Res[] {
   const cache: Cache = {};
@@ -269,7 +269,9 @@ function doEvaluate(
           cache
         );
         const aggVar = term.varName;
-        const groupKey = gatherVars(term.record) - aggVar;
+        const groupKey = gatherVarsInTerm(term.record).filter(
+          (t) => t !== aggVar
+        );
         const groups = groupBy(results, (res) =>
           groupKey.map((varName) => fastPPT(res.bindings[varName])).join(",")
         );
