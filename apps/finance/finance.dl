@@ -6,7 +6,7 @@
 timeWindow{time: T} :-
   range{from: 0, to: 100, val: T}.
 
-# Contract Rules
+# ==== Contract Rules ====
 
 contract.InCompliance{contractID: I, time: T} :-
   timeWindow{time: T} &
@@ -50,7 +50,7 @@ childInCompliance{id: I, parentID: P, time: T} :-
 numChildren{parentID: P, count: I} :-
   count[P, I: contract.parent{id: I, parentID: P}].
 
-# tree structure
+# == tree structure ==
 
 contract.node{id: A, parentID: B, display: C} :-
   rootNode{id: A, parentID: B, display: C} |
@@ -82,10 +82,22 @@ contract.member{contractID: I, nodeID: N} :-
   contract.Contract{id: I} &
   contract.ancestor{ancestor: I, descendant: N}.
 
-# Viz
+# == balance sheet ==
+
+# TODO: due date
+owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.Payment{id: N, from: D, to: C, amount: A} &
+  !payment{from: D, to: C, amount: A, countractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+
+# TODO: fix aggregation syntax
+balance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: owe{creditor: C, debtor: D, amount: A}].
+
+# ==== Viz ====
 
 internal.visualization{
-  name: "Contracts",
+  name: "Contract Trees",
   spec: tree{
     nodes: contract.node{id: ID, parentID: ParentID, display: Display},
     rootTerm: -1,
@@ -120,17 +132,7 @@ internal.visualization{
   },
 }.
 
-# TODO: due date
-owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
-  contract.Payment{id: N, from: D, to: C, amount: A} &
-  !payment{from: D, to: C, amount: A, countractID: CID} &
-  contract.member{contractID: CID, nodeID: N}.
-
-# TODO: fix aggregation syntax
-balance{creditor: C, debtor: D, amount: A} :-
-  sum[C, D, A: owe{creditor: C, debtor: D, amount: A}].
-
-# Example contract
+# ==== Example contract ====
 
 # TODO: parameterize
 contract.Contract{id: 1, name: "loan"}.
