@@ -1,4 +1,5 @@
-# syntax highlighting
+# ==== syntax highlighting ===
+
 hl.mapping{rule: "intLit", type: "number"}.
 hl.mapping{rule: "stringLit", type: "string"}.
 hl.mapping{rule: "bool", type: "number"}.
@@ -6,9 +7,11 @@ hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "paymentKW", type: "keyword"}.
 hl.mapping{rule: "contractKW", type: "keyword"}.
 
-# mapping into DL
+# ==== mapping into DL ===
 
-contract.PaymentNode{id: I, parentID: Parent, from: From, to: To, amount: Amt} :-
+# == contract nodes ==
+
+contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "pay"} &
   ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
@@ -24,9 +27,11 @@ contract.PaymentNode{id: I, parentID: Parent, from: From, to: To, amount: Amt} :
   ast.stringLit{parentID: ToExpr, id: ToStr} &
   ast.stringContents{parentID: ToStr, text: To}.
 
-contract.AndNode{id: I, parentID: Parent} :-
+contract.AndNode{id: I} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "and"}.
+
+# == payment ==
 
 contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
@@ -52,7 +57,7 @@ contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, 
   astInternal.node{id: TimeExpr, text: TText} &
   intToString{string: TText, int: T}.
 
-# helpers
+# ==== helpers ====
 
 ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
   ast.funcArgs{id: Args, parentID: Call} &
