@@ -8,12 +8,21 @@ hl.mapping{rule: "contractKW", type: "keyword"}.
 
 # mapping into DL
 
-contract.PaymentNode{id: I, parentID: P, from: F, to: T, amount: A} :-
+contract.PaymentNode{id: I, parentID: Parent, from: From, to: To, amount: Amt} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "pay"} &
   ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
   ast.namedFuncArg{callID: I, name: "to", exprID: ToExpr} &
-  ast.namedFuncArg{callID: I, name: "amount", exprID: AmtExpr}.
+  ast.namedFuncArg{callID: I, name: "amount", exprID: AmtExpr} &
+  
+  astInternal.node{id: AmtExpr, text: AmtText} &
+  intToString{string: AmtText, int: Amt} &
+  
+  ast.stringLit{parentID: FromExpr, id: FromStr} &
+  ast.stringContents{parentId: FromStr, text: From} &
+  
+  ast.stringLit{parentID: ToExpr, id: ToStr} &
+  ast.stringContents{parentId: ToStr, text: To}.
 
 contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
