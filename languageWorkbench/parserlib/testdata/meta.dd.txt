@@ -7,7 +7,7 @@ array :- ["[", repSep(value, ","), "]"].
 digit :- [0-9].
 stringLit :- ["\"", repSep([a-z], ""), "\""].
 ----
-text/plain
+application/json
 {
   "main": {
     "type": "Ref",
@@ -160,7 +160,7 @@ text/plain
 
 notQuote :- ^'"'.
 ----
-text/plain
+application/json
 {
   "notQuote": {
     "type": "Char",
@@ -176,7 +176,7 @@ text/plain
 
 escapedQuote :- ['\\', '"'].
 ----
-text/plain
+application/json
 {
   "escapedQuote": {
     "type": "Sequence",
@@ -201,7 +201,7 @@ text/plain
 
 stringChar :- (^'"' | ['\\', '"']).
 ----
-text/plain
+application/json
 {
   "stringChar": {
     "type": "Choice",
@@ -241,7 +241,7 @@ text/plain
 
 commentChar :- ^'\n'.
 ----
-text/plain
+application/json
 {
   "commentChar": {
     "type": "Char",
@@ -257,7 +257,7 @@ text/plain
 
 backslash :- '\\'.
 ----
-text/plain
+application/json
 {
   "backslash": {
     "type": "Char",
@@ -270,7 +270,7 @@ text/plain
 
 singleChar :- "here's a backslash: \\ there it was!".
 ----
-text/plain
+application/json
 {
   "singleChar": {
     "type": "Text",
@@ -280,7 +280,7 @@ text/plain
 
 binOp :- [left:term, "==", right:term].
 ----
-text/plain
+application/json
 {
   "binOp": {
     "type": "Sequence",
