@@ -1,0 +1,7 @@
+# syntax highlighting
+hl.mapping{rule: "intLit", type: "number"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "number"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "paymentKW", type: "keyword"}.
+hl.mapping{rule: "contractKW", type: "keyword"}.
