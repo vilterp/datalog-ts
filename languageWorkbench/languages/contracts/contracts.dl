@@ -24,6 +24,10 @@ contract.PaymentNode{id: I, parentID: Parent, from: From, to: To, amount: Amt} :
   ast.stringLit{parentID: ToExpr, id: ToStr} &
   ast.stringContents{parentID: ToStr, text: To}.
 
+contract.AndNode{id: I, parentID: Parent} :-
+  ast.funcCall{id: I} &
+  ast.varExpr{parentID: I, text: "and"}.
+
 contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
   ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
