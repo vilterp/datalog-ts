@@ -40,7 +40,7 @@ contract.DelayNode{id: I, duration: D} :-
 
 # == payment ==
 
-contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
+contract.PaymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
   ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
   ast.namedFuncArg{callID: Payment, name: "contractID", exprID: ContractExpr} &
