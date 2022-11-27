@@ -7,7 +7,7 @@ hl.mapping{rule: "paymentKW", type: "keyword"}.
 hl.mapping{rule: "contractKW", type: "keyword"}.
 
 # mapping into DL
-payment{id: I, contractID: CID, from: From, to: To, amount: A, time: T} :-
+payment{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
   ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
   ast.namedFuncArg{callID: Payment, name: "contractID", exprID: ContractExpr} &
@@ -19,8 +19,10 @@ payment{id: I, contractID: CID, from: From, to: To, amount: A, time: T} :-
   astInternal.node{id: ContractExpr, text: CID} &
   astInternal.node{id: FromExpr, text: From} &
   astInternal.node{id: ToExpr, text: To} &
-  astInternal.node{id: AmountExpr, text: A} &
-  astInternal.node{id: TimeExpr, text: T}.
+  astInternal.node{id: AmountExpr, text: AmtText} &
+  intToString{string: AmtText, int: Amt} &
+  astInternal.node{id: TimeExpr, text: TText} &
+  intToString{string: TText, int: T}.
 
 ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
   ast.funcArgs{id: Args, parentID: Call} &
