@@ -15,12 +15,19 @@ payment{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.namedFuncArg{callID: Payment, name: "to", exprID: ToExpr} &
   ast.namedFuncArg{callID: Payment, name: "amount", exprID: AmountExpr} &
   ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr} &
+  
   astInternal.node{id: PaymentIDExpr, text: I} &
   astInternal.node{id: ContractExpr, text: CID} &
-  astInternal.node{id: FromExpr, text: From} &
-  astInternal.node{id: ToExpr, text: To} &
+  
+  ast.stringLit{id: FromStr, parentID: FromExpr} &
+  ast.stringContents{parentID: FromStr, text: From} &
+  
+  ast.stringLit{id: ToStr, parentID: ToExpr} &
+  ast.stringContents{parentID: ToStr, text: To} &
+  
   astInternal.node{id: AmountExpr, text: AmtText} &
   intToString{string: AmtText, int: Amt} &
+  
   astInternal.node{id: TimeExpr, text: TText} &
   intToString{string: TText, int: T}.
 

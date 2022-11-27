@@ -15,7 +15,8 @@ parenExpr :- ["(", expr, ")"].
 lambda :- ["(", lambdaParam ,")", ws, ":", ws, type, ws, "=>", ws, expr].
 lambdaParam :- [ident, ws, ":", ws, type].
 varExpr :- ident.
-stringLit :- ["\"", repSep(stringChar, ""), "\""].
+stringLit :- ["\"", stringContents, "\""].
+stringContents :- repSep(stringChar, "").
 intLit :- [num, repSep(num, "")].
 
 type :- ident.
