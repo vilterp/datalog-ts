@@ -7,7 +7,7 @@ hl.mapping{rule: "paymentKW", type: "keyword"}.
 hl.mapping{rule: "contractKW", type: "keyword"}.
 
 # mapping into DL
-payment{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
+contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
   ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
   ast.namedFuncArg{callID: Payment, name: "contractID", exprID: ContractExpr} &
