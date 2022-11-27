@@ -112,10 +112,18 @@ paymentHop{
   payment{from: FP, to: TP, time: T}.
 
 internal.visualization{
-  name: "Payments",
+  name: "Payment Sequence",
   spec: sequence{
     actors: contract.Party{name: ID},
     messages: paymentHop{from: FromTick, to: ToTick},
+  }
+}.
+
+internal.visualization{
+  name: "Balance Graph",
+  spec: graphviz{
+    nodes: contract.Party{name: ID},
+    edges: balance{debtor: From, creditor: To, amount: Label}
   }
 }.
 
