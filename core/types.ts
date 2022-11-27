@@ -216,7 +216,7 @@ export type NegationWithBindings = {
 export type AggregationWithBindings = {
   type: "AggregationWithBindings";
   aggregation: string;
-  varNames: string[];
+  varName: string;
   record: TermWithBindings;
 };
 
