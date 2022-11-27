@@ -1,0 +1,6 @@
+contracts
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
+contract.paymentRecord{}?
+----
+application/datalog
+contract.paymentRecord{amount: 100, contractID: "1", from: "Alice", id: "1", time: 0, to: "Bob"}.
