@@ -9,4 +9,4 @@ contract(
   )
 ).
 
-payment(from:"Alice", to:"Bob", amount:100, time:0).
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
