@@ -7,8 +7,8 @@ paymentStmt :- [paymentKW, funcArgs].
 
 expr :- (funcCall | lambda | varExpr | stringLit | intLit | placeholder).
 
-funcCall :- [varExpr, "(", funcArgs, ")"].
-funcArgs :- ["(", repSep(funcArg, commaWS), ")"].
+funcCall :- [varExpr, funcArgs].
+funcArgs :- ["(", ws, repSep(funcArg, commaWS), ws, ")"].
 funcArg :- [([ident, ":"] | ""), expr].
 
 parenExpr :- ["(", expr, ")"].
