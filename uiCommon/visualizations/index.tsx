@@ -8,6 +8,7 @@ import { dagEditor } from "./dagEditor/dagEditor";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Statement, Term } from "../../core/types";
 import { paramSlider } from "./paramSlider";
+import { graphviz } from "./graphviz";
 
 export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   sequence,
@@ -16,6 +17,7 @@ export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   tableEditor,
   dagEditor,
   paramSlider,
+  graphviz,
 };
 
 export function IndividualViz(props: {
