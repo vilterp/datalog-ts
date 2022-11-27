@@ -31,6 +31,13 @@ contract.AndNode{id: I} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "and"}.
 
+contract.DelayNode{id: I, duration: D} :-
+  ast.funcCall{id: I} &
+  ast.namedFuncArg{callID: I, name: "duration", exprID: DurationExpr} &
+  
+  astInternal.node{id: DurationExpr, text: DurationText} &
+  intToString{string: DurationText, int: D}.
+
 # == payment ==
 
 contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
