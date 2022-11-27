@@ -1,0 +1,32 @@
+main :- expr.
+
+stmt :- [(registerStmt | paymentStmt), "."].
+
+registerStmt :- [registerKW, funcArgs].
+paymentStmt :- [paymentKW, funcArgs].
+
+expr :- (funcCall | lambda | varExpr | stringLit | intLit | placeholder).
+
+funcCall :- [varExpr, "(", funcArgs, ")"].
+funcArgs :- ["(", repSep([ident, ":", expr], commaWS), ")"].
+
+parenExpr :- ["(", expr, ")"].
+lambda :- ["(", lambdaParam ,")", ws, ":", ws, type, ws, "=>", ws, expr].
+lambdaParam :- [ident, ws, ":", ws, type].
+varExpr :- ident.
+stringLit :- ["\"", repSep(stringChar, ""), "\""].
+intLit :- [num, repSep(num, "")].
+
+type :- ident.
+
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ident :- [alpha, repSep((alphaNum | "."), "")].
+ws :- repSep((" "|"\n"), "").
+placeholder :- "???".
+stringChar :- (^'"' | ['\\', '"']).
+commaWS :- [",", ws].
+
+registerKW :- "register".
+paymentKW :- "payment".

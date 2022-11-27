@@ -1,0 +1,12 @@
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+
+payment(from:"Alice", to:"Bob", amount:100, time:0).

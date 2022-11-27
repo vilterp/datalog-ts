@@ -70,6 +70,15 @@ import modelicaGrammar from "./modelica/modelica.grammar";
 // @ts-ignore
 import modelicaExample from "./modelica/example.txt";
 
+// Contracts
+
+// @ts-ignore
+import contractsDL from "./contracts/contracts.dl";
+// @ts-ignore
+import contractsGrammar from "./contracts/contracts.grammar";
+// @ts-ignore
+import contractsExample from "./contracts/example.txt";
+
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText: {
     name: "plainText",
@@ -124,6 +133,12 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
     datalog: modelicaDL,
     example: modelicaExample,
     grammar: modelicaGrammar,
+  },
+  contracts: {
+    name: "contracts",
+    datalog: contractsDL,
+    example: contractsExample,
+    grammar: contractsGrammar,
   },
 };
 
