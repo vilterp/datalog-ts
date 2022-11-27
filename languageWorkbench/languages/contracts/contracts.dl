@@ -1,0 +1,73 @@
+# ==== syntax highlighting ===
+
+hl.mapping{rule: "intLit", type: "number"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "number"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "paymentKW", type: "keyword"}.
+hl.mapping{rule: "contractKW", type: "keyword"}.
+
+# ==== mapping into DL ===
+
+# == contract nodes ==
+
+contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
+  ast.funcCall{id: I} &
+  ast.varExpr{parentID: I, text: "pay"} &
+  ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
+  ast.namedFuncArg{callID: I, name: "to", exprID: ToExpr} &
+  ast.namedFuncArg{callID: I, name: "amount", exprID: AmtExpr} &
+  
+  astInternal.node{id: AmtExpr, text: AmtText} &
+  intToString{string: AmtText, int: Amt} &
+  
+  ast.stringLit{parentID: FromExpr, id: FromStr} &
+  ast.stringContents{parentID: FromStr, text: From} &
+  
+  ast.stringLit{parentID: ToExpr, id: ToStr} &
+  ast.stringContents{parentID: ToStr, text: To}.
+
+contract.AndNode{id: I} :-
+  ast.funcCall{id: I} &
+  ast.varExpr{parentID: I, text: "and"}.
+
+contract.DelayNode{id: I, duration: D} :-
+  ast.funcCall{id: I} &
+  ast.namedFuncArg{callID: I, name: "duration", exprID: DurationExpr} &
+  
+  astInternal.node{id: DurationExpr, text: DurationText} &
+  intToString{string: DurationText, int: D}.
+
+# == payment ==
+
+contract.PaymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
+  ast.paymentStmt{id: Payment} &
+  ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
+  ast.namedFuncArg{callID: Payment, name: "contractID", exprID: ContractExpr} &
+  ast.namedFuncArg{callID: Payment, name: "from", exprID: FromExpr} &
+  ast.namedFuncArg{callID: Payment, name: "to", exprID: ToExpr} &
+  ast.namedFuncArg{callID: Payment, name: "amount", exprID: AmountExpr} &
+  ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr} &
+  
+  astInternal.node{id: PaymentIDExpr, text: I} &
+  astInternal.node{id: ContractExpr, text: CID} &
+  
+  ast.stringLit{id: FromStr, parentID: FromExpr} &
+  ast.stringContents{parentID: FromStr, text: From} &
+  
+  ast.stringLit{id: ToStr, parentID: ToExpr} &
+  ast.stringContents{parentID: ToStr, text: To} &
+  
+  astInternal.node{id: AmountExpr, text: AmtText} &
+  intToString{string: AmtText, int: Amt} &
+  
+  astInternal.node{id: TimeExpr, text: TText} &
+  intToString{string: TText, int: T}.
+
+# ==== helpers ====
+
+ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
+  ast.funcArgs{id: Args, parentID: Call} &
+  ast.funcArg{id: Arg, parentID: Args} &
+  ast.ident{parentID: Arg, text: N} &
+  ast.expr{id: E, parentID: Arg}.

@@ -18,6 +18,7 @@ export function lwbTests(writeResults: boolean): Suite {
     "modelica",
     "treeSQL",
     "basicBlocks",
+    "contracts",
   ].map((lang) => ({
     name: lang,
     test() {

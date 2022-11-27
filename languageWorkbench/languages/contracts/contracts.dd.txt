@@ -1,0 +1,55 @@
+contracts
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
+contract.PaymentRecord{}?
+----
+application/datalog
+contract.PaymentRecord{amount: 100, contractID: "1", from: "Alice", id: "1", time: 0, to: "Bob"}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.PaymentNode{}?
+----
+application/datalog
+contract.PaymentNode{amount: 100, from: "Alice", id: 44, to: "Bob"}.
+contract.PaymentNode{amount: 110, from: "Bob", id: 156, to: "Alice"}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.AndNode{}?
+----
+application/datalog
+contract.AndNode{id: 32}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.DelayNode{}?
+----
+application/datalog
+contract.DelayNode{duration: 30, id: 103}.
