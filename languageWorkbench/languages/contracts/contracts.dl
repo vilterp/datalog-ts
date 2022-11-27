@@ -19,10 +19,10 @@ contract.PaymentNode{id: I, parentID: Parent, from: From, to: To, amount: Amt} :
   intToString{string: AmtText, int: Amt} &
   
   ast.stringLit{parentID: FromExpr, id: FromStr} &
-  ast.stringContents{parentId: FromStr, text: From} &
+  ast.stringContents{parentID: FromStr, text: From} &
   
   ast.stringLit{parentID: ToExpr, id: ToStr} &
-  ast.stringContents{parentId: ToStr, text: To}.
+  ast.stringContents{parentID: ToStr, text: To}.
 
 contract.paymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
   ast.paymentStmt{id: Payment} &
