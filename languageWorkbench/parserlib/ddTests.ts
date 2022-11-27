@@ -6,6 +6,7 @@ import { prettyPrintRuleTree } from "./pretty";
 import {
   datalogOut,
   datalogOutRules,
+  jsonOut,
   plainTextOut,
   TestOutput,
 } from "../../util/ddTest/types";
@@ -104,7 +105,7 @@ function metaTest(test: string[]): TestOutput[] {
     // if (errors.length > 0) {
     //   throw new Error(`errors in metaTest: ${errors.map(formatParseError)}`);
     // }
-    return plainTextOut(JSON.stringify(grammar, null, 2));
+    return jsonOut(grammar);
   });
 }
 
