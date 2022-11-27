@@ -1,14 +1,15 @@
-main :- expr.
+main :- repSep(stmt, ws).
 
-stmt :- [(registerStmt | paymentStmt), "."].
+stmt :- [(contractStmt | paymentStmt), "."].
 
-registerStmt :- [registerKW, funcArgs].
+contractStmt :- [contractKW, funcArgs].
 paymentStmt :- [paymentKW, funcArgs].
 
 expr :- (funcCall | lambda | varExpr | stringLit | intLit | placeholder).
 
 funcCall :- [varExpr, "(", funcArgs, ")"].
-funcArgs :- ["(", repSep([ident, ":", expr], commaWS), ")"].
+funcArgs :- ["(", repSep(funcArg, commaWS), ")"].
+funcArg :- [([ident, ":"] | ""), expr].
 
 parenExpr :- ["(", expr, ")"].
 lambda :- ["(", lambdaParam ,")", ws, ":", ws, type, ws, "=>", ws, expr].
@@ -28,5 +29,5 @@ placeholder :- "???".
 stringChar :- (^'"' | ['\\', '"']).
 commaWS :- [",", ws].
 
-registerKW :- "register".
+contractKW :- "contract".
 paymentKW :- "payment".
