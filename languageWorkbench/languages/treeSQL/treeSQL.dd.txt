@@ -20,9 +20,9 @@ scope.Usage{}?
 application/datalog
 scope.Usage{definitionScopeID: "global", defnSpan: span{from: 13, to: 18}, kind: "table", name: "users", usageScopeID: "global", usageSpan: span{from: 163, to: 168}}.
 scope.Usage{definitionScopeID: "global", defnSpan: span{from: 59, to: 64}, kind: "table", name: "posts", usageScopeID: "global", usageSpan: span{from: 129, to: 134}}.
-scope.Usage{definitionScopeID: 164, defnSpan: span{from: 33, to: 37}, kind: "column", name: "name", usageScopeID: 164, usageSpan: span{from: 175, to: 179}}.
-scope.Usage{definitionScopeID: 119, defnSpan: span{from: 69, to: 71}, kind: "column", name: "id", usageScopeID: 119, usageSpan: span{from: 139, to: 141}}.
-scope.Usage{definitionScopeID: 119, defnSpan: span{from: 111, to: 115}, kind: "column", name: "body", usageScopeID: 119, usageSpan: span{from: 145, to: 149}}.
+scope.Usage{definitionScopeID: 170, defnSpan: span{from: 33, to: 37}, kind: "column", name: "name", usageScopeID: 170, usageSpan: span{from: 175, to: 179}}.
+scope.Usage{definitionScopeID: 125, defnSpan: span{from: 69, to: 71}, kind: "column", name: "id", usageScopeID: 125, usageSpan: span{from: 139, to: 141}}.
+scope.Usage{definitionScopeID: 125, defnSpan: span{from: 111, to: 115}, kind: "column", name: "body", usageScopeID: 125, usageSpan: span{from: 145, to: 149}}.
 
 treeSQL
 CREATE TABLE users (
@@ -45,5 +45,5 @@ MANY posts {
 ide.Suggestion{}?
 ----
 application/datalog
-ide.Suggestion{id: 164, name: "id", span: span{from: 185, to: 188}, type: T}.
-ide.Suggestion{id: 164, name: "name", span: span{from: 185, to: 188}, type: T}.
+ide.Suggestion{id: 170, name: "id", span: span{from: 185, to: 188}, type: T}.
+ide.Suggestion{id: 170, name: "name", span: span{from: 185, to: 188}, type: T}.
