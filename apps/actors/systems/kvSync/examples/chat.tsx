@@ -161,6 +161,7 @@ function SendBox(props: { threadID: string; client: Client }) {
         evt.preventDefault();
         setMessage("");
         props.client.runMutation({
+          type: "Invocation",
           name: "sendMessage",
           args: [props.threadID, message],
         });
@@ -172,6 +173,7 @@ function SendBox(props: { threadID: string; client: Client }) {
         onFocus={() => {
           if (latestSeqNo) {
             props.client.runMutation({
+              type: "Invocation",
               name: "markRead",
               args: [props.threadID, latestSeqNo.value],
             });

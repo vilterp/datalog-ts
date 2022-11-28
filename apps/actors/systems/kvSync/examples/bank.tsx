@@ -50,6 +50,7 @@ function WithdrawForm(props: { client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         props.client.runMutation({
+          type: "Invocation",
           name: "withdraw",
           args: [account, amount],
         });
@@ -76,6 +77,7 @@ function DepositForm(props: { client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         props.client.runMutation({
+          type: "Invocation",
           name: "deposit",
           args: [account, amount],
         });
@@ -103,6 +105,7 @@ function MoveForm(props: { client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         props.client.runMutation({
+          type: "Invocation",
           name: "move",
           args: [fromAccount, toAccount, amount],
         });

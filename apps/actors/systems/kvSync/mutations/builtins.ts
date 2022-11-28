@@ -2,6 +2,7 @@ import { randStep } from "../../../../../util/util";
 import { Value } from "./types";
 
 export type InterpreterState = {
+  type: "InterpreterState";
   randSeed: number;
 };
 

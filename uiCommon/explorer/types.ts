@@ -5,6 +5,8 @@ export type TableCollapseState = {
   [key: string]: TreeCollapseState;
 };
 
+export const emptyTableCollapseState = {};
+
 export type RelationStatus =
   | { type: "Count"; count: number }
   | { type: "Error" };
