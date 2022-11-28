@@ -62,6 +62,7 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
           const msg: UserInput = {
             type: "RunMutation",
             invocation: {
+              type: "Invocation",
               name: (record.attrs.name as StringLit).val,
               args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
             },

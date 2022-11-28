@@ -92,6 +92,7 @@ type KeyUpdate =
   | { type: "Deleted"; key: string };
 
 export type MutationInvocation = {
+  type: "Invocation";
   name: string;
   args: Json[];
 };
