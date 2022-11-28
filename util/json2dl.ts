@@ -54,6 +54,9 @@ export function dlToJson(term: Term, addTypeTags: boolean = true): Json {
       if (term.relation === "null" && Object.keys(term.attrs).length === 0) {
         return null;
       }
+      if (term.relation === "") {
+        throw new Error("empty relation name: " + JSON.stringify(term));
+      }
       const out: Json = {};
       for (const key in term.attrs) {
         out[key] = dlToJson(term.attrs[key], addTypeTags);
