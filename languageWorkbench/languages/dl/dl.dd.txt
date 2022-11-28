@@ -2,6 +2,7 @@ dl
 .table baz
 foo{bar: A, baz: B} :-
   ??? &
+  # test comment
   bar{doop: ???} &
   baz{???}.
 baz{time: T} :-
@@ -9,12 +10,12 @@ baz{time: T} :-
 ide.Suggestion{}?
 ----
 application/datalog
-ide.Suggestion{id: 15, name: "A", span: span{from: 54, to: 57}, type: T}.
-ide.Suggestion{id: 15, name: "B", span: span{from: 54, to: 57}, type: T}.
+ide.Suggestion{id: 15, name: "A", span: span{from: 71, to: 74}, type: T}.
+ide.Suggestion{id: 15, name: "B", span: span{from: 71, to: 74}, type: T}.
 ide.Suggestion{id: global{}, name: "foo", span: span{from: 36, to: 39}, type: T}.
 ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}.
 ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}.
-ide.Suggestion{id: "baz", name: "time", span: span{from: 67, to: 70}, type: T}.
+ide.Suggestion{id: "baz", name: "time", span: span{from: 84, to: 87}, type: T}.
 
 dl
 foo{a: A, b: B} :- bar{a: A, b: B}.
