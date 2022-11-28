@@ -36,4 +36,4 @@ scope.Usage{}
 ----
 application/datalog
 scope.Usage{definitionScopeID: 7, defnSpan: span{from: 8, to: 9}, kind: "value", name: "a", usageScopeID: 26, usageSpan: span{from: 40, to: 41}}.
-scope.Usage{definitionScopeID: "global", defnSpan: span{from: 0, to: 3}, kind: "label", name: "foo", usageScopeID: 66, usageSpan: span{from: 101, to: 104}}.
+scope.Usage{definitionScopeID: "global", defnSpan: span{from: 0, to: 3}, kind: "label", name: "foo", usageScopeID: 71, usageSpan: span{from: 101, to: 104}}.
