@@ -69,20 +69,24 @@ export function registerLanguageSupport(
 
   // completions
   subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(spec.name, {
-      provideCompletionItems(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
-      ): vscode.ProviderResult<vscode.CompletionItem[]> {
-        try {
-          return getCompletionItems(spec, document, position, token, context);
-        } catch (e) {
-          console.error("in completion provider:", e);
-        }
+    vscode.languages.registerCompletionItemProvider(
+      spec.name,
+      {
+        provideCompletionItems(
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          token: vscode.CancellationToken,
+          context: vscode.CompletionContext
+        ): vscode.ProviderResult<vscode.CompletionItem[]> {
+          try {
+            return getCompletionItems(spec, document, position, token, context);
+          } catch (e) {
+            console.error("in completion provider:", e);
+          }
+        },
       },
-    })
+      ...(spec.triggerCharacters || [])
+    )
   );
 
   // renames
@@ -141,6 +145,10 @@ export function registerLanguageSupport(
           document: vscode.TextDocument,
           token: vscode.CancellationToken
         ): vscode.ProviderResult<vscode.SemanticTokens> {
+          if (token.isCancellationRequested) {
+            console.log("cancelled: provideDocumentSemanticTokens");
+            return null;
+          }
           try {
             const before = new Date().getTime();
             const tokens = getSemanticTokens(spec, document, token);
