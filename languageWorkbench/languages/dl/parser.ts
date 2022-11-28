@@ -158,7 +158,6 @@ export type DLMain = {
   text: string;
   span: Span;
   statement: DLStatement[];
-  comment: DLComment[];
 };
 export type DLNegation = {
   type: "Negation";
@@ -222,6 +221,11 @@ export type DLRule = {
   record: DLRecord;
   disjunct: DLDisjunct[];
 };
+export type DLSpaces = {
+  type: "Spaces";
+  text: string;
+  span: Span;
+};
 export type DLStatement =
   | DLRule
   | DLFact
@@ -271,6 +275,8 @@ export type DLWs = {
   type: "Ws";
   text: string;
   span: Span;
+  spaces: DLSpaces[];
+  comment: DLComment[];
 };
 export function parseAggregation(input: string): DLAggregation {
   const traceTree = parserlib.parse(GRAMMAR, "aggregation", input);
@@ -446,6 +452,11 @@ export function parseRule(input: string): DLRule {
   const traceTree = parserlib.parse(GRAMMAR, "rule", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRule(input, ruleTree);
+}
+export function parseSpaces(input: string): DLSpaces {
+  const traceTree = parserlib.parse(GRAMMAR, "spaces", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractSpaces(input, ruleTree);
 }
 export function parseStatement(input: string): DLStatement {
   const traceTree = parserlib.parse(GRAMMAR, "statement", input);
@@ -744,9 +755,6 @@ function extractMain(input: string, node: RuleTree): DLMain {
     statement: childrenByName(node, "statement").map((child) =>
       extractStatement(input, child)
     ),
-    comment: childrenByName(node, "comment").map((child) =>
-      extractComment(input, child)
-    ),
   };
 }
 function extractNegation(input: string, node: RuleTree): DLNegation {
@@ -845,6 +853,13 @@ function extractRule(input: string, node: RuleTree): DLRule {
     disjunct: childrenByName(node, "disjunct").map((child) =>
       extractDisjunct(input, child)
     ),
+  };
+}
+function extractSpaces(input: string, node: RuleTree): DLSpaces {
+  return {
+    type: "Spaces",
+    text: textForSpan(input, node.span),
+    span: node.span,
   };
 }
 function extractStatement(input: string, node: RuleTree): DLStatement {
@@ -954,19 +969,9 @@ const GRAMMAR: Grammar = {
       {
         type: "RepSep",
         rep: {
-          type: "Choice",
-          choices: [
-            {
-              type: "Ref",
-              captureName: null,
-              rule: "statement",
-            },
-            {
-              type: "Ref",
-              captureName: null,
-              rule: "comment",
-            },
-          ],
+          type: "Ref",
+          captureName: null,
+          rule: "statement",
         },
         sep: {
           type: "Ref",
@@ -1944,17 +1949,39 @@ const GRAMMAR: Grammar = {
   ws: {
     type: "RepSep",
     rep: {
-      type: "Choice",
-      choices: [
+      type: "Sequence",
+      items: [
         {
-          type: "Text",
-          value: " ",
+          type: "Ref",
+          captureName: null,
+          rule: "spaces",
         },
         {
-          type: "Text",
-          value: "\n",
+          type: "Choice",
+          choices: [
+            {
+              type: "Ref",
+              captureName: null,
+              rule: "comment",
+            },
+            {
+              type: "Text",
+              value: "",
+            },
+          ],
         },
       ],
+    },
+    sep: {
+      type: "Text",
+      value: "\n",
+    },
+  },
+  spaces: {
+    type: "RepSep",
+    rep: {
+      type: "Text",
+      value: " ",
     },
     sep: {
       type: "Text",
