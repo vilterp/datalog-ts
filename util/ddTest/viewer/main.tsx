@@ -91,7 +91,9 @@ function TestViewer(props: { archive: Archive }) {
                         whiteSpace: "pre",
                         marginTop: 0,
                         marginBottom: 0,
-                        paddingLeft: 10,
+                        marginLeft: 10,
+                        padding: 5,
+                        backgroundColor: "rgb(230, 230, 230)",
                       }}
                     >
                       {pair.input}
@@ -99,8 +101,7 @@ function TestViewer(props: { archive: Archive }) {
                   </div>
                 )}
                 content={
-                  <div style={{ paddingLeft: 17, marginBottom: 10 }}>
-                    <pre style={{ margin: 0 }}>----</pre>
+                  <div style={{ marginLeft: 17, marginBottom: 10, padding: 5 }}>
                     {(
                       VISUALIZERS[pair.output.mimeType] ||
                       VISUALIZERS["text/plain"]

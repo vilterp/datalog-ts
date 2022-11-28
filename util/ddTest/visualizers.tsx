@@ -46,12 +46,15 @@ function DLView(props: { text: string }) {
   const relation = interp.getTables()[0];
 
   return (
-    <ResultsTable
-      relation={{ type: "Table", name: relation }}
-      collapseState={collapseState}
-      setCollapseState={setCollapseState}
-      highlight={noHighlightProps}
-      results={interp.queryStr(`${relation}{}`)}
-    />
+    <>
+      <pre style={{ fontWeight: "bold" }}>{relation}</pre>
+      <ResultsTable
+        relation={{ type: "Table", name: relation }}
+        collapseState={collapseState}
+        setCollapseState={setCollapseState}
+        highlight={noHighlightProps}
+        results={interp.queryStr(`${relation}{}`)}
+      />
+    </>
   );
 }
