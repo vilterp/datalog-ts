@@ -20,7 +20,7 @@ contract.PaymentNode{}?
 ----
 application/datalog
 contract.PaymentNode{amount: 100, from: "Alice", id: 44, to: "Bob"}.
-contract.PaymentNode{amount: 110, from: "Bob", id: 156, to: "Alice"}.
+contract.PaymentNode{amount: 110, from: "Bob", id: 160, to: "Alice"}.
 
 contracts
 contract(
@@ -52,4 +52,4 @@ contract(
 contract.DelayNode{}?
 ----
 application/datalog
-contract.DelayNode{duration: 30, id: 103}.
+contract.DelayNode{duration: 30, id: 107}.

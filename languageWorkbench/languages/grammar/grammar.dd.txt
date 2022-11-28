@@ -41,8 +41,13 @@ astInternal.node{id: 4, parentID: 1, rule: "ws", span: span{from: 1, to: 2}, tex
 astInternal.node{id: 5, parentID: 1, rule: "ws", span: span{from: 4, to: 5}, text: " "}.
 astInternal.node{id: 8, parentID: 7, rule: "ws", span: span{from: 6, to: 6}, text: ""}.
 astInternal.node{id: 16, parentID: 15, rule: "ws", span: span{from: 14, to: 14}, text: ""}.
-astInternal.node{id: 23, parentID: 15, rule: "ws", span: span{from: 23, to: 23}, text: ""}.
-astInternal.node{id: 24, parentID: 7, rule: "ws", span: span{from: 24, to: 24}, text: ""}.
+astInternal.node{id: 23, parentID: 15, rule: "ws", span: span{from: 18, to: 18}, text: ""}.
+astInternal.node{id: 24, parentID: 15, rule: "ws", span: span{from: 19, to: 20}, text: " "}.
+astInternal.node{id: 25, parentID: 15, rule: "ws", span: span{from: 23, to: 23}, text: ""}.
+astInternal.node{id: 26, parentID: 7, rule: "ws", span: span{from: 10, to: 11}, text: " "}.
+astInternal.node{id: 27, parentID: 7, rule: "ws", span: span{from: 12, to: 13}, text: " "}.
+astInternal.node{id: 28, parentID: 7, rule: "ws", span: span{from: 24, to: 24}, text: ""}.
+astInternal.node{id: 29, parentID: 0, rule: "ws", span: span{from: 26, to: 26}, text: ""}.
 astInternal.node{id: 3, parentID: 2, rule: "alpha", span: span{from: 0, to: 1}, text: "a"}.
 
 grammar
@@ -58,6 +63,7 @@ astInternal.node{id: 18, parentID: 17, rule: "singleChar", span: span{from: 15, 
 astInternal.node{id: 2, parentID: 1, rule: "ident", span: span{from: 0, to: 11}, text: "commentChar"}.
 astInternal.node{id: 14, parentID: 1, rule: "ws", span: span{from: 11, to: 12}, text: " "}.
 astInternal.node{id: 15, parentID: 1, rule: "ws", span: span{from: 14, to: 15}, text: " "}.
+astInternal.node{id: 19, parentID: 0, rule: "ws", span: span{from: 20, to: 20}, text: ""}.
 astInternal.node{id: 3, parentID: 2, rule: "alpha", span: span{from: 0, to: 1}, text: "c"}.
 astInternal.node{id: 4, parentID: 2, rule: "alpha", span: span{from: 1, to: 2}, text: "o"}.
 astInternal.node{id: 5, parentID: 2, rule: "alpha", span: span{from: 2, to: 3}, text: "m"}.

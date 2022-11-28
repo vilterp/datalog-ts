@@ -17,13 +17,13 @@ contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
   ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
   ast.namedFuncArg{callID: I, name: "to", exprID: ToExpr} &
   ast.namedFuncArg{callID: I, name: "amount", exprID: AmtExpr} &
-  
+  # amt
   astInternal.node{id: AmtExpr, text: AmtText} &
   intToString{string: AmtText, int: Amt} &
-  
+  # from
   ast.stringLit{parentID: FromExpr, id: FromStr} &
   ast.stringContents{parentID: FromStr, text: From} &
-  
+  # to
   ast.stringLit{parentID: ToExpr, id: ToStr} &
   ast.stringContents{parentID: ToStr, text: To}.
 
@@ -41,6 +41,7 @@ contract.DelayNode{id: I, duration: D} :-
 # == payment ==
 
 contract.PaymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
+  # args from payment statement
   ast.paymentStmt{id: Payment} &
   ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
   ast.namedFuncArg{callID: Payment, name: "contractID", exprID: ContractExpr} &
@@ -48,19 +49,20 @@ contract.PaymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, 
   ast.namedFuncArg{callID: Payment, name: "to", exprID: ToExpr} &
   ast.namedFuncArg{callID: Payment, name: "amount", exprID: AmountExpr} &
   ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr} &
-  
+  # id
   astInternal.node{id: PaymentIDExpr, text: I} &
+  # contract id
   astInternal.node{id: ContractExpr, text: CID} &
-  
+  # from
   ast.stringLit{id: FromStr, parentID: FromExpr} &
   ast.stringContents{parentID: FromStr, text: From} &
-  
+  # to
   ast.stringLit{id: ToStr, parentID: ToExpr} &
   ast.stringContents{parentID: ToStr, text: To} &
-  
+  # amt
   astInternal.node{id: AmountExpr, text: AmtText} &
   intToString{string: AmtText, int: Amt} &
-  
+  # time
   astInternal.node{id: TimeExpr, text: TText} &
   intToString{string: TText, int: T}.
 

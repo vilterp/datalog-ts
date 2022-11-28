@@ -23,6 +23,7 @@ import {
   randStep,
 } from "../../../../util/util";
 import { runMutation } from "./mutations/run";
+import { InterpreterState } from "./mutations/builtins";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -134,7 +135,10 @@ function runMutationOnClient(
 ): [ClientState, MutationRequest | null] {
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
-  const initialInterpState = { randSeed: randStep(randNum) };
+  const initialInterpState: InterpreterState = {
+    type: "InterpreterState",
+    randSeed: randStep(randNum),
+  };
   const [data1, newInterpState, outcome, trace] = runMutation(
     state.data,
     initialInterpState,
@@ -260,6 +264,7 @@ export function updateClient(
           const [newState, req] = runMutationOnClient(
             state,
             {
+              type: "Invocation",
               name: msg.invocation.name,
               args: msg.invocation.args,
             },

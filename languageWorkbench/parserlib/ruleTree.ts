@@ -35,8 +35,10 @@ function getChildren(tt: TraceTree): RuleTree[] {
     case "ChoiceTrace":
       return getChildren(tt.innerTrace);
     case "RepSepTrace":
-      // TODO: keep sep traces?
-      return flatten(tt.repTraces.map(getChildren));
+      return [
+        ...flatten(tt.repTraces.map(getChildren)),
+        ...flatten(tt.sepTraces.map(getChildren)),
+      ];
     default:
       return [];
   }

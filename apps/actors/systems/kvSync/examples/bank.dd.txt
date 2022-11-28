@@ -5,15 +5,15 @@ runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 ----
 application/datalog
-hop{from: tick{place: "user0", time: 3}, message: RunMutation{invocation: {args: ["foo",10], name: "deposit"}}, to: tick{place: "client0", time: 5}}.
-hop{from: tick{place: "client0", time: 5}, message: MutationRequest{interpState: {randSeed: 2502798}, invocation: {args: ["foo",10], name: "deposit"}, trace: [Read{key: "foo", transactionID: "-1"},Write{key: "foo", value: 10}], txnID: "10698"}, to: tick{place: "server", time: 7}}.
+hop{from: tick{place: "user0", time: 3}, message: RunMutation{invocation: Invocation{args: ["foo",10], name: "deposit"}}, to: tick{place: "client0", time: 5}}.
+hop{from: tick{place: "client0", time: 5}, message: MutationRequest{interpState: InterpreterState{randSeed: 2502798}, invocation: Invocation{args: ["foo",10], name: "deposit"}, trace: [Read{key: "foo", transactionID: "-1"},Write{key: "foo", value: 10}], txnID: "10698"}, to: tick{place: "server", time: 7}}.
 hop{from: tick{place: "server", time: 7}, message: MutationResponse{payload: Accept{timestamp: 0}, txnID: "10698"}, to: tick{place: "client0", time: 9}}.
-hop{from: tick{place: "user0", time: 10}, message: RunMutation{invocation: {args: ["bar",10], name: "deposit"}}, to: tick{place: "client0", time: 12}}.
-hop{from: tick{place: "client0", time: 12}, message: MutationRequest{interpState: {randSeed: 5046918}, invocation: {args: ["bar",10], name: "deposit"}, trace: [Read{key: "bar", transactionID: "-1"},Write{key: "bar", value: 10}], txnID: "4540893"}, to: tick{place: "server", time: 14}}.
+hop{from: tick{place: "user0", time: 10}, message: RunMutation{invocation: Invocation{args: ["bar",10], name: "deposit"}}, to: tick{place: "client0", time: 12}}.
+hop{from: tick{place: "client0", time: 12}, message: MutationRequest{interpState: InterpreterState{randSeed: 5046918}, invocation: Invocation{args: ["bar",10], name: "deposit"}, trace: [Read{key: "bar", transactionID: "-1"},Write{key: "bar", value: 10}], txnID: "4540893"}, to: tick{place: "server", time: 14}}.
 hop{from: tick{place: "server", time: 14}, message: MutationResponse{payload: Accept{timestamp: 1}, txnID: "4540893"}, to: tick{place: "client0", time: 16}}.
-hop{from: tick{place: "user0", time: 17}, message: RunMutation{invocation: {args: ["foo","bar",5], name: "move"}}, to: tick{place: "client0", time: 19}}.
-hop{from: tick{place: "client0", time: 19}, message: MutationRequest{interpState: {randSeed: 746088}, invocation: {args: ["foo","bar",5], name: "move"}, trace: [Read{key: "foo", transactionID: "10698"},Read{key: "bar", transactionID: "4540893"},Write{key: "foo", value: 5},Write{key: "bar", value: 15}], txnID: "3045903"}, to: tick{place: "server", time: 21}}.
+hop{from: tick{place: "user0", time: 17}, message: RunMutation{invocation: Invocation{args: ["foo","bar",5], name: "move"}}, to: tick{place: "client0", time: 19}}.
+hop{from: tick{place: "client0", time: 19}, message: MutationRequest{interpState: InterpreterState{randSeed: 746088}, invocation: Invocation{args: ["foo","bar",5], name: "move"}, trace: [Read{key: "foo", transactionID: "10698"},Read{key: "bar", transactionID: "4540893"},Write{key: "foo", value: 5},Write{key: "bar", value: 15}], txnID: "3045903"}, to: tick{place: "server", time: 21}}.
 hop{from: tick{place: "server", time: 21}, message: MutationResponse{payload: Accept{timestamp: 2}, txnID: "3045903"}, to: tick{place: "client0", time: 23}}.
-hop{from: tick{place: "user0", time: 24}, message: RunMutation{invocation: {args: ["foo","bar",5], name: "move"}}, to: tick{place: "client0", time: 26}}.
-hop{from: tick{place: "client0", time: 26}, message: MutationRequest{interpState: {randSeed: 1974273}, invocation: {args: ["foo","bar",5], name: "move"}, trace: [Read{key: "foo", transactionID: "3045903"},Read{key: "bar", transactionID: "3045903"},Write{key: "foo", value: 0},Write{key: "bar", value: 20}], txnID: "1820643"}, to: tick{place: "server", time: 28}}.
+hop{from: tick{place: "user0", time: 24}, message: RunMutation{invocation: Invocation{args: ["foo","bar",5], name: "move"}}, to: tick{place: "client0", time: 26}}.
+hop{from: tick{place: "client0", time: 26}, message: MutationRequest{interpState: InterpreterState{randSeed: 1974273}, invocation: Invocation{args: ["foo","bar",5], name: "move"}, trace: [Read{key: "foo", transactionID: "3045903"},Read{key: "bar", transactionID: "3045903"},Write{key: "foo", value: 0},Write{key: "bar", value: 20}], txnID: "1820643"}, to: tick{place: "server", time: 28}}.
 hop{from: tick{place: "server", time: 28}, message: MutationResponse{payload: Accept{timestamp: 3}, txnID: "1820643"}, to: tick{place: "client0", time: 30}}.
