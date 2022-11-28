@@ -7,10 +7,12 @@ hl.Segment{type: T, span: S, highlight: HH} :-
   hl.ident{type: T, span: S, highlight: H} |
   ??? |
   hl.int{???, span: S, highlightt: H} |
+  # this is a comment inside a rule
   hl.string{type: T, span: S, highlight: ???}.
 
 hl.ident{type: "ident", span: S, highlight: false} :-
   ast.ident{span: S}.
+# this is a rule for vars
 hl.var{type: "var", span: S, highlight: false} :-
   ast.var{span: S}.
 hl.int{type: "int", span: S, highlight: false} :-

@@ -1,4 +1,4 @@
-main :- [ws, repSep((statement | comment), ws), ws].
+main :- [ws, repSep(statement, ws), ws].
 statement :- (rule | fact | query | deleteFact | tableDecl | loadStmt).
 comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [tableKW, ws, name:ident].
@@ -42,8 +42,8 @@ stringChar :- (^'"' | ['\\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
 alphaNum :- (alpha | num).
-ws :- [justWs, (comment | ""), justWs].
-justWs :- repSep((" "|"\n"), "").
+ws :- repSep([spaces, (comment | "")], "\n").
+spaces :- repSep(" ", "").
 placeholder :- "???".
 commaSpace :- [",", ws].
 path :- repSep(pathSegment, "/").
