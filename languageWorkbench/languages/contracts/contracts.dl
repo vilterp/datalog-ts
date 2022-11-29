@@ -79,7 +79,7 @@ contract.tree.contractNode{id: I, display: contract{id: I}} :-
   contract.Contract{id: I}.
 
 contract.tree.rootNodeAndParent{id: 0, display: root{}, parent: -1}.
-contract.tree.nodeAndParent{id: A, display: B, parentID: C} :-
+contract.tree.nodeAndParent{id: A, display: [A, B], parentID: C} :-
   contract.tree.node{id: A, display: B} &
   contract.tree.parent{child: A, parent: C} |
   contract.tree.rootNodeAndParent{id: A, display: B, parent: C}.
@@ -147,6 +147,9 @@ internal.visualization{
 
 timeWindow{time: T} :-
   range{from: 0, to: 100, val: T}.
+
+contract.compliance.ContractInComplianceInitially{contractID: I} :-
+  contract.compliance.ContractInCompliance{contractID: I, time: 0}.
 
 contract.compliance.ContractInCompliance{contractID: I, time: T} :-
   timeWindow{time: T} &
