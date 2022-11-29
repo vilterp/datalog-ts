@@ -16,7 +16,7 @@ contract(
     )
   )
 ).
-contract.PaymentNode{}?
+contract.node.Payment{}?
 ----
 application/datalog
 contract.PaymentNode{amount: 100, from: "Alice", id: 44, to: "Bob"}.
@@ -33,7 +33,7 @@ contract(
     )
   )
 ).
-contract.AndNode{}?
+contract.node.And{}?
 ----
 application/datalog
 contract.AndNode{id: 32}.
@@ -49,7 +49,21 @@ contract(
     )
   )
 ).
-contract.DelayNode{}?
+contract.node.Delay{}?
 ----
 application/datalog
 contract.DelayNode{duration: 30, id: 107}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.node{}?
+----

@@ -11,7 +11,7 @@ hl.mapping{rule: "contractKW", type: "keyword"}.
 
 # == contract nodes ==
 
-contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
+contract.node.Payment{id: I, from: From, to: To, amount: Amt} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "pay"} &
   ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
@@ -27,16 +27,29 @@ contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
   ast.stringLit{parentID: ToExpr, id: ToStr} &
   ast.stringContents{parentID: ToStr, text: To}.
 
-contract.AndNode{id: I} :-
+contract.node.And{id: I} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "and"}.
 
-contract.DelayNode{id: I, duration: D} :-
+contract.node.Delay{id: I, duration: D} :-
   ast.funcCall{id: I} &
   ast.namedFuncArg{callID: I, name: "duration", exprID: DurationExpr} &
-  
+  # duration arg
   astInternal.node{id: DurationExpr, text: DurationText} &
   intToString{string: DurationText, int: D}.
+
+# == tree structure
+
+contract.node{id: I, display: D} :-
+  contract.tree.andNode{id: I, display: D} |
+  contract.tree.delayNode{id: I, display: D} |
+  contract.tree.paymentNode{id: I, display: D}.
+contract.tree.andNode{id: I, display: and{}} :-
+  contract.node.And{id: I}.
+contract.tree.delayNode{id: I, display: delay{duration: D}} :-
+  contract.node.Delay{id: I, duration: D}.
+contract.tree.paymentNode{id: I, display: payment{from: F, to: T, amount: A}} :-
+  contract.node.Payment{id: I, from: F, to: T, amount: A}.
 
 # == payment ==
 
