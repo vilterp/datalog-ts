@@ -84,10 +84,10 @@ contract(
     )
   )
 ).
-contract.root{}?
+contract.tree.root{}?
 ----
 application/datalog
-contract.root{callID: 32, contractID: 2}.
+contract.tree.root{callID: 32, contractID: 2}.
 
 contracts
 contract(
@@ -100,9 +100,23 @@ contract(
     )
   )
 ).
-contract.parent{}?
+contract.tree.parent{}?
 ----
 application/datalog
-contract.parent{child: 44, parent: 32}.
-contract.parent{child: 160, parent: 107}.
-contract.parent{child: 107, parent: 32}.
+contract.tree.parent{child: 44, parent: 32}.
+contract.tree.parent{child: 160, parent: 107}.
+contract.tree.parent{child: 107, parent: 32}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.Contract{}?
+----
