@@ -72,3 +72,19 @@ contract.tree.node{display: and{}, id: 32}.
 contract.tree.node{display: delay{duration: 30}, id: 107}.
 contract.tree.node{display: payment{amount: 100, from: "Alice", to: "Bob"}, id: 44}.
 contract.tree.node{display: payment{amount: 110, from: "Bob", to: "Alice"}, id: 160}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.root{}?
+----
+application/datalog
+contract.root{callID: 32, contractID: 2}.
