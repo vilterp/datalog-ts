@@ -3,7 +3,7 @@ payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
 contract.PaymentRecord{}?
 ----
 application/datalog
-contract.PaymentRecord{amount: 100, contractID: "1", from: "Alice", id: "1", time: 0, to: "Bob"}.
+contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", id: 1, time: 0, to: "Bob"}.
 
 contracts
 contract(
@@ -68,9 +68,27 @@ contract(
 contract.tree.nodeAndParent{}?
 ----
 application/datalog
-contract.tree.nodeAndParent{display: contract{id: 1}, id: 1, parentID: "root"}.
-contract.tree.nodeAndParent{display: and{}, id: 32, parentID: 1}.
-contract.tree.nodeAndParent{display: delay{duration: 30}, id: 107, parentID: 32}.
-contract.tree.nodeAndParent{display: payment{amount: 100, from: "Alice", to: "Bob"}, id: 44, parentID: 32}.
-contract.tree.nodeAndParent{display: payment{amount: 110, from: "Bob", to: "Alice"}, id: 160, parentID: 107}.
-contract.tree.nodeAndParent{display: root{}, id: "root", parentID: -1}.
+contract.tree.nodeAndParent{display: [1,contract{id: 1}], id: 1, parentID: 0}.
+contract.tree.nodeAndParent{display: [32,and{}], id: 32, parentID: 1}.
+contract.tree.nodeAndParent{display: [107,delay{duration: 30}], id: 107, parentID: 32}.
+contract.tree.nodeAndParent{display: [44,payment{amount: 100, from: "Alice", to: "Bob"}], id: 44, parentID: 32}.
+contract.tree.nodeAndParent{display: [160,payment{amount: 110, from: "Bob", to: "Alice"}], id: 160, parentID: 107}.
+contract.tree.nodeAndParent{display: [0,root{}], id: 0, parentID: -1}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
+payment(id:2, contractID:1, from:"Bob", to:"Alice", amount:110, time:30).
+contract.compliance.ContractInComplianceInitially{}?
+----
+application/datalog
+contract.compliance.ContractInComplianceInitially{contractID: 1}.
