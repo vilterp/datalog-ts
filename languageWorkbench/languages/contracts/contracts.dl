@@ -9,9 +9,20 @@ hl.mapping{rule: "contractKW", type: "keyword"}.
 
 # ==== mapping into DL ===
 
+contract.Contract{id: ID, astNodeID: Stmt, contractExprID: ContractCall} :-
+  ast.contractStmt{id: Stmt} &
+  ast.funcArgs{id: Args, parentID: Stmt} &
+  # contract call
+  ast.namedFuncArg{callID: Stmt, name: "contract", exprID: ContractExpr} &
+  ast.funcCall{id: ContractCall, parentID: ContractExpr} &
+  # parse id
+  ast.namedFuncArg{callID: Stmt, name: "id", exprID: IDExpr} &
+  astInternal.node{id: IDExpr, text: IDText} &
+  intToString{string: IDText, int: ID}.
+
 # == contract nodes ==
 
-contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
+contract.node.Payment{id: I, from: From, to: To, amount: Amt} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "pay"} &
   ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
@@ -27,16 +38,51 @@ contract.PaymentNode{id: I, from: From, to: To, amount: Amt} :-
   ast.stringLit{parentID: ToExpr, id: ToStr} &
   ast.stringContents{parentID: ToStr, text: To}.
 
-contract.AndNode{id: I} :-
+contract.node.And{id: I} :-
   ast.funcCall{id: I} &
   ast.varExpr{parentID: I, text: "and"}.
 
-contract.DelayNode{id: I, duration: D} :-
+contract.node.Delay{id: I, duration: D} :-
   ast.funcCall{id: I} &
   ast.namedFuncArg{callID: I, name: "duration", exprID: DurationExpr} &
-  
+  # duration arg
   astInternal.node{id: DurationExpr, text: DurationText} &
   intToString{string: DurationText, int: D}.
+
+# ==== tree structure ====
+
+contract.tree.parent{child: C, parent: P} :-
+  contract.tree.nodeParent{child: C, parent: P} |
+  contract.contractRootParent{child: C, parent: P} |
+  contract.Contract{id: P, contractExprID: C}.
+contract.tree.nodeParent{child: ChildCall, parent: ParentCall} :-
+  ast.funcCall{id: ChildCall, parentID: Expr} &
+  ast.expr{id: Expr, parentID: Arg} &
+  ast.funcArg{id: Arg, parentID: Args} &
+  ast.funcArgs{id: Args, parentID: ParentCall} &
+  ast.funcCall{id: ParentCall}.
+contract.contractRootParent{child: C, parent: "root"} :-
+  contract.Contract{id: C}.
+
+contract.tree.node{id: A, display: B} :-
+  contract.tree.contractNode{id: A, display: B} |
+  contract.tree.andNode{id: A, display: B} |
+  contract.tree.delayNode{id: A, display: B} |
+  contract.tree.paymentNode{id: A, display: B}.
+contract.tree.andNode{id: I, display: and{}} :-
+  contract.node.And{id: I}.
+contract.tree.delayNode{id: I, display: delay{duration: D}} :-
+  contract.node.Delay{id: I, duration: D}.
+contract.tree.paymentNode{id: I, display: payment{from: F, to: T, amount: A}} :-
+  contract.node.Payment{id: I, from: F, to: T, amount: A}.
+contract.tree.contractNode{id: I, display: contract{id: I}} :-
+  contract.Contract{id: I}.
+
+contract.tree.rootNodeAndParent{id: "root", display: root{}, parent: -1}.
+contract.tree.nodeAndParent{id: A, display: B, parentID: C} :-
+  contract.tree.node{id: A, display: B} &
+  contract.tree.parent{child: A, parent: C} |
+  contract.tree.rootNodeAndParent{id: A, display: B, parent: C}.
 
 # == payment ==
 
@@ -73,3 +119,14 @@ ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
   ast.funcArg{id: Arg, parentID: Args} &
   ast.ident{parentID: Arg, text: N} &
   ast.expr{id: E, parentID: Arg}.
+
+# ==== viz ===
+
+internal.visualization{
+  name: "Contract Trees",
+  spec: tree{
+    nodes: contract.tree.nodeAndParent{id: ID, parentID: ParentID, display: Display},
+    rootTerm: -1,
+    sortChildren: false
+  }
+}.
