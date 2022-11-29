@@ -71,6 +71,7 @@ export function registerLanguageSupport(
   // completions
   subscriptions.push(
     monacoInstance.languages.registerCompletionItemProvider(spec.name, {
+      triggerCharacters: spec.triggerCharacters,
       provideCompletionItems(
         model: monaco.editor.ITextModel,
         position: monaco.Position,

@@ -91,6 +91,8 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
     datalog: datalogDL,
     grammar: datalogGrammar,
     example: datalogExample,
+    // TODO: derive these from the grammar
+    triggerCharacters: ["&", "|", "-", ":", "{", ","],
   },
   json: {
     name: "json",
@@ -147,4 +149,5 @@ export type LanguageSpec = {
   datalog: string;
   grammar: string;
   example: string;
+  triggerCharacters?: string[]; // TODO: put into DL itself or derive from grammar
 };
