@@ -19,8 +19,8 @@ contract(
 contract.node.Payment{}?
 ----
 application/datalog
-contract.PaymentNode{amount: 100, from: "Alice", id: 44, to: "Bob"}.
-contract.PaymentNode{amount: 110, from: "Bob", id: 160, to: "Alice"}.
+contract.node.Payment{amount: 100, from: "Alice", id: 44, to: "Bob"}.
+contract.node.Payment{amount: 110, from: "Bob", id: 160, to: "Alice"}.
 
 contracts
 contract(
@@ -36,7 +36,7 @@ contract(
 contract.node.And{}?
 ----
 application/datalog
-contract.AndNode{id: 32}.
+contract.node.And{id: 32}.
 
 contracts
 contract(
@@ -52,7 +52,7 @@ contract(
 contract.node.Delay{}?
 ----
 application/datalog
-contract.DelayNode{duration: 30, id: 107}.
+contract.node.Delay{duration: 30, id: 107}.
 
 contracts
 contract(
@@ -65,5 +65,10 @@ contract(
     )
   )
 ).
-contract.node{}?
+contract.tree.node{}?
 ----
+application/datalog
+contract.tree.node{display: and{}, id: 32}.
+contract.tree.node{display: delay{duration: 30}, id: 107}.
+contract.tree.node{display: payment{amount: 100, from: "Alice", to: "Bob"}, id: 44}.
+contract.tree.node{display: payment{amount: 110, from: "Bob", to: "Alice"}, id: 160}.

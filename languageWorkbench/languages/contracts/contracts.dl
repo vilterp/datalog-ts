@@ -40,10 +40,10 @@ contract.node.Delay{id: I, duration: D} :-
 
 # == tree structure
 
-contract.node{id: I, display: D} :-
-  contract.tree.andNode{id: I, display: D} |
-  contract.tree.delayNode{id: I, display: D} |
-  contract.tree.paymentNode{id: I, display: D}.
+contract.tree.node{id: A, display: B} :-
+  contract.tree.andNode{id: A, display: B} |
+  contract.tree.delayNode{id: A, display: B} |
+  contract.tree.paymentNode{id: A, display: B}.
 contract.tree.andNode{id: I, display: and{}} :-
   contract.node.And{id: I}.
 contract.tree.delayNode{id: I, display: delay{duration: D}} :-
