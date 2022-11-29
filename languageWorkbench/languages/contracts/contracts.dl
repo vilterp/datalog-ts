@@ -143,6 +143,24 @@ internal.visualization{
   }
 }.
 
+viz.party{name: N} :-
+  contract.PaymentRecord{from: N} |
+  contract.PaymentRecord{to: N}.
+
+viz.paymentHop{
+  from: tick{time: T, place: FP},
+  to: tick{time: T, place: TP},
+} :-
+  contract.PaymentRecord{from: FP, to: TP, time: T}.
+
+internal.visualization{
+  name: "Payment Sequence",
+  spec: sequence{
+    actors: viz.party{name: ID},
+    messages: viz.paymentHop{from: FromTick, to: ToTick},
+  }
+}.
+
 # ==== compliance ====
 
 timeWindow{time: T} :-
