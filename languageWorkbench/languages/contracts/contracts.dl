@@ -47,6 +47,13 @@ contract.root{contractID: Contract, callID: Call} :-
   ast.funcArgs{id: Args, parentID: Contract} &
   ast.contractStmt{id: Contract}.
 
+contract.parent{child: ChildCall, parent: ParentCall} :-
+  ast.funcCall{id: ChildCall, parentID: Expr} &
+  ast.expr{id: Expr, parentID: Arg} &
+  ast.funcArg{id: Arg, parentID: Args} &
+  ast.funcArgs{id: Args, parentID: ParentCall} &
+  ast.funcCall{id: ParentCall}.
+
 contract.tree.node{id: A, display: B} :-
   contract.tree.andNode{id: A, display: B} |
   contract.tree.delayNode{id: A, display: B} |
