@@ -181,7 +181,7 @@ contract.compliance.payment{id: I, time: T} :-
   PaymentT <= T.
 
 childrenInCompliance{parentID: P, count: I, time: T} :-
-  count[P, I: childInCompliance{id: I, parentID: P, time: T}].
+  count[P, T, I: childInCompliance{id: I, parentID: P, time: T}].
 childInCompliance{id: I, parentID: P, time: T} :-
   timeWindow{time: T} &
   contract.tree.parent{child: I, parent: P} &
