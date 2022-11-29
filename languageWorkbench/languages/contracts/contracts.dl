@@ -192,3 +192,15 @@ childInCompliance{id: I, parentID: P, time: T} :-
 
 numChildren{parentID: P, count: I} :-
   count[P, I: contract.tree.parent{child: I, parent: P}].
+
+# == balance sheet ==
+
+# TODO: due date
+contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.node.Payment{id: N, from: D, to: C, amount: A} &
+  !contract.PaymentRecord{from: D, to: C, amount: A, contractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+
+# TODO: fix aggregation syntax
+contract.balance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
