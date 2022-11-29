@@ -147,7 +147,14 @@ export function TermView(props: {
     case "AggregationWithBindings":
       return (
         <>
-          {term.aggregation}[{term.varNames.join(", ")}:{" "}
+          <span style={{ color: "purple" }}>{term.aggregation}</span>[
+          {intersperse(
+            <>, </>,
+            term.varNames.map((varName) => (
+              <span style={{ color: "darkorange" }}>{varName}</span>
+            ))
+          )}
+          :{" "}
           <TermView
             term={term.record}
             highlight={props.highlight}
