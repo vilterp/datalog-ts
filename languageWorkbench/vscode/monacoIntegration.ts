@@ -69,12 +69,6 @@ export function registerLanguageSupport(
   );
 
   // completions
-  console.log(
-    "registering language",
-    spec.name,
-    "with trigger characters",
-    spec.triggerCharacters
-  );
   subscriptions.push(
     monacoInstance.languages.registerCompletionItemProvider(spec.name, {
       triggerCharacters: spec.triggerCharacters,
