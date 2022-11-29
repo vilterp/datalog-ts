@@ -62,12 +62,31 @@ export function parse(
   };
 }
 
+// rule profile
+
+let allocsByRuleType: { [ruleType: string]: number } = {};
+
+function incrRuleType(rule: Rule) {
+  const current = allocsByRuleType[rule.type];
+  allocsByRuleType[rule.type] = (current || 0) + 1;
+}
+
+export function logAndClearRuleProfile() {
+  console.log("rule profile", allocsByRuleType);
+  resetRuleProfile();
+}
+
+function resetRuleProfile() {
+  allocsByRuleType = {};
+}
+
 function doParse(
   grammar: Grammar,
   rule: Rule,
   startIdx: number,
   input: string
 ): TraceTree {
+  incrRuleType(rule);
   if (startIdx > input.length) {
     return {
       type: "TextTrace", // this is messed up... what to return here?

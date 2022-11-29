@@ -8,6 +8,7 @@ import { datalogOut, jsonOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./languages";
+import { logAndClearRuleProfile } from "./parserlib/parser";
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
@@ -65,6 +66,7 @@ export function testLangQuery(test: string[]): TestOutput[] {
     if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
       return jsonOut({ allGrammarErrors, langParseError, dlErrors });
     }
+    logAndClearRuleProfile();
     try {
       const res = finalInterp.queryStr(query);
       return datalogOut(res.map((res) => res.term));
