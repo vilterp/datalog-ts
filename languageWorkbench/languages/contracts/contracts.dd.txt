@@ -65,58 +65,12 @@ contract(
     )
   )
 ).
-contract.tree.node{}?
+contract.tree.nodeAndParent{}?
 ----
 application/datalog
-contract.tree.node{display: and{}, id: 32}.
-contract.tree.node{display: delay{duration: 30}, id: 107}.
-contract.tree.node{display: payment{amount: 100, from: "Alice", to: "Bob"}, id: 44}.
-contract.tree.node{display: payment{amount: 110, from: "Bob", to: "Alice"}, id: 160}.
-
-contracts
-contract(
-  id:1,
-  contract:and(
-    pay(from:"Alice", to:"Bob", amount:100),
-    delay(
-      duration:30,
-      contract:pay(from:"Bob", to:"Alice", amount:110)
-    )
-  )
-).
-contract.tree.root{}?
-----
-application/datalog
-contract.tree.root{callID: 32, contractID: 2}.
-
-contracts
-contract(
-  id:1,
-  contract:and(
-    pay(from:"Alice", to:"Bob", amount:100),
-    delay(
-      duration:30,
-      contract:pay(from:"Bob", to:"Alice", amount:110)
-    )
-  )
-).
-contract.tree.parent{}?
-----
-application/datalog
-contract.tree.parent{child: 44, parent: 32}.
-contract.tree.parent{child: 160, parent: 107}.
-contract.tree.parent{child: 107, parent: 32}.
-
-contracts
-contract(
-  id:1,
-  contract:and(
-    pay(from:"Alice", to:"Bob", amount:100),
-    delay(
-      duration:30,
-      contract:pay(from:"Bob", to:"Alice", amount:110)
-    )
-  )
-).
-contract.Contract{}?
-----
+contract.tree.nodeAndParent{display: contract{id: 1}, id: 1, parentID: "root"}.
+contract.tree.nodeAndParent{display: and{}, id: 32, parentID: 1}.
+contract.tree.nodeAndParent{display: delay{duration: 30}, id: 107, parentID: 32}.
+contract.tree.nodeAndParent{display: payment{amount: 100, from: "Alice", to: "Bob"}, id: 44, parentID: 32}.
+contract.tree.nodeAndParent{display: payment{amount: 110, from: "Bob", to: "Alice"}, id: 160, parentID: 107}.
+contract.tree.nodeAndParent{display: root{}, id: "root", parentID: -1}.
