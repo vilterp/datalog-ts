@@ -1,5 +1,6 @@
 import { Grammar, Rule, Span, SingleCharRule, spanLength, char } from "./types";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
+import { reduceEarlyReturn } from "../../util/util";
 
 export type TraceTree = {
   span: Span;
@@ -132,12 +133,9 @@ function doParse(
         span: longest.trace.span,
       };
     case "Sequence":
-      const accum = rule.items.reduce<SequenceSt>(
+      const accum = reduceEarlyReturn<Rule, SequenceSt>(
+        rule.items,
         (accum, rule) => {
-          // TODO: early return variant of reduce
-          if (accum.error) {
-            return accum;
-          }
           const itemTrace = doParse(grammar, rule, accum.pos, input);
           return {
             itemTraces: [...accum.itemTraces, itemTrace],
@@ -145,6 +143,7 @@ function doParse(
             error: itemTrace.error,
           };
         },
+        (accum) => accum.error !== null,
         { itemTraces: [], pos: startIdx, error: null }
       );
       return {

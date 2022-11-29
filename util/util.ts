@@ -9,6 +9,22 @@ export function mapObj<T, V>(
   return out;
 }
 
+export function reduceEarlyReturn<T, A>(
+  arr: T[],
+  f: (accum: A, item: T) => A,
+  shouldReturn: (accum: A) => boolean,
+  init: A
+): A {
+  let accum = init;
+  for (const item of arr) {
+    accum = f(accum, item);
+    if (shouldReturn(accum)) {
+      break;
+    }
+  }
+  return accum;
+}
+
 export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
   const out: U[] = [];
   for (const item of arr) {
