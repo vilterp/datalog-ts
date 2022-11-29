@@ -40,14 +40,14 @@ contract.node.Delay{id: I, duration: D} :-
 
 # == tree structure
 
-contract.root{contractID: Contract, callID: Call} :-
+contract.tree.root{contractID: Contract, callID: Call} :-
   ast.funcCall{id: Call, parentID: Expr} &
   ast.expr{id: Expr, parentID: Arg} &
   ast.funcArg{id: Arg, parentID: Args} &
   ast.funcArgs{id: Args, parentID: Contract} &
   ast.contractStmt{id: Contract}.
 
-contract.parent{child: ChildCall, parent: ParentCall} :-
+contract.tree.parent{child: ChildCall, parent: ParentCall} :-
   ast.funcCall{id: ChildCall, parentID: Expr} &
   ast.expr{id: Expr, parentID: Arg} &
   ast.funcArg{id: Arg, parentID: Args} &
