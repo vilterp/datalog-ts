@@ -106,9 +106,11 @@ contract.PaymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, 
   ast.namedFuncArg{callID: Payment, name: "amount", exprID: AmountExpr} &
   ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr} &
   # id
-  astInternal.node{id: PaymentIDExpr, text: I} &
+  astInternal.node{id: PaymentIDExpr, text: PaymentIDText} &
+  intToString{string: PaymentIDText, int: I} &
   # contract id
-  astInternal.node{id: ContractExpr, text: CID} &
+  astInternal.node{id: ContractExpr, text: ContractIDText} &
+  intToString{string: ContractIDText, int: CID} &
   # from
   ast.stringLit{id: FromStr, parentID: FromExpr} &
   ast.stringContents{parentID: FromStr, text: From} &
