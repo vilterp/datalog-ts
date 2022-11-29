@@ -61,7 +61,7 @@ contract.tree.nodeParent{child: ChildCall, parent: ParentCall} :-
   ast.funcArg{id: Arg, parentID: Args} &
   ast.funcArgs{id: Args, parentID: ParentCall} &
   ast.funcCall{id: ParentCall}.
-contract.contractRootParent{child: C, parent: "root"} :-
+contract.contractRootParent{child: C, parent: 0} :-
   contract.Contract{id: C}.
 
 contract.tree.node{id: A, display: B} :-
@@ -78,11 +78,21 @@ contract.tree.paymentNode{id: I, display: payment{from: F, to: T, amount: A}} :-
 contract.tree.contractNode{id: I, display: contract{id: I}} :-
   contract.Contract{id: I}.
 
-contract.tree.rootNodeAndParent{id: "root", display: root{}, parent: -1}.
+contract.tree.rootNodeAndParent{id: 0, display: root{}, parent: -1}.
 contract.tree.nodeAndParent{id: A, display: B, parentID: C} :-
   contract.tree.node{id: A, display: B} &
   contract.tree.parent{child: A, parent: C} |
   contract.tree.rootNodeAndParent{id: A, display: B, parent: C}.
+
+# == node membership ==
+  
+contract.ancestor{ancestor: I, descendant: N} :-
+  contract.tree.parent{parent: I, child: N} |
+  contract.tree.parent{parent: B, child: N} &
+  contract.ancestor{ancestor: I, descendant: B}.
+contract.member{contractID: I, nodeID: N} :-
+  contract.Contract{id: I} &
+  contract.ancestor{ancestor: I, descendant: N}.
 
 # == payment ==
 
@@ -130,3 +140,50 @@ internal.visualization{
     sortChildren: false
   }
 }.
+
+# ==== compliance ====
+
+timeWindow{time: T} :-
+  range{from: 0, to: 100, val: T}.
+
+contract.compliance.ContractInCompliance{contractID: I, time: T} :-
+  timeWindow{time: T} &
+  contract.Contract{id: I} &
+  contract.tree.parent{child: N, parent: I} &
+  contract.compliance.node{id: N, time: T}.
+
+contract.compliance.node{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.compliance.and{id: I, time: T} |
+  contract.compliance.delay{id: I, time: T} |
+  contract.compliance.payment{id: I, time: T}.
+
+contract.compliance.and{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.node.And{id: I} &
+  childrenInCompliance{parentID: I, count: C1, time: T} &
+  numChildren{parentID: I, count: C2} &
+  C1 = C2.
+contract.compliance.delay{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.node.Delay{id: I, duration: D} &
+  contract.tree.parent{parent: I, child: C} &
+  LaterT = T + D &
+  contract.compliance.node{id: C, time: LaterT}.
+# TODO: on or before T?
+contract.compliance.payment{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.node.Payment{id: I, from: From, to: To, amount: A} &
+  contract.member{contractID: CID, nodeID: I} &
+  contract.PaymentRecord{contractID: CID, from: From, to: To, amount: A, time: PaymentT} &
+  PaymentT <= T.
+
+childrenInCompliance{parentID: P, count: I, time: T} :-
+  count[P, I: childInCompliance{id: I, parentID: P, time: T}].
+childInCompliance{id: I, parentID: P, time: T} :-
+  timeWindow{time: T} &
+  contract.tree.parent{child: I, parent: P} &
+  contract.compliance.node{id: I, time: T}.
+
+numChildren{parentID: P, count: I} :-
+  count[P, I: contract.tree.parent{child: I, parent: P}].
