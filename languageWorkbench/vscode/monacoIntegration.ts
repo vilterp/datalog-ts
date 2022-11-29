@@ -59,9 +59,6 @@ export function registerLanguageSupport(
         position: monaco.Position,
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
-        if (token.isCancellationRequested) {
-          return [];
-        }
         try {
           return getHighlights(spec, document, position, token);
         } catch (e) {
@@ -149,9 +146,6 @@ export function registerLanguageSupport(
         lastResultId: string | null,
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
-        if (token.isCancellationRequested) {
-          throw new Error("cancelled");
-        }
         try {
           const before = new Date().getTime();
           const tokens = getSemanticTokens(spec, model, token);

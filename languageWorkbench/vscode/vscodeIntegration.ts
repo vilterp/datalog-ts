@@ -145,10 +145,6 @@ export function registerLanguageSupport(
           document: vscode.TextDocument,
           token: vscode.CancellationToken
         ): vscode.ProviderResult<vscode.SemanticTokens> {
-          if (token.isCancellationRequested) {
-            console.log("cancelled: provideDocumentSemanticTokens");
-            return null;
-          }
           try {
             const before = new Date().getTime();
             const tokens = getSemanticTokens(spec, document, token);
