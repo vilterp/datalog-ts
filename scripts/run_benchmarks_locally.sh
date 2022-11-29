@@ -9,4 +9,4 @@
 source .env
 export GIT_SHA=$(git rev-parse HEAD)
 export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-yarn benchmark
+node --inspect-brk ./node_modules/.bin/ts-node allBenchmarks.ts
