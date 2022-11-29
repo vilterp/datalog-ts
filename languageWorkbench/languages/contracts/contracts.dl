@@ -143,6 +143,24 @@ internal.visualization{
   }
 }.
 
+viz.party{name: N} :-
+  contract.PaymentRecord{from: N} |
+  contract.PaymentRecord{to: N}.
+
+viz.paymentHop{
+  from: tick{time: T, place: FP},
+  to: tick{time: T, place: TP},
+} :-
+  contract.PaymentRecord{from: FP, to: TP, time: T}.
+
+internal.visualization{
+  name: "Payment Sequence",
+  spec: sequence{
+    actors: viz.party{name: ID},
+    messages: viz.paymentHop{from: FromTick, to: ToTick},
+  }
+}.
+
 # ==== compliance ====
 
 timeWindow{time: T} :-
@@ -192,3 +210,15 @@ childInCompliance{id: I, parentID: P, time: T} :-
 
 numChildren{parentID: P, count: I} :-
   count[P, I: contract.tree.parent{child: I, parent: P}].
+
+# == balance sheet ==
+
+# TODO: due date
+contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.node.Payment{id: N, from: D, to: C, amount: A} &
+  !contract.PaymentRecord{from: D, to: C, amount: A, contractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+
+# TODO: fix aggregation syntax
+contract.balance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].

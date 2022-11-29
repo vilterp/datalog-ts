@@ -92,3 +92,20 @@ contract.compliance.ContractInComplianceInitially{}?
 ----
 application/datalog
 contract.compliance.ContractInComplianceInitially{contractID: 1}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
+contract.balance{}?
+----
+application/datalog
+contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}.
