@@ -155,6 +155,120 @@ function* ruleBodyTerm(
   }
 }
 
+function* scopeVar(
+  db: NodesByRule
+): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
+  for (const result of scopeVarRuleInvocation(db)) {
+    yield result;
+  }
+  for (const result of scopeVarTerm(db)) {
+    yield result;
+  }
+  for (const result of scopeVarAttr(db)) {
+    yield result;
+  }
+  for (const result of scopeVarFact(db)) {
+    yield result;
+  }
+}
+
+function* scopeVarRuleInvocation(
+  db: NodesByRule
+): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
+  // TODO: pass in rule id?
+  for (const { termID: recordID, ruleID } of ruleBodyTerm(db)) {
+    if (db["record"].byID[recordID]) {
+      for (const ident of db["ident"].byParentID[recordID]) {
+        yield {
+          scopeID: "global", // TODO: not string
+          kind: "relation",
+          name: ident.text,
+          span: ident.span,
+        };
+      }
+    }
+  }
+}
+
+function* scopeVarTerm(
+  db: NodesByRule
+): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
+  for (const { ruleID, termID } of ruleBodyTerm(db)) {
+    // TODO: pass in some id so we're not doing a cross join?
+    for (const { termID: innerTermID, name, span } of scopeTermOrRecordVar(
+      db
+    )) {
+      if (termID.toString() === innerTermID) {
+        yield { scopeID: ruleID, name, span, kind: "var" };
+      }
+    }
+  }
+}
+
+function* scopeTermOrRecordVar(
+  db: NodesByRule
+): Generator<{ termID: string; name: string; span: Span }> {
+  for (const { recordID, name, span } of scopeRecordVar(db)) {
+    yield { termID: recordID, name, span };
+  }
+  for (const { termID, name, span } of scopeTermVar(db)) {
+    yield { termID, name, span };
+  }
+}
+
+function* scopeTermVar(
+  db: NodesByRule
+): Generator<{ termID: string; name: string; span: Span }> {
+  for (const termID in db["term"].byID) {
+    for (const varRecord of db["var"].byParentID[termID]) {
+      yield { termID, name: varRecord.text, span: varRecord.span };
+    }
+  }
+  for (const termID in db["term"].byID) {
+    for (const record of db["record"].byParentID[termID]) {
+      // TODO: pass argument to avoid cross join?
+      for (const { recordID, name, span } of scopeRecordVar(db)) {
+        if (record.id.toString() === recordID) {
+          yield { termID, name, span };
+        }
+      }
+    }
+  }
+  for (const termID in db["term"].byID) {
+    for (const array of db["array"].byParentID[termID]) {
+      for (const arrItemTerm of db["term"].byParentID[array.id]) {
+        // TODO: pass argument
+        for (const { termID, name, span } of scopeTermVar(db)) {
+          if (termID === arrItemTerm.id.toString()) {
+            yield { name, span, termID };
+          }
+        }
+      }
+    }
+  }
+}
+
+function* scopeRecordVar(
+  db: NodesByRule
+): Generator<{ recordID: string; name: string; span: Span }> {
+  for (const recordID in db["record"].byID) {
+    for (const recordAttr of db["recordAttrs"].byParentID[recordID]) {
+      for (const recordKeyValue of db["recordKeyValue"].byParentID[
+        recordAttr.id
+      ]) {
+        for (const term of db["term"].byParentID[recordKeyValue.id]) {
+          // TODO: pass argument
+          for (const { termID: valueTerm, name, span } of scopeTermVar(db)) {
+            if (valueTerm === term.id.toString()) {
+              yield { recordID: valueTerm, name, span };
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 // TODO: get all usages
 
 function pushVars(
