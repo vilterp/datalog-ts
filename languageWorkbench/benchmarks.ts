@@ -22,19 +22,21 @@ export const lwbBenchmarks: BenchmarkSpec[] = [
   },
 }));
 
-export const nativeDLBenchmark: BenchmarkSpec = {
-  name: "nativeDLSupport",
-  async run() {
-    return doBenchmark(100, testDLCompletions);
+export const nativeDLBenchmarks: BenchmarkSpec[] = [
+  {
+    name: "getCompletions",
+    async run() {
+      return doBenchmark(100, testDLCompletions);
+    },
   },
-};
+];
 
 // native DL benchmark
 
 const DLSample = `
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
-  scope.l|||et{id: I, name: N, type: T, location: S} |
+  scope.let{id: I, name: N, type: T, location: S} |
   scope.lambda{id: I, name: N, type: T, location: S}.
 scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
   ast.RootExpr{id: I} &
@@ -139,5 +141,7 @@ hl.mapping{rule: "inKW", type: "keyword"}.
 function testDLCompletions() {
   const main = parseMain(DLSample);
   const items = getCompletionItems(main, 3412);
-  console.log("testDLCompletions", items);
+  if (items.length === 0) {
+    throw new Error("items length should be > 0");
+  }
 }
