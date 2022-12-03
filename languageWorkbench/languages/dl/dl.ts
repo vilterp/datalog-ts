@@ -1,4 +1,5 @@
 import { spanContainsIdx } from "../../../uiCommon/ide/keymap/util";
+import { RuleTree } from "../../parserlib/ruleTree";
 import { Span } from "../../parserlib/types";
 import { DLMain, DLTerm, DLConjunct } from "./parser";
 
@@ -148,3 +149,46 @@ function pushVars(
       break;
   }
 }
+
+type TokenType =
+  | "ident"
+  | "typeParameter"
+  | "number"
+  | "number"
+  | "string"
+  | "comment"
+  | "keyword"
+  | "keyword"
+  | "string";
+
+export type SemanticToken = { type: TokenType; span: Span };
+
+export function getSemanticTokens(tree: RuleTree): SemanticToken[] {
+  const out: SemanticToken[] = [];
+  const recur = (node: RuleTree) => {
+    const mapping = SYNTAX_HIGHLIGHTING_MAPPING[node.name];
+    if (mapping) {
+      out.push({
+        type: mapping,
+        span: node.span,
+      });
+    }
+    for (const child of node.children) {
+      recur(child);
+    }
+  };
+  recur(tree);
+  return out;
+}
+
+const SYNTAX_HIGHLIGHTING_MAPPING: { [ruleType: string]: TokenType } = {
+  ident: "ident",
+  var: "typeParameter",
+  int: "number",
+  bool: "number",
+  string: "string",
+  comment: "comment",
+  tableKW: "keyword",
+  loadKW: "keyword",
+  path: "string",
+};
