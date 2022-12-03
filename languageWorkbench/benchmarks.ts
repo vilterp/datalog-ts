@@ -9,6 +9,7 @@ import { getCompletionItems, getSemanticTokens } from "./languages/dl/dl";
 import * as parserlib from "./parserlib/parser";
 import { GRAMMAR, parseMain } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
+import { flattenByRule } from "./parserlib/flattenByRule";
 
 export const lwbBenchmarks: BenchmarkSpec[] = [
   { lang: "fp", reps: 10 },
@@ -34,7 +35,13 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "getSemanticTokens",
     async run() {
-      return doBenchmark(1000, testGetSemanticTokens);
+      return doBenchmark(10000, testGetSemanticTokens);
+    },
+  },
+  {
+    name: "flattenByRule",
+    async run() {
+      return doBenchmark(1000, testFlattenByRule);
     },
   },
 ];
@@ -146,9 +153,13 @@ hl.mapping{rule: "letKW", type: "keyword"}.
 hl.mapping{rule: "inKW", type: "keyword"}.
 `;
 
+const LEAVES = new Set(["ident", "intLit", "stringLit"]);
+
 const main = parseMain(DLSample);
 const tree = parserlib.parse(GRAMMAR, "main", DLSample);
 const ruleTree = extractRuleTree(tree);
+const flattenedByRule = flattenByRule(ruleTree, DLSample, LEAVES);
+console.log(flattenedByRule);
 
 function testDLCompletions() {
   const items = getCompletionItems(main, 3412);
@@ -162,4 +173,8 @@ function testGetSemanticTokens() {
   if (tokens.length === 0) {
     throw new Error("tokens length should be > 0");
   }
+}
+
+function testFlattenByRule() {
+  flattenByRule(ruleTree, DLSample, LEAVES);
 }
