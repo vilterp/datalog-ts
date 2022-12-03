@@ -10,24 +10,33 @@ export type ASTNodeRecord = {
 
 export type NodesByRule = {
   [ruleName: string]: {
+    length: number;
     byID: { [id: string]: ASTNodeRecord };
     byParentID: { [parentID: string]: ASTNodeRecord[] };
   };
 };
 
-export function flattenByRule(ruleTree: RuleTree, source: string): NodesByRule {
+export function flattenByRule(
+  ruleTree: RuleTree,
+  source: string,
+  leaves: Set<string>
+): NodesByRule {
   const result: NodesByRule = {};
   let nextID = 0;
   const recur = (node: RuleTree, parentID: number) => {
+    if (leaves.has(node.name)) {
+      return;
+    }
     const id = nextID;
     nextID++;
     // ensure rule is there
     // TODO: I really need a DefaultDict
     let forRule = result[node.name];
     if (!forRule) {
-      forRule = { byID: {}, byParentID: {} };
+      forRule = { byID: {}, byParentID: {}, length: 0 };
       result[node.name] = forRule;
     }
+    forRule.length++;
     // construct node
     const record: ASTNodeRecord = {
       id,
