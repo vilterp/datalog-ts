@@ -101,26 +101,59 @@ function getAllDefns(main: DLMain): Defn[] {
   return results;
 }
 
-// function ruleConjunct(main: DLMain): { ruleID: string; conjunct: DLConjunct } {}
+function* ruleConjunct(db: NodesByRule): Generator<{
+  ruleID: string;
+  conjunctID: string;
+}> {
+  for (const ruleID in db["rule"].byID) {
+    for (const disjunctID in db["disjunct"].byParentID[ruleID]) {
+      for (const conjunctID in db["conjunct"].byParentID[disjunctID]) {
+        yield { ruleID, conjunctID };
+      }
+    }
+  }
+}
 
-// function termInRuleBody(main: DLMain): { term: DLTerm; rule: string }[] {
-//   const results: { term: DLTerm; rule: string }[] = [];
-//   main.statement.forEach((stmt) => {
-//     switch (stmt.type) {
-//       case "Rule": {
-//         const ruleName = stmt.record.ident.text;
-//         const ruleScope: Scope = { type: "Rule", name: ruleName };
-//         stmt.disjunct.forEach((disjunct) => {
-//           disjunct.conjunct.forEach((conjunct) => {
-//             pushVars(results, ruleScope, conjunct);
-//           });
-//         });
-//         break;
-//       }
-//     }
-//   });
-//   return results;
-// }
+function* ruleBodyTerm(
+  db: NodesByRule
+): Generator<{ ruleID: string; termID: number }> {
+  for (const { ruleID, conjunctID } of ruleConjunct(db)) {
+    for (const record of db["record"].byParentID[conjunctID]) {
+      yield { ruleID, termID: record.id };
+    }
+    for (const negation of db["negation"].byParentID[conjunctID]) {
+      for (const record of db["record"].byParentID[negation.id]) {
+        yield { ruleID, termID: record.id };
+      }
+    }
+    for (const aggregation of db["aggregation"].byParentID[conjunctID]) {
+      for (const record of db["record"].byParentID[aggregation.id]) {
+        yield { ruleID, termID: record.id };
+      }
+    }
+    for (const comparison of db["comparison"].byParentID[conjunctID]) {
+      for (const term of db["term"].byParentID[comparison.id]) {
+        yield { ruleID, termID: term.id };
+      }
+    }
+    for (const comparison of db["arithmetic"].byParentID[conjunctID]) {
+      for (const assignment of db["assignmentOnLeft"].byParentID[
+        comparison.id
+      ]) {
+        for (const term of db["term"].byParentID[assignment.id]) {
+          yield { ruleID, termID: term.id };
+        }
+      }
+      for (const assignment of db["assignmentOnRight"].byParentID[
+        comparison.id
+      ]) {
+        for (const term of db["term"].byParentID[assignment.id]) {
+          yield { ruleID, termID: term.id };
+        }
+      }
+    }
+  }
+}
 
 // TODO: get all usages
 
