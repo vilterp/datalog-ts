@@ -6,8 +6,8 @@ import {
 } from "./languageWorkbench/benchmarks";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
-  parserBenchmarks,
-  lwbBenchmarks,
+  // parserBenchmarks,
+  // lwbBenchmarks,
   nativeDLBenchmarks,
 };
 

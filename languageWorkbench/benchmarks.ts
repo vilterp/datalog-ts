@@ -5,8 +5,10 @@ import {
   runDDBenchmark,
 } from "../util/testBench/benchmark";
 import { testLangQuery } from "./ddTests";
-import { getCompletionItems } from "./languages/dl/dl";
-import { parseMain } from "./languages/dl/parser";
+import { getCompletionItems, getSemanticTokens } from "./languages/dl/dl";
+import * as parserlib from "./parserlib/parser";
+import { GRAMMAR, parseMain } from "./languages/dl/parser";
+import { extractRuleTree } from "./parserlib/ruleTree";
 
 export const lwbBenchmarks: BenchmarkSpec[] = ["fp", "dl"].map((lang) => ({
   name: lang,
@@ -22,7 +24,13 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "getCompletions",
     async run() {
-      return doBenchmark(100, testDLCompletions);
+      return doBenchmark(10000, testDLCompletions);
+    },
+  },
+  {
+    name: "getSemanticTokens",
+    async run() {
+      return doBenchmark(1000, testGetSemanticTokens);
     },
   },
 ];
@@ -134,10 +142,20 @@ hl.mapping{rule: "letKW", type: "keyword"}.
 hl.mapping{rule: "inKW", type: "keyword"}.
 `;
 
+const main = parseMain(DLSample);
+const tree = parserlib.parse(GRAMMAR, "main", DLSample);
+const ruleTree = extractRuleTree(tree);
+
 function testDLCompletions() {
-  const main = parseMain(DLSample);
   const items = getCompletionItems(main, 3412);
   if (items.length === 0) {
     throw new Error("items length should be > 0");
+  }
+}
+
+function testGetSemanticTokens() {
+  const tokens = getSemanticTokens(ruleTree);
+  if (tokens.length === 0) {
+    throw new Error("tokens length should be > 0");
   }
 }
