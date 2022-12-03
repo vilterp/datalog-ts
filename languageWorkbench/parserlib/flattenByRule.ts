@@ -24,9 +24,6 @@ export function flattenByRule(
   const result: NodesByRule = {};
   let nextID = 0;
   const recur = (node: RuleTree, parentID: number) => {
-    if (leaves.has(node.name)) {
-      return;
-    }
     const id = nextID;
     nextID++;
     // ensure rule is there
@@ -53,6 +50,10 @@ export function flattenByRule(
       result[node.name].byParentID[parentID] = byParentID;
     }
     byParentID.push(record);
+    // short circuit if this is a leaf
+    if (leaves.has(node.name)) {
+      return;
+    }
     // children
     for (const child of node.children) {
       recur(child, id);
