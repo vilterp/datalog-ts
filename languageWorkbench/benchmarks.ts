@@ -165,7 +165,7 @@ function testDLCompletions() {
 }
 
 function testGetSemanticTokens() {
-  const tokens = getSemanticTokens(ruleTree);
+  const tokens = getSemanticTokens(flattenedByRule);
   if (tokens.length === 0) {
     throw new Error("tokens length should be > 0");
   }
