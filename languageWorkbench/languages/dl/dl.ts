@@ -114,7 +114,7 @@ function* ruleConjunct(db: NodesByRule): Generator<{
   }
 }
 
-function* ruleBodyTerm(
+function* scopeRuleBodyTerm(
   db: NodesByRule
 ): Generator<{ ruleID: string; termID: number }> {
   for (const { ruleID, conjunctID } of ruleConjunct(db)) {
@@ -172,11 +172,59 @@ function* scopeVar(
   }
 }
 
+function* scopeVarAttr(db: NodesByRule): Generator<{
+  scopeID: string;
+  nodeID: string;
+  name: string;
+  span: Span;
+  kind: "attr";
+}> {
+  for (const { termID: recordID } of scopeRuleBodyTerm(db)) {
+    if (db["record"].byID[recordID]) {
+      for (const headIdent of db["ident"].byParentID[recordID]) {
+        for (const attr of db["recordAttrs"].byParentID[recordID]) {
+          for (const keyValue of db["recordKeyValue"].byParentID[attr.id]) {
+            for (const kvIdent of db["ident"].byParentID[keyValue.id]) {
+              yield {
+                scopeID: headIdent.text,
+                name: kvIdent.text,
+                nodeID: kvIdent.id.toString(),
+                span: kvIdent.span,
+                kind: "attr",
+              };
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function* scopeVarFact(db: NodesByRule): Generator<{
+  scopeID: "global";
+  name: string;
+  span: Span;
+  kind: "relation";
+}> {
+  for (const factID in db["fact"].byID) {
+    for (const record of db["record"].byParentID[factID]) {
+      for (const ident of db["ident"].byParentID[record.id]) {
+        yield {
+          scopeID: "global",
+          kind: "relation",
+          name: ident.text,
+          span: ident.span,
+        };
+      }
+    }
+  }
+}
+
 function* scopeVarRuleInvocation(
   db: NodesByRule
 ): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
   // TODO: pass in rule id?
-  for (const { termID: recordID, ruleID } of ruleBodyTerm(db)) {
+  for (const { termID: recordID, ruleID } of scopeRuleBodyTerm(db)) {
     if (db["record"].byID[recordID]) {
       for (const ident of db["ident"].byParentID[recordID]) {
         yield {
@@ -193,7 +241,7 @@ function* scopeVarRuleInvocation(
 function* scopeVarTerm(
   db: NodesByRule
 ): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
-  for (const { ruleID, termID } of ruleBodyTerm(db)) {
+  for (const { ruleID, termID } of scopeRuleBodyTerm(db)) {
     // TODO: pass in some id so we're not doing a cross join?
     for (const { termID: innerTermID, name, span } of scopeTermOrRecordVar(
       db
