@@ -1,4 +1,5 @@
 import { spanContainsIdx } from "../../../uiCommon/ide/keymap/util";
+import { NodesByRule } from "../../parserlib/flattenByRule";
 import { RuleTree } from "../../parserlib/ruleTree";
 import { Span } from "../../parserlib/types";
 import { DLMain, DLTerm, DLConjunct } from "./parser";
@@ -190,21 +191,21 @@ type TokenType =
 
 export type SemanticToken = { type: TokenType; span: Span };
 
-export function getSemanticTokens(tree: RuleTree): SemanticToken[] {
+export function getSemanticTokens(db: NodesByRule): SemanticToken[] {
   const out: SemanticToken[] = [];
-  const recur = (node: RuleTree) => {
-    const mapping = SYNTAX_HIGHLIGHTING_MAPPING[node.name];
-    if (mapping) {
+  for (const rule in SYNTAX_HIGHLIGHTING_MAPPING) {
+    const tokenType = SYNTAX_HIGHLIGHTING_MAPPING[rule];
+    if (!db[rule]) {
+      continue;
+    }
+    for (const nodeID in db[rule].byID) {
+      const node = db[rule].byID[nodeID];
       out.push({
-        type: mapping,
         span: node.span,
+        type: tokenType,
       });
     }
-    for (const child of node.children) {
-      recur(child);
-    }
-  };
-  recur(tree);
+  }
   return out;
 }
 
