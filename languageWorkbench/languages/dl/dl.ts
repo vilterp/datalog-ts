@@ -18,6 +18,12 @@ export type Defn = {
   scope: Scope;
 };
 
+export type Var = {
+  name: string;
+  span: Span;
+  scope: Scope;
+};
+
 type Scope = { type: "Global" } | { type: "Rule"; name: string };
 
 const globalScope: Scope = { type: "Global" };
@@ -50,7 +56,7 @@ function isWithinScope(usageScope: Scope, defnScope: Scope): boolean {
   return true;
 }
 
-export function getAllDefns(main: DLMain): Defn[] {
+function getAllDefns(main: DLMain): Defn[] {
   const results: Defn[] = [];
 
   main.statement.forEach((stmt) => {
@@ -93,6 +99,27 @@ export function getAllDefns(main: DLMain): Defn[] {
 
   return results;
 }
+
+// function ruleConjunct(main: DLMain): { ruleID: string; conjunct: DLConjunct } {}
+
+// function termInRuleBody(main: DLMain): { term: DLTerm; rule: string }[] {
+//   const results: { term: DLTerm; rule: string }[] = [];
+//   main.statement.forEach((stmt) => {
+//     switch (stmt.type) {
+//       case "Rule": {
+//         const ruleName = stmt.record.ident.text;
+//         const ruleScope: Scope = { type: "Rule", name: ruleName };
+//         stmt.disjunct.forEach((disjunct) => {
+//           disjunct.conjunct.forEach((conjunct) => {
+//             pushVars(results, ruleScope, conjunct);
+//           });
+//         });
+//         break;
+//       }
+//     }
+//   });
+//   return results;
+// }
 
 // TODO: get all usages
 
