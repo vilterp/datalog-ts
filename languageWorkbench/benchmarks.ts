@@ -36,15 +36,21 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "getCompletionsSimpleInterp",
     async run() {
-      return doBenchmark(10000, testCompletionsSimpleInterp);
+      return doBenchmark(1000, testCompletionsSimpleInterp);
     },
   },
-  // {
-  //   name: "getSemanticTokens",
-  //   async run() {
-  //     return doBenchmark(10000, testGetSemanticTokens);
-  //   },
-  // },
+  {
+    name: "getSemanticTokensNative",
+    async run() {
+      return doBenchmark(10000, testGetSemanticTokensNative);
+    },
+  },
+  {
+    name: "getSemanticTokensNative",
+    async run() {
+      return doBenchmark(1000, testGetSemanticTokensSimpleInterp);
+    },
+  },
   // {
   //   name: "flattenByRule",
   //   async run() {
@@ -196,11 +202,15 @@ function testCompletionsSimpleInterp() {
   }
 }
 
-function testGetSemanticTokens() {
+function testGetSemanticTokensNative() {
   const tokens = [...getSemanticTokens(flattenedByRule, datalog)];
   if (tokens.length === 0) {
     throw new Error("tokens length should be > 0");
   }
+}
+
+function testGetSemanticTokensSimpleInterp() {
+  const results = interp.queryStr("hl.NonHighlightSegment{}");
 }
 
 function testFlattenByRule() {
