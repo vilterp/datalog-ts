@@ -1,7 +1,7 @@
 import { fsLoader } from "../core/fsLoader";
 import { ppt } from "../core/pretty";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, getInterpForDoc } from "./interp";
+import { addCursor, getInterpForDoc } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPath } from "../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../util/ddTest/types";

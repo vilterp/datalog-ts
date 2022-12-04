@@ -10,7 +10,10 @@ import {
 import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
-import { addCursor, getInterpForDoc } from "../../languageWorkbench/interp";
+import {
+  addCursor,
+  getInterpForDoc,
+} from "../../languageWorkbench/interpCache";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditor(props: {

@@ -6,7 +6,10 @@ import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { addCursor, getInterpForDoc } from "../../languageWorkbench/interp";
+import {
+  addCursor,
+  getInterpForDoc,
+} from "../../languageWorkbench/interpCache";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 function Main() {
