@@ -33,6 +33,7 @@ scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :
   scope.ruleBodyTerm{termOrRecord: RecordID} &
   ast.record{id: RecordID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
+# vars in a rule body
 scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
   scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
   scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.
