@@ -60,8 +60,8 @@ edge{from: F, to: T}?
 ----
 application/datalog-results
 edge{from: "A", to: "B"}; {F: "A", T: "B"}.
-edge{from: "C", to: "D"}; {F: "C", T: "D"}.
-edge{from: "B", to: "C"}; {F: "B", T: "C"}.
-edge{from: "B", to: "D"}; {F: "B", T: "D"}.
 edge{from: "A", to: "C"}; {F: "A", T: "C"}.
 edge{from: "A", to: "D"}; {F: "A", T: "D"}.
+edge{from: "B", to: "C"}; {F: "B", T: "C"}.
+edge{from: "B", to: "D"}; {F: "B", T: "D"}.
+edge{from: "C", to: "D"}; {F: "C", T: "D"}.

@@ -44,11 +44,11 @@ trans_edge{from: A, to: B}?
 ----
 application/datalog
 trans_edge{from: "A", to: "B"}.
-trans_edge{from: "B", to: "C"}.
-trans_edge{from: "C", to: "D"}.
 trans_edge{from: "A", to: "C"}.
 trans_edge{from: "A", to: "D"}.
+trans_edge{from: "B", to: "C"}.
 trans_edge{from: "B", to: "D"}.
+trans_edge{from: "C", to: "D"}.
 
 edge{to: T, from: F, label: ""} :-
   trans_edge{to: T, from: F}.

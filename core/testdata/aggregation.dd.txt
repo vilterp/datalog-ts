@@ -40,5 +40,5 @@ countBarByParent{parentID: P, count: I} :-
 countBarByParent{parentID: P, count: I}?
 ----
 application/datalog
-countBarByParent{count: 3, parentID: 1}.
 countBarByParent{count: 2, parentID: 2}.
+countBarByParent{count: 3, parentID: 1}.

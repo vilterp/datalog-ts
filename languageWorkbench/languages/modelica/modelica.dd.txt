@@ -15,6 +15,6 @@ application/datalog
 scope.Usage{definitionScopeID: 1, defnSpan: span{from: 18, to: 28}, kind: "var", name: "initHeight", usageScopeID: 1, usageSpan: span{from: 51, to: 61}}.
 scope.Usage{definitionScopeID: 1, defnSpan: span{from: 32, to: 33}, kind: "var", name: "h", usageScopeID: 1, usageSpan: span{from: 47, to: 48}}.
 scope.Usage{definitionScopeID: 1, defnSpan: span{from: 32, to: 33}, kind: "var", name: "h", usageScopeID: 1, usageSpan: span{from: 91, to: 92}}.
+scope.Usage{definitionScopeID: 1, defnSpan: span{from: 37, to: 38}, kind: "var", name: "v", usageScopeID: 1, usageSpan: span{from: 101, to: 102}}.
 scope.Usage{definitionScopeID: 1, defnSpan: span{from: 37, to: 38}, kind: "var", name: "v", usageScopeID: 1, usageSpan: span{from: 65, to: 66}}.
 scope.Usage{definitionScopeID: 1, defnSpan: span{from: 37, to: 38}, kind: "var", name: "v", usageScopeID: 1, usageSpan: span{from: 83, to: 84}}.
-scope.Usage{definitionScopeID: 1, defnSpan: span{from: 37, to: 38}, kind: "var", name: "v", usageScopeID: 1, usageSpan: span{from: 101, to: 102}}.
