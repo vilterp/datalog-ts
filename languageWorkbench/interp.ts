@@ -24,11 +24,11 @@ const interpSourceCache: {
 } = {};
 
 // TODO: call this from the outside on vscode document change events
-function updateDocSource(uri: string, source: string) {
+function updateDocSource(uri: string, langID: string, source: string) {
   const currentSource = docSource[uri];
   if (currentSource !== source) {
     docSource[uri] = source;
-    delete interpSourceCache[uri];
+    delete interpSourceCache[`${langID}-${uri}`];
   }
 }
 
@@ -90,7 +90,7 @@ export function getInterpForDoc(
   uri: string,
   source: string
 ) {
-  updateDocSource(uri, source);
+  updateDocSource(uri, langID, source);
   const key = `${langID}-${uri}`;
   let res = interpSourceCache[key];
   // TODO: this is a big memory leak
@@ -98,7 +98,7 @@ export function getInterpForDoc(
     res = addSourceInner(initInterp, langID, languages, docSource[uri]);
     interpSourceCache[key] = res;
   } else {
-    console.log("cache hit", langID, uri, source);
+    console.log("cache hit", langID, uri, "source length", source.length);
   }
   return res;
 }
@@ -109,8 +109,6 @@ function addSourceInner(
   languages: { [langID: string]: LanguageSpec },
   source: string
 ): ConstructInterpRes {
-  console.log("addSourceInner", source.length);
-
   let { interp, grammar } = interpForLangSpec(initInterp, languages, langID);
 
   // initialize stuff that we'll fill in later, if parse succeeds
@@ -123,7 +121,6 @@ function addSourceInner(
     ruleTree = extractRuleTree(traceTree);
     const records = flatten(ruleTree, source);
     interp = interp.bulkInsert(records);
-    console.log("records", records);
     interp = interp.evalRawStmts(declareTables(grammar))[1];
     interp = interp.evalStmt({
       type: "Rule",
@@ -135,10 +132,10 @@ function addSourceInner(
     console.error(e);
   }
 
-  (interp as SimpleInterpreter).db.tables.mapEntries(([name, collection]) => {
-    console.log(name, collection.all().toArray());
-    return [name, collection];
-  });
+  // (interp as SimpleInterpreter).db.tables.mapEntries(([name, collection]) => {
+  //   console.log(name, collection.all().toArray());
+  //   return [name, collection];
+  // });
 
   return {
     interp,
