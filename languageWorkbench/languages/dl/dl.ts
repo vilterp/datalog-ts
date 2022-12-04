@@ -10,25 +10,25 @@ import { Span } from "../../parserlib/types";
 
 // ==== Defn ====
 
-function* scopeDefn(db: NodesByRule): Generator<Defn> {
-  for (const defn of scopeDefnRule(db)) {
+function* scopeDefn(db: NodesByRule, scopeID: string): Generator<Defn> {
+  for (const defn of scopeDefnRule(db, scopeID)) {
     yield defn;
   }
-  for (const defn of scopeDefnVar(db)) {
+  for (const defn of scopeDefnVar(db, scopeID)) {
     yield defn;
   }
-  for (const defn of scopeDefnTable(db)) {
+  for (const defn of scopeDefnTable(db, scopeID)) {
     yield defn;
   }
-  for (const defn of scopeDefnAttr(db)) {
+  for (const defn of scopeDefnAttr(db, scopeID)) {
     yield defn;
   }
-  for (const defn of scopeDefnInnerVar(db)) {
+  for (const defn of scopeDefnInnerVar(db, scopeID)) {
     yield defn;
   }
 }
 
-function* scopeDefnRule(db: NodesByRule): Generator<Defn> {
+function* scopeDefnRule(db: NodesByRule, scopeID: string): Generator<Defn> {
   for (const ruleID in db["rule"].byID) {
     for (const ident of db["ident"].byParentID[ruleID] || []) {
       yield {
@@ -42,26 +42,29 @@ function* scopeDefnRule(db: NodesByRule): Generator<Defn> {
   }
 }
 
-function* scopeDefnVar(db: NodesByRule): Generator<Defn> {
-  for (const ruleID in db["rule"].byID) {
-    for (const record of db["record"].byParentID[ruleID]) {
-      // TODO: pass argument
-      for (const recordVar of scopeRecordVar(db)) {
-        if (recordVar.recordID === record.id.toString()) {
-          yield {
-            kind: "var",
-            name: recordVar.name,
-            scopeID: ruleID,
-            span: recordVar.span,
-            type: "",
-          };
-        }
+function* scopeDefnVar(db: NodesByRule, ruleID: string): Generator<Defn> {
+  // for (const ruleID in db["rule"].byID) {
+  for (const record of db["record"].byParentID[ruleID] || []) {
+    // TODO: pass argument
+    for (const recordVar of scopeRecordVar(db, record.id.toString())) {
+      if (recordVar.recordID === record.id.toString()) {
+        yield {
+          kind: "var",
+          name: recordVar.name,
+          scopeID: ruleID,
+          span: recordVar.span,
+          type: "",
+        };
       }
     }
   }
+  // }
 }
 
-function* scopeDefnTable(db: NodesByRule): Generator<Defn> {
+function* scopeDefnTable(db: NodesByRule, scopeID: string): Generator<Defn> {
+  if (!db["tableDecl"]) {
+    return;
+  }
   for (const tableDeclID in db["tableDecl"].byID) {
     for (const ident of db["ident"].byParentID[tableDeclID]) {
       yield {
@@ -75,7 +78,7 @@ function* scopeDefnTable(db: NodesByRule): Generator<Defn> {
   }
 }
 
-function* scopeDefnAttr(db: NodesByRule): Generator<Defn> {
+function* scopeDefnAttr(db: NodesByRule, scopeID: string): Generator<Defn> {
   for (const ruleID in db["rule"].byID) {
     for (const record of db["record"].byParentID[ruleID]) {
       for (const headIdent of db["ident"].byParentID[record.id]) {
@@ -97,7 +100,7 @@ function* scopeDefnAttr(db: NodesByRule): Generator<Defn> {
   }
 }
 
-function* scopeDefnInnerVar(db: NodesByRule): Generator<Defn> {
+function* scopeDefnInnerVar(db: NodesByRule, scopeID: string): Generator<Defn> {
   for (const varTerm of scopeVarTerm(db)) {
     yield {
       kind: "var",
@@ -128,17 +131,27 @@ function* scopeVar(db: NodesByRule): Generator<Var> {
 
 function* ruleConjunct(db: NodesByRule): Generator<{
   ruleID: string;
+  ruleName: string;
   conjunctID: string;
 }> {
   for (const ruleID in db["rule"].byID) {
-    for (const disjunct of db["disjunct"].byParentID[ruleID]) {
-      for (const conjunct of db["conjunct"].byParentID[disjunct.id]) {
-        yield { ruleID, conjunctID: conjunct.id.toString() };
+    for (const record of db["record"].byParentID[ruleID]) {
+      for (const ident of db["ident"].byParentID[record.id]) {
+        for (const disjunct of db["disjunct"].byParentID[ruleID]) {
+          for (const conjunct of db["conjunct"].byParentID[disjunct.id]) {
+            yield {
+              ruleID,
+              ruleName: ident.text,
+              conjunctID: conjunct.id.toString(),
+            };
+          }
+        }
       }
     }
   }
 }
 
+// terms in a rule body (doesn't recurse all the way down)
 function* scopeRuleBodyTerm(
   db: NodesByRule
 ): Generator<{ ruleID: string; termID: number }> {
@@ -243,77 +256,89 @@ function* scopeVarTerm(db: NodesByRule): Generator<Var> {
   for (const { ruleID, termID } of scopeRuleBodyTerm(db)) {
     // TODO: pass in some id so we're not doing a cross join?
     for (const { termID: innerTermID, name, span } of scopeTermOrRecordVar(
-      db
+      db,
+      termID.toString()
     )) {
-      if (termID.toString() === innerTermID) {
-        yield { scopeID: ruleID, name, span, kind: "var" };
-      }
+      // if (termID.toString() === innerTermID) {
+      yield { scopeID: ruleID, name, span, kind: "var" };
+      // }
     }
   }
 }
 
 function* scopeTermOrRecordVar(
-  db: NodesByRule
+  db: NodesByRule,
+  curTermID: string
 ): Generator<{ termID: string; name: string; span: Span }> {
-  for (const { recordID, name, span } of scopeRecordVar(db)) {
+  for (const { recordID, name, span } of scopeRecordVar(db, curTermID)) {
     yield { termID: recordID, name, span };
   }
-  for (const { termID, name, span } of scopeTermVar(db)) {
+  for (const { termID, name, span } of scopeTermVar(db, curTermID)) {
     yield { termID, name, span };
   }
 }
 
 function* scopeTermVar(
-  db: NodesByRule
+  db: NodesByRule,
+  termID: string
 ): Generator<{ termID: string; name: string; span: Span }> {
-  for (const termID in db["term"].byID) {
-    for (const varRecord of db["var"].byParentID[termID] || []) {
-      yield { termID, name: varRecord.text, span: varRecord.span };
-    }
+  // for (const termID in db["term"].byID) {
+  for (const varRecord of db["var"].byParentID[termID] || []) {
+    yield { termID, name: varRecord.text, span: varRecord.span };
   }
-  for (const termID in db["term"].byID) {
-    for (const record of db["record"].byParentID[termID] || []) {
-      // TODO: pass argument to avoid cross join?
-      for (const { recordID, name, span } of scopeRecordVar(db)) {
-        if (record.id.toString() === recordID) {
-          yield { termID, name, span };
-        }
+  // }
+  // for (const termID in db["term"].byID) {
+  for (const record of db["record"].byParentID[termID] || []) {
+    // TODO: pass argument to avoid cross join?
+    for (const { recordID, name, span } of scopeRecordVar(
+      db,
+      record.id.toString()
+    )) {
+      if (record.id.toString() === recordID) {
+        yield { termID, name, span };
       }
     }
   }
-  for (const termID in db["term"].byID) {
-    for (const array of db["array"].byParentID[termID]) {
-      for (const arrItemTerm of db["term"].byParentID[array.id]) {
-        // TODO: pass argument
-        for (const { termID, name, span } of scopeTermVar(db)) {
-          if (termID === arrItemTerm.id.toString()) {
-            yield { name, span, termID };
-          }
-        }
+  // }
+  // for (const termID in db["term"].byID) {
+  for (const array of db["array"].byParentID[termID]) {
+    for (const arrItemTerm of db["term"].byParentID[array.id]) {
+      for (const { termID, name, span } of scopeTermVar(
+        db,
+        arrItemTerm.id.toString()
+      )) {
+        // if (termID === arrItemTerm.id.toString()) {
+        yield { name, span, termID };
+        // }
       }
     }
   }
+  // }
 }
 
 function* scopeRecordVar(
-  db: NodesByRule
+  db: NodesByRule,
+  recordID: string
 ): Generator<{ recordID: string; name: string; span: Span }> {
-  for (const recordID in db["record"].byID) {
-    for (const recordAttr of db["recordAttrs"].byParentID[recordID]) {
-      for (const recordKeyValue of db["recordKeyValue"].byParentID[
-        recordAttr.id
-      ]) {
-        for (const term of db["term"].byParentID[recordKeyValue.id]) {
-          // TODO: pass argument
-          for (const { termID: valueTerm, name, span } of scopeTermVar(db)) {
-            if (valueTerm === term.id.toString()) {
-              yield { recordID: valueTerm, name, span };
-            }
+  // for (const recordID in db["record"].byID) {
+  for (const recordAttr of db["recordAttrs"].byParentID[recordID]) {
+    for (const recordKeyValue of db["recordKeyValue"].byParentID[
+      recordAttr.id
+    ]) {
+      for (const term of db["term"].byParentID[recordKeyValue.id]) {
+        // TODO: pass argument
+        for (const { termID: valueTerm, name, span } of scopeTermVar(
+          db,
+          term.id.toString()
+        )) {
+          if (valueTerm === term.id.toString()) {
+            yield { recordID: valueTerm, name, span };
           }
         }
       }
     }
   }
+  // }
 }
 
 // === Placeholder ===
@@ -342,7 +367,7 @@ function* scopePlaceholderVar(db: NodesByRule): Generator<Placeholder> {
               []) {
               yield {
                 kind: "var",
-                scopeID: conjunct.ruleID,
+                scopeID: conjunct.ruleName,
                 span: placeholder.span,
               };
             }
