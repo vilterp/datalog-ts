@@ -126,9 +126,9 @@ function* ruleConjunct(db: NodesByRule): Generator<{
   conjunctID: string;
 }> {
   for (const ruleID in db["rule"].byID) {
-    for (const disjunctID in db["disjunct"].byParentID[ruleID]) {
-      for (const conjunctID in db["conjunct"].byParentID[disjunctID]) {
-        yield { ruleID, conjunctID };
+    for (const disjunct of db["disjunct"].byParentID[ruleID]) {
+      for (const conjunct of db["conjunct"].byParentID[disjunct.id]) {
+        yield { ruleID, conjunctID: conjunct.id.toString() };
       }
     }
   }
@@ -311,6 +311,8 @@ function* scopeRecordVar(
   }
 }
 
+// === Placeholder ===
+
 function* scopePlaceholder(db: NodesByRule): Generator<Placeholder> {
   for (const placeholder of scopePlaceholderVar(db)) {
     yield placeholder;
@@ -331,7 +333,8 @@ function* scopePlaceholderVar(db: NodesByRule): Generator<Placeholder> {
           recordAttrs.id
         ]) {
           for (const term of db["term"].byParentID[recordKeyValue.id]) {
-            for (const placeholder of db["placeholder"].byParentID[term.id]) {
+            for (const placeholder of db["placeholder"].byParentID[term.id] ||
+              []) {
               yield {
                 kind: "var",
                 scopeID: conjunct.ruleID,
