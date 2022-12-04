@@ -55,15 +55,14 @@ export function testLangQuery(test: string[]): TestOutput[] {
       ),
       example: "",
     };
-    const {
-      interp: withoutCursor,
-      allGrammarErrors,
-      dlErrors,
-      langParseError,
-    } = constructInterp(INIT_INTERP, langSpec, example);
+    const { interp: withoutCursor, errors } = constructInterp(
+      INIT_INTERP,
+      langSpec,
+      example
+    );
     const finalInterp = addCursor(withoutCursor, cursorPos);
-    if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
-      return jsonOut({ allGrammarErrors, langParseError, dlErrors });
+    if (errors.length > 0) {
+      return jsonOut({ errors });
     }
     try {
       const res = finalInterp.queryStr(query);
