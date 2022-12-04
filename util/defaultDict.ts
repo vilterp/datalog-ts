@@ -8,11 +8,12 @@ export class DefaultDict<V> {
   }
 
   get(key: string): V {
-    const value = this.items.get(key);
-    if (value !== undefined) {
-      return value;
+    let value = this.items.get(key);
+    if (value === undefined) {
+      value = this.getDefault();
+      this.items.set(key, value);
     }
-    return this.getDefault();
+    return value;
   }
 
   put(key: string, value: V) {
