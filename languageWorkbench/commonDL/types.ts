@@ -34,6 +34,7 @@ export type Suggestion = {
   scopeID: string;
   name: string;
   span: Span;
+  kind: string;
   type: string;
 };
 
