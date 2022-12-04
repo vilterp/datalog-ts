@@ -31,7 +31,7 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
-const INIT_INTERP = new SimpleInterpreter(
+export const INIT_INTERP = new SimpleInterpreter(
   "languageWorkbench/commonDL",
   fsLoader
 );
