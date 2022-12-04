@@ -8,8 +8,7 @@ export function* ideCurrentSuggestion(
   impl: LangImpl,
   cursor: number
 ): Generator<Suggestion> {
-  const currentPlaceholder = [...ideCurrentPlaceholder(db, impl, cursor)];
-  for (const placeholder of currentPlaceholder) {
+  for (const placeholder of ideCurrentPlaceholder(db, impl, cursor)) {
     for (const suggestion of ideSuggestion(
       db,
       impl,

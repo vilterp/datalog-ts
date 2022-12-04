@@ -2,7 +2,11 @@ import { NodesByRule } from "../parserlib/flattenByRule";
 import { Span } from "../parserlib/types";
 
 export type LangImpl = {
-  scopeDefn: (db: NodesByRule, scopeID: string) => Generator<Defn>;
+  scopeDefn: (
+    db: NodesByRule,
+    scopeID: string,
+    kind: string
+  ) => Generator<Defn>;
   scopeVar: (db: NodesByRule) => Generator<Var>;
   scopePlaceholder: (db: NodesByRule) => Generator<Placeholder>;
   scopeParent: (
