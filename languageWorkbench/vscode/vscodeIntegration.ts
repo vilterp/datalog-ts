@@ -140,8 +140,7 @@ export function registerLanguageSupport(
         vscode.SymbolInformation[] | vscode.DocumentSymbol[]
       > {
         try {
-          // return getSymbolList(spec, document, token);
-          return [];
+          return getSymbolList(spec, document, token);
         } catch (e) {
           console.error("in symbol provider:", e);
         }
