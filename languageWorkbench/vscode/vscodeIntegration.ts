@@ -271,7 +271,7 @@ function getCompletionItems(
   const sourceWithPlaceholder =
     source.slice(0, cursorIdx) + "???" + source.slice(cursorIdx);
   if (spec.nativeImpl) {
-    const flattened = getFlattened(sourceWithPlaceholder);
+    const flattened = getFlattened(sourceWithPlaceholder, spec.leaves);
     const suggestions = [
       ...native.ideCurrentSuggestion(flattened, spec.nativeImpl, cursorIdx),
     ];
@@ -375,8 +375,6 @@ function getSymbolList(
   });
 }
 
-const LEAVES = new Set(["ident", "stringLit", "intLit"]);
-
 function getSemanticTokens(
   spec: LanguageSpec,
   document: vscode.TextDocument,
@@ -386,7 +384,7 @@ function getSemanticTokens(
   // const interp = getInterp(spec, source);
   // const results = interp.queryStr("hl.NonHighlightSegment{}");
   if (spec.nativeImpl) {
-    const flattened = getFlattened(source);
+    const flattened = getFlattened(source, spec.leaves);
     const results = [...native.getSemanticTokens(flattened, spec.nativeImpl)];
 
     const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
@@ -422,7 +420,7 @@ export function refreshDiagnostics(
 ) {
   const source = document.getText();
   if (spec.nativeImpl) {
-    const flattened = getFlattened(source);
+    const flattened = getFlattened(source, spec.leaves);
     const problems = [...spec.nativeImpl.tcProblem(flattened)];
     const diags = problems.map((res) => nativeProblemToDiagnostic(source, res));
     diagnostics.set(document.uri, diags);
@@ -458,13 +456,16 @@ function nativeProblemToDiagnostic(
 let lastSource: string = "";
 let lastFlattened: NodesByRule = emptyNodesByRule();
 
-function getFlattened(source: string): NodesByRule {
+function getFlattened(
+  source: string,
+  leaves: Set<string> = new Set<string>()
+): NodesByRule {
   if (source === lastSource) {
     return lastFlattened;
   }
   const traceTree = parse(GRAMMAR, "main", source);
   const ruleTree = extractRuleTree(traceTree);
-  const flattened = flattenByRule(ruleTree, source, LEAVES);
+  const flattened = flattenByRule(ruleTree, source, leaves);
   lastFlattened = flattened;
   return flattened;
 }

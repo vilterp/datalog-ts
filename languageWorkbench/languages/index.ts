@@ -97,6 +97,7 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
     triggerCharacters: ["&", "|", "-", ":", "{", ","],
     // TODO: make interpreter as fast as this
     nativeImpl: datalogLangImpl,
+    leaves: new Set(["ident", "stringLit", "intLit"]),
   },
   json: {
     name: "json",
@@ -155,4 +156,5 @@ export type LanguageSpec = {
   example: string;
   triggerCharacters?: string[]; // TODO: put into DL itself or derive from grammar
   nativeImpl?: LangImpl;
+  leaves?: Set<string>;
 };
