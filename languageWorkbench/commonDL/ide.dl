@@ -47,8 +47,9 @@ ide.DefnForCursor{defnLoc: DL} :-
   ide.DefnAtPos{idx: CIdx, defnSpan: DL}.
 
 ide.DefnAtPos{idx: CIdx, defnSpan: DS} :-
-  scope.Usage{defnSpan: DS, usageSpan: span{from: FIdx, to: TIdx}} &
-  FIdx <= CIdx & CIdx <= TIdx.
+  scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
+  FIdx <= CIdx & CIdx <= TIdx &
+  scope.Usage{name: N, usageScopeID: Scope, defnSpan: DS}.
 
 ide.UsageForCursor{usageSpan: US} :-
   ide.Cursor{idx: CIdx} &
