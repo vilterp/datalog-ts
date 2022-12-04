@@ -318,9 +318,21 @@ function* scopePlaceholder(db: NodesByRule): Generator<Placeholder> {
   for (const placeholder of scopePlaceholderRule(db)) {
     yield placeholder;
   }
-  for (const placeholder of scopePlaceholdeKeyValue(db)) {
+  for (const placeholder of scopePlaceholderKeyValue(db)) {
     yield placeholder;
   }
+}
+
+function* scopePlaceholderVar(db: NodesByRule): Generator<Placeholder> {
+  // ...
+}
+
+function* scopePlaceholderRule(db: NodesByRule): Generator<Placeholder> {
+  // ...
+}
+
+function* scopePlaceholderKeyValue(db: NodesByRule): Generator<Placeholder> {
+  // ...
 }
 
 function* scopeParent(
