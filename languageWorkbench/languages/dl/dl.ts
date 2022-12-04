@@ -524,18 +524,20 @@ function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
 }
 
 function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
-  for (const rule of scopeDefnRule(db)) {
+  for (const ruleID in db.get("rule").byID) {
     // gather set of terms that are used in body
     const bodyVars = new Set<string>();
-    for (const bodyVar of scopeVarInBodyTerm(db, rule.name)) {
+    for (const bodyVar of scopeVarInBodyTerm(db, ruleID)) {
       bodyVars.add(bodyVar.name);
     }
-    for (const headVar of scopeDefnHeadVar(db, rule.name)) {
-      if (!bodyVars.has(headVar.name)) {
-        yield {
-          desc: `unbound var \`${headVar.name}\` in head of rule \`${rule.name}\``,
-          span: headVar.span,
-        };
+    for (const ruleName of ruleIDToName(db, ruleID)) {
+      for (const headVar of scopeDefnHeadVar(db, ruleName)) {
+        if (!bodyVars.has(headVar.name)) {
+          yield {
+            desc: `unbound var \`${headVar.name}\` in head of rule \`${ruleName}\``,
+            span: headVar.span,
+          };
+        }
       }
     }
   }
