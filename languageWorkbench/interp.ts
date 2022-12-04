@@ -81,7 +81,7 @@ function interpForLangSpecInner(
 }
 
 let lastInterpForLangSpecResult: ConstructInterpRes | null = null;
-let lastSource: string = "";
+let lastSource: string | null = null;
 let lastAddSourceResult: ConstructInterpRes | null = null;
 
 export function constructInterp(
