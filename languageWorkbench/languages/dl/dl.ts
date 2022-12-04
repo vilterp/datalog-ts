@@ -29,8 +29,8 @@ function* scopeDefn(db: NodesByRule, scopeID: string): Generator<Defn> {
 }
 
 function* scopeDefnRule(db: NodesByRule, scopeID: string): Generator<Defn> {
-  for (const ruleID in db["rule"].byID) {
-    for (const ident of db["ident"].byParentID[ruleID] || []) {
+  for (const ruleID in db.get("rule").byID) {
+    for (const ident of db.get("ident").byParentID.get(ruleID)) {
       yield {
         kind: "relation",
         name: ident.text,
@@ -43,8 +43,8 @@ function* scopeDefnRule(db: NodesByRule, scopeID: string): Generator<Defn> {
 }
 
 function* scopeDefnVar(db: NodesByRule, ruleID: string): Generator<Defn> {
-  // for (const ruleID in db["rule"].byID) {
-  for (const record of db["record"].byParentID[ruleID] || []) {
+  // for (const ruleID in db.get("rule").byID) {
+  for (const record of db.get("record").byParentID.get(ruleID)) {
     // TODO: pass argument
     for (const recordVar of scopeRecordVar(db, record.id.toString())) {
       if (recordVar.recordID === record.id.toString()) {
@@ -62,11 +62,11 @@ function* scopeDefnVar(db: NodesByRule, ruleID: string): Generator<Defn> {
 }
 
 function* scopeDefnTable(db: NodesByRule, scopeID: string): Generator<Defn> {
-  if (!db["tableDecl"]) {
+  if (!db.get("tableDecl")) {
     return;
   }
-  for (const tableDeclID in db["tableDecl"].byID) {
-    for (const ident of db["ident"].byParentID[tableDeclID]) {
+  for (const tableDeclID in db.get("tableDecl").byID) {
+    for (const ident of db.get("ident").byParentID.get(tableDeclID)) {
       yield {
         kind: "relation",
         name: ident.text,
@@ -79,12 +79,20 @@ function* scopeDefnTable(db: NodesByRule, scopeID: string): Generator<Defn> {
 }
 
 function* scopeDefnAttr(db: NodesByRule, scopeID: string): Generator<Defn> {
-  for (const ruleID in db["rule"].byID) {
-    for (const record of db["record"].byParentID[ruleID]) {
-      for (const headIdent of db["ident"].byParentID[record.id]) {
-        for (const attr of db["recordAttrs"].byParentID[record.id]) {
-          for (const keyValue of db["recordKeyValue"].byParentID[attr.id]) {
-            for (const kvIdent of db["ident"].byParentID[keyValue.id]) {
+  for (const ruleID in db.get("rule").byID) {
+    for (const record of db.get("record").byParentID.get(ruleID)) {
+      for (const headIdent of db
+        .get("ident")
+        .byParentID.get(record.id.toString())) {
+        for (const attr of db
+          .get("recordAttrs")
+          .byParentID.get(record.id.toString())) {
+          for (const keyValue of db
+            .get("recordKeyValue")
+            .byParentID.get(attr.id.toString())) {
+            for (const kvIdent of db
+              .get("ident")
+              .byParentID.get(keyValue.id.toString())) {
               yield {
                 scopeID: headIdent.text,
                 name: kvIdent.text,
@@ -134,11 +142,15 @@ function* ruleConjunct(db: NodesByRule): Generator<{
   ruleName: string;
   conjunctID: string;
 }> {
-  for (const ruleID in db["rule"].byID) {
-    for (const record of db["record"].byParentID[ruleID]) {
-      for (const ident of db["ident"].byParentID[record.id]) {
-        for (const disjunct of db["disjunct"].byParentID[ruleID]) {
-          for (const conjunct of db["conjunct"].byParentID[disjunct.id]) {
+  for (const ruleID in db.get("rule").byID) {
+    for (const record of db.get("record").byParentID.get(ruleID)) {
+      for (const ident of db
+        .get("ident")
+        .byParentID.get(record.id.toString())) {
+        for (const disjunct of db.get("disjunct").byParentID.get(ruleID)) {
+          for (const conjunct of db
+            .get("conjunct")
+            .byParentID.get(disjunct.id.toString())) {
             yield {
               ruleID,
               ruleName: ident.text,
@@ -156,36 +168,48 @@ function* scopeRuleBodyTerm(
   db: NodesByRule
 ): Generator<{ ruleID: string; termID: number }> {
   for (const { ruleID, conjunctID } of ruleConjunct(db)) {
-    for (const record of db["record"].byParentID[conjunctID]) {
+    for (const record of db.get("record").byParentID.get(conjunctID)) {
       yield { ruleID, termID: record.id };
     }
-    for (const negation of db["negation"].byParentID[conjunctID]) {
-      for (const record of db["record"].byParentID[negation.id]) {
+    for (const negation of db.get("negation").byParentID.get(conjunctID)) {
+      for (const record of db
+        .get("record")
+        .byParentID.get(negation.id.toString())) {
         yield { ruleID, termID: record.id };
       }
     }
-    for (const aggregation of db["aggregation"].byParentID[conjunctID]) {
-      for (const record of db["record"].byParentID[aggregation.id]) {
+    for (const aggregation of db
+      .get("aggregation")
+      .byParentID.get(conjunctID)) {
+      for (const record of db
+        .get("record")
+        .byParentID.get(aggregation.id.toString())) {
         yield { ruleID, termID: record.id };
       }
     }
-    for (const comparison of db["comparison"].byParentID[conjunctID]) {
-      for (const term of db["term"].byParentID[comparison.id]) {
+    for (const comparison of db.get("comparison").byParentID.get(conjunctID)) {
+      for (const term of db
+        .get("term")
+        .byParentID.get(comparison.id.toString())) {
         yield { ruleID, termID: term.id };
       }
     }
-    for (const comparison of db["arithmetic"].byParentID[conjunctID]) {
-      for (const assignment of db["assignmentOnLeft"].byParentID[
-        comparison.id
-      ]) {
-        for (const term of db["term"].byParentID[assignment.id]) {
+    for (const comparison of db.get("arithmetic").byParentID.get(conjunctID)) {
+      for (const assignment of db
+        .get("assignmentOnLeft")
+        .byParentID.get(comparison.id.toString())) {
+        for (const term of db
+          .get("term")
+          .byParentID.get(assignment.id.toString())) {
           yield { ruleID, termID: term.id };
         }
       }
-      for (const assignment of db["assignmentOnRight"].byParentID[
-        comparison.id
-      ]) {
-        for (const term of db["term"].byParentID[assignment.id]) {
+      for (const assignment of db
+        .get("assignmentOnRight")
+        .byParentID.get(comparison.id.toString())) {
+        for (const term of db
+          .get("term")
+          .byParentID.get(assignment.id.toString())) {
           yield { ruleID, termID: term.id };
         }
       }
@@ -201,11 +225,19 @@ function* scopeVarAttr(db: NodesByRule): Generator<{
   kind: "attr";
 }> {
   for (const { termID: recordID } of scopeRuleBodyTerm(db)) {
-    if (db["record"].byID[recordID]) {
-      for (const headIdent of db["ident"].byParentID[recordID]) {
-        for (const attr of db["recordAttrs"].byParentID[recordID]) {
-          for (const keyValue of db["recordKeyValue"].byParentID[attr.id]) {
-            for (const kvIdent of db["ident"].byParentID[keyValue.id]) {
+    if (db.get("record").byID[recordID]) {
+      for (const headIdent of db
+        .get("ident")
+        .byParentID.get(recordID.toString())) {
+        for (const attr of db
+          .get("recordAttrs")
+          .byParentID.get(recordID.toString())) {
+          for (const keyValue of db
+            .get("recordKeyValue")
+            .byParentID.get(attr.id.toString())) {
+            for (const kvIdent of db
+              .get("ident")
+              .byParentID.get(keyValue.id.toString())) {
               yield {
                 scopeID: headIdent.text,
                 name: kvIdent.text,
@@ -222,9 +254,11 @@ function* scopeVarAttr(db: NodesByRule): Generator<{
 }
 
 function* scopeVarFact(db: NodesByRule): Generator<Var> {
-  for (const factID in db["fact"].byID) {
-    for (const record of db["record"].byParentID[factID]) {
-      for (const ident of db["ident"].byParentID[record.id]) {
+  for (const factID in db.get("fact").byID) {
+    for (const record of db.get("record").byParentID.get(factID)) {
+      for (const ident of db
+        .get("ident")
+        .byParentID.get(record.id.toString())) {
         yield {
           scopeID: "global",
           kind: "relation",
@@ -239,8 +273,8 @@ function* scopeVarFact(db: NodesByRule): Generator<Var> {
 function* scopeVarRuleInvocation(db: NodesByRule): Generator<Var> {
   // TODO: pass in rule id?
   for (const { termID: recordID, ruleID } of scopeRuleBodyTerm(db)) {
-    if (db["record"].byID[recordID]) {
-      for (const ident of db["ident"].byParentID[recordID]) {
+    if (db.get("record").byID[recordID]) {
+      for (const ident of db.get("ident").byParentID.get(recordID.toString())) {
         yield {
           scopeID: "global", // TODO: not string
           kind: "relation",
@@ -282,13 +316,13 @@ function* scopeTermVar(
   db: NodesByRule,
   termID: string
 ): Generator<{ termID: string; name: string; span: Span }> {
-  // for (const termID in db["term"].byID) {
-  for (const varRecord of db["var"].byParentID[termID] || []) {
+  // for (const termID in db.get("term").byID) {
+  for (const varRecord of db.get("var").byParentID.get(termID)) {
     yield { termID, name: varRecord.text, span: varRecord.span };
   }
   // }
-  // for (const termID in db["term"].byID) {
-  for (const record of db["record"].byParentID[termID] || []) {
+  // for (const termID in db.get("term").byID) {
+  for (const record of db.get("record").byParentID.get(termID)) {
     // TODO: pass argument to avoid cross join?
     for (const { recordID, name, span } of scopeRecordVar(
       db,
@@ -300,9 +334,11 @@ function* scopeTermVar(
     }
   }
   // }
-  // for (const termID in db["term"].byID) {
-  for (const array of db["array"].byParentID[termID]) {
-    for (const arrItemTerm of db["term"].byParentID[array.id]) {
+  // for (const termID in db.get("term").byID) {
+  for (const array of db.get("array").byParentID.get(termID)) {
+    for (const arrItemTerm of db
+      .get("term")
+      .byParentID.get(array.id.toString())) {
       for (const { termID, name, span } of scopeTermVar(
         db,
         arrItemTerm.id.toString()
@@ -320,12 +356,14 @@ function* scopeRecordVar(
   db: NodesByRule,
   recordID: string
 ): Generator<{ recordID: string; name: string; span: Span }> {
-  // for (const recordID in db["record"].byID) {
-  for (const recordAttr of db["recordAttrs"].byParentID[recordID]) {
-    for (const recordKeyValue of db["recordKeyValue"].byParentID[
-      recordAttr.id
-    ]) {
-      for (const term of db["term"].byParentID[recordKeyValue.id]) {
+  // for (const recordID in db.get("record").byID) {
+  for (const recordAttr of db.get("recordAttrs").byParentID.get(recordID)) {
+    for (const recordKeyValue of db
+      .get("recordKeyValue")
+      .byParentID.get(recordAttr.id.toString())) {
+      for (const term of db
+        .get("term")
+        .byParentID.get(recordKeyValue.id.toString())) {
         // TODO: pass argument
         for (const { termID: valueTerm, name, span } of scopeTermVar(
           db,
@@ -357,14 +395,21 @@ function* scopePlaceholder(db: NodesByRule): Generator<Placeholder> {
 
 function* scopePlaceholderVar(db: NodesByRule): Generator<Placeholder> {
   for (const conjunct of ruleConjunct(db)) {
-    for (const record of db["record"].byParentID[conjunct.conjunctID]) {
-      for (const recordAttrs of db["recordAttrs"].byParentID[record.id]) {
-        for (const recordKeyValue of db["recordKeyValue"].byParentID[
-          recordAttrs.id
-        ]) {
-          for (const term of db["term"].byParentID[recordKeyValue.id]) {
-            for (const placeholder of db["placeholder"].byParentID[term.id] ||
-              []) {
+    for (const record of db
+      .get("record")
+      .byParentID.get(conjunct.conjunctID.toString())) {
+      for (const recordAttrs of db
+        .get("recordAttrs")
+        .byParentID.get(record.id.toString())) {
+        for (const recordKeyValue of db
+          .get("recordKeyValue")
+          .byParentID.get(recordAttrs.id.toString())) {
+          for (const term of db
+            .get("term")
+            .byParentID.get(recordKeyValue.id.toString())) {
+            for (const placeholder of db
+              .get("placeholder")
+              .byParentID.get(term.id.toString())) {
               yield {
                 kind: "var",
                 scopeID: conjunct.ruleName,

@@ -1,3 +1,4 @@
+import { DefaultDict } from "../../util/defaultDict";
 import { RuleTree } from "./ruleTree";
 import { Span } from "./types";
 
@@ -8,31 +9,32 @@ export type ASTNodeRecord = {
   text: string;
 };
 
-export type NodesByRule = {
-  [ruleName: string]: {
-    length: number;
-    byID: { [id: string]: ASTNodeRecord };
-    byParentID: { [parentID: string]: ASTNodeRecord[] };
-  };
+type ByRule = {
+  length: number;
+  byID: { [id: string]: ASTNodeRecord };
+  byParentID: DefaultDict<ASTNodeRecord[]>;
 };
+
+const getEmptyByRule = (): ByRule => ({
+  length: 0,
+  byID: {},
+  byParentID: new DefaultDict<ASTNodeRecord[]>(() => []),
+});
+
+export type NodesByRule = DefaultDict<ByRule>;
 
 export function flattenByRule(
   ruleTree: RuleTree,
   source: string,
   leaves: Set<string>
 ): NodesByRule {
-  const result: NodesByRule = {};
+  const result: NodesByRule = new DefaultDict<ByRule>(getEmptyByRule);
   let nextID = 0;
   const recur = (node: RuleTree, parentID: number) => {
     const id = nextID;
     nextID++;
     // ensure rule is there
-    // TODO: I really need a DefaultDict
-    let forRule = result[node.name];
-    if (!forRule) {
-      forRule = { byID: {}, byParentID: {}, length: 0 };
-      result[node.name] = forRule;
-    }
+    const forRule = result.get(node.name);
     forRule.length++;
     // construct node
     const record: ASTNodeRecord = {
@@ -42,13 +44,9 @@ export function flattenByRule(
       text: source.substring(node.span.from, node.span.to),
     };
     // add node by ID
-    result[node.name].byID[id] = record;
+    forRule.byID[id] = record;
     // add node by parent id
-    let byParentID = result[node.name].byParentID[parentID];
-    if (!byParentID) {
-      byParentID = [];
-      result[node.name].byParentID[parentID] = byParentID;
-    }
+    const byParentID = forRule.byParentID.get(parentID.toString());
     byParentID.push(record);
     // short circuit if this is a leaf
     if (leaves.has(node.name)) {
