@@ -1,3 +1,4 @@
+import { DefaultDict } from "../../../util/defaultDict";
 import {
   Defn,
   LangImpl,
@@ -156,8 +157,10 @@ function* scopeVar(db: NodesByRule): Generator<Var> {
   for (const result of scopeVarInBodyTerm(db, "TODO")) {
     yield result;
   }
-  for (const result of scopeVarAttr(db)) {
-    yield result;
+  for (const ruleID in db.get("rule").byID) {
+    for (const result of scopeVarAttr(db, ruleID)) {
+      yield result;
+    }
   }
   for (const result of scopeVarFact(db)) {
     yield result;
@@ -235,38 +238,39 @@ function* scopeRuleBodyTerm(
 }
 
 // attributes used in record invocations
-function* scopeVarAttr(db: NodesByRule): Generator<{
+function* scopeVarAttr(
+  db: NodesByRule,
+  ruleID: string
+): Generator<{
   scopeID: string;
   nodeID: string;
   name: string;
   span: Span;
   kind: "attr";
 }> {
-  for (const ruleID in db.get("rule").byID) {
-    for (const { termID: recordID } of scopeRuleBodyTerm(db, ruleID)) {
-      if (db.get("record").byID[recordID]) {
-        for (const headIdent of db.get("ident").byParentID.get(recordID)) {
-          for (const attr of db.get("recordAttrs").byParentID.get(recordID)) {
-            for (const keyValue of db
-              .get("recordKeyValue")
-              .byParentID.get(attr.id)) {
-              for (const kvIdent of db
-                .get("ident")
-                .byParentID.get(keyValue.id)) {
-                yield {
-                  scopeID: headIdent.text,
-                  name: kvIdent.text,
-                  nodeID: kvIdent.id,
-                  span: kvIdent.span,
-                  kind: "attr",
-                };
-              }
+  // for (const ruleID in db.get("rule").byID) {
+  for (const { termID: recordID } of scopeRuleBodyTerm(db, ruleID)) {
+    if (db.get("record").byID[recordID]) {
+      for (const headIdent of db.get("ident").byParentID.get(recordID)) {
+        for (const attr of db.get("recordAttrs").byParentID.get(recordID)) {
+          for (const keyValue of db
+            .get("recordKeyValue")
+            .byParentID.get(attr.id)) {
+            for (const kvIdent of db.get("ident").byParentID.get(keyValue.id)) {
+              yield {
+                scopeID: headIdent.text,
+                name: kvIdent.text,
+                nodeID: kvIdent.id,
+                span: kvIdent.span,
+                kind: "attr",
+              };
             }
           }
         }
       }
     }
   }
+  // }
 }
 
 function* scopeVarFact(db: NodesByRule): Generator<Var> {
@@ -486,7 +490,26 @@ function* tcProblems(db: NodesByRule): Generator<Problem> {
   }
 }
 
-function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {}
+function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
+  // build index of rule attrs
+  const ruleAttrs = new DefaultDict<Set<string>>(() => new Set<string>());
+  for (const ruleID in db.get("rule").byID) {
+    for (const attr of scopeDefnAttr(db, ruleID)) {
+      ruleAttrs.get(ruleID).add(attr.name);
+    }
+  }
+  for (const ruleID in db.get("rule").byID) {
+    for (const attr of scopeVarAttr(db, ruleID)) {
+      if (!ruleAttrs.get(ruleID).has(attr.name)) {
+        // TODO: get rule name
+        yield {
+          span: attr.span,
+          desc: `rule \`${ruleID}\` has no attribute \`${attr.name}\``,
+        };
+      }
+    }
+  }
+}
 
 function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
   for (const rule of scopeDefnRule(db)) {
