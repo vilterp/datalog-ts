@@ -15,10 +15,10 @@ import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 function Main() {
-  return <Playground />;
+  return <Workbench />;
 }
 
-function Playground() {
+function Workbench() {
   // state
   const [langName, setLangName] = useHashParam("", Object.keys(LANGUAGES)[0]);
 
