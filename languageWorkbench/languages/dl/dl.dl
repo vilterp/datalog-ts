@@ -63,9 +63,7 @@ scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.placeholder{parentID: ValueTermID, span: S}.
 scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
-  ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  ast.conjunct{id: ConjunctID} &
   ast.placeholder{parentID: ConjunctID, span: S}.
 scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
