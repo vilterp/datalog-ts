@@ -29,6 +29,12 @@ export const lwbBenchmarks: BenchmarkSpec[] = ["fp", "dl"].map((lang) => ({
 
 export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
+    name: "defnAtPosSimpleInterp",
+    async run() {
+      return doBenchmark(300, testDefnAtPosSimpleInterp);
+    },
+  },
+  {
     name: "problemsNative",
     async run() {
       return doBenchmark(500, testProblemsNative);
@@ -252,4 +258,9 @@ function testProblemsNative() {
 function testProblemsSimpleInterp() {
   const problems = interp.queryStr("tc.Problem{}");
   assertDeepEqual(problems.length, 2, "problems length");
+}
+
+function testDefnAtPosSimpleInterp() {
+  const results = interp.queryStr("ide.DefnAtPos{idx: 2174}");
+  assertDeepEqual(results.length, 1, "results length");
 }
