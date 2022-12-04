@@ -265,16 +265,15 @@ function getCompletionItems(
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
   const source = document.getText();
-  const flattened = getFlattened(source);
+  const cursorIdx = idxFromLineAndCol(source, {
+    line: position.line,
+    col: position.character,
+  });
+  const sourceWithPlaceholder =
+    source.slice(0, cursorIdx) + "???" + source.slice(cursorIdx);
+  const flattened = getFlattened(sourceWithPlaceholder);
   const suggestions = [
-    ...native.ideCurrentSuggestion(
-      flattened,
-      datalogLangImpl,
-      idxFromLineAndCol(source, {
-        line: position.line,
-        col: position.character,
-      })
-    ),
+    ...native.ideCurrentSuggestion(flattened, datalogLangImpl, cursorIdx),
   ];
   console.log("getCompletionItems", suggestions);
   return suggestions.map((res) => {
