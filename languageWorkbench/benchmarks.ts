@@ -61,6 +61,12 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
       return doBenchmark(1000, testFlattenByRule);
     },
   },
+  {
+    name: "parser",
+    async run() {
+      return doBenchmark(300, testParse);
+    },
+  },
 ];
 
 // native DL benchmark
@@ -221,4 +227,9 @@ function testGetSemanticTokensSimpleInterp() {
 
 function testFlattenByRule() {
   flattenByRule(ruleTree, DLSample, LEAVES);
+}
+
+function testParse() {
+  const tree = parserlib.parse(GRAMMAR, "main", input);
+  extractRuleTree(tree);
 }
