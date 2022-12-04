@@ -38,7 +38,7 @@ function interpForLangSpec(
   if (initInterp === lastInitInterp && langSpec === lastLangSpec) {
     return lastInterpForLangSpecResult;
   }
-  lastInterpForLangSpecResult = constructInterpInner(initInterp, langSpec);
+  lastInterpForLangSpecResult = interpForLangSpecInner(initInterp, langSpec);
   lastInitInterp = initInterp;
   lastLangSpec = langSpec;
   return lastInterpForLangSpecResult;
@@ -46,10 +46,12 @@ function interpForLangSpec(
 
 // TODO: separate function to inject the langSource
 // so we can memoize that separately
-function constructInterpInner(
+function interpForLangSpecInner(
   initInterp: AbstractInterpreter,
   langSpec: LanguageSpec
 ): ConstructInterpRes {
+  console.log("interpForLangSpecInner", langSpec.name);
+
   let interp = initInterp;
   interp = interp.doLoad("main.dl");
 
@@ -101,6 +103,8 @@ function addSourceInner(
   res: ConstructInterpRes,
   source: string
 ): ConstructInterpRes {
+  console.log("addSourceInner", { source });
+
   let interp = res.interp;
 
   // initialize stuff that we'll fill in later, if parse succeeds

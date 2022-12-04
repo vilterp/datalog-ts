@@ -24,6 +24,7 @@ export function registerLanguageSupport(
         position: monaco.Position,
         token: monaco.CancellationToken
       ): monaco.languages.ProviderResult<monaco.languages.Definition> {
+        console.log("==== provideDefinition");
         try {
           return getDefinition(spec, document, position, token);
         } catch (e) {
@@ -168,6 +169,7 @@ function getDefinition(
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.Definition> {
+  console.log("getDefinition", spec.name);
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
@@ -189,6 +191,7 @@ function getReferences(
   context: monaco.languages.ReferenceContext,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.Location[]> {
+  console.log("getDefinition", spec.name);
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
@@ -210,6 +213,7 @@ function getHighlights(
   position: monaco.Position,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.DocumentHighlight[]> {
+  console.log("getHighlights", spec.name);
   const source = document.getValue();
   const interp = getInterp(spec, source);
   const idx = idxFromPosition(source, position);
@@ -236,6 +240,7 @@ function getCompletionItems(
   token: monaco.CancellationToken,
   context: monaco.languages.CompletionContext
 ): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
+  console.log("getCompletionItems", spec.name);
   const source = document.getValue();
   const idx = idxFromPosition(source, position);
   const sourceWithPlaceholder =
@@ -249,7 +254,6 @@ function getCompletionItems(
     (res) => ((res.term as Rec).attrs.name as StringLit).val,
     results
   );
-  console.log("getCompletionItems", { uniqueResults });
   const out = {
     suggestions: uniqueResults.map((res) => {
       const result = res.term as Rec;
@@ -281,6 +285,7 @@ function getRenameEdits(
   newName: string,
   token: monaco.CancellationToken
 ): monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit> {
+  console.log("getRenameEdits", spec.name);
   const source = document.getValue();
   const idx = idxFromPosition(source, position);
   const interp = getInterp(spec, source);
