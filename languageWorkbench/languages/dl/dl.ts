@@ -324,7 +324,25 @@ function* scopePlaceholder(db: NodesByRule): Generator<Placeholder> {
 }
 
 function* scopePlaceholderVar(db: NodesByRule): Generator<Placeholder> {
-  // ...
+  for (const conjunct of ruleConjunct(db)) {
+    for (const record of db["record"].byParentID[conjunct.conjunctID]) {
+      for (const recordAttrs of db["recordAttrs"].byParentID[record.id]) {
+        for (const recordKeyValue of db["recordKeyValue"].byParentID[
+          recordAttrs.id
+        ]) {
+          for (const term of db["term"].byParentID[recordKeyValue.id]) {
+            for (const placeholder of db["placeholder"].byParentID[term.id]) {
+              yield {
+                kind: "var",
+                scopeID: conjunct.ruleID,
+                span: placeholder.span,
+              };
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 function* scopePlaceholderRule(db: NodesByRule): Generator<Placeholder> {
