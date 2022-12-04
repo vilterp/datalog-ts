@@ -145,11 +145,11 @@ export function* getSemanticTokens(
 ): Generator<SemanticToken> {
   for (const rule in impl.highlightMapping) {
     const tokenType = impl.highlightMapping[rule];
-    if (!db[rule]) {
+    if (db.get(rule).length === 0) {
       continue;
     }
-    for (const nodeID in db[rule].byID) {
-      const node = db[rule].byID[nodeID];
+    for (const nodeID in db.get(rule).byID) {
+      const node = db.get(rule).byID[nodeID];
       yield {
         span: node.span,
         type: tokenType,

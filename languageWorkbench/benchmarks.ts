@@ -46,17 +46,17 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
     },
   },
   {
-    name: "getSemanticTokensNative",
+    name: "getSemanticTokensSimpleInterp",
     async run() {
       return doBenchmark(1000, testGetSemanticTokensSimpleInterp);
     },
   },
-  // {
-  //   name: "flattenByRule",
-  //   async run() {
-  //     return doBenchmark(1000, testFlattenByRule);
-  //   },
-  // },
+  {
+    name: "flattenByRule",
+    async run() {
+      return doBenchmark(1000, testFlattenByRule);
+    },
+  },
 ];
 
 // native DL benchmark
