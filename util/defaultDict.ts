@@ -7,6 +7,10 @@ export class DefaultDict<V> {
     this.getDefault = getDefault;
   }
 
+  has(key: string): boolean {
+    return this.items.has(key);
+  }
+
   get(key: string): V {
     let value = this.items.get(key);
     if (value === undefined) {
