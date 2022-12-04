@@ -22,6 +22,7 @@ export type BenchmarkResult =
     }
   | { type: "Errored"; error: Error };
 
+// TOOD: allow passing time budget
 export async function doBenchmark(
   repetitions: number,
   op: () => void
