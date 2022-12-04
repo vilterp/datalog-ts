@@ -78,9 +78,10 @@ export function constructInterp(
   source: string
 ) {
   let res = interpSourceCache[`${langID}-${source}`];
+  // TODO: this is a big memory leak
   if (!res) {
     res = addSourceInner(initInterp, langID, languages, source);
-    interpSourceCache[`${langID}-${source}`];
+    interpSourceCache[`${langID}-${source}`] = res;
   }
   return res;
 }
