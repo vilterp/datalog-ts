@@ -103,7 +103,7 @@ function addSourceInner(
   res: ConstructInterpRes,
   source: string
 ): ConstructInterpRes {
-  console.log("addSourceInner", { source });
+  console.log("addSourceInner");
 
   let interp = res.interp;
 
