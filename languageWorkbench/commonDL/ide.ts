@@ -47,6 +47,7 @@ function* ideSuggestion(
       name: item.name,
       scopeID: item.scopeID,
       span: item.defnSpan,
+      kind: item.kind,
       type: item.type,
     };
     // }

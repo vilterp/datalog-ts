@@ -278,10 +278,17 @@ function getCompletionItems(
   console.log("getCompletionItems", suggestions);
   return suggestions.map((res) => {
     return {
+      // label: res.name + EXTRA_TEXT[res.kind],
       label: res.name,
     };
   });
 }
+
+const EXTRA_TEXT = {
+  relation: "{}",
+  var: ",",
+  attr: ":",
+};
 
 function getRenameEdits(
   spec: LanguageSpec,
