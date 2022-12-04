@@ -23,12 +23,16 @@ const getEmptyByRule = (): ByRule => ({
 
 export type NodesByRule = DefaultDict<ByRule>;
 
+export function emptyNodesByRule() {
+  return new DefaultDict<ByRule>(getEmptyByRule);
+}
+
 export function flattenByRule(
   ruleTree: RuleTree,
   source: string,
   leaves: Set<string>
 ): NodesByRule {
-  const result: NodesByRule = new DefaultDict<ByRule>(getEmptyByRule);
+  const result: NodesByRule = emptyNodesByRule();
   let nextID = 0;
   const recur = (node: RuleTree, parentID: number) => {
     const id = nextID;

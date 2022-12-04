@@ -10,7 +10,7 @@ import { GRAMMAR, parseMain } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
-import { datalog } from "./languages/dl/dl";
+import { datalogLangImpl } from "./languages/dl/dl";
 import { addCursor, constructInterp } from "./interp";
 import { LANGUAGES, LanguageSpec } from "./languages";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
@@ -192,7 +192,9 @@ let interp: AbstractInterpreter = constructInterp(
 interp = addCursor(interp, cursorPos);
 
 function testCompletionsNative() {
-  const items = [...ideCurrentSuggestion(flattenedByRule, datalog, cursorPos)];
+  const items = [
+    ...ideCurrentSuggestion(flattenedByRule, datalogLangImpl, cursorPos),
+  ];
   // TODO: should be I and P
   if (items.length === 0) {
     throw new Error("items length should be > 0");
@@ -207,7 +209,7 @@ function testCompletionsSimpleInterp() {
 }
 
 function testGetSemanticTokensNative() {
-  const tokens = [...getSemanticTokens(flattenedByRule, datalog)];
+  const tokens = [...getSemanticTokens(flattenedByRule, datalogLangImpl)];
   if (tokens.length === 0) {
     throw new Error("tokens length should be > 0");
   }

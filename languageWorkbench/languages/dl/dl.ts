@@ -438,7 +438,7 @@ function* scopeParent(
 }
 
 const SYNTAX_HIGHLIGHTING_MAPPING: { [ruleType: string]: TokenType } = {
-  ident: "ident",
+  ident: "variable",
   var: "typeParameter",
   int: "number",
   bool: "number",
@@ -449,7 +449,7 @@ const SYNTAX_HIGHLIGHTING_MAPPING: { [ruleType: string]: TokenType } = {
   path: "string",
 };
 
-export const datalog: LangImpl = {
+export const datalogLangImpl: LangImpl = {
   highlightMapping: SYNTAX_HIGHLIGHTING_MAPPING,
   scopeDefn,
   scopePlaceholder,
