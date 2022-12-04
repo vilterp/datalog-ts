@@ -55,10 +55,19 @@ function Playground() {
     [langName, dlEditorState.source, grammarEditorState.source]
   );
 
-  const { interp: interpWithoutCursor, errors } = useMemo(
-    () => getInterpForDoc(INIT_INTERP, langSpec, langSource),
+  // TODO: give new name to language each time it's updated
+  const { interp: interpWithoutCursor } = useMemo(
+    () =>
+      getInterpForDoc(
+        INIT_INTERP,
+        langSpec.name,
+        { [langSpec.name]: langSpec },
+        `test.${langSpec.name}`,
+        langSource
+      ),
     [langSpec, langSource]
   );
+  const errors = [];
   const interp = addCursor(interpWithoutCursor, cursorPos);
 
   return (

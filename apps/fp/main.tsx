@@ -17,7 +17,9 @@ function Main() {
 
   const { interp: withoutCursor } = getInterpForDoc(
     INIT_INTERP,
-    LANGUAGES.fp,
+    "fp",
+    { fp: LANGUAGES.fp },
+    "test.fp",
     editorState.source
   );
   const interp = addCursor(withoutCursor, editorState.cursorPos);

@@ -41,6 +41,8 @@ function interpForLangSpec(
   if (!res) {
     res = interpForLangSpecInner(initInterp, languages[langID]);
     interpCache[langID] = res;
+  } else {
+    console.log("cache hit", langID);
   }
   return res;
 }
@@ -95,6 +97,8 @@ export function getInterpForDoc(
   if (!res) {
     res = addSourceInner(initInterp, langID, languages, docSource[uri]);
     interpSourceCache[key] = res;
+  } else {
+    console.log("cache hit", langID, uri, source);
   }
   return res;
 }
