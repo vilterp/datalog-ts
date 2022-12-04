@@ -1,8 +1,30 @@
-import { spanContainsIdx } from "../../../uiCommon/ide/keymap/util";
+import {
+  Defn,
+  LangImpl,
+  Placeholder,
+  TokenType,
+  Var,
+} from "../../commonDL/types";
 import { NodesByRule } from "../../parserlib/flattenByRule";
-import { RuleTree } from "../../parserlib/ruleTree";
 import { Span } from "../../parserlib/types";
-import { DLMain, DLTerm, DLConjunct } from "./parser";
+
+function* scopeDefn(db: NodesByRule): Generator<Defn> {
+  for (const defn of scopedefnRule(db)) {
+    yield defn;
+  }
+  for (const defn of scopedefnVar(db)) {
+    yield defn;
+  }
+  for (const defn of scopedefnTable(db)) {
+    yield defn;
+  }
+  for (const defn of scopedefnAttr(db)) {
+    yield defn;
+  }
+  for (const defn of scopedefnInnerVar(db)) {
+    yield defn;
+  }
+}
 
 function* ruleConjunct(db: NodesByRule): Generator<{
   ruleID: string;
@@ -58,9 +80,7 @@ function* scopeRuleBodyTerm(
   }
 }
 
-function* scopeVar(
-  db: NodesByRule
-): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
+function* scopeVar(db: NodesByRule): Generator<Var> {
   for (const result of scopeVarRuleInvocation(db)) {
     yield result;
   }
@@ -103,12 +123,7 @@ function* scopeVarAttr(db: NodesByRule): Generator<{
   }
 }
 
-function* scopeVarFact(db: NodesByRule): Generator<{
-  scopeID: "global";
-  name: string;
-  span: Span;
-  kind: "relation";
-}> {
+function* scopeVarFact(db: NodesByRule): Generator<Var> {
   for (const factID in db["fact"].byID) {
     for (const record of db["record"].byParentID[factID]) {
       for (const ident of db["ident"].byParentID[record.id]) {
@@ -123,9 +138,7 @@ function* scopeVarFact(db: NodesByRule): Generator<{
   }
 }
 
-function* scopeVarRuleInvocation(
-  db: NodesByRule
-): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
+function* scopeVarRuleInvocation(db: NodesByRule): Generator<Var> {
   // TODO: pass in rule id?
   for (const { termID: recordID, ruleID } of scopeRuleBodyTerm(db)) {
     if (db["record"].byID[recordID]) {
@@ -141,9 +154,7 @@ function* scopeVarRuleInvocation(
   }
 }
 
-function* scopeVarTerm(
-  db: NodesByRule
-): Generator<{ scopeID: string; name: string; span: Span; kind: string }> {
+function* scopeVarTerm(db: NodesByRule): Generator<Var> {
   for (const { ruleID, termID } of scopeRuleBodyTerm(db)) {
     // TODO: pass in some id so we're not doing a cross join?
     for (const { termID: innerTermID, name, span } of scopeTermOrRecordVar(
@@ -220,37 +231,22 @@ function* scopeRecordVar(
   }
 }
 
-// tokens
-
-type TokenType =
-  | "ident"
-  | "typeParameter"
-  | "number"
-  | "number"
-  | "string"
-  | "comment"
-  | "keyword"
-  | "keyword"
-  | "string";
-
-export type SemanticToken = { type: TokenType; span: Span };
-
-export function getSemanticTokens(db: NodesByRule): SemanticToken[] {
-  const out: SemanticToken[] = [];
-  for (const rule in SYNTAX_HIGHLIGHTING_MAPPING) {
-    const tokenType = SYNTAX_HIGHLIGHTING_MAPPING[rule];
-    if (!db[rule]) {
-      continue;
-    }
-    for (const nodeID in db[rule].byID) {
-      const node = db[rule].byID[nodeID];
-      out.push({
-        span: node.span,
-        type: tokenType,
-      });
-    }
+function* scopePlaceholder(db: NodesByRule): Generator<Placeholder> {
+  for (const placeholder of scopePlaceholderVar(db)) {
+    yield placeholder;
   }
-  return out;
+  for (const placeholder of scopePlaceholderRule(db)) {
+    yield placeholder;
+  }
+  for (const placeholder of scopePlaceholdeKeyValue(db)) {
+    yield placeholder;
+  }
+}
+
+function* scopeParent(
+  db: NodesByRule
+): Generator<{ scopeID: string; parentID: string }> {
+  // nothing here in dl.dl
 }
 
 const SYNTAX_HIGHLIGHTING_MAPPING: { [ruleType: string]: TokenType } = {
@@ -263,4 +259,12 @@ const SYNTAX_HIGHLIGHTING_MAPPING: { [ruleType: string]: TokenType } = {
   tableKW: "keyword",
   loadKW: "keyword",
   path: "string",
+};
+
+export const datalog: LangImpl = {
+  highlightMapping: SYNTAX_HIGHLIGHTING_MAPPING,
+  scopeDefn,
+  scopePlaceholder,
+  scopeVar,
+  scopeParent,
 };
