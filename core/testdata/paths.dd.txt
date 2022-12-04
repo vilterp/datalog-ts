@@ -13,9 +13,9 @@ multipleEdges{from: A, to: B, path: P} :-
 path{}?
 ----
 application/datalog
+path{from: 1, path: [1,2,3,4], to: 4}.
+path{from: 1, path: [1,2,3], to: 3}.
 path{from: 1, path: [1,2], to: 2}.
+path{from: 2, path: [2,3,4], to: 4}.
 path{from: 2, path: [2,3], to: 3}.
 path{from: 3, path: [3,4], to: 4}.
-path{from: 1, path: [1,2,3], to: 3}.
-path{from: 1, path: [1,2,3,4], to: 4}.
-path{from: 2, path: [2,3,4], to: 4}.

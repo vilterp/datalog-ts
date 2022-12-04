@@ -10,12 +10,12 @@ baz{time: T} :-
 ide.Suggestion{}?
 ----
 application/datalog
+ide.Suggestion{id: "baz", name: "time", span: span{from: 84, to: 87}, type: T}.
 ide.Suggestion{id: 15, name: "A", span: span{from: 71, to: 74}, type: T}.
 ide.Suggestion{id: 15, name: "B", span: span{from: 71, to: 74}, type: T}.
+ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}.
+ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}.
 ide.Suggestion{id: global{}, name: "foo", span: span{from: 36, to: 39}, type: T}.
-ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}.
-ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: T}.
-ide.Suggestion{id: "baz", name: "time", span: span{from: 84, to: 87}, type: T}.
 
 dl
 foo{a: A, b: B} :- bar{a: A, b: B}.
@@ -48,14 +48,14 @@ foo{id: F, span: span{from: F}, spanArr: [F]} :-
 scope.Defn{}?
 ----
 application/datalog
-scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 0, to: 3}}.
-scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 8, to: 9}}.
-scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 28, to: 29}}.
-scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 42, to: 43}}.
 scope.Defn{kind: "attr", name: "id", scopeID: "foo", span: span{from: 4, to: 6}}.
 scope.Defn{kind: "attr", name: "span", scopeID: "foo", span: span{from: 11, to: 15}}.
 scope.Defn{kind: "attr", name: "spanArr", scopeID: "foo", span: span{from: 32, to: 39}}.
+scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 0, to: 3}}.
+scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 28, to: 29}}.
+scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 42, to: 43}}.
 scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 60, to: 61}}.
+scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 8, to: 9}}.
 scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 83, to: 84}}.
 scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 90, to: 91}}.
 scope.Defn{kind: "var", name: "F", scopeID: 4, span: span{from: 95, to: 96}}.
@@ -68,14 +68,14 @@ foo{id: F, span: span{from: F}, spanArr: [F]} :-
 scope.Var{}?
 ----
 application/datalog
+scope.Var{kind: "attr", name: "id", scopeID: "from", span: span{from: 56, to: 58}}.
+scope.Var{kind: "attr", name: "pos", scopeID: "something", span: span{from: 78, to: 81}}.
 scope.Var{kind: "relation", name: "from", scopeID: global{}, span: span{from: 51, to: 55}}.
 scope.Var{kind: "relation", name: "something", scopeID: global{}, span: span{from: 68, to: 77}}.
 scope.Var{kind: "var", name: "F", scopeID: 4, span: span{from: 60, to: 61}}.
 scope.Var{kind: "var", name: "F", scopeID: 4, span: span{from: 84, to: 85}}.
 scope.Var{kind: "var", name: "F", scopeID: 4, span: span{from: 92, to: 93}}.
 scope.Var{kind: "var", name: "F", scopeID: 4, span: span{from: 97, to: 98}}.
-scope.Var{kind: "attr", name: "id", scopeID: "from", span: span{from: 56, to: 58}}.
-scope.Var{kind: "attr", name: "pos", scopeID: "something", span: span{from: 78, to: 81}}.
 
 dl
 foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
@@ -86,24 +86,6 @@ foo{id: I, span: span{from: F, to: T}, spanArr: [F, T]} :-
 scope.Usage{}?
 ----
 application/datalog
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 70, to: 71}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 92, to: 93}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 122, to: 123}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 28, to: 29}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 78, to: 79}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 28, to: 29}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 137, to: 138}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 100, to: 101}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 130, to: 131}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 142, to: 143}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 49, to: 50}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 78, to: 79}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 49, to: 50}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 137, to: 138}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 52, to: 53}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 100, to: 101}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 52, to: 53}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 130, to: 131}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 52, to: 53}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 142, to: 143}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 70, to: 71}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 92, to: 93}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 70, to: 71}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 122, to: 123}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 78, to: 79}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 137, to: 138}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 92, to: 93}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 70, to: 71}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 92, to: 93}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 122, to: 123}}.
 scope.Usage{definitionScopeID: 4, defnSpan: span{from: 100, to: 101}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 130, to: 131}}.
 scope.Usage{definitionScopeID: 4, defnSpan: span{from: 100, to: 101}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 142, to: 143}}.
 scope.Usage{definitionScopeID: 4, defnSpan: span{from: 122, to: 123}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 70, to: 71}}.
@@ -113,6 +95,24 @@ scope.Usage{definitionScopeID: 4, defnSpan: span{from: 130, to: 131}, kind: "var
 scope.Usage{definitionScopeID: 4, defnSpan: span{from: 137, to: 138}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 78, to: 79}}.
 scope.Usage{definitionScopeID: 4, defnSpan: span{from: 142, to: 143}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 100, to: 101}}.
 scope.Usage{definitionScopeID: 4, defnSpan: span{from: 142, to: 143}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 130, to: 131}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 28, to: 29}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 137, to: 138}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 28, to: 29}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 78, to: 79}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 100, to: 101}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 130, to: 131}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 35, to: 36}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 142, to: 143}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 49, to: 50}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 137, to: 138}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 49, to: 50}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 78, to: 79}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 52, to: 53}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 100, to: 101}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 52, to: 53}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 130, to: 131}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 52, to: 53}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 142, to: 143}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 70, to: 71}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 122, to: 123}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 70, to: 71}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 92, to: 93}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 78, to: 79}, kind: "var", name: "F", usageScopeID: 4, usageSpan: span{from: 137, to: 138}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 122, to: 123}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 70, to: 71}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 8, to: 9}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 92, to: 93}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 92, to: 93}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 122, to: 123}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 92, to: 93}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 70, to: 71}}.
 
 dl
 .table foo
@@ -242,150 +242,6 @@ hl.mapping{rule: "inKW", type: "keyword"}.
 scope.Usage{}?
 ----
 application/datalog
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 215, to: 228}, kind: "relation", name: "scope.builtin", usageScopeID: global{}, usageSpan: span{from: 55, to: 68}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 336, to: 345}, kind: "relation", name: "scope.let", usageScopeID: global{}, usageSpan: span{from: 111, to: 120}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 545, to: 557}, kind: "relation", name: "scope.lambda", usageScopeID: global{}, usageSpan: span{from: 163, to: 175}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1470, to: 1488}, kind: "relation", name: "ast.letBindingExpr", usageScopeID: global{}, usageSpan: span{from: 430, to: 448}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1470, to: 1488}, kind: "relation", name: "ast.letBindingExpr", usageScopeID: global{}, usageSpan: span{from: 1159, to: 1177}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1653, to: 1668}, kind: "relation", name: "ast.letBodyExpr", usageScopeID: global{}, usageSpan: span{from: 389, to: 404}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1653, to: 1668}, kind: "relation", name: "ast.letBodyExpr", usageScopeID: global{}, usageSpan: span{from: 1242, to: 1257}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1653, to: 1668}, kind: "relation", name: "ast.letBodyExpr", usageScopeID: global{}, usageSpan: span{from: 2943, to: 2958}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1830, to: 1840}, kind: "relation", name: "ast.letVar", usageScopeID: global{}, usageSpan: span{from: 477, to: 487}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1939, to: 1954}, kind: "relation", name: "ast.funcCallArg", usageScopeID: global{}, usageSpan: span{from: 1320, to: 1335}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1939, to: 1954}, kind: "relation", name: "ast.funcCallArg", usageScopeID: global{}, usageSpan: span{from: 2638, to: 2653}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2035, to: 2051}, kind: "relation", name: "ast.funcCallFunc", usageScopeID: global{}, usageSpan: span{from: 1398, to: 1414}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2035, to: 2051}, kind: "relation", name: "ast.funcCallFunc", usageScopeID: global{}, usageSpan: span{from: 2682, to: 2698}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 520, to: 527}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 2828, to: 2835}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 2986, to: 2993}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 3322, to: 3329}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2385, to: 2393}, kind: "relation", name: "tc.typeS", usageScopeID: global{}, usageSpan: span{from: 2165, to: 2173}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2470, to: 2478}, kind: "relation", name: "tc.typeI", usageScopeID: global{}, usageSpan: span{from: 2194, to: 2202}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2549, to: 2558}, kind: "relation", name: "tc.typeFC", usageScopeID: global{}, usageSpan: span{from: 2257, to: 2266}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2855, to: 2865}, kind: "relation", name: "tc.typeLet", usageScopeID: global{}, usageSpan: span{from: 2287, to: 2297}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 3013, to: 3023}, kind: "relation", name: "tc.typeVar", usageScopeID: global{}, usageSpan: span{from: 2318, to: 2328}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 3152, to: 3165}, kind: "relation", name: "tc.typeLambda", usageScopeID: global{}, usageSpan: span{from: 2223, to: 2236}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 3347, to: 3365}, kind: "relation", name: "tc.typePlaceholder", usageScopeID: global{}, usageSpan: span{from: 2349, to: 2367}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 20, to: 21}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 73, to: 74}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 20, to: 21}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 125, to: 126}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 20, to: 21}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 180, to: 181}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 29, to: 30}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 82, to: 83}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 29, to: 30}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 134, to: 135}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 29, to: 30}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 189, to: 190}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 38, to: 39}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 91, to: 92}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 38, to: 39}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 143, to: 144}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 38, to: 39}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 198, to: 199}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 47, to: 48}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 104, to: 105}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 47, to: 48}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 156, to: 157}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 47, to: 48}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 211, to: 212}}.
-scope.Usage{definitionScopeID: 393, defnSpan: span{from: 233, to: 234}, kind: "var", name: "I", usageScopeID: 393, usageSpan: span{from: 297, to: 298}}.
-scope.Usage{definitionScopeID: 393, defnSpan: span{from: 242, to: 243}, kind: "var", name: "N", usageScopeID: 393, usageSpan: span{from: 323, to: 324}}.
-scope.Usage{definitionScopeID: 393, defnSpan: span{from: 251, to: 252}, kind: "var", name: "T", usageScopeID: 393, usageSpan: span{from: 332, to: 333}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 350, to: 351}, kind: "var", name: "I", usageScopeID: 604, usageSpan: span{from: 423, to: 424}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 359, to: 360}, kind: "var", name: "N", usageScopeID: 604, usageSpan: span{from: 504, to: 505}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 368, to: 369}, kind: "var", name: "T", usageScopeID: 604, usageSpan: span{from: 541, to: 542}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 381, to: 382}, kind: "var", name: "S", usageScopeID: 604, usageSpan: span{from: 513, to: 514}}.
-scope.Usage{definitionScopeID: 982, defnSpan: span{from: 562, to: 563}, kind: "var", name: "I", usageScopeID: 982, usageSpan: span{from: 618, to: 619}}.
-scope.Usage{definitionScopeID: 982, defnSpan: span{from: 571, to: 572}, kind: "var", name: "N", usageScopeID: 982, usageSpan: span{from: 671, to: 672}}.
-scope.Usage{definitionScopeID: 982, defnSpan: span{from: 580, to: 581}, kind: "var", name: "T", usageScopeID: 982, usageSpan: span{from: 678, to: 679}}.
-scope.Usage{definitionScopeID: 982, defnSpan: span{from: 593, to: 594}, kind: "var", name: "L", usageScopeID: 982, usageSpan: span{from: 691, to: 692}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 753, to: 754}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 782, to: 783}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 820, to: 821}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 866, to: 867}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 723, to: 724}, kind: "var", name: "N", usageScopeID: 1246, usageSpan: span{from: 791, to: 792}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 723, to: 724}, kind: "var", name: "N", usageScopeID: 1246, usageSpan: span{from: 913, to: 914}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 732, to: 733}, kind: "var", name: "S", usageScopeID: 1246, usageSpan: span{from: 800, to: 801}}.
-scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 732, to: 733}, kind: "var", name: "S", usageScopeID: 1246, usageSpan: span{from: 922, to: 923}}.
-scope.Usage{definitionScopeID: 1654, defnSpan: span{from: 942, to: 943}, kind: "var", name: "I", usageScopeID: 1654, usageSpan: span{from: 973, to: 974}}.
-scope.Usage{definitionScopeID: 1654, defnSpan: span{from: 952, to: 953}, kind: "var", name: "I", usageScopeID: 1654, usageSpan: span{from: 973, to: 974}}.
-scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1004, to: 1005}, kind: "var", name: "I", usageScopeID: 1745, usageSpan: span{from: 1034, to: 1035}}.
-scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1004, to: 1005}, kind: "var", name: "I", usageScopeID: 1745, usageSpan: span{from: 1067, to: 1068}}.
-scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1013, to: 1014}, kind: "var", name: "S", usageScopeID: 1745, usageSpan: span{from: 1076, to: 1077}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1199, to: 1200}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1276, to: 1277}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1354, to: 1355}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1434, to: 1435}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1152, to: 1153}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1235, to: 1236}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1313, to: 1314}}.
-scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1391, to: 1392}}.
-scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1496, to: 1497}, kind: "var", name: "L", usageScopeID: 2590, usageSpan: span{from: 1534, to: 1535}}.
-scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1496, to: 1497}, kind: "var", name: "L", usageScopeID: 2590, usageSpan: span{from: 1568, to: 1569}}.
-scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1510, to: 1511}, kind: "var", name: "D", usageScopeID: 2590, usageSpan: span{from: 1639, to: 1640}}.
-scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1676, to: 1677}, kind: "var", name: "L", usageScopeID: 2916, usageSpan: span{from: 1711, to: 1712}}.
-scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1676, to: 1677}, kind: "var", name: "L", usageScopeID: 2916, usageSpan: span{from: 1745, to: 1746}}.
-scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1687, to: 1688}, kind: "var", name: "I", usageScopeID: 2916, usageSpan: span{from: 1826, to: 1827}}.
-scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1848, to: 1849}, kind: "var", name: "L", usageScopeID: 3230, usageSpan: span{from: 1890, to: 1891}}.
-scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1848, to: 1849}, kind: "var", name: "L", usageScopeID: 3230, usageSpan: span{from: 1917, to: 1918}}.
-scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1857, to: 1858}, kind: "var", name: "N", usageScopeID: 3230, usageSpan: span{from: 1926, to: 1927}}.
-scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1866, to: 1867}, kind: "var", name: "S", usageScopeID: 3230, usageSpan: span{from: 1935, to: 1936}}.
-scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1963, to: 1964}, kind: "var", name: "C", usageScopeID: 3426, usageSpan: span{from: 1998, to: 1999}}.
-scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1963, to: 1964}, kind: "var", name: "C", usageScopeID: 3426, usageSpan: span{from: 2024, to: 2025}}.
-scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1973, to: 1974}, kind: "var", name: "I", usageScopeID: 3426, usageSpan: span{from: 2031, to: 2032}}.
-scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2060, to: 2061}, kind: "var", name: "C", usageScopeID: 3600, usageSpan: span{from: 2096, to: 2097}}.
-scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2060, to: 2061}, kind: "var", name: "C", usageScopeID: 3600, usageSpan: span{from: 2132, to: 2133}}.
-scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2071, to: 2072}, kind: "var", name: "F", usageScopeID: 3600, usageSpan: span{from: 2119, to: 2120}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2178, to: 2179}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2207, to: 2208}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2241, to: 2242}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2271, to: 2272}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2302, to: 2303}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2333, to: 2334}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2372, to: 2373}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2187, to: 2188}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2216, to: 2217}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2250, to: 2251}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2280, to: 2281}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2311, to: 2312}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2342, to: 2343}}.
-scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2381, to: 2382}}.
-scope.Usage{definitionScopeID: 4233, defnSpan: span{from: 2398, to: 2399}, kind: "var", name: "I", usageScopeID: 4233, usageSpan: span{from: 2435, to: 2436}}.
-scope.Usage{definitionScopeID: 4233, defnSpan: span{from: 2398, to: 2399}, kind: "var", name: "I", usageScopeID: 4233, usageSpan: span{from: 2466, to: 2467}}.
-scope.Usage{definitionScopeID: 4379, defnSpan: span{from: 2483, to: 2484}, kind: "var", name: "I", usageScopeID: 4379, usageSpan: span{from: 2517, to: 2518}}.
-scope.Usage{definitionScopeID: 4379, defnSpan: span{from: 2483, to: 2484}, kind: "var", name: "I", usageScopeID: 4379, usageSpan: span{from: 2545, to: 2546}}.
-scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2563, to: 2564}, kind: "var", name: "I", usageScopeID: 4516, usageSpan: span{from: 2593, to: 2594}}.
-scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2563, to: 2564}, kind: "var", name: "I", usageScopeID: 4516, usageSpan: span{from: 2623, to: 2624}}.
-scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2572, to: 2573}, kind: "var", name: "T", usageScopeID: 4516, usageSpan: span{from: 2820, to: 2821}}.
-scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2870, to: 2871}, kind: "var", name: "I", usageScopeID: 5047, usageSpan: span{from: 2900, to: 2901}}.
-scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2870, to: 2871}, kind: "var", name: "I", usageScopeID: 5047, usageSpan: span{from: 2936, to: 2937}}.
-scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2879, to: 2880}, kind: "var", name: "T", usageScopeID: 5047, usageSpan: span{from: 3009, to: 3010}}.
-scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3028, to: 3029}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3058, to: 3059}}.
-scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3028, to: 3029}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3094, to: 3095}}.
-scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3028, to: 3029}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3130, to: 3131}}.
-scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3037, to: 3038}, kind: "var", name: "T", usageScopeID: 5323, usageSpan: span{from: 3148, to: 3149}}.
-scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3170, to: 3171}, kind: "var", name: "I", usageScopeID: 5572, usageSpan: span{from: 3219, to: 3220}}.
-scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3170, to: 3171}, kind: "var", name: "I", usageScopeID: 5572, usageSpan: span{from: 3254, to: 3255}}.
-scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3190, to: 3191}, kind: "var", name: "F", usageScopeID: 5572, usageSpan: span{from: 3315, to: 3316}}.
-scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3197, to: 3198}, kind: "var", name: "R", usageScopeID: 5572, usageSpan: span{from: 3266, to: 3267}}.
-scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3197, to: 3198}, kind: "var", name: "R", usageScopeID: 5572, usageSpan: span{from: 3343, to: 3344}}.
-scope.Usage{definitionScopeID: 5926, defnSpan: span{from: 3370, to: 3371}, kind: "var", name: "I", usageScopeID: 5926, usageSpan: span{from: 3408, to: 3409}}.
-scope.Usage{definitionScopeID: 5926, defnSpan: span{from: 3370, to: 3371}, kind: "var", name: "I", usageScopeID: 5926, usageSpan: span{from: 3448, to: 3449}}.
-scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 229, to: 231}, kind: "attr", name: "id", usageScopeID: "scope.builtin", usageSpan: span{from: 69, to: 71}}.
-scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 236, to: 240}, kind: "attr", name: "name", usageScopeID: "scope.builtin", usageSpan: span{from: 76, to: 80}}.
-scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 245, to: 249}, kind: "attr", name: "type", usageScopeID: "scope.builtin", usageSpan: span{from: 85, to: 89}}.
-scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 254, to: 262}, kind: "attr", name: "location", usageScopeID: "scope.builtin", usageSpan: span{from: 94, to: 102}}.
-scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 346, to: 348}, kind: "attr", name: "id", usageScopeID: "scope.let", usageSpan: span{from: 121, to: 123}}.
-scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 353, to: 357}, kind: "attr", name: "name", usageScopeID: "scope.let", usageSpan: span{from: 128, to: 132}}.
-scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 362, to: 366}, kind: "attr", name: "type", usageScopeID: "scope.let", usageSpan: span{from: 137, to: 141}}.
-scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 371, to: 379}, kind: "attr", name: "location", usageScopeID: "scope.let", usageSpan: span{from: 146, to: 154}}.
-scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 558, to: 560}, kind: "attr", name: "id", usageScopeID: "scope.lambda", usageSpan: span{from: 176, to: 178}}.
-scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 565, to: 569}, kind: "attr", name: "name", usageScopeID: "scope.lambda", usageSpan: span{from: 183, to: 187}}.
-scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 574, to: 578}, kind: "attr", name: "type", usageScopeID: "scope.lambda", usageSpan: span{from: 192, to: 196}}.
-scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 583, to: 591}, kind: "attr", name: "location", usageScopeID: "scope.lambda", usageSpan: span{from: 201, to: 209}}.
-scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1489, to: 1494}, kind: "attr", name: "letID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 449, to: 454}}.
-scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1489, to: 1494}, kind: "attr", name: "letID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 1178, to: 1183}}.
-scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1499, to: 1508}, kind: "attr", name: "bindingID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 459, to: 468}}.
-scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1499, to: 1508}, kind: "attr", name: "bindingID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 1188, to: 1197}}.
-scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1669, to: 1674}, kind: "attr", name: "letID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 405, to: 410}}.
-scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1669, to: 1674}, kind: "attr", name: "letID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 1258, to: 1263}}.
-scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1669, to: 1674}, kind: "attr", name: "letID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 2959, to: 2964}}.
-scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1679, to: 1685}, kind: "attr", name: "bodyID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 415, to: 421}}.
-scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1679, to: 1685}, kind: "attr", name: "bodyID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 1268, to: 1274}}.
-scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1679, to: 1685}, kind: "attr", name: "bodyID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 2969, to: 2975}}.
-scope.Usage{definitionScopeID: "ast.letVar", defnSpan: span{from: 1841, to: 1846}, kind: "attr", name: "letID", usageScopeID: "ast.letVar", usageSpan: span{from: 488, to: 493}}.
-scope.Usage{definitionScopeID: "ast.letVar", defnSpan: span{from: 1851, to: 1855}, kind: "attr", name: "name", usageScopeID: "ast.letVar", usageSpan: span{from: 498, to: 502}}.
-scope.Usage{definitionScopeID: "ast.letVar", defnSpan: span{from: 1860, to: 1864}, kind: "attr", name: "span", usageScopeID: "ast.letVar", usageSpan: span{from: 507, to: 511}}.
 scope.Usage{definitionScopeID: "ast.funcCallArg", defnSpan: span{from: 1955, to: 1961}, kind: "attr", name: "callID", usageScopeID: "ast.funcCallArg", usageSpan: span{from: 1336, to: 1342}}.
 scope.Usage{definitionScopeID: "ast.funcCallArg", defnSpan: span{from: 1955, to: 1961}, kind: "attr", name: "callID", usageScopeID: "ast.funcCallArg", usageSpan: span{from: 2654, to: 2660}}.
 scope.Usage{definitionScopeID: "ast.funcCallArg", defnSpan: span{from: 1966, to: 1971}, kind: "attr", name: "argID", usageScopeID: "ast.funcCallArg", usageSpan: span{from: 1347, to: 1352}}.
@@ -394,62 +250,61 @@ scope.Usage{definitionScopeID: "ast.funcCallFunc", defnSpan: span{from: 2052, to
 scope.Usage{definitionScopeID: "ast.funcCallFunc", defnSpan: span{from: 2052, to: 2058}, kind: "attr", name: "callID", usageScopeID: "ast.funcCallFunc", usageSpan: span{from: 2699, to: 2705}}.
 scope.Usage{definitionScopeID: "ast.funcCallFunc", defnSpan: span{from: 2063, to: 2069}, kind: "attr", name: "funcID", usageScopeID: "ast.funcCallFunc", usageSpan: span{from: 1426, to: 1432}}.
 scope.Usage{definitionScopeID: "ast.funcCallFunc", defnSpan: span{from: 2063, to: 2069}, kind: "attr", name: "funcID", usageScopeID: "ast.funcCallFunc", usageSpan: span{from: 2711, to: 2717}}.
-scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2144, to: 2146}, kind: "attr", name: "id", usageScopeID: "tc.Type", usageSpan: span{from: 528, to: 530}}.
+scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1489, to: 1494}, kind: "attr", name: "letID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 1178, to: 1183}}.
+scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1489, to: 1494}, kind: "attr", name: "letID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 449, to: 454}}.
+scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1499, to: 1508}, kind: "attr", name: "bindingID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 1188, to: 1197}}.
+scope.Usage{definitionScopeID: "ast.letBindingExpr", defnSpan: span{from: 1499, to: 1508}, kind: "attr", name: "bindingID", usageScopeID: "ast.letBindingExpr", usageSpan: span{from: 459, to: 468}}.
+scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1669, to: 1674}, kind: "attr", name: "letID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 1258, to: 1263}}.
+scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1669, to: 1674}, kind: "attr", name: "letID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 2959, to: 2964}}.
+scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1669, to: 1674}, kind: "attr", name: "letID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 405, to: 410}}.
+scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1679, to: 1685}, kind: "attr", name: "bodyID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 1268, to: 1274}}.
+scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1679, to: 1685}, kind: "attr", name: "bodyID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 2969, to: 2975}}.
+scope.Usage{definitionScopeID: "ast.letBodyExpr", defnSpan: span{from: 1679, to: 1685}, kind: "attr", name: "bodyID", usageScopeID: "ast.letBodyExpr", usageSpan: span{from: 415, to: 421}}.
+scope.Usage{definitionScopeID: "ast.letVar", defnSpan: span{from: 1841, to: 1846}, kind: "attr", name: "letID", usageScopeID: "ast.letVar", usageSpan: span{from: 488, to: 493}}.
+scope.Usage{definitionScopeID: "ast.letVar", defnSpan: span{from: 1851, to: 1855}, kind: "attr", name: "name", usageScopeID: "ast.letVar", usageSpan: span{from: 498, to: 502}}.
+scope.Usage{definitionScopeID: "ast.letVar", defnSpan: span{from: 1860, to: 1864}, kind: "attr", name: "span", usageScopeID: "ast.letVar", usageSpan: span{from: 507, to: 511}}.
+scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 229, to: 231}, kind: "attr", name: "id", usageScopeID: "scope.builtin", usageSpan: span{from: 69, to: 71}}.
+scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 236, to: 240}, kind: "attr", name: "name", usageScopeID: "scope.builtin", usageSpan: span{from: 76, to: 80}}.
+scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 245, to: 249}, kind: "attr", name: "type", usageScopeID: "scope.builtin", usageSpan: span{from: 85, to: 89}}.
+scope.Usage{definitionScopeID: "scope.builtin", defnSpan: span{from: 254, to: 262}, kind: "attr", name: "location", usageScopeID: "scope.builtin", usageSpan: span{from: 94, to: 102}}.
+scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 558, to: 560}, kind: "attr", name: "id", usageScopeID: "scope.lambda", usageSpan: span{from: 176, to: 178}}.
+scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 565, to: 569}, kind: "attr", name: "name", usageScopeID: "scope.lambda", usageSpan: span{from: 183, to: 187}}.
+scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 574, to: 578}, kind: "attr", name: "type", usageScopeID: "scope.lambda", usageSpan: span{from: 192, to: 196}}.
+scope.Usage{definitionScopeID: "scope.lambda", defnSpan: span{from: 583, to: 591}, kind: "attr", name: "location", usageScopeID: "scope.lambda", usageSpan: span{from: 201, to: 209}}.
+scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 346, to: 348}, kind: "attr", name: "id", usageScopeID: "scope.let", usageSpan: span{from: 121, to: 123}}.
+scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 353, to: 357}, kind: "attr", name: "name", usageScopeID: "scope.let", usageSpan: span{from: 128, to: 132}}.
+scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 362, to: 366}, kind: "attr", name: "type", usageScopeID: "scope.let", usageSpan: span{from: 137, to: 141}}.
+scope.Usage{definitionScopeID: "scope.let", defnSpan: span{from: 371, to: 379}, kind: "attr", name: "location", usageScopeID: "scope.let", usageSpan: span{from: 146, to: 154}}.
 scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2144, to: 2146}, kind: "attr", name: "id", usageScopeID: "tc.Type", usageSpan: span{from: 2836, to: 2838}}.
 scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2144, to: 2146}, kind: "attr", name: "id", usageScopeID: "tc.Type", usageSpan: span{from: 2994, to: 2996}}.
 scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2144, to: 2146}, kind: "attr", name: "id", usageScopeID: "tc.Type", usageSpan: span{from: 3330, to: 3332}}.
-scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2151, to: 2155}, kind: "attr", name: "type", usageScopeID: "tc.Type", usageSpan: span{from: 535, to: 539}}.
+scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2144, to: 2146}, kind: "attr", name: "id", usageScopeID: "tc.Type", usageSpan: span{from: 528, to: 530}}.
 scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2151, to: 2155}, kind: "attr", name: "type", usageScopeID: "tc.Type", usageSpan: span{from: 2845, to: 2849}}.
 scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2151, to: 2155}, kind: "attr", name: "type", usageScopeID: "tc.Type", usageSpan: span{from: 3003, to: 3007}}.
 scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2151, to: 2155}, kind: "attr", name: "type", usageScopeID: "tc.Type", usageSpan: span{from: 3337, to: 3341}}.
-scope.Usage{definitionScopeID: "tc.typeS", defnSpan: span{from: 2394, to: 2396}, kind: "attr", name: "id", usageScopeID: "tc.typeS", usageSpan: span{from: 2174, to: 2176}}.
-scope.Usage{definitionScopeID: "tc.typeS", defnSpan: span{from: 2401, to: 2405}, kind: "attr", name: "type", usageScopeID: "tc.typeS", usageSpan: span{from: 2181, to: 2185}}.
-scope.Usage{definitionScopeID: "tc.typeI", defnSpan: span{from: 2479, to: 2481}, kind: "attr", name: "id", usageScopeID: "tc.typeI", usageSpan: span{from: 2203, to: 2205}}.
-scope.Usage{definitionScopeID: "tc.typeI", defnSpan: span{from: 2486, to: 2490}, kind: "attr", name: "type", usageScopeID: "tc.typeI", usageSpan: span{from: 2210, to: 2214}}.
+scope.Usage{definitionScopeID: "tc.Type", defnSpan: span{from: 2151, to: 2155}, kind: "attr", name: "type", usageScopeID: "tc.Type", usageSpan: span{from: 535, to: 539}}.
 scope.Usage{definitionScopeID: "tc.typeFC", defnSpan: span{from: 2559, to: 2561}, kind: "attr", name: "id", usageScopeID: "tc.typeFC", usageSpan: span{from: 2267, to: 2269}}.
 scope.Usage{definitionScopeID: "tc.typeFC", defnSpan: span{from: 2566, to: 2570}, kind: "attr", name: "type", usageScopeID: "tc.typeFC", usageSpan: span{from: 2274, to: 2278}}.
-scope.Usage{definitionScopeID: "tc.typeLet", defnSpan: span{from: 2866, to: 2868}, kind: "attr", name: "id", usageScopeID: "tc.typeLet", usageSpan: span{from: 2298, to: 2300}}.
-scope.Usage{definitionScopeID: "tc.typeLet", defnSpan: span{from: 2873, to: 2877}, kind: "attr", name: "type", usageScopeID: "tc.typeLet", usageSpan: span{from: 2305, to: 2309}}.
-scope.Usage{definitionScopeID: "tc.typeVar", defnSpan: span{from: 3024, to: 3026}, kind: "attr", name: "id", usageScopeID: "tc.typeVar", usageSpan: span{from: 2329, to: 2331}}.
-scope.Usage{definitionScopeID: "tc.typeVar", defnSpan: span{from: 3031, to: 3035}, kind: "attr", name: "type", usageScopeID: "tc.typeVar", usageSpan: span{from: 2336, to: 2340}}.
+scope.Usage{definitionScopeID: "tc.typeI", defnSpan: span{from: 2479, to: 2481}, kind: "attr", name: "id", usageScopeID: "tc.typeI", usageSpan: span{from: 2203, to: 2205}}.
+scope.Usage{definitionScopeID: "tc.typeI", defnSpan: span{from: 2486, to: 2490}, kind: "attr", name: "type", usageScopeID: "tc.typeI", usageSpan: span{from: 2210, to: 2214}}.
 scope.Usage{definitionScopeID: "tc.typeLambda", defnSpan: span{from: 3166, to: 3168}, kind: "attr", name: "id", usageScopeID: "tc.typeLambda", usageSpan: span{from: 2237, to: 2239}}.
 scope.Usage{definitionScopeID: "tc.typeLambda", defnSpan: span{from: 3173, to: 3177}, kind: "attr", name: "type", usageScopeID: "tc.typeLambda", usageSpan: span{from: 2244, to: 2248}}.
+scope.Usage{definitionScopeID: "tc.typeLet", defnSpan: span{from: 2866, to: 2868}, kind: "attr", name: "id", usageScopeID: "tc.typeLet", usageSpan: span{from: 2298, to: 2300}}.
+scope.Usage{definitionScopeID: "tc.typeLet", defnSpan: span{from: 2873, to: 2877}, kind: "attr", name: "type", usageScopeID: "tc.typeLet", usageSpan: span{from: 2305, to: 2309}}.
 scope.Usage{definitionScopeID: "tc.typePlaceholder", defnSpan: span{from: 3366, to: 3368}, kind: "attr", name: "id", usageScopeID: "tc.typePlaceholder", usageSpan: span{from: 2368, to: 2370}}.
 scope.Usage{definitionScopeID: "tc.typePlaceholder", defnSpan: span{from: 3373, to: 3377}, kind: "attr", name: "type", usageScopeID: "tc.typePlaceholder", usageSpan: span{from: 2375, to: 2379}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 73, to: 74}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 125, to: 126}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 73, to: 74}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 180, to: 181}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 82, to: 83}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 134, to: 135}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 82, to: 83}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 189, to: 190}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 91, to: 92}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 143, to: 144}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 91, to: 92}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 198, to: 199}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 104, to: 105}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 156, to: 157}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 104, to: 105}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 211, to: 212}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 125, to: 126}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 73, to: 74}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 125, to: 126}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 180, to: 181}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 134, to: 135}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 82, to: 83}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 134, to: 135}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 189, to: 190}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 143, to: 144}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 91, to: 92}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 143, to: 144}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 198, to: 199}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 156, to: 157}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 104, to: 105}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 156, to: 157}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 211, to: 212}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 180, to: 181}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 73, to: 74}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 180, to: 181}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 125, to: 126}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 189, to: 190}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 82, to: 83}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 189, to: 190}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 134, to: 135}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 198, to: 199}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 91, to: 92}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 198, to: 199}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 143, to: 144}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 211, to: 212}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 104, to: 105}}.
-scope.Usage{definitionScopeID: 4, defnSpan: span{from: 211, to: 212}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 156, to: 157}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 412, to: 413}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 456, to: 457}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 412, to: 413}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 495, to: 496}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 456, to: 457}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 412, to: 413}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 456, to: 457}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 495, to: 496}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 470, to: 471}, kind: "var", name: "B", usageScopeID: 604, usageSpan: span{from: 532, to: 533}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 495, to: 496}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 412, to: 413}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 495, to: 496}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 456, to: 457}}.
-scope.Usage{definitionScopeID: 604, defnSpan: span{from: 532, to: 533}, kind: "var", name: "B", usageScopeID: 604, usageSpan: span{from: 470, to: 471}}.
-scope.Usage{definitionScopeID: 982, defnSpan: span{from: 625, to: 628}, kind: "var", name: "LID", usageScopeID: 982, usageSpan: span{from: 660, to: 663}}.
-scope.Usage{definitionScopeID: 982, defnSpan: span{from: 660, to: 663}, kind: "var", name: "LID", usageScopeID: 982, usageSpan: span{from: 625, to: 628}}.
+scope.Usage{definitionScopeID: "tc.typeS", defnSpan: span{from: 2394, to: 2396}, kind: "attr", name: "id", usageScopeID: "tc.typeS", usageSpan: span{from: 2174, to: 2176}}.
+scope.Usage{definitionScopeID: "tc.typeS", defnSpan: span{from: 2401, to: 2405}, kind: "attr", name: "type", usageScopeID: "tc.typeS", usageSpan: span{from: 2181, to: 2185}}.
+scope.Usage{definitionScopeID: "tc.typeVar", defnSpan: span{from: 3024, to: 3026}, kind: "attr", name: "id", usageScopeID: "tc.typeVar", usageSpan: span{from: 2329, to: 2331}}.
+scope.Usage{definitionScopeID: "tc.typeVar", defnSpan: span{from: 3031, to: 3035}, kind: "attr", name: "type", usageScopeID: "tc.typeVar", usageSpan: span{from: 2336, to: 2340}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 753, to: 754}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 782, to: 783}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 820, to: 821}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 714, to: 715}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 866, to: 867}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 723, to: 724}, kind: "var", name: "N", usageScopeID: 1246, usageSpan: span{from: 791, to: 792}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 723, to: 724}, kind: "var", name: "N", usageScopeID: 1246, usageSpan: span{from: 913, to: 914}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 732, to: 733}, kind: "var", name: "S", usageScopeID: 1246, usageSpan: span{from: 800, to: 801}}.
+scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 732, to: 733}, kind: "var", name: "S", usageScopeID: 1246, usageSpan: span{from: 922, to: 923}}.
 scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 753, to: 754}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 782, to: 783}}.
 scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 753, to: 754}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 820, to: 821}}.
 scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 753, to: 754}, kind: "var", name: "I", usageScopeID: 1246, usageSpan: span{from: 866, to: 867}}.
@@ -468,8 +323,21 @@ scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 866, to: 867}, kind: "
 scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 895, to: 905}, kind: "var", name: "FuncCallID", usageScopeID: 1246, usageSpan: span{from: 844, to: 854}}.
 scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 913, to: 914}, kind: "var", name: "N", usageScopeID: 1246, usageSpan: span{from: 791, to: 792}}.
 scope.Usage{definitionScopeID: 1246, defnSpan: span{from: 922, to: 923}, kind: "var", name: "S", usageScopeID: 1246, usageSpan: span{from: 800, to: 801}}.
+scope.Usage{definitionScopeID: 1654, defnSpan: span{from: 942, to: 943}, kind: "var", name: "I", usageScopeID: 1654, usageSpan: span{from: 973, to: 974}}.
+scope.Usage{definitionScopeID: 1654, defnSpan: span{from: 952, to: 953}, kind: "var", name: "I", usageScopeID: 1654, usageSpan: span{from: 973, to: 974}}.
+scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1004, to: 1005}, kind: "var", name: "I", usageScopeID: 1745, usageSpan: span{from: 1034, to: 1035}}.
+scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1004, to: 1005}, kind: "var", name: "I", usageScopeID: 1745, usageSpan: span{from: 1067, to: 1068}}.
+scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1013, to: 1014}, kind: "var", name: "S", usageScopeID: 1745, usageSpan: span{from: 1076, to: 1077}}.
 scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1034, to: 1035}, kind: "var", name: "I", usageScopeID: 1745, usageSpan: span{from: 1067, to: 1068}}.
 scope.Usage{definitionScopeID: 1745, defnSpan: span{from: 1067, to: 1068}, kind: "var", name: "I", usageScopeID: 1745, usageSpan: span{from: 1034, to: 1035}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1199, to: 1200}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1276, to: 1277}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1354, to: 1355}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1102, to: 1103}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1434, to: 1435}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1152, to: 1153}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1235, to: 1236}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1313, to: 1314}}.
+scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1115, to: 1116}, kind: "var", name: "P", usageScopeID: 1933, usageSpan: span{from: 1391, to: 1392}}.
 scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1139, to: 1140}, kind: "var", name: "L", usageScopeID: 1933, usageSpan: span{from: 1185, to: 1186}}.
 scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1139, to: 1140}, kind: "var", name: "L", usageScopeID: 1933, usageSpan: span{from: 1222, to: 1223}}.
 scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1139, to: 1140}, kind: "var", name: "L", usageScopeID: 1933, usageSpan: span{from: 1265, to: 1266}}.
@@ -518,24 +386,54 @@ scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1423, to: 1424}, kind:
 scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1434, to: 1435}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1199, to: 1200}}.
 scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1434, to: 1435}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1276, to: 1277}}.
 scope.Usage{definitionScopeID: 1933, defnSpan: span{from: 1434, to: 1435}, kind: "var", name: "I", usageScopeID: 1933, usageSpan: span{from: 1354, to: 1355}}.
+scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1496, to: 1497}, kind: "var", name: "L", usageScopeID: 2590, usageSpan: span{from: 1534, to: 1535}}.
+scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1496, to: 1497}, kind: "var", name: "L", usageScopeID: 2590, usageSpan: span{from: 1568, to: 1569}}.
+scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1510, to: 1511}, kind: "var", name: "D", usageScopeID: 2590, usageSpan: span{from: 1639, to: 1640}}.
 scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1534, to: 1535}, kind: "var", name: "L", usageScopeID: 2590, usageSpan: span{from: 1568, to: 1569}}.
 scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1554, to: 1556}, kind: "var", name: "IN", usageScopeID: 2590, usageSpan: span{from: 1608, to: 1610}}.
 scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1568, to: 1569}, kind: "var", name: "L", usageScopeID: 2590, usageSpan: span{from: 1534, to: 1535}}.
 scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1598, to: 1600}, kind: "var", name: "WS", usageScopeID: 2590, usageSpan: span{from: 1648, to: 1650}}.
 scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1608, to: 1610}, kind: "var", name: "IN", usageScopeID: 2590, usageSpan: span{from: 1554, to: 1556}}.
 scope.Usage{definitionScopeID: 2590, defnSpan: span{from: 1648, to: 1650}, kind: "var", name: "WS", usageScopeID: 2590, usageSpan: span{from: 1598, to: 1600}}.
+scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1676, to: 1677}, kind: "var", name: "L", usageScopeID: 2916, usageSpan: span{from: 1711, to: 1712}}.
+scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1676, to: 1677}, kind: "var", name: "L", usageScopeID: 2916, usageSpan: span{from: 1745, to: 1746}}.
+scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1687, to: 1688}, kind: "var", name: "I", usageScopeID: 2916, usageSpan: span{from: 1826, to: 1827}}.
 scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1711, to: 1712}, kind: "var", name: "L", usageScopeID: 2916, usageSpan: span{from: 1745, to: 1746}}.
 scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1731, to: 1733}, kind: "var", name: "IN", usageScopeID: 2916, usageSpan: span{from: 1775, to: 1777}}.
 scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1745, to: 1746}, kind: "var", name: "L", usageScopeID: 2916, usageSpan: span{from: 1711, to: 1712}}.
 scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1775, to: 1777}, kind: "var", name: "IN", usageScopeID: 2916, usageSpan: span{from: 1731, to: 1733}}.
 scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1785, to: 1787}, kind: "var", name: "WS", usageScopeID: 2916, usageSpan: span{from: 1816, to: 1818}}.
 scope.Usage{definitionScopeID: 2916, defnSpan: span{from: 1816, to: 1818}, kind: "var", name: "WS", usageScopeID: 2916, usageSpan: span{from: 1785, to: 1787}}.
+scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1848, to: 1849}, kind: "var", name: "L", usageScopeID: 3230, usageSpan: span{from: 1890, to: 1891}}.
+scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1848, to: 1849}, kind: "var", name: "L", usageScopeID: 3230, usageSpan: span{from: 1917, to: 1918}}.
+scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1857, to: 1858}, kind: "var", name: "N", usageScopeID: 3230, usageSpan: span{from: 1926, to: 1927}}.
+scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1866, to: 1867}, kind: "var", name: "S", usageScopeID: 3230, usageSpan: span{from: 1935, to: 1936}}.
 scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1890, to: 1891}, kind: "var", name: "L", usageScopeID: 3230, usageSpan: span{from: 1917, to: 1918}}.
 scope.Usage{definitionScopeID: 3230, defnSpan: span{from: 1917, to: 1918}, kind: "var", name: "L", usageScopeID: 3230, usageSpan: span{from: 1890, to: 1891}}.
+scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1963, to: 1964}, kind: "var", name: "C", usageScopeID: 3426, usageSpan: span{from: 1998, to: 1999}}.
+scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1963, to: 1964}, kind: "var", name: "C", usageScopeID: 3426, usageSpan: span{from: 2024, to: 2025}}.
+scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1973, to: 1974}, kind: "var", name: "I", usageScopeID: 3426, usageSpan: span{from: 2031, to: 2032}}.
 scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 1998, to: 1999}, kind: "var", name: "C", usageScopeID: 3426, usageSpan: span{from: 2024, to: 2025}}.
 scope.Usage{definitionScopeID: 3426, defnSpan: span{from: 2024, to: 2025}, kind: "var", name: "C", usageScopeID: 3426, usageSpan: span{from: 1998, to: 1999}}.
+scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2060, to: 2061}, kind: "var", name: "C", usageScopeID: 3600, usageSpan: span{from: 2096, to: 2097}}.
+scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2060, to: 2061}, kind: "var", name: "C", usageScopeID: 3600, usageSpan: span{from: 2132, to: 2133}}.
+scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2071, to: 2072}, kind: "var", name: "F", usageScopeID: 3600, usageSpan: span{from: 2119, to: 2120}}.
 scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2096, to: 2097}, kind: "var", name: "C", usageScopeID: 3600, usageSpan: span{from: 2132, to: 2133}}.
 scope.Usage{definitionScopeID: 3600, defnSpan: span{from: 2132, to: 2133}, kind: "var", name: "C", usageScopeID: 3600, usageSpan: span{from: 2096, to: 2097}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2178, to: 2179}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2207, to: 2208}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2241, to: 2242}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2271, to: 2272}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2302, to: 2303}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2333, to: 2334}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2148, to: 2149}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2372, to: 2373}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2187, to: 2188}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2216, to: 2217}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2250, to: 2251}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2280, to: 2281}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2311, to: 2312}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2342, to: 2343}}.
+scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2157, to: 2158}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2381, to: 2382}}.
 scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2178, to: 2179}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2207, to: 2208}}.
 scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2178, to: 2179}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2241, to: 2242}}.
 scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2178, to: 2179}, kind: "var", name: "I", usageScopeID: 3784, usageSpan: span{from: 2271, to: 2272}}.
@@ -620,10 +518,56 @@ scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2381, to: 2382}, kind:
 scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2381, to: 2382}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2280, to: 2281}}.
 scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2381, to: 2382}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2311, to: 2312}}.
 scope.Usage{definitionScopeID: 3784, defnSpan: span{from: 2381, to: 2382}, kind: "var", name: "T", usageScopeID: 3784, usageSpan: span{from: 2342, to: 2343}}.
+scope.Usage{definitionScopeID: 393, defnSpan: span{from: 233, to: 234}, kind: "var", name: "I", usageScopeID: 393, usageSpan: span{from: 297, to: 298}}.
+scope.Usage{definitionScopeID: 393, defnSpan: span{from: 242, to: 243}, kind: "var", name: "N", usageScopeID: 393, usageSpan: span{from: 323, to: 324}}.
+scope.Usage{definitionScopeID: 393, defnSpan: span{from: 251, to: 252}, kind: "var", name: "T", usageScopeID: 393, usageSpan: span{from: 332, to: 333}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 104, to: 105}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 156, to: 157}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 104, to: 105}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 211, to: 212}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 125, to: 126}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 180, to: 181}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 125, to: 126}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 73, to: 74}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 134, to: 135}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 189, to: 190}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 134, to: 135}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 82, to: 83}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 143, to: 144}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 198, to: 199}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 143, to: 144}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 91, to: 92}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 156, to: 157}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 104, to: 105}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 156, to: 157}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 211, to: 212}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 180, to: 181}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 125, to: 126}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 180, to: 181}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 73, to: 74}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 189, to: 190}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 134, to: 135}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 189, to: 190}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 82, to: 83}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 198, to: 199}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 143, to: 144}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 198, to: 199}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 91, to: 92}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 20, to: 21}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 125, to: 126}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 20, to: 21}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 180, to: 181}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 20, to: 21}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 73, to: 74}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 211, to: 212}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 104, to: 105}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 211, to: 212}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 156, to: 157}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 29, to: 30}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 134, to: 135}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 29, to: 30}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 189, to: 190}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 29, to: 30}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 82, to: 83}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 38, to: 39}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 143, to: 144}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 38, to: 39}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 198, to: 199}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 38, to: 39}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 91, to: 92}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 47, to: 48}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 104, to: 105}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 47, to: 48}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 156, to: 157}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 47, to: 48}, kind: "var", name: "S", usageScopeID: 4, usageSpan: span{from: 211, to: 212}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 73, to: 74}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 125, to: 126}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 73, to: 74}, kind: "var", name: "I", usageScopeID: 4, usageSpan: span{from: 180, to: 181}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 82, to: 83}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 134, to: 135}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 82, to: 83}, kind: "var", name: "N", usageScopeID: 4, usageSpan: span{from: 189, to: 190}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 91, to: 92}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 143, to: 144}}.
+scope.Usage{definitionScopeID: 4, defnSpan: span{from: 91, to: 92}, kind: "var", name: "T", usageScopeID: 4, usageSpan: span{from: 198, to: 199}}.
+scope.Usage{definitionScopeID: 4233, defnSpan: span{from: 2398, to: 2399}, kind: "var", name: "I", usageScopeID: 4233, usageSpan: span{from: 2435, to: 2436}}.
+scope.Usage{definitionScopeID: 4233, defnSpan: span{from: 2398, to: 2399}, kind: "var", name: "I", usageScopeID: 4233, usageSpan: span{from: 2466, to: 2467}}.
 scope.Usage{definitionScopeID: 4233, defnSpan: span{from: 2435, to: 2436}, kind: "var", name: "I", usageScopeID: 4233, usageSpan: span{from: 2466, to: 2467}}.
 scope.Usage{definitionScopeID: 4233, defnSpan: span{from: 2466, to: 2467}, kind: "var", name: "I", usageScopeID: 4233, usageSpan: span{from: 2435, to: 2436}}.
+scope.Usage{definitionScopeID: 4379, defnSpan: span{from: 2483, to: 2484}, kind: "var", name: "I", usageScopeID: 4379, usageSpan: span{from: 2517, to: 2518}}.
+scope.Usage{definitionScopeID: 4379, defnSpan: span{from: 2483, to: 2484}, kind: "var", name: "I", usageScopeID: 4379, usageSpan: span{from: 2545, to: 2546}}.
 scope.Usage{definitionScopeID: 4379, defnSpan: span{from: 2517, to: 2518}, kind: "var", name: "I", usageScopeID: 4379, usageSpan: span{from: 2545, to: 2546}}.
 scope.Usage{definitionScopeID: 4379, defnSpan: span{from: 2545, to: 2546}, kind: "var", name: "I", usageScopeID: 4379, usageSpan: span{from: 2517, to: 2518}}.
+scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2563, to: 2564}, kind: "var", name: "I", usageScopeID: 4516, usageSpan: span{from: 2593, to: 2594}}.
+scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2563, to: 2564}, kind: "var", name: "I", usageScopeID: 4516, usageSpan: span{from: 2623, to: 2624}}.
+scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2572, to: 2573}, kind: "var", name: "T", usageScopeID: 4516, usageSpan: span{from: 2820, to: 2821}}.
 scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2593, to: 2594}, kind: "var", name: "I", usageScopeID: 4516, usageSpan: span{from: 2623, to: 2624}}.
 scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2623, to: 2624}, kind: "var", name: "I", usageScopeID: 4516, usageSpan: span{from: 2593, to: 2594}}.
 scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2630, to: 2632}, kind: "var", name: "FC", usageScopeID: 4516, usageSpan: span{from: 2662, to: 2664}}.
@@ -644,12 +588,19 @@ scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2793, to: 2794}, kind:
 scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2813, to: 2814}, kind: "var", name: "F", usageScopeID: 4516, usageSpan: span{from: 2851, to: 2852}}.
 scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2840, to: 2843}, kind: "var", name: "AID", usageScopeID: 4516, usageSpan: span{from: 2673, to: 2676}}.
 scope.Usage{definitionScopeID: 4516, defnSpan: span{from: 2851, to: 2852}, kind: "var", name: "F", usageScopeID: 4516, usageSpan: span{from: 2813, to: 2814}}.
+scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2870, to: 2871}, kind: "var", name: "I", usageScopeID: 5047, usageSpan: span{from: 2900, to: 2901}}.
+scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2870, to: 2871}, kind: "var", name: "I", usageScopeID: 5047, usageSpan: span{from: 2936, to: 2937}}.
+scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2879, to: 2880}, kind: "var", name: "T", usageScopeID: 5047, usageSpan: span{from: 3009, to: 3010}}.
 scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2900, to: 2901}, kind: "var", name: "I", usageScopeID: 5047, usageSpan: span{from: 2936, to: 2937}}.
 scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2923, to: 2924}, kind: "var", name: "L", usageScopeID: 5047, usageSpan: span{from: 2966, to: 2967}}.
 scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2936, to: 2937}, kind: "var", name: "I", usageScopeID: 5047, usageSpan: span{from: 2900, to: 2901}}.
 scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2966, to: 2967}, kind: "var", name: "L", usageScopeID: 5047, usageSpan: span{from: 2923, to: 2924}}.
 scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2977, to: 2980}, kind: "var", name: "BID", usageScopeID: 5047, usageSpan: span{from: 2998, to: 3001}}.
 scope.Usage{definitionScopeID: 5047, defnSpan: span{from: 2998, to: 3001}, kind: "var", name: "BID", usageScopeID: 5047, usageSpan: span{from: 2977, to: 2980}}.
+scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3028, to: 3029}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3058, to: 3059}}.
+scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3028, to: 3029}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3094, to: 3095}}.
+scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3028, to: 3029}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3130, to: 3131}}.
+scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3037, to: 3038}, kind: "var", name: "T", usageScopeID: 5323, usageSpan: span{from: 3148, to: 3149}}.
 scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3058, to: 3059}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3094, to: 3095}}.
 scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3058, to: 3059}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3130, to: 3131}}.
 scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3094, to: 3095}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3058, to: 3059}}.
@@ -658,6 +609,11 @@ scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3103, to: 3104}, kind:
 scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3130, to: 3131}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3058, to: 3059}}.
 scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3130, to: 3131}, kind: "var", name: "I", usageScopeID: 5323, usageSpan: span{from: 3094, to: 3095}}.
 scope.Usage{definitionScopeID: 5323, defnSpan: span{from: 3139, to: 3140}, kind: "var", name: "N", usageScopeID: 5323, usageSpan: span{from: 3103, to: 3104}}.
+scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3170, to: 3171}, kind: "var", name: "I", usageScopeID: 5572, usageSpan: span{from: 3219, to: 3220}}.
+scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3170, to: 3171}, kind: "var", name: "I", usageScopeID: 5572, usageSpan: span{from: 3254, to: 3255}}.
+scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3190, to: 3191}, kind: "var", name: "F", usageScopeID: 5572, usageSpan: span{from: 3315, to: 3316}}.
+scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3197, to: 3198}, kind: "var", name: "R", usageScopeID: 5572, usageSpan: span{from: 3266, to: 3267}}.
+scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3197, to: 3198}, kind: "var", name: "R", usageScopeID: 5572, usageSpan: span{from: 3343, to: 3344}}.
 scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3219, to: 3220}, kind: "var", name: "I", usageScopeID: 5572, usageSpan: span{from: 3254, to: 3255}}.
 scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3241, to: 3242}, kind: "var", name: "L", usageScopeID: 5572, usageSpan: span{from: 3308, to: 3309}}.
 scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3254, to: 3255}, kind: "var", name: "I", usageScopeID: 5572, usageSpan: span{from: 3219, to: 3220}}.
@@ -666,5 +622,49 @@ scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3275, to: 3276}, kind:
 scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3308, to: 3309}, kind: "var", name: "L", usageScopeID: 5572, usageSpan: span{from: 3241, to: 3242}}.
 scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3334, to: 3335}, kind: "var", name: "B", usageScopeID: 5572, usageSpan: span{from: 3275, to: 3276}}.
 scope.Usage{definitionScopeID: 5572, defnSpan: span{from: 3343, to: 3344}, kind: "var", name: "R", usageScopeID: 5572, usageSpan: span{from: 3266, to: 3267}}.
+scope.Usage{definitionScopeID: 5926, defnSpan: span{from: 3370, to: 3371}, kind: "var", name: "I", usageScopeID: 5926, usageSpan: span{from: 3408, to: 3409}}.
+scope.Usage{definitionScopeID: 5926, defnSpan: span{from: 3370, to: 3371}, kind: "var", name: "I", usageScopeID: 5926, usageSpan: span{from: 3448, to: 3449}}.
 scope.Usage{definitionScopeID: 5926, defnSpan: span{from: 3408, to: 3409}, kind: "var", name: "I", usageScopeID: 5926, usageSpan: span{from: 3448, to: 3449}}.
 scope.Usage{definitionScopeID: 5926, defnSpan: span{from: 3448, to: 3449}, kind: "var", name: "I", usageScopeID: 5926, usageSpan: span{from: 3408, to: 3409}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 350, to: 351}, kind: "var", name: "I", usageScopeID: 604, usageSpan: span{from: 423, to: 424}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 359, to: 360}, kind: "var", name: "N", usageScopeID: 604, usageSpan: span{from: 504, to: 505}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 368, to: 369}, kind: "var", name: "T", usageScopeID: 604, usageSpan: span{from: 541, to: 542}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 381, to: 382}, kind: "var", name: "S", usageScopeID: 604, usageSpan: span{from: 513, to: 514}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 412, to: 413}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 456, to: 457}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 412, to: 413}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 495, to: 496}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 456, to: 457}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 412, to: 413}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 456, to: 457}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 495, to: 496}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 470, to: 471}, kind: "var", name: "B", usageScopeID: 604, usageSpan: span{from: 532, to: 533}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 495, to: 496}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 412, to: 413}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 495, to: 496}, kind: "var", name: "L", usageScopeID: 604, usageSpan: span{from: 456, to: 457}}.
+scope.Usage{definitionScopeID: 604, defnSpan: span{from: 532, to: 533}, kind: "var", name: "B", usageScopeID: 604, usageSpan: span{from: 470, to: 471}}.
+scope.Usage{definitionScopeID: 982, defnSpan: span{from: 562, to: 563}, kind: "var", name: "I", usageScopeID: 982, usageSpan: span{from: 618, to: 619}}.
+scope.Usage{definitionScopeID: 982, defnSpan: span{from: 571, to: 572}, kind: "var", name: "N", usageScopeID: 982, usageSpan: span{from: 671, to: 672}}.
+scope.Usage{definitionScopeID: 982, defnSpan: span{from: 580, to: 581}, kind: "var", name: "T", usageScopeID: 982, usageSpan: span{from: 678, to: 679}}.
+scope.Usage{definitionScopeID: 982, defnSpan: span{from: 593, to: 594}, kind: "var", name: "L", usageScopeID: 982, usageSpan: span{from: 691, to: 692}}.
+scope.Usage{definitionScopeID: 982, defnSpan: span{from: 625, to: 628}, kind: "var", name: "LID", usageScopeID: 982, usageSpan: span{from: 660, to: 663}}.
+scope.Usage{definitionScopeID: 982, defnSpan: span{from: 660, to: 663}, kind: "var", name: "LID", usageScopeID: 982, usageSpan: span{from: 625, to: 628}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1470, to: 1488}, kind: "relation", name: "ast.letBindingExpr", usageScopeID: global{}, usageSpan: span{from: 1159, to: 1177}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1470, to: 1488}, kind: "relation", name: "ast.letBindingExpr", usageScopeID: global{}, usageSpan: span{from: 430, to: 448}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1653, to: 1668}, kind: "relation", name: "ast.letBodyExpr", usageScopeID: global{}, usageSpan: span{from: 1242, to: 1257}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1653, to: 1668}, kind: "relation", name: "ast.letBodyExpr", usageScopeID: global{}, usageSpan: span{from: 2943, to: 2958}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1653, to: 1668}, kind: "relation", name: "ast.letBodyExpr", usageScopeID: global{}, usageSpan: span{from: 389, to: 404}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1830, to: 1840}, kind: "relation", name: "ast.letVar", usageScopeID: global{}, usageSpan: span{from: 477, to: 487}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1939, to: 1954}, kind: "relation", name: "ast.funcCallArg", usageScopeID: global{}, usageSpan: span{from: 1320, to: 1335}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 1939, to: 1954}, kind: "relation", name: "ast.funcCallArg", usageScopeID: global{}, usageSpan: span{from: 2638, to: 2653}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2035, to: 2051}, kind: "relation", name: "ast.funcCallFunc", usageScopeID: global{}, usageSpan: span{from: 1398, to: 1414}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2035, to: 2051}, kind: "relation", name: "ast.funcCallFunc", usageScopeID: global{}, usageSpan: span{from: 2682, to: 2698}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 2828, to: 2835}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 2986, to: 2993}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 3322, to: 3329}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2136, to: 2143}, kind: "relation", name: "tc.Type", usageScopeID: global{}, usageSpan: span{from: 520, to: 527}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 215, to: 228}, kind: "relation", name: "scope.builtin", usageScopeID: global{}, usageSpan: span{from: 55, to: 68}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2385, to: 2393}, kind: "relation", name: "tc.typeS", usageScopeID: global{}, usageSpan: span{from: 2165, to: 2173}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2470, to: 2478}, kind: "relation", name: "tc.typeI", usageScopeID: global{}, usageSpan: span{from: 2194, to: 2202}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2549, to: 2558}, kind: "relation", name: "tc.typeFC", usageScopeID: global{}, usageSpan: span{from: 2257, to: 2266}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 2855, to: 2865}, kind: "relation", name: "tc.typeLet", usageScopeID: global{}, usageSpan: span{from: 2287, to: 2297}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 3013, to: 3023}, kind: "relation", name: "tc.typeVar", usageScopeID: global{}, usageSpan: span{from: 2318, to: 2328}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 3152, to: 3165}, kind: "relation", name: "tc.typeLambda", usageScopeID: global{}, usageSpan: span{from: 2223, to: 2236}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 3347, to: 3365}, kind: "relation", name: "tc.typePlaceholder", usageScopeID: global{}, usageSpan: span{from: 2349, to: 2367}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 336, to: 345}, kind: "relation", name: "scope.let", usageScopeID: global{}, usageSpan: span{from: 111, to: 120}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 545, to: 557}, kind: "relation", name: "scope.lambda", usageScopeID: global{}, usageSpan: span{from: 163, to: 175}}.

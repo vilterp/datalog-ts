@@ -8,14 +8,12 @@ state{}?
 application/datalog
 state{state: threadState{done: false, pc: 0, vars: {}}, threadID: 1, time: 0}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 0}}, threadID: 1, time: 1}.
-state{state: threadState{done: false, pc: 2, vars: {"x": 1}}, threadID: 1, time: 2}.
-state{state: threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}, threadID: 1, time: 3}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 1, "y": true}}, threadID: 1, time: 4}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 1}}, threadID: 1, time: 2}.
 state{state: threadState{done: false, pc: 2, vars: {"x": 2, "y": true}}, threadID: 1, time: 5}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}, threadID: 1, time: 3}.
 state{state: threadState{done: false, pc: 3, vars: {"x": 2, "y": false}}, threadID: 1, time: 6}.
 state{state: threadState{done: false, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 7}.
-state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 8}.
-state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 9}.
 state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 10}.
 state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 11}.
 state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 12}.
@@ -27,6 +25,8 @@ state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadI
 state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 18}.
 state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 19}.
 state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 20}.
+state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 8}.
+state{state: threadState{done: true, pc: 4, vars: {"x": 2, "y": false}}, threadID: 1, time: 9}.
 
 instr{idx: 0, op: store{var: "y", val: 1}}.
 instr{idx: 1, op: fork{goto: 2}}.
@@ -36,10 +36,10 @@ state{}?
 application/datalog
 state{state: threadState{done: false, pc: 0, vars: {}}, threadID: 1, time: 0}.
 state{state: threadState{done: false, pc: 1, vars: {"y": 1}}, threadID: 1, time: 1}.
-state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 1, time: 2}.
-state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 103, time: 2}.
 state{state: threadState{done: false, pc: 3, vars: {"y": 2}}, threadID: 1, time: 3}.
 state{state: threadState{done: false, pc: 3, vars: {"y": 2}}, threadID: 103, time: 3}.
+state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 1, time: 2}.
+state{state: threadState{pc: 2, vars: {"y": 1}}, threadID: 103, time: 2}.
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
 instr{idx: 1, op: increment{var: "x"}}.
@@ -54,41 +54,41 @@ state{}?
 application/datalog
 state{state: threadState{done: false, pc: 0, vars: {}}, threadID: 1, time: 0}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 0}}, threadID: 1, time: 1}.
-state{state: threadState{done: false, pc: 2, vars: {"x": 1}}, threadID: 1, time: 2}.
-state{state: threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}, threadID: 1, time: 3}.
-state{state: threadState{pc: 4, vars: {"x": 1, "y": true}}, threadID: 1, time: 4}.
-state{state: threadState{pc: 5, vars: {"x": 1, "y": true}}, threadID: 105, time: 4}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 1, "y": true}}, threadID: 1, time: 5}.
-state{state: threadState{done: false, pc: 6, vars: {"x": 2, "y": true}}, threadID: 105, time: 5}.
-state{state: threadState{done: false, pc: 2, vars: {"x": 2, "y": true}}, threadID: 1, time: 6}.
-state{state: threadState{done: false, pc: 7, vars: {"x": 3, "y": true}}, threadID: 105, time: 6}.
-state{state: threadState{done: false, pc: 3, vars: {"x": 2, "y": true}}, threadID: 1, time: 7}.
-state{state: threadState{done: false, pc: 8, vars: {"x": 4, "y": true}}, threadID: 105, time: 7}.
-state{state: threadState{pc: 4, vars: {"x": 2, "y": true}}, threadID: 1, time: 8}.
-state{state: threadState{pc: 5, vars: {"x": 2, "y": true}}, threadID: 109, time: 8}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 2, "y": true}}, threadID: 1, time: 9}.
-state{state: threadState{done: false, pc: 6, vars: {"x": 3, "y": true}}, threadID: 109, time: 9}.
-state{state: threadState{done: false, pc: 2, vars: {"x": 3, "y": true}}, threadID: 1, time: 10}.
-state{state: threadState{done: false, pc: 7, vars: {"x": 4, "y": true}}, threadID: 109, time: 10}.
-state{state: threadState{done: false, pc: 3, vars: {"x": 3, "y": true}}, threadID: 1, time: 11}.
-state{state: threadState{done: false, pc: 8, vars: {"x": 5, "y": true}}, threadID: 109, time: 11}.
-state{state: threadState{pc: 4, vars: {"x": 3, "y": true}}, threadID: 1, time: 12}.
-state{state: threadState{pc: 5, vars: {"x": 3, "y": true}}, threadID: 113, time: 12}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 3, "y": true}}, threadID: 1, time: 13}.
-state{state: threadState{done: false, pc: 6, vars: {"x": 4, "y": true}}, threadID: 113, time: 13}.
-state{state: threadState{done: false, pc: 2, vars: {"x": 4, "y": true}}, threadID: 1, time: 14}.
-state{state: threadState{done: false, pc: 7, vars: {"x": 5, "y": true}}, threadID: 113, time: 14}.
-state{state: threadState{done: false, pc: 3, vars: {"x": 4, "y": true}}, threadID: 1, time: 15}.
-state{state: threadState{done: false, pc: 8, vars: {"x": 6, "y": true}}, threadID: 113, time: 15}.
-state{state: threadState{pc: 4, vars: {"x": 4, "y": true}}, threadID: 1, time: 16}.
-state{state: threadState{pc: 5, vars: {"x": 4, "y": true}}, threadID: 117, time: 16}.
 state{state: threadState{done: false, pc: 1, vars: {"x": 4, "y": true}}, threadID: 1, time: 17}.
-state{state: threadState{done: false, pc: 6, vars: {"x": 5, "y": true}}, threadID: 117, time: 17}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 1}}, threadID: 1, time: 2}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 2, "y": true}}, threadID: 1, time: 6}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 3, "y": true}}, threadID: 1, time: 10}.
+state{state: threadState{done: false, pc: 2, vars: {"x": 4, "y": true}}, threadID: 1, time: 14}.
 state{state: threadState{done: false, pc: 2, vars: {"x": 5, "y": true}}, threadID: 1, time: 18}.
-state{state: threadState{done: false, pc: 7, vars: {"x": 6, "y": true}}, threadID: 117, time: 18}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 1, "y": true}}, threadID: 1, time: 3}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 2, "y": true}}, threadID: 1, time: 7}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 3, "y": true}}, threadID: 1, time: 11}.
+state{state: threadState{done: false, pc: 3, vars: {"x": 4, "y": true}}, threadID: 1, time: 15}.
 state{state: threadState{done: false, pc: 3, vars: {"x": 5, "y": false}}, threadID: 1, time: 19}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 2, "y": true}}, threadID: 105, time: 5}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 3, "y": true}}, threadID: 109, time: 9}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 4, "y": true}}, threadID: 113, time: 13}.
+state{state: threadState{done: false, pc: 6, vars: {"x": 5, "y": true}}, threadID: 117, time: 17}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 3, "y": true}}, threadID: 105, time: 6}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 4, "y": true}}, threadID: 109, time: 10}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 5, "y": true}}, threadID: 113, time: 14}.
+state{state: threadState{done: false, pc: 7, vars: {"x": 6, "y": true}}, threadID: 117, time: 18}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 4, "y": true}}, threadID: 105, time: 7}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 5, "y": true}}, threadID: 109, time: 11}.
+state{state: threadState{done: false, pc: 8, vars: {"x": 6, "y": true}}, threadID: 113, time: 15}.
 state{state: threadState{done: false, pc: 8, vars: {"x": 7, "y": true}}, threadID: 117, time: 19}.
+state{state: threadState{pc: 4, vars: {"x": 1, "y": true}}, threadID: 1, time: 4}.
+state{state: threadState{pc: 4, vars: {"x": 2, "y": true}}, threadID: 1, time: 8}.
+state{state: threadState{pc: 4, vars: {"x": 3, "y": true}}, threadID: 1, time: 12}.
+state{state: threadState{pc: 4, vars: {"x": 4, "y": true}}, threadID: 1, time: 16}.
 state{state: threadState{pc: 4, vars: {"x": 5, "y": false}}, threadID: 1, time: 20}.
+state{state: threadState{pc: 5, vars: {"x": 1, "y": true}}, threadID: 105, time: 4}.
+state{state: threadState{pc: 5, vars: {"x": 2, "y": true}}, threadID: 109, time: 8}.
+state{state: threadState{pc: 5, vars: {"x": 3, "y": true}}, threadID: 113, time: 12}.
+state{state: threadState{pc: 5, vars: {"x": 4, "y": true}}, threadID: 117, time: 16}.
 state{state: threadState{pc: 5, vars: {"x": 5, "y": false}}, threadID: 121, time: 20}.
 
 instr{idx: 0, op: store{var: "x", val: 0}}.
@@ -120,40 +120,40 @@ instr{idx: 7, op: increment{var: "x"}}.
 viz.message{}?
 ----
 application/datalog
-viz.message{fromTickID: viz.tick{place: 1, time: 3}, toTickID: viz.tick{place: 105, time: 4}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 7}, toTickID: viz.tick{place: 109, time: 8}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 11}, toTickID: viz.tick{place: 113, time: 12}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 15}, toTickID: viz.tick{place: 117, time: 16}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 19}, toTickID: viz.tick{place: 121, time: 20}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 0}, toTickID: viz.tick{place: 1, time: 1}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 10}, toTickID: viz.tick{place: 1, time: 11}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 11}, toTickID: viz.tick{place: 1, time: 12}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 11}, toTickID: viz.tick{place: 113, time: 12}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 12}, toTickID: viz.tick{place: 1, time: 13}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 13}, toTickID: viz.tick{place: 1, time: 14}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 14}, toTickID: viz.tick{place: 1, time: 15}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 15}, toTickID: viz.tick{place: 1, time: 16}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 15}, toTickID: viz.tick{place: 117, time: 16}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 16}, toTickID: viz.tick{place: 1, time: 17}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 17}, toTickID: viz.tick{place: 1, time: 18}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 18}, toTickID: viz.tick{place: 1, time: 19}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 19}, toTickID: viz.tick{place: 1, time: 20}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 19}, toTickID: viz.tick{place: 121, time: 20}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 1}, toTickID: viz.tick{place: 1, time: 2}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 2}, toTickID: viz.tick{place: 1, time: 3}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 3}, toTickID: viz.tick{place: 1, time: 4}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 3}, toTickID: viz.tick{place: 105, time: 4}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 4}, toTickID: viz.tick{place: 1, time: 5}}.
-viz.message{fromTickID: viz.tick{place: 105, time: 4}, toTickID: viz.tick{place: 105, time: 5}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 5}, toTickID: viz.tick{place: 1, time: 6}}.
-viz.message{fromTickID: viz.tick{place: 105, time: 5}, toTickID: viz.tick{place: 105, time: 6}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 6}, toTickID: viz.tick{place: 1, time: 7}}.
-viz.message{fromTickID: viz.tick{place: 105, time: 6}, toTickID: viz.tick{place: 105, time: 7}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 7}, toTickID: viz.tick{place: 1, time: 8}}.
+viz.message{fromTickID: viz.tick{place: 1, time: 7}, toTickID: viz.tick{place: 109, time: 8}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 8}, toTickID: viz.tick{place: 1, time: 9}}.
-viz.message{fromTickID: viz.tick{place: 109, time: 8}, toTickID: viz.tick{place: 109, time: 9}}.
 viz.message{fromTickID: viz.tick{place: 1, time: 9}, toTickID: viz.tick{place: 1, time: 10}}.
-viz.message{fromTickID: viz.tick{place: 109, time: 9}, toTickID: viz.tick{place: 109, time: 10}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 10}, toTickID: viz.tick{place: 1, time: 11}}.
+viz.message{fromTickID: viz.tick{place: 105, time: 4}, toTickID: viz.tick{place: 105, time: 5}}.
+viz.message{fromTickID: viz.tick{place: 105, time: 5}, toTickID: viz.tick{place: 105, time: 6}}.
+viz.message{fromTickID: viz.tick{place: 105, time: 6}, toTickID: viz.tick{place: 105, time: 7}}.
 viz.message{fromTickID: viz.tick{place: 109, time: 10}, toTickID: viz.tick{place: 109, time: 11}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 11}, toTickID: viz.tick{place: 1, time: 12}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 12}, toTickID: viz.tick{place: 1, time: 13}}.
+viz.message{fromTickID: viz.tick{place: 109, time: 8}, toTickID: viz.tick{place: 109, time: 9}}.
+viz.message{fromTickID: viz.tick{place: 109, time: 9}, toTickID: viz.tick{place: 109, time: 10}}.
 viz.message{fromTickID: viz.tick{place: 113, time: 12}, toTickID: viz.tick{place: 113, time: 13}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 13}, toTickID: viz.tick{place: 1, time: 14}}.
 viz.message{fromTickID: viz.tick{place: 113, time: 13}, toTickID: viz.tick{place: 113, time: 14}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 14}, toTickID: viz.tick{place: 1, time: 15}}.
 viz.message{fromTickID: viz.tick{place: 113, time: 14}, toTickID: viz.tick{place: 113, time: 15}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 15}, toTickID: viz.tick{place: 1, time: 16}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 16}, toTickID: viz.tick{place: 1, time: 17}}.
 viz.message{fromTickID: viz.tick{place: 117, time: 16}, toTickID: viz.tick{place: 117, time: 17}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 17}, toTickID: viz.tick{place: 1, time: 18}}.
 viz.message{fromTickID: viz.tick{place: 117, time: 17}, toTickID: viz.tick{place: 117, time: 18}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 18}, toTickID: viz.tick{place: 1, time: 19}}.
 viz.message{fromTickID: viz.tick{place: 117, time: 18}, toTickID: viz.tick{place: 117, time: 19}}.
-viz.message{fromTickID: viz.tick{place: 1, time: 19}, toTickID: viz.tick{place: 1, time: 20}}.

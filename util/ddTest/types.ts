@@ -46,14 +46,14 @@ export function jsonOut(content: Json): TestOutput {
 
 export function datalogOut(terms: Term[]): TestOutput {
   return {
-    content: joinLinesWithTrailing(".", terms.map(ppt)),
+    content: joinLinesWithTrailing(".", terms.map(ppt).sort()),
     mimeType: "application/datalog",
   };
 }
 
 export function datalogOutResults(terms: Res[]): TestOutput {
   return {
-    content: joinLinesWithTrailing(".", terms.map(ppr)),
+    content: joinLinesWithTrailing(".", terms.map(ppr).sort()),
     mimeType: "application/datalog-results",
   };
 }
