@@ -23,6 +23,7 @@ export function getInterp(
   language: LanguageSpec,
   source: string
 ): AbstractInterpreter {
+  console.log("getInterp", language.name);
   const res = constructInterp(INIT_INTERP, language, source);
   // TODO: something with errors if they're there
   return res.interp;
