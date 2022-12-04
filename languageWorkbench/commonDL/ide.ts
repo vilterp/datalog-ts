@@ -10,7 +10,12 @@ export function* ideCurrentSuggestion(
 ): Generator<Suggestion> {
   const currentPlaceholder = [...ideCurrentPlaceholder(db, impl, cursor)];
   for (const placeholder of currentPlaceholder) {
-    for (const suggestion of ideSuggestion(db, impl, placeholder.scopeID)) {
+    for (const suggestion of ideSuggestion(
+      db,
+      impl,
+      placeholder.scopeID,
+      placeholder.kind
+    )) {
       if (suggestion.scopeID === placeholder.scopeID) {
         yield suggestion;
       }
@@ -33,10 +38,11 @@ function* ideCurrentPlaceholder(
 function* ideSuggestion(
   db: NodesByRule,
   impl: LangImpl,
-  scopeID: string
+  scopeID: string,
+  kind: string
 ): Generator<Suggestion> {
   // for (const placeholder of impl.scopePlaceholder(db)) {
-  for (const item of scopeItem(db, impl, scopeID)) {
+  for (const item of scopeItem(db, impl, scopeID, kind)) {
     // if (scopeID === item.scopeID) {
     yield {
       name: item.name,
@@ -61,12 +67,13 @@ type ScopeItem = {
 function* scopeItem(
   db: NodesByRule,
   impl: LangImpl,
-  scopeID: string
+  scopeID: string,
+  kind: string
 ): Generator<ScopeItem> {
-  for (const defn of scopeDefnHere(db, impl, scopeID)) {
+  for (const defn of scopeDefnHere(db, impl, scopeID, kind)) {
     yield defn;
   }
-  for (const defn of scopeDefnParent(db, impl)) {
+  for (const defn of scopeDefnParent(db, impl, kind)) {
     yield defn;
   }
 }
@@ -74,9 +81,10 @@ function* scopeItem(
 function* scopeDefnHere(
   db: NodesByRule,
   impl: LangImpl,
-  scopeID: string
+  scopeID: string,
+  kind: string
 ): Generator<ScopeItem> {
-  for (const item of impl.scopeDefn(db, scopeID)) {
+  for (const item of impl.scopeDefn(db, scopeID, kind)) {
     yield {
       defnScopeID: item.scopeID,
       defnSpan: item.span,
@@ -90,10 +98,11 @@ function* scopeDefnHere(
 
 function* scopeDefnParent(
   db: NodesByRule,
-  impl: LangImpl
+  impl: LangImpl,
+  kind: string
 ): Generator<ScopeItem> {
   for (const parent of impl.scopeParent(db)) {
-    for (const item of scopeItem(db, impl, parent.parentID)) {
+    for (const item of scopeItem(db, impl, parent.parentID, kind)) {
       // if (item.scopeID === parent.parentID) {
       yield item;
       // }
@@ -111,7 +120,7 @@ type ScopeUsage = {
 };
 
 function* scopeUsage(db: NodesByRule, impl: LangImpl): Generator<ScopeUsage> {
-  for (const item of scopeItem(db, impl, "TODO")) {
+  for (const item of scopeItem(db, impl, "TODO", "TODO")) {
     for (const varRec of impl.scopeVar(db)) {
       if (
         varRec.kind === item.kind &&
