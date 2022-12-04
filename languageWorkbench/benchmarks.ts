@@ -2,6 +2,7 @@ import {
   BenchmarkResult,
   BenchmarkSpec,
   doBenchmark,
+  doBenchmarkTimeBudget,
   runDDBenchmark,
 } from "../util/testBench/benchmark";
 import { extractCursor, INIT_INTERP, testLangQuery } from "./ddTests";
@@ -31,31 +32,31 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "defnAtPosSimpleInterp",
     async run() {
-      return doBenchmark(300, testDefnAtPosSimpleInterp);
+      return doBenchmarkTimeBudget(testDefnAtPosSimpleInterp);
     },
   },
   {
     name: "problemsNative",
     async run() {
-      return doBenchmark(500, testProblemsNative);
+      return doBenchmarkTimeBudget(testProblemsNative);
     },
   },
   {
     name: "problemsSimpleInterp",
     async run() {
-      return doBenchmark(200, testProblemsSimpleInterp);
+      return doBenchmarkTimeBudget(testProblemsSimpleInterp);
     },
   },
   {
     name: "getCompletionsNative",
     async run() {
-      return doBenchmark(10000, testCompletionsNative);
+      return doBenchmarkTimeBudget(testCompletionsNative);
     },
   },
   {
     name: "getCompletionsSimpleInterp",
     async run() {
-      return doBenchmark(500, testCompletionsSimpleInterp);
+      return doBenchmarkTimeBudget(testCompletionsSimpleInterp);
     },
   },
   {
