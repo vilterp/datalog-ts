@@ -41,8 +41,12 @@ export async function doBenchmarkTimeBudget(
   const start = new Date().getTime();
   return doBenchmarkInner(op, () => {
     const now = new Date().getTime();
-    const soFar = now - start;
-    return soFar < timeBudgetMS;
+    const durationSoFar = now - start;
+    const keepGoing = durationSoFar < timeBudgetMS;
+    if (!keepGoing) {
+      console.log("stopping after", durationSoFar, "ms");
+    }
+    return keepGoing;
   });
 }
 
