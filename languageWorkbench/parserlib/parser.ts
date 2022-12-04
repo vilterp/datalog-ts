@@ -9,6 +9,7 @@ import {
 } from "./types";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
 import { reduceEarlyReturn } from "../../util/util";
+import { allItems, LinkedList } from "../../util/linkedList";
 
 export type TraceTree = {
   span: Span;
@@ -25,7 +26,7 @@ type ParseError = {
 };
 
 type TraceInner =
-  | { type: "SeqTrace"; itemTraces: TraceTree[] }
+  | { type: "SeqTrace"; itemTraces: LinkedList<TraceTree> }
   | {
       type: "ChoiceTrace";
       optIdx: number;
@@ -150,13 +151,13 @@ function doParse(
         (accum, rule) => {
           const itemTrace = doParse(grammar, rule, accum.pos, input);
           return {
-            itemTraces: [...accum.itemTraces, itemTrace],
+            itemTraces: { head: itemTrace, tail: accum.itemTraces },
             pos: itemTrace.span.to,
             error: itemTrace.error,
           };
         },
         (accum) => accum.error !== null,
-        { itemTraces: [], pos: startIdx, error: null }
+        { itemTraces: null, pos: startIdx, error: null }
       );
       return {
         type: "SeqTrace",
@@ -220,7 +221,7 @@ function doParse(
 }
 
 type SequenceSt = {
-  itemTraces: TraceTree[];
+  itemTraces: LinkedList<TraceTree>;
   pos: number;
   error: ParseError | null;
 };
@@ -255,9 +256,9 @@ function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
       }
       break;
     case "SeqTrace":
-      tree.itemTraces.forEach((itemTrace) => {
+      for (const itemTrace of allItems(tree.itemTraces)) {
         forEachTraceTreeNode(itemTrace, fn);
-      });
+      }
       break;
     case "RefTrace":
       forEachTraceTreeNode(tree.innerTrace, fn);

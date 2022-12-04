@@ -1,6 +1,7 @@
 import { TraceTree } from "./parser";
 import { flatten } from "../../util/util";
 import { Span } from "./types";
+import { allItems } from "../../util/linkedList";
 
 export type RuleTree = {
   name: string;
@@ -29,7 +30,7 @@ function getChildren(tt: TraceTree): RuleTree[] {
   }
   switch (tt.type) {
     case "SeqTrace":
-      return flatten(tt.itemTraces.map(getChildren));
+      return flatten([...allItems(tt.itemTraces)].map(getChildren));
     case "RefTrace":
       return [extractRuleTree(tt)];
     case "ChoiceTrace":
