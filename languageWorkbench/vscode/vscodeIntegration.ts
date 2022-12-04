@@ -9,7 +9,6 @@ import {
 import { ppt } from "../../core/pretty";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
-import { datalogLangImpl } from "../languages/dl/dl";
 import * as native from "../commonDL/ide";
 import {
   emptyNodesByRule,
@@ -271,24 +270,38 @@ function getCompletionItems(
   });
   const sourceWithPlaceholder =
     source.slice(0, cursorIdx) + "???" + source.slice(cursorIdx);
-  const flattened = getFlattened(sourceWithPlaceholder);
-  const suggestions = [
-    ...native.ideCurrentSuggestion(flattened, datalogLangImpl, cursorIdx),
-  ];
-  console.log("getCompletionItems", suggestions);
-  return suggestions.map((res) => {
-    return {
-      // label: res.name + EXTRA_TEXT[res.kind],
-      label: res.name,
-    };
-  });
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(sourceWithPlaceholder);
+    const suggestions = [
+      ...native.ideCurrentSuggestion(flattened, spec.nativeImpl, cursorIdx),
+    ];
+    console.log("getCompletionItems", suggestions);
+    return suggestions.map((res) => {
+      return {
+        // label: res.name + EXTRA_TEXT[res.kind],
+        label: res.name,
+      };
+    });
+  } else {
+    const interp = getInterp(spec, sourceWithPlaceholder);
+    const interp2 = interp.evalStr(`ide.Cursor{idx: ${cursorIdx}}.`)[1];
+    const results = interp2.queryStr(
+      `ide.CurrentSuggestion{name: N, span: S, type: T}`
+    );
+    const uniqueResults = uniqBy(
+      (res) => ((res.term as Rec).attrs.name as StringLit).val,
+      results
+    );
+    console.log({ uniqueResults });
+    return uniqueResults.map((res) => {
+      const result = res.term as Rec;
+      const label = result.attrs.name as StringLit;
+      return {
+        label: label.val,
+      };
+    });
+  }
 }
-
-const EXTRA_TEXT = {
-  relation: "{}",
-  var: ",",
-  attr: ":",
-};
 
 function getRenameEdits(
   spec: LanguageSpec,
@@ -372,16 +385,30 @@ function getSemanticTokens(
   const source = document.getText();
   // const interp = getInterp(spec, source);
   // const results = interp.queryStr("hl.NonHighlightSegment{}");
-  const flattened = getFlattened(source);
-  const results = [...native.getSemanticTokens(flattened, datalogLangImpl)];
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(source);
+    const results = [...native.getSemanticTokens(flattened, spec.nativeImpl)];
 
-  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
-  for (const result of results) {
-    const range = nonDLspanToRange(source, result.span);
-    const typ = result.type;
-    builder.push(range, typ);
+    const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+    for (const result of results) {
+      const range = nonDLspanToRange(source, result.span);
+      const typ = result.type;
+      builder.push(range, typ);
+    }
+    return builder.build();
+  } else {
+    const interp = getInterp(spec, source);
+    const results = interp.queryStr("hl.NonHighlightSegment{}");
+
+    const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+    results.forEach((res) => {
+      const result = res.term as Rec;
+      const range = spanToRange(source, result.attrs.span as Rec);
+      const typ = (result.attrs.type as StringLit).val;
+      builder.push(range, typ);
+    });
+    return builder.build();
   }
-  return builder.build();
 }
 
 export const semanticTokensLegend = new vscode.SemanticTokensLegend(
@@ -394,13 +421,32 @@ export function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
-  const flattened = getFlattened(source);
-  const problems = [...datalogLangImpl.tcProblem(flattened)];
-  const diags = problems.map((res) => problemToDiagnostic(source, res));
-  diagnostics.set(document.uri, diags);
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(source);
+    const problems = [...spec.nativeImpl.tcProblem(flattened)];
+    const diags = problems.map((res) => nativeProblemToDiagnostic(source, res));
+    diagnostics.set(document.uri, diags);
+  } else {
+    const interp = getInterp(spec, source);
+
+    const problems = interp.queryStr("tc.Problem{}");
+    const diags = problems.map((res) =>
+      problemToDiagnostic(source, res.term as Rec)
+    );
+    diagnostics.set(document.uri, diags);
+  }
 }
 
-function problemToDiagnostic(
+function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
+  const span = dlToSpan(rec.attrs.span as Rec);
+  const from = lineAndColFromIdx(source, span.from);
+  const to = lineAndColFromIdx(source, span.to);
+
+  const range = new vscode.Range(from.line, from.col, to.line, to.col);
+  return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
+}
+
+function nativeProblemToDiagnostic(
   source: string,
   problem: Problem
 ): vscode.Diagnostic {
