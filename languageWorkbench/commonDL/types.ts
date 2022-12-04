@@ -44,7 +44,7 @@ export type Placeholder = {
 };
 
 export type TokenType =
-  | "ident"
+  | "variable"
   | "typeParameter"
   | "number"
   | "number"
