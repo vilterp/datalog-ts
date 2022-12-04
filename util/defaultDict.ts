@@ -1,6 +1,6 @@
 export class DefaultDict<V> {
-  items: Map<string, V>;
-  getDefault: () => V;
+  private items: Map<string, V>;
+  private getDefault: () => V;
 
   constructor(getDefault: () => V) {
     this.items = new Map<string, V>();
