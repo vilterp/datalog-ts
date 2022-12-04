@@ -4,12 +4,13 @@ import {
   doBenchmark,
   runDDBenchmark,
 } from "../util/testBench/benchmark";
-import { testLangQuery } from "./ddTests";
-import { getCompletionItems, getSemanticTokens } from "./languages/dl/dl";
+import { extractCursor, testLangQuery } from "./ddTests";
 import * as parserlib from "./parserlib/parser";
 import { GRAMMAR, parseMain } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
+import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
+import { datalog } from "./languages/dl/dl";
 
 export const lwbBenchmarks: BenchmarkSpec[] = ["fp", "dl"].map((lang) => ({
   name: lang,
@@ -137,7 +138,7 @@ tc.typeLambda{id: I, type: tapp{from: F, to: R}} :-
   ast.lambdaParam{lambdaID: L, ty: F} &
   tc.Type{id: B, type: R}.
 tc.typePlaceholder{id: I, type: "unknown"} :-
-  ast.expr{id: ???} &
+  ast.expr{id: ?|||??} &
   ast.Placeholder{id: P, parentID: I}.
 lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
 ast.RootExpr{id: 1}.
@@ -151,21 +152,22 @@ hl.mapping{rule: "inKW", type: "keyword"}.
 
 const LEAVES = new Set(["ident", "intLit", "stringLit"]);
 
-const main = parseMain(DLSample);
+const { input, cursorPos } = extractCursor(DLSample);
+const main = parseMain(input);
 const tree = parserlib.parse(GRAMMAR, "main", DLSample);
 const ruleTree = extractRuleTree(tree);
 const flattenedByRule = flattenByRule(ruleTree, DLSample, LEAVES);
 console.log(flattenedByRule);
 
 function testDLCompletions() {
-  const items = getCompletionItems(main, 3412);
+  const items = [...ideCurrentSuggestion(flattenedByRule, datalog, cursorPos)];
   if (items.length === 0) {
     throw new Error("items length should be > 0");
   }
 }
 
 function testGetSemanticTokens() {
-  const tokens = getSemanticTokens(flattenedByRule);
+  const tokens = [...getSemanticTokens(flattenedByRule, datalog)];
   if (tokens.length === 0) {
     throw new Error("tokens length should be > 0");
   }

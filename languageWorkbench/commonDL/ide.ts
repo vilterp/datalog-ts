@@ -119,11 +119,10 @@ export function* scopeUsage(
   }
 }
 
-export function getSemanticTokens(
+export function* getSemanticTokens(
   db: NodesByRule,
   impl: LangImpl
-): SemanticToken[] {
-  const out: SemanticToken[] = [];
+): Generator<SemanticToken> {
   for (const rule in impl.highlightMapping) {
     const tokenType = impl.highlightMapping[rule];
     if (!db[rule]) {
@@ -131,11 +130,10 @@ export function getSemanticTokens(
     }
     for (const nodeID in db[rule].byID) {
       const node = db[rule].byID[nodeID];
-      out.push({
+      yield {
         span: node.span,
         type: tokenType,
-      });
+      };
     }
   }
-  return out;
 }

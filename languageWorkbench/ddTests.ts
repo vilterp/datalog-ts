@@ -77,7 +77,10 @@ export function testLangQuery(test: string[]): TestOutput[] {
 
 const CURSOR = "|||";
 
-function extractCursor(input: string): { input: string; cursorPos: number } {
+export function extractCursor(input: string): {
+  input: string;
+  cursorPos: number;
+} {
   const split = input.split(CURSOR, 2);
   if (split.length === 1) {
     return { input, cursorPos: 1 };
