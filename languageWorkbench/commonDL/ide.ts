@@ -8,7 +8,8 @@ export function* ideCurrentSuggestion(
   impl: LangImpl,
   cursor: number
 ): Generator<Suggestion> {
-  for (const placeholder of ideCurrentPlaceholder(db, impl, cursor)) {
+  const currentPlaceholder = [...ideCurrentPlaceholder(db, impl, cursor)];
+  for (const placeholder of currentPlaceholder) {
     for (const suggestion of ideSuggestion(db, impl, placeholder.scopeID)) {
       if (suggestion.scopeID === placeholder.scopeID) {
         yield suggestion;
@@ -75,7 +76,7 @@ function* scopeDefnHere(
   impl: LangImpl,
   scopeID: string
 ): Generator<ScopeItem> {
-  for (const item of impl.scopeDefn(db)) {
+  for (const item of impl.scopeDefn(db, scopeID)) {
     yield {
       defnScopeID: item.scopeID,
       defnSpan: item.span,
