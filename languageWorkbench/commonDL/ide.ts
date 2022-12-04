@@ -9,7 +9,7 @@ export function* ideCurrentSuggestion(
   cursor: number
 ): Generator<Suggestion> {
   for (const placeholder of ideCurrentPlaceholder(db, impl, cursor)) {
-    for (const suggestion of ideSuggestion(db, impl)) {
+    for (const suggestion of ideSuggestion(db, impl, placeholder.scopeID)) {
       if (suggestion.scopeID === placeholder.scopeID) {
         yield suggestion;
       }
@@ -31,22 +31,21 @@ function* ideCurrentPlaceholder(
 
 function* ideSuggestion(
   db: NodesByRule,
-  impl: LangImpl
+  impl: LangImpl,
+  scopeID: string
 ): Generator<Suggestion> {
-  for (const placeholder of impl.scopePlaceholder(db)) {
-    for (const item of scopeItem(db, impl)) {
-      if (placeholder.scopeID === item.scopeID) {
-        yield {
-          name: item.name,
-          scopeID: item.scopeID,
-          span: item.defnSpan,
-          type: item.type,
-        };
-      }
-    }
+  // for (const placeholder of impl.scopePlaceholder(db)) {
+  for (const item of scopeItem(db, impl, scopeID)) {
+    // if (scopeID === item.scopeID) {
+    yield {
+      name: item.name,
+      scopeID: item.scopeID,
+      span: item.defnSpan,
+      type: item.type,
+    };
+    // }
   }
-  // placeholder
-  // item
+  // }
 }
 
 type ScopeItem = {
@@ -58,8 +57,12 @@ type ScopeItem = {
   type: string;
 };
 
-function* scopeItem(db: NodesByRule, impl: LangImpl): Generator<ScopeItem> {
-  for (const defn of scopeDefnHere(db, impl)) {
+function* scopeItem(
+  db: NodesByRule,
+  impl: LangImpl,
+  scopeID: string
+): Generator<ScopeItem> {
+  for (const defn of scopeDefnHere(db, impl, scopeID)) {
     yield defn;
   }
   for (const defn of scopeDefnParent(db, impl)) {
@@ -67,9 +70,20 @@ function* scopeItem(db: NodesByRule, impl: LangImpl): Generator<ScopeItem> {
   }
 }
 
-function* scopeDefnHere(db: NodesByRule, impl: LangImpl): Generator<ScopeItem> {
-  for (const item of scopeItem(db, impl)) {
-    yield item;
+function* scopeDefnHere(
+  db: NodesByRule,
+  impl: LangImpl,
+  scopeID: string
+): Generator<ScopeItem> {
+  for (const item of impl.scopeDefn(db)) {
+    yield {
+      defnScopeID: item.scopeID,
+      defnSpan: item.span,
+      kind: item.kind,
+      name: item.name,
+      scopeID: item.scopeID,
+      type: item.type,
+    };
   }
 }
 
@@ -78,10 +92,10 @@ function* scopeDefnParent(
   impl: LangImpl
 ): Generator<ScopeItem> {
   for (const parent of impl.scopeParent(db)) {
-    for (const item of scopeItem(db, impl)) {
-      if (item.scopeID === parent.parentID) {
-        yield item;
-      }
+    for (const item of scopeItem(db, impl, parent.parentID)) {
+      // if (item.scopeID === parent.parentID) {
+      yield item;
+      // }
     }
   }
 }
@@ -95,11 +109,8 @@ type ScopeUsage = {
   kind: string;
 };
 
-export function* scopeUsage(
-  db: NodesByRule,
-  impl: LangImpl
-): Generator<ScopeUsage> {
-  for (const item of scopeItem(db, impl)) {
+function* scopeUsage(db: NodesByRule, impl: LangImpl): Generator<ScopeUsage> {
+  for (const item of scopeItem(db, impl, "TODO")) {
     for (const varRec of impl.scopeVar(db)) {
       if (
         varRec.kind === item.kind &&

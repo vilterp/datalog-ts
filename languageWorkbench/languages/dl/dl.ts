@@ -30,12 +30,13 @@ function* scopeDefn(db: NodesByRule): Generator<Defn> {
 
 function* scopeDefnRule(db: NodesByRule): Generator<Defn> {
   for (const ruleID in db["rule"].byID) {
-    for (const ident of db["ident"].byParentID[ruleID]) {
+    for (const ident of db["ident"].byParentID[ruleID] || []) {
       yield {
         kind: "relation",
         name: ident.text,
         scopeID: "global",
         span: ident.span,
+        type: "",
       };
     }
   }
@@ -52,6 +53,7 @@ function* scopeDefnVar(db: NodesByRule): Generator<Defn> {
             name: recordVar.name,
             scopeID: ruleID,
             span: recordVar.span,
+            type: "",
           };
         }
       }
@@ -67,6 +69,7 @@ function* scopeDefnTable(db: NodesByRule): Generator<Defn> {
         name: ident.text,
         scopeID: "global",
         span: ident.span,
+        type: "",
       };
     }
   }
@@ -84,6 +87,7 @@ function* scopeDefnAttr(db: NodesByRule): Generator<Defn> {
                 name: kvIdent.text,
                 span: kvIdent.span,
                 kind: "attr",
+                type: "",
               };
             }
           }
@@ -100,6 +104,7 @@ function* scopeDefnInnerVar(db: NodesByRule): Generator<Defn> {
       name: varTerm.name,
       scopeID: varTerm.scopeID,
       span: varTerm.span,
+      type: "",
     };
   }
 }
@@ -262,12 +267,12 @@ function* scopeTermVar(
   db: NodesByRule
 ): Generator<{ termID: string; name: string; span: Span }> {
   for (const termID in db["term"].byID) {
-    for (const varRecord of db["var"].byParentID[termID]) {
+    for (const varRecord of db["var"].byParentID[termID] || []) {
       yield { termID, name: varRecord.text, span: varRecord.span };
     }
   }
   for (const termID in db["term"].byID) {
-    for (const record of db["record"].byParentID[termID]) {
+    for (const record of db["record"].byParentID[termID] || []) {
       // TODO: pass argument to avoid cross join?
       for (const { recordID, name, span } of scopeRecordVar(db)) {
         if (record.id.toString() === recordID) {
