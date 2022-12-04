@@ -20,6 +20,7 @@ import { parse } from "../parserlib/parser";
 import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
 import { Problem } from "../commonDL/types";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
