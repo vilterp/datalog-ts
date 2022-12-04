@@ -22,19 +22,44 @@ export type BenchmarkResult =
     }
   | { type: "Errored"; error: Error };
 
-// TOOD: allow passing time budget
 export async function doBenchmark(
   repetitions: number,
   op: () => void
 ): Promise<BenchmarkResult> {
+  let i = 0;
+  return doBenchmarkInner(op, () => {
+    const stillGoing = i < repetitions;
+    i++;
+    return stillGoing;
+  });
+}
+
+export async function doBenchmarkTimeBudget(
+  op: () => void,
+  timeBudgetMS: number = 2000
+) {
+  const start = new Date().getTime();
+  return doBenchmarkInner(op, () => {
+    const now = new Date().getTime();
+    const soFar = now - start;
+    return soFar < timeBudgetMS;
+  });
+}
+
+async function doBenchmarkInner(
+  op: () => void,
+  doAnother: () => boolean
+): Promise<BenchmarkResult> {
   try {
     v8profiler.startProfiling();
     const before = performance.now();
-    for (let i = 0; i < repetitions; i++) {
+    let i = 0;
+    while (doAnother()) {
       op();
       if (i % 10 === 0) {
         console.log(i);
       }
+      i++;
     }
     const after = performance.now();
     const profile = v8profiler.stopProfiling();
@@ -43,7 +68,7 @@ export async function doBenchmark(
 
     return {
       type: "Finished",
-      repetitions,
+      repetitions: i,
       totalTimeMS: after - before,
       profilePath: profilePath,
     };
