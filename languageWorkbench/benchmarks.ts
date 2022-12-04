@@ -36,6 +36,12 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
     },
   },
   {
+    name: "symbolListSimpleInterp",
+    async run() {
+      return doBenchmarkTimeBudget(testSymbolListSimpleInterp);
+    },
+  },
+  {
     name: "usageAtPosSimpleInterp",
     async run() {
       return doBenchmarkTimeBudget(testUsageAtPosSimpleInterp);
@@ -275,4 +281,11 @@ function testDefnAtPosSimpleInterp() {
 function testUsageAtPosSimpleInterp() {
   const results = interp.queryStr(`ide.UsageAtPos{idx: 2392, usageSpan: US}`);
   assertDeepEqual(results.length, 1, "results length");
+}
+
+function testSymbolListSimpleInterp() {
+  const results = interp.queryStr(
+    `scope.Defn{scopeID: global{}, name: N, span: S, kind: K}`
+  );
+  assertDeepEqual(results.length, 21, "results length");
 }
