@@ -13,6 +13,7 @@ export type LangImpl = {
     db: NodesByRule
   ) => Generator<{ scopeID: string; parentID: string }>;
   highlightMapping: { [ruleName: string]: TokenType };
+  tcProblem: (db: NodesByRule) => Generator<Problem>;
 };
 
 export type Defn = {
@@ -42,6 +43,11 @@ export type Placeholder = {
   scopeID: string;
   span: Span;
   kind: string;
+};
+
+export type Problem = {
+  desc: string;
+  span: Span;
 };
 
 export type TokenType =

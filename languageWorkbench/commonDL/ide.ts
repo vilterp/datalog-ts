@@ -1,7 +1,13 @@
 import { spanContainsIdx } from "../../uiCommon/ide/keymap/util";
 import { NodesByRule } from "../parserlib/flattenByRule";
 import { Span } from "../parserlib/types";
-import { LangImpl, Placeholder, SemanticToken, Suggestion } from "./types";
+import {
+  LangImpl,
+  Placeholder,
+  Problem,
+  SemanticToken,
+  Suggestion,
+} from "./types";
 
 export function* ideCurrentSuggestion(
   db: NodesByRule,
@@ -157,4 +163,11 @@ export function* getSemanticTokens(
       };
     }
   }
+}
+
+export function tcProblems(
+  db: NodesByRule,
+  impl: LangImpl
+): Generator<Problem> {
+  return impl.tcProblem(db);
 }

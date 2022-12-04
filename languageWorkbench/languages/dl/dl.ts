@@ -2,6 +2,7 @@ import {
   Defn,
   LangImpl,
   Placeholder,
+  Problem,
   TokenType,
   Var,
 } from "../../commonDL/types";
@@ -17,7 +18,7 @@ function* scopeDefn(
 ): Generator<Defn> {
   switch (kind) {
     case "relation":
-      for (const defn of scopeDefnRule(db, scopeID)) {
+      for (const defn of scopeDefnRule(db)) {
         yield defn;
       }
       for (const defn of scopeDefnTable(db, scopeID)) {
@@ -25,13 +26,9 @@ function* scopeDefn(
       }
       break;
     case "var":
-      for (const defn of scopeDefnHeadVar(db, scopeID)) {
+      for (const defn of scopeDefnVar(db, scopeID)) {
         yield defn;
       }
-      for (const defn of scopeDefnInnerVar(db, scopeID)) {
-        yield defn;
-      }
-      break;
     case "attr":
       for (const defn of scopeDefnAttr(db, scopeID)) {
         yield defn;
@@ -40,7 +37,16 @@ function* scopeDefn(
   }
 }
 
-function* scopeDefnRule(db: NodesByRule, scopeID: string): Generator<Defn> {
+function* scopeDefnVar(db: NodesByRule, scopeID: string): Generator<Defn> {
+  for (const defn of scopeDefnHeadVar(db, scopeID)) {
+    yield defn;
+  }
+  for (const defn of scopeDefnBodyVar(db, scopeID)) {
+    yield defn;
+  }
+}
+
+function* scopeDefnRule(db: NodesByRule): Generator<Defn> {
   for (const ruleID in db.get("rule").byID) {
     for (const record of db.get("record").byParentID.get(ruleID)) {
       for (const ident of db.get("ident").byParentID.get(record.id)) {
@@ -129,8 +135,8 @@ function* scopeDefnAttr(db: NodesByRule, scopeID: string): Generator<Defn> {
   }
 }
 
-function* scopeDefnInnerVar(db: NodesByRule, ruleID: string): Generator<Defn> {
-  for (const varTerm of scopeVarTerm(db, ruleID)) {
+function* scopeDefnBodyVar(db: NodesByRule, ruleID: string): Generator<Defn> {
+  for (const varTerm of scopeVarInBodyTerm(db, ruleID)) {
     yield {
       kind: "var",
       name: varTerm.name,
@@ -147,7 +153,7 @@ function* scopeVar(db: NodesByRule): Generator<Var> {
   for (const result of scopeVarRuleInvocation(db)) {
     yield result;
   }
-  for (const result of scopeVarTerm(db, "TODO")) {
+  for (const result of scopeVarInBodyTerm(db, "TODO")) {
     yield result;
   }
   for (const result of scopeVarAttr(db)) {
@@ -296,12 +302,10 @@ function* scopeVarRuleInvocation(db: NodesByRule): Generator<Var> {
   }
 }
 
-function* scopeVarTerm(db: NodesByRule, ruleID: string): Generator<Var> {
+// vars that are used in body
+function* scopeVarInBodyTerm(db: NodesByRule, ruleID: string): Generator<Var> {
   for (const { termID } of scopeRuleBodyTerm(db, ruleID)) {
-    for (const { termID: innerTermID, name, span } of scopeTermOrRecordVar(
-      db,
-      termID
-    )) {
+    for (const { name, span } of scopeTermOrRecordVar(db, termID)) {
       // if (termID === innerTermID) {
       yield { scopeID: ruleID, name, span, kind: "var" };
       // }
@@ -473,10 +477,40 @@ const SYNTAX_HIGHLIGHTING_MAPPING: { [ruleType: string]: TokenType } = {
   path: "string",
 };
 
+function* tcProblems(db: NodesByRule): Generator<Problem> {
+  for (const problem of tcNonexistentAttr(db)) {
+    yield problem;
+  }
+  for (const problem of tcUnboundVarInHead(db)) {
+    yield problem;
+  }
+}
+
+function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {}
+
+function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
+  for (const rule of scopeDefnRule(db)) {
+    // gather set of terms that are used in body
+    const bodyVars = new Set<string>();
+    for (const bodyVar of scopeVarInBodyTerm(db, rule.name)) {
+      bodyVars.add(bodyVar.name);
+    }
+    for (const headVar of scopeDefnHeadVar(db, rule.name)) {
+      if (!bodyVars.has(headVar.name)) {
+        yield {
+          desc: `unbound var \`${headVar.name}\` in head of rule \`${rule.name}\``,
+          span: headVar.span,
+        };
+      }
+    }
+  }
+}
+
 export const datalogLangImpl: LangImpl = {
   highlightMapping: SYNTAX_HIGHLIGHTING_MAPPING,
   scopeDefn,
   scopePlaceholder,
   scopeVar,
   scopeParent,
+  tcProblem: tcProblems,
 };
