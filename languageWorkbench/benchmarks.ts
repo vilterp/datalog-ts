@@ -4,15 +4,17 @@ import {
   doBenchmark,
   runDDBenchmark,
 } from "../util/testBench/benchmark";
-import { extractCursor, testLangQuery } from "./ddTests";
+import { extractCursor, INIT_INTERP, testLangQuery } from "./ddTests";
 import * as parserlib from "./parserlib/parser";
 import { GRAMMAR, parseMain } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
 import { datalog } from "./languages/dl/dl";
-import { prettyPrintRuleTree, ruleTreeToTree } from "./parserlib/pretty";
-import { prettyPrintTree } from "../util/tree";
+import { addCursor, constructInterp } from "./interp";
+import { LANGUAGES, LanguageSpec } from "./languages";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
+import * as fs from "fs";
 
 export const lwbBenchmarks: BenchmarkSpec[] = [
   { lang: "fp", reps: 10 },
@@ -30,9 +32,15 @@ export const lwbBenchmarks: BenchmarkSpec[] = [
 
 export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
-    name: "getCompletions",
+    name: "getCompletionsNative",
     async run() {
-      return doBenchmark(10000, testDLCompletions);
+      return doBenchmark(10000, testCompletionsNative);
+    },
+  },
+  {
+    name: "getCompletionsSimpleInterp",
+    async run() {
+      return doBenchmark(10000, testCompletionsSimpleInterp);
     },
   },
   // {
@@ -163,10 +171,31 @@ const tree = parserlib.parse(GRAMMAR, "main", input);
 const ruleTree = extractRuleTree(tree);
 const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
-function testDLCompletions() {
+const langSpec: LanguageSpec = {
+  name: "datalog",
+  datalog: fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8"),
+  grammar: fs.readFileSync(`languageWorkbench/languages/dl/dl.grammar`, "utf8"),
+  example: "",
+};
+
+let interp: AbstractInterpreter = constructInterp(
+  INIT_INTERP,
+  langSpec,
+  input
+).interp;
+interp = addCursor(interp, cursorPos);
+
+function testCompletionsNative() {
   const items = [...ideCurrentSuggestion(flattenedByRule, datalog, cursorPos)];
   // TODO: should be I and P
   if (items.length === 0) {
+    throw new Error("items length should be > 0");
+  }
+}
+
+function testCompletionsSimpleInterp() {
+  const results = interp.queryStr("ide.CurrentSuggestion{}");
+  if (results.length === 0) {
     throw new Error("items length should be > 0");
   }
 }
