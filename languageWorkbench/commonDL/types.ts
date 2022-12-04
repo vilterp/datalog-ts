@@ -16,6 +16,7 @@ export type Defn = {
   span: Span;
   name: string;
   kind: string;
+  type: string;
 };
 
 export type Var = {
