@@ -11,6 +11,8 @@ import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
 import { datalog } from "./languages/dl/dl";
+import { prettyPrintRuleTree, ruleTreeToTree } from "./parserlib/pretty";
+import { prettyPrintTree } from "../util/tree";
 
 export const lwbBenchmarks: BenchmarkSpec[] = ["fp", "dl"].map((lang) => ({
   name: lang,
@@ -29,18 +31,18 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
       return doBenchmark(10000, testDLCompletions);
     },
   },
-  {
-    name: "getSemanticTokens",
-    async run() {
-      return doBenchmark(10000, testGetSemanticTokens);
-    },
-  },
-  {
-    name: "flattenByRule",
-    async run() {
-      return doBenchmark(1000, testFlattenByRule);
-    },
-  },
+  // {
+  //   name: "getSemanticTokens",
+  //   async run() {
+  //     return doBenchmark(10000, testGetSemanticTokens);
+  //   },
+  // },
+  // {
+  //   name: "flattenByRule",
+  //   async run() {
+  //     return doBenchmark(1000, testFlattenByRule);
+  //   },
+  // },
 ];
 
 // native DL benchmark
@@ -153,11 +155,9 @@ hl.mapping{rule: "inKW", type: "keyword"}.
 const LEAVES = new Set(["ident", "intLit", "stringLit"]);
 
 const { input, cursorPos } = extractCursor(DLSample);
-const main = parseMain(input);
-const tree = parserlib.parse(GRAMMAR, "main", DLSample);
+const tree = parserlib.parse(GRAMMAR, "main", input);
 const ruleTree = extractRuleTree(tree);
-const flattenedByRule = flattenByRule(ruleTree, DLSample, LEAVES);
-console.log(flattenedByRule);
+const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
 function testDLCompletions() {
   const items = [...ideCurrentSuggestion(flattenedByRule, datalog, cursorPos)];
