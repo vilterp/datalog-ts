@@ -9,6 +9,17 @@ import {
 import { ppt } from "../../core/pretty";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
+import * as native from "../commonDL/ide";
+import {
+  emptyNodesByRule,
+  flattenByRule,
+  NodesByRule,
+} from "../parserlib/flattenByRule";
+import { extractRuleTree } from "../parserlib/ruleTree";
+import { parse } from "../parserlib/parser";
+import { GRAMMAR } from "../languages/dl/parser";
+import { Span } from "../parserlib/types";
+import { Problem } from "../commonDL/types";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -253,29 +264,43 @@ function getCompletionItems(
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
   const source = document.getText();
-  const idx = idxFromLineAndCol(source, {
+  const cursorIdx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
   const sourceWithPlaceholder =
-    source.slice(0, idx) + "???" + source.slice(idx);
-  const interp = getInterp(spec, sourceWithPlaceholder);
-  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(
-    `ide.CurrentSuggestion{name: N, span: S, type: T}`
-  );
-  const uniqueResults = uniqBy(
-    (res) => ((res.term as Rec).attrs.name as StringLit).val,
-    results
-  );
-  console.log({ uniqueResults });
-  return uniqueResults.map((res) => {
-    const result = res.term as Rec;
-    const label = result.attrs.name as StringLit;
-    return {
-      label: label.val,
-    };
-  });
+    source.slice(0, cursorIdx) + "???" + source.slice(cursorIdx);
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(sourceWithPlaceholder, spec.leaves);
+    const suggestions = [
+      ...native.ideCurrentSuggestion(flattened, spec.nativeImpl, cursorIdx),
+    ];
+    console.log("getCompletionItems", suggestions);
+    return suggestions.map((res) => {
+      return {
+        // label: res.name + EXTRA_TEXT[res.kind],
+        label: res.name,
+      };
+    });
+  } else {
+    const interp = getInterp(spec, sourceWithPlaceholder);
+    const interp2 = interp.evalStr(`ide.Cursor{idx: ${cursorIdx}}.`)[1];
+    const results = interp2.queryStr(
+      `ide.CurrentSuggestion{name: N, span: S, type: T}`
+    );
+    const uniqueResults = uniqBy(
+      (res) => ((res.term as Rec).attrs.name as StringLit).val,
+      results
+    );
+    console.log({ uniqueResults });
+    return uniqueResults.map((res) => {
+      const result = res.term as Rec;
+      const label = result.attrs.name as StringLit;
+      return {
+        label: label.val,
+      };
+    });
+  }
 }
 
 function getRenameEdits(
@@ -356,17 +381,32 @@ function getSemanticTokens(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
-  const results = interp.queryStr("hl.NonHighlightSegment{}");
+  // const interp = getInterp(spec, source);
+  // const results = interp.queryStr("hl.NonHighlightSegment{}");
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(source, spec.leaves);
+    const results = [...native.getSemanticTokens(flattened, spec.nativeImpl)];
 
-  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
-  results.forEach((res) => {
-    const result = res.term as Rec;
-    const range = spanToRange(source, result.attrs.span as Rec);
-    const typ = (result.attrs.type as StringLit).val;
-    builder.push(range, typ);
-  });
-  return builder.build();
+    const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+    for (const result of results) {
+      const range = nonDLspanToRange(source, result.span);
+      const typ = result.type;
+      builder.push(range, typ);
+    }
+    return builder.build();
+  } else {
+    const interp = getInterp(spec, source);
+    const results = interp.queryStr("hl.NonHighlightSegment{}");
+
+    const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+    results.forEach((res) => {
+      const result = res.term as Rec;
+      const range = spanToRange(source, result.attrs.span as Rec);
+      const typ = (result.attrs.type as StringLit).val;
+      builder.push(range, typ);
+    });
+    return builder.build();
+  }
 }
 
 export const semanticTokensLegend = new vscode.SemanticTokensLegend(
@@ -379,13 +419,20 @@ export function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(source, spec.leaves);
+    const problems = [...spec.nativeImpl.tcProblem(flattened)];
+    const diags = problems.map((res) => nativeProblemToDiagnostic(source, res));
+    diagnostics.set(document.uri, diags);
+  } else {
+    const interp = getInterp(spec, source);
 
-  const problems = interp.queryStr("tc.Problem{}");
-  const diags = problems.map((res) =>
-    problemToDiagnostic(source, res.term as Rec)
-  );
-  diagnostics.set(document.uri, diags);
+    const problems = interp.queryStr("tc.Problem{}");
+    const diags = problems.map((res) =>
+      problemToDiagnostic(source, res.term as Rec)
+    );
+    diagnostics.set(document.uri, diags);
+  }
 }
 
 function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
@@ -397,7 +444,31 @@ function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
   return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
 }
 
-// utils
+function nativeProblemToDiagnostic(
+  source: string,
+  problem: Problem
+): vscode.Diagnostic {
+  const range = nonDLspanToRange(source, problem.span);
+  return new vscode.Diagnostic(range, problem.desc);
+}
+
+// TODO: cache by document URL
+let lastSource: string = "";
+let lastFlattened: NodesByRule = emptyNodesByRule();
+
+function getFlattened(
+  source: string,
+  leaves: Set<string> = new Set<string>()
+): NodesByRule {
+  if (source === lastSource) {
+    return lastFlattened;
+  }
+  const traceTree = parse(GRAMMAR, "main", source);
+  const ruleTree = extractRuleTree(traceTree);
+  const flattened = flattenByRule(ruleTree, source, leaves);
+  lastFlattened = flattened;
+  return flattened;
+}
 
 function idxToPosition(source: string, idx: number): vscode.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
@@ -406,6 +477,12 @@ function idxToPosition(source: string, idx: number): vscode.Position {
 
 function spanToRange(source: string, dlSpan: Rec): vscode.Range {
   const span = dlToSpan(dlSpan);
+  const from = idxToPosition(source, span.from);
+  const to = idxToPosition(source, span.to);
+  return new vscode.Range(from, to);
+}
+
+function nonDLspanToRange(source: string, span: Span): vscode.Range {
   const from = idxToPosition(source, span.from);
   const to = idxToPosition(source, span.to);
   return new vscode.Range(from, to);

@@ -46,17 +46,21 @@ ide.DefnForCursor{defnLoc: DL} :-
   ide.Cursor{idx: CIdx} &
   ide.DefnAtPos{idx: CIdx, defnSpan: DL}.
 
+# definition of the var at the current pos
 ide.DefnAtPos{idx: CIdx, defnSpan: DS} :-
-  scope.Usage{defnSpan: DS, usageSpan: span{from: FIdx, to: TIdx}} &
-  FIdx <= CIdx & CIdx <= TIdx.
+  scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
+  FIdx <= CIdx & CIdx <= TIdx &
+  scope.Usage{name: N, usageScopeID: Scope, defnSpan: DS}.
 
 ide.UsageForCursor{usageSpan: US} :-
   ide.Cursor{idx: CIdx} &
   ide.UsageAtPos{idx: CIdx, usageSpan: US}.
 
+# usage of the definition at the current pos
 ide.UsageAtPos{idx: CIdx, usageSpan: US} :-
-  scope.Usage{defnSpan: span{from: FIdx, to: TIdx}, usageSpan: US} &
-  FIdx <= CIdx & CIdx <= TIdx.
+  scope.Defn{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
+  FIdx <= CIdx & CIdx <= TIdx &
+  scope.Usage{name: N, definitionScopeID: Scope, usageSpan: US}.
 
 # === Suggestions ===
 

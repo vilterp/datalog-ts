@@ -55,12 +55,7 @@ function Playground() {
     [langName, dlEditorState.source, grammarEditorState.source]
   );
 
-  const {
-    interp: interpWithoutCursor,
-    allGrammarErrors,
-    langParseError,
-    dlErrors,
-  } = useMemo(
+  const { interp: interpWithoutCursor, errors } = useMemo(
     () => constructInterp(INIT_INTERP, langSpec, langSource),
     [langSpec, langSource]
   );
@@ -98,7 +93,7 @@ function Playground() {
                 lineNumbers="off"
                 showKeyBindingsTable
               />
-              <ErrorList errors={langParseError ? [langParseError] : []} />
+              <ErrorList errors={errors} />
             </td>
             <td>
               <h3>Grammar Source</h3>
@@ -108,7 +103,6 @@ function Playground() {
                 langSpec={LANGUAGES.grammar}
                 lineNumbers="off"
               />
-              <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
@@ -118,7 +112,6 @@ function Playground() {
                 langSpec={LANGUAGES.datalog}
                 lineNumbers="off"
               />
-              <ErrorList errors={dlErrors} />
             </td>
           </tr>
         </tbody>
@@ -129,7 +122,7 @@ function Playground() {
         content={
           <>
             {/* we run into errors querying highlight rules if the grammar isn't valid */}
-            {allGrammarErrors.length === 0 ? (
+            {errors.length === 0 ? (
               <Explorer interp={interp} showViz />
             ) : (
               <em>Grammar isn't valid</em>

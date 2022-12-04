@@ -31,7 +31,7 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
-const INIT_INTERP = new SimpleInterpreter(
+export const INIT_INTERP = new SimpleInterpreter(
   "languageWorkbench/commonDL",
   fsLoader
 );
@@ -55,15 +55,14 @@ export function testLangQuery(test: string[]): TestOutput[] {
       ),
       example: "",
     };
-    const {
-      interp: withoutCursor,
-      allGrammarErrors,
-      dlErrors,
-      langParseError,
-    } = constructInterp(INIT_INTERP, langSpec, example);
+    const { interp: withoutCursor, errors } = constructInterp(
+      INIT_INTERP,
+      langSpec,
+      example
+    );
     const finalInterp = addCursor(withoutCursor, cursorPos);
-    if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
-      return jsonOut({ allGrammarErrors, langParseError, dlErrors });
+    if (errors.length > 0) {
+      return jsonOut({ errors });
     }
     try {
       const res = finalInterp.queryStr(query);
@@ -77,7 +76,10 @@ export function testLangQuery(test: string[]): TestOutput[] {
 
 const CURSOR = "|||";
 
-function extractCursor(input: string): { input: string; cursorPos: number } {
+export function extractCursor(input: string): {
+  input: string;
+  cursorPos: number;
+} {
   const split = input.split(CURSOR, 2);
   if (split.length === 1) {
     return { input, cursorPos: 1 };

@@ -78,6 +78,8 @@ import contractsDL from "./contracts/contracts.dl";
 import contractsGrammar from "./contracts/contracts.grammar";
 // @ts-ignore
 import contractsExample from "./contracts/example.txt";
+import { LangImpl } from "../commonDL/types";
+import { datalogLangImpl } from "./dl/dl";
 
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText: {
@@ -93,6 +95,9 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
     example: datalogExample,
     // TODO: derive these from the grammar
     triggerCharacters: ["&", "|", "-", ":", "{", ","],
+    // TODO: make interpreter as fast as this
+    nativeImpl: datalogLangImpl,
+    leaves: new Set(["ident", "stringLit", "intLit"]),
   },
   json: {
     name: "json",
@@ -150,4 +155,6 @@ export type LanguageSpec = {
   grammar: string;
   example: string;
   triggerCharacters?: string[]; // TODO: put into DL itself or derive from grammar
+  nativeImpl?: LangImpl;
+  leaves?: Set<string>;
 };
