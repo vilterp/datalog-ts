@@ -3,7 +3,7 @@ import { RuleTree } from "./ruleTree";
 import { Span } from "./types";
 
 export type ASTNodeRecord = {
-  id: number;
+  id: string;
   parentID: number;
   span: Span;
   text: string;
@@ -38,7 +38,7 @@ export function flattenByRule(
     forRule.length++;
     // construct node
     const record: ASTNodeRecord = {
-      id,
+      id: id.toString(),
       parentID,
       span: node.span,
       text: source.substring(node.span.from, node.span.to),
