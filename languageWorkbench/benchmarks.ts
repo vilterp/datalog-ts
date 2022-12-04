@@ -40,6 +40,12 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
     },
   },
   {
+    name: "usageAtPosSimpleInterp",
+    async run() {
+      return doBenchmarkTimeBudget(testUsageAtPosSimpleInterp);
+    },
+  },
+  {
     name: "problemsNative",
     async run() {
       return doBenchmarkTimeBudget(testProblemsNative);
@@ -267,5 +273,10 @@ function testProblemsSimpleInterp() {
 
 function testDefnAtPosSimpleInterp() {
   const results = interp.queryStr("ide.DefnAtPos{idx: 2174}");
+  assertDeepEqual(results.length, 1, "results length");
+}
+
+function testUsageAtPosSimpleInterp() {
+  const results = interp.queryStr(`ide.UsageAtPos{idx: 2392, usageSpan: US}`);
   assertDeepEqual(results.length, 1, "results length");
 }
