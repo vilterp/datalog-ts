@@ -161,6 +161,7 @@ const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
 function testDLCompletions() {
   const items = [...ideCurrentSuggestion(flattenedByRule, datalog, cursorPos)];
+  // TODO: should be I and P
   if (items.length === 0) {
     throw new Error("items length should be > 0");
   }
