@@ -95,6 +95,14 @@ function* ruleNameToID(db: NodesByRule, ruleName: string): Generator<string> {
   }
 }
 
+function* ruleIDToName(db: NodesByRule, ruleID: string): Generator<string> {
+  for (const record of db.get("record").byParentID.get(ruleID)) {
+    for (const ident of db.get("ident").byParentID.get(record.id)) {
+      yield ident.text;
+    }
+  }
+}
+
 function* scopeDefnTable(db: NodesByRule, scopeID: string): Generator<Defn> {
   if (!db.get("tableDecl")) {
     return;
@@ -112,28 +120,28 @@ function* scopeDefnTable(db: NodesByRule, scopeID: string): Generator<Defn> {
   }
 }
 
-function* scopeDefnAttr(db: NodesByRule, scopeID: string): Generator<Defn> {
-  for (const ruleID in db.get("rule").byID) {
-    for (const record of db.get("record").byParentID.get(ruleID)) {
-      for (const headIdent of db.get("ident").byParentID.get(record.id)) {
-        for (const attr of db.get("recordAttrs").byParentID.get(record.id)) {
-          for (const keyValue of db
-            .get("recordKeyValue")
-            .byParentID.get(attr.id)) {
-            for (const kvIdent of db.get("ident").byParentID.get(keyValue.id)) {
-              yield {
-                scopeID: headIdent.text,
-                name: kvIdent.text,
-                span: kvIdent.span,
-                kind: "attr",
-                type: "",
-              };
-            }
+function* scopeDefnAttr(db: NodesByRule, ruleID: string): Generator<Defn> {
+  // for (const ruleID in db.get("rule").byID) {
+  for (const record of db.get("record").byParentID.get(ruleID)) {
+    for (const headIdent of db.get("ident").byParentID.get(record.id)) {
+      for (const attr of db.get("recordAttrs").byParentID.get(record.id)) {
+        for (const keyValue of db
+          .get("recordKeyValue")
+          .byParentID.get(attr.id)) {
+          for (const kvIdent of db.get("ident").byParentID.get(keyValue.id)) {
+            yield {
+              scopeID: headIdent.text,
+              name: kvIdent.text,
+              span: kvIdent.span,
+              kind: "attr",
+              type: "",
+            };
           }
         }
       }
     }
   }
+  // }
 }
 
 function* scopeDefnBodyVar(db: NodesByRule, ruleID: string): Generator<Defn> {
@@ -492,20 +500,24 @@ function* tcProblems(db: NodesByRule): Generator<Problem> {
 
 function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
   // build index of rule attrs
-  const ruleAttrs = new DefaultDict<Set<string>>(() => new Set<string>());
+  const ruleAttrsByName = new DefaultDict<Set<string>>(() => new Set<string>());
   for (const ruleID in db.get("rule").byID) {
     for (const attr of scopeDefnAttr(db, ruleID)) {
-      ruleAttrs.get(ruleID).add(attr.name);
+      for (const ruleName of ruleIDToName(db, ruleID)) {
+        ruleAttrsByName.get(ruleName).add(attr.name);
+      }
     }
   }
   for (const ruleID in db.get("rule").byID) {
     for (const attr of scopeVarAttr(db, ruleID)) {
-      if (!ruleAttrs.get(ruleID).has(attr.name)) {
-        // TODO: get rule name
-        yield {
-          span: attr.span,
-          desc: `rule \`${ruleID}\` has no attribute \`${attr.name}\``,
-        };
+      const ruleName = attr.scopeID;
+      if (ruleAttrsByName.has(ruleName)) {
+        if (!ruleAttrsByName.get(ruleName).has(attr.name)) {
+          yield {
+            span: attr.span,
+            desc: `rule \`${ruleName}\` has no attribute \`${attr.name}\``,
+          };
+        }
       }
     }
   }
