@@ -6,7 +6,7 @@ import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import { addCursor, getInterpForDoc } from "../../languageWorkbench/interp";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
 function Main() {
@@ -15,7 +15,7 @@ function Main() {
     initialEditorState("let x = 40 in plus2(y)")
   );
 
-  const { interp: withoutCursor } = constructInterp(
+  const { interp: withoutCursor } = getInterpForDoc(
     INIT_INTERP,
     LANGUAGES.fp,
     editorState.source

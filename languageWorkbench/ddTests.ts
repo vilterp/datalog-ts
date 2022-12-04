@@ -1,7 +1,7 @@
 import { fsLoader } from "../core/fsLoader";
 import { ppt } from "../core/pretty";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, constructInterp } from "./interp";
+import { addCursor, getInterpForDoc } from "./interp";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPath } from "../util/ddTest/runner";
 import { datalogOut, jsonOut } from "../util/ddTest/types";
@@ -55,7 +55,7 @@ export function testLangQuery(test: string[]): TestOutput[] {
       ),
       example: "",
     };
-    const { interp: withoutCursor, errors } = constructInterp(
+    const { interp: withoutCursor, errors } = getInterpForDoc(
       INIT_INTERP,
       langSpec,
       example

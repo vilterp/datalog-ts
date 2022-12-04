@@ -12,7 +12,7 @@ import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
 import { datalogLangImpl } from "./languages/dl/dl";
-import { addCursor, constructInterp } from "./interp";
+import { addCursor, getInterpForDoc } from "./interp";
 import { LANGUAGES, LanguageSpec } from "./languages";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
@@ -218,7 +218,7 @@ const langSpec: LanguageSpec = {
   example: "",
 };
 
-let interp: AbstractInterpreter = constructInterp(
+let interp: AbstractInterpreter = getInterpForDoc(
   INIT_INTERP,
   langSpec,
   input

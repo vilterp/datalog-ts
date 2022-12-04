@@ -18,9 +18,19 @@ type ConstructInterpRes = {
 const interpCache: {
   [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
 } = {};
+const docSource: { [uri: string]: string } = {};
 const interpSourceCache: {
-  [languageIDSource: string]: { interp: AbstractInterpreter };
+  [docURI: string]: { interp: AbstractInterpreter };
 } = {};
+
+// TODO: call this from the outside on vscode document change events
+function updateDocSource(uri: string, source: string) {
+  const currentSource = docSource[uri];
+  if (currentSource !== source) {
+    docSource[uri] = source;
+    delete interpSourceCache[uri];
+  }
+}
 
 function interpForLangSpec(
   initInterp: AbstractInterpreter,
@@ -71,17 +81,20 @@ function interpForLangSpecInner(
   };
 }
 
-export function constructInterp(
+export function getInterpForDoc(
   initInterp: AbstractInterpreter,
   langID: string,
   languages: { [langID: string]: LanguageSpec },
+  uri: string,
   source: string
 ) {
-  let res = interpSourceCache[`${langID}-${source}`];
+  updateDocSource(uri, source);
+  const key = `${langID}-${uri}`;
+  let res = interpSourceCache[key];
   // TODO: this is a big memory leak
   if (!res) {
-    res = addSourceInner(initInterp, langID, languages, source);
-    interpSourceCache[`${langID}-${source}`] = res;
+    res = addSourceInner(initInterp, langID, languages, docSource[uri]);
+    interpSourceCache[key] = res;
   }
   return res;
 }

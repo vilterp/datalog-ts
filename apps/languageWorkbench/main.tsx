@@ -7,7 +7,7 @@ import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import { addCursor, getInterpForDoc } from "../../languageWorkbench/interp";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 
@@ -56,7 +56,7 @@ function Playground() {
   );
 
   const { interp: interpWithoutCursor, errors } = useMemo(
-    () => constructInterp(INIT_INTERP, langSpec, langSource),
+    () => getInterpForDoc(INIT_INTERP, langSpec, langSource),
     [langSpec, langSource]
   );
   const interp = addCursor(interpWithoutCursor, cursorPos);

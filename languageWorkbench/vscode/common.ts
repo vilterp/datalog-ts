@@ -4,7 +4,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../commonDL";
-import { constructInterp } from "../interp";
+import { getInterpForDoc } from "../interp";
 import { LanguageSpec } from "../languages";
 
 // needs to match highlight.dl
@@ -21,13 +21,15 @@ export const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
 export function getInterp(
   language: LanguageSpec,
+  uri: string,
   source: string
 ): AbstractInterpreter {
   console.log("getInterp", language.name);
-  const res = constructInterp(
+  const res = getInterpForDoc(
     INIT_INTERP,
     language.name,
     { [language.name]: language },
+    uri,
     source
   );
   // TODO: something with errors if they're there
