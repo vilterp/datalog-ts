@@ -28,6 +28,7 @@ function updateDocSource(uri: string, langID: string, source: string) {
   const currentSource = docSource[uri];
   if (currentSource !== source) {
     docSource[uri] = source;
+    // TODO: factor invalidation out into a framework
     delete interpSourceCache[`${langID}-${uri}`];
   }
 }
