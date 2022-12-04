@@ -20,6 +20,7 @@ import { extractRuleTree } from "../parserlib/ruleTree";
 import { parse } from "../parserlib/parser";
 import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
+import { Problem } from "../commonDL/types";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -394,25 +395,21 @@ export function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
-  // const interp = getInterp(spec, source);
-
-  // const problems = interp.queryStr("tc.Problem{}");
-  const problems = [];
-  const diags = problems.map((res) =>
-    problemToDiagnostic(source, res.term as Rec)
-  );
+  const flattened = getFlattened(source);
+  const problems = [...datalogLangImpl.tcProblem(flattened)];
+  const diags = problems.map((res) => problemToDiagnostic(source, res));
   diagnostics.set(document.uri, diags);
 }
 
-function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
-  const span = dlToSpan(rec.attrs.span as Rec);
-  const from = lineAndColFromIdx(source, span.from);
-  const to = lineAndColFromIdx(source, span.to);
-
-  const range = new vscode.Range(from.line, from.col, to.line, to.col);
-  return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
+function problemToDiagnostic(
+  source: string,
+  problem: Problem
+): vscode.Diagnostic {
+  const range = nonDLspanToRange(source, problem.span);
+  return new vscode.Diagnostic(range, problem.desc);
 }
 
+// TODO: cache by document URL
 let lastSource: string = "";
 let lastFlattened: NodesByRule = emptyNodesByRule();
 

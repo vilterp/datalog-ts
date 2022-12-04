@@ -63,15 +63,27 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
       return doBenchmark(300, testParse);
     },
   },
+  {
+    name: "problemsNative",
+    async run() {
+      return doBenchmark(500, testProblemsNative);
+    },
+  },
+  {
+    name: "problemsSimpleInterp",
+    async run() {
+      return doBenchmark(500, testProblemsSimpleInterp);
+    },
+  },
 ];
 
 // native DL benchmark
 
 const DLSample = `
-scope.Defn{scopeID: I, name: N, type: T, span: S} :-
+scope.Defn{scopeID: I, name: N, type: TT, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.let{id: I, name: N, type: T, location: S} |
-  scope.lambda{id: I, name: N, type: T, location: S}.
+  scope.lambda{idd: I, name: N, type: T, location: S}.
 scope.builtin{id: I, name: N, type: T, location: "builtin"} :-
   ast.RootExpr{id: I} &
   lang.Builtin{name: N, type: T}.
@@ -228,4 +240,15 @@ function testFlattenByRule() {
 function testParse() {
   const tree = parserlib.parse(GRAMMAR, "main", input);
   extractRuleTree(tree);
+}
+
+function testProblemsNative() {
+  const problems = [...datalogLangImpl.tcProblem(flattenedByRule)];
+  if (problems.length !== 2) {
+    throw new Error("problems length should be 2");
+  }
+}
+
+function testProblemsSimpleInterp() {
+  const results = interp.queryStr("tc.Problem{}");
 }
