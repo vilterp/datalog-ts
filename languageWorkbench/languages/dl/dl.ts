@@ -8,21 +8,116 @@ import {
 import { NodesByRule } from "../../parserlib/flattenByRule";
 import { Span } from "../../parserlib/types";
 
+// ==== Defn ====
+
 function* scopeDefn(db: NodesByRule): Generator<Defn> {
-  for (const defn of scopedefnRule(db)) {
+  for (const defn of scopeDefnRule(db)) {
     yield defn;
   }
-  for (const defn of scopedefnVar(db)) {
+  for (const defn of scopeDefnVar(db)) {
     yield defn;
   }
-  for (const defn of scopedefnTable(db)) {
+  for (const defn of scopeDefnTable(db)) {
     yield defn;
   }
-  for (const defn of scopedefnAttr(db)) {
+  for (const defn of scopeDefnAttr(db)) {
     yield defn;
   }
-  for (const defn of scopedefnInnerVar(db)) {
+  for (const defn of scopeDefnInnerVar(db)) {
     yield defn;
+  }
+}
+
+function* scopeDefnRule(db: NodesByRule): Generator<Defn> {
+  for (const ruleID in db["rule"].byID) {
+    for (const ident of db["ident"].byParentID[ruleID]) {
+      yield {
+        kind: "relation",
+        name: ident.text,
+        scopeID: "global",
+        span: ident.span,
+      };
+    }
+  }
+}
+
+function* scopeDefnVar(db: NodesByRule): Generator<Defn> {
+  for (const ruleID in db["rule"].byID) {
+    for (const record of db["record"].byParentID[ruleID]) {
+      // TODO: pass argument
+      for (const recordVar of scopeRecordVar(db)) {
+        if (recordVar.recordID === record.id.toString()) {
+          yield {
+            kind: "var",
+            name: recordVar.name,
+            scopeID: ruleID,
+            span: recordVar.span,
+          };
+        }
+      }
+    }
+  }
+}
+
+function* scopeDefnTable(db: NodesByRule): Generator<Defn> {
+  for (const tableDeclID in db["tableDecl"].byID) {
+    for (const ident of db["ident"].byParentID[tableDeclID]) {
+      yield {
+        kind: "relation",
+        name: ident.text,
+        scopeID: "global",
+        span: ident.span,
+      };
+    }
+  }
+}
+
+function* scopeDefnAttr(db: NodesByRule): Generator<Defn> {
+  for (const ruleID in db["rule"].byID) {
+    for (const record of db["record"].byParentID[ruleID]) {
+      for (const headIdent of db["ident"].byParentID[record.id]) {
+        for (const attr of db["recordAttrs"].byParentID[record.id]) {
+          for (const keyValue of db["recordKeyValue"].byParentID[attr.id]) {
+            for (const kvIdent of db["ident"].byParentID[keyValue.id]) {
+              yield {
+                scopeID: headIdent.text,
+                name: kvIdent.text,
+                span: kvIdent.span,
+                kind: "attr",
+              };
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function* scopeDefnInnerVar(db: NodesByRule): Generator<Defn> {
+  for (const varTerm of scopeVarTerm(db)) {
+    yield {
+      kind: "var",
+      name: varTerm.name,
+      scopeID: varTerm.scopeID,
+      span: varTerm.span,
+    };
+  }
+}
+
+// ==== Var ====
+
+function* scopeVar(db: NodesByRule): Generator<Var> {
+  for (const result of scopeVarRuleInvocation(db)) {
+    yield result;
+  }
+  for (const result of scopeVarTerm(db)) {
+    yield result;
+  }
+  for (const result of scopeVarAttr(db)) {
+    yield result;
+  }
+  for (const result of scopeVarFact(db)) {
+    yield result;
   }
 }
 
@@ -77,21 +172,6 @@ function* scopeRuleBodyTerm(
         }
       }
     }
-  }
-}
-
-function* scopeVar(db: NodesByRule): Generator<Var> {
-  for (const result of scopeVarRuleInvocation(db)) {
-    yield result;
-  }
-  for (const result of scopeVarTerm(db)) {
-    yield result;
-  }
-  for (const result of scopeVarAttr(db)) {
-    yield result;
-  }
-  for (const result of scopeVarFact(db)) {
-    yield result;
   }
 }
 
