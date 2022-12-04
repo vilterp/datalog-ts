@@ -2,6 +2,19 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Debug Benchmark",
+			"request": "launch",
+			"runtimeArgs": [
+				"run-script",
+				"benchmark"
+			],
+			"runtimeExecutable": "npm",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
+		},
+		{
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
