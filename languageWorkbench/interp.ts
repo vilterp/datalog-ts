@@ -30,19 +30,18 @@ type ConstructInterpRes = {
 // Is there a way to cache by object identity in javascript?
 let lastInitInterp: AbstractInterpreter | null = null;
 let lastLangSpec: LanguageSpec | null = null;
-let lastResult: ConstructInterpRes | null = null;
 
 function interpForLangSpec(
   initInterp: AbstractInterpreter,
   langSpec: LanguageSpec
 ): ConstructInterpRes {
   if (initInterp === lastInitInterp && langSpec === lastLangSpec) {
-    return lastResult;
+    return lastInterpForLangSpecResult;
   }
-  lastResult = constructInterpInner(initInterp, langSpec);
+  lastInterpForLangSpecResult = constructInterpInner(initInterp, langSpec);
   lastInitInterp = initInterp;
   lastLangSpec = langSpec;
-  return lastResult;
+  return lastInterpForLangSpecResult;
 }
 
 // TODO: separate function to inject the langSource
