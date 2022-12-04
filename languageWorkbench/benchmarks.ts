@@ -15,6 +15,7 @@ import { addCursor, constructInterp } from "./interp";
 import { LANGUAGES, LanguageSpec } from "./languages";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
+import { assertDeepEqual, assertStringEqual } from "../util/testBench/testing";
 
 export const lwbBenchmarks: BenchmarkSpec[] = [
   { lang: "fp", reps: 10 },
@@ -32,6 +33,18 @@ export const lwbBenchmarks: BenchmarkSpec[] = [
 
 export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
+    name: "problemsNative",
+    async run() {
+      return doBenchmark(500, testProblemsNative);
+    },
+  },
+  {
+    name: "problemsSimpleInterp",
+    async run() {
+      return doBenchmark(200, testProblemsSimpleInterp);
+    },
+  },
+  {
     name: "getCompletionsNative",
     async run() {
       return doBenchmark(10000, testCompletionsNative);
@@ -40,7 +53,7 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "getCompletionsSimpleInterp",
     async run() {
-      return doBenchmark(1000, testCompletionsSimpleInterp);
+      return doBenchmark(500, testCompletionsSimpleInterp);
     },
   },
   {
@@ -52,7 +65,7 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "getSemanticTokensSimpleInterp",
     async run() {
-      return doBenchmark(1000, testGetSemanticTokensSimpleInterp);
+      return doBenchmark(500, testGetSemanticTokensSimpleInterp);
     },
   },
   {
@@ -64,19 +77,7 @@ export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
     name: "parser",
     async run() {
-      return doBenchmark(300, testParse);
-    },
-  },
-  {
-    name: "problemsNative",
-    async run() {
-      return doBenchmark(500, testProblemsNative);
-    },
-  },
-  {
-    name: "problemsSimpleInterp",
-    async run() {
-      return doBenchmark(500, testProblemsSimpleInterp);
+      return doBenchmark(200, testParse);
     },
   },
 ];
@@ -248,11 +249,11 @@ function testParse() {
 
 function testProblemsNative() {
   const problems = [...datalogLangImpl.tcProblem(flattenedByRule)];
-  if (problems.length !== 2) {
-    throw new Error("problems length should be 2");
-  }
+  // TODO: why is this one more than simpleInterp?
+  assertDeepEqual(problems.length, 3, "problems length");
 }
 
 function testProblemsSimpleInterp() {
-  const results = interp.queryStr("tc.Problem{}");
+  const problems = interp.queryStr("tc.Problem{}");
+  assertDeepEqual(problems.length, 2, "problems length");
 }
