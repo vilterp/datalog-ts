@@ -1,5 +1,6 @@
 import * as diff from "diff";
 import * as util from "util";
+import { Json, jsonEq } from "../json";
 
 // TODO: assert order-independent equal
 export function assert(
@@ -23,15 +24,17 @@ export function assertStringEqual(
   }
 }
 
-export function assertDeepEqual<T extends object>(
+export function assertDeepEqual<T extends Json>(
   expected: T,
   actual: T,
   msg?: string
 ) {
-  const expJSON = util.inspect(expected, { depth: null });
-  const actJSON = util.inspect(actual, { depth: null });
-  if (actJSON != expJSON) {
-    throw new DiffError(expJSON, actJSON, msg);
+  if (!jsonEq(expected, actual)) {
+    throw new DiffError(
+      util.inspect(expected, { depth: null }),
+      util.inspect(actual, { depth: null }),
+      msg
+    );
   }
 }
 
