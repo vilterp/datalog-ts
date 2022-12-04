@@ -42,14 +42,16 @@ function* scopeDefn(
 
 function* scopeDefnRule(db: NodesByRule, scopeID: string): Generator<Defn> {
   for (const ruleID in db.get("rule").byID) {
-    for (const ident of db.get("ident").byParentID.get(ruleID)) {
-      yield {
-        kind: "relation",
-        name: ident.text,
-        scopeID: "global",
-        span: ident.span,
-        type: "",
-      };
+    for (const record of db.get("record").byParentID.get(ruleID)) {
+      for (const ident of db.get("ident").byParentID.get(record.id)) {
+        yield {
+          kind: "relation",
+          name: ident.text,
+          scopeID: "global",
+          span: ident.span,
+          type: "",
+        };
+      }
     }
   }
 }
@@ -424,11 +426,33 @@ function* scopePlaceholderVar(db: NodesByRule): Generator<Placeholder> {
 }
 
 function* scopePlaceholderRule(db: NodesByRule): Generator<Placeholder> {
-  // ...
+  for (const placeholderID in db.get("placeholder").byID) {
+    const placeholder = db.get("placeholder").byID[placeholderID];
+    if (db.get("conjunct").byID[placeholder.parentID]) {
+      yield {
+        scopeID: "global",
+        kind: "relation",
+        span: placeholder.span,
+      };
+    }
+  }
 }
 
 function* scopePlaceholderKeyValue(db: NodesByRule): Generator<Placeholder> {
-  // ...
+  for (const placeholderID in db.get("placeholder").byID) {
+    const placeholder = db.get("placeholder").byID[placeholderID];
+    const recordAttrs = db.get("recordAttrs").byID[placeholder.parentID];
+    if (recordAttrs) {
+      const record = db.get("record").byID[recordAttrs.parentID];
+      for (const ident of db.get("ident").byParentID.get(record.id)) {
+        yield {
+          scopeID: ident.text,
+          kind: "attr",
+          span: placeholder.span,
+        };
+      }
+    }
+  }
 }
 
 function* scopeParent(
