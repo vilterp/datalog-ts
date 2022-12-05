@@ -220,7 +220,9 @@ const langSpec: LanguageSpec = {
 
 let interp: AbstractInterpreter = getInterpForDoc(
   INIT_INTERP,
-  langSpec,
+  langSpec.name,
+  { [langSpec.name]: langSpec },
+  "test.datalog",
   input
 ).interp;
 interp = addCursor(interp, cursorPos);
