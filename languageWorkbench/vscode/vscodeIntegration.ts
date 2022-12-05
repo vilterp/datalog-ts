@@ -20,6 +20,7 @@ import { parse } from "../parserlib/parser";
 import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
 import { Problem } from "../commonDL/types";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -186,7 +187,7 @@ function getDefinition(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -211,7 +212,7 @@ function getReferences(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -238,7 +239,7 @@ function getHighlights(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -283,7 +284,11 @@ function getCompletionItems(
       };
     });
   } else {
-    const interp = getInterp(spec, sourceWithPlaceholder);
+    const interp = getInterp(
+      spec,
+      document.uri.toString(),
+      sourceWithPlaceholder
+    );
     const interp2 = interp.evalStr(`ide.Cursor{idx: ${cursorIdx}}.`)[1];
     const results = interp2.queryStr(
       `ide.CurrentSuggestion{name: N, span: S, type: T}`
@@ -315,7 +320,7 @@ function getRenameEdits(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
@@ -338,7 +343,7 @@ function prepareRename(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
@@ -356,7 +361,7 @@ function getSymbolList(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
 
   const results = interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -381,7 +386,7 @@ function getSemanticTokens(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
-  // const interp = getInterp(spec, source);
+  // const interp = getInterp(spec, document.uri.toString(), source);
   // const results = interp.queryStr("hl.NonHighlightSegment{}");
   if (spec.nativeImpl) {
     const flattened = getFlattened(source, spec.leaves);
@@ -395,7 +400,7 @@ function getSemanticTokens(
     }
     return builder.build();
   } else {
-    const interp = getInterp(spec, source);
+    const interp = getInterp(spec, document.uri.toString(), source);
     const results = interp.queryStr("hl.NonHighlightSegment{}");
 
     const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
@@ -425,7 +430,7 @@ export function refreshDiagnostics(
     const diags = problems.map((res) => nativeProblemToDiagnostic(source, res));
     diagnostics.set(document.uri, diags);
   } else {
-    const interp = getInterp(spec, source);
+    const interp = getInterp(spec, document.uri.toString(), source);
 
     const problems = interp.queryStr("tc.Problem{}");
     const diags = problems.map((res) =>

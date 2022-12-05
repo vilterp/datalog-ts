@@ -1,22 +1,12 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { SimpleInterpreter } from "../core/simple/interpreter";
 import { LanguageSpec } from "./languages";
 import { parseMain } from "./languages/grammar/parser";
-import {
-  declareTables,
-  flatten,
-  getAllStatements,
-  getUnionRule,
-} from "./parserlib/flatten";
-import {
-  formatParseError,
-  getErrors,
-  parse,
-  TraceTree,
-} from "./parserlib/parser";
+import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
+import { parse, TraceTree } from "./parserlib/parser";
 import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
 import { parserGrammarToInternal } from "./parserlib/translateAST";
 import { Grammar } from "./parserlib/types";
-import { validateGrammar } from "./parserlib/validate";
 import { ensureRequiredRelations } from "./requiredRelations";
 
 type ConstructInterpRes = {
@@ -25,23 +15,37 @@ type ConstructInterpRes = {
   errors: string[];
 };
 
-// TODO: this doesn't work that well when there are multiple languages
-// we're switching between, like in the LWB...
-// Is there a way to cache by object identity in javascript?
-let lastInitInterp: AbstractInterpreter | null = null;
-let lastLangSpec: LanguageSpec | null = null;
+const interpCache: {
+  [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
+} = {};
+const docSource: { [uri: string]: string } = {};
+const interpSourceCache: {
+  [docURI: string]: { interp: AbstractInterpreter };
+} = {};
+
+// TODO: call this from the outside on vscode document change events
+function updateDocSource(uri: string, langID: string, source: string) {
+  const currentSource = docSource[uri];
+  if (currentSource !== source) {
+    docSource[uri] = source;
+    // TODO: factor invalidation out into a framework
+    delete interpSourceCache[`${langID}-${uri}`];
+  }
+}
 
 function interpForLangSpec(
   initInterp: AbstractInterpreter,
-  langSpec: LanguageSpec
-): ConstructInterpRes {
-  if (initInterp === lastInitInterp && langSpec === lastLangSpec) {
-    return lastInterpForLangSpecResult;
+  languages: { [langID: string]: LanguageSpec }, // TODO: check this as well
+  langID: string
+): { interp: AbstractInterpreter; grammar: Grammar } {
+  let res = interpCache[langID];
+  if (!res) {
+    res = interpForLangSpecInner(initInterp, languages[langID]);
+    interpCache[langID] = res;
+  } else {
+    // console.log("cache hit", langID);
   }
-  lastInterpForLangSpecResult = interpForLangSpecInner(initInterp, langSpec);
-  lastInitInterp = initInterp;
-  lastLangSpec = langSpec;
-  return lastInterpForLangSpecResult;
+  return res;
 }
 
 // TODO: separate function to inject the langSource
@@ -50,7 +54,7 @@ function interpForLangSpecInner(
   initInterp: AbstractInterpreter,
   langSpec: LanguageSpec
 ): ConstructInterpRes {
-  console.log("interpForLangSpecInner", langSpec.name);
+  // console.log("interpForLangSpecInner", langSpec.name);
 
   let interp = initInterp;
   interp = interp.doLoad("main.dl");
@@ -80,32 +84,33 @@ function interpForLangSpecInner(
   };
 }
 
-let lastInterpForLangSpecResult: ConstructInterpRes | null = null;
-let lastSource: string | null = null;
-let lastAddSourceResult: ConstructInterpRes | null = null;
-
-export function constructInterp(
+export function getInterpForDoc(
   initInterp: AbstractInterpreter,
-  langSpec: LanguageSpec,
+  langID: string,
+  languages: { [langID: string]: LanguageSpec },
+  uri: string,
   source: string
 ) {
-  const res = interpForLangSpec(initInterp, langSpec);
-  if (res === lastInterpForLangSpecResult && source === lastSource) {
-    return lastAddSourceResult;
+  updateDocSource(uri, langID, source);
+  const key = `${langID}-${uri}`;
+  let res = interpSourceCache[key];
+  // TODO: this is a big memory leak
+  if (!res) {
+    res = addSourceInner(initInterp, langID, languages, docSource[uri]);
+    interpSourceCache[key] = res;
+  } else {
+    // console.log("cache hit", langID, uri, "source length", source.length);
   }
-  const outerRes = addSourceInner(res, source);
-  lastSource = source;
-  lastAddSourceResult = outerRes;
-  return outerRes;
+  return res;
 }
 
 function addSourceInner(
-  res: ConstructInterpRes,
+  initInterp: AbstractInterpreter,
+  langID: string,
+  languages: { [langID: string]: LanguageSpec },
   source: string
 ): ConstructInterpRes {
-  console.log("addSourceInner");
-
-  let interp = res.interp;
+  let { interp, grammar } = interpForLangSpec(initInterp, languages, langID);
 
   // initialize stuff that we'll fill in later, if parse succeeds
   let traceTree: TraceTree = null;
@@ -113,14 +118,14 @@ function addSourceInner(
   let langParseError: string | null = null;
 
   try {
-    traceTree = parse(res.grammar, "main", source);
+    traceTree = parse(grammar, "main", source);
     ruleTree = extractRuleTree(traceTree);
     const records = flatten(ruleTree, source);
     interp = interp.bulkInsert(records);
-    interp = interp.evalRawStmts(declareTables(res.grammar))[1];
+    interp = interp.evalRawStmts(declareTables(grammar))[1];
     interp = interp.evalStmt({
       type: "Rule",
-      rule: getUnionRule(res.grammar),
+      rule: getUnionRule(grammar),
     })[1];
     interp = ensureRequiredRelations(interp);
   } catch (e) {
@@ -128,9 +133,14 @@ function addSourceInner(
     console.error(e);
   }
 
+  // (interp as SimpleInterpreter).db.tables.mapEntries(([name, collection]) => {
+  //   console.log(name, collection.all().toArray());
+  //   return [name, collection];
+  // });
+
   return {
     interp,
-    grammar: res.grammar,
+    grammar,
     errors: langParseError ? [langParseError] : [],
   };
 }
