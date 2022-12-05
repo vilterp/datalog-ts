@@ -43,7 +43,7 @@ function interpForLangSpec(
     res = interpForLangSpecInner(initInterp, languages[langID]);
     interpCache[langID] = res;
   } else {
-    console.log("cache hit", langID);
+    // console.log("cache hit", langID);
   }
   return res;
 }
@@ -54,7 +54,7 @@ function interpForLangSpecInner(
   initInterp: AbstractInterpreter,
   langSpec: LanguageSpec
 ): ConstructInterpRes {
-  console.log("interpForLangSpecInner", langSpec.name);
+  // console.log("interpForLangSpecInner", langSpec.name);
 
   let interp = initInterp;
   interp = interp.doLoad("main.dl");
@@ -99,7 +99,7 @@ export function getInterpForDoc(
     res = addSourceInner(initInterp, langID, languages, docSource[uri]);
     interpSourceCache[key] = res;
   } else {
-    console.log("cache hit", langID, uri, "source length", source.length);
+    // console.log("cache hit", langID, uri, "source length", source.length);
   }
   return res;
 }

@@ -55,15 +55,14 @@ export function testLangQuery(test: string[]): TestOutput[] {
       ),
       example: "",
     };
-    const { interp: withoutCursor, errors } = getInterpForDoc(
+    const { interp: withoutCursor } = getInterpForDoc(
       INIT_INTERP,
-      langSpec,
+      langName,
+      { [langName]: langSpec },
+      `test.${langName}`,
       example
     );
     const finalInterp = addCursor(withoutCursor, cursorPos);
-    if (errors.length > 0) {
-      return jsonOut({ errors });
-    }
     try {
       const res = finalInterp.queryStr(query);
       return datalogOut(res.map((res) => res.term));
