@@ -461,6 +461,7 @@ function getFlattened(
   source: string,
   leaves: Set<string> = new Set<string>()
 ): NodesByRule {
+  // TODO: pass in spec; use its grammar
   const traceTree = parse(GRAMMAR, "main", source);
   const ruleTree = extractRuleTree(traceTree);
   return flattenByRule(ruleTree, source, leaves);
