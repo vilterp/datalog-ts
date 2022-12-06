@@ -4,7 +4,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../commonDL";
-import { getInterpForDoc } from "../interpCache";
+import { getInterpForDoc, InterpreterCache } from "../interpCache";
 import { LanguageSpec } from "../languages";
 
 // needs to match highlight.dl
@@ -20,6 +20,7 @@ export const TOKEN_TYPES = [
 export const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
 export function getInterp(
+  cache: InterpreterCache,
   language: LanguageSpec,
   uri: string,
   source: string
