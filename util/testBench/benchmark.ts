@@ -58,13 +58,13 @@ async function doBenchmarkInner(
     v8profiler.startProfiling();
     const before = performance.now();
     let i = 0;
-    while (doAnother()) {
+    do {
       op();
       if (i % 10 === 0) {
         console.log(i);
       }
       i++;
-    }
+    } while (doAnother());
     const after = performance.now();
     const profile = v8profiler.stopProfiling();
 
