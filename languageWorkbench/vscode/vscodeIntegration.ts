@@ -457,22 +457,13 @@ function nativeProblemToDiagnostic(
   return new vscode.Diagnostic(range, problem.desc);
 }
 
-// TODO: cache by document URL
-let lastSource: string = "";
-let lastFlattened: NodesByRule = emptyNodesByRule();
-
 function getFlattened(
   source: string,
   leaves: Set<string> = new Set<string>()
 ): NodesByRule {
-  if (source === lastSource) {
-    return lastFlattened;
-  }
   const traceTree = parse(GRAMMAR, "main", source);
   const ruleTree = extractRuleTree(traceTree);
-  const flattened = flattenByRule(ruleTree, source, leaves);
-  lastFlattened = flattened;
-  return flattened;
+  return flattenByRule(ruleTree, source, leaves);
 }
 
 function idxToPosition(source: string, idx: number): vscode.Position {
