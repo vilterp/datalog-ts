@@ -21,6 +21,7 @@ import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
 import { Problem } from "../commonDL/types";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { updateDocSource } from "../interpCache";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -272,7 +273,12 @@ function getCompletionItems(
   const sourceWithPlaceholder =
     source.slice(0, cursorIdx) + "???" + source.slice(cursorIdx);
   if (spec.nativeImpl) {
-    const flattened = getFlattened(sourceWithPlaceholder, spec.leaves);
+    const flattened = getFlattened(
+      document.uri.toString(),
+      spec.name,
+      sourceWithPlaceholder,
+      spec.leaves
+    );
     const suggestions = [
       ...native.ideCurrentSuggestion(flattened, spec.nativeImpl, cursorIdx),
     ];
@@ -389,7 +395,13 @@ function getSemanticTokens(
   // const interp = getInterp(spec, document.uri.toString(), source);
   // const results = interp.queryStr("hl.NonHighlightSegment{}");
   if (spec.nativeImpl) {
-    const flattened = getFlattened(source, spec.leaves);
+    console.log("native semantic tokens");
+    const flattened = getFlattened(
+      document.uri.toString(),
+      spec.name,
+      source,
+      spec.leaves
+    );
     const results = [...native.getSemanticTokens(flattened, spec.nativeImpl)];
 
     const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
@@ -425,7 +437,12 @@ export function refreshDiagnostics(
 ) {
   const source = document.getText();
   if (spec.nativeImpl) {
-    const flattened = getFlattened(source, spec.leaves);
+    const flattened = getFlattened(
+      document.uri.toString(),
+      spec.name,
+      source,
+      spec.leaves
+    );
     const problems = [...spec.nativeImpl.tcProblem(flattened)];
     const diags = problems.map((res) => nativeProblemToDiagnostic(source, res));
     diagnostics.set(document.uri, diags);
@@ -457,22 +474,19 @@ function nativeProblemToDiagnostic(
   return new vscode.Diagnostic(range, problem.desc);
 }
 
-// TODO: cache by document URL
-let lastSource: string = "";
-let lastFlattened: NodesByRule = emptyNodesByRule();
-
 function getFlattened(
+  uri: string,
+  langID: string,
   source: string,
   leaves: Set<string> = new Set<string>()
 ): NodesByRule {
-  if (source === lastSource) {
-    return lastFlattened;
-  }
+  // call updateSource here?
+  updateDocSource(uri, langID, source);
+  // TODO: pass in spec; use its grammar
+  console.log("get flattened");
   const traceTree = parse(GRAMMAR, "main", source);
   const ruleTree = extractRuleTree(traceTree);
-  const flattened = flattenByRule(ruleTree, source, leaves);
-  lastFlattened = flattened;
-  return flattened;
+  return flattenByRule(ruleTree, source, leaves);
 }
 
 function idxToPosition(source: string, idx: number): vscode.Position {

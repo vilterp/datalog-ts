@@ -24,7 +24,7 @@ const interpSourceCache: {
 } = {};
 
 // TODO: call this from the outside on vscode document change events
-function updateDocSource(uri: string, langID: string, source: string) {
+export function updateDocSource(uri: string, langID: string, source: string) {
   const currentSource = docSource[uri];
   if (currentSource !== source) {
     docSource[uri] = source;
