@@ -267,7 +267,7 @@ function testParse() {
 function testProblemsNative() {
   const problems = [...datalogLangImpl.tcProblem(flattenedByRule)];
   // TODO: why is this one more than simpleInterp?
-  assertDeepEqual(problems.length, 3, "problems length");
+  assertDeepEqual(problems.length, 2, "problems length");
 }
 
 function testProblemsSimpleInterp() {
