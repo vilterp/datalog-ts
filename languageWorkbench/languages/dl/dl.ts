@@ -501,8 +501,8 @@ function* tcProblems(db: NodesByRule): Generator<Problem> {
 function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
   for (const ruleID in db.get("rule").byID) {
     for (const attr of scopeVarAttr(db, ruleID)) {
-      if (generatorIsEmpty(tcRuleAttr(db, ruleID))) {
-        for (const ruleName of ruleIDToName(db, ruleID)) {
+      if (generatorIsEmpty(tcRuleAttr(db, attr.scopeID, attr.name))) {
+        for (const ruleName of ruleIDToName(db, attr.scopeID)) {
           yield {
             desc: `nonexistent attr \`${attr.name}\` calling rule \`${ruleName}\``,
             span: attr.span,
@@ -530,7 +530,8 @@ function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
 
 function* tcRuleAttr(
   db: NodesByRule,
-  ruleID: string
+  ruleID: string,
+  attrName: string
 ): Generator<{ ruleID: string; attr: string; span: Span; ruleName: string }> {
   // for (const ruleID in db.get("rule").byID) {
   for (const record of db.get("record").byParentID.get(ruleID)) {
@@ -539,12 +540,14 @@ function* tcRuleAttr(
         for (const kv of db.get("recordKeyValue").byParentID.get(attrs.id)) {
           // would need to index this by name for it to be fast
           for (const attr of db.get("ident").byParentID.get(kv.id)) {
-            yield {
-              ruleID,
-              attr: attr.text,
-              span: attr.span,
-              ruleName: ruleName.text,
-            };
+            if (attr.text === attrName) {
+              yield {
+                ruleID,
+                attr: attr.text,
+                span: attr.span,
+                ruleName: ruleName.text,
+              };
+            }
           }
         }
       }
