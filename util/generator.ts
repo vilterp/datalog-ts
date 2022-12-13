@@ -1,6 +1,6 @@
 export function generatorCount<T>(gen: Generator<T>): number {
   let count = 0;
-  for (const item in gen) {
+  for (const item of gen) {
     count++;
   }
   return count;
