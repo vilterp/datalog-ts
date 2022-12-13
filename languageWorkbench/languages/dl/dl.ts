@@ -518,13 +518,27 @@ function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
   for (const ruleID in db.get("rule").byID) {
     for (const ruleName of ruleIDToName(db, ruleID)) {
       for (const headVar of scopeDefnHeadVar(db, ruleName)) {
-        if (generatorIsEmpty(scopeVarInBodyTerm(db, ruleID))) {
+        if (
+          generatorIsEmpty(scopeVarInBodyTermWithName(db, ruleID, headVar.name))
+        ) {
           yield {
             desc: `unbound var ${headVar.name} in head of ${ruleName}`,
             span: headVar.span,
           };
         }
       }
+    }
+  }
+}
+
+function* scopeVarInBodyTermWithName(
+  db: NodesByRule,
+  ruleID: string,
+  varName: string
+) {
+  for (const varNode of scopeVarInBodyTerm(db, ruleID)) {
+    if (varNode.name === varName) {
+      yield varNode;
     }
   }
 }
