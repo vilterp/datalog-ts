@@ -134,6 +134,7 @@ tc.Problem{desc: D, span: S} :-
   tc.nonexistentAttr{desc: D, span: S} |
   tc.unboundVarInHead{desc: D, span: S}.
 tc.nonexistentAttr{desc: nonexistentAttr{relation: Relation, attr: N}, span: S} :-
+  scope.defnRule{name: Relation} &
   scope.varAttr{scopeID: Relation, name: N, span: S} &
   !tc.ruleAttr{rule: Relation, attr: N}.
 tc.unboundVarInHead{desc: unboundVarInHead{rule: R, name: N}, span: S} :-
