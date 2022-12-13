@@ -1,4 +1,5 @@
 import { DefaultDict } from "../../../util/defaultDict";
+import { generatorIsEmpty } from "../../../util/generator";
 import {
   Defn,
   LangImpl,
@@ -564,17 +565,3 @@ export const datalogLangImpl: LangImpl = {
   scopeParent,
   tcProblem: tcProblems,
 };
-
-// util
-
-function generatorCount<T>(gen: Generator<T>): number {
-  let count = 0;
-  for (const item in gen) {
-    count++;
-  }
-  return count;
-}
-
-function generatorIsEmpty<T>(gen: Generator<T>): boolean {
-  return generatorCount(gen) === 0;
-}
