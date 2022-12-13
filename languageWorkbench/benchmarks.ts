@@ -267,27 +267,27 @@ function testParse() {
 function testProblemsNative() {
   const problems = [...datalogLangImpl.tcProblem(flattenedByRule)];
   // TODO: why is this one more than simpleInterp?
-  assertDeepEqual(problems.length, 2, "problems length");
+  assertDeepEqual(2, problems.length, "problems length");
 }
 
 function testProblemsSimpleInterp() {
   const problems = interp.queryStr("tc.Problem{}");
-  assertDeepEqual(problems.length, 2, "problems length");
+  assertDeepEqual(2, problems.length, "problems length");
 }
 
 function testDefnAtPosSimpleInterp() {
   const results = interp.queryStr("ide.DefnAtPos{idx: 2174}");
-  assertDeepEqual(results.length, 1, "results length");
+  assertDeepEqual(1, results.length, "results length");
 }
 
 function testUsageAtPosSimpleInterp() {
   const results = interp.queryStr(`ide.UsageAtPos{idx: 2392, usageSpan: US}`);
-  assertDeepEqual(results.length, 1, "results length");
+  assertDeepEqual(1, results.length, "results length");
 }
 
 function testSymbolListSimpleInterp() {
   const results = interp.queryStr(
     `scope.Defn{scopeID: global{}, name: N, span: S, kind: K}`
   );
-  assertDeepEqual(results.length, 21, "results length");
+  assertDeepEqual(21, results.length, "results length");
 }
