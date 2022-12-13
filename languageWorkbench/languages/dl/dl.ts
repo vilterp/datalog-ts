@@ -499,23 +499,13 @@ function* tcProblems(db: NodesByRule): Generator<Problem> {
 }
 
 function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
-  // build index of rule attrs
-  const ruleAttrsByName = new DefaultDict<Set<string>>(() => new Set<string>());
-  for (const ruleID in db.get("rule").byID) {
-    for (const attr of scopeDefnAttr(db, ruleID)) {
-      for (const ruleName of ruleIDToName(db, ruleID)) {
-        ruleAttrsByName.get(ruleName).add(attr.name);
-      }
-    }
-  }
   for (const ruleID in db.get("rule").byID) {
     for (const attr of scopeVarAttr(db, ruleID)) {
-      const ruleName = attr.scopeID;
-      if (ruleAttrsByName.has(ruleName)) {
-        if (!ruleAttrsByName.get(ruleName).has(attr.name)) {
+      if (generatorIsEmpty(tcRuleAttr(db, ruleID))) {
+        for (const ruleName of ruleIDToName(db, ruleID)) {
           yield {
+            desc: `nonexistent attr \`${attr.name}\` calling rule \`${ruleName}\``,
             span: attr.span,
-            desc: `rule \`${ruleName}\` has no attribute \`${attr.name}\``,
           };
         }
       }
@@ -525,12 +515,12 @@ function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
 
 function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
   for (const ruleID in db.get("rule").byID) {
-    for (const attr of scopeVarAttr(db, ruleID)) {
-      if (generatorIsEmpty(tcRuleAttr(db, ruleID))) {
-        for (const ruleName of ruleIDToName(db, ruleID)) {
+    for (const ruleName of ruleIDToName(db, ruleID)) {
+      for (const headVar of scopeDefnHeadVar(db, ruleName)) {
+        if (generatorIsEmpty(scopeVarInBodyTerm(db, ruleID))) {
           yield {
-            desc: `unbound var \`${attr.name}\` in head of rule \`${ruleName}\``,
-            span: attr.span,
+            desc: `unbound var ${headVar.name} in head of ${ruleName}`,
+            span: headVar.span,
           };
         }
       }
