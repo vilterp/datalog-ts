@@ -525,21 +525,41 @@ function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
 
 function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
   for (const ruleID in db.get("rule").byID) {
-    // gather set of terms that are used in body
-    const bodyVars = new Set<string>();
-    for (const bodyVar of scopeVarInBodyTerm(db, ruleID)) {
-      bodyVars.add(bodyVar.name);
-    }
-    for (const ruleName of ruleIDToName(db, ruleID)) {
-      for (const headVar of scopeDefnHeadVar(db, ruleName)) {
-        if (!bodyVars.has(headVar.name)) {
+    for (const attr of scopeVarAttr(db, ruleID)) {
+      if (generatorIsEmpty(tcRuleAttr(db, ruleID))) {
+        for (const ruleName of ruleIDToName(db, ruleID)) {
           yield {
-            desc: `unbound var \`${headVar.name}\` in head of rule \`${ruleName}\``,
-            span: headVar.span,
+            desc: `unbound var \`${attr.name}\` in head of rule \`${ruleName}\``,
+            span: attr.span,
           };
         }
       }
     }
+  }
+}
+
+function* tcRuleAttr(
+  db: NodesByRule,
+  ruleID: string
+): Generator<{ ruleID: string; attr: string; span: Span; ruleName: string }> {
+  // for (const ruleID in db.get("rule").byID) {
+  for (const record of db.get("record").byParentID.get(ruleID)) {
+    for (const ruleName of db.get("ident").byParentID.get(record.id)) {
+      for (const attrs of db.get("recordAttrs").byParentID.get(record.id)) {
+        for (const kv of db.get("recordKeyValue").byParentID.get(attrs.id)) {
+          // would need to index this by name for it to be fast
+          for (const attr of db.get("ident").byParentID.get(kv.id)) {
+            yield {
+              ruleID,
+              attr: attr.text,
+              span: attr.span,
+              ruleName: ruleName.text,
+            };
+          }
+        }
+      }
+    }
+    // }
   }
 }
 
@@ -551,3 +571,17 @@ export const datalogLangImpl: LangImpl = {
   scopeParent,
   tcProblem: tcProblems,
 };
+
+// util
+
+function generatorCount<T>(gen: Generator<T>): number {
+  let count = 0;
+  for (const item in gen) {
+    count++;
+  }
+  return count;
+}
+
+function generatorIsEmpty<T>(gen: Generator<T>): boolean {
+  return generatorCount(gen) === 0;
+}
