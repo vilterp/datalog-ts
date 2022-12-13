@@ -1,4 +1,5 @@
 import { DefaultDict } from "../../../util/defaultDict";
+import { generatorIsEmpty } from "../../../util/generator";
 import {
   Defn,
   LangImpl,
@@ -499,23 +500,13 @@ function* tcProblems(db: NodesByRule): Generator<Problem> {
 }
 
 function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
-  // build index of rule attrs
-  const ruleAttrsByName = new DefaultDict<Set<string>>(() => new Set<string>());
-  for (const ruleID in db.get("rule").byID) {
-    for (const attr of scopeDefnAttr(db, ruleID)) {
-      for (const ruleName of ruleIDToName(db, ruleID)) {
-        ruleAttrsByName.get(ruleName).add(attr.name);
-      }
-    }
-  }
   for (const ruleID in db.get("rule").byID) {
     for (const attr of scopeVarAttr(db, ruleID)) {
-      const ruleName = attr.scopeID;
-      if (ruleAttrsByName.has(ruleName)) {
-        if (!ruleAttrsByName.get(ruleName).has(attr.name)) {
+      if (generatorIsEmpty(tcRuleAttr(db, attr.scopeID, attr.name))) {
+        for (const ruleName of ruleIDToName(db, attr.scopeID)) {
           yield {
+            desc: `nonexistent attr \`${attr.name}\` calling rule \`${ruleName}\``,
             span: attr.span,
-            desc: `rule \`${ruleName}\` has no attribute \`${attr.name}\``,
           };
         }
       }
@@ -525,21 +516,58 @@ function* tcNonexistentAttr(db: NodesByRule): Generator<Problem> {
 
 function* tcUnboundVarInHead(db: NodesByRule): Generator<Problem> {
   for (const ruleID in db.get("rule").byID) {
-    // gather set of terms that are used in body
-    const bodyVars = new Set<string>();
-    for (const bodyVar of scopeVarInBodyTerm(db, ruleID)) {
-      bodyVars.add(bodyVar.name);
-    }
     for (const ruleName of ruleIDToName(db, ruleID)) {
       for (const headVar of scopeDefnHeadVar(db, ruleName)) {
-        if (!bodyVars.has(headVar.name)) {
+        if (
+          generatorIsEmpty(scopeVarInBodyTermWithName(db, ruleID, headVar.name))
+        ) {
           yield {
-            desc: `unbound var \`${headVar.name}\` in head of rule \`${ruleName}\``,
+            desc: `unbound var ${headVar.name} in head of ${ruleName}`,
             span: headVar.span,
           };
         }
       }
     }
+  }
+}
+
+function* scopeVarInBodyTermWithName(
+  db: NodesByRule,
+  ruleID: string,
+  varName: string
+) {
+  for (const varNode of scopeVarInBodyTerm(db, ruleID)) {
+    if (varNode.name === varName) {
+      yield varNode;
+    }
+  }
+}
+
+function* tcRuleAttr(
+  db: NodesByRule,
+  ruleID: string,
+  attrName: string
+): Generator<{ ruleID: string; attr: string; span: Span; ruleName: string }> {
+  // for (const ruleID in db.get("rule").byID) {
+  for (const record of db.get("record").byParentID.get(ruleID)) {
+    for (const ruleName of db.get("ident").byParentID.get(record.id)) {
+      for (const attrs of db.get("recordAttrs").byParentID.get(record.id)) {
+        for (const kv of db.get("recordKeyValue").byParentID.get(attrs.id)) {
+          // would need to index this by name for it to be fast
+          for (const attr of db.get("ident").byParentID.get(kv.id)) {
+            if (attr.text === attrName) {
+              yield {
+                ruleID,
+                attr: attr.text,
+                span: attr.span,
+                ruleName: ruleName.text,
+              };
+            }
+          }
+        }
+      }
+    }
+    // }
   }
 }
 
