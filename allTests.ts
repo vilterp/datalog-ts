@@ -14,6 +14,7 @@ import { lwbTests } from "./languageWorkbench/ddTests";
 import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { raceDetectorTests } from "./apps/raceDetector/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
+import { plannerTests } from "./core/simple/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -25,6 +26,7 @@ const suites: { [name: string]: Suite } = {
   parserTests: parserTests(writeResults),
   // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
   coreTestsSimple: coreTestsSimple(writeResults),
+  plannerTests: plannerTests(writeResults),
   // coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
   incrTests: incrTests(writeResults),

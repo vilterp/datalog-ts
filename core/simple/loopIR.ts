@@ -1,3 +1,5 @@
+import { Rec } from "../types";
+
 export type LoopNode =
   | {
       type: "Loop";
@@ -7,10 +9,14 @@ export type LoopNode =
     }
   | { type: "Block"; elements: LoopNode[] }
   | { type: "If"; cond: ScalarExpr; inner: LoopNode }
-  | { type: "Emit"; tuple: { [key: string]: ScalarExpr } };
+  | { type: "Emit"; record: Rec };
 
 // TODO: distinguish between base and derived relations?
-export type RelExpr = { relationName: string; arguments: ScalarExpr[] };
+export type RelExpr = {
+  relationName: string;
+  arguments: ScalarExpr[];
+  indexLookup: { attr: string; value: ScalarExpr } | null;
+};
 
 export type ScalarExpr =
   | { type: "Var"; name: string }
@@ -33,6 +39,6 @@ export function ifNode(cond: ScalarExpr, inner: LoopNode): LoopNode {
   return { type: "If", cond, inner };
 }
 
-export function emit(tuple: { [key: string]: ScalarExpr }): LoopNode {
-  return { type: "Emit", tuple };
+export function emit(tuple: Rec): LoopNode {
+  return { type: "Emit", record: tuple };
 }

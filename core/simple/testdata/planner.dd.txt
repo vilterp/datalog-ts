@@ -1,0 +1,213 @@
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInBodyTerm{scopeID: I, name: N, span: S, kind: K} |
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varFact{scopeID: I, name: N, span: S, kind: K}.
+----
+application/json
+{
+  "type": "Block",
+  "elements": [
+    {
+      "type": "Loop",
+      "loopVar": "record0",
+      "relation": {
+        "relationName": "scope.varRuleInvocation",
+        "arguments": [],
+        "indexLookup": null
+      },
+      "inner": {
+        "type": "Emit",
+        "record": {
+          "type": "Record",
+          "relation": "scope.Var",
+          "attrs": {
+            "scopeID": {
+              "type": "Var",
+              "name": "I"
+            },
+            "name": {
+              "type": "Var",
+              "name": "N"
+            },
+            "span": {
+              "type": "Var",
+              "name": "S"
+            },
+            "kind": {
+              "type": "Var",
+              "name": "K"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Loop",
+      "loopVar": "record1",
+      "relation": {
+        "relationName": "scope.varInBodyTerm",
+        "arguments": [],
+        "indexLookup": null
+      },
+      "inner": {
+        "type": "Emit",
+        "record": {
+          "type": "Record",
+          "relation": "scope.Var",
+          "attrs": {
+            "scopeID": {
+              "type": "Var",
+              "name": "I"
+            },
+            "name": {
+              "type": "Var",
+              "name": "N"
+            },
+            "span": {
+              "type": "Var",
+              "name": "S"
+            },
+            "kind": {
+              "type": "Var",
+              "name": "K"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Loop",
+      "loopVar": "record2",
+      "relation": {
+        "relationName": "scope.varAttr",
+        "arguments": [],
+        "indexLookup": null
+      },
+      "inner": {
+        "type": "Emit",
+        "record": {
+          "type": "Record",
+          "relation": "scope.Var",
+          "attrs": {
+            "scopeID": {
+              "type": "Var",
+              "name": "I"
+            },
+            "name": {
+              "type": "Var",
+              "name": "N"
+            },
+            "span": {
+              "type": "Var",
+              "name": "S"
+            },
+            "kind": {
+              "type": "Var",
+              "name": "K"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Loop",
+      "loopVar": "record3",
+      "relation": {
+        "relationName": "scope.varFact",
+        "arguments": [],
+        "indexLookup": null
+      },
+      "inner": {
+        "type": "Emit",
+        "record": {
+          "type": "Record",
+          "relation": "scope.Var",
+          "attrs": {
+            "scopeID": {
+              "type": "Var",
+              "name": "I"
+            },
+            "name": {
+              "type": "Var",
+              "name": "N"
+            },
+            "span": {
+              "type": "Var",
+              "name": "S"
+            },
+            "kind": {
+              "type": "Var",
+              "name": "K"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+
+scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
+  scope.ruleBodyTerm{termOrRecord: RecordID} &
+  ast.record{id: RecordID} &
+  ast.ident{parentID: RecordID, text: N, span: S}.
+----
+application/json
+{
+  "type": "Block",
+  "elements": [
+    {
+      "type": "Loop",
+      "loopVar": "record2",
+      "relation": {
+        "relationName": "ast.ident",
+        "arguments": [],
+        "indexLookup": null
+      },
+      "inner": {
+        "type": "Loop",
+        "loopVar": "record1",
+        "relation": {
+          "relationName": "ast.record",
+          "arguments": [],
+          "indexLookup": null
+        },
+        "inner": {
+          "type": "Loop",
+          "loopVar": "record0",
+          "relation": {
+            "relationName": "scope.ruleBodyTerm",
+            "arguments": [],
+            "indexLookup": null
+          },
+          "inner": {
+            "type": "Emit",
+            "record": {
+              "type": "Record",
+              "relation": "scope.varRuleInvocation",
+              "attrs": {
+                "scopeID": {
+                  "type": "Record",
+                  "relation": "global",
+                  "attrs": {}
+                },
+                "name": {
+                  "type": "Var",
+                  "name": "N"
+                },
+                "span": {
+                  "type": "Var",
+                  "name": "S"
+                },
+                "kind": {
+                  "type": "StringLit",
+                  "val": "relation"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
