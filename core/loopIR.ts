@@ -6,8 +6,9 @@ type IRNode =
       inner: IRNode;
     }
   | { type: "If"; cond: ScalarExpr }
-  | { type: "Emit" };
+  | { type: "Emit"; tuple: { [key: string]: ScalarExpr } };
 
+// TODO: distinguish between base and derived relations?
 type RelExpr = { relationName: string; arguments: ScalarExpr[] };
 
 type ScalarExpr =
