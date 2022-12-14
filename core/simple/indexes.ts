@@ -1,4 +1,5 @@
 import { List } from "immutable";
+import { DefaultDict } from "../../util/defaultDict";
 import { baseFactTrace, Bindings, Rec, Res } from "../types";
 import { unify } from "../unify";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
@@ -39,6 +40,23 @@ export function getForScope(
   return out;
 }
 
+const emptyIndexStats = () => ({
+  sequentialScans: 0,
+  indexHits: 0,
+  detailedIndexStats: new DefaultDict<number>(() => 0),
+  detailedSequentialScans: new DefaultDict<number>(() => 0),
+});
+
+let indexStats = emptyIndexStats();
+
+export function clearIndexStats() {
+  indexStats = emptyIndexStats();
+}
+
+export function getIndexStats() {
+  return indexStats;
+}
+
 function getFromIndex(
   collection: LazyIndexedCollection,
   scope: Bindings,
@@ -71,6 +89,8 @@ function getFromIndex(
       //   val: ppt(scopeVal),
       //   res: collection.get(attr, scopeVal).map(ppt).toArray(),
       // });
+      indexStats.indexHits++;
+      indexStats.detailedIndexStats.update(attr, (n) => n + 1);
       return collection.get(attr, scopeVal);
     }
     if (val.type === "Record") {
@@ -80,7 +100,10 @@ function getFromIndex(
       continue;
     }
     // console.log("chose index from attr", attr);
+    indexStats.indexHits++;
     return collection.get(attr, val);
   }
+  indexStats.sequentialScans++;
+  indexStats.detailedSequentialScans.update(rec.relation, (n) => n + 1);
   return collection.all();
 }
