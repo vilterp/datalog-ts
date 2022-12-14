@@ -23,4 +23,8 @@ export class DefaultDict<V> {
   put(key: string, value: V) {
     this.items.set(key, value);
   }
+
+  update(key: string, updater: (v: V) => V) {
+    this.put(key, updater(this.get(key)));
+  }
 }
