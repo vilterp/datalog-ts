@@ -16,7 +16,7 @@ export function getForScope(
   //   scope: ppb(scope),
   //   res: records.toArray().map(ppt),
   // });
-  for (const rec of records.toArray()) {
+  for (const rec of records) {
     const unifyRes = unify(scope, original, rec);
     // console.log("scan", {
     //   scope: ppb(scope),
