@@ -5,7 +5,7 @@ export function plan(rule: Rule): LoopNode {
   let loopVar = 0;
   return block(
     rule.body.disjuncts.map((disjunct) =>
-      disjunct.conjuncts.reduce(
+      disjunct.conjuncts.reduceRight(
         (accum, conjunct) =>
           loop(
             `record${loopVar++}`,

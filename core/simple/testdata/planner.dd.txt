@@ -160,7 +160,7 @@ application/json
       "type": "Loop",
       "loopVar": "record2",
       "relation": {
-        "relationName": "ast.ident",
+        "relationName": "scope.ruleBodyTerm",
         "arguments": [],
         "indexLookup": null
       },
@@ -176,7 +176,7 @@ application/json
           "type": "Loop",
           "loopVar": "record0",
           "relation": {
-            "relationName": "scope.ruleBodyTerm",
+            "relationName": "ast.ident",
             "arguments": [],
             "indexLookup": null
           },
