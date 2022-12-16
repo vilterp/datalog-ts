@@ -3,7 +3,7 @@ import { runDDTestAtPath } from "../../util/ddTest";
 import { jsonOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
 import { parserRuleToInternal } from "../translateAST";
-import { plan } from "./planner";
+import { plan } from "./loopIR/planner";
 
 export function plannerTests(writeResults: boolean): Suite {
   return [

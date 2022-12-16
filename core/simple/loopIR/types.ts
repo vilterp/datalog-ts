@@ -1,4 +1,4 @@
-import { Rec } from "../types";
+import { Rec } from "../../types";
 
 export type LoopNode =
   | {

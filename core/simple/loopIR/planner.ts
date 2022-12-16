@@ -1,5 +1,5 @@
-import { Rule } from "../types";
-import { block, emit, loop, LoopNode } from "./loopIR";
+import { Rule } from "../../types";
+import { block, emit, loop, LoopNode } from "./types";
 
 export function plan(rule: Rule): LoopNode {
   let loopVar = 0;
