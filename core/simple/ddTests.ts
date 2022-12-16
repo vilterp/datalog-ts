@@ -11,7 +11,7 @@ export function plannerTests(writeResults: boolean): Suite {
       name: "Planner",
       test() {
         runDDTestAtPath(
-          "core/simple/testdata/planner.dd.txt",
+          "core/simple/loopIR/testdata/planner.dd.txt",
           testPlanner,
           writeResults
         );
