@@ -23,4 +23,12 @@ export class DefaultDict<V> {
   put(key: string, value: V) {
     this.items.set(key, value);
   }
+
+  toJSON(): { [key: string]: V } {
+    const out: { [key: string]: V } = {};
+    this.items.forEach((value, key) => {
+      out[key] = value;
+    });
+    return out;
+  }
 }

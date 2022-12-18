@@ -6,12 +6,10 @@ import {
 import { DefaultDict } from "../../util/defaultDict";
 import { Rule, Term } from "../types";
 
-// TODO: top sort SCCs
-
-function getSCCs(
-  rules: { [name: string]: Rule },
+export function getTopologicallyOrderedSCCs(
+  rules: Rule[],
   tables: string[]
-): { sccs: DefaultDict<string[]>; order: number[] } {
+): { sccs: { [key: string]: string[] }; order: number[] } {
   // get SCCs
   const { graph, index } = buildGraph(rules, tables);
   const sccs = new StronglyConnectedComponents(graph);
@@ -33,17 +31,14 @@ function getSCCs(
   }
   const topSort = new TopologicalSort(condensation);
   const order = topSort.order();
-  return { sccs: components, order };
+  return { sccs: components.toJSON(), order };
 }
 
 type GraphWithIndex = { graph: DiGraph; index: NameToIdx };
 
 type NameToIdx = { [name: string]: number };
 
-function buildGraph(
-  rules: { [name: string]: Rule },
-  tables: string[]
-): GraphWithIndex {
+function buildGraph(rules: Rule[], tables: string[]): GraphWithIndex {
   // build index
   const nameToIndex: NameToIdx = {};
   const ruleNames = Object.keys(rules);
@@ -53,8 +48,8 @@ function buildGraph(
   });
   // build graph
   const graph = new DiGraph(relationNames.length);
-  for (const [ruleName, rule] of Object.entries(rules)) {
-    const fromIdx = nameToIndex[ruleName];
+  for (const rule of rules) {
+    const fromIdx = nameToIndex[rule.head.relation];
     getReferences(rule).forEach((ruleRef) => {
       const toIdx = nameToIndex[ruleRef];
       graph.addEdge(fromIdx, toIdx);

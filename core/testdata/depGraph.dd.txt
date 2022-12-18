@@ -1,0 +1,6 @@
+.table usage
+.table definition
+tc.undefinedVar{name: V} :-
+  usage{name: V} &
+  !definition{name: V}.
+----

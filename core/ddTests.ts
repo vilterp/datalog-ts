@@ -10,6 +10,8 @@ import { traceToGraph } from "./traceGraph";
 import { prettyPrintGraph } from "../util/graphviz";
 import { parseMain } from "../languageWorkbench/languages/dl/parser";
 import { parserStatementToInternal } from "./translateAST";
+import { nullLoader } from "./loaders";
+import { getTopologicallyOrderedSCCs } from "./simple/depgraph";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -92,10 +94,20 @@ export function coreTestsCommon(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "depGraph",
+      test() {
+        runDDTestAtPath(
+          "core/testdata/depGraph.dd.txt",
+          depGraphTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
-export function putThroughInterp(
+function putThroughInterp(
   test: string[],
   getInterp: () => AbstractInterpreter
 ): TestOutput[] {
@@ -134,5 +146,17 @@ function traceGraphTest(test: string[]): TestOutput[] {
         })
         .join("\n")
     );
+  });
+}
+
+function depGraphTest(inputs: string[]): TestOutput[] {
+  return inputs.map((input) => {
+    let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
+    interp = interp.evalStr(input)[1];
+    const res = getTopologicallyOrderedSCCs(
+      interp.getRules(),
+      interp.getTables()
+    );
+    return jsonOut(res);
   });
 }
