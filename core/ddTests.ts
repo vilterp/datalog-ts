@@ -12,6 +12,7 @@ import { parseMain } from "../languageWorkbench/languages/dl/parser";
 import { parserStatementToInternal } from "./translateAST";
 import { nullLoader } from "./loaders";
 import { getTopologicallyOrderedSCCs } from "./simple/depgraph";
+import { pairsToObj } from "../util/util";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -154,7 +155,11 @@ function depGraphTest(inputs: string[]): TestOutput[] {
     let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
     interp = interp.evalStr(input)[1];
     const res = getTopologicallyOrderedSCCs(
-      interp.getRules(),
+      pairsToObj(
+        interp
+          .getRules()
+          .map((rule) => ({ key: rule.head.relation, value: rule }))
+      ),
       interp.getTables()
     );
     return jsonOut(res);

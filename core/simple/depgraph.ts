@@ -7,7 +7,7 @@ import { DefaultDict } from "../../util/defaultDict";
 import { Rule, Term } from "../types";
 
 export function getTopologicallyOrderedSCCs(
-  rules: Rule[],
+  rules: { [name: string]: Rule },
   tables: string[]
 ): { sccs: { [key: string]: string[] }; order: number[] } {
   // get SCCs
@@ -16,8 +16,7 @@ export function getTopologicallyOrderedSCCs(
   // build condensation graph and recover rule names for SCCs
   const components = new DefaultDict<string[]>(() => []);
   const condensation = new DiGraph(sccs.componentCount());
-  for (const rule of rules) {
-    const ruleName = rule.head.relation;
+  for (const [ruleName, rule] of Object.entries(rules)) {
     const ruleIdx = index[ruleName];
     const componentID = sccs.componentId(ruleIdx);
     components.get(componentID.toString()).push(ruleName);
@@ -39,18 +38,20 @@ type GraphWithIndex = { graph: DiGraph; index: NameToIdx };
 
 type NameToIdx = { [name: string]: number };
 
-function buildGraph(rules: Rule[], tables: string[]): GraphWithIndex {
+function buildGraph(
+  rules: { [name: string]: Rule },
+  tables: string[]
+): GraphWithIndex {
   // build index
   const nameToIndex: NameToIdx = {};
-  const relationNames = [...rules.map((rule) => rule.head.relation), ...tables];
+  const relationNames = [...Object.keys(rules), ...tables];
   relationNames.forEach((name, idx) => {
     nameToIndex[name] = idx;
   });
   // build graph
   const graph = new DiGraph(relationNames.length);
   console.log("graph size:", graph.V, "index", nameToIndex);
-  for (const rule of rules) {
-    const ruleName = rule.head.relation;
+  for (const [ruleName, rule] of Object.entries(rules)) {
     const fromIdx = nameToIndex[ruleName];
     getReferences(rule).forEach((ruleRef) => {
       const toIdx = nameToIndex[ruleRef];
