@@ -66,6 +66,7 @@
     "classnames": "^2.3.1",
     "denque": "^2.0.1",
     "immutable": "^4.0.0-rc.12",
+    "js-graph-algorithms": "^1.0.18",
     "monaco-editor": "^0.33.0",
     "path-browserify": "^1.0.1",
     "prettier-printer": "^1.1.4",
