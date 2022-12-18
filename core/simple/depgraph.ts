@@ -1,4 +1,8 @@
-import { DiGraph, StronglyConnectedComponents } from "js-graph-algorithms";
+import {
+  DiGraph,
+  StronglyConnectedComponents,
+  TopologicalSort,
+} from "js-graph-algorithms";
 import { DefaultDict } from "../../util/defaultDict";
 import { Rule, Term } from "../types";
 
@@ -7,16 +11,29 @@ import { Rule, Term } from "../types";
 function getSCCs(
   rules: { [name: string]: Rule },
   tables: string[]
-): DefaultDict<string[]> {
+): { sccs: DefaultDict<string[]>; order: number[] } {
+  // get SCCs
   const { graph, index } = buildGraph(rules, tables);
   const sccs = new StronglyConnectedComponents(graph);
+  // build condensation graph and recover rule names for SCCs
   const components = new DefaultDict<string[]>(() => []);
+  const condensation = new DiGraph(sccs.componentCount());
   for (const ruleName in index) {
     const ruleIdx = index[ruleName];
     const componentID = sccs.componentId(ruleIdx);
     components.get(componentID.toString()).push(ruleName);
+    const references = getReferences(rules[ruleName]);
+    references.forEach((target) => {
+      const from = index[ruleName];
+      const to = index[target];
+      const fromComponent = sccs.componentId(from);
+      const toComponent = sccs.componentId(to);
+      condensation.addEdge(fromComponent, toComponent);
+    });
   }
-  return components;
+  const topSort = new TopologicalSort(condensation);
+  const order = topSort.order();
+  return { sccs: components, order };
 }
 
 type GraphWithIndex = { graph: DiGraph; index: NameToIdx };
@@ -27,11 +44,14 @@ function buildGraph(
   rules: { [name: string]: Rule },
   tables: string[]
 ): GraphWithIndex {
+  // build index
   const nameToIndex: NameToIdx = {};
-  const relationNames = [...Object.keys(rules), ...tables];
+  const ruleNames = Object.keys(rules);
+  const relationNames = [...ruleNames, ...tables];
   relationNames.forEach((name, idx) => {
     nameToIndex[name] = idx;
   });
+  // build graph
   const graph = new DiGraph(relationNames.length);
   for (const [ruleName, rule] of Object.entries(rules)) {
     const fromIdx = nameToIndex[ruleName];
