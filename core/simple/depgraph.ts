@@ -16,11 +16,12 @@ export function getTopologicallyOrderedSCCs(
   // build condensation graph and recover rule names for SCCs
   const components = new DefaultDict<string[]>(() => []);
   const condensation = new DiGraph(sccs.componentCount());
-  for (const ruleName in index) {
+  for (const rule of rules) {
+    const ruleName = rule.head.relation;
     const ruleIdx = index[ruleName];
     const componentID = sccs.componentId(ruleIdx);
     components.get(componentID.toString()).push(ruleName);
-    const references = getReferences(rules[ruleName]);
+    const references = getReferences(rule);
     references.forEach((target) => {
       const from = index[ruleName];
       const to = index[target];
@@ -41,17 +42,19 @@ type NameToIdx = { [name: string]: number };
 function buildGraph(rules: Rule[], tables: string[]): GraphWithIndex {
   // build index
   const nameToIndex: NameToIdx = {};
-  const ruleNames = Object.keys(rules);
-  const relationNames = [...ruleNames, ...tables];
+  const relationNames = [...rules.map((rule) => rule.head.relation), ...tables];
   relationNames.forEach((name, idx) => {
     nameToIndex[name] = idx;
   });
   // build graph
   const graph = new DiGraph(relationNames.length);
+  console.log("graph size:", graph.V, "index", nameToIndex);
   for (const rule of rules) {
-    const fromIdx = nameToIndex[rule.head.relation];
+    const ruleName = rule.head.relation;
+    const fromIdx = nameToIndex[ruleName];
     getReferences(rule).forEach((ruleRef) => {
       const toIdx = nameToIndex[ruleRef];
+      console.log("add edge", { ruleName, ruleRef, fromIdx, toIdx });
       graph.addEdge(fromIdx, toIdx);
     });
   }
