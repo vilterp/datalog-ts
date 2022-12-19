@@ -16,3 +16,19 @@ application/json
     "definition"
   ]
 ]
+
+.table edge
+reachable{from: A, to: C} :-
+  edge{from: A, to: C} |
+  edge{from: A, to: B} &
+  reachable{from: B, to: C}.
+----
+application/json
+[
+  [
+    "reachable"
+  ],
+  [
+    "edge"
+  ]
+]
