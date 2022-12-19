@@ -5,15 +5,14 @@ tc.undefinedVar{name: V} :-
   !definition{name: V}.
 ----
 application/json
-{
-  "sccs": {
-    "2": [
-      "tc.undefinedVar"
-    ]
-  },
-  "order": [
-    2,
-    1,
-    0
+[
+  [
+    "tc.undefinedVar"
+  ],
+  [
+    "usage"
+  ],
+  [
+    "definition"
   ]
-}
+]

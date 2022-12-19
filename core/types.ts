@@ -12,6 +12,8 @@ export type Relation =
   | { type: "Table"; name: string }
   | { type: "Rule"; name: string; rule: Rule };
 
+export type Definitions = { [name: string]: Relation };
+
 // === Results ===
 
 export interface Res {

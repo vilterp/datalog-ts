@@ -1,4 +1,4 @@
-import { Rec, Relation, Res, Rule, Statement } from "./types";
+import { Definitions, Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
 import {
   DLMain,
@@ -85,6 +85,18 @@ export abstract class AbstractInterpreter {
       const [_, newInterp] = out.evalStmt(parserStatementToInternal(stmt));
       out = newInterp;
     }
+    return out;
+  }
+
+  getRelations(): Definitions {
+    const out: Definitions = {};
+    this.getTables().forEach((name) => {
+      out[name] = { type: "Table", name };
+    });
+    this.getRules().forEach((rule) => {
+      const name = rule.head.relation;
+      out[name] = { type: "Rule", rule, name };
+    });
     return out;
   }
 

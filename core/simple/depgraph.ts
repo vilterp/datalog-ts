@@ -4,9 +4,7 @@ import {
   TopologicalSort,
 } from "js-graph-algorithms";
 import { DefaultDict } from "../../util/defaultDict";
-import { Relation, Rule, Term } from "../types";
-
-export type Definitions = { [name: string]: Relation };
+import { Definitions, Rule, Term } from "../types";
 
 export type StratifiedDefinitions = Definitions[];
 
@@ -17,12 +15,12 @@ export function getTopologicallyOrderedSCCs(
   const { graph, index } = buildGraph(definitions);
   const sccs = new StronglyConnectedComponents(graph);
   // build condensation graph and recover rule names for SCCs
-  const components = new DefaultDict<string[]>(() => []);
+  const components = new DefaultDict<Definitions>(() => ({}));
   const condensation = new DiGraph(sccs.componentCount());
   for (const [relName, rel] of Object.entries(definitions)) {
     const ruleIdx = index[relName];
     const componentID = sccs.componentId(ruleIdx);
-    components.get(componentID.toString()).push(relName);
+    components.get(componentID.toString())[relName] = rel;
     if (rel.type === "Rule") {
       const references = getReferences(rel.rule);
       references.forEach((target) => {
@@ -36,11 +34,7 @@ export function getTopologicallyOrderedSCCs(
   }
   const topSort = new TopologicalSort(condensation);
   const order = topSort.order();
-  return order.map((componentID) =>
-    components
-      .get(componentID.toString())
-      .map((relName) => definitions[relName])
-  );
+  return order.map((componentID) => components.get(componentID.toString()));
 }
 
 type GraphWithIndex = { graph: DiGraph; index: NameToIdx };
