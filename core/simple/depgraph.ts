@@ -62,8 +62,8 @@ function buildGraph(definitions: Definitions): GraphWithIndex {
   return { graph, index: nameToIndex };
 }
 
-function getReferences(rule: Rule): string[] {
-  const out: string[] = [];
+function getReferences(rule: Rule): Set<string> {
+  const out = new Set<string>();
   rule.body.disjuncts.forEach((disjunct) => {
     disjunct.conjuncts.forEach((conjunct) => {
       switch (conjunct.type) {
@@ -82,8 +82,8 @@ function getReferences(rule: Rule): string[] {
   return out;
 }
 
-function addTerm(references: string[], term: Term) {
+function addTerm(references: Set<string>, term: Term) {
   if (term.type === "Record") {
-    references.push(term.relation);
+    references.add(term.relation);
   }
 }
