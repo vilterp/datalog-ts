@@ -4,60 +4,66 @@ import {
   TopologicalSort,
 } from "js-graph-algorithms";
 import { DefaultDict } from "../../util/defaultDict";
-import { Rule, Term } from "../types";
+import { Relation, Rule, Term } from "../types";
+
+export type Definitions = { [name: string]: Relation };
+
+export type StratifiedDefinitions = Definitions[];
 
 export function getTopologicallyOrderedSCCs(
-  rules: { [name: string]: Rule },
-  tables: string[]
-): { sccs: { [key: string]: string[] }; order: number[] } {
+  definitions: Definitions
+): StratifiedDefinitions {
   // get SCCs
-  const { graph, index } = buildGraph(rules, tables);
+  const { graph, index } = buildGraph(definitions);
   const sccs = new StronglyConnectedComponents(graph);
   // build condensation graph and recover rule names for SCCs
   const components = new DefaultDict<string[]>(() => []);
   const condensation = new DiGraph(sccs.componentCount());
-  for (const [ruleName, rule] of Object.entries(rules)) {
-    const ruleIdx = index[ruleName];
+  for (const [relName, rel] of Object.entries(definitions)) {
+    const ruleIdx = index[relName];
     const componentID = sccs.componentId(ruleIdx);
-    components.get(componentID.toString()).push(ruleName);
-    const references = getReferences(rule);
-    references.forEach((target) => {
-      const from = index[ruleName];
-      const to = index[target];
-      const fromComponent = sccs.componentId(from);
-      const toComponent = sccs.componentId(to);
-      condensation.addEdge(fromComponent, toComponent);
-    });
+    components.get(componentID.toString()).push(relName);
+    if (rel.type === "Rule") {
+      const references = getReferences(rel.rule);
+      references.forEach((target) => {
+        const from = index[relName];
+        const to = index[target];
+        const fromComponent = sccs.componentId(from);
+        const toComponent = sccs.componentId(to);
+        condensation.addEdge(fromComponent, toComponent);
+      });
+    }
   }
   const topSort = new TopologicalSort(condensation);
   const order = topSort.order();
-  return { sccs: components.toJSON(), order };
+  return order.map((componentID) =>
+    components
+      .get(componentID.toString())
+      .map((relName) => definitions[relName])
+  );
 }
 
 type GraphWithIndex = { graph: DiGraph; index: NameToIdx };
 
 type NameToIdx = { [name: string]: number };
 
-function buildGraph(
-  rules: { [name: string]: Rule },
-  tables: string[]
-): GraphWithIndex {
+function buildGraph(definitions: Definitions): GraphWithIndex {
   // build index
   const nameToIndex: NameToIdx = {};
-  const relationNames = [...Object.keys(rules), ...tables];
+  const relationNames = Object.keys(definitions);
   relationNames.forEach((name, idx) => {
     nameToIndex[name] = idx;
   });
   // build graph
   const graph = new DiGraph(relationNames.length);
-  console.log("graph size:", graph.V, "index", nameToIndex);
-  for (const [ruleName, rule] of Object.entries(rules)) {
-    const fromIdx = nameToIndex[ruleName];
-    getReferences(rule).forEach((ruleRef) => {
-      const toIdx = nameToIndex[ruleRef];
-      console.log("add edge", { ruleName, ruleRef, fromIdx, toIdx });
-      graph.addEdge(fromIdx, toIdx);
-    });
+  for (const [relName, rel] of Object.entries(definitions)) {
+    const fromIdx = nameToIndex[relName];
+    if (rel.type === "Rule") {
+      getReferences(rel.rule).forEach((ruleRef) => {
+        const toIdx = nameToIndex[ruleRef];
+        graph.addEdge(fromIdx, toIdx);
+      });
+    }
   }
   return { graph, index: nameToIndex };
 }
