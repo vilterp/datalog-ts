@@ -1,21 +1,9 @@
-import {
-  ack,
-  EmissionLogAndGraph,
-  emptyRuleGraph,
-  Output,
-  RuleGraph,
-} from "./types";
+import { ack, emptyRuleGraph, Output, RuleGraph } from "./types";
 import { baseFactTrace, Res, Rule, Statement } from "../types";
-import { doQuery, EmissionLog, insertFact } from "./eval";
-import { ppb, ppr } from "../pretty";
+import { doQuery, insertFact } from "./eval";
 import { Loader } from "../loaders";
-import {
-  datalogOut,
-  datalogOutResults,
-  TestOutput,
-} from "../../util/ddTest/types";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { filterMap, flatMap } from "../../util/util";
+import { filterMap } from "../../util/util";
 import {
   addFact,
   addRule,
