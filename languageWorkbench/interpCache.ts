@@ -1,5 +1,4 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { SimpleInterpreter } from "../core/simple/interpreter";
 import { LanguageSpec } from "./languages";
 import { parseMain } from "./languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
