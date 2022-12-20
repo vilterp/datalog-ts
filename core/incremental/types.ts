@@ -1,12 +1,13 @@
 import { Rec, VarMappings, Rule, Res } from "../types";
 import { EmissionLog } from "./eval";
-import { List, Map } from "immutable";
+import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
 export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
+  builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
 };
@@ -52,6 +53,7 @@ export type NodeDesc =
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
+  builtins: Set(),
   nodes: Map(),
   edges: Map(),
 };

@@ -14,6 +14,7 @@ import { emptyIndexedCollection } from "../../util/indexedCollection";
 import { fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
+import { node } from "../../util/tree";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
   const entries = Object.entries(catalog);
@@ -304,17 +305,20 @@ function addNode(
   isInternal: boolean,
   desc: NodeDesc
 ): [RuleGraph, NodeID] {
+  const nodeID = graph.nextNodeID.toString();
   return [
     {
       ...graph,
       nextNodeID: graph.nextNodeID + 1,
-      nodes: graph.nodes.set(graph.nextNodeID.toString(), {
+      builtins:
+        desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins,
+      nodes: graph.nodes.set(nodeID, {
         desc,
         cache: emptyIndexedCollection(),
         isInternal,
       }),
     },
-    `${graph.nextNodeID}`,
+    nodeID,
   ];
 }
 
