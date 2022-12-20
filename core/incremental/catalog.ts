@@ -1,4 +1,5 @@
 import { List } from "immutable";
+import { ppt } from "../pretty";
 import { Rec, Rule } from "../types";
 
 export type Catalog = {
@@ -20,16 +21,17 @@ export function addRule(catalog: Catalog, rule: Rule): Catalog {
 }
 
 export function addFact(catalog: Catalog, fact: Rec): Catalog {
-  const table: TableEntry = catalog.tables[fact.relation] || {
+  const existing = catalog[fact.relation];
+  if (existing.type === "Rule") {
+    throw new Error(`trying to add fact ${ppt(fact)} but that's a rule`);
+  }
+  const table: TableEntry = existing || {
     type: "Table",
     records: List(),
   };
   return {
     ...catalog,
-    tables: {
-      ...catalog.tables,
-      // TODO: what's the complexity of this?
-      [fact.relation]: { ...table, records: table.records.push(fact) },
-    },
+    // TODO: what's the complexity of this?
+    [fact.relation]: { ...table, records: table.records.push(fact) },
   };
 }
