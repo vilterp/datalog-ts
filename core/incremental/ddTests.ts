@@ -73,7 +73,7 @@ function buildTest(test: string[]): TestOutput[] {
   });
 }
 
-export function evalTest(inputs: string[]): TestOutput[] {
+function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
   let interp = new IncrementalInterpreter(".", fsLoader);
   for (let input of inputs) {
