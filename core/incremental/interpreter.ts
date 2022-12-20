@@ -109,6 +109,10 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             replayFacts(buildGraph(this.catalog), this.catalog)
           );
         }
+        console.log("graph", {
+          nodes: newInterp.graph.nodes.toJSON(),
+          edges: newInterp.graph.edges.toJSON(),
+        });
         return {
           newInterp,
           output: {
