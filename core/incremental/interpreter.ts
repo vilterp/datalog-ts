@@ -1,7 +1,6 @@
 import { EmissionLogAndGraph, emptyRuleGraph, RuleGraph } from "./types";
 import { Rec, Res, Rule, Statement } from "../types";
-import { declareTable } from "./build";
-import { addRule, doQuery, EmissionLog, insertFact } from "./eval";
+import { doQuery, EmissionLog, insertFact } from "./eval";
 import { hasVars } from "../simple/simpleEvaluate";
 import { ppb, ppr, ppt } from "../pretty";
 import { Loader } from "../loaders";
@@ -15,6 +14,13 @@ import { AbstractInterpreter } from "../abstractInterpreter";
 import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
 import { parserTermToInternal } from "../translateAST";
 import { flatMap } from "../../util/util";
+import {
+  addFact,
+  addRule,
+  Catalog,
+  declareTable,
+  emptyCatalog,
+} from "./catalog";
 
 export type Output =
   | { type: "EmissionLog"; log: EmissionLog }
@@ -23,15 +29,20 @@ export type Output =
   | { type: "Acknowledge" };
 
 export class IncrementalInterpreter extends AbstractInterpreter {
-  graph: RuleGraph;
-  rules: Rule[];
-  tables: string[];
+  graph: RuleGraph | null; // null: invalid; needs to be recomputed
+  catalog: Catalog;
 
   // TODO: kind of don't want to expose the graph parameter on the public
   //   constructor, but there's no constructor overloading...
-  constructor(cwd: string, loader: Loader, graph: RuleGraph = emptyRuleGraph) {
+  constructor(
+    cwd: string,
+    loader: Loader,
+    catalog: Catalog = emptyCatalog,
+    graph: RuleGraph = emptyRuleGraph
+  ) {
     super(cwd, loader);
     this.graph = graph;
+    this.catalog = catalog;
   }
 
   evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
@@ -44,51 +55,65 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     output: Output;
   } {
     const interp = this;
-    const graph = interp.graph;
     switch (stmt.type) {
       case "TableDecl": {
-        const newGraph = declareTable(graph, stmt.name);
+        const newCatalog = declareTable(interp.catalog, stmt.name);
+        const newInterp = new IncrementalInterpreter(
+          this.cwd,
+          this.loader,
+          newCatalog,
+          null
+        );
         return {
-          newInterp: new IncrementalInterpreter(
-            this.cwd,
-            this.loader,
-            newGraph
-          ),
+          newInterp,
           output: ack,
         };
       }
       case "Rule": {
-        const { newGraph, emissionLog } = addRule(graph, stmt.rule);
+        // TODO: maybe adding a rule should immediately compute that rule
+        const newCatalog = addRule(interp.catalog, stmt.rule);
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
             this.loader,
-            newGraph
+            newCatalog,
+            null
           ),
-          output: { type: "EmissionLog", log: emissionLog },
+          output: ack,
         };
       }
       case "Fact": {
-        const { newGraph, emissionLog } = insertFact(graph, {
+        const { newGraph, emissionLog } = insertFact(interp.graph, {
           term: stmt.record,
           trace: { type: "BaseFactTrace" },
           bindings: {},
         });
+        const newCatalog = addFact(interp.catalog, stmt.record);
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
             this.loader,
+            newCatalog,
             newGraph
           ),
           output: { type: "EmissionLog", log: emissionLog },
         };
       }
       case "Query": {
+        let newInterp: IncrementalInterpreter = interp;
+        if (interp.graph === null) {
+          newInterp = new IncrementalInterpreter(
+            this.cwd,
+            this.loader,
+            this.catalog,
+            buildGraph(this.catalog)
+          );
+        }
         return {
-          newInterp: interp,
+          newInterp,
           output: {
             type: "QueryResults",
-            results: doQuery(graph, stmt.record),
+            results: doQuery(newInterp.graph, stmt.record),
           },
         };
       }

@@ -7,13 +7,8 @@ export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
-  tables: string[];
-  rules: Rule[];
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
-  unmappedRules: {
-    [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
-  };
 };
 
 export type NodeAndCache = {
@@ -56,12 +51,9 @@ export type NodeDesc =
   | { type: "Builtin"; rec: Rec };
 
 export const emptyRuleGraph: RuleGraph = {
-  tables: [],
-  rules: [],
   nextNodeID: 0,
   nodes: Map(),
   edges: Map(),
-  unmappedRules: {},
 };
 
 export type EmissionLogAndGraph = {
