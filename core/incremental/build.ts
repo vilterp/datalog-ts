@@ -16,14 +16,25 @@ import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
-  return Object.entries(catalog).reduce((accum, [relName, rel]) => {
+  const entries = Object.entries(catalog);
+  let graph = emptyRuleGraph;
+  graph = entries.reduce((accum, [relName, rel]) => {
+    switch (rel.type) {
+      case "Table":
+        return declareTable(accum, relName);
+      default:
+        return accum;
+    }
+  }, graph);
+  graph = entries.reduce((accum, [relName, rel]) => {
     switch (rel.type) {
       case "Rule":
         return addRule(accum, rel.rule);
-      case "Table":
-        return declareTable(accum, relName);
+      default:
+        return accum;
     }
-  }, emptyRuleGraph);
+  }, graph);
+  return graph;
 }
 
 function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
