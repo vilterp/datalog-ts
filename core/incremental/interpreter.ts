@@ -13,7 +13,7 @@ import {
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
 import { parserTermToInternal } from "../translateAST";
-import { flatMap } from "../../util/util";
+import { filterMap, flatMap } from "../../util/util";
 import {
   addFact,
   addRule,
@@ -21,6 +21,7 @@ import {
   declareTable,
   emptyCatalog,
 } from "./catalog";
+import { buildGraph } from "./build";
 
 export type Output =
   | { type: "EmissionLog"; log: EmissionLog }
@@ -133,11 +134,15 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   }
 
   getRules(): Rule[] {
-    return this.graph.rules;
+    return filterMap(Object.entries(this.catalog), ([key, val]) =>
+      val.type === "Rule" ? val.rule : null
+    );
   }
 
   getTables(): string[] {
-    return this.graph.tables;
+    return filterMap(Object.entries(this.catalog), ([key, val]) =>
+      val.type === "Table" ? key : null
+    );
   }
 }
 

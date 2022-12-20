@@ -1,20 +1,51 @@
 import { Rule, Rec, Disjunction, Conjunct, VarMappings, Res } from "../types";
-import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
-import { getMappings } from "../unify";
 import {
-  combineObjects,
-  filterObj,
-  permute,
-  setAdd,
-  setUnion,
-} from "../../util/util";
+  RuleGraph,
+  NodeDesc,
+  NodeID,
+  JoinInfo,
+  VarToPath,
+  emptyRuleGraph,
+} from "./types";
+import { combineObjects, permute, setAdd, setUnion } from "../../util/util";
 import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "../../util/indexedCollection";
 import { fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
+import { Catalog } from "./catalog";
 
-export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
+export function buildGraph(catalog: Catalog): RuleGraph {
+  return Object.entries(catalog).reduce((accum, [relName, rel]) => {
+    switch (rel.type) {
+      case "Rule":
+        return addRule(accum, rel.rule);
+      case "Table":
+        return declareTable(accum, relName);
+    }
+  }, emptyRuleGraph);
+}
+
+function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
+  const withOr = addOr(graph, rule.body).newGraph;
+  const withSubst = addNodeKnownID(rule.head.relation, withOr, false, {
+    type: "Substitute",
+    rec: rule.head,
+  });
+  return withSubst;
+}
+
+function declareTable(graph: RuleGraph, name: string): RuleGraph {
+  if (graph.nodes.has(name)) {
+    return graph;
+  }
+  const withNode = addNodeKnownID(name, graph, false, {
+    type: "BaseFactTable",
+  });
+  return withNode;
+}
+
+function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   const leftVars = getVarToPath(left);
   const rightVars = getVarToPath(right);
   return {
@@ -48,18 +79,14 @@ function getVarToPath(rec: Rec): VarToPath {
 }
 
 // TODO: put RuleGraph back into this
-export type AddResult = {
+type AddResult = {
   newGraph: RuleGraph;
   newNodeIDs: Set<NodeID>;
   rec: Rec;
   tipID: NodeID;
 };
 
-export function addOr(
-  graph: RuleGraph,
-  ruleName: string,
-  or: Disjunction
-): AddResult {
+function addOr(graph: RuleGraph, or: Disjunction): AddResult {
   if (or.disjuncts.length === 1) {
     return addAnd(graph, or.disjuncts[0].conjuncts);
   }
@@ -307,30 +334,6 @@ function updateMappings(
           ? { ...node.desc, mappings: newMappings }
           : node.desc,
     })),
-  };
-}
-
-export function addUnmappedRule(
-  graph: RuleGraph,
-  rule: Rule,
-  newNodeIDs: Set<NodeID>
-): RuleGraph {
-  return {
-    ...graph,
-    unmappedRules: {
-      ...graph.unmappedRules,
-      [rule.head.relation]: { rule, newNodeIDs },
-    },
-  };
-}
-
-function removeUnmappedRule(graph: RuleGraph, ruleName: string): RuleGraph {
-  return {
-    ...graph,
-    unmappedRules: filterObj(
-      graph.unmappedRules,
-      (name: string) => name !== ruleName
-    ),
   };
 }
 
