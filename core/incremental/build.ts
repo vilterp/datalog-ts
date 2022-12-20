@@ -45,7 +45,7 @@ function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return withNode;
 }
 
-function getJoinInfo(left: Rec, right: Rec): JoinInfo {
+export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
   const leftVars = getVarToPath(left);
   const rightVars = getVarToPath(right);
   return {

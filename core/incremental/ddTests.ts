@@ -1,7 +1,6 @@
 import { toGraphviz } from "./graphviz";
 import { Rec, Statement } from "../types";
 import { formatOutput, IncrementalInterpreter } from "./interpreter";
-import { getJoinInfo } from "./build";
 import { fsLoader } from "../fsLoader";
 import { Suite } from "../../util/testBench/testing";
 import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
@@ -15,6 +14,7 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "../translateAST";
+import { getJoinInfo } from "./build";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
