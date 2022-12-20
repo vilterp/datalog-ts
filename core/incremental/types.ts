@@ -64,6 +64,8 @@ export type Output =
   | { type: "QueryResults"; results: Res[] }
   | { type: "Acknowledge" };
 
+export const ack: Output = { type: "Acknowledge" };
+
 export type EmissionLogAndGraph = {
   graph: RuleGraph;
   log: EmissionLog;

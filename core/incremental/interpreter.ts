@@ -1,4 +1,5 @@
 import {
+  ack,
   EmissionLogAndGraph,
   emptyRuleGraph,
   Output,
@@ -150,5 +151,3 @@ function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
     );
   }, ruleGraph);
 }
-
-const ack: Output = { type: "Acknowledge" };
