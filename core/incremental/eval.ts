@@ -36,25 +36,12 @@ function getInsertionIterator(graph: RuleGraph, res: Res): InsertionIterator {
       destination: (res.term as Rec).relation,
     },
   ];
-  return { graph, queue: new Denque(queue), mode: { type: "Playing" } };
-}
-
-function getReplayIterator(
-  graph: RuleGraph,
-  newNodeIDs: Set<NodeID>,
-  queue: Insertion[]
-): InsertionIterator {
-  return {
-    graph,
-    queue: new Denque(queue),
-    mode: { type: "Replaying", newNodeIDs },
-  };
+  return { graph, queue: new Denque(queue) };
 }
 
 type InsertionIterator = {
   graph: RuleGraph;
   queue: Denque<Insertion>;
-  mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
 
 const MAX_QUEUE_SIZE = 10000;
@@ -83,9 +70,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
   const results = processInsertion(iter.graph, insertingNow);
   // console.log("push", results);
   for (let result of results) {
-    if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
-      newGraph = addToCache(newGraph, curNodeID, result);
-    }
+    newGraph = addToCache(newGraph, curNodeID, result);
     for (let destination of newGraph.edges.get(curNodeID) || []) {
       iter.queue.push({
         destination,
