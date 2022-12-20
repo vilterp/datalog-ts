@@ -21,7 +21,10 @@ export function addRule(catalog: Catalog, rule: Rule): Catalog {
 }
 
 export function addFact(catalog: Catalog, fact: Rec): Catalog {
-  const existing = catalog[fact.relation];
+  let existing = catalog[fact.relation];
+  if (!existing) {
+    existing = { type: "Table", records: List() };
+  }
   if (existing.type === "Rule") {
     throw new Error(`trying to add fact ${ppt(fact)} but that's a rule`);
   }

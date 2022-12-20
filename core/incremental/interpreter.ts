@@ -26,7 +26,7 @@ export type Output =
   | { type: "Acknowledge" };
 
 export class IncrementalInterpreter extends AbstractInterpreter {
-  graph: RuleGraph;
+  graph: RuleGraph | null;
   catalog: Catalog;
 
   // TODO: kind of don't want to expose the graph parameter on the public
@@ -55,14 +55,11 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     switch (stmt.type) {
       case "TableDecl": {
         const newCatalog = declareTable(interp.catalog, stmt.name);
-        // rebuild graph from scratch
-        let graph = buildGraph(newCatalog);
-        graph = replayFacts(graph, newCatalog);
         const newInterp = new IncrementalInterpreter(
           this.cwd,
           this.loader,
           newCatalog,
-          graph
+          null
         );
         return {
           newInterp,
@@ -71,25 +68,26 @@ export class IncrementalInterpreter extends AbstractInterpreter {
       }
       case "Rule": {
         const newCatalog = addRule(interp.catalog, stmt.rule);
-        // rebuild graph from scratch
-        let graph = buildGraph(newCatalog);
-        graph = replayFacts(graph, newCatalog);
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
             this.loader,
             newCatalog,
-            graph
+            null
           ),
           output: ack,
         };
       }
       case "Fact": {
-        const { newGraph, emissionLog } = insertFact(interp.graph, {
-          term: stmt.record,
-          trace: { type: "BaseFactTrace" },
-          bindings: {},
-        });
+        let newGraph = this.graph;
+        if (this.graph !== null) {
+          const res = insertFact(interp.graph, {
+            term: stmt.record,
+            trace: { type: "BaseFactTrace" },
+            bindings: {},
+          });
+          newGraph = res.newGraph;
+        }
         const newCatalog = addFact(interp.catalog, stmt.record);
         return {
           newInterp: new IncrementalInterpreter(
@@ -98,7 +96,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             newCatalog,
             newGraph
           ),
-          output: { type: "EmissionLog", log: emissionLog },
+          output: ack,
         };
       }
       case "Query": {
@@ -108,7 +106,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             this.cwd,
             this.loader,
             this.catalog,
-            buildGraph(this.catalog)
+            replayFacts(buildGraph(this.catalog), this.catalog)
           );
         }
         return {
