@@ -2,6 +2,7 @@
 
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../commonDL";
 import { getInterpForDoc } from "../interpCache";
@@ -17,7 +18,7 @@ export const TOKEN_TYPES = [
   "typeParameter",
 ];
 
-export const INIT_INTERP = new IncrementalInterpreter(".", LOADER);
+export const INIT_INTERP = new SimpleInterpreter(".", LOADER);
 
 export function getInterp(
   language: LanguageSpec,
