@@ -68,16 +68,24 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         };
       }
       case "Fact": {
+        let newCatalog = this.catalog;
         let newGraph = this.graph;
-        if (this.graph !== null) {
-          const res = insertFact(interp.graph, {
-            term: stmt.record,
-            trace: { type: "BaseFactTrace" },
-            bindings: {},
-          });
-          newGraph = res.newGraph;
+        const tableName = stmt.record.relation;
+        if (!this.catalog[tableName]) {
+          // create table if it doesn't exist
+          newCatalog = declareTable(newCatalog, tableName);
+          newGraph = replayFacts(buildGraph(newCatalog), newCatalog);
+        } else if (newGraph === null) {
+          // rebuild graph if it was invalidated otherwise
+          newGraph = replayFacts(buildGraph(newCatalog), newCatalog);
         }
-        const newCatalog = addFact(interp.catalog, stmt.record);
+        // add the new fact
+        newCatalog = addFact(this.catalog, stmt.record);
+        newGraph = insertFact(newGraph, {
+          term: stmt.record,
+          trace: { type: "BaseFactTrace" },
+          bindings: {},
+        }).newGraph;
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
