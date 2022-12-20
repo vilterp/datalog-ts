@@ -1,18 +1,14 @@
 import { EmissionLogAndGraph, emptyRuleGraph, RuleGraph } from "./types";
-import { Rec, Res, Rule, Statement } from "../types";
+import { baseFactTrace, Res, Rule, Statement } from "../types";
 import { doQuery, EmissionLog, insertFact } from "./eval";
-import { hasVars } from "../simple/simpleEvaluate";
-import { ppb, ppr, ppt } from "../pretty";
+import { ppb, ppr } from "../pretty";
 import { Loader } from "../loaders";
 import {
   datalogOut,
   datalogOutResults,
-  plainTextOut,
   TestOutput,
 } from "../../util/ddTest/types";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
-import { parserTermToInternal } from "../translateAST";
 import { filterMap, flatMap } from "../../util/util";
 import {
   addFact,
@@ -30,7 +26,7 @@ export type Output =
   | { type: "Acknowledge" };
 
 export class IncrementalInterpreter extends AbstractInterpreter {
-  graph: RuleGraph | null; // null: invalid; needs to be recomputed
+  graph: RuleGraph;
   catalog: Catalog;
 
   // TODO: kind of don't want to expose the graph parameter on the public
@@ -63,7 +59,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           this.cwd,
           this.loader,
           newCatalog,
-          null
+          buildGraph(newCatalog)
         );
         return {
           newInterp,
@@ -73,12 +69,14 @@ export class IncrementalInterpreter extends AbstractInterpreter {
       case "Rule": {
         // TODO: maybe adding a rule should immediately compute that rule
         const newCatalog = addRule(interp.catalog, stmt.rule);
+        let graph = buildGraph(newCatalog);
+        graph = replayFacts(graph, newCatalog);
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
             this.loader,
             newCatalog,
-            null
+            graph
           ),
           output: ack,
         };
@@ -126,13 +124,6 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     }
   }
 
-  // TODO: shouldn't this be in AbstractInterpreter?
-  queryStr(str: string): Res[] {
-    const rawRecord = parseRecord(str);
-    const record = parserTermToInternal(rawRecord) as Rec;
-    return doQuery(this.graph, record);
-  }
-
   getRules(): Rule[] {
     return filterMap(Object.entries(this.catalog), ([key, val]) =>
       val.type === "Rule" ? val.rule : null
@@ -144,6 +135,20 @@ export class IncrementalInterpreter extends AbstractInterpreter {
       val.type === "Table" ? key : null
     );
   }
+}
+
+function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
+  return Object.entries(catalog).reduce((accum, [relName, rel]) => {
+    if (rel.type === "Rule") {
+      return accum;
+    }
+    return rel.records.reduce(
+      (accum2, rec) =>
+        insertFact(accum2, { term: rec, bindings: {}, trace: baseFactTrace })
+          .newGraph,
+      accum
+    );
+  }, ruleGraph);
 }
 
 const ack: Output = { type: "Acknowledge" };
