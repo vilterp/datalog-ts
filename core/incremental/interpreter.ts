@@ -55,11 +55,14 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     switch (stmt.type) {
       case "TableDecl": {
         const newCatalog = declareTable(interp.catalog, stmt.name);
+        // rebuild graph from scratch
+        let graph = buildGraph(newCatalog);
+        graph = replayFacts(graph, newCatalog);
         const newInterp = new IncrementalInterpreter(
           this.cwd,
           this.loader,
           newCatalog,
-          buildGraph(newCatalog)
+          graph
         );
         return {
           newInterp,
@@ -67,8 +70,8 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         };
       }
       case "Rule": {
-        // TODO: maybe adding a rule should immediately compute that rule
         const newCatalog = addRule(interp.catalog, stmt.rule);
+        // rebuild graph from scratch
         let graph = buildGraph(newCatalog);
         graph = replayFacts(graph, newCatalog);
         return {
