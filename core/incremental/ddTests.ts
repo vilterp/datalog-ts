@@ -14,7 +14,7 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "../translateAST";
-import { getJoinInfo } from "./build";
+import { buildGraph, getJoinInfo } from "./build";
 import { formatOutput } from "./output";
 
 export function incrTests(writeResults: boolean): Suite {
@@ -67,7 +67,9 @@ function buildTest(test: string[]): TestOutput[] {
       const stmt = parserStatementToInternal(rawStmt);
       interp = interp.processStmt(stmt).newInterp as IncrementalInterpreter;
     }
-    return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
+    return graphvizOut(
+      prettyPrintGraph(toGraphviz(buildGraph(interp.catalog)))
+    );
   });
 }
 
