@@ -56,6 +56,14 @@ export const emptyRuleGraph: RuleGraph = {
   edges: Map(),
 };
 
+// output
+
+export type Output =
+  | { type: "EmissionLog"; log: EmissionLog }
+  | { type: "Trace"; logAndGraph: EmissionLogAndGraph }
+  | { type: "QueryResults"; results: Res[] }
+  | { type: "Acknowledge" };
+
 export type EmissionLogAndGraph = {
   graph: RuleGraph;
   log: EmissionLog;
