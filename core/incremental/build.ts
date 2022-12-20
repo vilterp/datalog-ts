@@ -253,14 +253,14 @@ export function getIndexName(attrs: ColName[]): string {
   return attrs.join("-");
 }
 
-export type JoinTree =
+type JoinTree =
   | {
       type: "Leaf";
       rec: Rec;
     }
   | { type: "Node"; left: Rec; joinInfo: JoinInfo; right: JoinTree | null };
 
-export function getJoinTree(recs: Rec[]): JoinTree {
+function getJoinTree(recs: Rec[]): JoinTree {
   if (recs.length === 1) {
     return { type: "Leaf", rec: recs[0] };
   }
@@ -273,7 +273,7 @@ export function getJoinTree(recs: Rec[]): JoinTree {
   };
 }
 
-export function numJoinsWithCommonVars(joinTree: JoinTree): number {
+function numJoinsWithCommonVars(joinTree: JoinTree): number {
   if (joinTree.type === "Leaf") {
     return 0;
   }
@@ -318,33 +318,12 @@ function addNode(
   ];
 }
 
-export function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
+function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
     edges: graph.edges.update(from, List(), (destinations) =>
       destinations.push(to)
     ),
-  };
-}
-
-function updateMappings(
-  graph: RuleGraph,
-  from: NodeID,
-  newMappings: VarMappings
-): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(from, (node) => ({
-      ...node,
-      // TODO: create index
-      // cache: node.cache.createIndex(XXX, (res) => {
-      //   XXX;
-      // }),
-      desc:
-        node.desc.type === "Match"
-          ? { ...node.desc, mappings: newMappings }
-          : node.desc,
-    })),
   };
 }
 
