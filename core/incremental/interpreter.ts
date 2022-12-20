@@ -12,6 +12,7 @@ import {
   emptyCatalog,
 } from "./catalog";
 import { buildGraph } from "./build";
+import { evalBuiltin } from "../evalBuiltin";
 
 export class IncrementalInterpreter extends AbstractInterpreter {
   graph: RuleGraph | null;
@@ -126,16 +127,36 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   }
 }
 
+// TODO: probably move to eval.ts
 function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
-  return Object.entries(catalog).reduce((accum, [relName, rel]) => {
-    if (rel.type === "Rule") {
-      return accum;
+  let graph = ruleGraph;
+  ruleGraph.builtins.forEach((nodeID) => {
+    const node = ruleGraph.nodes.get(nodeID);
+    if (node.desc.type !== "Builtin") {
+      throw new Error("node in builtins index not builtin");
     }
-    return rel.records.reduce(
-      (accum2, rec) =>
-        insertFact(accum2, { term: rec, bindings: {}, trace: baseFactTrace })
-          .newGraph,
-      accum
-    );
+    let results: Res[] = [];
+    try {
+      results = evalBuiltin(node.desc.rec, {});
+    } catch (e) {
+      // TODO: check that it's the expected error
+      return;
+    }
+    results.forEach((res) => {
+      graph = insertFact(graph, res).newGraph;
+    });
+  });
+  Object.entries(catalog).forEach(([relName, rel]) => {
+    if (rel.type === "Rule") {
+      return;
+    }
+    rel.records.forEach((rec) => {
+      graph = insertFact(graph, {
+        term: rec,
+        bindings: {},
+        trace: baseFactTrace,
+      }).newGraph;
+    });
   }, ruleGraph);
+  return graph;
 }
