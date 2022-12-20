@@ -9,11 +9,15 @@ import {
 } from "./types";
 import { combineObjects, permute, setAdd, setUnion } from "../../util/util";
 import { ppb } from "../pretty";
-import { List } from "immutable";
-import { emptyIndexedCollection } from "../../util/indexedCollection";
+import { List, Map } from "immutable";
+import {
+  emptyIndexedCollection,
+  IndexedCollection,
+} from "../../util/indexedCollection";
 import { fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
+import { evalBuiltin } from "../evalBuiltin";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
   const entries = Object.entries(catalog);
@@ -304,13 +308,23 @@ function addNode(
   isInternal: boolean,
   desc: NodeDesc
 ): [RuleGraph, NodeID] {
+  // TODO: if builtin is grounded enough, evaluate it here!
+  let cache = emptyIndexedCollection<Res>();
+  if (desc.type === "Builtin") {
+    try {
+      const results = evalBuiltin(desc.rec, {});
+      cache = new IndexedCollection<Res>(List(results), Map());
+    } catch (e) {
+      // TODO: check for "not supported"
+    }
+  }
   return [
     {
       ...graph,
       nextNodeID: graph.nextNodeID + 1,
       nodes: graph.nodes.set(graph.nextNodeID.toString(), {
         desc,
-        cache: emptyIndexedCollection(),
+        cache,
         isInternal,
       }),
     },
