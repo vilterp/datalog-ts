@@ -1,6 +1,6 @@
 import { ack, emptyRuleGraph, Output, RuleGraph } from "./types";
-import { baseFactTrace, Res, Rule, Statement } from "../types";
-import { doQuery, insertFact, insertFromNode } from "./eval";
+import { Res, Rule, Statement } from "../types";
+import { doQuery, insertFact, replayFacts } from "./eval";
 import { Loader } from "../loaders";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { filterMap } from "../../util/util";
@@ -12,7 +12,6 @@ import {
   emptyCatalog,
 } from "./catalog";
 import { buildGraph } from "./build";
-import { evalBuiltin } from "../evalBuiltin";
 
 export class IncrementalInterpreter extends AbstractInterpreter {
   graph: RuleGraph | null;
@@ -133,39 +132,4 @@ export class IncrementalInterpreter extends AbstractInterpreter {
       val.type === "Table" ? key : null
     );
   }
-}
-
-// TODO: probably move to eval.ts
-function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
-  let graph = ruleGraph;
-  // emit from builtins
-  ruleGraph.builtins.forEach((nodeID) => {
-    const node = ruleGraph.nodes.get(nodeID);
-    if (node.desc.type !== "Builtin") {
-      throw new Error("node in builtins index not builtin");
-    }
-    let results: Res[] = [];
-    try {
-      results = evalBuiltin(node.desc.rec, {});
-    } catch (e) {
-      // TODO: check that it's the expected error
-      return;
-    }
-    results.forEach((res) => {
-      graph = insertFromNode(graph, nodeID, res).newGraph;
-    });
-  });
-  Object.entries(catalog).forEach(([relName, rel]) => {
-    if (rel.type === "Rule") {
-      return;
-    }
-    rel.records.forEach((rec) => {
-      graph = insertFact(graph, {
-        term: rec,
-        bindings: {},
-        trace: baseFactTrace,
-      }).newGraph;
-    });
-  }, ruleGraph);
-  return graph;
 }

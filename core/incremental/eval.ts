@@ -1,9 +1,10 @@
 import { RuleGraph, NodeID, JoinDesc } from "./types";
-import { Rec, Res, UserError } from "../types";
+import { baseFactTrace, Rec, Res, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
 import { getIndexKey, getIndexName } from "./build";
 import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
+import { Catalog } from "./catalog";
 
 export type Insertion = {
   res: Res;
@@ -28,7 +29,62 @@ export function insertFact(
   return result;
 }
 
-export function insertFromNode(
+export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
+  let graph = ruleGraph;
+  // emit from builtins
+  ruleGraph.builtins.forEach((nodeID) => {
+    const node = ruleGraph.nodes.get(nodeID);
+    if (node.desc.type !== "Builtin") {
+      throw new Error("node in builtins index not builtin");
+    }
+    let results: Res[] = [];
+    try {
+      results = evalBuiltin(node.desc.rec, {});
+    } catch (e) {
+      // TODO: check that it's the expected error
+      return;
+    }
+    results.forEach((res) => {
+      graph = insertFromNode(graph, nodeID, res).newGraph;
+    });
+  });
+  Object.entries(catalog).forEach(([relName, rel]) => {
+    if (rel.type === "Rule") {
+      return;
+    }
+    rel.records.forEach((rec) => {
+      graph = insertFact(graph, {
+        term: rec,
+        bindings: {},
+        trace: baseFactTrace,
+      }).newGraph;
+    });
+  }, ruleGraph);
+  return graph;
+}
+
+export function doQuery(graph: RuleGraph, query: Rec): Res[] {
+  // TODO: use index selection
+  const node = graph.nodes.get(query.relation);
+  if (!node) {
+    // TODO: maybe start using result type
+    throw new UserError(`no such relation: ${query.relation}`);
+  }
+  return node.cache
+    .all()
+    .map((res) => {
+      const bindings = unify({}, res.term, query);
+      if (bindings === null) {
+        return null;
+      }
+      // TODO: should this be its own trace node??
+      return { term: res.term, bindings, trace: res.trace };
+    })
+    .filter((x) => x !== null)
+    .toArray();
+}
+
+function insertFromNode(
   graph: RuleGraph,
   nodeID: NodeID,
   res: Res
@@ -252,27 +308,6 @@ function doJoin(
   return results;
 }
 
-export function doQuery(graph: RuleGraph, query: Rec): Res[] {
-  // TODO: use index selection
-  const node = graph.nodes.get(query.relation);
-  if (!node) {
-    // TODO: maybe start using result type
-    throw new UserError(`no such relation: ${query.relation}`);
-  }
-  return node.cache
-    .all()
-    .map((res) => {
-      const bindings = unify({}, res.term, query);
-      if (bindings === null) {
-        return null;
-      }
-      // TODO: should this be its own trace node??
-      return { term: res.term, bindings, trace: res.trace };
-    })
-    .filter((x) => x !== null)
-    .toArray();
-}
-
 // helpers
 
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
@@ -286,5 +321,3 @@ function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
     }),
   };
 }
-
-// TODO: retractStep
