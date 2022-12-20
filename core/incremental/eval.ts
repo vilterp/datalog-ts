@@ -1,19 +1,8 @@
 import { RuleGraph, NodeID, JoinDesc } from "./types";
-import { Rec, Res, Rule, UserError } from "../types";
+import { Rec, Res, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
-import { filterMap, flatMap, mapObjToList } from "../../util/util";
-import {
-  addEdge,
-  addNodeKnownID,
-  addOr,
-  addUnmappedRule,
-  getIndexKey,
-  getIndexName,
-  resolveUnmappedRules,
-} from "./build";
+import { getIndexKey, getIndexName } from "./build";
 import Denque from "denque";
-import { ppr } from "../pretty";
-import { BUILTINS } from "../builtins";
 import { evalBuiltin } from "../evalBuiltin";
 
 export type Insertion = {
@@ -26,116 +15,10 @@ export type EmissionLog = EmissionBatch[];
 
 export type EmissionBatch = { fromID: NodeID; output: Res[] };
 
-export function addRule(
-  graph: RuleGraph,
-  rule: Rule
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  // console.log("add", rule.head.relation);
-  const substID = rule.head.relation;
-  const {
-    newGraph: withOr,
-    tipID: orID,
-    newNodeIDs,
-  } = addOr(graph, rule.head.relation, rule.body);
-  const withSubst = addNodeKnownID(substID, withOr, false, {
-    type: "Substitute",
-    rec: rule.head,
-  });
-  newNodeIDs.add(substID); // TODO: weird mix of mutation and non-mutation here...?
-  const withEdge = addEdge(withSubst, orID, substID);
-  const withUnmapped = addUnmappedRule(withEdge, rule, newNodeIDs);
-  const resultGraph = resolveUnmappedRules(withUnmapped);
-  if (Object.keys(resultGraph.unmappedRules).length === 0) {
-    const nodesToReplay = new Set([
-      ...flatMap(
-        Object.values(withUnmapped.unmappedRules).map(({ rule }) => rule),
-        getRoots
-      ),
-    ]);
-    return addRuleToRes(
-      rule,
-      replayFacts(resultGraph, newNodeIDs, nodesToReplay)
-    );
-  }
-  return addRuleToRes(rule, {
-    newGraph: resultGraph,
-    emissionLog: [],
-  });
-}
-
-function addRuleToRes(
-  rule: Rule,
-  res: { newGraph: RuleGraph; emissionLog: EmissionLog }
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  return {
-    ...res,
-    newGraph: {
-      ...res.newGraph,
-      rules: [...res.newGraph.rules, rule],
-    },
-  };
-}
-
-function replayFacts(
-  graph: RuleGraph,
-  allNewNodes: Set<NodeID>,
-  roots: Set<NodeID>
-): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  let outGraph = graph;
-  let outEmissionLog: EmissionLog = [];
-  for (let rootID of roots) {
-    for (let res of graph.nodes.get(rootID).cache.all()) {
-      for (let destination of graph.edges.get(rootID)) {
-        const iter = getReplayIterator(outGraph, allNewNodes, [
-          {
-            res,
-            origin: rootID,
-            destination,
-          },
-        ]);
-        const { newGraph, emissionLog } = stepIteratorAll(outGraph, iter);
-        outGraph = newGraph;
-        for (let emission of emissionLog) {
-          outEmissionLog.push(emission);
-        }
-      }
-    }
-  }
-  return { newGraph: outGraph, emissionLog: outEmissionLog };
-}
-
-function getRoots(rule: Rule): NodeID[] {
-  return flatMap(rule.body.disjuncts, (opt) => {
-    return filterMap(opt.conjuncts, (andClause) => {
-      if (andClause.type === "Negation") {
-        return andClause.record.relation;
-      }
-      if (andClause.type === "Aggregation") {
-        return andClause.record.relation;
-      }
-      if (BUILTINS[andClause.relation]) {
-        return null;
-      }
-      return andClause.relation;
-    });
-  });
-}
-
 export function insertFact(
   graph: RuleGraph,
   res: Res
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  if (Object.keys(graph.unmappedRules).length > 0) {
-    throw new Error(
-      `tried to insert fact ${ppr(
-        res
-      )} when some rules still rely on things not defined yet: [${mapObjToList(
-        graph.unmappedRules,
-        (name) => name
-      ).join(", ")}]`
-    );
-  }
-
   const iter = getInsertionIterator(graph, res);
   const result = stepIteratorAll(graph, iter);
 
@@ -143,6 +26,24 @@ export function insertFact(
   // clearJoinStats();
 
   return result;
+}
+
+export function insertFromNode(
+  graph: RuleGraph,
+  nodeID: NodeID,
+  res: Res
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+  const iter: InsertionIterator = {
+    graph,
+    queue: new Denque([
+      {
+        destination: nodeID,
+        origin: null,
+        res,
+      },
+    ]),
+  };
+  return stepIteratorAll(graph, iter);
 }
 
 function getInsertionIterator(graph: RuleGraph, res: Res): InsertionIterator {
@@ -153,25 +54,12 @@ function getInsertionIterator(graph: RuleGraph, res: Res): InsertionIterator {
       destination: (res.term as Rec).relation,
     },
   ];
-  return { graph, queue: new Denque(queue), mode: { type: "Playing" } };
-}
-
-function getReplayIterator(
-  graph: RuleGraph,
-  newNodeIDs: Set<NodeID>,
-  queue: Insertion[]
-): InsertionIterator {
-  return {
-    graph,
-    queue: new Denque(queue),
-    mode: { type: "Replaying", newNodeIDs },
-  };
+  return { graph, queue: new Denque(queue) };
 }
 
 type InsertionIterator = {
   graph: RuleGraph;
   queue: Denque<Insertion>;
-  mode: { type: "Replaying"; newNodeIDs: Set<NodeID> } | { type: "Playing" };
 };
 
 const MAX_QUEUE_SIZE = 10000;
@@ -200,9 +88,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
   const results = processInsertion(iter.graph, insertingNow);
   // console.log("push", results);
   for (let result of results) {
-    if (iter.mode.type === "Playing" || iter.mode.newNodeIDs.has(curNodeID)) {
-      newGraph = addToCache(newGraph, curNodeID, result);
-    }
+    newGraph = addToCache(newGraph, curNodeID, result);
     for (let destination of newGraph.edges.get(curNodeID) || []) {
       iter.queue.push({
         destination,
@@ -286,9 +172,8 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "BaseFactTable":
       return [ins.res];
     case "Builtin":
-      throw new Error(
-        "unreachable: nothing should be sending records to a builtin"
-      );
+      // TODO: ???
+      return [ins.res];
   }
 }
 

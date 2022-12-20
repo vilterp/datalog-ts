@@ -2,11 +2,11 @@ import { Map } from "immutable";
 import { Rec, Rule } from "../types";
 import { LazyIndexedCollection } from "./lazyIndexedCollection";
 
-export interface DB {
+export type DB = {
   tables: Map<string, LazyIndexedCollection>;
   rules: Map<string, Rule>;
   virtualTables: Map<string, VirtualTable>;
-}
+};
 
 type VirtualTable = (db: DB) => Rec[];
 

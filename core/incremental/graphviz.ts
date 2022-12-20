@@ -31,14 +31,6 @@ export function toGraphviz(
         }))
         .toArray()
     ),
-    comments:
-      Object.keys(graph.unmappedRules).length > 0
-        ? mapObjToList(
-            graph.unmappedRules,
-            (name, rule) =>
-              `unmapped: ${name} [${[...rule.newNodeIDs].join(", ")}]`
-          )
-        : [],
   };
 }
 

@@ -1,6 +1,7 @@
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../commonDL";

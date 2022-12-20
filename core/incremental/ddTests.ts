@@ -1,7 +1,6 @@
 import { toGraphviz } from "./graphviz";
-import { Rec, Statement } from "../types";
-import { formatOutput, IncrementalInterpreter } from "./interpreter";
-import { getJoinInfo } from "./build";
+import { Rec } from "../types";
+import { IncrementalInterpreter } from "./interpreter";
 import { fsLoader } from "../fsLoader";
 import { Suite } from "../../util/testBench/testing";
 import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
@@ -15,6 +14,8 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "../translateAST";
+import { buildGraph, getJoinInfo } from "./build";
+import { formatOutput } from "./output";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -66,11 +67,13 @@ function buildTest(test: string[]): TestOutput[] {
       const stmt = parserStatementToInternal(rawStmt);
       interp = interp.processStmt(stmt).newInterp as IncrementalInterpreter;
     }
-    return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
+    return graphvizOut(
+      prettyPrintGraph(toGraphviz(buildGraph(interp.catalog)))
+    );
   });
 }
 
-export function evalTest(inputs: string[]): TestOutput[] {
+function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
   let interp = new IncrementalInterpreter(".", fsLoader);
   for (let input of inputs) {

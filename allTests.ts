@@ -25,9 +25,9 @@ const suites: { [name: string]: Suite } = {
   parserTests: parserTests(writeResults),
   // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
   coreTestsSimple: coreTestsSimple(writeResults),
-  // coreTestsIncremental: coreTestsIncremental(writeResults),
+  coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
-  incrTests: incrTests(writeResults),
+  // incrTests: incrTests(writeResults),
   prettyPrintTests,
   treeTests,
   parserlibTests: parserlibTests(writeResults),

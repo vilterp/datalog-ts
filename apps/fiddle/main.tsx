@@ -11,6 +11,7 @@ import { LANGUAGES } from "../../languageWorkbench/languages";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { LingoEditor } from "../../uiCommon/ide/editor";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -19,7 +20,7 @@ function Main() {
   );
 
   let error = null;
-  let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
+  let interp: AbstractInterpreter = new IncrementalInterpreter(".", nullLoader);
   try {
     interp = interp.evalStr(editorState.source)[1];
   } catch (e) {

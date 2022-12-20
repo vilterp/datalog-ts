@@ -1,19 +1,15 @@
 import { Rec, VarMappings, Rule, Res } from "../types";
 import { EmissionLog } from "./eval";
-import { List, Map } from "immutable";
+import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
 export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
-  tables: string[];
-  rules: Rule[];
+  builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
-  unmappedRules: {
-    [name: string]: { rule: Rule; newNodeIDs: Set<NodeID> };
-  };
 };
 
 export type NodeAndCache = {
@@ -56,13 +52,21 @@ export type NodeDesc =
   | { type: "Builtin"; rec: Rec };
 
 export const emptyRuleGraph: RuleGraph = {
-  tables: [],
-  rules: [],
   nextNodeID: 0,
+  builtins: Set(),
   nodes: Map(),
   edges: Map(),
-  unmappedRules: {},
 };
+
+// output
+
+export type Output =
+  | { type: "EmissionLog"; log: EmissionLog }
+  | { type: "Trace"; logAndGraph: EmissionLogAndGraph }
+  | { type: "QueryResults"; results: Res[] }
+  | { type: "Acknowledge" };
+
+export const ack: Output = { type: "Acknowledge" };
 
 export type EmissionLogAndGraph = {
   graph: RuleGraph;
