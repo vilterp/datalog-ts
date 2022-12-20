@@ -52,13 +52,15 @@ export function coreTestsSimple(writeResults: boolean): Suite {
 export function coreTestsIncremental(writeResults: boolean): Suite {
   return coreTests(
     writeResults,
-    () => new IncrementalInterpreter(".", fsLoader)
+    () => new IncrementalInterpreter(".", fsLoader),
+    new Set(["negation", "aggregation"])
   );
 }
 
 function coreTests(
   writeResults: boolean,
-  getInterp: () => AbstractInterpreter
+  getInterp: () => AbstractInterpreter,
+  exclude: Set<string> = null
 ): Suite {
   return [
     "simple",
@@ -68,16 +70,18 @@ function coreTests(
     "negation",
     "aggregation",
     "paths",
-  ].map((name) => ({
-    name,
-    test() {
-      runDDTestAtPath(
-        `core/testdata/${name}.dd.txt`,
-        (test: string[]) => putThroughInterp(test, getInterp),
-        writeResults
-      );
-    },
-  }));
+  ]
+    .filter((suite) => (exclude !== null ? !exclude.has(suite) : true))
+    .map((name) => ({
+      name,
+      test() {
+        runDDTestAtPath(
+          `core/testdata/${name}.dd.txt`,
+          (test: string[]) => putThroughInterp(test, getInterp),
+          writeResults
+        );
+      },
+    }));
 }
 
 export function coreTestsCommon(writeResults: boolean): Suite {

@@ -27,7 +27,7 @@ const suites: { [name: string]: Suite } = {
   coreTestsSimple: coreTestsSimple(writeResults),
   coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
-  incrTests: incrTests(writeResults),
+  // incrTests: incrTests(writeResults),
   prettyPrintTests,
   treeTests,
   parserlibTests: parserlibTests(writeResults),
