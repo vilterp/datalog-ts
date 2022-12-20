@@ -1,6 +1,6 @@
 import { ack, emptyRuleGraph, Output, RuleGraph } from "./types";
 import { baseFactTrace, Res, Rule, Statement } from "../types";
-import { doQuery, insertFact } from "./eval";
+import { doQuery, insertFact, insertFromNode } from "./eval";
 import { Loader } from "../loaders";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { filterMap } from "../../util/util";
@@ -130,6 +130,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
 // TODO: probably move to eval.ts
 function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
   let graph = ruleGraph;
+  // emit from builtins
   ruleGraph.builtins.forEach((nodeID) => {
     const node = ruleGraph.nodes.get(nodeID);
     if (node.desc.type !== "Builtin") {
@@ -143,7 +144,7 @@ function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       return;
     }
     results.forEach((res) => {
-      graph = insertFact(graph, res).newGraph;
+      graph = insertFromNode(graph, nodeID, res).newGraph;
     });
   });
   Object.entries(catalog).forEach(([relName, rel]) => {

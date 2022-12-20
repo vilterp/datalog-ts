@@ -28,6 +28,24 @@ export function insertFact(
   return result;
 }
 
+export function insertFromNode(
+  graph: RuleGraph,
+  nodeID: NodeID,
+  res: Res
+): { newGraph: RuleGraph; emissionLog: EmissionLog } {
+  const iter: InsertionIterator = {
+    graph,
+    queue: new Denque([
+      {
+        destination: nodeID,
+        origin: null,
+        res,
+      },
+    ]),
+  };
+  return stepIteratorAll(graph, iter);
+}
+
 function getInsertionIterator(graph: RuleGraph, res: Res): InsertionIterator {
   const queue: Insertion[] = [
     {
@@ -154,9 +172,8 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
     case "BaseFactTable":
       return [ins.res];
     case "Builtin":
-      throw new Error(
-        "unreachable: nothing should be sending records to a builtin"
-      );
+      // TODO: ???
+      return [ins.res];
   }
 }
 
