@@ -49,7 +49,9 @@ export type NodeDesc =
   | { type: "Match"; rec: Rec; mappings: VarMappings }
   | { type: "Substitute"; rec: Rec }
   | { type: "Union" }
-  | { type: "Builtin"; rec: Rec };
+  | { type: "Builtin"; rec: Rec }
+  // TODO: maybe operator state should be kept separate?
+  | { type: "Negation"; rec: Rec; received: number };
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,

@@ -1,5 +1,5 @@
-.table mother;
-.table father;
+.table mother
+.table father
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
@@ -18,9 +18,9 @@ digraph G {
   "2" -> "matGramp" [];
 }
 
-.table a;
-.table b;
-.table c;
+.table a
+.table b
+.table c
 d{} :- a{} & b{} & c{}.
 ----
 application/graphviz
@@ -44,8 +44,8 @@ digraph G {
   "4" -> "d" [];
 }
 
-.table mother;
-.table father;
+.table mother
+.table father
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
@@ -64,10 +64,10 @@ digraph G {
   "0" -> "parent" [];
 }
 
-.table mother;
-.table father;
+.table mother
+.table father
 parent{child: C, parent: P} :-
-  mother{child: C, mother: P} | father{child: C, father: P}.;
+  mother{child: C, mother: P} | father{child: C, father: P}.
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
@@ -79,8 +79,8 @@ digraph G {
   "0" [fillcolor="moccasin" label="0: Union []" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" label="1: Match(mother{child: C, mother: P}; {}) []" shape="box" style="filled"];
   "2" [fillcolor="darkseagreen2" label="2: Match(father{child: C, father: P}; {}) []" shape="box" style="filled"];
-  "3" [fillcolor="darkseagreen2" label="3: Match(parent{child: A, parent: B}; {C: A, P: B}) [B]" shape="box" style="filled"];
-  "4" [fillcolor="darkseagreen2" label="4: Match(parent{child: B, parent: C}; {C: B, P: C}) [B]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(parent{child: A, parent: B}; {}) [B]" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" label="4: Match(parent{child: B, parent: C}; {}) [B]" shape="box" style="filled"];
   "5" [fillcolor="thistle" label="5: Join(B) []" shape="box" style="filled"];
   "grandparent" [fillcolor="lightblue" label="grandparent: Subst({grandchild: A, grandparent: C}) []" shape="box" style="filled"];
   "father" [fillcolor="darksalmon" label="father:  []" shape="box" style="filled"];
@@ -94,4 +94,27 @@ digraph G {
   "4" -> "5" [];
   "5" -> "grandparent" [];
   "father" -> "2" [];
+}
+
+.table var
+.table defn
+undefVar{name: N} :-
+  var{name: N} &
+  !defn{name: N}.
+----
+application/graphviz
+digraph G {
+  "var" [fillcolor="darksalmon" label="var:  []" shape="box" style="filled"];
+  "defn" [fillcolor="darksalmon" label="defn:  []" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" label="0: Match(var{name: N}; {}) []" shape="box" style="filled"];
+  "1" [fillcolor="" label="1: Not(defn{name: N}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(defn{name: N}; {}) []" shape="box" style="filled"];
+  "3" [fillcolor="thistle" label="3: Join(N) []" shape="box" style="filled"];
+  "undefVar" [fillcolor="lightblue" label="undefVar: Subst({name: N}) []" shape="box" style="filled"];
+  "var" -> "0" [];
+  "defn" -> "2" [];
+  "2" -> "1" [];
+  "1" -> "3" [];
+  "0" -> "3" [];
+  "3" -> "undefVar" [];
 }

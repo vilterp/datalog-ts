@@ -21,6 +21,8 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
       return "Union";
     case "BaseFactTable":
       return "";
+    case "Negation":
+      return `Not(${ppt(nodeDesc.rec)})`;
   }
 }
 

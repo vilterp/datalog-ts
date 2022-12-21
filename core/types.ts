@@ -36,9 +36,9 @@ export type Conjunction = { type: "Conjunction"; conjuncts: Conjunct[] };
 
 export type Conjunct = Rec | Negation | Aggregation;
 
-type Negation = { type: "Negation"; record: Rec };
+export type Negation = { type: "Negation"; record: Rec };
 
-type Aggregation = {
+export type Aggregation = {
   type: "Aggregation";
   aggregation: string;
   varNames: string[];

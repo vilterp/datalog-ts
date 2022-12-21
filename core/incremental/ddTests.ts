@@ -21,17 +21,17 @@ export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
     ["build", buildTest],
     ["buildBinExpr", buildTest],
-    ["eval", evalTest],
-    ["eval2", evalTest],
-    ["eval3", evalTest],
-    ["family", evalTest],
-    ["indexes", evalTest],
-    ["siblings", evalTest],
-    ["cycles", evalTest],
-    ["replay", evalTest],
-    ["cyclesReplay", evalTest],
-    ["dlParser", evalTest],
-    ["findJoinInfo", joinInfoTest],
+    // ["eval", evalTest],
+    // ["eval2", evalTest],
+    // ["eval3", evalTest],
+    // ["family", evalTest],
+    // ["indexes", evalTest],
+    // ["siblings", evalTest],
+    // ["cycles", evalTest],
+    // ["replay", evalTest],
+    // ["cyclesReplay", evalTest],
+    // ["dlParser", evalTest],
+    // ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
     name,
@@ -55,18 +55,10 @@ function joinInfoTest(test: string[]): TestOutput[] {
   });
 }
 
-// TODO: deprecate this since we have .rulegraph now?
 function buildTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const statements = input
-      .split(";")
-      .map((s) => s.trim())
-      .map(parseStatement);
     let interp = new IncrementalInterpreter(".", fsLoader);
-    for (let rawStmt of statements) {
-      const stmt = parserStatementToInternal(rawStmt);
-      interp = interp.processStmt(stmt).newInterp as IncrementalInterpreter;
-    }
+    interp = interp.evalStr(input)[1] as IncrementalInterpreter;
     return graphvizOut(
       prettyPrintGraph(toGraphviz(buildGraph(interp.catalog)))
     );
