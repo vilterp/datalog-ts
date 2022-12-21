@@ -5,13 +5,13 @@ bar{a: A, b: B} :-
 application/graphviz
 digraph G {
   "foo" [fillcolor="darksalmon" label="foo:  []" shape="box" style="filled"];
-  "0" [fillcolor="darkseagreen2" label="0: Match(foo{a: A, b: B}; {}) [A-B]" shape="box" style="filled"];
-  "1" [fillcolor="" label="1: Builtin(base.neq{a: A, b: B}) [A-B]" shape="box" style="filled"];
+  "0" [fillcolor="" label="0: Builtin(base.neq{a: A, b: B}) [A-B]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" label="1: Match(foo{a: A, b: B}; {}) [A-B]" shape="box" style="filled"];
   "2" [fillcolor="thistle" label="2: Join(A, B) []" shape="box" style="filled"];
   "bar" [fillcolor="lightblue" label="bar: Subst({a: A, b: B}) []" shape="box" style="filled"];
-  "foo" -> "0" [];
-  "1" -> "2" [];
+  "foo" -> "1" [];
   "0" -> "2" [];
+  "1" -> "2" [];
   "2" -> "bar" [];
 }
 
@@ -24,18 +24,18 @@ sibling{left: L, right: R} :-
 application/graphviz
 digraph G {
   "parents" [fillcolor="darksalmon" label="parents:  []" shape="box" style="filled"];
-  "0" [fillcolor="darkseagreen2" label="0: Match(parents{child: L, father: F, mother: M}; {}) [M-F]" shape="box" style="filled"];
+  "0" [fillcolor="" label="0: Builtin(base.neq{a: L, b: R}) [R]" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" label="1: Match(parents{child: R, father: F, mother: M}; {}) [M-F]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: Join(M, F) [R]" shape="box" style="filled"];
-  "3" [fillcolor="" label="3: Builtin(base.neq{a: L, b: R}) [R]" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(parents{child: L, father: F, mother: M}; {}) [M-F]" shape="box" style="filled"];
+  "3" [fillcolor="thistle" label="3: Join(M, F) [R]" shape="box" style="filled"];
   "4" [fillcolor="thistle" label="4: Join(R) []" shape="box" style="filled"];
   "sibling" [fillcolor="lightblue" label="sibling: Subst({left: L, right: R}) []" shape="box" style="filled"];
-  "parents" -> "0" [];
   "parents" -> "1" [];
-  "1" -> "2" [];
-  "0" -> "2" [];
+  "parents" -> "2" [];
+  "1" -> "3" [];
+  "2" -> "3" [];
+  "0" -> "4" [];
   "3" -> "4" [];
-  "2" -> "4" [];
   "4" -> "sibling" [];
 }
 
@@ -49,23 +49,23 @@ main{span: span{from: P1, to: P2}} :-
 ----
 application/graphviz
 digraph G {
-  "0" [fillcolor="darkseagreen2" label="0: Match(input.next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" label="1: Match(input.char{char: C, id: P1}; {}) [P1]" shape="box" style="filled"];
-  "2" [fillcolor="thistle" label="2: Join(P1) [C]" shape="box" style="filled"];
-  "3" [fillcolor="" label="3: Builtin(base.lte{a: \"a\", b: C}) [C]" shape="box" style="filled"];
-  "4" [fillcolor="thistle" label="4: Join(C) [C]" shape="box" style="filled"];
-  "5" [fillcolor="" label="5: Builtin(base.lte{a: C, b: \"z\"}) [C]" shape="box" style="filled"];
+  "0" [fillcolor="" label="0: Builtin(base.lte{a: C, b: \"z\"}) [C]" shape="box" style="filled"];
+  "1" [fillcolor="" label="1: Builtin(base.lte{a: \"a\", b: C}) [C]" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" label="2: Match(input.char{char: C, id: P1}; {}) [P1]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" label="3: Match(input.next{left: P1, right: P2}; {}) [P1]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" label="4: Join(P1) [C]" shape="box" style="filled"];
+  "5" [fillcolor="thistle" label="5: Join(C) [C]" shape="box" style="filled"];
   "6" [fillcolor="thistle" label="6: Join(C) []" shape="box" style="filled"];
   "input.next" [fillcolor="darksalmon" label="input.next:  []" shape="box" style="filled"];
   "main" [fillcolor="lightblue" label="main: Subst({span: span{from: P1, to: P2}}) []" shape="box" style="filled"];
   "input.char" [fillcolor="darksalmon" label="input.char:  []" shape="box" style="filled"];
-  "0" -> "2" [];
-  "1" -> "2" [];
+  "0" -> "6" [];
+  "1" -> "5" [];
   "2" -> "4" [];
   "3" -> "4" [];
-  "4" -> "6" [];
+  "4" -> "5" [];
   "5" -> "6" [];
   "6" -> "main" [];
-  "input.next" -> "0" [];
-  "input.char" -> "1" [];
+  "input.next" -> "3" [];
+  "input.char" -> "2" [];
 }
