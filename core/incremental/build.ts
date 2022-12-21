@@ -142,37 +142,56 @@ function addAnd(graph: RuleGraph, conjuncts: Conjunct[]): AddConjunctResult {
   return addJoinTree(graph, joinTree);
 }
 
-function addJoinTree(
-  ruleGraph: RuleGraph,
-  joinTree: JoinTree
-): AddConjunctResult {
+function addJoinTree(graph: RuleGraph, joinTree: JoinTree): AddConjunctResult {
   if (joinTree.type === "Leaf") {
-    return addConjunct(ruleGraph, joinTree.conjunct);
+    const res = addRec(graph, getRecord(joinTree.conjunct));
+    return addModifier(res, joinTree.conjunct);
   }
-  const leftRes = addConjunct(ruleGraph, joinTree.left);
-  const rightRes = addJoinTree(leftRes.newGraph, joinTree.right);
-  return addJoin(rightRes.newGraph, leftRes, rightRes);
+  const rightRes = addJoinTree(graph, joinTree.right);
+  const leftRes0 = addRec(rightRes.newGraph, getRecord(joinTree.left));
+  const leftRes1 = addModifier(leftRes0, joinTree.left);
+  return addJoin(leftRes1.newGraph, leftRes1, rightRes);
 }
 
-function addConjunct(graph: RuleGraph, conjunct: Conjunct): AddConjunctResult {
+function getRecord(conjunct: Conjunct): Rec {
+  switch (conjunct.type) {
+    case "Record": {
+      return conjunct;
+    }
+    case "Aggregation":
+      return conjunct.record;
+    case "Negation": {
+      return conjunct.record;
+    }
+  }
+}
+
+function addModifier(
+  prev: AddConjunctResult,
+  conjunct: Conjunct
+): AddConjunctResult {
   switch (conjunct.type) {
     case "Record":
-      return addRec(graph, conjunct);
+      // no modifier
+      return prev;
     case "Aggregation":
-      return addAggregation(graph, conjunct);
-    case "Negation":
-      return addNegation(graph, conjunct);
+      return addAggregation(prev, conjunct);
+    case "Negation": {
+      return addNegation(prev, conjunct);
+    }
   }
 }
 
-function addNegation(graph0: RuleGraph, negation: Negation): AddConjunctResult {
-  const res1 = addRec(graph0, negation.record);
-  const [graph2, negationID] = addNode(res1.newGraph, true, {
+function addNegation(
+  prev: AddConjunctResult,
+  negation: Negation
+): AddConjunctResult {
+  const [graph2, negationID] = addNode(prev.newGraph, true, {
     type: "Negation",
     rec: negation.record,
     received: 0,
   });
-  const graph3 = addEdge(graph2, res1.tipID, negationID);
+  const graph3 = addEdge(graph2, prev.tipID, negationID);
   return {
     newGraph: graph3,
     rec: negation.record,
@@ -181,15 +200,15 @@ function addNegation(graph0: RuleGraph, negation: Negation): AddConjunctResult {
 }
 
 function addAggregation(
-  graph0: RuleGraph,
+  prev: AddConjunctResult,
   aggregation: Aggregation
 ): AddConjunctResult {
-  const res1 = addRec(graph0, aggregation.record);
-  const [graph2, aggID] = addNode(res1.newGraph, true, {
+  const graph0 = prev.newGraph;
+  const [graph2, aggID] = addNode(prev.newGraph, true, {
     type: "Aggregation",
     aggregation,
   });
-  const graph3 = addEdge(graph2, res1.tipID, aggID);
+  const graph3 = addEdge(graph2, prev.tipID, aggID);
   return {
     newGraph: graph3,
     rec: aggregation.record,
