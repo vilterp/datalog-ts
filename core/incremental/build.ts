@@ -147,7 +147,7 @@ function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
 
   const negations = clauses.filter((conjuct) => conjuct.type === "Negation");
   const withNegations = negations.reduce((accum, negation) => {
-    return addNegation(accum, negation);
+    return addNegation(accum.newGraph, negation as Negation);
   }, withJoinTree);
 
   return withNegations;
