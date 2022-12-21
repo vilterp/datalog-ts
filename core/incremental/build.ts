@@ -147,10 +147,11 @@ function addJoinTree(graph: RuleGraph, joinTree: JoinTree): AddConjunctResult {
     const res = addRec(graph, getRecord(joinTree.conjunct));
     return addModifier(res, joinTree.conjunct);
   }
+
   const rightRes = addJoinTree(graph, joinTree.right);
   const leftRes0 = addRec(rightRes.newGraph, getRecord(joinTree.left));
-  const leftRes1 = addModifier(leftRes0, joinTree.left);
-  return addJoin(leftRes1.newGraph, leftRes1, rightRes);
+  const leftRes1 = addJoin(leftRes0.newGraph, leftRes0, rightRes);
+  return addModifier(leftRes1, joinTree.left);
 }
 
 function getRecord(conjunct: Conjunct): Rec {
