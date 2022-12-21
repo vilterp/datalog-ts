@@ -147,14 +147,14 @@ function addJoinTree(
   joinTree: JoinTree
 ): AddConjunctResult {
   if (joinTree.type === "Leaf") {
-    return addRec(ruleGraph, joinTree.conjunct);
+    return addConjunct(ruleGraph, joinTree.conjunct);
   }
   const {
     newGraph,
     tipID: rightID,
     rec: rightRec,
   } = addJoinTree(ruleGraph, joinTree.right);
-  const { newGraph: newGraph2, tipID: andID } = addAndBinary(
+  const { newGraph: newGraph2, tipID: andID } = addJoin(
     newGraph,
     joinTree.left,
     rightRec,
@@ -179,77 +179,61 @@ function addConjunct(graph: RuleGraph, conjunct: Conjunct): AddConjunctResult {
 }
 
 function addNegation(graph0: RuleGraph, negation: Negation): AddConjunctResult {
-  const [graph1, negationID] = addNode(graph0, true, {
+  const res1 = addRec(graph0, negation.record);
+  const [graph2, negationID] = addNode(res1.newGraph, true, {
     type: "Negation",
     rec: negation.record,
     received: 0,
   });
-  const [graph2, matchID] = addNode(graph1, true, {
-    type: "Match",
-    rec: negation.record,
-    mappings: {},
-  });
-  const graph3 = addEdge(graph2, negation.record.relation, matchID);
-  const graph4 = addEdge(graph3, matchID, negationID);
-  const joinInfo = getJoinInfo(negation.record, result.rec);
-  const [graph5, joinID] = addNode(graph4, true, {
-    type: "Join",
-    joinVars: Object.keys(joinInfo.join),
-    leftID: negationID,
-    rightID: result.tipID,
-  });
-  const graph6 = addEdge(graph5, negationID, joinID);
-  const graph7 = addEdge(graph6, result.tipID, joinID);
+  const graph3 = addEdge(graph2, res1.tipID, negationID);
   return {
-    newGraph: graph7,
+    newGraph: graph3,
     rec: negation.record,
-    tipID: joinID,
+    tipID: negationID,
   };
 }
 
 function addAggregation(
-  result: AddConjunctResult,
+  graph0: RuleGraph,
   aggregation: Aggregation
 ): AddConjunctResult {
-  const [graph1, aggID] = addNode(result.newGraph, true, {
+  const res1 = addRec(graph0, aggregation.record);
+  const [graph2, aggID] = addNode(res1.newGraph, true, {
     type: "Aggregation",
     aggregation,
   });
-  const graph2 = addEdge(graph1, result.tipID, aggID);
+  const graph3 = addEdge(graph2, res1.tipID, aggID);
   return {
-    newGraph: graph2,
+    newGraph: graph3,
     rec: aggregation.record,
     tipID: aggID,
   };
 }
 
-function addAndBinary(
+function addJoin(
   graph: RuleGraph,
-  left: Rec,
-  right: Rec,
-  rightID: NodeID
+  left: AddConjunctResult,
+  right: AddConjunctResult
 ): AddConjunctResult {
   let outGraph = graph;
-  const joinInfo = getJoinInfo(left, right);
+  const joinInfo = getJoinInfo(left.rec, right.rec);
   const varsToIndex = Object.keys(joinInfo.join);
-  const { newGraph: outGraph2, tipID: leftID } = addRec(outGraph, left);
-  outGraph = outGraph2;
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
     joinVars: Object.keys(joinInfo.join),
-    leftID,
-    rightID,
+    leftID: left.tipID,
+    rightID: right.tipID,
   });
   outGraph = outGraph3;
-  outGraph = addEdge(outGraph, leftID, joinID);
-  outGraph = addEdge(outGraph, rightID, joinID);
+  outGraph = addEdge(outGraph, left.tipID, joinID);
+  outGraph = addEdge(outGraph, right.tipID, joinID);
   // console.log({ colsToIndex });
-  outGraph = addIndex(outGraph, leftID, varsToIndex);
-  outGraph = addIndex(outGraph, rightID, varsToIndex);
+  outGraph = addIndex(outGraph, left.tipID, varsToIndex);
+  outGraph = addIndex(outGraph, right.tipID, varsToIndex);
   return {
     newGraph: outGraph,
     tipID: joinID,
-    rec: left,
+    rec: left.rec, // ???
   };
 }
 
