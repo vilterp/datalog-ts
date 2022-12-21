@@ -148,6 +148,7 @@ function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
 function addNegation(graph: RuleGraph, negation: Negation): AddResult {
   const [graph1, negationID] = addNode(graph, true, {
     type: "Negation",
+    rec: negation.record,
     received: 0,
   });
   const [graph2, matchID] = addNode(graph1, true, {

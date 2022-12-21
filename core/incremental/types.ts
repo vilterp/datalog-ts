@@ -51,7 +51,7 @@ export type NodeDesc =
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }
   // TODO: maybe operator state should be kept separate?
-  | { type: "Negation"; received: number };
+  | { type: "Negation"; rec: Rec; received: number };
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
