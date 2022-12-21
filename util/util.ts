@@ -326,6 +326,9 @@ export function sortBy<T>(arr: T[], attr: (t: T) => string): T[] {
 }
 
 export function permute<T>(items: T[]): T[][] {
+  if (items.length === 0) {
+    return [];
+  }
   if (items.length === 1) {
     return [items];
   }

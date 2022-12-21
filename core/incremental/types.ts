@@ -1,4 +1,4 @@
-import { Rec, VarMappings, Rule, Res } from "../types";
+import { Rec, VarMappings, Rule, Res, Aggregation } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -51,7 +51,8 @@ export type NodeDesc =
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }
   // TODO: maybe operator state should be kept separate?
-  | { type: "Negation"; rec: Rec; received: number };
+  | { type: "Negation"; rec: Rec; received: number }
+  | { type: "Aggregation"; aggregation: Aggregation };
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,

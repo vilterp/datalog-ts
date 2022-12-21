@@ -38,6 +38,7 @@ export type Conjunct = Rec | Negation | Aggregation;
 
 export type Negation = { type: "Negation"; record: Rec };
 
+// TODO: make the primitive `reduce`?
 export type Aggregation = {
   type: "Aggregation";
   aggregation: string;

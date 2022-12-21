@@ -17,6 +17,7 @@ export function toGraphviz(
             label: `${id}: ${formatNodeWithIndexes(node)}`,
             fillcolor: getNodeColor(node.desc) || "",
             style: "filled",
+            fontname: "Courier",
           },
         };
       })
