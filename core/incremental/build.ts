@@ -1,4 +1,12 @@
-import { Rule, Rec, Disjunction, Conjunct, VarMappings, Res } from "../types";
+import {
+  Rule,
+  Rec,
+  Disjunction,
+  Conjunct,
+  VarMappings,
+  Res,
+  Negation,
+} from "../types";
 import {
   RuleGraph,
   NodeDesc,
@@ -14,7 +22,6 @@ import { emptyIndexedCollection } from "../../util/indexedCollection";
 import { fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
-import { node } from "../../util/tree";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
   const entries = Object.entries(catalog);
@@ -125,15 +132,7 @@ function addOr(graph: RuleGraph, or: Disjunction): AddResult {
 }
 
 function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
-  const recs = clauses.filter((clause) => {
-    if (clause.type === "Record") {
-      return true;
-    } else {
-      throw new Error(
-        `clauses of type ${clause.type} not supported in incremental interpreter`
-      );
-    }
-  }) as Rec[];
+  const recs = clauses.filter((clause) => clause.type === "Record") as Rec[];
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
     const tree = getJoinTree(recs);
@@ -144,7 +143,35 @@ function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
   });
   const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
 
-  return addJoinTree(graph, joinTree);
+  const withJoinTree = addJoinTree(graph, joinTree);
+
+  const negations = clauses.filter((conjuct) => conjuct.type === "Negation");
+  const withNegations = negations.reduce((accum, negation) => {
+    return addNegation(accum, negation);
+  }, withJoinTree);
+
+  return withNegations;
+}
+
+function addNegation(graph: RuleGraph, negation: Negation): AddResult {
+  const [graph1, negationID] = addNode(graph, true, {
+    type: "Negation",
+    received: 0,
+  });
+  const [graph2, matchID] = addNode(graph1, true, {
+    type: "Match",
+    rec: negation.record,
+    mappings: {},
+  });
+  // TODO: needs to be a Match in here too
+  const graph3 = addEdge(graph2, negation.record.relation, matchID);
+  const graph4 = addEdge(graph3, matchID, negationID);
+  return {
+    newGraph: graph4,
+    newNodeIDs: new Set([matchID, negationID]),
+    rec: null,
+    tipID: negationID,
+  };
 }
 
 function addAndBinary(

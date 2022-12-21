@@ -1,4 +1,4 @@
-import { RuleGraph, NodeID, JoinDesc } from "./types";
+import { RuleGraph, NodeID, JoinDesc, NodeDesc } from "./types";
 import { baseFactTrace, Rec, Res, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
 import { getIndexKey, getIndexName } from "./build";
@@ -141,7 +141,8 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
   let newGraph = iter.graph;
   const insertingNow = iter.queue.shift();
   const curNodeID = insertingNow.destination;
-  const results = processInsertion(iter.graph, insertingNow);
+  const [newNodeDesc, results] = processInsertion(iter.graph, insertingNow);
+  newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
   // console.log("push", results);
   for (let result of results) {
     newGraph = addToCache(newGraph, curNodeID, result);
@@ -158,7 +159,7 @@ function stepIterator(iter: InsertionIterator): EmissionBatch {
 }
 
 // caller adds resulting facts
-function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
+function processInsertion(graph: RuleGraph, ins: Insertion): [NodeDesc, Res[]] {
   const node = graph.nodes.get(ins.destination);
   if (!node) {
     throw new Error(`not found: node ${ins.destination}`);
@@ -166,24 +167,24 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
   const nodeDesc = node.desc;
   switch (nodeDesc.type) {
     case "Union":
-      return [ins.res];
+      return [nodeDesc, [ins.res]];
     case "Join": {
       if (ins.origin === nodeDesc.leftID) {
-        return doJoin(graph, ins, nodeDesc, nodeDesc.rightID);
+        return [nodeDesc, doJoin(graph, ins, nodeDesc, nodeDesc.rightID)];
       } else {
-        return doJoin(graph, ins, nodeDesc, nodeDesc.leftID);
+        return [nodeDesc, doJoin(graph, ins, nodeDesc, nodeDesc.leftID)];
       }
     }
     case "Match": {
       const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
       const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
       if (bindings === null) {
-        return [];
+        return [nodeDesc, []];
       }
       for (let key of Object.keys(bindings)) {
         // console.log({ bindings, key });
         if (bindings[key].type === "Var") {
-          return [];
+          return [nodeDesc, []];
         }
       }
       // console.log("match", {
@@ -194,15 +195,18 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       //   mappedBindings: ppb(mappedBindings),
       // });
       return [
-        {
-          term: ins.res.term,
-          bindings: bindings,
-          trace: {
-            type: "MatchTrace",
-            fact: ins.res,
-            match: nodeDesc.rec,
+        nodeDesc,
+        [
+          {
+            term: ins.res.term,
+            bindings: bindings,
+            trace: {
+              type: "MatchTrace",
+              fact: ins.res,
+              match: nodeDesc.rec,
+            },
           },
-        },
+        ],
       ];
     }
     case "Substitute":
@@ -213,23 +217,28 @@ function processInsertion(graph: RuleGraph, ins: Insertion): Res[] {
       //   out: ppt(rec),
       // });
       return [
-        {
-          term: rec,
-          bindings: ins.res.bindings,
-          trace: {
-            type: "RefTrace",
-            innerRes: ins.res,
-            invokeLoc: [], // TODO: ???
-            mappings: {}, // TODO: ???
-            refTerm: nodeDesc.rec,
+        nodeDesc,
+        [
+          {
+            term: rec,
+            bindings: ins.res.bindings,
+            trace: {
+              type: "RefTrace",
+              innerRes: ins.res,
+              invokeLoc: [], // TODO: ???
+              mappings: {}, // TODO: ???
+              refTerm: nodeDesc.rec,
+            },
           },
-        },
+        ],
       ];
     case "BaseFactTable":
-      return [ins.res];
+      return [nodeDesc, [ins.res]];
     case "Builtin":
-      // TODO: ???
-      return [ins.res];
+      // TODO: does this make sense?
+      return [nodeDesc, [ins.res]];
+    case "Negation":
+      return [{ type: "Negation", received: nodeDesc.received + 1 }, []];
   }
 }
 
@@ -313,11 +322,27 @@ function doJoin(
 function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
   const newCache = cache.insert(res);
+  // TODO: use Map#update?
   return {
     ...graph,
     nodes: graph.nodes.set(nodeID, {
       ...graph.nodes.get(nodeID),
       cache: newCache,
+    }),
+  };
+}
+
+function updateNodeDesc(
+  graph: RuleGraph,
+  nodeID: NodeID,
+  newDesc: NodeDesc
+): RuleGraph {
+  // TODO: use Map#update?
+  return {
+    ...graph,
+    nodes: graph.nodes.set(nodeID, {
+      ...graph.nodes.get(nodeID),
+      desc: newDesc,
     }),
   };
 }
