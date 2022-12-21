@@ -159,9 +159,10 @@ function addNegation(result: AddResult, negation: Negation): AddResult {
   });
   const graph3 = addEdge(graph2, negation.record.relation, matchID);
   const graph4 = addEdge(graph3, matchID, negationID);
+  const joinInfo = getJoinInfo(negation.record, result.rec);
   const [graph5, joinID] = addNode(graph4, true, {
     type: "Join",
-    joinVars: [],
+    joinVars: Object.keys(joinInfo.join),
     leftID: negationID,
     rightID: result.tipID,
   });
