@@ -57,15 +57,8 @@ function joinInfoTest(test: string[]): TestOutput[] {
 
 function buildTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const statements = input
-      .split(";")
-      .map((s) => s.trim())
-      .map(parseStatement);
     let interp = new IncrementalInterpreter(".", fsLoader);
-    for (let rawStmt of statements) {
-      const stmt = parserStatementToInternal(rawStmt);
-      interp = interp.processStmt(stmt).newInterp as IncrementalInterpreter;
-    }
+    interp = interp.evalStr(input)[1] as IncrementalInterpreter;
     return graphvizOut(
       prettyPrintGraph(toGraphviz(buildGraph(interp.catalog)))
     );
