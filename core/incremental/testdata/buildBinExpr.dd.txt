@@ -1,4 +1,4 @@
-.table foo;
+.table foo
 bar{a: A, b: B} :-
   foo{a: A, b: B} & A != B.
 ----
@@ -15,7 +15,7 @@ digraph G {
   "2" -> "bar" [];
 }
 
-.table parents;
+.table parents
 sibling{left: L, right: R} :-
   parents{child: L, mother: M, father: F} &
   parents{child: R, mother: M, father: F} &
@@ -39,8 +39,8 @@ digraph G {
   "4" -> "sibling" [];
 }
 
-.table input.char;
-.table input.next;
+.table input.char
+.table input.next
 main{span: span{from: P1, to: P2}} :-
   input.char{id: P1, char: C} &
   input.next{left: P1, right: P2} &
