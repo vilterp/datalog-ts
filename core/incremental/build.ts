@@ -7,6 +7,7 @@ import {
   Res,
   Negation,
   Aggregation,
+  rec,
 } from "../types";
 import {
   RuleGraph,
@@ -65,9 +66,11 @@ function declareTable(graph: RuleGraph, name: string): RuleGraph {
   return withNode;
 }
 
-export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
-  const leftVars = getVarToPath(left);
-  const rightVars = getVarToPath(right);
+export function getJoinInfo(left: Conjunct, right: Conjunct): JoinInfo {
+  const leftVars = getVarToPath(left.type === "Record" ? left : left.record);
+  const rightVars = getVarToPath(
+    right.type === "Record" ? right : right.record
+  );
   return {
     leftVars,
     rightVars,
@@ -98,13 +101,10 @@ function getVarToPath(rec: Rec): VarToPath {
   return out;
 }
 
-type AddResult = {
-  newGraph: RuleGraph;
-  rec: Rec | null;
-  tipID: NodeID;
-};
-
-function addOr(graph: RuleGraph, or: Disjunction): AddResult {
+function addOr(
+  graph: RuleGraph,
+  or: Disjunction
+): { newGraph: RuleGraph; tipID: NodeID } {
   if (or.disjuncts.length === 1) {
     return addAnd(graph, or.disjuncts[0].conjuncts);
   }
@@ -118,12 +118,17 @@ function addOr(graph: RuleGraph, or: Disjunction): AddResult {
 
   return {
     newGraph: outGraph,
-    rec: null, // ???
     tipID: orID,
   };
 }
 
-function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
+type AddConjunctResult = {
+  newGraph: RuleGraph;
+  rec: Rec;
+  tipID: NodeID;
+};
+
+function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddConjunctResult {
   // add normal conjuncts
   const recs = clauses.filter((clause) => clause.type === "Record") as Rec[];
   const allRecPermutations = permute(recs);
@@ -156,7 +161,10 @@ function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
   return withAggregations;
 }
 
-function addNegation(result: AddResult, negation: Negation): AddResult {
+function addNegation(
+  result: AddConjunctResult,
+  negation: Negation
+): AddConjunctResult {
   const graph0 = result.newGraph;
   const [graph1, negationID] = addNode(graph0, true, {
     type: "Negation",
@@ -181,15 +189,15 @@ function addNegation(result: AddResult, negation: Negation): AddResult {
   const graph7 = addEdge(graph6, result.tipID, joinID);
   return {
     newGraph: graph7,
-    rec: null,
+    rec: negation.record,
     tipID: joinID,
   };
 }
 
 function addAggregation(
-  result: AddResult,
+  result: AddConjunctResult,
   aggregation: Aggregation
-): AddResult {
+): AddConjunctResult {
   const [graph1, aggID] = addNode(result.newGraph, true, {
     type: "Aggregation",
     aggregation,
@@ -197,7 +205,7 @@ function addAggregation(
   const graph2 = addEdge(graph1, result.tipID, aggID);
   return {
     newGraph: graph2,
-    rec: null,
+    rec: aggregation.record,
     tipID: aggID,
   };
 }
@@ -207,7 +215,7 @@ function addAndBinary(
   left: Rec,
   right: Rec,
   rightID: NodeID
-): AddResult {
+): AddConjunctResult {
   let outGraph = graph;
   const joinInfo = getJoinInfo(left, right);
   const varsToIndex = Object.keys(joinInfo.join);
@@ -232,9 +240,12 @@ function addAndBinary(
   };
 }
 
-function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
+function addJoinTree(
+  ruleGraph: RuleGraph,
+  joinTree: JoinTree
+): AddConjunctResult {
   if (joinTree.type === "Leaf") {
-    return addRec(ruleGraph, joinTree.rec);
+    return addRec(ruleGraph, joinTree.conjunct);
   }
   const {
     newGraph,
@@ -254,7 +265,18 @@ function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
   };
 }
 
-function addRec(graph: RuleGraph, rec: Rec): AddResult {
+function addConjunct(graph: RuleGraph, conjunct: Conjunct): AddConjunctResult {
+  switch (conjunct.type) {
+    case "Record":
+      return addRec(graph, conjunct);
+    case "Aggregation":
+      return addAggregation(graph, conjunct);
+    case "Negation":
+      return addNegation(graph, conjunct);
+  }
+}
+
+function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   // TODO: probably should just add all of these globally...
   if (BUILTINS[rec.relation]) {
     const [graph2, builtinID] = addNode(graph, true, { type: "Builtin", rec });
@@ -301,20 +323,25 @@ export function getIndexName(attrs: ColName[]): string {
 type JoinTree =
   | {
       type: "Leaf";
-      rec: Rec;
+      conjunct: Conjunct;
     }
-  | { type: "Node"; left: Rec; joinInfo: JoinInfo; right: JoinTree | null };
+  | {
+      type: "Node";
+      left: Conjunct;
+      joinInfo: JoinInfo;
+      right: JoinTree | null;
+    };
 
-function getJoinTree(recs: Rec[]): JoinTree {
-  if (recs.length === 1) {
-    return { type: "Leaf", rec: recs[0] };
+function getJoinTree(conjuncts: Conjunct[]): JoinTree {
+  if (conjuncts.length === 1) {
+    return { type: "Leaf", conjunct: conjuncts[0] };
   }
   return {
     type: "Node",
-    left: recs[0],
+    left: conjuncts[0],
     // are we joining with just the next record, or everything on the right?
-    joinInfo: getJoinInfo(recs[0], recs[1]),
-    right: getJoinTree(recs.slice(1)),
+    joinInfo: getJoinInfo(conjuncts[0], conjuncts[1]),
+    right: getJoinTree(conjuncts.slice(1)),
   };
 }
 
