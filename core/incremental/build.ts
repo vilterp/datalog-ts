@@ -128,44 +128,57 @@ type AddConjunctResult = {
   tipID: NodeID;
 };
 
-function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddConjunctResult {
+function addAnd(graph: RuleGraph, conjuncts: Conjunct[]): AddConjunctResult {
   // add normal conjuncts
-  const recs = clauses.filter((clause) => clause.type === "Record") as Rec[];
-  const allRecPermutations = permute(recs);
-  const allJoinTrees = allRecPermutations.map((recs) => {
-    const tree = getJoinTree(recs);
+  const allRecPermutations = permute(conjuncts);
+  const allJoinTrees = allRecPermutations.map((permutation) => {
+    const tree = getJoinTree(permutation);
     return { tree, numCommonVars: numJoinsWithCommonVars(tree) };
   });
   allJoinTrees.sort((left, right) => {
     return left.numCommonVars - right.numCommonVars;
   });
   const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
-  const withJoinTree = addJoinTree(graph, joinTree);
-
-  // add negations
-  const negations = clauses.filter((conjuct) => conjuct.type === "Negation");
-  const withNegations = negations.reduce(
-    (accum, negation) => addNegation(accum, negation as Negation),
-    withJoinTree
-  );
-
-  // add aggregations
-  const aggregations = clauses.filter(
-    (conjunct) => conjunct.type === "Aggregation"
-  );
-  const withAggregations = aggregations.reduce(
-    (accum, aggregation) => addAggregation(accum, aggregation as Aggregation),
-    withNegations
-  );
-
-  return withAggregations;
+  return addJoinTree(graph, joinTree);
 }
 
-function addNegation(
-  result: AddConjunctResult,
-  negation: Negation
+function addJoinTree(
+  ruleGraph: RuleGraph,
+  joinTree: JoinTree
 ): AddConjunctResult {
-  const graph0 = result.newGraph;
+  if (joinTree.type === "Leaf") {
+    return addRec(ruleGraph, joinTree.conjunct);
+  }
+  const {
+    newGraph,
+    tipID: rightID,
+    rec: rightRec,
+  } = addJoinTree(ruleGraph, joinTree.right);
+  const { newGraph: newGraph2, tipID: andID } = addAndBinary(
+    newGraph,
+    joinTree.left,
+    rightRec,
+    rightID
+  );
+  return {
+    newGraph: newGraph2,
+    tipID: andID,
+    rec: joinTree.left,
+  };
+}
+
+function addConjunct(graph: RuleGraph, conjunct: Conjunct): AddConjunctResult {
+  switch (conjunct.type) {
+    case "Record":
+      return addRec(graph, conjunct);
+    case "Aggregation":
+      return addAggregation(graph, conjunct);
+    case "Negation":
+      return addNegation(graph, conjunct);
+  }
+}
+
+function addNegation(graph0: RuleGraph, negation: Negation): AddConjunctResult {
   const [graph1, negationID] = addNode(graph0, true, {
     type: "Negation",
     rec: negation.record,
@@ -238,42 +251,6 @@ function addAndBinary(
     tipID: joinID,
     rec: left,
   };
-}
-
-function addJoinTree(
-  ruleGraph: RuleGraph,
-  joinTree: JoinTree
-): AddConjunctResult {
-  if (joinTree.type === "Leaf") {
-    return addRec(ruleGraph, joinTree.conjunct);
-  }
-  const {
-    newGraph,
-    tipID: rightID,
-    rec: rightRec,
-  } = addJoinTree(ruleGraph, joinTree.right);
-  const { newGraph: newGraph2, tipID: andID } = addAndBinary(
-    newGraph,
-    joinTree.left,
-    rightRec,
-    rightID
-  );
-  return {
-    newGraph: newGraph2,
-    tipID: andID,
-    rec: joinTree.left,
-  };
-}
-
-function addConjunct(graph: RuleGraph, conjunct: Conjunct): AddConjunctResult {
-  switch (conjunct.type) {
-    case "Record":
-      return addRec(graph, conjunct);
-    case "Aggregation":
-      return addAggregation(graph, conjunct);
-    case "Negation":
-      return addNegation(graph, conjunct);
-  }
 }
 
 function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
