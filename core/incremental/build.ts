@@ -233,9 +233,6 @@ function addRec(graph: RuleGraph, rec: Rec): AddResult {
     mappings: {},
   };
   const [graph2, matchID] = addNode(graph, true, newNodeDesc);
-  if (BUILTINS[rec.relation]) {
-    console.log("add edge from", rec.relation, matchID);
-  }
   const graph3 = addEdge(graph2, rec.relation, matchID);
   return {
     newGraph: graph3,
