@@ -238,7 +238,8 @@ function processInsertion(graph: RuleGraph, ins: Insertion): [NodeDesc, Res[]] {
       // TODO: does this make sense?
       return [nodeDesc, [ins.res]];
     case "Negation":
-      return [{ ...nodeDesc, received: nodeDesc.received + 1 }, []];
+      throw new Error("can't handle negation yet");
+    // return [{ ...nodeDesc, received: nodeDesc.received + 1 }, []];
   }
 }
 
