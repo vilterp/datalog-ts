@@ -109,9 +109,12 @@ digraph G {
   "0" [fillcolor="darkseagreen2" label="0: Match(var{name: N}; {}) []" shape="box" style="filled"];
   "1" [fillcolor="" label="1: Not(defn{name: N}) []" shape="box" style="filled"];
   "2" [fillcolor="darkseagreen2" label="2: Match(defn{name: N}; {}) []" shape="box" style="filled"];
+  "3" [fillcolor="thistle" label="3: Join() []" shape="box" style="filled"];
   "undefVar" [fillcolor="lightblue" label="undefVar: Subst({name: N}) []" shape="box" style="filled"];
   "var" -> "0" [];
   "defn" -> "2" [];
   "2" -> "1" [];
-  "1" -> "undefVar" [];
+  "1" -> "3" [];
+  "0" -> "3" [];
+  "3" -> "undefVar" [];
 }

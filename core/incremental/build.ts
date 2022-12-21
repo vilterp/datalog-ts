@@ -139,14 +139,15 @@ function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
 
   const negations = clauses.filter((conjuct) => conjuct.type === "Negation");
   const withNegations = negations.reduce((accum, negation) => {
-    return addNegation(accum.newGraph, negation as Negation);
+    return addNegation(accum, negation as Negation);
   }, withJoinTree);
 
   return withNegations;
 }
 
-function addNegation(graph: RuleGraph, negation: Negation): AddResult {
-  const [graph1, negationID] = addNode(graph, true, {
+function addNegation(result: AddResult, negation: Negation): AddResult {
+  const graph0 = result.newGraph;
+  const [graph1, negationID] = addNode(graph0, true, {
     type: "Negation",
     rec: negation.record,
     received: 0,
@@ -156,13 +157,20 @@ function addNegation(graph: RuleGraph, negation: Negation): AddResult {
     rec: negation.record,
     mappings: {},
   });
-  // TODO: needs to be a Match in here too
   const graph3 = addEdge(graph2, negation.record.relation, matchID);
   const graph4 = addEdge(graph3, matchID, negationID);
+  const [graph5, joinID] = addNode(graph4, true, {
+    type: "Join",
+    joinVars: [],
+    leftID: negationID,
+    rightID: result.tipID,
+  });
+  const graph6 = addEdge(graph5, negationID, joinID);
+  const graph7 = addEdge(graph6, result.tipID, joinID);
   return {
-    newGraph: graph4,
+    newGraph: graph7,
     rec: null,
-    tipID: negationID,
+    tipID: joinID,
   };
 }
 
@@ -292,7 +300,7 @@ function numJoinsWithCommonVars(joinTree: JoinTree): number {
 
 // helpers
 
-export function addNodeKnownID(
+function addNodeKnownID(
   id: NodeID,
   graph: RuleGraph,
   isInternal: boolean,
