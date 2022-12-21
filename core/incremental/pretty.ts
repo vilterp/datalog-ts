@@ -23,6 +23,10 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
       return "";
     case "Negation":
       return `Not(${ppt(nodeDesc.rec)})`;
+    case "Aggregation":
+      return `Agg(${nodeDesc.aggregation.varNames.join(", ")}: ${ppt(
+        nodeDesc.aggregation.record
+      )})`;
   }
 }
 
