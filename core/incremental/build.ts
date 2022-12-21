@@ -149,22 +149,9 @@ function addJoinTree(
   if (joinTree.type === "Leaf") {
     return addConjunct(ruleGraph, joinTree.conjunct);
   }
-  const {
-    newGraph,
-    tipID: rightID,
-    rec: rightRec,
-  } = addJoinTree(ruleGraph, joinTree.right);
-  const { newGraph: newGraph2, tipID: andID } = addJoin(
-    newGraph,
-    joinTree.left,
-    rightRec,
-    rightID
-  );
-  return {
-    newGraph: newGraph2,
-    tipID: andID,
-    rec: joinTree.left,
-  };
+  const leftRes = addConjunct(ruleGraph, joinTree.left);
+  const rightRes = addJoinTree(leftRes.newGraph, joinTree.right);
+  return addJoin(rightRes.newGraph, leftRes, rightRes);
 }
 
 function addConjunct(graph: RuleGraph, conjunct: Conjunct): AddConjunctResult {
