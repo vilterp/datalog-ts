@@ -61,6 +61,25 @@ export const emptyRuleGraph: RuleGraph = {
   edges: Map(),
 };
 
+// eval
+
+export type Message = {
+  payload: MessagePayload;
+  origin: NodeID | null; // null if coming from outside
+  destination: NodeID;
+};
+
+export type MessagePayload = Insert | MarkDone;
+
+export type Insert = {
+  type: "Insert";
+  res: Res;
+};
+
+export type MarkDone = {
+  type: "MarkDone";
+};
+
 // output
 
 export type Output =

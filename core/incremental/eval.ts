@@ -1,27 +1,18 @@
-import { RuleGraph, NodeID, JoinDesc, NodeDesc } from "./types";
+import {
+  RuleGraph,
+  NodeID,
+  JoinDesc,
+  NodeDesc,
+  Insert,
+  MessagePayload,
+  Message,
+} from "./types";
 import { baseFactTrace, Rec, Res, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
 import { getIndexKey, getIndexName } from "./build";
 import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
-
-type Message = {
-  payload: MessagePayload;
-  origin: NodeID | null; // null if coming from outside
-  destination: NodeID;
-};
-
-type MessagePayload = Insert | MarkDone;
-
-type Insert = {
-  type: "Insert";
-  res: Res;
-};
-
-type MarkDone = {
-  type: "MarkDone";
-};
 
 export type EmissionLog = EmissionBatch[];
 
