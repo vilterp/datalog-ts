@@ -6,6 +6,7 @@ import {
   VarMappings,
   Res,
   Negation,
+  Aggregation,
 } from "../types";
 import {
   RuleGraph,
@@ -97,10 +98,9 @@ function getVarToPath(rec: Rec): VarToPath {
   return out;
 }
 
-// TODO: put RuleGraph back into this
 type AddResult = {
   newGraph: RuleGraph;
-  rec: Rec;
+  rec: Rec | null;
   tipID: NodeID;
 };
 
@@ -124,6 +124,7 @@ function addOr(graph: RuleGraph, or: Disjunction): AddResult {
 }
 
 function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
+  // add normal conjuncts
   const recs = clauses.filter((clause) => clause.type === "Record") as Rec[];
   const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((recs) => {
@@ -134,15 +135,25 @@ function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
     return left.numCommonVars - right.numCommonVars;
   });
   const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
-
   const withJoinTree = addJoinTree(graph, joinTree);
 
+  // add negations
   const negations = clauses.filter((conjuct) => conjuct.type === "Negation");
-  const withNegations = negations.reduce((accum, negation) => {
-    return addNegation(accum, negation as Negation);
-  }, withJoinTree);
+  const withNegations = negations.reduce(
+    (accum, negation) => addNegation(accum, negation as Negation),
+    withJoinTree
+  );
 
-  return withNegations;
+  // add aggregations
+  const aggregations = clauses.filter(
+    (conjunct) => conjunct.type === "Aggregation"
+  );
+  const withAggregations = aggregations.reduce(
+    (accum, aggregation) => addAggregation(accum, aggregation as Aggregation),
+    withNegations
+  );
+
+  return withAggregations;
 }
 
 function addNegation(result: AddResult, negation: Negation): AddResult {
@@ -172,6 +183,22 @@ function addNegation(result: AddResult, negation: Negation): AddResult {
     newGraph: graph7,
     rec: null,
     tipID: joinID,
+  };
+}
+
+function addAggregation(
+  result: AddResult,
+  aggregation: Aggregation
+): AddResult {
+  const [graph1, aggID] = addNode(result.newGraph, true, {
+    type: "Aggregation",
+    aggregation,
+  });
+  const graph2 = addEdge(graph1, result.tipID, aggID);
+  return {
+    newGraph: graph2,
+    rec: null,
+    tipID: aggID,
   };
 }
 
