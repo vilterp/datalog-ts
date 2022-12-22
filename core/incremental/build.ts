@@ -7,7 +7,13 @@ import {
   Bindings,
   VarToPath,
 } from "../types";
-import { RuleGraph, NodeDesc, NodeID, emptyRuleGraph } from "./types";
+import {
+  RuleGraph,
+  NodeDesc,
+  NodeID,
+  emptyRuleGraph,
+  emptyNegationState,
+} from "./types";
 import { permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
@@ -176,9 +182,8 @@ function addJoinTree(
 
 function getRecord(conjunct: Conjunct): Rec {
   switch (conjunct.type) {
-    case "Record": {
+    case "Record":
       return conjunct;
-    }
     case "Aggregation":
       return conjunct.record;
     case "Negation": {
@@ -198,10 +203,10 @@ function addNegation(
       type: "Join",
       joinVars,
       leftID: prev.tipID,
-      rightID: negationRes.tipID,
+      rightID: negationRes.tipID, // right side is negated
     },
     // TODO: mark which side is negated?
-    received: 0,
+    state: emptyNegationState,
   });
   const graph3 = addEdge(graph2, prev.tipID, negationID);
   const graph4 = addEdge(graph3, negationRes.tipID, negationID);

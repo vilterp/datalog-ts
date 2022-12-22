@@ -6,6 +6,9 @@ import {
   MessagePayload,
   Message,
   BindingsMsg,
+  NegationState,
+  NegationDesc,
+  emptyNegationState,
 } from "./types";
 import {
   Bindings,
@@ -260,28 +263,59 @@ function processMessage(
       // TODO: does this make sense?
       return [nodeDesc, [payload]];
     case "Negation": {
-      // switch (msg.payload.type) {
-      //   case "Insert":
-      //     return [{ ...nodeDesc, received: nodeDesc.received + 1 }, []];
-      //   case "MarkDone": {
-      //     const newNodeDesc: NodeDesc = { ...nodeDesc, received: 0 };
-      //     // negation failed, since we've received some records
-      //     if (nodeDesc.received > 0) {
-      //       return [newNodeDesc, [{ type: "MarkDone" }]];
-      //     }
-      //     const res: Res = {
-      //       term: nodeDesc.rec,
-      //       bindings: {}, // TODO: ???
-      //       trace: { type: "NegationTrace", negatedTerm: nodeDesc.rec },
-      //     };
-      //     return [newNodeDesc, [{ type: "Insert", res }, { type: "MarkDone" }]];
-      //   }
-      // }
-      throw new Error("can't handle negation yet");
+      switch (payload.type) {
+        case "Bindings": {
+          const newDesc = updateNegationState(
+            nodeDesc,
+            msg.origin,
+            payload.bindings
+          );
+          return [newDesc, []];
+        }
+        case "MarkDone": {
+          const newNodeDesc: NodeDesc = {
+            ...nodeDesc,
+            state: emptyNegationState,
+          };
+          // negation failed, since we've received some records
+          if (nodeDesc.received > 0) {
+            return [newNodeDesc, [{ type: "MarkDone" }]];
+          }
+          const res: Res = {
+            term: nodeDesc.rec,
+            bindings: {}, // TODO: ???
+            trace: { type: "NegationTrace", negatedTerm: nodeDesc.rec },
+          };
+          return [newNodeDesc, [{ type: "Insert", res }, { type: "MarkDone" }]];
+        }
+        case "Record":
+          throw new Error(
+            "Negation nodes not supposed to receive Record messages"
+          );
+      }
     }
     case "Aggregation":
       throw new Error("can't handle aggregation yet");
   }
+}
+
+function updateNegationState(
+  nodeDesc: NegationDesc,
+  origin: NodeID,
+  bindings: BindingsWithTrace
+): NegationDesc {
+  const oldState = nodeDesc.state;
+  const newState: NegationState =
+    origin === nodeDesc.joinDesc.leftID
+      ? {
+          ...oldState,
+          receivedNormal: [...oldState.receivedNormal, bindings],
+        }
+      : {
+          ...oldState,
+          receivedNegated: [...oldState.receivedNegated, bindings],
+        };
+  return { ...nodeDesc, state: newState };
 }
 
 type JoinStats = {

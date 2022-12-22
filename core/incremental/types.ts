@@ -2,8 +2,6 @@ import {
   Rec,
   Res,
   Aggregation,
-  Bindings,
-  Trace,
   BindingsWithTrace,
   AttrPath,
   VarToPath,
@@ -35,13 +33,6 @@ export type JoinInfo = {
   };
 };
 
-export type JoinDesc = {
-  type: "Join";
-  joinVars: Set<string>;
-  leftID: NodeID;
-  rightID: NodeID;
-};
-
 export type NodeDesc =
   | JoinDesc
   | { type: "BaseFactTable" }
@@ -51,8 +42,31 @@ export type NodeDesc =
   | { type: "Builtin"; rec: Rec }
   // TODO: maybe operator state should be kept separate?
   // Negation aka AntiJoin
-  | { type: "Negation"; joinDesc: JoinDesc; received: number }
+  | NegationDesc
   | { type: "Aggregation"; aggregation: Aggregation };
+
+export type JoinDesc = {
+  type: "Join";
+  joinVars: Set<string>;
+  leftID: NodeID;
+  rightID: NodeID;
+};
+
+export type NegationDesc = {
+  type: "Negation";
+  joinDesc: JoinDesc;
+  state: NegationState;
+};
+
+export type NegationState = {
+  receivedNormal: BindingsWithTrace[];
+  receivedNegated: BindingsWithTrace[];
+};
+
+export const emptyNegationState: NegationState = {
+  receivedNormal: [],
+  receivedNegated: [],
+};
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
@@ -84,6 +98,8 @@ export type BindingsMsg = {
 export type MarkDoneMsg = {
   type: "MarkDone";
 };
+
+export const markDone: MarkDoneMsg = { type: "MarkDone" };
 
 // output
 
