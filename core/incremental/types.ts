@@ -25,6 +25,7 @@ export type AttrPath = AttrName[];
 export type VarToPath = { [varName: string]: AttrPath };
 
 export type JoinInfo = {
+  // TODO: do leftVars and rightVars need to be here?
   leftVars: VarToPath;
   rightVars: VarToPath;
   join: {

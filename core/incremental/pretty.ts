@@ -22,7 +22,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BaseFactTable":
       return "";
     case "Negation":
-      return `Not(${ppt(nodeDesc.rec)})`;
+      return `Not(${nodeDesc.joinDesc.joinVars.join(", ")})`;
     case "Aggregation":
       return `Agg(${nodeDesc.aggregation.varNames.join(", ")}: ${ppt(
         nodeDesc.aggregation.record
