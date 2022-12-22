@@ -25,12 +25,10 @@ export type AttrPath = AttrName[];
 export type VarToPath = { [varName: string]: AttrPath };
 
 export type JoinInfo = {
-  join: {
-    [varName: string]: {
-      varName: string;
-      leftAttr: AttrPath;
-      rightAttr: AttrPath;
-    };
+  [varName: string]: {
+    varName: string;
+    leftAttr: AttrPath;
+    rightAttr: AttrPath;
   };
 };
 

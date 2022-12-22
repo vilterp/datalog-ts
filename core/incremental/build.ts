@@ -71,13 +71,11 @@ export function getJoinInfo(left: Conjunct, right: Conjunct): JoinInfo {
   const rightVars = getVarToPath(
     right.type === "Record" ? right : right.record
   );
-  return {
-    join: combineObjects(
-      leftVars,
-      rightVars,
-      (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
-    ),
-  };
+  return combineObjects(
+    leftVars,
+    rightVars,
+    (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
+  );
 }
 
 function getVarToPath(rec: Rec): VarToPath {
@@ -208,7 +206,7 @@ function addNegation(
     type: "Negation",
     joinDesc: {
       type: "Join",
-      joinVars: Object.keys(joinInfo.join),
+      joinVars: Object.keys(joinInfo),
       leftID: prev.tipID,
       rightID: negationRes.tipID,
     },
@@ -246,10 +244,10 @@ function addJoin(
 ): AddConjunctResult {
   let outGraph = right.newGraph; // this feels pretty arbitrary
   const joinInfo = getJoinInfo(left.rec, right.rec);
-  const varsToIndex = Object.keys(joinInfo.join);
+  const varsToIndex = Object.keys(joinInfo);
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
-    joinVars: Object.keys(joinInfo.join),
+    joinVars: Object.keys(joinInfo),
     leftID: left.tipID,
     rightID: right.tipID,
   });
@@ -339,7 +337,7 @@ function numJoinsWithCommonVars(joinTree: JoinTree): number {
   if (joinTree.type === "Leaf") {
     return 0;
   }
-  const thisDoes = Object.keys(joinTree.joinInfo.join).length > 0 ? 1 : 0;
+  const thisDoes = Object.keys(joinTree.joinInfo).length > 0 ? 1 : 0;
   return thisDoes + numJoinsWithCommonVars(joinTree.right);
 }
 
