@@ -37,7 +37,7 @@ export type JoinInfo = {
 
 export type JoinDesc = {
   type: "Join";
-  joinInfo: JoinInfo;
+  joinVars: Set<string>;
   leftID: NodeID;
   rightID: NodeID;
 };

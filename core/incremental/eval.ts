@@ -321,8 +321,8 @@ function doJoin(
     }));
   }
   // TODO: avoid this allocation
-  const indexName = getIndexName(joinDesc.joinInfo);
-  const indexKey = getIndexKey(msg.bindings.bindings, joinDesc.joinInfo);
+  const indexName = getIndexName(joinDesc.joinVars);
+  const indexKey = getIndexKey(msg.bindings.bindings, joinDesc.joinVars);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
   // console.log("doJoin", {
   //   originID: ins.origin,
@@ -336,6 +336,7 @@ function doJoin(
   const results: BindingsWithTrace[] = [];
   for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch;
+    // loop through the join vars
     const unifyRes = unifyBindings(
       thisVars.bindings || {},
       otherVars.bindings || {}
