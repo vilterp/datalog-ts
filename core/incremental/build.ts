@@ -166,7 +166,10 @@ function addJoinTree(
         }
         return addJoin(leftRes, lastResult);
       case "Negation":
-        return addNegation(leftRes, conjunct);
+        if (lastResult.tipID === null) {
+          throw new Error("can't have just a negation as the body");
+        }
+        return addNegation(leftRes, lastResult);
       case "Aggregation":
         return addAggregation(leftRes, conjunct);
     }
@@ -187,18 +190,25 @@ function getRecord(conjunct: Conjunct): Rec {
 }
 
 function addNegation(
-  prev: GraphWithTip,
-  negation: Negation
+  prev: AddConjunctResult,
+  negationRes: AddConjunctResult
 ): AddConjunctResult {
+  const joinInfo = getJoinInfo(prev.rec, negationRes.rec);
   const [graph2, negationID] = addNode(prev.newGraph, true, {
     type: "Negation",
-    joinDesc: XXXX,
+    joinDesc: {
+      type: "Join",
+      joinVars: Object.keys(joinInfo.join),
+      leftID: prev.tipID,
+      rightID: negationRes.tipID,
+    },
+    // TODO: mark which side is negated?
     received: 0,
   });
   const graph3 = addEdge(graph2, prev.tipID, negationID);
   return {
     newGraph: graph3,
-    rec: negation.record,
+    rec: negationRes.rec,
     tipID: negationID,
   };
 }
