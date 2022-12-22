@@ -51,7 +51,7 @@ function joinInfoTest(test: string[]): TestOutput[] {
     const leftStmt = parserTermToInternal(parseRecord(left)) as Rec;
     const rightStmt = parserTermToInternal(parseRecord(right)) as Rec;
     const res = getJoinVars(leftStmt, rightStmt);
-    return jsonOut(res);
+    return jsonOut(res.toArray());
   });
 }
 

@@ -82,13 +82,15 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   }
   return node.cache
     .all()
-    .map((res) => {
-      const bindings = unify({}, res.term, query);
+    .map((bindingsWithTrace) => {
+      // TODO: this is awkward, and possibly not correct?
+      const substituted = substitute(query, bindingsWithTrace.bindings);
+      const bindings = unify({}, substituted, query);
       if (bindings === null) {
         return null;
       }
       // TODO: should this be its own trace node??
-      return { term: res.term, bindings, trace: res.trace };
+      return { term: substituted, bindings, trace: bindingsWithTrace.trace };
     })
     .filter((x) => x !== null)
     .toArray();
@@ -336,7 +338,7 @@ function doJoin(
   const results: BindingsWithTrace[] = [];
   for (let possibleOtherMatch of otherEntries) {
     const otherVars = possibleOtherMatch;
-    // loop through the join vars
+    // TODO: just loop through the join vars?
     const unifyRes = unifyBindings(
       thisVars.bindings || {},
       otherVars.bindings || {}
