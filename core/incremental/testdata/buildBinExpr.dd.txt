@@ -5,10 +5,10 @@ bar{a: A, b: B} :-
 application/graphviz
 digraph G {
   "foo" [fillcolor="darksalmon" fontname="Courier" label="foo:  []" shape="box" style="filled"];
-  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match({\"A\":[\"a\"],\"B\":[\"b\"]}) [A-B]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match{A: a, B: b} [A-B]" shape="box" style="filled"];
   "1" [fillcolor="" fontname="Courier" label="1: Builtin(base.neq{a: A, b: B}) [A-B]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(A, B) []" shape="box" style="filled"];
-  "bar" [fillcolor="lightblue" fontname="Courier" label="bar: Subst({a: A, b: B}) []" shape="box" style="filled"];
+  "bar" [fillcolor="lightblue" fontname="Courier" label="bar: Subst(bar{a: A, b: B}) []" shape="box" style="filled"];
   "foo" -> "0" [];
   "1" -> "2" [];
   "0" -> "2" [];
@@ -24,12 +24,12 @@ sibling{left: L, right: R} :-
 application/graphviz
 digraph G {
   "parents" [fillcolor="darksalmon" fontname="Courier" label="parents:  []" shape="box" style="filled"];
-  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match({\"L\":[\"child\"],\"M\":[\"mother\"],\"F\":[\"father\"]}) [F-M]" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match({\"R\":[\"child\"],\"M\":[\"mother\"],\"F\":[\"father\"]}) [F-M]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match{F: father, L: child, M: mother} [F-M]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match{F: father, M: mother, R: child} [F-M]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(F, M) [L-R]" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.neq{a: L, b: R}) [L-R]" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(L, R) []" shape="box" style="filled"];
-  "sibling" [fillcolor="lightblue" fontname="Courier" label="sibling: Subst({left: L, right: R}) []" shape="box" style="filled"];
+  "sibling" [fillcolor="lightblue" fontname="Courier" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box" style="filled"];
   "parents" -> "0" [];
   "parents" -> "1" [];
   "1" -> "2" [];
@@ -49,15 +49,15 @@ main{span: span{from: P1, to: P2}} :-
 ----
 application/graphviz
 digraph G {
-  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match({\"P1\":[\"id\"],\"C\":[\"char\"]}) [P1]" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match({\"P1\":[\"left\"],\"P2\":[\"right\"]}) [P1]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match{C: char, P1: id} [P1]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match{P1: left, P2: right} [P1]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(P1) [C]" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.lte{a: \"a\", b: C}) [C]" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(C) [C]" shape="box" style="filled"];
   "5" [fillcolor="" fontname="Courier" label="5: Builtin(base.lte{a: C, b: \"z\"}) [C]" shape="box" style="filled"];
   "6" [fillcolor="thistle" fontname="Courier" label="6: Join(C) []" shape="box" style="filled"];
   "input.next" [fillcolor="darksalmon" fontname="Courier" label="input.next:  []" shape="box" style="filled"];
-  "main" [fillcolor="lightblue" fontname="Courier" label="main: Subst({span: span{from: P1, to: P2}}) []" shape="box" style="filled"];
+  "main" [fillcolor="lightblue" fontname="Courier" label="main: Subst(main{span: span{from: P1, to: P2}}) []" shape="box" style="filled"];
   "input.char" [fillcolor="darksalmon" fontname="Courier" label="input.char:  []" shape="box" style="filled"];
   "0" -> "2" [];
   "1" -> "2" [];

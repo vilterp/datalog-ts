@@ -2,18 +2,16 @@ import { JoinInfo, NodeAndCache, NodeDesc } from "./types";
 import { ppt, ppVM } from "../pretty";
 import { mapObjToList } from "../../util/util";
 import { Set } from "immutable";
+import { VarToPath } from "../types";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "Join":
       return `Join(${formatJoinInfo(nodeDesc.joinVars)})`;
     case "Match":
-      return `Match(${JSON.stringify(nodeDesc.varToPath)})`;
+      return `Match${formatVarToPath(nodeDesc.varToPath)}`;
     case "Substitute":
-      return `Subst({${mapObjToList(
-        nodeDesc.rec.attrs,
-        (key, val) => `${key}: ${ppt(val)}`
-      ).join(", ")}})`;
+      return `Subst(${ppt(nodeDesc.rec)})`;
     case "Builtin":
       return `Builtin(${ppt(nodeDesc.rec)})`;
     case "Union":
@@ -29,6 +27,13 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
         nodeDesc.aggregation.record
       )}])`;
   }
+}
+
+function formatVarToPath(varToPath: VarToPath): string {
+  return `{${Object.keys(varToPath)
+    .sort()
+    .map((key) => `${key}: ${varToPath[key].join(".")}`)
+    .join(", ")}}`;
 }
 
 function formatJoinInfo(joinVars: Set<string>): string {
