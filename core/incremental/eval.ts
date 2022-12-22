@@ -190,6 +190,35 @@ function processMessage(
           : doJoin(graph, ins, nodeDesc, nodeDesc.leftID);
       return [nodeDesc, results.map((res) => ({ type: "Insert", res }))];
     }
+    case "Negation": {
+      switch (msg.payload.type) {
+        case "Insert": {
+          const ins = msg.payload;
+          const joinDesc = nodeDesc.joinDesc;
+          const results =
+            msg.origin === joinDesc.leftID
+              ? doJoin(graph, ins, joinDesc, joinDesc.rightID)
+              : doJoin(graph, ins, joinDesc, joinDesc.leftID);
+          return [
+            { ...nodeDesc, received: nodeDesc.received + results.length },
+            [],
+          ];
+        }
+        case "MarkDone": {
+          const newNodeDesc: NodeDesc = {
+            ...nodeDesc,
+            receivedFromPositiveSide: [],
+          };
+          // negation failed, since we've received some records
+          const res: Res = {
+            term: nodeDesc.rec,
+            bindings: {}, // TODO: ???
+            trace: { type: "NegationTrace", negatedTerm: nodeDesc.rec },
+          };
+          return [newNodeDesc, [{ type: "Insert", res }, { type: "MarkDone" }]];
+        }
+      }
+    }
     case "Match": {
       if (msg.payload.type === "MarkDone") {
         return [nodeDesc, [msg.payload]];
@@ -252,26 +281,6 @@ function processMessage(
     case "Builtin":
       // TODO: does this make sense?
       return [nodeDesc, [msg.payload]];
-    case "Negation": {
-      // switch (msg.payload.type) {
-      //   case "Insert":
-      //     return [{ ...nodeDesc, received: nodeDesc.received + 1 }, []];
-      //   case "MarkDone": {
-      //     const newNodeDesc: NodeDesc = { ...nodeDesc, received: 0 };
-      //     // negation failed, since we've received some records
-      //     if (nodeDesc.received > 0) {
-      //       return [newNodeDesc, [{ type: "MarkDone" }]];
-      //     }
-      //     const res: Res = {
-      //       term: nodeDesc.rec,
-      //       bindings: {}, // TODO: ???
-      //       trace: { type: "NegationTrace", negatedTerm: nodeDesc.rec },
-      //     };
-      //     return [newNodeDesc, [{ type: "Insert", res }, { type: "MarkDone" }]];
-      //   }
-      // }
-      throw new Error("can't handle negation yet");
-    }
     case "Aggregation":
       throw new Error("can't handle aggregation yet");
   }
