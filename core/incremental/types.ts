@@ -25,20 +25,16 @@ export type AttrPath = AttrName[];
 export type VarToPath = { [varName: string]: AttrPath };
 
 export type JoinInfo = {
-  leftVars: VarToPath;
-  rightVars: VarToPath;
-  join: {
-    [varName: string]: {
-      varName: string;
-      leftAttr: AttrPath;
-      rightAttr: AttrPath;
-    };
+  [varName: string]: {
+    varName: string;
+    leftAttr: AttrPath;
+    rightAttr: AttrPath;
   };
 };
 
 export type JoinDesc = {
   type: "Join";
-  joinVars: string[];
+  joinInfo: JoinInfo;
   leftID: NodeID;
   rightID: NodeID;
 };
@@ -51,7 +47,8 @@ export type NodeDesc =
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }
   // TODO: maybe operator state should be kept separate?
-  | { type: "Negation"; rec: Rec; received: number }
+  // Negation aka AntiJoin
+  | { type: "Negation"; joinDesc: JoinDesc; received: number }
   | { type: "Aggregation"; aggregation: Aggregation };
 
 export const emptyRuleGraph: RuleGraph = {
@@ -59,6 +56,25 @@ export const emptyRuleGraph: RuleGraph = {
   builtins: Set(),
   nodes: Map(),
   edges: Map(),
+};
+
+// eval
+
+export type Message = {
+  payload: MessagePayload;
+  origin: NodeID | null; // null if coming from outside
+  destination: NodeID;
+};
+
+export type MessagePayload = Insert | MarkDone;
+
+export type Insert = {
+  type: "Insert";
+  res: Res;
+};
+
+export type MarkDone = {
+  type: "MarkDone";
 };
 
 // output

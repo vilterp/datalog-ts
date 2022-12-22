@@ -5,7 +5,8 @@ import {
 } from "../../util/ddTest/types";
 import { flatMap } from "../../util/util";
 import { ppb, ppr } from "../pretty";
-import { Output, RuleGraph } from "./types";
+import { rec } from "../types";
+import { MessagePayload, Output, RuleGraph } from "./types";
 
 type OutputOptions = {
   emissionLogMode: "test" | "repl";
@@ -27,9 +28,7 @@ export function formatOutput(
           content: output.log
             .map(
               ({ fromID, output }) =>
-                `${fromID}: [${output
-                  .map((res) => (res.term ? ppr(res) : ppb(res.bindings)))
-                  .join(", ")}]`
+                `${fromID}: [${output.map(formatMessagePayload).join(", ")}]`
             )
             .join("\n"),
         };
@@ -42,7 +41,12 @@ export function formatOutput(
                 !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
               );
             }),
-            ({ output }) => output.map((res) => res.term)
+            ({ output }) =>
+              output.map((payload) =>
+                payload.type === "Insert"
+                  ? rec("insert", { term: payload.res.term })
+                  : rec("MarkDone", {})
+              )
           )
         );
       }
@@ -55,5 +59,15 @@ export function formatOutput(
         content: JSON.stringify(output.logAndGraph),
         mimeType: "incremental-datalog/trace",
       };
+  }
+}
+
+function formatMessagePayload(payload: MessagePayload) {
+  switch (payload.type) {
+    case "MarkDone":
+      return "MarkDone";
+    case "Insert":
+      const res = payload.res;
+      return res.term ? ppr(res) : ppb(res.bindings);
   }
 }
