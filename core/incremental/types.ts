@@ -34,7 +34,7 @@ export type JoinInfo = {
 
 export type JoinDesc = {
   type: "Join";
-  joinVars: string[];
+  joinInfo: JoinInfo;
   leftID: NodeID;
   rightID: NodeID;
 };

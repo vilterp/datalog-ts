@@ -1,11 +1,11 @@
-import { NodeAndCache, NodeDesc } from "./types";
+import { JoinInfo, NodeAndCache, NodeDesc } from "./types";
 import { ppt, ppVM } from "../pretty";
 import { mapObjToList } from "../../util/util";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "Join":
-      return `Join(${nodeDesc.joinVars.join(", ")})`;
+      return `Join(${formatJoinInfo(nodeDesc.joinInfo)})`;
     case "Match":
       return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
         showScopePath: false,
@@ -22,12 +22,17 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BaseFactTable":
       return "";
     case "Negation":
-      return `Negation(${nodeDesc.joinDesc.joinVars.join(", ")})`;
+      return `Negation(${formatJoinInfo(nodeDesc.joinDesc.joinInfo)})`;
     case "Aggregation":
       return `Agg(${nodeDesc.aggregation.varNames.join(", ")}: ${ppt(
         nodeDesc.aggregation.record
       )})`;
   }
+}
+
+function formatJoinInfo(joinInfo: JoinInfo): string {
+  // TODO: show paths?
+  return Object.keys(joinInfo).sort().join(", ");
 }
 
 export function formatNodeWithIndexes(node: NodeAndCache): string {

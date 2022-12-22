@@ -206,7 +206,7 @@ function addNegation(
     type: "Negation",
     joinDesc: {
       type: "Join",
-      joinVars: Object.keys(joinInfo),
+      joinInfo,
       leftID: prev.tipID,
       rightID: negationRes.tipID,
     },
@@ -244,10 +244,9 @@ function addJoin(
 ): AddConjunctResult {
   let outGraph = right.newGraph; // this feels pretty arbitrary
   const joinInfo = getJoinInfo(left.rec, right.rec);
-  const varsToIndex = Object.keys(joinInfo);
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
-    joinVars: Object.keys(joinInfo),
+    joinInfo,
     leftID: left.tipID,
     rightID: right.tipID,
   });
@@ -255,8 +254,8 @@ function addJoin(
   outGraph = addEdge(outGraph, left.tipID, joinID);
   outGraph = addEdge(outGraph, right.tipID, joinID);
   // console.log({ colsToIndex });
-  outGraph = addIndex(outGraph, left.tipID, varsToIndex);
-  outGraph = addIndex(outGraph, right.tipID, varsToIndex);
+  outGraph = addIndex(outGraph, left.tipID, joinInfo);
+  outGraph = addIndex(outGraph, right.tipID, joinInfo);
   return {
     newGraph: outGraph,
     tipID: joinID,
@@ -290,22 +289,25 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
 
 type ColName = string;
 
-export function getIndexKey(res: Res, varNames: string[]): List<string> {
+export function getIndexKey(res: Res, joinInfo: JoinInfo): List<string> {
   return List(
-    varNames.map((varName) => {
-      const term = res.bindings[varName];
-      if (!term) {
-        throw new Error(
-          `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
-        );
-      }
-      return fastPPT(term);
-    })
+    Object.keys(joinInfo)
+      .sort()
+      .map((varName) => {
+        const term = res.bindings[varName];
+        if (!term) {
+          throw new Error(
+            `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
+          );
+        }
+        return fastPPT(term);
+      })
   );
 }
 
-export function getIndexName(attrs: ColName[]): string {
-  return attrs.join("-");
+export function getIndexName(joinInfo: JoinInfo): string {
+  // TODO: some way to remove this sort
+  return Object.keys(joinInfo).sort().join("-");
 }
 
 type JoinTree =
@@ -393,16 +395,16 @@ function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
 function addIndex(
   graph: RuleGraph,
   nodeID: NodeID,
-  attrs: string[]
+  joinInfo: JoinInfo
 ): RuleGraph {
   return {
     ...graph,
     nodes: graph.nodes.update(nodeID, (node) => ({
       ...node,
-      cache: node.cache.createIndex(getIndexName(attrs), (res) => {
+      cache: node.cache.createIndex(getIndexName(joinInfo), (res) => {
         // TODO: is this gonna be a perf bottleneck?
         // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(res, attrs);
+        return getIndexKey(res, joinInfo);
       }),
     })),
   };

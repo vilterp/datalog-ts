@@ -317,8 +317,8 @@ function doJoin(
     }));
   }
   // TODO: avoid this allocation
-  const indexName = getIndexName(joinDesc.joinVars);
-  const indexKey = getIndexKey(ins.res, joinDesc.joinVars);
+  const indexName = getIndexName(joinDesc.joinInfo);
+  const indexKey = getIndexKey(ins.res, joinDesc.joinInfo);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
   // console.log("doJoin", {
   //   originID: ins.origin,
