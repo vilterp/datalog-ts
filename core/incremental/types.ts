@@ -1,4 +1,11 @@
-import { Rec, VarMappings, Rule, Res, Aggregation, Bindings } from "../types";
+import {
+  Rec,
+  Res,
+  Aggregation,
+  Bindings,
+  Trace,
+  BindingsWithTrace,
+} from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -15,7 +22,7 @@ export type RuleGraph = {
 export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
-  cache: IndexedCollection<Res>;
+  cache: IndexedCollection<BindingsWithTrace>;
 };
 
 export type AttrName = string;
@@ -75,7 +82,7 @@ export type RecordMsg = {
 
 export type BindingsMsg = {
   type: "Bindings";
-  bindings: Bindings;
+  bindings: BindingsWithTrace;
 };
 
 export type MarkDoneMsg = {

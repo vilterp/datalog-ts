@@ -8,6 +8,7 @@ import {
   Negation,
   Aggregation,
   rec,
+  Bindings,
 } from "../types";
 import {
   RuleGraph,
@@ -288,15 +289,18 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
 
 type ColName = string;
 
-export function getIndexKey(res: Res, joinInfo: JoinInfo): List<string> {
+export function getIndexKey(
+  bindings: Bindings,
+  joinInfo: JoinInfo
+): List<string> {
   return List(
     Object.keys(joinInfo)
       .sort()
       .map((varName) => {
-        const term = res.bindings[varName];
+        const term = bindings[varName];
         if (!term) {
           throw new Error(
-            `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
+            `couldn't get attr "${varName}" of "${ppb(bindings)}"`
           );
         }
         return fastPPT(term);
@@ -400,10 +404,10 @@ function addIndex(
     ...graph,
     nodes: graph.nodes.update(nodeID, (node) => ({
       ...node,
-      cache: node.cache.createIndex(getIndexName(joinInfo), (res) => {
+      cache: node.cache.createIndex(getIndexName(joinInfo), (bindings) => {
         // TODO: is this gonna be a perf bottleneck?
         // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(res, joinInfo);
+        return getIndexKey(bindings.bindings, joinInfo);
       }),
     })),
   };

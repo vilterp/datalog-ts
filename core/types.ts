@@ -137,8 +137,12 @@ export type VarMappings = { [from: string]: string };
 
 // === Traces ===
 
+export type BindingsWithTrace = { bindings: Bindings; trace: Trace };
+
+// TODO: trim this down
 export type Trace =
   | { type: "AndTrace"; sources: Res[] }
+  | { type: "JoinTrace"; sources: BindingsWithTrace[] } // TODO: unify this with AndTrace. // TODO: include put trace?
   | { type: "MatchTrace"; fact: Res; match: Rec } // TODO: fact isn't used, since it's always just baseFact
   | {
       type: "RefTrace";
@@ -151,6 +155,7 @@ export type Trace =
   | { type: "AggregationTrace"; aggregatedResults: Res[] }
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
+  | { type: "BuiltinTrace" }
   | { type: "VarTrace" };
 
 export const literalTrace: Trace = { type: "LiteralTrace" };
@@ -158,6 +163,8 @@ export const literalTrace: Trace = { type: "LiteralTrace" };
 export const varTrace: Trace = { type: "VarTrace" };
 
 export const baseFactTrace: Trace = { type: "BaseFactTrace" };
+
+export const builtinTrace: Trace = { type: "BuiltinTrace" };
 
 export type InvocationLocation = RulePathSegment[];
 
