@@ -5,6 +5,8 @@ import {
   Bindings,
   Trace,
   BindingsWithTrace,
+  AttrPath,
+  VarToPath,
 } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map, Set } from "immutable";
@@ -24,12 +26,6 @@ export type NodeAndCache = {
   desc: NodeDesc;
   cache: IndexedCollection<BindingsWithTrace>;
 };
-
-export type AttrName = string;
-
-export type AttrPath = AttrName[];
-
-export type VarToPath = { [varName: string]: AttrPath };
 
 export type JoinInfo = {
   [varName: string]: {

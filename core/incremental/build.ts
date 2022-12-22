@@ -3,22 +3,12 @@ import {
   Rec,
   Disjunction,
   Conjunct,
-  VarMappings,
-  Res,
-  Negation,
   Aggregation,
-  rec,
   Bindings,
-} from "../types";
-import {
-  RuleGraph,
-  NodeDesc,
-  NodeID,
-  JoinInfo,
   VarToPath,
-  emptyRuleGraph,
-} from "./types";
-import { combineObjects, permute, setAdd, setUnion } from "../../util/util";
+} from "../types";
+import { RuleGraph, NodeDesc, NodeID, JoinInfo, emptyRuleGraph } from "./types";
+import { combineObjects, permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List } from "immutable";
 import { emptyIndexedCollection } from "../../util/indexedCollection";

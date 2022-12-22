@@ -13,6 +13,7 @@ import {
   builtinTrace,
   Rec,
   Res,
+  Term,
   UserError,
 } from "../types";
 import { substitute, unify, unifyBindings } from "../unify";
@@ -20,6 +21,7 @@ import { getIndexKey, getIndexName } from "./build";
 import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
+import { ppt } from "../pretty";
 
 export type EmissionLog = EmissionBatch[];
 
@@ -221,7 +223,19 @@ function processMessage(
 
       return [
         nodeDesc,
-        [{ type: "Bindings", bindings: { bindings, trace: XXXX } }],
+        [
+          {
+            type: "Bindings",
+            bindings: {
+              bindings,
+              trace: {
+                type: "MatchPathsTrace",
+                fact: payload.rec,
+                match: nodeDesc.varToPath,
+              },
+            },
+          },
+        ],
       ];
     }
     case "Substitute":
@@ -373,4 +387,26 @@ function updateNodeDesc(
       desc: newDesc,
     }),
   };
+}
+
+// TODO: move these up into core?
+
+function getAtPath(term: Term, path: string[]): Term {
+  return getAtPathRecur(term, path, 0);
+}
+
+function getAtPathRecur(term: Term, path: string[], idx: number): Term {
+  if (idx === path.length) {
+    return term;
+  }
+  switch (term.type) {
+    case "Record":
+      return getAtPathRecur(term.attrs[path[idx]], path, idx + 1);
+    case "Array":
+      return getAtPathRecur(term.items[path[idx]], path, idx + 1);
+    case "Dict":
+      return getAtPathRecur(term.map[path[idx]], path, idx + 1);
+    default:
+      throw new Error(`no attribute ${path[idx]} of term ${ppt(term)}`);
+  }
 }
