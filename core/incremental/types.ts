@@ -1,4 +1,4 @@
-import { Rec, VarMappings, Rule, Res, Aggregation } from "../types";
+import { Rec, VarMappings, Rule, Res, Aggregation, Bindings } from "../types";
 import { EmissionLog } from "./eval";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -42,7 +42,7 @@ export type JoinDesc = {
 export type NodeDesc =
   | JoinDesc
   | { type: "BaseFactTable" }
-  | { type: "Match"; rec: Rec; mappings: VarMappings }
+  | { type: "Match"; varToPath: VarToPath }
   | { type: "Substitute"; rec: Rec }
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }
@@ -66,14 +66,19 @@ export type Message = {
   destination: NodeID;
 };
 
-export type MessagePayload = Insert | MarkDone;
+export type MessagePayload = RecordMsg | BindingsMsg | MarkDoneMsg;
 
-export type Insert = {
-  type: "Insert";
-  res: Res;
+export type RecordMsg = {
+  type: "Record";
+  rec: Rec;
 };
 
-export type MarkDone = {
+export type BindingsMsg = {
+  type: "Bindings";
+  bindings: Bindings;
+};
+
+export type MarkDoneMsg = {
   type: "MarkDone";
 };
 

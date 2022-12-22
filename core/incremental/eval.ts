@@ -7,7 +7,7 @@ import {
   MessagePayload,
   Message,
 } from "./types";
-import { baseFactTrace, Rec, Res, UserError } from "../types";
+import { baseFactTrace, Bindings, Rec, Res, UserError } from "../types";
 import { applyMappings, substitute, unify, unifyBindings } from "../unify";
 import { getIndexKey, getIndexName } from "./build";
 import Denque from "denque";
@@ -47,7 +47,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       return;
     }
     results.forEach((res) => {
-      graph = insertFromNode(graph, nodeID, res).newGraph;
+      graph = insertFromNode(graph, nodeID, res.bindings).newGraph;
     });
   });
   Object.entries(catalog).forEach(([relName, rel]) => {
@@ -89,15 +89,15 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 function insertFromNode(
   graph: RuleGraph,
   nodeID: NodeID,
-  res: Res
+  bindings: Bindings
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   const iter: Propagator = {
     graph,
-    queue: new Denque([
+    queue: new Denque<Message>([
       {
         destination: nodeID,
         origin: null,
-        payload: { type: "Insert", res },
+        payload: { type: "Bindings", bindings },
       },
     ]),
   };
