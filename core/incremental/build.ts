@@ -170,20 +170,20 @@ function addJoinTree(
     tipID: null,
   };
   return conjuncts.reduce((lastResult, conjunct) => {
-    const leftRes = addRec(graph, getRecord(conjunct));
+    const withRec = addRec(lastResult.newGraph, getRecord(conjunct));
     switch (conjunct.type) {
       case "Record":
         if (lastResult.tipID === null) {
-          return leftRes;
+          return withRec;
         }
-        return addJoin(leftRes, lastResult);
+        return addJoin(lastResult, withRec);
       case "Negation":
         if (lastResult.tipID === null) {
           throw new Error("can't have just a negation as the body");
         }
-        return addNegation(leftRes, lastResult);
+        return addNegation(withRec, lastResult);
       case "Aggregation":
-        return addAggregation(leftRes, conjunct);
+        return addAggregation(withRec, conjunct);
     }
   }, initResult);
 }
@@ -218,8 +218,9 @@ function addNegation(
     received: 0,
   });
   const graph3 = addEdge(graph2, prev.tipID, negationID);
+  const graph4 = addEdge(graph3, negationRes.tipID, negationID);
   return {
-    newGraph: graph3,
+    newGraph: graph4,
     rec: negationRes.rec,
     tipID: negationID,
   };
@@ -245,7 +246,7 @@ function addJoin(
   left: AddConjunctResult,
   right: AddConjunctResult
 ): AddConjunctResult {
-  let outGraph = left.newGraph;
+  let outGraph = right.newGraph; // this feels pretty arbitrary
   const joinInfo = getJoinInfo(left.rec, right.rec);
   const varsToIndex = Object.keys(joinInfo.join);
   const [outGraph3, joinID] = addNode(outGraph, true, {
