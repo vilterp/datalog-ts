@@ -152,30 +152,25 @@ function addJoinTree(
     throw new Error("can't have a single negation as the body");
   }
 
-  let newGraph = graph;
-  let tipID: NodeID | null = null;
-  let rec = null;
-  conjuncts.forEach((conjunct) => {
-    const res0 = addRec(graph, getRecord(conjunct));
+  const initResult: AddConjunctResult = {
+    newGraph: graph,
+    rec: null,
+    tipID: null,
+  };
+  return conjuncts.reduce((lastResult, conjunct) => {
+    const leftRes = addRec(graph, getRecord(conjunct));
     switch (conjunct.type) {
       case "Record":
-        if (tipID != null) {
-          const res = addJoin(newGraph, leftRes0, rightRes);
-          newGraph = res.newGraph;
-          tipID = res.tipID;
-          rec = res.rec;
+        if (lastResult.tipID === null) {
+          return leftRes;
         }
-        break;
+        return addJoin(leftRes, lastResult);
       case "Negation":
-        XXXX;
-        break;
+        return addNegation(leftRes, conjunct);
       case "Aggregation":
-        const res = addAggregation(res, conjunct);
-        break;
+        return addAggregation(leftRes, conjunct);
     }
-  });
-  // TODO: does `rec` need to be here?
-  return { newGraph, tipID, rec };
+  }, initResult);
 }
 
 function getRecord(conjunct: Conjunct): Rec {
@@ -225,11 +220,10 @@ function addAggregation(
 }
 
 function addJoin(
-  graph: RuleGraph,
   left: AddConjunctResult,
   right: AddConjunctResult
 ): AddConjunctResult {
-  let outGraph = graph;
+  let outGraph = left.newGraph;
   const joinInfo = getJoinInfo(left.rec, right.rec);
   const varsToIndex = Object.keys(joinInfo.join);
   const [outGraph3, joinID] = addNode(outGraph, true, {
