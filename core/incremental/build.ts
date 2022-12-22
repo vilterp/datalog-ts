@@ -72,8 +72,6 @@ export function getJoinInfo(left: Conjunct, right: Conjunct): JoinInfo {
     right.type === "Record" ? right : right.record
   );
   return {
-    leftVars,
-    rightVars,
     join: combineObjects(
       leftVars,
       rightVars,
