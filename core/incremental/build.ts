@@ -148,7 +148,7 @@ function addConjuncts(
     allJoinTrees.length > 0
       ? allJoinTrees[allJoinTrees.length - 1].permutation
       : [];
-  const finalOrder = [...winningPermuation, ...nonRecs];
+  const finalOrder = [...nonRecs, ...winningPermuation];
   return addJoinTree(graph, finalOrder);
 }
 
@@ -165,14 +165,14 @@ function addJoinTree(
     rec: null,
     tipID: null,
   };
-  return conjuncts.reduce((lastResult, conjunct) => {
+  return conjuncts.reduceRight((lastResult, conjunct) => {
     const withRec = addRec(lastResult.newGraph, getRecord(conjunct));
     switch (conjunct.type) {
       case "Record":
         if (lastResult.tipID === null) {
           return withRec;
         }
-        return addJoin(lastResult, withRec);
+        return addJoin(withRec.newGraph, withRec, lastResult);
       case "Negation":
         if (lastResult.tipID === null) {
           throw new Error("can't have just a negation as the body");
@@ -239,10 +239,10 @@ function addAggregation(
 }
 
 function addJoin(
+  outGraph: RuleGraph,
   left: AddConjunctResult,
   right: AddConjunctResult
 ): AddConjunctResult {
-  let outGraph = right.newGraph; // this feels pretty arbitrary
   const joinInfo = getJoinInfo(left.rec, right.rec);
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
