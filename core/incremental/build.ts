@@ -103,13 +103,16 @@ function getVarToPath(rec: Rec): VarToPath {
 
 function addOr(graph: RuleGraph, or: Disjunction): GraphWithTip {
   if (or.disjuncts.length === 1) {
-    return addAnd(graph, or.disjuncts[0].conjuncts);
+    return addConjuncts(graph, or.disjuncts[0].conjuncts);
   }
   const [g1, orID] = addNode(graph, true, { type: "Union" });
 
   let outGraph = g1;
   for (let orOption of or.disjuncts) {
-    const { newGraph, tipID: andID } = addAnd(outGraph, orOption.conjuncts);
+    const { newGraph, tipID: andID } = addConjuncts(
+      outGraph,
+      orOption.conjuncts
+    );
     outGraph = addEdge(newGraph, andID, orID);
   }
 
@@ -130,7 +133,10 @@ type GraphWithTip = {
   tipID: NodeID;
 };
 
-function addAnd(graph: RuleGraph, conjuncts: Conjunct[]): AddConjunctResult {
+function addConjuncts(
+  graph: RuleGraph,
+  conjuncts: Conjunct[]
+): AddConjunctResult {
   // add normal conjuncts
   const allRecPermutations = permute(conjuncts);
   const allJoinTrees = allRecPermutations.map((permutation) => {
