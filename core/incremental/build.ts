@@ -101,10 +101,7 @@ function getVarToPath(rec: Rec): VarToPath {
   return out;
 }
 
-function addOr(
-  graph: RuleGraph,
-  or: Disjunction
-): { newGraph: RuleGraph; tipID: NodeID } {
+function addOr(graph: RuleGraph, or: Disjunction): GraphWithTip {
   if (or.disjuncts.length === 1) {
     return addAnd(graph, or.disjuncts[0].conjuncts);
   }
@@ -128,30 +125,57 @@ type AddConjunctResult = {
   tipID: NodeID;
 };
 
+type GraphWithTip = {
+  newGraph: RuleGraph;
+  tipID: NodeID;
+};
+
 function addAnd(graph: RuleGraph, conjuncts: Conjunct[]): AddConjunctResult {
   // add normal conjuncts
   const allRecPermutations = permute(conjuncts);
   const allJoinTrees = allRecPermutations.map((permutation) => {
     const tree = getJoinTree(permutation);
-    return { tree, numCommonVars: numJoinsWithCommonVars(tree) };
+    return { permutation, numCommonVars: numJoinsWithCommonVars(tree) };
   });
   allJoinTrees.sort((left, right) => {
     return left.numCommonVars - right.numCommonVars;
   });
-  const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
-  return addJoinTree(graph, joinTree);
+  const winningPermuation = allJoinTrees[allJoinTrees.length - 1].permutation;
+  return addJoinTree(graph, winningPermuation);
 }
 
-function addJoinTree(graph: RuleGraph, joinTree: JoinTree): AddConjunctResult {
-  if (joinTree.type === "Leaf") {
-    const res = addRec(graph, getRecord(joinTree.conjunct));
-    return addModifier(res, joinTree.conjunct);
+function addJoinTree(
+  graph: RuleGraph,
+  conjuncts: Conjunct[]
+): AddConjunctResult {
+  if (conjuncts.length === 1 && conjuncts[0].type === "Negation") {
+    throw new Error("can't have a single negation as the body");
   }
 
-  const rightRes = addJoinTree(graph, joinTree.right);
-  const leftRes0 = addRec(rightRes.newGraph, getRecord(joinTree.left));
-  const leftRes1 = addJoin(leftRes0.newGraph, leftRes0, rightRes);
-  return addModifier(leftRes1, joinTree.left);
+  let newGraph = graph;
+  let tipID: NodeID | null = null;
+  let rec = null;
+  conjuncts.forEach((conjunct) => {
+    const res0 = addRec(graph, getRecord(conjunct));
+    switch (conjunct.type) {
+      case "Record":
+        if (tipID != null) {
+          const res = addJoin(newGraph, leftRes0, rightRes);
+          newGraph = res.newGraph;
+          tipID = res.tipID;
+          rec = res.rec;
+        }
+        break;
+      case "Negation":
+        XXXX;
+        break;
+      case "Aggregation":
+        const res = addAggregation(res, conjunct);
+        break;
+    }
+  });
+  // TODO: does `rec` need to be here?
+  return { newGraph, tipID, rec };
 }
 
 function getRecord(conjunct: Conjunct): Rec {
@@ -167,29 +191,13 @@ function getRecord(conjunct: Conjunct): Rec {
   }
 }
 
-function addModifier(
-  prev: AddConjunctResult,
-  conjunct: Conjunct
-): AddConjunctResult {
-  switch (conjunct.type) {
-    case "Record":
-      // no modifier
-      return prev;
-    case "Aggregation":
-      return addAggregation(prev, conjunct);
-    case "Negation": {
-      return addNegation(prev, conjunct);
-    }
-  }
-}
-
 function addNegation(
-  prev: AddConjunctResult,
+  prev: GraphWithTip,
   negation: Negation
 ): AddConjunctResult {
   const [graph2, negationID] = addNode(prev.newGraph, true, {
     type: "Negation",
-    rec: negation.record,
+    joinDesc: XXXX,
     received: 0,
   });
   const graph3 = addEdge(graph2, prev.tipID, negationID);
@@ -201,10 +209,9 @@ function addNegation(
 }
 
 function addAggregation(
-  prev: AddConjunctResult,
+  prev: GraphWithTip,
   aggregation: Aggregation
 ): AddConjunctResult {
-  const graph0 = prev.newGraph;
   const [graph2, aggID] = addNode(prev.newGraph, true, {
     type: "Aggregation",
     aggregation,
@@ -297,7 +304,7 @@ type JoinTree =
       type: "Node";
       left: Conjunct;
       joinInfo: JoinInfo;
-      right: JoinTree | null;
+      right: JoinTree;
     };
 
 function getJoinTree(conjuncts: Conjunct[]): JoinTree {

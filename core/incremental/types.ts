@@ -51,7 +51,8 @@ export type NodeDesc =
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }
   // TODO: maybe operator state should be kept separate?
-  | { type: "Negation"; rec: Rec; received: number }
+  // Negation aka AntiJoin
+  | { type: "Negation"; joinDesc: JoinDesc; received: number }
   | { type: "Aggregation"; aggregation: Aggregation };
 
 export const emptyRuleGraph: RuleGraph = {
