@@ -138,7 +138,9 @@ function addConjuncts(
   conjuncts: Conjunct[]
 ): AddConjunctResult {
   // add normal conjuncts
-  const allRecPermutations = permute(conjuncts);
+  const recs = conjuncts.filter((c) => c.type === "Record");
+  const nonRecs = conjuncts.filter((c) => c.type !== "Record");
+  const allRecPermutations = permute(recs);
   const allJoinTrees = allRecPermutations.map((permutation) => {
     const tree = getJoinTree(permutation);
     return { permutation, numCommonVars: numJoinsWithCommonVars(tree) };
@@ -146,8 +148,12 @@ function addConjuncts(
   allJoinTrees.sort((left, right) => {
     return left.numCommonVars - right.numCommonVars;
   });
-  const winningPermuation = allJoinTrees[allJoinTrees.length - 1].permutation;
-  return addJoinTree(graph, winningPermuation);
+  const winningPermuation =
+    allJoinTrees.length > 0
+      ? allJoinTrees[allJoinTrees.length - 1].permutation
+      : [];
+  const finalOrder = [...winningPermuation, ...nonRecs];
+  return addJoinTree(graph, finalOrder);
 }
 
 function addJoinTree(
