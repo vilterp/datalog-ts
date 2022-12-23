@@ -179,7 +179,6 @@ function doJoin(
       trace: builtinTrace,
     }));
   }
-  // TODO: avoid this allocation
   const indexName = getIndexName(joinDesc.joinVars);
   const indexKey = getIndexKey(thisVars.bindings, joinDesc.joinVars);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
