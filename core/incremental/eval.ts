@@ -11,7 +11,6 @@ import {
   markDone,
   EmissionLog,
   EmissionBatch,
-  NodeAndCache,
 } from "./types";
 import {
   baseFactTrace,

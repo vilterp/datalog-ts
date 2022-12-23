@@ -173,7 +173,7 @@ function addJoinTree(
         if (lastResult.tipID === null) {
           throw new Error("can't have just a negation as the body");
         }
-        return addNegation(withRec, lastResult);
+        return addNegation(lastResult, withRec);
       case "Aggregation":
         return addAggregation(withRec, conjunct);
     }
@@ -197,7 +197,7 @@ function addNegation(
   negationRes: AddConjunctResult
 ): AddConjunctResult {
   const joinVars = prev.bindings.intersect(negationRes.bindings);
-  let outGraph = prev.newGraph;
+  let outGraph = negationRes.newGraph;
   const [graph2, negationID] = addNode(outGraph, true, {
     type: "Negation",
     joinDesc: {
@@ -206,7 +206,6 @@ function addNegation(
       leftID: prev.tipID,
       rightID: negationRes.tipID, // right side is negated
     },
-    // TODO: mark which side is negated?
     state: emptyNegationState,
   });
   outGraph = graph2;
