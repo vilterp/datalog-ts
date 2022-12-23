@@ -5,7 +5,7 @@ bar{a: A, b: B} :-
 application/graphviz
 digraph G {
   "foo" [fillcolor="darksalmon" fontname="Courier" label="foo:  []" shape="box" style="filled"];
-  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match{A: a, B: b} [A-B]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(foo{a: A, b: B}) [A-B]" shape="box" style="filled"];
   "1" [fillcolor="" fontname="Courier" label="1: Builtin(base.neq{a: A, b: B}) [A-B]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(A, B) []" shape="box" style="filled"];
   "bar" [fillcolor="lightblue" fontname="Courier" label="bar: Subst(bar{a: A, b: B}) []" shape="box" style="filled"];
@@ -24,8 +24,8 @@ sibling{left: L, right: R} :-
 application/graphviz
 digraph G {
   "parents" [fillcolor="darksalmon" fontname="Courier" label="parents:  []" shape="box" style="filled"];
-  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match{F: father, L: child, M: mother} [F-M]" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match{F: father, M: mother, R: child} [F-M]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(parents{child: L, father: F, mother: M}) [F-M]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(parents{child: R, father: F, mother: M}) [F-M]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(F, M) [L-R]" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.neq{a: L, b: R}) [L-R]" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(L, R) []" shape="box" style="filled"];
@@ -49,8 +49,8 @@ main{span: span{from: P1, to: P2}} :-
 ----
 application/graphviz
 digraph G {
-  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match{C: char, P1: id} [P1]" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match{P1: left, P2: right} [P1]" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(input.char{char: C, id: P1}) [P1]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(input.next{left: P1, right: P2}) [P1]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(P1) [C]" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.lte{a: \"a\", b: C}) [C]" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(C) [C]" shape="box" style="filled"];

@@ -247,7 +247,17 @@ function processMessage(
         );
       }
 
-      const bindings = unify({}, payload.rec, nodeDesc.rec);
+      const bindings = unify({}, nodeDesc.rec, payload.rec);
+      if (bindings === null) {
+        return [nodeDesc, []];
+      }
+      for (let key of Object.keys(bindings)) {
+        // console.log({ bindings, key });
+        if (bindings[key].type === "Var") {
+          return [nodeDesc, []];
+        }
+      }
+
       return [
         nodeDesc,
         [
