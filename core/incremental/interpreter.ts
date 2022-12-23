@@ -80,11 +80,8 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         }
         // add the new fact
         newCatalog = addFact(this.catalog, stmt.record);
-        newGraph = insertFact(newGraph, {
-          term: stmt.record,
-          trace: { type: "BaseFactTrace" },
-          bindings: {},
-        }).newGraph;
+        newGraph = insertFact(newGraph, stmt.record).newGraph;
+        newGraph = { ...newGraph, currentEpoch: newGraph.currentEpoch + 1 };
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,

@@ -3,26 +3,37 @@ import {
   NodeID,
   JoinDesc,
   NodeDesc,
-  Insert,
   MessagePayload,
   Message,
+  NegationState,
+  NegationDesc,
+  emptyNegationState,
+  markDone,
+  EmissionLog,
+  EmissionBatch,
 } from "./types";
-import { baseFactTrace, Rec, Res, UserError } from "../types";
-import { applyMappings, substitute, unify, unifyBindings } from "../unify";
+import {
+  baseFactTrace,
+  Bindings,
+  BindingsWithTrace,
+  builtinTrace,
+  Rec,
+  Res,
+  Term,
+  UserError,
+} from "../types";
+import { substitute, unify, unifyBindings } from "../unify";
 import { getIndexKey, getIndexName } from "./build";
 import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
-
-export type EmissionLog = EmissionBatch[];
-
-export type EmissionBatch = { fromID: NodeID; output: MessagePayload[] };
+import { ppt } from "../pretty";
 
 export function insertFact(
   graph: RuleGraph,
-  res: Res
+  rec: Rec
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  const iter = getPropagator(graph, res);
+  const iter = getPropagator(graph, rec);
   const result = stepPropagatorAll(graph, iter);
 
   // console.log("insertFact", { joinStats: getJoinStats() });
@@ -47,7 +58,10 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       return;
     }
     results.forEach((res) => {
-      graph = insertFromNode(graph, nodeID, res).newGraph;
+      graph = insertFromNode(graph, nodeID, {
+        bindings: res.bindings,
+        trace: builtinTrace,
+      }).newGraph;
     });
   });
   Object.entries(catalog).forEach(([relName, rel]) => {
@@ -55,11 +69,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       return;
     }
     rel.records.forEach((rec) => {
-      graph = insertFact(graph, {
-        term: rec,
-        bindings: {},
-        trace: baseFactTrace,
-      }).newGraph;
+      graph = insertFact(graph, rec).newGraph;
     });
   }, ruleGraph);
   return graph;
@@ -75,7 +85,8 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   return node.cache
     .all()
     .map((res) => {
-      const bindings = unify({}, res.term, query);
+      // TODO: this is awkward, and possibly not correct?
+      const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
         return null;
       }
@@ -89,31 +100,32 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
 function insertFromNode(
   graph: RuleGraph,
   nodeID: NodeID,
-  res: Res
+  bindings: BindingsWithTrace
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   const iter: Propagator = {
     graph,
-    queue: new Denque([
+    queue: new Denque<Message>([
       {
         destination: nodeID,
         origin: null,
-        payload: { type: "Insert", res },
+        payload: { type: "Bindings", bindings },
       },
     ]),
   };
   return stepPropagatorAll(graph, iter);
 }
 
-function getPropagator(graph: RuleGraph, res: Res): Propagator {
+function getPropagator(graph: RuleGraph, rec: Rec): Propagator {
   const queue: Message[] = [
     {
       payload: {
-        type: "Insert",
-        res,
+        type: "Record",
+        rec,
       },
       origin: null,
-      destination: (res.term as Rec).relation,
+      destination: rec.relation,
     },
+    { payload: markDone, origin: null, destination: rec.relation },
   ];
   return { graph, queue: new Denque(queue) };
 }
@@ -123,7 +135,7 @@ type Propagator = {
   queue: Denque<Message>;
 };
 
-const MAX_QUEUE_SIZE = 10000;
+const MAX_QUEUE_SIZE = 10_000;
 
 function stepPropagatorAll(
   graph: RuleGraph,
@@ -148,11 +160,13 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   const curNodeID = insertingNow.destination;
   const [newNodeDesc, outMessages] = processMessage(iter.graph, insertingNow);
   newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
+  const [newNewGraph, additionalMessages] = markNodeDone(newGraph, curNodeID);
+  newGraph = newNewGraph;
   // console.log("push", results);
-  for (let outMessage of outMessages) {
-    if (outMessage.type === "Insert") {
-      newGraph = addToCache(newGraph, curNodeID, outMessage.res);
-    }
+  for (let outMessage of [...outMessages, ...additionalMessages]) {
+    // update cache
+    newGraph = handleOutMessage(newGraph, curNodeID, outMessage);
+    // propagate messages
     for (let destination of newGraph.edges.get(curNodeID) || []) {
       iter.queue.push({
         destination,
@@ -163,6 +177,33 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   }
   iter.graph = newGraph;
   return { fromID: curNodeID, output: outMessages };
+}
+
+function handleOutMessage(
+  newGraph: RuleGraph,
+  curNodeID: string,
+  outMessage: MessagePayload
+): RuleGraph {
+  switch (outMessage.type) {
+    case "Bindings": {
+      const res: Res = {
+        bindings: outMessage.bindings.bindings,
+        trace: outMessage.bindings.trace,
+        term: null,
+      };
+      return addToCache(newGraph, curNodeID, res);
+    }
+    case "Record": {
+      const res: Res = {
+        bindings: {},
+        trace: baseFactTrace,
+        term: outMessage.rec,
+      };
+      return addToCache(newGraph, curNodeID, res);
+    }
+    case "MarkDone":
+      return newGraph;
+  }
 }
 
 // caller adds resulting facts
@@ -176,27 +217,37 @@ function processMessage(
     throw new Error(`not found: node ${msg.destination}`);
   }
   const nodeDesc = node.desc;
+  const payload = msg.payload;
   switch (nodeDesc.type) {
     case "Union":
-      return [nodeDesc, [msg.payload]];
+      return [nodeDesc, payload.type === "Bindings" ? [payload] : []];
     case "Join": {
-      if (msg.payload.type === "MarkDone") {
-        return [nodeDesc, [msg.payload]];
+      if (payload.type === "MarkDone") {
+        return [nodeDesc, []];
       }
-      const ins = msg.payload;
+      if (payload.type === "Record") {
+        throw new Error("Join type not receive messages of type Record");
+      }
       const results =
         msg.origin === nodeDesc.leftID
-          ? doJoin(graph, ins, nodeDesc, nodeDesc.rightID)
-          : doJoin(graph, ins, nodeDesc, nodeDesc.leftID);
-      return [nodeDesc, results.map((res) => ({ type: "Insert", res }))];
+          ? doJoin(graph, payload.bindings, nodeDesc, nodeDesc.rightID)
+          : doJoin(graph, payload.bindings, nodeDesc, nodeDesc.leftID);
+      return [
+        nodeDesc,
+        results.map((bindings) => ({ type: "Bindings", bindings })),
+      ];
     }
     case "Match": {
-      if (msg.payload.type === "MarkDone") {
-        return [nodeDesc, [msg.payload]];
+      if (payload.type === "MarkDone") {
+        return [nodeDesc, []];
       }
-      const ins = msg.payload;
-      const mappedBindings = applyMappings(nodeDesc.mappings, ins.res.bindings);
-      const bindings = unify(mappedBindings, nodeDesc.rec, ins.res.term);
+      if (payload.type === "Bindings") {
+        throw new Error(
+          "Match nodes should not receive messages of type Bindings"
+        );
+      }
+
+      const bindings = unify({}, nodeDesc.rec, payload.rec);
       if (bindings === null) {
         return [nodeDesc, []];
       }
@@ -206,75 +257,122 @@ function processMessage(
           return [nodeDesc, []];
         }
       }
-      // console.log("match", {
-      //   insRec: formatRes(ins.res),
-      //   match: ppt(nodeDesc.rec),
-      //   bindings: ppb(bindings || {}),
-      //   mappings: ppVM(nodeDesc.mappings, [], { showScopePath: false }),
-      //   mappedBindings: ppb(mappedBindings),
-      // });
-      const res: Res = {
-        term: ins.res.term,
-        bindings: bindings,
-        trace: {
-          type: "MatchTrace",
-          fact: ins.res,
-          match: nodeDesc.rec,
-        },
-      };
-      return [nodeDesc, [{ type: "Insert", res }]];
+
+      return [
+        nodeDesc,
+        [
+          {
+            type: "Bindings",
+            bindings: {
+              bindings,
+              trace: {
+                type: "MatchTrace",
+                fact: { term: payload.rec, trace: baseFactTrace, bindings: {} },
+                match: nodeDesc.rec,
+              },
+            },
+          },
+        ],
+      ];
     }
     case "Substitute":
-      if (msg.payload.type === "MarkDone") {
-        return [nodeDesc, [msg.payload]];
+      if (payload.type === "MarkDone") {
+        return [nodeDesc, []];
       }
-      const ins = msg.payload;
-      const rec = substitute(nodeDesc.rec, ins.res.bindings);
+      if (payload.type === "Record") {
+        throw new Error("Substitute nodes should not get Record messages");
+      }
+      const rec = substitute(nodeDesc.rec, payload.bindings.bindings);
       // console.log("substitute", {
       //   inBindings: ppb(ins.res.bindings),
       //   sub: ppt(nodeDesc.rec),
       //   out: ppt(rec),
       // });
-      const res: Res = {
-        term: rec,
-        bindings: ins.res.bindings,
-        trace: {
-          type: "RefTrace",
-          innerRes: ins.res,
-          invokeLoc: [], // TODO: ???
-          mappings: {}, // TODO: ???
-          refTerm: nodeDesc.rec,
-        },
-      };
-      return [nodeDesc, [{ type: "Insert", res }]];
+      return [nodeDesc, [{ type: "Record", rec: rec as Rec }]];
     case "BaseFactTable":
-      return [nodeDesc, [msg.payload]];
+      return [nodeDesc, payload.type === "Record" ? [payload] : []];
     case "Builtin":
       // TODO: does this make sense?
-      return [nodeDesc, [msg.payload]];
+      return [nodeDesc, payload.type === "Bindings" ? [payload] : []];
     case "Negation": {
-      // switch (msg.payload.type) {
-      //   case "Insert":
-      //     return [{ ...nodeDesc, received: nodeDesc.received + 1 }, []];
-      //   case "MarkDone": {
-      //     const newNodeDesc: NodeDesc = { ...nodeDesc, received: 0 };
-      //     // negation failed, since we've received some records
-      //     if (nodeDesc.received > 0) {
-      //       return [newNodeDesc, [{ type: "MarkDone" }]];
-      //     }
-      //     const res: Res = {
-      //       term: nodeDesc.rec,
-      //       bindings: {}, // TODO: ???
-      //       trace: { type: "NegationTrace", negatedTerm: nodeDesc.rec },
-      //     };
-      //     return [newNodeDesc, [{ type: "Insert", res }, { type: "MarkDone" }]];
-      //   }
-      // }
-      throw new Error("can't handle negation yet");
+      switch (payload.type) {
+        case "Bindings": {
+          const newDesc = updateNegationState(
+            nodeDesc,
+            msg.origin,
+            payload.bindings
+          );
+          return [newDesc, []];
+        }
+        case "MarkDone": {
+          const newNodeDesc: NodeDesc = {
+            ...nodeDesc,
+            state: emptyNegationState,
+          };
+          const messages = processNegation(graph, nodeDesc);
+          return [newNodeDesc, messages];
+        }
+        case "Record":
+          throw new Error(
+            "Negation nodes not supposed to receive Record messages"
+          );
+      }
     }
     case "Aggregation":
       throw new Error("can't handle aggregation yet");
   }
+}
+
+function markNodeDone(
+  graph: RuleGraph,
+  nodeID: NodeID
+): [RuleGraph, MessagePayload[]] {
+  const node = graph.nodes.get(nodeID);
+  if (node.epochDone === graph.currentEpoch) {
+    return [graph, []];
+  }
+  return [
+    {
+      ...graph,
+      nodes: graph.nodes.set(nodeID, {
+        ...node,
+        epochDone: graph.currentEpoch,
+      }),
+    },
+    [markDone],
+  ];
+}
+
+function updateNegationState(
+  nodeDesc: NegationDesc,
+  origin: NodeID,
+  bindings: BindingsWithTrace
+): NegationDesc {
+  const oldState = nodeDesc.state;
+  const newState: NegationState =
+    origin === nodeDesc.joinDesc.leftID
+      ? {
+          ...oldState,
+          receivedNormal: [...oldState.receivedNormal, bindings],
+        }
+      : {
+          ...oldState,
+          receivedNegated: [...oldState.receivedNegated, bindings],
+        };
+  return { ...nodeDesc, state: newState };
+}
+
+function processNegation(
+  graph: RuleGraph,
+  desc: NegationDesc
+): MessagePayload[] {
+  // tuples from the normal side that don't join against the negated side
+  const negatedJoinResults = desc.state.receivedNormal.filter(
+    (bindings) =>
+      doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.rightID).length === 0
+  );
+  // TODO: other direction (i.e. ones which need to be retracted)
+  return negatedJoinResults.map((bindings) => ({ type: "Bindings", bindings }));
 }
 
 type JoinStats = {
@@ -302,23 +400,22 @@ export function clearJoinStats() {
 
 function doJoin(
   graph: RuleGraph,
-  ins: Insert,
+  bindings: BindingsWithTrace,
   joinDesc: JoinDesc,
   otherNodeID: NodeID
-): Res[] {
-  const thisVars = ins.res.bindings;
+): BindingsWithTrace[] {
+  const thisVars = bindings;
   const otherNode = graph.nodes.get(otherNodeID);
   if (otherNode.desc.type === "Builtin") {
-    const results = evalBuiltin(otherNode.desc.rec as Rec, ins.res.bindings);
+    const results = evalBuiltin(otherNode.desc.rec, thisVars.bindings);
     return results.map((res) => ({
-      trace: res.trace,
-      term: res.term,
-      bindings: unifyBindings(res.bindings, ins.res.bindings),
+      bindings: unifyBindings(res.bindings, thisVars.bindings),
+      trace: builtinTrace,
     }));
   }
   // TODO: avoid this allocation
-  const indexName = getIndexName(joinDesc.joinInfo);
-  const indexKey = getIndexKey(ins.res, joinDesc.joinInfo);
+  const indexName = getIndexName(joinDesc.joinVars);
+  const indexKey = getIndexKey(thisVars.bindings, joinDesc.joinVars);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
   // console.log("doJoin", {
   //   originID: ins.origin,
@@ -329,10 +426,14 @@ function doJoin(
   //   otherEntries,
   //   cache: otherNode.cache.toJSON(),
   // });
-  const results: Res[] = [];
+  const results: BindingsWithTrace[] = [];
   for (let possibleOtherMatch of otherEntries) {
-    const otherVars = possibleOtherMatch.bindings;
-    const unifyRes = unifyBindings(thisVars || {}, otherVars || {});
+    const otherVars = possibleOtherMatch;
+    // TODO: just loop through the join vars?
+    const unifyRes = unifyBindings(
+      thisVars.bindings || {},
+      otherVars.bindings || {}
+    );
     // console.log("join", {
     //   left: ppb(thisVars),
     //   right: ppb(otherVars),
@@ -340,12 +441,8 @@ function doJoin(
     // });
     if (unifyRes !== null) {
       results.push({
-        term: null,
         bindings: unifyRes,
-        trace: {
-          type: "AndTrace",
-          sources: [ins.res, possibleOtherMatch],
-        },
+        trace: { type: "JoinTrace", sources: [thisVars, otherVars] },
       });
     }
   }
@@ -380,4 +477,26 @@ function updateNodeDesc(
       desc: newDesc,
     }),
   };
+}
+
+// TODO: move these up into core?
+
+function getAtPath(term: Term, path: string[]): Term {
+  return getAtPathRecur(term, path, 0);
+}
+
+function getAtPathRecur(term: Term, path: string[], idx: number): Term {
+  if (idx === path.length) {
+    return term;
+  }
+  switch (term.type) {
+    case "Record":
+      return getAtPathRecur(term.attrs[path[idx]], path, idx + 1);
+    case "Array":
+      return getAtPathRecur(term.items[path[idx]], path, idx + 1);
+    case "Dict":
+      return getAtPathRecur(term.map[path[idx]], path, idx + 1);
+    default:
+      throw new Error(`no attribute ${path[idx]} of term ${ppt(term)}`);
+  }
 }

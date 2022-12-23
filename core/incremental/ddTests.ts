@@ -14,7 +14,7 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "../translateAST";
-import { buildGraph, getJoinInfo } from "./build";
+import { buildGraph, getJoinVars } from "./build";
 import { formatOutput } from "./output";
 
 export function incrTests(writeResults: boolean): Suite {
@@ -50,8 +50,8 @@ function joinInfoTest(test: string[]): TestOutput[] {
     const [left, right] = input.split("\n");
     const leftStmt = parserTermToInternal(parseRecord(left)) as Rec;
     const rightStmt = parserTermToInternal(parseRecord(right)) as Rec;
-    const res = getJoinInfo(leftStmt, rightStmt);
-    return jsonOut(res);
+    const res = getJoinVars(leftStmt, rightStmt);
+    return jsonOut(res.toArray());
   });
 }
 

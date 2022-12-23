@@ -83,6 +83,16 @@ sibling{left: "Carolyn", right: "Pete"}.
 sibling{left: "Paul", right: "Ann"}.
 sibling{left: "Pete", right: "Carolyn"}.
 
+sister{}?
+----
+application/datalog
+sister{person: "Paul", sister: "Ann"}.
+
+brother{}?
+----
+application/datalog
+brother{brother: "Paul", person: "Ann"}.
+
 cousin{left: X, right: Y}?
 ----
 application/datalog

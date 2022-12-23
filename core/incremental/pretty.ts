@@ -1,20 +1,16 @@
-import { JoinInfo, NodeAndCache, NodeDesc } from "./types";
-import { ppt, ppVM } from "../pretty";
-import { mapObjToList } from "../../util/util";
+import { NodeAndCache, NodeDesc } from "./types";
+import { ppt } from "../pretty";
+import { Set } from "immutable";
+import { VarToPath } from "../types";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "Join":
-      return `Join(${formatJoinInfo(nodeDesc.joinInfo)})`;
+      return `Join(${formatJoinInfo(nodeDesc.joinVars)})`;
     case "Match":
-      return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-        showScopePath: false,
-      })})`;
+      return `Match(${ppt(nodeDesc.rec)})`;
     case "Substitute":
-      return `Subst({${mapObjToList(
-        nodeDesc.rec.attrs,
-        (key, val) => `${key}: ${ppt(val)}`
-      ).join(", ")}})`;
+      return `Subst(${ppt(nodeDesc.rec)})`;
     case "Builtin":
       return `Builtin(${ppt(nodeDesc.rec)})`;
     case "Union":
@@ -22,7 +18,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BaseFactTable":
       return "";
     case "Negation":
-      return `Negation(${formatJoinInfo(nodeDesc.joinDesc.joinInfo)})`;
+      return `Negation(${formatJoinInfo(nodeDesc.joinDesc.joinVars)})`;
     case "Aggregation":
       return `Agg(${
         nodeDesc.aggregation.aggregation
@@ -32,9 +28,16 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
   }
 }
 
-function formatJoinInfo(joinInfo: JoinInfo): string {
+function formatVarToPath(varToPath: VarToPath): string {
+  return `{${Object.keys(varToPath)
+    .sort()
+    .map((key) => `${key}: ${varToPath[key].join(".")}`)
+    .join(", ")}}`;
+}
+
+function formatJoinInfo(joinVars: Set<string>): string {
   // TODO: show paths?
-  return Object.keys(joinInfo).sort().join(", ");
+  return joinVars.toArray().sort().join(", ");
 }
 
 export function formatNodeWithIndexes(node: NodeAndCache): string {

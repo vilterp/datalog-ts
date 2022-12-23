@@ -1,5 +1,4 @@
-import { Rec, VarMappings, Rule, Res, Aggregation } from "../types";
-import { EmissionLog } from "./eval";
+import { Rec, Res, Aggregation, BindingsWithTrace, AttrPath } from "../types";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
@@ -7,6 +6,7 @@ export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
+  currentEpoch: number;
   builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
@@ -15,14 +15,9 @@ export type RuleGraph = {
 export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
+  epochDone: number;
   cache: IndexedCollection<Res>;
 };
-
-export type AttrName = string;
-
-export type AttrPath = AttrName[];
-
-export type VarToPath = { [varName: string]: AttrPath };
 
 export type JoinInfo = {
   [varName: string]: {
@@ -32,27 +27,44 @@ export type JoinInfo = {
   };
 };
 
-export type JoinDesc = {
-  type: "Join";
-  joinInfo: JoinInfo;
-  leftID: NodeID;
-  rightID: NodeID;
-};
-
 export type NodeDesc =
   | JoinDesc
   | { type: "BaseFactTable" }
-  | { type: "Match"; rec: Rec; mappings: VarMappings }
+  | { type: "Match"; rec: Rec }
   | { type: "Substitute"; rec: Rec }
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }
   // TODO: maybe operator state should be kept separate?
   // Negation aka AntiJoin
-  | { type: "Negation"; joinDesc: JoinDesc; received: number }
+  | NegationDesc
   | { type: "Aggregation"; aggregation: Aggregation };
+
+export type JoinDesc = {
+  type: "Join";
+  joinVars: Set<string>;
+  leftID: NodeID;
+  rightID: NodeID;
+};
+
+export type NegationDesc = {
+  type: "Negation";
+  joinDesc: JoinDesc;
+  state: NegationState;
+};
+
+export type NegationState = {
+  receivedNormal: BindingsWithTrace[];
+  receivedNegated: BindingsWithTrace[];
+};
+
+export const emptyNegationState: NegationState = {
+  receivedNormal: [],
+  receivedNegated: [],
+};
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
+  currentEpoch: 0,
   builtins: Set(),
   nodes: Map(),
   edges: Map(),
@@ -66,16 +78,23 @@ export type Message = {
   destination: NodeID;
 };
 
-export type MessagePayload = Insert | MarkDone;
+export type MessagePayload = RecordMsg | BindingsMsg | MarkDoneMsg;
 
-export type Insert = {
-  type: "Insert";
-  res: Res;
+export type RecordMsg = {
+  type: "Record";
+  rec: Rec;
 };
 
-export type MarkDone = {
+export type BindingsMsg = {
+  type: "Bindings";
+  bindings: BindingsWithTrace;
+};
+
+export type MarkDoneMsg = {
   type: "MarkDone";
 };
+
+export const markDone: MarkDoneMsg = { type: "MarkDone" };
 
 // output
 
@@ -86,6 +105,10 @@ export type Output =
   | { type: "Acknowledge" };
 
 export const ack: Output = { type: "Acknowledge" };
+
+export type EmissionLog = EmissionBatch[];
+
+export type EmissionBatch = { fromID: NodeID; output: MessagePayload[] };
 
 export type EmissionLogAndGraph = {
   graph: RuleGraph;
