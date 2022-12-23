@@ -197,7 +197,8 @@ function addNegation(
   negationRes: AddConjunctResult
 ): AddConjunctResult {
   const joinVars = prev.bindings.intersect(negationRes.bindings);
-  const [graph2, negationID] = addNode(prev.newGraph, true, {
+  let outGraph = prev.newGraph;
+  const [graph2, negationID] = addNode(outGraph, true, {
     type: "Negation",
     joinDesc: {
       type: "Join",
@@ -208,10 +209,13 @@ function addNegation(
     // TODO: mark which side is negated?
     state: emptyNegationState,
   });
-  const graph3 = addEdge(graph2, prev.tipID, negationID);
-  const graph4 = addEdge(graph3, negationRes.tipID, negationID);
+  outGraph = graph2;
+  outGraph = addEdge(outGraph, prev.tipID, negationID);
+  outGraph = addEdge(outGraph, negationRes.tipID, negationID);
+  outGraph = addIndex(outGraph, prev.tipID, joinVars);
+  outGraph = addIndex(outGraph, negationRes.tipID, joinVars);
   return {
-    newGraph: graph4,
+    newGraph: outGraph,
     bindings: prev.bindings.union(negationRes.bindings),
     tipID: negationID,
   };
@@ -355,6 +359,7 @@ function addNodeKnownID(
     nodes: graph.nodes.set(id, {
       isInternal,
       desc,
+      epochDone: -1,
       cache: emptyIndexedCollection(),
     }),
   };
@@ -374,6 +379,7 @@ function addNode(
         desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins,
       nodes: graph.nodes.set(nodeID, {
         desc,
+        epochDone: -1,
         cache: emptyIndexedCollection(),
         isInternal,
       }),

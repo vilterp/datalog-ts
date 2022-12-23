@@ -11,6 +11,7 @@ import {
   markDone,
   EmissionLog,
   EmissionBatch,
+  NodeAndCache,
 } from "./types";
 import {
   baseFactTrace,
@@ -125,6 +126,7 @@ function getPropagator(graph: RuleGraph, rec: Rec): Propagator {
       origin: null,
       destination: rec.relation,
     },
+    { payload: markDone, origin: null, destination: rec.relation },
   ];
   return { graph, queue: new Denque(queue) };
 }
@@ -134,7 +136,7 @@ type Propagator = {
   queue: Denque<Message>;
 };
 
-const MAX_QUEUE_SIZE = 10000;
+const MAX_QUEUE_SIZE = 10_000;
 
 function stepPropagatorAll(
   graph: RuleGraph,
@@ -159,28 +161,13 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   const curNodeID = insertingNow.destination;
   const [newNodeDesc, outMessages] = processMessage(iter.graph, insertingNow);
   newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
+  const [newNewGraph, additionalMessages] = markNodeDone(newGraph, curNodeID);
+  newGraph = newNewGraph;
   // console.log("push", results);
-  for (let outMessage of outMessages) {
-    switch (outMessage.type) {
-      case "Bindings": {
-        const res: Res = {
-          bindings: outMessage.bindings.bindings,
-          trace: outMessage.bindings.trace,
-          term: null,
-        };
-        newGraph = addToCache(newGraph, curNodeID, res);
-        break;
-      }
-      case "Record": {
-        const res: Res = {
-          bindings: {},
-          trace: baseFactTrace,
-          term: outMessage.rec,
-        };
-        newGraph = addToCache(newGraph, curNodeID, res);
-        break;
-      }
-    }
+  for (let outMessage of [...outMessages, ...additionalMessages]) {
+    // update cache
+    newGraph = handleOutMessage(newGraph, curNodeID, outMessage);
+    // propagate messages
     for (let destination of newGraph.edges.get(curNodeID) || []) {
       iter.queue.push({
         destination,
@@ -191,6 +178,33 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   }
   iter.graph = newGraph;
   return { fromID: curNodeID, output: outMessages };
+}
+
+function handleOutMessage(
+  newGraph: RuleGraph,
+  curNodeID: string,
+  outMessage: MessagePayload
+): RuleGraph {
+  switch (outMessage.type) {
+    case "Bindings": {
+      const res: Res = {
+        bindings: outMessage.bindings.bindings,
+        trace: outMessage.bindings.trace,
+        term: null,
+      };
+      return addToCache(newGraph, curNodeID, res);
+    }
+    case "Record": {
+      const res: Res = {
+        bindings: {},
+        trace: baseFactTrace,
+        term: outMessage.rec,
+      };
+      return addToCache(newGraph, curNodeID, res);
+    }
+    case "MarkDone":
+      return newGraph;
+  }
 }
 
 // caller adds resulting facts
@@ -207,10 +221,10 @@ function processMessage(
   const payload = msg.payload;
   switch (nodeDesc.type) {
     case "Union":
-      return [nodeDesc, [payload]];
+      return [nodeDesc, payload.type === "Bindings" ? [payload] : []];
     case "Join": {
       if (payload.type === "MarkDone") {
-        return [nodeDesc, [payload]];
+        return [nodeDesc, []];
       }
       if (payload.type === "Record") {
         throw new Error("Join type not receive messages of type Record");
@@ -226,7 +240,7 @@ function processMessage(
     }
     case "Match": {
       if (payload.type === "MarkDone") {
-        return [nodeDesc, [payload]];
+        return [nodeDesc, []];
       }
       if (payload.type === "Bindings") {
         throw new Error(
@@ -259,7 +273,7 @@ function processMessage(
     }
     case "Substitute":
       if (payload.type === "MarkDone") {
-        return [nodeDesc, [payload]];
+        return [nodeDesc, []];
       }
       if (payload.type === "Record") {
         throw new Error("Substitute nodes should not get Record messages");
@@ -272,10 +286,10 @@ function processMessage(
       // });
       return [nodeDesc, [{ type: "Record", rec: rec as Rec }]];
     case "BaseFactTable":
-      return [nodeDesc, [payload]];
+      return [nodeDesc, payload.type === "Record" ? [payload] : []];
     case "Builtin":
       // TODO: does this make sense?
-      return [nodeDesc, [payload]];
+      return [nodeDesc, payload.type === "Bindings" ? [payload] : []];
     case "Negation": {
       switch (payload.type) {
         case "Bindings": {
@@ -292,7 +306,7 @@ function processMessage(
             state: emptyNegationState,
           };
           const messages = processNegation(graph, nodeDesc);
-          return [newNodeDesc, [...messages, markDone]];
+          return [newNodeDesc, messages];
         }
         case "Record":
           throw new Error(
@@ -303,6 +317,26 @@ function processMessage(
     case "Aggregation":
       throw new Error("can't handle aggregation yet");
   }
+}
+
+function markNodeDone(
+  graph: RuleGraph,
+  nodeID: NodeID
+): [RuleGraph, MessagePayload[]] {
+  const node = graph.nodes.get(nodeID);
+  if (node.epochDone === graph.currentEpoch) {
+    return [graph, []];
+  }
+  return [
+    {
+      ...graph,
+      nodes: graph.nodes.set(nodeID, {
+        ...node,
+        epochDone: graph.currentEpoch,
+      }),
+    },
+    [markDone],
+  ];
 }
 
 function updateNegationState(

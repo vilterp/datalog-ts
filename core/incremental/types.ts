@@ -13,6 +13,7 @@ export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
+  currentEpoch: number;
   builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
@@ -21,6 +22,7 @@ export type RuleGraph = {
 export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
+  epochDone: number;
   cache: IndexedCollection<Res>;
 };
 
@@ -69,6 +71,7 @@ export const emptyNegationState: NegationState = {
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
+  currentEpoch: 0,
   builtins: Set(),
   nodes: Map(),
   edges: Map(),
