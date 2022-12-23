@@ -1,8 +1,7 @@
+import { Json } from "../util/json";
 import { int, Term } from "./types";
 
-type Aggregation = (terms: Term[]) => Term;
-
-export const AGGREGATIONS: { [name: string]: Aggregation } = {
+export const AGGREGATIONS: { [name: string]: Aggregator } = {
   sum: (terms: Term[]) => {
     let result = 0;
     terms.forEach((term) => {
@@ -15,4 +14,10 @@ export const AGGREGATIONS: { [name: string]: Aggregation } = {
   count: (terms: Term[]) => {
     return int(terms.length);
   },
+};
+
+type Aggregator = {
+  init: Term;
+  step: (accum: Term, item: Term) => Term;
+  final: (accum: Term) => Term;
 };
