@@ -1,11 +1,4 @@
-import {
-  Rec,
-  Res,
-  Aggregation,
-  BindingsWithTrace,
-  AttrPath,
-  VarToPath,
-} from "../types";
+import { Rec, Res, Aggregation, BindingsWithTrace, AttrPath } from "../types";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
@@ -37,7 +30,7 @@ export type JoinInfo = {
 export type NodeDesc =
   | JoinDesc
   | { type: "BaseFactTable" }
-  | { type: "Match"; varToPath: VarToPath }
+  | { type: "Match"; rec: Rec }
   | { type: "Substitute"; rec: Rec }
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec }

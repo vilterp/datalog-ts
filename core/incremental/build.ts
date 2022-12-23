@@ -274,7 +274,7 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   }
   const newNodeDesc: NodeDesc = {
     type: "Match",
-    varToPath: getVarToPath(rec),
+    rec,
   };
   const [graph2, matchID] = addNode(graph, true, newNodeDesc);
   const graph3 = addEdge(graph2, rec.relation, matchID);

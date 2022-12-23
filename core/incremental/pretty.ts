@@ -1,6 +1,5 @@
-import { JoinInfo, NodeAndCache, NodeDesc } from "./types";
-import { ppt, ppVM } from "../pretty";
-import { mapObjToList } from "../../util/util";
+import { NodeAndCache, NodeDesc } from "./types";
+import { ppt } from "../pretty";
 import { Set } from "immutable";
 import { VarToPath } from "../types";
 
@@ -9,7 +8,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "Join":
       return `Join(${formatJoinInfo(nodeDesc.joinVars)})`;
     case "Match":
-      return `Match${formatVarToPath(nodeDesc.varToPath)}`;
+      return `Match(${ppt(nodeDesc.rec)})`;
     case "Substitute":
       return `Subst(${ppt(nodeDesc.rec)})`;
     case "Builtin":

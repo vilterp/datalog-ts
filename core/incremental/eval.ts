@@ -247,12 +247,7 @@ function processMessage(
         );
       }
 
-      const bindings: Bindings = {};
-      Object.entries(nodeDesc.varToPath).forEach(([varName, path]) => {
-        const val = getAtPath(payload.rec, path);
-        bindings[varName] = val;
-      });
-
+      const bindings = unify({}, payload.rec, nodeDesc.rec);
       return [
         nodeDesc,
         [
@@ -261,9 +256,9 @@ function processMessage(
             bindings: {
               bindings,
               trace: {
-                type: "MatchPathsTrace",
-                fact: payload.rec,
-                match: nodeDesc.varToPath,
+                type: "MatchTrace",
+                fact: { term: payload.rec, trace: baseFactTrace, bindings: {} },
+                match: nodeDesc.rec,
               },
             },
           },
