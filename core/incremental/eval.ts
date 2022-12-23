@@ -5,13 +5,13 @@ import {
   NodeDesc,
   MessagePayload,
   Message,
-  BindingsMsg,
   NegationState,
   NegationDesc,
   emptyNegationState,
   markDone,
 } from "./types";
 import {
+  baseFactTrace,
   Bindings,
   BindingsWithTrace,
   builtinTrace,
@@ -26,7 +26,6 @@ import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { ppt } from "../pretty";
-import { flatMap } from "../../util/util";
 
 export type EmissionLog = EmissionBatch[];
 
@@ -87,15 +86,14 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   }
   return node.cache
     .all()
-    .map((bindingsWithTrace) => {
+    .map((res) => {
       // TODO: this is awkward, and possibly not correct?
-      const substituted = substitute(query, bindingsWithTrace.bindings);
-      const bindings = unify({}, substituted, query);
+      const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
         return null;
       }
       // TODO: should this be its own trace node??
-      return { term: substituted, bindings, trace: bindingsWithTrace.trace };
+      return { term: res.term, bindings, trace: res.trace };
     })
     .filter((x) => x !== null)
     .toArray();
@@ -165,8 +163,25 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
   // console.log("push", results);
   for (let outMessage of outMessages) {
-    if (outMessage.type === "Bindings") {
-      newGraph = addToCache(newGraph, curNodeID, outMessage.bindings);
+    switch (outMessage.type) {
+      case "Bindings": {
+        const res: Res = {
+          bindings: outMessage.bindings.bindings,
+          trace: outMessage.bindings.trace,
+          term: null,
+        };
+        newGraph = addToCache(newGraph, curNodeID, res);
+        break;
+      }
+      case "Record": {
+        const res: Res = {
+          bindings: {},
+          trace: baseFactTrace,
+          term: outMessage.rec,
+        };
+        newGraph = addToCache(newGraph, curNodeID, res);
+        break;
+      }
     }
     for (let destination of newGraph.edges.get(curNodeID) || []) {
       iter.queue.push({
@@ -400,13 +415,9 @@ function doJoin(
 
 // helpers
 
-function addToCache(
-  graph: RuleGraph,
-  nodeID: NodeID,
-  bindings: BindingsWithTrace
-): RuleGraph {
+function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.insert(bindings);
+  const newCache = cache.insert(res);
   // TODO: use Map#update?
   return {
     ...graph,

@@ -22,7 +22,7 @@ export type RuleGraph = {
 export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
-  cache: IndexedCollection<BindingsWithTrace>;
+  cache: IndexedCollection<Res>;
 };
 
 export type JoinInfo = {
