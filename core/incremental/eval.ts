@@ -9,6 +9,8 @@ import {
   NegationDesc,
   emptyNegationState,
   markDone,
+  EmissionLog,
+  EmissionBatch,
 } from "./types";
 import {
   baseFactTrace,
@@ -26,10 +28,6 @@ import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { ppt } from "../pretty";
-
-export type EmissionLog = EmissionBatch[];
-
-export type EmissionBatch = { fromID: NodeID; output: MessagePayload[] };
 
 export function insertFact(
   graph: RuleGraph,

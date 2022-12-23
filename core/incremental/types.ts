@@ -6,7 +6,6 @@ import {
   AttrPath,
   VarToPath,
 } from "../types";
-import { EmissionLog } from "./eval";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
@@ -110,6 +109,10 @@ export type Output =
   | { type: "Acknowledge" };
 
 export const ack: Output = { type: "Acknowledge" };
+
+export type EmissionLog = EmissionBatch[];
+
+export type EmissionBatch = { fromID: NodeID; output: MessagePayload[] };
 
 export type EmissionLogAndGraph = {
   graph: RuleGraph;
