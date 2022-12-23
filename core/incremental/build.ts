@@ -286,8 +286,6 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   };
 }
 
-type ColName = string;
-
 export function getIndexKey(
   bindings: Bindings,
   joinVars: Set<string>
