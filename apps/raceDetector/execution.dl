@@ -1,185 +1,172 @@
+.table time
+
 .table instr
+.table expr.funcCall
+.table expr.funcArg
+.table expr.intLit
+.table expr.var
 
-timeLimit{limit: 20}.
 
-# Overall control flow
+# === Program Counter ===
 
-state{time: T, threadID: I, state: S} :-
-  initialState{time: T, threadID: I, state: S} |
-  laterState{time: T, threadID: I, state: S}.
+state.ProgramCounter{thread: TH, time: T, counter: C} :-
+  state.programCounter.init{thread: TH, time: T, counter: C} |
+  state.programCounter.store{thread: TH, time: T, counter: C} |
+  state.programCounter.increment{thread: TH, time: T, counter: C} |
+  state.programCounter.fork{thread: TH, time: T, counter: C} |
+  state.programCounter.condGoto{thread: TH, time: T, counter: C}.
 
-initialState{
-  time: 0,
-  threadID: 1,
-  state: threadState{
-    vars: {},
-    pc: 0,
-    done: false
-  }
-}.
+.table state.programCounter.init
 
-laterState{time: T, threadID: TT, state: ToState} :-
-  timeLimit{limit: TimeLimit} &
-  range{from: 0, to: TimeLimit, val: T} &
+state.programCounter.store{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: store{}} &
   T = PrevT + 1 &
-  state{time: PrevT, threadID: FT, state: FromState} &
-  stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.increment{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: increment{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
 
-# Individual ops
-
-stepState{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
-  stepStateNormal{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} |
-  stepStateFork{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
-
-stepStateFork{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} :-
-  stepForkOrig{fromState: FromState, toState: ToState, fromThread: FT, toThread: TT} |
-  stepForkForked{time: T, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
-
-stepForkOrig{
-  fromState: threadState{pc: FromPC, vars: FromVars},
-  toState: threadState{pc: ToPC, vars: ToVars},
-  fromThread: FT, toThread: TT
-} :-
-  instr{idx: FromPC, op: fork{goto: GotoPC}} &
-  ToPC = FromPC + 1 &
-  ToVars = FromVars &
-  FT = TT.
-
-stepForkForked{
+# fork
+state.programCounter.fork{thread: TH, time: T, counter: C} :-
+  state.programCounter.fork.orig{thread: TH, time: T, counter: C} |
+  state.programCounter.fork.new{thread: TH, time: T, counter: C}.
+state.programCounter.fork.orig{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: fork{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.fork.new{
+  thread: TH,
+  origThread: PrevTH,
   time: T,
-  fromState: threadState{pc: FromPC, vars: FromVars},
-  toState: threadState{pc: ToPC, vars: ToVars},
-  fromThread: FT,
-  toThread: TT
+  counter: ForkC,
 } :-
-  instr{idx: FromPC, op: fork{goto: GotoPC}} &
-  ToPC = GotoPC &
-  ToVars = FromVars &
-  ShiftedFT = FT + 100 &
-  TT = ShiftedFT + T.
-# ughhh
+  time{time: T} &
+  instr{idx: PrevC, op: fork{goto: ForkC}} &
+  T = PrevT + 1 &
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC} &
+  ShiftedT = T + 100 &
+  TH = PrevTH + ShiftedT.
 
-stepStateNormal{
-  fromState: FromState,
-  toState: ToState,
-  fromThread: FT, toThread: TT
-} :-
-  stepOp{fromState: FromState, toState: ToState} &
-  FT = TT.
+# goto
+state.programCounter.condGoto{thread: TH, time: T, counter: C} :-
+  state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} |
+  state.programCounter.condGoto.no{thread: TH, time: T, counter: C}.
 
-stepOp{fromState: FromState, toState: ToState} :-
-  stepStore{fromState: FromState, toState: ToState} |
-  stepIncrement{fromState: FromState, toState: ToState} |
-  stepConditionalGoto{fromState: FromState, toState: ToState} |
-  stepStop{fromState: FromState, toState: ToState}.
+state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: conditionalGoto{dest: C, var: Var}} &
+  T = PrevT + 1 &
+  state.Var{thread: TH, time: PrevT, var: Var, value: true} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: conditionalGoto{var: Var}} &
+  T = PrevT + 1 &
+  state.Var{thread: TH, time: PrevT, var: Var, value: false} &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
 
-stepStore{
-  fromState: threadState{pc: FromPC, vars: FromVars},
-  toState: threadState{pc: ToPC, vars: ToVars, done: false}
-} :-
-  instr{idx: FromPC, op: store{var: Var, val: Expr}} &
-  eval{vars: FromVars, expr: Expr, value: Value} &
-  dict.set{in: FromVars, key: Var, value: Value, out: ToVars} &
-  ToPC = FromPC + 1.
+# === Var ===
 
-stepIncrement{
-  fromState: threadState{pc: FromPC, vars: FromVars},
-  toState: threadState{pc: ToPC, vars: ToVars, done: false}
-} :-
-  instr{idx: FromPC, op: increment{var: Var}} &
-  dict.item{dict: FromVars, key: Var, value: OldValue} &
-  NewValue = OldValue + 1 &
-  dict.set{in: FromVars, key: Var, value: NewValue, out: ToVars} &
-  ToPC = FromPC + 1.
+state.Var{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.store{thread: TH, time: T, var: Var, value: Val} |
+  state.var.increment{thread: TH, time: T, var: Var, value: Val} |
+  state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
-stepConditionalGoto{fromState: FromState, toState: ToState} :-
-  stepConditionalGotoYes{fromState: FromState, toState: ToState} |
-  stepConditionalGotoNo{fromState: FromState, toState: ToState}.
+state.var.store{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, expr: Expr}} &
+  eval{expr: Expr, thread: TH, time: PrevT, value: Val} &
+  T = PrevT + 1.
+state.var.increment{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: increment{var: Var}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  Val = PrevVal + 1.
 
-stepConditionalGotoYes{
-  fromState: threadState{pc: FromPC, vars: FromVars},
-  toState: threadState{pc: ToPC, vars: ToVars, done: false}
-} :-
-  instr{idx: FromPC, op: conditionalGoto{var: Var, dest: ToPC}} &
-  dict.item{dict: FromVars, key: Var, value: Val} &
-  Val = true &
-  FromVars = ToVars.
-stepConditionalGotoNo{
-  fromState: threadState{pc: FromPC, vars: FromVars},
-  toState: threadState{pc: ToPC, vars: ToVars, done: false}
-} :-
-  instr{idx: FromPC, op: conditionalGoto{var: Var, dest: Dest}} &
-  dict.item{dict: FromVars, key: Var, value: Val} &
-  Val != true &
-  FromVars = ToVars &
-  ToPC = FromPC + 1.
+# == stay
+state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal}.
+# store & increment
+state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: store{var: OtherVar}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  OtherVar != Var.
+state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: increment{var: OtherVar}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  OtherVar != Var.
+# fork
+state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal}.
+state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: fork{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
+  state.programCounter.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
+  T = PrevT + 1 &
+  state.Var{thread: OrigTH, time: PrevT, var: Var, value: Val}.
+# condGoto
+state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: conditionalGoto{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
 
-stepStop{
-  fromState: threadState{pc: PC, vars: FromVars},
-  toState: threadState{pc: PC, vars: ToVars, done: true}
-} :-
-  instr{idx: PC, op: stop{}} &
-  FromVars = ToVars.
+# === Eval ===
 
-# Expressions
+eval{thread: TH, time: T, expr: Expr, value: Value} :-
+  eval.FuncCall{thread: TH, time: T, expr: Expr, value: Value} |
+  eval.Var{thread: TH, time: T, expr: Expr, value: Value} |
+  eval.IntLit{thread: TH, time: T, expr: Expr, value: Value}.
 
-eval{vars: FromVars, expr: Expr, value: Value} :-
-  evalLt{vars: FromVars, expr: Expr, value: Value} |
-  evalIntLit{expr: Expr, value: Value}.
+eval.FuncCall{thread: TH, time: T, expr: Expr, value: Value} :-
+  eval.FuncCall.LT{thread: TH, time: T, expr: Expr, value: Value}.
+eval.FuncCall.LT{thread: TH, time: T, expr: Expr, value: Value} :-
+  eval.FuncCall.LT.true{thread: TH, time: T, expr: Expr, value: Value} |
+  eval.FuncCall.LT.false{thread: TH, time: T, expr: Expr, value: Value}.
+eval.FuncCall.LT.true{thread: TH, time: T, expr: Expr, value: true} :-
+  expr.funcCall{id: Expr, name: "<"} &
+  expr.funcArg{funcID: Expr, argID: Left, idx: 0} &
+  expr.funcArg{funcID: Expr, argID: Right, idx: 1} &
+  eval{thread: TH, time: T, expr: Left, value: LeftVal} &
+  eval{thread: TH, time: T, expr: Right, value: RightVal} &
+  LeftVal < RightVal.
+eval.FuncCall.LT.false{thread: TH, time: T, expr: Expr, value: false} :-
+  expr.funcCall{id: Expr, name: "<"} &
+  expr.funcArg{funcID: Expr, argID: Left, idx: 0} &
+  expr.funcArg{funcID: Expr, argID: Right, idx: 1} &
+  eval{thread: TH, time: T, expr: Left, value: LeftVal} &
+  eval{thread: TH, time: T, expr: Right, value: RightVal} &
+  LeftVal >= RightVal.
+eval.Var{thread: TH, time: T, expr: Expr, value: Value} :-
+  expr.var{id: Expr, name: N} &
+  state.Var{thread: TH, time: T, var: N, value: Value}.
+eval.IntLit{thread: TH, time: T, expr: Expr, value: Value} :-
+  expr.intLit{id: Expr, value: Value} &
+  state.ProgramCounter{thread: TH, time: T}.
 
-evalLt{vars: FromVars, expr: Expr, value: V} :-
-  evalLtTrue{vars: FromVars, expr: Expr, value: V} |
-  evalLtFalse{vars: FromVars, expr: Expr, value: V}.
-# this pattern is so wonky lol
-evalLtTrue{vars: FromVars, expr: lt{var: Var, val: LiteralVal}, value: true} :-
-  dict.item{dict: FromVars, key: Var, value: VarVal} &
-  VarVal < LiteralVal.
-evalLtFalse{vars: FromVars, expr: lt{var: Var, val: LiteralVal}, value: false} :-
-  dict.item{dict: FromVars, key: Var, value: VarVal} &
-  VarVal >= LiteralVal.
-evalIntLit{expr: Expr, value: Value} :-
-  base.int{a: Expr} &
-  Expr = Value.
+# === Viz ===
 
-# debugging
-
-debug.stepStateNormalTest{toState: ToState, toThread: TT} :-
-  initialState{state: S} &
-  stepState{fromState: S, toState: ToState, fromThread: I, toThread: TT}.
-
-debug.threadIDStringTest{threadID: I} :-
-  state{time: T, threadID: spawned{fromThread: I}}.
-
-debug.threadIDStringTest2{threadID: I} :-
-  state{time: T, threadID: I}.
-
-# tree viz
-
-viz.threadNode{id: I, parentID: P, display: I} :-
-  viz.initialThreadNode{id: I, parentID: P} |
-  viz.childThreadNode{id: I, parentID: P}.
-
-viz.initialThreadNode{id: I, parentID: -1} :-
-  initialState{time: T, threadID: I}.
-
-viz.childThreadNode{id: I, parentID: P} :-
-  viz.spawnMessage{
-    fromTickID: viz.tick{place: P},
-    toTickID: viz.tick{place: I},
-  }.
-
-internal.visualization{
-  name: "Thread Tree",
-  spec: tree{
-    nodes: viz.threadNode{id: ID, parentID: ParentID, display: Display},
-    rootTerm: -1
-  }
-}.
-
-# chart viz
-
-viz.programCounter{time: T, threadID: I, pc: PC} :-
-  state{time: T, threadID: I, state: threadState{pc: PC}}.
+.table internal.visualization
 
 internal.visualization{
   name: "Program Counter over Time",
@@ -187,48 +174,87 @@ internal.visualization{
     mark: "line",
     encoding: encoding{
       x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "pc", type: "quantitative"},
-      color: mapping{field: "threadID"}
+      y: mapping{field: "counter", type: "quantitative"},
+      color: mapping{field: "thread"}
     },
-    query: viz.programCounter{}
+    query: state.ProgramCounter{}
   }
 }.
 
-# seq diagram viz
+viz.threadVar{time: T, tv: [TH, V], value: Val} :-
+  state.Var{thread: TH, time: T, var: V, value: Val}.
 
-viz.message{fromTickID: FromTickID, toTickID: ToTickID} :-
-  viz.spawnMessage{fromTickID: FromTickID, toTickID: ToTickID} |
-  viz.continueMessage{fromTickID: FromTickID, toTickID: ToTickID}.
-
-viz.spawnMessage{
-  fromTickID: viz.tick{time: FromTime, place: FT},
-  toTickID: viz.tick{time: ToTime, place: TT},
-} :-
-  state{time: FromTime, state: FromState, threadID: FT} &
-  state{time: ToTime, state: ToState, threadID: TT} &
-  stepForkForked{time: ToTime, fromState: FromState, toState: ToState, fromThread: FT, toThread: TT}.
-
-viz.continueMessage{
-  fromTickID: viz.tick{time: FT, place: Thread},
-  toTickID: viz.tick{time: TT, place: Thread},
-} :-
-  state{time: FT, threadID: Thread} &
-  state{time: TT, threadID: Thread} &
-  TT = FT + 1.
-
-viz.tick{time: T, place: P} :-
-  state{threadID: P, time: T}.
-
-# actors: threads
-# ticks: thread states
-# messages:
-# - thread state advances
-# - thread spawns another thread
+# TODO: another encoding channel for thread
 internal.visualization{
-  name: "Overview",
+  name: "Variables Over over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "value", type: "quantitative"},
+      color: mapping{field: "tv"}
+    },
+    query: viz.threadVar{}
+  }
+}.
+
+viz.message{fromTick: FromTick, toTick: ToTick} :-
+  viz.spawnMessage{fromTick: FromTick, toTick: ToTick} |
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick}.
+viz.spawnMessage{
+  fromTick: tick{time: FromT, place: FromTH},
+  toTick: tick{time: ToT, place: ToTH}
+} :-
+  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
+  ToT = FromT + 1.
+viz.continueMessage{
+  fromTick: tick{time: PrevT, place: TH},
+  toTick: tick{time: T, place: TH}
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT} &
+  state.ProgramCounter{thread: TH, time: T} &
+  PrevT = T + 1.
+
+internal.visualization{
+  name: "Spawning Sequence",
   spec: sequence{
-    actors: viz.threadNode{id: ID},
-    ticks: state{time: Time, threadID: Place},
-    messages: viz.message{fromTickID: FromTick, toTickID: ToTick},
+    actors: state.ProgramCounter{thread: ID},
+    messages: viz.message{fromTick: FromTick, toTick: ToTick},
   },
 }.
+
+# insertion
+
+state.programCounter.init{thread: 1, time: 1, counter: 0}.
+
+time{time: 1}.
+time{time: 2}.
+time{time: 3}.
+time{time: 4}.
+time{time: 5}.
+time{time: 6}.
+time{time: 7}.
+time{time: 8}.
+time{time: 9}.
+time{time: 10}.
+time{time: 11}.
+time{time: 12}.
+time{time: 13}.
+time{time: 14}.
+time{time: 15}.
+
+instr{idx: 0, op: store{var: "x", expr: 3}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", expr: 0}}.
+instr{idx: 3, op: fork{goto: 5}}.
+instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 5, op: increment{var: "x"}}.
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
+
+expr.funcCall{id: 0, name: "<"}.
+expr.funcArg{funcID: 0, argID: 1, idx: 0}.
+expr.funcArg{funcID: 0, argID: 2, idx: 1}.
+expr.var{id: 1, name: "x"}.
+expr.intLit{id: 2, value: 5}.
+expr.intLit{id: 3, value: 0}.
