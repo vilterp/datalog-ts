@@ -9,6 +9,7 @@ import {
   NegationState,
   NegationDesc,
   emptyNegationState,
+  markDone,
 } from "./types";
 import {
   Bindings,
@@ -25,6 +26,7 @@ import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { ppt } from "../pretty";
+import { flatMap } from "../../util/util";
 
 export type EmissionLog = EmissionBatch[];
 
@@ -200,11 +202,10 @@ function processMessage(
       if (payload.type === "Record") {
         throw new Error("Join type not receive messages of type Record");
       }
-      const ins = payload;
       const results =
         msg.origin === nodeDesc.leftID
-          ? doJoin(graph, ins, nodeDesc, nodeDesc.rightID)
-          : doJoin(graph, ins, nodeDesc, nodeDesc.leftID);
+          ? doJoin(graph, payload.bindings, nodeDesc, nodeDesc.rightID)
+          : doJoin(graph, payload.bindings, nodeDesc, nodeDesc.leftID);
       return [
         nodeDesc,
         results.map((bindings) => ({ type: "Bindings", bindings })),
@@ -277,16 +278,8 @@ function processMessage(
             ...nodeDesc,
             state: emptyNegationState,
           };
-          // negation failed, since we've received some records
-          if (nodeDesc.received > 0) {
-            return [newNodeDesc, [{ type: "MarkDone" }]];
-          }
-          const res: Res = {
-            term: nodeDesc.rec,
-            bindings: {}, // TODO: ???
-            trace: { type: "NegationTrace", negatedTerm: nodeDesc.rec },
-          };
-          return [newNodeDesc, [{ type: "Insert", res }, { type: "MarkDone" }]];
+          const messages = processNegation(graph, nodeDesc);
+          return [newNodeDesc, [...messages, markDone]];
         }
         case "Record":
           throw new Error(
@@ -318,6 +311,19 @@ function updateNegationState(
   return { ...nodeDesc, state: newState };
 }
 
+function processNegation(
+  graph: RuleGraph,
+  desc: NegationDesc
+): MessagePayload[] {
+  // tuples from the normal side that don't join against the negated side
+  const negatedJoinResults = desc.state.receivedNormal.filter(
+    (bindings) =>
+      doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.rightID).length === 0
+  );
+  // TODO: other direction (i.e. ones which need to be retracted)
+  return negatedJoinResults.map((bindings) => ({ type: "Bindings", bindings }));
+}
+
 type JoinStats = {
   joinTimeMS: number;
   inputRecords: number;
@@ -343,22 +349,22 @@ export function clearJoinStats() {
 
 function doJoin(
   graph: RuleGraph,
-  msg: BindingsMsg,
+  bindings: BindingsWithTrace,
   joinDesc: JoinDesc,
   otherNodeID: NodeID
 ): BindingsWithTrace[] {
-  const thisVars = msg.bindings;
+  const thisVars = bindings;
   const otherNode = graph.nodes.get(otherNodeID);
   if (otherNode.desc.type === "Builtin") {
-    const results = evalBuiltin(otherNode.desc.rec, msg.bindings.bindings);
+    const results = evalBuiltin(otherNode.desc.rec, thisVars.bindings);
     return results.map((res) => ({
-      bindings: unifyBindings(res.bindings, msg.bindings.bindings),
+      bindings: unifyBindings(res.bindings, thisVars.bindings),
       trace: builtinTrace,
     }));
   }
   // TODO: avoid this allocation
   const indexName = getIndexName(joinDesc.joinVars);
-  const indexKey = getIndexKey(msg.bindings.bindings, joinDesc.joinVars);
+  const indexKey = getIndexKey(thisVars.bindings, joinDesc.joinVars);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
   // console.log("doJoin", {
   //   originID: ins.origin,
