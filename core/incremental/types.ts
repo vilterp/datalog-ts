@@ -1,4 +1,12 @@
-import { Rec, Res, Aggregation, BindingsWithTrace, AttrPath } from "../types";
+import {
+  Rec,
+  Res,
+  Aggregation,
+  BindingsWithTrace,
+  AttrPath,
+  Term,
+  Bindings,
+} from "../types";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
@@ -37,7 +45,7 @@ export type NodeDesc =
   // TODO: maybe operator state should be kept separate?
   // Negation aka AntiJoin
   | NegationDesc
-  | { type: "Aggregation"; aggregation: Aggregation };
+  | { type: "Aggregation"; aggregation: Aggregation; state: AggregationState };
 
 export type JoinDesc = {
   type: "Join";
@@ -61,6 +69,11 @@ export const emptyNegationState: NegationState = {
   receivedNormal: [],
   receivedNegated: [],
 };
+
+// key: pretty print of bindings
+export type AggregationState = Map<Term[], Term>;
+
+export const emptyAggregationState: AggregationState = Map();
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,

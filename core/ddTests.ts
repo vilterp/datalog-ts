@@ -52,8 +52,7 @@ export function coreTestsSimple(writeResults: boolean): Suite {
 export function coreTestsIncremental(writeResults: boolean): Suite {
   return coreTests(
     writeResults,
-    () => new IncrementalInterpreter(".", fsLoader),
-    new Set(["aggregation"])
+    () => new IncrementalInterpreter(".", fsLoader)
   );
 }
 

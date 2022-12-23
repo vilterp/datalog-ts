@@ -268,10 +268,10 @@ function doEvaluate(
           term.record,
           cache
         );
-        const groupKey = term.varNames.slice(0, term.varNames.length - 1);
+        const groupVars = term.varNames.slice(0, term.varNames.length - 1);
         const aggVar = term.varNames[term.varNames.length - 1];
         const groups = groupBy(results, (res) =>
-          groupKey.map((varName) => fastPPT(res.bindings[varName])).join(",")
+          groupVars.map((varName) => fastPPT(res.bindings[varName])).join(",")
         );
         const aggregatedGroups = mapObjToList(groups, (key, results): Res => {
           const terms = results.map((res) => res.bindings[aggVar]);
@@ -300,6 +300,7 @@ function doEvaluate(
 }
 
 function doAggregation(terms: Term[], aggName: string): Term {
+  // TODO: maybe a fast path, e.g. for count?
   const agg = AGGREGATIONS[aggName];
   let state = agg.init;
   for (const term of terms) {
