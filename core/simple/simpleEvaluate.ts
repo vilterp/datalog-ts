@@ -275,7 +275,7 @@ function doEvaluate(
         );
         const aggregatedGroups = mapObjToList(groups, (key, results): Res => {
           const terms = results.map((res) => res.bindings[aggVar]);
-          const aggResult = AGGREGATIONS[term.aggregation](terms);
+          const aggResult = doAggregation(terms, term.aggregation);
           const otherBindings = results.length > 0 ? results[0].bindings : {};
           const bindings = {
             ...otherBindings,
@@ -299,17 +299,13 @@ function doEvaluate(
   return bigRes;
 }
 
-export function hasVars(t: Term): boolean {
-  switch (t.type) {
-    case "StringLit":
-      return false;
-    case "Var":
-      return true;
-    case "Record":
-      return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
-    case "Bool":
-      return false;
+function doAggregation(terms: Term[], aggName: string): Term {
+  const agg = AGGREGATIONS[aggName];
+  let state = agg.init;
+  for (const term of terms) {
+    state = agg.step(state, term);
   }
+  return agg.final(state);
 }
 
 type Cache = { [key: string]: Res[] };

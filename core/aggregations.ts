@@ -1,18 +1,20 @@
-import { Json } from "../util/json";
-import { int, Term } from "./types";
+import { identity } from "../util/util";
+import { Int, int, Term } from "./types";
 
 export const AGGREGATIONS: { [name: string]: Aggregator } = {
-  sum: (terms: Term[]) => {
-    let result = 0;
-    terms.forEach((term) => {
-      if (term.type === "IntLit") {
-        result += term.val;
-      }
-    });
-    return int(result);
+  sum: {
+    init: int(0),
+    step(accum: Term, item: Term): Term {
+      return int((accum as Int).val + (item as Int).val);
+    },
+    final: identity,
   },
-  count: (terms: Term[]) => {
-    return int(terms.length);
+  count: {
+    init: int(0),
+    step(accum: Term, item: Term): Term {
+      return int((accum as Int).val + 1);
+    },
+    final: identity,
   },
 };
 

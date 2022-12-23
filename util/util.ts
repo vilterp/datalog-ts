@@ -430,3 +430,7 @@ export function hashString(str: string): number {
   }
   return hash;
 }
+
+export function identity<T>(item: T): T {
+  return item;
+}
