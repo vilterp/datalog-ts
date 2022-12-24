@@ -4,7 +4,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
-import { LOADER } from "../commonDL";
+import { LOADER } from "../common";
 import { getInterpForDoc } from "../interpCache";
 import { LanguageSpec } from "../languages";
 

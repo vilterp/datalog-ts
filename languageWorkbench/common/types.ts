@@ -1,6 +1,16 @@
 import { NodesByRule } from "../parserlib/flattenByRule";
 import { Span } from "../parserlib/types";
 
+export type LanguageSpec = {
+  name: string;
+  datalog: string;
+  grammar: string;
+  example: string;
+  triggerCharacters?: string[]; // TODO: put into DL itself or derive from grammar
+  nativeImpl?: LangImpl;
+  leaves?: Set<string>;
+};
+
 export type LangImpl = {
   scopeDefn: (
     db: NodesByRule,

@@ -1,22 +1,20 @@
 import {
-  BenchmarkResult,
   BenchmarkSpec,
-  doBenchmark,
   doBenchmarkTimeBudget,
   runDDBenchmark,
 } from "../util/testBench/benchmark";
 import { extractCursor, INIT_INTERP, testLangQuery } from "./ddTests";
 import * as parserlib from "./parserlib/parser";
-import { GRAMMAR, parseMain } from "./languages/dl/parser";
+import { GRAMMAR } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
-import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
+import { getSemanticTokens, ideCurrentSuggestion } from "./common/ide";
 import { datalogLangImpl } from "./languages/dl/dl";
 import { addCursor, getInterpForDoc } from "./interpCache";
-import { LANGUAGES, LanguageSpec } from "./languages";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
-import { assertDeepEqual, assertStringEqual } from "../util/testBench/testing";
+import { assertDeepEqual } from "../util/testBench/testing";
+import { LanguageSpec } from "./common/types";
 
 export const lwbBenchmarks: BenchmarkSpec[] = ["fp", "dl"].map((lang) => ({
   name: lang,
