@@ -1,4 +1,4 @@
-import { LanguageSpec } from "../../commonDL/types";
+import { LanguageSpec } from "../../common/types";
 import { datalogLangImpl } from "./dl";
 // @ts-ignore
 import datalogTxt from "./dl.dl";

@@ -1,4 +1,4 @@
-import { LanguageSpec } from "../commonDL/types";
+import { LanguageSpec } from "../common/types";
 import { basicBlocks } from "./basicBlocks";
 import { contracts } from "./contracts";
 import { datalog } from "./dl";

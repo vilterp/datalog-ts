@@ -10,7 +10,7 @@ import * as parserlib from "./parserlib/parser";
 import { GRAMMAR, parseMain } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
-import { getSemanticTokens, ideCurrentSuggestion } from "./commonDL/ide";
+import { getSemanticTokens, ideCurrentSuggestion } from "./common/ide";
 import { datalogLangImpl } from "./languages/dl/dl";
 import { addCursor, getInterpForDoc } from "./interpCache";
 import { LANGUAGES, LanguageSpec } from "./languages";

@@ -9,7 +9,7 @@ import {
 import { ppt } from "../../core/pretty";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
-import * as native from "../commonDL/ide";
+import * as native from "../common/ide";
 import {
   emptyNodesByRule,
   flattenByRule,
@@ -19,7 +19,7 @@ import { extractRuleTree } from "../parserlib/ruleTree";
 import { parse } from "../parserlib/parser";
 import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
-import { Problem } from "../commonDL/types";
+import { Problem } from "../common/types";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { updateDocSource } from "../interpCache";
 

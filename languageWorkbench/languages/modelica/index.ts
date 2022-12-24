@@ -1,4 +1,4 @@
-import { LanguageSpec } from "../../commonDL/types";
+import { LanguageSpec } from "../../common/types";
 // @ts-ignore
 import datalog from "./modelica.dl";
 // @ts-ignore

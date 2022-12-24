@@ -6,7 +6,7 @@ import { runDDTestAtPath } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
-import { LanguageSpec } from "./commonDL/types";
+import { LanguageSpec } from "./common/types";
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
@@ -31,7 +31,7 @@ export function lwbTests(writeResults: boolean): Suite {
 }
 
 export const INIT_INTERP = new SimpleInterpreter(
-  "languageWorkbench/commonDL",
+  "languageWorkbench/common",
   fsLoader
 );
 

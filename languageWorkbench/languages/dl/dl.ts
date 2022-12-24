@@ -7,7 +7,7 @@ import {
   Problem,
   TokenType,
   Var,
-} from "../../commonDL/types";
+} from "../../common/types";
 import { NodesByRule } from "../../parserlib/flattenByRule";
 import { Span } from "../../parserlib/types";
 
