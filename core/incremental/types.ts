@@ -5,7 +5,6 @@ import {
   BindingsWithTrace,
   AttrPath,
   Term,
-  Bindings,
 } from "../types";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -18,6 +17,14 @@ export type RuleGraph = {
   builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
+};
+
+export const emptyRuleGraph: RuleGraph = {
+  nextNodeID: 0,
+  currentEpoch: 0,
+  builtins: Set(),
+  nodes: Map(),
+  edges: Map(),
 };
 
 export type NodeAndCache = {
@@ -85,14 +92,6 @@ export type AggregationDesc = {
 export type AggregationState = Map<Term[], Term>;
 
 export const emptyAggregationState: AggregationState = Map();
-
-export const emptyRuleGraph: RuleGraph = {
-  nextNodeID: 0,
-  currentEpoch: 0,
-  builtins: Set(),
-  nodes: Map(),
-  edges: Map(),
-};
 
 // eval
 
