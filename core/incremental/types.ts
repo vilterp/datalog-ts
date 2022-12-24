@@ -5,6 +5,7 @@ import {
   BindingsWithTrace,
   AttrPath,
   Term,
+  Bindings,
 } from "../types";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
@@ -89,7 +90,7 @@ export type AggregationDesc = {
   state: AggregationState;
 };
 
-export type AggregationState = Map<Term[], Term>;
+export type AggregationState = Map<string, { bindings: Bindings; state: Term }>;
 
 export const emptyAggregationState: AggregationState = Map();
 

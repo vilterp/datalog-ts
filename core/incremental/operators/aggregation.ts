@@ -1,5 +1,5 @@
 import { AGGREGATIONS } from "../../aggregations";
-import { ppt } from "../../pretty";
+import { fastPPT } from "../../fastPPT";
 import { Bindings } from "../../types";
 import { AggregationDesc, MessagePayload, BindingsMsg } from "../types";
 
@@ -16,45 +16,48 @@ export function processAggregation(
   );
   switch (payload.type) {
     case "Bindings": {
-      const groupKey = groupVars.map(
-        (varName) => payload.bindings.bindings[varName]
-      );
+      const groupKey = groupVars
+        .map((varName) => payload.bindings.bindings[varName])
+        .map(fastPPT)
+        .join(",");
       return [
         {
           ...nodeDesc,
-          state: nodeDesc.state.update(groupKey, agg.init, (groupState) => {
-            const term = payload.bindings.bindings[aggVar];
-            const result = agg.step(groupState, term);
-            console.log("step:", {
-              aggregation: nodeDesc.aggregation.aggregation,
-              groupKey: groupKey.map(ppt),
-              term: ppt(term),
-              groupState: ppt(groupState),
-              result,
-            });
-            return result;
-          }),
+          state: nodeDesc.state.update(
+            groupKey,
+            { state: agg.init, bindings: payload.bindings.bindings },
+            (groupState) => {
+              const term = payload.bindings.bindings[aggVar];
+              const result = agg.step(groupState.state, term);
+              // console.log("step:", {
+              //   aggregation: nodeDesc.aggregation.aggregation,
+              //   groupKey,
+              //   term: ppt(term),
+              //   groupState: ppt(groupState.state),
+              //   result,
+              // });
+              return { ...groupState, state: result };
+            }
+          ),
         },
         [],
       ];
     }
     case "MarkDone": {
       // TODO: emit negations of old values
-      console.log(
-        "done",
-        nodeDesc.state
-          .mapEntries(([k, v]) => [k.map(ppt).join(","), ppt(v)])
-          .toJSON()
-      );
+      // console.log(
+      //   "done",
+      //   nodeDesc.state.mapEntries(([k, v]) => [k, ppt(v.state)]).toJSON()
+      // );
       return [
         nodeDesc,
         nodeDesc.state
-          .map((groupState, groupKey): BindingsMsg => {
+          .map((groupState): BindingsMsg => {
             const bindings: Bindings = {};
             groupVars.forEach((varName, i) => {
-              bindings[varName] = groupKey[i];
+              bindings[varName] = groupState.bindings[varName];
             });
-            bindings[aggVar] = groupState;
+            bindings[aggVar] = groupState.state;
             return {
               type: "Bindings",
               bindings: {
