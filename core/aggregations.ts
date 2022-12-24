@@ -1,18 +1,25 @@
-import { int, Term } from "./types";
+import { identity } from "../util/util";
+import { Int, int, Term } from "./types";
 
-type Aggregation = (terms: Term[]) => Term;
+export const AGGREGATIONS: { [name: string]: Aggregator } = {
+  sum: {
+    init: int(0),
+    step(accum: Term, item: Term): Term {
+      return int((accum as Int).val + (item as Int).val);
+    },
+    final: identity,
+  },
+  count: {
+    init: int(0),
+    step(accum: Term, item: Term): Term {
+      return int((accum as Int).val + 1);
+    },
+    final: identity,
+  },
+};
 
-export const AGGREGATIONS: { [name: string]: Aggregation } = {
-  sum: (terms: Term[]) => {
-    let result = 0;
-    terms.forEach((term) => {
-      if (term.type === "IntLit") {
-        result += term.val;
-      }
-    });
-    return int(result);
-  },
-  count: (terms: Term[]) => {
-    return int(terms.length);
-  },
+type Aggregator = {
+  init: Term;
+  step: (accum: Term, item: Term) => Term;
+  final: (accum: Term) => Term;
 };

@@ -34,7 +34,14 @@ export function insertFact(
   // console.log("insertFact", { joinStats: getJoinStats() });
   // clearJoinStats();
 
-  return result;
+  return {
+    ...result,
+    newGraph: advanceEpoch(result.newGraph),
+  };
+}
+
+function advanceEpoch(ruleGraph: RuleGraph): RuleGraph {
+  return { ...ruleGraph, currentEpoch: ruleGraph.currentEpoch + 1 };
 }
 
 export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {

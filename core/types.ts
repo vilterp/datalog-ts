@@ -160,6 +160,7 @@ export type Trace =
     }
   | { type: "NegationTrace"; negatedTerm: Term }
   | { type: "AggregationTrace"; aggregatedResults: Res[] }
+  | { type: "AggregationTraceForIncr" } // TODO: unify/eliminate this
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
   | { type: "BuiltinTrace" }

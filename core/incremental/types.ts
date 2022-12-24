@@ -1,4 +1,12 @@
-import { Rec, Res, Aggregation, BindingsWithTrace, AttrPath } from "../types";
+import {
+  Rec,
+  Res,
+  Aggregation,
+  BindingsWithTrace,
+  AttrPath,
+  Term,
+  Bindings,
+} from "../types";
 import { List, Map, Set } from "immutable";
 import { IndexedCollection } from "../../util/indexedCollection";
 
@@ -10,6 +18,14 @@ export type RuleGraph = {
   builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
+};
+
+export const emptyRuleGraph: RuleGraph = {
+  nextNodeID: 0,
+  currentEpoch: 0,
+  builtins: Set(),
+  nodes: Map(),
+  edges: Map(),
 };
 
 export type NodeAndCache = {
@@ -29,15 +45,17 @@ export type JoinInfo = {
 
 export type NodeDesc =
   | JoinDesc
-  | { type: "BaseFactTable" }
-  | { type: "Match"; rec: Rec }
-  | { type: "Substitute"; rec: Rec }
-  | { type: "Union" }
-  | { type: "Builtin"; rec: Rec }
-  // TODO: maybe operator state should be kept separate?
-  // Negation aka AntiJoin
+  | MatchDesc
+  | SubstituteDesc
   | NegationDesc
-  | { type: "Aggregation"; aggregation: Aggregation };
+  | AggregationDesc
+  | { type: "BaseFactTable" }
+  | { type: "Union" }
+  | { type: "Builtin"; rec: Rec };
+
+export type MatchDesc = { type: "Match"; rec: Rec };
+
+export type SubstituteDesc = { type: "Substitute"; rec: Rec };
 
 export type JoinDesc = {
   type: "Join";
@@ -46,9 +64,11 @@ export type JoinDesc = {
   rightID: NodeID;
 };
 
+// Negation aka AntiJoin
 export type NegationDesc = {
   type: "Negation";
   joinDesc: JoinDesc;
+  // TODO: maybe operator state should be kept separate?
   state: NegationState;
 };
 
@@ -62,13 +82,17 @@ export const emptyNegationState: NegationState = {
   receivedNegated: [],
 };
 
-export const emptyRuleGraph: RuleGraph = {
-  nextNodeID: 0,
-  currentEpoch: 0,
-  builtins: Set(),
-  nodes: Map(),
-  edges: Map(),
+// key: pretty print of bindings
+
+export type AggregationDesc = {
+  type: "Aggregation";
+  aggregation: Aggregation;
+  state: AggregationState;
 };
+
+export type AggregationState = Map<string, { bindings: Bindings; state: Term }>;
+
+export const emptyAggregationState: AggregationState = Map();
 
 // eval
 
