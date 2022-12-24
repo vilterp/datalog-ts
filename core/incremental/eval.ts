@@ -22,18 +22,13 @@ import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { processMessage } from "./operators";
 
-// === propagating messages through the graph ====
-
-export function insertFact(
+export function insertOrRetractFact(
   graph: RuleGraph,
-  rec: Rec
+  rec: Rec,
+  multiplicity: number // 1: insert. -1: retract.
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  const iter = getPropagator(graph, rec);
+  const iter = getPropagator(graph, rec, multiplicity);
   const result = stepPropagatorAll(graph, iter);
-
-  // console.log("insertFact", { joinStats: getJoinStats() });
-  // clearJoinStats();
-
   return {
     ...result,
     newGraph: advanceEpoch(result.newGraph),
@@ -71,7 +66,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       return;
     }
     rel.records.forEach((rec) => {
-      graph = insertFact(graph, rec).newGraph;
+      graph = insertOrRetractFact(graph, rec, 1).newGraph;
     });
   }, ruleGraph);
   return graph;
@@ -121,12 +116,16 @@ function insertFromNode(
   return stepPropagatorAll(graph, iter);
 }
 
-function getPropagator(graph: RuleGraph, rec: Rec): Propagator {
+function getPropagator(
+  graph: RuleGraph,
+  rec: Rec,
+  multiplicity: number
+): Propagator {
   const queue: Message[] = [
     {
       payload: {
         type: "Data",
-        multiplicity: 1,
+        multiplicity,
         data: {
           type: "Record",
           rec,
