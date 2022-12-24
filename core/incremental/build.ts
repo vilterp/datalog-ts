@@ -18,7 +18,7 @@ import {
 import { permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
-import { emptyIndexedCollection } from "../../util/indexedCollection";
+import { emptyIndexedCollection } from "./indexedCollection";
 import { fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";

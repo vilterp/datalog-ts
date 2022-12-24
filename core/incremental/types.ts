@@ -8,7 +8,7 @@ import {
   Bindings,
 } from "../types";
 import { List, Map, Set } from "immutable";
-import { IndexedCollection } from "../../util/indexedCollection";
+import { IndexedCollection } from "./indexedCollection";
 
 export type NodeID = string;
 
