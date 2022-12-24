@@ -4,7 +4,7 @@ import {
   TestOutput,
 } from "../../util/ddTest/types";
 import { flatMap } from "../../util/util";
-import { ppb, ppr, ppt } from "../pretty";
+import { ppb, ppt } from "../pretty";
 import { dict, rec } from "../types";
 import { MessagePayload, Output, RuleGraph } from "./types";
 
@@ -43,13 +43,13 @@ export function formatOutput(
             }),
             ({ output }) =>
               output.map((payload) =>
-                payload.type === "Bindings"
+                payload.type === "MarkDone"
+                  ? rec("MarkDone", {})
+                  : payload.data.type === "Bindings"
                   ? rec("Bindings", {
-                      bindings: dict(payload.bindings.bindings),
+                      bindings: dict(payload.data.bindings.bindings),
                     })
-                  : payload.type === "Record"
-                  ? rec("Record", { rec: payload.rec })
-                  : rec("MarkDone", {})
+                  : rec("Record", { rec: payload.data.rec })
               )
           )
         );
@@ -70,9 +70,14 @@ function formatMessagePayload(payload: MessagePayload) {
   switch (payload.type) {
     case "MarkDone":
       return "MarkDone";
-    case "Bindings":
-      return ppb(payload.bindings.bindings);
-    case "Record":
-      return ppt(payload.rec);
+    case "Data": {
+      const data = payload.data;
+      switch (data.type) {
+        case "Bindings":
+          return ppb(data.bindings.bindings);
+        case "Record":
+          return ppt(data.rec);
+      }
+    }
   }
 }

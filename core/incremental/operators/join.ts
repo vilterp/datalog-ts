@@ -13,16 +13,21 @@ export function processJoin(
   if (payload.type === "MarkDone") {
     return [nodeDesc, []];
   }
-  if (payload.type === "Record") {
+  const data = payload.data;
+  if (data.type === "Record") {
     throw new Error("Join type not receive messages of type Record");
   }
   const results =
     origin === nodeDesc.leftID
-      ? doJoin(graph, payload.bindings, nodeDesc, nodeDesc.rightID)
-      : doJoin(graph, payload.bindings, nodeDesc, nodeDesc.leftID);
+      ? doJoin(graph, data.bindings, nodeDesc, nodeDesc.rightID)
+      : doJoin(graph, data.bindings, nodeDesc, nodeDesc.leftID);
   return [
     nodeDesc,
-    results.map((bindings) => ({ type: "Bindings", bindings })),
+    results.map((bindings) => ({
+      type: "Data",
+      multiplicity: 1,
+      data: { type: "Bindings", bindings },
+    })),
   ];
 }
 

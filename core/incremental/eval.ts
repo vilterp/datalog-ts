@@ -110,7 +110,11 @@ function insertFromNode(
       {
         destination: nodeID,
         origin: null,
-        payload: { type: "Bindings", bindings },
+        payload: {
+          type: "Data",
+          multiplicity: 1,
+          data: { type: "Bindings", bindings },
+        },
       },
     ]),
   };
@@ -121,8 +125,12 @@ function getPropagator(graph: RuleGraph, rec: Rec): Propagator {
   const queue: Message[] = [
     {
       payload: {
-        type: "Record",
-        rec,
+        type: "Data",
+        multiplicity: 1,
+        data: {
+          type: "Record",
+          rec,
+        },
       },
       origin: null,
       destination: rec.relation,
@@ -187,21 +195,26 @@ function handleOutMessage(
   outMessage: MessagePayload
 ): RuleGraph {
   switch (outMessage.type) {
-    case "Bindings": {
-      const res: Res = {
-        bindings: outMessage.bindings.bindings,
-        trace: outMessage.bindings.trace,
-        term: null,
-      };
-      return addToCache(newGraph, curNodeID, res);
-    }
-    case "Record": {
-      const res: Res = {
-        bindings: {},
-        trace: baseFactTrace,
-        term: outMessage.rec,
-      };
-      return addToCache(newGraph, curNodeID, res);
+    case "Data": {
+      const data = outMessage.data;
+      switch (data.type) {
+        case "Bindings": {
+          const res: Res = {
+            bindings: data.bindings.bindings,
+            trace: data.bindings.trace,
+            term: null,
+          };
+          return addToCache(newGraph, curNodeID, res);
+        }
+        case "Record": {
+          const res: Res = {
+            bindings: {},
+            trace: baseFactTrace,
+            term: data.rec,
+          };
+          return addToCache(newGraph, curNodeID, res);
+        }
+      }
     }
     case "MarkDone":
       return newGraph;

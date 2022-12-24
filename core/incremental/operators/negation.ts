@@ -16,9 +16,18 @@ export function processNegation(
   payload: MessagePayload
 ): [NegationDesc, MessagePayload[]] {
   switch (payload.type) {
-    case "Bindings": {
-      const newDesc = processBindings(nodeDesc, origin, payload.bindings);
-      return [newDesc, []];
+    case "Data": {
+      const data = payload.data;
+      switch (data.type) {
+        case "Bindings": {
+          const newDesc = processBindings(nodeDesc, origin, data.bindings);
+          return [newDesc, []];
+        }
+        case "Record":
+          throw new Error(
+            "Negation nodes not supposed to receive Record messages"
+          );
+      }
     }
     case "MarkDone": {
       const newNodeDesc: NegationDesc = {
@@ -28,8 +37,6 @@ export function processNegation(
       const messages = processMarkDone(graph, nodeDesc);
       return [newNodeDesc, messages];
     }
-    case "Record":
-      throw new Error("Negation nodes not supposed to receive Record messages");
   }
 }
 
@@ -43,7 +50,11 @@ function processMarkDone(
       doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.rightID).length === 0
   );
   // TODO: other direction (i.e. ones which need to be retracted)
-  return negatedJoinResults.map((bindings) => ({ type: "Bindings", bindings }));
+  return negatedJoinResults.map((bindings) => ({
+    type: "Data",
+    multiplicity: 1,
+    data: { type: "Bindings", bindings },
+  }));
 }
 
 function processBindings(

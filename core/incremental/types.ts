@@ -102,7 +102,13 @@ export type Message = {
   destination: NodeID;
 };
 
-export type MessagePayload = RecordMsg | BindingsMsg | MarkDoneMsg;
+export type MessagePayload = DataMsg | MarkDoneMsg;
+
+export type DataMsg = {
+  type: "Data";
+  data: RecordMsg | BindingsMsg;
+  multiplicity: number;
+};
 
 export type RecordMsg = {
   type: "Record";

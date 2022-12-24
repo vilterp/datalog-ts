@@ -18,7 +18,7 @@ export function processMessage(
   const payload = msg.payload;
   switch (nodeDesc.type) {
     case "Union":
-      return [nodeDesc, payload.type === "Bindings" ? [payload] : []];
+      return [nodeDesc, payload.type === "Data" ? [payload] : []];
     case "Join":
       return processJoin(graph, nodeDesc, msg.origin, payload);
     case "Match":
@@ -26,10 +26,10 @@ export function processMessage(
     case "Substitute":
       return processSubstitute(nodeDesc, payload);
     case "BaseFactTable":
-      return [nodeDesc, payload.type === "Record" ? [payload] : []];
+      return [nodeDesc, payload.type === "Data" ? [payload] : []];
     case "Builtin":
       // TODO: does this make sense?
-      return [nodeDesc, payload.type === "Bindings" ? [payload] : []];
+      return [nodeDesc, payload.type === "Data" ? [payload] : []];
     case "Negation":
       return processNegation(graph, nodeDesc, msg.origin, payload);
     case "Aggregation":
