@@ -1,4 +1,5 @@
 import { AGGREGATIONS } from "../../aggregations";
+import { ppt } from "../../pretty";
 import { Bindings } from "../../types";
 import { AggregationDesc, MessagePayload, BindingsMsg } from "../types";
 
@@ -23,7 +24,15 @@ export function processAggregation(
           ...nodeDesc,
           state: nodeDesc.state.update(groupKey, agg.init, (groupState) => {
             const term = payload.bindings.bindings[aggVar];
-            return agg.step(groupState, term);
+            const result = agg.step(groupState, term);
+            console.log("step:", {
+              aggregation: nodeDesc.aggregation.aggregation,
+              groupKey: groupKey.map(ppt),
+              term: ppt(term),
+              groupState: ppt(groupState),
+              result,
+            });
+            return result;
           }),
         },
         [],
@@ -31,6 +40,12 @@ export function processAggregation(
     }
     case "MarkDone": {
       // TODO: emit negations of old values
+      console.log(
+        "done",
+        nodeDesc.state
+          .mapEntries(([k, v]) => [k.map(ppt).join(","), ppt(v)])
+          .toJSON()
+      );
       return [
         nodeDesc,
         nodeDesc.state
