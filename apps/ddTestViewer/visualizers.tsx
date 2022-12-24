@@ -6,7 +6,7 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { noHighlightProps } from "../../uiCommon/dl/term";
 import { ResultsTable } from "../../uiCommon/explorer/resultsTable";
 import { emptyTableCollapseState } from "../../uiCommon/explorer/types";
-import { TestOutput } from "./types";
+import { TestOutput } from "../../util/ddTest/types";
 
 export type SuiteSpec = {
   name: string;
