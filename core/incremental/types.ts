@@ -37,15 +37,17 @@ export type JoinInfo = {
 
 export type NodeDesc =
   | JoinDesc
-  | { type: "BaseFactTable" }
-  | { type: "Match"; rec: Rec }
-  | { type: "Substitute"; rec: Rec }
-  | { type: "Union" }
-  | { type: "Builtin"; rec: Rec }
-  // TODO: maybe operator state should be kept separate?
-  // Negation aka AntiJoin
+  | MatchDesc
+  | SubstituteDesc
   | NegationDesc
-  | { type: "Aggregation"; aggregation: Aggregation; state: AggregationState };
+  | AggregationDesc
+  | { type: "BaseFactTable" }
+  | { type: "Union" }
+  | { type: "Builtin"; rec: Rec };
+
+export type MatchDesc = { type: "Match"; rec: Rec };
+
+export type SubstituteDesc = { type: "Substitute"; rec: Rec };
 
 export type JoinDesc = {
   type: "Join";
@@ -54,9 +56,11 @@ export type JoinDesc = {
   rightID: NodeID;
 };
 
+// Negation aka AntiJoin
 export type NegationDesc = {
   type: "Negation";
   joinDesc: JoinDesc;
+  // TODO: maybe operator state should be kept separate?
   state: NegationState;
 };
 
@@ -71,6 +75,13 @@ export const emptyNegationState: NegationState = {
 };
 
 // key: pretty print of bindings
+
+export type AggregationDesc = {
+  type: "Aggregation";
+  aggregation: Aggregation;
+  state: AggregationState;
+};
+
 export type AggregationState = Map<Term[], Term>;
 
 export const emptyAggregationState: AggregationState = Map();
