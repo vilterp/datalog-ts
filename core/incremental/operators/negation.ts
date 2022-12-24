@@ -49,12 +49,26 @@ function processMarkDone(
     (bindings) =>
       doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.rightID).length === 0
   );
-  // TODO: other direction (i.e. ones which need to be retracted)
-  return negatedJoinResults.map((bindings) => ({
-    type: "Data",
-    multiplicity: 1,
-    data: { type: "Bindings", bindings },
-  }));
+  const normalJoinResults = desc.state.receivedNegated.filter(
+    (bindings) =>
+      doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.leftID).length === 0
+  );
+  return [
+    ...negatedJoinResults.map(
+      (bindings): MessagePayload => ({
+        type: "Data",
+        multiplicity: 1,
+        data: { type: "Bindings", bindings },
+      })
+    ),
+    ...normalJoinResults.map(
+      (bindings): MessagePayload => ({
+        type: "Data",
+        multiplicity: -1,
+        data: { type: "Bindings", bindings },
+      })
+    ),
+  ];
 }
 
 function processBindings(
