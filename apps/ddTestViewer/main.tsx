@@ -2,17 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import useTitle from "@hookeasy/use-title";
 import useHashParam from "use-hash-param";
-import { VISUALIZERS } from "../visualizers";
-import { lastItem } from "../../util";
-import { Archive } from "../types";
-import { useFetch } from "use-http";
-import { Collapsible } from "../../../uiCommon/generic/collapsible";
-import { buildTrie, trieToTree } from "../../trie";
-import {
-  emptyCollapseState,
-  TreeView,
-} from "../../../uiCommon/generic/treeView";
-import { useJSONLocalStorage } from "../../../uiCommon/generic/hooks";
+import { VISUALIZERS } from "./visualizers";
+import { Archive } from "aws-sdk/clients/cloudwatchevents";
+import useFetch from "use-http";
+import { Collapsible } from "../../uiCommon/generic/collapsible";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { emptyCollapseState, TreeView } from "../../uiCommon/generic/treeView";
+import { buildTrie, trieToTree } from "../../util/trie";
+import { lastItem } from "../../util/util";
 
 function Main() {
   const [archiveURL] = useHashParam(
