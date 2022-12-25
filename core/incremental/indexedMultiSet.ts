@@ -64,7 +64,7 @@ export class IndexedMultiSet<T> {
     );
   }
 
-  get(indexName: string, key: List<string>): Map<T, number> {
+  getByIndex(indexName: string, key: List<string>): Map<T, number> {
     return this.indexes.get(indexName).items.get(key, Map());
   }
 }

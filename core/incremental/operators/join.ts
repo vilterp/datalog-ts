@@ -58,7 +58,7 @@ export function doJoin(
   }
   const indexName = getIndexName(joinDesc.joinVars);
   const indexKey = getIndexKey(thisVars.bindings.bindings, joinDesc.joinVars);
-  const otherEntries = otherNode.cache.get(indexName, indexKey);
+  const otherEntries = otherNode.cache.getByIndex(indexName, indexKey);
   // console.log("doJoin", {
   //   originID: ins.origin,
   //   joinID: ins.destination,
