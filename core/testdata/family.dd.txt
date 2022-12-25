@@ -162,3 +162,24 @@ ancestor{an: "Peter", desc: "Carolyn"}.
 ancestor{an: "Peter", desc: "Henry"}.
 ancestor{an: "Peter", desc: "Paul"}.
 ancestor{an: "Peter", desc: "Pete"}.
+
+ancestor{desc: "Pete", an: Y}?
+----
+application/datalog
+ancestor{an: "Carolyn K", desc: "Pete"}.
+ancestor{an: "Judith", desc: "Pete"}.
+ancestor{an: "Mark", desc: "Pete"}.
+ancestor{an: "Mary", desc: "Pete"}.
+ancestor{an: "Paul", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Pete"}.
+
+-mother{child: "Pete", mother: "Mary"}.
+----
+application/datalog
+
+ancestor{desc: "Pete", an: Y}?
+----
+application/datalog
+ancestor{an: "Judith", desc: "Pete"}.
+ancestor{an: "Paul", desc: "Pete"}.
+ancestor{an: "Peter", desc: "Pete"}.
