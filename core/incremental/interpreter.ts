@@ -10,6 +10,7 @@ import {
   Catalog,
   declareTable,
   emptyCatalog,
+  removeFact,
 } from "./catalog";
 import { buildGraph } from "./build";
 
@@ -92,9 +93,21 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         };
       }
       case "Delete": {
-        // remove from catalog
-        // retract from graph
-        throw new Error("deletion not supported yet");
+        const newCatalog = removeFact(this.catalog, stmt.record);
+        const newGraph = insertOrRetractFact(
+          this.graph,
+          stmt.record,
+          -1
+        ).newGraph;
+        return {
+          newInterp: new IncrementalInterpreter(
+            this.cwd,
+            this.loader,
+            newCatalog,
+            newGraph
+          ),
+          output: ack,
+        };
       }
       case "Query": {
         let newInterp: IncrementalInterpreter = interp;
