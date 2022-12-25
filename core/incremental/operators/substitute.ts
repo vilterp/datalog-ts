@@ -20,7 +20,7 @@ export function processSubstitute(
     nodeDesc,
     [
       {
-        multiplicity: 1,
+        multiplicity: payload.multiplicity,
         data: { type: "Record", rec: rec as Rec },
       },
     ],

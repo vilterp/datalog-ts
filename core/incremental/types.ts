@@ -70,7 +70,7 @@ export type AggregationDesc = {
   state: AggregationState;
 };
 
-export type AggregationState = Map<string, { bindings: Bindings; state: Term }>;
+export type AggregationState = Map<string, Term>;
 
 export const emptyAggregationState: AggregationState = Map();
 

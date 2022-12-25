@@ -1,12 +1,11 @@
 import { AGGREGATIONS } from "../../aggregations";
 import { fastPPT } from "../../fastPPT";
-import { Bindings, BindingsWithTrace } from "../../types";
-import { IndexedMultiSet } from "../indexedMultiSet";
+import { ppb } from "../../pretty";
+import { Bindings } from "../../types";
 import { AggregationDesc, MessagePayload } from "../types";
 
 export function processAggregation(
   nodeDesc: AggregationDesc,
-  cache: IndexedMultiSet<BindingsWithTrace>,
   payload: MessagePayload
 ): [AggregationDesc, MessagePayload[]] {
   const aggregation = nodeDesc.aggregation;
@@ -25,51 +24,56 @@ export function processAggregation(
         .map((varName) => data.bindings.bindings[varName])
         .map(fastPPT)
         .join(",");
-      const curGroupState = nodeDesc.state.get(groupKey, {
-        state: agg.init,
-        bindings: data.bindings.bindings,
-      });
+      const curGroupState = nodeDesc.state.get(groupKey, agg.init);
       const term = data.bindings.bindings[aggVar];
-      const result = agg.step(curGroupState.state, term);
-      const newGroupState = {
-        ...curGroupState,
-        state: result,
-      };
-      // console.log("step:", {
-      //   aggregation: nodeDesc.aggregation.aggregation,
-      //   groupKey,
-      //   term: ppt(term),
-      //   groupState: ppt(groupState.state),
-      //   result,
-      // });
-      const newState: AggregationDesc = {
+      const newGroupState = agg.step(curGroupState, term);
+      const newNodeState: AggregationDesc = {
         ...nodeDesc,
         state: nodeDesc.state.set(groupKey, newGroupState),
       };
-      // TODO: negate old aggregations
-      const messages: MessagePayload[] = nodeDesc.state
-        .valueSeq()
-        .flatMap((groupState): MessagePayload[] => {
-          const bindings: Bindings = {};
-          groupVars.forEach((varName, i) => {
-            bindings[varName] = groupState.bindings[varName];
-          });
-          bindings[aggVar] = newGroupState.state;
-          return [
-            {
-              multiplicity: 1,
-              data: {
-                type: "Bindings",
-                bindings: {
-                  bindings,
-                  trace: { type: "AggregationTraceForIncr" },
-                },
+
+      const oldBindings: Bindings = {
+        ...data.bindings.bindings,
+        [aggVar]: curGroupState,
+      };
+      const newBindings: Bindings = {
+        ...oldBindings,
+        [aggVar]: newGroupState,
+      };
+
+      // console.log("step:", {
+      //   aggregation: nodeDesc.aggregation.aggregation,
+      //   groupKey,
+      //   oldBindings: ppb(oldBindings),
+      //   newBindings: ppb(newBindings),
+      // });
+
+      return [
+        newNodeState,
+        [
+          {
+            // TODO: don't retract old one if it wasn't there before
+            multiplicity: -1,
+            data: {
+              type: "Bindings",
+              bindings: {
+                bindings: oldBindings,
+                trace: { type: "AggregationTraceForIncr" },
               },
             },
-          ];
-        })
-        .toArray();
-      return [newState, messages];
+          },
+          {
+            multiplicity: 1,
+            data: {
+              type: "Bindings",
+              bindings: {
+                bindings: newBindings,
+                trace: { type: "AggregationTraceForIncr" },
+              },
+            },
+          },
+        ],
+      ];
     }
   }
 }

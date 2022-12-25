@@ -33,6 +33,6 @@ export function processMessage(
     case "Negation":
       return [nodeDesc, processNegation(payload)];
     case "Aggregation":
-      return processAggregation(nodeDesc, node.cache, msg.payload);
+      return processAggregation(nodeDesc, msg.payload);
   }
 }
