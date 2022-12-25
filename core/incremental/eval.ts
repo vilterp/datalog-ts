@@ -194,15 +194,15 @@ function handleOutMessage(
           trace: baseFactTrace,
           term: data.rec,
         };
-  if (
-    outMessage.data.type === "Bindings" &&
-    outMessage.data.bindings.trace.type === "AggregationTraceForIncr"
-  ) {
-    console.log(
-      outMessage.multiplicity,
-      ppb(outMessage.data.bindings.bindings)
-    );
-  }
+  // if (
+  //   outMessage.data.type === "Bindings" &&
+  //   outMessage.data.bindings.trace.type === "AggregationTraceForIncr"
+  // ) {
+  //   console.log(
+  //     outMessage.multiplicity,
+  //     ppb(outMessage.data.bindings.bindings)
+  //   );
+  // }
   return updateCache(newGraph, curNodeID, res, outMessage.multiplicity);
 }
 
