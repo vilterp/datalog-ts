@@ -1,27 +1,40 @@
-import { List, Map } from "immutable";
+import { List, Map, Set } from "immutable";
 
-export function emptyIndexedCollection<T>(): IndexedMultiSet<T> {
-  return new IndexedMultiSet(Map(), Map());
+export function emptyIndexedCollection<T>(
+  stringify: (t: T) => string
+): IndexedMultiSet<T> {
+  return new IndexedMultiSet(Map(), Map(), stringify);
 }
+
+type ItemAndMult<T> = { item: T; mult: number };
 
 type Index<T> = {
   getKey: (t: T) => List<string>;
-  items: Map<List<string>, Map<T, number>>;
+  items: Map<List<string>, Set<string>>;
 };
 
 export class IndexedMultiSet<T> {
-  private readonly allRecords: Map<T, number>;
+  private readonly allRecords: Map<string, ItemAndMult<T>>;
   private readonly indexes: Map<string, Index<T>>;
+  private readonly stringify: (t: T) => string;
   readonly size: number;
 
-  constructor(allRecords: Map<T, number>, indexes: Map<string, Index<T>>) {
+  constructor(
+    allRecords: Map<string, ItemAndMult<T>>,
+    indexes: Map<string, Index<T>>,
+    stringify: (t: T) => string
+  ) {
     this.allRecords = allRecords;
     this.indexes = indexes;
     this.size = allRecords.size;
+    this.stringify = stringify;
   }
 
   all(): Map<T, number> {
-    return this.allRecords;
+    return this.allRecords.mapEntries(([key, value]) => [
+      value.item,
+      value.mult,
+    ]);
   }
 
   indexNames(): string[] {
@@ -41,30 +54,41 @@ export class IndexedMultiSet<T> {
       this.indexes.set(name, {
         getKey,
         items: this.allRecords.reduce(
-          (accum, multiplicity, item) =>
-            accum.update(getKey(item), Map(), (l) => l.set(item, multiplicity)),
+          (accum, val, key) =>
+            accum.update(getKey(val.item), Set(), (l) => l.add(key)),
           Map()
         ),
-      })
+      }),
+      this.stringify
     );
   }
 
   update(item: T, multiplicityDelta: number): IndexedMultiSet<T> {
     // TODO: remove item if newMult is 0?
-    const curMult = this.allRecords.get(item, 0);
+    const key = this.stringify(item);
+    const curMult = this.allRecords.get(key, [item, 0])[1];
     const newMult = curMult + multiplicityDelta;
     return new IndexedMultiSet<T>(
-      this.allRecords.set(item, newMult),
+      this.allRecords.set(key, newMult),
       this.indexes.map((index) => ({
         ...index,
-        items: index.items.update(index.getKey(item), Map(), (items) =>
-          items.set(item, newMult)
+        items: index.items.update(index.getKey(item), Set(), (items) =>
+          items.add(key)
         ),
-      }))
+      })),
+      this.stringify
     );
   }
 
   getByIndex(indexName: string, key: List<string>): Map<T, number> {
-    return this.indexes.get(indexName).items.get(key, Map());
+    const keySet: Set<string> = this.indexes
+      .get(indexName)
+      .items.get(key, Set());
+    return Map(
+      keySet.map((key) => {
+        const { item, mult } = this.allRecords.get(key);
+        return [item, mult];
+      })
+    );
   }
 }

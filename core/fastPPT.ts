@@ -2,7 +2,7 @@ import { mapObjToListUnordered } from "../util/util";
 import { Bindings, Res, Term } from "./types";
 
 export function fastPPR(res: Res) {
-  return `${fastPPT(res.term)} ${fastPPB(res.bindings)}`;
+  return `${res.term ? fastPPT(res.term) : null} ${fastPPB(res.bindings)}`;
 }
 
 export function fastPPB(bindings: Bindings) {

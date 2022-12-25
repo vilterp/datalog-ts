@@ -18,7 +18,7 @@ import { permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
 import { emptyIndexedCollection } from "./indexedMultiSet";
-import { fastPPT } from "../fastPPT";
+import { fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
 
@@ -355,7 +355,7 @@ function addNodeKnownID(
       isInternal,
       desc,
       epochDone: -1,
-      cache: emptyIndexedCollection(),
+      cache: emptyIndexedCollection(fastPPR),
     }),
   };
 }
@@ -375,7 +375,7 @@ function addNode(
       nodes: graph.nodes.set(nodeID, {
         desc,
         epochDone: -1,
-        cache: emptyIndexedCollection(),
+        cache: emptyIndexedCollection(fastPPR),
         isInternal,
       }),
     },
