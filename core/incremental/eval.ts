@@ -20,6 +20,7 @@ import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { processMessage } from "./operators";
+import { ppb } from "../pretty";
 
 export function insertOrRetractFact(
   graph: RuleGraph,
@@ -193,6 +194,15 @@ function handleOutMessage(
           trace: baseFactTrace,
           term: data.rec,
         };
+  if (
+    outMessage.data.type === "Bindings" &&
+    outMessage.data.bindings.trace.type === "AggregationTraceForIncr"
+  ) {
+    console.log(
+      outMessage.multiplicity,
+      ppb(outMessage.data.bindings.bindings)
+    );
+  }
   return updateCache(newGraph, curNodeID, res, outMessage.multiplicity);
 }
 

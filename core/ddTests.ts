@@ -106,8 +106,8 @@ export function putThroughInterp(
   let interp = getInterp();
 
   const results: TestOutput[] = [];
-
   for (const input of test) {
+    console.log("======");
     try {
       const [stmtResult, newInterp] = interp.evalStr(input + "\n");
       interp = newInterp;

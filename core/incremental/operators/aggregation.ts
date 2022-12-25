@@ -1,7 +1,7 @@
 import { AGGREGATIONS } from "../../aggregations";
 import { fastPPT } from "../../fastPPT";
 import { ppb } from "../../pretty";
-import { Bindings } from "../../types";
+import { aggTraceForInner, Bindings } from "../../types";
 import { AggregationDesc, MessagePayload } from "../types";
 
 export function processAggregation(
@@ -32,14 +32,15 @@ export function processAggregation(
         state: nodeDesc.state.set(groupKey, newGroupState),
       };
 
-      const oldBindings: Bindings = {
-        ...data.bindings.bindings,
-        [aggVar]: curGroupState,
-      };
-      const newBindings: Bindings = {
-        ...oldBindings,
-        [aggVar]: newGroupState,
-      };
+      const oldBindings: Bindings = {};
+      const newBindings: Bindings = {};
+      for (const varName of groupVars) {
+        const val = data.bindings.bindings[varName];
+        oldBindings[varName] = val;
+        newBindings[varName] = val;
+      }
+      oldBindings[aggVar] = curGroupState;
+      newBindings[aggVar] = newGroupState;
 
       // console.log("step:", {
       //   aggregation: nodeDesc.aggregation.aggregation,
@@ -58,7 +59,7 @@ export function processAggregation(
               type: "Bindings",
               bindings: {
                 bindings: oldBindings,
-                trace: { type: "AggregationTraceForIncr" },
+                trace: aggTraceForInner,
               },
             },
           },
@@ -68,7 +69,7 @@ export function processAggregation(
               type: "Bindings",
               bindings: {
                 bindings: newBindings,
-                trace: { type: "AggregationTraceForIncr" },
+                trace: aggTraceForInner,
               },
             },
           },
