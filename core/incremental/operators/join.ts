@@ -2,12 +2,14 @@ import { evalBuiltin } from "../../evalBuiltin";
 import { BindingsWithTrace, builtinTrace } from "../../types";
 import { unifyBindings } from "../../unify";
 import { getIndexName, getIndexKey } from "../build";
-import { RuleGraph, JoinDesc, NodeID, MessagePayload, DataMsg } from "../types";
-
-type BindingsWithMultiplicity = {
-  bindings: BindingsWithTrace;
-  multiplicity: number;
-};
+import {
+  RuleGraph,
+  JoinDesc,
+  NodeID,
+  MessagePayload,
+  DataMsg,
+  BindingsWithMultiplicity,
+} from "../types";
 
 export function processJoin(
   graph: RuleGraph,

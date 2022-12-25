@@ -73,8 +73,13 @@ export type NegationDesc = {
 };
 
 export type NegationState = {
-  receivedNormal: BindingsWithTrace[];
-  receivedNegated: BindingsWithTrace[];
+  receivedNormal: BindingsWithMultiplicity[];
+  receivedNegated: BindingsWithMultiplicity[];
+};
+
+export type BindingsWithMultiplicity = {
+  bindings: BindingsWithTrace;
+  multiplicity: number;
 };
 
 export const emptyNegationState: NegationState = {

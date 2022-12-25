@@ -6,6 +6,7 @@ import {
   NodeID,
   NegationState,
   emptyNegationState,
+  BindingsWithMultiplicity,
 } from "../types";
 import { doJoin } from "./join";
 
@@ -20,7 +21,10 @@ export function processNegation(
       const data = payload.data;
       switch (data.type) {
         case "Bindings": {
-          const newDesc = processBindings(nodeDesc, origin, data.bindings);
+          const newDesc = processBindings(nodeDesc, origin, {
+            bindings: data.bindings,
+            multiplicity: payload.multiplicity,
+          });
           return [newDesc, []];
         }
         case "Record":
@@ -44,37 +48,39 @@ function processMarkDone(
   graph: RuleGraph,
   desc: NegationDesc
 ): MessagePayload[] {
+  // TODO: use a negate node and do a single join here
   // tuples from the normal side that don't join against the negated side
   const negatedJoinResults = desc.state.receivedNormal.filter(
     (bindings) =>
       doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.rightID).length === 0
   );
-  // const normalJoinResults = desc.state.receivedNegated.filter(
-  //   (bindings) =>
-  //     doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.leftID).length === 0
-  // );
+  // new tuples on the negated side that mean we have to retract things
+  const normalJoinResults = desc.state.receivedNegated.filter(
+    (bindings) =>
+      doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.leftID).length === 0
+  );
   return [
     ...negatedJoinResults.map(
-      (bindings): MessagePayload => ({
+      (bwm): MessagePayload => ({
         type: "Data",
-        multiplicity: 1,
-        data: { type: "Bindings", bindings },
+        multiplicity: bwm.multiplicity,
+        data: { type: "Bindings", bindings: bwm.bindings },
       })
     ),
-    // ...normalJoinResults.map(
-    //   (bindings): MessagePayload => ({
-    //     type: "Data",
-    //     multiplicity: -1,
-    //     data: { type: "Bindings", bindings },
-    //   })
-    // ),
+    ...normalJoinResults.map(
+      (bwm): MessagePayload => ({
+        type: "Data",
+        multiplicity: -bwm.multiplicity,
+        data: { type: "Bindings", bindings: bwm.bindings },
+      })
+    ),
   ];
 }
 
 function processBindings(
   nodeDesc: NegationDesc,
   origin: NodeID,
-  bindings: BindingsWithTrace
+  bindings: BindingsWithMultiplicity
 ): NegationDesc {
   const oldState = nodeDesc.state;
   const newState: NegationState =
