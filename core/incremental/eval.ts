@@ -193,26 +193,25 @@ function handleOutMessage(
           trace: baseFactTrace,
           term: data.rec,
         };
-  return addToCache(newGraph, curNodeID, res, outMessage.multiplicity);
+  return updateCache(newGraph, curNodeID, res, outMessage.multiplicity);
 }
 
 // helpers
 
-function addToCache(
+function updateCache(
   graph: RuleGraph,
   nodeID: NodeID,
   res: Res,
-  multiplicity: number
+  multiplicityDelta: number
 ): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.update(res, multiplicity);
-  // TODO: use Map#update?
+  const newCache = cache.update(res, multiplicityDelta);
   return {
     ...graph,
-    nodes: graph.nodes.set(nodeID, {
-      ...graph.nodes.get(nodeID),
+    nodes: graph.nodes.update(nodeID, (oldNode) => ({
+      ...oldNode,
       cache: newCache,
-    }),
+    })),
   };
 }
 
@@ -221,12 +220,11 @@ function updateNodeDesc(
   nodeID: NodeID,
   newDesc: NodeDesc
 ): RuleGraph {
-  // TODO: use Map#update?
   return {
     ...graph,
-    nodes: graph.nodes.set(nodeID, {
-      ...graph.nodes.get(nodeID),
+    nodes: graph.nodes.update(nodeID, (oldNode) => ({
+      ...oldNode,
       desc: newDesc,
-    }),
+    })),
   };
 }
