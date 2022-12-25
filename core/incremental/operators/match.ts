@@ -6,9 +6,6 @@ export function processMatch(
   nodeDesc: MatchDesc,
   payload: MessagePayload
 ): [MatchDesc, MessagePayload[]] {
-  if (payload.type === "MarkDone") {
-    return [nodeDesc, []];
-  }
   const data = payload.data;
   if (data.type === "Bindings") {
     throw new Error("Match nodes should not receive messages of type Bindings");
@@ -29,8 +26,7 @@ export function processMatch(
     nodeDesc,
     [
       {
-        type: "Data",
-        multiplicity: 1,
+        multiplicity: payload.multiplicity,
         data: {
           type: "Bindings",
           bindings: {

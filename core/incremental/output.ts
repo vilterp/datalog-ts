@@ -43,9 +43,7 @@ export function formatOutput(
             }),
             ({ output }) =>
               output.map((payload) =>
-                payload.type === "MarkDone"
-                  ? rec("MarkDone", {})
-                  : payload.data.type === "Bindings"
+                payload.data.type === "Bindings"
                   ? rec("Bindings", {
                       bindings: dict(payload.data.bindings.bindings),
                     })
@@ -67,17 +65,10 @@ export function formatOutput(
 }
 
 function formatMessagePayload(payload: MessagePayload) {
-  switch (payload.type) {
-    case "MarkDone":
-      return "MarkDone";
-    case "Data": {
-      const data = payload.data;
-      switch (data.type) {
-        case "Bindings":
-          return ppb(data.bindings.bindings);
-        case "Record":
-          return ppt(data.rec);
-      }
-    }
+  switch (payload.data.type) {
+    case "Bindings":
+      return ppb(payload.data.bindings.bindings);
+    case "Record":
+      return ppt(payload.data.rec);
   }
 }

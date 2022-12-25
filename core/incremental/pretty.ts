@@ -6,7 +6,7 @@ import { VarToPath } from "../types";
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "Join":
-      return `Join(${formatJoinInfo(nodeDesc.joinVars)})`;
+      return `Join(${nodeDesc.joinVars.toArray().sort().join(", ")})`;
     case "Match":
       return `Match(${ppt(nodeDesc.rec)})`;
     case "Substitute":
@@ -18,7 +18,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BaseFactTable":
       return "";
     case "Negation":
-      return `Negation(${formatJoinInfo(nodeDesc.joinDesc.joinVars)})`;
+      return `Negation()`;
     case "Aggregation":
       return `Agg(${
         nodeDesc.aggregation.aggregation
@@ -26,18 +26,6 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
         nodeDesc.aggregation.record
       )}])`;
   }
-}
-
-function formatVarToPath(varToPath: VarToPath): string {
-  return `{${Object.keys(varToPath)
-    .sort()
-    .map((key) => `${key}: ${varToPath[key].join(".")}`)
-    .join(", ")}}`;
-}
-
-function formatJoinInfo(joinVars: Set<string>): string {
-  // TODO: show paths?
-  return joinVars.toArray().sort().join(", ");
 }
 
 export function formatNodeWithIndexes(node: NodeAndCache): string {

@@ -8,13 +8,12 @@ import {
   Bindings,
 } from "../types";
 import { List, Map, Set } from "immutable";
-import { IndexedCollection } from "./indexedCollection";
+import { IndexedMultiSet } from "./indexedMultiSet";
 
 export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
-  currentEpoch: number;
   builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
   edges: Map<NodeID, List<NodeID>>;
@@ -22,7 +21,6 @@ export type RuleGraph = {
 
 export const emptyRuleGraph: RuleGraph = {
   nextNodeID: 0,
-  currentEpoch: 0,
   builtins: Set(),
   nodes: Map(),
   edges: Map(),
@@ -32,7 +30,7 @@ export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
   epochDone: number;
-  cache: IndexedCollection<Res>;
+  cache: IndexedMultiSet<Res>;
 };
 
 export type JoinInfo = {
@@ -47,8 +45,8 @@ export type NodeDesc =
   | JoinDesc
   | MatchDesc
   | SubstituteDesc
-  | NegationDesc
   | AggregationDesc
+  | { type: "Negation" }
   | { type: "BaseFactTable" }
   | { type: "Union" }
   | { type: "Builtin"; rec: Rec };
@@ -62,29 +60,6 @@ export type JoinDesc = {
   joinVars: Set<string>;
   leftID: NodeID;
   rightID: NodeID;
-};
-
-// Negation aka AntiJoin
-export type NegationDesc = {
-  type: "Negation";
-  joinDesc: JoinDesc;
-  // TODO: maybe operator state should be kept separate?
-  state: NegationState;
-};
-
-export type NegationState = {
-  receivedNormal: BindingsWithMultiplicity[];
-  receivedNegated: BindingsWithMultiplicity[];
-};
-
-export type BindingsWithMultiplicity = {
-  bindings: BindingsWithTrace;
-  multiplicity: number;
-};
-
-export const emptyNegationState: NegationState = {
-  receivedNormal: [],
-  receivedNegated: [],
 };
 
 // key: pretty print of bindings
@@ -107,10 +82,7 @@ export type Message = {
   destination: NodeID;
 };
 
-export type MessagePayload = DataMsg | MarkDoneMsg;
-
-export type DataMsg = {
-  type: "Data";
+export type MessagePayload = {
   data: RecordMsg | BindingsMsg;
   multiplicity: number;
 };
@@ -125,11 +97,10 @@ export type BindingsMsg = {
   bindings: BindingsWithTrace;
 };
 
-export type MarkDoneMsg = {
-  type: "MarkDone";
+export type BindingsWithMultiplicity = {
+  bindings: BindingsWithTrace;
+  multiplicity: number;
 };
-
-export const markDone: MarkDoneMsg = { type: "MarkDone" };
 
 // output
 

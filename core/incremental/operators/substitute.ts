@@ -6,9 +6,6 @@ export function processSubstitute(
   nodeDesc: SubstituteDesc,
   payload: MessagePayload
 ): [SubstituteDesc, MessagePayload[]] {
-  if (payload.type === "MarkDone") {
-    return [nodeDesc, []];
-  }
   const data = payload.data;
   if (data.type === "Record") {
     throw new Error("Substitute nodes should not get Record messages");
@@ -23,7 +20,6 @@ export function processSubstitute(
     nodeDesc,
     [
       {
-        type: "Data",
         multiplicity: 1,
         data: { type: "Record", rec: rec as Rec },
       },

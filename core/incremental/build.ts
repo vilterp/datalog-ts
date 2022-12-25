@@ -12,13 +12,12 @@ import {
   NodeDesc,
   NodeID,
   emptyRuleGraph,
-  emptyNegationState,
   emptyAggregationState,
 } from "./types";
 import { permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
-import { emptyIndexedCollection } from "./indexedCollection";
+import { emptyIndexedCollection } from "./indexedMultiSet";
 import { fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
@@ -174,7 +173,7 @@ function addJoinTree(
         if (lastResult.tipID === null) {
           throw new Error("can't have just a negation as the body");
         }
-        return addNegation(lastResult, withRec);
+        return addNegation(lastResult);
       case "Aggregation":
         return addAggregation(withRec, conjunct);
     }
@@ -193,31 +192,15 @@ function getRecord(conjunct: Conjunct): Rec {
   }
 }
 
-function addNegation(
-  prev: AddConjunctResult,
-  negationRes: AddConjunctResult
-): AddConjunctResult {
-  const joinVars = prev.bindings.intersect(negationRes.bindings);
-  let outGraph = negationRes.newGraph;
-  const [graph2, negationID] = addNode(outGraph, true, {
+function addNegation(prev: AddConjunctResult): AddConjunctResult {
+  const [graph2, negID] = addNode(prev.newGraph, true, {
     type: "Negation",
-    joinDesc: {
-      type: "Join",
-      joinVars,
-      leftID: prev.tipID,
-      rightID: negationRes.tipID, // right side is negated
-    },
-    state: emptyNegationState,
   });
-  outGraph = graph2;
-  outGraph = addEdge(outGraph, prev.tipID, negationID);
-  outGraph = addEdge(outGraph, negationRes.tipID, negationID);
-  outGraph = addIndex(outGraph, prev.tipID, joinVars);
-  outGraph = addIndex(outGraph, negationRes.tipID, joinVars);
+  const graph3 = addEdge(graph2, prev.tipID, negID);
   return {
-    newGraph: outGraph,
-    bindings: prev.bindings.union(negationRes.bindings),
-    tipID: negationID,
+    newGraph: graph3,
+    bindings: prev.bindings,
+    tipID: negID,
   };
 }
 

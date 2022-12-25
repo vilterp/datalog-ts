@@ -7,7 +7,6 @@ import {
   JoinDesc,
   NodeID,
   MessagePayload,
-  DataMsg,
   BindingsWithMultiplicity,
 } from "../types";
 
@@ -16,10 +15,7 @@ export function processJoin(
   nodeDesc: JoinDesc,
   origin: NodeID,
   payload: MessagePayload
-): [JoinDesc, DataMsg[]] {
-  if (payload.type === "MarkDone") {
-    return [nodeDesc, []];
-  }
+): [JoinDesc, MessagePayload[]] {
   const data = payload.data;
   if (data.type === "Record") {
     throw new Error("Join type not receive messages of type Record");

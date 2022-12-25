@@ -4,7 +4,6 @@ import {
   NodeDesc,
   MessagePayload,
   Message,
-  markDone,
   EmissionLog,
   EmissionBatch,
 } from "./types";
@@ -28,15 +27,7 @@ export function insertOrRetractFact(
   multiplicity: number // 1: insert. -1: retract.
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
   const iter = getPropagator(graph, rec, multiplicity);
-  const result = stepPropagatorAll(graph, iter);
-  return {
-    ...result,
-    newGraph: advanceEpoch(result.newGraph),
-  };
-}
-
-function advanceEpoch(ruleGraph: RuleGraph): RuleGraph {
-  return { ...ruleGraph, currentEpoch: ruleGraph.currentEpoch + 1 };
+  return stepPropagatorAll(graph, iter);
 }
 
 export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
@@ -90,6 +81,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
       // TODO: should this be its own trace node??
       return [{ term: res.term, bindings, trace: res.trace }, multiplicity];
     })
+    .filter((multiplicity) => multiplicity > 0)
     .keySeq()
     .toArray();
 }
@@ -106,7 +98,6 @@ function insertFromNode(
         destination: nodeID,
         origin: null,
         payload: {
-          type: "Data",
           multiplicity: 1,
           data: { type: "Bindings", bindings },
         },
@@ -124,7 +115,6 @@ function getPropagator(
   const queue: Message[] = [
     {
       payload: {
-        type: "Data",
         multiplicity,
         data: {
           type: "Record",
@@ -134,7 +124,6 @@ function getPropagator(
       origin: null,
       destination: rec.relation,
     },
-    { payload: markDone, origin: null, destination: rec.relation },
   ];
   return { graph, queue: new Denque(queue) };
 }
@@ -169,10 +158,11 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   const curNodeID = insertingNow.destination;
   const [newNodeDesc, outMessages] = processMessage(iter.graph, insertingNow);
   newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
-  const [newNewGraph, additionalMessages] = markNodeDone(newGraph, curNodeID);
-  newGraph = newNewGraph;
   // console.log("push", results);
-  for (let outMessage of [...outMessages, ...additionalMessages]) {
+  for (let outMessage of outMessages) {
+    if (outMessage.multiplicity === 0) {
+      continue;
+    }
     // update cache
     newGraph = handleOutMessage(newGraph, curNodeID, outMessage);
     // propagate messages
@@ -193,46 +183,20 @@ function handleOutMessage(
   curNodeID: string,
   outMessage: MessagePayload
 ): RuleGraph {
-  switch (outMessage.type) {
-    case "Data": {
-      const data = outMessage.data;
-      const res: Res =
-        data.type === "Bindings"
-          ? {
-              bindings: data.bindings.bindings,
-              trace: data.bindings.trace,
-              term: null,
-            }
-          : {
-              bindings: {},
-              trace: baseFactTrace,
-              term: data.rec,
-            };
-      return addToCache(newGraph, curNodeID, res, outMessage.multiplicity);
-    }
-    case "MarkDone":
-      return newGraph;
-  }
-}
-
-function markNodeDone(
-  graph: RuleGraph,
-  nodeID: NodeID
-): [RuleGraph, MessagePayload[]] {
-  const node = graph.nodes.get(nodeID);
-  if (node.epochDone === graph.currentEpoch) {
-    return [graph, []];
-  }
-  return [
-    {
-      ...graph,
-      nodes: graph.nodes.set(nodeID, {
-        ...node,
-        epochDone: graph.currentEpoch,
-      }),
-    },
-    [markDone],
-  ];
+  const data = outMessage.data;
+  const res: Res =
+    data.type === "Bindings"
+      ? {
+          bindings: data.bindings.bindings,
+          trace: data.bindings.trace,
+          term: null,
+        }
+      : {
+          bindings: {},
+          trace: baseFactTrace,
+          term: data.rec,
+        };
+  return addToCache(newGraph, curNodeID, res, outMessage.multiplicity);
 }
 
 // helpers
@@ -244,7 +208,7 @@ function addToCache(
   multiplicity: number
 ): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.insert(res, multiplicity);
+  const newCache = cache.update(res, multiplicity);
   // TODO: use Map#update?
   return {
     ...graph,

@@ -1,7 +1,7 @@
 import { List, Map } from "immutable";
 
-export function emptyIndexedCollection<T>(): IndexedCollection<T> {
-  return new IndexedCollection(Map(), Map());
+export function emptyIndexedCollection<T>(): IndexedMultiSet<T> {
+  return new IndexedMultiSet(Map(), Map());
 }
 
 type Index<T> = {
@@ -9,7 +9,7 @@ type Index<T> = {
   items: Map<List<string>, Map<T, number>>;
 };
 
-export class IndexedCollection<T> {
+export class IndexedMultiSet<T> {
   private readonly allRecords: Map<T, number>;
   private readonly indexes: Map<string, Index<T>>;
   readonly size: number;
@@ -35,8 +35,8 @@ export class IndexedCollection<T> {
   createIndex(
     name: string,
     getKey: (t: T) => List<string>
-  ): IndexedCollection<T> {
-    return new IndexedCollection<T>(
+  ): IndexedMultiSet<T> {
+    return new IndexedMultiSet<T>(
       this.allRecords,
       this.indexes.set(name, {
         getKey,
@@ -49,13 +49,16 @@ export class IndexedCollection<T> {
     );
   }
 
-  insert(item: T, multiplicity: number): IndexedCollection<T> {
-    return new IndexedCollection<T>(
-      this.allRecords.set(item, multiplicity),
+  update(item: T, multiplicityDelta: number): IndexedMultiSet<T> {
+    // TODO: remove item if newMult is 0?
+    const curMult = this.allRecords.get(item);
+    const newMult = curMult + multiplicityDelta;
+    return new IndexedMultiSet<T>(
+      this.allRecords.set(item, newMult),
       this.indexes.map((index) => ({
         ...index,
         items: index.items.update(index.getKey(item), Map(), (items) =>
-          items.set(item, multiplicity)
+          items.set(item, newMult)
         ),
       }))
     );
