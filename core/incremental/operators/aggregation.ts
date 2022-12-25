@@ -23,24 +23,26 @@ export function processAggregation(
         .map((varName) => data.bindings.bindings[varName])
         .map(fastPPT)
         .join(",");
+      const curGroupState = nodeDesc.state.get(groupKey, {
+        state: agg.init,
+        bindings: data.bindings.bindings,
+      });
+      const term = data.bindings.bindings[aggVar];
+      const result = agg.step(curGroupState.state, term);
+      const newGroupState = {
+        ...curGroupState,
+        state: result,
+      };
+      // console.log("step:", {
+      //   aggregation: nodeDesc.aggregation.aggregation,
+      //   groupKey,
+      //   term: ppt(term),
+      //   groupState: ppt(groupState.state),
+      //   result,
+      // });
       const newState: AggregationDesc = {
         ...nodeDesc,
-        state: nodeDesc.state.update(
-          groupKey,
-          { state: agg.init, bindings: data.bindings.bindings },
-          (groupState) => {
-            const term = data.bindings.bindings[aggVar];
-            const result = agg.step(groupState.state, term);
-            // console.log("step:", {
-            //   aggregation: nodeDesc.aggregation.aggregation,
-            //   groupKey,
-            //   term: ppt(term),
-            //   groupState: ppt(groupState.state),
-            //   result,
-            // });
-            return { ...groupState, state: result };
-          }
-        ),
+        state: nodeDesc.state.set(groupKey, newGroupState),
       };
       // TODO: negate old aggregations
       const messages: MessagePayload[] = nodeDesc.state
@@ -49,7 +51,7 @@ export function processAggregation(
           groupVars.forEach((varName, i) => {
             bindings[varName] = groupState.bindings[varName];
           });
-          bindings[aggVar] = groupState.state;
+          bindings[aggVar] = newGroupState.state;
           return {
             multiplicity: 1,
             data: {
