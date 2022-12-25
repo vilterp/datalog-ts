@@ -196,16 +196,24 @@ function addNegation(
   prev: AddConjunctResult,
   withRec: AddConjunctResult
 ): AddConjunctResult {
-  // TODO: better variable names, etc
+  // TODO: this is one line in differential dataflow lol
+  // https://github.com/TimelyDataflow/differential-dataflow/blob/c2e8fefce9ddad0aef5afcac0238b4dc6ae0ddcb/src/operators/join.rs#L181
   const [graph2, negID] = addNode(withRec.newGraph, true, {
     type: "Negation",
   });
   const graph3 = addEdge(graph2, withRec.tipID, negID);
-  const joinRes = addJoin(graph3, { ...withRec, tipID: negID }, prev);
+  const {
+    newGraph: graph4,
+    tipID: joinID,
+    bindings,
+  } = addJoin(graph3, { ...withRec, tipID: negID }, prev);
+  const [graph5, unionID] = addNode(graph4, true, { type: "Union" });
+  const graph6 = addEdge(graph5, prev.tipID, unionID);
+  const graph7 = addEdge(graph6, joinID, unionID);
   return {
-    newGraph: joinRes.newGraph,
-    bindings: prev.bindings,
-    tipID: joinRes.tipID,
+    newGraph: graph7,
+    bindings: bindings,
+    tipID: joinID,
   };
 }
 
