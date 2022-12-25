@@ -1,10 +1,12 @@
 import { AGGREGATIONS } from "../../aggregations";
 import { fastPPT } from "../../fastPPT";
-import { Bindings } from "../../types";
+import { Bindings, BindingsWithTrace } from "../../types";
+import { IndexedMultiSet } from "../indexedMultiSet";
 import { AggregationDesc, MessagePayload } from "../types";
 
 export function processAggregation(
   nodeDesc: AggregationDesc,
+  cache: IndexedMultiSet<BindingsWithTrace>,
   payload: MessagePayload
 ): [AggregationDesc, MessagePayload[]] {
   const aggregation = nodeDesc.aggregation;
@@ -46,24 +48,26 @@ export function processAggregation(
       };
       // TODO: negate old aggregations
       const messages: MessagePayload[] = nodeDesc.state
-        .map((groupState): MessagePayload => {
+        .valueSeq()
+        .flatMap((groupState): MessagePayload[] => {
           const bindings: Bindings = {};
           groupVars.forEach((varName, i) => {
             bindings[varName] = groupState.bindings[varName];
           });
           bindings[aggVar] = newGroupState.state;
-          return {
-            multiplicity: 1,
-            data: {
-              type: "Bindings",
-              bindings: {
-                bindings,
-                trace: { type: "AggregationTraceForIncr" },
+          return [
+            {
+              multiplicity: 1,
+              data: {
+                type: "Bindings",
+                bindings: {
+                  bindings,
+                  trace: { type: "AggregationTraceForIncr" },
+                },
               },
             },
-          };
+          ];
         })
-        .valueSeq()
         .toArray();
       return [newState, messages];
     }
