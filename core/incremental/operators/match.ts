@@ -6,14 +6,12 @@ export function processMatch(
   nodeDesc: MatchDesc,
   payload: MessagePayload
 ): [MatchDesc, MessagePayload[]] {
-  if (payload.type === "MarkDone") {
-    return [nodeDesc, []];
-  }
-  if (payload.type === "Bindings") {
+  const data = payload.data;
+  if (data.type === "Bindings") {
     throw new Error("Match nodes should not receive messages of type Bindings");
   }
 
-  const bindings = unify({}, nodeDesc.rec, payload.rec);
+  const bindings = unify({}, nodeDesc.rec, data.rec);
   if (bindings === null) {
     return [nodeDesc, []];
   }
@@ -28,13 +26,16 @@ export function processMatch(
     nodeDesc,
     [
       {
-        type: "Bindings",
-        bindings: {
-          bindings,
-          trace: {
-            type: "MatchTrace",
-            fact: { term: payload.rec, trace: baseFactTrace, bindings: {} },
-            match: nodeDesc.rec,
+        multiplicity: payload.multiplicity,
+        data: {
+          type: "Bindings",
+          bindings: {
+            bindings,
+            trace: {
+              type: "MatchTrace",
+              fact: { term: data.rec, trace: baseFactTrace, bindings: {} },
+              match: nodeDesc.rec,
+            },
           },
         },
       },

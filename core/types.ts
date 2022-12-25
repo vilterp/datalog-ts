@@ -174,6 +174,8 @@ export const baseFactTrace: Trace = { type: "BaseFactTrace" };
 
 export const builtinTrace: Trace = { type: "BuiltinTrace" };
 
+export const aggTraceForInner: Trace = { type: "AggregationTraceForIncr" };
+
 export type InvocationLocation = RulePathSegment[];
 
 export type RulePathSegment =

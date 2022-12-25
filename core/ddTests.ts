@@ -52,8 +52,7 @@ export function coreTestsSimple(writeResults: boolean): Suite {
 export function coreTestsIncremental(writeResults: boolean): Suite {
   return coreTests(
     writeResults,
-    () => new IncrementalInterpreter(".", fsLoader),
-    new Set(["aggregation"])
+    () => new IncrementalInterpreter(".", fsLoader)
   );
 }
 
@@ -106,8 +105,8 @@ export function putThroughInterp(
   let interp = getInterp();
 
   const results: TestOutput[] = [];
-
   for (const input of test) {
+    // console.log("======");
     try {
       const [stmtResult, newInterp] = interp.evalStr(input + "\n");
       interp = newInterp;

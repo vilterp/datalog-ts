@@ -4,7 +4,6 @@ import {
   NodeDesc,
   MessagePayload,
   Message,
-  markDone,
   EmissionLog,
   EmissionBatch,
 } from "./types";
@@ -21,27 +20,15 @@ import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { processMessage } from "./operators";
+import { ppb } from "../pretty";
 
-// === propagating messages through the graph ====
-
-export function insertFact(
+export function insertOrRetractFact(
   graph: RuleGraph,
-  rec: Rec
+  rec: Rec,
+  multiplicity: number // 1: insert. -1: retract.
 ): { newGraph: RuleGraph; emissionLog: EmissionLog } {
-  const iter = getPropagator(graph, rec);
-  const result = stepPropagatorAll(graph, iter);
-
-  // console.log("insertFact", { joinStats: getJoinStats() });
-  // clearJoinStats();
-
-  return {
-    ...result,
-    newGraph: advanceEpoch(result.newGraph),
-  };
-}
-
-function advanceEpoch(ruleGraph: RuleGraph): RuleGraph {
-  return { ...ruleGraph, currentEpoch: ruleGraph.currentEpoch + 1 };
+  const iter = getPropagator(graph, rec, multiplicity);
+  return stepPropagatorAll(graph, iter);
 }
 
 export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
@@ -71,7 +58,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       return;
     }
     rel.records.forEach((rec) => {
-      graph = insertFact(graph, rec).newGraph;
+      graph = insertOrRetractFact(graph, rec, 1).newGraph;
     });
   }, ruleGraph);
   return graph;
@@ -86,16 +73,17 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   }
   return node.cache
     .all()
-    .map((res) => {
+    .mapEntries(([res, multiplicity]) => {
       // TODO: this is awkward, and possibly not correct?
       const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
         return null;
       }
       // TODO: should this be its own trace node??
-      return { term: res.term, bindings, trace: res.trace };
+      return [{ term: res.term, bindings, trace: res.trace }, multiplicity];
     })
-    .filter((x) => x !== null)
+    .filter((multiplicity) => multiplicity > 0)
+    .keySeq()
     .toArray();
 }
 
@@ -110,24 +98,33 @@ function insertFromNode(
       {
         destination: nodeID,
         origin: null,
-        payload: { type: "Bindings", bindings },
+        payload: {
+          multiplicity: 1,
+          data: { type: "Bindings", bindings },
+        },
       },
     ]),
   };
   return stepPropagatorAll(graph, iter);
 }
 
-function getPropagator(graph: RuleGraph, rec: Rec): Propagator {
+function getPropagator(
+  graph: RuleGraph,
+  rec: Rec,
+  multiplicity: number
+): Propagator {
   const queue: Message[] = [
     {
       payload: {
-        type: "Record",
-        rec,
+        multiplicity,
+        data: {
+          type: "Record",
+          rec,
+        },
       },
       origin: null,
       destination: rec.relation,
     },
-    { payload: markDone, origin: null, destination: rec.relation },
   ];
   return { graph, queue: new Denque(queue) };
 }
@@ -162,10 +159,8 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   const curNodeID = insertingNow.destination;
   const [newNodeDesc, outMessages] = processMessage(iter.graph, insertingNow);
   newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
-  const [newNewGraph, additionalMessages] = markNodeDone(newGraph, curNodeID);
-  newGraph = newNewGraph;
   // console.log("push", results);
-  for (let outMessage of [...outMessages, ...additionalMessages]) {
+  for (let outMessage of outMessages) {
     // update cache
     newGraph = handleOutMessage(newGraph, curNodeID, outMessage);
     // propagate messages
@@ -186,60 +181,47 @@ function handleOutMessage(
   curNodeID: string,
   outMessage: MessagePayload
 ): RuleGraph {
-  switch (outMessage.type) {
-    case "Bindings": {
-      const res: Res = {
-        bindings: outMessage.bindings.bindings,
-        trace: outMessage.bindings.trace,
-        term: null,
-      };
-      return addToCache(newGraph, curNodeID, res);
-    }
-    case "Record": {
-      const res: Res = {
-        bindings: {},
-        trace: baseFactTrace,
-        term: outMessage.rec,
-      };
-      return addToCache(newGraph, curNodeID, res);
-    }
-    case "MarkDone":
-      return newGraph;
-  }
-}
-
-function markNodeDone(
-  graph: RuleGraph,
-  nodeID: NodeID
-): [RuleGraph, MessagePayload[]] {
-  const node = graph.nodes.get(nodeID);
-  if (node.epochDone === graph.currentEpoch) {
-    return [graph, []];
-  }
-  return [
-    {
-      ...graph,
-      nodes: graph.nodes.set(nodeID, {
-        ...node,
-        epochDone: graph.currentEpoch,
-      }),
-    },
-    [markDone],
-  ];
+  const data = outMessage.data;
+  const res: Res =
+    data.type === "Bindings"
+      ? {
+          bindings: data.bindings.bindings,
+          trace: data.bindings.trace,
+          term: null,
+        }
+      : {
+          bindings: {},
+          trace: baseFactTrace,
+          term: data.rec,
+        };
+  // if (
+  //   outMessage.data.type === "Bindings" &&
+  //   outMessage.data.bindings.trace.type === "AggregationTraceForIncr"
+  // ) {
+  //   console.log(
+  //     outMessage.multiplicity,
+  //     ppb(outMessage.data.bindings.bindings)
+  //   );
+  // }
+  return updateCache(newGraph, curNodeID, res, outMessage.multiplicity);
 }
 
 // helpers
 
-function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
+function updateCache(
+  graph: RuleGraph,
+  nodeID: NodeID,
+  res: Res,
+  multiplicityDelta: number
+): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.insert(res);
-  // TODO: use Map#update?
+  const newCache = cache.update(res, multiplicityDelta);
   return {
     ...graph,
-    nodes: graph.nodes.set(nodeID, {
-      ...graph.nodes.get(nodeID),
+    nodes: graph.nodes.update(nodeID, (oldNode) => ({
+      ...oldNode,
       cache: newCache,
-    }),
+    })),
   };
 }
 
@@ -248,12 +230,11 @@ function updateNodeDesc(
   nodeID: NodeID,
   newDesc: NodeDesc
 ): RuleGraph {
-  // TODO: use Map#update?
   return {
     ...graph,
-    nodes: graph.nodes.set(nodeID, {
-      ...graph.nodes.get(nodeID),
+    nodes: graph.nodes.update(nodeID, (oldNode) => ({
+      ...oldNode,
       desc: newDesc,
-    }),
+    })),
   };
 }

@@ -6,17 +6,23 @@ export function processSubstitute(
   nodeDesc: SubstituteDesc,
   payload: MessagePayload
 ): [SubstituteDesc, MessagePayload[]] {
-  if (payload.type === "MarkDone") {
-    return [nodeDesc, []];
-  }
-  if (payload.type === "Record") {
+  const data = payload.data;
+  if (data.type === "Record") {
     throw new Error("Substitute nodes should not get Record messages");
   }
-  const rec = substitute(nodeDesc.rec, payload.bindings.bindings);
+  const rec = substitute(nodeDesc.rec, data.bindings.bindings);
   // console.log("substitute", {
   //   inBindings: ppb(ins.res.bindings),
   //   sub: ppt(nodeDesc.rec),
   //   out: ppt(rec),
   // });
-  return [nodeDesc, [{ type: "Record", rec: rec as Rec }]];
+  return [
+    nodeDesc,
+    [
+      {
+        multiplicity: payload.multiplicity,
+        data: { type: "Record", rec: rec as Rec },
+      },
+    ],
+  ];
 }

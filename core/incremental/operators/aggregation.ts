@@ -1,7 +1,8 @@
 import { AGGREGATIONS } from "../../aggregations";
 import { fastPPT } from "../../fastPPT";
-import { Bindings } from "../../types";
-import { AggregationDesc, MessagePayload, BindingsMsg } from "../types";
+import { ppb } from "../../pretty";
+import { aggTraceForInner, Bindings } from "../../types";
+import { AggregationDesc, MessagePayload } from "../types";
 
 export function processAggregation(
   nodeDesc: AggregationDesc,
@@ -14,63 +15,66 @@ export function processAggregation(
     0,
     aggregation.varNames.length - 1
   );
-  switch (payload.type) {
-    case "Bindings": {
-      const groupKey = groupVars
-        .map((varName) => payload.bindings.bindings[varName])
-        .map(fastPPT)
-        .join(",");
-      return [
-        {
-          ...nodeDesc,
-          state: nodeDesc.state.update(
-            groupKey,
-            { state: agg.init, bindings: payload.bindings.bindings },
-            (groupState) => {
-              const term = payload.bindings.bindings[aggVar];
-              const result = agg.step(groupState.state, term);
-              // console.log("step:", {
-              //   aggregation: nodeDesc.aggregation.aggregation,
-              //   groupKey,
-              //   term: ppt(term),
-              //   groupState: ppt(groupState.state),
-              //   result,
-              // });
-              return { ...groupState, state: result };
-            }
-          ),
-        },
-        [],
-      ];
-    }
-    case "MarkDone": {
-      // TODO: emit negations of old values
-      // console.log(
-      //   "done",
-      //   nodeDesc.state.mapEntries(([k, v]) => [k, ppt(v.state)]).toJSON()
-      // );
-      return [
-        nodeDesc,
-        nodeDesc.state
-          .map((groupState): BindingsMsg => {
-            const bindings: Bindings = {};
-            groupVars.forEach((varName, i) => {
-              bindings[varName] = groupState.bindings[varName];
-            });
-            bindings[aggVar] = groupState.state;
-            return {
-              type: "Bindings",
-              bindings: {
-                bindings,
-                trace: { type: "AggregationTraceForIncr" },
-              },
-            };
-          })
-          .valueSeq()
-          .toArray(),
-      ];
-    }
+  const data = payload.data;
+  switch (data.type) {
     case "Record":
       throw new Error("Negation nodes not supposed to receive Record messages");
+    case "Bindings": {
+      const groupKey = groupVars
+        .map((varName) => data.bindings.bindings[varName])
+        .map(fastPPT)
+        .join(",");
+      const curGroupState = nodeDesc.state.get(groupKey, agg.init);
+      const term = data.bindings.bindings[aggVar];
+      const newGroupState = agg.step(curGroupState, term);
+      const newNodeState: AggregationDesc = {
+        ...nodeDesc,
+        state: nodeDesc.state.set(groupKey, newGroupState),
+      };
+
+      const oldBindings: Bindings = {};
+      const newBindings: Bindings = {};
+      for (const varName of groupVars) {
+        const val = data.bindings.bindings[varName];
+        oldBindings[varName] = val;
+        newBindings[varName] = val;
+      }
+      oldBindings[aggVar] = curGroupState;
+      newBindings[aggVar] = newGroupState;
+
+      // console.log("step:", {
+      //   aggregation: nodeDesc.aggregation.aggregation,
+      //   groupKey,
+      //   oldBindings: ppb(oldBindings),
+      //   newBindings: ppb(newBindings),
+      // });
+
+      return [
+        newNodeState,
+        [
+          {
+            // TODO: don't retract old one if it wasn't there before
+            multiplicity: -1,
+            data: {
+              type: "Bindings",
+              bindings: {
+                bindings: oldBindings,
+                trace: aggTraceForInner,
+              },
+            },
+          },
+          {
+            multiplicity: 1,
+            data: {
+              type: "Bindings",
+              bindings: {
+                bindings: newBindings,
+                trace: aggTraceForInner,
+              },
+            },
+          },
+        ],
+      ];
+    }
   }
 }

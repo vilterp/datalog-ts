@@ -1,6 +1,6 @@
 import { ack, emptyRuleGraph, Output, RuleGraph } from "./types";
 import { Res, Rule, Statement } from "../types";
-import { doQuery, insertFact, replayFacts } from "./eval";
+import { doQuery, insertOrRetractFact, replayFacts } from "./eval";
 import { Loader } from "../loaders";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { filterMap } from "../../util/util";
@@ -80,8 +80,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         }
         // add the new fact
         newCatalog = addFact(this.catalog, stmt.record);
-        newGraph = insertFact(newGraph, stmt.record).newGraph;
-        newGraph = { ...newGraph, currentEpoch: newGraph.currentEpoch + 1 };
+        newGraph = insertOrRetractFact(newGraph, stmt.record, 1).newGraph;
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
@@ -91,6 +90,11 @@ export class IncrementalInterpreter extends AbstractInterpreter {
           ),
           output: ack,
         };
+      }
+      case "Delete": {
+        // remove from catalog
+        // retract from graph
+        throw new Error("deletion not supported yet");
       }
       case "Query": {
         let newInterp: IncrementalInterpreter = interp;

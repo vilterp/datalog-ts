@@ -12,14 +12,13 @@ import {
   NodeDesc,
   NodeID,
   emptyRuleGraph,
-  emptyNegationState,
   emptyAggregationState,
 } from "./types";
 import { permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
-import { emptyIndexedCollection } from "../../util/indexedCollection";
-import { fastPPT } from "../fastPPT";
+import { emptyIndexedCollection } from "./indexedMultiSet";
+import { fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
 
@@ -195,29 +194,26 @@ function getRecord(conjunct: Conjunct): Rec {
 
 function addNegation(
   prev: AddConjunctResult,
-  negationRes: AddConjunctResult
+  withRec: AddConjunctResult
 ): AddConjunctResult {
-  const joinVars = prev.bindings.intersect(negationRes.bindings);
-  let outGraph = negationRes.newGraph;
-  const [graph2, negationID] = addNode(outGraph, true, {
+  // TODO: this is one line in differential dataflow lol
+  // https://github.com/TimelyDataflow/differential-dataflow/blob/c2e8fefce9ddad0aef5afcac0238b4dc6ae0ddcb/src/operators/join.rs#L181
+  const [graph2, negID] = addNode(withRec.newGraph, true, {
     type: "Negation",
-    joinDesc: {
-      type: "Join",
-      joinVars,
-      leftID: prev.tipID,
-      rightID: negationRes.tipID, // right side is negated
-    },
-    state: emptyNegationState,
   });
-  outGraph = graph2;
-  outGraph = addEdge(outGraph, prev.tipID, negationID);
-  outGraph = addEdge(outGraph, negationRes.tipID, negationID);
-  outGraph = addIndex(outGraph, prev.tipID, joinVars);
-  outGraph = addIndex(outGraph, negationRes.tipID, joinVars);
+  const graph3 = addEdge(graph2, withRec.tipID, negID);
+  const {
+    newGraph: graph4,
+    tipID: joinID,
+    bindings,
+  } = addJoin(graph3, { ...withRec, tipID: negID }, prev);
+  const [graph5, unionID] = addNode(graph4, true, { type: "Union" });
+  const graph6 = addEdge(graph5, prev.tipID, unionID);
+  const graph7 = addEdge(graph6, joinID, unionID);
   return {
-    newGraph: outGraph,
-    bindings: prev.bindings.union(negationRes.bindings),
-    tipID: negationID,
+    newGraph: graph7,
+    bindings: bindings,
+    tipID: unionID,
   };
 }
 
@@ -359,7 +355,7 @@ function addNodeKnownID(
       isInternal,
       desc,
       epochDone: -1,
-      cache: emptyIndexedCollection(),
+      cache: emptyIndexedCollection(fastPPR),
     }),
   };
 }
@@ -379,7 +375,7 @@ function addNode(
       nodes: graph.nodes.set(nodeID, {
         desc,
         epochDone: -1,
-        cache: emptyIndexedCollection(),
+        cache: emptyIndexedCollection(fastPPR),
         isInternal,
       }),
     },
