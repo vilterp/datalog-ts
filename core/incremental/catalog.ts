@@ -1,6 +1,7 @@
 import { List } from "immutable";
 import { ppt } from "../pretty";
 import { Rec, Rule } from "../types";
+import { termEq } from "../unify";
 
 export type Catalog = {
   [name: string]: RuleEntry | TableEntry;
@@ -36,5 +37,20 @@ export function addFact(catalog: Catalog, fact: Rec): Catalog {
     ...catalog,
     // TODO: what's the complexity of this?
     [fact.relation]: { ...table, records: table.records.push(fact) },
+  };
+}
+
+export function removeFact(catalog: Catalog, fact: Rec): Catalog {
+  // TODO: faster than linear time...
+  const table = catalog[fact.relation];
+  if (table.type !== "Table") {
+    throw new Error("trying to retract a fact from a rule");
+  }
+  return {
+    ...catalog,
+    [fact.relation]: {
+      ...table,
+      records: table.records.filter((existing) => !termEq(fact, existing)),
+    },
   };
 }
