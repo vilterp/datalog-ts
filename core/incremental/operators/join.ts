@@ -59,7 +59,7 @@ export function doJoin(
   //   cache: otherNode.cache.toJSON(),
   // });
   const results: BindingsWithTrace[] = [];
-  for (let possibleOtherMatch of otherEntries) {
+  for (let possibleOtherMatch of otherEntries.keySeq()) {
     const otherVars = possibleOtherMatch;
     // TODO: just loop through the join vars?
     const unifyRes = unifyBindings(

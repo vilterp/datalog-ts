@@ -49,10 +49,10 @@ function processMarkDone(
     (bindings) =>
       doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.rightID).length === 0
   );
-  const normalJoinResults = desc.state.receivedNegated.filter(
-    (bindings) =>
-      doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.leftID).length === 0
-  );
+  // const normalJoinResults = desc.state.receivedNegated.filter(
+  //   (bindings) =>
+  //     doJoin(graph, bindings, desc.joinDesc, desc.joinDesc.leftID).length === 0
+  // );
   return [
     ...negatedJoinResults.map(
       (bindings): MessagePayload => ({
@@ -61,13 +61,13 @@ function processMarkDone(
         data: { type: "Bindings", bindings },
       })
     ),
-    ...normalJoinResults.map(
-      (bindings): MessagePayload => ({
-        type: "Data",
-        multiplicity: -1,
-        data: { type: "Bindings", bindings },
-      })
-    ),
+    // ...normalJoinResults.map(
+    //   (bindings): MessagePayload => ({
+    //     type: "Data",
+    //     multiplicity: -1,
+    //     data: { type: "Bindings", bindings },
+    //   })
+    // ),
   ];
 }
 

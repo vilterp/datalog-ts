@@ -81,16 +81,16 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
   }
   return node.cache
     .all()
-    .map((res) => {
+    .mapEntries(([res, multiplicity]) => {
       // TODO: this is awkward, and possibly not correct?
       const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
         return null;
       }
       // TODO: should this be its own trace node??
-      return { term: res.term, bindings, trace: res.trace };
+      return [{ term: res.term, bindings, trace: res.trace }, multiplicity];
     })
-    .filter((x) => x !== null)
+    .keySeq()
     .toArray();
 }
 
@@ -196,24 +196,19 @@ function handleOutMessage(
   switch (outMessage.type) {
     case "Data": {
       const data = outMessage.data;
-      switch (data.type) {
-        case "Bindings": {
-          const res: Res = {
-            bindings: data.bindings.bindings,
-            trace: data.bindings.trace,
-            term: null,
-          };
-          return addToCache(newGraph, curNodeID, res);
-        }
-        case "Record": {
-          const res: Res = {
-            bindings: {},
-            trace: baseFactTrace,
-            term: data.rec,
-          };
-          return addToCache(newGraph, curNodeID, res);
-        }
-      }
+      const res: Res =
+        data.type === "Bindings"
+          ? {
+              bindings: data.bindings.bindings,
+              trace: data.bindings.trace,
+              term: null,
+            }
+          : {
+              bindings: {},
+              trace: baseFactTrace,
+              term: data.rec,
+            };
+      return addToCache(newGraph, curNodeID, res, outMessage.multiplicity);
     }
     case "MarkDone":
       return newGraph;
@@ -242,9 +237,14 @@ function markNodeDone(
 
 // helpers
 
-function addToCache(graph: RuleGraph, nodeID: NodeID, res: Res): RuleGraph {
+function addToCache(
+  graph: RuleGraph,
+  nodeID: NodeID,
+  res: Res,
+  multiplicity: number
+): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.insert(res);
+  const newCache = cache.insert(res, multiplicity);
   // TODO: use Map#update?
   return {
     ...graph,
