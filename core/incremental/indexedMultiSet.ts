@@ -66,10 +66,10 @@ export class IndexedMultiSet<T> {
   update(item: T, multiplicityDelta: number): IndexedMultiSet<T> {
     // TODO: remove item if newMult is 0?
     const key = this.stringify(item);
-    const curMult = this.allRecords.get(key, [item, 0])[1];
+    const curMult = this.allRecords.get(key, { item, mult: 0 }).mult;
     const newMult = curMult + multiplicityDelta;
     return new IndexedMultiSet<T>(
-      this.allRecords.set(key, newMult),
+      this.allRecords.set(key, { mult: newMult, item }),
       this.indexes.map((index) => ({
         ...index,
         items: index.items.update(index.getKey(item), Set(), (items) =>
