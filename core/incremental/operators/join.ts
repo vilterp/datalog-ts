@@ -2,14 +2,19 @@ import { evalBuiltin } from "../../evalBuiltin";
 import { BindingsWithTrace, builtinTrace } from "../../types";
 import { unifyBindings } from "../../unify";
 import { getIndexName, getIndexKey } from "../build";
-import { RuleGraph, JoinDesc, NodeID, MessagePayload } from "../types";
+import { RuleGraph, JoinDesc, NodeID, MessagePayload, DataMsg } from "../types";
+
+type BindingsWithMultiplicity = {
+  bindings: BindingsWithTrace;
+  multiplicity: number;
+};
 
 export function processJoin(
   graph: RuleGraph,
   nodeDesc: JoinDesc,
   origin: NodeID,
   payload: MessagePayload
-): [JoinDesc, MessagePayload[]] {
+): [JoinDesc, DataMsg[]] {
   if (payload.type === "MarkDone") {
     return [nodeDesc, []];
   }
@@ -17,15 +22,19 @@ export function processJoin(
   if (data.type === "Record") {
     throw new Error("Join type not receive messages of type Record");
   }
+  const bwm: BindingsWithMultiplicity = {
+    bindings: data.bindings,
+    multiplicity: payload.multiplicity,
+  };
   const results =
     origin === nodeDesc.leftID
-      ? doJoin(graph, data.bindings, nodeDesc, nodeDesc.rightID)
-      : doJoin(graph, data.bindings, nodeDesc, nodeDesc.leftID);
+      ? doJoin(graph, bwm, nodeDesc, nodeDesc.rightID)
+      : doJoin(graph, bwm, nodeDesc, nodeDesc.leftID);
   return [
     nodeDesc,
-    results.map((bindings) => ({
+    results.map(({ bindings, multiplicity }) => ({
       type: "Data",
-      multiplicity: 1,
+      multiplicity,
       data: { type: "Bindings", bindings },
     })),
   ];
@@ -33,21 +42,24 @@ export function processJoin(
 
 export function doJoin(
   graph: RuleGraph,
-  bindings: BindingsWithTrace,
+  bindings: BindingsWithMultiplicity,
   joinDesc: JoinDesc,
   otherNodeID: NodeID
-): BindingsWithTrace[] {
+): BindingsWithMultiplicity[] {
   const thisVars = bindings;
   const otherNode = graph.nodes.get(otherNodeID);
   if (otherNode.desc.type === "Builtin") {
-    const results = evalBuiltin(otherNode.desc.rec, thisVars.bindings);
+    const results = evalBuiltin(otherNode.desc.rec, thisVars.bindings.bindings);
     return results.map((res) => ({
-      bindings: unifyBindings(res.bindings, thisVars.bindings),
-      trace: builtinTrace,
+      bindings: {
+        bindings: unifyBindings(res.bindings, thisVars.bindings.bindings),
+        trace: builtinTrace,
+      },
+      multiplicity: 1,
     }));
   }
   const indexName = getIndexName(joinDesc.joinVars);
-  const indexKey = getIndexKey(thisVars.bindings, joinDesc.joinVars);
+  const indexKey = getIndexKey(thisVars.bindings.bindings, joinDesc.joinVars);
   const otherEntries = otherNode.cache.get(indexName, indexKey);
   // console.log("doJoin", {
   //   originID: ins.origin,
@@ -58,12 +70,12 @@ export function doJoin(
   //   otherEntries,
   //   cache: otherNode.cache.toJSON(),
   // });
-  const results: BindingsWithTrace[] = [];
-  for (let possibleOtherMatch of otherEntries.keySeq()) {
+  const results: { bindings: BindingsWithTrace; multiplicity: number }[] = [];
+  for (let [possibleOtherMatch, otherMultiplicity] of otherEntries) {
     const otherVars = possibleOtherMatch;
     // TODO: just loop through the join vars?
     const unifyRes = unifyBindings(
-      thisVars.bindings || {},
+      thisVars.bindings.bindings || {},
       otherVars.bindings || {}
     );
     // console.log("join", {
@@ -73,8 +85,11 @@ export function doJoin(
     // });
     if (unifyRes !== null) {
       results.push({
-        bindings: unifyRes,
-        trace: { type: "JoinTrace", sources: [thisVars, otherVars] },
+        bindings: {
+          bindings: unifyRes,
+          trace: { type: "JoinTrace", sources: [thisVars.bindings, otherVars] },
+        },
+        multiplicity: thisVars.multiplicity * otherMultiplicity,
       });
     }
   }
