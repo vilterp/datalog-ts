@@ -160,9 +160,6 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
   // console.log("push", results);
   for (let outMessage of outMessages) {
-    if (outMessage.multiplicity === 0) {
-      continue;
-    }
     // update cache
     newGraph = handleOutMessage(newGraph, curNodeID, outMessage);
     // propagate messages
