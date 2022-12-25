@@ -213,7 +213,7 @@ function addNegation(
   return {
     newGraph: graph7,
     bindings: bindings,
-    tipID: joinID,
+    tipID: unionID,
   };
 }
 

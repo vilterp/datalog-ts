@@ -18,7 +18,7 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
     case "BaseFactTable":
       return "";
     case "Negation":
-      return `Negation()`;
+      return `Negate()`;
     case "Aggregation":
       return `Agg(${
         nodeDesc.aggregation.aggregation
