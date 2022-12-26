@@ -1,6 +1,6 @@
 import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, getInterpForDoc } from "./interpCache";
+import { addCursor, clearInterpCache, getInterpForDoc } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPath } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
@@ -49,6 +49,7 @@ function lwbTests(
           (test) => testLangQuery(test, initInterp),
           writeResults
         );
+        clearInterpCache();
       },
     }));
 }

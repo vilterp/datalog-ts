@@ -22,6 +22,16 @@ const interpSourceCache: {
   [docURI: string]: { interp: AbstractInterpreter };
 } = {};
 
+// TODO: remove this hack
+export function clearInterpCache() {
+  for (const key in interpCache) {
+    delete interpCache[key];
+  }
+  for (const key in interpSourceCache) {
+    delete interpSourceCache[key];
+  }
+}
+
 // TODO: call this from the outside on vscode document change events
 export function updateDocSource(uri: string, langID: string, source: string) {
   const currentSource = docSource[uri];
