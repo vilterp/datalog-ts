@@ -90,6 +90,8 @@ export function testLangQuery(
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);
+    } finally {
+      clearInterpCache();
     }
   });
 }
