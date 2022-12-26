@@ -92,3 +92,10 @@ tc.Problem{}?
 ----
 application/datalog
 tc.Problem{desc: undefinedVar{name: "foo"}, span: span{from: 58, to: 61}}.
+
+sql
+SELECT id FROM ???;
+tc.Problem{}?
+----
+application/datalog
+tc.Problem{desc: undefinedVar{name: "id"}, span: span{from: 7, to: 9}}.
