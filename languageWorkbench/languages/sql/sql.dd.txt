@@ -98,5 +98,4 @@ SELECT id FROM ???;
 tc.Problem{}?
 ----
 application/datalog
-tc.Problem{desc: undefinedVar{name: "???"}, span: span{from: 15, to: 18}}.
 tc.Problem{desc: undefinedVar{name: "id"}, span: span{from: 7, to: 9}}.

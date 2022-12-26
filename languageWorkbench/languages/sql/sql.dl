@@ -28,17 +28,21 @@ scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.columnRef{scopeID: I, name: N, span: S, kind: K}.
 scope.tableUsage{scopeID: "global", name: N, span: S, kind: "table"} :-
   ast.selectStmt{id: SelectID} &
-  ast.tableName{parentID: SelectID, span: S, text: N}.
+  ast.tableName{parentID: SelectID, id: TableNameID} &
+  ast.ident{id: TableNameID, span: S, text: N}.
 scope.columnUsage{scopeID: SelectID, name: N, span: S, kind: "column"} :-
   ast.selectStmt{id: SelectID} &
   ast.selection{parentID: SelectID, id: SelectionID} &
-  ast.columnName{parentID: SelectionID, span: S, text: N}.
+  ast.columnName{parentID: SelectionID, id: ColNameID} &
+  ast.ident{parentID: ColNameID, span: S, text: N}.
 scope.tableRef{scopeID: "global", name: N, span: S, kind: "table"} :-
   ast.refClause{id: C} &
-  ast.tableName{parentID: C, text: N, span: S}.
+  ast.tableName{parentID: C, id: T} &
+  ast.ident{parentID: T, text: N, span: S}.
 scope.columnRef{scopeID: C, name: N, span: S, kind: "column"} :-
   ast.refClause{id: C} &
-  ast.columnName{parentID: C, text: N, span: S}.
+  ast.columnName{parentID: C, id: CN} &
+  ast.ident{parentID: CN, text: N, span: S}.
 
 scope.Placeholder{span: S, scopeID: I, kind: K} :-
   scope.placeholderColumn{span: S, scopeID: I, kind: K} |
