@@ -1,3 +1,5 @@
+.table hl.mapping
+
 # TODO: prob don't need this anymore
 hl.Segment{type: T, span: S, highlight: H} :-
   hl.NonHighlightSegment{type: T, span: S, highlight: H} |

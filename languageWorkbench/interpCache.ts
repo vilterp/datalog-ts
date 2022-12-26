@@ -72,6 +72,12 @@ function interpForLangSpecInner(
     if (langSpec.datalog.length > 0) {
       interp = interp.evalStr(langSpec.datalog)[1];
     }
+    interp = interp.evalRawStmts(declareTables(grammar))[1];
+    interp = interp.evalStmt({
+      type: "Rule",
+      rule: getUnionRule(grammar),
+    })[1];
+    interp = ensureRequiredRelations(interp);
   } catch (e) {
     dlErrors = [e.toString()];
   }
@@ -121,12 +127,6 @@ function addSourceInner(
     ruleTree = extractRuleTree(traceTree);
     const records = flatten(ruleTree, source);
     interp = interp.bulkInsert(records);
-    interp = interp.evalRawStmts(declareTables(grammar))[1];
-    interp = interp.evalStmt({
-      type: "Rule",
-      rule: getUnionRule(grammar),
-    })[1];
-    interp = ensureRequiredRelations(interp);
   } catch (e) {
     langParseError = e.toString();
     console.error(e);
