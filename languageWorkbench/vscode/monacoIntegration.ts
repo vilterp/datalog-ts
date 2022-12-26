@@ -173,7 +173,8 @@ function getDefinition(
   const source = document.getValue();
   const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromPosition(source, position);
-  const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.DefnAtPos{defnSpan: US}`);
   if (results.length === 0) {
     return null;
   }
@@ -195,7 +196,8 @@ function getReferences(
   const source = document.getValue();
   const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromPosition(source, position);
-  const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
   return results.map((res) => ({
     uri: document.uri,
     range: spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec),

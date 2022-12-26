@@ -2,6 +2,7 @@ import {
   BenchmarkResult,
   BenchmarkSpec,
   doBenchmark,
+  doBenchmarkTimeBudget,
 } from "../../util/testBench/benchmark";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
@@ -30,7 +31,6 @@ export const parserBenchmarks: BenchmarkSpec[] = [
     async run(): Promise<BenchmarkResult> {
       return parserTestDatalog(
         () => new SimpleInterpreter(".", fsLoader),
-        50,
         GRAMMAR,
         INPUT
       );
@@ -41,7 +41,6 @@ export const parserBenchmarks: BenchmarkSpec[] = [
     async run(): Promise<BenchmarkResult> {
       return parserTestDatalog(
         () => new IncrementalInterpreter(".", fsLoader),
-        50,
         GRAMMAR,
         INPUT
       );
@@ -57,7 +56,6 @@ export const parserBenchmarks: BenchmarkSpec[] = [
 
 async function parserTestDatalog(
   mkInterp: () => AbstractInterpreter,
-  repetitions: number,
   grammarSource: string,
   input: string
 ): Promise<BenchmarkResult> {
@@ -69,13 +67,8 @@ async function parserTestDatalog(
   const grammarDL = grammarToDL(grammarParsed);
   const inputDL = inputToDL(input);
 
-  return doBenchmark(repetitions, () => {
+  return doBenchmarkTimeBudget(() => {
     let interp = loadedInterp;
-    interp = interp.evalRawStmts(
-      grammarDL.map((rule) => ({ type: "Rule", rule }))
-    )[1];
-    interp = interp.insertAll(inputDL);
-
     interp = interp.evalRawStmts(
       grammarDL.map((rule) => ({ type: "Rule", rule }))
     )[1];
