@@ -3,7 +3,7 @@ import {
   doBenchmarkTimeBudget,
   runDDBenchmark,
 } from "../util/testBench/benchmark";
-import { extractCursor, INIT_INTERP, testLangQuery } from "./ddTests";
+import { extractCursor, testLangQuery } from "./ddTests";
 import * as parserlib from "./parserlib/parser";
 import { GRAMMAR } from "./languages/dl/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
@@ -15,16 +15,29 @@ import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
 import { assertDeepEqual } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
+import { SimpleInterpreter } from "../core/simple/interpreter";
+import { fsLoader } from "../core/fsLoader";
+import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
-export const lwbBenchmarks: BenchmarkSpec[] = ["fp", "dl"].map((lang) => ({
-  name: lang,
-  async run() {
-    return runDDBenchmark(
-      `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-      testLangQuery
-    );
-  },
-}));
+export const lwbBenchmarksSimple: BenchmarkSpec[] = lwbBenchmarks(
+  new SimpleInterpreter("languageWorkbench/common", fsLoader)
+);
+
+export const lwbBenchmarksIncr: BenchmarkSpec[] = lwbBenchmarks(
+  new IncrementalInterpreter("languageWorkbench/common", fsLoader)
+);
+
+function lwbBenchmarks(initInterp: AbstractInterpreter) {
+  return ["fp", "dl"].map((lang) => ({
+    name: lang,
+    async run() {
+      return runDDBenchmark(
+        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+        (input) => testLangQuery(input, initInterp)
+      );
+    },
+  }));
+}
 
 export const nativeDLBenchmarks: BenchmarkSpec[] = [
   {
@@ -217,7 +230,7 @@ const langSpec: LanguageSpec = {
 };
 
 let interp: AbstractInterpreter = getInterpForDoc(
-  INIT_INTERP,
+  new SimpleInterpreter("languageWorkbench/common", fsLoader),
   langSpec.name,
   { [langSpec.name]: langSpec },
   "test.datalog",

@@ -10,10 +10,10 @@ import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
-import { lwbTests } from "./languageWorkbench/ddTests";
 import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { raceDetectorTests } from "./apps/raceDetector/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
+import { lwbTestsIncr, lwbTestsSimple } from "./languageWorkbench/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -34,7 +34,8 @@ const suites: { [name: string]: Suite } = {
   sourcePositionsTests,
   kvSync: kvSyncTests(writeResults),
   raceDetector: raceDetectorTests(writeResults),
-  lwbTests: lwbTests(writeResults),
+  lwbTestsSimple: lwbTestsSimple(writeResults),
+  lwbTestsIncr: lwbTestsIncr(writeResults),
 };
 
 try {

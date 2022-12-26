@@ -7,8 +7,29 @@ import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
+import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
 
-export function lwbTests(writeResults: boolean): Suite {
+export function lwbTestsSimple(writeResults: boolean) {
+  return lwbTests(
+    writeResults,
+    new SimpleInterpreter("languageWorkbench/common", fsLoader)
+  );
+}
+
+export function lwbTestsIncr(writeResults: boolean) {
+  return lwbTests(
+    writeResults,
+    new IncrementalInterpreter("languageWorkbench/common", fsLoader),
+    new Set(["contracts"])
+  );
+}
+
+function lwbTests(
+  writeResults: boolean,
+  initInterp: AbstractInterpreter,
+  exclude: Set<string> = new Set<string>()
+): Suite {
   return [
     "fp",
     "sql",
@@ -18,24 +39,24 @@ export function lwbTests(writeResults: boolean): Suite {
     "treeSQL",
     "basicBlocks",
     "contracts",
-  ].map((lang) => ({
-    name: lang,
-    test() {
-      runDDTestAtPath(
-        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-        testLangQuery,
-        writeResults
-      );
-    },
-  }));
+  ]
+    .filter((lang) => !exclude.has(lang))
+    .map((lang) => ({
+      name: lang,
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+          (test) => testLangQuery(test, initInterp),
+          writeResults
+        );
+      },
+    }));
 }
 
-export const INIT_INTERP = new SimpleInterpreter(
-  "languageWorkbench/common",
-  fsLoader
-);
-
-export function testLangQuery(test: string[]): TestOutput[] {
+export function testLangQuery(
+  test: string[],
+  initInterp: AbstractInterpreter
+): TestOutput[] {
   return test.map((input) => {
     const lines = input.split("\n");
     const langName = lines[0];
@@ -55,7 +76,7 @@ export function testLangQuery(test: string[]): TestOutput[] {
       example: "",
     };
     const { interp: withoutCursor } = getInterpForDoc(
-      INIT_INTERP,
+      initInterp,
       langName,
       { [langName]: langSpec },
       `test.${langName}`,

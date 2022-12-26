@@ -13,12 +13,12 @@ bar {
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 36, name: "a", span: span{from: 56, to: 59}, type: T}.
-ide.Suggestion{id: 36, name: "b", span: span{from: 56, to: 59}, type: T}.
-ide.Suggestion{id: 36, name: "c", span: span{from: 56, to: 59}, type: T}.
-ide.Suggestion{id: 36, name: "x", span: span{from: 56, to: 59}, type: T}.
-ide.Suggestion{id: 46, name: "bar", span: span{from: 69, to: 72}, type: T}.
-ide.Suggestion{id: 46, name: "foo", span: span{from: 69, to: 72}, type: T}.
+ide.Suggestion{id: 36, name: "a", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: 36, name: "b", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: 36, name: "c", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: 36, name: "x", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: 46, name: "bar", span: span{from: 69, to: 72}, type: "any"}.
+ide.Suggestion{id: 46, name: "foo", span: span{from: 69, to: 72}, type: "any"}.
 
 basicBlocks
 foo {

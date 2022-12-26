@@ -3,7 +3,7 @@ scope.Scope{id: RuleID, label: N} :-
   ast.record{id: RecordID, parentID: RuleID} &
   ast.ident{parentID: RecordID, text: N}.
 
-scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnTable{scopeID: I, name: N, span: S, kind: K} |
   scope.defnAttr{scopeID: I, name: N, span: S, kind: K} |

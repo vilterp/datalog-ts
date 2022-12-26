@@ -68,7 +68,7 @@ export function runSuite(ts: Suite) {
       console.groupEnd();
       if (e instanceof DiffError) {
         const patch = diff.createPatch(
-          `${t.name} ${e.message}`,
+          `${t.name}`,
           e.expected + "\n",
           e.actual + "\n",
           "expected",
@@ -95,6 +95,8 @@ export function runSuite(ts: Suite) {
 export type Suite = Test[];
 
 export function runSuites(suites: { [name: string]: Suite }) {
+  console.log("node", process.version);
+
   const failures = new Set();
   for (const suiteName of Object.keys(suites)) {
     console.group("Suite", suiteName);
