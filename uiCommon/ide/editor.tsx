@@ -1,7 +1,6 @@
 import * as monaco from "monaco-editor";
 import Editor from "@monaco-editor/react";
 import React, { useEffect, useMemo, useRef } from "react";
-import { LanguageSpec } from "../../languageWorkbench/languages";
 import {
   getMarkers,
   idxFromPosition,
@@ -15,6 +14,7 @@ import {
   getInterpForDoc,
 } from "../../languageWorkbench/interpCache";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
+import { LanguageSpec } from "../../languageWorkbench/common/types";
 
 export function LingoEditor(props: {
   editorState: EditorState;
