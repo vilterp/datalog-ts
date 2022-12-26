@@ -1,0 +1,5 @@
+plainText
+hello world
+hl.Segment{}?
+----
+application/datalog

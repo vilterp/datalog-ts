@@ -1,5 +1,7 @@
 # === scope / reference graph ===
 
+.table ide.Cursor
+
 # TODO: decide on defnSpan vs defnSpan
 
 scope.Item{

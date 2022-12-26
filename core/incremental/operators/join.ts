@@ -1,5 +1,5 @@
 import { evalBuiltin } from "../../evalBuiltin";
-import { BindingsWithTrace, builtinTrace } from "../../types";
+import { BindingsWithTrace, builtinTrace, Res } from "../../types";
 import { unifyBindings } from "../../unify";
 import { getIndexName, getIndexKey } from "../build";
 import {

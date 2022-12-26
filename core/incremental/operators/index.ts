@@ -1,3 +1,5 @@
+import { prettyPrintGraph } from "../../../util/graphviz";
+import { toGraphviz } from "../graphviz";
 import { RuleGraph, Message, NodeDesc, MessagePayload } from "../types";
 import { processAggregation } from "./aggregation";
 import { processJoin } from "./join";
@@ -16,23 +18,29 @@ export function processMessage(
   }
   const nodeDesc = node.desc;
   const payload = msg.payload;
-  switch (nodeDesc.type) {
-    case "Union":
-      return [nodeDesc, [payload]];
-    case "Join":
-      return processJoin(graph, nodeDesc, msg.origin, payload);
-    case "Match":
-      return processMatch(nodeDesc, payload);
-    case "Substitute":
-      return processSubstitute(nodeDesc, payload);
-    case "BaseFactTable":
-      return [nodeDesc, [payload]];
-    case "Builtin":
-      // TODO: does this make sense?
-      return [nodeDesc, [payload]];
-    case "Negation":
-      return [nodeDesc, processNegation(payload)];
-    case "Aggregation":
-      return processAggregation(nodeDesc, msg.payload);
+  try {
+    switch (nodeDesc.type) {
+      case "Union":
+        return [nodeDesc, [payload]];
+      case "Join":
+        return processJoin(graph, nodeDesc, msg.origin, payload);
+      case "Match":
+        return processMatch(nodeDesc, payload);
+      case "Substitute":
+        return processSubstitute(nodeDesc, payload);
+      case "BaseFactTable":
+        return [nodeDesc, [payload]];
+      case "Builtin":
+        // TODO: does this make sense?
+        return [nodeDesc, [payload]];
+      case "Negation":
+        return [nodeDesc, processNegation(payload)];
+      case "Aggregation":
+        return processAggregation(nodeDesc, msg.payload);
+    }
+  } catch (e) {
+    console.error("error processing node", msg.origin, e);
+    console.log(prettyPrintGraph(toGraphviz(graph)));
+    return [nodeDesc, []];
   }
 }

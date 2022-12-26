@@ -21,6 +21,8 @@ import { emptyIndexedCollection } from "./indexedMultiSet";
 import { fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
+import { prettyPrintGraph } from "../../util/graphviz";
+import { toGraphviz } from "./graphviz";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
   const entries = Object.entries(catalog);
@@ -41,6 +43,7 @@ export function buildGraph(catalog: Catalog): RuleGraph {
         return accum;
     }
   }, graph);
+  // console.log("graph", prettyPrintGraph(toGraphviz(graph)));
   return graph;
 }
 

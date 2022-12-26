@@ -7,17 +7,19 @@ import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
+import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
-    "fp",
-    "sql",
-    "dl",
-    "grammar",
-    "modelica",
-    "treeSQL",
-    "basicBlocks",
-    "contracts",
+    // "fp",
+    // "sql",
+    // "dl",
+    // "grammar",
+    // "modelica",
+    // "treeSQL",
+    // "basicBlocks",
+    // "contracts",
+    "plainText",
   ].map((lang) => ({
     name: lang,
     test() {
@@ -30,7 +32,7 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
-export const INIT_INTERP = new SimpleInterpreter(
+export const INIT_INTERP = new IncrementalInterpreter(
   "languageWorkbench/common",
   fsLoader
 );
