@@ -45,5 +45,5 @@ MANY posts {
 ide.Suggestion{}?
 ----
 application/datalog
-ide.Suggestion{id: 170, name: "id", span: span{from: 185, to: 188}, type: T}.
-ide.Suggestion{id: 170, name: "name", span: span{from: 185, to: 188}, type: T}.
+ide.Suggestion{id: 170, name: "id", span: span{from: 185, to: 188}, type: "any"}.
+ide.Suggestion{id: 170, name: "name", span: span{from: 185, to: 188}, type: "any"}.

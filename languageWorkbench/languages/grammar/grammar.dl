@@ -1,6 +1,6 @@
 scope.Scope{id: global{}, label: "global"}.
 
-scope.Defn{scopeID: global{}, span: S, name: N, kind: "rule"} :-
+scope.Defn{scopeID: global{}, span: S, name: N, kind: "rule", type: "any"} :-
   ast.ruleDefn{id: RuleID} &
   ast.ident{parentID: RuleID, span: S, text: N}.
 

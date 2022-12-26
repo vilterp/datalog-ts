@@ -20,13 +20,15 @@ export function lwbTestsSimple(writeResults: boolean) {
 export function lwbTestsIncr(writeResults: boolean) {
   return lwbTests(
     writeResults,
-    new IncrementalInterpreter("languageWorkbench/common", fsLoader)
+    new IncrementalInterpreter("languageWorkbench/common", fsLoader),
+    new Set(["contracts"])
   );
 }
 
 function lwbTests(
   writeResults: boolean,
-  initInterp: AbstractInterpreter
+  initInterp: AbstractInterpreter,
+  exclude: Set<string> = new Set<string>()
 ): Suite {
   return [
     "fp",
@@ -37,16 +39,18 @@ function lwbTests(
     "treeSQL",
     "basicBlocks",
     "contracts",
-  ].map((lang) => ({
-    name: lang,
-    test() {
-      runDDTestAtPath(
-        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-        (test) => testLangQuery(test, initInterp),
-        writeResults
-      );
-    },
-  }));
+  ]
+    .filter((lang) => !exclude.has(lang))
+    .map((lang) => ({
+      name: lang,
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+          (test) => testLangQuery(test, initInterp),
+          writeResults
+        );
+      },
+    }));
 }
 
 export function testLangQuery(

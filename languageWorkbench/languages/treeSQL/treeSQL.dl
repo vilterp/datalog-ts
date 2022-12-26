@@ -5,7 +5,7 @@ scope.tableColumn{defnLoc: DL, name: N, table: T, type: TY} :-
   ast.type{parentID: ColSpecID, text: TY} &
   ast.columnName{parentID: ColSpecID, span: DL, text: N}.
 
-scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
   scope.tableDefn{scopeID: I, span: S, name: N, kind: K} |
   scope.columnFromSelectTable{scopeID: I, span: S, name: N, kind: K}.
 scope.tableDefn{scopeID: "global", span: S, name: N, kind: "table"} :-
