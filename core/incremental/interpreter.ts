@@ -43,6 +43,15 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     const interp = this;
     switch (stmt.type) {
       case "TableDecl": {
+        const existing = interp.catalog[stmt.name];
+        if (existing) {
+          if (existing.type === "Table") {
+            return { newInterp: this, output: ack };
+          }
+          throw new Error(
+            `can't declare table ${stmt.name}: already a rule with that name`
+          );
+        }
         const newCatalog = declareTable(interp.catalog, stmt.name);
         const newInterp = new IncrementalInterpreter(
           this.cwd,
