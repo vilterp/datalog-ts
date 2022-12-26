@@ -5,16 +5,16 @@ foo{bar: A, baz: B} :-
   # test comment
   bar{doop: ???} &
   baz{???}.
-baz{time: T} :-
+wut{time: T} :-
   time{time: T}.
 ide.Suggestion{}?
 ----
 application/datalog
-ide.Suggestion{id: "baz", name: "time", span: span{from: 84, to: 87}, type: "any"}.
 ide.Suggestion{id: 15, name: "A", span: span{from: 71, to: 74}, type: "any"}.
 ide.Suggestion{id: 15, name: "B", span: span{from: 71, to: 74}, type: "any"}.
 ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: "any"}.
 ide.Suggestion{id: global{}, name: "foo", span: span{from: 36, to: 39}, type: "any"}.
+ide.Suggestion{id: global{}, name: "wut", span: span{from: 36, to: 39}, type: "any"}.
 
 dl
 foo{a: A, b: B} :- bar{a: A, b: B}.
