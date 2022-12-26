@@ -4,11 +4,9 @@ application/datalog
 state.ProgramCounter{counter: 0, thread: 1, time: 1}.
 state.ProgramCounter{counter: 1, thread: 1, time: 10}.
 state.ProgramCounter{counter: 1, thread: 1, time: 14}.
-state.ProgramCounter{counter: 1, thread: 1, time: 14}.
 state.ProgramCounter{counter: 1, thread: 1, time: 2}.
 state.ProgramCounter{counter: 1, thread: 1, time: 6}.
 state.ProgramCounter{counter: 2, thread: 1, time: 11}.
-state.ProgramCounter{counter: 2, thread: 1, time: 15}.
 state.ProgramCounter{counter: 2, thread: 1, time: 15}.
 state.ProgramCounter{counter: 2, thread: 1, time: 3}.
 state.ProgramCounter{counter: 2, thread: 1, time: 7}.
@@ -34,100 +32,18 @@ state.Var{}?
 ----
 application/datalog
 state.Var{thread: 1, time: 10, value: 2, var: "x"}.
-state.Var{thread: 1, time: 10, value: 2, var: "x"}.
 state.Var{thread: 1, time: 10, value: true, var: "y"}.
-state.Var{thread: 1, time: 11, value: 3, var: "x"}.
 state.Var{thread: 1, time: 11, value: 3, var: "x"}.
 state.Var{thread: 1, time: 11, value: true, var: "y"}.
 state.Var{thread: 1, time: 12, value: 3, var: "x"}.
-state.Var{thread: 1, time: 12, value: 3, var: "x"}.
-state.Var{thread: 1, time: 12, value: 3, var: "x"}.
-state.Var{thread: 1, time: 12, value: 3, var: "x"}.
-state.Var{thread: 1, time: 12, value: true, var: "y"}.
 state.Var{thread: 1, time: 12, value: true, var: "y"}.
 state.Var{thread: 1, time: 13, value: 3, var: "x"}.
-state.Var{thread: 1, time: 13, value: 3, var: "x"}.
-state.Var{thread: 1, time: 13, value: 3, var: "x"}.
-state.Var{thread: 1, time: 13, value: 3, var: "x"}.
-state.Var{thread: 1, time: 13, value: true, var: "y"}.
 state.Var{thread: 1, time: 13, value: true, var: "y"}.
 state.Var{thread: 1, time: 14, value: 3, var: "x"}.
-state.Var{thread: 1, time: 14, value: 3, var: "x"}.
-state.Var{thread: 1, time: 14, value: 3, var: "x"}.
-state.Var{thread: 1, time: 14, value: 3, var: "x"}.
-state.Var{thread: 1, time: 14, value: true, var: "y"}.
 state.Var{thread: 1, time: 14, value: true, var: "y"}.
 state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: 4, var: "x"}.
-state.Var{thread: 1, time: 15, value: true, var: "y"}.
-state.Var{thread: 1, time: 15, value: true, var: "y"}.
-state.Var{thread: 1, time: 15, value: true, var: "y"}.
 state.Var{thread: 1, time: 15, value: true, var: "y"}.
 state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: 4, var: "x"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
-state.Var{thread: 1, time: 16, value: true, var: "y"}.
 state.Var{thread: 1, time: 16, value: true, var: "y"}.
 state.Var{thread: 1, time: 2, value: 0, var: "x"}.
 state.Var{thread: 1, time: 3, value: 1, var: "x"}.
@@ -140,9 +56,7 @@ state.Var{thread: 1, time: 6, value: true, var: "y"}.
 state.Var{thread: 1, time: 7, value: 2, var: "x"}.
 state.Var{thread: 1, time: 7, value: true, var: "y"}.
 state.Var{thread: 1, time: 8, value: 2, var: "x"}.
-state.Var{thread: 1, time: 8, value: 2, var: "x"}.
 state.Var{thread: 1, time: 8, value: true, var: "y"}.
-state.Var{thread: 1, time: 9, value: 2, var: "x"}.
 state.Var{thread: 1, time: 9, value: 2, var: "x"}.
 state.Var{thread: 1, time: 9, value: true, var: "y"}.
 state.Var{thread: 106, time: 5, value: 1, var: "x"}.
@@ -154,40 +68,20 @@ state.Var{thread: 106, time: 7, value: true, var: "y"}.
 state.Var{thread: 106, time: 8, value: 4, var: "x"}.
 state.Var{thread: 106, time: 8, value: true, var: "y"}.
 state.Var{thread: 110, time: 10, value: 3, var: "x"}.
-state.Var{thread: 110, time: 10, value: 3, var: "x"}.
 state.Var{thread: 110, time: 10, value: true, var: "y"}.
-state.Var{thread: 110, time: 11, value: 4, var: "x"}.
 state.Var{thread: 110, time: 11, value: 4, var: "x"}.
 state.Var{thread: 110, time: 11, value: true, var: "y"}.
 state.Var{thread: 110, time: 12, value: 5, var: "x"}.
-state.Var{thread: 110, time: 12, value: 5, var: "x"}.
 state.Var{thread: 110, time: 12, value: true, var: "y"}.
-state.Var{thread: 110, time: 9, value: 2, var: "x"}.
 state.Var{thread: 110, time: 9, value: 2, var: "x"}.
 state.Var{thread: 110, time: 9, value: true, var: "y"}.
 state.Var{thread: 114, time: 13, value: 3, var: "x"}.
-state.Var{thread: 114, time: 13, value: 3, var: "x"}.
-state.Var{thread: 114, time: 13, value: 3, var: "x"}.
-state.Var{thread: 114, time: 13, value: 3, var: "x"}.
-state.Var{thread: 114, time: 13, value: true, var: "y"}.
 state.Var{thread: 114, time: 13, value: true, var: "y"}.
 state.Var{thread: 114, time: 14, value: 4, var: "x"}.
-state.Var{thread: 114, time: 14, value: 4, var: "x"}.
-state.Var{thread: 114, time: 14, value: 4, var: "x"}.
-state.Var{thread: 114, time: 14, value: 4, var: "x"}.
-state.Var{thread: 114, time: 14, value: true, var: "y"}.
 state.Var{thread: 114, time: 14, value: true, var: "y"}.
 state.Var{thread: 114, time: 15, value: 5, var: "x"}.
-state.Var{thread: 114, time: 15, value: 5, var: "x"}.
-state.Var{thread: 114, time: 15, value: 5, var: "x"}.
-state.Var{thread: 114, time: 15, value: 5, var: "x"}.
-state.Var{thread: 114, time: 15, value: true, var: "y"}.
 state.Var{thread: 114, time: 15, value: true, var: "y"}.
 state.Var{thread: 114, time: 16, value: 6, var: "x"}.
-state.Var{thread: 114, time: 16, value: 6, var: "x"}.
-state.Var{thread: 114, time: 16, value: 6, var: "x"}.
-state.Var{thread: 114, time: 16, value: 6, var: "x"}.
-state.Var{thread: 114, time: 16, value: true, var: "y"}.
 state.Var{thread: 114, time: 16, value: true, var: "y"}.
 
 viz.message{}?
@@ -199,10 +93,6 @@ viz.message{fromTick: tick{place: 1, time: 12}, toTick: tick{place: 1, time: 11}
 viz.message{fromTick: tick{place: 1, time: 12}, toTick: tick{place: 114, time: 13}}.
 viz.message{fromTick: tick{place: 1, time: 13}, toTick: tick{place: 1, time: 12}}.
 viz.message{fromTick: tick{place: 1, time: 14}, toTick: tick{place: 1, time: 13}}.
-viz.message{fromTick: tick{place: 1, time: 14}, toTick: tick{place: 1, time: 13}}.
-viz.message{fromTick: tick{place: 1, time: 15}, toTick: tick{place: 1, time: 14}}.
-viz.message{fromTick: tick{place: 1, time: 15}, toTick: tick{place: 1, time: 14}}.
-viz.message{fromTick: tick{place: 1, time: 15}, toTick: tick{place: 1, time: 14}}.
 viz.message{fromTick: tick{place: 1, time: 15}, toTick: tick{place: 1, time: 14}}.
 viz.message{fromTick: tick{place: 1, time: 2}, toTick: tick{place: 1, time: 1}}.
 viz.message{fromTick: tick{place: 1, time: 3}, toTick: tick{place: 1, time: 2}}.
