@@ -44,7 +44,7 @@ export function removeFact(catalog: Catalog, fact: Rec): Catalog {
   // TODO: faster than linear time...
   const table = catalog[fact.relation];
   if (table.type !== "Table") {
-    throw new Error("trying to retract a fact from a rule");
+    throw new Error(`tried to retract ${ppt(fact)}, but that's a rule`);
   }
   return {
     ...catalog,
