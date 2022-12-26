@@ -275,7 +275,7 @@ function testProblemsSimpleInterp() {
 
 function testDefnAtPosSimpleInterp() {
   const interp2 = interp.evalStr(`ide.Cursor{idx: 2174}.`)[1];
-  const results = interp2.queryStr("ide.DefnAtPos{idx: 2174}");
+  const results = interp2.queryStr("ide.DefnForCursor{defnSpan: DS}");
   assertDeepEqual(1, results.length, "results length");
 }
 
