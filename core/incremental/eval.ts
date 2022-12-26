@@ -134,7 +134,7 @@ type Propagator = {
   queue: Denque<Message>;
 };
 
-const MAX_QUEUE_SIZE = 10_000;
+const MAX_QUEUE_SIZE = 100_000;
 
 function stepPropagatorAll(
   graph: RuleGraph,
