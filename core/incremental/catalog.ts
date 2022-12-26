@@ -54,3 +54,10 @@ export function removeFact(catalog: Catalog, fact: Rec): Catalog {
     },
   };
 }
+
+export function numFacts(catalog: Catalog): number {
+  return Object.values(catalog).reduce(
+    (accum, val) => accum + (val.type === "Table" ? val.records.size : 0),
+    0
+  );
+}
