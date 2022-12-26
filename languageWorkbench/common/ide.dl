@@ -1,3 +1,9 @@
+.table ide.Cursor
+.table astInternal.firstChild
+.table astInternal.lastChild
+.table astInternal.next
+.table internal.visualization
+
 # === scope / reference graph ===
 
 # TODO: decide on defnSpan vs defnSpan

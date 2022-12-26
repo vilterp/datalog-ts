@@ -1,3 +1,9 @@
+# === roots ===
+
+lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
+
+ast.RootExpr{id: 1}.
+
 # === scope ===
 
 scope.Defn{scopeID: I, name: N, type: T, span: S, kind: "val"} :-
@@ -136,12 +142,6 @@ tc.undefinedVar{desc: undefinedVar{name: N}, span: S} :-
   ast.expr{id: I} &
   ast.varExpr{id: Var, parentID: I, span: S, text: N} &
   !scope.Item{scopeID: I, name: N}.
-
-# === roots ===
-
-lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
-
-ast.RootExpr{id: 1}.
 
 # === highlight ===
 
