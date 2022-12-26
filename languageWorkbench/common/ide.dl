@@ -48,7 +48,7 @@ ide.RenameSpan{span: S} :-
 
 # === Jump to Definition ===
 
-ide.DefnForCursor{defnLoc: DS} :-
+ide.DefnForCursor{defnSpan: DS} :-
   ide.Cursor{idx: CIdx} &
   scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
   FIdx <= CIdx & CIdx <= TIdx &

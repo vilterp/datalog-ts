@@ -192,7 +192,7 @@ function getDefinition(
     col: position.character,
   });
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.DefnAtPos{defnSpan: US}`);
+  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}`);
   if (results.length === 0) {
     return null;
   }

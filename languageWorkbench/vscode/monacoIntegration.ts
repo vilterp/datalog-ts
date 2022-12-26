@@ -174,7 +174,7 @@ function getDefinition(
   const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromPosition(source, position);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.DefnAtPos{defnSpan: US}`);
+  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}`);
   if (results.length === 0) {
     return null;
   }
