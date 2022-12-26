@@ -1,14 +1,12 @@
-// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
-
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../common";
+import { LanguageSpec } from "../common/types";
 import { getInterpForDoc } from "../interpCache";
-import { LanguageSpec } from "../languages";
 
-// needs to match highlight.dl
+// needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
+// and highlight.dl
 export const TOKEN_TYPES = [
   "number",
   "string",

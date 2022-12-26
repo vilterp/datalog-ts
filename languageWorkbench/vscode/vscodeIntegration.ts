@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { LanguageSpec } from "../languages";
 import { Rec, StringLit } from "../../core/types";
 import {
   dlToSpan,
@@ -19,8 +18,7 @@ import { extractRuleTree } from "../parserlib/ruleTree";
 import { parse } from "../parserlib/parser";
 import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
-import { Problem } from "../common/types";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { LanguageSpec, Problem } from "../common/types";
 import { updateDocSource } from "../interpCache";
 
 export function registerLanguageSupport(

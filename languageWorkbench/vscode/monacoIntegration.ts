@@ -1,12 +1,12 @@
 import * as monaco from "monaco-editor";
 import { Monaco } from "@monaco-editor/react";
-import { LanguageSpec } from "../languages";
 import { Rec, StringLit } from "../../core/types";
 import { dlToSpan, lineAndColFromIdx } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
 import { SemanticTokensBuilder } from "./semanticTokensBuilder";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
+import { LanguageSpec } from "../common/types";
 
 export function registerLanguageSupport(
   monacoInstance: Monaco,

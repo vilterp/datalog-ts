@@ -1,10 +1,10 @@
-import React, { useMemo, useReducer, useState } from "react";
+import React, { useReducer } from "react";
 import ReactDOM from "react-dom";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObj, mapObjToList } from "../../util/util";
 import { LingoEditor } from "../../uiCommon/ide/editor";
-import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
+import { EditorState } from "../../uiCommon/ide/types";
+import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import {
@@ -13,6 +13,7 @@ import {
 } from "../../languageWorkbench/interpCache";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
+import { LanguageSpec } from "../../languageWorkbench/common/types";
 
 function Main() {
   return <Workbench />;

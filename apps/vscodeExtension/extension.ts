@@ -5,7 +5,8 @@ import {
 } from "../../languageWorkbench/vscode/vscodeIntegration";
 import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
-import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
+import { LANGUAGES } from "../../languageWorkbench/languages";
+import { LanguageSpec } from "../../languageWorkbench/common/types";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
