@@ -68,7 +68,7 @@ export function runSuite(ts: Suite) {
       console.groupEnd();
       if (e instanceof DiffError) {
         const patch = diff.createPatch(
-          `${t.name} ${e.message}`,
+          `${t.name}`,
           e.expected + "\n",
           e.actual + "\n",
           "expected",

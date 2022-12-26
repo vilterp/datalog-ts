@@ -8,14 +8,14 @@ function checkResults(results: Result[]) {
   // TODO: print 'em all out, not just first that failed
   for (const result of results) {
     assertStringEqual(
-      result.pair.output.content,
-      result.actual.content,
-      `L${result.pair.lineNo}: ${result.pair.input}`
-    );
-    assertStringEqual(
       result.pair.output.mimeType,
       result.actual.mimeType,
-      `L${result.pair.lineNo}: ${result.pair.input}`
+      `mime type not equal at line ${result.pair.lineNo}`
+    );
+    assertStringEqual(
+      result.pair.output.content,
+      result.actual.content,
+      `output not equal at line ${result.pair.lineNo}`
     );
   }
 }
