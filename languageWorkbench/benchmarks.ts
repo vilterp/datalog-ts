@@ -274,12 +274,14 @@ function testProblemsSimpleInterp() {
 }
 
 function testDefnAtPosSimpleInterp() {
-  const results = interp.queryStr("ide.DefnAtPos{idx: 2174}");
+  const interp2 = interp.evalStr(`ide.Cursor{idx: 2174}.`)[1];
+  const results = interp2.queryStr("ide.DefnAtPos{idx: 2174}");
   assertDeepEqual(1, results.length, "results length");
 }
 
 function testUsageAtPosSimpleInterp() {
-  const results = interp.queryStr(`ide.UsageAtPos{idx: 2392, usageSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: 2392}.`)[1];
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
   assertDeepEqual(1, results.length, "results length");
 }
 

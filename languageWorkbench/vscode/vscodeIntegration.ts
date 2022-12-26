@@ -191,7 +191,8 @@ function getDefinition(
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.DefnAtPos{defnSpan: US}`);
   if (results.length === 0) {
     return null;
   }
@@ -216,7 +217,8 @@ function getReferences(
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
   return results.map(
     (res) =>
       new vscode.Location(
