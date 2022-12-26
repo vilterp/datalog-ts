@@ -1,13 +1,15 @@
 import { BenchmarkSpec, runAll } from "./util/testBench/benchmark";
 import { parserBenchmarks } from "./languageWorkbench/parserlib/benchmarks";
 import {
-  lwbBenchmarks,
+  lwbBenchmarksIncr,
+  lwbBenchmarksSimple,
   nativeDLBenchmarks,
 } from "./languageWorkbench/benchmarks";
 
 const allBenchmarks: { [name: string]: BenchmarkSpec[] } = {
   parserBenchmarks,
-  lwbBenchmarks,
+  lwbBenchmarksSimple,
+  lwbBenchmarksIncr,
   nativeDLBenchmarks,
 };
 
