@@ -1,0 +1,32 @@
+.table internal.visualization
+batteryLevel{time: T, level: L} :-
+  batteryLevelInitial{time: T, level: L} |
+  batteryLevelStep{time: T, level: L}.
+batteryLevelInitial{time: 1, level: 5}.
+currentAtSource{time: T, level: Clamped} :-
+  time2{time: T} &
+  T + 1 = ShiftedT &
+  math.sin{a: ShiftedT, res: Raw} &
+  Raw * 1 = C &
+  1 + C = ShiftedL &
+  clamp{min: 0, max: 1000, val: ShiftedL, res: Clamped}.
+currentAtSink{time: T, level: ShiftedL} :-
+  time2{time: T} &
+  T + 2 = ShiftedT &
+  math.sin{a: ShiftedT, res: Raw} &
+  Raw + 1 = C &
+  30 + C = ShiftedL.
+batteryLevelStep{time: T, level: NextLevel} :-
+  time2{time: PrevT} &
+  PrevT + 1 = T &
+  batteryLevel{time: PrevT, level: PrevLevel} &
+  batteryLevelDelta{time: T, delta: InputCurrent} &
+  PrevLevel + InputCurrent = NotClamped &
+  clamp{min: 0, max: 10, val: NotClamped, res: NextLevel}.
+batteryLevelDelta{time: T, delta: Delta} :-
+  currentAtSource{time: T, level: Input} &
+  currentAtSink{time: T, level: PosOutput} &
+  invert{a: PosOutput, res: Output} &
+  Input + Output = Delta.
+time2{time: T} :-
+  range{from: 1, to: 10, val: T}.
