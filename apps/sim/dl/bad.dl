@@ -6,10 +6,6 @@ batteryLevel{time: T, level: L} :-
   batteryLevelInitial{time: T, level: L} |
   batteryLevelStep{time: T, level: L}.
 batteryLevelInitial{time: 1, level: 5}.
-currentAtSource{id: I, time: T, level: L} :-
-  time2{time: T} &
-  source{id: I, size: Size} &
-  L = T * Size.
 batteryLevelStep{time: T, level: NextLevel} :-
   time2{time: PrevT} &
   PrevT + 1 = T &
