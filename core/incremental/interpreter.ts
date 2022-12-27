@@ -90,15 +90,15 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         }
         // add the new fact
         newCatalog = addFact(this.catalog, stmt.record);
-        newGraph = insertOrRetractFact(newGraph, stmt.record, 1).newGraph;
+        const res = insertOrRetractFact(newGraph, stmt.record, 1);
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
             this.loader,
             newCatalog,
-            newGraph
+            res.newGraph
           ),
-          output: ack,
+          output: { type: "EmissionLog", log: res.emissionLog },
         };
       }
       case "Delete": {
@@ -128,6 +128,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             replayFacts(buildGraph(this.catalog), this.catalog)
           );
         }
+        // TODO: output emission log here too
         return {
           newInterp,
           output: {
