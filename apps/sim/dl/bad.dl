@@ -1,6 +1,5 @@
 .table levelInitial
 .table inputFrom
-.table internal.visualization
 
 level{time: T, level: L} :-
   levelInitial{time: T, level: L} |
