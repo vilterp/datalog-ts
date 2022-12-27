@@ -9,19 +9,19 @@ application/datalog
 matGramp{child: A, grandfather: C} :-
   mother{child: A, mother: B} & father{child: B, father: C}.
 ----
-incremental-datalog/trace
+application/datalog
 
 father{child: "Mary", father: "Mark"}.
 ----
 incremental-datalog/trace
-father: [father{child: "Mary", father: "Mark"}; {}]
-1: [father{child: "Mary", father: "Mark"}; {B: "Mary", C: "Mark"}]
+father: [father{child: "Mary", father: "Mark"}]
+1: [{B: "Mary", C: "Mark"}]
 2: []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}; {}]
-0: [mother{child: "Pete", mother: "Mary"}; {A: "Pete", B: "Mary"}]
+mother: [mother{child: "Pete", mother: "Mary"}]
+0: [{A: "Pete", B: "Mary"}]
 2: [{A: "Pete", B: "Mary", C: "Mark"}]
-matGramp: [matGramp{child: "Pete", grandfather: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+matGramp: [matGramp{child: "Pete", grandfather: "Mark"}]

@@ -15,27 +15,27 @@ opportunity{worker: N, capability: C, objective: O, fundingSource: S} :-
   worker{name: N, capability: C} &
   fundingSource{objective: O, source: S}.
 ----
-incremental-datalog/trace
+application/datalog
 
 need{capability: "write HTML", objective: "make website"}.
 ----
 incremental-datalog/trace
-need: [need{capability: "write HTML", objective: "make website"}; {}]
-1: [need{capability: "write HTML", objective: "make website"}; {C: "write HTML", O: "make website"}]
+need: [need{capability: "write HTML", objective: "make website"}]
+0: [{C: "write HTML", O: "make website"}]
 2: []
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
 incremental-datalog/trace
-worker: [worker{capability: "write HTML", name: "Pete"}; {}]
-0: [worker{capability: "write HTML", name: "Pete"}; {C: "write HTML", N: "Pete"}]
+worker: [worker{capability: "write HTML", name: "Pete"}]
+1: [{C: "write HTML", N: "Pete"}]
 2: [{C: "write HTML", N: "Pete", O: "make website"}]
 4: []
 
 fundingSource{objective: "make website", source: "some company"}.
 ----
 incremental-datalog/trace
-fundingSource: [fundingSource{objective: "make website", source: "some company"}; {}]
-3: [fundingSource{objective: "make website", source: "some company"}; {O: "make website", S: "some company"}]
+fundingSource: [fundingSource{objective: "make website", source: "some company"}]
+3: [{O: "make website", S: "some company"}]
 4: [{C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
-opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}; {C: "write HTML", N: "Pete", O: "make website", S: "some company"}]
+opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}]
