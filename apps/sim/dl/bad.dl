@@ -1,35 +1,30 @@
 .table source
-.table battery
 .table internal.visualization
 source{id: 1, size: 10}.
 source{id: 4, size: 20}.
-battery{id: 2, initialLevel: 50}.
-batteryLevel{id: I, time: T, level: L} :-
-  batteryLevelInitial{id: I, time: T, level: L} |
-  batteryLevelStep{id: I, time: T, level: L}.
-batteryLevelInitial{id: I, time: 1, level: L} :-
-  battery{id: I, initialLevel: L}.
+batteryLevel{time: T, level: L} :-
+  batteryLevelInitial{time: T, level: L} |
+  batteryLevelStep{time: T, level: L}.
+batteryLevelInitial{time: 1, level: 5}.
 currentAtSource{id: I, time: T, level: L} :-
   time2{time: T} &
   source{id: I, size: Size} &
   L = T * Size.
-batteryLevelStep{id: I, time: T, level: NextLevel} :-
-  battery{id: I} &
+batteryLevelStep{time: T, level: NextLevel} :-
   time2{time: PrevT} &
   PrevT + 1 = T &
-  batteryLevel{id: I, time: PrevT, level: PrevLevel} &
-  batteryLevelDelta{id: I, time: T, delta: InputCurrent} &
+  batteryLevel{time: PrevT, level: PrevLevel} &
+  batteryLevelDelta{time: T, delta: InputCurrent} &
   PrevLevel + InputCurrent = NextLevel.
-batteryLevelDelta{id: B, time: T, delta: Delta} :-
-  batteryInputCurrent{id: B, time: T, current: Input} &
+batteryLevelDelta{time: T, delta: Delta} :-
+  batteryInputCurrent{time: T, current: Input} &
   PosOutput = 10 &
   invert{a: PosOutput, res: Output} &
   Input + Output = Delta.
-batteryInputCurrent{id: B, time: T, current: C} :-
-  sum[B, T, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
-batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
+batteryInputCurrent{time: T, current: C} :-
+  sum[T, C: batteryInputCurrentFrom{time: T, current: C}].
+batteryInputCurrentFrom{time: T, current: L, from: S} :-
   time2{time: T} &
-  battery{id: B} &
   source{id: S} &
   L = 10.
 time2{time: T} :-
