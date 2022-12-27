@@ -5,8 +5,6 @@
 source{id: 1, size: 10}.
 source{id: 4, size: 20}.
 battery{id: 2, initialLevel: 50}.
-connection{from: 1, to: 2}.
-connection{from: 4, to: 2}.
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
   batteryLevelStep{id: I, time: T, level: L}.
@@ -28,13 +26,12 @@ batteryLevelDelta{id: B, time: T, delta: Delta} :-
   PosOutput = 10 &
   invert{a: PosOutput, res: Output} &
   Input + Output = Delta.
+batteryInputCurrent{id: B, time: T, current: C} :-
+  sum[B, T, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
 batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
   time2{time: T} &
   battery{id: B} &
   source{id: S} &
-  connection{from: S, to: B} &
-  currentAtSource{id: S, time: T, level: L}.
-batteryInputCurrent{id: B, time: T, current: C} :-
-  sum[B, T, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
+  L = 10.
 time2{time: T} :-
   range{from: 1, to: 2, val: T}.
