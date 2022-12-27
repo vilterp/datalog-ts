@@ -40,7 +40,7 @@ batteryLevel{id: I, time: T, level: L} :-
 batteryLevelInitial{id: I, time: 1, level: L} :-
   battery{id: I, initialLevel: L}.
 currentAtSource{id: I, time: T, level: Clamped} :-
-  time{time: T} &
+  time2{time: T} &
   source{id: I, baseline: Baseline, amplitude: Size, phaseShift: PhaseShift} &
   T + PhaseShift = ShiftedT &
   math.sin{a: ShiftedT, res: Raw} &
@@ -48,7 +48,7 @@ currentAtSource{id: I, time: T, level: Clamped} :-
   Baseline + C = ShiftedL &
   clamp{min: 0, max: 1000, val: ShiftedL, res: Clamped}.
 currentAtSink{id: I, time: T, level: ShiftedL} :-
-  time{time: T} &
+  time2{time: T} &
   T + 2 = ShiftedT &
   sink{id: I, demand: Size} &
   math.sin{a: ShiftedT, res: Raw} &
@@ -82,7 +82,7 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   connection{from: B, to: S} &
   currentAtSink{id: S, time: T, level: L}.
 time2{time: T} :-
-  range{from: 1, to: 30, val: T}.
+  range{from: 1, to: 10, val: T}.
 batteryLevel{}?
 ----
 application/datalog
