@@ -3,10 +3,10 @@
 .table battery
 .table connection
 .table internal.visualization
-source{id: 1, phaseShift: 0, baseline: 30, amplitude: 10, pos: pos{x: 10, y: 20}}.
-source{id: 4, phaseShift: 0, baseline: 30, amplitude: 15, pos: pos{x: 330, y: 20}}.
-battery{id: 2, capacity: 100, initialLevel: 50, pos: pos{x: 170, y: 250}}.
-sink{id: 3, demand: 15, pos: pos{x: 170, y: 450}}.
+source{id: 1, size: 10}.
+source{id: 4, size: 20}.
+battery{id: 2, initialLevel: 50}.
+sink{id: 3, size: 15}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
@@ -15,29 +15,21 @@ batteryLevel{id: I, time: T, level: L} :-
   batteryLevelStep{id: I, time: T, level: L}.
 batteryLevelInitial{id: I, time: 1, level: L} :-
   battery{id: I, initialLevel: L}.
-currentAtSource{id: I, time: T, level: Clamped} :-
+currentAtSource{id: I, time: T, level: L} :-
   time2{time: T} &
-  source{id: I, baseline: Baseline, amplitude: Size, phaseShift: PhaseShift} &
-  T + PhaseShift = ShiftedT &
-  math.sin{a: ShiftedT, res: Raw} &
-  Raw * Size = C &
-  Baseline + C = ShiftedL &
-  clamp{min: 0, max: 1000, val: ShiftedL, res: Clamped}.
-currentAtSink{id: I, time: T, level: ShiftedL} :-
+  source{id: I, size: Size} &
+  L = T * Size.
+currentAtSink{id: I, time: T, level: L} :-
   time2{time: T} &
-  T + 2 = ShiftedT &
-  sink{id: I, demand: Size} &
-  math.sin{a: ShiftedT, res: Raw} &
-  Raw + Size = C &
-  30 + C = ShiftedL.
+  sink{id: I, size: Size} &
+  L = T * Size.
 batteryLevelStep{id: I, time: T, level: NextLevel} :-
   battery{id: I, capacity: Capacity} &
   time2{time: PrevT} &
   PrevT + 1 = T &
   batteryLevel{id: I, time: PrevT, level: PrevLevel} &
   batteryLevelDelta{id: I, time: T, delta: InputCurrent} &
-  PrevLevel + InputCurrent = NotClamped &
-  clamp{min: 0, max: Capacity, val: NotClamped, res: NextLevel}.
+  PrevLevel + InputCurrent = NextLevel.
 batteryLevelDelta{id: B, time: T, delta: Delta} :-
   batteryInputCurrent{id: B, time: T, current: Input} &
   batteryOutputCurrent{id: B, time: T, current: PosOutput} &
