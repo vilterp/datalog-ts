@@ -1,11 +1,21 @@
-.table source
+.table time2
+.table levelInitial
+.table inputFrom
 .table internal.visualization
-source{id: 1, size: 10}.
-source{id: 4, size: 20}.
+
+levelInitial{time: 1, level: 5}.
+
+inputFrom{id: 1, time: 1, current: 1}.
+inputFrom{id: 1, time: 1, current: 2}.
+inputFrom{id: 2, time: 2, current: 1}.
+inputFrom{id: 2, time: 2, current: 2}.
+
+time2{time: 1}.
+time2{time: 2}.
+
 level{time: T, level: L} :-
   levelInitial{time: T, level: L} |
   levelStep{time: T, level: L}.
-levelInitial{time: 1, level: 5}.
 levelStep{time: T, level: NextLevel} :-
   time2{time: PrevT} &
   PrevT + 1 = T &
@@ -14,9 +24,3 @@ levelStep{time: T, level: NextLevel} :-
   PrevLevel + Input = NextLevel.
 input{time: T, current: C} :-
   sum[T, C: inputFrom{time: T, current: C}].
-inputFrom{time: T, current: L, from: S} :-
-  time2{time: T} &
-  source{id: S} &
-  L = 10.
-time2{time: T} :-
-  range{from: 1, to: 2, val: T}.
