@@ -116,7 +116,7 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   currentAtSink{id: S, time: T, level: L}.
 
 time{time: T} :-
-  range{from: 1, to: 30, val: T}.
+  range{from: 1, to: 5, val: T}.
 
 # === visualization ===
 
