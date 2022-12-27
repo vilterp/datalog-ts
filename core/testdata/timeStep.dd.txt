@@ -1,0 +1,24 @@
+time{time: T} :-
+  range{from: 1, to: 10, val: T}.
+levelInit{time: 1, val: 1}.
+levelStep{time: T, val: V} :-
+  time{time: T} &
+  T = PrevT + 1 &
+  level{time: PrevT, val: PrevV} &
+  V = PrevV + 1.
+level{time: T, val: V} :-
+  levelInit{time: T, val: V} |
+  levelStep{time: T, val: V}.
+level{}?
+----
+application/datalog
+level{time: 1, val: 1}.
+level{time: 10, val: 10}.
+level{time: 2, val: 2}.
+level{time: 3, val: 3}.
+level{time: 4, val: 4}.
+level{time: 5, val: 5}.
+level{time: 6, val: 6}.
+level{time: 7, val: 7}.
+level{time: 8, val: 8}.
+level{time: 9, val: 9}.
