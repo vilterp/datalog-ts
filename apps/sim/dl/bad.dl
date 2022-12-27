@@ -1,5 +1,4 @@
 .table source
-.table sink
 .table battery
 .table connection
 .table internal.visualization
@@ -18,7 +17,7 @@ currentAtSource{id: I, time: T, level: L} :-
   source{id: I, size: Size} &
   L = T * Size.
 batteryLevelStep{id: I, time: T, level: NextLevel} :-
-  battery{id: I, capacity: Capacity} &
+  battery{id: I} &
   time2{time: PrevT} &
   PrevT + 1 = T &
   batteryLevel{id: I, time: PrevT, level: PrevLevel} &
