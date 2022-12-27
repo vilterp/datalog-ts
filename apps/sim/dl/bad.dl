@@ -25,7 +25,7 @@ batteryLevelStep{id: I, time: T, level: NextLevel} :-
   PrevLevel + InputCurrent = NextLevel.
 batteryLevelDelta{id: B, time: T, delta: Delta} :-
   batteryInputCurrent{id: B, time: T, current: Input} &
-  batteryOutputCurrent{id: B, time: T, current: PosOutput} &
+  PosOutput = 10 &
   invert{a: PosOutput, res: Output} &
   Input + Output = Delta.
 batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
@@ -36,9 +36,5 @@ batteryInputCurrentFrom{id: B, time: T, current: L, from: S} :-
   currentAtSource{id: S, time: T, level: L}.
 batteryInputCurrent{id: B, time: T, current: C} :-
   sum[B, T, C: batteryInputCurrentFrom{id: B, time: T, current: C}].
-batteryOutputCurrent{id: B, time: T, current: L} :-
-  time2{time: T} &
-  battery{id: B} &
-  L = T * 2.
 time2{time: T} :-
   range{from: 1, to: 2, val: T}.
