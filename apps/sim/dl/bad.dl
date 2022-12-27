@@ -1,6 +1,5 @@
 .table source
 .table battery
-.table connection
 .table internal.visualization
 source{id: 1, size: 10}.
 source{id: 4, size: 20}.
