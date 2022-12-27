@@ -108,3 +108,9 @@ level: [level{level: 7, time: 2}+1]
 5: [{PrevLevel: 7, PrevT: 2, T: 3}+1]
 7: []
 7: []
+
+level{}?
+----
+application/datalog-results
+level{level: 5, time: 1}; {}.
+level{level: 7, time: 2}; {}.
