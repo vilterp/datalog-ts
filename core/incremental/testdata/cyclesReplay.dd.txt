@@ -5,17 +5,17 @@ application/datalog
 baseEdge{from: "A", to: "B"}.
 ----
 incremental-datalog/trace
-baseEdge: [baseEdge{from: "A", to: "B"}]
+baseEdge: [baseEdge{from: "A", to: "B"}+1]
 
 baseEdge{from: "C", to: "D"}.
 ----
 incremental-datalog/trace
-baseEdge: [baseEdge{from: "C", to: "D"}]
+baseEdge: [baseEdge{from: "C", to: "D"}+1]
 
 baseEdge{from: "B", to: "C"}.
 ----
 incremental-datalog/trace
-baseEdge: [baseEdge{from: "B", to: "C"}]
+baseEdge: [baseEdge{from: "B", to: "C"}+1]
 
 edge{from: F, to: T} :-
   baseEdge{from: F, to: T} |

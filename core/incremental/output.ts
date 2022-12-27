@@ -67,8 +67,22 @@ export function formatOutput(
 function formatMessagePayload(payload: MessagePayload) {
   switch (payload.data.type) {
     case "Bindings":
-      return ppb(payload.data.bindings.bindings);
+      return `${ppb(payload.data.bindings.bindings)}${formatMultiplicity(
+        payload.multiplicity
+      )}`;
     case "Record":
-      return ppt(payload.data.rec);
+      return `${ppt(payload.data.rec)}${formatMultiplicity(
+        payload.multiplicity
+      )}`;
   }
+}
+
+function formatMultiplicity(mul: number) {
+  if (mul === 0) {
+    return "+0";
+  }
+  if (mul < 0) {
+    return mul.toString();
+  }
+  return `+${mul}`;
 }
