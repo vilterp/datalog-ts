@@ -15,5 +15,4 @@ input{time: T, current: C} :-
 
 levelInitial{time: 1, level: 5}.
 
-inputFrom{id: 2, time: 2, current: 2}.
-inputFrom{id: 2, time: 2, current: 2}.
+inputFrom{id: 1, time: 2, current: 2}.
