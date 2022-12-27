@@ -7,7 +7,6 @@ level{time: T, level: L} :-
   levelInitial{time: T, level: L} |
   levelStep{time: T, level: L}.
 levelStep{time: T, level: NextLevel} :-
-  time2{time: PrevT} &
   PrevT + 1 = T &
   level{time: PrevT, level: PrevLevel} &
   input{time: T, current: Input} &
