@@ -2,19 +2,19 @@
 .table internal.visualization
 source{id: 1, size: 10}.
 source{id: 4, size: 20}.
-batteryLevel{time: T, level: L} :-
-  batteryLevelInitial{time: T, level: L} |
-  batteryLevelStep{time: T, level: L}.
-batteryLevelInitial{time: 1, level: 5}.
-batteryLevelStep{time: T, level: NextLevel} :-
+level{time: T, level: L} :-
+  levelInitial{time: T, level: L} |
+  levelStep{time: T, level: L}.
+levelInitial{time: 1, level: 5}.
+levelStep{time: T, level: NextLevel} :-
   time2{time: PrevT} &
   PrevT + 1 = T &
-  batteryLevel{time: PrevT, level: PrevLevel} &
-  batteryInputCurrent{time: T, current: Input} &
+  level{time: PrevT, level: PrevLevel} &
+  input{time: T, current: Input} &
   PrevLevel + Input = NextLevel.
-batteryInputCurrent{time: T, current: C} :-
-  sum[T, C: batteryInputCurrentFrom{time: T, current: C}].
-batteryInputCurrentFrom{time: T, current: L, from: S} :-
+input{time: T, current: C} :-
+  sum[T, C: inputFrom{time: T, current: C}].
+inputFrom{time: T, current: L, from: S} :-
   time2{time: T} &
   source{id: S} &
   L = 10.
