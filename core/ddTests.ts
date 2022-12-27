@@ -69,6 +69,7 @@ function coreTests(
     "negation",
     "aggregation",
     "paths",
+    "timeStep",
   ]
     .filter((suite) => (exclude !== null ? !exclude.has(suite) : true))
     .map((name) => ({
