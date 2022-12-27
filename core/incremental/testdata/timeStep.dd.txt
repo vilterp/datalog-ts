@@ -1,0 +1,70 @@
+.table levelInitial
+----
+application/datalog
+
+.table inputFrom
+----
+application/datalog
+
+level{time: T, level: L} :-
+  levelInitial{time: T, level: L} |
+  levelStep{time: T, level: L}.
+----
+application/datalog
+
+levelStep{time: T, level: NextLevel} :-
+  PrevT + 1 = T &
+  level{time: PrevT, level: PrevLevel} &
+  input{time: T, current: Input} &
+  PrevLevel + Input = NextLevel.
+----
+application/datalog
+
+input{time: T, current: C} :-
+  sum[T, C: inputFrom{time: T, current: C}].
+----
+application/datalog
+
+level{}?
+----
+application/datalog-results
+
+levelInitial{time: 1, level: 5}.
+----
+incremental-datalog/trace
+levelInitial: [levelInitial{level: 5, time: 1}]
+1: [{L: 5, T: 1}]
+0: [{L: 5, T: 1}]
+level: [level{level: 5, time: 1}]
+4: [{PrevLevel: 5, PrevT: 1}]
+5: [{PrevLevel: 5, PrevT: 1, T: 2}]
+7: []
+
+inputFrom{id: 1, time: 2, current: 2}.
+----
+incremental-datalog/trace
+inputFrom: [inputFrom{current: 2, id: 1, time: 2}]
+10: [{C: 2, T: 2}]
+11: [{C: 0, T: 2}, {C: 2, T: 2}]
+input: [input{current: 0, time: 2}]
+input: [input{current: 2, time: 2}]
+6: [{Input: 0, T: 2}]
+6: [{Input: 2, T: 2}]
+7: [{Input: 0, PrevLevel: 5, PrevT: 1, T: 2}]
+7: [{Input: 2, PrevLevel: 5, PrevT: 1, T: 2}]
+9: [{Input: 0, NextLevel: 5, PrevLevel: 5, PrevT: 1, T: 2}]
+9: [{Input: 2, NextLevel: 7, PrevLevel: 5, PrevT: 1, T: 2}]
+levelStep: [levelStep{level: 5, time: 2}]
+levelStep: [levelStep{level: 7, time: 2}]
+2: [{L: 5, T: 2}]
+2: [{L: 7, T: 2}]
+0: [{L: 5, T: 2}]
+0: [{L: 7, T: 2}]
+level: [level{level: 5, time: 2}]
+level: [level{level: 7, time: 2}]
+4: [{PrevLevel: 5, PrevT: 2}]
+4: [{PrevLevel: 7, PrevT: 2}]
+5: [{PrevLevel: 5, PrevT: 2, T: 3}]
+5: [{PrevLevel: 7, PrevT: 2, T: 3}]
+7: []
+7: []

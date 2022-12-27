@@ -7,6 +7,7 @@ import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
 import { graphvizOut, jsonOut } from "../../util/ddTest/types";
 import { prettyPrintGraph } from "../../util/graphviz";
 import {
+  parseMain,
   parseRecord,
   parseStatement,
 } from "../../languageWorkbench/languages/dl/parser";
@@ -31,6 +32,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["replay", evalTest],
     ["cyclesReplay", evalTest],
     ["dlParser", evalTest],
+    ["timeStep", evalTest],
     ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
