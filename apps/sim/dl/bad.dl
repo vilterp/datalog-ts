@@ -6,9 +6,7 @@
 source{id: 1, size: 10}.
 source{id: 4, size: 20}.
 battery{id: 2, initialLevel: 50}.
-sink{id: 3, size: 15}.
 connection{from: 1, to: 2}.
-connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
@@ -18,10 +16,6 @@ batteryLevelInitial{id: I, time: 1, level: L} :-
 currentAtSource{id: I, time: T, level: L} :-
   time2{time: T} &
   source{id: I, size: Size} &
-  L = T * Size.
-currentAtSink{id: I, time: T, level: L} :-
-  time2{time: T} &
-  sink{id: I, size: Size} &
   L = T * Size.
 batteryLevelStep{id: I, time: T, level: NextLevel} :-
   battery{id: I, capacity: Capacity} &
@@ -46,8 +40,6 @@ batteryInputCurrent{id: B, time: T, current: C} :-
 batteryOutputCurrent{id: B, time: T, current: L} :-
   time2{time: T} &
   battery{id: B} &
-  sink{id: S} &
-  connection{from: B, to: S} &
-  currentAtSink{id: S, time: T, level: L}.
+  L = T * 2.
 time2{time: T} :-
   range{from: 1, to: 2, val: T}.
