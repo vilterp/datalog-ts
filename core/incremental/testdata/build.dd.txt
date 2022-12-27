@@ -161,3 +161,49 @@ digraph G {
   "4" -> "0" [];
   "0" -> "reachable" [];
 }
+
+time{time: T} :-
+  range{from: 1, to: 10, val: T}.
+levelInit{time: 1, val: 1}.
+levelStep{time: T, val: V} :-
+  time{time: T} &
+  T = PrevT + 1 &
+  level{time: PrevT, val: PrevV} &
+  V = PrevV + 1.
+level{time: T, val: V} :-
+  levelInit{time: T, val: V} |
+  levelStep{time: T, val: V}.
+----
+application/graphviz
+digraph G {
+  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{time: T, val: V}) []" shape="box" style="filled"];
+  "time" [fillcolor="lightblue" fontname="Courier" label="time: Subst(time{time: T}) []" shape="box" style="filled"];
+  "0" [fillcolor="" fontname="Courier" label="0: Builtin(range{from: 1, to: 10, val: T}) []" shape="box" style="filled"];
+  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{time: T, val: V}) []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(time{time: T}) [T]" shape="box" style="filled"];
+  "2" [fillcolor="" fontname="Courier" label="2: Builtin(base.add{a: PrevT, b: 1, res: T}) [T]" shape="box" style="filled"];
+  "3" [fillcolor="thistle" fontname="Courier" label="3: Join(T) [PrevT]" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" fontname="Courier" label="4: Match(level{time: PrevT, val: PrevV}) [PrevT]" shape="box" style="filled"];
+  "levelInit" [fillcolor="darksalmon" fontname="Courier" label="levelInit:  []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" fontname="Courier" label="5: Join(PrevT) [PrevV]" shape="box" style="filled"];
+  "6" [fillcolor="" fontname="Courier" label="6: Builtin(base.add{a: PrevV, b: 1, res: V}) [PrevV]" shape="box" style="filled"];
+  "7" [fillcolor="thistle" fontname="Courier" label="7: Join(PrevV) []" shape="box" style="filled"];
+  "8" [fillcolor="moccasin" fontname="Courier" label="8: Union []" shape="box" style="filled"];
+  "9" [fillcolor="darkseagreen2" fontname="Courier" label="9: Match(levelInit{time: T, val: V}) []" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" fontname="Courier" label="10: Match(levelStep{time: T, val: V}) []" shape="box" style="filled"];
+  "level" -> "4" [];
+  "time" -> "1" [];
+  "0" -> "time" [];
+  "levelStep" -> "10" [];
+  "1" -> "3" [];
+  "2" -> "3" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "levelInit" -> "9" [];
+  "5" -> "7" [];
+  "6" -> "7" [];
+  "7" -> "levelStep" [];
+  "8" -> "level" [];
+  "9" -> "8" [];
+  "10" -> "8" [];
+}
