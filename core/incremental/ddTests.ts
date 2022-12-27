@@ -7,6 +7,7 @@ import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
 import { graphvizOut, jsonOut } from "../../util/ddTest/types";
 import { prettyPrintGraph } from "../../util/graphviz";
 import {
+  parseMain,
   parseRecord,
   parseStatement,
 } from "../../languageWorkbench/languages/dl/parser";
@@ -31,6 +32,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["replay", evalTest],
     ["cyclesReplay", evalTest],
     ["dlParser", evalTest],
+    ["timeStep", evalTest],
     ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
@@ -69,6 +71,11 @@ function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
   let interp = new IncrementalInterpreter(".", fsLoader);
   for (let input of inputs) {
+    if (input === ".ruleGraph") {
+      // TODO: query virtual relations instead?
+      out.push(graphvizOut(prettyPrintGraph(toGraphviz(interp.graph))));
+      continue;
+    }
     const rawStmt = parseStatement(input);
     const stmt = parserStatementToInternal(rawStmt);
     // const before = Date.now();

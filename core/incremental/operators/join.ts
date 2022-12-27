@@ -53,7 +53,7 @@ export function doJoin(
         bindings: unifyBindings(res.bindings, thisVars.bindings.bindings),
         trace: builtinTrace,
       },
-      multiplicity: 1,
+      multiplicity: bindings.multiplicity,
     }));
   }
   const indexName = getIndexName(joinDesc.joinVars);

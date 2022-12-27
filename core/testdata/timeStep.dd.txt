@@ -1,0 +1,48 @@
+time{time: T} :-
+  range{from: 1, to: 10, val: T}.
+levelInit{time: 1, val: 1}.
+levelStep{time: T, val: V} :-
+  time{time: T} &
+  T = PrevT + 1 &
+  level{time: PrevT, val: PrevV} &
+  V = PrevV + 1.
+level{time: T, val: V} :-
+  levelInit{time: T, val: V} |
+  levelStep{time: T, val: V}.
+level{}?
+----
+application/datalog
+level{time: 1, val: 1}.
+level{time: 10, val: 10}.
+level{time: 2, val: 2}.
+level{time: 3, val: 3}.
+level{time: 4, val: 4}.
+level{time: 5, val: 5}.
+level{time: 6, val: 6}.
+level{time: 7, val: 7}.
+level{time: 8, val: 8}.
+level{time: 9, val: 9}.
+
+.table levelInitial
+.table inputFrom
+.table time2
+level2{time: T, level: L} :-
+  levelInitial{time: T, level: L} |
+  levelStep2{time: T, level: L}.
+levelStep2{time: T, level: NextLevel} :-
+  time2{time: T} &
+  PrevT + 1 = T &
+  level2{time: PrevT, level: PrevLevel} &
+  input{time: T, current: Input} &
+  PrevLevel + Input = NextLevel.
+input{time: T, current: C} :-
+  sum[T, C: inputFrom{time: T, current: C}].
+levelInitial{time: 1, level: 5}.
+inputFrom{id: 1, time: 2, current: 2}.
+time2{time: 1}.
+time2{time: 2}.
+level2{}?
+----
+application/datalog
+level2{level: 5, time: 1}.
+level2{level: 7, time: 2}.

@@ -17,40 +17,40 @@ application/datalog
 input.char{char: "END", id: -2}.
 ----
 incremental-datalog/trace
-input.char: [input.char{char: "END", id: -2}]
-0: [{C: "END", P1: -2}]
+input.char: [input.char{char: "END", id: -2}+1]
+0: [{C: "END", P1: -2}+1]
 2: []
 
 input.char{char: "START", id: -1}.
 ----
 incremental-datalog/trace
-input.char: [input.char{char: "START", id: -1}]
-0: [{C: "START", P1: -1}]
+input.char: [input.char{char: "START", id: -1}+1]
+0: [{C: "START", P1: -1}+1]
 2: []
 
 input.char{char: "b", id: 0}.
 ----
 incremental-datalog/trace
-input.char: [input.char{char: "b", id: 0}]
-0: [{C: "b", P1: 0}]
+input.char: [input.char{char: "b", id: 0}+1]
+0: [{C: "b", P1: 0}+1]
 2: []
 
 input.next{left: -1, right: 0}.
 ----
 incremental-datalog/trace
-input.next: [input.next{left: -1, right: 0}]
-1: [{P1: -1, P2: 0}]
-2: [{C: "START", P1: -1, P2: 0}]
-4: [{C: "START", P1: -1, P2: 0}]
-6: [{C: "START", P1: -1, P2: 0}]
-main: [main{span: span{from: -1, to: 0}}]
+input.next: [input.next{left: -1, right: 0}+1]
+1: [{P1: -1, P2: 0}+1]
+2: [{C: "START", P1: -1, P2: 0}+1]
+4: [{C: "START", P1: -1, P2: 0}+1]
+6: [{C: "START", P1: -1, P2: 0}+1]
+main: [main{span: span{from: -1, to: 0}}+1]
 
 input.next{left: 0, right: -2}.
 ----
 incremental-datalog/trace
-input.next: [input.next{left: 0, right: -2}]
-1: [{P1: 0, P2: -2}]
-2: [{C: "b", P1: 0, P2: -2}]
-4: [{C: "b", P1: 0, P2: -2}]
-6: [{C: "b", P1: 0, P2: -2}]
-main: [main{span: span{from: 0, to: -2}}]
+input.next: [input.next{left: 0, right: -2}+1]
+1: [{P1: 0, P2: -2}+1]
+2: [{C: "b", P1: 0, P2: -2}+1]
+4: [{C: "b", P1: 0, P2: -2}+1]
+6: [{C: "b", P1: 0, P2: -2}+1]
+main: [main{span: span{from: 0, to: -2}}+1]

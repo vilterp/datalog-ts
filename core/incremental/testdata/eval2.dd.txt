@@ -14,7 +14,7 @@ application/datalog
 father{child: "Pete", father: "Paul"}.
 ----
 incremental-datalog/trace
-father: [father{child: "Pete", father: "Paul"}]
-2: [{C: "Pete", P: "Paul"}]
-0: [{C: "Pete", P: "Paul"}]
-parent: [parent{child: "Pete", parent: "Paul"}]
+father: [father{child: "Pete", father: "Paul"}+1]
+2: [{C: "Pete", P: "Paul"}+1]
+0: [{C: "Pete", P: "Paul"}+1]
+parent: [parent{child: "Pete", parent: "Paul"}+1]

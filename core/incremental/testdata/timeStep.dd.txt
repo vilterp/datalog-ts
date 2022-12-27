@@ -1,0 +1,116 @@
+.table levelInitial
+----
+application/datalog
+
+.table inputFrom
+----
+application/datalog
+
+level{time: T, level: L} :-
+  levelInitial{time: T, level: L} |
+  levelStep{time: T, level: L}.
+----
+application/datalog
+
+levelStep{time: T, level: NextLevel} :-
+  PrevT + 1 = T &
+  level{time: PrevT, level: PrevLevel} &
+  input{time: T, current: Input} &
+  PrevLevel + Input = NextLevel.
+----
+application/datalog
+
+input{time: T, current: C} :-
+  sum[T, C: inputFrom{time: T, current: C}].
+----
+application/datalog
+
+level{}?
+----
+application/datalog-results
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "11" [fillcolor="" fontname="Courier" label="11: Agg(sum[T, C: inputFrom{current: C, time: T}]) []" shape="box" style="filled"];
+  "levelInitial" [fillcolor="darksalmon" fontname="Courier" label="levelInitial:  []" shape="box" style="filled"];
+  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{level: L, time: T}) []" shape="box" style="filled"];
+  "input" [fillcolor="lightblue" fontname="Courier" label="input: Subst(input{current: C, time: T}) []" shape="box" style="filled"];
+  "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
+  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{level: NextLevel, time: T}) []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(levelInitial{level: L, time: T}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(levelStep{level: L, time: T}) []" shape="box" style="filled"];
+  "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.add{a: PrevT, b: 1, res: T}) [PrevT]" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" fontname="Courier" label="4: Match(level{level: PrevLevel, time: PrevT}) [PrevT]" shape="box" style="filled"];
+  "inputFrom" [fillcolor="darksalmon" fontname="Courier" label="inputFrom:  []" shape="box" style="filled"];
+  "5" [fillcolor="thistle" fontname="Courier" label="5: Join(PrevT) [T]" shape="box" style="filled"];
+  "6" [fillcolor="darkseagreen2" fontname="Courier" label="6: Match(input{current: Input, time: T}) [T]" shape="box" style="filled"];
+  "7" [fillcolor="thistle" fontname="Courier" label="7: Join(T) [Input-PrevLevel]" shape="box" style="filled"];
+  "8" [fillcolor="" fontname="Courier" label="8: Builtin(base.add{a: PrevLevel, b: Input, res: NextLevel}) [Input-PrevLevel]" shape="box" style="filled"];
+  "9" [fillcolor="thistle" fontname="Courier" label="9: Join(Input, PrevLevel) []" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" fontname="Courier" label="10: Match(inputFrom{current: C, time: T}) []" shape="box" style="filled"];
+  "11" -> "input" [];
+  "levelInitial" -> "1" [];
+  "level" -> "4" [];
+  "input" -> "6" [];
+  "0" -> "level" [];
+  "levelStep" -> "2" [];
+  "1" -> "0" [];
+  "2" -> "0" [];
+  "3" -> "5" [];
+  "4" -> "5" [];
+  "inputFrom" -> "10" [];
+  "5" -> "7" [];
+  "6" -> "7" [];
+  "7" -> "9" [];
+  "8" -> "9" [];
+  "9" -> "levelStep" [];
+  "10" -> "11" [];
+}
+
+levelInitial{time: 1, level: 5}.
+----
+incremental-datalog/trace
+levelInitial: [levelInitial{level: 5, time: 1}+1]
+1: [{L: 5, T: 1}+1]
+0: [{L: 5, T: 1}+1]
+level: [level{level: 5, time: 1}+1]
+4: [{PrevLevel: 5, PrevT: 1}+1]
+5: [{PrevLevel: 5, PrevT: 1, T: 2}+1]
+7: []
+
+inputFrom{id: 1, time: 2, current: 2}.
+----
+incremental-datalog/trace
+inputFrom: [inputFrom{current: 2, id: 1, time: 2}+1]
+10: [{C: 2, T: 2}+1]
+11: [{C: 0, T: 2}-1, {C: 2, T: 2}+1]
+input: [input{current: 0, time: 2}-1]
+input: [input{current: 2, time: 2}+1]
+6: [{Input: 0, T: 2}-1]
+6: [{Input: 2, T: 2}+1]
+7: [{Input: 0, PrevLevel: 5, PrevT: 1, T: 2}-1]
+7: [{Input: 2, PrevLevel: 5, PrevT: 1, T: 2}+1]
+9: [{Input: 0, NextLevel: 5, PrevLevel: 5, PrevT: 1, T: 2}-1]
+9: [{Input: 2, NextLevel: 7, PrevLevel: 5, PrevT: 1, T: 2}+1]
+levelStep: [levelStep{level: 5, time: 2}-1]
+levelStep: [levelStep{level: 7, time: 2}+1]
+2: [{L: 5, T: 2}-1]
+2: [{L: 7, T: 2}+1]
+0: [{L: 5, T: 2}-1]
+0: [{L: 7, T: 2}+1]
+level: [level{level: 5, time: 2}-1]
+level: [level{level: 7, time: 2}+1]
+4: [{PrevLevel: 5, PrevT: 2}-1]
+4: [{PrevLevel: 7, PrevT: 2}+1]
+5: [{PrevLevel: 5, PrevT: 2, T: 3}-1]
+5: [{PrevLevel: 7, PrevT: 2, T: 3}+1]
+7: []
+7: []
+
+level{}?
+----
+application/datalog-results
+level{level: 5, time: 1}; {}.
+level{level: 7, time: 2}; {}.
