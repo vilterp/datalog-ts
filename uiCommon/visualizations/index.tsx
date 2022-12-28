@@ -8,7 +8,6 @@ import { dagEditor } from "./dagEditor/dagEditor";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Statement, Term } from "../../core/types";
 import { paramSlider } from "./paramSlider";
-import { graphviz } from "./graphviz";
 import { ticker } from "./ticker";
 
 export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
@@ -18,7 +17,6 @@ export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   tableEditor,
   dagEditor,
   paramSlider,
-  graphviz,
   ticker,
 };
 
