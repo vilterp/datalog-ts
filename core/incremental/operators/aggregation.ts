@@ -49,32 +49,31 @@ export function processAggregation(
       //   newBindings: ppb(newBindings),
       // });
 
-      return [
-        newNodeState,
-        [
-          {
-            // TODO: don't retract old one if it wasn't there before
-            multiplicity: -1,
-            data: {
-              type: "Bindings",
-              bindings: {
-                bindings: oldBindings,
-                trace: aggTraceForInner,
-              },
+      const out: MessagePayload[] = [];
+      if (nodeDesc.state.has(groupKey)) {
+        out.push({
+          multiplicity: -1,
+          data: {
+            type: "Bindings",
+            bindings: {
+              bindings: oldBindings,
+              trace: aggTraceForInner,
             },
           },
-          {
-            multiplicity: 1,
-            data: {
-              type: "Bindings",
-              bindings: {
-                bindings: newBindings,
-                trace: aggTraceForInner,
-              },
-            },
+        });
+      }
+      out.push({
+        multiplicity: 1,
+        data: {
+          type: "Bindings",
+          bindings: {
+            bindings: newBindings,
+            trace: aggTraceForInner,
           },
-        ],
-      ];
+        },
+      });
+
+      return [newNodeState, out];
     }
   }
 }
