@@ -27,7 +27,7 @@ application/datalog
 
 level{}?
 ----
-application/datalog-results
+application/datalog
 
 .ruleGraph
 ----
@@ -71,46 +71,44 @@ digraph G {
 
 levelInitial{time: 1, level: 5}.
 ----
-incremental-datalog/trace
-levelInitial: [levelInitial{level: 5, time: 1}+1]
-1: [{L: 5, T: 1}+1]
-0: [{L: 5, T: 1}+1]
-level: [level{level: 5, time: 1}+1]
-4: [{PrevLevel: 5, PrevT: 1}+1]
-5: [{PrevLevel: 5, PrevT: 1, T: 2}+1]
-7: []
+application/datalog
+step{input: bindings{bindings: {"L": 5, "T": 1}}, multiplicity: 1, node: "0", output: bindings{bindings: {"L": 5, "T": 1}}, step: 2}.
+step{input: bindings{bindings: {"L": 5, "T": 1}}, multiplicity: 1, node: "level", output: record{rec: level{level: 5, time: 1}}, step: 3}.
+step{input: bindings{bindings: {"PrevLevel": 5, "PrevT": 1}}, multiplicity: 1, node: "5", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 5}.
+step{input: record{rec: levelInitial{level: 5, time: 1}}, multiplicity: 1, node: "1", output: bindings{bindings: {"L": 5, "T": 1}}, step: 1}.
+step{input: record{rec: levelInitial{level: 5, time: 1}}, multiplicity: 1, node: "levelInitial", output: record{rec: levelInitial{level: 5, time: 1}}, step: 0}.
+step{input: record{rec: level{level: 5, time: 1}}, multiplicity: 1, node: "4", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 1}}, step: 4}.
 
 inputFrom{id: 1, time: 2, current: 2}.
 ----
-incremental-datalog/trace
-inputFrom: [inputFrom{current: 2, id: 1, time: 2}+1]
-10: [{C: 2, T: 2}+1]
-11: [{C: 0, T: 2}-1, {C: 2, T: 2}+1]
-input: [input{current: 0, time: 2}-1]
-input: [input{current: 2, time: 2}+1]
-6: [{Input: 0, T: 2}-1]
-6: [{Input: 2, T: 2}+1]
-7: [{Input: 0, PrevLevel: 5, PrevT: 1, T: 2}-1]
-7: [{Input: 2, PrevLevel: 5, PrevT: 1, T: 2}+1]
-9: [{Input: 0, NextLevel: 5, PrevLevel: 5, PrevT: 1, T: 2}-1]
-9: [{Input: 2, NextLevel: 7, PrevLevel: 5, PrevT: 1, T: 2}+1]
-levelStep: [levelStep{level: 5, time: 2}-1]
-levelStep: [levelStep{level: 7, time: 2}+1]
-2: [{L: 5, T: 2}-1]
-2: [{L: 7, T: 2}+1]
-0: [{L: 5, T: 2}-1]
-0: [{L: 7, T: 2}+1]
-level: [level{level: 5, time: 2}-1]
-level: [level{level: 7, time: 2}+1]
-4: [{PrevLevel: 5, PrevT: 2}-1]
-4: [{PrevLevel: 7, PrevT: 2}+1]
-5: [{PrevLevel: 5, PrevT: 2, T: 3}-1]
-5: [{PrevLevel: 7, PrevT: 2, T: 3}+1]
-7: []
-7: []
+application/datalog
+step{input: bindings{bindings: {"C": 0, "T": 2}}, multiplicity: -1, node: "input", output: record{rec: input{current: 0, time: 2}}, step: 3}.
+step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: -1, node: "11", output: bindings{bindings: {"C": 0, "T": 2}}, step: 2}.
+step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: 1, node: "11", output: bindings{bindings: {"C": 2, "T": 2}}, step: 2}.
+step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: 1, node: "input", output: record{rec: input{current: 2, time: 2}}, step: 4}.
+step{input: bindings{bindings: {"Input": 0, "NextLevel": 5, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: -1, node: "levelStep", output: record{rec: levelStep{level: 5, time: 2}}, step: 11}.
+step{input: bindings{bindings: {"Input": 0, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: -1, node: "9", output: bindings{bindings: {"Input": 0, "NextLevel": 5, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 9}.
+step{input: bindings{bindings: {"Input": 0, "T": 2}}, multiplicity: -1, node: "7", output: bindings{bindings: {"Input": 0, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 7}.
+step{input: bindings{bindings: {"Input": 2, "NextLevel": 7, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: 1, node: "levelStep", output: record{rec: levelStep{level: 7, time: 2}}, step: 12}.
+step{input: bindings{bindings: {"Input": 2, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: 1, node: "9", output: bindings{bindings: {"Input": 2, "NextLevel": 7, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 10}.
+step{input: bindings{bindings: {"Input": 2, "T": 2}}, multiplicity: 1, node: "7", output: bindings{bindings: {"Input": 2, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 8}.
+step{input: bindings{bindings: {"L": 5, "T": 2}}, multiplicity: -1, node: "0", output: bindings{bindings: {"L": 5, "T": 2}}, step: 15}.
+step{input: bindings{bindings: {"L": 5, "T": 2}}, multiplicity: -1, node: "level", output: record{rec: level{level: 5, time: 2}}, step: 17}.
+step{input: bindings{bindings: {"L": 7, "T": 2}}, multiplicity: 1, node: "0", output: bindings{bindings: {"L": 7, "T": 2}}, step: 16}.
+step{input: bindings{bindings: {"L": 7, "T": 2}}, multiplicity: 1, node: "level", output: record{rec: level{level: 7, time: 2}}, step: 18}.
+step{input: bindings{bindings: {"PrevLevel": 5, "PrevT": 2}}, multiplicity: -1, node: "5", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 2, "T": 3}}, step: 21}.
+step{input: bindings{bindings: {"PrevLevel": 7, "PrevT": 2}}, multiplicity: 1, node: "5", output: bindings{bindings: {"PrevLevel": 7, "PrevT": 2, "T": 3}}, step: 22}.
+step{input: record{rec: inputFrom{current: 2, id: 1, time: 2}}, multiplicity: 1, node: "10", output: bindings{bindings: {"C": 2, "T": 2}}, step: 1}.
+step{input: record{rec: inputFrom{current: 2, id: 1, time: 2}}, multiplicity: 1, node: "inputFrom", output: record{rec: inputFrom{current: 2, id: 1, time: 2}}, step: 0}.
+step{input: record{rec: input{current: 0, time: 2}}, multiplicity: -1, node: "6", output: bindings{bindings: {"Input": 0, "T": 2}}, step: 5}.
+step{input: record{rec: input{current: 2, time: 2}}, multiplicity: 1, node: "6", output: bindings{bindings: {"Input": 2, "T": 2}}, step: 6}.
+step{input: record{rec: levelStep{level: 5, time: 2}}, multiplicity: -1, node: "2", output: bindings{bindings: {"L": 5, "T": 2}}, step: 13}.
+step{input: record{rec: levelStep{level: 7, time: 2}}, multiplicity: 1, node: "2", output: bindings{bindings: {"L": 7, "T": 2}}, step: 14}.
+step{input: record{rec: level{level: 5, time: 2}}, multiplicity: -1, node: "4", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 2}}, step: 19}.
+step{input: record{rec: level{level: 7, time: 2}}, multiplicity: 1, node: "4", output: bindings{bindings: {"PrevLevel": 7, "PrevT": 2}}, step: 20}.
 
 level{}?
 ----
-application/datalog-results
-level{level: 5, time: 1}; {}.
-level{level: 7, time: 2}; {}.
+application/datalog
+level{level: 5, time: 1}.
+level{level: 7, time: 2}.

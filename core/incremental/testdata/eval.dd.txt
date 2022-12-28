@@ -13,15 +13,14 @@ application/datalog
 
 father{child: "Mary", father: "Mark"}.
 ----
-incremental-datalog/trace
-father: [father{child: "Mary", father: "Mark"}+1]
-1: [{B: "Mary", C: "Mark"}+1]
-2: []
+application/datalog
+step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"B": "Mary", "C": "Mark"}}, step: 1}.
+step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Mary", father: "Mark"}}, step: 0}.
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}+1]
-0: [{A: "Pete", B: "Mary"}+1]
-2: [{A: "Pete", B: "Mary", C: "Mark"}+1]
-matGramp: [matGramp{child: "Pete", grandfather: "Mark"}+1]
+application/datalog
+step{input: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, multiplicity: 1, node: "matGramp", output: record{rec: matGramp{child: "Pete", grandfather: "Mark"}}, step: 3}.
+step{input: bindings{bindings: {"A": "Pete", "B": "Mary"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, step: 2}.
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 1}.
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.

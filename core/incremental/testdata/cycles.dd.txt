@@ -10,58 +10,52 @@ application/datalog
 
 baseEdge{from: "A", to: "B"}.
 ----
-incremental-datalog/trace
-baseEdge: [baseEdge{from: "A", to: "B"}+1]
-1: [{F: "A", T: "B"}+1]
-2: [{F: "A", I: "B"}+1]
-0: [{F: "A", T: "B"}+1]
-4: []
-edge: [edge{from: "A", to: "B"}+1]
-3: [{I: "A", T: "B"}+1]
-4: []
+application/datalog
+step{input: bindings{bindings: {"F": "A", "T": "B"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "T": "B"}}, step: 3}.
+step{input: bindings{bindings: {"F": "A", "T": "B"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "B"}}, step: 5}.
+step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "A", "T": "B"}}, step: 1}.
+step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "A", "I": "B"}}, step: 2}.
+step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "A", to: "B"}}, step: 0}.
+step{input: record{rec: edge{from: "A", to: "B"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "B"}}, step: 6}.
 
 baseEdge{from: "C", to: "D"}.
 ----
-incremental-datalog/trace
-baseEdge: [baseEdge{from: "C", to: "D"}+1]
-1: [{F: "C", T: "D"}+1]
-2: [{F: "C", I: "D"}+1]
-0: [{F: "C", T: "D"}+1]
-4: []
-edge: [edge{from: "C", to: "D"}+1]
-3: [{I: "C", T: "D"}+1]
-4: []
+application/datalog
+step{input: bindings{bindings: {"F": "C", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "C", "T": "D"}}, step: 3}.
+step{input: bindings{bindings: {"F": "C", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "C", to: "D"}}, step: 5}.
+step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "C", "T": "D"}}, step: 1}.
+step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "C", "I": "D"}}, step: 2}.
+step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "C", to: "D"}}, step: 0}.
+step{input: record{rec: edge{from: "C", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "C", "T": "D"}}, step: 6}.
 
 baseEdge{from: "B", to: "C"}.
 ----
-incremental-datalog/trace
-baseEdge: [baseEdge{from: "B", to: "C"}+1]
-1: [{F: "B", T: "C"}+1]
-2: [{F: "B", I: "C"}+1]
-0: [{F: "B", T: "C"}+1]
-4: [{F: "B", I: "C", T: "D"}+1]
-edge: [edge{from: "B", to: "C"}+1]
-0: [{F: "B", I: "C", T: "D"}+1]
-3: [{I: "B", T: "C"}+1]
-edge: [edge{from: "B", to: "D"}+1]
-4: [{F: "A", I: "B", T: "C"}+1]
-3: [{I: "B", T: "D"}+1]
-0: [{F: "A", I: "B", T: "C"}+1]
-4: [{F: "A", I: "B", T: "D"}+1]
-edge: [edge{from: "A", to: "C"}+1]
-0: [{F: "A", I: "B", T: "D"}+1]
-3: [{I: "A", T: "C"}+1]
-edge: [edge{from: "A", to: "D"}+1]
-4: []
-3: [{I: "A", T: "D"}+1]
-4: []
+application/datalog
+step{input: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, step: 11}.
+step{input: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "C"}}, step: 13}.
+step{input: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, step: 14}.
+step{input: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "D"}}, step: 16}.
+step{input: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, step: 6}.
+step{input: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "B", to: "D"}}, step: 8}.
+step{input: bindings{bindings: {"F": "B", "I": "C"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, step: 4}.
+step{input: bindings{bindings: {"F": "B", "T": "C"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "B", "T": "C"}}, step: 3}.
+step{input: bindings{bindings: {"F": "B", "T": "C"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "B", to: "C"}}, step: 5}.
+step{input: bindings{bindings: {"I": "B", "T": "C"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, step: 9}.
+step{input: bindings{bindings: {"I": "B", "T": "D"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, step: 12}.
+step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "B", "T": "C"}}, step: 1}.
+step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "B", "I": "C"}}, step: 2}.
+step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "B", to: "C"}}, step: 0}.
+step{input: record{rec: edge{from: "A", to: "C"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "C"}}, step: 15}.
+step{input: record{rec: edge{from: "A", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "D"}}, step: 18}.
+step{input: record{rec: edge{from: "B", to: "C"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "B", "T": "C"}}, step: 7}.
+step{input: record{rec: edge{from: "B", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "B", "T": "D"}}, step: 10}.
 
 edge{from: F, to: T}?
 ----
-application/datalog-results
-edge{from: "A", to: "B"}; {F: "A", T: "B"}.
-edge{from: "A", to: "C"}; {F: "A", T: "C"}.
-edge{from: "A", to: "D"}; {F: "A", T: "D"}.
-edge{from: "B", to: "C"}; {F: "B", T: "C"}.
-edge{from: "B", to: "D"}; {F: "B", T: "D"}.
-edge{from: "C", to: "D"}; {F: "C", T: "D"}.
+application/datalog
+edge{from: "A", to: "B"}.
+edge{from: "A", to: "C"}.
+edge{from: "A", to: "D"}.
+edge{from: "B", to: "C"}.
+edge{from: "B", to: "D"}.
+edge{from: "C", to: "D"}.

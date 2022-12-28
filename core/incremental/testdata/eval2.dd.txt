@@ -13,8 +13,8 @@ application/datalog
 
 father{child: "Pete", father: "Paul"}.
 ----
-incremental-datalog/trace
-father: [father{child: "Pete", father: "Paul"}+1]
-2: [{C: "Pete", P: "Paul"}+1]
-0: [{C: "Pete", P: "Paul"}+1]
-parent: [parent{child: "Pete", parent: "Paul"}+1]
+application/datalog
+step{input: bindings{bindings: {"C": "Pete", "P": "Paul"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Pete", "P": "Paul"}}, step: 2}.
+step{input: bindings{bindings: {"C": "Pete", "P": "Paul"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Pete", parent: "Paul"}}, step: 3}.
+step{input: record{rec: father{child: "Pete", father: "Paul"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "Pete", "P": "Paul"}}, step: 1}.
+step{input: record{rec: father{child: "Pete", father: "Paul"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Pete", father: "Paul"}}, step: 0}.

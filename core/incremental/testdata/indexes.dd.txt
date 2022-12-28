@@ -19,23 +19,21 @@ application/datalog
 
 need{capability: "write HTML", objective: "make website"}.
 ----
-incremental-datalog/trace
-need: [need{capability: "write HTML", objective: "make website"}+1]
-0: [{C: "write HTML", O: "make website"}+1]
-2: []
+application/datalog
+step{input: record{rec: need{capability: "write HTML", objective: "make website"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "write HTML", "O": "make website"}}, step: 1}.
+step{input: record{rec: need{capability: "write HTML", objective: "make website"}}, multiplicity: 1, node: "need", output: record{rec: need{capability: "write HTML", objective: "make website"}}, step: 0}.
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
-incremental-datalog/trace
-worker: [worker{capability: "write HTML", name: "Pete"}+1]
-1: [{C: "write HTML", N: "Pete"}+1]
-2: [{C: "write HTML", N: "Pete", O: "make website"}+1]
-4: []
+application/datalog
+step{input: bindings{bindings: {"C": "write HTML", "N": "Pete"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website"}}, step: 2}.
+step{input: record{rec: worker{capability: "write HTML", name: "Pete"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"C": "write HTML", "N": "Pete"}}, step: 1}.
+step{input: record{rec: worker{capability: "write HTML", name: "Pete"}}, multiplicity: 1, node: "worker", output: record{rec: worker{capability: "write HTML", name: "Pete"}}, step: 0}.
 
 fundingSource{objective: "make website", source: "some company"}.
 ----
-incremental-datalog/trace
-fundingSource: [fundingSource{objective: "make website", source: "some company"}+1]
-3: [{O: "make website", S: "some company"}+1]
-4: [{C: "write HTML", N: "Pete", O: "make website", S: "some company"}+1]
-opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}+1]
+application/datalog
+step{input: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website", "S": "some company"}}, multiplicity: 1, node: "opportunity", output: record{rec: opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}}, step: 3}.
+step{input: bindings{bindings: {"O": "make website", "S": "some company"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website", "S": "some company"}}, step: 2}.
+step{input: record{rec: fundingSource{objective: "make website", source: "some company"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"O": "make website", "S": "some company"}}, step: 1}.
+step{input: record{rec: fundingSource{objective: "make website", source: "some company"}}, multiplicity: 1, node: "fundingSource", output: record{rec: fundingSource{objective: "make website", source: "some company"}}, step: 0}.

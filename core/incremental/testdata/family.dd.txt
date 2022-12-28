@@ -4,35 +4,23 @@ application/datalog
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}+1]
-4: [{B: "Pete", C: "Mary"}+1]
-10: [{C: "Pete", P: "Mary"}+1]
-12: [{C: "Pete", M: "Mary"}+1]
-5: []
-9: [{C: "Pete", P: "Mary"}+1]
-14: []
-parent: [parent{child: "Pete", parent: "Mary"}+1]
-0: [{A: "Pete", B: "Mary"}+1]
-3: [{A: "Pete", B: "Mary"}+1]
-6: [{A: "Pete", B: "Mary"}+1]
-7: [{B: "Pete", C: "Mary"}+1]
-20: [{L: "Pete", P1: "Mary"}+1]
-23: [{P2: "Mary", R: "Pete"}+1]
-25: [{C: "Pete", P: "Mary"}+1]
-28: [{C: "Pete", P: "Mary"}+1]
-38: [{X: "Pete", Z: "Mary"}+1]
-39: [{X: "Pete", Y: "Mary"}+1]
-2: []
-5: []
-8: []
-8: []
-22: []
-24: []
-27: []
-30: []
-37: [{X: "Pete", Z: "Mary"}+1]
-41: []
-ancestor: [ancestor{an: "Mary", desc: "Pete"}+1]
-40: [{Y: "Pete", Z: "Mary"}+1]
-41: []
+application/datalog
+step{input: bindings{bindings: {"C": "Pete", "P": "Mary"}}, multiplicity: 1, node: "9", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 5}.
+step{input: bindings{bindings: {"C": "Pete", "P": "Mary"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Pete", parent: "Mary"}}, step: 7}.
+step{input: bindings{bindings: {"X": "Pete", "Z": "Mary"}}, multiplicity: 1, node: "37", output: bindings{bindings: {"X": "Pete", "Z": "Mary"}}, step: 26}.
+step{input: bindings{bindings: {"X": "Pete", "Z": "Mary"}}, multiplicity: 1, node: "ancestor", output: record{rec: ancestor{an: "Mary", desc: "Pete"}}, step: 28}.
+step{input: record{rec: ancestor{an: "Mary", desc: "Pete"}}, multiplicity: 1, node: "40", output: bindings{bindings: {"Y": "Pete", "Z": "Mary"}}, step: 29}.
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "10", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 2}.
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "12", output: bindings{bindings: {"C": "Pete", "M": "Mary"}}, step: 3}.
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Pete", "C": "Mary"}}, step: 1}.
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 8}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "20", output: bindings{bindings: {"L": "Pete", "P1": "Mary"}}, step: 12}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "23", output: bindings{bindings: {"P2": "Mary", "R": "Pete"}}, step: 13}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "25", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 14}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "28", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 15}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 9}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "38", output: bindings{bindings: {"X": "Pete", "Z": "Mary"}}, step: 16}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "39", output: bindings{bindings: {"X": "Pete", "Y": "Mary"}}, step: 17}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "6", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 10}.
+step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "7", output: bindings{bindings: {"B": "Pete", "C": "Mary"}}, step: 11}.

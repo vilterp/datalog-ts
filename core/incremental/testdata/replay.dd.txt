@@ -8,23 +8,23 @@ application/datalog
 
 mother{child: "Pete", mother: "Mary"}.
 ----
-incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}+1]
+application/datalog
+step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.
 
 father{child: "Pete", father: "Paul"}.
 ----
-incremental-datalog/trace
-father: [father{child: "Pete", father: "Paul"}+1]
+application/datalog
+step{input: record{rec: father{child: "Pete", father: "Paul"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Pete", father: "Paul"}}, step: 0}.
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
-incremental-datalog/trace
-mother: [mother{child: "Carolyn", mother: "Mary"}+1]
+application/datalog
+step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Carolyn", mother: "Mary"}}, step: 0}.
 
 father{child: "Carolyn", father: "Paul"}.
 ----
-incremental-datalog/trace
-father: [father{child: "Carolyn", father: "Paul"}+1]
+application/datalog
+step{input: record{rec: father{child: "Carolyn", father: "Paul"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Carolyn", father: "Paul"}}, step: 0}.
 
 parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &
@@ -41,6 +41,6 @@ application/datalog
 
 sibling{}?
 ----
-application/datalog-results
-sibling{left: "Carolyn", right: "Pete"}; {}.
-sibling{left: "Pete", right: "Carolyn"}; {}.
+application/datalog
+sibling{left: "Carolyn", right: "Pete"}.
+sibling{left: "Pete", right: "Carolyn"}.
