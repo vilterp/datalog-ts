@@ -144,6 +144,7 @@ function stepPropagatorAll(
   let newGraph = graph;
   while (iter.queue.length > 0) {
     if (iter.queue.length > MAX_QUEUE_SIZE) {
+      console.error("queue size exceeded", iter.queue.toArray());
       throw new Error("max queue size exceeded");
     }
     const emissions = stepPropagator(iter);
@@ -162,9 +163,13 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   // console.log("push", results);
   for (let outMessage of outMessages) {
     // update cache
-    newGraph = handleOutMessage(newGraph, curNodeID, outMessage);
+    newGraph = updateCurNodeCache(newGraph, curNodeID, outMessage);
     // propagate messages
     for (let destination of newGraph.edges.get(curNodeID) || []) {
+      // messages with 0 multiplicity have no effect; we can ignore them
+      if (outMessage.multiplicity === 0) {
+        continue;
+      }
       iter.queue.push({
         destination,
         origin: curNodeID,
@@ -176,7 +181,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   return { fromID: curNodeID, output: outMessages };
 }
 
-function handleOutMessage(
+function updateCurNodeCache(
   newGraph: RuleGraph,
   curNodeID: string,
   outMessage: MessagePayload
