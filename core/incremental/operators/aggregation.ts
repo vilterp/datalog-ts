@@ -20,6 +20,12 @@ export function processAggregation(
     case "Record":
       throw new Error("Negation nodes not supposed to receive Record messages");
     case "Bindings": {
+      console.log("multiplicity coming into aggregate", {
+        mult: payload.multiplicity,
+        bindings: ppb(data.bindings.bindings),
+        groupVars,
+        aggVar,
+      });
       const groupKey = groupVars
         .map((varName) => data.bindings.bindings[varName])
         .map(fastPPT)

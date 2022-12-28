@@ -46,12 +46,14 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       // TODO: check that it's the expected error
       return;
     }
+    console.log("replaying facts from builtin");
     results.forEach((res) => {
       graph = insertFromNode(graph, nodeID, {
         bindings: res.bindings,
         trace: builtinTrace,
       }).newGraph;
     });
+    console.log("done replaying facts from builtin");
   });
   Object.entries(catalog).forEach(([relName, rel]) => {
     if (rel.type === "Rule") {

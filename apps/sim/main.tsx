@@ -20,7 +20,7 @@ function Main() {
         runStatements={(stmts) => {
           setInterp(interp.evalRawStmts(stmts)[1]);
         }}
-        showViz
+        // showViz
       />
     </>
   );

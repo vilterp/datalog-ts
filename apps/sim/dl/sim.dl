@@ -6,58 +6,15 @@
 .table connection
 .table internal.visualization
 
-source{id: 1, phaseShift: 0, baseline: 30, amplitude: 10, pos: pos{x: 10, y: 20}}.
-source{id: 4, phaseShift: 0, baseline: 30, amplitude: 15, pos: pos{x: 330, y: 20}}.
+source{id: 1}.
+source{id: 4}.
 battery{id: 2, capacity: 100, initialLevel: 50, pos: pos{x: 170, y: 250}}.
 sink{id: 3, demand: 15, pos: pos{x: 170, y: 450}}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
 
-internal.attrEditor{
-  relation: "source",
-  attr: "amplitude",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "source",
-  attr: "baseline",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "sink",
-  attr: "demand",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "source",
-  attr: "phaseShift",
-  editor: slider{min: 0, max: 5},
-}.
-internal.attrEditor{
-  relation: "battery",
-  attr: "capacity",
-  editor: slider{min: 0, max: 300},
-}.
-internal.attrEditor{
-  relation: "battery",
-  attr: "initialLevel",
-  editor: slider{min: 0, max: 100},
-}.
-
 # === rules ===
-
-node{id: I, label: L, pos: Pos} :-
-  nodeSource{id: I, label: L, pos: Pos} |
-  nodeSink{id: I, label: L, pos: Pos} |
-  nodeBattery{id: I, label: L, pos: Pos}.
-
-nodeSource{id: I, label: source{id: I, supply: S}, pos: Pos} :-
-  source{id: I, supply: S, pos: Pos}.
-nodeSink{id: I, label: sink{id: I, demand: S}, pos: Pos} :-
-  sink{id: I, demand: S, pos: Pos}.
-nodeBattery{id: I, label: battery{id: I, capacity: S, initialLevel: IL}, pos: Pos} :-
-  battery{id: I, capacity: S, initialLevel: IL, pos: Pos}.
 
 current{id: I, time: T, level: L} :-
   currentAtSource{id: I, time: T, level: L} |
@@ -65,19 +22,12 @@ current{id: I, time: T, level: L} :-
 
 currentAtSource{id: I, time: T, level: Clamped} :-
   time{time: T} &
-  source{id: I, baseline: Baseline, amplitude: Size, phaseShift: PhaseShift} &
-  T + PhaseShift = ShiftedT &
-  math.sin{a: ShiftedT, res: Raw} &
-  Raw * Size = C &
-  Baseline + C = ShiftedL &
-  clamp{min: 0, max: 1000, val: ShiftedL, res: Clamped}.
+  source{id: I} &
+  Clamped = T * 10.
 currentAtSink{id: I, time: T, level: ShiftedL} :-
   time{time: T} &
-  T + 2 = ShiftedT &
-  sink{id: I, demand: Size} &
-  math.sin{a: ShiftedT, res: Raw} &
-  Raw + Size = C &
-  30 + C = ShiftedL.
+  sink{id: I} &
+  ShiftedL = T * 10.
 
 batteryLevel{id: I, time: T, level: L} :-
   batteryLevelInitial{id: I, time: T, level: L} |
@@ -117,71 +67,3 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
 
 time{time: T} :-
   range{from: 1, to: 5, val: T}.
-
-# === visualization ===
-
-internal.visualization{
-  name: "Current over Time",
-  spec: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-      color: mapping{field: "id"}
-    },
-    query: current{}
-  }
-}.
-
-internal.visualization{
-  name: "Battery Level",
-  spec: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-      color: mapping{field: "id"}
-    },
-    query: batteryLevel{}
-  }
-}.
-
-internal.visualization{
-  name: "Editor",
-  spec: dagEditor{
-    nodes: node{},
-    edges: connection{},
-    newEdge: connection{},
-    newNodes: [
-      source{baseline: 10, amplitude: 10},
-      sink{demand: 15},
-      battery{capacity: 100, initialLevel: 50},
-    ],
-  },
-}.
-
-# `id` attribute gets put into the query
-internal.dagEditor.nodeViz{
-  relation: "source",
-  viz: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-    },
-    query: current{}
-  },
-}.
-
-# `id` attribute gets put into the query
-internal.dagEditor.nodeViz{
-  relation: "battery",
-  viz: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-    },
-    query: batteryLevel{}
-  },
-}.
