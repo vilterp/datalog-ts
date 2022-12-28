@@ -5,57 +5,33 @@ import {
 } from "../../util/ddTest/types";
 import { flatMap } from "../../util/util";
 import { ppb, ppt } from "../pretty";
-import { dict, rec } from "../types";
+import { dict, int, rec, str } from "../types";
 import { MessagePayload, Output, RuleGraph } from "./types";
 
-type OutputOptions = {
-  emissionLogMode: "test" | "repl";
-  showBindings: boolean;
-};
-
-export function formatOutput(
-  graph: RuleGraph,
-  output: Output,
-  opts: OutputOptions
-): TestOutput {
+export function formatOutput(graph: RuleGraph, output: Output): TestOutput {
   switch (output.type) {
     case "Acknowledge":
       return datalogOut([]);
     case "EmissionLog":
-      if (opts.emissionLogMode === "test") {
-        return {
-          mimeType: "incremental-datalog/trace",
-          content: output.log
-            .map(
-              ({ fromID, output }) =>
-                `${fromID}: [${output.map(formatMessagePayload).join(", ")}]`
-            )
-            .join("\n"),
-        };
-      } else {
-        return datalogOut(
-          flatMap(
-            output.log.filter((emissionBatch) => {
-              const fromNode = graph.nodes.get(emissionBatch.fromID);
-              return (
-                !fromNode.isInternal && fromNode.desc.type !== "BaseFactTable"
-              );
-            }),
-            ({ output }) =>
-              output.map((payload) =>
-                payload.data.type === "Bindings"
-                  ? rec("Bindings", {
-                      bindings: dict(payload.data.bindings.bindings),
+      return datalogOut(
+        flatMap(output.log, (logEntry, idx) =>
+          logEntry.output.map((message) =>
+            rec("step", {
+              step: int(idx),
+              node: str(logEntry.nodeID),
+              multiplicity: int(message.multiplicity),
+              message:
+                message.data.type === "Bindings"
+                  ? rec("bindings", {
+                      bindings: dict(message.data.bindings.bindings),
                     })
-                  : rec("Record", { rec: payload.data.rec })
-              )
+                  : rec("record", { rec: message.data.rec }),
+            })
           )
-        );
-      }
+        )
+      );
     case "QueryResults":
-      return opts.showBindings
-        ? datalogOutResults(output.results)
-        : datalogOut(output.results.map((res) => res.term));
+      return datalogOut(output.results.map((res) => res.term));
     case "Trace":
       return {
         content: JSON.stringify(output.logAndGraph),

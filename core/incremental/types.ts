@@ -114,7 +114,11 @@ export const ack: Output = { type: "Acknowledge" };
 
 export type EmissionLog = EmissionBatch[];
 
-export type EmissionBatch = { fromID: NodeID; output: MessagePayload[] };
+export type EmissionBatch = {
+  nodeID: NodeID;
+  input: MessagePayload;
+  output: MessagePayload[];
+};
 
 export type EmissionLogAndGraph = {
   graph: RuleGraph;

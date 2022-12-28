@@ -83,12 +83,7 @@ function evalTest(inputs: string[]): TestOutput[] {
     interp = newInterp as IncrementalInterpreter;
     // const after = Date.now();
     // console.log(after - before, "ms", stmt);
-    out.push(
-      formatOutput(interp.graph, output, {
-        emissionLogMode: "test",
-        showBindings: true,
-      })
-    );
+    out.push(formatOutput(interp.graph, output));
   }
   return out;
 }

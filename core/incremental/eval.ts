@@ -173,7 +173,11 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     }
   }
   iter.graph = newGraph;
-  return { fromID: curNodeID, output: outMessages };
+  return {
+    nodeID: curNodeID,
+    input: insertingNow.payload,
+    output: outMessages,
+  };
 }
 
 function handleOutMessage(
