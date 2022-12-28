@@ -34,15 +34,13 @@ function SequenceDiagram(props: VizArgs) {
 
     return (
       <div>
-        <div>
-          <Diagram<Term>
-            diagram={sequenceDiagram(
-              makeSequenceSpec(actors, messages),
-              props.highlightedTerm
-            )}
-            onMouseOver={(term) => props.setHighlightedTerm?.(term)}
-          />
-        </div>
+        <Diagram<Term>
+          diagram={sequenceDiagram(
+            makeSequenceSpec(actors, messages),
+            props.highlightedTerm
+          )}
+          onMouseOver={(term) => props.setHighlightedTerm?.(term)}
+        />
       </div>
     );
   } catch (e) {
