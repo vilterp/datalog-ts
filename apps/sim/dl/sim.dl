@@ -146,19 +146,20 @@ internal.visualization{
   }
 }.
 
-internal.visualization{
-  name: "Editor",
-  spec: dagEditor{
-    nodes: node{},
-    edges: connection{},
-    newEdge: connection{},
-    newNodes: [
-      source{baseline: 10, amplitude: 10},
-      sink{demand: 15},
-      battery{capacity: 100, initialLevel: 50},
-    ],
-  },
-}.
+# TODO: re-enable when dep issue is sorted out
+# internal.visualization{
+#   name: "Editor",
+#   spec: dagEditor{
+#     nodes: node{},
+#     edges: connection{},
+#     newEdge: connection{},
+#     newNodes: [
+#       source{baseline: 10, amplitude: 10},
+#       sink{demand: 15},
+#       battery{capacity: 100, initialLevel: 50},
+#     ],
+#   },
+# }.
 
 # `id` attribute gets put into the query
 internal.dagEditor.nodeViz{
