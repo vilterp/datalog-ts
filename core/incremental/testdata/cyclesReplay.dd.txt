@@ -5,17 +5,17 @@ application/datalog
 baseEdge{from: "A", to: "B"}.
 ----
 application/datalog
-step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "A", to: "B"}}, step: 0}.
+eval.step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "A", to: "B"}}, step: 0}.
 
 baseEdge{from: "C", to: "D"}.
 ----
 application/datalog
-step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "C", to: "D"}}, step: 0}.
+eval.step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "C", to: "D"}}, step: 0}.
 
 baseEdge{from: "B", to: "C"}.
 ----
 application/datalog
-step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "B", to: "C"}}, step: 0}.
+eval.step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "B", to: "C"}}, step: 0}.
 
 edge{from: F, to: T} :-
   baseEdge{from: F, to: T} |

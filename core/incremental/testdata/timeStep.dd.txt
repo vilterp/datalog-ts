@@ -31,81 +31,79 @@ application/datalog
 
 .ruleGraph
 ----
-application/graphviz
-digraph G {
-  "11" [fillcolor="" fontname="Courier" label="11: Agg(sum[T, C: inputFrom{current: C, time: T}]) []" shape="box" style="filled"];
-  "levelInitial" [fillcolor="darksalmon" fontname="Courier" label="levelInitial:  []" shape="box" style="filled"];
-  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{level: L, time: T}) []" shape="box" style="filled"];
-  "input" [fillcolor="lightblue" fontname="Courier" label="input: Subst(input{current: C, time: T}) []" shape="box" style="filled"];
-  "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
-  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{level: NextLevel, time: T}) []" shape="box" style="filled"];
-  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(levelInitial{level: L, time: T}) []" shape="box" style="filled"];
-  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(levelStep{level: L, time: T}) []" shape="box" style="filled"];
-  "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.add{a: PrevT, b: 1, res: T}) [PrevT]" shape="box" style="filled"];
-  "4" [fillcolor="darkseagreen2" fontname="Courier" label="4: Match(level{level: PrevLevel, time: PrevT}) [PrevT]" shape="box" style="filled"];
-  "inputFrom" [fillcolor="darksalmon" fontname="Courier" label="inputFrom:  []" shape="box" style="filled"];
-  "5" [fillcolor="thistle" fontname="Courier" label="5: Join(PrevT) [T]" shape="box" style="filled"];
-  "6" [fillcolor="darkseagreen2" fontname="Courier" label="6: Match(input{current: Input, time: T}) [T]" shape="box" style="filled"];
-  "7" [fillcolor="thistle" fontname="Courier" label="7: Join(T) [Input-PrevLevel]" shape="box" style="filled"];
-  "8" [fillcolor="" fontname="Courier" label="8: Builtin(base.add{a: PrevLevel, b: Input, res: NextLevel}) [Input-PrevLevel]" shape="box" style="filled"];
-  "9" [fillcolor="thistle" fontname="Courier" label="9: Join(Input, PrevLevel) []" shape="box" style="filled"];
-  "10" [fillcolor="darkseagreen2" fontname="Courier" label="10: Match(inputFrom{current: C, time: T}) []" shape="box" style="filled"];
-  "11" -> "input" [];
-  "levelInitial" -> "1" [];
-  "level" -> "4" [];
-  "input" -> "6" [];
-  "0" -> "level" [];
-  "levelStep" -> "2" [];
-  "1" -> "0" [];
-  "2" -> "0" [];
-  "3" -> "5" [];
-  "4" -> "5" [];
-  "inputFrom" -> "10" [];
-  "5" -> "7" [];
-  "6" -> "7" [];
-  "7" -> "9" [];
-  "8" -> "9" [];
-  "9" -> "levelStep" [];
-  "10" -> "11" [];
-}
+application/datalog
+ruleGraph.edge{from: "0", to: "level"}.
+ruleGraph.edge{from: "1", to: "0"}.
+ruleGraph.edge{from: "10", to: "11"}.
+ruleGraph.edge{from: "11", to: "input"}.
+ruleGraph.edge{from: "2", to: "0"}.
+ruleGraph.edge{from: "3", to: "5"}.
+ruleGraph.edge{from: "4", to: "5"}.
+ruleGraph.edge{from: "5", to: "7"}.
+ruleGraph.edge{from: "6", to: "7"}.
+ruleGraph.edge{from: "7", to: "9"}.
+ruleGraph.edge{from: "8", to: "9"}.
+ruleGraph.edge{from: "9", to: "levelStep"}.
+ruleGraph.edge{from: "input", to: "6"}.
+ruleGraph.edge{from: "inputFrom", to: "10"}.
+ruleGraph.edge{from: "level", to: "4"}.
+ruleGraph.edge{from: "levelInitial", to: "1"}.
+ruleGraph.edge{from: "levelStep", to: "2"}.
+ruleGraph.node{id: "0", label: "0: Union []"}.
+ruleGraph.node{id: "1", label: "1: Match(levelInitial{level: L, time: T}) []"}.
+ruleGraph.node{id: "10", label: "10: Match(inputFrom{current: C, time: T}) []"}.
+ruleGraph.node{id: "11", label: "11: Agg(sum[T, C: inputFrom{current: C, time: T}]) []"}.
+ruleGraph.node{id: "2", label: "2: Match(levelStep{level: L, time: T}) []"}.
+ruleGraph.node{id: "3", label: "3: Builtin(base.add{a: PrevT, b: 1, res: T}) [PrevT]"}.
+ruleGraph.node{id: "4", label: "4: Match(level{level: PrevLevel, time: PrevT}) [PrevT]"}.
+ruleGraph.node{id: "5", label: "5: Join(PrevT) [T]"}.
+ruleGraph.node{id: "6", label: "6: Match(input{current: Input, time: T}) [T]"}.
+ruleGraph.node{id: "7", label: "7: Join(T) [Input-PrevLevel]"}.
+ruleGraph.node{id: "8", label: "8: Builtin(base.add{a: PrevLevel, b: Input, res: NextLevel}) [Input-PrevLevel]"}.
+ruleGraph.node{id: "9", label: "9: Join(Input, PrevLevel) []"}.
+ruleGraph.node{id: "input", label: "input: Subst(input{current: C, time: T}) []"}.
+ruleGraph.node{id: "inputFrom", label: "inputFrom:  []"}.
+ruleGraph.node{id: "level", label: "level: Subst(level{level: L, time: T}) []"}.
+ruleGraph.node{id: "levelInitial", label: "levelInitial:  []"}.
+ruleGraph.node{id: "levelStep", label: "levelStep: Subst(levelStep{level: NextLevel, time: T}) []"}.
 
 levelInitial{time: 1, level: 5}.
 ----
 application/datalog
-step{input: bindings{bindings: {"L": 5, "T": 1}}, multiplicity: 1, node: "0", output: bindings{bindings: {"L": 5, "T": 1}}, step: 2}.
-step{input: bindings{bindings: {"L": 5, "T": 1}}, multiplicity: 1, node: "level", output: record{rec: level{level: 5, time: 1}}, step: 3}.
-step{input: bindings{bindings: {"PrevLevel": 5, "PrevT": 1}}, multiplicity: 1, node: "5", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 5}.
-step{input: record{rec: levelInitial{level: 5, time: 1}}, multiplicity: 1, node: "1", output: bindings{bindings: {"L": 5, "T": 1}}, step: 1}.
-step{input: record{rec: levelInitial{level: 5, time: 1}}, multiplicity: 1, node: "levelInitial", output: record{rec: levelInitial{level: 5, time: 1}}, step: 0}.
-step{input: record{rec: level{level: 5, time: 1}}, multiplicity: 1, node: "4", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 1}}, step: 4}.
+eval.step{input: bindings{bindings: {"L": 5, "T": 1}}, multiplicity: 1, node: "0", output: bindings{bindings: {"L": 5, "T": 1}}, step: 2}.
+eval.step{input: bindings{bindings: {"L": 5, "T": 1}}, multiplicity: 1, node: "level", output: record{rec: level{level: 5, time: 1}}, step: 3}.
+eval.step{input: bindings{bindings: {"PrevLevel": 5, "PrevT": 1}}, multiplicity: 1, node: "5", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 5}.
+eval.step{input: record{rec: levelInitial{level: 5, time: 1}}, multiplicity: 1, node: "1", output: bindings{bindings: {"L": 5, "T": 1}}, step: 1}.
+eval.step{input: record{rec: levelInitial{level: 5, time: 1}}, multiplicity: 1, node: "levelInitial", output: record{rec: levelInitial{level: 5, time: 1}}, step: 0}.
+eval.step{input: record{rec: level{level: 5, time: 1}}, multiplicity: 1, node: "4", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 1}}, step: 4}.
 
 inputFrom{id: 1, time: 2, current: 2}.
 ----
 application/datalog
-step{input: bindings{bindings: {"C": 0, "T": 2}}, multiplicity: -1, node: "input", output: record{rec: input{current: 0, time: 2}}, step: 3}.
-step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: -1, node: "11", output: bindings{bindings: {"C": 0, "T": 2}}, step: 2}.
-step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: 1, node: "11", output: bindings{bindings: {"C": 2, "T": 2}}, step: 2}.
-step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: 1, node: "input", output: record{rec: input{current: 2, time: 2}}, step: 4}.
-step{input: bindings{bindings: {"Input": 0, "NextLevel": 5, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: -1, node: "levelStep", output: record{rec: levelStep{level: 5, time: 2}}, step: 11}.
-step{input: bindings{bindings: {"Input": 0, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: -1, node: "9", output: bindings{bindings: {"Input": 0, "NextLevel": 5, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 9}.
-step{input: bindings{bindings: {"Input": 0, "T": 2}}, multiplicity: -1, node: "7", output: bindings{bindings: {"Input": 0, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 7}.
-step{input: bindings{bindings: {"Input": 2, "NextLevel": 7, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: 1, node: "levelStep", output: record{rec: levelStep{level: 7, time: 2}}, step: 12}.
-step{input: bindings{bindings: {"Input": 2, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: 1, node: "9", output: bindings{bindings: {"Input": 2, "NextLevel": 7, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 10}.
-step{input: bindings{bindings: {"Input": 2, "T": 2}}, multiplicity: 1, node: "7", output: bindings{bindings: {"Input": 2, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 8}.
-step{input: bindings{bindings: {"L": 5, "T": 2}}, multiplicity: -1, node: "0", output: bindings{bindings: {"L": 5, "T": 2}}, step: 15}.
-step{input: bindings{bindings: {"L": 5, "T": 2}}, multiplicity: -1, node: "level", output: record{rec: level{level: 5, time: 2}}, step: 17}.
-step{input: bindings{bindings: {"L": 7, "T": 2}}, multiplicity: 1, node: "0", output: bindings{bindings: {"L": 7, "T": 2}}, step: 16}.
-step{input: bindings{bindings: {"L": 7, "T": 2}}, multiplicity: 1, node: "level", output: record{rec: level{level: 7, time: 2}}, step: 18}.
-step{input: bindings{bindings: {"PrevLevel": 5, "PrevT": 2}}, multiplicity: -1, node: "5", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 2, "T": 3}}, step: 21}.
-step{input: bindings{bindings: {"PrevLevel": 7, "PrevT": 2}}, multiplicity: 1, node: "5", output: bindings{bindings: {"PrevLevel": 7, "PrevT": 2, "T": 3}}, step: 22}.
-step{input: record{rec: inputFrom{current: 2, id: 1, time: 2}}, multiplicity: 1, node: "10", output: bindings{bindings: {"C": 2, "T": 2}}, step: 1}.
-step{input: record{rec: inputFrom{current: 2, id: 1, time: 2}}, multiplicity: 1, node: "inputFrom", output: record{rec: inputFrom{current: 2, id: 1, time: 2}}, step: 0}.
-step{input: record{rec: input{current: 0, time: 2}}, multiplicity: -1, node: "6", output: bindings{bindings: {"Input": 0, "T": 2}}, step: 5}.
-step{input: record{rec: input{current: 2, time: 2}}, multiplicity: 1, node: "6", output: bindings{bindings: {"Input": 2, "T": 2}}, step: 6}.
-step{input: record{rec: levelStep{level: 5, time: 2}}, multiplicity: -1, node: "2", output: bindings{bindings: {"L": 5, "T": 2}}, step: 13}.
-step{input: record{rec: levelStep{level: 7, time: 2}}, multiplicity: 1, node: "2", output: bindings{bindings: {"L": 7, "T": 2}}, step: 14}.
-step{input: record{rec: level{level: 5, time: 2}}, multiplicity: -1, node: "4", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 2}}, step: 19}.
-step{input: record{rec: level{level: 7, time: 2}}, multiplicity: 1, node: "4", output: bindings{bindings: {"PrevLevel": 7, "PrevT": 2}}, step: 20}.
+eval.step{input: bindings{bindings: {"C": 0, "T": 2}}, multiplicity: -1, node: "input", output: record{rec: input{current: 0, time: 2}}, step: 3}.
+eval.step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: -1, node: "11", output: bindings{bindings: {"C": 0, "T": 2}}, step: 2}.
+eval.step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: 1, node: "11", output: bindings{bindings: {"C": 2, "T": 2}}, step: 2}.
+eval.step{input: bindings{bindings: {"C": 2, "T": 2}}, multiplicity: 1, node: "input", output: record{rec: input{current: 2, time: 2}}, step: 4}.
+eval.step{input: bindings{bindings: {"Input": 0, "NextLevel": 5, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: -1, node: "levelStep", output: record{rec: levelStep{level: 5, time: 2}}, step: 11}.
+eval.step{input: bindings{bindings: {"Input": 0, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: -1, node: "9", output: bindings{bindings: {"Input": 0, "NextLevel": 5, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 9}.
+eval.step{input: bindings{bindings: {"Input": 0, "T": 2}}, multiplicity: -1, node: "7", output: bindings{bindings: {"Input": 0, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 7}.
+eval.step{input: bindings{bindings: {"Input": 2, "NextLevel": 7, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: 1, node: "levelStep", output: record{rec: levelStep{level: 7, time: 2}}, step: 12}.
+eval.step{input: bindings{bindings: {"Input": 2, "PrevLevel": 5, "PrevT": 1, "T": 2}}, multiplicity: 1, node: "9", output: bindings{bindings: {"Input": 2, "NextLevel": 7, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 10}.
+eval.step{input: bindings{bindings: {"Input": 2, "T": 2}}, multiplicity: 1, node: "7", output: bindings{bindings: {"Input": 2, "PrevLevel": 5, "PrevT": 1, "T": 2}}, step: 8}.
+eval.step{input: bindings{bindings: {"L": 5, "T": 2}}, multiplicity: -1, node: "0", output: bindings{bindings: {"L": 5, "T": 2}}, step: 15}.
+eval.step{input: bindings{bindings: {"L": 5, "T": 2}}, multiplicity: -1, node: "level", output: record{rec: level{level: 5, time: 2}}, step: 17}.
+eval.step{input: bindings{bindings: {"L": 7, "T": 2}}, multiplicity: 1, node: "0", output: bindings{bindings: {"L": 7, "T": 2}}, step: 16}.
+eval.step{input: bindings{bindings: {"L": 7, "T": 2}}, multiplicity: 1, node: "level", output: record{rec: level{level: 7, time: 2}}, step: 18}.
+eval.step{input: bindings{bindings: {"PrevLevel": 5, "PrevT": 2}}, multiplicity: -1, node: "5", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 2, "T": 3}}, step: 21}.
+eval.step{input: bindings{bindings: {"PrevLevel": 7, "PrevT": 2}}, multiplicity: 1, node: "5", output: bindings{bindings: {"PrevLevel": 7, "PrevT": 2, "T": 3}}, step: 22}.
+eval.step{input: record{rec: inputFrom{current: 2, id: 1, time: 2}}, multiplicity: 1, node: "10", output: bindings{bindings: {"C": 2, "T": 2}}, step: 1}.
+eval.step{input: record{rec: inputFrom{current: 2, id: 1, time: 2}}, multiplicity: 1, node: "inputFrom", output: record{rec: inputFrom{current: 2, id: 1, time: 2}}, step: 0}.
+eval.step{input: record{rec: input{current: 0, time: 2}}, multiplicity: -1, node: "6", output: bindings{bindings: {"Input": 0, "T": 2}}, step: 5}.
+eval.step{input: record{rec: input{current: 2, time: 2}}, multiplicity: 1, node: "6", output: bindings{bindings: {"Input": 2, "T": 2}}, step: 6}.
+eval.step{input: record{rec: levelStep{level: 5, time: 2}}, multiplicity: -1, node: "2", output: bindings{bindings: {"L": 5, "T": 2}}, step: 13}.
+eval.step{input: record{rec: levelStep{level: 7, time: 2}}, multiplicity: 1, node: "2", output: bindings{bindings: {"L": 7, "T": 2}}, step: 14}.
+eval.step{input: record{rec: level{level: 5, time: 2}}, multiplicity: -1, node: "4", output: bindings{bindings: {"PrevLevel": 5, "PrevT": 2}}, step: 19}.
+eval.step{input: record{rec: level{level: 7, time: 2}}, multiplicity: 1, node: "4", output: bindings{bindings: {"PrevLevel": 7, "PrevT": 2}}, step: 20}.
 
 level{}?
 ----

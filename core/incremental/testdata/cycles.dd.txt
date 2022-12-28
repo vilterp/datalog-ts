@@ -11,44 +11,44 @@ application/datalog
 baseEdge{from: "A", to: "B"}.
 ----
 application/datalog
-step{input: bindings{bindings: {"F": "A", "T": "B"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "T": "B"}}, step: 3}.
-step{input: bindings{bindings: {"F": "A", "T": "B"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "B"}}, step: 5}.
-step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "A", "T": "B"}}, step: 1}.
-step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "A", "I": "B"}}, step: 2}.
-step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "A", to: "B"}}, step: 0}.
-step{input: record{rec: edge{from: "A", to: "B"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "B"}}, step: 6}.
+eval.step{input: bindings{bindings: {"F": "A", "T": "B"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "T": "B"}}, step: 3}.
+eval.step{input: bindings{bindings: {"F": "A", "T": "B"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "B"}}, step: 5}.
+eval.step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "A", "T": "B"}}, step: 1}.
+eval.step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "A", "I": "B"}}, step: 2}.
+eval.step{input: record{rec: baseEdge{from: "A", to: "B"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "A", to: "B"}}, step: 0}.
+eval.step{input: record{rec: edge{from: "A", to: "B"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "B"}}, step: 6}.
 
 baseEdge{from: "C", to: "D"}.
 ----
 application/datalog
-step{input: bindings{bindings: {"F": "C", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "C", "T": "D"}}, step: 3}.
-step{input: bindings{bindings: {"F": "C", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "C", to: "D"}}, step: 5}.
-step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "C", "T": "D"}}, step: 1}.
-step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "C", "I": "D"}}, step: 2}.
-step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "C", to: "D"}}, step: 0}.
-step{input: record{rec: edge{from: "C", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "C", "T": "D"}}, step: 6}.
+eval.step{input: bindings{bindings: {"F": "C", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "C", "T": "D"}}, step: 3}.
+eval.step{input: bindings{bindings: {"F": "C", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "C", to: "D"}}, step: 5}.
+eval.step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "C", "T": "D"}}, step: 1}.
+eval.step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "C", "I": "D"}}, step: 2}.
+eval.step{input: record{rec: baseEdge{from: "C", to: "D"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "C", to: "D"}}, step: 0}.
+eval.step{input: record{rec: edge{from: "C", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "C", "T": "D"}}, step: 6}.
 
 baseEdge{from: "B", to: "C"}.
 ----
 application/datalog
-step{input: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, step: 11}.
-step{input: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "C"}}, step: 13}.
-step{input: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, step: 14}.
-step{input: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "D"}}, step: 16}.
-step{input: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, step: 6}.
-step{input: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "B", to: "D"}}, step: 8}.
-step{input: bindings{bindings: {"F": "B", "I": "C"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, step: 4}.
-step{input: bindings{bindings: {"F": "B", "T": "C"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "B", "T": "C"}}, step: 3}.
-step{input: bindings{bindings: {"F": "B", "T": "C"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "B", to: "C"}}, step: 5}.
-step{input: bindings{bindings: {"I": "B", "T": "C"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, step: 9}.
-step{input: bindings{bindings: {"I": "B", "T": "D"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, step: 12}.
-step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "B", "T": "C"}}, step: 1}.
-step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "B", "I": "C"}}, step: 2}.
-step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "B", to: "C"}}, step: 0}.
-step{input: record{rec: edge{from: "A", to: "C"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "C"}}, step: 15}.
-step{input: record{rec: edge{from: "A", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "D"}}, step: 18}.
-step{input: record{rec: edge{from: "B", to: "C"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "B", "T": "C"}}, step: 7}.
-step{input: record{rec: edge{from: "B", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "B", "T": "D"}}, step: 10}.
+eval.step{input: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, step: 11}.
+eval.step{input: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "C"}}, step: 13}.
+eval.step{input: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, step: 14}.
+eval.step{input: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "A", to: "D"}}, step: 16}.
+eval.step{input: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, step: 6}.
+eval.step{input: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "B", to: "D"}}, step: 8}.
+eval.step{input: bindings{bindings: {"F": "B", "I": "C"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "B", "I": "C", "T": "D"}}, step: 4}.
+eval.step{input: bindings{bindings: {"F": "B", "T": "C"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"F": "B", "T": "C"}}, step: 3}.
+eval.step{input: bindings{bindings: {"F": "B", "T": "C"}}, multiplicity: 1, node: "edge", output: record{rec: edge{from: "B", to: "C"}}, step: 5}.
+eval.step{input: bindings{bindings: {"I": "B", "T": "C"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "A", "I": "B", "T": "C"}}, step: 9}.
+eval.step{input: bindings{bindings: {"I": "B", "T": "D"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"F": "A", "I": "B", "T": "D"}}, step: 12}.
+eval.step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"F": "B", "T": "C"}}, step: 1}.
+eval.step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"F": "B", "I": "C"}}, step: 2}.
+eval.step{input: record{rec: baseEdge{from: "B", to: "C"}}, multiplicity: 1, node: "baseEdge", output: record{rec: baseEdge{from: "B", to: "C"}}, step: 0}.
+eval.step{input: record{rec: edge{from: "A", to: "C"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "C"}}, step: 15}.
+eval.step{input: record{rec: edge{from: "A", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "A", "T": "D"}}, step: 18}.
+eval.step{input: record{rec: edge{from: "B", to: "C"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "B", "T": "C"}}, step: 7}.
+eval.step{input: record{rec: edge{from: "B", to: "D"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"I": "B", "T": "D"}}, step: 10}.
 
 edge{from: F, to: T}?
 ----

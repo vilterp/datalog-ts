@@ -20,33 +20,33 @@ application/datalog
 father{child: "Mary", father: "Mark"}.
 ----
 application/datalog
-step{input: bindings{bindings: {"C": "Mary", "P": "Mark"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Mary", "P": "Mark"}}, step: 2}.
-step{input: bindings{bindings: {"C": "Mary", "P": "Mark"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Mary", parent: "Mark"}}, step: 3}.
-step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "Mary", "P": "Mark"}}, step: 1}.
-step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Mary", father: "Mark"}}, step: 0}.
-step{input: record{rec: parent{child: "Mary", parent: "Mark"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Mary", "B": "Mark"}}, step: 4}.
-step{input: record{rec: parent{child: "Mary", parent: "Mark"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Mary", "C": "Mark"}}, step: 5}.
+eval.step{input: bindings{bindings: {"C": "Mary", "P": "Mark"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Mary", "P": "Mark"}}, step: 2}.
+eval.step{input: bindings{bindings: {"C": "Mary", "P": "Mark"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Mary", parent: "Mark"}}, step: 3}.
+eval.step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "Mary", "P": "Mark"}}, step: 1}.
+eval.step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Mary", father: "Mark"}}, step: 0}.
+eval.step{input: record{rec: parent{child: "Mary", parent: "Mark"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Mary", "B": "Mark"}}, step: 4}.
+eval.step{input: record{rec: parent{child: "Mary", parent: "Mark"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Mary", "C": "Mark"}}, step: 5}.
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 application/datalog
-step{input: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, multiplicity: 1, node: "grandparent", output: record{rec: grandparent{grandchild: "Pete", grandparent: "Mark"}}, step: 8}.
-step{input: bindings{bindings: {"A": "Pete", "B": "Mary"}}, multiplicity: 1, node: "5", output: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, step: 6}.
-step{input: bindings{bindings: {"C": "Pete", "P": "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 2}.
-step{input: bindings{bindings: {"C": "Pete", "P": "Mary"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Pete", parent: "Mary"}}, step: 3}.
-step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 1}.
-step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.
-step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 4}.
-step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Pete", "C": "Mary"}}, step: 5}.
+eval.step{input: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, multiplicity: 1, node: "grandparent", output: record{rec: grandparent{grandchild: "Pete", grandparent: "Mark"}}, step: 8}.
+eval.step{input: bindings{bindings: {"A": "Pete", "B": "Mary"}}, multiplicity: 1, node: "5", output: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, step: 6}.
+eval.step{input: bindings{bindings: {"C": "Pete", "P": "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 2}.
+eval.step{input: bindings{bindings: {"C": "Pete", "P": "Mary"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Pete", parent: "Mary"}}, step: 3}.
+eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"C": "Pete", "P": "Mary"}}, step: 1}.
+eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.
+eval.step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 4}.
+eval.step{input: record{rec: parent{child: "Pete", parent: "Mary"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Pete", "C": "Mary"}}, step: 5}.
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
 application/datalog
-step{input: bindings{bindings: {"A": "Carolyn", "B": "Mary", "C": "Mark"}}, multiplicity: 1, node: "grandparent", output: record{rec: grandparent{grandchild: "Carolyn", grandparent: "Mark"}}, step: 8}.
-step{input: bindings{bindings: {"A": "Carolyn", "B": "Mary"}}, multiplicity: 1, node: "5", output: bindings{bindings: {"A": "Carolyn", "B": "Mary", "C": "Mark"}}, step: 6}.
-step{input: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, step: 2}.
-step{input: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Carolyn", parent: "Mary"}}, step: 3}.
-step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, step: 1}.
-step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Carolyn", mother: "Mary"}}, step: 0}.
-step{input: record{rec: parent{child: "Carolyn", parent: "Mary"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Carolyn", "B": "Mary"}}, step: 4}.
-step{input: record{rec: parent{child: "Carolyn", parent: "Mary"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Carolyn", "C": "Mary"}}, step: 5}.
+eval.step{input: bindings{bindings: {"A": "Carolyn", "B": "Mary", "C": "Mark"}}, multiplicity: 1, node: "grandparent", output: record{rec: grandparent{grandchild: "Carolyn", grandparent: "Mark"}}, step: 8}.
+eval.step{input: bindings{bindings: {"A": "Carolyn", "B": "Mary"}}, multiplicity: 1, node: "5", output: bindings{bindings: {"A": "Carolyn", "B": "Mary", "C": "Mark"}}, step: 6}.
+eval.step{input: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, step: 2}.
+eval.step{input: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, multiplicity: 1, node: "parent", output: record{rec: parent{child: "Carolyn", parent: "Mary"}}, step: 3}.
+eval.step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"C": "Carolyn", "P": "Mary"}}, step: 1}.
+eval.step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Carolyn", mother: "Mary"}}, step: 0}.
+eval.step{input: record{rec: parent{child: "Carolyn", parent: "Mary"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"A": "Carolyn", "B": "Mary"}}, step: 4}.
+eval.step{input: record{rec: parent{child: "Carolyn", parent: "Mary"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"B": "Carolyn", "C": "Mary"}}, step: 5}.
