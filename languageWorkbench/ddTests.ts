@@ -58,7 +58,7 @@ export function testLangQuery(
   test: string[],
   initInterp: AbstractInterpreter
 ): TestOutput[] {
-  return test.map((input) => {
+  const output = test.map((input) => {
     const lines = input.split("\n");
     const langName = lines[0];
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
@@ -90,10 +90,10 @@ export function testLangQuery(
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);
-    } finally {
-      clearInterpCache();
     }
   });
+  clearInterpCache();
+  return output;
 }
 
 const CURSOR = "|||";
