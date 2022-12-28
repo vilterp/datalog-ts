@@ -14,13 +14,13 @@ application/datalog
 father{child: "Mary", father: "Mark"}.
 ----
 application/datalog
-eval.step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"B": "Mary", "C": "Mark"}}, step: 1}.
-eval.step{input: record{rec: father{child: "Mary", father: "Mark"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Mary", father: "Mark"}}, step: 0}.
+eval.step{input: record{rec: father{child: "Mary", father: "Mark"}}, inputMult: 1, node: "1", output: bindings{bindings: {"B": "Mary", "C": "Mark"}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: father{child: "Mary", father: "Mark"}}, inputMult: 1, node: "father", output: record{rec: father{child: "Mary", father: "Mark"}}, outputMult: 1, step: 0}.
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 application/datalog
-eval.step{input: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, multiplicity: 1, node: "matGramp", output: record{rec: matGramp{child: "Pete", grandfather: "Mark"}}, step: 3}.
-eval.step{input: bindings{bindings: {"A": "Pete", "B": "Mary"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, step: 2}.
-eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, step: 1}.
-eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.
+eval.step{input: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, inputMult: 1, node: "matGramp", output: record{rec: matGramp{child: "Pete", grandfather: "Mark"}}, outputMult: 1, step: 3}.
+eval.step{input: bindings{bindings: {"A": "Pete", "B": "Mary"}}, inputMult: 1, node: "2", output: bindings{bindings: {"A": "Pete", "B": "Mary", "C": "Mark"}}, outputMult: 1, step: 2}.
+eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, inputMult: 1, node: "0", output: bindings{bindings: {"A": "Pete", "B": "Mary"}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, inputMult: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, outputMult: 1, step: 0}.

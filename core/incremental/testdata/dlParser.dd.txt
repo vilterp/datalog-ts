@@ -17,37 +17,37 @@ application/datalog
 input.char{char: "END", id: -2}.
 ----
 application/datalog
-eval.step{input: record{rec: input.char{char: "END", id: -2}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "END", "P1": -2}}, step: 1}.
-eval.step{input: record{rec: input.char{char: "END", id: -2}}, multiplicity: 1, node: "input.char", output: record{rec: input.char{char: "END", id: -2}}, step: 0}.
+eval.step{input: record{rec: input.char{char: "END", id: -2}}, inputMult: 1, node: "0", output: bindings{bindings: {"C": "END", "P1": -2}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: input.char{char: "END", id: -2}}, inputMult: 1, node: "input.char", output: record{rec: input.char{char: "END", id: -2}}, outputMult: 1, step: 0}.
 
 input.char{char: "START", id: -1}.
 ----
 application/datalog
-eval.step{input: record{rec: input.char{char: "START", id: -1}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "START", "P1": -1}}, step: 1}.
-eval.step{input: record{rec: input.char{char: "START", id: -1}}, multiplicity: 1, node: "input.char", output: record{rec: input.char{char: "START", id: -1}}, step: 0}.
+eval.step{input: record{rec: input.char{char: "START", id: -1}}, inputMult: 1, node: "0", output: bindings{bindings: {"C": "START", "P1": -1}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: input.char{char: "START", id: -1}}, inputMult: 1, node: "input.char", output: record{rec: input.char{char: "START", id: -1}}, outputMult: 1, step: 0}.
 
 input.char{char: "b", id: 0}.
 ----
 application/datalog
-eval.step{input: record{rec: input.char{char: "b", id: 0}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "b", "P1": 0}}, step: 1}.
-eval.step{input: record{rec: input.char{char: "b", id: 0}}, multiplicity: 1, node: "input.char", output: record{rec: input.char{char: "b", id: 0}}, step: 0}.
+eval.step{input: record{rec: input.char{char: "b", id: 0}}, inputMult: 1, node: "0", output: bindings{bindings: {"C": "b", "P1": 0}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: input.char{char: "b", id: 0}}, inputMult: 1, node: "input.char", output: record{rec: input.char{char: "b", id: 0}}, outputMult: 1, step: 0}.
 
 input.next{left: -1, right: 0}.
 ----
 application/datalog
-eval.step{input: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, multiplicity: 1, node: "4", output: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, step: 3}.
-eval.step{input: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, multiplicity: 1, node: "6", output: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, step: 4}.
-eval.step{input: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, multiplicity: 1, node: "main", output: record{rec: main{span: span{from: -1, to: 0}}}, step: 5}.
-eval.step{input: bindings{bindings: {"P1": -1, "P2": 0}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, step: 2}.
-eval.step{input: record{rec: input.next{left: -1, right: 0}}, multiplicity: 1, node: "1", output: bindings{bindings: {"P1": -1, "P2": 0}}, step: 1}.
-eval.step{input: record{rec: input.next{left: -1, right: 0}}, multiplicity: 1, node: "input.next", output: record{rec: input.next{left: -1, right: 0}}, step: 0}.
+eval.step{input: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, inputMult: 1, node: "4", output: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, outputMult: 1, step: 3}.
+eval.step{input: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, inputMult: 1, node: "6", output: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, outputMult: 1, step: 4}.
+eval.step{input: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, inputMult: 1, node: "main", output: record{rec: main{span: span{from: -1, to: 0}}}, outputMult: 1, step: 5}.
+eval.step{input: bindings{bindings: {"P1": -1, "P2": 0}}, inputMult: 1, node: "2", output: bindings{bindings: {"C": "START", "P1": -1, "P2": 0}}, outputMult: 1, step: 2}.
+eval.step{input: record{rec: input.next{left: -1, right: 0}}, inputMult: 1, node: "1", output: bindings{bindings: {"P1": -1, "P2": 0}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: input.next{left: -1, right: 0}}, inputMult: 1, node: "input.next", output: record{rec: input.next{left: -1, right: 0}}, outputMult: 1, step: 0}.
 
 input.next{left: 0, right: -2}.
 ----
 application/datalog
-eval.step{input: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, multiplicity: 1, node: "4", output: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, step: 3}.
-eval.step{input: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, multiplicity: 1, node: "6", output: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, step: 4}.
-eval.step{input: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, multiplicity: 1, node: "main", output: record{rec: main{span: span{from: 0, to: -2}}}, step: 5}.
-eval.step{input: bindings{bindings: {"P1": 0, "P2": -2}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, step: 2}.
-eval.step{input: record{rec: input.next{left: 0, right: -2}}, multiplicity: 1, node: "1", output: bindings{bindings: {"P1": 0, "P2": -2}}, step: 1}.
-eval.step{input: record{rec: input.next{left: 0, right: -2}}, multiplicity: 1, node: "input.next", output: record{rec: input.next{left: 0, right: -2}}, step: 0}.
+eval.step{input: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, inputMult: 1, node: "4", output: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, outputMult: 1, step: 3}.
+eval.step{input: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, inputMult: 1, node: "6", output: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, outputMult: 1, step: 4}.
+eval.step{input: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, inputMult: 1, node: "main", output: record{rec: main{span: span{from: 0, to: -2}}}, outputMult: 1, step: 5}.
+eval.step{input: bindings{bindings: {"P1": 0, "P2": -2}}, inputMult: 1, node: "2", output: bindings{bindings: {"C": "b", "P1": 0, "P2": -2}}, outputMult: 1, step: 2}.
+eval.step{input: record{rec: input.next{left: 0, right: -2}}, inputMult: 1, node: "1", output: bindings{bindings: {"P1": 0, "P2": -2}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: input.next{left: 0, right: -2}}, inputMult: 1, node: "input.next", output: record{rec: input.next{left: 0, right: -2}}, outputMult: 1, step: 0}.

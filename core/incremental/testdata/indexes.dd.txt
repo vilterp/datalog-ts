@@ -20,20 +20,20 @@ application/datalog
 need{capability: "write HTML", objective: "make website"}.
 ----
 application/datalog
-eval.step{input: record{rec: need{capability: "write HTML", objective: "make website"}}, multiplicity: 1, node: "0", output: bindings{bindings: {"C": "write HTML", "O": "make website"}}, step: 1}.
-eval.step{input: record{rec: need{capability: "write HTML", objective: "make website"}}, multiplicity: 1, node: "need", output: record{rec: need{capability: "write HTML", objective: "make website"}}, step: 0}.
+eval.step{input: record{rec: need{capability: "write HTML", objective: "make website"}}, inputMult: 1, node: "0", output: bindings{bindings: {"C": "write HTML", "O": "make website"}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: need{capability: "write HTML", objective: "make website"}}, inputMult: 1, node: "need", output: record{rec: need{capability: "write HTML", objective: "make website"}}, outputMult: 1, step: 0}.
 
 worker{name: "Pete", capability: "write HTML"}.
 ----
 application/datalog
-eval.step{input: bindings{bindings: {"C": "write HTML", "N": "Pete"}}, multiplicity: 1, node: "2", output: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website"}}, step: 2}.
-eval.step{input: record{rec: worker{capability: "write HTML", name: "Pete"}}, multiplicity: 1, node: "1", output: bindings{bindings: {"C": "write HTML", "N": "Pete"}}, step: 1}.
-eval.step{input: record{rec: worker{capability: "write HTML", name: "Pete"}}, multiplicity: 1, node: "worker", output: record{rec: worker{capability: "write HTML", name: "Pete"}}, step: 0}.
+eval.step{input: bindings{bindings: {"C": "write HTML", "N": "Pete"}}, inputMult: 1, node: "2", output: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website"}}, outputMult: 1, step: 2}.
+eval.step{input: record{rec: worker{capability: "write HTML", name: "Pete"}}, inputMult: 1, node: "1", output: bindings{bindings: {"C": "write HTML", "N": "Pete"}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: worker{capability: "write HTML", name: "Pete"}}, inputMult: 1, node: "worker", output: record{rec: worker{capability: "write HTML", name: "Pete"}}, outputMult: 1, step: 0}.
 
 fundingSource{objective: "make website", source: "some company"}.
 ----
 application/datalog
-eval.step{input: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website", "S": "some company"}}, multiplicity: 1, node: "opportunity", output: record{rec: opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}}, step: 3}.
-eval.step{input: bindings{bindings: {"O": "make website", "S": "some company"}}, multiplicity: 1, node: "4", output: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website", "S": "some company"}}, step: 2}.
-eval.step{input: record{rec: fundingSource{objective: "make website", source: "some company"}}, multiplicity: 1, node: "3", output: bindings{bindings: {"O": "make website", "S": "some company"}}, step: 1}.
-eval.step{input: record{rec: fundingSource{objective: "make website", source: "some company"}}, multiplicity: 1, node: "fundingSource", output: record{rec: fundingSource{objective: "make website", source: "some company"}}, step: 0}.
+eval.step{input: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website", "S": "some company"}}, inputMult: 1, node: "opportunity", output: record{rec: opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}}, outputMult: 1, step: 3}.
+eval.step{input: bindings{bindings: {"O": "make website", "S": "some company"}}, inputMult: 1, node: "4", output: bindings{bindings: {"C": "write HTML", "N": "Pete", "O": "make website", "S": "some company"}}, outputMult: 1, step: 2}.
+eval.step{input: record{rec: fundingSource{objective: "make website", source: "some company"}}, inputMult: 1, node: "3", output: bindings{bindings: {"O": "make website", "S": "some company"}}, outputMult: 1, step: 1}.
+eval.step{input: record{rec: fundingSource{objective: "make website", source: "some company"}}, inputMult: 1, node: "fundingSource", output: record{rec: fundingSource{objective: "make website", source: "some company"}}, outputMult: 1, step: 0}.

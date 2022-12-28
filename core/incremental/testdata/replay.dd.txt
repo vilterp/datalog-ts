@@ -9,22 +9,22 @@ application/datalog
 mother{child: "Pete", mother: "Mary"}.
 ----
 application/datalog
-eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, step: 0}.
+eval.step{input: record{rec: mother{child: "Pete", mother: "Mary"}}, inputMult: 1, node: "mother", output: record{rec: mother{child: "Pete", mother: "Mary"}}, outputMult: 1, step: 0}.
 
 father{child: "Pete", father: "Paul"}.
 ----
 application/datalog
-eval.step{input: record{rec: father{child: "Pete", father: "Paul"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Pete", father: "Paul"}}, step: 0}.
+eval.step{input: record{rec: father{child: "Pete", father: "Paul"}}, inputMult: 1, node: "father", output: record{rec: father{child: "Pete", father: "Paul"}}, outputMult: 1, step: 0}.
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
 application/datalog
-eval.step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, multiplicity: 1, node: "mother", output: record{rec: mother{child: "Carolyn", mother: "Mary"}}, step: 0}.
+eval.step{input: record{rec: mother{child: "Carolyn", mother: "Mary"}}, inputMult: 1, node: "mother", output: record{rec: mother{child: "Carolyn", mother: "Mary"}}, outputMult: 1, step: 0}.
 
 father{child: "Carolyn", father: "Paul"}.
 ----
 application/datalog
-eval.step{input: record{rec: father{child: "Carolyn", father: "Paul"}}, multiplicity: 1, node: "father", output: record{rec: father{child: "Carolyn", father: "Paul"}}, step: 0}.
+eval.step{input: record{rec: father{child: "Carolyn", father: "Paul"}}, inputMult: 1, node: "father", output: record{rec: father{child: "Carolyn", father: "Paul"}}, outputMult: 1, step: 0}.
 
 parents{child: C, mother: M, father: F} :-
   mother{child: C, mother: M} &

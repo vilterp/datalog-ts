@@ -14,7 +14,8 @@ export function formatOutput(graph: RuleGraph, output: Output): TestOutput {
             rec("eval.step", {
               step: int(idx),
               node: str(logEntry.nodeID),
-              multiplicity: int(outputMessage.multiplicity),
+              inputMult: int(logEntry.input.multiplicity),
+              outputMult: int(outputMessage.multiplicity),
               input: messageToDL(logEntry.input),
               output: messageToDL(outputMessage),
             })
