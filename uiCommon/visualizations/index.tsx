@@ -9,6 +9,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, Statement, Term } from "../../core/types";
 import { paramSlider } from "./paramSlider";
 import { graphviz } from "./graphviz";
+import { ticker } from "./ticker";
 
 export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   sequence,
@@ -18,6 +19,7 @@ export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   dagEditor,
   paramSlider,
   graphviz,
+  ticker,
 };
 
 export function IndividualViz(props: {

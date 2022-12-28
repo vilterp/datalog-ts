@@ -115,10 +115,14 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   connection{from: B, to: S} &
   currentAtSink{id: S, time: T, level: L}.
 
-time{time: T} :-
-  range{from: 1, to: 30, val: T}.
+.table time
 
 # === visualization ===
+
+internal.visualization{
+  name: "Time Ticker",
+  spec: ticker{},
+}.
 
 internal.visualization{
   name: "Current over Time",
