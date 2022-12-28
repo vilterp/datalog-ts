@@ -1,10 +1,10 @@
 import { toGraphviz } from "./graphviz";
-import { Rec } from "../types";
+import { rec, Rec, str } from "../types";
 import { IncrementalInterpreter } from "./interpreter";
 import { fsLoader } from "../fsLoader";
 import { Suite } from "../../util/testBench/testing";
 import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
-import { graphvizOut, jsonOut } from "../../util/ddTest/types";
+import { datalogOut, graphvizOut, jsonOut } from "../../util/ddTest/types";
 import { prettyPrintGraph } from "../../util/graphviz";
 import {
   parseMain,
@@ -73,7 +73,23 @@ function evalTest(inputs: string[]): TestOutput[] {
   for (let input of inputs) {
     if (input === ".ruleGraph") {
       // TODO: query virtual relations instead?
-      out.push(graphvizOut(prettyPrintGraph(toGraphviz(interp.graph))));
+      const gvGraph = toGraphviz(interp.graph);
+      out.push(
+        datalogOut([
+          ...gvGraph.nodes.map((node) =>
+            rec("ruleGraph.node", {
+              id: str(node.id),
+              label: str(node.attrs.label as string),
+            })
+          ),
+          ...gvGraph.edges.map((edge) =>
+            rec("ruleGraph.edge", {
+              from: str(edge.from as string),
+              to: str(edge.to as string),
+            })
+          ),
+        ])
+      );
       continue;
     }
     const rawStmt = parseStatement(input);

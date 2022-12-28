@@ -1,0 +1,7 @@
+internal.visualization{
+  name: "Rule Graph",
+  spec: graphviz{
+    nodes: ruleGraph.node{id: ID},
+    edges: ruleGraph.edge{from: From, to: To}
+  }
+}.
