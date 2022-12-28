@@ -29,7 +29,7 @@ dict :- ["{", ws, repSep(dictKeyValue, commaSpace), ws, "}"].
 dictKeyValue :- [key:string, ":", ws, value:term].
 recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
 recordKeyValue :- [ident, ":", ws, term].
-int :- [("-" | ""), first:num, repSep(num, "")].
+int :- [("-" | ""), first:num, repSep(num, ""), ("" | [".", repSep(num, "")])].
 bool :- ("true" | "false").
 array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
 
