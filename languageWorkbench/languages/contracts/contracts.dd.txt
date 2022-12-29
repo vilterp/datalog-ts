@@ -14,3 +14,5 @@ payment(id:2, contractID:1, from:"Bob", to:"Alice", amount:110, time:30).
 contract.balance{}?
 ----
 application/datalog
+contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}.
+contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}.

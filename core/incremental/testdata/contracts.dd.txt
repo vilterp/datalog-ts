@@ -83,9 +83,9 @@ contract.PaymentRecord: [contract.PaymentRecord{amount: 100, contractID: 1, from
 6: [{A: 100, C: "Bob", D: "Alice"}-1]
 contract.owe: [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
 0: [{A: 100, C: "Bob", D: "Alice"}-1]
-1: [{A: 100, C: "Bob", D: "Alice"}-1, {A: 200, C: "Bob", D: "Alice"}+1]
+1: [{A: 100, C: "Bob", D: "Alice"}-1, {A: 0, C: "Bob", D: "Alice"}+1]
 contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
-contract.balance: [contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}+1]
+contract.balance: [contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}+1]
 
 contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", time: 30, to: "Alice"}.
 ----
@@ -97,12 +97,12 @@ contract.PaymentRecord: [contract.PaymentRecord{amount: 110, contractID: 1, from
 6: [{A: 110, C: "Alice", D: "Bob"}-1]
 contract.owe: [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
 0: [{A: 110, C: "Alice", D: "Bob"}-1]
-1: [{A: 110, C: "Alice", D: "Bob"}-1, {A: 220, C: "Alice", D: "Bob"}+1]
+1: [{A: 110, C: "Alice", D: "Bob"}-1, {A: 0, C: "Alice", D: "Bob"}+1]
 contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
-contract.balance: [contract.balance{amount: 220, creditor: "Alice", debtor: "Bob"}+1]
+contract.balance: [contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}+1]
 
 contract.balance{}?
 ----
 application/datalog-results
-contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}; {}.
-contract.balance{amount: 220, creditor: "Alice", debtor: "Bob"}; {}.
+contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}; {}.
+contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}; {}.

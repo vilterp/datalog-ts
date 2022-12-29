@@ -4,15 +4,15 @@ import { Int, int, Term } from "./types";
 export const AGGREGATIONS: { [name: string]: Aggregator } = {
   sum: {
     init: int(0),
-    step(accum: Term, item: Term): Term {
-      return int((accum as Int).val + (item as Int).val);
+    step(accum: Term, item: Term, count: number): Term {
+      return int((accum as Int).val + (item as Int).val * count);
     },
     final: identity,
   },
   count: {
     init: int(0),
-    step(accum: Term, item: Term): Term {
-      return int((accum as Int).val + 1);
+    step(accum: Term, item: Term, count: number): Term {
+      return int((accum as Int).val + 1 * count);
     },
     final: identity,
   },
@@ -20,6 +20,6 @@ export const AGGREGATIONS: { [name: string]: Aggregator } = {
 
 type Aggregator = {
   init: Term;
-  step: (accum: Term, item: Term) => Term;
+  step: (accum: Term, item: Term, count: number) => Term;
   final: (accum: Term) => Term;
 };

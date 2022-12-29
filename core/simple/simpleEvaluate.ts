@@ -304,7 +304,7 @@ function doAggregation(terms: Term[], aggName: string): Term {
   const agg = AGGREGATIONS[aggName];
   let state = agg.init;
   for (const term of terms) {
-    state = agg.step(state, term);
+    state = agg.step(state, term, 1);
   }
   return agg.final(state);
 }

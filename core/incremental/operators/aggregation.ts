@@ -26,7 +26,7 @@ export function processAggregation(
         .join(",");
       const curGroupState = nodeDesc.state.get(groupKey, agg.init);
       const term = data.bindings.bindings[aggVar];
-      const newGroupState = agg.step(curGroupState, term);
+      const newGroupState = agg.step(curGroupState, term, payload.multiplicity);
       const newNodeState: AggregationDesc = {
         ...nodeDesc,
         state: nodeDesc.state.set(groupKey, newGroupState),
