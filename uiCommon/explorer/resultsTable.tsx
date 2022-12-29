@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ppr } from "../../core/pretty";
+import { ppr, ppt } from "../../core/pretty";
 import { Rec, Relation, Res } from "../../core/types";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
@@ -45,7 +45,17 @@ export function ResultsTable(props: {
       <thead>
         <tr style={{ borderBottom: "1px solid black" }}>
           {/* expander */}
-          <th />
+          <th>
+            <button
+              onClick={() => {
+                console.log(
+                  props.results.map((res) => ppt(res.term) + ".").join("\n")
+                );
+              }}
+            >
+              Text
+            </button>
+          </th>
           {fields.map((name) => {
             const orderInd =
               ordering === null || ordering.col !== name
