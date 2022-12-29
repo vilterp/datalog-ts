@@ -22,9 +22,8 @@ import { Catalog } from "./catalog";
 import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
-  const entries = Object.entries(catalog);
   let graph = emptyRuleGraph;
-  graph = entries.reduce((accum, [relName, rel]) => {
+  graph = catalog.reduce((accum, rel, relName) => {
     switch (rel.type) {
       case "Table":
         return declareTable(accum, relName);
@@ -32,7 +31,7 @@ export function buildGraph(catalog: Catalog): RuleGraph {
         return accum;
     }
   }, graph);
-  graph = entries.reduce((accum, [relName, rel]) => {
+  graph = catalog.reduce((accum, rel) => {
     switch (rel.type) {
       case "Rule":
         return addRule(accum, rel.rule);

@@ -3,7 +3,6 @@ import { Res, Rule, Statement } from "../types";
 import { doQuery, insertOrRetractFact, replayFacts } from "./eval";
 import { Loader } from "../loaders";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { filterMap } from "../../util/util";
 import {
   addFact,
   addRule,
@@ -11,6 +10,7 @@ import {
   declareTable,
   emptyCatalog,
   removeFact,
+  RuleEntry,
 } from "./catalog";
 import { buildGraph } from "./build";
 
@@ -43,7 +43,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     const interp = this;
     switch (stmt.type) {
       case "TableDecl": {
-        const existing = interp.catalog[stmt.name];
+        const existing = interp.catalog.get(stmt.name);
         if (existing) {
           if (existing.type === "Table") {
             return { newInterp: this, output: ack };
@@ -80,7 +80,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         let newCatalog = this.catalog;
         let newGraph = this.graph;
         const tableName = stmt.record.relation;
-        if (!this.catalog[tableName]) {
+        if (!this.catalog.has(tableName)) {
           // create table if it doesn't exist
           newCatalog = declareTable(newCatalog, tableName);
           newGraph = replayFacts(buildGraph(newCatalog), newCatalog);
@@ -146,14 +146,17 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   }
 
   getRules(): Rule[] {
-    return filterMap(Object.entries(this.catalog), ([key, val]) =>
-      val.type === "Rule" ? val.rule : null
-    );
+    return this.catalog
+      .valueSeq()
+      .filter((e) => e.type === "Rule")
+      .map((val) => (val as RuleEntry).rule)
+      .toArray();
   }
 
   getTables(): string[] {
-    return filterMap(Object.entries(this.catalog), ([key, val]) =>
-      val.type === "Table" ? key : null
-    );
+    return this.catalog
+      .filter((e) => e.type === "Table")
+      .keySeq()
+      .toArray();
   }
 }
