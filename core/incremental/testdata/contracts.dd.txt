@@ -3,10 +3,9 @@ contract.balance{creditor: C, debtor: D, amount: A} :-
 ----
 application/datalog
 
-contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+contract.owe{creditor: C, debtor: D, amount: A} :-
   contract.node.Payment{id: N, from: D, to: C, amount: A} &
-  !contract.PaymentRecord{from: D, to: C, amount: A, contractID: CID} &
-  contract.member{contractID: CID, nodeID: N}.
+  !contract.PaymentRecord{from: D, to: C, amount: A}.
 ----
 application/datalog
 
@@ -19,111 +18,76 @@ application/datalog-results
 application/graphviz
 digraph G {
   "contract.balance" [fillcolor="lightblue" fontname="Courier" label="contract.balance: Subst(contract.balance{amount: A, creditor: C, debtor: D}) []" shape="box" style="filled"];
-  "contract.owe" [fillcolor="lightblue" fontname="Courier" label="contract.owe: Subst(contract.owe{amount: A, contractID: CID, creditor: C, debtor: D}) []" shape="box" style="filled"];
+  "contract.owe" [fillcolor="lightblue" fontname="Courier" label="contract.owe: Subst(contract.owe{amount: A, creditor: C, debtor: D}) []" shape="box" style="filled"];
   "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(contract.owe{amount: A, creditor: C, debtor: D}) []" shape="box" style="filled"];
   "1" [fillcolor="" fontname="Courier" label="1: Agg(sum[C, D, A: contract.owe{amount: A, creditor: C, debtor: D}]) []" shape="box" style="filled"];
-  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(contract.node.Payment{amount: A, from: D, id: N, to: C}) [N]" shape="box" style="filled"];
-  "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(contract.member{contractID: CID, nodeID: N}) [N]" shape="box" style="filled"];
-  "4" [fillcolor="thistle" fontname="Courier" label="4: Join(N) [A-C-CID-D]" shape="box" style="filled"];
-  "5" [fillcolor="darkseagreen2" fontname="Courier" label="5: Match(contract.PaymentRecord{amount: A, contractID: CID, from: D, to: C}) []" shape="box" style="filled"];
-  "6" [fillcolor="" fontname="Courier" label="6: Negate() [A-C-CID-D]" shape="box" style="filled"];
-  "7" [fillcolor="thistle" fontname="Courier" label="7: Join(A, C, CID, D) []" shape="box" style="filled"];
-  "8" [fillcolor="moccasin" fontname="Courier" label="8: Union []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(contract.node.Payment{amount: A, from: D, id: N, to: C}) [A-C-D]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(contract.PaymentRecord{amount: A, from: D, to: C}) []" shape="box" style="filled"];
+  "4" [fillcolor="" fontname="Courier" label="4: Negate() [A-C-D]" shape="box" style="filled"];
+  "5" [fillcolor="thistle" fontname="Courier" label="5: Join(A, C, D) []" shape="box" style="filled"];
+  "6" [fillcolor="moccasin" fontname="Courier" label="6: Union []" shape="box" style="filled"];
   "contract.owe" -> "0" [];
   "0" -> "1" [];
   "1" -> "contract.balance" [];
-  "2" -> "4" [];
+  "2" -> "5" [];
+  "2" -> "6" [];
   "3" -> "4" [];
-  "4" -> "7" [];
-  "4" -> "8" [];
+  "4" -> "5" [];
   "5" -> "6" [];
-  "6" -> "7" [];
+  "6" -> "contract.owe" [];
   "contract.node.Payment" -> "2" [];
-  "contract.member" -> "3" [];
-  "7" -> "8" [];
-  "8" -> "contract.owe" [];
-  "contract.PaymentRecord" -> "5" [];
+  "contract.PaymentRecord" -> "3" [];
 }
 
-contract.node.Payment{amount: 100, from: "Alice", id: 44, to: "Bob"}.
+contract.node.Payment{amount: 100, from: "Alice", to: "Bob"}.
 ----
 incremental-datalog/trace
-contract.node.Payment: [contract.node.Payment{amount: 100, from: "Alice", id: 44, to: "Bob"}+1]
-2: [{A: 100, C: "Bob", D: "Alice", N: 44}+1]
-4: []
-
-contract.node.Payment{amount: 110, from: "Bob", id: 160, to: "Alice"}.
-----
-incremental-datalog/trace
-contract.node.Payment: [contract.node.Payment{amount: 110, from: "Bob", id: 160, to: "Alice"}+1]
-2: [{A: 110, C: "Alice", D: "Bob", N: 160}+1]
-4: []
-
-contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", id: 1, time: 0, to: "Bob"}.
-----
-incremental-datalog/trace
-contract.PaymentRecord: [contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", id: 1, time: 0, to: "Bob"}+1]
-5: [{A: 100, C: "Bob", CID: 1, D: "Alice"}+1]
-6: [{A: 100, C: "Bob", CID: 1, D: "Alice"}-1]
-7: []
-
-contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", id: 2, time: 30, to: "Alice"}.
-----
-incremental-datalog/trace
-contract.PaymentRecord: [contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", id: 2, time: 30, to: "Alice"}+1]
-5: [{A: 110, C: "Alice", CID: 1, D: "Bob"}+1]
-6: [{A: 110, C: "Alice", CID: 1, D: "Bob"}-1]
-7: []
-
-contract.member{contractID: 1, nodeID: 32}.
-----
-incremental-datalog/trace
-contract.member: [contract.member{contractID: 1, nodeID: 32}+1]
-3: [{CID: 1, N: 32}+1]
-4: []
-
-contract.member{contractID: 1, nodeID: 44}.
-----
-incremental-datalog/trace
-contract.member: [contract.member{contractID: 1, nodeID: 44}+1]
-3: [{CID: 1, N: 44}+1]
-4: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}+1]
-7: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}-1]
-8: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}+1]
-8: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}-1]
-contract.owe: [contract.owe{amount: 100, contractID: 1, creditor: "Bob", debtor: "Alice"}+1]
-contract.owe: [contract.owe{amount: 100, contractID: 1, creditor: "Bob", debtor: "Alice"}-1]
+contract.node.Payment: [contract.node.Payment{amount: 100, from: "Alice", to: "Bob"}+1]
+2: [{A: 100, C: "Bob", D: "Alice"}+1]
+5: []
+6: [{A: 100, C: "Bob", D: "Alice"}+1]
+contract.owe: [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
 0: [{A: 100, C: "Bob", D: "Alice"}+1]
-0: [{A: 100, C: "Bob", D: "Alice"}-1]
 1: [{A: 100, C: "Bob", D: "Alice"}+1]
-1: [{A: 100, C: "Bob", D: "Alice"}-1, {A: 200, C: "Bob", D: "Alice"}+1]
 contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
+
+contract.node.Payment{amount: 110, from: "Bob", to: "Alice"}.
+----
+incremental-datalog/trace
+contract.node.Payment: [contract.node.Payment{amount: 110, from: "Bob", to: "Alice"}+1]
+2: [{A: 110, C: "Alice", D: "Bob"}+1]
+5: []
+6: [{A: 110, C: "Alice", D: "Bob"}+1]
+contract.owe: [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
+0: [{A: 110, C: "Alice", D: "Bob"}+1]
+1: [{A: 110, C: "Alice", D: "Bob"}+1]
+contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
+
+contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", time: 0, to: "Bob"}.
+----
+incremental-datalog/trace
+contract.PaymentRecord: [contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", time: 0, to: "Bob"}+1]
+3: [{A: 100, C: "Bob", D: "Alice"}+1]
+4: [{A: 100, C: "Bob", D: "Alice"}-1]
+5: [{A: 100, C: "Bob", D: "Alice"}-1]
+6: [{A: 100, C: "Bob", D: "Alice"}-1]
+contract.owe: [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
+0: [{A: 100, C: "Bob", D: "Alice"}-1]
+1: [{A: 100, C: "Bob", D: "Alice"}-1, {A: 200, C: "Bob", D: "Alice"}+1]
 contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
 contract.balance: [contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}+1]
 
-contract.member{contractID: 1, nodeID: 107}.
+contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", time: 30, to: "Alice"}.
 ----
 incremental-datalog/trace
-contract.member: [contract.member{contractID: 1, nodeID: 107}+1]
-3: [{CID: 1, N: 107}+1]
-4: []
-
-contract.member{contractID: 1, nodeID: 160}.
-----
-incremental-datalog/trace
-contract.member: [contract.member{contractID: 1, nodeID: 160}+1]
-3: [{CID: 1, N: 160}+1]
-4: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}+1]
-7: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}-1]
-8: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}+1]
-8: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}-1]
-contract.owe: [contract.owe{amount: 110, contractID: 1, creditor: "Alice", debtor: "Bob"}+1]
-contract.owe: [contract.owe{amount: 110, contractID: 1, creditor: "Alice", debtor: "Bob"}-1]
-0: [{A: 110, C: "Alice", D: "Bob"}+1]
+contract.PaymentRecord: [contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", time: 30, to: "Alice"}+1]
+3: [{A: 110, C: "Alice", D: "Bob"}+1]
+4: [{A: 110, C: "Alice", D: "Bob"}-1]
+5: [{A: 110, C: "Alice", D: "Bob"}-1]
+6: [{A: 110, C: "Alice", D: "Bob"}-1]
+contract.owe: [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
 0: [{A: 110, C: "Alice", D: "Bob"}-1]
-1: [{A: 110, C: "Alice", D: "Bob"}+1]
 1: [{A: 110, C: "Alice", D: "Bob"}-1, {A: 220, C: "Alice", D: "Bob"}+1]
-contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
 contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
 contract.balance: [contract.balance{amount: 220, creditor: "Alice", debtor: "Bob"}+1]
 
