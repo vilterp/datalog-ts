@@ -109,3 +109,4 @@ contract.balance{}?
 ----
 application/datalog
 contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}.
+contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}.
