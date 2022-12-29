@@ -53,7 +53,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       }).newGraph;
     });
   });
-  Object.entries(catalog).forEach(([relName, rel]) => {
+  catalog.forEach((rel, relName) => {
     if (rel.type === "Rule") {
       return;
     }
