@@ -21,6 +21,8 @@ import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { processMessage } from "./operators";
 import { ppb } from "../pretty";
+import { prettyPrintGraph } from "../../util/graphviz";
+import { toGraphviz } from "./graphviz";
 
 export function insertOrRetractFact(
   graph: RuleGraph,
@@ -53,7 +55,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
       }).newGraph;
     });
   });
-  catalog.forEach((rel, relName) => {
+  catalog.forEach((rel) => {
     if (rel.type === "Rule") {
       return;
     }
@@ -171,8 +173,12 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   if (newNodeDesc !== node.desc) {
     newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
   }
-  // console.log("push", results);
   for (let outMessage of outMessages) {
+    if (outMessage.multiplicity === 2) {
+      // console.log(prettyPrintGraph(toGraphviz(newGraph)));
+      console.log("mult 2 from node", curNodeID, newNodeDesc);
+      debugger;
+    }
     // update cache
     newGraph = updateCurNodeCache(newGraph, curNodeID, outMessage);
     // propagate messages

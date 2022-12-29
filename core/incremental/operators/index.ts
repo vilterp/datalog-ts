@@ -1,3 +1,5 @@
+import { ppt } from "../../pretty";
+import { formatMessagePayload } from "../output";
 import { RuleGraph, Message, NodeDesc, MessagePayload, NodeID } from "../types";
 import { processAggregation } from "./aggregation";
 import { processJoin } from "./join";
@@ -28,7 +30,16 @@ export function processMessage(
       return [nodeDesc, [payload]];
     case "Negation":
       return [nodeDesc, processNegation(payload)];
-    case "Aggregation":
-      return processAggregation(nodeDesc, payload);
+    case "Aggregation": {
+      const res = processAggregation(nodeDesc, payload);
+      console.log(
+        ppt(nodeDesc.aggregation),
+        "========",
+        formatMessagePayload(payload),
+        "===========>",
+        res[1].map(formatMessagePayload)
+      );
+      return res;
+    }
   }
 }

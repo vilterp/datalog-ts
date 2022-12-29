@@ -92,13 +92,13 @@ export class IncrementalInterpreter extends AbstractInterpreter {
         // add the new fact
         newCatalog = addFact(this.catalog, stmt.record);
         const res = insertOrRetractFact(newGraph, stmt.record, 1);
-        console.log("========");
-        res.emissionLog.forEach((entry) => {
-          console.log(
-            entry.fromID,
-            entry.output.map((payload) => formatMessagePayload(payload))
-          );
-        });
+        // console.log("========");
+        // res.emissionLog.forEach((entry) => {
+        //   console.log(
+        //     entry.fromID,
+        //     entry.output.map((payload) => formatMessagePayload(payload))
+        //   );
+        // });
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,

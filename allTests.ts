@@ -34,7 +34,7 @@ const suites: { [name: string]: Suite } = {
   sourcePositionsTests,
   kvSync: kvSyncTests(writeResults),
   raceDetector: raceDetectorTests(writeResults),
-  lwbTestsSimple: lwbTestsSimple(writeResults),
+  // lwbTestsSimple: lwbTestsSimple(writeResults),
   lwbTestsIncr: lwbTestsIncr(writeResults),
 };
 

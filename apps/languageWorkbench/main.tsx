@@ -69,7 +69,7 @@ function Workbench() {
 
       <table>
         <tbody>
-          <tr>
+          {/* <tr>
             <td>
               <h3>Example Source</h3>
               <LingoEditor
@@ -117,7 +117,7 @@ function Workbench() {
                 lineNumbers="off"
               />
             </td>
-          </tr>
+          </tr> */}
         </tbody>
       </table>
 

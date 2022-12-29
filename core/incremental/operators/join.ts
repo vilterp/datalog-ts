@@ -81,12 +81,16 @@ export function doJoin(
     //   unifyRes: ppb(unifyRes),
     // });
     if (unifyRes !== null) {
+      const mult = thisVars.multiplicity * otherMultiplicity;
+      if (mult === 2) {
+        debugger;
+      }
       results.push({
         bindings: {
           bindings: unifyRes,
           trace: { type: "JoinTrace", sources: [thisVars.bindings, otherVars] },
         },
-        multiplicity: thisVars.multiplicity * otherMultiplicity,
+        multiplicity: mult,
       });
     }
   }
