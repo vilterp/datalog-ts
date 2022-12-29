@@ -5,7 +5,6 @@ import {
   Conjunct,
   Aggregation,
   Bindings,
-  VarToPath,
 } from "../types";
 import {
   RuleGraph,
@@ -14,13 +13,13 @@ import {
   emptyRuleGraph,
   emptyAggregationState,
 } from "./types";
-import { permute } from "../../util/util";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
 import { emptyIndexedCollection } from "./indexedMultiSet";
 import { fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
+import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
   const entries = Object.entries(catalog);
@@ -74,25 +73,6 @@ export function getJoinVars(left: Conjunct, right: Conjunct): Set<string> {
   return leftVars.intersect(rightVars);
 }
 
-function getVarToPath(rec: Rec): VarToPath {
-  const out: VarToPath = {};
-  Object.entries(rec.attrs).forEach(([attr, attrVal]) => {
-    switch (attrVal.type) {
-      case "Var":
-        out[attrVal.name] = [attr];
-        break;
-      case "Record":
-        const subMapping = getVarToPath(attrVal);
-        Object.entries(subMapping).forEach(([subVar, subPath]) => {
-          out[subVar] = [attr, ...subPath];
-        });
-        break;
-      // TODO: lists?
-    }
-  });
-  return out;
-}
-
 function addOr(graph: RuleGraph, or: Disjunction): GraphWithTip {
   if (or.disjuncts.length === 1) {
     return addConjuncts(graph, or.disjuncts[0].conjuncts);
@@ -129,22 +109,10 @@ function addConjuncts(
   graph: RuleGraph,
   conjuncts: Conjunct[]
 ): AddConjunctResult {
-  // add normal conjuncts
   const recs = conjuncts.filter((c) => c.type === "Record");
   const nonRecs = conjuncts.filter((c) => c.type !== "Record");
-  const allRecPermutations = permute(recs);
-  const allJoinTrees = allRecPermutations.map((permutation) => {
-    const tree = getJoinTree(permutation);
-    return { permutation, numCommonVars: numJoinsWithCommonVars(tree) };
-  });
-  allJoinTrees.sort((left, right) => {
-    return left.numCommonVars - right.numCommonVars;
-  });
-  const winningPermuation =
-    allJoinTrees.length > 0
-      ? allJoinTrees[allJoinTrees.length - 1].permutation
-      : [];
-  const finalOrder = [...nonRecs, ...winningPermuation];
+  const joinOrder = getJoinOrder(recs);
+  const finalOrder = [...nonRecs, ...joinOrder];
   return addJoinTree(graph, finalOrder);
 }
 
@@ -178,18 +146,6 @@ function addJoinTree(
         return addAggregation(withRec, conjunct);
     }
   }, initResult);
-}
-
-function getRecord(conjunct: Conjunct): Rec {
-  switch (conjunct.type) {
-    case "Record":
-      return conjunct;
-    case "Aggregation":
-      return conjunct.record;
-    case "Negation": {
-      return conjunct.record;
-    }
-  }
 }
 
 function addNegation(
@@ -306,39 +262,6 @@ export function getIndexKey(
 export function getIndexName(joinVars: Set<string>): string {
   // TODO: some way to remove this sort
   return joinVars.toArray().sort().join("-");
-}
-
-type JoinTree =
-  | {
-      type: "Leaf";
-      conjunct: Conjunct;
-    }
-  | {
-      type: "Node";
-      left: Conjunct;
-      joinVars: Set<string>;
-      right: JoinTree;
-    };
-
-function getJoinTree(conjuncts: Conjunct[]): JoinTree {
-  if (conjuncts.length === 1) {
-    return { type: "Leaf", conjunct: conjuncts[0] };
-  }
-  return {
-    type: "Node",
-    left: conjuncts[0],
-    // are we joining with just the next record, or everything on the right?
-    joinVars: getJoinVars(conjuncts[0], conjuncts[1]),
-    right: getJoinTree(conjuncts.slice(1)),
-  };
-}
-
-function numJoinsWithCommonVars(joinTree: JoinTree): number {
-  if (joinTree.type === "Leaf") {
-    return 0;
-  }
-  const thisDoes = Object.keys(joinTree.joinVars).length > 0 ? 1 : 0;
-  return thisDoes + numJoinsWithCommonVars(joinTree.right);
 }
 
 // helpers
