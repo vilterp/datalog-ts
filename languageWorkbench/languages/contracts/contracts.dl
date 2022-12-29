@@ -220,5 +220,9 @@ contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
   contract.member{contractID: CID, nodeID: N}.
 
 # TODO: fix aggregation syntax
-contract.balance{creditor: C, debtor: D, amount: A} :-
+contract.rawBalance{creditor: C, debtor: D, amount: A} :-
   sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
+
+contract.balance{creditor: C, debtor: D, amount: A} :-
+  contract.rawBalance{creditor: C, debtor: D, amount: A} &
+  A != 0.
