@@ -1,0 +1,622 @@
+.table contract.And
+----
+application/datalog
+
+.table contract.Payment
+----
+application/datalog
+
+.table contract.Delay
+----
+application/datalog
+
+.table contract.Contract
+----
+application/datalog
+
+timeWindow{time: T} :-
+  range{from: 0, to: 10, val: T}.
+----
+application/datalog
+
+contract.InCompliance{contractID: I, time: T} :-
+  timeWindow{time: T} &
+  contract.Contract{id: I} &
+  contract.parent{id: N, parentID: I} &
+  contract.nodeInCompliance{id: N, time: T}.
+----
+application/datalog
+
+contract.nodeInCompliance{id: I, time: T} :-
+  timeWindow{time: T} &
+  andInCompliance{id: I, time: T} |
+  delayInCompliance{id: I, time: T} |
+  paymentInCompliance{id: I, time: T}.
+----
+application/datalog
+
+andInCompliance{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.And{id: I} &
+  childrenInCompliance{parentID: I, count: C1, time: T} &
+  numChildren{parentID: I, count: C2} &
+  C1 = C2.
+----
+application/datalog
+
+delayInCompliance{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.Delay{id: I, duration: D} &
+  contract.parent{parentID: I, id: C} &
+  LaterT = T + D &
+  contract.nodeInCompliance{id: C, time: LaterT}.
+----
+application/datalog
+
+paymentInCompliance{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.Payment{id: I, from: From, to: To, amount: A} &
+  payment{from: From, to: To, amount: A, time: T}.
+----
+application/datalog
+
+childrenInCompliance{parentID: P, count: I, time: T} :-
+  count[P, T, I: childInCompliance{id: I, parentID: P, time: T}].
+----
+application/datalog
+
+childInCompliance{id: I, parentID: P, time: T} :-
+  timeWindow{time: T} &
+  contract.parent{id: I, parentID: P} &
+  contract.nodeInCompliance{id: I, time: T}.
+----
+application/datalog
+
+numChildren{parentID: P, count: I} :-
+  count[P, I: contract.parent{id: I, parentID: P}].
+----
+application/datalog
+
+contract.node{id: A, parentID: B, display: C} :-
+  paymentNode{id: A, parentID: B, display: C} |
+  andNode{id: A, parentID: B, display: C} |
+  delayNode{id: A, parentID: B, display: C}.
+----
+application/datalog
+
+andNode{id: I, parentID: P, display: [I, and{}]} :-
+  contract.And{id: I, parentID: P}.
+----
+application/datalog
+
+delayNode{id: I, parentID: P, display: [I, delay{duration: D}]} :-
+  contract.Delay{id: I, parentID: P, duration: D}.
+----
+application/datalog
+
+paymentNode{id: I, parentID: P, display: [I, payment{from: F, to: T, amount: A}]} :-
+  contract.Payment{id: I, parentID: P, from: F, to: T, amount: A}.
+----
+application/datalog
+
+contract.parent{id: I, parentID: P} :-
+  contract.And{id: I, parentID: P} |
+  contract.Delay{id: I, parentID: P} |
+  contract.Payment{id: I, parentID: P}.
+----
+application/datalog
+
+contract.InCompliance{}?
+----
+application/datalog-results
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "11" [fillcolor="" fontname="Courier" label="11: Agg(count[P, I: contract.parent{id: I, parentID: P}]) []" shape="box" style="filled"];
+  "22" [fillcolor="darkseagreen2" fontname="Courier" label="22: Match(timeWindow{time: T}) []" shape="box" style="filled"];
+  "33" [fillcolor="darkseagreen2" fontname="Courier" label="33: Match(contract.parent{id: I, parentID: P}) []" shape="box" style="filled"];
+  "44" [fillcolor="" fontname="Courier" label="44: Builtin(range{from: 0, to: 10, val: T}) []" shape="box" style="filled"];
+  "55" [fillcolor="darkseagreen2" fontname="Courier" label="55: Match(childInCompliance{id: I, parentID: P, time: T}) []" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" fontname="Courier" label="12: Match(timeWindow{time: T}) []" shape="box" style="filled"];
+  "23" [fillcolor="darkseagreen2" fontname="Courier" label="23: Match(contract.And{id: I}) []" shape="box" style="filled"];
+  "34" [fillcolor="thistle" fontname="Courier" label="34: Join() [I-T]" shape="box" style="filled"];
+  "45" [fillcolor="moccasin" fontname="Courier" label="45: Union []" shape="box" style="filled"];
+  "56" [fillcolor="" fontname="Courier" label="56: Agg(count[P, T, I: childInCompliance{id: I, parentID: P, time: T}]) []" shape="box" style="filled"];
+  "13" [fillcolor="darkseagreen2" fontname="Courier" label="13: Match(contract.Payment{amount: A, from: From, id: I, to: To}) []" shape="box" style="filled"];
+  "24" [fillcolor="thistle" fontname="Courier" label="24: Join() [I-T]" shape="box" style="filled"];
+  "35" [fillcolor="darkseagreen2" fontname="Courier" label="35: Match(contract.nodeInCompliance{id: I, time: T}) [I-T]" shape="box" style="filled"];
+  "46" [fillcolor="darkseagreen2" fontname="Courier" label="46: Match(paymentNode{display: C, id: A, parentID: B}) []" shape="box" style="filled"];
+  "delayInCompliance" [fillcolor="lightblue" fontname="Courier" label="delayInCompliance: Subst(delayInCompliance{id: I, time: T}) []" shape="box" style="filled"];
+  "14" [fillcolor="thistle" fontname="Courier" label="14: Join() [A-From-T-To]" shape="box" style="filled"];
+  "25" [fillcolor="darkseagreen2" fontname="Courier" label="25: Match(childrenInCompliance{count: C1, parentID: I, time: T}) [I-T]" shape="box" style="filled"];
+  "36" [fillcolor="thistle" fontname="Courier" label="36: Join(I, T) []" shape="box" style="filled"];
+  "47" [fillcolor="darkseagreen2" fontname="Courier" label="47: Match(andNode{display: C, id: A, parentID: B}) []" shape="box" style="filled"];
+  "15" [fillcolor="darkseagreen2" fontname="Courier" label="15: Match(payment{amount: A, from: From, time: T, to: To}) [A-From-T-To]" shape="box" style="filled"];
+  "26" [fillcolor="thistle" fontname="Courier" label="26: Join(I, T) [I]" shape="box" style="filled"];
+  "37" [fillcolor="darkseagreen2" fontname="Courier" label="37: Match(timeWindow{time: T}) []" shape="box" style="filled"];
+  "48" [fillcolor="darkseagreen2" fontname="Courier" label="48: Match(delayNode{display: C, id: A, parentID: B}) []" shape="box" style="filled"];
+  "16" [fillcolor="thistle" fontname="Courier" label="16: Join(A, From, T, To) []" shape="box" style="filled"];
+  "delayNode" [fillcolor="lightblue" fontname="Courier" label="delayNode: Subst(delayNode{display: [I,delay{duration: D}], id: I, parentID: P}) []" shape="box" style="filled"];
+  "27" [fillcolor="darkseagreen2" fontname="Courier" label="27: Match(numChildren{count: C2, parentID: I}) [I]" shape="box" style="filled"];
+  "38" [fillcolor="darkseagreen2" fontname="Courier" label="38: Match(contract.Contract{id: I}) []" shape="box" style="filled"];
+  "49" [fillcolor="moccasin" fontname="Courier" label="49: Union []" shape="box" style="filled"];
+  "numChildren" [fillcolor="lightblue" fontname="Courier" label="numChildren: Subst(numChildren{count: I, parentID: P}) []" shape="box" style="filled"];
+  "paymentInCompliance" [fillcolor="lightblue" fontname="Courier" label="paymentInCompliance: Subst(paymentInCompliance{id: I, time: T}) []" shape="box" style="filled"];
+  "contract.parent" [fillcolor="lightblue" fontname="Courier" label="contract.parent: Subst(contract.parent{id: I, parentID: P}) []" shape="box" style="filled"];
+  "17" [fillcolor="moccasin" fontname="Courier" label="17: Union []" shape="box" style="filled"];
+  "28" [fillcolor="thistle" fontname="Courier" label="28: Join(I) [C1-C2]" shape="box" style="filled"];
+  "39" [fillcolor="thistle" fontname="Courier" label="39: Join() [I]" shape="box" style="filled"];
+  "contract.Delay" [fillcolor="darksalmon" fontname="Courier" label="contract.Delay:  []" shape="box" style="filled"];
+  "18" [fillcolor="darkseagreen2" fontname="Courier" label="18: Match(contract.And{id: I, parentID: P}) []" shape="box" style="filled"];
+  "29" [fillcolor="" fontname="Courier" label="29: Builtin(base.eq{a: C1, b: C2}) [C1-C2]" shape="box" style="filled"];
+  "paymentNode" [fillcolor="lightblue" fontname="Courier" label="paymentNode: Subst(paymentNode{display: [I,payment{amount: A, from: F, to: T}], id: I, parentID: P}) []" shape="box" style="filled"];
+  "19" [fillcolor="darkseagreen2" fontname="Courier" label="19: Match(contract.Delay{id: I, parentID: P}) []" shape="box" style="filled"];
+  "contract.Payment" [fillcolor="darksalmon" fontname="Courier" label="contract.Payment:  []" shape="box" style="filled"];
+  "contract.Contract" [fillcolor="darksalmon" fontname="Courier" label="contract.Contract:  []" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(timeWindow{time: T}) []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(contract.Delay{duration: D, id: I}) []" shape="box" style="filled"];
+  "2" [fillcolor="thistle" fontname="Courier" label="2: Join() [I]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(contract.parent{id: C, parentID: I}) [I]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" fontname="Courier" label="4: Join(I) [D-T]" shape="box" style="filled"];
+  "5" [fillcolor="" fontname="Courier" label="5: Builtin(base.add{a: T, b: D, res: LaterT}) [D-T]" shape="box" style="filled"];
+  "6" [fillcolor="thistle" fontname="Courier" label="6: Join(D, T) [C-LaterT]" shape="box" style="filled"];
+  "7" [fillcolor="darkseagreen2" fontname="Courier" label="7: Match(contract.nodeInCompliance{id: C, time: LaterT}) [C-LaterT]" shape="box" style="filled"];
+  "andInCompliance" [fillcolor="lightblue" fontname="Courier" label="andInCompliance: Subst(andInCompliance{id: I, time: T}) []" shape="box" style="filled"];
+  "8" [fillcolor="thistle" fontname="Courier" label="8: Join(C, LaterT) []" shape="box" style="filled"];
+  "9" [fillcolor="darkseagreen2" fontname="Courier" label="9: Match(contract.Delay{duration: D, id: I, parentID: P}) []" shape="box" style="filled"];
+  "andNode" [fillcolor="lightblue" fontname="Courier" label="andNode: Subst(andNode{display: [I,and{}], id: I, parentID: P}) []" shape="box" style="filled"];
+  "50" [fillcolor="darkseagreen2" fontname="Courier" label="50: Match(timeWindow{time: T}) [T]" shape="box" style="filled"];
+  "contract.And" [fillcolor="darksalmon" fontname="Courier" label="contract.And:  []" shape="box" style="filled"];
+  "childInCompliance" [fillcolor="lightblue" fontname="Courier" label="childInCompliance: Subst(childInCompliance{id: I, parentID: P, time: T}) []" shape="box" style="filled"];
+  "40" [fillcolor="darkseagreen2" fontname="Courier" label="40: Match(contract.parent{id: N, parentID: I}) [I]" shape="box" style="filled"];
+  "51" [fillcolor="darkseagreen2" fontname="Courier" label="51: Match(andInCompliance{id: I, time: T}) [T]" shape="box" style="filled"];
+  "contract.InCompliance" [fillcolor="lightblue" fontname="Courier" label="contract.InCompliance: Subst(contract.InCompliance{contractID: I, time: T}) []" shape="box" style="filled"];
+  "timeWindow" [fillcolor="lightblue" fontname="Courier" label="timeWindow: Subst(timeWindow{time: T}) []" shape="box" style="filled"];
+  "30" [fillcolor="thistle" fontname="Courier" label="30: Join(C1, C2) []" shape="box" style="filled"];
+  "41" [fillcolor="thistle" fontname="Courier" label="41: Join(I) [N-T]" shape="box" style="filled"];
+  "52" [fillcolor="thistle" fontname="Courier" label="52: Join(T) []" shape="box" style="filled"];
+  "contract.node" [fillcolor="lightblue" fontname="Courier" label="contract.node: Subst(contract.node{display: C, id: A, parentID: B}) []" shape="box" style="filled"];
+  "20" [fillcolor="darkseagreen2" fontname="Courier" label="20: Match(contract.Payment{id: I, parentID: P}) []" shape="box" style="filled"];
+  "31" [fillcolor="darkseagreen2" fontname="Courier" label="31: Match(contract.And{id: I, parentID: P}) []" shape="box" style="filled"];
+  "42" [fillcolor="darkseagreen2" fontname="Courier" label="42: Match(contract.nodeInCompliance{id: N, time: T}) [N-T]" shape="box" style="filled"];
+  "53" [fillcolor="darkseagreen2" fontname="Courier" label="53: Match(delayInCompliance{id: I, time: T}) []" shape="box" style="filled"];
+  "contract.nodeInCompliance" [fillcolor="lightblue" fontname="Courier" label="contract.nodeInCompliance: Subst(contract.nodeInCompliance{id: I, time: T}) []" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" fontname="Courier" label="10: Match(contract.parent{id: I, parentID: P}) []" shape="box" style="filled"];
+  "21" [fillcolor="darkseagreen2" fontname="Courier" label="21: Match(contract.Payment{amount: A, from: F, id: I, parentID: P, to: T}) []" shape="box" style="filled"];
+  "32" [fillcolor="darkseagreen2" fontname="Courier" label="32: Match(timeWindow{time: T}) []" shape="box" style="filled"];
+  "43" [fillcolor="thistle" fontname="Courier" label="43: Join(N, T) []" shape="box" style="filled"];
+  "54" [fillcolor="darkseagreen2" fontname="Courier" label="54: Match(paymentInCompliance{id: I, time: T}) []" shape="box" style="filled"];
+  "childrenInCompliance" [fillcolor="lightblue" fontname="Courier" label="childrenInCompliance: Subst(childrenInCompliance{count: I, parentID: P, time: T}) []" shape="box" style="filled"];
+  "11" -> "numChildren" [];
+  "22" -> "24" [];
+  "33" -> "34" [];
+  "44" -> "timeWindow" [];
+  "55" -> "56" [];
+  "12" -> "14" [];
+  "23" -> "24" [];
+  "34" -> "36" [];
+  "45" -> "contract.node" [];
+  "56" -> "childrenInCompliance" [];
+  "13" -> "14" [];
+  "24" -> "26" [];
+  "35" -> "36" [];
+  "46" -> "45" [];
+  "delayInCompliance" -> "53" [];
+  "14" -> "16" [];
+  "25" -> "26" [];
+  "36" -> "childInCompliance" [];
+  "47" -> "45" [];
+  "15" -> "16" [];
+  "26" -> "28" [];
+  "37" -> "39" [];
+  "48" -> "45" [];
+  "16" -> "paymentInCompliance" [];
+  "delayNode" -> "48" [];
+  "27" -> "28" [];
+  "38" -> "39" [];
+  "49" -> "contract.nodeInCompliance" [];
+  "numChildren" -> "27" [];
+  "paymentInCompliance" -> "54" [];
+  "contract.parent" -> "3" [];
+  "contract.parent" -> "10" [];
+  "contract.parent" -> "33" [];
+  "contract.parent" -> "40" [];
+  "payment" -> "15" [];
+  "17" -> "contract.parent" [];
+  "28" -> "30" [];
+  "39" -> "41" [];
+  "contract.Delay" -> "1" [];
+  "contract.Delay" -> "9" [];
+  "contract.Delay" -> "19" [];
+  "18" -> "17" [];
+  "29" -> "30" [];
+  "paymentNode" -> "46" [];
+  "19" -> "17" [];
+  "contract.Payment" -> "13" [];
+  "contract.Payment" -> "20" [];
+  "contract.Payment" -> "21" [];
+  "contract.Contract" -> "38" [];
+  "0" -> "2" [];
+  "1" -> "2" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "6" [];
+  "5" -> "6" [];
+  "6" -> "8" [];
+  "7" -> "8" [];
+  "andInCompliance" -> "51" [];
+  "8" -> "delayInCompliance" [];
+  "9" -> "delayNode" [];
+  "andNode" -> "47" [];
+  "50" -> "52" [];
+  "contract.And" -> "18" [];
+  "contract.And" -> "23" [];
+  "contract.And" -> "31" [];
+  "childInCompliance" -> "55" [];
+  "40" -> "41" [];
+  "51" -> "52" [];
+  "timeWindow" -> "0" [];
+  "timeWindow" -> "12" [];
+  "timeWindow" -> "22" [];
+  "timeWindow" -> "32" [];
+  "timeWindow" -> "37" [];
+  "timeWindow" -> "50" [];
+  "30" -> "andInCompliance" [];
+  "41" -> "43" [];
+  "52" -> "49" [];
+  "20" -> "17" [];
+  "31" -> "andNode" [];
+  "42" -> "43" [];
+  "53" -> "49" [];
+  "contract.nodeInCompliance" -> "7" [];
+  "contract.nodeInCompliance" -> "35" [];
+  "contract.nodeInCompliance" -> "42" [];
+  "10" -> "11" [];
+  "21" -> "paymentNode" [];
+  "32" -> "34" [];
+  "43" -> "contract.InCompliance" [];
+  "54" -> "49" [];
+  "childrenInCompliance" -> "25" [];
+}
+
+contract.Contract{id: 1, name: "loan"}.
+----
+incremental-datalog/trace
+contract.Contract: [contract.Contract{id: 1, name: "loan"}+1]
+38: [{I: 1}+1]
+39: [{I: 1, T: 9}+1, {I: 1, T: 8}+1, {I: 1, T: 5}+1, {I: 1, T: 4}+1, {I: 1, T: 3}+1, {I: 1, T: 2}+1, {I: 1, T: 1}+1, {I: 1, T: 0}+1, {I: 1, T: 10}+1, {I: 1, T: 7}+1, {I: 1, T: 6}+1]
+41: []
+41: []
+41: []
+41: []
+41: []
+41: []
+41: []
+41: []
+41: []
+41: []
+41: []
+
+contract.And{id: 2, parentID: 1}.
+----
+incremental-datalog/trace
+contract.And: [contract.And{id: 2, parentID: 1}+1]
+18: [{I: 2, P: 1}+1]
+23: [{I: 2}+1]
+31: [{I: 2, P: 1}+1]
+17: [{I: 2, P: 1}+1]
+24: [{I: 2, T: 10}+1, {I: 2, T: 6}+1, {I: 2, T: 8}+1, {I: 2, T: 5}+1, {I: 2, T: 4}+1, {I: 2, T: 3}+1, {I: 2, T: 2}+1, {I: 2, T: 1}+1, {I: 2, T: 0}+1, {I: 2, T: 9}+1, {I: 2, T: 7}+1]
+andNode: [andNode{display: [2,and{}], id: 2, parentID: 1}+1]
+contract.parent: [contract.parent{id: 2, parentID: 1}+1]
+26: []
+26: []
+26: []
+26: []
+26: []
+26: []
+26: []
+26: []
+26: []
+26: []
+26: []
+47: [{A: 2, B: 1, C: [2,and{}]}+1]
+3: [{C: 2, I: 1}+1]
+10: [{I: 2, P: 1}+1]
+33: [{I: 2, P: 1}+1]
+40: [{I: 1, N: 2}+1]
+45: [{A: 2, B: 1, C: [2,and{}]}+1]
+4: []
+11: [{I: 1, P: 1}+1]
+34: [{I: 2, P: 1, T: 7}+1, {I: 2, P: 1, T: 6}+1, {I: 2, P: 1, T: 9}+1, {I: 2, P: 1, T: 8}+1, {I: 2, P: 1, T: 5}+1, {I: 2, P: 1, T: 4}+1, {I: 2, P: 1, T: 3}+1, {I: 2, P: 1, T: 2}+1, {I: 2, P: 1, T: 1}+1, {I: 2, P: 1, T: 0}+1, {I: 2, P: 1, T: 10}+1]
+41: [{I: 1, N: 2, T: 2}+1, {I: 1, N: 2, T: 1}+1, {I: 1, N: 2, T: 9}+1, {I: 1, N: 2, T: 8}+1, {I: 1, N: 2, T: 7}+1, {I: 1, N: 2, T: 6}+1, {I: 1, N: 2, T: 5}+1, {I: 1, N: 2, T: 4}+1, {I: 1, N: 2, T: 3}+1, {I: 1, N: 2, T: 0}+1, {I: 1, N: 2, T: 10}+1]
+contract.node: [contract.node{display: [2,and{}], id: 2, parentID: 1}+1]
+numChildren: [numChildren{count: 1, parentID: 1}+1]
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+43: []
+43: []
+43: []
+43: []
+43: []
+43: []
+43: []
+43: []
+43: []
+43: []
+43: []
+27: [{C2: 1, I: 1}+1]
+28: []
+
+contract.Payment{id: 3, parentID: 2, from: "Alice", to: "Bob", amount: 100}.
+----
+incremental-datalog/trace
+contract.Payment: [contract.Payment{amount: 100, from: "Alice", id: 3, parentID: 2, to: "Bob"}+1]
+13: [{A: 100, From: "Alice", I: 3, To: "Bob"}+1]
+20: [{I: 3, P: 2}+1]
+21: [{A: 100, F: "Alice", I: 3, P: 2, T: "Bob"}+1]
+14: [{A: 100, From: "Alice", I: 3, T: 1, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 9, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 7, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 6, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 8, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 5, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 4, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 3, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 2, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 0, To: "Bob"}+1, {A: 100, From: "Alice", I: 3, T: 10, To: "Bob"}+1]
+17: [{I: 3, P: 2}+1]
+paymentNode: [paymentNode{display: [3,payment{amount: 100, from: "Alice", to: "Bob"}], id: 3, parentID: 2}+1]
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+contract.parent: [contract.parent{id: 3, parentID: 2}+1]
+46: [{A: 3, B: 2, C: [3,payment{amount: 100, from: "Alice", to: "Bob"}]}+1]
+3: [{C: 3, I: 2}+1]
+10: [{I: 3, P: 2}+1]
+33: [{I: 3, P: 2}+1]
+40: [{I: 2, N: 3}+1]
+45: [{A: 3, B: 2, C: [3,payment{amount: 100, from: "Alice", to: "Bob"}]}+1]
+4: []
+11: [{I: 1, P: 2}+1]
+34: [{I: 3, P: 2, T: 7}+1, {I: 3, P: 2, T: 6}+1, {I: 3, P: 2, T: 9}+1, {I: 3, P: 2, T: 8}+1, {I: 3, P: 2, T: 5}+1, {I: 3, P: 2, T: 4}+1, {I: 3, P: 2, T: 3}+1, {I: 3, P: 2, T: 2}+1, {I: 3, P: 2, T: 1}+1, {I: 3, P: 2, T: 0}+1, {I: 3, P: 2, T: 10}+1]
+41: []
+contract.node: [contract.node{display: [3,payment{amount: 100, from: "Alice", to: "Bob"}], id: 3, parentID: 2}+1]
+numChildren: [numChildren{count: 1, parentID: 2}+1]
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+27: [{C2: 1, I: 2}+1]
+28: []
+
+contract.Delay{id: 4, parentID: 2, duration: 2}.
+----
+incremental-datalog/trace
+contract.Delay: [contract.Delay{duration: 2, id: 4, parentID: 2}+1]
+1: [{D: 2, I: 4}+1]
+9: [{D: 2, I: 4, P: 2}+1]
+19: [{I: 4, P: 2}+1]
+2: [{D: 2, I: 4, T: 2}+1, {D: 2, I: 4, T: 10}+1, {D: 2, I: 4, T: 9}+1, {D: 2, I: 4, T: 7}+1, {D: 2, I: 4, T: 6}+1, {D: 2, I: 4, T: 8}+1, {D: 2, I: 4, T: 5}+1, {D: 2, I: 4, T: 4}+1, {D: 2, I: 4, T: 3}+1, {D: 2, I: 4, T: 1}+1, {D: 2, I: 4, T: 0}+1]
+delayNode: [delayNode{display: [4,delay{duration: 2}], id: 4, parentID: 2}+1]
+17: [{I: 4, P: 2}+1]
+4: []
+4: []
+4: []
+4: []
+4: []
+4: []
+4: []
+4: []
+4: []
+4: []
+4: []
+48: [{A: 4, B: 2, C: [4,delay{duration: 2}]}+1]
+contract.parent: [contract.parent{id: 4, parentID: 2}+1]
+45: [{A: 4, B: 2, C: [4,delay{duration: 2}]}+1]
+3: [{C: 4, I: 2}+1]
+10: [{I: 4, P: 2}+1]
+33: [{I: 4, P: 2}+1]
+40: [{I: 2, N: 4}+1]
+contract.node: [contract.node{display: [4,delay{duration: 2}], id: 4, parentID: 2}+1]
+4: []
+11: [{I: 1, P: 2}-1, {I: 2, P: 2}+1]
+34: [{I: 4, P: 2, T: 7}+1, {I: 4, P: 2, T: 6}+1, {I: 4, P: 2, T: 9}+1, {I: 4, P: 2, T: 8}+1, {I: 4, P: 2, T: 5}+1, {I: 4, P: 2, T: 4}+1, {I: 4, P: 2, T: 3}+1, {I: 4, P: 2, T: 2}+1, {I: 4, P: 2, T: 1}+1, {I: 4, P: 2, T: 0}+1, {I: 4, P: 2, T: 10}+1]
+41: []
+numChildren: [numChildren{count: 1, parentID: 2}-1]
+numChildren: [numChildren{count: 2, parentID: 2}+1]
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+27: [{C2: 1, I: 2}-1]
+27: [{C2: 2, I: 2}+1]
+28: []
+28: []
+
+contract.Payment{id: 5, parentID: 4, from: "Bob", to: "Alice", amount: 110}.
+----
+incremental-datalog/trace
+contract.Payment: [contract.Payment{amount: 110, from: "Bob", id: 5, parentID: 4, to: "Alice"}+1]
+13: [{A: 110, From: "Bob", I: 5, To: "Alice"}+1]
+20: [{I: 5, P: 4}+1]
+21: [{A: 110, F: "Bob", I: 5, P: 4, T: "Alice"}+1]
+14: [{A: 110, From: "Bob", I: 5, T: 1, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 9, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 7, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 6, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 8, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 5, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 4, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 3, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 2, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 0, To: "Alice"}+1, {A: 110, From: "Bob", I: 5, T: 10, To: "Alice"}+1]
+17: [{I: 5, P: 4}+1]
+paymentNode: [paymentNode{display: [5,payment{amount: 110, from: "Bob", to: "Alice"}], id: 5, parentID: 4}+1]
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+16: []
+contract.parent: [contract.parent{id: 5, parentID: 4}+1]
+46: [{A: 5, B: 4, C: [5,payment{amount: 110, from: "Bob", to: "Alice"}]}+1]
+3: [{C: 5, I: 4}+1]
+10: [{I: 5, P: 4}+1]
+33: [{I: 5, P: 4}+1]
+40: [{I: 4, N: 5}+1]
+45: [{A: 5, B: 4, C: [5,payment{amount: 110, from: "Bob", to: "Alice"}]}+1]
+4: [{C: 5, D: 2, I: 4, T: 2}+1, {C: 5, D: 2, I: 4, T: 1}+1, {C: 5, D: 2, I: 4, T: 9}+1, {C: 5, D: 2, I: 4, T: 8}+1, {C: 5, D: 2, I: 4, T: 7}+1, {C: 5, D: 2, I: 4, T: 6}+1, {C: 5, D: 2, I: 4, T: 5}+1, {C: 5, D: 2, I: 4, T: 4}+1, {C: 5, D: 2, I: 4, T: 3}+1, {C: 5, D: 2, I: 4, T: 0}+1, {C: 5, D: 2, I: 4, T: 10}+1]
+11: [{I: 1, P: 4}+1]
+34: [{I: 5, P: 4, T: 7}+1, {I: 5, P: 4, T: 6}+1, {I: 5, P: 4, T: 9}+1, {I: 5, P: 4, T: 8}+1, {I: 5, P: 4, T: 5}+1, {I: 5, P: 4, T: 4}+1, {I: 5, P: 4, T: 3}+1, {I: 5, P: 4, T: 2}+1, {I: 5, P: 4, T: 1}+1, {I: 5, P: 4, T: 0}+1, {I: 5, P: 4, T: 10}+1]
+41: []
+contract.node: [contract.node{display: [5,payment{amount: 110, from: "Bob", to: "Alice"}], id: 5, parentID: 4}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 4, T: 2}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 3, T: 1}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 11, T: 9}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 10, T: 8}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 9, T: 7}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 8, T: 6}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 7, T: 5}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 6, T: 4}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 5, T: 3}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 2, T: 0}+1]
+6: [{C: 5, D: 2, I: 4, LaterT: 12, T: 10}+1]
+numChildren: [numChildren{count: 1, parentID: 4}+1]
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+36: []
+8: []
+8: []
+8: []
+8: []
+8: []
+8: []
+8: []
+8: []
+8: []
+8: []
+8: []
+27: [{C2: 1, I: 4}+1]
+28: []
+
+payment{from: "Alice", to: "Bob", amount: 100, time: 0}.
+----
+incremental-datalog/trace
+payment: [payment{amount: 100, from: "Alice", time: 0, to: "Bob"}+1]
+15: [{A: 100, From: "Alice", T: 0, To: "Bob"}+1]
+16: [{A: 100, From: "Alice", I: 3, T: 0, To: "Bob"}+1]
+paymentInCompliance: [paymentInCompliance{id: 3, time: 0}+1]
+54: [{I: 3, T: 0}+1]
+49: [{I: 3, T: 0}+1]
+contract.nodeInCompliance: [contract.nodeInCompliance{id: 3, time: 0}+1]
+7: [{C: 3, LaterT: 0}+1]
+35: [{I: 3, T: 0}+1]
+42: [{N: 3, T: 0}+1]
+8: []
+36: [{I: 3, P: 2, T: 0}+1]
+43: []
+childInCompliance: [childInCompliance{id: 3, parentID: 2, time: 0}+1]
+55: [{I: 3, P: 2, T: 0}+1]
+56: [{I: 1, P: 2, T: 0}+1]
+childrenInCompliance: [childrenInCompliance{count: 1, parentID: 2, time: 0}+1]
+25: [{C1: 1, I: 2, T: 0}+1]
+26: [{C1: 1, I: 2, T: 0}+1]
+28: [{C1: 1, C2: 1, I: 2, T: 0}+0, {C1: 1, C2: 2, I: 2, T: 0}+1]
+30: []
+
+payment{from: "Bob", to: "Alice", amount: 110, time: 2}.
+----
+incremental-datalog/trace
+payment: [payment{amount: 110, from: "Bob", time: 2, to: "Alice"}+1]
+15: [{A: 110, From: "Bob", T: 2, To: "Alice"}+1]
+16: [{A: 110, From: "Bob", I: 5, T: 2, To: "Alice"}+1]
+paymentInCompliance: [paymentInCompliance{id: 5, time: 2}+1]
+54: [{I: 5, T: 2}+1]
+49: [{I: 5, T: 2}+1]
+contract.nodeInCompliance: [contract.nodeInCompliance{id: 5, time: 2}+1]
+7: [{C: 5, LaterT: 2}+1]
+35: [{I: 5, T: 2}+1]
+42: [{N: 5, T: 2}+1]
+8: [{C: 5, D: 2, I: 4, LaterT: 2, T: 0}+1]
+36: [{I: 5, P: 4, T: 2}+1]
+43: []
+delayInCompliance: [delayInCompliance{id: 4, time: 0}+1]
+childInCompliance: [childInCompliance{id: 5, parentID: 4, time: 2}+1]
+53: [{I: 4, T: 0}+1]
+55: [{I: 5, P: 4, T: 2}+1]
+49: [{I: 4, T: 0}+1]
+56: [{I: 1, P: 4, T: 2}+1]
+contract.nodeInCompliance: [contract.nodeInCompliance{id: 4, time: 0}+1]
+childrenInCompliance: [childrenInCompliance{count: 1, parentID: 4, time: 2}+1]
+7: [{C: 4, LaterT: 0}+1]
+35: [{I: 4, T: 0}+1]
+42: [{N: 4, T: 0}+1]
+25: [{C1: 1, I: 4, T: 2}+1]
+8: []
+36: [{I: 4, P: 2, T: 0}+1]
+43: []
+26: []
+childInCompliance: [childInCompliance{id: 4, parentID: 2, time: 0}+1]
+55: [{I: 4, P: 2, T: 0}+1]
+56: [{I: 1, P: 2, T: 0}-1, {I: 2, P: 2, T: 0}+1]
+childrenInCompliance: [childrenInCompliance{count: 1, parentID: 2, time: 0}-1]
+childrenInCompliance: [childrenInCompliance{count: 2, parentID: 2, time: 0}+1]
+25: [{C1: 1, I: 2, T: 0}-1]
+25: [{C1: 2, I: 2, T: 0}+1]
+26: [{C1: 1, I: 2, T: 0}-1]
+26: [{C1: 2, I: 2, T: 0}+1]
+28: [{C1: 1, C2: 1, I: 2, T: 0}+0, {C1: 1, C2: 2, I: 2, T: 0}-1]
+28: [{C1: 2, C2: 1, I: 2, T: 0}+0, {C1: 2, C2: 2, I: 2, T: 0}+1]
+30: []
+30: [{C1: 2, C2: 2, I: 2, T: 0}+1]
+andInCompliance: [andInCompliance{id: 2, time: 0}+1]
+51: [{I: 2, T: 0}+1]
+52: [{I: 2, T: 0}+1]
+49: [{I: 2, T: 0}+1]
+contract.nodeInCompliance: [contract.nodeInCompliance{id: 2, time: 0}+1]
+7: [{C: 2, LaterT: 0}+1]
+35: [{I: 2, T: 0}+1]
+42: [{N: 2, T: 0}+1]
+8: []
+36: [{I: 2, P: 1, T: 0}+1]
+43: [{I: 1, N: 2, T: 0}+1]
+childInCompliance: [childInCompliance{id: 2, parentID: 1, time: 0}+1]
+contract.InCompliance: [contract.InCompliance{contractID: 1, time: 0}+1]
+55: [{I: 2, P: 1, T: 0}+1]
+56: [{I: 1, P: 1, T: 0}+1]
+childrenInCompliance: [childrenInCompliance{count: 1, parentID: 1, time: 0}+1]
+25: [{C1: 1, I: 1, T: 0}+1]
+26: []
+
+contract.InCompliance{}?
+----
+application/datalog-results
+contract.InCompliance{contractID: 1, time: 0}; {}.
