@@ -1,4 +1,81 @@
 contracts
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
+contract.PaymentRecord{}?
+----
+application/datalog
+contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", id: 1, time: 0, to: "Bob"}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.node.Payment{}?
+----
+application/datalog
+contract.node.Payment{amount: 100, from: "Alice", id: 44, to: "Bob"}.
+contract.node.Payment{amount: 110, from: "Bob", id: 160, to: "Alice"}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.node.And{}?
+----
+application/datalog
+contract.node.And{id: 32}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.node.Delay{}?
+----
+application/datalog
+contract.node.Delay{duration: 30, id: 107}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+contract.tree.nodeAndParent{}?
+----
+application/datalog
+contract.tree.nodeAndParent{display: [0,root{}], id: 0, parentID: -1}.
+contract.tree.nodeAndParent{display: [1,contract{id: 1}], id: 1, parentID: 0}.
+contract.tree.nodeAndParent{display: [107,delay{duration: 30}], id: 107, parentID: 32}.
+contract.tree.nodeAndParent{display: [160,payment{amount: 110, from: "Bob", to: "Alice"}], id: 160, parentID: 107}.
+contract.tree.nodeAndParent{display: [32,and{}], id: 32, parentID: 1}.
+contract.tree.nodeAndParent{display: [44,payment{amount: 100, from: "Alice", to: "Bob"}], id: 44, parentID: 32}.
+
+contracts
 contract(
   id:1,
   contract:and(
@@ -11,8 +88,25 @@ contract(
 ).
 payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
 payment(id:2, contractID:1, from:"Bob", to:"Alice", amount:110, time:30).
+contract.compliance.ContractInComplianceInitially{}?
+----
+application/datalog
+contract.compliance.ContractInComplianceInitially{contractID: 1}.
+
+contracts
+contract(
+  id:1,
+  contract:and(
+    pay(from:"Alice", to:"Bob", amount:100),
+    delay(
+      duration:30,
+      contract:pay(from:"Bob", to:"Alice", amount:110)
+    )
+  )
+).
+payment(id:1, contractID:1, from:"Alice", to:"Bob", amount:100, time:0).
 contract.balance{}?
 ----
 application/datalog
-contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}.
-contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}.
+contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}.
+contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}.
