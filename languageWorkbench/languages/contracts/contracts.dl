@@ -213,11 +213,12 @@ numChildren{parentID: P, count: I} :-
 
 # == balance sheet ==
 
-contract.obligation{creditor: F, debtor: T, amount: Obligation} :-
-  sum[F, T, Obligation: contract.node.Payment{from: F, to: T, amount: Obligation}].
-contract.payment{creditor: F, debtor: T, amount: Payment} :-
-  sum[F, T, Payment: contract.PaymentRecord{from: F, to: T, amount: Payment}].
-contract.balance{creditor: F, debtor: T, amount: A} :-
-  contract.obligation{creditor: F, debtor: T, amount: O} &
-  contract.payment{creditor: F, debtor: T, amount: P} &
-  O = A + P.
+# TODO: due date
+contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.node.Payment{id: N, from: D, to: C, amount: A} &
+  !contract.PaymentRecord{from: D, to: C, amount: A, contractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+
+# TODO: fix aggregation syntax
+contract.balance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
