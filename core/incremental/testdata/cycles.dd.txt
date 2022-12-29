@@ -58,10 +58,10 @@ edge: [edge{from: "A", to: "D"}+1]
 
 edge{from: F, to: T}?
 ----
-application/datalog-results
-edge{from: "A", to: "B"}; {F: "A", T: "B"}.
-edge{from: "A", to: "C"}; {F: "A", T: "C"}.
-edge{from: "A", to: "D"}; {F: "A", T: "D"}.
-edge{from: "B", to: "C"}; {F: "B", T: "C"}.
-edge{from: "B", to: "D"}; {F: "B", T: "D"}.
-edge{from: "C", to: "D"}; {F: "C", T: "D"}.
+application/datalog
+edge{from: "A", to: "B"}.
+edge{from: "A", to: "C"}.
+edge{from: "A", to: "D"}.
+edge{from: "B", to: "C"}.
+edge{from: "B", to: "D"}.
+edge{from: "C", to: "D"}.

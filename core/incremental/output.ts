@@ -1,8 +1,4 @@
-import {
-  datalogOut,
-  datalogOutResults,
-  TestOutput,
-} from "../../util/ddTest/types";
+import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { flatMap } from "../../util/util";
 import { ppb, ppt } from "../pretty";
 import { dict, rec } from "../types";
@@ -10,7 +6,6 @@ import { MessagePayload, Output, RuleGraph } from "./types";
 
 type OutputOptions = {
   emissionLogMode: "test" | "repl";
-  showBindings: boolean;
 };
 
 export function formatOutput(
@@ -53,9 +48,7 @@ export function formatOutput(
         );
       }
     case "QueryResults":
-      return opts.showBindings
-        ? datalogOutResults(output.results)
-        : datalogOut(output.results.map((res) => res.term));
+      return datalogOut(output.results.map((res) => res.term));
     case "Trace":
       return {
         content: JSON.stringify(output.logAndGraph),
