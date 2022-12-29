@@ -21,7 +21,9 @@ export const VISUALIZERS = {
   // TODO: syntax highlight using TermView?
   "application/datalog": (text) => <DLView text={text} />,
   // TODO: reinstate an actual graphviz viewer
-  "application/graphviz": (text) => <Graphviz dot={text} />,
+  "application/graphviz": (text) => (
+    <Graphviz options={{ width: 1000, heigth: 800 }} dot={text} />
+  ),
   "application/json": (text) => (
     <ReactJson
       name={null}
