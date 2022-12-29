@@ -228,10 +228,10 @@ function updateCache(
   graph: RuleGraph,
   nodeID: NodeID,
   res: Res,
-  multiplicityDelta: number
+  newMult: number
 ): RuleGraph {
   const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.update(res, multiplicityDelta);
+  const newCache = cache.update(res, newMult);
   return {
     ...graph,
     nodes: graph.nodes.update(nodeID, (oldNode) => ({
