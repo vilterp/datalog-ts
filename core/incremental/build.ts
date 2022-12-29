@@ -108,6 +108,7 @@ function addConjuncts(
   graph: RuleGraph,
   conjuncts: Conjunct[]
 ): AddConjunctResult {
+  // TODO: do we need to separate out negations & aggregations like this?
   const recs = conjuncts.filter((c) => c.type === "Record");
   const nonRecs = conjuncts.filter((c) => c.type !== "Record");
   const joinOrder = getJoinOrder(recs);
