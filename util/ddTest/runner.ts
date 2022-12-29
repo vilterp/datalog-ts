@@ -2,7 +2,7 @@ import { assertStringEqual, Suite } from "../testBench/testing";
 import fs from "fs";
 import { zip } from "../util";
 import { parseDDTest } from "./parser";
-import { ProcessFn, Result, resultsToStr } from "./types";
+import { ProcessFn, Result, resultsToStr, TestOutput } from "./types";
 
 function checkResults(results: Result[]) {
   // TODO: print 'em all out, not just first that failed
@@ -52,4 +52,23 @@ export function runDDTestAtPath(
   } else {
     checkResults(results);
   }
+}
+
+export function runDDTestAtPathWithVariants(
+  path: string,
+  variants: { [name: string]: ProcessFn },
+  writeResults: boolean
+) {
+  const contents = fs.readFileSync(path);
+  const test = parseDDTest(contents.toString());
+  const resultsByVariant: { [name: string]: TestOutput[] } = {};
+  for (const variant in variants) {
+    const getResults = variants[variant];
+    resultsByVariant[variant] = getResults(test.map((t) => t.input));
+  }
+  test.forEach((input, idx) => {
+    for (const variant in variants) {
+      const output = resultsByVariant[variant][idx];
+    }
+  });
 }
