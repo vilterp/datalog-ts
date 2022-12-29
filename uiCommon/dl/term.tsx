@@ -150,8 +150,10 @@ export function TermView(props: {
           <span style={{ color: "purple" }}>{term.aggregation}</span>[
           {intersperse(
             <>, </>,
-            term.varNames.map((varName) => (
-              <span style={{ color: "darkorange" }}>{varName}</span>
+            term.varNames.map((varName, idx) => (
+              <span key={idx} style={{ color: "darkorange" }}>
+                {varName}
+              </span>
             ))
           )}
           :{" "}
