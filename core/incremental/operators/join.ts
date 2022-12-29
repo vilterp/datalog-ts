@@ -31,7 +31,6 @@ export function processJoin(
   return [
     nodeDesc,
     results.map(({ bindings, multiplicity }) => ({
-      type: "Data",
       multiplicity,
       data: { type: "Bindings", bindings },
     })),
