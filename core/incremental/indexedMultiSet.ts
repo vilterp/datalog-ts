@@ -1,4 +1,5 @@
 import { List, Map, Set } from "immutable";
+import { clamp } from "../../util/util";
 
 export function emptyIndexedCollection<T>(
   stringify: (t: T) => string
@@ -12,6 +13,8 @@ type Index<T> = {
   getKey: (t: T) => List<string>;
   items: Map<List<string>, Set<string>>;
 };
+
+const MULT_RANGE: [number, number] = [-1, 1];
 
 export class IndexedMultiSet<T> {
   private readonly allRecords: Map<string, ItemAndMult<T>>;
@@ -63,9 +66,11 @@ export class IndexedMultiSet<T> {
     );
   }
 
-  update(item: T, newMult: number): IndexedMultiSet<T> {
+  update(item: T, multiplicityDelta: number): IndexedMultiSet<T> {
     // TODO: remove item if newMult is 0?
     const key = this.stringify(item);
+    const curMult = this.allRecords.get(key, { item, mult: 0 }).mult;
+    const newMult = clamp(curMult + multiplicityDelta, MULT_RANGE);
     return new IndexedMultiSet<T>(
       this.allRecords.set(key, { mult: newMult, item }),
       this.indexes.map((index) => ({
