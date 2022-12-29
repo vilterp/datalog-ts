@@ -51,13 +51,6 @@ export function datalogOut(terms: Term[]): TestOutput {
   };
 }
 
-export function datalogOutResults(terms: Res[]): TestOutput {
-  return {
-    content: joinLinesWithTrailing(".", terms.map(ppr).sort()),
-    mimeType: "application/datalog-results",
-  };
-}
-
 export function datalogOutRules(terms: Rule[]): TestOutput {
   return {
     content: joinLinesWithTrailing(".", terms.map(ppRule)),

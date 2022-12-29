@@ -27,7 +27,7 @@ application/datalog
 
 level{}?
 ----
-application/datalog-results
+application/datalog
 
 .ruleGraph
 ----
@@ -118,7 +118,7 @@ level: [level{level: 10, time: 3}+1]
 
 level{}?
 ----
-application/datalog-results
-level{level: 10, time: 3}; {}.
-level{level: 5, time: 1}; {}.
-level{level: 7, time: 2}; {}.
+application/datalog
+level{level: 10, time: 3}.
+level{level: 5, time: 1}.
+level{level: 7, time: 2}.

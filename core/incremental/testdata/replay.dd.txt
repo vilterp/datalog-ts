@@ -41,6 +41,6 @@ application/datalog
 
 sibling{}?
 ----
-application/datalog-results
-sibling{left: "Carolyn", right: "Pete"}; {}.
-sibling{left: "Pete", right: "Carolyn"}; {}.
+application/datalog
+sibling{left: "Carolyn", right: "Pete"}.
+sibling{left: "Pete", right: "Carolyn"}.
