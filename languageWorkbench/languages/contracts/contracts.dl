@@ -184,9 +184,10 @@ contract.compliance.node{id: I, time: T} :-
 contract.compliance.and{id: I, time: T} :-
   timeWindow{time: T} &
   contract.node.And{id: I} &
-  childrenInCompliance{parentID: I, count: C1, time: T} &
-  numChildren{parentID: I, count: C2} &
-  C1 = C2.
+  childrenInCompliance{parentID: I, count: ChildrenInCompliance, time: T} &
+  numChildren{parentID: I, count: NumChildren} &
+  # TODO: this should be =. Something wrong with incr.
+  ChildrenInCompliance >= NumChildren.
 contract.compliance.delay{id: I, time: T} :-
   timeWindow{time: T} &
   contract.node.Delay{id: I, duration: D} &
