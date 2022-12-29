@@ -221,4 +221,5 @@ contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
 
 # TODO: fix aggregation syntax
 contract.balance{creditor: C, debtor: D, amount: A} :-
-  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
+  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}] &
+  A != 0.
