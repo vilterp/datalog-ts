@@ -112,7 +112,7 @@ application/datalog
 
 contract.InCompliance{}?
 ----
-application/datalog-results
+application/datalog
 
 .ruleGraph
 ----
@@ -623,5 +623,5 @@ childrenInCompliance: [childrenInCompliance{count: 1, parentID: 1, time: 0}+1]
 
 contract.InCompliance{}?
 ----
-application/datalog-results
-contract.InCompliance{contractID: 1, time: 0}; {}.
+application/datalog
+contract.InCompliance{contractID: 1, time: 0}.
