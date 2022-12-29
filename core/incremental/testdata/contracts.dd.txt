@@ -1,0 +1,103 @@
+contract.balance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
+----
+application/datalog
+
+contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.node.Payment{id: N, from: D, to: C, amount: A} &
+  !contract.PaymentRecord{from: D, to: C, amount: A, contractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+----
+application/datalog
+
+contract.balance{}?
+----
+application/datalog-results
+
+contract.node.Payment{amount: 100, from: "Alice", id: 44, to: "Bob"}.
+----
+incremental-datalog/trace
+contract.node.Payment: [contract.node.Payment{amount: 100, from: "Alice", id: 44, to: "Bob"}+1]
+2: [{A: 100, C: "Bob", D: "Alice", N: 44}+1]
+4: []
+
+contract.node.Payment{amount: 110, from: "Bob", id: 160, to: "Alice"}.
+----
+incremental-datalog/trace
+contract.node.Payment: [contract.node.Payment{amount: 110, from: "Bob", id: 160, to: "Alice"}+1]
+2: [{A: 110, C: "Alice", D: "Bob", N: 160}+1]
+4: []
+
+contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", id: 1, time: 0, to: "Bob"}.
+----
+incremental-datalog/trace
+contract.PaymentRecord: [contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", id: 1, time: 0, to: "Bob"}+1]
+5: [{A: 100, C: "Bob", CID: 1, D: "Alice"}+1]
+6: [{A: 100, C: "Bob", CID: 1, D: "Alice"}-1]
+7: []
+
+contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", id: 2, time: 30, to: "Alice"}.
+----
+incremental-datalog/trace
+contract.PaymentRecord: [contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", id: 2, time: 30, to: "Alice"}+1]
+5: [{A: 110, C: "Alice", CID: 1, D: "Bob"}+1]
+6: [{A: 110, C: "Alice", CID: 1, D: "Bob"}-1]
+7: []
+
+contract.member{contractID: 1, nodeID: 32}.
+----
+incremental-datalog/trace
+contract.member: [contract.member{contractID: 1, nodeID: 32}+1]
+3: [{CID: 1, N: 32}+1]
+4: []
+
+contract.member{contractID: 1, nodeID: 44}.
+----
+incremental-datalog/trace
+contract.member: [contract.member{contractID: 1, nodeID: 44}+1]
+3: [{CID: 1, N: 44}+1]
+4: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}+1]
+7: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}-1]
+8: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}+1]
+8: [{A: 100, C: "Bob", CID: 1, D: "Alice", N: 44}-1]
+contract.owe: [contract.owe{amount: 100, contractID: 1, creditor: "Bob", debtor: "Alice"}+1]
+contract.owe: [contract.owe{amount: 100, contractID: 1, creditor: "Bob", debtor: "Alice"}-1]
+0: [{A: 100, C: "Bob", D: "Alice"}+1]
+0: [{A: 100, C: "Bob", D: "Alice"}-1]
+1: [{A: 100, C: "Bob", D: "Alice"}+1]
+1: [{A: 100, C: "Bob", D: "Alice"}-1, {A: 200, C: "Bob", D: "Alice"}+1]
+contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
+contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
+contract.balance: [contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}+1]
+
+contract.member{contractID: 1, nodeID: 107}.
+----
+incremental-datalog/trace
+contract.member: [contract.member{contractID: 1, nodeID: 107}+1]
+3: [{CID: 1, N: 107}+1]
+4: []
+
+contract.member{contractID: 1, nodeID: 160}.
+----
+incremental-datalog/trace
+contract.member: [contract.member{contractID: 1, nodeID: 160}+1]
+3: [{CID: 1, N: 160}+1]
+4: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}+1]
+7: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}-1]
+8: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}+1]
+8: [{A: 110, C: "Alice", CID: 1, D: "Bob", N: 160}-1]
+contract.owe: [contract.owe{amount: 110, contractID: 1, creditor: "Alice", debtor: "Bob"}+1]
+contract.owe: [contract.owe{amount: 110, contractID: 1, creditor: "Alice", debtor: "Bob"}-1]
+0: [{A: 110, C: "Alice", D: "Bob"}+1]
+0: [{A: 110, C: "Alice", D: "Bob"}-1]
+1: [{A: 110, C: "Alice", D: "Bob"}+1]
+1: [{A: 110, C: "Alice", D: "Bob"}-1, {A: 220, C: "Alice", D: "Bob"}+1]
+contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
+contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
+contract.balance: [contract.balance{amount: 220, creditor: "Alice", debtor: "Bob"}+1]
+
+contract.balance{}?
+----
+application/datalog-results
+contract.balance{amount: 200, creditor: "Bob", debtor: "Alice"}; {}.
+contract.balance{amount: 220, creditor: "Alice", debtor: "Bob"}; {}.
