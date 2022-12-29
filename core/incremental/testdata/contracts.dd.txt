@@ -1,3 +1,11 @@
+.table contract.node.Payment
+----
+application/datalog
+
+.table contract.PaymentRecord
+----
+application/datalog
+
 contract.balance{creditor: C, debtor: D, amount: A} :-
   sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
 ----
@@ -26,6 +34,8 @@ digraph G {
   "4" [fillcolor="" fontname="Courier" label="4: Negate() [A-C-D]" shape="box" style="filled"];
   "5" [fillcolor="thistle" fontname="Courier" label="5: Join(A, C, D) []" shape="box" style="filled"];
   "6" [fillcolor="moccasin" fontname="Courier" label="6: Union []" shape="box" style="filled"];
+  "contract.node.Payment" [fillcolor="darksalmon" fontname="Courier" label="contract.node.Payment:  []" shape="box" style="filled"];
+  "contract.PaymentRecord" [fillcolor="darksalmon" fontname="Courier" label="contract.PaymentRecord:  []" shape="box" style="filled"];
   "contract.owe" -> "0" [];
   "0" -> "1" [];
   "1" -> "contract.balance" [];
