@@ -156,10 +156,21 @@ function stepPropagatorAll(
 
 function stepPropagator(iter: Propagator): EmissionBatch {
   let newGraph = iter.graph;
-  const insertingNow = iter.queue.shift();
-  const curNodeID = insertingNow.destination;
-  const [newNodeDesc, outMessages] = processMessage(iter.graph, insertingNow);
-  newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
+  const curMsg = iter.queue.shift();
+  const curNodeID = curMsg.destination;
+  const node = iter.graph.nodes.get(curMsg.destination);
+  if (!node) {
+    throw new Error(`not found: node ${curMsg.destination}`);
+  }
+  const [newNodeDesc, outMessages] = processMessage(
+    iter.graph,
+    node.desc,
+    curMsg.origin,
+    curMsg.payload
+  );
+  if (newNodeDesc !== node.desc) {
+    newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
+  }
   // console.log("push", results);
   for (let outMessage of outMessages) {
     // update cache

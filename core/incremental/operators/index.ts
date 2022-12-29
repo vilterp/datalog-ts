@@ -1,4 +1,4 @@
-import { RuleGraph, Message, NodeDesc, MessagePayload } from "../types";
+import { RuleGraph, Message, NodeDesc, MessagePayload, NodeID } from "../types";
 import { processAggregation } from "./aggregation";
 import { processJoin } from "./join";
 import { processMatch } from "./match";
@@ -8,19 +8,15 @@ import { processSubstitute } from "./substitute";
 // should only be used internally by eval.ts
 export function processMessage(
   graph: RuleGraph,
-  msg: Message
+  nodeDesc: NodeDesc,
+  origin: NodeID,
+  payload: MessagePayload
 ): [NodeDesc, MessagePayload[]] {
-  const node = graph.nodes.get(msg.destination);
-  if (!node) {
-    throw new Error(`not found: node ${msg.destination}`);
-  }
-  const nodeDesc = node.desc;
-  const payload = msg.payload;
   switch (nodeDesc.type) {
     case "Union":
       return [nodeDesc, [payload]];
     case "Join":
-      return processJoin(graph, nodeDesc, msg.origin, payload);
+      return processJoin(graph, nodeDesc, origin, payload);
     case "Match":
       return processMatch(nodeDesc, payload);
     case "Substitute":
@@ -33,6 +29,6 @@ export function processMessage(
     case "Negation":
       return [nodeDesc, processNegation(payload)];
     case "Aggregation":
-      return processAggregation(nodeDesc, msg.payload);
+      return processAggregation(nodeDesc, payload);
   }
 }
