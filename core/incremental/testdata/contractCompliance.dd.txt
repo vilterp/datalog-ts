@@ -14,6 +14,10 @@ application/datalog
 ----
 application/datalog
 
+.table payment
+----
+application/datalog
+
 timeWindow{time: T} :-
   range{from: 0, to: 10, val: T}.
 ----
@@ -145,6 +149,7 @@ digraph G {
   "numChildren" [fillcolor="lightblue" fontname="Courier" label="numChildren: Subst(numChildren{count: I, parentID: P}) []" shape="box" style="filled"];
   "paymentInCompliance" [fillcolor="lightblue" fontname="Courier" label="paymentInCompliance: Subst(paymentInCompliance{id: I, time: T}) []" shape="box" style="filled"];
   "contract.parent" [fillcolor="lightblue" fontname="Courier" label="contract.parent: Subst(contract.parent{id: I, parentID: P}) []" shape="box" style="filled"];
+  "payment" [fillcolor="darksalmon" fontname="Courier" label="payment:  []" shape="box" style="filled"];
   "17" [fillcolor="moccasin" fontname="Courier" label="17: Union []" shape="box" style="filled"];
   "28" [fillcolor="thistle" fontname="Courier" label="28: Join(I) [C1-C2]" shape="box" style="filled"];
   "39" [fillcolor="thistle" fontname="Courier" label="39: Join() [I]" shape="box" style="filled"];
