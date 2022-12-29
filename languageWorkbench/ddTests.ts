@@ -20,8 +20,7 @@ export function lwbTestsSimple(writeResults: boolean) {
 export function lwbTestsIncr(writeResults: boolean) {
   return lwbTests(
     writeResults,
-    new IncrementalInterpreter("languageWorkbench/common", fsLoader),
-    new Set(["contracts"])
+    new IncrementalInterpreter("languageWorkbench/common", fsLoader)
   );
 }
 

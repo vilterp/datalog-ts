@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ppr } from "../../core/pretty";
 import { Rec, Relation, Res } from "../../core/types";
 import { jsonEq } from "../../util/json";
