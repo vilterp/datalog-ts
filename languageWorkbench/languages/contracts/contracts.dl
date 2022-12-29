@@ -164,7 +164,7 @@ internal.visualization{
 # ==== compliance ====
 
 timeWindow{time: T} :-
-  range{from: 0, to: 100, val: T}.
+  range{from: 0, to: 5, val: T}.
 
 contract.compliance.ContractInComplianceInitially{contractID: I} :-
   contract.compliance.ContractInCompliance{contractID: I, time: 0}.
