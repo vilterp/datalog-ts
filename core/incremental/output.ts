@@ -57,7 +57,7 @@ export function formatOutput(
   }
 }
 
-function formatMessagePayload(payload: MessagePayload) {
+export function formatMessagePayload(payload: MessagePayload) {
   switch (payload.data.type) {
     case "Bindings":
       return `${ppb(payload.data.bindings.bindings)}${formatMultiplicity(
