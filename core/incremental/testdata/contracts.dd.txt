@@ -20,7 +20,7 @@ application/datalog
 
 contract.balance{}?
 ----
-application/datalog-results
+application/datalog
 
 .ruleGraph
 ----
@@ -105,6 +105,6 @@ contract.balance: [contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}
 
 contract.balance{}?
 ----
-application/datalog-results
-contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}; {}.
-contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}; {}.
+application/datalog
+contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}.
+contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}.
