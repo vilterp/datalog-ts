@@ -22,7 +22,7 @@ type Entry =
 
 function graphFromConjuncts(conjuncts: Conjunct[]): [DiGraph, Entry[]] {
   const varNameToIndex = new Map<string, number>();
-  const edgesFromConjuncts = new DefaultDict<string[]>(() => []);
+  const edgesFromConjuncts = new DefaultDict<string, string[]>(() => []);
   const varEntries: Entry[] = [];
   conjuncts.forEach((conjunct, conjunctIdx) => {
     const varToPath = getVarToPath(getRecord(conjunct));

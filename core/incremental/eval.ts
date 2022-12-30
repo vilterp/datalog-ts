@@ -71,20 +71,18 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
     // TODO: maybe start using result type
     throw new UserError(`no such relation: ${query.relation}`);
   }
-  return node.cache
-    .all()
-    .mapEntries(([res, multiplicity]) => {
-      // TODO: this is awkward, and possibly not correct?
+  const out: Res[] = [];
+  for (const item of node.cache.all()) {
+    if (item.mult > 0) {
+      const res = item.item;
       const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
         return null;
       }
-      // TODO: should this be its own trace node??
-      return [{ term: res.term, bindings, trace: res.trace }, multiplicity];
-    })
-    .filter((multiplicity) => multiplicity > 0)
-    .keySeq()
-    .toArray();
+      out.push({ term: res.term, bindings, trace: res.trace });
+    }
+  }
+  return out;
 }
 
 function insertFromNode(
