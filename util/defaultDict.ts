@@ -29,8 +29,21 @@ export class DefaultDict<K, V> {
     return value;
   }
 
-  put(key: K, value: V) {
+  set(key: K, value: V) {
     this.items.set(key, value);
+    return this;
+  }
+
+  update(key: K, updater: (v: V) => V) {
+    const value = this.get(key);
+    this.set(key, updater(value));
+    return this;
+  }
+
+  updateWithDefault(key: K, def: V, updater: (v: V) => V) {
+    const value = this.getWithDefault(key, def);
+    this.set(key, updater(value));
+    return this;
   }
 
   entries(): IterableIterator<[K, V]> {

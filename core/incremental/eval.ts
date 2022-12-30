@@ -174,7 +174,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     // update cache
     newGraph = updateCurNodeCache(newGraph, curNodeID, outMessage);
     // propagate messages
-    for (let destination of newGraph.edges.get(curNodeID) || []) {
+    for (let destination of newGraph.edges.getWithDefault(curNodeID, [])) {
       // messages with 0 multiplicity have no effect; we can ignore them
       if (outMessage.multiplicity === 0) {
         continue;

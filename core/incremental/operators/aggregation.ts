@@ -24,7 +24,7 @@ export function processAggregation(
         .map((varName) => data.bindings.bindings[varName])
         .map(fastPPT)
         .join(",");
-      const curGroupState = nodeDesc.state.get(groupKey, agg.init);
+      const curGroupState = nodeDesc.state.getWithDefault(groupKey, agg.init);
       const term = data.bindings.bindings[aggVar];
       const newGroupState = agg.step(curGroupState, term, payload.multiplicity);
       const newNodeState: AggregationDesc = {
