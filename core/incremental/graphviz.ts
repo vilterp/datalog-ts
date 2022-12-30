@@ -8,29 +8,24 @@ export function toGraphviz(
   highlightedNodeID?: string
 ): Graph {
   return {
-    nodes: graph.nodes
-      .map((node, id) => {
-        return {
-          id,
-          attrs: {
-            shape: "box",
-            label: `${id}: ${formatNodeWithIndexes(node)}`,
-            fillcolor: getNodeColor(node.desc) || "",
-            style: "filled",
-            fontname: "Courier",
-          },
-        };
-      })
-      .valueSeq()
-      .toArray(),
-    edges: flatMap(graph.edges.toArray(), ([fromID, destinations]) =>
-      destinations
-        .map((dst) => ({
-          from: fromID,
-          to: dst,
-          attrs: {},
-        }))
-        .toArray()
+    nodes: [...graph.nodes.entries()].map(([id, node]) => {
+      return {
+        id,
+        attrs: {
+          shape: "box",
+          label: `${id}: ${formatNodeWithIndexes(node)}`,
+          fillcolor: getNodeColor(node.desc) || "",
+          style: "filled",
+          fontname: "Courier",
+        },
+      };
+    }),
+    edges: flatMap([...graph.edges.entries()], ([fromID, destinations]) =>
+      destinations.map((dst) => ({
+        from: fromID,
+        to: dst,
+        attrs: {},
+      }))
     ),
   };
 }
