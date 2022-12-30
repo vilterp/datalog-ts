@@ -17,7 +17,7 @@ export function emptyIndexedCollection<T>(
 
 type ItemAndMult<T> = { item: T; mult: number };
 
-type Key = string[];
+export type Key = string;
 
 type Index<T> = {
   getKey: (t: T) => Key;
@@ -51,7 +51,7 @@ export class IndexedMultiSet<T> {
     return [...this.indexes.keys()];
   }
 
-  createIndex(name: string, getKey: (t: T) => string[]): IndexedMultiSet<T> {
+  createIndex(name: string, getKey: (t: T) => Key): IndexedMultiSet<T> {
     const indexItems = new DefaultDict<Key, Set<Key>>(() => new Set<Key>());
     for (const [key, val] of this.allRecords.entries()) {
       const keyForItem = getKey(val.item);
@@ -75,11 +75,11 @@ export class IndexedMultiSet<T> {
     return this;
   }
 
-  getByIndex(indexName: string, key: string[]): [Key, ItemAndMult<T>][] {
+  getByIndex(indexName: string, key: Key): ItemAndMult<T>[] {
     const keySet: Set<Key> = this.indexes.get(indexName).items.get(key);
-    const out: [Key, ItemAndMult<T>][] = [];
+    const out: ItemAndMult<T>[] = [];
     for (const key of keySet) {
-      out.push([key, this.allRecords.get(key)]);
+      out.push(this.allRecords.get(key));
     }
     return out;
   }
