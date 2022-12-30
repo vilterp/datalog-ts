@@ -67,6 +67,7 @@ export class IndexedMultiSet<T> {
     const key = this.stringify(item);
     const curMult = this.allRecords.getWithDefault(key, { item, mult: 0 }).mult;
     const newMult = clamp(curMult + multiplicityDelta, MULT_RANGE);
+    this.allRecords.put(key, { item, mult: newMult });
     for (const index of this.indexes.values()) {
       const idxKey = index.getKey(item);
       const items = index.items.get(idxKey);

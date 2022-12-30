@@ -77,7 +77,7 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
       const res = item.item;
       const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
-        return null;
+        continue;
       }
       out.push({ term: res.term, bindings, trace: res.trace });
     }
