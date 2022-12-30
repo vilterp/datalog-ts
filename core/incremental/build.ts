@@ -22,7 +22,7 @@ import { Catalog } from "./catalog";
 import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
-  let graph = emptyRuleGraph;
+  let graph = emptyRuleGraph();
   graph = catalog.reduce((accum, rel, relName) => {
     switch (rel.type) {
       case "Table":
@@ -313,9 +313,10 @@ function addNode(
 function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
   return {
     ...graph,
-    edges: graph.edges.update(from, List(), (destinations) =>
-      destinations.push(to)
-    ),
+    edges: graph.edges.updateWithDefault(from, [], (destinations) => {
+      destinations.push(to);
+      return destinations;
+    }),
   };
 }
 

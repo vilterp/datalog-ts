@@ -24,7 +24,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
     cwd: string,
     loader: Loader,
     catalog: Catalog = emptyCatalog,
-    graph: RuleGraph = emptyRuleGraph
+    graph: RuleGraph = emptyRuleGraph()
   ) {
     super(cwd, loader);
     this.graph = graph;
