@@ -15,7 +15,7 @@ import {
 } from "./types";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
-import { emptyIndexedMultiset } from "./indexedMultiSet";
+import { emptyIndexedMultiset, Key } from "./indexedMultiSet";
 import { fastPPB, fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
@@ -250,24 +250,18 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   };
 }
 
-export function getIndexKey(
-  bindings: Bindings,
-  joinVars: Set<string>
-): List<string> {
-  return List(
-    joinVars
-      .toArray()
-      .sort()
-      .map((varName) => {
-        const term = bindings[varName];
-        if (!term) {
-          throw new Error(
-            `couldn't get attr "${varName}" of "${ppb(bindings)}"`
-          );
-        }
-        return fastPPT(term);
-      })
-  );
+export function getIndexKey(bindings: Bindings, joinVars: Set<string>): Key {
+  return joinVars
+    .toArray()
+    .sort()
+    .map((varName) => {
+      const term = bindings[varName];
+      if (!term) {
+        throw new Error(`couldn't get attr "${varName}" of "${ppb(bindings)}"`);
+      }
+      return fastPPT(term);
+    })
+    .join(",");
 }
 
 export function getIndexName(joinVars: Set<string>): string {

@@ -12,19 +12,19 @@ export type ASTNodeRecord = {
 type ByRule = {
   length: number;
   byID: { [id: string]: ASTNodeRecord };
-  byParentID: DefaultDict<ASTNodeRecord[]>;
+  byParentID: DefaultDict<string, ASTNodeRecord[]>;
 };
 
 const getEmptyByRule = (): ByRule => ({
   length: 0,
   byID: {},
-  byParentID: new DefaultDict<ASTNodeRecord[]>(() => []),
+  byParentID: new DefaultDict<string, ASTNodeRecord[]>(() => []),
 });
 
-export type NodesByRule = DefaultDict<ByRule>;
+export type NodesByRule = DefaultDict<string, ByRule>;
 
 export function emptyNodesByRule() {
-  return new DefaultDict<ByRule>(getEmptyByRule);
+  return new DefaultDict<string, ByRule>(getEmptyByRule);
 }
 
 export function flattenByRule(
