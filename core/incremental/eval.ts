@@ -71,20 +71,18 @@ export function doQuery(graph: RuleGraph, query: Rec): Res[] {
     // TODO: maybe start using result type
     throw new UserError(`no such relation: ${query.relation}`);
   }
-  return node.cache
-    .all()
-    .mapEntries(([res, multiplicity]) => {
-      // TODO: this is awkward, and possibly not correct?
+  const out: Res[] = [];
+  for (const item of node.cache.all()) {
+    if (item.mult > 0) {
+      const res = item.item;
       const bindings = unify(res.bindings, res.term, query);
       if (bindings === null) {
-        return null;
+        continue;
       }
-      // TODO: should this be its own trace node??
-      return [{ term: res.term, bindings, trace: res.trace }, multiplicity];
-    })
-    .filter((multiplicity) => multiplicity > 0)
-    .keySeq()
-    .toArray();
+      out.push({ term: res.term, bindings, trace: res.trace });
+    }
+  }
+  return out;
 }
 
 function insertFromNode(
@@ -232,15 +230,8 @@ function updateCache(
   res: Res,
   multiplicityDelta: number
 ): RuleGraph {
-  const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.update(res, multiplicityDelta);
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (oldNode) => ({
-      ...oldNode,
-      cache: newCache,
-    })),
-  };
+  graph.nodes.get(nodeID).cache.update(res, multiplicityDelta);
+  return graph;
 }
 
 function updateNodeDesc(
@@ -248,11 +239,6 @@ function updateNodeDesc(
   nodeID: NodeID,
   newDesc: NodeDesc
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (oldNode) => ({
-      ...oldNode,
-      desc: newDesc,
-    })),
-  };
+  graph.nodes.get(nodeID).desc = newDesc;
+  return graph;
 }
