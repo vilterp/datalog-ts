@@ -5,9 +5,15 @@
         "jsx": "react",
         "target": "ES6",
         "moduleResolution": "Node",
-        "skipLibCheck": true
     },
+    "exclude": [
+        "node_modules/"
+    ],
     "files": [
-        "allTests.ts"
+        "allTests.ts",
+        "allBenchmarks.ts",
+        "apps/languageWorkbench/main.tsx",
+        "apps/fiddle/main.tsx",
+        "apps/actors/main.tsx",
     ]
 }
