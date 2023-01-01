@@ -4,6 +4,10 @@
         "esModuleInterop": true,
         "jsx": "react",
         "target": "ES6",
-        "moduleResolution": "Node"
-    }
+        "moduleResolution": "Node",
+        "skipLibCheck": true
+    },
+    "files": [
+        "allTests.ts"
+    ]
 }
