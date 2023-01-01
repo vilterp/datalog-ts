@@ -35,7 +35,25 @@ const tasks: Tasks = {
       {}
     );
   },
+  async benchmark() {
+    await bundleBenchmarks();
+    await execPromise("node --enable-source-maps allBenchmarks.js", {});
+  },
 };
+
+async function bundleBenchmarks() {
+  await build({
+    entryPoints: ["allBenchmarks.ts"],
+    bundle: true,
+    platform: "node",
+    outfile: "allBenchmarks.js",
+    sourcemap: true,
+    loader: {
+      ".dl": "text",
+      ".grammar": "text",
+    },
+  });
+}
 
 async function bundleTests() {
   await build({

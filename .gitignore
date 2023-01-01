@@ -7,3 +7,5 @@ dist
 *.heapprofile
 allTests.js
 allTests.js.map
+allBenchmarks.js
+allBenchmarks.js.map
