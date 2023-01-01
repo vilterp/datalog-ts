@@ -14,6 +14,7 @@ import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { raceDetectorTests } from "./apps/raceDetector/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
 import { lwbTestsIncr, lwbTestsSimple } from "./languageWorkbench/ddTests";
+import { lwbTypingTests } from "./languageWorkbench/typingBenchmark";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -36,6 +37,7 @@ const suites: { [name: string]: Suite } = {
   raceDetector: raceDetectorTests(writeResults),
   lwbTestsSimple: lwbTestsSimple(writeResults),
   lwbTestsIncr: lwbTestsIncr(writeResults),
+  lwbTypingTests: lwbTypingTests(writeResults),
 };
 
 try {

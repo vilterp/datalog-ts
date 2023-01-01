@@ -1,0 +1,155 @@
+scope.Scope{id: RuleID, label: N} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.ident{parentID: RecordID, text: N}.
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnTable{scopeID: I, name: N, span: S, kind: K} |
+  scope.defnAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.defnHeadVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.defnBodyVar{scopeID: I, name: N, span: S, kind: K}.
+scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} :-
+  scope.rule{span: S, name: N}.
+scope.defnHeadVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  scope.recordVar{record: RecordID, name: N, span: S}.
+scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
+  ast.tableDecl{id: DeclID} &
+  ast.ident{parentID: DeclID, span: S, text: N}.
+scope.defnAttr{scopeID: RuleName, name: N, span: S, kind: "attr"} :-
+  tc.ruleAttr{rule: RuleName, attr: N, span: S}.
+scope.defnBodyVar{scopeID: I, name: N, span: S, kind: "var"} :-
+  scope.varInBodyTerm{scopeID: I, name: N, span: S}.
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInBodyTerm{scopeID: I, name: N, span: S, kind: K} |
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varFact{scopeID: I, name: N, span: S, kind: K}.
+scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
+  scope.ruleBodyTerm{termOrRecord: RecordID} &
+  ast.record{id: RecordID} &
+  ast.ident{parentID: RecordID, text: N, span: S}.
+scope.varInBodyTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
+  scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
+  scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.
+scope.varAttr{scopeID: Relation, nodeID: I, name: N, span: S, kind: "attr"} :-
+  scope.ruleBodyTerm{termOrRecord: Rec} &
+  ast.record{id: Rec} &
+  ast.ident{parentID: Rec, text: Relation} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.recordKeyValue{id: KV, parentID: Attrs} &
+  ast.ident{id: I, parentID: KV, text: N, span: S}.
+scope.varFact{scopeID: global{}, name: N, span: S, kind: "relation"} :-
+  ast.fact{id: Fact} &
+  ast.record{id: Rec, parentID: Fact} &
+  ast.ident{parentID: Rec, text: N, span: S}.
+scope.Placeholder{scopeID: I, span: S, kind: K} :-
+  scope.placeholderVar{scopeID: I, span: S, kind: K} |
+  scope.placeholderRule{scopeID: I, span: S, kind: K} |
+  scope.placeholderKeyValue{scopeID: I, span: S, kind: K}.
+scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
+  scope.ruleConjunct{ruleID: RuleID, conjunct: ConjunctID} &
+  ast.record{id: RecordID, parentID: ConjunctID} &
+  ast.recordAttrs{id: AttrsID, parentID: RecordID} &
+  ast.recordKeyValue{id: KeyValueID, parentID: AttrsID} &
+  ast.term{id: ValueTermID, parentID: KeyValueID} &
+  ast.placeholder{parentID: ValueTermID, span: S}.
+scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
+  ast.conjunct{id: ConjunctID} &
+  ast.placeholder{parentID: ConjunctID, span: S}.
+scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
+  ast.conjunct{id: Conjunct} &
+  ast.record{id: Rec, parentID: Conjunct} &
+  ast.ident{parentID: Rec, text: Relation} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.placeholder{parentID: Attrs, span: S}.
+scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} :-
+  ast.rule{id: Rule} &
+  ast.disjunct{id: Disjunct, parentID: Rule} &
+  ast.conjunct{id: Conjunct, parentID: Disjunct}.
+scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} :-
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.record{id: TermOrRecord, parentID: Conjunct}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.negation{id: Negation, parentID: Conjunct} &
+  ast.record{id: TermOrRecord, parentID: Negation}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.aggregation{id: Agg, parentID: Conjunct} &
+  ast.record{id: TermOrRecord, parentID: Agg}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.comparison{id: Comparison, parentID: Conjunct} &
+  ast.term{id: TermOrRecord, parentID: Comparison}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.arithmetic{id: Arithmetic, parentID: Conjunct} &
+  ast.assignmentOnRight{id: Assignment, parentID: Arithmetic} &
+  ast.term{id: TermOrRecord, parentID: Assignment}
+  |
+  scope.ruleConjunct{ruleID: Rule, conjunct: Conjunct} &
+  ast.arithmetic{id: Arithmetic, parentID: Conjunct} &
+  ast.assignmentOnLeft{id: Assignment, parentID: Arithmetic} &
+  ast.term{id: TermOrRecord, parentID: Assignment}.
+scope.termOrRecordVar{term: TermOrRecord, name: N, span: S} :-
+  scope.recordVar{record: TermOrRecord, name: N, span: S} |
+  scope.termVar{term: TermOrRecord, name: N, span: S}.
+scope.termVar{term: Term, name: N, span: S} :-
+  ast.term{id: Term} &
+  ast.var{parentID: Term, text: N, span: S}
+  |
+  ast.term{id: Term} &
+  ast.record{id: Record, parentID: Term} &
+  scope.recordVar{record: Record, name: N, span: S}
+  |
+  ast.term{id: Term} &
+  ast.array{id: Array, parentID: Term} &
+  ast.term{id: ArrItemTerm, parentID: Array} &
+  scope.termVar{term: ArrItemTerm, name: N, span: S}.
+scope.recordVar{record: Record, name: N, span: S} :-
+  ast.record{id: Record} &
+  ast.recordAttrs{id: Attrs, parentID: Record} &
+  ast.recordKeyValue{id: KeyValue, parentID: Attrs} &
+  ast.term{id: ValueTerm, parentID: KeyValue} &
+  scope.termVar{term: ValueTerm, name: N, span: S}.
+tc.Problem{desc: D, span: S} :-
+  tc.nonexistentAttr{desc: D, span: S} |
+  tc.unboundVarInHead{desc: D, span: S}.
+tc.nonexistentAttr{desc: nonexistentAttr{relation: Relation, attr: N}, span: S} :-
+  scope.defnRule{name: Relation} &
+  scope.varAttr{scopeID: Relation, name: N, span: S} &
+  !tc.ruleAttr{rule: Relation, attr: N}.
+tc.unboundVarInHead{desc: unboundVarInHead{rule: R, name: N}, span: S} :-
+  scope.defnHeadVar{scopeID: RuleID, span: S, name: N} &
+  scope.rule{scopeID: RuleID, name: R} &
+  !scope.varInBodyTerm{scopeID: RuleID, name: N}.
+scope.rule{scopeID: RuleID, name: N, span: S} :-
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.ident{parentID: RecordID, text: N, span: S}.
+tc.ruleAttr{rule: RuleName, attr: Attr, span: SS} :-
+  ast.rule{id: Rule} &
+  ast.record{id: Rec, parentID: Rule} &
+  ast.ident{parentID: Rec, text: RuleName} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.recordKeyValue{id: KV, parentID: Attrs} &
+  ast.ident{parentID: KV, text: Attr, span: S}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "var", type: "typeParameter"}.
+hl.mapping{rule: "int", type: "number"}.
+hl.mapping{rule: "bool", type: "number"}.
+hl.mapping{rule: "string", type: "string"}.
+hl.mapping{rule: "comment", type: "comment"}.
+hl.mapping{rule: "tableKW", type: "keyword"}.
+hl.mapping{rule: "loadKW", type: "keyword"}.
+hl.mapping{rule: "path", type: "string"}.
+----
+text/plain
+32292
+
+replace{idx: 6695, length: 2, new: "S"}.
+----
+text/plain
+edit
