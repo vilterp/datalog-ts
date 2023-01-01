@@ -3,9 +3,9 @@
   "version": "0.5.9",
   "license": "MIT",
   "scripts": {
-    "test": "ts-node allTests.ts",
-    "test-stay-alive": "ts-node allTests.ts --stay-alive",
-    "test-write-results": "ts-node allTests.ts --write-results",
+    "bundle-tests": "esbuild allTests.ts --bundle --platform=node --outfile=allTests.js --sourcemap --loader:.grammar=text --loader:.dl=text",
+    "test": "yarn bundle-tests && node --enable-source-maps allTests.js",
+    "test-write-results": "yarn bundle-tests && node --enable-source-maps allTests.js --write-results",
     "test-build-archive": "ts-node util/ddTest/buildArchive.ts",
     "test-write-and-archive": "yarn test-write-results; yarn test-build-archive",
     "cloc": "cloc --vcs=git --exclude-dir=dist",
