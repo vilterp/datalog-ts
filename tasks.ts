@@ -1,4 +1,4 @@
-import { exec, ExecOptions } from "child_process";
+import { exec, spawn, ExecOptions } from "child_process";
 import { build } from "esbuild";
 
 const tasks: { [name: string]: () => Promise<void> } = {
@@ -64,13 +64,15 @@ async function serveApp(name: string) {
 
 function execPromise(cmd: string, options: ExecOptions): Promise<void> {
   return new Promise((resolve, reject) => {
-    exec(cmd, options, (err) => {
+    const proc = exec(cmd, options, (err) => {
       if (err !== null) {
         reject(err);
       } else {
         resolve();
       }
     });
+    proc.stdout?.pipe(process.stdout);
+    proc.stderr?.pipe(process.stdout);
   });
 }
 
