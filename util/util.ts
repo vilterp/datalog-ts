@@ -434,3 +434,7 @@ export function hashString(str: string): number {
 export function identity<T>(item: T): T {
   return item;
 }
+
+export function titleCase(name: string) {
+  return name[0].toUpperCase() + name.slice(1);
+}

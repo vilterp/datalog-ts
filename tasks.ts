@@ -1,6 +1,6 @@
-import { exec, spawn, ExecOptions } from "child_process";
 import { build } from "esbuild";
-import { flatMap, pairsToObj } from "./util/util";
+import { execPromise, taskRunnerMain, Tasks } from "./util/taskRunner";
+import { flatMap, pairsToObj, titleCase } from "./util/util";
 
 const APPS = [
   "actors",
@@ -16,14 +16,40 @@ const APPS = [
   "sim",
 ];
 
-const tasks: { [name: string]: () => Promise<void> } = {
+const tasks: Tasks = {
+  // apps
   ...pairsToObj(
     flatMap(APPS, (app) => [
       { key: `build${titleCase(app)}`, value: () => buildApp(app) },
       { key: `serve${titleCase(app)}`, value: () => serveApp(app) },
     ])
   ),
+  async test() {
+    await bundleTests();
+    await execPromise("node --enable-source-maps allTests.js", {});
+  },
+  async testWriteResults() {
+    await bundleTests();
+    await execPromise(
+      "node --enable-source-maps allTests.js --write-results",
+      {}
+    );
+  },
 };
+
+async function bundleTests() {
+  await build({
+    entryPoints: ["allTests.ts"],
+    bundle: true,
+    platform: "node",
+    outfile: "allTests.js",
+    sourcemap: true,
+    loader: {
+      ".dl": "text",
+      ".grammar": "text",
+    },
+  });
+}
 
 async function buildApp(name: string) {
   await build({
@@ -45,25 +71,4 @@ async function serveApp(name: string) {
   });
 }
 
-function execPromise(cmd: string, options: ExecOptions): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const proc = exec(cmd, options, (err) => {
-      if (err !== null) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-    proc.stdout?.pipe(process.stdout);
-    proc.stderr?.pipe(process.stdout);
-  });
-}
-
-function titleCase(name: string) {
-  return name[0].toUpperCase() + name.slice(1);
-}
-
-console.log(tasks);
-
-// tasks.buildLanguageWorkbench();
-tasks.serveLanguageWorkbench();
+taskRunnerMain(tasks, process.argv);
