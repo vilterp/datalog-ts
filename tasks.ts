@@ -1,41 +1,45 @@
+import { exec, ExecOptions } from "child_process";
 import { build } from "esbuild";
 
 const tasks: { [name: string]: () => Promise<void> } = {
   // build
-  buildActors: async () => {
+  async buildActors() {
     buildApp("actors");
   },
-  buildDDTestViewer: async () => {
+  async buildDDTestViewer() {
     buildApp("ddTestViewer");
   },
-  buildDLParser: async () => {
+  async buildDLParser() {
     buildApp("dlParser");
   },
-  buildFiddle: async () => {
+  async buildFiddle() {
     buildApp("fiddle");
   },
-  buildFinance: async () => {
+  async buildFinance() {
     buildApp("finance");
   },
-  buildFP: async () => {
+  async buildFP() {
     buildApp("fp");
   },
-  buildLanguageWorkbench: async () => {
+  async buildLanguageWorkbench() {
     buildApp("languageWorkbench");
   },
-  buildNotebook: async () => {
+  async buildNotebook() {
     buildApp("notebook");
   },
-  buildRaceDetector: async () => {
+  async buildRaceDetector() {
     buildApp("raceDetector");
   },
-  buildRelSQLPlayground: async () => {
+  async buildRelSQLPlayground() {
     buildApp("relSQLPlayground");
   },
-  buildSim: async () => {
+  async buildSim() {
     buildApp("sim");
   },
   // serve
+  async serveLanguageWorkbench() {
+    serveApp("languageWorkbench");
+  },
 };
 
 async function buildApp(name: string) {
@@ -52,4 +56,23 @@ async function buildApp(name: string) {
   });
 }
 
-tasks.buildLanguageWorkbench();
+async function serveApp(name: string) {
+  await execPromise("../../../node_modules/.bin/http-server -c-1", {
+    cwd: `apps/${name}/public`,
+  });
+}
+
+function execPromise(cmd: string, options: ExecOptions): Promise<void> {
+  return new Promise((resolve, reject) => {
+    exec(cmd, options, (err) => {
+      if (err !== null) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+// tasks.buildLanguageWorkbench();
+tasks.serveLanguageWorkbench();
