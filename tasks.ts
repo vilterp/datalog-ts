@@ -1,45 +1,28 @@
 import { exec, spawn, ExecOptions } from "child_process";
 import { build } from "esbuild";
+import { flatMap, pairsToObj } from "./util/util";
+
+const APPS = [
+  "actors",
+  "ddTestViewer",
+  "dlParser",
+  "fiddle",
+  "finance",
+  "fp",
+  "languageWorkbench",
+  "notebook",
+  "raceDetector",
+  "relSQLPlayground",
+  "sim",
+];
 
 const tasks: { [name: string]: () => Promise<void> } = {
-  // build
-  async buildActors() {
-    buildApp("actors");
-  },
-  async buildDDTestViewer() {
-    buildApp("ddTestViewer");
-  },
-  async buildDLParser() {
-    buildApp("dlParser");
-  },
-  async buildFiddle() {
-    buildApp("fiddle");
-  },
-  async buildFinance() {
-    buildApp("finance");
-  },
-  async buildFP() {
-    buildApp("fp");
-  },
-  async buildLanguageWorkbench() {
-    buildApp("languageWorkbench");
-  },
-  async buildNotebook() {
-    buildApp("notebook");
-  },
-  async buildRaceDetector() {
-    buildApp("raceDetector");
-  },
-  async buildRelSQLPlayground() {
-    buildApp("relSQLPlayground");
-  },
-  async buildSim() {
-    buildApp("sim");
-  },
-  // serve
-  async serveLanguageWorkbench() {
-    serveApp("languageWorkbench");
-  },
+  ...pairsToObj(
+    flatMap(APPS, (app) => [
+      { key: `build${titleCase(app)}`, value: () => buildApp(app) },
+      { key: `serve${titleCase(app)}`, value: () => serveApp(app) },
+    ])
+  ),
 };
 
 async function buildApp(name: string) {
@@ -75,6 +58,12 @@ function execPromise(cmd: string, options: ExecOptions): Promise<void> {
     proc.stderr?.pipe(process.stdout);
   });
 }
+
+function titleCase(name: string) {
+  return name[0].toUpperCase() + name.slice(1);
+}
+
+console.log(tasks);
 
 // tasks.buildLanguageWorkbench();
 tasks.serveLanguageWorkbench();
