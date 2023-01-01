@@ -5,6 +5,7 @@ import {
   Conjunct,
   Aggregation,
   Bindings,
+  BindingsWithTrace,
 } from "../types";
 import {
   RuleGraph,
@@ -239,16 +240,21 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   };
 }
 
-export function getIndexKey(bindings: Bindings, joinVars: Set<string>): Key {
+export function getIndexKey(
+  bindings: BindingsWithTrace,
+  joinVars: Set<string>
+): Key {
   return joinVars
     .toArray()
     .sort()
     .map((varName) => {
-      const term = bindings[varName];
-      if (!term) {
-        throw new Error(`couldn't get attr "${varName}" of "${ppb(bindings)}"`);
+      const termStr = bindings.stringifiedBindings[varName];
+      if (!termStr) {
+        throw new Error(
+          `couldn't get attr "${varName}" of "${ppb(bindings.bindings)}"`
+        );
       }
-      return fastPPT(term);
+      return termStr;
     })
     .join(",");
 }
@@ -319,10 +325,10 @@ function addIndex(
     ...graph,
     nodes: graph.nodes.update(nodeID, (node) => ({
       ...node,
-      cache: node.cache.createIndex(getIndexName(joinVars), (bindings) => {
+      cache: node.cache.createIndex(getIndexName(joinVars), (res) => {
         // TODO: is this gonna be a perf bottleneck?
         // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(bindings.bindings, joinVars);
+        return getIndexKey(res.bindings, joinVars);
       }),
     })),
   };

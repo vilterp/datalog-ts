@@ -21,6 +21,7 @@ import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { processMessage } from "./operators";
 import { ppb } from "../pretty";
+import { fastPPT } from "../fastPPT";
 
 export function insertOrRetractFact(
   graph: RuleGraph,
@@ -49,6 +50,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
     results.forEach((res) => {
       graph = insertFromNode(graph, nodeID, {
         bindings: res.bindings,
+        stringifiedBindings: XXXX,
         trace: builtinTrace,
       }).newGraph;
     });
@@ -118,6 +120,7 @@ function getPropagator(
         data: {
           type: "Record",
           rec,
+          cachedKey: fastPPT(rec),
         },
       },
       origin: null,

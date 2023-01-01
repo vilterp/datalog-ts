@@ -102,6 +102,7 @@ export type MessagePayload = {
 export type RecordMsg = {
   type: "Record";
   rec: Rec;
+  cachedKey: string;
 };
 
 export type BindingsMsg = {

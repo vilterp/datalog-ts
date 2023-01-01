@@ -51,6 +51,7 @@ export function doJoin(
     return results.map((res) => ({
       bindings: {
         bindings: unifyBindings(res.bindings, thisVars.bindings.bindings),
+        stringifiedBindings: XXXX,
         trace: builtinTrace,
       },
       multiplicity: bindings.multiplicity,

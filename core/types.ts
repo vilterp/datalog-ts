@@ -143,7 +143,11 @@ export type AttrPath = AttrName[];
 
 // === Traces ===
 
-export type BindingsWithTrace = { bindings: Bindings; trace: Trace };
+export type BindingsWithTrace = {
+  bindings: Bindings;
+  stringifiedBindings: { [varName: string]: string };
+  trace: Trace;
+};
 
 // TODO: trim this down
 export type Trace =
