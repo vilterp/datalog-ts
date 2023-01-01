@@ -147,7 +147,7 @@ hl.mapping{rule: "loadKW", type: "keyword"}.
 hl.mapping{rule: "path", type: "string"}.
 ----
 text/plain
-32292
+32292 facts inserted
 
 replace{idx: 6695, length: 2, new: "S"}.
 ----
