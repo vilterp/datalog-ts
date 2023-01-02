@@ -1,12 +1,14 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { numFacts } from "../../core/incremental/catalog";
+import { toGraphviz } from "../../core/incremental/graphviz";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { formatOutput } from "../../core/incremental/output";
+import { formatOutput as formatIncrOutput } from "../../core/incremental/output";
 import { parserTermToInternal } from "../../core/translateAST";
 import { int, Int, rec, Rec } from "../../core/types";
 import { runDDTestAtPath, TestOutput } from "../../util/ddTest";
-import { plainTextOut } from "../../util/ddTest/types";
+import { graphvizOut, plainTextOut } from "../../util/ddTest/types";
+import { prettyPrintGraph } from "../../util/graphviz";
 import { assert, Suite } from "../../util/testBench/testing";
 import { LanguageSpec } from "../common/types";
 import { LANGUAGES } from "../languages";
@@ -37,8 +39,13 @@ function typingTest(langSpec: LanguageSpec, test: string[]): TestOutput[] {
   const out: TestOutput[] = [];
 
   // initialize the interpreter for this language
-  let interp: AbstractInterpreter = new IncrementalInterpreter(".", fsLoader);
+  let interp: AbstractInterpreter = new IncrementalInterpreter(
+    "languageWorkbench/common",
+    fsLoader
+  );
+  interp = interp.doLoad("main.dl");
 
+  // load this language spec
   const grammarTree = parseMain(langSpec.grammar);
   const grammar = parserGrammarToInternal(grammarTree);
   interp = interp.evalStr(langSpec.datalog)[1];
@@ -71,7 +78,13 @@ function typingTest(langSpec: LanguageSpec, test: string[]): TestOutput[] {
   );
 
   for (const edit of test.slice(1)) {
-    if (edit === "removeCursor") {
+    if (edit === "ruleGraph") {
+      out.push(
+        graphvizOut(
+          prettyPrintGraph(toGraphviz((interp as IncrementalInterpreter).graph))
+        )
+      );
+    } else if (edit === "removeCursor") {
       // delete old cursor
       const { newInterp, output } = (
         interp as IncrementalInterpreter
@@ -80,8 +93,9 @@ function typingTest(langSpec: LanguageSpec, test: string[]): TestOutput[] {
         record: rec("ide.Cursor", { idx: int(lastCursor) }),
       });
       out.push(
-        formatOutput((newInterp as IncrementalInterpreter).graph, output, {
+        formatIncrOutput((newInterp as IncrementalInterpreter).graph, output, {
           emissionLogMode: "test",
+          filterEmpties: true,
         })
       );
       interp = newInterp;
@@ -98,8 +112,9 @@ function typingTest(langSpec: LanguageSpec, test: string[]): TestOutput[] {
         record: rec("ide.Cursor", { idx: int(newCursor) }),
       });
       out.push(
-        formatOutput((newInterp as IncrementalInterpreter).graph, output, {
+        formatIncrOutput((newInterp as IncrementalInterpreter).graph, output, {
           emissionLogMode: "test",
+          filterEmpties: true,
         })
       );
       lastCursor = newCursor;
