@@ -103,11 +103,11 @@ export class IncrementalInterpreter extends AbstractInterpreter {
       }
       case "Delete": {
         const newCatalog = removeFact(this.catalog, stmt.record);
-        const newGraph = insertOrRetractFact(
+        const { newGraph, emissionLog } = insertOrRetractFact(
           this.graph,
           stmt.record,
           -1
-        ).newGraph;
+        );
         return {
           newInterp: new IncrementalInterpreter(
             this.cwd,
@@ -115,7 +115,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
             newCatalog,
             newGraph
           ),
-          output: ack,
+          output: { type: "EmissionLog", log: emissionLog },
         };
       }
       case "Query": {
