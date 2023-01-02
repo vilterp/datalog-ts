@@ -2,11 +2,15 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { numFacts } from "../../core/incremental/catalog";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { formatOutput } from "../../core/incremental/output";
+import { parserTermToInternal } from "../../core/translateAST";
+import { int, Int, rec, Rec } from "../../core/types";
 import { runDDTestAtPath, TestOutput } from "../../util/ddTest";
 import { plainTextOut } from "../../util/ddTest/types";
 import { assert, Suite } from "../../util/testBench/testing";
 import { LanguageSpec } from "../common/types";
 import { LANGUAGES } from "../languages";
+import { parseRecord } from "../languages/dl/parser";
 import { parseMain } from "../languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "../parserlib/flatten";
 import { parse } from "../parserlib/parser";
@@ -57,14 +61,50 @@ function typingTest(langSpec: LanguageSpec, test: string[]): TestOutput[] {
   const records = flatten(ruleTree, source);
   interp = interp.bulkInsert(records);
 
+  let lastCursor = 1;
+  interp = interp.evalStr("ide.Cursor{idx: 1}.")[1];
+
   out.push(
     plainTextOut(
       `${numFacts((interp as IncrementalInterpreter).catalog)} facts inserted`
     )
   );
 
-  for (const edit in test.slice(1)) {
-    out.push(plainTextOut("edit"));
+  for (const edit of test.slice(1)) {
+    if (edit === "removeCursor") {
+      // delete old cursor
+      const { newInterp, output } = (
+        interp as IncrementalInterpreter
+      ).processStmt({
+        type: "Delete",
+        record: rec("ide.Cursor", { idx: int(lastCursor) }),
+      });
+      out.push(
+        formatOutput((newInterp as IncrementalInterpreter).graph, output, {
+          emissionLogMode: "test",
+        })
+      );
+      interp = newInterp;
+    } else {
+      // insert new cursor
+      const rawRec = parseRecord(edit);
+      const inputRec = parserTermToInternal(rawRec);
+      const newCursor = ((inputRec as Rec).attrs.idx as Int).val;
+
+      const { newInterp, output } = (
+        interp as IncrementalInterpreter
+      ).processStmt({
+        type: "Fact",
+        record: rec("ide.Cursor", { idx: int(newCursor) }),
+      });
+      out.push(
+        formatOutput((newInterp as IncrementalInterpreter).graph, output, {
+          emissionLogMode: "test",
+        })
+      );
+      lastCursor = newCursor;
+      interp = newInterp;
+    }
   }
 
   return out;

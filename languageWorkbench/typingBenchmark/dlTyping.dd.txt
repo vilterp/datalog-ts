@@ -129,7 +129,7 @@ scope.rule{scopeID: RuleID, name: N, span: S} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
-tc.ruleAttr{rule: RuleName, attr: Attr, span: SS} :-
+tc.ruleAttr{rule: RuleName, attr: Attr, span: S} :-
   ast.rule{id: Rule} &
   ast.record{id: Rec, parentID: Rule} &
   ast.ident{parentID: Rec, text: RuleName} &
@@ -147,9 +147,18 @@ hl.mapping{rule: "loadKW", type: "keyword"}.
 hl.mapping{rule: "path", type: "string"}.
 ----
 text/plain
-32292
+32293 facts inserted
 
-replace{idx: 6695, length: 2, new: "S"}.
+removeCursor
 ----
-text/plain
-edit
+application/datalog
+
+cursor{idx: 6396}.
+----
+incremental-datalog/trace
+ide.Cursor: [ide.Cursor{idx: 6396}+1]
+
+cursor{idx: 6373}.
+----
+incremental-datalog/trace
+ide.Cursor: [ide.Cursor{idx: 6373}+1]
