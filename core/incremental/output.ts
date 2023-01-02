@@ -6,6 +6,7 @@ import { MessagePayload, Output, RuleGraph } from "./types";
 
 type OutputOptions = {
   emissionLogMode: "test" | "repl";
+  filterEmpties: boolean;
 };
 
 export function formatOutput(
@@ -21,6 +22,9 @@ export function formatOutput(
         return {
           mimeType: "incremental-datalog/trace",
           content: output.log
+            .filter((batch) =>
+              opts.filterEmpties ? batch.output.length > 0 : true
+            )
             .map(
               ({ fromID, output }) =>
                 `${fromID}: [${output.map(formatMessagePayload).join(", ")}]`
