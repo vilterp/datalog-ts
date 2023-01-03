@@ -1,9 +1,10 @@
 import { Conjunct, Rec, VarToPath } from "./types";
 import { DiGraph, TopologicalSort } from "js-graph-algorithms";
 import { DefaultDict } from "../util/defaultDict";
+import { Graph } from "../util/graphviz";
 
 export function getJoinOrder(conjuncts: Conjunct[]): Conjunct[] {
-  const [graph, entries] = graphFromConjuncts(conjuncts);
+  const [graph, entries] = getConjunctGraph(conjuncts);
   const topSort = new TopologicalSort(graph);
   const order = topSort.order();
   const out: Conjunct[] = [];
@@ -20,7 +21,7 @@ type Entry =
   | { type: "Var"; name: string }
   | { type: "Conjunct"; conjunct: Conjunct };
 
-function graphFromConjuncts(conjuncts: Conjunct[]): [DiGraph, Entry[]] {
+export function getConjunctGraph(conjuncts: Conjunct[]): [DiGraph, Entry[]] {
   const varNameToIndex = new Map<string, number>();
   const edgesFromConjuncts = new DefaultDict<string[]>(() => []);
   const varEntries: Entry[] = [];
@@ -77,4 +78,32 @@ export function getRecord(conjunct: Conjunct): Rec {
       return conjunct.record;
     }
   }
+}
+
+export function joinGraphToGraphviz(graph: DiGraph, entries: Entry[]): Graph {
+  const out: Graph = {
+    nodes: [],
+    edges: [],
+  };
+  for (let i = 0; i < graph.V; i++) {
+    const entry = entries[i];
+    switch (entry.type) {
+      case "Var":
+        out.nodes.push({ id: i.toString(), attrs: { label: entry.name } });
+        break;
+      case "Conjunct":
+        out.nodes.push({
+          id: i.toString(),
+          // TODO: mark it as negation or aggregation
+          attrs: { label: getRecord(entry.conjunct).relation, shape: "box" },
+        });
+        break;
+    }
+  }
+  for (let i = 0; i < graph.V; i++) {
+    graph.adj(i).forEach((j) => {
+      out.edges.push({ from: i.toString(), to: j.toString(), attrs: {} });
+    });
+  }
+  return out;
 }
