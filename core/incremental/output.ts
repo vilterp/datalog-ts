@@ -2,7 +2,8 @@ import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { flatMap } from "../../util/util";
 import { ppb, ppt } from "../pretty";
 import { dict, rec } from "../types";
-import { MessagePayload, Output, RuleGraph } from "./types";
+import { formatNodeDesc } from "./pretty";
+import { MessagePayload, NodeAndCache, Output, RuleGraph } from "./types";
 
 type OutputOptions = {
   emissionLogMode: "test" | "repl";
@@ -25,10 +26,12 @@ export function formatOutput(
             .filter((batch) =>
               opts.filterEmpties ? batch.output.length > 0 : true
             )
-            .map(
-              ({ fromID, output }) =>
-                `${fromID}: [${output.map(formatMessagePayload).join(", ")}]`
-            )
+            .map(({ fromID, output }) => {
+              const node: NodeAndCache = graph.nodes.get(fromID);
+              return `${fromID} (${node.desc.type}): [${output
+                .map(formatMessagePayload)
+                .join(", ")}]`;
+            })
             .join("\n"),
         };
       } else {

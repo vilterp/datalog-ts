@@ -54,54 +54,54 @@ digraph G {
 contract.node.Payment{amount: 100, from: "Alice", to: "Bob"}.
 ----
 incremental-datalog/trace
-contract.node.Payment: [contract.node.Payment{amount: 100, from: "Alice", to: "Bob"}+1]
-3: [{A: 100, C: "Bob", D: "Alice"}+1]
-6: []
-7: [{A: 100, C: "Bob", D: "Alice"}+1]
-contract.owe: [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
-1: [{A: 100, C: "Bob", D: "Alice"}+1]
-2: [{A: 100, C: "Bob", D: "Alice"}+1]
-contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
+contract.node.Payment (BaseFactTable): [contract.node.Payment{amount: 100, from: "Alice", to: "Bob"}+1]
+3 (Match): [{A: 100, C: "Bob", D: "Alice"}+1]
+6 (Join): []
+7 (Union): [{A: 100, C: "Bob", D: "Alice"}+1]
+contract.owe (Substitute): [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
+1 (Match): [{A: 100, C: "Bob", D: "Alice"}+1]
+2 (Aggregation): [{A: 100, C: "Bob", D: "Alice"}+1]
+contract.balance (Substitute): [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}+1]
 
 contract.node.Payment{amount: 110, from: "Bob", to: "Alice"}.
 ----
 incremental-datalog/trace
-contract.node.Payment: [contract.node.Payment{amount: 110, from: "Bob", to: "Alice"}+1]
-3: [{A: 110, C: "Alice", D: "Bob"}+1]
-6: []
-7: [{A: 110, C: "Alice", D: "Bob"}+1]
-contract.owe: [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
-1: [{A: 110, C: "Alice", D: "Bob"}+1]
-2: [{A: 110, C: "Alice", D: "Bob"}+1]
-contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
+contract.node.Payment (BaseFactTable): [contract.node.Payment{amount: 110, from: "Bob", to: "Alice"}+1]
+3 (Match): [{A: 110, C: "Alice", D: "Bob"}+1]
+6 (Join): []
+7 (Union): [{A: 110, C: "Alice", D: "Bob"}+1]
+contract.owe (Substitute): [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
+1 (Match): [{A: 110, C: "Alice", D: "Bob"}+1]
+2 (Aggregation): [{A: 110, C: "Alice", D: "Bob"}+1]
+contract.balance (Substitute): [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}+1]
 
 contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", time: 0, to: "Bob"}.
 ----
 incremental-datalog/trace
-contract.PaymentRecord: [contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", time: 0, to: "Bob"}+1]
-4: [{A: 100, C: "Bob", D: "Alice"}+1]
-5: [{A: 100, C: "Bob", D: "Alice"}-1]
-6: [{A: 100, C: "Bob", D: "Alice"}-1]
-7: [{A: 100, C: "Bob", D: "Alice"}-1]
-contract.owe: [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
-1: [{A: 100, C: "Bob", D: "Alice"}-1]
-2: [{A: 100, C: "Bob", D: "Alice"}-1, {A: 0, C: "Bob", D: "Alice"}+1]
-contract.balance: [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
-contract.balance: [contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}+1]
+contract.PaymentRecord (BaseFactTable): [contract.PaymentRecord{amount: 100, contractID: 1, from: "Alice", time: 0, to: "Bob"}+1]
+4 (Match): [{A: 100, C: "Bob", D: "Alice"}+1]
+5 (Negation): [{A: 100, C: "Bob", D: "Alice"}-1]
+6 (Join): [{A: 100, C: "Bob", D: "Alice"}-1]
+7 (Union): [{A: 100, C: "Bob", D: "Alice"}-1]
+contract.owe (Substitute): [contract.owe{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
+1 (Match): [{A: 100, C: "Bob", D: "Alice"}-1]
+2 (Aggregation): [{A: 100, C: "Bob", D: "Alice"}-1, {A: 0, C: "Bob", D: "Alice"}+1]
+contract.balance (Substitute): [contract.balance{amount: 100, creditor: "Bob", debtor: "Alice"}-1]
+contract.balance (Substitute): [contract.balance{amount: 0, creditor: "Bob", debtor: "Alice"}+1]
 
 contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", time: 30, to: "Alice"}.
 ----
 incremental-datalog/trace
-contract.PaymentRecord: [contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", time: 30, to: "Alice"}+1]
-4: [{A: 110, C: "Alice", D: "Bob"}+1]
-5: [{A: 110, C: "Alice", D: "Bob"}-1]
-6: [{A: 110, C: "Alice", D: "Bob"}-1]
-7: [{A: 110, C: "Alice", D: "Bob"}-1]
-contract.owe: [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
-1: [{A: 110, C: "Alice", D: "Bob"}-1]
-2: [{A: 110, C: "Alice", D: "Bob"}-1, {A: 0, C: "Alice", D: "Bob"}+1]
-contract.balance: [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
-contract.balance: [contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}+1]
+contract.PaymentRecord (BaseFactTable): [contract.PaymentRecord{amount: 110, contractID: 1, from: "Bob", time: 30, to: "Alice"}+1]
+4 (Match): [{A: 110, C: "Alice", D: "Bob"}+1]
+5 (Negation): [{A: 110, C: "Alice", D: "Bob"}-1]
+6 (Join): [{A: 110, C: "Alice", D: "Bob"}-1]
+7 (Union): [{A: 110, C: "Alice", D: "Bob"}-1]
+contract.owe (Substitute): [contract.owe{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
+1 (Match): [{A: 110, C: "Alice", D: "Bob"}-1]
+2 (Aggregation): [{A: 110, C: "Alice", D: "Bob"}-1, {A: 0, C: "Alice", D: "Bob"}+1]
+contract.balance (Substitute): [contract.balance{amount: 110, creditor: "Alice", debtor: "Bob"}-1]
+contract.balance (Substitute): [contract.balance{amount: 0, creditor: "Alice", debtor: "Bob"}+1]
 
 contract.balance{}?
 ----
