@@ -95,7 +95,7 @@ export function joinGraphToGraphviz(graph: DiGraph, entries: Entry[]): Graph {
         out.nodes.push({
           id: i.toString(),
           // TODO: mark it as negation or aggregation
-          attrs: { label: getRecord(entry.conjunct).relation },
+          attrs: { label: getRecord(entry.conjunct).relation, shape: "box" },
         });
         break;
     }

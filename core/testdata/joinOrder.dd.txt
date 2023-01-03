@@ -6,11 +6,11 @@ ide.DefnForCursor{defnSpan: DS} :-
 ----
 application/graphviz
 digraph G {
-  "0" [label="ide.Cursor"];
-  "1" [label="scope.Var"];
-  "2" [label="base.lte"];
-  "3" [label="base.lte"];
-  "4" [label="scope.Usage"];
+  "0" [label="ide.Cursor" shape="box"];
+  "1" [label="scope.Var" shape="box"];
+  "2" [label="base.lte" shape="box"];
+  "3" [label="base.lte" shape="box"];
+  "4" [label="scope.Usage" shape="box"];
   "5" [label="CIdx"];
   "6" [label="FIdx"];
   "7" [label="TIdx"];
