@@ -14,14 +14,14 @@ application/datalog
 father{child: "Mary", father: "Mark"}.
 ----
 incremental-datalog/trace
-father: [father{child: "Mary", father: "Mark"}+1]
-1: [{B: "Mary", C: "Mark"}+1]
-2: []
+father (BaseFactTable): [father{child: "Mary", father: "Mark"}+1]
+1 (Match): [{B: "Mary", C: "Mark"}+1]
+2 (Join): []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}+1]
-0: [{A: "Pete", B: "Mary"}+1]
-2: [{A: "Pete", B: "Mary", C: "Mark"}+1]
-matGramp: [matGramp{child: "Pete", grandfather: "Mark"}+1]
+mother (BaseFactTable): [mother{child: "Pete", mother: "Mary"}+1]
+0 (Match): [{A: "Pete", B: "Mary"}+1]
+2 (Join): [{A: "Pete", B: "Mary", C: "Mark"}+1]
+matGramp (Substitute): [matGramp{child: "Pete", grandfather: "Mark"}+1]
