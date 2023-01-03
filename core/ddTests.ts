@@ -114,7 +114,7 @@ export function joinOrderTests(writeResults: boolean) {
       name: "joinOrder",
       test() {
         runDDTestAtPath(
-          "core/testData/joinOrder.dd.txt",
+          "core/testdata/joinOrder.dd.txt",
           joinOrderTest,
           writeResults
         );
