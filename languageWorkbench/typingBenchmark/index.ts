@@ -86,12 +86,15 @@ function typingTest(langSpec: LanguageSpec, test: string[]): TestOutput[] {
       );
     } else if (edit === "removeCursor") {
       // delete old cursor
+      const before = new Date().getTime();
       const { newInterp, output } = (
         interp as IncrementalInterpreter
       ).processStmt({
         type: "Delete",
         record: rec("ide.Cursor", { idx: int(lastCursor) }),
       });
+      const after = new Date().getTime();
+      console.log(after - before, "ms");
       out.push(
         formatIncrOutput((newInterp as IncrementalInterpreter).graph, output, {
           emissionLogMode: "test",
