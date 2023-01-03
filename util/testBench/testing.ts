@@ -3,14 +3,9 @@ import * as util from "util";
 import { Json, jsonEq } from "../json";
 
 // TODO: assert order-independent equal
-export function assert(
-  cond: boolean,
-  expected: string,
-  actual: string,
-  msg: string
-) {
+export function assert(cond: boolean, msg: string) {
   if (!cond) {
-    throw new DiffError(expected, actual, msg);
+    throw new Error(`condition not true: ${msg}`);
   }
 }
 
