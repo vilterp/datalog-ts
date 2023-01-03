@@ -1,4 +1,4 @@
-import { Suite } from "../util/testBench/testing";
+import { assert, Suite } from "../util/testBench/testing";
 import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
@@ -8,8 +8,12 @@ import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
 import { traceToGraph } from "./traceGraph";
 import { prettyPrintGraph } from "../util/graphviz";
-import { parseMain } from "../languageWorkbench/languages/dl/parser";
-import { parserStatementToInternal } from "./translateAST";
+import { parseMain, parseRule } from "../languageWorkbench/languages/dl/parser";
+import {
+  parserRuleToInternal,
+  parserStatementToInternal,
+} from "./translateAST";
+import { getConjunctGraph, joinGraphToGraphviz } from "./joinOrder";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -99,6 +103,21 @@ export function coreTestsCommon(writeResults: boolean): Suite {
   ];
 }
 
+export function joinOrderTests(writeResults: boolean) {
+  return [
+    {
+      name: "joinOrder",
+      test() {
+        runDDTestAtPath(
+          "core/testData/joinOrder.dd.txt",
+          joinOrderTest,
+          writeResults
+        );
+      },
+    },
+  ];
+}
+
 export function putThroughInterp(
   test: string[],
   getInterp: () => AbstractInterpreter
@@ -138,5 +157,16 @@ function traceGraphTest(test: string[]): TestOutput[] {
         })
         .join("\n")
     );
+  });
+}
+
+function joinOrderTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const rawRule = parseRule(input);
+    const rule = parserRuleToInternal(rawRule);
+    assert(rule.body.disjuncts.length === 1, "disjuncts length 1");
+    const [graph, entries] = getConjunctGraph(rule.body.disjuncts[0].conjuncts);
+    const graphvizGraph = joinGraphToGraphviz(graph, entries);
+    return graphvizOut(prettyPrintGraph(graphvizGraph));
   });
 }

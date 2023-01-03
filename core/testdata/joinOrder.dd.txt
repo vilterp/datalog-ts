@@ -1,0 +1,32 @@
+ide.DefnForCursor{defnSpan: DS} :-
+  ide.Cursor{idx: CIdx} &
+  scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
+  FIdx <= CIdx & CIdx <= TIdx &
+  scope.Usage{name: N, usageScopeID: Scope, defnSpan: DS}.
+----
+application/graphviz
+digraph G {
+  "0" [label="ide.Cursor"];
+  "1" [label="scope.Var"];
+  "2" [label="base.lte"];
+  "3" [label="base.lte"];
+  "4" [label="scope.Usage"];
+  "5" [label="CIdx"];
+  "6" [label="FIdx"];
+  "7" [label="TIdx"];
+  "8" [label="N"];
+  "9" [label="Scope"];
+  "10" [label="DS"];
+  "0" -> "5" [];
+  "1" -> "6" [];
+  "1" -> "7" [];
+  "1" -> "8" [];
+  "1" -> "9" [];
+  "2" -> "6" [];
+  "2" -> "5" [];
+  "3" -> "5" [];
+  "3" -> "7" [];
+  "4" -> "8" [];
+  "4" -> "9" [];
+  "4" -> "10" [];
+}
