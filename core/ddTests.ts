@@ -13,7 +13,12 @@ import {
   parserRuleToInternal,
   parserStatementToInternal,
 } from "./translateAST";
-import { getConjunctGraph, joinGraphToGraphviz } from "./joinOrder";
+import {
+  getConjunctGraph,
+  getJoinOrder,
+  getRecord,
+  joinGraphToGraphviz,
+} from "./joinOrder";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -162,11 +167,26 @@ function traceGraphTest(test: string[]): TestOutput[] {
 
 function joinOrderTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const rawRule = parseRule(input);
+    const lines = input.split("\n");
+    const first = lines[0];
+    const rest = lines.slice(1).join("\n");
+    const rawRule = parseRule(rest);
     const rule = parserRuleToInternal(rawRule);
     assert(rule.body.disjuncts.length === 1, "disjuncts length 1");
-    const [graph, entries] = getConjunctGraph(rule.body.disjuncts[0].conjuncts);
-    const graphvizGraph = joinGraphToGraphviz(graph, entries);
-    return graphvizOut(prettyPrintGraph(graphvizGraph));
+    const conjuncts = rule.body.disjuncts[0].conjuncts;
+    switch (first) {
+      case "graph": {
+        const [graph, entries] = getConjunctGraph(conjuncts);
+        const graphvizGraph = joinGraphToGraphviz(graph, entries);
+        return graphvizOut(prettyPrintGraph(graphvizGraph));
+      }
+      case "order": {
+        return jsonOut(
+          getJoinOrder(conjuncts).map(
+            (conjunct) => getRecord(conjunct).relation
+          )
+        );
+      }
+    }
   });
 }

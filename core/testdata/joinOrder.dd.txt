@@ -1,3 +1,4 @@
+graph
 ide.DefnForCursor{defnSpan: DS} :-
   ide.Cursor{idx: CIdx} &
   scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
@@ -30,3 +31,19 @@ digraph G {
   "4" -> "9" [];
   "4" -> "10" [];
 }
+
+order
+ide.DefnForCursor{defnSpan: DS} :-
+  ide.Cursor{idx: CIdx} &
+  scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
+  FIdx <= CIdx & CIdx <= TIdx &
+  scope.Usage{name: N, usageScopeID: Scope, defnSpan: DS}.
+----
+application/json
+[
+  "scope.Usage",
+  "base.lte",
+  "base.lte",
+  "scope.Var",
+  "ide.Cursor"
+]
