@@ -21,9 +21,13 @@ type Entry =
   | { type: "Var"; name: string }
   | { type: "Conjunct"; conjunct: Conjunct };
 
-export function getConjunctGraph(conjuncts: Conjunct[]): [DiGraph, Entry[]] {
+export function getConjunctGraph(
+  conjuncts: Conjunct[]
+): [DiGraph, Entry[], string[]] {
   const varNameToIndex = new Map<string, number>();
-  const edgesFromConjuncts = new DefaultDict<string[]>(() => []);
+  const edgesFromConjuncts = new DefaultDict<
+    { path: string[]; varName: string }[]
+  >(() => []);
   const varEntries: Entry[] = [];
   conjuncts.forEach((conjunct, conjunctIdx) => {
     const varToPath = getVarToPath(getRecord(conjunct));
@@ -32,21 +36,24 @@ export function getConjunctGraph(conjuncts: Conjunct[]): [DiGraph, Entry[]] {
         varNameToIndex.set(varName, varNameToIndex.size);
         varEntries.push({ type: "Var", name: varName });
       }
-      edgesFromConjuncts.get(conjunctIdx.toString()).push(varName);
+      const path = varToPath[varName];
+      edgesFromConjuncts.get(conjunctIdx.toString()).push({ varName, path });
     }
   });
+  const edgeLabel: string[] = [];
   const graph = new DiGraph(conjuncts.length + varNameToIndex.size);
   conjuncts.forEach((_, idx) => {
     const edgesFrom = edgesFromConjuncts.get(idx.toString());
-    edgesFrom.forEach((varName) => {
+    edgesFrom.forEach(({ varName, path }) => {
       graph.addEdge(idx, conjuncts.length + varNameToIndex.get(varName));
+      edgeLabel.push(path.join("."));
     });
   });
   const entries: Entry[] = [
     ...conjuncts.map((conjunct): Entry => ({ type: "Conjunct", conjunct })),
     ...varEntries,
   ];
-  return [graph, entries];
+  return [graph, entries, edgeLabel];
 }
 
 export function getVarToPath(rec: Rec): VarToPath {
@@ -80,7 +87,11 @@ export function getRecord(conjunct: Conjunct): Rec {
   }
 }
 
-export function joinGraphToGraphviz(graph: DiGraph, entries: Entry[]): Graph {
+export function joinGraphToGraphviz(
+  graph: DiGraph,
+  entries: Entry[],
+  edgeLabel: string[]
+): Graph {
   const out: Graph = {
     nodes: [],
     edges: [],
@@ -102,7 +113,11 @@ export function joinGraphToGraphviz(graph: DiGraph, entries: Entry[]): Graph {
   }
   for (let i = 0; i < graph.V; i++) {
     graph.adj(i).forEach((j) => {
-      out.edges.push({ from: i.toString(), to: j.toString(), attrs: {} });
+      out.edges.push({
+        from: i.toString(),
+        to: j.toString(),
+        attrs: { label: edgeLabel[i] },
+      });
     });
   }
   return out;

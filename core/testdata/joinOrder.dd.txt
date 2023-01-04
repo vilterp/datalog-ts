@@ -18,18 +18,18 @@ digraph G {
   "8" [label="N"];
   "9" [label="Scope"];
   "10" [label="DS"];
-  "0" -> "5" [];
-  "1" -> "6" [];
-  "1" -> "7" [];
-  "1" -> "8" [];
-  "1" -> "9" [];
-  "2" -> "6" [];
-  "2" -> "5" [];
-  "3" -> "5" [];
-  "3" -> "7" [];
-  "4" -> "8" [];
-  "4" -> "9" [];
-  "4" -> "10" [];
+  "0" -> "5" [label="idx"];
+  "1" -> "6" [label="span.from"];
+  "1" -> "7" [label="span.from"];
+  "1" -> "8" [label="span.from"];
+  "1" -> "9" [label="span.from"];
+  "2" -> "6" [label="span.to"];
+  "2" -> "5" [label="span.to"];
+  "3" -> "5" [label="name"];
+  "3" -> "7" [label="name"];
+  "4" -> "8" [label="scopeID"];
+  "4" -> "9" [label="scopeID"];
+  "4" -> "10" [label="scopeID"];
 }
 
 order

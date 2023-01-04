@@ -176,8 +176,8 @@ function joinOrderTest(test: string[]): TestOutput[] {
     const conjuncts = rule.body.disjuncts[0].conjuncts;
     switch (first) {
       case "graph": {
-        const [graph, entries] = getConjunctGraph(conjuncts);
-        const graphvizGraph = joinGraphToGraphviz(graph, entries);
+        const [graph, entries, edgeLabel] = getConjunctGraph(conjuncts);
+        const graphvizGraph = joinGraphToGraphviz(graph, entries, edgeLabel);
         return graphvizOut(prettyPrintGraph(graphvizGraph));
       }
       case "order": {
