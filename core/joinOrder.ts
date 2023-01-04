@@ -4,7 +4,7 @@ import { DefaultDict } from "../util/defaultDict";
 import { Graph } from "../util/graphviz";
 
 export function getJoinOrder(conjuncts: Conjunct[]): Conjunct[] {
-  const [graph, entries] = getConjunctGraph(conjuncts);
+  const [graph, entries, _] = getConjunctGraph(conjuncts);
   const topSort = new TopologicalSort(graph);
   const order = topSort.order();
   const out: Conjunct[] = [];
