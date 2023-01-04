@@ -17,6 +17,7 @@ import {
   getConjunctGraph,
   getJoinOrder,
   getRecord,
+  getVarOrder,
   joinGraphToGraphviz,
 } from "./joinOrder";
 
@@ -180,13 +181,14 @@ function joinOrderTest(test: string[]): TestOutput[] {
         const graphvizGraph = joinGraphToGraphviz(graph, entries, edgeLabel);
         return graphvizOut(prettyPrintGraph(graphvizGraph));
       }
-      case "order": {
+      case "joinOrder":
         return jsonOut(
           getJoinOrder(conjuncts).map(
             (conjunct) => getRecord(conjunct).relation
           )
         );
-      }
+      case "varOrder":
+        return jsonOut(getVarOrder(conjuncts));
     }
   });
 }

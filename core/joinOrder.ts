@@ -17,6 +17,20 @@ export function getJoinOrder(conjuncts: Conjunct[]): Conjunct[] {
   return out;
 }
 
+export function getVarOrder(conjuncts: Conjunct[]): string[] {
+  const [graph, entries, _] = getConjunctGraph(conjuncts);
+  const topSort = new TopologicalSort(graph);
+  const order = topSort.order();
+  const out: string[] = [];
+  for (const idx of order) {
+    const entry = entries[idx];
+    if (entry.type === "Var") {
+      out.push(entry.name);
+    }
+  }
+  return out;
+}
+
 type Entry =
   | { type: "Var"; name: string }
   | { type: "Conjunct"; conjunct: Conjunct };

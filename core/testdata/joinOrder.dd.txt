@@ -32,7 +32,7 @@ digraph G {
   "4" -> "10" [label="scopeID"];
 }
 
-order
+joinOrder
 ide.DefnForCursor{defnSpan: DS} :-
   ide.Cursor{idx: CIdx} &
   scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
@@ -46,4 +46,21 @@ application/json
   "base.lte",
   "scope.Var",
   "ide.Cursor"
+]
+
+varOrder
+ide.DefnForCursor{defnSpan: DS} :-
+  ide.Cursor{idx: CIdx} &
+  scope.Var{span: span{from: FIdx, to: TIdx}, name: N, scopeID: Scope} &
+  FIdx <= CIdx & CIdx <= TIdx &
+  scope.Usage{name: N, usageScopeID: Scope, defnSpan: DS}.
+----
+application/json
+[
+  "DS",
+  "Scope",
+  "N",
+  "TIdx",
+  "FIdx",
+  "CIdx"
 ]
