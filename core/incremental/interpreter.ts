@@ -23,7 +23,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   constructor(
     cwd: string,
     loader: Loader,
-    catalog: Catalog = emptyCatalog,
+    catalog: Catalog = emptyCatalog(),
     graph: RuleGraph = emptyRuleGraph()
   ) {
     super(cwd, loader);
@@ -146,17 +146,22 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   }
 
   getRules(): Rule[] {
-    return this.catalog
-      .valueSeq()
-      .filter((e) => e.type === "Rule")
-      .map((val) => (val as RuleEntry).rule)
-      .toArray();
+    const out: Rule[] = [];
+    for (const entry of this.catalog.values()) {
+      if (entry.type === "Rule") {
+        out.push(entry.rule);
+      }
+    }
+    return out;
   }
 
   getTables(): string[] {
-    return this.catalog
-      .filter((e) => e.type === "Table")
-      .keySeq()
-      .toArray();
+    const out: string[] = [];
+    for (const [name, entry] of this.catalog.entries()) {
+      if (entry.type === "Table") {
+        out.push(name);
+      }
+    }
+    return out;
   }
 }

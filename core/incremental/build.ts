@@ -23,22 +23,20 @@ import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
   let graph = emptyRuleGraph();
-  graph = catalog.reduce((accum, rel, relName) => {
+  for (const [relName, rel] of catalog.entries()) {
     switch (rel.type) {
       case "Table":
-        return declareTable(accum, relName);
-      default:
-        return accum;
+        graph = declareTable(graph, relName);
+        break;
     }
-  }, graph);
-  graph = catalog.reduce((accum, rel) => {
+  }
+  for (const [relName, rel] of catalog.entries()) {
     switch (rel.type) {
       case "Rule":
-        return addRule(accum, rel.rule);
-      default:
-        return accum;
+        graph = addRule(graph, rel.rule);
+        break;
     }
-  }, graph);
+  }
   return graph;
 }
 
