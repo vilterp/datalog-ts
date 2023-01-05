@@ -1,0 +1,29 @@
+.table edge
+----
+
+reach{from: A, to: C} :-
+  A = C |
+  edge{from: A, to: C} |
+  edge{from: A, to: B} &
+  reach{from: B, to: C}.
+----
+
+sameSCC{a: A, b: B} :-
+  reach{from: A, to: B} &
+  reach{from: B, to: A}.
+----
+
+edge{from: "a", to: "b"}.
+----
+
+edge{from: "b", to: "c"}.
+----
+
+edge{from: "c", to: "a"}.
+----
+
+edge{from: "d", to: "e"}.
+----
+
+edge{from: "e", to: "d"}.
+----
