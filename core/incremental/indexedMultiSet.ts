@@ -83,6 +83,10 @@ export class IndexedMultiSet<T> {
     );
   }
 
+  has(item: T): boolean {
+    return this.allRecords.has(this.stringify(item));
+  }
+
   getByIndex(indexName: string, key: List<string>): Map<T, number> {
     const keySet: Set<string> = this.indexes
       .get(indexName)

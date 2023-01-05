@@ -43,12 +43,22 @@ export function buildGraph(catalog: Catalog): RuleGraph {
 }
 
 function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
-  const { newGraph: withOr, tipID } = addOr(graph, rule.body);
-  const withSubst = addNodeKnownID(rule.head.relation, withOr, false, {
+  let newGraph = graph;
+  // add rule body
+  const orRes = addOr(graph, rule.body);
+  newGraph = orRes.newGraph;
+  // add distinct
+  const [withDistinct, distinctID] = addNode(newGraph, true, {
+    type: "Distinct",
+  });
+  newGraph = withDistinct;
+  newGraph = addEdge(graph, orRes.tipID, distinctID);
+  // add subst
+  const withSubst = addNodeKnownID(rule.head.relation, newGraph, false, {
     type: "Substitute",
     rec: rule.head,
   });
-  return addEdge(withSubst, tipID, rule.head.relation);
+  return addEdge(withSubst, distinctID, rule.head.relation);
 }
 
 function declareTable(graph: RuleGraph, name: string): RuleGraph {
