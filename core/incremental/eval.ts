@@ -228,15 +228,8 @@ function updateCache(
   res: Res,
   multiplicityDelta: number
 ): RuleGraph {
-  const cache = graph.nodes.get(nodeID).cache;
-  const newCache = cache.update(res, multiplicityDelta);
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (oldNode) => ({
-      ...oldNode,
-      cache: newCache,
-    })),
-  };
+  graph.nodes.get(nodeID).cache.update(res, multiplicityDelta);
+  return graph;
 }
 
 function updateNodeDesc(
@@ -244,11 +237,6 @@ function updateNodeDesc(
   nodeID: NodeID,
   newDesc: NodeDesc
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (oldNode) => ({
-      ...oldNode,
-      desc: newDesc,
-    })),
-  };
+  graph.nodes.get(nodeID).desc = newDesc;
+  return graph;
 }
