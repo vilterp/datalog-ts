@@ -45,14 +45,14 @@ export function buildGraph(catalog: Catalog): RuleGraph {
 function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   let newGraph = graph;
   // add rule body
-  const orRes = addOr(graph, rule.body);
+  const orRes = addOr(newGraph, rule.body);
   newGraph = orRes.newGraph;
   // add distinct
   const [withDistinct, distinctID] = addNode(newGraph, true, {
     type: "Distinct",
   });
   newGraph = withDistinct;
-  newGraph = addEdge(graph, orRes.tipID, distinctID);
+  newGraph = addEdge(newGraph, orRes.tipID, distinctID);
   // add subst
   const withSubst = addNodeKnownID(rule.head.relation, newGraph, false, {
     type: "Substitute",

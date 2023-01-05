@@ -25,6 +25,8 @@ export function formatNodeDesc(nodeDesc: NodeDesc): string {
       }[${nodeDesc.aggregation.varNames.join(", ")}: ${ppt(
         nodeDesc.aggregation.record
       )}])`;
+    case "Distinct":
+      return "Distinct";
   }
 }
 
