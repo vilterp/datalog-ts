@@ -43,6 +43,7 @@ input.next: [input.next{left: -1, right: 0}+1]
 2: [{C: "START", P1: -1, P2: 0}+1]
 4: [{C: "START", P1: -1, P2: 0}+1]
 6: [{C: "START", P1: -1, P2: 0}+1]
+7: [{C: "START", P1: -1, P2: 0}+1]
 main: [main{span: span{from: -1, to: 0}}+1]
 
 input.next{left: 0, right: -2}.
@@ -53,4 +54,5 @@ input.next: [input.next{left: 0, right: -2}+1]
 2: [{C: "b", P1: 0, P2: -2}+1]
 4: [{C: "b", P1: 0, P2: -2}+1]
 6: [{C: "b", P1: 0, P2: -2}+1]
+7: [{C: "b", P1: 0, P2: -2}+1]
 main: [main{span: span{from: 0, to: -2}}+1]

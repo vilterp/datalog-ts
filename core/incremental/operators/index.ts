@@ -1,5 +1,8 @@
+import { Res } from "../../types";
+import { IndexedMultiSet } from "../indexedMultiSet";
 import { RuleGraph, Message, NodeDesc, MessagePayload, NodeID } from "../types";
 import { processAggregation } from "./aggregation";
+import { processDistinct } from "./distinct";
 import { processJoin } from "./join";
 import { processMatch } from "./match";
 import { processNegation } from "./negation";
@@ -9,6 +12,7 @@ import { processSubstitute } from "./substitute";
 export function processMessage(
   graph: RuleGraph,
   nodeDesc: NodeDesc,
+  cache: IndexedMultiSet<Res>,
   origin: NodeID,
   payload: MessagePayload
 ): [NodeDesc, MessagePayload[]] {
@@ -30,5 +34,8 @@ export function processMessage(
       return [nodeDesc, processNegation(payload)];
     case "Aggregation":
       return processAggregation(nodeDesc, payload);
+    case "Distinct": {
+      return [nodeDesc, processDistinct(cache, payload)];
+    }
   }
 }

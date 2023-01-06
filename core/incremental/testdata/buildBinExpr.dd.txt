@@ -8,11 +8,13 @@ digraph G {
   "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(foo{a: A, b: B}) [A-B]" shape="box" style="filled"];
   "1" [fillcolor="" fontname="Courier" label="1: Builtin(base.neq{a: A, b: B}) [A-B]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(A, B) []" shape="box" style="filled"];
+  "3" [fillcolor="" fontname="Courier" label="3: Distinct []" shape="box" style="filled"];
   "bar" [fillcolor="lightblue" fontname="Courier" label="bar: Subst(bar{a: A, b: B}) []" shape="box" style="filled"];
   "foo" -> "0" [];
   "1" -> "2" [];
   "0" -> "2" [];
-  "2" -> "bar" [];
+  "2" -> "3" [];
+  "3" -> "bar" [];
 }
 
 .table parents
@@ -29,6 +31,7 @@ digraph G {
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(F, M) [L-R]" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.neq{a: L, b: R}) [L-R]" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(L, R) []" shape="box" style="filled"];
+  "5" [fillcolor="" fontname="Courier" label="5: Distinct []" shape="box" style="filled"];
   "sibling" [fillcolor="lightblue" fontname="Courier" label="sibling: Subst(sibling{left: L, right: R}) []" shape="box" style="filled"];
   "parents" -> "0" [];
   "parents" -> "1" [];
@@ -36,7 +39,8 @@ digraph G {
   "0" -> "2" [];
   "3" -> "4" [];
   "2" -> "4" [];
-  "4" -> "sibling" [];
+  "4" -> "5" [];
+  "5" -> "sibling" [];
 }
 
 .table input.char
@@ -56,6 +60,7 @@ digraph G {
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(C) [C]" shape="box" style="filled"];
   "5" [fillcolor="" fontname="Courier" label="5: Builtin(base.lte{a: C, b: \"z\"}) [C]" shape="box" style="filled"];
   "6" [fillcolor="thistle" fontname="Courier" label="6: Join(C) []" shape="box" style="filled"];
+  "7" [fillcolor="" fontname="Courier" label="7: Distinct []" shape="box" style="filled"];
   "input.next" [fillcolor="darksalmon" fontname="Courier" label="input.next:  []" shape="box" style="filled"];
   "main" [fillcolor="lightblue" fontname="Courier" label="main: Subst(main{span: span{from: P1, to: P2}}) []" shape="box" style="filled"];
   "input.char" [fillcolor="darksalmon" fontname="Courier" label="input.char:  []" shape="box" style="filled"];
@@ -65,7 +70,8 @@ digraph G {
   "3" -> "4" [];
   "4" -> "6" [];
   "5" -> "6" [];
-  "6" -> "main" [];
+  "6" -> "7" [];
+  "7" -> "main" [];
   "input.next" -> "1" [];
   "input.char" -> "0" [];
 }

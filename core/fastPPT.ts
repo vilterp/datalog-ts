@@ -1,4 +1,4 @@
-import { mapObjToListUnordered } from "../util/util";
+import { mapObjToList, mapObjToListUnordered } from "../util/util";
 import { Bindings, Res, Term } from "./types";
 
 export function fastPPR(res: Res) {
@@ -6,10 +6,9 @@ export function fastPPR(res: Res) {
 }
 
 export function fastPPB(bindings: Bindings) {
-  return `{${mapObjToListUnordered(
-    bindings,
-    (k, v) => `${k}: ${fastPPT(v)}`
-  ).join(", ")}}`;
+  return `{${mapObjToList(bindings, (k, v) => `${k}: ${fastPPT(v)}`).join(
+    ", "
+  )}}`;
 }
 
 export function fastPPT(term: Term): string {

@@ -24,4 +24,5 @@ incremental-datalog/trace
 mother: [mother{child: "Pete", mother: "Mary"}+1]
 0: [{A: "Pete", B: "Mary"}+1]
 2: [{A: "Pete", B: "Mary", C: "Mark"}+1]
+3: [{A: "Pete", B: "Mary", C: "Mark"}+1]
 matGramp: [matGramp{child: "Pete", grandfather: "Mark"}+1]

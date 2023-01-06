@@ -33,6 +33,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["dlParser", evalTest],
     ["timeStep", evalTest],
     ["contracts", evalTest],
+    ["sccs", evalTest],
     ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({

@@ -46,6 +46,7 @@ export type NodeDesc =
   | MatchDesc
   | SubstituteDesc
   | AggregationDesc
+  | { type: "Distinct" }
   | { type: "Negation" }
   | { type: "BaseFactTable" }
   | { type: "Union" }
