@@ -8,6 +8,7 @@ export function processDistinct(
   payload: MessagePayload
 ): MessagePayload[] {
   const data = payload.data;
+  // TODO: dedup this with building of Res in updateNodeCache
   const res: Res =
     data.type === "Bindings"
       ? {
