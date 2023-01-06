@@ -17,4 +17,5 @@ incremental-datalog/trace
 father: [father{child: "Pete", father: "Paul"}+1]
 2: [{C: "Pete", P: "Paul"}+1]
 0: [{C: "Pete", P: "Paul"}+1]
+3: [{C: "Pete", P: "Paul"}+1]
 parent: [parent{child: "Pete", parent: "Paul"}+1]

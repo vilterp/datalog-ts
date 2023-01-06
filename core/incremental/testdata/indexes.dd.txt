@@ -38,4 +38,5 @@ incremental-datalog/trace
 fundingSource: [fundingSource{objective: "make website", source: "some company"}+1]
 3: [{O: "make website", S: "some company"}+1]
 4: [{C: "write HTML", N: "Pete", O: "make website", S: "some company"}+1]
+5: [{C: "write HTML", N: "Pete", O: "make website", S: "some company"}+1]
 opportunity: [opportunity{capability: "write HTML", fundingSource: "some company", objective: "make website", worker: "Pete"}+1]
