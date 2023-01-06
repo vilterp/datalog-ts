@@ -30,20 +30,20 @@ digraph G {
   "a" [fillcolor="darksalmon" fontname="Courier" label="a:  []" shape="box" style="filled"];
   "b" [fillcolor="darksalmon" fontname="Courier" label="b:  []" shape="box" style="filled"];
   "c" [fillcolor="darksalmon" fontname="Courier" label="c:  []" shape="box" style="filled"];
-  "d" [fillcolor="lightblue" fontname="Courier" label="d: Subst(d{}) []" shape="box" style="filled"];
   "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(a{}) []" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(b{}) []" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join() []" shape="box" style="filled"];
   "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(c{}) []" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join() []" shape="box" style="filled"];
   "5" [fillcolor="" fontname="Courier" label="5: Distinct []" shape="box" style="filled"];
+  "d" [fillcolor="lightblue" fontname="Courier" label="d: Subst(d{}) []" shape="box" style="filled"];
   "a" -> "0" [];
   "b" -> "1" [];
-  "c" -> "3" [];
-  "0" -> "2" [];
   "1" -> "2" [];
-  "2" -> "4" [];
+  "0" -> "2" [];
+  "c" -> "3" [];
   "3" -> "4" [];
+  "2" -> "4" [];
   "4" -> "5" [];
   "5" -> "d" [];
 }
@@ -81,29 +81,29 @@ grandparent{grandchild: A, grandparent: C} :-
 application/graphviz
 digraph G {
   "mother" [fillcolor="darksalmon" fontname="Courier" label="mother:  []" shape="box" style="filled"];
-  "parent" [fillcolor="lightblue" fontname="Courier" label="parent: Subst(parent{child: C, parent: P}) []" shape="box" style="filled"];
+  "father" [fillcolor="darksalmon" fontname="Courier" label="father:  []" shape="box" style="filled"];
   "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(mother{child: C, mother: P}) []" shape="box" style="filled"];
   "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(father{child: C, father: P}) []" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Distinct []" shape="box" style="filled"];
+  "parent" [fillcolor="lightblue" fontname="Courier" label="parent: Subst(parent{child: C, parent: P}) []" shape="box" style="filled"];
   "4" [fillcolor="darkseagreen2" fontname="Courier" label="4: Match(parent{child: A, parent: B}) [B]" shape="box" style="filled"];
   "5" [fillcolor="darkseagreen2" fontname="Courier" label="5: Match(parent{child: B, parent: C}) [B]" shape="box" style="filled"];
   "6" [fillcolor="thistle" fontname="Courier" label="6: Join(B) []" shape="box" style="filled"];
-  "grandparent" [fillcolor="lightblue" fontname="Courier" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box" style="filled"];
   "7" [fillcolor="" fontname="Courier" label="7: Distinct []" shape="box" style="filled"];
-  "father" [fillcolor="darksalmon" fontname="Courier" label="father:  []" shape="box" style="filled"];
+  "grandparent" [fillcolor="lightblue" fontname="Courier" label="grandparent: Subst(grandparent{grandchild: A, grandparent: C}) []" shape="box" style="filled"];
   "mother" -> "1" [];
+  "1" -> "0" [];
+  "father" -> "2" [];
+  "2" -> "0" [];
+  "0" -> "3" [];
+  "3" -> "parent" [];
   "parent" -> "4" [];
   "parent" -> "5" [];
-  "0" -> "3" [];
-  "1" -> "0" [];
-  "2" -> "0" [];
-  "3" -> "parent" [];
-  "4" -> "6" [];
   "5" -> "6" [];
+  "4" -> "6" [];
   "6" -> "7" [];
   "7" -> "grandparent" [];
-  "father" -> "2" [];
 }
 
 .table var
@@ -192,42 +192,42 @@ level{time: T, val: V} :-
 ----
 application/graphviz
 digraph G {
-  "11" [fillcolor="darkseagreen2" fontname="Courier" label="11: Match(levelInit{time: T, val: V}) []" shape="box" style="filled"];
-  "12" [fillcolor="darkseagreen2" fontname="Courier" label="12: Match(levelStep{time: T, val: V}) []" shape="box" style="filled"];
-  "13" [fillcolor="" fontname="Courier" label="13: Distinct []" shape="box" style="filled"];
-  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{time: T, val: V}) []" shape="box" style="filled"];
-  "time" [fillcolor="lightblue" fontname="Courier" label="time: Subst(time{time: T}) []" shape="box" style="filled"];
+  "levelInit" [fillcolor="darksalmon" fontname="Courier" label="levelInit:  []" shape="box" style="filled"];
   "0" [fillcolor="" fontname="Courier" label="0: Builtin(range{from: 1, to: 10, val: T}) []" shape="box" style="filled"];
-  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{time: T, val: V}) []" shape="box" style="filled"];
   "1" [fillcolor="" fontname="Courier" label="1: Distinct []" shape="box" style="filled"];
+  "time" [fillcolor="lightblue" fontname="Courier" label="time: Subst(time{time: T}) []" shape="box" style="filled"];
   "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(time{time: T}) [T]" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.add{a: PrevT, b: 1, res: T}) [T]" shape="box" style="filled"];
   "4" [fillcolor="thistle" fontname="Courier" label="4: Join(T) [PrevT]" shape="box" style="filled"];
-  "levelInit" [fillcolor="darksalmon" fontname="Courier" label="levelInit:  []" shape="box" style="filled"];
   "5" [fillcolor="darkseagreen2" fontname="Courier" label="5: Match(level{time: PrevT, val: PrevV}) [PrevT]" shape="box" style="filled"];
   "6" [fillcolor="thistle" fontname="Courier" label="6: Join(PrevT) [PrevV]" shape="box" style="filled"];
   "7" [fillcolor="" fontname="Courier" label="7: Builtin(base.add{a: PrevV, b: 1, res: V}) [PrevV]" shape="box" style="filled"];
   "8" [fillcolor="thistle" fontname="Courier" label="8: Join(PrevV) []" shape="box" style="filled"];
   "9" [fillcolor="" fontname="Courier" label="9: Distinct []" shape="box" style="filled"];
+  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{time: T, val: V}) []" shape="box" style="filled"];
   "10" [fillcolor="moccasin" fontname="Courier" label="10: Union []" shape="box" style="filled"];
-  "11" -> "10" [];
-  "12" -> "10" [];
-  "13" -> "level" [];
-  "level" -> "5" [];
-  "time" -> "2" [];
+  "11" [fillcolor="darkseagreen2" fontname="Courier" label="11: Match(levelInit{time: T, val: V}) []" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" fontname="Courier" label="12: Match(levelStep{time: T, val: V}) []" shape="box" style="filled"];
+  "13" [fillcolor="" fontname="Courier" label="13: Distinct []" shape="box" style="filled"];
+  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{time: T, val: V}) []" shape="box" style="filled"];
   "0" -> "1" [];
-  "levelStep" -> "12" [];
   "1" -> "time" [];
-  "2" -> "4" [];
+  "time" -> "2" [];
   "3" -> "4" [];
-  "4" -> "6" [];
-  "levelInit" -> "11" [];
+  "2" -> "4" [];
+  "level" -> "5" [];
   "5" -> "6" [];
-  "6" -> "8" [];
+  "4" -> "6" [];
   "7" -> "8" [];
+  "6" -> "8" [];
   "8" -> "9" [];
   "9" -> "levelStep" [];
+  "levelInit" -> "11" [];
+  "11" -> "10" [];
+  "levelStep" -> "12" [];
+  "12" -> "10" [];
   "10" -> "13" [];
+  "13" -> "level" [];
 }
 
 .table levelInitial
@@ -245,44 +245,44 @@ input{time: T, current: C} :-
 ----
 application/graphviz
 digraph G {
-  "11" [fillcolor="" fontname="Courier" label="11: Distinct []" shape="box" style="filled"];
   "levelInitial" [fillcolor="darksalmon" fontname="Courier" label="levelInitial:  []" shape="box" style="filled"];
-  "12" [fillcolor="darkseagreen2" fontname="Courier" label="12: Match(inputFrom{current: C, time: T}) []" shape="box" style="filled"];
-  "13" [fillcolor="" fontname="Courier" label="13: Agg(sum[T, C: inputFrom{current: C, time: T}]) []" shape="box" style="filled"];
-  "14" [fillcolor="" fontname="Courier" label="14: Distinct []" shape="box" style="filled"];
-  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{level: L, time: T}) []" shape="box" style="filled"];
-  "input" [fillcolor="lightblue" fontname="Courier" label="input: Subst(input{current: C, time: T}) []" shape="box" style="filled"];
+  "inputFrom" [fillcolor="darksalmon" fontname="Courier" label="inputFrom:  []" shape="box" style="filled"];
   "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
-  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{level: NextLevel, time: T}) []" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(levelInitial{level: L, time: T}) []" shape="box" style="filled"];
   "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(levelStep{level: L, time: T}) []" shape="box" style="filled"];
   "3" [fillcolor="" fontname="Courier" label="3: Distinct []" shape="box" style="filled"];
+  "level" [fillcolor="lightblue" fontname="Courier" label="level: Subst(level{level: L, time: T}) []" shape="box" style="filled"];
   "4" [fillcolor="" fontname="Courier" label="4: Builtin(base.add{a: PrevT, b: 1, res: T}) [PrevT]" shape="box" style="filled"];
-  "inputFrom" [fillcolor="darksalmon" fontname="Courier" label="inputFrom:  []" shape="box" style="filled"];
   "5" [fillcolor="darkseagreen2" fontname="Courier" label="5: Match(level{level: PrevLevel, time: PrevT}) [PrevT]" shape="box" style="filled"];
   "6" [fillcolor="thistle" fontname="Courier" label="6: Join(PrevT) [T]" shape="box" style="filled"];
   "7" [fillcolor="darkseagreen2" fontname="Courier" label="7: Match(input{current: Input, time: T}) [T]" shape="box" style="filled"];
   "8" [fillcolor="thistle" fontname="Courier" label="8: Join(T) [Input-PrevLevel]" shape="box" style="filled"];
   "9" [fillcolor="" fontname="Courier" label="9: Builtin(base.add{a: PrevLevel, b: Input, res: NextLevel}) [Input-PrevLevel]" shape="box" style="filled"];
   "10" [fillcolor="thistle" fontname="Courier" label="10: Join(Input, PrevLevel) []" shape="box" style="filled"];
-  "11" -> "levelStep" [];
+  "11" [fillcolor="" fontname="Courier" label="11: Distinct []" shape="box" style="filled"];
+  "levelStep" [fillcolor="lightblue" fontname="Courier" label="levelStep: Subst(levelStep{level: NextLevel, time: T}) []" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" fontname="Courier" label="12: Match(inputFrom{current: C, time: T}) []" shape="box" style="filled"];
+  "13" [fillcolor="" fontname="Courier" label="13: Agg(sum[T, C: inputFrom{current: C, time: T}]) []" shape="box" style="filled"];
+  "14" [fillcolor="" fontname="Courier" label="14: Distinct []" shape="box" style="filled"];
+  "input" [fillcolor="lightblue" fontname="Courier" label="input: Subst(input{current: C, time: T}) []" shape="box" style="filled"];
   "levelInitial" -> "1" [];
+  "1" -> "0" [];
+  "levelStep" -> "2" [];
+  "2" -> "0" [];
+  "0" -> "3" [];
+  "3" -> "level" [];
+  "level" -> "5" [];
+  "5" -> "6" [];
+  "4" -> "6" [];
+  "input" -> "7" [];
+  "7" -> "8" [];
+  "6" -> "8" [];
+  "9" -> "10" [];
+  "8" -> "10" [];
+  "10" -> "11" [];
+  "11" -> "levelStep" [];
+  "inputFrom" -> "12" [];
   "12" -> "13" [];
   "13" -> "14" [];
   "14" -> "input" [];
-  "level" -> "5" [];
-  "input" -> "7" [];
-  "0" -> "3" [];
-  "levelStep" -> "2" [];
-  "1" -> "0" [];
-  "2" -> "0" [];
-  "3" -> "level" [];
-  "4" -> "6" [];
-  "inputFrom" -> "12" [];
-  "5" -> "6" [];
-  "6" -> "8" [];
-  "7" -> "8" [];
-  "8" -> "10" [];
-  "9" -> "10" [];
-  "10" -> "11" [];
 }
