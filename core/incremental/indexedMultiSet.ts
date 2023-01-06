@@ -14,8 +14,6 @@ type Index<T> = {
   items: Map<List<string>, Set<string>>;
 };
 
-const MULT_RANGE: [number, number] = [-1, 1];
-
 export class IndexedMultiSet<T> {
   private readonly allRecords: Map<string, ItemAndMult<T>>;
   private readonly indexes: Map<string, Index<T>>;
@@ -70,7 +68,7 @@ export class IndexedMultiSet<T> {
     // TODO: remove item if newMult is 0?
     const key = this.stringify(item);
     const curMult = this.allRecords.get(key, { item, mult: 0 }).mult;
-    const newMult = clamp(curMult + multiplicityDelta, MULT_RANGE);
+    const newMult = curMult + multiplicityDelta;
     return new IndexedMultiSet<T>(
       this.allRecords.set(key, { mult: newMult, item }),
       this.indexes.map((index) => ({
