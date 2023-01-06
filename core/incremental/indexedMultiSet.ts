@@ -60,8 +60,10 @@ export class IndexedMultiSet<T> {
   }
 
   get(item: T): number {
-    const entry = this.allRecords.get(this.stringify(item));
-    return entry ? entry.mult : 0;
+    return this.allRecords.getWithDefault(this.stringify(item), {
+      item,
+      mult: 0,
+    }).mult;
   }
 
   has(item: T): boolean {
