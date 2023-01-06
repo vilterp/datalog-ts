@@ -84,12 +84,14 @@ mother: [mother{child: "Pete", mother: "Mary"}-1, mother{child: "Pete", mother: 
 5: [{A: "Pete", C: "Mary"}-1]
 0: [{A: "Pete", B: "Mary", C: "Carolyn K"}-1]
 ancestor: [ancestor{an: "Mary", desc: "Pete"}-1]
-5: []
+5: [{A: "Pete", B: "Mary", C: "Carolyn K"}-1]
 3: [{B: "Pete", C: "Mary"}-1]
+ancestor: [ancestor{an: "Carolyn K", desc: "Pete"}-1]
+4: []
+3: [{B: "Pete", C: "Carolyn K"}-1]
 4: []
 
 ancestor{}?
 ----
 application/datalog
 ancestor{an: "Carolyn K", desc: "Mary"}.
-ancestor{an: "Carolyn K", desc: "Pete"}.
