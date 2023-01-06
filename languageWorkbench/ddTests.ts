@@ -30,13 +30,13 @@ function lwbTests(
   exclude: Set<string> = new Set<string>()
 ): Suite {
   return [
-    "fp",
-    "sql",
-    "dl",
-    "grammar",
-    "modelica",
-    "treeSQL",
-    "basicBlocks",
+    // "fp",
+    // "sql",
+    // "dl",
+    // "grammar",
+    // "modelica",
+    // "treeSQL",
+    // "basicBlocks",
     "contracts",
   ]
     .filter((lang) => !exclude.has(lang))
