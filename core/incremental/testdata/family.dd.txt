@@ -38,7 +38,7 @@ digraph G {
 mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}+1]
+mother: [mother{child: "Pete", mother: "Mary"}+1, mother{child: "Pete", mother: "Mary"}+1]
 1: [{A: "Pete", C: "Mary"}+1]
 2: [{A: "Pete", B: "Mary"}+1]
 0: [{A: "Pete", C: "Mary"}+1]
@@ -51,7 +51,7 @@ ancestor: [ancestor{an: "Mary", desc: "Pete"}+1]
 mother{child: "Mary", mother: "Carolyn K"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Mary", mother: "Carolyn K"}+1]
+mother: [mother{child: "Mary", mother: "Carolyn K"}+1, mother{child: "Mary", mother: "Carolyn K"}+1]
 1: [{A: "Mary", C: "Carolyn K"}+1]
 2: [{A: "Mary", B: "Carolyn K"}+1]
 0: [{A: "Mary", C: "Carolyn K"}+1]
@@ -76,7 +76,7 @@ ancestor{an: "Mary", desc: "Pete"}.
 -mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}-1]
+mother: [mother{child: "Pete", mother: "Mary"}-1, mother{child: "Pete", mother: "Mary"}-1]
 1: [{A: "Pete", C: "Mary"}-1]
 2: [{A: "Pete", B: "Mary"}-1]
 0: [{A: "Pete", C: "Mary"}-1]
@@ -84,7 +84,7 @@ mother: [mother{child: "Pete", mother: "Mary"}-1]
 5: [{A: "Pete", C: "Mary"}-1]
 0: [{A: "Pete", B: "Mary", C: "Carolyn K"}-1]
 ancestor: [ancestor{an: "Mary", desc: "Pete"}-1]
-5: [{A: "Pete", B: "Mary", C: "Carolyn K"}+0]
+5: []
 3: [{B: "Pete", C: "Mary"}-1]
 4: []
 

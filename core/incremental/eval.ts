@@ -173,6 +173,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
   }
   // console.log("push", results);
+  const out: MessagePayload[] = [];
   for (let outMessage of outMessages) {
     // update cache
     newGraph = updateCurNodeCache(newGraph, curNodeID, outMessage);
@@ -182,6 +183,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
       if (outMessage.multiplicity === 0) {
         continue;
       }
+      out.push(outMessage);
       iter.queue.push({
         destination,
         origin: curNodeID,
@@ -190,7 +192,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     }
   }
   iter.graph = newGraph;
-  return { fromID: curNodeID, output: outMessages };
+  return { fromID: curNodeID, output: out };
 }
 
 function updateCurNodeCache(
