@@ -211,3 +211,16 @@ reach{from: "b", to: "c"}.
 reach{from: "c", to: "a"}.
 reach{from: "c", to: "b"}.
 reach{from: "c", to: "c"}.
+
+sameSCC{}?
+----
+application/datalog
+sameSCC{a: "a", b: "a"}.
+sameSCC{a: "a", b: "b"}.
+sameSCC{a: "a", b: "c"}.
+sameSCC{a: "b", b: "a"}.
+sameSCC{a: "b", b: "b"}.
+sameSCC{a: "b", b: "c"}.
+sameSCC{a: "c", b: "a"}.
+sameSCC{a: "c", b: "b"}.
+sameSCC{a: "c", b: "c"}.
