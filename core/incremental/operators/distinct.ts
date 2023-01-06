@@ -21,7 +21,7 @@ export function processDistinct(
           trace: baseFactTrace,
           term: data.rec,
         };
-  const curMult = cache.get(res) || 0;
+  const curMult = cache.get(res);
   const newMult = clamp(curMult + payload.multiplicity, [0, 1]);
   const multDiff = newMult - curMult;
   return [{ ...payload, multiplicity: multDiff }];
