@@ -1,86 +1,95 @@
-.load core/testdata/family_rules.dl
+.table mother
 ----
 application/datalog
+
+ancestor{desc: A, an: C} :-
+  mother{child: A, mother: C} |
+  mother{child: A, mother: B} & ancestor{desc: B, an: C}.
+----
+application/datalog
+
+ancestor{}?
+----
+application/datalog
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "mother" [fillcolor="darksalmon" fontname="Courier" label="mother:  []" shape="box" style="filled"];
+  "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(mother{child: A, mother: C}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(mother{child: A, mother: B}) [B]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(ancestor{an: C, desc: B}) [B]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" fontname="Courier" label="4: Join(B) []" shape="box" style="filled"];
+  "5" [fillcolor="" fontname="Courier" label="5: Distinct []" shape="box" style="filled"];
+  "ancestor" [fillcolor="lightblue" fontname="Courier" label="ancestor: Subst(ancestor{an: C, desc: A}) []" shape="box" style="filled"];
+  "mother" -> "1" [];
+  "mother" -> "2" [];
+  "1" -> "0" [];
+  "ancestor" -> "3" [];
+  "3" -> "4" [];
+  "2" -> "4" [];
+  "4" -> "0" [];
+  "0" -> "5" [];
+  "5" -> "ancestor" [];
+}
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
 mother: [mother{child: "Pete", mother: "Mary"}+1]
-22: [{C: "Pete", M: "Mary"}+1]
-27: [{C: "Pete", P: "Mary"}+1]
-37: [{B: "Pete", C: "Mary"}+1]
-24: []
-26: [{C: "Pete", P: "Mary"}+1]
-38: []
-29: [{C: "Pete", P: "Mary"}+1]
-parent: [parent{child: "Pete", parent: "Mary"}+1]
-10: [{C: "Pete", P: "Mary"}+1]
-18: [{A: "Pete", B: "Mary"}+1]
-30: [{L: "Pete", P1: "Mary"}+1]
-33: [{P2: "Mary", R: "Pete"}+1]
-36: [{A: "Pete", B: "Mary"}+1]
-41: [{X: "Pete", Z: "Mary"}+1]
-42: [{X: "Pete", Y: "Mary"}+1]
-46: [{A: "Pete", B: "Mary"}+1]
-47: [{B: "Pete", C: "Mary"}+1]
-50: [{C: "Pete", P: "Mary"}+1]
-12: []
-20: []
-32: []
-34: []
-38: []
-40: [{X: "Pete", Z: "Mary"}+1]
-44: []
-48: []
-48: []
-52: []
-45: [{X: "Pete", Z: "Mary"}+1]
+1: [{A: "Pete", C: "Mary"}+1]
+2: [{A: "Pete", B: "Mary"}+1]
+0: [{A: "Pete", C: "Mary"}+1]
+4: []
+5: [{A: "Pete", C: "Mary"}+1]
 ancestor: [ancestor{an: "Mary", desc: "Pete"}+1]
-43: [{Y: "Pete", Z: "Mary"}+1]
-44: []
+3: [{B: "Pete", C: "Mary"}+1]
+4: []
+
+mother{child: "Mary", mother: "Carolyn K"}.
+----
+incremental-datalog/trace
+mother: [mother{child: "Mary", mother: "Carolyn K"}+1]
+1: [{A: "Mary", C: "Carolyn K"}+1]
+2: [{A: "Mary", B: "Carolyn K"}+1]
+0: [{A: "Mary", C: "Carolyn K"}+1]
+4: []
+5: [{A: "Mary", C: "Carolyn K"}+1]
+ancestor: [ancestor{an: "Carolyn K", desc: "Mary"}+1]
+3: [{B: "Mary", C: "Carolyn K"}+1]
+4: [{A: "Pete", B: "Mary", C: "Carolyn K"}+1]
+0: [{A: "Pete", B: "Mary", C: "Carolyn K"}+1]
+5: [{A: "Pete", B: "Mary", C: "Carolyn K"}+1]
+ancestor: [ancestor{an: "Carolyn K", desc: "Pete"}+1]
+3: [{B: "Pete", C: "Carolyn K"}+1]
+4: []
 
 ancestor{}?
 ----
 application/datalog
+ancestor{an: "Carolyn K", desc: "Mary"}.
+ancestor{an: "Carolyn K", desc: "Pete"}.
 ancestor{an: "Mary", desc: "Pete"}.
 
 -mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
 mother: [mother{child: "Pete", mother: "Mary"}-1]
-22: [{C: "Pete", M: "Mary"}-1]
-27: [{C: "Pete", P: "Mary"}-1]
-37: [{B: "Pete", C: "Mary"}-1]
-24: []
-26: [{C: "Pete", P: "Mary"}-1]
-38: []
-29: [{C: "Pete", P: "Mary"}-1]
-parent: [parent{child: "Pete", parent: "Mary"}-1]
-10: [{C: "Pete", P: "Mary"}-1]
-18: [{A: "Pete", B: "Mary"}-1]
-30: [{L: "Pete", P1: "Mary"}-1]
-33: [{P2: "Mary", R: "Pete"}-1]
-36: [{A: "Pete", B: "Mary"}-1]
-41: [{X: "Pete", Z: "Mary"}-1]
-42: [{X: "Pete", Y: "Mary"}-1]
-46: [{A: "Pete", B: "Mary"}-1]
-47: [{B: "Pete", C: "Mary"}-1]
-50: [{C: "Pete", P: "Mary"}-1]
-12: []
-20: []
-32: []
-34: []
-38: []
-40: [{X: "Pete", Z: "Mary"}-1]
-44: []
-48: []
-48: []
-52: []
-45: [{X: "Pete", Z: "Mary"}-1]
+1: [{A: "Pete", C: "Mary"}-1]
+2: [{A: "Pete", B: "Mary"}-1]
+0: [{A: "Pete", C: "Mary"}-1]
+4: [{A: "Pete", B: "Mary", C: "Carolyn K"}-1]
+5: [{A: "Pete", C: "Mary"}-1]
+0: [{A: "Pete", B: "Mary", C: "Carolyn K"}-1]
 ancestor: [ancestor{an: "Mary", desc: "Pete"}-1]
-43: [{Y: "Pete", Z: "Mary"}-1]
-44: []
+5: [{A: "Pete", B: "Mary", C: "Carolyn K"}+0]
+3: [{B: "Pete", C: "Mary"}-1]
+4: []
 
 ancestor{}?
 ----
 application/datalog
+ancestor{an: "Carolyn K", desc: "Mary"}.
+ancestor{an: "Carolyn K", desc: "Pete"}.
