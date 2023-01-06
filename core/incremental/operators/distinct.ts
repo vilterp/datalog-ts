@@ -1,3 +1,4 @@
+import { clamp } from "../../../util/util";
 import { baseFactTrace, Res } from "../../types";
 import { IndexedMultiSet } from "../indexedMultiSet";
 import { MessagePayload } from "../types";
@@ -19,8 +20,8 @@ export function processDistinct(
           trace: baseFactTrace,
           term: data.rec,
         };
-  if (cache.has(res)) {
-    return [];
-  }
-  return [payload];
+  const curMult = cache.get(res) || 0;
+  const newMult = clamp(curMult + payload.multiplicity, [0, 1]);
+  const multDiff = newMult - curMult;
+  return [{ ...payload, multiplicity: multDiff }];
 }

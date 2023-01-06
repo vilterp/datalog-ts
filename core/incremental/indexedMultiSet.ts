@@ -81,6 +81,10 @@ export class IndexedMultiSet<T> {
     );
   }
 
+  get(item: T): number {
+    return this.allRecords.get(this.stringify(item))?.mult;
+  }
+
   has(item: T): boolean {
     return this.allRecords.has(this.stringify(item));
   }
