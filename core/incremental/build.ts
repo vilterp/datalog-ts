@@ -15,14 +15,14 @@ import {
 } from "./types";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
-import { emptyIndexedMultiset } from "./indexedMultiSet";
+import { emptyIndexedMultiset, Key } from "./indexedMultiSet";
 import { fastPPB, fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
 import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
 
 export function buildGraph(catalog: Catalog): RuleGraph {
-  let graph = emptyRuleGraph;
+  let graph = emptyRuleGraph();
   graph = catalog.reduce((accum, rel, relName) => {
     switch (rel.type) {
       case "Table":
@@ -191,7 +191,7 @@ function addAggregation(
   const [graph2, aggID] = addNode(prev.newGraph, true, {
     type: "Aggregation",
     aggregation,
-    state: emptyAggregationState,
+    state: emptyAggregationState(),
   });
   const graph3 = addEdge(graph2, prev.tipID, aggID);
   return {
@@ -250,24 +250,18 @@ function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   };
 }
 
-export function getIndexKey(
-  bindings: Bindings,
-  joinVars: Set<string>
-): List<string> {
-  return List(
-    joinVars
-      .toArray()
-      .sort()
-      .map((varName) => {
-        const term = bindings[varName];
-        if (!term) {
-          throw new Error(
-            `couldn't get attr "${varName}" of "${ppb(bindings)}"`
-          );
-        }
-        return fastPPT(term);
-      })
-  );
+export function getIndexKey(bindings: Bindings, joinVars: Set<string>): Key {
+  return joinVars
+    .toArray()
+    .sort()
+    .map((varName) => {
+      const term = bindings[varName];
+      if (!term) {
+        throw new Error(`couldn't get attr "${varName}" of "${ppb(bindings)}"`);
+      }
+      return fastPPT(term);
+    })
+    .join(",");
 }
 
 export function getIndexName(joinVars: Set<string>): string {
@@ -283,14 +277,12 @@ function addNodeKnownID(
   isInternal: boolean,
   desc: NodeDesc
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.set(id, {
-      isInternal,
-      desc,
-      cache: emptyIndexedMultiset(fastPPR),
-    }),
-  };
+  graph.nodes.set(id, {
+    isInternal,
+    desc,
+    cache: emptyIndexedMultiset(fastPPR),
+  });
+  return graph;
 }
 
 function addNode(
@@ -299,29 +291,23 @@ function addNode(
   desc: NodeDesc
 ): [RuleGraph, NodeID] {
   const nodeID = graph.nextNodeID.toString();
-  return [
-    {
-      ...graph,
-      nextNodeID: graph.nextNodeID + 1,
-      builtins:
-        desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins,
-      nodes: graph.nodes.set(nodeID, {
-        desc,
-        cache: emptyIndexedMultiset(fastPPR),
-        isInternal,
-      }),
-    },
-    nodeID,
-  ];
+  graph.nextNodeID += 1;
+  graph.builtins =
+    desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins;
+  graph.nodes.set(nodeID, {
+    desc,
+    cache: emptyIndexedMultiset(fastPPR),
+    isInternal,
+  });
+  return [graph, nodeID];
 }
 
 function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
-  return {
-    ...graph,
-    edges: graph.edges.update(from, List(), (destinations) =>
-      destinations.push(to)
-    ),
-  };
+  graph.edges.updateWithDefault(from, [], (destinations) => {
+    destinations.push(to);
+    return destinations;
+  });
+  return graph;
 }
 
 function addIndex(
@@ -329,15 +315,12 @@ function addIndex(
   nodeID: NodeID,
   joinVars: Set<string>
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (node) => ({
-      ...node,
-      cache: node.cache.createIndex(getIndexName(joinVars), (bindings) => {
-        // TODO: is this gonna be a perf bottleneck?
-        // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(bindings.bindings, joinVars);
-      }),
-    })),
-  };
+  graph.nodes
+    .get(nodeID)
+    .cache.createIndex(getIndexName(joinVars), (bindings) => {
+      // TODO: is this gonna be a perf bottleneck?
+      // console.log({ attrs, res: ppt(res.term) });
+      return getIndexKey(bindings.bindings, joinVars);
+    });
+  return graph;
 }

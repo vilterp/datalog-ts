@@ -7,24 +7,31 @@ import {
   Term,
   Bindings,
 } from "../types";
-import { List, Map, Set } from "immutable";
+import { List, Set } from "immutable";
 import { IndexedMultiSet } from "./indexedMultiSet";
+import { DefaultDict } from "../../util/defaultDict";
 
 export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
   builtins: Set<NodeID>;
-  nodes: Map<NodeID, NodeAndCache>;
-  edges: Map<NodeID, List<NodeID>>;
+  nodes: DefaultDict<NodeID, NodeAndCache>;
+  edges: DefaultDict<NodeID, NodeID[]>;
 };
 
-export const emptyRuleGraph: RuleGraph = {
-  nextNodeID: 0,
-  builtins: Set(),
-  nodes: Map(),
-  edges: Map(),
-};
+export function emptyRuleGraph(): RuleGraph {
+  return {
+    nextNodeID: 0,
+    builtins: Set(),
+    nodes: new DefaultDict<NodeID, NodeAndCache>(() => {
+      throw new Error("bloop");
+    }),
+    edges: new DefaultDict<NodeID, NodeID[]>(() => {
+      throw new Error("bloop");
+    }),
+  };
+}
 
 export type NodeAndCache = {
   isInternal: boolean;
@@ -75,9 +82,13 @@ export type AggregationDesc = {
   state: AggregationState;
 };
 
-export type AggregationState = Map<string, Term>;
+export type AggregationState = DefaultDict<string, Term>;
 
-export const emptyAggregationState: AggregationState = Map();
+export function emptyAggregationState(): AggregationState {
+  return new DefaultDict<string, Term>(() => {
+    throw new Error("bloop");
+  });
+}
 
 // eval
 

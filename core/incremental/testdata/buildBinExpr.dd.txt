@@ -53,6 +53,8 @@ main{span: span{from: P1, to: P2}} :-
 ----
 application/graphviz
 digraph G {
+  "input.char" [fillcolor="darksalmon" fontname="Courier" label="input.char:  []" shape="box" style="filled"];
+  "input.next" [fillcolor="darksalmon" fontname="Courier" label="input.next:  []" shape="box" style="filled"];
   "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(input.char{char: C, id: P1}) [P1]" shape="box" style="filled"];
   "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(input.next{left: P1, right: P2}) [P1]" shape="box" style="filled"];
   "2" [fillcolor="thistle" fontname="Courier" label="2: Join(P1) [C]" shape="box" style="filled"];
@@ -61,17 +63,15 @@ digraph G {
   "5" [fillcolor="" fontname="Courier" label="5: Builtin(base.lte{a: C, b: \"z\"}) [C]" shape="box" style="filled"];
   "6" [fillcolor="thistle" fontname="Courier" label="6: Join(C) []" shape="box" style="filled"];
   "7" [fillcolor="" fontname="Courier" label="7: Distinct []" shape="box" style="filled"];
-  "input.next" [fillcolor="darksalmon" fontname="Courier" label="input.next:  []" shape="box" style="filled"];
   "main" [fillcolor="lightblue" fontname="Courier" label="main: Subst(main{span: span{from: P1, to: P2}}) []" shape="box" style="filled"];
-  "input.char" [fillcolor="darksalmon" fontname="Courier" label="input.char:  []" shape="box" style="filled"];
-  "0" -> "2" [];
+  "input.char" -> "0" [];
+  "input.next" -> "1" [];
   "1" -> "2" [];
-  "2" -> "4" [];
+  "0" -> "2" [];
   "3" -> "4" [];
-  "4" -> "6" [];
+  "2" -> "4" [];
   "5" -> "6" [];
+  "4" -> "6" [];
   "6" -> "7" [];
   "7" -> "main" [];
-  "input.next" -> "1" [];
-  "input.char" -> "0" [];
 }

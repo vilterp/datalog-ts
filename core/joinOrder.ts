@@ -26,6 +26,7 @@ export function getConjunctGraph(
 ): [DiGraph, Entry[], string[]] {
   const varNameToIndex = new Map<string, number>();
   const edgesFromConjuncts = new DefaultDict<
+    string,
     { path: string[]; varName: string }[]
   >(() => []);
   const varEntries: Entry[] = [];

@@ -1,4 +1,3 @@
-import { DefaultDict } from "../../../util/defaultDict";
 import { generatorIsEmpty } from "../../../util/generator";
 import {
   Defn,
