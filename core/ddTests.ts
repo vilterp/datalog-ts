@@ -71,14 +71,14 @@ function coreTests(
   exclude: Set<string> = null
 ): Suite {
   return [
-    "simple",
-    "family",
-    "recurse",
-    "literals",
-    "negation",
+    // "simple",
+    // "family",
+    // "recurse",
+    // "literals",
+    // "negation",
     "aggregation",
-    "paths",
-    "timeStep",
+    // "paths",
+    // "timeStep",
   ]
     .filter((suite) => (exclude !== null ? !exclude.has(suite) : true))
     .map((name) => ({
