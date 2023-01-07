@@ -1,0 +1,256 @@
+.table edge
+----
+application/datalog
+
+reach{from: A, to: C} :-
+  edge{from: A, to: C} |
+  edge{from: A, to: B} &
+  reach{from: B, to: C}.
+----
+application/datalog
+
+reach{}?
+----
+application/datalog
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "edge" [fillcolor="darksalmon" fontname="Courier" label="edge:  []" shape="box" style="filled"];
+  "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(edge{from: A, to: C}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(edge{from: A, to: B}) [B]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(reach{from: B, to: C}) [B]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" fontname="Courier" label="4: Join(B) []" shape="box" style="filled"];
+  "5" [fillcolor="" fontname="Courier" label="5: Distinct []" shape="box" style="filled"];
+  "reach" [fillcolor="lightblue" fontname="Courier" label="reach: Subst(reach{from: A, to: C}) []" shape="box" style="filled"];
+  "edge" -> "1" [];
+  "edge" -> "2" [];
+  "1" -> "0" [];
+  "reach" -> "3" [];
+  "3" -> "4" [];
+  "2" -> "4" [];
+  "4" -> "0" [];
+  "0" -> "5" [];
+  "5" -> "reach" [];
+}
+
+edge{from: "a", to: "b"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "a", to: "b"}+1]
+1: [{A: "a", C: "b"}+1]
+2: [{A: "a", B: "b"}+1]
+0: [{A: "a", C: "b"}+1]
+4: []
+5: [{A: "a", C: "b"}+1]
+reach: [reach{from: "a", to: "b"}+1]
+3: [{B: "a", C: "b"}+1]
+4: []
+
+reach{}?
+----
+application/datalog
+reach{from: "a", to: "b"}.
+
+edge{from: "b", to: "c"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "b", to: "c"}+1]
+1: [{A: "b", C: "c"}+1]
+2: [{A: "b", B: "c"}+1]
+0: [{A: "b", C: "c"}+1]
+4: []
+5: [{A: "b", C: "c"}+1]
+reach: [reach{from: "b", to: "c"}+1]
+3: [{B: "b", C: "c"}+1]
+4: [{A: "a", B: "b", C: "c"}+1]
+0: [{A: "a", B: "b", C: "c"}+1]
+5: [{A: "a", B: "b", C: "c"}+1]
+reach: [reach{from: "a", to: "c"}+1]
+3: [{B: "a", C: "c"}+1]
+4: []
+
+reach{}?
+----
+application/datalog
+reach{from: "a", to: "b"}.
+reach{from: "a", to: "c"}.
+reach{from: "b", to: "c"}.
+
+edge{from: "c", to: "a"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "c", to: "a"}+1]
+1: [{A: "c", C: "a"}+1]
+2: [{A: "c", B: "a"}+1]
+0: [{A: "c", C: "a"}+1]
+4: [{A: "c", B: "a", C: "b"}+1, {A: "c", B: "a", C: "c"}+1]
+5: [{A: "c", C: "a"}+1]
+0: [{A: "c", B: "a", C: "b"}+1]
+0: [{A: "c", B: "a", C: "c"}+1]
+reach: [reach{from: "c", to: "a"}+1]
+5: [{A: "c", B: "a", C: "b"}+1]
+5: [{A: "c", B: "a", C: "c"}+1]
+3: [{B: "c", C: "a"}+1]
+reach: [reach{from: "c", to: "b"}+1]
+reach: [reach{from: "c", to: "c"}+1]
+4: [{A: "b", B: "c", C: "a"}+1]
+3: [{B: "c", C: "b"}+1]
+3: [{B: "c", C: "c"}+1]
+0: [{A: "b", B: "c", C: "a"}+1]
+4: [{A: "b", B: "c", C: "b"}+1]
+4: [{A: "b", B: "c", C: "c"}+1]
+5: [{A: "b", B: "c", C: "a"}+1]
+0: [{A: "b", B: "c", C: "b"}+1]
+0: [{A: "b", B: "c", C: "c"}+1]
+reach: [reach{from: "b", to: "a"}+1]
+5: [{A: "b", B: "c", C: "b"}+1]
+5: [{A: "b", B: "c", C: "c"}+1]
+3: [{B: "b", C: "a"}+1]
+reach: [reach{from: "b", to: "b"}+1]
+reach: [reach{from: "b", to: "c"}+1]
+4: [{A: "a", B: "b", C: "a"}+1]
+3: [{B: "b", C: "b"}+1]
+3: [{B: "b", C: "c"}+1]
+0: [{A: "a", B: "b", C: "a"}+1]
+4: [{A: "a", B: "b", C: "b"}+1]
+4: [{A: "a", B: "b", C: "c"}+1]
+5: [{A: "a", B: "b", C: "a"}+1]
+0: [{A: "a", B: "b", C: "b"}+1]
+0: [{A: "a", B: "b", C: "c"}+1]
+reach: [reach{from: "a", to: "a"}+1]
+5: [{A: "a", B: "b", C: "b"}+1]
+5: []
+3: [{B: "a", C: "a"}+1]
+reach: [reach{from: "a", to: "b"}+1]
+4: [{A: "c", B: "a", C: "a"}+1]
+3: [{B: "a", C: "b"}+1]
+0: [{A: "c", B: "a", C: "a"}+1]
+4: [{A: "c", B: "a", C: "b"}+1]
+5: [{A: "c", B: "a", C: "a"}+1]
+0: [{A: "c", B: "a", C: "b"}+1]
+reach: [reach{from: "c", to: "a"}+1]
+5: []
+3: [{B: "c", C: "a"}+1]
+4: [{A: "b", B: "c", C: "a"}+1]
+0: [{A: "b", B: "c", C: "a"}+1]
+5: []
+
+reach{}?
+----
+application/datalog
+reach{from: "a", to: "a"}.
+reach{from: "a", to: "b"}.
+reach{from: "a", to: "c"}.
+reach{from: "b", to: "a"}.
+reach{from: "b", to: "b"}.
+reach{from: "b", to: "c"}.
+reach{from: "c", to: "a"}.
+reach{from: "c", to: "b"}.
+reach{from: "c", to: "c"}.
+
+-edge{from: "c", to: "a"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "c", to: "a"}-1]
+1: [{A: "c", C: "a"}-1]
+2: [{A: "c", B: "a"}-1]
+0: [{A: "c", C: "a"}-1]
+4: [{A: "c", B: "a", C: "b"}-2, {A: "c", B: "a", C: "c"}-1, {A: "c", B: "a", C: "a"}-1]
+5: [{A: "c", C: "a"}-1]
+0: [{A: "c", B: "a", C: "b"}-2]
+0: [{A: "c", B: "a", C: "c"}-1]
+0: [{A: "c", B: "a", C: "a"}-1]
+reach: [reach{from: "c", to: "a"}-1]
+5: [{A: "c", B: "a", C: "b"}-1]
+5: [{A: "c", B: "a", C: "c"}-1]
+5: [{A: "c", B: "a", C: "a"}-1]
+3: [{B: "c", C: "a"}-1]
+reach: [reach{from: "c", to: "b"}-1]
+reach: [reach{from: "c", to: "c"}-1]
+reach: [reach{from: "c", to: "a"}-1]
+4: [{A: "b", B: "c", C: "a"}-1]
+3: [{B: "c", C: "b"}-1]
+3: [{B: "c", C: "c"}-1]
+3: [{B: "c", C: "a"}-1]
+0: [{A: "b", B: "c", C: "a"}-1]
+4: [{A: "b", B: "c", C: "b"}-1]
+4: [{A: "b", B: "c", C: "c"}-1]
+4: [{A: "b", B: "c", C: "a"}-1]
+5: []
+0: [{A: "b", B: "c", C: "b"}-1]
+0: [{A: "b", B: "c", C: "c"}-1]
+0: [{A: "b", B: "c", C: "a"}-1]
+5: [{A: "b", B: "c", C: "b"}-1]
+5: [{A: "b", B: "c", C: "c"}-1]
+5: [{A: "b", B: "c", C: "a"}-1]
+reach: [reach{from: "b", to: "b"}-1]
+reach: [reach{from: "b", to: "c"}-1]
+reach: [reach{from: "b", to: "a"}-1]
+3: [{B: "b", C: "b"}-1]
+3: [{B: "b", C: "c"}-1]
+3: [{B: "b", C: "a"}-1]
+4: [{A: "a", B: "b", C: "b"}-1]
+4: [{A: "a", B: "b", C: "c"}-1]
+4: [{A: "a", B: "b", C: "a"}-1]
+0: [{A: "a", B: "b", C: "b"}-1]
+0: [{A: "a", B: "b", C: "c"}-1]
+0: [{A: "a", B: "b", C: "a"}-1]
+5: [{A: "a", B: "b", C: "b"}-1]
+5: []
+5: [{A: "a", B: "b", C: "a"}-1]
+reach: [reach{from: "a", to: "b"}-1]
+reach: [reach{from: "a", to: "a"}-1]
+3: [{B: "a", C: "b"}-1]
+3: [{B: "a", C: "a"}-1]
+4: []
+4: []
+
+reach{}?
+----
+application/datalog
+reach{from: "a", to: "b"}.
+reach{from: "a", to: "c"}.
+reach{from: "b", to: "c"}.
+
+-edge{from: "b", to: "c"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "b", to: "c"}-1]
+1: [{A: "b", C: "c"}-1]
+2: [{A: "b", B: "c"}-1]
+0: [{A: "b", C: "c"}-1]
+4: []
+5: [{A: "b", C: "c"}-1]
+reach: [reach{from: "b", to: "c"}-1]
+3: [{B: "b", C: "c"}-1]
+4: [{A: "a", B: "b", C: "c"}-1]
+0: [{A: "a", B: "b", C: "c"}-1]
+5: [{A: "a", B: "b", C: "c"}-1]
+reach: [reach{from: "a", to: "c"}-1]
+3: [{B: "a", C: "c"}-1]
+4: []
+
+reach{}?
+----
+application/datalog
+reach{from: "a", to: "b"}.
+
+-edge{from: "a", to: "b"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "a", to: "b"}-1]
+1: [{A: "a", C: "b"}-1]
+2: [{A: "a", B: "b"}-1]
+0: [{A: "a", C: "b"}-1]
+4: []
+5: [{A: "a", C: "b"}-1]
+reach: [reach{from: "a", to: "b"}-1]
+3: [{B: "a", C: "b"}-1]
+4: []
+
+reach{}?
+----
+application/datalog

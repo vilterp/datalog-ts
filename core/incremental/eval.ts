@@ -165,7 +165,6 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   const [newNodeDesc, outMessages] = processMessage(
     iter.graph,
     node.desc,
-    node.cache,
     curMsg.origin,
     curMsg.payload
   );

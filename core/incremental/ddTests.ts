@@ -27,12 +27,11 @@ export function incrTests(writeResults: boolean): Suite {
     ["family", evalTest],
     ["indexes", evalTest],
     ["siblings", evalTest],
-    ["cycles", evalTest],
     ["replay", evalTest],
-    ["cyclesReplay", evalTest],
     ["dlParser", evalTest],
     ["timeStep", evalTest],
     ["contracts", evalTest],
+    ["transitiveClosure", evalTest],
     ["sccs", evalTest],
     ["findJoinInfo", joinInfoTest],
   ];

@@ -1,7 +1,7 @@
 import { List, Map, Set } from "immutable";
-import { clamp } from "../../util/util";
+import { clamp, repeat } from "../../util/util";
 
-export function emptyIndexedCollection<T>(
+export function emptyIndexedMultiset<T>(
   stringify: (t: T) => string
 ): IndexedMultiSet<T> {
   return new IndexedMultiSet(Map(), Map(), stringify);
@@ -82,7 +82,8 @@ export class IndexedMultiSet<T> {
   }
 
   get(item: T): number {
-    return this.allRecords.get(this.stringify(item))?.mult;
+    const entry = this.allRecords.get(this.stringify(item));
+    return entry ? entry.mult : 0;
   }
 
   has(item: T): boolean {
