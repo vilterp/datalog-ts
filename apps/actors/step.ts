@@ -1,6 +1,6 @@
 import { Json } from "../../util/json";
 import { int, Rec, rec, str, StringLit } from "../../core/types";
-import { adtToRec, dlToJson, jsonToDL } from "../../util/json2dl";
+import { dlToJson, jsonToDL } from "../../util/json2dl";
 import {
   ActorResp,
   AddressedTickInitiator,
@@ -178,7 +178,7 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
       id: int(newTickID),
       actorID: str(from),
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
-      resp: adtToRec({
+      resp: jsonToDL({
         type: "continue",
         state: latestState,
         messages: [

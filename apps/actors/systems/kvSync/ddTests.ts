@@ -34,7 +34,10 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
     const interp = new SimpleInterpreter("apps/actors", fsLoader);
     let trace = system.getInitialState(interp);
     // TODO: parse it as a program? idk
-    testCase.split("\n").forEach((line) => {
+    const lines = testCase.split("\n");
+    const query = lines[lines.length - 1];
+    const mutations = lines.slice(0, lines.length - 1);
+    mutations.forEach((line) => {
       const rawRec = parseRecord(line);
       const record = parserTermToInternal(rawRec) as Rec;
       switch (record.relation) {
@@ -85,6 +88,6 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
         }
       }
     });
-    return datalogOut(trace.interp.evalStr("hop{}?")[0].map((res) => res.term));
+    return datalogOut(trace.interp.evalStr(query)[0].map((res) => res.term));
   });
 }
