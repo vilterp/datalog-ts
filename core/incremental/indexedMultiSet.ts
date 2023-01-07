@@ -69,9 +69,6 @@ export class IndexedMultiSet<T> {
     const key = this.stringify(item);
     const curMult = this.allRecords.get(key, { item, mult: 0 }).mult;
     const newMult = curMult + multiplicityDelta;
-    if (newMult > 1) {
-      console.log("mult", repeat(newMult, "*"));
-    }
     return new IndexedMultiSet<T>(
       this.allRecords.set(key, { mult: newMult, item }),
       this.indexes.map((index) => ({
