@@ -14,10 +14,8 @@ export function processDistinct(
     state: desc.state.update(data.bindings.bindings, payload.multiplicity),
   };
   const curMult = desc.state.get(data.bindings.bindings);
-  const newMult = clamp(curMult + payload.multiplicity, [0, 1]);
-  const multDiff = newMult - curMult;
-  if (newMult === 0) {
-    console.log("set to 0");
-  }
+  const newMult = curMult + payload.multiplicity;
+  const multDiff =
+    curMult < 1 && newMult >= 1 ? 1 : curMult >= 1 && newMult < 1 ? -1 : 0;
   return [newDesc, [{ ...payload, multiplicity: multDiff }]];
 }
