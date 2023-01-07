@@ -36,10 +36,6 @@ export function jsonToDL(json: Json): Term {
   return res;
 }
 
-export function adtToRec(adt: ADT): Rec {
-  return jsonToDL(adt) as Rec;
-}
-
 export function dlToJson(term: Term, addTypeTags: boolean = true): Json {
   switch (term.type) {
     case "StringLit":
