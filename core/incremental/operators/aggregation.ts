@@ -24,6 +24,7 @@ export function processAggregation(
         .map((varName) => data.bindings.bindings[varName])
         .map(fastPPT)
         .join(",");
+      const hadGroupKey = nodeDesc.state.has(groupKey);
       const curGroupState = nodeDesc.state.getWithDefault(groupKey, agg.init);
       const term = data.bindings.bindings[aggVar];
       const newGroupState = agg.step(curGroupState, term, payload.multiplicity);
@@ -50,7 +51,7 @@ export function processAggregation(
       // });
 
       const out: MessagePayload[] = [];
-      if (nodeDesc.state.has(groupKey)) {
+      if (hadGroupKey) {
         out.push({
           multiplicity: -1,
           data: {
