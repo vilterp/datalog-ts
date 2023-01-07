@@ -86,6 +86,7 @@ function evalTest(inputs: string[]): TestOutput[] {
     out.push(
       formatOutput(interp.graph, output, {
         emissionLogMode: "test",
+        filterInternal: false,
       })
     );
   }

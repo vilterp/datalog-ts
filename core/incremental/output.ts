@@ -6,6 +6,7 @@ import { MessagePayload, Output, RuleGraph } from "./types";
 
 type OutputOptions = {
   emissionLogMode: "test" | "repl";
+  filterInternal: boolean;
 };
 
 export function formatOutput(
@@ -21,6 +22,11 @@ export function formatOutput(
         return {
           mimeType: "incremental-datalog/trace",
           content: output.log
+            .filter((item) =>
+              opts.filterInternal
+                ? !graph.nodes.get(item.fromID).isInternal
+                : true
+            )
             .map(
               ({ fromID, output }) =>
                 `${fromID}: [${output.map(formatMessagePayload).join(", ")}]`
