@@ -3,6 +3,7 @@ runMutation{from: "0", name: "deposit", args: ["foo", 10]}.
 runMutation{from: "0", name: "deposit", args: ["bar", 10]}.
 runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
 runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
+hop{}?
 ----
 application/datalog
 hop{from: tick{place: "client0", time: 12}, message: MutationRequest{interpState: InterpreterState{randSeed: 5046918}, invocation: Invocation{args: ["bar",10], name: "deposit"}, trace: [Read{key: "bar", transactionID: "-1"},Write{key: "bar", value: 10}], txnID: "4540893"}, to: tick{place: "server", time: 14}}.
@@ -17,3 +18,11 @@ hop{from: tick{place: "user0", time: 10}, message: RunMutation{invocation: Invoc
 hop{from: tick{place: "user0", time: 17}, message: RunMutation{invocation: Invocation{args: ["foo","bar",5], name: "move"}}, to: tick{place: "client0", time: 19}}.
 hop{from: tick{place: "user0", time: 24}, message: RunMutation{invocation: Invocation{args: ["foo","bar",5], name: "move"}}, to: tick{place: "client0", time: 26}}.
 hop{from: tick{place: "user0", time: 3}, message: RunMutation{invocation: Invocation{args: ["foo",10], name: "deposit"}}, to: tick{place: "client0", time: 5}}.
+
+addClient{id: "0"}.
+runMutation{from: "0", name: "deposit", args: ["foo", 10]}.
+runMutation{from: "0", name: "deposit", args: ["bar", 10]}.
+runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
+runMutation{from: "0", name: "move", args: ["foo", "bar", 5]}.
+actor{}?
+----
