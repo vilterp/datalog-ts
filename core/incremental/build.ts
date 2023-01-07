@@ -15,8 +15,8 @@ import {
 } from "./types";
 import { ppb } from "../pretty";
 import { List, Set } from "immutable";
-import { emptyIndexedCollection } from "./indexedMultiSet";
-import { fastPPR, fastPPT } from "../fastPPT";
+import { emptyIndexedMultiset } from "./indexedMultiSet";
+import { fastPPB, fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
 import { Catalog } from "./catalog";
 import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
@@ -50,6 +50,7 @@ function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
   // add distinct
   const [withDistinct, distinctID] = addNode(newGraph, true, {
     type: "Distinct",
+    state: emptyIndexedMultiset(fastPPB),
   });
   newGraph = withDistinct;
   newGraph = addEdge(newGraph, orRes.tipID, distinctID);
@@ -288,7 +289,7 @@ function addNodeKnownID(
       isInternal,
       desc,
       epochDone: -1,
-      cache: emptyIndexedCollection(fastPPR),
+      cache: emptyIndexedMultiset(fastPPR),
     }),
   };
 }
@@ -308,7 +309,7 @@ function addNode(
       nodes: graph.nodes.set(nodeID, {
         desc,
         epochDone: -1,
-        cache: emptyIndexedCollection(fastPPR),
+        cache: emptyIndexedMultiset(fastPPR),
         isInternal,
       }),
     },

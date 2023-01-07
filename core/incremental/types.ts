@@ -46,7 +46,7 @@ export type NodeDesc =
   | MatchDesc
   | SubstituteDesc
   | AggregationDesc
-  | { type: "Distinct" }
+  | DistinctDesc
   | { type: "Negation" }
   | { type: "BaseFactTable" }
   | { type: "Union" }
@@ -61,6 +61,11 @@ export type JoinDesc = {
   joinVars: Set<string>;
   leftID: NodeID;
   rightID: NodeID;
+};
+
+export type DistinctDesc = {
+  type: "Distinct";
+  state: IndexedMultiSet<Bindings>;
 };
 
 // key: pretty print of bindings
