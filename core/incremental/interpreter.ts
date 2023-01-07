@@ -13,6 +13,7 @@ import {
   RuleEntry,
 } from "./catalog";
 import { buildGraph } from "./build";
+import { formatOutput } from "./output";
 
 export class IncrementalInterpreter extends AbstractInterpreter {
   graph: RuleGraph | null;
@@ -33,6 +34,14 @@ export class IncrementalInterpreter extends AbstractInterpreter {
 
   evalStmt(stmt: Statement): [Res[], AbstractInterpreter] {
     const { output, newInterp } = this.processStmt(stmt);
+    if (output.type === "EmissionLog") {
+      console.log(
+        formatOutput((newInterp as IncrementalInterpreter).graph, output, {
+          emissionLogMode: "test",
+          filterInternal: true,
+        }).content
+      );
+    }
     return [output.type === "QueryResults" ? output.results : [], newInterp];
   }
 

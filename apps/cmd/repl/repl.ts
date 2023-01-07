@@ -6,6 +6,7 @@ import { prettyPrintTerm } from "../../../core/pretty";
 import * as pp from "prettier-printer";
 import { Graph, prettyPrintGraph } from "../../../util/graphviz";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { IncrementalInterpreter } from "../../../core/incremental/interpreter";
 
 type Mode = "repl" | "pipe" | "test";
 
@@ -25,7 +26,7 @@ export class Repl {
     query: string,
     loader: Loader
   ) {
-    this.interp = new SimpleInterpreter(__dirname, loader);
+    this.interp = new IncrementalInterpreter(__dirname, loader);
     this.in = input;
     this.out = out;
     this.buffer = "";
