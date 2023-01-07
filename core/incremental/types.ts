@@ -29,7 +29,6 @@ export const emptyRuleGraph: RuleGraph = {
 export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
-  epochDone: number;
   cache: IndexedMultiSet<Res>;
 };
 
