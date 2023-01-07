@@ -15,14 +15,14 @@ import { insertUserInput, spawnInitiator, step } from "./step";
 // @ts-ignore
 import patternsDL from "./patterns.dl";
 import { makeMemoryLoader } from "../../core/loaders";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
 ): State<St, Msg> {
   return {
     systemInstances: systems.map((system) => {
-      const interp = new SimpleInterpreter(
+      const interp = new IncrementalInterpreter(
         ".",
         makeMemoryLoader({
           "./patterns.dl": patternsDL,
