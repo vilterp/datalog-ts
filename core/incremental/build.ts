@@ -280,7 +280,6 @@ function addNodeKnownID(
   graph.nodes.set(id, {
     isInternal,
     desc,
-    epochDone: -1,
     cache: emptyIndexedMultiset(fastPPR),
   });
   return graph;
@@ -297,7 +296,6 @@ function addNode(
     desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins;
   graph.nodes.set(nodeID, {
     desc,
-    epochDone: -1,
     cache: emptyIndexedMultiset(fastPPR),
     isInternal,
   });
