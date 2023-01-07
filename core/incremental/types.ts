@@ -84,12 +84,11 @@ export type AggregationDesc = {
 
 export type AggregationState = DefaultDict<string, Term>;
 
-export const emptyAggregationState: AggregationState = new DefaultDict<
-  string,
-  Term
->(() => {
-  throw new Error("bloop");
-});
+export function emptyAggregationState(): AggregationState {
+  return new DefaultDict<string, Term>(() => {
+    throw new Error("bloop");
+  });
+}
 
 // eval
 

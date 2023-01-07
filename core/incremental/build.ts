@@ -191,7 +191,7 @@ function addAggregation(
   const [graph2, aggID] = addNode(prev.newGraph, true, {
     type: "Aggregation",
     aggregation,
-    state: emptyAggregationState,
+    state: emptyAggregationState(),
   });
   const graph3 = addEdge(graph2, prev.tipID, aggID);
   return {
