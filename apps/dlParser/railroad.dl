@@ -1,0 +1,85 @@
+.table input.char
+.table input.next
+.table input.start
+.table input.end
+
+.table grammar.rule
+.table grammar.stateNode
+.table grammar.refEdge
+.table grammar.charLiteralEdge
+
+# === grammar ===
+
+# main = foo
+grammar.rule{name: "main", from: 0, to: 2}.
+grammar.stateNode{id: 0}.
+grammar.refEdge{from: 0, to: 1, ref: "foo"}.
+grammar.stateNode{id: 1}.
+grammar.refEdge{from: 1, to: 2, ref: "bar"}.
+grammar.stateNode{id: 2}.
+
+# foo = "foo".
+grammar.rule{name: "foo", from: 3, to: 6}.
+grammar.stateNode{id: 3}.
+grammar.charLiteralEdge{from: 3, to: 4, val: "f"}.
+grammar.stateNode{id: 4}.
+grammar.charLiteralEdge{from: 4, to: 5, val: "o"}.
+grammar.stateNode{id: 5}.
+grammar.charLiteralEdge{from: 5, to: 6, val: "o"}.
+grammar.stateNode{id: 6}.
+
+# bar = "bar".
+grammar.rule{name: "bar", from: 7, to: 10}.
+grammar.stateNode{id: 7}.
+grammar.charLiteralEdge{from: 7, to: 8, val: "b"}.
+grammar.stateNode{id: 8}.
+grammar.charLiteralEdge{from: 8, to: 9, val: "a"}.
+grammar.stateNode{id: 9}.
+grammar.charLiteralEdge{from: 9, to: 10, val: "r"}.
+grammar.stateNode{id: 10}.
+
+
+# === interpreter ===
+
+parse.initailState{state: S, char: C} :-
+  grammar.rule{name: "main", from: S} &
+  input.start{id: C}.
+parse.State{state: S, char: C} :-
+  # initial
+  parse.initailState{state: S, char: C}
+  | # match char
+  parse.State{state: S1, char: C1} &
+  grammar.charLiteralEdge{from: S1, to: S, val: V} &
+  input.char{char: C1, val: V} &
+  input.next{from: C1, to: C}
+  | # call rule
+  parse.State{state: SBeforeRef, char: C} &
+  grammar.refEdge{from: SBeforeRef, ref: Rule} &
+  grammar.rule{name: Rule, from: S}
+  | # return from rule
+  parse.State{state: SBeforeRef, char: CStart} &
+  grammar.refEdge{from: SBeforeRef, to: S, ref: Rule} &
+  grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
+  parse.State{state: SRuleEnd, char: C}.
+
+# a box in the flame graph
+# parse.match{fromChar: FC, toChar: TC, fromState: FS, toState: TS, parentID: P} :-
+#   XXXX{}.
+
+# === input ===
+
+input.start{id: 0}.
+input.end{id: 5}.
+
+input.char{id: 0, val: "f"}.
+input.char{id: 1, val: "o"}.
+input.char{id: 2, val: "o"}.
+input.char{id: 3, val: "b"}.
+input.char{id: 4, val: "a"}.
+input.char{id: 5, val: "r"}.
+
+input.next{from: 0, to: 1}.
+input.next{from: 1, to: 2}.
+input.next{from: 2, to: 3}.
+input.next{from: 3, to: 4}.
+input.next{from: 4, to: 5}.
