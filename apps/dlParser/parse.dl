@@ -1,0 +1,47 @@
+char{id: 0, val: "f"}.
+char{id: 1, val: "o"}.
+char{id: 2, val: "o"}.
+char{id: 3, val: "b"}.
+char{id: 4, val: "a"}.
+char{id: 5, val: "r"}.
+
+next{from: 0, to: 1}.
+next{from: 1, to: 2}.
+next{from: 2, to: 3}.
+next{from: 3, to: 4}.
+next{from: 4, to: 5}.
+
+# main = [foo, bar].
+main{id: id{rule: "main", char: C1}, from: C1, to: C4} :-
+  foo{from: C1, to: C2} &
+  next{from: C2, to: C3} &
+  bar{from: C3, to: C4}.
+
+parent{child: C, parent: P} :-
+  parent.main_foo{child: C, parent: P} |
+  parent.main_bar{child: C, parent: P}.
+
+parent.main_foo{child: C, parent: P} :-
+  main{id: P, from: C1} &
+  foo{id: C, from: C1}.
+parent.main_bar{child: C, parent: P} :-
+  main{id: P, from: C1} &
+  foo{from: C1, to: C2} &
+  next{from: C2, to: C3} &
+  bar{id: C, from: C3, to: C4}.
+
+# foo = "foo".
+foo{id: id{rule: "foo", char: C1}, from: C1, to: C3} :-
+  char{id: C1, val: "f"} &
+  next{from: C1, to: C2} &
+  char{id: C2, val: "o"} &
+  next{from: C2, to: C3} &
+  char{id: C3, val: "o"}.
+
+# bar = "bar".
+bar{id: id{rule: "bar", char: C1}, from: C1, to: C3} :-
+  char{id: C1, val: "b"} &
+  next{from: C1, to: C2} &
+  char{id: C2, val: "a"} &
+  next{from: C2, to: C3} &
+  char{id: C3, val: "r"}.
