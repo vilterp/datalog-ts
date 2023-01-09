@@ -39,12 +39,15 @@ grammar.stateNode{id: 10}.
 
 # === interpreter ===
 
-parse.initailState{state: S, char: C} :-
+parse.Complete{} :-
+  parse.State{char: C} &
+  input.next{from: C, to: -2}.
+parse.initialState{state: S, char: C} :-
   grammar.rule{name: "main", from: S} &
   input.next{from: -1, to: C}.
 parse.State{state: S, char: C} :-
   # initial
-  parse.initailState{state: S, char: C}
+  parse.initialState{state: S, char: C}
   | # match char
   parse.State{state: S1, char: C1} &
   grammar.charLiteralEdge{from: S1, to: S, val: V} &
