@@ -33,6 +33,15 @@ bar{id: id{rule: "bar", char: C1}, from: C1, to: C3} :-
   next{from: C2, to: C3} &
   char{id: C3, val: "r"}.
 
+# === frontier ===
+
+initialFrontier{rule: "main", fromIdx: 0, toIdx: 0}.
+frontier{rule: R, fromIdx: F, toIdx: T} :-
+  initialFrontier{rule: R, fromIdx: F, toIdx: T} |
+  frontierStep{rule: R, fromIdx: F, toIdx: T}.
+
+frontierStep{rule: R, fromIdx: F, toIdx: T} :-
+  frontier{}.
 
 # === input ===
 
