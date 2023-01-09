@@ -50,7 +50,7 @@ parse.State{state: S, char: C} :-
   | # match char
   parse.State{state: S1, char: C1} &
   grammar.charLiteralEdge{from: S1, to: S, val: V} &
-  input.char{char: C1, val: V} &
+  input.char{id: C1, val: V} &
   input.next{from: C1, to: C}
   | # call rule
   parse.State{state: SBeforeRef, char: C} &
