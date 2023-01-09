@@ -1,0 +1,182 @@
+.table input.char
+----
+application/datalog
+
+.table input.next
+----
+application/datalog
+
+.table input.start
+----
+application/datalog
+
+.table input.end
+----
+application/datalog
+
+.table grammar.rule
+----
+application/datalog
+
+.table grammar.stateNode
+----
+application/datalog
+
+.table grammar.refEdge
+----
+application/datalog
+
+.table grammar.charLiteralEdge
+----
+application/datalog
+
+parse.initailState{state: S, char: C} :-
+  grammar.rule{name: "main", from: S} &
+  input.start{id: C}.
+----
+application/datalog
+
+parse.State{state: S, char: C} :-
+  # initial
+  parse.initailState{state: S, char: C}
+  | # match char
+  parse.State{state: S1, char: C1} &
+  grammar.charLiteralEdge{from: S1, to: S, val: V} &
+  input.char{char: C1, val: V} &
+  input.next{from: C1, to: C}
+  | # call rule
+  parse.State{state: SBeforeRef, char: C} &
+  grammar.refEdge{from: SBeforeRef, ref: Rule} &
+  grammar.rule{name: Rule, from: S}
+  | # return from rule
+  parse.State{state: SBeforeRef, char: CStart} &
+  grammar.refEdge{from: SBeforeRef, to: S, ref: Rule} &
+  grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
+  parse.State{state: SRuleEnd, char: C}.
+----
+application/datalog
+
+parse.State{}?
+----
+application/datalog
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "11" [fillcolor="thistle" fontname="Courier" label="11: Join(SBeforeRef) [Rule]" shape="box" style="filled"];
+  "22" [fillcolor="darkseagreen2" fontname="Courier" label="22: Match(grammar.rule{from: S, name: \"main\"}) []" shape="box" style="filled"];
+  "12" [fillcolor="darkseagreen2" fontname="Courier" label="12: Match(grammar.rule{from: S, name: Rule}) [Rule]" shape="box" style="filled"];
+  "23" [fillcolor="darkseagreen2" fontname="Courier" label="23: Match(input.start{id: C}) []" shape="box" style="filled"];
+  "13" [fillcolor="thistle" fontname="Courier" label="13: Join(Rule) []" shape="box" style="filled"];
+  "24" [fillcolor="thistle" fontname="Courier" label="24: Join() []" shape="box" style="filled"];
+  "grammar.rule" [fillcolor="darksalmon" fontname="Courier" label="grammar.rule:  []" shape="box" style="filled"];
+  "14" [fillcolor="darkseagreen2" fontname="Courier" label="14: Match(parse.State{char: CStart, state: SBeforeRef}) [SBeforeRef]" shape="box" style="filled"];
+  "25" [fillcolor="" fontname="Courier" label="25: Distinct []" shape="box" style="filled"];
+  "15" [fillcolor="darkseagreen2" fontname="Courier" label="15: Match(grammar.refEdge{from: SBeforeRef, ref: Rule, to: S}) [SBeforeRef]" shape="box" style="filled"];
+  "16" [fillcolor="thistle" fontname="Courier" label="16: Join(SBeforeRef) [Rule]" shape="box" style="filled"];
+  "17" [fillcolor="darkseagreen2" fontname="Courier" label="17: Match(grammar.rule{from: SRuleStart, name: Rule, to: SRuleEnd}) [Rule]" shape="box" style="filled"];
+  "18" [fillcolor="thistle" fontname="Courier" label="18: Join(Rule) [SRuleEnd]" shape="box" style="filled"];
+  "19" [fillcolor="darkseagreen2" fontname="Courier" label="19: Match(parse.State{char: C, state: SRuleEnd}) [SRuleEnd]" shape="box" style="filled"];
+  "grammar.refEdge" [fillcolor="darksalmon" fontname="Courier" label="grammar.refEdge:  []" shape="box" style="filled"];
+  "grammar.stateNode" [fillcolor="darksalmon" fontname="Courier" label="grammar.stateNode:  []" shape="box" style="filled"];
+  "grammar.charLiteralEdge" [fillcolor="darksalmon" fontname="Courier" label="grammar.charLiteralEdge:  []" shape="box" style="filled"];
+  "0" [fillcolor="moccasin" fontname="Courier" label="0: Union []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(parse.initailState{char: C, state: S}) []" shape="box" style="filled"];
+  "2" [fillcolor="darkseagreen2" fontname="Courier" label="2: Match(parse.State{char: C1, state: S1}) [S1]" shape="box" style="filled"];
+  "3" [fillcolor="darkseagreen2" fontname="Courier" label="3: Match(grammar.charLiteralEdge{from: S1, to: S, val: V}) [S1]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" fontname="Courier" label="4: Join(S1) [C1-V]" shape="box" style="filled"];
+  "5" [fillcolor="darkseagreen2" fontname="Courier" label="5: Match(input.char{char: C1, val: V}) [C1-V]" shape="box" style="filled"];
+  "6" [fillcolor="thistle" fontname="Courier" label="6: Join(C1, V) [C1]" shape="box" style="filled"];
+  "parse.State" [fillcolor="lightblue" fontname="Courier" label="parse.State: Subst(parse.State{char: C, state: S}) []" shape="box" style="filled"];
+  "7" [fillcolor="darkseagreen2" fontname="Courier" label="7: Match(input.next{from: C1, to: C}) [C1]" shape="box" style="filled"];
+  "input.end" [fillcolor="darksalmon" fontname="Courier" label="input.end:  []" shape="box" style="filled"];
+  "input.next" [fillcolor="darksalmon" fontname="Courier" label="input.next:  []" shape="box" style="filled"];
+  "8" [fillcolor="thistle" fontname="Courier" label="8: Join(C1) []" shape="box" style="filled"];
+  "parse.initailState" [fillcolor="lightblue" fontname="Courier" label="parse.initailState: Subst(parse.initailState{char: C, state: S}) []" shape="box" style="filled"];
+  "9" [fillcolor="darkseagreen2" fontname="Courier" label="9: Match(parse.State{char: C, state: SBeforeRef}) [SBeforeRef]" shape="box" style="filled"];
+  "input.char" [fillcolor="darksalmon" fontname="Courier" label="input.char:  []" shape="box" style="filled"];
+  "input.start" [fillcolor="darksalmon" fontname="Courier" label="input.start:  []" shape="box" style="filled"];
+  "20" [fillcolor="thistle" fontname="Courier" label="20: Join(SRuleEnd) []" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" fontname="Courier" label="10: Match(grammar.refEdge{from: SBeforeRef, ref: Rule}) [SBeforeRef]" shape="box" style="filled"];
+  "21" [fillcolor="" fontname="Courier" label="21: Distinct []" shape="box" style="filled"];
+  "11" -> "13" [];
+  "22" -> "24" [];
+  "12" -> "13" [];
+  "23" -> "24" [];
+  "13" -> "0" [];
+  "24" -> "25" [];
+  "grammar.rule" -> "12" [];
+  "grammar.rule" -> "17" [];
+  "grammar.rule" -> "22" [];
+  "14" -> "16" [];
+  "25" -> "parse.initailState" [];
+  "15" -> "16" [];
+  "16" -> "18" [];
+  "17" -> "18" [];
+  "18" -> "20" [];
+  "19" -> "20" [];
+  "grammar.refEdge" -> "10" [];
+  "grammar.refEdge" -> "15" [];
+  "grammar.charLiteralEdge" -> "3" [];
+  "0" -> "21" [];
+  "1" -> "0" [];
+  "2" -> "4" [];
+  "3" -> "4" [];
+  "4" -> "6" [];
+  "5" -> "6" [];
+  "6" -> "8" [];
+  "parse.State" -> "2" [];
+  "parse.State" -> "9" [];
+  "parse.State" -> "14" [];
+  "parse.State" -> "19" [];
+  "7" -> "8" [];
+  "input.next" -> "7" [];
+  "8" -> "0" [];
+  "parse.initailState" -> "1" [];
+  "9" -> "11" [];
+  "input.char" -> "5" [];
+  "input.start" -> "23" [];
+  "20" -> "0" [];
+  "10" -> "11" [];
+  "21" -> "parse.State" [];
+}
+
+input.start{id: 0}.
+----
+
+input.end{id: 5}.
+----
+
+input.char{id: 0, val: "f"}.
+----
+
+input.char{id: 1, val: "o"}.
+----
+
+input.char{id: 2, val: "o"}.
+----
+
+input.char{id: 3, val: "b"}.
+----
+
+input.char{id: 4, val: "a"}.
+----
+
+input.char{id: 5, val: "r"}.
+----
+
+input.next{from: 0, to: 1}.
+----
+
+input.next{from: 1, to: 2}.
+----
+
+input.next{from: 2, to: 3}.
+----
+
+input.next{from: 3, to: 4}.
+----
+
+input.next{from: 4, to: 5}.
+----
