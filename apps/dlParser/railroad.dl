@@ -1,7 +1,5 @@
 .table input.char
 .table input.next
-.table input.start
-.table input.end
 
 .table grammar.rule
 .table grammar.stateNode
@@ -43,7 +41,7 @@ grammar.stateNode{id: 10}.
 
 parse.initailState{state: S, char: C} :-
   grammar.rule{name: "main", from: S} &
-  input.start{id: C}.
+  input.next{from: -1, to: C}.
 parse.State{state: S, char: C} :-
   # initial
   parse.initailState{state: S, char: C}
@@ -68,9 +66,6 @@ parse.State{state: S, char: C} :-
 
 # === input ===
 
-input.start{id: 0}.
-input.end{id: 5}.
-
 input.char{id: 0, val: "f"}.
 input.char{id: 1, val: "o"}.
 input.char{id: 2, val: "o"}.
@@ -78,8 +73,10 @@ input.char{id: 3, val: "b"}.
 input.char{id: 4, val: "a"}.
 input.char{id: 5, val: "r"}.
 
+input.next{from: -1, to: 0}.
 input.next{from: 0, to: 1}.
 input.next{from: 1, to: 2}.
 input.next{from: 2, to: 3}.
 input.next{from: 3, to: 4}.
 input.next{from: 4, to: 5}.
+input.next{from: 5, to: -2}.
