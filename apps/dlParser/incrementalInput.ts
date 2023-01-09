@@ -21,7 +21,7 @@ export class IncrementalInputManager {
         const lengthBefore = this.indexToID.length;
         const out: Statement[] = [
           {
-            type: "Insert",
+            type: "Fact",
             record: rec("source", {
               id: int(newID),
               char: str(evt.char),
@@ -32,7 +32,7 @@ export class IncrementalInputManager {
           const leftID = this.indexToID.peekAt(evt.index - 1);
           // TODO: retract old linkage
           out.push({
-            type: "Insert",
+            type: "Fact",
             record: rec("next", {
               left: int(leftID),
               right: int(newID),
@@ -42,7 +42,7 @@ export class IncrementalInputManager {
         if (evt.index < lengthBefore) {
           // TODO: retract old linkage
           out.push({
-            type: "Insert",
+            type: "Fact",
             record: rec("next", {
               left: int(newID),
               right: int(this.indexToID.peekAt(evt.index)),
