@@ -6,14 +6,6 @@ application/datalog
 ----
 application/datalog
 
-.table input.start
-----
-application/datalog
-
-.table input.end
-----
-application/datalog
-
 .table grammar.rule
 ----
 application/datalog
@@ -30,15 +22,19 @@ application/datalog
 ----
 application/datalog
 
-parse.initailState{state: S, char: C} :-
-  grammar.rule{name: "main", from: S} &
-  input.start{id: C}.
+parse.Complete{} :-
+  parse.State{char: C} &
+  input.next{from: C, to: -2}.
 ----
-application/datalog
+
+parse.initialState{state: S, char: C} :-
+  grammar.rule{name: "main", from: S} &
+  input.next{from: -1, to: C}.
+----
 
 parse.State{state: S, char: C} :-
   # initial
-  parse.initailState{state: S, char: C}
+  parse.initialState{state: S, char: C}
   | # match char
   parse.State{state: S1, char: C1} &
   grammar.charLiteralEdge{from: S1, to: S, val: V} &
@@ -53,8 +49,6 @@ parse.State{state: S, char: C} :-
   grammar.refEdge{from: SBeforeRef, to: S, ref: Rule} &
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleEnd, char: C}.
-----
-application/datalog
 
 parse.State{}?
 ----
