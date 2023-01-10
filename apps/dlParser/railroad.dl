@@ -68,6 +68,15 @@ parse.ruleMatch{rule: Rule, fromChar: CStart, toChar: CEnd} :-
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd}.
 
+parse.stateReachable{from: StateFrom, to: StateTo} :-
+  parse.stateDirectlyReachable{from: StateFrom, to: StateTo} |
+  parse.stateDirectlyReachable{from: StateFrom, to: StateBetween} &
+  parse.stateReachable{from: StateBetween, to: StateTo}.
+
+parse.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
+  grammar.charLiteralEdge{from: StateFrom, to: StateTo} |
+  grammar.refEdge{from: StateFrom, to: StateTo}.
+
 # === input ===
 
 input.char{id: 0, val: "f"}.
