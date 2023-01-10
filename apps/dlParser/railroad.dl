@@ -112,7 +112,7 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
 
 # ==== Viz ====
 
-viz.astNode{id: I, parentID: P} :-
+viz.astNode{id: I, parentID: P, display: I} :-
   viz.normalNode{id: I, parentID: P} |
   viz.mainNode{id: I, parentID: P}.
 
@@ -125,7 +125,7 @@ viz.mainNode{id: match{rule: "main", span: Span}, parentID: -1} :-
 internal.visualization{
   name: "AST",
   spec: tree{
-    nodes: parse.ruleMatch{id: ID, parentID: ParentID, display: Display},
+    nodes: viz.astNode{id: ID, parentID: ParentID, display: Display},
     rootTerm: -1,
     sortChildren: false
   }
