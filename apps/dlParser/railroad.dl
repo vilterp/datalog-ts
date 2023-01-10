@@ -23,17 +23,11 @@ parse.State{state: S, char: C} :-
 # state step
 
 parse.stateStep{from: From, to: To} :-
-  parse.sameState{from: From, to: To} |
   parse.initialStateStep{from: From, to: To} |
   parse.matchChar{from: From, to: To} |
   parse.callRule{from: From, to: To} |
   parse.returnFromRule{from: From, to: To}.
 
-parse.sameState{
-  from: st{state: S, char: C},
-  to: st{state: S, char: C}
-} :-
-  parse.State{state: S, char: C}.
 parse.initialStateStep{
   from: st{state: -1, char: -1},
   to: st{state: S, char: C}
