@@ -118,9 +118,9 @@ parse.ruleMatchParent{
   grammar.refEdge{from: RefSt, ref: ChildRule} &
   grammar.stateReachable{from: ParentStartSt, to: RefSt} &
   parse.State{state: RefSt, char: ChildStartCh} &
-  parse.stateStep{
-    from: st{state: ParentStartSt, char: ParentStartCh},
-    to: st{state: ChildStartSt, char: ChildStartCh},
+  parse.callRule{
+    from: st{state: RefSt, char: ChildStartCh},
+    to: st{state: ChildStartSt, char: ChildStartCh}
   }.
 
 # === Deriving facts about the grammar ===
