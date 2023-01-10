@@ -101,7 +101,16 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
 
 # ==== Viz ====
 
-viz.astNode{id: I, parentID: P, display: I} :-
+viz.astNode{
+  id: match{rule: R, span: span{from: F, to: T}},
+  parentID: P, display: [R, [F, T]],
+} :-
+  viz.astNodeInternal{
+    id: match{rule: R, span: span{from: F, to: T}},
+    parentID: P,
+  }.
+
+viz.astNodeInternal{id: I, parentID: P} :-
   viz.normalNode{id: I, parentID: P} |
   viz.mainNode{id: I, parentID: P}.
 
