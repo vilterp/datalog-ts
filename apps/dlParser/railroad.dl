@@ -46,10 +46,10 @@ parse.Complete{} :-
 parse.State{state: S, char: C} :-
   parse.stateStep{to: st{state: S, char: C}}.
 
-parse.statePath{from: From, to: To} :-
-  parse.stateStep{from: From, to: To} |
-  parse.stateStep{from: From, to: Between} &
-  parse.statePath{from: Between, to: To}.
+# parse.statePath{from: From, to: To} :-
+#   parse.stateStep{from: From, to: To} |
+#   parse.stateStep{from: From, to: Between} &
+#   parse.statePath{from: Between, to: To}.
 
 # state step
 
@@ -107,21 +107,21 @@ parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd}.
 
-# parse.ruleMatchParent{
-#   child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
-#   parent: match{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}},
-# } :-
-#   parse.ruleMatch{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}} &
-#   parse.ruleMatch{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}} &
-#   grammar.rule{rule: ParentRule, from: ParentStartSt} &
-#   grammar.rule{rule: ChildRule, from: ChildStartSt} &
-#   # still not right. needs to be just one edge
-#   parse.statePath{
-#     from: st{state: ParentStartSt, char: ParentStartCh},
-#     to: st{state: ChildStartSt, char: ChildStartCh},
-#   }.
-
-# some kind of 'state path' thing
+parse.ruleMatchParent{
+  child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
+  parent: match{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}},
+} :-
+  parse.ruleMatch{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}} &
+  parse.ruleMatch{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}} &
+  grammar.rule{rule: ParentRule, from: ParentStartSt} &
+  grammar.rule{rule: ChildRule, from: ChildStartSt} &
+  grammar.refEdge{from: RefSt, ref: ChildRule} &
+  grammar.stateReachable{from: ParentStartSt, to: RefSt} &
+  parse.State{state: RefSt, char: ChildStartCh} &
+  parse.stateStep{
+    from: st{state: ParentStartSt, char: ParentStartCh},
+    to: st{state: ChildStartSt, char: ChildStartCh},
+  }.
 
 # === Deriving facts about the grammar ===
 
