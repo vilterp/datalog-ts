@@ -46,17 +46,31 @@ parse.Complete{} :-
 parse.State{state: S, char: C} :-
   parse.stateStep{to: st{state: S, char: C}}.
 
+parse.statePath{from: From, to: To} :-
+  parse.stateStep{from: From, to: To} |
+  parse.stateStep{from: From, to: Between} &
+  parse.statePath{from: Between, to: To}.
+
+# state step
+
+parse.stateStep{from: From, to: To} :-
+  parse.sameState{from: From, to: To} |
+  parse.initialStateStep{from: From, to: To} |
+  parse.matchChar{from: From, to: To} |
+  parse.callRule{from: From, to: To} |
+  parse.returnFromRule{from: From, to: To}.
+
+parse.sameState{
+  from: st{state: S, char: C},
+  to: st{state: S, char: C}
+} :-
+  parse.State{state: S, char: C}.
 parse.initialStateStep{
   from: st{state: -1, char: -1},
   to: st{state: S, char: C}
 } :-
   grammar.rule{name: "main", from: S} &
   input.next{from: -1, to: C}.
-parse.stateStep{from: From, to: To} :-
-  parse.initialStateStep{from: From, to: To} |
-  parse.matchChar{from: From, to: To} |
-  parse.callRule{from: From, to: To} |
-  parse.returnFromRule{from: From, to: To}.
 
 parse.matchChar{
   from: st{state: FromS, char: FromC},
@@ -83,14 +97,16 @@ parse.returnFromRule{
   parse.State{state: SBeforeRef, char: CStart} &
   grammar.refEdge{from: SBeforeRef, to: ToS, ref: Rule} &
   grammar.rule{name: Rule, from: SRuleStart, to: FromS} &
-  parse.State{state: FromS, char: ToC}.
+  parse.State{state: FromS, char: ToC} &
+  FromC = ToC.
+
+# building rule tree
 
 parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd}.
 
-# TODO: enforce that it's a direct child
 # parse.ruleMatchParent{
 #   child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
 #   parent: match{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}},
@@ -100,7 +116,7 @@ parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
 #   grammar.rule{rule: ParentRule, from: ParentStartSt} &
 #   grammar.rule{rule: ChildRule, from: ChildStartSt} &
 #   # still not right. needs to be just one edge
-#   statePath{
+#   parse.statePath{
 #     from: st{state: ParentStartSt, char: ParentStartCh},
 #     to: st{state: ChildStartSt, char: ChildStartCh},
 #   }.
