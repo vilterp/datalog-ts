@@ -15,11 +15,6 @@ parse.Complete{} :-
 parse.State{state: S, char: C} :-
   parse.stateStep{to: st{state: S, char: C}}.
 
-# parse.statePath{from: From, to: To} :-
-#   parse.stateStep{from: From, to: To} |
-#   parse.stateStep{from: From, to: Between} &
-#   parse.statePath{from: Between, to: To}.
-
 # state step
 
 parse.stateStep{from: From, to: To} :-
