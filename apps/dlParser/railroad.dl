@@ -63,10 +63,37 @@ parse.State{state: S, char: C} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleEnd, char: C}.
 
-parse.ruleMatch{rule: Rule, fromChar: CStart, toChar: CEnd} :-
+parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd}.
+
+# TODO: enforce that it's a direct child
+parse.ruleMatchParent{
+  child: match{rule: ChildRule, span: ChildSpan},
+  parent: match{rule: ParentRule, span: ParentSpan},
+} :-
+  parse.ruleMatch{rule: ParentRule, span: ParentSpan} &
+  parse.ruleMatch{rule: ChildRule, span: ChildSpan} &
+  grammar.ruleRef{from: ParentRule, to: ChildRule}.
+
+# === Deriving facts about the grammar ===
+
+grammar.ruleRef{from: FromRule, to: ToRule} :-
+  grammar.rule{name: FromRule, from: StartSt} &
+  grammar.stateReachable{from: StartSt, to: RefSt} &
+  grammar.refEdge{from: RefSt, ref: ToRule}.
+
+grammar.stateReachable{from: StateFrom, to: StateTo} :-
+  grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} |
+  grammar.stateDirectlyReachable{from: StateFrom, to: StateBetween} &
+  grammar.stateReachable{from: StateBetween, to: StateTo}.
+
+grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
+  grammar.charLiteralEdge{from: StateFrom, to: StateTo} |
+  grammar.refEdge{from: StateFrom, to: StateTo} |
+  grammar.stateNode{id: StateFrom} &
+  StateTo = StateFrom.
 
 # === input ===
 
