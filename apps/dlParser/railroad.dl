@@ -63,9 +63,10 @@ parse.State{state: S, char: C} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleEnd, char: C}.
 
-# a box in the flame graph
-# parse.match{fromChar: FC, toChar: TC, fromState: FS, toState: TS, parentID: P} :-
-#   XXXX{}.
+parse.ruleMatch{rule: Rule, fromChar: CStart, toChar: CEnd} :-
+  grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
+  parse.State{state: SRuleStart, char: CStart} &
+  parse.State{state: SRuleEnd, char: CEnd}.
 
 # === input ===
 
