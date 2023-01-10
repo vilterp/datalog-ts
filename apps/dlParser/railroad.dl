@@ -6,37 +6,6 @@
 .table grammar.refEdge
 .table grammar.charLiteralEdge
 
-# === grammar ===
-
-# main = foo
-grammar.rule{name: "main", from: 0, to: 2}.
-grammar.stateNode{id: 0}.
-grammar.refEdge{from: 0, to: 1, ref: "foo"}.
-grammar.stateNode{id: 1}.
-grammar.refEdge{from: 1, to: 2, ref: "bar"}.
-grammar.stateNode{id: 2}.
-
-# foo = "foo".
-grammar.rule{name: "foo", from: 3, to: 6}.
-grammar.stateNode{id: 3}.
-grammar.charLiteralEdge{from: 3, to: 4, val: "f"}.
-grammar.stateNode{id: 4}.
-grammar.charLiteralEdge{from: 4, to: 5, val: "o"}.
-grammar.stateNode{id: 5}.
-grammar.charLiteralEdge{from: 5, to: 6, val: "o"}.
-grammar.stateNode{id: 6}.
-
-# bar = "bar".
-grammar.rule{name: "bar", from: 7, to: 10}.
-grammar.stateNode{id: 7}.
-grammar.charLiteralEdge{from: 7, to: 8, val: "b"}.
-grammar.stateNode{id: 8}.
-grammar.charLiteralEdge{from: 8, to: 9, val: "a"}.
-grammar.stateNode{id: 9}.
-grammar.charLiteralEdge{from: 9, to: 10, val: "r"}.
-grammar.stateNode{id: 10}.
-
-
 # === interpreter ===
 
 parse.Complete{} :-
@@ -140,6 +109,36 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
   grammar.refEdge{from: StateFrom, to: StateTo} |
   grammar.stateNode{id: StateFrom} &
   StateTo = StateFrom.
+
+# === grammar ===
+
+# main = foo
+grammar.rule{name: "main", from: 0, to: 2}.
+grammar.stateNode{id: 0}.
+grammar.refEdge{from: 0, to: 1, ref: "foo"}.
+grammar.stateNode{id: 1}.
+grammar.refEdge{from: 1, to: 2, ref: "bar"}.
+grammar.stateNode{id: 2}.
+
+# foo = "foo".
+grammar.rule{name: "foo", from: 3, to: 6}.
+grammar.stateNode{id: 3}.
+grammar.charLiteralEdge{from: 3, to: 4, val: "f"}.
+grammar.stateNode{id: 4}.
+grammar.charLiteralEdge{from: 4, to: 5, val: "o"}.
+grammar.stateNode{id: 5}.
+grammar.charLiteralEdge{from: 5, to: 6, val: "o"}.
+grammar.stateNode{id: 6}.
+
+# bar = "bar".
+grammar.rule{name: "bar", from: 7, to: 10}.
+grammar.stateNode{id: 7}.
+grammar.charLiteralEdge{from: 7, to: 8, val: "b"}.
+grammar.stateNode{id: 8}.
+grammar.charLiteralEdge{from: 8, to: 9, val: "a"}.
+grammar.stateNode{id: 9}.
+grammar.charLiteralEdge{from: 9, to: 10, val: "r"}.
+grammar.stateNode{id: 10}.
 
 # === input ===
 
