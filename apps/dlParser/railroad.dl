@@ -113,8 +113,8 @@ parse.ruleMatchParent{
 } :-
   parse.ruleMatch{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}} &
   parse.ruleMatch{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}} &
-  grammar.rule{rule: ParentRule, from: ParentStartSt} &
-  grammar.rule{rule: ChildRule, from: ChildStartSt} &
+  grammar.rule{name: ParentRule, from: ParentStartSt} &
+  grammar.rule{name: ChildRule, from: ChildStartSt} &
   grammar.refEdge{from: RefSt, ref: ChildRule} &
   grammar.stateReachable{from: ParentStartSt, to: RefSt} &
   parse.State{state: RefSt, char: ChildStartCh} &
