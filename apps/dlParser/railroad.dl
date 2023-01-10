@@ -110,7 +110,28 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
   grammar.stateNode{id: StateFrom} &
   StateTo = StateFrom.
 
-# === grammar ===
+# ==== Viz ====
+
+viz.astNode{id: I, parentID: P} :-
+  viz.normalNode{id: I, parentID: P} |
+  viz.mainNode{id: I, parentID: P}.
+
+viz.normalNode{id: match{rule: Rule, span: Span}, parentID: P} :-
+  parse.ruleMatch{rule: Rule, span: Span} &
+  parse.ruleMatchParent{child: match{rule: Rule, span: Span}, parent: P}.
+viz.mainNode{id: match{rule: "main", span: Span}, parentID: -1} :-
+  parse.ruleMatch{rule: "main", span: Span}.
+
+internal.visualization{
+  name: "AST",
+  spec: tree{
+    nodes: parse.ruleMatch{id: ID, parentID: ParentID, display: Display},
+    rootTerm: -1,
+    sortChildren: false
+  }
+}.
+
+# === example grammar ===
 
 # main = foo
 grammar.rule{name: "main", from: 0, to: 2}.
@@ -140,7 +161,7 @@ grammar.stateNode{id: 9}.
 grammar.charLiteralEdge{from: 9, to: 10, val: "r"}.
 grammar.stateNode{id: 10}.
 
-# === input ===
+# === example input ===
 
 input.char{id: 0, val: "f"}.
 input.char{id: 1, val: "o"}.
