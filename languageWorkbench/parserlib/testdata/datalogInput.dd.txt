@@ -7,11 +7,11 @@ input.char{char: "l", id: 2}.
 input.char{char: "l", id: 3}.
 input.char{char: "n", id: 0}.
 input.char{char: "u", id: 1}.
-input.next{left: -1, right: 0}.
-input.next{left: 0, right: 1}.
-input.next{left: 1, right: 2}.
-input.next{left: 2, right: 3}.
-input.next{left: 3, right: -2}.
+input.next{from: -1, to: 0}.
+input.next{from: 0, to: 1}.
+input.next{from: 1, to: 2}.
+input.next{from: 2, to: 3}.
+input.next{from: 3, to: -2}.
 
 42
 ----
@@ -20,6 +20,6 @@ input.char{char: "2", id: 1}.
 input.char{char: "4", id: 0}.
 input.char{char: "END", id: -2}.
 input.char{char: "START", id: -1}.
-input.next{left: -1, right: 0}.
-input.next{left: 0, right: 1}.
-input.next{left: 1, right: -2}.
+input.next{from: -1, to: 0}.
+input.next{from: 0, to: 1}.
+input.next{from: 1, to: -2}.
