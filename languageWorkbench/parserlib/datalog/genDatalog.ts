@@ -90,8 +90,31 @@ class Builder {
         this.addJumpEdge(sepEndState, startState);
         return endState;
       }
+      case "Char": {
+        return this.addSingleCharRule(rule.rule, startState);
+      }
       default:
-        unreachable(rule.type);
+        unreachable(rule);
+    }
+  }
+
+  private addSingleCharRule(rule: SingleCharRule, startState: number): number {
+    switch (rule.type) {
+      case "AnyChar": {
+        const endState = this.addState();
+        return this.records.push(
+          rec("grammar.anyCharEdge", {
+            from: int(startState),
+            to: int(endState),
+          })
+        );
+      }
+      case "Literal":
+        return XXX;
+      case "Not":
+        return XXX;
+      case "Range":
+        return XXX;
     }
   }
 
