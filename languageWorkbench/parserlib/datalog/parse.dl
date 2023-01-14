@@ -21,7 +21,8 @@ parse.stateStep{from: From, to: To} :-
   parse.initialStateStep{from: From, to: To} |
   parse.matchChar{from: From, to: To} |
   parse.callRule{from: From, to: To} |
-  parse.returnFromRule{from: From, to: To}.
+  parse.returnFromRule{from: From, to: To} |
+  parse.jumpEdge{from: From, to: To}.
 
 parse.initialStateStep{
   from: st{state: -1, char: -1},
@@ -57,6 +58,13 @@ parse.returnFromRule{
   grammar.rule{name: Rule, from: SRuleStart, to: FromS} &
   parse.State{state: FromS, char: ToC} &
   FromC = ToC.
+
+parse.jumpEdge{
+  from: st{state: FromS, char: C},
+  to: st{state: ToS, char: C},
+} :-
+  parse.State{state: FromS, char: C} &
+  grammar.jumpEdge{from: FromS, to: ToS}.
 
 # building rule tree
 

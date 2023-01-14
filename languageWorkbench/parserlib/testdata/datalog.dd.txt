@@ -117,6 +117,7 @@ input
 foobarfoo
 ----
 application/datalog
+parse.Complete{}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
