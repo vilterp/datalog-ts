@@ -102,19 +102,45 @@ class Builder {
     switch (rule.type) {
       case "AnyChar": {
         const endState = this.addState();
-        return this.records.push(
+        this.records.push(
           rec("grammar.anyCharEdge", {
             from: int(startState),
             to: int(endState),
           })
         );
+        return endState;
       }
-      case "Literal":
-        return XXX;
-      case "Not":
-        return XXX;
-      case "Range":
-        return XXX;
+      case "Literal": {
+        const endState = this.addState();
+        this.records.push(
+          rec("grammar.charLiteralEdge", {
+            from: int(startState),
+            to: int(endState),
+            val: str(rule.value),
+          })
+        );
+        return endState;
+      }
+      case "Not": {
+        const ruleEnd = this.addSingleCharRule(rule.rule, startState);
+        const endState = this.addState();
+        this.records.push(
+          rec("grammar.negateEdge", { from: int(ruleEnd), to: int(endState) })
+        );
+        return endState;
+      }
+      case "Range": {
+        const endState = this.addState();
+        this.records.push(
+          rec("grammar.charRangeEdge", {
+            from: int(startState),
+            to: int(endState),
+            rangeStart: str(rule.from),
+            rangeEnd: str(rule.to),
+          })
+        );
+        return endState;
+      }
     }
   }
 
@@ -148,65 +174,6 @@ class Builder {
     this.nextStateID++;
     return newID;
   }
-}
-
-// TODO: write these as strings, or at least make helper functions.
-//   building the raw AST is so verbose.
-function ruleToDL(name: string, rule: gram.Rule): dl.Rec[] {
-  switch (rule.type) {
-    case "Char":
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P2") }),
-          }),
-          or([
-            and([
-              rec("input.char", {
-                id: varr("P1"),
-                char: varr("C"),
-              }),
-              rec("input.next", {
-                left: varr("P1"),
-                right: varr("P2"),
-              }),
-              ...exprsForCharRule(rule.rule),
-            ]),
-          ])
-        ),
-      ];
-  }
-}
-
-function succeedRule(name: string): dl.Rule {
-  return dl.rule(
-    rec(name, { span: rec("span", { from: varr("P1"), to: varr("P1") }) }),
-    or([and([rec("input.char", { id: varr("P1") })])])
-  );
-}
-
-function exprsForCharRule(charRule: SingleCharRule): Rec[] {
-  switch (charRule.type) {
-    case "AnyChar":
-      return [];
-    case "Literal":
-      return [rec("base.eq", { a: varr("C"), b: str(charRule.value) })];
-    case "Range":
-      return [
-        rec("base.lte", { a: str(charRule.from), b: varr("C") }),
-        rec("base.lte", { a: varr("C"), b: str(charRule.to) }),
-      ];
-    case "Not":
-      throw new Error("TODO: `not` single char rules");
-  }
-}
-
-function seqItemName(name: string, idx: number): string {
-  return `${name}_seq_${idx}`;
-}
-
-function choiceName(name: string, idx: number): string {
-  return `${name}_choice_${idx}`;
 }
 
 export function inputToDL(input: string): Rec[] {
