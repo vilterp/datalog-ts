@@ -65,14 +65,7 @@ class Builder {
       }
       case "Ref": {
         const nextState = this.addState();
-        this.records.push(
-          rec("grammar.refEdge", {
-            from: int(startState),
-            to: int(nextState),
-            ref: str(rule.rule),
-            captureName: str(rule.captureName),
-          })
-        );
+        this.addRefEdge(startState, nextState, rule.rule, rule.captureName);
         return nextState;
       }
       case "Sequence": {
@@ -86,18 +79,45 @@ class Builder {
         const endState = this.addState();
         for (const choice of rule.choices) {
           const ruleEndState = this.addSegment(choice, startState);
-          this.records.push(
-            rec("grammar.jumpEdge", {
-              from: int(ruleEndState),
-              to: int(endState),
-            })
-          );
+          this.addJumpEdge(ruleEndState, endState);
         }
+        return endState;
+      }
+      case "RepSep": {
+        const endState = this.addSegment(rule.rep, startState);
+        this.addJumpEdge(startState, endState);
+        const sepEndState = this.addSegment(rule.sep, endState);
+        this.addJumpEdge(sepEndState, startState);
         return endState;
       }
       default:
         unreachable(rule.type);
     }
+  }
+
+  private addRefEdge(
+    from: number,
+    to: number,
+    rule: string,
+    captureName: string | null
+  ) {
+    this.records.push(
+      rec("grammar.refEdge", {
+        from: int(startState),
+        to: int(nextState),
+        ref: str(rule.rule),
+        captureName: str(rule.captureName),
+      })
+    );
+  }
+
+  private addJumpEdge(from: number, to: number) {
+    this.records.push(
+      rec("grammar.jumpEdge", {
+        from: int(from),
+        to: int(to),
+      })
+    );
   }
 
   private addState(): number {
@@ -111,59 +131,6 @@ class Builder {
 //   building the raw AST is so verbose.
 function ruleToDL(name: string, rule: gram.Rule): dl.Rec[] {
   switch (rule.type) {
-    case "Choice":
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P2`),
-            }),
-          }),
-          or(
-            rule.choices.map((choice, idx) =>
-              and([
-                rec(choiceName(name, idx), {
-                  span: rec("span", {
-                    from: varr("P1"),
-                    to: varr("P2"),
-                  }),
-                }),
-              ])
-            )
-          )
-        ),
-        ...flatMap(rule.choices, (subRule, idx) =>
-          ruleToDL(choiceName(name, idx), subRule)
-        ),
-      ];
-    case "Sequence": {
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P${rule.items.length + 1}`),
-            }),
-          }),
-          or([
-            and([
-              ...rule.items.map((char, idx) =>
-                rec(seqItemName(name, idx), {
-                  span: rec("span", {
-                    from: varr(`P${idx + 1}`),
-                    to: varr(`P${idx + 2}`),
-                  }),
-                })
-              ),
-            ]),
-          ])
-        ),
-        ...flatMap(rule.items, (subRule, idx) =>
-          ruleToDL(seqItemName(name, idx), subRule)
-        ),
-      ];
-    }
     case "Char":
       return [
         dl.rule(
@@ -184,41 +151,6 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rec[] {
             ]),
           ])
         ),
-      ];
-    case "RepSep":
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P4") }),
-          }),
-          or([
-            and([
-              rec(`${name}_succeed`, {
-                span: rec("span", { from: varr("P1"), to: varr("P4") }),
-              }),
-            ]),
-            and([
-              rec(`${name}_rep`, {
-                span: rec("span", { from: varr("P1"), to: varr("P4") }),
-              }),
-            ]),
-            and([
-              rec(`${name}_rep`, {
-                span: rec("span", { from: varr("P1"), to: varr("P2") }),
-              }),
-              rec(`${name}_sep`, {
-                span: rec("span", { from: varr("P2"), to: varr("P3") }),
-              }),
-              rec(name, {
-                span: rec("span", { from: varr("P3"), to: varr("P4") }),
-              }),
-            ]),
-          ])
-        ),
-        ...ruleToDL(`${name}_rep`, rule.rep),
-        // TODO: handle case where this is empty
-        ...ruleToDL(`${name}_sep`, rule.sep),
-        succeedRule(`${name}_succeed`), // TODO: everyone should use the same succeed rule
       ];
   }
 }
