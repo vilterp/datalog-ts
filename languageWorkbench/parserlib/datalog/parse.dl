@@ -139,19 +139,19 @@ viz.edge{from: From, to: To, label: Label} :-
   viz.jumpEdge{from: From, to: To, label: Label} |
   viz.charRangeEdge{from: From, to: To, label: Label}.
 
-viz.charLiteralEdge{from: From, to: To, label: char{c: Label}} :-
+viz.charLiteralEdge{from: From, to: To, label: Val} :-
   grammar.charLiteralEdge{from: From, to: To, val: Val}.
 viz.refEdge{from: From, to: To, label: ref{r: Ref}} :-
   grammar.refEdge{from: From, to: To, ref: Ref}.
 viz.jumpEdge{from: From, to: To, label: jump{}} :-
   grammar.jumpEdge{from: From, to: To}.
-viz.charRangeEdge{from: From, to: To, label: range{f: Start, to: End}} :-
+viz.charRangeEdge{from: From, to: To, label: [Start, End]} :-
   grammar.charRangeEdge{from: From, to: To, rangeStart: Start, rangeEnd: End}.
 
 internal.visualization{
   name: "State Machine",
   spec: graphviz{
     nodes: grammar.stateNode{id: ID},
-    edges: viz.edge{}
+    edges: viz.edge{from: From, to: To, label: Label}
   }
 }.
