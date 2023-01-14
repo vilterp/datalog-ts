@@ -181,12 +181,12 @@ export function inputToDL(input: string): Rec[] {
       .map((char, idx) => rec("input.char", { char: str(char), id: int(idx) }))
       .concat(
         range(input.length - 1).map((idx) =>
-          rec("input.next", { left: int(idx), right: int(idx + 1) })
+          rec("input.next", { from: int(idx), to: int(idx + 1) })
         )
       ),
     rec("input.char", { char: str("START"), id: int(-1) }),
     rec("input.char", { char: str("END"), id: int(-2) }),
-    rec("input.next", { left: int(-1), right: int(0) }),
-    rec("input.next", { left: int(input.length - 1), right: int(-2) }),
+    rec("input.next", { from: int(-1), to: int(0) }),
+    rec("input.next", { from: int(input.length - 1), to: int(-2) }),
   ];
 }

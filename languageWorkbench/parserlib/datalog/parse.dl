@@ -36,7 +36,7 @@ parse.matchChar{
 } :-
   parse.State{state: FromS, char: FromC} &
   grammar.charLiteralEdge{from: FromS, to: ToS, val: V} &
-  input.char{id: FromC, val: V} &
+  input.char{id: FromC, char: V} &
   input.next{from: FromC, to: ToC}.
 
 parse.callRule{
