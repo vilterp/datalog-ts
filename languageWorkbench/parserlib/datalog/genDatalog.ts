@@ -8,48 +8,89 @@ import {
 import * as gram from "../types";
 import { int, Rec, rec, str, varr, or, and } from "../../../core/types";
 import { SingleCharRule } from "../types";
+import { unreachable } from "../../../util/unreachable";
 
 // generate datalog rules that implement a parser for this grammar
-export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
-  return flatMapObjToList(grammar, (ruleName, gramRule): dl.Rule[] => {
-    return ruleToDL(ruleName, gramRule);
-  });
+export function grammarToDL(grammar: gram.Grammar): dl.Rec[] {
+  const builder = new Builder();
+  builder.addGrammar(grammar);
+  return builder.records;
+}
+
+class Builder {
+  nextStateID: number;
+  records: Rec[];
+
+  constructor() {
+    this.nextStateID = 0;
+    this.records = [];
+  }
+
+  addGrammar(grammar: gram.Grammar) {
+    for (const ruleName in grammar) {
+      const rule = grammar[ruleName];
+      this.addRule(ruleName, rule);
+    }
+  }
+
+  private addRule(name: string, rule: gram.Rule) {
+    const startState = this.addState();
+    const endState = this.addSegment(rule, startState);
+    this.records.push(
+      rec("grammar.rule", {
+        name: str(name),
+        from: int(startState),
+        to: int(endState),
+      })
+    );
+  }
+
+  private addSegment(rule: gram.Rule, startState: number): number {
+    switch (rule.type) {
+      case "Text": {
+        let curState = startState;
+        for (let i = 0; i < rule.value.length; i++) {
+          const char = rule.value[i];
+          const nextState = this.addState();
+          this.records.push(
+            rec("grammar.charLiteralEdge", {
+              from: int(curState),
+              to: int(nextState),
+              val: str(char),
+            })
+          );
+          curState = nextState;
+        }
+        return curState;
+      }
+      case "Ref": {
+        const nextState = this.addState();
+        this.records.push(
+          rec("grammar.refEdge", {
+            from: int(startState),
+            to: int(nextState),
+            ref: str(rule.rule),
+            captureName: str(rule.captureName),
+          })
+        );
+        return nextState;
+      }
+      default:
+        unreachable(rule.type);
+    }
+  }
+
+  private addState(): number {
+    const newID = this.nextStateID;
+    this.nextStateID++;
+    return newID;
+  }
 }
 
 // TODO: write these as strings, or at least make helper functions.
 //   building the raw AST is so verbose.
-function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
+function ruleToDL(name: string, rule: gram.Rule): dl.Rec[] {
   switch (rule.type) {
-    case "Text":
-      if (rule.value === "") {
-        return [succeedRule(name)];
-      }
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P${rule.value.length + 1}`),
-            }),
-          }),
-          or([
-            and([
-              ...stringToArray(rule.value).map((char, idx) =>
-                rec("input.char", {
-                  id: varr(`P${idx + 1}`),
-                  char: str(char),
-                })
-              ),
-              ...range(rule.value.length).map((idx) =>
-                rec("input.next", {
-                  left: varr(`P${idx + 1}`),
-                  right: varr(`P${idx + 2}`),
-                })
-              ),
-            ]),
-          ])
-        ),
-      ];
     case "Choice":
       return [
         dl.rule(
@@ -103,26 +144,6 @@ function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
         ),
       ];
     }
-    case "Ref":
-      // TODO: this one seems a bit unnecessary...
-      //   these should be collapsed out somehow
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P2`),
-            }),
-          }),
-          or([
-            and([
-              rec(rule.rule, {
-                span: rec("span", { from: varr("P1"), to: varr("P2") }),
-              }),
-            ]),
-          ])
-        ),
-      ];
     case "Char":
       return [
         dl.rule(
