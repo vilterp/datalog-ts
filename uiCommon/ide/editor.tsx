@@ -62,6 +62,10 @@ export function LingoEditor(props: {
       });
     });
 
+    editor.getModel().onDidChangeContent((evt) => {
+      console.log("change event", evt);
+    });
+
     // Remove key bindings that are already there
     Object.keys(KEY_MAP).map((actionID) => {
       removeKeyBinding(editor, actionID);
