@@ -82,6 +82,19 @@ class Builder {
         }
         return curState;
       }
+      case "Choice": {
+        const endState = this.addState();
+        for (const choice of rule.choices) {
+          const ruleEndState = this.addSegment(choice, startState);
+          this.records.push(
+            rec("grammar.jumpEdge", {
+              from: int(ruleEndState),
+              to: int(endState),
+            })
+          );
+        }
+        return endState;
+      }
       default:
         unreachable(rule.type);
     }
