@@ -75,6 +75,13 @@ class Builder {
         );
         return nextState;
       }
+      case "Sequence": {
+        let curState = startState;
+        for (const item of rule.items) {
+          curState = this.addSegment(item, curState);
+        }
+        return curState;
+      }
       default:
         unreachable(rule.type);
     }
