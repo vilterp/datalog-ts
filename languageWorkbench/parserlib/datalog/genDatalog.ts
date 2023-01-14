@@ -99,9 +99,9 @@ class Builder {
   }
 
   private addSingleCharRule(rule: SingleCharRule, startState: number): number {
+    const endState = this.addState();
     switch (rule.type) {
       case "AnyChar": {
-        const endState = this.addState();
         this.records.push(
           rec("grammar.anyCharEdge", {
             from: int(startState),
@@ -111,7 +111,6 @@ class Builder {
         return endState;
       }
       case "Literal": {
-        const endState = this.addState();
         this.records.push(
           rec("grammar.charLiteralEdge", {
             from: int(startState),
@@ -123,14 +122,12 @@ class Builder {
       }
       case "Not": {
         const ruleEnd = this.addSingleCharRule(rule.rule, startState);
-        const endState = this.addState();
         this.records.push(
           rec("grammar.negateEdge", { from: int(ruleEnd), to: int(endState) })
         );
         return endState;
       }
       case "Range": {
-        const endState = this.addState();
         this.records.push(
           rec("grammar.charRangeEdge", {
             from: int(startState),
