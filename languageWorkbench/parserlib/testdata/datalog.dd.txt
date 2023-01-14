@@ -6,12 +6,15 @@ grammar.charLiteralEdge{from: 0, to: 1, val: "f"}.
 grammar.charLiteralEdge{from: 1, to: 2, val: "o"}.
 grammar.charLiteralEdge{from: 2, to: 3, val: "o"}.
 grammar.rule{from: 0, name: "main", to: 3}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
 
 input
 foo
 ----
-text/plain
-Error: bloop
+application/datalog
 
 gram
 main :- ["a", "b", "c"].
@@ -21,12 +24,15 @@ grammar.charLiteralEdge{from: 0, to: 1, val: "a"}.
 grammar.charLiteralEdge{from: 1, to: 2, val: "b"}.
 grammar.charLiteralEdge{from: 2, to: 3, val: "c"}.
 grammar.rule{from: 0, name: "main", to: 3}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
 
 input
 abc
 ----
-text/plain
-Error: bloop
+application/datalog
 
 gram
 main :- (foo | bar).
@@ -47,18 +53,28 @@ grammar.refEdge{from: 0, ref: "foo", to: 2}.
 grammar.rule{from: 0, name: "main", to: 1}.
 grammar.rule{from: 4, name: "foo", to: 7}.
 grammar.rule{from: 8, name: "bar", to: 11}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 10}.
+grammar.stateNode{id: 11}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
+grammar.stateNode{id: 5}.
+grammar.stateNode{id: 6}.
+grammar.stateNode{id: 7}.
+grammar.stateNode{id: 8}.
+grammar.stateNode{id: 9}.
 
 input
 foo
 ----
-text/plain
-Error: bloop
+application/datalog
 
 input
 bar
 ----
-text/plain
-Error: bloop
+application/datalog
 
 gram
 main :- repSep("foo", "bar").
@@ -73,24 +89,28 @@ grammar.charLiteralEdge{from: 5, to: 6, val: "r"}.
 grammar.jumpEdge{from: 0, to: 3}.
 grammar.jumpEdge{from: 6, to: 0}.
 grammar.rule{from: 0, name: "main", to: 3}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
+grammar.stateNode{id: 5}.
+grammar.stateNode{id: 6}.
 
 input
 foo
 ----
-text/plain
-Error: bloop
+application/datalog
 
 input
 foobar
 ----
-text/plain
-Error: bloop
+application/datalog
 
 input
 foobarfoo
 ----
-text/plain
-Error: bloop
+application/datalog
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -103,12 +123,16 @@ grammar.charRangeEdge{from: 1, rangeEnd: "z", rangeStart: "a", to: 2}.
 grammar.jumpEdge{from: 1, to: 2}.
 grammar.jumpEdge{from: 3, to: 1}.
 grammar.rule{from: 0, name: "main", to: 4}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
 
 input
 [a,b,c]
 ----
-text/plain
-Error: bloop
+application/datalog
 
 gram
 main :- repSep([0-9], "").
@@ -118,18 +142,18 @@ grammar.charRangeEdge{from: 0, rangeEnd: "9", rangeStart: "0", to: 1}.
 grammar.jumpEdge{from: 0, to: 1}.
 grammar.jumpEdge{from: 1, to: 0}.
 grammar.rule{from: 0, name: "main", to: 1}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
 
 input
 1
 ----
-text/plain
-Error: bloop
+application/datalog
 
 input
 123
 ----
-text/plain
-Error: bloop
+application/datalog
 
 gram
 main :- value.
@@ -189,15 +213,48 @@ grammar.rule{from: 21, name: "string", to: 24}.
 grammar.rule{from: 25, name: "array", to: 29}.
 grammar.rule{from: 30, name: "null", to: 34}.
 grammar.rule{from: 9, name: "int", to: 11}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 10}.
+grammar.stateNode{id: 11}.
+grammar.stateNode{id: 12}.
+grammar.stateNode{id: 13}.
+grammar.stateNode{id: 14}.
+grammar.stateNode{id: 15}.
+grammar.stateNode{id: 16}.
+grammar.stateNode{id: 17}.
+grammar.stateNode{id: 18}.
+grammar.stateNode{id: 19}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 20}.
+grammar.stateNode{id: 21}.
+grammar.stateNode{id: 22}.
+grammar.stateNode{id: 23}.
+grammar.stateNode{id: 24}.
+grammar.stateNode{id: 25}.
+grammar.stateNode{id: 26}.
+grammar.stateNode{id: 27}.
+grammar.stateNode{id: 28}.
+grammar.stateNode{id: 29}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 30}.
+grammar.stateNode{id: 31}.
+grammar.stateNode{id: 32}.
+grammar.stateNode{id: 33}.
+grammar.stateNode{id: 34}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
+grammar.stateNode{id: 5}.
+grammar.stateNode{id: 6}.
+grammar.stateNode{id: 7}.
+grammar.stateNode{id: 8}.
+grammar.stateNode{id: 9}.
 
 input
 null
 ----
-text/plain
-Error: bloop
+application/datalog
 
 input
 [1,2,3]
 ----
-text/plain
-Error: bloop
+application/datalog

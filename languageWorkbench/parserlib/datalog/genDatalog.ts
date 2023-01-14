@@ -170,6 +170,7 @@ class Builder {
   private addState(): number {
     const newID = this.nextStateID;
     this.nextStateID++;
+    this.records.push(rec("grammar.stateNode", { id: int(newID) }));
     return newID;
   }
 }
