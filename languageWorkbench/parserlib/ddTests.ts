@@ -136,7 +136,7 @@ function datalogTest(test: string[]): TestOutput[] {
       interp = interp.insertAll(inputToDL(restOfInput));
       // TODO: insert grammar interpreter
       try {
-        const results = interp.queryStr(`parse.Complete{}`);
+        const results = interp.queryStr(`viz.astNode{}`);
         return datalogOut(results.map((res) => res.term));
       } catch (e) {
         return plainTextOut(`${e}`);
