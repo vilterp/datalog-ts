@@ -133,12 +133,10 @@ function datalogTest(test: string[]): TestOutput[] {
         grammarData.map((record) => ({ type: "Fact", record }))
       )[1];
       // insert input as data
-      interp = interp.evalStr(".table input.char")[1];
-      interp = interp.evalStr(".table input.next")[1];
       interp = interp.insertAll(inputToDL(restOfInput));
       // TODO: insert grammar interpreter
       try {
-        const results = interp.queryStr(`main{span: span{from: 0, to: -2}}`);
+        const results = interp.queryStr(`parse.Complete{}`);
         return datalogOut(results.map((res) => res.term));
       } catch (e) {
         return plainTextOut(`${e}`);
