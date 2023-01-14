@@ -137,7 +137,8 @@ viz.edge{from: From, to: To, label: Label} :-
   viz.charLiteralEdge{from: From, to: To, label: Label} |
   viz.refEdge{from: From, to: To, label: Label} |
   viz.jumpEdge{from: From, to: To, label: Label} |
-  viz.charRangeEdge{from: From, to: To, label: Label}.
+  viz.charRangeEdge{from: From, to: To, label: Label} |
+  viz.ruleEdge{from: From, to: To, label: Label}.
 
 viz.charLiteralEdge{from: From, to: To, label: Val} :-
   grammar.charLiteralEdge{from: From, to: To, val: Val}.
@@ -147,6 +148,8 @@ viz.jumpEdge{from: From, to: To, label: jump{}} :-
   grammar.jumpEdge{from: From, to: To}.
 viz.charRangeEdge{from: From, to: To, label: [Start, End]} :-
   grammar.charRangeEdge{from: From, to: To, rangeStart: Start, rangeEnd: End}.
+viz.ruleEdge{from: From, to: To, label: Name} :-
+  grammar.rule{from: From, to: To, name: Name}.
 
 internal.visualization{
   name: "State Machine",
