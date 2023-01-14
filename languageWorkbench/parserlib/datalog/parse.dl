@@ -101,6 +101,8 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
 
 # ==== Viz ====
 
+# == AST Node ==
+
 viz.astNode{
   id: match{rule: R, span: span{from: F, to: T}},
   parentID: P, display: [R, [F, T]],
@@ -126,5 +128,30 @@ internal.visualization{
     nodes: viz.astNode{id: ID, parentID: ParentID, display: Display},
     rootTerm: -1,
     sortChildren: false
+  }
+}.
+
+# == Rule Graph ==
+
+viz.edge{from: From, to: To, label: Label} :-
+  viz.charLiteralEdge{from: From, to: To, label: Label} |
+  viz.refEdge{from: From, to: To, label: Label} |
+  viz.jumpEdge{from: From, to: To, label: Label} |
+  viz.charRangeEdge{from: From, to: To, label: Label}.
+
+viz.charLiteralEdge{from: From, to: To, label: char{c: Label}} :-
+  grammar.charLiteralEdge{from: From, to: To, val: Val}.
+viz.refEdge{from: From, to: To, label: ref{r: Ref}} :-
+  grammar.refEdge{from: From, to: To, ref: Ref}.
+viz.jumpEdge{from: From, to: To, label: jump{}} :-
+  grammar.jumpEdge{from: From, to: To}.
+viz.charRangeEdge{from: From, to: To, label: range{f: Start, to: End}} :-
+  grammar.charRangeEdge{from: From, to: To, rangeStart: Start, rangeEnd: End}.
+
+internal.visualization{
+  name: "State Machine",
+  spec: graphviz{
+    nodes: grammar.stateNode{id: ID},
+    edges: viz.edge{}
   }
 }.
