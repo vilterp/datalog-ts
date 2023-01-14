@@ -98,3 +98,33 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
   grammar.refEdge{from: StateFrom, to: StateTo} |
   grammar.stateNode{id: StateFrom} &
   StateTo = StateFrom.
+
+# ==== Viz ====
+
+viz.astNode{
+  id: match{rule: R, span: span{from: F, to: T}},
+  parentID: P, display: [R, [F, T]],
+} :-
+  viz.astNodeInternal{
+    id: match{rule: R, span: span{from: F, to: T}},
+    parentID: P,
+  }.
+
+viz.astNodeInternal{id: I, parentID: P} :-
+  viz.normalNode{id: I, parentID: P} |
+  viz.mainNode{id: I, parentID: P}.
+
+viz.normalNode{id: match{rule: Rule, span: Span}, parentID: P} :-
+  parse.ruleMatch{rule: Rule, span: Span} &
+  parse.ruleMatchParent{child: match{rule: Rule, span: Span}, parent: P}.
+viz.mainNode{id: match{rule: "main", span: Span}, parentID: -1} :-
+  parse.ruleMatch{rule: "main", span: Span}.
+
+internal.visualization{
+  name: "AST",
+  spec: tree{
+    nodes: viz.astNode{id: ID, parentID: ParentID, display: Display},
+    rootTerm: -1,
+    sortChildren: false
+  }
+}.
