@@ -140,6 +140,7 @@ input
 [a,b,c]
 ----
 application/datalog
+parse.Complete{}.
 
 gram
 main :- repSep([0-9], "").
@@ -162,6 +163,7 @@ input
 123
 ----
 application/datalog
+parse.Complete{}.
 
 gram
 main :- value.
@@ -267,3 +269,4 @@ input
 [1,2,3]
 ----
 application/datalog
+parse.Complete{}.
