@@ -103,10 +103,10 @@ class Builder {
   ) {
     this.records.push(
       rec("grammar.refEdge", {
-        from: int(startState),
-        to: int(nextState),
-        ref: str(rule.rule),
-        captureName: str(rule.captureName),
+        from: int(from),
+        to: int(to),
+        ref: str(rule),
+        captureName: str(captureName),
       })
     );
   }
