@@ -147,14 +147,15 @@ class Builder {
     rule: string,
     captureName: string | null
   ) {
-    this.records.push(
-      rec("grammar.refEdge", {
-        from: int(from),
-        to: int(to),
-        ref: str(rule),
-        captureName: str(captureName),
-      })
-    );
+    const attrs: { [name: string]: dl.Term } = {
+      from: int(from),
+      to: int(to),
+      ref: str(rule),
+    };
+    if (captureName !== null) {
+      attrs.captureName = str(captureName);
+    }
+    this.records.push(rec("grammar.refEdge", attrs));
   }
 
   private addJumpEdge(from: number, to: number) {
