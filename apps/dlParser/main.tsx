@@ -81,7 +81,7 @@ function constructInterp(grammarSource: string) {
   const grammarParsed = parserGrammarToInternal(grammarTree);
   const rules = grammarToDL(grammarParsed);
   interp = interp.evalRawStmts(
-    rules.map((rule) => ({ type: "Rule", rule }))
+    rules.map((record) => ({ type: "Fact", record }))
   )[1];
   return interp;
 }
