@@ -19,6 +19,7 @@ parse.State{state: S, char: C} :-
 
 # state path
 
+# TODO: use individual steps instead of this
 parse.statePathWithinRule{from: From, to: To} :-
   parse.sameState{from: From, to: To} |
   parse.stateStepWithinRule{from: From, to: To} |
