@@ -22,9 +22,13 @@ parse.State{state: S, char: C} :-
 # state path
 
 parse.statePathWithinRule{from: From, to: To} :-
+  parse.sameState{from: From, to: To} |
   parse.stateStepWithinRule{from: From, to: To} |
   parse.stateStepWithinRule{from: From, to: Between} &
   parse.statePathWithinRule{from: Between, to: To}.
+
+parse.sameState{from: st{state: S, char: C}, to: st{state: S, char: C}} :-
+  parse.State{state: S, char: C}.
 
 # state step
 
