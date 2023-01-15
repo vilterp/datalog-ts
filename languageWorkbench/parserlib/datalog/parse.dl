@@ -8,6 +8,8 @@
 .table grammar.charRangeEdge
 .table grammar.jumpEdge
 
+.table parse.initialParent
+
 # === interpreter ===
 
 parse.Complete{} :-
@@ -16,6 +18,13 @@ parse.Complete{} :-
 
 parse.State{state: S, char: C} :-
   parse.stateStep{to: st{state: S, char: C}}.
+
+# state path
+
+parse.statePath{from: From, to: To} :-
+  parse.stateStep{from: From, to: To} |
+  parse.stateStep{from: From, to: Between} &
+  parse.statePath{from: Between, to: To}.
 
 # state step
 
@@ -73,7 +82,27 @@ parse.returnFromRule{
   grammar.refEdge{from: SBeforeRef, to: ToS, ref: Rule} &
   grammar.rule{name: Rule, from: SRuleStart, to: FromS} &
   parse.State{state: FromS, char: ToC} &
+  # TODO: return to parent
   FromC = ToC.
+
+parse.refStep{
+  from: st{state: FromS, char: FromC},
+  to: st{state: ToS, char: ToC},
+  type: "ref",
+} :-
+  parse.callRule{
+    from: st{state: FromS, char: FromC},
+    to: st{state: RuleStartSt, char: FromC}
+  } &
+  parse.statePath{
+    from: st{state: RuleStartSt, char: FromC},
+    to: st{state: RuleEndSt, char: ToC},
+  } &
+  parse.returnFromRule{
+    from: st{state: RuleEndSt, char: ToC},
+    to: st{state: ToS, char: ToC}
+  } &
+  grammar.refEdge{from: FromS, to: ToS}.
 
 parse.jump{
   from: st{state: FromS, char: C},
@@ -108,7 +137,14 @@ parse.stateParent{child: Child, parent: Parent} :-
   parse.initialParent{child: Child, parent: Parent} |
   parse.nonCallStep{from: PrevChild, to: Child} &
   parse.stateParent{child: PrevChild, parent: Parent} |
-  parse.callRule{from: Parent, to: Child}.
+  parse.refStepParent{child: Child, parent: Parent}.
+
+parse.refStepParent{
+  child: To,
+  parent: Parent,
+} :-
+  parse.stateParent{child: From, parent: Parent} &
+  parse.refStep{from: From, to: To}.
 
 parse.initialParent{child: st{state: -1, char: -1}, parent: root{}}.
 
@@ -124,11 +160,7 @@ parse.ruleMatchParent{
   grammar.refEdge{from: RefFromSt, to: RefToSt, ref: ChildRule} &
   grammar.stateReachable{from: ParentStartSt, to: RefFromSt} &
   parse.State{state: RefFromSt, char: ChildStartCh} &
-  parse.State{state: ChildStartSt, char: ChildStartCh} &
-  parse.stateParent{
-    parent: st{state: RefFromSt, char: ChildStartCh},
-    child: st{state: ChildStartSt, char: ChildStartCh},
-  }.
+  parse.State{state: ChildStartSt, char: ChildStartCh}.
 
 # === Deriving facts about the grammar ===
 
