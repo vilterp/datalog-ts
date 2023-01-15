@@ -15,7 +15,7 @@ input
 foo
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- ["a", "b", "c"].
@@ -34,7 +34,7 @@ input
 abc
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- (foo | bar).
@@ -72,15 +72,15 @@ input
 foo
 ----
 application/datalog
-parse.ruleMatch{rule: "foo", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
+viz.astNode{display: ["foo",[0,-2]], id: match{rule: "foo", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 input
 bar
 ----
 application/datalog
-parse.ruleMatch{rule: "bar", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
+viz.astNode{display: ["bar",[0,-2]], id: match{rule: "bar", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- repSep("foo", "bar").
@@ -107,28 +107,28 @@ input
 foo
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
 
 input
 foobar
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: -2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 3}}.
+viz.astNode{display: ["main",[-2,-2]], id: match{rule: "main", span: span{from: -2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
+viz.astNode{display: ["main",[0,3]], id: match{rule: "main", span: span{from: 0, to: 3}}, parentID: -1}.
 
 input
 foobarfoo
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 3}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 6}}.
-parse.ruleMatch{rule: "main", span: span{from: 6, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 6, to: 6}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
+viz.astNode{display: ["main",[0,3]], id: match{rule: "main", span: span{from: 0, to: 3}}, parentID: -1}.
+viz.astNode{display: ["main",[0,6]], id: match{rule: "main", span: span{from: 0, to: 6}}, parentID: -1}.
+viz.astNode{display: ["main",[6,-2]], id: match{rule: "main", span: span{from: 6, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[6,6]], id: match{rule: "main", span: span{from: 6, to: 6}}, parentID: -1}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
@@ -151,7 +151,7 @@ input
 [a,b,c]
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- repSep([0-9], "").
@@ -168,24 +168,24 @@ input
 1
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: -2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
+viz.astNode{display: ["main",[-2,-2]], id: match{rule: "main", span: span{from: -2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
 
 input
 123
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: -2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 1}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: 2}}.
-parse.ruleMatch{rule: "main", span: span{from: 1, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 1, to: 1}}.
-parse.ruleMatch{rule: "main", span: span{from: 1, to: 2}}.
-parse.ruleMatch{rule: "main", span: span{from: 2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 2, to: 2}}.
+viz.astNode{display: ["main",[-2,-2]], id: match{rule: "main", span: span{from: -2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
+viz.astNode{display: ["main",[0,1]], id: match{rule: "main", span: span{from: 0, to: 1}}, parentID: -1}.
+viz.astNode{display: ["main",[0,2]], id: match{rule: "main", span: span{from: 0, to: 2}}, parentID: -1}.
+viz.astNode{display: ["main",[1,-2]], id: match{rule: "main", span: span{from: 1, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[1,1]], id: match{rule: "main", span: span{from: 1, to: 1}}, parentID: -1}.
+viz.astNode{display: ["main",[1,2]], id: match{rule: "main", span: span{from: 1, to: 2}}, parentID: -1}.
+viz.astNode{display: ["main",[2,-2]], id: match{rule: "main", span: span{from: 2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[2,2]], id: match{rule: "main", span: span{from: 2, to: 2}}, parentID: -1}.
 
 gram
 main :- value.
@@ -285,20 +285,20 @@ input
 null
 ----
 application/datalog
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "null", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "value", span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["null",[0,-2]], id: match{rule: "null", span: span{from: 0, to: -2}}, parentID: match{rule: "value", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
 
 input
 [1,2,3]
 ----
 application/datalog
-parse.ruleMatch{rule: "array", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "int", span: span{from: 1, to: 2}}.
-parse.ruleMatch{rule: "int", span: span{from: 3, to: 4}}.
-parse.ruleMatch{rule: "int", span: span{from: 5, to: 6}}.
-parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "value", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "value", span: span{from: 1, to: 2}}.
-parse.ruleMatch{rule: "value", span: span{from: 3, to: 4}}.
-parse.ruleMatch{rule: "value", span: span{from: 5, to: 6}}.
+viz.astNode{display: ["array",[0,-2]], id: match{rule: "array", span: span{from: 0, to: -2}}, parentID: match{rule: "value", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["int",[1,2]], id: match{rule: "int", span: span{from: 1, to: 2}}, parentID: match{rule: "value", span: span{from: 1, to: 2}}}.
+viz.astNode{display: ["int",[3,4]], id: match{rule: "int", span: span{from: 3, to: 4}}, parentID: match{rule: "value", span: span{from: 3, to: 4}}}.
+viz.astNode{display: ["int",[5,6]], id: match{rule: "int", span: span{from: 5, to: 6}}, parentID: match{rule: "value", span: span{from: 5, to: 6}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[1,2]], id: match{rule: "value", span: span{from: 1, to: 2}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[3,4]], id: match{rule: "value", span: span{from: 3, to: 4}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[5,6]], id: match{rule: "value", span: span{from: 5, to: 6}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
