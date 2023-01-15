@@ -127,7 +127,8 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
 
 viz.astNode{
   id: match{rule: R, span: span{from: F, to: T}},
-  parentID: P, display: [R, [F, T]],
+  parentID: P,
+  display: [R, [F, T]],
 } :-
   viz.astNodeInternal{
     id: match{rule: R, span: span{from: F, to: T}},
@@ -178,5 +179,15 @@ internal.visualization{
   spec: graphviz{
     nodes: grammar.stateNode{id: ID},
     edges: viz.edge{from: From, to: To, label: Label}
+  }
+}.
+
+# == Match Graph ==
+
+internal.visualization{
+  name: "Match Graph",
+  spec: graphviz{
+    nodes: viz.astNode{id: ID, display: Label},
+    edges: viz.astNode{id: From, parentID: To},
   }
 }.
