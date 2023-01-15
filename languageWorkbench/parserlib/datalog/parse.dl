@@ -155,19 +155,23 @@ parse.refStepParent{
 
 parse.initialParent{child: st{state: -1, char: -1}, parent: root{}}.
 
-# TODO: this rule is a monster; no way we need all these clauses
 parse.ruleMatchParent{
   child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
   parent: match{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}},
 } :-
-  parse.ruleMatch{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}} &
-  parse.ruleMatch{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}} &
-  grammar.rule{name: ParentRule, from: ParentStartSt} &
-  grammar.rule{name: ChildRule, from: ChildStartSt, to: ChildEndSt} &
-  grammar.refEdge{from: RefFromSt, to: RefToSt, ref: ChildRule} &
-  grammar.stateReachable{from: ParentStartSt, to: RefFromSt} &
-  parse.State{state: RefFromSt, char: ChildStartCh} &
-  parse.State{state: ChildStartSt, char: ChildStartCh}.
+  grammar.rule{name: ParentRule, from: ParentStartSt, to: ParentEndSt} &
+  parse.State{state: ParentStartSt, char: ParentStartCh} &
+  parse.statePathWithinRule{
+    from: st{state: ParentStartSt, char: ParentStartCh},
+    to: CallingSt,
+  } &
+  parse.callRule{from: CallingSt, to: CalledState, rule: ChildRule} &
+  parse.statePathWithinRule{from: CalledState, to: ReturningState} &
+  parse.returnFromRule{from: ReturningState, to: ReturnedState} &
+  parse.statePathWithinRule{
+    from: ReturnedState,
+    to: st{state: ParentEndSt, char: ParentEndCh},
+  }.
 
 # === Deriving facts about the grammar ===
 
