@@ -8,8 +8,6 @@
 .table grammar.charRangeEdge
 .table grammar.jumpEdge
 
-.table parse.initialParent
-
 # === interpreter ===
 
 parse.Complete{} :-
@@ -147,22 +145,6 @@ parse.nonCallStep{from: From, to: To, type: T} :-
   parse.matchCharRange{from: From, to: To, type: T} |
   parse.jump{from: From, to: To, type: T}.
 
-parse.stateParent{child: Child, parent: Parent} :-
-  parse.initialParent{child: Child, parent: Parent} |
-  parse.nonCallStep{from: PrevChild, to: Child} &
-  parse.stateParent{child: PrevChild, parent: Parent} |
-  parse.callRule{from: Parent, to: Child} |
-  parse.refStepParent{child: Child, parent: Parent}.
-
-parse.refStepParent{
-  child: To,
-  parent: Parent,
-} :-
-  parse.stateParent{child: From, parent: Parent} &
-  parse.refStep{from: From, to: To}.
-
-parse.initialParent{child: st{state: -1, char: -1}, parent: root{}}.
-
 parse.ruleMatchParent{
   child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
   parent: match{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}},
@@ -281,24 +263,11 @@ viz.stateGraphEdge{from: From, to: To, type: Type} :-
   parse.stateStep{from: From, to: To, type: Type}.
   # viz.parentEdge{from: From, to: To, type: Type}.
 
-viz.parentEdge{from: From, to: To, type: "parent"} :-
-  parse.stateParent{child: From, parent: To}.
-
 internal.visualization{
   name: "State Graph",
   spec: graphviz{
     nodes: viz.stateNode{st: ID},
     edges: viz.stateGraphEdge{from: From, to: To, type: Label},
-  }
-}.
-
-# == Parent Graph ==
-
-internal.visualization{
-  name: "Parent Graph",
-  spec: graphviz{
-    nodes: viz.stateNode{st: ID},
-    edges: viz.parentEdge{from: From, to: To, type: Label},
   }
 }.
 
