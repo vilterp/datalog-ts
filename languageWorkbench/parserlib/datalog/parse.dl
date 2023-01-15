@@ -21,12 +21,16 @@ parse.State{state: S, char: C} :-
 
 # state path
 
-parse.statePath{from: From, to: To} :-
-  parse.stateStep{from: From, to: To} |
-  parse.stateStep{from: From, to: Between} &
-  parse.statePath{from: Between, to: To}.
+parse.statePathWithinRule{from: From, to: To} :-
+  parse.stateStepWithinRule{from: From, to: To} |
+  parse.stateStepWithinRule{from: From, to: Between} &
+  parse.statePathWithinRule{from: Between, to: To}.
 
 # state step
+
+parse.stateStepWithinRule{from: From, to: To} :-
+  parse.nonCallStep{from: From, to: To, type: T} |
+  parse.refStep{from: From, to: To, type: T}.
 
 parse.stateStep{from: From, to: To, type: T} :-
   parse.nonCallStep{from: From, to: To, type: T} |
@@ -66,26 +70,30 @@ parse.matchCharRange{
 parse.callRule{
   from: st{state: FromS, char: FromC},
   to: st{state: ToS, char: ToC},
+  rule: Rule,
+  retState: RetS,
   type: "callRule",
 } :-
   parse.State{state: FromS, char: FromC} &
-  grammar.refEdge{from: FromS, ref: Rule} &
+  grammar.refEdge{from: FromS, to: RetS, ref: Rule} &
   grammar.rule{name: Rule, from: ToS} &
   ToC = FromC.
 
 parse.returnFromRule{
-  from: st{state: FromS, char: FromC},
+  from: st{state: RuleEndState, char: FromC},
   to: st{state: ToS, char: ToC},
   type: "returnFromRule",
 } :-
-  parse.State{state: SBeforeRef, char: CStart} &
-  grammar.refEdge{from: SBeforeRef, to: ToS, ref: Rule} &
-  grammar.rule{name: Rule, from: SRuleStart, to: FromS} &
-  parse.State{state: FromS, char: ToC} &
-  # parse.stateParent{
-  #   child: st{},
-  #   parent: st{state: ToS, char: ToC},
-  # } &
+  parse.callRule{
+    to: st{state: RuleBeginState, char: RuleBeginChar},
+    retState: ToS,
+    rule: Rule,
+  } &
+  grammar.rule{name: Rule, from: RuleBeginState, to: RuleEndState} &
+  parse.statePathWithinRule{
+    from: st{state: RuleBeginState, char: RuleBeginChar},
+    to: st{state: RuleEndState, char: FromC},
+  } &
   FromC = ToC.
 
 parse.refStep{
@@ -97,7 +105,7 @@ parse.refStep{
     from: st{state: FromS, char: FromC},
     to: st{state: RuleStartSt, char: FromC}
   } &
-  parse.statePath{
+  parse.statePathWithinRule{
     from: st{state: RuleStartSt, char: FromC},
     to: st{state: RuleEndSt, char: ToC},
   } &
@@ -121,7 +129,7 @@ parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd} &
-  parse.statePath{
+  parse.statePathWithinRule{
     from: st{state: SRuleStart, char: CStart},
     to: st{state: SRuleEnd, char: CEnd},
   }.
