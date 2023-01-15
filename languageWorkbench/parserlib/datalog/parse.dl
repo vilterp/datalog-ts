@@ -195,3 +195,16 @@ internal.visualization{
     edges: viz.astNode{id: From, parentID: To},
   }
 }.
+
+# == State Graph ==
+
+viz.stateNode{st: st{state: S, char: C}} :-
+  parse.State{state: S, char: C}.
+
+internal.visualization{
+  name: "State Graph",
+  spec: graphviz{
+    nodes: viz.stateNode{st: ID},
+    edges: parse.stateStep{from: From, to: To},
+  }
+}.
