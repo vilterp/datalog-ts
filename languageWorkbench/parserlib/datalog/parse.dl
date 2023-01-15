@@ -86,12 +86,23 @@ parse.jump{
   parse.State{state: FromS, char: C} &
   grammar.jumpEdge{from: FromS, to: ToS}.
 
+# state path
+
+parse.statePath{from: From, to: To} :-
+  parse.stateStep{from: From, to: To} |
+  parse.stateStep{from: From, to: Between} &
+  parse.statePath{from: Between, to: To}.
+
 # building rule tree
 
 parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
-  parse.State{state: SRuleEnd, char: CEnd}.
+  parse.State{state: SRuleEnd, char: CEnd} &
+  parse.statePath{
+    from: st{state: SRuleStart, char: CStart},
+    to: st{state: SRuleEnd, char: CEnd},
+  }.
 
 parse.ruleMatchParent{
   child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
@@ -212,5 +223,15 @@ internal.visualization{
   spec: graphviz{
     nodes: viz.stateNode{st: ID},
     edges: parse.stateStep{from: From, to: To, type: Label},
+  }
+}.
+
+# == Input Graph ==
+
+internal.visualization{
+  name: "Input Graph",
+  spec: graphviz{
+    nodes: input.char{id: ID, char: Label},
+    edges: input.next{from: From, to: To},
   }
 }.

@@ -115,8 +115,6 @@ foobar
 ----
 application/datalog
 parse.ruleMatch{rule: "main", span: span{from: -2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: -2, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: -2, to: 3}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 3}}.
@@ -130,8 +128,6 @@ parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 3}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 6}}.
 parse.ruleMatch{rule: "main", span: span{from: 6, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 6, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: 6, to: 3}}.
 parse.ruleMatch{rule: "main", span: span{from: 6, to: 6}}.
 
 gram
@@ -173,7 +169,6 @@ input
 ----
 application/datalog
 parse.ruleMatch{rule: "main", span: span{from: -2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: -2, to: 0}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
 
@@ -182,20 +177,14 @@ input
 ----
 application/datalog
 parse.ruleMatch{rule: "main", span: span{from: -2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: -2, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: -2, to: 1}}.
-parse.ruleMatch{rule: "main", span: span{from: -2, to: 2}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 0}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 1}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 2}}.
 parse.ruleMatch{rule: "main", span: span{from: 1, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 1, to: 0}}.
 parse.ruleMatch{rule: "main", span: span{from: 1, to: 1}}.
 parse.ruleMatch{rule: "main", span: span{from: 1, to: 2}}.
 parse.ruleMatch{rule: "main", span: span{from: 2, to: -2}}.
-parse.ruleMatch{rule: "main", span: span{from: 2, to: 0}}.
-parse.ruleMatch{rule: "main", span: span{from: 2, to: 1}}.
 parse.ruleMatch{rule: "main", span: span{from: 2, to: 2}}.
 
 gram
@@ -305,20 +294,11 @@ input
 ----
 application/datalog
 parse.ruleMatch{rule: "array", span: span{from: 0, to: -2}}.
-parse.ruleMatch{rule: "array", span: span{from: 1, to: -2}}.
-parse.ruleMatch{rule: "array", span: span{from: 3, to: -2}}.
-parse.ruleMatch{rule: "array", span: span{from: 5, to: -2}}.
-parse.ruleMatch{rule: "int", span: span{from: 0, to: 2}}.
-parse.ruleMatch{rule: "int", span: span{from: 0, to: 4}}.
-parse.ruleMatch{rule: "int", span: span{from: 0, to: 6}}.
 parse.ruleMatch{rule: "int", span: span{from: 1, to: 2}}.
 parse.ruleMatch{rule: "int", span: span{from: 1, to: 4}}.
 parse.ruleMatch{rule: "int", span: span{from: 1, to: 6}}.
-parse.ruleMatch{rule: "int", span: span{from: 3, to: 2}}.
 parse.ruleMatch{rule: "int", span: span{from: 3, to: 4}}.
 parse.ruleMatch{rule: "int", span: span{from: 3, to: 6}}.
-parse.ruleMatch{rule: "int", span: span{from: 5, to: 2}}.
-parse.ruleMatch{rule: "int", span: span{from: 5, to: 4}}.
 parse.ruleMatch{rule: "int", span: span{from: 5, to: 6}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: -2}}.
 parse.ruleMatch{rule: "main", span: span{from: 0, to: 2}}.
@@ -333,10 +313,7 @@ parse.ruleMatch{rule: "value", span: span{from: 1, to: 2}}.
 parse.ruleMatch{rule: "value", span: span{from: 1, to: 4}}.
 parse.ruleMatch{rule: "value", span: span{from: 1, to: 6}}.
 parse.ruleMatch{rule: "value", span: span{from: 3, to: -2}}.
-parse.ruleMatch{rule: "value", span: span{from: 3, to: 2}}.
 parse.ruleMatch{rule: "value", span: span{from: 3, to: 4}}.
 parse.ruleMatch{rule: "value", span: span{from: 3, to: 6}}.
 parse.ruleMatch{rule: "value", span: span{from: 5, to: -2}}.
-parse.ruleMatch{rule: "value", span: span{from: 5, to: 2}}.
-parse.ruleMatch{rule: "value", span: span{from: 5, to: 4}}.
 parse.ruleMatch{rule: "value", span: span{from: 5, to: 6}}.
