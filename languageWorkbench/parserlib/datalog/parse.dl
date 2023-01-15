@@ -260,8 +260,8 @@ viz.stateNode{st: st{state: S, char: C}} :-
   parse.State{state: S, char: C}.
 
 viz.stateGraphEdge{from: From, to: To, type: Type} :-
-  parse.stateStep{from: From, to: To, type: Type}.
-  # viz.parentEdge{from: From, to: To, type: Type}.
+  parse.stateStep{from: From, to: To, type: Type} |
+  parse.refStep{from: From, to: To, rule: Type}.
 
 internal.visualization{
   name: "State Graph",
