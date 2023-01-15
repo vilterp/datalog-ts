@@ -94,13 +94,17 @@ parse.ruleMatchParent{
   parse.ruleMatch{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}} &
   parse.ruleMatch{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}} &
   grammar.rule{name: ParentRule, from: ParentStartSt} &
-  grammar.rule{name: ChildRule, from: ChildStartSt} &
-  grammar.refEdge{from: RefSt, ref: ChildRule} &
-  grammar.stateReachable{from: ParentStartSt, to: RefSt} &
-  parse.State{state: RefSt, char: ChildStartCh} &
+  grammar.rule{name: ChildRule, from: ChildStartSt, to: ChildEndSt} &
+  grammar.refEdge{from: RefFromSt, to: RefToSt, ref: ChildRule} &
+  grammar.stateReachable{from: ParentStartSt, to: RefFromSt} &
+  parse.State{state: RefFromSt, char: ChildStartCh} &
   parse.callRule{
-    from: st{state: RefSt, char: ChildStartCh},
+    from: st{state: RefFromSt, char: ChildStartCh},
     to: st{state: ChildStartSt, char: ChildStartCh}
+  } &
+  parse.returnFromRule{
+    from: st{state: ChildEndSt, char: ChildEndCh},
+    to: st{state: RefToSt, char: ChildEndCh},
   }.
 
 # === Deriving facts about the grammar ===
