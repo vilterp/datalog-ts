@@ -70,11 +70,11 @@ async function parserTestDatalog(
   return doBenchmarkTimeBudget(() => {
     let interp = loadedInterp;
     interp = interp.evalRawStmts(
-      grammarDL.map((rule) => ({ type: "Rule", rule }))
+      grammarDL.map((record) => ({ type: "Fact", record }))
     )[1];
     interp = interp.insertAll(inputDL);
 
-    interp.queryStr("main{span: span{from: 0, to: -2}}");
+    interp.queryStr("parse.Complete{}");
   });
 }
 
