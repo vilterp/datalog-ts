@@ -94,7 +94,7 @@ parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
     parent: Parent,
   } &
   parse.stateParent{
-    child: parse.State{state: SRuleEnd, char: CEnd},
+    child: st{state: SRuleEnd, char: CEnd},
     parent: Parent,
   }.
 
@@ -105,9 +105,12 @@ parse.nonCallStep{from: From, to: To, type: T} :-
   parse.jump{from: From, to: To, type: T}.
 
 parse.stateParent{child: Child, parent: Parent} :-
+  parse.initialParent{child: Child, parent: Parent} |
   parse.nonCallStep{from: PrevChild, to: Child} &
   parse.stateParent{child: PrevChild, parent: Parent} |
   parse.callRule{from: Parent, to: Child}.
+
+parse.initialParent{child: st{state: -1, char: -1}, parent: root{}}.
 
 # TODO: this rule is a monster; no way we need all these clauses
 parse.ruleMatchParent{
