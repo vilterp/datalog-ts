@@ -302,3 +302,25 @@ viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from:
 viz.astNode{display: ["value",[1,2]], id: match{rule: "value", span: span{from: 1, to: 2}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
 viz.astNode{display: ["value",[3,4]], id: match{rule: "value", span: span{from: 3, to: 4}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
 viz.astNode{display: ["value",[5,6]], id: match{rule: "value", span: span{from: 5, to: 6}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
+
+input
+{'foo':2,'bar':[1,2,3]}
+----
+application/datalog
+viz.astNode{display: ["array",[15,22]], id: match{rule: "array", span: span{from: 15, to: 22}}, parentID: match{rule: "value", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["int",[16,17]], id: match{rule: "int", span: span{from: 16, to: 17}}, parentID: match{rule: "value", span: span{from: 16, to: 17}}}.
+viz.astNode{display: ["int",[18,19]], id: match{rule: "int", span: span{from: 18, to: 19}}, parentID: match{rule: "value", span: span{from: 18, to: 19}}}.
+viz.astNode{display: ["int",[20,21]], id: match{rule: "int", span: span{from: 20, to: 21}}, parentID: match{rule: "value", span: span{from: 20, to: 21}}}.
+viz.astNode{display: ["int",[7,8]], id: match{rule: "int", span: span{from: 7, to: 8}}, parentID: match{rule: "value", span: span{from: 7, to: 8}}}.
+viz.astNode{display: ["keyValue",[1,8]], id: match{rule: "keyValue", span: span{from: 1, to: 8}}, parentID: match{rule: "object", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["keyValue",[9,22]], id: match{rule: "keyValue", span: span{from: 9, to: 22}}, parentID: match{rule: "object", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["object",[0,-2]], id: match{rule: "object", span: span{from: 0, to: -2}}, parentID: match{rule: "value", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["string",[1,6]], id: match{rule: "string", span: span{from: 1, to: 6}}, parentID: match{rule: "keyValue", span: span{from: 1, to: 8}}}.
+viz.astNode{display: ["string",[9,14]], id: match{rule: "string", span: span{from: 9, to: 14}}, parentID: match{rule: "keyValue", span: span{from: 9, to: 22}}}.
+viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[15,22]], id: match{rule: "value", span: span{from: 15, to: 22}}, parentID: match{rule: "keyValue", span: span{from: 9, to: 22}}}.
+viz.astNode{display: ["value",[16,17]], id: match{rule: "value", span: span{from: 16, to: 17}}, parentID: match{rule: "array", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["value",[18,19]], id: match{rule: "value", span: span{from: 18, to: 19}}, parentID: match{rule: "array", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["value",[20,21]], id: match{rule: "value", span: span{from: 20, to: 21}}, parentID: match{rule: "array", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["value",[7,8]], id: match{rule: "value", span: span{from: 7, to: 8}}, parentID: match{rule: "keyValue", span: span{from: 1, to: 8}}}.
