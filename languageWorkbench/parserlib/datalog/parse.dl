@@ -19,24 +19,26 @@ parse.State{state: S, char: C} :-
 
 # state step
 
-parse.stateStep{from: From, to: To} :-
-  parse.initialStateStep{from: From, to: To} |
-  parse.matchCharLiteral{from: From, to: To} |
-  parse.matchCharRange{from: From, to: To} |
-  parse.callRule{from: From, to: To} |
-  parse.returnFromRule{from: From, to: To} |
-  parse.jump{from: From, to: To}.
+parse.stateStep{from: From, to: To, type: T} :-
+  parse.initialStateStep{from: From, to: To, type: T} |
+  parse.matchCharLiteral{from: From, to: To, type: T} |
+  parse.matchCharRange{from: From, to: To, type: T} |
+  parse.callRule{from: From, to: To, type: T} |
+  parse.returnFromRule{from: From, to: To, type: T} |
+  parse.jump{from: From, to: To, type: T}.
 
 parse.initialStateStep{
   from: st{state: -1, char: -1},
-  to: st{state: S, char: C}
+  to: st{state: S, char: C},
+  type: "initial",
 } :-
   grammar.rule{name: "main", from: S} &
   input.next{from: -1, to: C}.
 
 parse.matchCharLiteral{
   from: st{state: FromS, char: FromC},
-  to: st{state: ToS, char: ToC}
+  to: st{state: ToS, char: ToC},
+  type: "matchCharLiteral",
 } :-
   parse.State{state: FromS, char: FromC} &
   grammar.charLiteralEdge{from: FromS, to: ToS, val: V} &
@@ -45,7 +47,8 @@ parse.matchCharLiteral{
 
 parse.matchCharRange{
   from: st{state: FromS, char: FromC},
-  to: st{state: ToS, char: ToC}
+  to: st{state: ToS, char: ToC},
+  type: "matchCharRange",
 } :-
   parse.State{state: FromS, char: FromC} &
   grammar.charRangeEdge{from: FromS, to: ToS, rangeStart: RS, rangeEnd: RE} &
@@ -56,7 +59,8 @@ parse.matchCharRange{
 
 parse.callRule{
   from: st{state: FromS, char: FromC},
-  to: st{state: ToS, char: ToC}
+  to: st{state: ToS, char: ToC},
+  type: "callRule",
 } :-
   parse.State{state: FromS, char: FromC} &
   grammar.refEdge{from: FromS, ref: Rule} &
@@ -65,7 +69,8 @@ parse.callRule{
 
 parse.returnFromRule{
   from: st{state: FromS, char: FromC},
-  to: st{state: ToS, char: ToC}
+  to: st{state: ToS, char: ToC},
+  type: "returnFromRule",
 } :-
   parse.State{state: SBeforeRef, char: CStart} &
   grammar.refEdge{from: SBeforeRef, to: ToS, ref: Rule} &
@@ -76,6 +81,7 @@ parse.returnFromRule{
 parse.jump{
   from: st{state: FromS, char: C},
   to: st{state: ToS, char: C},
+  type: "jump",
 } :-
   parse.State{state: FromS, char: C} &
   grammar.jumpEdge{from: FromS, to: ToS}.
@@ -205,6 +211,6 @@ internal.visualization{
   name: "State Graph",
   spec: graphviz{
     nodes: viz.stateNode{st: ID},
-    edges: parse.stateStep{from: From, to: To},
+    edges: parse.stateStep{from: From, to: To, type: Label},
   }
 }.
