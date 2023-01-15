@@ -27,15 +27,10 @@ function Main() {
     initialEditorState(INITIAL_GRAMMAR_TEXT)
   );
 
-  const interp1 = useMemo(
-    () => constructInterp(grammarEditorState.source),
-    [grammarEditorState.source]
-  );
-
-  const { interp: interp2, error } = useMemo(
-    () => insertInput(interp1, source),
-    [source, interp1]
-  );
+  const { interp: interp2, error } = useMemo(() => {
+    const interp1 = constructInterp(grammarEditorState.source);
+    return insertInput(interp1, source);
+  }, [source, grammarEditorState.source]);
 
   return (
     <>
@@ -81,7 +76,7 @@ function constructInterp(grammarSource: string) {
   const grammarParsed = parserGrammarToInternal(grammarTree);
   const rules = grammarToDL(grammarParsed);
   interp = interp.evalRawStmts(
-    rules.map((rule) => ({ type: "Rule", rule }))
+    rules.map((record) => ({ type: "Fact", record }))
   )[1];
   return interp;
 }

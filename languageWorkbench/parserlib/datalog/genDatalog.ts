@@ -8,209 +8,171 @@ import {
 import * as gram from "../types";
 import { int, Rec, rec, str, varr, or, and } from "../../../core/types";
 import { SingleCharRule } from "../types";
+import { unreachable } from "../../../util/unreachable";
 
 // generate datalog rules that implement a parser for this grammar
-export function grammarToDL(grammar: gram.Grammar): dl.Rule[] {
-  return flatMapObjToList(grammar, (ruleName, gramRule): dl.Rule[] => {
-    return ruleToDL(ruleName, gramRule);
-  });
+export function grammarToDL(grammar: gram.Grammar): dl.Rec[] {
+  const builder = new Builder();
+  builder.addGrammar(grammar);
+  return builder.records;
 }
 
-// TODO: write these as strings, or at least make helper functions.
-//   building the raw AST is so verbose.
-function ruleToDL(name: string, rule: gram.Rule): dl.Rule[] {
-  switch (rule.type) {
-    case "Text":
-      if (rule.value === "") {
-        return [succeedRule(name)];
-      }
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P${rule.value.length + 1}`),
-            }),
-          }),
-          or([
-            and([
-              ...stringToArray(rule.value).map((char, idx) =>
-                rec("input.char", {
-                  id: varr(`P${idx + 1}`),
-                  char: str(char),
-                })
-              ),
-              ...range(rule.value.length).map((idx) =>
-                rec("input.next", {
-                  left: varr(`P${idx + 1}`),
-                  right: varr(`P${idx + 2}`),
-                })
-              ),
-            ]),
-          ])
-        ),
-      ];
-    case "Choice":
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P2`),
-            }),
-          }),
-          or(
-            rule.choices.map((choice, idx) =>
-              and([
-                rec(choiceName(name, idx), {
-                  span: rec("span", {
-                    from: varr("P1"),
-                    to: varr("P2"),
-                  }),
-                }),
-              ])
-            )
-          )
-        ),
-        ...flatMap(rule.choices, (subRule, idx) =>
-          ruleToDL(choiceName(name, idx), subRule)
-        ),
-      ];
-    case "Sequence": {
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P${rule.items.length + 1}`),
-            }),
-          }),
-          or([
-            and([
-              ...rule.items.map((char, idx) =>
-                rec(seqItemName(name, idx), {
-                  span: rec("span", {
-                    from: varr(`P${idx + 1}`),
-                    to: varr(`P${idx + 2}`),
-                  }),
-                })
-              ),
-            ]),
-          ])
-        ),
-        ...flatMap(rule.items, (subRule, idx) =>
-          ruleToDL(seqItemName(name, idx), subRule)
-        ),
-      ];
+class Builder {
+  nextStateID: number;
+  records: Rec[];
+
+  constructor() {
+    this.nextStateID = 0;
+    this.records = [];
+  }
+
+  addGrammar(grammar: gram.Grammar) {
+    for (const ruleName in grammar) {
+      const rule = grammar[ruleName];
+      this.addRule(ruleName, rule);
     }
-    case "Ref":
-      // TODO: this one seems a bit unnecessary...
-      //   these should be collapsed out somehow
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", {
-              from: varr("P1"),
-              to: varr(`P2`),
-            }),
-          }),
-          or([
-            and([
-              rec(rule.rule, {
-                span: rec("span", { from: varr("P1"), to: varr("P2") }),
-              }),
-            ]),
-          ])
-        ),
-      ];
-    case "Char":
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P2") }),
-          }),
-          or([
-            and([
-              rec("input.char", {
-                id: varr("P1"),
-                char: varr("C"),
-              }),
-              rec("input.next", {
-                left: varr("P1"),
-                right: varr("P2"),
-              }),
-              ...exprsForCharRule(rule.rule),
-            ]),
-          ])
-        ),
-      ];
-    case "RepSep":
-      return [
-        dl.rule(
-          rec(name, {
-            span: rec("span", { from: varr("P1"), to: varr("P4") }),
-          }),
-          or([
-            and([
-              rec(`${name}_succeed`, {
-                span: rec("span", { from: varr("P1"), to: varr("P4") }),
-              }),
-            ]),
-            and([
-              rec(`${name}_rep`, {
-                span: rec("span", { from: varr("P1"), to: varr("P4") }),
-              }),
-            ]),
-            and([
-              rec(`${name}_rep`, {
-                span: rec("span", { from: varr("P1"), to: varr("P2") }),
-              }),
-              rec(`${name}_sep`, {
-                span: rec("span", { from: varr("P2"), to: varr("P3") }),
-              }),
-              rec(name, {
-                span: rec("span", { from: varr("P3"), to: varr("P4") }),
-              }),
-            ]),
-          ])
-        ),
-        ...ruleToDL(`${name}_rep`, rule.rep),
-        // TODO: handle case where this is empty
-        ...ruleToDL(`${name}_sep`, rule.sep),
-        succeedRule(`${name}_succeed`), // TODO: everyone should use the same succeed rule
-      ];
   }
-}
 
-function succeedRule(name: string): dl.Rule {
-  return dl.rule(
-    rec(name, { span: rec("span", { from: varr("P1"), to: varr("P1") }) }),
-    or([and([rec("input.char", { id: varr("P1") })])])
-  );
-}
-
-function exprsForCharRule(charRule: SingleCharRule): Rec[] {
-  switch (charRule.type) {
-    case "AnyChar":
-      return [];
-    case "Literal":
-      return [rec("base.eq", { a: varr("C"), b: str(charRule.value) })];
-    case "Range":
-      return [
-        rec("base.lte", { a: str(charRule.from), b: varr("C") }),
-        rec("base.lte", { a: varr("C"), b: str(charRule.to) }),
-      ];
-    case "Not":
-      throw new Error("TODO: `not` single char rules");
+  private addRule(name: string, rule: gram.Rule) {
+    const startState = this.addState();
+    const endState = this.addSegment(rule, startState);
+    this.records.push(
+      rec("grammar.rule", {
+        name: str(name),
+        from: int(startState),
+        to: int(endState),
+      })
+    );
   }
-}
 
-function seqItemName(name: string, idx: number): string {
-  return `${name}_seq_${idx}`;
-}
+  private addSegment(rule: gram.Rule, startState: number): number {
+    switch (rule.type) {
+      case "Text": {
+        let curState = startState;
+        for (let i = 0; i < rule.value.length; i++) {
+          const char = rule.value[i];
+          const nextState = this.addState();
+          this.records.push(
+            rec("grammar.charLiteralEdge", {
+              from: int(curState),
+              to: int(nextState),
+              val: str(char),
+            })
+          );
+          curState = nextState;
+        }
+        return curState;
+      }
+      case "Ref": {
+        const nextState = this.addState();
+        this.addRefEdge(startState, nextState, rule.rule, rule.captureName);
+        return nextState;
+      }
+      case "Sequence": {
+        let curState = startState;
+        for (const item of rule.items) {
+          curState = this.addSegment(item, curState);
+        }
+        return curState;
+      }
+      case "Choice": {
+        const endState = this.addState();
+        for (const choice of rule.choices) {
+          const ruleEndState = this.addSegment(choice, startState);
+          this.addJumpEdge(ruleEndState, endState);
+        }
+        return endState;
+      }
+      case "RepSep": {
+        const endState = this.addSegment(rule.rep, startState);
+        this.addJumpEdge(startState, endState);
+        const sepEndState = this.addSegment(rule.sep, endState);
+        this.addJumpEdge(sepEndState, startState);
+        return endState;
+      }
+      case "Char": {
+        return this.addSingleCharRule(rule.rule, startState);
+      }
+      default:
+        unreachable(rule);
+    }
+  }
 
-function choiceName(name: string, idx: number): string {
-  return `${name}_choice_${idx}`;
+  private addSingleCharRule(rule: SingleCharRule, startState: number): number {
+    const endState = this.addState();
+    switch (rule.type) {
+      case "AnyChar": {
+        this.records.push(
+          rec("grammar.anyCharEdge", {
+            from: int(startState),
+            to: int(endState),
+          })
+        );
+        return endState;
+      }
+      case "Literal": {
+        this.records.push(
+          rec("grammar.charLiteralEdge", {
+            from: int(startState),
+            to: int(endState),
+            val: str(rule.value),
+          })
+        );
+        return endState;
+      }
+      case "Not": {
+        const ruleEnd = this.addSingleCharRule(rule.rule, startState);
+        this.records.push(
+          rec("grammar.negateEdge", { from: int(ruleEnd), to: int(endState) })
+        );
+        return endState;
+      }
+      case "Range": {
+        this.records.push(
+          rec("grammar.charRangeEdge", {
+            from: int(startState),
+            to: int(endState),
+            rangeStart: str(rule.from),
+            rangeEnd: str(rule.to),
+          })
+        );
+        return endState;
+      }
+    }
+  }
+
+  private addRefEdge(
+    from: number,
+    to: number,
+    rule: string,
+    captureName: string | null
+  ) {
+    const attrs: { [name: string]: dl.Term } = {
+      from: int(from),
+      to: int(to),
+      ref: str(rule),
+    };
+    if (captureName !== null) {
+      attrs.captureName = str(captureName);
+    }
+    this.records.push(rec("grammar.refEdge", attrs));
+  }
+
+  private addJumpEdge(from: number, to: number) {
+    this.records.push(
+      rec("grammar.jumpEdge", {
+        from: int(from),
+        to: int(to),
+      })
+    );
+  }
+
+  private addState(): number {
+    const newID = this.nextStateID;
+    this.nextStateID++;
+    this.records.push(rec("grammar.stateNode", { id: int(newID) }));
+    return newID;
+  }
 }
 
 export function inputToDL(input: string): Rec[] {
@@ -219,12 +181,12 @@ export function inputToDL(input: string): Rec[] {
       .map((char, idx) => rec("input.char", { char: str(char), id: int(idx) }))
       .concat(
         range(input.length - 1).map((idx) =>
-          rec("input.next", { left: int(idx), right: int(idx + 1) })
+          rec("input.next", { from: int(idx), to: int(idx + 1) })
         )
       ),
     rec("input.char", { char: str("START"), id: int(-1) }),
     rec("input.char", { char: str("END"), id: int(-2) }),
-    rec("input.next", { left: int(-1), right: int(0) }),
-    rec("input.next", { left: int(input.length - 1), right: int(-2) }),
+    rec("input.next", { from: int(-1), to: int(0) }),
+    rec("input.next", { from: int(input.length - 1), to: int(-2) }),
   ];
 }

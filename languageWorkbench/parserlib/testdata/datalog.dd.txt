@@ -2,43 +2,39 @@ gram
 main :- "foo".
 ----
 application/datalog
-main{span: span{from: P1, to: P4}} :- 
-  input.char{char: "f", id: P1} &
-  input.char{char: "o", id: P2} &
-  input.char{char: "o", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
+grammar.charLiteralEdge{from: 0, to: 1, val: "f"}.
+grammar.charLiteralEdge{from: 1, to: 2, val: "o"}.
+grammar.charLiteralEdge{from: 2, to: 3, val: "o"}.
+grammar.rule{from: 0, name: "main", to: 3}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
 
 input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- ["a", "b", "c"].
 ----
 application/datalog
-main{span: span{from: P1, to: P4}} :- 
-  main_seq_0{span: span{from: P1, to: P2}} &
-  main_seq_1{span: span{from: P2, to: P3}} &
-  main_seq_2{span: span{from: P3, to: P4}}.
-main_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: "a", id: P1} &
-  input.next{left: P1, right: P2}.
-main_seq_1{span: span{from: P1, to: P2}} :- 
-  input.char{char: "b", id: P1} &
-  input.next{left: P1, right: P2}.
-main_seq_2{span: span{from: P1, to: P2}} :- 
-  input.char{char: "c", id: P1} &
-  input.next{left: P1, right: P2}.
+grammar.charLiteralEdge{from: 0, to: 1, val: "a"}.
+grammar.charLiteralEdge{from: 1, to: 2, val: "b"}.
+grammar.charLiteralEdge{from: 2, to: 3, val: "c"}.
+grammar.rule{from: 0, name: "main", to: 3}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
 
 input
 abc
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- (foo | bar).
@@ -46,147 +42,150 @@ foo :- "foo".
 bar :- "bar".
 ----
 application/datalog
-bar{span: span{from: P1, to: P4}} :- 
-  input.char{char: "b", id: P1} &
-  input.char{char: "a", id: P2} &
-  input.char{char: "r", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
-foo{span: span{from: P1, to: P4}} :- 
-  input.char{char: "f", id: P1} &
-  input.char{char: "o", id: P2} &
-  input.char{char: "o", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
-main{span: span{from: P1, to: P2}} :- 
-  main_choice_0{span: span{from: P1, to: P2}} |
-  main_choice_1{span: span{from: P1, to: P2}}.
-main_choice_0{span: span{from: P1, to: P2}} :- foo{span: span{from: P1, to: P2}}.
-main_choice_1{span: span{from: P1, to: P2}} :- bar{span: span{from: P1, to: P2}}.
+grammar.charLiteralEdge{from: 10, to: 11, val: "r"}.
+grammar.charLiteralEdge{from: 4, to: 5, val: "f"}.
+grammar.charLiteralEdge{from: 5, to: 6, val: "o"}.
+grammar.charLiteralEdge{from: 6, to: 7, val: "o"}.
+grammar.charLiteralEdge{from: 8, to: 9, val: "b"}.
+grammar.charLiteralEdge{from: 9, to: 10, val: "a"}.
+grammar.jumpEdge{from: 2, to: 1}.
+grammar.jumpEdge{from: 3, to: 1}.
+grammar.refEdge{from: 0, ref: "bar", to: 3}.
+grammar.refEdge{from: 0, ref: "foo", to: 2}.
+grammar.rule{from: 0, name: "main", to: 1}.
+grammar.rule{from: 4, name: "foo", to: 7}.
+grammar.rule{from: 8, name: "bar", to: 11}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 10}.
+grammar.stateNode{id: 11}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
+grammar.stateNode{id: 5}.
+grammar.stateNode{id: 6}.
+grammar.stateNode{id: 7}.
+grammar.stateNode{id: 8}.
+grammar.stateNode{id: 9}.
 
 input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["foo",[0,-2]], id: match{rule: "foo", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 input
 bar
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["bar",[0,-2]], id: match{rule: "bar", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- repSep("foo", "bar").
 ----
 application/datalog
-main{span: span{from: P1, to: P4}} :- 
-  main_succeed{span: span{from: P1, to: P4}} |
-  main_rep{span: span{from: P1, to: P4}} |
-  main_rep{span: span{from: P1, to: P2}} &
-  main_sep{span: span{from: P2, to: P3}} &
-  main{span: span{from: P3, to: P4}}.
-main_rep{span: span{from: P1, to: P4}} :- 
-  input.char{char: "f", id: P1} &
-  input.char{char: "o", id: P2} &
-  input.char{char: "o", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
-main_sep{span: span{from: P1, to: P4}} :- 
-  input.char{char: "b", id: P1} &
-  input.char{char: "a", id: P2} &
-  input.char{char: "r", id: P3} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4}.
-main_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+grammar.charLiteralEdge{from: 0, to: 1, val: "f"}.
+grammar.charLiteralEdge{from: 1, to: 2, val: "o"}.
+grammar.charLiteralEdge{from: 2, to: 3, val: "o"}.
+grammar.charLiteralEdge{from: 3, to: 4, val: "b"}.
+grammar.charLiteralEdge{from: 4, to: 5, val: "a"}.
+grammar.charLiteralEdge{from: 5, to: 6, val: "r"}.
+grammar.jumpEdge{from: 0, to: 3}.
+grammar.jumpEdge{from: 6, to: 0}.
+grammar.rule{from: 0, name: "main", to: 3}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
+grammar.stateNode{id: 5}.
+grammar.stateNode{id: 6}.
 
 input
 foo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
 
 input
 foobar
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[-2,-2]], id: match{rule: "main", span: span{from: -2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
+viz.astNode{display: ["main",[0,3]], id: match{rule: "main", span: span{from: 0, to: 3}}, parentID: -1}.
 
 input
 foobarfoo
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
+viz.astNode{display: ["main",[0,3]], id: match{rule: "main", span: span{from: 0, to: 3}}, parentID: -1}.
+viz.astNode{display: ["main",[0,6]], id: match{rule: "main", span: span{from: 0, to: 6}}, parentID: -1}.
+viz.astNode{display: ["main",[6,-2]], id: match{rule: "main", span: span{from: 6, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[6,6]], id: match{rule: "main", span: span{from: 6, to: 6}}, parentID: -1}.
 
 gram
 main :- ["[", repSep([a-z], ","), "]"].
 ----
 application/datalog
-main{span: span{from: P1, to: P4}} :- 
-  main_seq_0{span: span{from: P1, to: P2}} &
-  main_seq_1{span: span{from: P2, to: P3}} &
-  main_seq_2{span: span{from: P3, to: P4}}.
-main_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: "[", id: P1} &
-  input.next{left: P1, right: P2}.
-main_seq_1{span: span{from: P1, to: P4}} :- 
-  main_seq_1_succeed{span: span{from: P1, to: P4}} |
-  main_seq_1_rep{span: span{from: P1, to: P4}} |
-  main_seq_1_rep{span: span{from: P1, to: P2}} &
-  main_seq_1_sep{span: span{from: P2, to: P3}} &
-  main_seq_1{span: span{from: P3, to: P4}}.
-main_seq_1_rep{span: span{from: P1, to: P2}} :- 
-  input.char{char: C, id: P1} &
-  input.next{left: P1, right: P2} &
-  base.lte{a: "a", b: C} &
-  base.lte{a: C, b: "z"}.
-main_seq_1_sep{span: span{from: P1, to: P2}} :- 
-  input.char{char: ",", id: P1} &
-  input.next{left: P1, right: P2}.
-main_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-main_seq_2{span: span{from: P1, to: P2}} :- 
-  input.char{char: "]", id: P1} &
-  input.next{left: P1, right: P2}.
+grammar.charLiteralEdge{from: 0, to: 1, val: "["}.
+grammar.charLiteralEdge{from: 2, to: 3, val: ","}.
+grammar.charLiteralEdge{from: 2, to: 4, val: "]"}.
+grammar.charRangeEdge{from: 1, rangeEnd: "z", rangeStart: "a", to: 2}.
+grammar.jumpEdge{from: 1, to: 2}.
+grammar.jumpEdge{from: 3, to: 1}.
+grammar.rule{from: 0, name: "main", to: 4}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
 
 input
 [a,b,c]
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
 
 gram
 main :- repSep([0-9], "").
 ----
 application/datalog
-main{span: span{from: P1, to: P4}} :- 
-  main_succeed{span: span{from: P1, to: P4}} |
-  main_rep{span: span{from: P1, to: P4}} |
-  main_rep{span: span{from: P1, to: P2}} &
-  main_sep{span: span{from: P2, to: P3}} &
-  main{span: span{from: P3, to: P4}}.
-main_rep{span: span{from: P1, to: P2}} :- 
-  input.char{char: C, id: P1} &
-  input.next{left: P1, right: P2} &
-  base.lte{a: "0", b: C} &
-  base.lte{a: C, b: "9"}.
-main_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-main_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
+grammar.charRangeEdge{from: 0, rangeEnd: "9", rangeStart: "0", to: 1}.
+grammar.jumpEdge{from: 0, to: 1}.
+grammar.jumpEdge{from: 1, to: 0}.
+grammar.rule{from: 0, name: "main", to: 1}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 1}.
 
 input
 1
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[-2,-2]], id: match{rule: "main", span: span{from: -2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
 
 input
 123
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[-2,-2]], id: match{rule: "main", span: span{from: -2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[0,0]], id: match{rule: "main", span: span{from: 0, to: 0}}, parentID: -1}.
+viz.astNode{display: ["main",[0,1]], id: match{rule: "main", span: span{from: 0, to: 1}}, parentID: -1}.
+viz.astNode{display: ["main",[0,2]], id: match{rule: "main", span: span{from: 0, to: 2}}, parentID: -1}.
+viz.astNode{display: ["main",[1,-2]], id: match{rule: "main", span: span{from: 1, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[1,1]], id: match{rule: "main", span: span{from: 1, to: 1}}, parentID: -1}.
+viz.astNode{display: ["main",[1,2]], id: match{rule: "main", span: span{from: 1, to: 2}}, parentID: -1}.
+viz.astNode{display: ["main",[2,-2]], id: match{rule: "main", span: span{from: 2, to: -2}}, parentID: -1}.
+viz.astNode{display: ["main",[2,2]], id: match{rule: "main", span: span{from: 2, to: 2}}, parentID: -1}.
 
 gram
 main :- value.
@@ -199,131 +198,129 @@ array :- ["[", repSep(value, ","), "]"].
 null :- "null".
 ----
 application/datalog
-array{span: span{from: P1, to: P4}} :- 
-  array_seq_0{span: span{from: P1, to: P2}} &
-  array_seq_1{span: span{from: P2, to: P3}} &
-  array_seq_2{span: span{from: P3, to: P4}}.
-array_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: "[", id: P1} &
-  input.next{left: P1, right: P2}.
-array_seq_1{span: span{from: P1, to: P4}} :- 
-  array_seq_1_succeed{span: span{from: P1, to: P4}} |
-  array_seq_1_rep{span: span{from: P1, to: P4}} |
-  array_seq_1_rep{span: span{from: P1, to: P2}} &
-  array_seq_1_sep{span: span{from: P2, to: P3}} &
-  array_seq_1{span: span{from: P3, to: P4}}.
-array_seq_1_rep{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-array_seq_1_sep{span: span{from: P1, to: P2}} :- 
-  input.char{char: ",", id: P1} &
-  input.next{left: P1, right: P2}.
-array_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-array_seq_2{span: span{from: P1, to: P2}} :- 
-  input.char{char: "]", id: P1} &
-  input.next{left: P1, right: P2}.
-int{span: span{from: P1, to: P3}} :- 
-  int_seq_0{span: span{from: P1, to: P2}} &
-  int_seq_1{span: span{from: P2, to: P3}}.
-int_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: C, id: P1} &
-  input.next{left: P1, right: P2} &
-  base.lte{a: "0", b: C} &
-  base.lte{a: C, b: "9"}.
-int_seq_1{span: span{from: P1, to: P4}} :- 
-  int_seq_1_succeed{span: span{from: P1, to: P4}} |
-  int_seq_1_rep{span: span{from: P1, to: P4}} |
-  int_seq_1_rep{span: span{from: P1, to: P2}} &
-  int_seq_1_sep{span: span{from: P2, to: P3}} &
-  int_seq_1{span: span{from: P3, to: P4}}.
-int_seq_1_rep{span: span{from: P1, to: P2}} :- 
-  input.char{char: C, id: P1} &
-  input.next{left: P1, right: P2} &
-  base.lte{a: "0", b: C} &
-  base.lte{a: C, b: "9"}.
-int_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-int_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-keyValue{span: span{from: P1, to: P4}} :- 
-  keyValue_seq_0{span: span{from: P1, to: P2}} &
-  keyValue_seq_1{span: span{from: P2, to: P3}} &
-  keyValue_seq_2{span: span{from: P3, to: P4}}.
-keyValue_seq_0{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
-keyValue_seq_1{span: span{from: P1, to: P2}} :- 
-  input.char{char: ":", id: P1} &
-  input.next{left: P1, right: P2}.
-keyValue_seq_2{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-main{span: span{from: P1, to: P2}} :- value{span: span{from: P1, to: P2}}.
-null{span: span{from: P1, to: P5}} :- 
-  input.char{char: "n", id: P1} &
-  input.char{char: "u", id: P2} &
-  input.char{char: "l", id: P3} &
-  input.char{char: "l", id: P4} &
-  input.next{left: P1, right: P2} &
-  input.next{left: P2, right: P3} &
-  input.next{left: P3, right: P4} &
-  input.next{left: P4, right: P5}.
-object{span: span{from: P1, to: P4}} :- 
-  object_seq_0{span: span{from: P1, to: P2}} &
-  object_seq_1{span: span{from: P2, to: P3}} &
-  object_seq_2{span: span{from: P3, to: P4}}.
-object_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: "{", id: P1} &
-  input.next{left: P1, right: P2}.
-object_seq_1{span: span{from: P1, to: P4}} :- 
-  object_seq_1_succeed{span: span{from: P1, to: P4}} |
-  object_seq_1_rep{span: span{from: P1, to: P4}} |
-  object_seq_1_rep{span: span{from: P1, to: P2}} &
-  object_seq_1_sep{span: span{from: P2, to: P3}} &
-  object_seq_1{span: span{from: P3, to: P4}}.
-object_seq_1_rep{span: span{from: P1, to: P2}} :- keyValue{span: span{from: P1, to: P2}}.
-object_seq_1_sep{span: span{from: P1, to: P2}} :- 
-  input.char{char: ",", id: P1} &
-  input.next{left: P1, right: P2}.
-object_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-object_seq_2{span: span{from: P1, to: P2}} :- 
-  input.char{char: "}", id: P1} &
-  input.next{left: P1, right: P2}.
-string{span: span{from: P1, to: P4}} :- 
-  string_seq_0{span: span{from: P1, to: P2}} &
-  string_seq_1{span: span{from: P2, to: P3}} &
-  string_seq_2{span: span{from: P3, to: P4}}.
-string_seq_0{span: span{from: P1, to: P2}} :- 
-  input.char{char: "'", id: P1} &
-  input.next{left: P1, right: P2}.
-string_seq_1{span: span{from: P1, to: P4}} :- 
-  string_seq_1_succeed{span: span{from: P1, to: P4}} |
-  string_seq_1_rep{span: span{from: P1, to: P4}} |
-  string_seq_1_rep{span: span{from: P1, to: P2}} &
-  string_seq_1_sep{span: span{from: P2, to: P3}} &
-  string_seq_1{span: span{from: P3, to: P4}}.
-string_seq_1_rep{span: span{from: P1, to: P2}} :- 
-  input.char{char: C, id: P1} &
-  input.next{left: P1, right: P2} &
-  base.lte{a: "a", b: C} &
-  base.lte{a: C, b: "z"}.
-string_seq_1_sep{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-string_seq_1_succeed{span: span{from: P1, to: P1}} :- input.char{id: P1}.
-string_seq_2{span: span{from: P1, to: P2}} :- 
-  input.char{char: "'", id: P1} &
-  input.next{left: P1, right: P2}.
-value{span: span{from: P1, to: P2}} :- 
-  value_choice_0{span: span{from: P1, to: P2}} |
-  value_choice_1{span: span{from: P1, to: P2}} |
-  value_choice_2{span: span{from: P1, to: P2}} |
-  value_choice_3{span: span{from: P1, to: P2}} |
-  value_choice_4{span: span{from: P1, to: P2}}.
-value_choice_0{span: span{from: P1, to: P2}} :- object{span: span{from: P1, to: P2}}.
-value_choice_1{span: span{from: P1, to: P2}} :- array{span: span{from: P1, to: P2}}.
-value_choice_2{span: span{from: P1, to: P2}} :- int{span: span{from: P1, to: P2}}.
-value_choice_3{span: span{from: P1, to: P2}} :- string{span: span{from: P1, to: P2}}.
-value_choice_4{span: span{from: P1, to: P2}} :- null{span: span{from: P1, to: P2}}.
+grammar.charLiteralEdge{from: 12, to: 13, val: "{"}.
+grammar.charLiteralEdge{from: 14, to: 15, val: ","}.
+grammar.charLiteralEdge{from: 14, to: 16, val: "}"}.
+grammar.charLiteralEdge{from: 18, to: 19, val: ":"}.
+grammar.charLiteralEdge{from: 21, to: 22, val: "'"}.
+grammar.charLiteralEdge{from: 23, to: 24, val: "'"}.
+grammar.charLiteralEdge{from: 25, to: 26, val: "["}.
+grammar.charLiteralEdge{from: 27, to: 28, val: ","}.
+grammar.charLiteralEdge{from: 27, to: 29, val: "]"}.
+grammar.charLiteralEdge{from: 30, to: 31, val: "n"}.
+grammar.charLiteralEdge{from: 31, to: 32, val: "u"}.
+grammar.charLiteralEdge{from: 32, to: 33, val: "l"}.
+grammar.charLiteralEdge{from: 33, to: 34, val: "l"}.
+grammar.charRangeEdge{from: 10, rangeEnd: "9", rangeStart: "0", to: 11}.
+grammar.charRangeEdge{from: 22, rangeEnd: "z", rangeStart: "a", to: 23}.
+grammar.charRangeEdge{from: 9, rangeEnd: "9", rangeStart: "0", to: 10}.
+grammar.jumpEdge{from: 10, to: 11}.
+grammar.jumpEdge{from: 11, to: 10}.
+grammar.jumpEdge{from: 13, to: 14}.
+grammar.jumpEdge{from: 15, to: 13}.
+grammar.jumpEdge{from: 22, to: 23}.
+grammar.jumpEdge{from: 23, to: 22}.
+grammar.jumpEdge{from: 26, to: 27}.
+grammar.jumpEdge{from: 28, to: 26}.
+grammar.jumpEdge{from: 4, to: 3}.
+grammar.jumpEdge{from: 5, to: 3}.
+grammar.jumpEdge{from: 6, to: 3}.
+grammar.jumpEdge{from: 7, to: 3}.
+grammar.jumpEdge{from: 8, to: 3}.
+grammar.refEdge{from: 0, ref: "value", to: 1}.
+grammar.refEdge{from: 13, ref: "keyValue", to: 14}.
+grammar.refEdge{from: 17, ref: "string", to: 18}.
+grammar.refEdge{from: 19, ref: "value", to: 20}.
+grammar.refEdge{from: 2, ref: "array", to: 5}.
+grammar.refEdge{from: 2, ref: "int", to: 6}.
+grammar.refEdge{from: 2, ref: "null", to: 8}.
+grammar.refEdge{from: 2, ref: "object", to: 4}.
+grammar.refEdge{from: 2, ref: "string", to: 7}.
+grammar.refEdge{from: 26, ref: "value", to: 27}.
+grammar.rule{from: 0, name: "main", to: 1}.
+grammar.rule{from: 12, name: "object", to: 16}.
+grammar.rule{from: 17, name: "keyValue", to: 20}.
+grammar.rule{from: 2, name: "value", to: 3}.
+grammar.rule{from: 21, name: "string", to: 24}.
+grammar.rule{from: 25, name: "array", to: 29}.
+grammar.rule{from: 30, name: "null", to: 34}.
+grammar.rule{from: 9, name: "int", to: 11}.
+grammar.stateNode{id: 0}.
+grammar.stateNode{id: 10}.
+grammar.stateNode{id: 11}.
+grammar.stateNode{id: 12}.
+grammar.stateNode{id: 13}.
+grammar.stateNode{id: 14}.
+grammar.stateNode{id: 15}.
+grammar.stateNode{id: 16}.
+grammar.stateNode{id: 17}.
+grammar.stateNode{id: 18}.
+grammar.stateNode{id: 19}.
+grammar.stateNode{id: 1}.
+grammar.stateNode{id: 20}.
+grammar.stateNode{id: 21}.
+grammar.stateNode{id: 22}.
+grammar.stateNode{id: 23}.
+grammar.stateNode{id: 24}.
+grammar.stateNode{id: 25}.
+grammar.stateNode{id: 26}.
+grammar.stateNode{id: 27}.
+grammar.stateNode{id: 28}.
+grammar.stateNode{id: 29}.
+grammar.stateNode{id: 2}.
+grammar.stateNode{id: 30}.
+grammar.stateNode{id: 31}.
+grammar.stateNode{id: 32}.
+grammar.stateNode{id: 33}.
+grammar.stateNode{id: 34}.
+grammar.stateNode{id: 3}.
+grammar.stateNode{id: 4}.
+grammar.stateNode{id: 5}.
+grammar.stateNode{id: 6}.
+grammar.stateNode{id: 7}.
+grammar.stateNode{id: 8}.
+grammar.stateNode{id: 9}.
 
 input
 null
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["null",[0,-2]], id: match{rule: "null", span: span{from: 0, to: -2}}, parentID: match{rule: "value", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
 
 input
 [1,2,3]
 ----
 application/datalog
-main{span: span{from: 0, to: -2}}.
+viz.astNode{display: ["array",[0,-2]], id: match{rule: "array", span: span{from: 0, to: -2}}, parentID: match{rule: "value", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["int",[1,2]], id: match{rule: "int", span: span{from: 1, to: 2}}, parentID: match{rule: "value", span: span{from: 1, to: 2}}}.
+viz.astNode{display: ["int",[3,4]], id: match{rule: "int", span: span{from: 3, to: 4}}, parentID: match{rule: "value", span: span{from: 3, to: 4}}}.
+viz.astNode{display: ["int",[5,6]], id: match{rule: "int", span: span{from: 5, to: 6}}, parentID: match{rule: "value", span: span{from: 5, to: 6}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[1,2]], id: match{rule: "value", span: span{from: 1, to: 2}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[3,4]], id: match{rule: "value", span: span{from: 3, to: 4}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[5,6]], id: match{rule: "value", span: span{from: 5, to: 6}}, parentID: match{rule: "array", span: span{from: 0, to: -2}}}.
+
+input
+{'foo':2,'bar':[1,2,3]}
+----
+application/datalog
+viz.astNode{display: ["array",[15,22]], id: match{rule: "array", span: span{from: 15, to: 22}}, parentID: match{rule: "value", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["int",[16,17]], id: match{rule: "int", span: span{from: 16, to: 17}}, parentID: match{rule: "value", span: span{from: 16, to: 17}}}.
+viz.astNode{display: ["int",[18,19]], id: match{rule: "int", span: span{from: 18, to: 19}}, parentID: match{rule: "value", span: span{from: 18, to: 19}}}.
+viz.astNode{display: ["int",[20,21]], id: match{rule: "int", span: span{from: 20, to: 21}}, parentID: match{rule: "value", span: span{from: 20, to: 21}}}.
+viz.astNode{display: ["int",[7,8]], id: match{rule: "int", span: span{from: 7, to: 8}}, parentID: match{rule: "value", span: span{from: 7, to: 8}}}.
+viz.astNode{display: ["keyValue",[1,8]], id: match{rule: "keyValue", span: span{from: 1, to: 8}}, parentID: match{rule: "object", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["keyValue",[9,22]], id: match{rule: "keyValue", span: span{from: 9, to: 22}}, parentID: match{rule: "object", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["main",[0,-2]], id: match{rule: "main", span: span{from: 0, to: -2}}, parentID: -1}.
+viz.astNode{display: ["object",[0,-2]], id: match{rule: "object", span: span{from: 0, to: -2}}, parentID: match{rule: "value", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["string",[1,6]], id: match{rule: "string", span: span{from: 1, to: 6}}, parentID: match{rule: "keyValue", span: span{from: 1, to: 8}}}.
+viz.astNode{display: ["string",[9,14]], id: match{rule: "string", span: span{from: 9, to: 14}}, parentID: match{rule: "keyValue", span: span{from: 9, to: 22}}}.
+viz.astNode{display: ["value",[0,-2]], id: match{rule: "value", span: span{from: 0, to: -2}}, parentID: match{rule: "main", span: span{from: 0, to: -2}}}.
+viz.astNode{display: ["value",[15,22]], id: match{rule: "value", span: span{from: 15, to: 22}}, parentID: match{rule: "keyValue", span: span{from: 9, to: 22}}}.
+viz.astNode{display: ["value",[16,17]], id: match{rule: "value", span: span{from: 16, to: 17}}, parentID: match{rule: "array", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["value",[18,19]], id: match{rule: "value", span: span{from: 18, to: 19}}, parentID: match{rule: "array", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["value",[20,21]], id: match{rule: "value", span: span{from: 20, to: 21}}, parentID: match{rule: "array", span: span{from: 15, to: 22}}}.
+viz.astNode{display: ["value",[7,8]], id: match{rule: "value", span: span{from: 7, to: 8}}, parentID: match{rule: "keyValue", span: span{from: 1, to: 8}}}.

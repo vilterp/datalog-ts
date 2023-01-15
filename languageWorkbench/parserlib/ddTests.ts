@@ -13,7 +13,7 @@ import {
 import { ppRule, ppt } from "../../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rule } from "../../core/types";
+import { Rec, Rule } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { genExtractorStr, Options } from "./gen/generate";
@@ -110,7 +110,7 @@ function metaTest(test: string[]): TestOutput[] {
 }
 
 function datalogTest(test: string[]): TestOutput[] {
-  let grammarRules: Rule[] = [];
+  let grammarData: Rec[] = [];
   return test.map((input) => {
     const lines = input.split("\n");
     const firstLine = lines[0];
@@ -118,8 +118,8 @@ function datalogTest(test: string[]): TestOutput[] {
     if (firstLine === "gram") {
       const grammarParsed = parseMain(restOfInput);
       const grammar = parserGrammarToInternal(grammarParsed);
-      grammarRules = grammarToDL(grammar);
-      return datalogOutRules(grammarRules);
+      grammarData = grammarToDL(grammar);
+      return datalogOut(grammarData);
     } else if (firstLine === "input") {
       // TODO: bring back `initializeInterp` into this package; use here?
       let interp = new IncrementalInterpreter(
@@ -130,15 +130,13 @@ function datalogTest(test: string[]): TestOutput[] {
       interp = interp.doLoad("languageWorkbench/parserlib/datalog/parse.dl");
       // insert grammar as data
       interp = interp.evalRawStmts(
-        grammarRules.map((rule) => ({ type: "Rule", rule }))
+        grammarData.map((record) => ({ type: "Fact", record }))
       )[1];
       // insert input as data
-      interp = interp.evalStr(".table input.char")[1];
-      interp = interp.evalStr(".table input.next")[1];
       interp = interp.insertAll(inputToDL(restOfInput));
       // TODO: insert grammar interpreter
       try {
-        const results = interp.queryStr(`main{span: span{from: 0, to: -2}}`);
+        const results = interp.queryStr(`viz.astNode{}`);
         return datalogOut(results.map((res) => res.term));
       } catch (e) {
         return plainTextOut(`${e}`);

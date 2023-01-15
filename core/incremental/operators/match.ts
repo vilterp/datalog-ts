@@ -15,6 +15,18 @@ export function processMatch(
   if (bindings === null) {
     return [nodeDesc, []];
   }
+
+  // Debug logging to detect mismatched attr names.
+  // TODO: do this by statically analyzing the DL somehow.
+  // const allVars = Object.keys(getVarToPath(nodeDesc.rec));
+  // if (Object.keys(bindings).length < allVars.length) {
+  //   console.warn("didn't match everything", {
+  //     bindings: ppb(bindings),
+  //     rec: ppt(nodeDesc.rec),
+  //     input: ppt(data.rec),
+  //   });
+  // }
+
   for (let key of Object.keys(bindings)) {
     // console.log({ bindings, key });
     if (bindings[key].type === "Var") {
