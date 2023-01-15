@@ -118,13 +118,9 @@ parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd} &
-  parse.stateParent{
-    child: st{state: SRuleStart, char: CStart},
-    parent: Parent,
-  } &
-  parse.stateParent{
-    child: st{state: SRuleEnd, char: CEnd},
-    parent: Parent,
+  parse.statePath{
+    from: st{state: SRuleStart, char: CStart},
+    to: st{state: SRuleEnd, char: CEnd},
   }.
 
 parse.nonCallStep{from: From, to: To, type: T} :-
