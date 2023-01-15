@@ -136,6 +136,13 @@ application/datalog
 ast.dict{id: 41, parentID: 40, rule: "dict", span: span{from: 17, to: 37}, text: "{\"foo\": 2, \"bar\": 3}"}.
 
 dl
+foo{bar: A} :-
+  baz{boop: doop{id: A}}.
+tc.Problem{}?
+----
+application/datalog
+
+dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
   scope.builtin{id: I, name: N, type: T, location: S} |
   scope.l|||et{id: I, name: N, type: T, location: S} |
