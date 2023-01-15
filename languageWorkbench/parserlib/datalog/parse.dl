@@ -82,7 +82,10 @@ parse.returnFromRule{
   grammar.refEdge{from: SBeforeRef, to: ToS, ref: Rule} &
   grammar.rule{name: Rule, from: SRuleStart, to: FromS} &
   parse.State{state: FromS, char: ToC} &
-  # TODO: return to parent
+  # parse.stateParent{
+  #   child: st{},
+  #   parent: st{state: ToS, char: ToC},
+  # } &
   FromC = ToC.
 
 parse.refStep{
@@ -133,6 +136,7 @@ parse.stateParent{child: Child, parent: Parent} :-
   parse.initialParent{child: Child, parent: Parent} |
   parse.nonCallStep{from: PrevChild, to: Child} &
   parse.stateParent{child: PrevChild, parent: Parent} |
+  parse.callRule{from: Parent, to: Child} |
   parse.refStepParent{child: Child, parent: Parent}.
 
 parse.refStepParent{
@@ -252,11 +256,28 @@ internal.visualization{
 viz.stateNode{st: st{state: S, char: C}} :-
   parse.State{state: S, char: C}.
 
+viz.stateGraphEdge{from: From, to: To, type: Type} :-
+  parse.stateStep{from: From, to: To, type: Type}.
+  # viz.parentEdge{from: From, to: To, type: Type}.
+
+viz.parentEdge{from: From, to: To, type: "parent"} :-
+  parse.stateParent{child: From, parent: To}.
+
 internal.visualization{
   name: "State Graph",
   spec: graphviz{
     nodes: viz.stateNode{st: ID},
-    edges: parse.stateStep{from: From, to: To, type: Label},
+    edges: viz.stateGraphEdge{from: From, to: To, type: Label},
+  }
+}.
+
+# == Parent Graph ==
+
+internal.visualization{
+  name: "Parent Graph",
+  spec: graphviz{
+    nodes: viz.stateNode{st: ID},
+    edges: viz.parentEdge{from: From, to: To, type: Label},
   }
 }.
 
