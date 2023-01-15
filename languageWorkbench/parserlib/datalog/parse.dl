@@ -80,8 +80,8 @@ parse.callRule{
   ToC = FromC.
 
 parse.returnFromRule{
-  from: st{state: RuleEndState, char: FromC},
-  to: st{state: ToS, char: ToC},
+  from: st{state: RuleEndState, char: EndChar},
+  to: st{state: ToS, char: EndChar},
   type: "returnFromRule",
 } :-
   parse.callRule{
@@ -92,9 +92,8 @@ parse.returnFromRule{
   grammar.rule{name: Rule, from: RuleBeginState, to: RuleEndState} &
   parse.statePathWithinRule{
     from: st{state: RuleBeginState, char: RuleBeginChar},
-    to: st{state: RuleEndState, char: FromC},
-  } &
-  FromC = ToC.
+    to: st{state: RuleEndState, char: EndChar},
+  }.
 
 parse.refStep{
   from: st{state: FromS, char: FromC},
