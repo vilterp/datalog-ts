@@ -7,7 +7,6 @@ total{level: C}?
 ----
 application/datalog
 total{level: 28}.
-total{level: 5}.
 
 currentInput{dest: 1, level: 5}.
 currentInput{dest: 1, level: 10}.
