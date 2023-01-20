@@ -27,7 +27,12 @@ export function processAggregation(
       const hadGroupKey = nodeDesc.state.has(groupKey);
       const curGroupState = nodeDesc.state.getWithDefault(groupKey, agg.init);
       const term = data.bindings.bindings[aggVar];
-      const newGroupState = agg.step(curGroupState, term, payload.multiplicity);
+      const newGroupState = agg.step(
+        curGroupState,
+        term,
+        payload.multiplicity,
+        data.bindings.bindings
+      );
       const newNodeState: AggregationDesc = {
         ...nodeDesc,
         state: nodeDesc.state.set(groupKey, newGroupState),
@@ -40,8 +45,8 @@ export function processAggregation(
         oldBindings[varName] = val;
         newBindings[varName] = val;
       }
-      oldBindings[aggVar] = curGroupState;
-      newBindings[aggVar] = newGroupState;
+      oldBindings[aggVar] = agg.final(curGroupState, aggVar);
+      newBindings[aggVar] = agg.final(newGroupState, aggVar);
 
       // console.log("step:", {
       //   aggregation: nodeDesc.aggregation.aggregation,

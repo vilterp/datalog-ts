@@ -304,9 +304,9 @@ function doAggregation(terms: Term[], aggName: string): Term {
   const agg = AGGREGATIONS[aggName];
   let state = agg.init;
   for (const term of terms) {
-    state = agg.step(state, term, 1);
+    state = agg.step(state, term, 1, {}); // TODO: bindings
   }
-  return agg.final(state);
+  return agg.final(state, ""); // TODO: agg var
 }
 
 type Cache = { [key: string]: Res[] };
