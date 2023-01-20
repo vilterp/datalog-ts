@@ -7,6 +7,7 @@ total{level: C}?
 ----
 application/datalog
 total{level: 28}.
+total{level: 5}.
 
 currentInput{dest: 1, level: 5}.
 currentInput{dest: 1, level: 10}.
@@ -42,3 +43,13 @@ countBarByParent{parentID: P, count: I}?
 application/datalog
 countBarByParent{count: 2, parentID: 2}.
 countBarByParent{count: 3, parentID: 1}.
+
+parseResult{length: 1, res: "a"}.
+parseResult{length: 3, res: "abc"}.
+parseResult{length: 2, res: "ab"}.
+longestParseResult{res: R} :-
+  maxBy[L: parseResult{length: L, res: R}].
+longestParseResult{}?
+----
+application/datalog
+longestParseResult{res: "abc"}.
