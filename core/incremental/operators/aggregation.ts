@@ -1,4 +1,4 @@
-import { AGGREGATIONS } from "../../aggregations";
+import { AGGREGATIONS, GroupInfo } from "../../aggregations";
 import { fastPPT } from "../../fastPPT";
 import { aggTraceForInner, Bindings } from "../../types";
 import { AggregationDesc, MessagePayload } from "../types";
@@ -25,10 +25,13 @@ export function processAggregation(
         .join(",");
       const hadGroupKey = nodeDesc.state.has(groupKey);
       const curGroupState = nodeDesc.state.getWithDefault(groupKey, agg.init);
-      const config = { groupBindings: data.bindings.bindings, aggVar };
+      const groupInfo: GroupInfo = {
+        groupBindings: data.bindings.bindings,
+        aggVar,
+      };
       const newGroupState = agg.step(
         curGroupState,
-        config,
+        groupInfo,
         data.bindings.bindings,
         payload.multiplicity
       );
@@ -37,8 +40,8 @@ export function processAggregation(
         state: nodeDesc.state.set(groupKey, newGroupState),
       };
 
-      const oldBindings: Bindings = agg.final(curGroupState, config);
-      const newBindings: Bindings = agg.final(newGroupState, config);
+      const oldBindings: Bindings = agg.final(curGroupState, groupInfo);
+      const newBindings: Bindings = agg.final(newGroupState, groupInfo);
 
       // console.log("step:", {
       //   aggregation: nodeDesc.aggregation.aggregation,

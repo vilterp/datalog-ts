@@ -19,7 +19,12 @@ export const AGGREGATIONS: { [name: string]: Aggregator } = {
   }),
   maxBy: {
     init: rec("start", {}),
-    step(accum: Term, config: Config, bindings: Bindings, count: number): Term {
+    step(
+      accum: Term,
+      config: GroupInfo,
+      bindings: Bindings,
+      count: number
+    ): Term {
       const item = bindings[config.aggVar];
       if ((accum as Rec).relation === "start") {
         return rec("started", { max: item, bindings: dict(bindings) });
@@ -31,7 +36,7 @@ export const AGGREGATIONS: { [name: string]: Aggregator } = {
       return accum;
     },
     // not sure this is right...
-    final(accum: Term, config: Config): Bindings {
+    final(accum: Term, config: GroupInfo): Bindings {
       if ((accum as Rec).relation === "start") {
         return null; // ???
       }
@@ -40,7 +45,7 @@ export const AGGREGATIONS: { [name: string]: Aggregator } = {
   },
 };
 
-type Config = {
+export type GroupInfo = {
   groupBindings: Bindings;
   aggVar: string;
 };
@@ -49,11 +54,11 @@ type Aggregator = {
   init: Term;
   step: (
     accum: Term,
-    config: Config,
+    config: GroupInfo,
     bindings: Bindings,
     count: number
   ) => Term;
-  final: (accum: Term, config: Config) => Bindings;
+  final: (accum: Term, config: GroupInfo) => Bindings;
 };
 
 function simpleAgg(props: {
@@ -63,10 +68,10 @@ function simpleAgg(props: {
 }): Aggregator {
   return {
     init: props.init,
-    step(accum: Term, config: Config, bindings: Bindings, count: number) {
+    step(accum: Term, config: GroupInfo, bindings: Bindings, count: number) {
       return props.step(accum, bindings[config.aggVar], count);
     },
-    final(accum: Term, config: Config): Bindings {
+    final(accum: Term, config: GroupInfo): Bindings {
       const out: Bindings = {};
       for (const varName in config.groupBindings) {
         out[varName] = config.groupBindings[varName];
