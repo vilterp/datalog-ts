@@ -116,11 +116,11 @@ parse.refStep{
     to: st{state: RuleStartSt, char: FromC},
     rule: Rule,
   } &
-  parse.statePathWithinRule{
+  maxBy[RuleStartSt, FromC, RuleEndSt, ToC, L: parse.statePathWithinRule{
     from: st{state: RuleStartSt, char: FromC},
     to: st{state: RuleEndSt, char: ToC},
     length: L,
-  } &
+  }] &
   parse.returnFromRule{
     from: st{state: RuleEndSt, char: ToC},
     to: st{state: ToS, char: ToC}
