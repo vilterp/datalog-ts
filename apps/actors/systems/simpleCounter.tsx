@@ -8,6 +8,7 @@ import {
 } from "../types";
 import * as effects from "../effects";
 import { spawnInitialActors } from "../step";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 
 // states
 
@@ -39,10 +40,14 @@ type ServerResp = "ack";
 
 // initial state
 
-const initialClientState = { type: "ClientState", value: 0, status: "steady" };
+const initialClientState: State = {
+  type: "ClientState",
+  value: 0,
+  status: "steady",
+};
 
-export function getInitialState(): Trace<State> {
-  return spawnInitialActors(update, {
+export function getInitialState(interp: AbstractInterpreter): Trace<State> {
+  return spawnInitialActors(update, interp, {
     server: { type: "ServerState", value: 0 },
   });
 }
@@ -160,7 +165,7 @@ export const simpleCounter: System<State, Msg> = {
   id: "simple-counter",
   ui: ClientServerUI,
   update,
-  initialState: getInitialState(),
-  initialClientState: initialClientState as State,
+  getInitialState,
+  initialClientState: () => initialClientState,
   initialUserState: { type: "UserState" },
 };

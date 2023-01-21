@@ -1,70 +1,51 @@
-import React, { useMemo, useState } from "react";
+import React, { useReducer } from "react";
 import ReactDOM from "react-dom";
 import { Explorer } from "../../uiCommon/explorer";
-import { mapObjToList } from "../../util/util";
+import { mapObj, mapObjToList } from "../../util/util";
 import { LingoEditor } from "../../uiCommon/ide/editor";
-import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { LANGUAGES, LanguageSpec } from "../../languageWorkbench/languages";
+import { EditorState } from "../../uiCommon/ide/types";
+import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import { addCursor, constructInterp } from "../../languageWorkbench/interp";
+import {
+  addCursor,
+  getInterpForDoc,
+} from "../../languageWorkbench/interpCache";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
+import { LanguageSpec } from "../../languageWorkbench/common/types";
 
 function Main() {
-  return <Playground />;
+  return <Workbench />;
 }
 
-function Playground() {
+function Workbench() {
   // state
-  const [langName, setLangName] = useHashParam("", Object.keys(LANGUAGES)[0]);
+  const [curLangID, setLangID] = useHashParam("", Object.keys(LANGUAGES)[0]);
 
-  const curExample = LANGUAGES[langName];
+  const [state, dispatch] = useReducer(reducer, emptyState);
+  const curLangState = state[curLangID];
+  const versionedLangID = `${curLangID}-${curLangState.version}`;
 
-  const [grammarEditorState, setGrammarEditorState] = useState(
-    initialEditorState(curExample.grammar)
-  );
-  const [dlEditorState, setDLEditorState] = useState(
-    initialEditorState(curExample.datalog)
-  );
-
-  const [exampleEditorState, setExampleEditorState] = useState<EditorState>(
-    initialEditorState(curExample.example)
-  );
-  const cursorPos = exampleEditorState.cursorPos;
-  const langSource = exampleEditorState.source;
-  const setExampleSource = (source: string) => {
-    setExampleEditorState({ ...exampleEditorState, source });
+  const curLangSpec: LanguageSpec = {
+    name: versionedLangID,
+    datalog: curLangState.datalog.source,
+    example: curLangState.example.source,
+    grammar: curLangState.grammar.source,
   };
 
-  const setLang = (name) => {
-    setLangName(name);
-    const example = LANGUAGES[name];
-    setGrammarEditorState({ ...grammarEditorState, source: example.grammar });
-    setDLEditorState({ ...dlEditorState, source: example.datalog });
-    setExampleSource(example.example);
-  };
-
-  const langSpec: LanguageSpec = useMemo(
-    () => ({
-      name: langName,
-      datalog: dlEditorState.source,
-      grammar: grammarEditorState.source,
-      example: "",
-    }),
-    [langName, dlEditorState.source, grammarEditorState.source]
-  );
-
-  const {
-    interp: interpWithoutCursor,
-    allGrammarErrors,
-    langParseError,
-    dlErrors,
-  } = useMemo(
-    () => constructInterp(INIT_INTERP, langSpec, langSource),
-    [langSpec, langSource]
-  );
-  const interp = addCursor(interpWithoutCursor, cursorPos);
+  const uri = `test.${curLangID}`;
+  const interpWithoutCursor = getInterpForDoc(
+    INIT_INTERP,
+    versionedLangID,
+    {
+      [versionedLangID]: curLangSpec,
+    },
+    uri,
+    curLangState.example.source
+  ).interp;
+  const errors = [];
+  const interp = addCursor(interpWithoutCursor, curLangState.example.cursorPos);
 
   return (
     <>
@@ -74,9 +55,9 @@ function Playground() {
         <h3>Example:</h3>
         <select
           onChange={(evt) => {
-            setLang(evt.target.value);
+            setLangID(evt.target.value);
           }}
-          value={langName}
+          value={curLangID}
         >
           {mapObjToList(LANGUAGES, (name) => (
             <option key={name} value={name}>
@@ -92,33 +73,49 @@ function Playground() {
             <td>
               <h3>Example Source</h3>
               <LingoEditor
-                editorState={exampleEditorState}
-                setEditorState={setExampleEditorState}
-                langSpec={langSpec}
+                editorState={curLangState.example}
+                setEditorState={(newEditorState) =>
+                  dispatch({
+                    type: "UpdateLang",
+                    langID: curLangID,
+                    action: { type: "UpdateExample", newEditorState },
+                  })
+                }
+                langSpec={curLangSpec}
                 lineNumbers="off"
                 showKeyBindingsTable
               />
-              <ErrorList errors={langParseError ? [langParseError] : []} />
+              <ErrorList errors={errors} />
             </td>
             <td>
               <h3>Grammar Source</h3>
               <LingoEditor
-                editorState={grammarEditorState}
-                setEditorState={setGrammarEditorState}
+                editorState={curLangState.grammar}
+                setEditorState={(newEditorState) =>
+                  dispatch({
+                    type: "UpdateLang",
+                    langID: curLangID,
+                    action: { type: "UpdateGrammar", newEditorState },
+                  })
+                }
                 langSpec={LANGUAGES.grammar}
                 lineNumbers="off"
               />
-              <ErrorList errors={allGrammarErrors} />
             </td>
             <td>
               <h3>Datalog Source</h3>
               <LingoEditor
-                editorState={dlEditorState}
-                setEditorState={setDLEditorState}
+                editorState={curLangState.datalog}
+                setEditorState={(newEditorState) =>
+                  dispatch({
+                    type: "UpdateLang",
+                    langID: curLangID,
+                    action: { type: "UpdateDatalog", newEditorState },
+                  })
+                }
                 langSpec={LANGUAGES.datalog}
                 lineNumbers="off"
               />
-              <ErrorList errors={dlErrors} />
             </td>
           </tr>
         </tbody>
@@ -129,7 +126,7 @@ function Playground() {
         content={
           <>
             {/* we run into errors querying highlight rules if the grammar isn't valid */}
-            {allGrammarErrors.length === 0 ? (
+            {errors.length === 0 ? (
               <Explorer interp={interp} showViz />
             ) : (
               <em>Grammar isn't valid</em>
@@ -148,6 +145,63 @@ function Playground() {
       </p>
     </>
   );
+}
+
+type State = {
+  [langID: string]: LangState;
+};
+
+type LangState = {
+  version: number;
+  example: EditorState;
+  grammar: EditorState;
+  datalog: EditorState;
+};
+
+const emptyState: State = mapObj(LANGUAGES, (langID, spec) => ({
+  version: 1,
+  example: { cursorPos: 1, source: spec.example },
+  grammar: { cursorPos: 1, source: spec.grammar },
+  datalog: { cursorPos: 1, source: spec.datalog },
+}));
+
+type Action = { type: "UpdateLang"; langID: string; action: LangAction };
+
+type LangAction =
+  | { type: "UpdateGrammar"; newEditorState: EditorState }
+  | { type: "UpdateDatalog"; newEditorState: EditorState }
+  | { type: "UpdateExample"; newEditorState: EditorState };
+
+// TODO: dry up
+function reducer(state: State, action: Action): State {
+  const langState = state[action.langID];
+  return { ...state, [action.langID]: updateLang(langState, action.action) };
+}
+
+function updateLang(langState: LangState, action: LangAction): LangState {
+  switch (action.type) {
+    case "UpdateGrammar": {
+      return {
+        ...langState,
+        version: langState.version + 1,
+        grammar: action.newEditorState,
+      };
+    }
+    case "UpdateDatalog": {
+      return {
+        ...langState,
+        version: langState.version + 1,
+        datalog: action.newEditorState,
+      };
+    }
+    case "UpdateExample": {
+      return {
+        ...langState,
+        version: langState.version,
+        example: action.newEditorState,
+      };
+    }
+  }
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));

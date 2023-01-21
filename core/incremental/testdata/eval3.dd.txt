@@ -9,48 +9,53 @@ application/datalog
 parent{child: C, parent: P} :-
   mother{child: C, mother: P} | father{child: C, father: P}.
 ----
-incremental-datalog/trace
+application/datalog
 
 grandparent{grandchild: A, grandparent: C} :-
   parent{child: A, parent: B} &
   parent{child: B, parent: C}.
 ----
-incremental-datalog/trace
+application/datalog
 
 father{child: "Mary", father: "Mark"}.
 ----
 incremental-datalog/trace
-father: [father{child: "Mary", father: "Mark"}; {}]
-2: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
-0: [father{child: "Mary", father: "Mark"}; {C: "Mary", P: "Mark"}]
-parent: [parent{child: "Mary", parent: "Mark"}; {C: "Mary", P: "Mark"}]
-3: [parent{child: "Mary", parent: "Mark"}; {A: "Mary", B: "Mark"}]
-4: [parent{child: "Mary", parent: "Mark"}; {B: "Mary", C: "Mark"}]
-5: []
-5: []
+father: [father{child: "Mary", father: "Mark"}+1]
+2: [{C: "Mary", P: "Mark"}+1]
+0: [{C: "Mary", P: "Mark"}+1]
+3: [{C: "Mary", P: "Mark"}+1]
+parent: [parent{child: "Mary", parent: "Mark"}+1]
+4: [{A: "Mary", B: "Mark"}+1]
+5: [{B: "Mary", C: "Mark"}+1]
+6: []
+6: []
 
 mother{child: "Pete", mother: "Mary"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Pete", mother: "Mary"}; {}]
-1: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
-0: [mother{child: "Pete", mother: "Mary"}; {C: "Pete", P: "Mary"}]
-parent: [parent{child: "Pete", parent: "Mary"}; {C: "Pete", P: "Mary"}]
-3: [parent{child: "Pete", parent: "Mary"}; {A: "Pete", B: "Mary"}]
-4: [parent{child: "Pete", parent: "Mary"}; {B: "Pete", C: "Mary"}]
-5: [{A: "Pete", B: "Mary", C: "Mark"}]
-5: []
-grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}; {A: "Pete", B: "Mary", C: "Mark"}]
+mother: [mother{child: "Pete", mother: "Mary"}+1]
+1: [{C: "Pete", P: "Mary"}+1]
+0: [{C: "Pete", P: "Mary"}+1]
+3: [{C: "Pete", P: "Mary"}+1]
+parent: [parent{child: "Pete", parent: "Mary"}+1]
+4: [{A: "Pete", B: "Mary"}+1]
+5: [{B: "Pete", C: "Mary"}+1]
+6: [{A: "Pete", B: "Mary", C: "Mark"}+1]
+6: []
+7: [{A: "Pete", B: "Mary", C: "Mark"}+1]
+grandparent: [grandparent{grandchild: "Pete", grandparent: "Mark"}+1]
 
 mother{child: "Carolyn", mother: "Mary"}.
 ----
 incremental-datalog/trace
-mother: [mother{child: "Carolyn", mother: "Mary"}; {}]
-1: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
-0: [mother{child: "Carolyn", mother: "Mary"}; {C: "Carolyn", P: "Mary"}]
-parent: [parent{child: "Carolyn", parent: "Mary"}; {C: "Carolyn", P: "Mary"}]
-3: [parent{child: "Carolyn", parent: "Mary"}; {A: "Carolyn", B: "Mary"}]
-4: [parent{child: "Carolyn", parent: "Mary"}; {B: "Carolyn", C: "Mary"}]
-5: [{A: "Carolyn", B: "Mary", C: "Mark"}]
-5: []
-grandparent: [grandparent{grandchild: "Carolyn", grandparent: "Mark"}; {A: "Carolyn", B: "Mary", C: "Mark"}]
+mother: [mother{child: "Carolyn", mother: "Mary"}+1]
+1: [{C: "Carolyn", P: "Mary"}+1]
+0: [{C: "Carolyn", P: "Mary"}+1]
+3: [{C: "Carolyn", P: "Mary"}+1]
+parent: [parent{child: "Carolyn", parent: "Mary"}+1]
+4: [{A: "Carolyn", B: "Mary"}+1]
+5: [{B: "Carolyn", C: "Mary"}+1]
+6: [{A: "Carolyn", B: "Mary", C: "Mark"}+1]
+6: []
+7: [{A: "Carolyn", B: "Mary", C: "Mark"}+1]
+grandparent: [grandparent{grandchild: "Carolyn", grandparent: "Mark"}+1]

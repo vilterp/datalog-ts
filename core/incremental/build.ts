@@ -1,329 +1,288 @@
-import { Rule, Rec, Disjunction, Conjunct, VarMappings, Res } from "../types";
-import { RuleGraph, NodeDesc, NodeID, JoinInfo, VarToPath } from "./types";
-import { getMappings } from "../unify";
 import {
-  combineObjects,
-  filterObj,
-  permute,
-  setAdd,
-  setUnion,
-} from "../../util/util";
+  Rule,
+  Rec,
+  Disjunction,
+  Conjunct,
+  Aggregation,
+  Bindings,
+} from "../types";
+import {
+  RuleGraph,
+  NodeDesc,
+  NodeID,
+  emptyRuleGraph,
+  emptyAggregationState,
+} from "./types";
 import { ppb } from "../pretty";
-import { List } from "immutable";
-import { emptyIndexedCollection } from "../../util/indexedCollection";
-import { fastPPT } from "../fastPPT";
+import { List, Set } from "immutable";
+import { emptyIndexedMultiset, Key } from "./indexedMultiSet";
+import { fastPPB, fastPPR, fastPPT } from "../fastPPT";
 import { BUILTINS } from "../builtins";
+import { Catalog } from "./catalog";
+import { getJoinOrder, getRecord, getVarToPath } from "../joinOrder";
 
-export function declareTable(graph: RuleGraph, name: string): RuleGraph {
+export function buildGraph(catalog: Catalog): RuleGraph {
+  let graph = emptyRuleGraph();
+  graph = catalog.reduce((accum, rel, relName) => {
+    switch (rel.type) {
+      case "Table":
+        return declareTable(accum, relName);
+      default:
+        return accum;
+    }
+  }, graph);
+  graph = catalog.reduce((accum, rel) => {
+    switch (rel.type) {
+      case "Rule":
+        return addRule(accum, rel.rule);
+      default:
+        return accum;
+    }
+  }, graph);
+  return graph;
+}
+
+function addRule(graph: RuleGraph, rule: Rule): RuleGraph {
+  let newGraph = graph;
+  // add rule body
+  const orRes = addOr(newGraph, rule.body);
+  newGraph = orRes.newGraph;
+  // add distinct
+  const [withDistinct, distinctID] = addNode(newGraph, true, {
+    type: "Distinct",
+    state: emptyIndexedMultiset(fastPPB),
+  });
+  newGraph = withDistinct;
+  newGraph = addEdge(newGraph, orRes.tipID, distinctID);
+  // add subst
+  const withSubst = addNodeKnownID(rule.head.relation, newGraph, false, {
+    type: "Substitute",
+    rec: rule.head,
+  });
+  return addEdge(withSubst, distinctID, rule.head.relation);
+}
+
+function declareTable(graph: RuleGraph, name: string): RuleGraph {
   if (graph.nodes.has(name)) {
     return graph;
   }
   const withNode = addNodeKnownID(name, graph, false, {
     type: "BaseFactTable",
   });
-  const resolved = resolveUnmappedRules(withNode);
-  return { ...resolved, tables: [...graph.tables, name] };
+  return withNode;
 }
 
-export function resolveUnmappedRules(graph: RuleGraph) {
-  let resultGraph = graph;
-  for (let unmappedRuleName in graph.unmappedRules) {
-    const rule = graph.unmappedRules[unmappedRuleName];
-    resultGraph = resolveUnmappedRule(resultGraph, rule.rule, rule.newNodeIDs);
-  }
-  return resultGraph;
+export function getJoinVars(left: Conjunct, right: Conjunct): Set<string> {
+  const leftVars = Set(
+    Object.keys(getVarToPath(left.type === "Record" ? left : left.record))
+  );
+  const rightVars = Set(
+    Object.keys(getVarToPath(right.type === "Record" ? right : right.record))
+  );
+
+  return leftVars.intersect(rightVars);
 }
 
-export function resolveUnmappedRule(
-  graph: RuleGraph,
-  rule: Rule,
-  newNodes: Set<NodeID>
-): RuleGraph {
-  let curGraph = graph;
-  let resolved = true;
-  for (let newNodeID of newNodes) {
-    const newNode = graph.nodes.get(newNodeID);
-    const nodeDesc = newNode.desc;
-    if (nodeDesc.type === "Match") {
-      const callRec = nodeDesc.rec;
-      if (BUILTINS[callRec.relation]) {
-        resolved = true;
-        continue;
-      }
-      const callNode = graph.nodes.get(callRec.relation);
-      if (!callNode) {
-        // not defined yet
-        resolved = false;
-        // console.log("=> exit: not defined yet:", callRec.relation);
-        continue;
-      }
-      const ruleNodeDesc = callNode.desc;
-      if (ruleNodeDesc.type === "BaseFactTable") {
-        // don't need to worry about mappings for base fact tables
-        continue;
-      }
-      if (ruleNodeDesc.type !== "Substitute") {
-        throw new Error("rule should be a Subst node");
-      }
-      const ruleRec = ruleNodeDesc.rec;
-      const mappings = getMappings(ruleRec.attrs, callRec.attrs);
-      // console.log("resolve Match", {
-      //   ruleAttrs: ppt(ruleRec),
-      //   callAttrs: ppt(callRec),
-      //   mappings: ppVM(mappings, [], { showScopePath: false }),
-      // });
-      curGraph = updateMappings(curGraph, newNodeID, mappings);
-    }
-  }
-  // console.log("resolveUnmappedRule", { head: rule.head.relation, resolved });
-  return resolved ? removeUnmappedRule(curGraph, rule.head.relation) : curGraph;
-}
-
-export function getJoinInfo(left: Rec, right: Rec): JoinInfo {
-  const leftVars = getVarToPath(left);
-  const rightVars = getVarToPath(right);
-  return {
-    leftVars,
-    rightVars,
-    join: combineObjects(
-      leftVars,
-      rightVars,
-      (varName, leftAttr, rightAttr) => ({ varName, leftAttr, rightAttr })
-    ),
-  };
-}
-
-function getVarToPath(rec: Rec): VarToPath {
-  const out: VarToPath = {};
-  Object.entries(rec.attrs).forEach(([attr, attrVal]) => {
-    switch (attrVal.type) {
-      case "Var":
-        out[attrVal.name] = [attr];
-        break;
-      case "Record":
-        const subMapping = getVarToPath(attrVal);
-        Object.entries(subMapping).forEach(([subVar, subPath]) => {
-          out[subVar] = [attr, ...subPath];
-        });
-        break;
-      // TODO: lists?
-    }
-  });
-  return out;
-}
-
-// TODO: put RuleGraph back into this
-export type AddResult = {
-  newGraph: RuleGraph;
-  newNodeIDs: Set<NodeID>;
-  rec: Rec;
-  tipID: NodeID;
-};
-
-export function addOr(
-  graph: RuleGraph,
-  ruleName: string,
-  or: Disjunction
-): AddResult {
+function addOr(graph: RuleGraph, or: Disjunction): GraphWithTip {
   if (or.disjuncts.length === 1) {
-    return addAnd(graph, or.disjuncts[0].conjuncts);
+    return addConjuncts(graph, or.disjuncts[0].conjuncts);
   }
   const [g1, orID] = addNode(graph, true, { type: "Union" });
 
   let outGraph = g1;
-  let outNodeIDs = new Set<NodeID>([orID]);
   for (let orOption of or.disjuncts) {
-    const {
-      newGraph,
-      newNodeIDs,
-      tipID: andID,
-    } = addAnd(outGraph, orOption.conjuncts);
+    const { newGraph, tipID: andID } = addConjuncts(
+      outGraph,
+      orOption.conjuncts
+    );
     outGraph = addEdge(newGraph, andID, orID);
-    outNodeIDs = setUnion(outNodeIDs, newNodeIDs);
   }
 
   return {
     newGraph: outGraph,
-    newNodeIDs: outNodeIDs,
-    rec: null, // ???
     tipID: orID,
   };
 }
 
-function addAnd(graph: RuleGraph, clauses: Conjunct[]): AddResult {
-  const recs = clauses.filter((clause) => {
-    if (clause.type === "Record") {
-      return true;
-    } else {
-      throw new Error(
-        `clauses of type ${clause.type} not supported in incremental interpreter`
-      );
-    }
-  }) as Rec[];
-  const allRecPermutations = permute(recs);
-  const allJoinTrees = allRecPermutations.map((recs) => {
-    const tree = getJoinTree(recs);
-    return { tree, numCommonVars: numJoinsWithCommonVars(tree) };
-  });
-  allJoinTrees.sort((left, right) => {
-    return left.numCommonVars - right.numCommonVars;
-  });
-  const joinTree = allJoinTrees[allJoinTrees.length - 1].tree;
+type AddConjunctResult = {
+  newGraph: RuleGraph;
+  bindings: Set<string>;
+  tipID: NodeID;
+};
 
-  return addJoinTree(graph, joinTree);
+type GraphWithTip = {
+  newGraph: RuleGraph;
+  tipID: NodeID;
+};
+
+function addConjuncts(
+  graph: RuleGraph,
+  conjuncts: Conjunct[]
+): AddConjunctResult {
+  // TODO: do we need to separate out negations & aggregations like this?
+  const recs = conjuncts.filter((c) => c.type === "Record");
+  const nonRecs = conjuncts.filter((c) => c.type !== "Record");
+  const joinOrder = getJoinOrder(recs);
+  const finalOrder = [...nonRecs, ...joinOrder];
+  return addJoinTree(graph, finalOrder);
 }
 
-function addAndBinary(
+function addJoinTree(
   graph: RuleGraph,
-  left: Rec,
-  right: Rec,
-  rightID: NodeID
-): AddResult {
-  let outGraph = graph;
-  const joinInfo = getJoinInfo(left, right);
-  const varsToIndex = Object.keys(joinInfo.join);
+  conjuncts: Conjunct[]
+): AddConjunctResult {
+  if (conjuncts.length === 1 && conjuncts[0].type === "Negation") {
+    throw new Error("can't have a single negation as the body");
+  }
+
+  const initResult: AddConjunctResult = {
+    newGraph: graph,
+    bindings: null,
+    tipID: null,
+  };
+  return conjuncts.reduceRight((lastResult, conjunct) => {
+    const withRec = addRec(lastResult.newGraph, getRecord(conjunct));
+    switch (conjunct.type) {
+      case "Record":
+        if (lastResult.tipID === null) {
+          return withRec;
+        }
+        return addJoin(withRec.newGraph, withRec, lastResult);
+      case "Negation":
+        if (lastResult.tipID === null) {
+          throw new Error("can't have just a negation as the body");
+        }
+        return addNegation(lastResult, withRec);
+      case "Aggregation":
+        return addAggregation(withRec, conjunct);
+    }
+  }, initResult);
+}
+
+function addNegation(
+  prev: AddConjunctResult,
+  withRec: AddConjunctResult
+): AddConjunctResult {
+  // TODO: this is one line in differential dataflow lol
+  // https://github.com/TimelyDataflow/differential-dataflow/blob/c2e8fefce9ddad0aef5afcac0238b4dc6ae0ddcb/src/operators/join.rs#L181
+  const [graph2, negID] = addNode(withRec.newGraph, true, {
+    type: "Negation",
+  });
+  const graph3 = addEdge(graph2, withRec.tipID, negID);
   const {
-    newGraph: outGraph2,
-    newNodeIDs: nn1,
-    tipID: leftID,
-  } = addRec(outGraph, left);
-  outGraph = outGraph2;
+    newGraph: graph4,
+    tipID: joinID,
+    bindings,
+  } = addJoin(graph3, { ...withRec, tipID: negID }, prev);
+  const [graph5, unionID] = addNode(graph4, true, { type: "Union" });
+  const graph6 = addEdge(graph5, prev.tipID, unionID);
+  const graph7 = addEdge(graph6, joinID, unionID);
+  return {
+    newGraph: graph7,
+    bindings: bindings,
+    tipID: unionID,
+  };
+}
+
+function addAggregation(
+  prev: GraphWithTip,
+  aggregation: Aggregation
+): AddConjunctResult {
+  const [graph2, aggID] = addNode(prev.newGraph, true, {
+    type: "Aggregation",
+    aggregation,
+    state: emptyAggregationState(),
+  });
+  const graph3 = addEdge(graph2, prev.tipID, aggID);
+  return {
+    newGraph: graph3,
+    bindings: Set(aggregation.varNames), // ??
+    tipID: aggID,
+  };
+}
+
+function addJoin(
+  outGraph: RuleGraph,
+  left: AddConjunctResult,
+  right: AddConjunctResult
+): AddConjunctResult {
+  const joinVars = left.bindings.intersect(right.bindings);
   const [outGraph3, joinID] = addNode(outGraph, true, {
     type: "Join",
-    joinVars: Object.keys(joinInfo.join),
-    leftID,
-    rightID,
+    joinVars,
+    leftID: left.tipID,
+    rightID: right.tipID,
   });
   outGraph = outGraph3;
-  outGraph = addEdge(outGraph, leftID, joinID);
-  outGraph = addEdge(outGraph, rightID, joinID);
+  outGraph = addEdge(outGraph, left.tipID, joinID);
+  outGraph = addEdge(outGraph, right.tipID, joinID);
   // console.log({ colsToIndex });
-  outGraph = addIndex(outGraph, leftID, varsToIndex);
-  outGraph = addIndex(outGraph, rightID, varsToIndex);
+  outGraph = addIndex(outGraph, left.tipID, joinVars);
+  outGraph = addIndex(outGraph, right.tipID, joinVars);
   return {
     newGraph: outGraph,
     tipID: joinID,
-    rec: left,
-    newNodeIDs: setAdd(nn1, joinID),
+    bindings: left.bindings.union(right.bindings),
   };
 }
 
-function addJoinTree(ruleGraph: RuleGraph, joinTree: JoinTree): AddResult {
-  if (joinTree.type === "Leaf") {
-    return addRec(ruleGraph, joinTree.rec);
-  }
-  const {
-    newGraph,
-    tipID: rightID,
-    rec: rightRec,
-    newNodeIDs: nn1,
-  } = addJoinTree(ruleGraph, joinTree.right);
-  const {
-    newGraph: newGraph2,
-    tipID: andID,
-    newNodeIDs: nn2,
-  } = addAndBinary(newGraph, joinTree.left, rightRec, rightID);
-  return {
-    newGraph: newGraph2,
-    tipID: andID,
-    rec: joinTree.left,
-    newNodeIDs: setUnion(nn1, nn2),
-  };
-}
-
-function addRec(graph: RuleGraph, rec: Rec): AddResult {
+function addRec(graph: RuleGraph, rec: Rec): AddConjunctResult {
   // TODO: probably should just add all of these globally...
+  const bindings = Set(Object.keys(getVarToPath(rec)));
   if (BUILTINS[rec.relation]) {
     const [graph2, builtinID] = addNode(graph, true, { type: "Builtin", rec });
     return {
       newGraph: graph2,
-      newNodeIDs: new Set([builtinID]),
-      rec,
+      bindings,
       tipID: builtinID,
     };
   }
   const newNodeDesc: NodeDesc = {
     type: "Match",
     rec,
-    mappings: {},
   };
   const [graph2, matchID] = addNode(graph, true, newNodeDesc);
-  if (BUILTINS[rec.relation]) {
-    console.log("add edge from", rec.relation, matchID);
-  }
   const graph3 = addEdge(graph2, rec.relation, matchID);
   return {
     newGraph: graph3,
-    newNodeIDs: new Set([matchID]),
-    rec,
+    bindings,
     tipID: matchID,
   };
 }
 
-type ColName = string;
-
-export function getIndexKey(res: Res, varNames: string[]): List<string> {
-  return List(
-    varNames.map((varName) => {
-      const term = res.bindings[varName];
+export function getIndexKey(bindings: Bindings, joinVars: Set<string>): Key {
+  return joinVars
+    .toArray()
+    .sort()
+    .map((varName) => {
+      const term = bindings[varName];
       if (!term) {
-        throw new Error(
-          `couldn't get attr "${varName}" of "${ppb(res.bindings)}"`
-        );
+        throw new Error(`couldn't get attr "${varName}" of "${ppb(bindings)}"`);
       }
       return fastPPT(term);
     })
-  );
+    .join(",");
 }
 
-export function getIndexName(attrs: ColName[]): string {
-  return attrs.join("-");
-}
-
-export type JoinTree =
-  | {
-      type: "Leaf";
-      rec: Rec;
-    }
-  | { type: "Node"; left: Rec; joinInfo: JoinInfo; right: JoinTree | null };
-
-export function getJoinTree(recs: Rec[]): JoinTree {
-  if (recs.length === 1) {
-    return { type: "Leaf", rec: recs[0] };
-  }
-  return {
-    type: "Node",
-    left: recs[0],
-    // are we joining with just the next record, or everything on the right?
-    joinInfo: getJoinInfo(recs[0], recs[1]),
-    right: getJoinTree(recs.slice(1)),
-  };
-}
-
-export function numJoinsWithCommonVars(joinTree: JoinTree): number {
-  if (joinTree.type === "Leaf") {
-    return 0;
-  }
-  const thisDoes = Object.keys(joinTree.joinInfo.join).length > 0 ? 1 : 0;
-  return thisDoes + numJoinsWithCommonVars(joinTree.right);
+export function getIndexName(joinVars: Set<string>): string {
+  // TODO: some way to remove this sort
+  return joinVars.toArray().sort().join("-");
 }
 
 // helpers
 
-export function addNodeKnownID(
+function addNodeKnownID(
   id: NodeID,
   graph: RuleGraph,
   isInternal: boolean,
   desc: NodeDesc
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.set(id, {
-      isInternal,
-      desc,
-      cache: emptyIndexedCollection(),
-    }),
-  };
+  graph.nodes.set(id, {
+    isInternal,
+    desc,
+    cache: emptyIndexedMultiset(fastPPR),
+  });
+  return graph;
 }
 
 function addNode(
@@ -331,88 +290,37 @@ function addNode(
   isInternal: boolean,
   desc: NodeDesc
 ): [RuleGraph, NodeID] {
-  return [
-    {
-      ...graph,
-      nextNodeID: graph.nextNodeID + 1,
-      nodes: graph.nodes.set(graph.nextNodeID.toString(), {
-        desc,
-        cache: emptyIndexedCollection(),
-        isInternal,
-      }),
-    },
-    `${graph.nextNodeID}`,
-  ];
+  const nodeID = graph.nextNodeID.toString();
+  graph.nextNodeID += 1;
+  graph.builtins =
+    desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins;
+  graph.nodes.set(nodeID, {
+    desc,
+    cache: emptyIndexedMultiset(fastPPR),
+    isInternal,
+  });
+  return [graph, nodeID];
 }
 
-export function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
-  return {
-    ...graph,
-    edges: graph.edges.update(from, List(), (destinations) =>
-      destinations.push(to)
-    ),
-  };
-}
-
-function updateMappings(
-  graph: RuleGraph,
-  from: NodeID,
-  newMappings: VarMappings
-): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(from, (node) => ({
-      ...node,
-      // TODO: create index
-      // cache: node.cache.createIndex(XXX, (res) => {
-      //   XXX;
-      // }),
-      desc:
-        node.desc.type === "Match"
-          ? { ...node.desc, mappings: newMappings }
-          : node.desc,
-    })),
-  };
-}
-
-export function addUnmappedRule(
-  graph: RuleGraph,
-  rule: Rule,
-  newNodeIDs: Set<NodeID>
-): RuleGraph {
-  return {
-    ...graph,
-    unmappedRules: {
-      ...graph.unmappedRules,
-      [rule.head.relation]: { rule, newNodeIDs },
-    },
-  };
-}
-
-function removeUnmappedRule(graph: RuleGraph, ruleName: string): RuleGraph {
-  return {
-    ...graph,
-    unmappedRules: filterObj(
-      graph.unmappedRules,
-      (name: string) => name !== ruleName
-    ),
-  };
+function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
+  graph.edges.updateWithDefault(from, [], (destinations) => {
+    destinations.push(to);
+    return destinations;
+  });
+  return graph;
 }
 
 function addIndex(
   graph: RuleGraph,
   nodeID: NodeID,
-  attrs: string[]
+  joinVars: Set<string>
 ): RuleGraph {
-  return {
-    ...graph,
-    nodes: graph.nodes.update(nodeID, (node) => ({
-      ...node,
-      cache: node.cache.createIndex(getIndexName(attrs), (res) => {
-        // TODO: is this gonna be a perf bottleneck?
-        // console.log({ attrs, res: ppt(res.term) });
-        return getIndexKey(res, attrs);
-      }),
-    })),
-  };
+  graph.nodes
+    .get(nodeID)
+    .cache.createIndex(getIndexName(joinVars), (bindings) => {
+      // TODO: is this gonna be a perf bottleneck?
+      // console.log({ attrs, res: ppt(res.term) });
+      return getIndexKey(bindings.bindings, joinVars);
+    });
+  return graph;
 }

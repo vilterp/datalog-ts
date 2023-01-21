@@ -9,6 +9,22 @@ export function mapObj<T, V>(
   return out;
 }
 
+export function reduceEarlyReturn<T, A>(
+  arr: T[],
+  f: (accum: A, item: T) => A,
+  shouldReturn: (accum: A) => boolean,
+  init: A
+): A {
+  let accum = init;
+  for (const item of arr) {
+    accum = f(accum, item);
+    if (shouldReturn(accum)) {
+      break;
+    }
+  }
+  return accum;
+}
+
 export function filterMap<T, U>(arr: T[], f: (t: T) => U | null): U[] {
   const out: U[] = [];
   for (const item of arr) {
@@ -59,16 +75,6 @@ export function mapObjMaybe<T, V>(
       out[key] = res;
     }
   }
-  return out;
-}
-
-export function mapListToObj<V>(list: { key: string; value: V }[]): {
-  [key: string]: V;
-} {
-  const out: { [key: string]: V } = {};
-  list.forEach(({ key, value }) => {
-    out[key] = value;
-  });
   return out;
 }
 
@@ -217,15 +223,34 @@ export function groupBy<T>(
   return out;
 }
 
+export function groupByPreserveKey<T, K>(
+  arr: T[],
+  f: (item: T) => K,
+  toString: (key: K) => string
+): { [key: string]: { key: K; items: T[] } } {
+  const out: { [key: string]: { key: K; items: T[] } } = {};
+  arr.forEach((item) => {
+    const key = f(item);
+    const keyStr = toString(key);
+    let group = out[keyStr];
+    if (!group) {
+      group = { key, items: [] };
+      out[keyStr] = group;
+    }
+    group.items.push(item);
+  });
+  return out;
+}
+
 export function pairsToObj<T>(
   arr: {
     key: string;
-    val: T;
+    value: T;
   }[]
 ): { [key: string]: T } {
   const out: { [key: string]: T } = {};
-  arr.forEach(({ key, val }) => {
-    out[key] = val;
+  arr.forEach(({ key, value }) => {
+    out[key] = value;
   });
   return out;
 }
@@ -320,6 +345,9 @@ export function sortBy<T>(arr: T[], attr: (t: T) => string): T[] {
 }
 
 export function permute<T>(items: T[]): T[][] {
+  if (items.length === 0) {
+    return [];
+  }
   if (items.length === 1) {
     return [items];
   }
@@ -332,22 +360,6 @@ export function permute<T>(items: T[]): T[][] {
       outArr.push(firstEl);
       outArr = outArr.concat(perm.slice(i));
       out.push(outArr);
-    }
-  }
-  return out;
-}
-
-export function combineObjects<T, U>(
-  left: { [key: string]: T },
-  right: { [key: string]: T },
-  combine: (key: string, left: T, right: T) => U
-): { [key: string]: U } {
-  const out: { [key: string]: U } = {};
-  for (let leftKey in left) {
-    const rightItem = right[leftKey];
-    if (rightItem) {
-      const leftItem = left[leftKey];
-      out[leftKey] = combine(leftKey, leftItem, rightItem);
     }
   }
   return out;
@@ -428,4 +440,24 @@ export function sum(numbers: number[]): number {
 
 export function avg(numbers: number[]): number {
   return sum(numbers) / numbers.length;
+}
+
+// TODO: something more 'random'
+export function randStep(num: number) {
+  return (num * 234 - 534) % 5235255;
+}
+
+export function hashString(str: string): number {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let i = 0; i < str.length; i++) {
+    const chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
+export function identity<T>(item: T): T {
+  return item;
 }

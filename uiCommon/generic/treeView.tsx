@@ -21,7 +21,7 @@ export function makeCollapseStateAllCollapsed<T>(
     childStates: pairsToObj(
       tree.children.map((child) => ({
         key: child.key,
-        val: makeCollapseStateAllCollapsed(child),
+        value: makeCollapseStateAllCollapsed(child),
       }))
     ),
   };

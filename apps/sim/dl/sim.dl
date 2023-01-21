@@ -115,10 +115,14 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   connection{from: B, to: S} &
   currentAtSink{id: S, time: T, level: L}.
 
-time{time: T} :-
-  range{from: 1, to: 30, val: T}.
+.table time
 
 # === visualization ===
+
+internal.visualization{
+  name: "Time Ticker",
+  spec: ticker{},
+}.
 
 internal.visualization{
   name: "Current over Time",
@@ -146,19 +150,20 @@ internal.visualization{
   }
 }.
 
-internal.visualization{
-  name: "Editor",
-  spec: dagEditor{
-    nodes: node{},
-    edges: connection{},
-    newEdge: connection{},
-    newNodes: [
-      source{baseline: 10, amplitude: 10},
-      sink{demand: 15},
-      battery{capacity: 100, initialLevel: 50},
-    ],
-  },
-}.
+# TODO: re-enable when dep issue is sorted out
+# internal.visualization{
+#   name: "Editor",
+#   spec: dagEditor{
+#     nodes: node{},
+#     edges: connection{},
+#     newEdge: connection{},
+#     newNodes: [
+#       source{baseline: 10, amplitude: 10},
+#       sink{demand: 15},
+#       battery{capacity: 100, initialLevel: 50},
+#     ],
+#   },
+# }.
 
 # `id` attribute gets put into the query
 internal.dagEditor.nodeViz{

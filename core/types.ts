@@ -50,9 +50,10 @@ export type Conjunction = {
 
 export type Conjunct = Rec | Negation | Aggregation;
 
-type Negation = { type: "Negation"; record: Rec };
+export type Negation = { type: "Negation"; record: Rec };
 
-type Aggregation = {
+// TODO: make the primitive `reduce`?
+export type Aggregation = {
   type: "Aggregation";
   aggregation: string;
   varNames: string[];
@@ -150,11 +151,22 @@ export const relationalFalse: Rec[] = [];
 // inner to outer (?)
 export type VarMappings = { [from: string]: string };
 
+export type VarToPath = { [varName: string]: AttrPath };
+
+export type AttrName = string;
+
+export type AttrPath = AttrName[];
+
 // === Traces ===
 
+export type BindingsWithTrace = { bindings: Bindings; trace: Trace };
+
+// TODO: trim this down
 export type Trace =
   | { type: "AndTrace"; sources: Res[] }
+  | { type: "JoinTrace"; sources: BindingsWithTrace[] } // TODO: (added for incr) unify this with AndTrace. // TODO: include put trace?
   | { type: "MatchTrace"; fact: Res; match: Rec } // TODO: fact isn't used, since it's always just baseFact
+  | { type: "MatchPathsTrace"; fact: Rec; match: VarToPath } // TODO: (added for incr) unify with MatchTrace
   | {
       type: "RefTrace";
       refTerm: Rec;
@@ -164,8 +176,10 @@ export type Trace =
     }
   | { type: "NegationTrace"; negatedTerm: Term }
   | { type: "AggregationTrace"; aggregatedResults: Res[] }
+  | { type: "AggregationTraceForIncr" } // TODO: unify/eliminate this
   | { type: "BaseFactTrace" }
   | { type: "LiteralTrace" }
+  | { type: "BuiltinTrace" }
   | { type: "VarTrace" };
 
 export const literalTrace: Trace = { type: "LiteralTrace" };
@@ -173,6 +187,10 @@ export const literalTrace: Trace = { type: "LiteralTrace" };
 export const varTrace: Trace = { type: "VarTrace" };
 
 export const baseFactTrace: Trace = { type: "BaseFactTrace" };
+
+export const builtinTrace: Trace = { type: "BuiltinTrace" };
+
+export const aggTraceForInner: Trace = { type: "AggregationTraceForIncr" };
 
 export type InvocationLocation = RulePathSegment[];
 

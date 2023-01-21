@@ -1,6 +1,6 @@
 import React from "react";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
-import { Rec, Res, StringLit, Term } from "../../core/types";
+import { Int, Rec, Res, StringLit, Term } from "../../core/types";
 import {
   AbsPos,
   Circle,
@@ -16,7 +16,10 @@ import {
 } from "../../util/diagrams/types";
 import { Diagram } from "../../util/diagrams/render";
 import { getCoords } from "../../util/diagrams/getCoords";
-import { flatMap } from "../../util/util";
+import { flatMap, uniqBy } from "../../util/util";
+import { jsonEq } from "../../util/json";
+import { termEq } from "../../core/unify";
+import { ppt } from "../../core/pretty";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -25,53 +28,59 @@ export const sequence: VizTypeSpec = {
 };
 
 function SequenceDiagram(props: VizArgs) {
-  const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
-  const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
-  const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
-  const ticksByID: { [id: string]: Term } = {};
-  ticks.forEach((tick) => {
-    ticksByID[((tick.term as Rec).attrs.id as StringLit).val] = tick.term;
-  });
+  try {
+    const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
+    const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
 
-  return (
-    <div>
+    return (
       <div>
         <Diagram<Term>
           diagram={sequenceDiagram(
-            makeSequenceSpec(actors, messages, ticksByID)
+            makeSequenceSpec(actors, messages),
+            props.highlightedTerm
           )}
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
       </div>
-    </div>
-  );
+    );
+  } catch (e) {
+    console.error("while evaluating sequence diagram:", e);
+    return (
+      <pre style={{ color: "red", fontFamily: "monospace" }}>
+        {e.toString()}
+      </pre>
+    );
+  }
 }
 
 // TODO: maybe integrate this into one of the above functions??
 //   or not
-function makeSequenceSpec(
-  actors: Res[],
-  messages: Res[],
-  ticksByID: { [id: string]: Term }
-): Sequence {
+function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
+  const locations = uniqBy((res) => ppt(res.bindings.ID), actors);
   return {
-    locations: actors.map((actor) => ({
+    locations: locations.map((actor) => ({
       loc: (actor.bindings.ID as StringLit).val,
       term: actor.term,
     })),
-    hops: messages.map((message) => ({
-      term: message.term,
-      from: {
-        location: (message.bindings.FromActorID as StringLit).val,
-        time: parseInt((message.bindings.FromTickID as StringLit).val),
-        term: ticksByID[(message.bindings.FromTickID as StringLit).val],
-      },
-      to: {
-        location: (message.bindings.ToActorID as StringLit).val,
-        time: parseInt((message.bindings.ToTickID as StringLit).val),
-        term: ticksByID[(message.bindings.ToTickID as StringLit).val],
-      },
-    })),
+    hops: messages.map((message) => {
+      const fromTickRec = message.bindings.FromTick as Rec;
+      const fromTick: Tick = {
+        time: (fromTickRec.attrs.time as Int).val,
+        place: (fromTickRec.attrs.place as StringLit).val,
+        term: fromTickRec,
+      };
+      const toTickRec = message.bindings.ToTick as Rec;
+      const toTick: Tick = {
+        time: (toTickRec.attrs.time as Int).val,
+        place: (toTickRec.attrs.place as StringLit).val,
+        term: toTickRec,
+      };
+      return {
+        term: message.term,
+        from: fromTick,
+        to: toTick,
+      };
+    }),
   };
 }
 
@@ -85,12 +94,12 @@ export interface Sequence {
 
 export interface Hop {
   term: Term;
-  from: TimeAndPlace;
-  to: TimeAndPlace;
+  from: Tick;
+  to: Tick;
 }
 
-interface TimeAndPlace {
-  location: Location;
+interface Tick {
+  place: Location;
   time: Time;
   term: Term;
 }
@@ -99,7 +108,7 @@ function yForTime(t: Time): number {
   return t * 10;
 }
 
-export function sequenceDiagram(seq: Sequence): Diag<Term> {
+export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
   const maxTime = seq.hops.reduce(
     (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
     0
@@ -112,9 +121,11 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
         VLayout([
           Tag(
             loc.term,
+            // TODO: cursor: pointer
             Text({
               text: loc.loc,
               fontSize: 10,
+              fontWeight: termEq(loc.term, highlight) ? "bold" : "normal",
             })
           ),
           ZLayout([
@@ -124,18 +135,19 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
               start: ORIGIN,
               end: { x: 0, y: yForTime(maxTime) + 20 },
             }),
-            ...pointsForLocation(loc.loc, seq.hops).map((tp) =>
-              AbsPos(
+            ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
+              const highlighted = jsonEq(tp.term, highlight);
+              return AbsPos(
                 { x: 0, y: yForTime(tp.time) },
                 Tag(
                   tp.term,
                   Circle({
                     radius: 5,
-                    fill: "red",
+                    fill: highlighted ? "orange" : "red",
                   })
                 )
-              )
-            ),
+              );
+            }),
           ]),
         ])
       )
@@ -148,10 +160,11 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
       if (fromCoords === null || toCoords === null) {
         return EMPTY_DIAGRAM;
       }
+      const highlighted = jsonEq(hop.term, highlight);
       return Tag(
         hop.term,
         Line({
-          stroke: "blue",
+          stroke: highlighted ? "orange" : "blue",
           width: 3,
           start: fromCoords,
           end: toCoords,
@@ -162,13 +175,13 @@ export function sequenceDiagram(seq: Sequence): Diag<Term> {
   return ZLayout<Term>([hops, locationLines]);
 }
 
-function pointsForLocation(loc: Location, hops: Hop[]): TimeAndPlace[] {
+function pointsForLocation(loc: Location, hops: Hop[]): Tick[] {
   return flatMap(hops, (hop) => {
-    const out: TimeAndPlace[] = [];
-    if (hop.to.location === loc) {
+    const out: Tick[] = [];
+    if (hop.to.place === loc) {
       out.push(hop.to);
     }
-    if (hop.from.location === loc) {
+    if (hop.from.place === loc) {
       out.push(hop.from);
     }
     return out;

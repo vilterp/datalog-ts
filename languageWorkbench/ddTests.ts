@@ -1,15 +1,34 @@
 import { fsLoader } from "../core/fsLoader";
-import { ppt } from "../core/pretty";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, constructInterp } from "./interp";
+import { addCursor, clearInterpCache, getInterpForDoc } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPath } from "../util/ddTest/runner";
-import { datalogOut, jsonOut } from "../util/ddTest/types";
+import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
-import { LanguageSpec } from "./languages";
+import { LanguageSpec } from "./common/types";
+import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
 
-export function lwbTests(writeResults: boolean): Suite {
+export function lwbTestsSimple(writeResults: boolean) {
+  return lwbTests(
+    writeResults,
+    new SimpleInterpreter("languageWorkbench/common", fsLoader)
+  );
+}
+
+export function lwbTestsIncr(writeResults: boolean) {
+  return lwbTests(
+    writeResults,
+    new IncrementalInterpreter("languageWorkbench/common", fsLoader)
+  );
+}
+
+function lwbTests(
+  writeResults: boolean,
+  initInterp: AbstractInterpreter,
+  exclude: Set<string> = new Set<string>()
+): Suite {
   return [
     "fp",
     "sql",
@@ -18,25 +37,27 @@ export function lwbTests(writeResults: boolean): Suite {
     "modelica",
     "treeSQL",
     "basicBlocks",
-  ].map((lang) => ({
-    name: lang,
-    test() {
-      runDDTestAtPath(
-        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-        testLangQuery,
-        writeResults
-      );
-    },
-  }));
+    "contracts",
+  ]
+    .filter((lang) => !exclude.has(lang))
+    .map((lang) => ({
+      name: lang,
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+          (test) => testLangQuery(test, initInterp),
+          writeResults
+        );
+        clearInterpCache();
+      },
+    }));
 }
 
-const INIT_INTERP = new SimpleInterpreter(
-  "languageWorkbench/commonDL",
-  fsLoader
-);
-
-export function testLangQuery(test: string[]): TestOutput[] {
-  return test.map((input) => {
+export function testLangQuery(
+  test: string[],
+  initInterp: AbstractInterpreter
+): TestOutput[] {
+  const output = test.map((input) => {
     const lines = input.split("\n");
     const langName = lines[0];
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
@@ -54,16 +75,14 @@ export function testLangQuery(test: string[]): TestOutput[] {
       ),
       example: "",
     };
-    const {
-      interp: withoutCursor,
-      allGrammarErrors,
-      dlErrors,
-      langParseError,
-    } = constructInterp(INIT_INTERP, langSpec, example);
+    const { interp: withoutCursor } = getInterpForDoc(
+      initInterp,
+      langName,
+      { [langName]: langSpec },
+      `test.${langName}`,
+      example
+    );
     const finalInterp = addCursor(withoutCursor, cursorPos);
-    if (allGrammarErrors.length > 0 || dlErrors.length > 0 || langParseError) {
-      return jsonOut({ allGrammarErrors, langParseError, dlErrors });
-    }
     try {
       const res = finalInterp.queryStr(query);
       return datalogOut(res.map((res) => res.term));
@@ -72,11 +91,16 @@ export function testLangQuery(test: string[]): TestOutput[] {
       throw new Error(`failed on input "${input}"`);
     }
   });
+  clearInterpCache();
+  return output;
 }
 
 const CURSOR = "|||";
 
-function extractCursor(input: string): { input: string; cursorPos: number } {
+export function extractCursor(input: string): {
+  input: string;
+  cursorPos: number;
+} {
   const split = input.split(CURSOR, 2);
   if (split.length === 1) {
     return { input, cursorPos: 1 };

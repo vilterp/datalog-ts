@@ -1,6 +1,6 @@
 import { Json } from "../../util/json";
 import { int, Rec, rec, str, StringLit } from "../../core/types";
-import { adtToRec, dlToJson, jsonToDL } from "../../util/json2dl";
+import { dlToJson, jsonToDL } from "../../util/json2dl";
 import {
   ActorResp,
   AddressedTickInitiator,
@@ -10,9 +10,9 @@ import {
   Trace,
   UpdateFn,
 } from "./types";
-import { sleep } from "../../util/util";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { ppt } from "../../core/pretty";
 
-// TODO: get rid of this
 export function stepAll<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
   update: UpdateFn<ActorState, Msg>,
@@ -52,7 +52,7 @@ export function step<ActorState extends Json, Msg extends Json>(
     newTrace.interp = newTrace.interp.insert(
       rec("actor", {
         id: str(nextInitiator.to),
-        spawningTickID: str(nextInitiator.init.spawningTickID),
+        spawningTickID: int(nextInitiator.init.spawningTickID),
         initialState: jsonToDL(spawn.initialState),
       })
     );
@@ -69,7 +69,7 @@ export function step<ActorState extends Json, Msg extends Json>(
   newTrace.nextID++;
   newTrace.interp = newTrace.interp.insert(
     rec("tick", {
-      id: str(newTickID.toString()),
+      id: int(newTickID),
       actorID: str(curActorID),
       initiator: jsonToDL(nextInitiator.init),
       resp: jsonToDL(actorResp),
@@ -90,7 +90,7 @@ export function step<ActorState extends Json, Msg extends Json>(
             id: str(newMessageID.toString()),
             toActorID: str(outgoingMsg.to),
             payload: jsonToDL(outgoingMsg.msg),
-            fromTickID: str(newTickID.toString()),
+            fromTickID: int(newTickID),
           })
         );
         // insert into queue so we can keep processing this step
@@ -124,12 +124,13 @@ export function step<ActorState extends Json, Msg extends Json>(
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
+  interp: AbstractInterpreter,
   initialStates: { [actorID: string]: ActorState }
 ): Trace<ActorState> {
   return Object.entries(initialStates).reduce(
     (trace, [actorID, actorState]) =>
       spawnSync(trace, update, actorID, actorState),
-    initialTrace<ActorState>()
+    initialTrace<ActorState>(interp)
   );
 }
 
@@ -151,7 +152,7 @@ export function spawnInitiator<St>(
     from: "<god>", // lol
     init: {
       type: "spawned",
-      spawningTickID: "0",
+      spawningTickID: 0,
       initialState,
     },
   };
@@ -159,8 +160,7 @@ export function spawnInitiator<St>(
 
 export function insertUserInput<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
-  update: UpdateFn<ActorState, Msg>,
-  clientID: number,
+  clientID: string,
   payload: Msg
 ): { newTrace: Trace<ActorState>; newMessageID: number } {
   const newTrace = {
@@ -172,14 +172,15 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
 
   const newTickID = trace.nextID;
   newTrace.nextID++;
+  const latestState = trace.latestStates[from];
   newTrace.interp = trace.interp.insert(
     rec("tick", {
-      id: str(newTickID.toString()),
+      id: int(newTickID),
       actorID: str(from),
       initiator: jsonToDL({ type: "userInput" } as TickInitiator<ActorState>),
-      resp: adtToRec({
+      resp: jsonToDL({
         type: "continue",
-        state: trace.latestStates[from],
+        state: latestState,
         messages: [
           {
             to: to,
@@ -197,7 +198,7 @@ export function insertUserInput<ActorState extends Json, Msg extends Json>(
       id: str(newMessageID.toString()),
       toActorID: str(to),
       payload: jsonToDL(payload),
-      fromTickID: str(newTickID.toString()),
+      fromTickID: int(newTickID),
     })
   );
 
@@ -214,7 +215,7 @@ function loadTickInitiator<ActorState, Msg extends Json>(
         `message{id: "${init.messageID}", fromTickID: T}`
       )[0].term as Rec;
       const fromTick = trace.interp.queryStr(
-        `tick{id: "${(msg.attrs.fromTickID as StringLit).val}", actorID: A}`
+        `tick{id: ${ppt(msg.attrs.fromTickID)}, actorID: A}`
       )[0].term as Rec;
       return {
         type: "messageReceived",

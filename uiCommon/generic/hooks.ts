@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { pairsToObj } from "../../util/util";
 
 export function useBoolLocalStorage(
   key: string,
@@ -36,26 +37,64 @@ export function useIntLocalStorage(
   return [parseInt(val), (v: number) => setVal(`${v}`)];
 }
 
+type EffectfulReducerAction<A> =
+  | { type: "OutsideAction"; action: A }
+  | { type: "MarkPromiseDispatched"; id: string };
+
+type EffectfulReducerState<S, A> = {
+  state: S;
+  nextPromiseID: number;
+  promises: { [id: string]: Promise<A> };
+};
+
 // inspired by the Elm architecture
 export function useEffectfulReducer<S, A>(
   reducer: (state: S, action: A) => [S, Promise<A>[]],
   initialState: S
 ): [S, (a: A) => void] {
   const myReducer = (
-    prevPair: [S, Promise<A>[]],
-    action: A
-  ): [S, Promise<A>[]] => {
-    const [prevState, _] = prevPair;
-    return reducer(prevState, action);
+    prevState: EffectfulReducerState<S, A>,
+    action: EffectfulReducerAction<A>
+  ): EffectfulReducerState<S, A> => {
+    switch (action.type) {
+      case "OutsideAction": {
+        const [newState, newPromises] = reducer(prevState.state, action.action);
+        const newPromisesObj = pairsToObj(
+          newPromises.map((newPromise, idx) => ({
+            key: (prevState.nextPromiseID + idx).toString(),
+            value: newPromise,
+          }))
+        );
+        return {
+          state: newState,
+          nextPromiseID: prevState.nextPromiseID + newPromises.length,
+          promises: { ...prevState.promises, ...newPromisesObj },
+        };
+      }
+      case "MarkPromiseDispatched": {
+        const newPromises = { ...prevState.promises };
+        delete newPromises[action.id];
+        return { ...prevState, promises: newPromises };
+      }
+    }
   };
-  const [[state, effects], dispatch] = useReducer(myReducer, [
-    initialState,
-    [],
-  ]);
+  const [effRedState, innerDispatch] = useReducer(myReducer, {
+    state: initialState,
+    nextPromiseID: 0,
+    promises: {},
+  });
+  const outerDispatch = (action: A) => {
+    innerDispatch({ type: "OutsideAction", action });
+  };
   useEffect(() => {
-    effects.map((eff) => eff.then(dispatch));
-  }, [effects]);
-  return [state, dispatch];
+    Object.entries(effRedState.promises).forEach(([id, promise]) => {
+      promise.then((action) => {
+        innerDispatch({ type: "OutsideAction", action });
+      });
+      innerDispatch({ type: "MarkPromiseDispatched", id });
+    });
+  }, [effRedState]);
+  return [effRedState.state, outerDispatch];
 }
 
 // TODO: make more generic...

@@ -6,6 +6,7 @@ import { intersperse, mapObjToListUnordered } from "../../util/util";
 import { TreeView, TreeCollapseState } from "../generic/treeView";
 import { BareTerm } from "./replViews";
 import { pathToScopePath } from "../../core/termWithBindings";
+import { substitute } from "../../core/unify";
 
 export function TraceTreeView(props: {
   result: Res;
@@ -54,7 +55,7 @@ export function TraceNode(props: {
     case "NegationTrace":
       return (
         <>
-          !<BareTerm term={res.trace.negatedTerm} />
+          !<BareTerm term={substitute(res.trace.negatedTerm, res.bindings)} />
         </>
       );
     default:

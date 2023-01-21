@@ -26,7 +26,7 @@ scope.blockToInstr{childID: InstrID, parentID: BlockID} :-
   astInternal.next{prev: WSID, next: InstrID}.
 
 # this var defined at this node
-scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
   scope.defnValue{scopeID: I, span: S, name: N, kind: K} |
   scope.defnLabel{scopeID: I, span: S, name: N, kind: K}.
 # definitions of value variables

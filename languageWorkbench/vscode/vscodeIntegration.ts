@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { LanguageSpec } from "../languages";
 import { Rec, StringLit } from "../../core/types";
 import {
   dlToSpan,
@@ -9,6 +8,18 @@ import {
 import { ppt } from "../../core/pretty";
 import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
+import * as native from "../common/ide";
+import {
+  emptyNodesByRule,
+  flattenByRule,
+  NodesByRule,
+} from "../parserlib/flattenByRule";
+import { extractRuleTree } from "../parserlib/ruleTree";
+import { parse } from "../parserlib/parser";
+import { GRAMMAR } from "../languages/dl/parser";
+import { Span } from "../parserlib/types";
+import { LanguageSpec, Problem } from "../common/types";
+import { updateDocSource } from "../interpCache";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -69,20 +80,24 @@ export function registerLanguageSupport(
 
   // completions
   subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(spec.name, {
-      provideCompletionItems(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
-      ): vscode.ProviderResult<vscode.CompletionItem[]> {
-        try {
-          return getCompletionItems(spec, document, position, token, context);
-        } catch (e) {
-          console.error("in completion provider:", e);
-        }
+    vscode.languages.registerCompletionItemProvider(
+      spec.name,
+      {
+        provideCompletionItems(
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          token: vscode.CancellationToken,
+          context: vscode.CompletionContext
+        ): vscode.ProviderResult<vscode.CompletionItem[]> {
+          try {
+            return getCompletionItems(spec, document, position, token, context);
+          } catch (e) {
+            console.error("in completion provider:", e);
+          }
+        },
       },
-    })
+      ...(spec.triggerCharacters || [])
+    )
   );
 
   // renames
@@ -171,12 +186,13 @@ function getDefinition(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Definition> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(`ide.DefnAtPos{idx: ${idx}, defnSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}`);
   if (results.length === 0) {
     return null;
   }
@@ -196,12 +212,13 @@ function getReferences(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.Location[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
-  const results = interp.queryStr(`ide.UsageAtPos{idx: ${idx}, usageSpan: US}`);
+  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
   return results.map(
     (res) =>
       new vscode.Location(
@@ -223,7 +240,7 @@ function getHighlights(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.DocumentHighlight[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
@@ -249,29 +266,52 @@ function getCompletionItems(
   context: vscode.CompletionContext
 ): vscode.ProviderResult<vscode.CompletionItem[]> {
   const source = document.getText();
-  const idx = idxFromLineAndCol(source, {
+  const cursorIdx = idxFromLineAndCol(source, {
     line: position.line,
     col: position.character,
   });
   const sourceWithPlaceholder =
-    source.slice(0, idx) + "???" + source.slice(idx);
-  const interp = getInterp(spec, sourceWithPlaceholder);
-  const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(
-    `ide.CurrentSuggestion{name: N, span: S, type: T}`
-  );
-  const uniqueResults = uniqBy(
-    (res) => ((res.term as Rec).attrs.name as StringLit).val,
-    results
-  );
-  console.log({ uniqueResults });
-  return uniqueResults.map((res) => {
-    const result = res.term as Rec;
-    const label = result.attrs.name as StringLit;
-    return {
-      label: label.val,
-    };
-  });
+    source.slice(0, cursorIdx) + "???" + source.slice(cursorIdx);
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(
+      document.uri.toString(),
+      spec.name,
+      sourceWithPlaceholder,
+      spec.leaves
+    );
+    const suggestions = [
+      ...native.ideCurrentSuggestion(flattened, spec.nativeImpl, cursorIdx),
+    ];
+    console.log("getCompletionItems", suggestions);
+    return suggestions.map((res) => {
+      return {
+        // label: res.name + EXTRA_TEXT[res.kind],
+        label: res.name,
+      };
+    });
+  } else {
+    const interp = getInterp(
+      spec,
+      document.uri.toString(),
+      sourceWithPlaceholder
+    );
+    const interp2 = interp.evalStr(`ide.Cursor{idx: ${cursorIdx}}.`)[1];
+    const results = interp2.queryStr(
+      `ide.CurrentSuggestion{name: N, span: S, type: T}`
+    );
+    const uniqueResults = uniqBy(
+      (res) => ((res.term as Rec).attrs.name as StringLit).val,
+      results
+    );
+    console.log({ uniqueResults });
+    return uniqueResults.map((res) => {
+      const result = res.term as Rec;
+      const label = result.attrs.name as StringLit;
+      return {
+        label: label.val,
+      };
+    });
+  }
 }
 
 function getRenameEdits(
@@ -286,7 +326,7 @@ function getRenameEdits(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
 
@@ -309,7 +349,7 @@ function prepareRename(
     line: position.line,
     col: position.character,
   });
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
     "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
@@ -327,7 +367,7 @@ function getSymbolList(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  const interp = getInterp(spec, document.uri.toString(), source);
 
   const results = interp.queryStr(
     `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
@@ -352,17 +392,38 @@ function getSemanticTokens(
   token: vscode.CancellationToken
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
-  const interp = getInterp(spec, source);
-  const results = interp.queryStr("hl.NonHighlightSegment{}");
+  // const interp = getInterp(spec, document.uri.toString(), source);
+  // const results = interp.queryStr("hl.NonHighlightSegment{}");
+  if (spec.nativeImpl) {
+    console.log("native semantic tokens");
+    const flattened = getFlattened(
+      document.uri.toString(),
+      spec.name,
+      source,
+      spec.leaves
+    );
+    const results = [...native.getSemanticTokens(flattened, spec.nativeImpl)];
 
-  const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
-  results.forEach((res) => {
-    const result = res.term as Rec;
-    const range = spanToRange(source, result.attrs.span as Rec);
-    const typ = (result.attrs.type as StringLit).val;
-    builder.push(range, typ);
-  });
-  return builder.build();
+    const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+    for (const result of results) {
+      const range = nonDLspanToRange(source, result.span);
+      const typ = result.type;
+      builder.push(range, typ);
+    }
+    return builder.build();
+  } else {
+    const interp = getInterp(spec, document.uri.toString(), source);
+    const results = interp.queryStr("hl.NonHighlightSegment{}");
+
+    const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
+    results.forEach((res) => {
+      const result = res.term as Rec;
+      const range = spanToRange(source, result.attrs.span as Rec);
+      const typ = (result.attrs.type as StringLit).val;
+      builder.push(range, typ);
+    });
+    return builder.build();
+  }
 }
 
 export const semanticTokensLegend = new vscode.SemanticTokensLegend(
@@ -375,13 +436,25 @@ export function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   const source = document.getText();
-  const interp = getInterp(spec, source);
+  if (spec.nativeImpl) {
+    const flattened = getFlattened(
+      document.uri.toString(),
+      spec.name,
+      source,
+      spec.leaves
+    );
+    const problems = [...spec.nativeImpl.tcProblem(flattened)];
+    const diags = problems.map((res) => nativeProblemToDiagnostic(source, res));
+    diagnostics.set(document.uri, diags);
+  } else {
+    const interp = getInterp(spec, document.uri.toString(), source);
 
-  const problems = interp.queryStr("tc.Problem{}");
-  const diags = problems.map((res) =>
-    problemToDiagnostic(source, res.term as Rec)
-  );
-  diagnostics.set(document.uri, diags);
+    const problems = interp.queryStr("tc.Problem{}");
+    const diags = problems.map((res) =>
+      problemToDiagnostic(source, res.term as Rec)
+    );
+    diagnostics.set(document.uri, diags);
+  }
 }
 
 function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
@@ -393,7 +466,28 @@ function problemToDiagnostic(source: string, rec: Rec): vscode.Diagnostic {
   return new vscode.Diagnostic(range, ppt(rec.attrs.desc));
 }
 
-// utils
+function nativeProblemToDiagnostic(
+  source: string,
+  problem: Problem
+): vscode.Diagnostic {
+  const range = nonDLspanToRange(source, problem.span);
+  return new vscode.Diagnostic(range, problem.desc);
+}
+
+function getFlattened(
+  uri: string,
+  langID: string,
+  source: string,
+  leaves: Set<string> = new Set<string>()
+): NodesByRule {
+  // call updateSource here?
+  updateDocSource(uri, langID, source);
+  // TODO: pass in spec; use its grammar
+  console.log("get flattened");
+  const traceTree = parse(GRAMMAR, "main", source);
+  const ruleTree = extractRuleTree(traceTree);
+  return flattenByRule(ruleTree, source, leaves);
+}
 
 function idxToPosition(source: string, idx: number): vscode.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
@@ -402,6 +496,12 @@ function idxToPosition(source: string, idx: number): vscode.Position {
 
 function spanToRange(source: string, dlSpan: Rec): vscode.Range {
   const span = dlToSpan(dlSpan);
+  const from = idxToPosition(source, span.from);
+  const to = idxToPosition(source, span.to);
+  return new vscode.Range(from, to);
+}
+
+function nonDLspanToRange(source: string, span: Span): vscode.Range {
   const from = idxToPosition(source, span.from);
   const to = idxToPosition(source, span.to);
   return new vscode.Range(from, to);

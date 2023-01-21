@@ -1,0 +1,260 @@
+.table time
+
+.table instr
+.table expr.funcCall
+.table expr.funcArg
+.table expr.intLit
+.table expr.var
+
+
+# === Program Counter ===
+
+state.ProgramCounter{thread: TH, time: T, counter: C} :-
+  state.programCounter.init{thread: TH, time: T, counter: C} |
+  state.programCounter.store{thread: TH, time: T, counter: C} |
+  state.programCounter.increment{thread: TH, time: T, counter: C} |
+  state.programCounter.fork{thread: TH, time: T, counter: C} |
+  state.programCounter.condGoto{thread: TH, time: T, counter: C}.
+
+.table state.programCounter.init
+
+state.programCounter.store{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: store{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.increment{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: increment{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+
+# fork
+state.programCounter.fork{thread: TH, time: T, counter: C} :-
+  state.programCounter.fork.orig{thread: TH, time: T, counter: C} |
+  state.programCounter.fork.new{thread: TH, time: T, counter: C}.
+state.programCounter.fork.orig{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: fork{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.fork.new{
+  thread: TH,
+  origThread: PrevTH,
+  time: T,
+  counter: ForkC,
+} :-
+  time{time: T} &
+  instr{idx: PrevC, op: fork{goto: ForkC}} &
+  T = PrevT + 1 &
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC} &
+  ShiftedT = T + 100 &
+  TH = PrevTH + ShiftedT.
+
+# goto
+state.programCounter.condGoto{thread: TH, time: T, counter: C} :-
+  state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} |
+  state.programCounter.condGoto.no{thread: TH, time: T, counter: C}.
+
+state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: conditionalGoto{dest: C, var: Var}} &
+  T = PrevT + 1 &
+  state.Var{thread: TH, time: PrevT, var: Var, value: true} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
+  time{time: T} &
+  instr{idx: PrevC, op: conditionalGoto{var: Var}} &
+  T = PrevT + 1 &
+  state.Var{thread: TH, time: PrevT, var: Var, value: false} &
+  C = PrevC + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+
+# === Var ===
+
+state.Var{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.store{thread: TH, time: T, var: Var, value: Val} |
+  state.var.increment{thread: TH, time: T, var: Var, value: Val} |
+  state.var.stay{thread: TH, time: T, var: Var, value: Val}.
+
+state.var.store{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, expr: Expr}} &
+  eval{expr: Expr, thread: TH, time: PrevT, value: Val} &
+  T = PrevT + 1.
+state.var.increment{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: increment{var: Var}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  Val = PrevVal + 1.
+
+# == stay
+state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal}.
+# store & increment
+state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: store{var: OtherVar}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  OtherVar != Var.
+state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: increment{var: OtherVar}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
+  OtherVar != Var.
+# fork
+state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal}.
+state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: fork{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
+  state.programCounter.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
+  T = PrevT + 1 &
+  state.Var{thread: OrigTH, time: PrevT, var: Var, value: Val}.
+# condGoto
+state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: conditionalGoto{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+
+# === Eval ===
+
+eval{thread: TH, time: T, expr: Expr, value: Value} :-
+  eval.FuncCall{thread: TH, time: T, expr: Expr, value: Value} |
+  eval.Var{thread: TH, time: T, expr: Expr, value: Value} |
+  eval.IntLit{thread: TH, time: T, expr: Expr, value: Value}.
+
+eval.FuncCall{thread: TH, time: T, expr: Expr, value: Value} :-
+  eval.FuncCall.LT{thread: TH, time: T, expr: Expr, value: Value}.
+eval.FuncCall.LT{thread: TH, time: T, expr: Expr, value: Value} :-
+  eval.FuncCall.LT.true{thread: TH, time: T, expr: Expr, value: Value} |
+  eval.FuncCall.LT.false{thread: TH, time: T, expr: Expr, value: Value}.
+eval.FuncCall.LT.true{thread: TH, time: T, expr: Expr, value: true} :-
+  expr.funcCall{id: Expr, name: "<"} &
+  expr.funcArg{funcID: Expr, argID: Left, idx: 0} &
+  expr.funcArg{funcID: Expr, argID: Right, idx: 1} &
+  eval{thread: TH, time: T, expr: Left, value: LeftVal} &
+  eval{thread: TH, time: T, expr: Right, value: RightVal} &
+  LeftVal < RightVal.
+eval.FuncCall.LT.false{thread: TH, time: T, expr: Expr, value: false} :-
+  expr.funcCall{id: Expr, name: "<"} &
+  expr.funcArg{funcID: Expr, argID: Left, idx: 0} &
+  expr.funcArg{funcID: Expr, argID: Right, idx: 1} &
+  eval{thread: TH, time: T, expr: Left, value: LeftVal} &
+  eval{thread: TH, time: T, expr: Right, value: RightVal} &
+  LeftVal >= RightVal.
+eval.Var{thread: TH, time: T, expr: Expr, value: Value} :-
+  expr.var{id: Expr, name: N} &
+  state.Var{thread: TH, time: T, var: N, value: Value}.
+eval.IntLit{thread: TH, time: T, expr: Expr, value: Value} :-
+  expr.intLit{id: Expr, value: Value} &
+  state.ProgramCounter{thread: TH, time: T}.
+
+# === Viz ===
+
+.table internal.visualization
+
+internal.visualization{
+  name: "Program Counter over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "counter", type: "quantitative"},
+      color: mapping{field: "thread"}
+    },
+    query: state.ProgramCounter{}
+  }
+}.
+
+viz.threadVar{time: T, tv: [TH, V], value: Val} :-
+  state.Var{thread: TH, time: T, var: V, value: Val}.
+
+# TODO: another encoding channel for thread
+internal.visualization{
+  name: "Variables Over over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "value", type: "quantitative"},
+      color: mapping{field: "tv"}
+    },
+    query: viz.threadVar{}
+  }
+}.
+
+viz.message{fromTick: FromTick, toTick: ToTick} :-
+  viz.spawnMessage{fromTick: FromTick, toTick: ToTick} |
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick}.
+viz.spawnMessage{
+  fromTick: tick{time: FromT, place: FromTH},
+  toTick: tick{time: ToT, place: ToTH}
+} :-
+  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
+  ToT = FromT + 1.
+viz.continueMessage{
+  fromTick: tick{time: PrevT, place: TH},
+  toTick: tick{time: T, place: TH}
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT} &
+  state.ProgramCounter{thread: TH, time: T} &
+  PrevT = T + 1.
+
+internal.visualization{
+  name: "Spawning Sequence",
+  spec: sequence{
+    actors: state.ProgramCounter{thread: ID},
+    messages: viz.message{fromTick: FromTick, toTick: ToTick},
+  },
+}.
+
+# insertion
+
+state.programCounter.init{thread: 1, time: 1, counter: 0}.
+
+time{time: 1}.
+time{time: 2}.
+time{time: 3}.
+time{time: 4}.
+time{time: 5}.
+time{time: 6}.
+time{time: 7}.
+time{time: 8}.
+time{time: 9}.
+time{time: 10}.
+time{time: 11}.
+time{time: 12}.
+time{time: 13}.
+time{time: 14}.
+time{time: 15}.
+
+instr{idx: 0, op: store{var: "x", expr: 3}}.
+instr{idx: 1, op: increment{var: "x"}}.
+instr{idx: 2, op: store{var: "y", expr: 0}}.
+instr{idx: 3, op: fork{goto: 5}}.
+instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
+instr{idx: 5, op: increment{var: "x"}}.
+instr{idx: 6, op: increment{var: "x"}}.
+instr{idx: 7, op: increment{var: "x"}}.
+
+expr.funcCall{id: 0, name: "<"}.
+expr.funcArg{funcID: 0, argID: 1, idx: 0}.
+expr.funcArg{funcID: 0, argID: 2, idx: 1}.
+expr.var{id: 1, name: "x"}.
+expr.intLit{id: 2, value: 5}.
+expr.intLit{id: 3, value: 0}.

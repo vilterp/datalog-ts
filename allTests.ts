@@ -5,14 +5,16 @@ import {
   coreTestsIncremental,
   coreTestsCommon,
   parserTests,
+  joinOrderTests,
 } from "./core/ddTests";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
 import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
-import { lwbTests } from "./languageWorkbench/ddTests";
 import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { raceDetectorTests } from "./apps/raceDetector/ddTests";
+import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
+import { lwbTestsIncr, lwbTestsSimple } from "./languageWorkbench/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -24,15 +26,18 @@ const suites: { [name: string]: Suite } = {
   parserTests: parserTests(writeResults),
   // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
   coreTestsSimple: coreTestsSimple(writeResults),
-  // coreTestsIncremental: coreTestsIncremental(writeResults),
+  coreTestsIncremental: coreTestsIncremental(writeResults),
   coreTestsCommon: coreTestsCommon(writeResults),
+  joinOrderTests: joinOrderTests(writeResults),
   incrTests: incrTests(writeResults),
   prettyPrintTests,
   treeTests,
   parserlibTests: parserlibTests(writeResults),
   sourcePositionsTests,
+  kvSync: kvSyncTests(writeResults),
   raceDetector: raceDetectorTests(writeResults),
-  lwbTests: lwbTests(writeResults),
+  lwbTestsSimple: lwbTestsSimple(writeResults),
+  lwbTestsIncr: lwbTestsIncr(writeResults),
 };
 
 try {

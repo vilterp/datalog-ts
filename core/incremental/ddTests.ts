@@ -1,7 +1,6 @@
 import { toGraphviz } from "./graphviz";
-import { Rec, Statement } from "../types";
-import { formatOutput, IncrementalInterpreter } from "./interpreter";
-import { getJoinInfo } from "./build";
+import { Rec } from "../types";
+import { IncrementalInterpreter } from "./interpreter";
 import { fsLoader } from "../fsLoader";
 import { Suite } from "../../util/testBench/testing";
 import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
@@ -15,6 +14,8 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "../translateAST";
+import { buildGraph, getJoinVars } from "./build";
+import { formatOutput } from "./output";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -26,10 +27,14 @@ export function incrTests(writeResults: boolean): Suite {
     ["family", evalTest],
     ["indexes", evalTest],
     ["siblings", evalTest],
-    ["cycles", evalTest],
     ["replay", evalTest],
-    ["cyclesReplay", evalTest],
     ["dlParser", evalTest],
+    ["timeStep", evalTest],
+    ["contracts", evalTest],
+    ["transitiveClosure", evalTest],
+    ["sccs", evalTest],
+    ["parse", evalTest],
+    ["aggregation", evalTest],
     ["findJoinInfo", joinInfoTest],
   ];
   return tests.map(([name, func]) => ({
@@ -49,31 +54,30 @@ function joinInfoTest(test: string[]): TestOutput[] {
     const [left, right] = input.split("\n");
     const leftStmt = parserTermToInternal(parseRecord(left)) as Rec;
     const rightStmt = parserTermToInternal(parseRecord(right)) as Rec;
-    const res = getJoinInfo(leftStmt, rightStmt);
-    return jsonOut(res);
+    const res = getJoinVars(leftStmt, rightStmt);
+    return jsonOut(res.toArray());
   });
 }
 
-// TODO: deprecate this since we have .rulegraph now?
 function buildTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const statements = input
-      .split(";")
-      .map((s) => s.trim())
-      .map(parseStatement);
     let interp = new IncrementalInterpreter(".", fsLoader);
-    for (let rawStmt of statements) {
-      const stmt = parserStatementToInternal(rawStmt);
-      interp = interp.processStmt(stmt).newInterp as IncrementalInterpreter;
-    }
-    return graphvizOut(prettyPrintGraph(toGraphviz(interp.graph)));
+    interp = interp.evalStr(input)[1] as IncrementalInterpreter;
+    return graphvizOut(
+      prettyPrintGraph(toGraphviz(buildGraph(interp.catalog)))
+    );
   });
 }
 
-export function evalTest(inputs: string[]): TestOutput[] {
+function evalTest(inputs: string[]): TestOutput[] {
   const out: TestOutput[] = [];
   let interp = new IncrementalInterpreter(".", fsLoader);
   for (let input of inputs) {
+    if (input === ".ruleGraph") {
+      // TODO: query virtual relations instead?
+      out.push(graphvizOut(prettyPrintGraph(toGraphviz(interp.graph))));
+      continue;
+    }
     const rawStmt = parseStatement(input);
     const stmt = parserStatementToInternal(rawStmt);
     // const before = Date.now();
@@ -84,7 +88,7 @@ export function evalTest(inputs: string[]): TestOutput[] {
     out.push(
       formatOutput(interp.graph, output, {
         emissionLogMode: "test",
-        showBindings: true,
+        filterInternal: false,
       })
     );
   }

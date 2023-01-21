@@ -508,5 +508,16 @@ function intToString(input: Rec): Rec[] {
       }),
     ];
   }
+  if (intInput.type === "IntLit" && strInput.type === "StringLit") {
+    if (parseInt(strInput.val) === intInput.val) {
+      return [
+        rec(input.relation, {
+          int: intInput,
+          string: str(intInput.val.toString()),
+        }),
+      ];
+    }
+    return [];
+  }
   throw new Error(`this case is not supported: ${ppt(input)}`);
 }

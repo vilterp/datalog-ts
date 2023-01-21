@@ -2,7 +2,7 @@ import { BUILTINS } from "./builtins";
 import { Bindings, Rec, Res } from "./types";
 import { substitute, unify } from "./unify";
 
-export function evalBuiltin(term: Rec, scope: Bindings) {
+export function evalBuiltin(term: Rec, scope: Bindings): Res[] {
   const builtin = BUILTINS[term.relation];
   const substituted = substitute(term, scope) as Rec;
   const records = builtin.fun(substituted);

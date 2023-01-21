@@ -1,8 +1,4 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { makeMemoryLoader } from "../../core/loaders";
-// @ts-ignore
-import patterns from "./patterns.dl";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import React from "react";
 
 // === overall ui model ===
@@ -28,21 +24,23 @@ export type UpdateFn<ActorState, Msg> = (
 export type System<ActorState, Msg> = {
   name: string;
   id: string;
-  ui: (props: {
-    state: ActorState;
-    sendUserInput: (input: Msg) => void;
-  }) => React.ReactElement;
+  ui: (props: UIProps<ActorState, Msg>) => React.ReactElement;
   update: UpdateFn<ActorState, Msg>;
   // TODO: something about all these initial states
-  initialState: Trace<ActorState>;
-  initialClientState: ActorState;
+  getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
+  initialClientState: (id: string) => ActorState;
   initialUserState: ActorState;
+};
+
+export type UIProps<ClientState, UserInput> = {
+  state: ClientState;
+  sendUserInput: (msg: UserInput) => void;
 };
 
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
   trace: Trace<ActorState>;
-  clientIDs: number[];
+  clientIDs: string[];
   nextClientID: number;
 };
 
@@ -52,19 +50,19 @@ export type SystemInstanceAction<St, Msg> =
       action: TraceAction<St, Msg>;
     }
   | { type: "AllocateClientID" }
-  | { type: "ExitClient"; clientID: number };
+  | { type: "ExitClient"; clientID: string };
 
 // === trace model ===
 
 export type TraceAction<ActorState, Msg> =
   | {
       type: "SpawnClient";
-      id: number;
+      id: string;
       // TODO: this is a bit awkward, since these both exist on System...
       initialUserState: ActorState;
       initialClientState: ActorState;
     }
-  | { type: "SendUserInput"; clientID: number; input: Msg }
+  | { type: "SendUserInput"; clientID: string; input: Msg }
   | { type: "Step"; init: AddressedTickInitiator<ActorState> };
 
 export type Trace<ActorState> = {
@@ -76,13 +74,9 @@ export type Trace<ActorState> = {
   latestStates: { [actorID: string]: ActorState };
 };
 
-export function initialTrace<ActorState>(): Trace<ActorState> {
-  const interp = new IncrementalInterpreter(
-    ".",
-    makeMemoryLoader({
-      "./patterns.dl": patterns,
-    })
-  );
+export function initialTrace<ActorState>(
+  interp: AbstractInterpreter
+): Trace<ActorState> {
   const interp2 = interp.doLoad("patterns.dl");
   return {
     latestStates: {},
@@ -130,7 +124,7 @@ export type MessageID = string;
 
 export type TimerID = string;
 
-export type TickID = string;
+export type TickID = number;
 
 // === effects and messages ===
 
@@ -143,4 +137,5 @@ export type ActorResp<ActorState, Message> =
   | { type: "sleep"; durationMS: number; state: ActorState }
   | { type: "exit" };
 
+// TODO: add "responding to" message id?
 export type OutgoingMessage<T> = { msg: T; to: ActorID };

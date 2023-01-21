@@ -1,4 +1,4 @@
-scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
   scope.paramDefn{scopeID: I, span: S, name: N, kind: K} |
   scope.varDefn{scopeID: I, span: S, name: N, kind: K}.
 

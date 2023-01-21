@@ -1,4 +1,4 @@
-import { mapListToObj } from "../../util/util";
+import { pairsToObj } from "../../util/util";
 import {
   GrammarCharRule,
   GrammarMain,
@@ -7,7 +7,7 @@ import {
 import { deEscape, Grammar, Rule, SingleCharRule } from "./types";
 
 export function parserGrammarToInternal(grammar: GrammarMain): Grammar {
-  return mapListToObj(
+  return pairsToObj(
     grammar.ruleDefn.map((defn) => ({
       key: defn.ident.text,
       value: parserRuleToInternal(defn.rule),

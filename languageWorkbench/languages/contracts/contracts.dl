@@ -1,0 +1,228 @@
+# ==== syntax highlighting ===
+
+hl.mapping{rule: "intLit", type: "number"}.
+hl.mapping{rule: "stringLit", type: "string"}.
+hl.mapping{rule: "bool", type: "number"}.
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "paymentKW", type: "keyword"}.
+hl.mapping{rule: "contractKW", type: "keyword"}.
+
+# ==== mapping into DL ===
+
+contract.Contract{id: ID, astNodeID: Stmt, contractExprID: ContractCall} :-
+  ast.contractStmt{id: Stmt} &
+  ast.funcArgs{id: Args, parentID: Stmt} &
+  # contract call
+  ast.namedFuncArg{callID: Stmt, name: "contract", exprID: ContractExpr} &
+  ast.funcCall{id: ContractCall, parentID: ContractExpr} &
+  # parse id
+  ast.namedFuncArg{callID: Stmt, name: "id", exprID: IDExpr} &
+  astInternal.node{id: IDExpr, text: IDText} &
+  intToString{string: IDText, int: ID}.
+
+# == contract nodes ==
+
+contract.node.Payment{id: I, from: From, to: To, amount: Amt} :-
+  ast.funcCall{id: I} &
+  ast.varExpr{parentID: I, text: "pay"} &
+  ast.namedFuncArg{callID: I, name: "from", exprID: FromExpr} &
+  ast.namedFuncArg{callID: I, name: "to", exprID: ToExpr} &
+  ast.namedFuncArg{callID: I, name: "amount", exprID: AmtExpr} &
+  # amt
+  astInternal.node{id: AmtExpr, text: AmtText} &
+  intToString{string: AmtText, int: Amt} &
+  # from
+  ast.stringLit{parentID: FromExpr, id: FromStr} &
+  ast.stringContents{parentID: FromStr, text: From} &
+  # to
+  ast.stringLit{parentID: ToExpr, id: ToStr} &
+  ast.stringContents{parentID: ToStr, text: To}.
+
+contract.node.And{id: I} :-
+  ast.funcCall{id: I} &
+  ast.varExpr{parentID: I, text: "and"}.
+
+contract.node.Delay{id: I, duration: D} :-
+  ast.funcCall{id: I} &
+  ast.namedFuncArg{callID: I, name: "duration", exprID: DurationExpr} &
+  # duration arg
+  astInternal.node{id: DurationExpr, text: DurationText} &
+  intToString{string: DurationText, int: D}.
+
+# ==== tree structure ====
+
+contract.tree.parent{child: C, parent: P} :-
+  contract.tree.nodeParent{child: C, parent: P} |
+  contract.contractRootParent{child: C, parent: P} |
+  contract.Contract{id: P, contractExprID: C}.
+contract.tree.nodeParent{child: ChildCall, parent: ParentCall} :-
+  ast.funcCall{id: ChildCall, parentID: Expr} &
+  ast.expr{id: Expr, parentID: Arg} &
+  ast.funcArg{id: Arg, parentID: Args} &
+  ast.funcArgs{id: Args, parentID: ParentCall} &
+  ast.funcCall{id: ParentCall}.
+contract.contractRootParent{child: C, parent: 0} :-
+  contract.Contract{id: C}.
+
+contract.tree.node{id: A, display: B} :-
+  contract.tree.contractNode{id: A, display: B} |
+  contract.tree.andNode{id: A, display: B} |
+  contract.tree.delayNode{id: A, display: B} |
+  contract.tree.paymentNode{id: A, display: B}.
+contract.tree.andNode{id: I, display: and{}} :-
+  contract.node.And{id: I}.
+contract.tree.delayNode{id: I, display: delay{duration: D}} :-
+  contract.node.Delay{id: I, duration: D}.
+contract.tree.paymentNode{id: I, display: payment{from: F, to: T, amount: A}} :-
+  contract.node.Payment{id: I, from: F, to: T, amount: A}.
+contract.tree.contractNode{id: I, display: contract{id: I}} :-
+  contract.Contract{id: I}.
+
+contract.tree.rootNodeAndParent{id: 0, display: root{}, parent: -1}.
+contract.tree.nodeAndParent{id: A, display: [A, B], parentID: C} :-
+  contract.tree.node{id: A, display: B} &
+  contract.tree.parent{child: A, parent: C} |
+  contract.tree.rootNodeAndParent{id: A, display: B, parent: C}.
+
+# == node membership ==
+  
+contract.ancestor{ancestor: I, descendant: N} :-
+  contract.tree.parent{parent: I, child: N} |
+  contract.tree.parent{parent: B, child: N} &
+  contract.ancestor{ancestor: I, descendant: B}.
+contract.member{contractID: I, nodeID: N} :-
+  contract.Contract{id: I} &
+  contract.ancestor{ancestor: I, descendant: N}.
+
+# == payment ==
+
+contract.PaymentRecord{id: I, contractID: CID, from: From, to: To, amount: Amt, time: T} :-
+  # args from payment statement
+  ast.paymentStmt{id: Payment} &
+  ast.namedFuncArg{callID: Payment, name: "id", exprID: PaymentIDExpr} &
+  ast.namedFuncArg{callID: Payment, name: "contractID", exprID: ContractExpr} &
+  ast.namedFuncArg{callID: Payment, name: "from", exprID: FromExpr} &
+  ast.namedFuncArg{callID: Payment, name: "to", exprID: ToExpr} &
+  ast.namedFuncArg{callID: Payment, name: "amount", exprID: AmountExpr} &
+  ast.namedFuncArg{callID: Payment, name: "time", exprID: TimeExpr} &
+  # id
+  astInternal.node{id: PaymentIDExpr, text: PaymentIDText} &
+  intToString{string: PaymentIDText, int: I} &
+  # contract id
+  astInternal.node{id: ContractExpr, text: ContractIDText} &
+  intToString{string: ContractIDText, int: CID} &
+  # from
+  ast.stringLit{id: FromStr, parentID: FromExpr} &
+  ast.stringContents{parentID: FromStr, text: From} &
+  # to
+  ast.stringLit{id: ToStr, parentID: ToExpr} &
+  ast.stringContents{parentID: ToStr, text: To} &
+  # amt
+  astInternal.node{id: AmountExpr, text: AmtText} &
+  intToString{string: AmtText, int: Amt} &
+  # time
+  astInternal.node{id: TimeExpr, text: TText} &
+  intToString{string: TText, int: T}.
+
+# ==== helpers ====
+
+ast.namedFuncArg{callID: Call, name: N, exprID: E} :-
+  ast.funcArgs{id: Args, parentID: Call} &
+  ast.funcArg{id: Arg, parentID: Args} &
+  ast.ident{parentID: Arg, text: N} &
+  ast.expr{id: E, parentID: Arg}.
+
+# ==== viz ===
+
+internal.visualization{
+  name: "Contract Trees",
+  spec: tree{
+    nodes: contract.tree.nodeAndParent{id: ID, parentID: ParentID, display: Display},
+    rootTerm: -1,
+    sortChildren: false
+  }
+}.
+
+viz.party{name: N} :-
+  contract.PaymentRecord{from: N} |
+  contract.PaymentRecord{to: N}.
+
+viz.paymentHop{
+  from: tick{time: T, place: FP},
+  to: tick{time: T, place: TP},
+} :-
+  contract.PaymentRecord{from: FP, to: TP, time: T}.
+
+internal.visualization{
+  name: "Payment Sequence",
+  spec: sequence{
+    actors: viz.party{name: ID},
+    messages: viz.paymentHop{from: FromTick, to: ToTick},
+  }
+}.
+
+# ==== compliance ====
+
+timeWindow{time: T} :-
+  range{from: 0, to: 100, val: T}.
+
+contract.compliance.ContractInComplianceInitially{contractID: I} :-
+  contract.compliance.ContractInCompliance{contractID: I, time: 0}.
+
+contract.compliance.ContractInCompliance{contractID: I, time: T} :-
+  timeWindow{time: T} &
+  contract.Contract{id: I} &
+  contract.tree.parent{child: N, parent: I} &
+  contract.compliance.node{id: N, time: T}.
+
+contract.compliance.node{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.compliance.and{id: I, time: T} |
+  contract.compliance.delay{id: I, time: T} |
+  contract.compliance.payment{id: I, time: T}.
+
+contract.compliance.and{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.node.And{id: I} &
+  childrenInCompliance{parentID: I, count: ChildrenInCompliance, time: T} &
+  numChildren{parentID: I, count: NumChildren} &
+  ChildrenInCompliance = NumChildren.
+contract.compliance.delay{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.node.Delay{id: I, duration: D} &
+  contract.tree.parent{parent: I, child: C} &
+  LaterT = T + D &
+  contract.compliance.node{id: C, time: LaterT}.
+# TODO: on or before T?
+contract.compliance.payment{id: I, time: T} :-
+  timeWindow{time: T} &
+  contract.node.Payment{id: I, from: From, to: To, amount: A} &
+  contract.member{contractID: CID, nodeID: I} &
+  contract.PaymentRecord{contractID: CID, from: From, to: To, amount: A, time: PaymentT} &
+  PaymentT <= T.
+
+childrenInCompliance{parentID: P, count: I, time: T} :-
+  count[P, T, I: childInCompliance{id: I, parentID: P, time: T}].
+childInCompliance{id: I, parentID: P, time: T} :-
+  timeWindow{time: T} &
+  contract.tree.parent{child: I, parent: P} &
+  contract.compliance.node{id: I, time: T}.
+
+numChildren{parentID: P, count: I} :-
+  count[P, I: contract.tree.parent{child: I, parent: P}].
+
+# == balance sheet ==
+
+# TODO: due date
+contract.owe{creditor: C, debtor: D, amount: A, contractID: CID} :-
+  contract.node.Payment{id: N, from: D, to: C, amount: A} &
+  !contract.PaymentRecord{from: D, to: C, amount: A, contractID: CID} &
+  contract.member{contractID: CID, nodeID: N}.
+
+# TODO: fix aggregation syntax
+contract.rawBalance{creditor: C, debtor: D, amount: A} :-
+  sum[C, D, A: contract.owe{creditor: C, debtor: D, amount: A}].
+
+contract.balance{creditor: C, debtor: D, amount: A} :-
+  contract.rawBalance{creditor: C, debtor: D, amount: A} &
+  A != 0.

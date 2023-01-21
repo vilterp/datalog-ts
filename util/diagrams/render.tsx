@@ -141,7 +141,11 @@ function render<T>(
     case "TEXT":
       return (
         <text
-          style={{ fontSize: d.fontSize, fill: "black" }}
+          style={{
+            fontSize: d.fontSize,
+            fontWeight: d.fontWeight,
+            fill: "black",
+          }}
           textAnchor="middle"
         >
           {d.text}

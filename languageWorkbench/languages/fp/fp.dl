@@ -1,6 +1,12 @@
+# === roots ===
+
+lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
+
+ast.RootExpr{id: 1}.
+
 # === scope ===
 
-scope.Defn{scopeID: I, name: N, type: T, span: S} :-
+scope.Defn{scopeID: I, name: N, type: T, span: S, kind: "val"} :-
   scope.builtin{id: I, name: N, type: T, span: S} |
   scope.let{id: I, name: N, type: T, span: S} |
   scope.lambda{id: I, name: N, type: T, span: S}.
@@ -20,7 +26,7 @@ scope.lambda{id: I, name: N, type: T, span: S} :-
   ast.ident{parentID: Param, text: N, span: S} &
   ast.lambdaBody{lambdaID: Lambda, bodyID: I}.
 
-scope.Var{scopeID: I, name: N, span: S} :-
+scope.Var{scopeID: I, name: N, span: S, kind: "val"} :-
   ast.expr{id: I} &
   ast.varExpr{parentID: I, text: N, span: S} |
   ast.expr{id: I} &
@@ -30,7 +36,7 @@ scope.Var{scopeID: I, name: N, span: S} :-
 scope.Scope{id: I, label: I} :-
   ast.expr{id: I}.
 
-scope.Placeholder{scopeID: I, span: S} :-
+scope.Placeholder{scopeID: I, span: S, kind: "val"} :-
   ast.expr{id: I} &
   ast.placeholder{parentID: I, span: S}.
 
@@ -136,12 +142,6 @@ tc.undefinedVar{desc: undefinedVar{name: N}, span: S} :-
   ast.expr{id: I} &
   ast.varExpr{id: Var, parentID: I, span: S, text: N} &
   !scope.Item{scopeID: I, name: N}.
-
-# === roots ===
-
-lang.Builtin{name: "plus2", type: tapp{from: "int", to: "int"}}.
-
-ast.RootExpr{id: 1}.
 
 # === highlight ===
 

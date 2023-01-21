@@ -1,26 +1,32 @@
 import { NodeAndCache, NodeDesc } from "./types";
-import { ppt, ppVM } from "../pretty";
-import { mapObjToList } from "../../util/util";
+import { ppt } from "../pretty";
+import { Set } from "immutable";
+import { VarToPath } from "../types";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
     case "Join":
-      return `Join(${nodeDesc.joinVars.join(", ")})`;
+      return `Join(${nodeDesc.joinVars.toArray().sort().join(", ")})`;
     case "Match":
-      return `Match(${ppt(nodeDesc.rec)}; ${ppVM(nodeDesc.mappings, [], {
-        showScopePath: false,
-      })})`;
+      return `Match(${ppt(nodeDesc.rec)})`;
     case "Substitute":
-      return `Subst({${mapObjToList(
-        nodeDesc.rec.attrs,
-        (key, val) => `${key}: ${ppt(val)}`
-      ).join(", ")}})`;
+      return `Subst(${ppt(nodeDesc.rec)})`;
     case "Builtin":
       return `Builtin(${ppt(nodeDesc.rec)})`;
     case "Union":
       return "Union";
     case "BaseFactTable":
       return "";
+    case "Negation":
+      return `Negate()`;
+    case "Aggregation":
+      return `Agg(${
+        nodeDesc.aggregation.aggregation
+      }[${nodeDesc.aggregation.varNames.join(", ")}: ${ppt(
+        nodeDesc.aggregation.record
+      )}])`;
+    case "Distinct":
+      return "Distinct";
   }
 }
 

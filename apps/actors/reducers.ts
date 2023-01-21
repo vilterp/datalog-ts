@@ -12,17 +12,29 @@ import {
 } from "./types";
 import { Json } from "../../util/json";
 import { insertUserInput, spawnInitiator, step } from "./step";
+// @ts-ignore
+import patternsDL from "./patterns.dl";
+import { makeMemoryLoader } from "../../core/loaders";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
 ): State<St, Msg> {
   return {
-    systemInstances: systems.map((system) => ({
-      system,
-      trace: system.initialState,
-      clientIDs: [],
-      nextClientID: 0,
-    })),
+    systemInstances: systems.map((system) => {
+      const interp = new IncrementalInterpreter(
+        ".",
+        makeMemoryLoader({
+          "./patterns.dl": patternsDL,
+        })
+      );
+      return {
+        system,
+        trace: system.getInitialState(interp),
+        clientIDs: [],
+        nextClientID: 0,
+      };
+    }),
   };
 }
 
@@ -95,15 +107,16 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
       return [
         {
           ...systemInstance,
-          clientIDs: [...systemInstance.clientIDs, systemInstance.nextClientID],
+          clientIDs: [
+            ...systemInstance.clientIDs,
+            systemInstance.nextClientID.toString(),
+          ],
           nextClientID: systemInstance.nextClientID + 1,
         },
         [],
       ];
   }
 }
-
-const NETWORK_LATENCY = 500;
 
 // TODO: returns traces that still need to be stepped...
 function traceReducer<St extends Json, Msg extends Json>(
@@ -115,7 +128,6 @@ function traceReducer<St extends Json, Msg extends Json>(
     case "SendUserInput": {
       const { newTrace: trace2, newMessageID } = insertUserInput(
         trace,
-        update,
         action.clientID,
         action.input
       );
@@ -127,7 +139,8 @@ function traceReducer<St extends Json, Msg extends Json>(
           messageID: newMessageID.toString(),
         },
       });
-      return [trace3, dispatchInits(newInits)];
+      // console.log("traceReducer", "dispatchInits", newInits);
+      return [trace3, promisesWithLatency(newInits)];
     }
     case "SpawnClient": {
       const { newTrace: trace2, newInits: newInits1 } = step(
@@ -140,21 +153,25 @@ function traceReducer<St extends Json, Msg extends Json>(
         update,
         spawnInitiator(`client${action.id}`, action.initialClientState)
       );
-      return [trace3, dispatchInits([...newInits1, ...newInits2])];
+      return [trace3, promisesWithLatency([...newInits1, ...newInits2])];
     }
     case "Step": {
       const { newTrace, newInits } = step(trace, update, action.init);
-      return [newTrace, dispatchInits(newInits)];
+      return [newTrace, promisesWithLatency(newInits)];
     }
   }
 }
 
-function dispatchInits<St, Msg>(
+const NETWORK_LATENCY = 1000;
+
+function promisesWithLatency<St, Msg>(
   inits: AddressedTickInitiator<St>[]
 ): Promise<TraceAction<St, Msg>>[] {
-  return inits.map((init) =>
-    sleep(latency(init)).then(() => ({ type: "Step", init }))
-  );
+  return inits.map((init) => {
+    const hopLatency = latency(init);
+    // console.log("latency for", init, ":", hopLatency);
+    return sleep(hopLatency).then(() => ({ type: "Step", init }));
+  });
 }
 
 // TODO: base on actor types, not substrings

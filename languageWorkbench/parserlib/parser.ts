@@ -1,5 +1,14 @@
-import { Grammar, Rule, Span, SingleCharRule, spanLength, char } from "./types";
+import {
+  Grammar,
+  Rule,
+  Span,
+  SingleCharRule,
+  spanLength,
+  char,
+  CharRule,
+} from "./types";
 import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
+import { reduceEarlyReturn } from "../../util/util";
 
 export type TraceTree = {
   span: Span;
@@ -9,7 +18,11 @@ export type TraceTree = {
 // TODO:
 // Either<{span: Span} & TraceInner, ParseError>
 
-type ParseError = { offset: number; expected: string[]; got: string };
+type ParseError = {
+  offset: number;
+  expected: Rule | "end of file";
+  got: string;
+};
 
 type TraceInner =
   | { type: "SeqTrace"; itemTraces: TraceTree[] }
@@ -58,7 +71,7 @@ function doParse(
   if (startIdx > input.length) {
     return {
       type: "TextTrace", // this is messed up... what to return here?
-      error: { offset: startIdx, expected: ["something"], got: "EOF" },
+      error: { offset: startIdx, expected: rule, got: "EOF" },
       span: { from: startIdx, to: startIdx },
     };
   }
@@ -78,7 +91,7 @@ function doParse(
         type: "TextTrace",
         // rule,
         span: { from: startIdx, to: startIdx },
-        error: { offset: startIdx, expected: [rule.value], got: next },
+        error: { offset: startIdx, expected: rule, got: next },
       };
     case "Ref":
       const innerRule = grammar[rule.rule];
@@ -103,7 +116,7 @@ function doParse(
           type: "ChoiceTrace",
           error: {
             offset: startIdx,
-            expected: [prettyPrintRule(rule)],
+            expected: rule,
             got: input.slice(startIdx, startIdx + 5), // lol
           },
           // TODO: these should only be set on success
@@ -132,12 +145,9 @@ function doParse(
         span: longest.trace.span,
       };
     case "Sequence":
-      const accum = rule.items.reduce<SequenceSt>(
+      const accum = reduceEarlyReturn<Rule, SequenceSt>(
+        rule.items,
         (accum, rule) => {
-          // TODO: early return variant of reduce
-          if (accum.error) {
-            return accum;
-          }
           const itemTrace = doParse(grammar, rule, accum.pos, input);
           return {
             itemTraces: [...accum.itemTraces, itemTrace],
@@ -145,6 +155,7 @@ function doParse(
             error: itemTrace.error,
           };
         },
+        (accum) => accum.error !== null,
         { itemTraces: [], pos: startIdx, error: null }
       );
       return {
@@ -167,7 +178,7 @@ function doParse(
         span: { from: startIdx, to: startIdx },
         error: {
           offset: startIdx,
-          expected: [prettyPrintCharRule(rule.rule)],
+          expected: rule,
           got: input[startIdx],
         },
       };
@@ -228,9 +239,11 @@ function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
 }
 
 export function formatParseError(error: ParseError): string {
-  return `offset ${error.offset}: expected ${error.expected.join(" | ")}; got ${
-    error.got
-  }`;
+  return `offset ${error.offset}: expected ${
+    typeof error.expected === "string"
+      ? error.expected
+      : prettyPrintRule(error.expected)
+  }; got ${error.got}`;
 }
 
 function forEachTraceTreeNode(tree: TraceTree, fn: (node: TraceTree) => void) {
@@ -272,7 +285,7 @@ export function getErrors(input: string, tree: TraceTree): ParseError[] {
     out.push({
       offset: tree.span.to,
       // TODO: make this into a different type of parse error
-      expected: ["end of file"],
+      expected: "end of file",
       got: input.slice(tree.span.to),
     });
   }

@@ -1,17 +1,14 @@
-import { Map, List } from "immutable";
+import { Map } from "immutable";
 import { Rec, Res, rec, str, Rule, UserError, Statement } from "../types";
-import { evaluate, hasVars } from "./simpleEvaluate";
+import { evaluate } from "./simpleEvaluate";
 import { Loader } from "../loaders";
 import { mapObjToList, flatMapObjToList, flatMap } from "../../util/util";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import {
   emptyLazyIndexedCollection,
-  LazyIndexedCollection,
   lazyIndexedCollectionFromList,
 } from "./lazyIndexedCollection";
 import { DB, emptyDB } from "./types";
-import { DLStatement } from "../../languageWorkbench/languages/dl/parser";
-import { parserRuleToInternal, parserTermToInternal } from "../translateAST";
 
 export class SimpleInterpreter extends AbstractInterpreter {
   db: DB;

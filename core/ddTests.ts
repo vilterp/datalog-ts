@@ -1,4 +1,4 @@
-import { Suite } from "../util/testBench/testing";
+import { assert, Suite } from "../util/testBench/testing";
 import { runDDTestAtPath, TestOutput } from "../util/ddTest";
 import { SimpleInterpreter } from "./simple/interpreter";
 import { ppt } from "./pretty";
@@ -8,8 +8,17 @@ import { AbstractInterpreter } from "./abstractInterpreter";
 import { IncrementalInterpreter } from "./incremental/interpreter";
 import { traceToGraph } from "./traceGraph";
 import { prettyPrintGraph } from "../util/graphviz";
-import { parseMain } from "../languageWorkbench/languages/dl/parser";
-import { parserStatementToInternal } from "./translateAST";
+import { parseMain, parseRule } from "../languageWorkbench/languages/dl/parser";
+import {
+  parserRuleToInternal,
+  parserStatementToInternal,
+} from "./translateAST";
+import {
+  getConjunctGraph,
+  getJoinOrder,
+  getRecord,
+  joinGraphToGraphviz,
+} from "./joinOrder";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -58,7 +67,8 @@ export function coreTestsIncremental(writeResults: boolean): Suite {
 
 function coreTests(
   writeResults: boolean,
-  getInterp: () => AbstractInterpreter
+  getInterp: () => AbstractInterpreter,
+  exclude: Set<string> = null
 ): Suite {
   return [
     "simple",
@@ -68,16 +78,19 @@ function coreTests(
     "negation",
     "aggregation",
     "paths",
-  ].map((name) => ({
-    name,
-    test() {
-      runDDTestAtPath(
-        `core/testdata/${name}.dd.txt`,
-        (test: string[]) => putThroughInterp(test, getInterp),
-        writeResults
-      );
-    },
-  }));
+    "timeStep",
+  ]
+    .filter((suite) => (exclude !== null ? !exclude.has(suite) : true))
+    .map((name) => ({
+      name,
+      test() {
+        runDDTestAtPath(
+          `core/testdata/${name}.dd.txt`,
+          (test: string[]) => putThroughInterp(test, getInterp),
+          writeResults
+        );
+      },
+    }));
 }
 
 export function coreTestsCommon(writeResults: boolean): Suite {
@@ -95,6 +108,21 @@ export function coreTestsCommon(writeResults: boolean): Suite {
   ];
 }
 
+export function joinOrderTests(writeResults: boolean) {
+  return [
+    {
+      name: "joinOrder",
+      test() {
+        runDDTestAtPath(
+          "core/testdata/joinOrder.dd.txt",
+          joinOrderTest,
+          writeResults
+        );
+      },
+    },
+  ];
+}
+
 export function putThroughInterp(
   test: string[],
   getInterp: () => AbstractInterpreter
@@ -102,8 +130,8 @@ export function putThroughInterp(
   let interp = getInterp();
 
   const results: TestOutput[] = [];
-
   for (const input of test) {
+    // console.log("======");
     try {
       const [stmtResult, newInterp] = interp.evalStr(input + "\n");
       interp = newInterp;
@@ -134,5 +162,31 @@ function traceGraphTest(test: string[]): TestOutput[] {
         })
         .join("\n")
     );
+  });
+}
+
+function joinOrderTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const lines = input.split("\n");
+    const first = lines[0];
+    const rest = lines.slice(1).join("\n");
+    const rawRule = parseRule(rest);
+    const rule = parserRuleToInternal(rawRule);
+    assert(rule.body.disjuncts.length === 1, "disjuncts length 1");
+    const conjuncts = rule.body.disjuncts[0].conjuncts;
+    switch (first) {
+      case "graph": {
+        const [graph, entries, edgeLabel] = getConjunctGraph(conjuncts);
+        const graphvizGraph = joinGraphToGraphviz(graph, entries, edgeLabel);
+        return graphvizOut(prettyPrintGraph(graphvizGraph));
+      }
+      case "order": {
+        return jsonOut(
+          getJoinOrder(conjuncts).map(
+            (conjunct) => getRecord(conjunct).relation
+          )
+        );
+      }
+    }
   });
 }

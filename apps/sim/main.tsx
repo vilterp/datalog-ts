@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import ReactDOM from "react-dom";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { nullLoader } from "../../core/loaders";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { Statement } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
 // @ts-ignore
 import simDL from "./dl/sim.dl";
 
-const emptyInterp = new SimpleInterpreter(".", nullLoader);
+const emptyInterp = new IncrementalInterpreter(".", nullLoader);
 const loadedInterp = emptyInterp.evalStr(simDL)[1];
 
 function Main() {
-  const [interp, setInterp] = useState(loadedInterp);
+  const [interp, dispatch] = useReducer(
+    (state: IncrementalInterpreter, action: Statement[]) =>
+      state.evalRawStmts(action)[1],
+    loadedInterp
+  );
 
   return (
     <>
@@ -18,7 +23,7 @@ function Main() {
       <Explorer
         interp={interp}
         runStatements={(stmts) => {
-          setInterp(interp.evalRawStmts(stmts)[1]);
+          dispatch(stmts);
         }}
         showViz
       />

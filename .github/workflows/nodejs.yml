@@ -33,24 +33,6 @@ jobs:
       - run: yarn run build-fp-ui
       - run: yarn run build-vscode-extension
       - run: yarn run package-vscode-extension
-      # TODO: re-enable
-      # build dist (does typecheck)
-      # - run: yarn run build-dist
-      # Percy UI tests
-      # TODO: re-enable
-      # - name: "Percy FP UI"
-      #   uses: percy/snapshot-action@v0.1.1
-      #   with:
-      #     build-directory: fp/fiddle
-      #   env:
-      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_FP }}
-      # - name: "Percy: Generic Fiddle"
-      #   uses: percy/snapshot-action@v0.1.1
-      #   with:
-      #     build-directory: fiddle
-      #   env:
-      #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN_GENERIC_FIDDLE }}
-      # benchmarks
   benchmark:
     runs-on: ubuntu-latest
     strategy:
@@ -74,3 +56,20 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_ACCESS_KEY_SECRET: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
           PROFILES_S3_BUCKET_NAME: datalog-ts-profiles
+  build-vscode-extension:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14]
+    steps:
+      # setup
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn global add ts-node --prefix=.
+      # install deps
+      - run: yarn
+      - run: yarn build-vscode-extension
+      - run: yarn package-vscode-extension

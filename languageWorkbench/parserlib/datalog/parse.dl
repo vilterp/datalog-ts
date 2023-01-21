@@ -1,3 +1,283 @@
-.table internal.visualization
 .table input.char
 .table input.next
+
+.table grammar.rule
+.table grammar.stateNode
+.table grammar.refEdge
+.table grammar.charLiteralEdge
+.table grammar.charRangeEdge
+.table grammar.jumpEdge
+
+# === interpreter ===
+
+parse.Complete{} :-
+  parse.State{char: C} &
+  input.next{from: C, to: -2}.
+
+parse.State{state: S, char: C} :-
+  parse.stateStep{to: st{state: S, char: C}}.
+
+# state path
+
+# TODO: use individual steps instead of this
+parse.statePathWithinRule{from: From, to: To} :-
+  parse.sameState{from: From, to: To} |
+  parse.stateStepWithinRule{from: From, to: To} |
+  parse.stateStepWithinRule{from: From, to: Between} &
+  parse.statePathWithinRule{from: Between, to: To}.
+
+parse.sameState{from: st{state: S, char: C}, to: st{state: S, char: C}} :-
+  parse.State{state: S, char: C}.
+
+# state step
+
+parse.stateStepWithinRule{from: From, to: To} :-
+  parse.nonCallStep{from: From, to: To, type: T} |
+  parse.refStep{from: From, to: To, type: T}.
+
+parse.stateStep{from: From, to: To, type: T} :-
+  parse.nonCallStep{from: From, to: To, type: T} |
+  parse.callRule{from: From, to: To, type: T} |
+  parse.returnFromRule{from: From, to: To, type: T}.
+
+parse.initialStateStep{
+  from: st{state: -1, char: -1},
+  to: st{state: S, char: C},
+  type: "initial",
+} :-
+  grammar.rule{name: "main", from: S} &
+  input.next{from: -1, to: C}.
+
+parse.matchCharLiteral{
+  from: st{state: FromS, char: FromC},
+  to: st{state: ToS, char: ToC},
+  type: "matchCharLiteral",
+} :-
+  parse.State{state: FromS, char: FromC} &
+  grammar.charLiteralEdge{from: FromS, to: ToS, val: V} &
+  input.char{id: FromC, char: V} &
+  input.next{from: FromC, to: ToC}.
+
+parse.matchCharRange{
+  from: st{state: FromS, char: FromC},
+  to: st{state: ToS, char: ToC},
+  type: "matchCharRange",
+} :-
+  parse.State{state: FromS, char: FromC} &
+  grammar.charRangeEdge{from: FromS, to: ToS, rangeStart: RS, rangeEnd: RE} &
+  input.char{id: FromC, char: V} &
+  input.next{from: FromC, to: ToC} &
+  RS <= V &
+  V <= RE.
+
+parse.callRule{
+  from: st{state: FromS, char: FromC},
+  to: st{state: ToS, char: ToC},
+  rule: Rule,
+  retState: RetS,
+  type: "callRule",
+} :-
+  parse.State{state: FromS, char: FromC} &
+  grammar.refEdge{from: FromS, to: RetS, ref: Rule} &
+  grammar.rule{name: Rule, from: ToS} &
+  ToC = FromC.
+
+parse.returnFromRule{
+  from: st{state: RuleEndState, char: EndChar},
+  to: st{state: ToS, char: EndChar},
+  rule: Rule,
+  type: "returnFromRule",
+} :-
+  parse.callRule{
+    to: st{state: RuleBeginState, char: RuleBeginChar},
+    retState: ToS,
+    rule: Rule,
+  } &
+  grammar.rule{name: Rule, from: RuleBeginState, to: RuleEndState} &
+  parse.statePathWithinRule{
+    from: st{state: RuleBeginState, char: RuleBeginChar},
+    to: st{state: RuleEndState, char: EndChar},
+  }.
+
+# TODO: DRY up with ruleMatchParent
+parse.refStep{
+  from: st{state: FromS, char: FromC},
+  to: st{state: ToS, char: ToC},
+  rule: Rule,
+  type: "ref",
+} :-
+  parse.callRule{
+    from: st{state: FromS, char: FromC},
+    to: st{state: RuleStartSt, char: FromC},
+    rule: Rule,
+  } &
+  parse.statePathWithinRule{
+    from: st{state: RuleStartSt, char: FromC},
+    to: st{state: RuleEndSt, char: ToC},
+  } &
+  parse.returnFromRule{
+    from: st{state: RuleEndSt, char: ToC},
+    to: st{state: ToS, char: ToC}
+  } &
+  grammar.refEdge{from: FromS, to: ToS}.
+
+parse.jump{
+  from: st{state: FromS, char: C},
+  to: st{state: ToS, char: C},
+  type: "jump",
+} :-
+  parse.State{state: FromS, char: C} &
+  grammar.jumpEdge{from: FromS, to: ToS}.
+
+# building rule tree
+
+parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
+  grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
+  parse.State{state: SRuleStart, char: CStart} &
+  parse.State{state: SRuleEnd, char: CEnd} &
+  parse.statePathWithinRule{
+    from: st{state: SRuleStart, char: CStart},
+    to: st{state: SRuleEnd, char: CEnd},
+  }.
+
+parse.nonCallStep{from: From, to: To, type: T} :-
+  parse.initialStateStep{from: From, to: To, type: T} |
+  parse.matchCharLiteral{from: From, to: To, type: T} |
+  parse.matchCharRange{from: From, to: To, type: T} |
+  parse.jump{from: From, to: To, type: T}.
+
+parse.ruleMatchParent{
+  child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
+  parent: match{rule: ParentRule, span: span{from: ParentStartCh, to: ParentEndCh}},
+} :-
+  grammar.rule{name: ParentRule, from: ParentStartSt, to: ParentEndSt} &
+  parse.State{state: ParentStartSt, char: ParentStartCh} &
+  parse.statePathWithinRule{
+    from: st{state: ParentStartSt, char: ParentStartCh},
+    to: st{state: CallingSt, char: ChildStartCh},
+  } &
+  parse.refStep{
+    from: st{state: CallingSt, char: ChildStartCh},
+    to: st{state: ReturnedSt, char: ChildEndCh},
+    rule: ChildRule,
+  } &
+  parse.statePathWithinRule{
+    from: st{state: ReturnedSt, char: ChildEndCh},
+    to: st{state: ParentEndSt, char: ParentEndCh},
+  }.
+
+# === Deriving facts about the grammar ===
+
+grammar.ruleRef{from: FromRule, to: ToRule} :-
+  grammar.rule{name: FromRule, from: StartSt} &
+  grammar.stateReachable{from: StartSt, to: RefSt} &
+  grammar.refEdge{from: RefSt, ref: ToRule}.
+
+grammar.stateReachable{from: StateFrom, to: StateTo} :-
+  grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} |
+  grammar.stateDirectlyReachable{from: StateFrom, to: StateBetween} &
+  grammar.stateReachable{from: StateBetween, to: StateTo}.
+
+grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
+  grammar.charLiteralEdge{from: StateFrom, to: StateTo} |
+  grammar.refEdge{from: StateFrom, to: StateTo} |
+  grammar.stateNode{id: StateFrom} &
+  StateTo = StateFrom.
+
+# ==== Viz ====
+
+# == AST Node ==
+
+viz.astNode{
+  id: match{rule: R, span: span{from: F, to: T}},
+  parentID: P,
+  display: [R, [F, T]],
+} :-
+  viz.astNodeInternal{
+    id: match{rule: R, span: span{from: F, to: T}},
+    parentID: P,
+  }.
+
+viz.astNodeInternal{id: I, parentID: P} :-
+  viz.normalNode{id: I, parentID: P} |
+  viz.mainNode{id: I, parentID: P}.
+
+viz.normalNode{id: match{rule: Rule, span: Span}, parentID: P} :-
+  parse.ruleMatch{rule: Rule, span: Span} &
+  parse.ruleMatchParent{child: match{rule: Rule, span: Span}, parent: P}.
+viz.mainNode{id: match{rule: "main", span: Span}, parentID: -1} :-
+  parse.ruleMatch{rule: "main", span: Span}.
+
+internal.visualization{
+  name: "AST",
+  spec: tree{
+    nodes: viz.astNode{id: ID, parentID: ParentID, display: Display},
+    rootTerm: -1,
+    sortChildren: false
+  }
+}.
+
+# == Rule Graph ==
+
+viz.edge{from: From, to: To, label: Label} :-
+  viz.charLiteralEdge{from: From, to: To, label: Label} |
+  viz.refEdge{from: From, to: To, label: Label} |
+  viz.jumpEdge{from: From, to: To, label: Label} |
+  viz.charRangeEdge{from: From, to: To, label: Label} |
+  viz.ruleEdge{from: From, to: To, label: Label}.
+
+viz.charLiteralEdge{from: From, to: To, label: Val} :-
+  grammar.charLiteralEdge{from: From, to: To, val: Val}.
+viz.refEdge{from: From, to: To, label: ref{r: Ref}} :-
+  grammar.refEdge{from: From, to: To, ref: Ref}.
+viz.jumpEdge{from: From, to: To, label: jump{}} :-
+  grammar.jumpEdge{from: From, to: To}.
+viz.charRangeEdge{from: From, to: To, label: [Start, End]} :-
+  grammar.charRangeEdge{from: From, to: To, rangeStart: Start, rangeEnd: End}.
+viz.ruleEdge{from: From, to: To, label: Name} :-
+  grammar.rule{from: From, to: To, name: Name}.
+
+internal.visualization{
+  name: "State Machine",
+  spec: graphviz{
+    nodes: grammar.stateNode{id: ID},
+    edges: viz.edge{from: From, to: To, label: Label}
+  }
+}.
+
+# == Match Graph ==
+
+internal.visualization{
+  name: "Match Graph",
+  spec: graphviz{
+    nodes: viz.astNode{id: ID, display: Label},
+    edges: viz.astNode{id: From, parentID: To},
+  }
+}.
+
+# == State Graph ==
+
+viz.stateNode{st: st{state: S, char: C}} :-
+  parse.State{state: S, char: C}.
+
+viz.stateGraphEdge{from: From, to: To, type: Type} :-
+  parse.stateStep{from: From, to: To, type: Type} |
+  parse.refStep{from: From, to: To, rule: Type}.
+
+internal.visualization{
+  name: "State Graph",
+  spec: graphviz{
+    nodes: viz.stateNode{st: ID},
+    edges: viz.stateGraphEdge{from: From, to: To, type: Label},
+  }
+}.
+
+# == Input Graph ==
+
+internal.visualization{
+  name: "Input Graph",
+  spec: graphviz{
+    nodes: input.char{id: ID, char: Label},
+    edges: input.next{from: From, to: To},
+  }
+}.

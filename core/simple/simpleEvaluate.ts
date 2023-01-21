@@ -13,6 +13,7 @@ import {
   relationalFalse,
   rec,
   baseFactTrace,
+  int,
 } from "../types";
 import {
   applyMappings,
@@ -21,12 +22,18 @@ import {
   unify,
   unifyBindings,
 } from "../unify";
-import { filterMap, flatMap, groupBy, mapObjToList } from "../../util/util";
+import {
+  filterMap,
+  flatMap,
+  groupBy,
+  groupByPreserveKey,
+  mapObjToList,
+} from "../../util/util";
 import { fastPPB, fastPPT } from "../fastPPT";
 import { perfMark, perfMeasure } from "../../util/perf";
 import { BUILTINS } from "../builtins";
 import { DB } from "./types";
-import { AGGREGATIONS } from "../aggregations";
+import { AGGREGATIONS, GroupInfo } from "../aggregations";
 import { getForScope } from "./indexes";
 import { evalBuiltin } from "../evalBuiltin";
 
@@ -268,26 +275,35 @@ function doEvaluate(
           term.record,
           cache
         );
-        const groupKey = term.varNames.slice(0, term.varNames.length - 1);
+        const groupVars = term.varNames.slice(0, term.varNames.length - 1);
         const aggVar = term.varNames[term.varNames.length - 1];
-        const groups = groupBy(results, (res) =>
-          groupKey.map((varName) => fastPPT(res.bindings[varName])).join(",")
+        const groups = groupByPreserveKey(
+          results,
+          (res) => groupVars.map((varName) => res.bindings[varName]),
+          (terms) => terms.map(fastPPT).join(",")
         );
-        const aggregatedGroups = mapObjToList(groups, (key, results): Res => {
-          const terms = results.map((res) => res.bindings[aggVar]);
-          const aggResult = AGGREGATIONS[term.aggregation](terms);
-          const otherBindings = results.length > 0 ? results[0].bindings : {};
-          const bindings = {
-            ...otherBindings,
-            [aggVar]: aggResult,
-          };
-          const substituted = substitute(term.record, bindings);
-          return {
-            term: substituted,
-            bindings,
-            trace: { type: "AggregationTrace", aggregatedResults: results },
-          };
-        });
+        const aggregatedGroups = mapObjToList(
+          groups,
+          (keyStr, { key, items }): Res => {
+            const groupBindings: Bindings = {};
+            groupVars.forEach((groupVar, i) => {
+              groupBindings[groupVar] = key[i];
+            });
+            const termBindings = items.map((res) => res.bindings);
+            const aggBindings = doAggregation(
+              groupBindings,
+              aggVar,
+              termBindings,
+              term.aggregation
+            );
+            const substituted = substitute(term.record, aggBindings);
+            return {
+              term: substituted,
+              bindings: aggBindings,
+              trace: { type: "AggregationTrace", aggregatedResults: results },
+            };
+          }
+        );
         return aggregatedGroups;
       }
       default:
@@ -299,17 +315,29 @@ function doEvaluate(
   return bigRes;
 }
 
-export function hasVars(t: Term): boolean {
-  switch (t.type) {
-    case "StringLit":
-      return false;
-    case "Var":
-      return true;
-    case "Record":
-      return Object.keys(t.attrs).some((k) => hasVars(t.attrs[k]));
-    case "Bool":
-      return false;
+function doAggregation(
+  groupBindings: Bindings,
+  aggVar: string,
+  termsInGroup: Bindings[],
+  aggName: string
+): Bindings {
+  // TODO: maybe a fast path, e.g. for count?
+  const agg = AGGREGATIONS[aggName];
+  let state = agg.init;
+  const groupInfo: GroupInfo = {
+    aggVar,
+    groupBindings,
+  };
+  for (const termBindings of termsInGroup) {
+    state = agg.step(
+      state,
+      groupInfo,
+      // TODO: remove allocation
+      termBindings,
+      1
+    );
   }
+  return agg.final(state, groupInfo);
 }
 
 type Cache = { [key: string]: Res[] };

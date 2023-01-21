@@ -1,0 +1,63 @@
+.table current
+----
+application/datalog
+
+total{level: C} :-
+  sum[C: current{id: I, level: C}].
+----
+application/datalog
+
+total{level: C}?
+----
+application/datalog
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "current" [fillcolor="darksalmon" fontname="Courier" label="current:  []" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(current{id: I, level: C}) []" shape="box" style="filled"];
+  "1" [fillcolor="" fontname="Courier" label="1: Agg(sum[C: current{id: I, level: C}]) []" shape="box" style="filled"];
+  "2" [fillcolor="" fontname="Courier" label="2: Distinct []" shape="box" style="filled"];
+  "total" [fillcolor="lightblue" fontname="Courier" label="total: Subst(total{level: C}) []" shape="box" style="filled"];
+  "current" -> "0" [];
+  "0" -> "1" [];
+  "1" -> "2" [];
+  "2" -> "total" [];
+}
+
+current{id: 1, level: 5}.
+----
+incremental-datalog/trace
+current: [current{id: 1, level: 5}+1]
+0: [{C: 5, I: 1}+1]
+1: [{C: 5}+1]
+2: [{C: 5}+1]
+total: [total{level: 5}+1]
+
+current{id: 2, level: 10}.
+----
+incremental-datalog/trace
+current: [current{id: 2, level: 10}+1]
+0: [{C: 10, I: 2}+1]
+1: [{C: 5}-1, {C: 15}+1]
+2: [{C: 5}-1]
+2: [{C: 15}+1]
+total: [total{level: 5}-1]
+total: [total{level: 15}+1]
+
+current{id: 2, level: 13}.
+----
+incremental-datalog/trace
+current: [current{id: 2, level: 13}+1]
+0: [{C: 13, I: 2}+1]
+1: [{C: 15}-1, {C: 28}+1]
+2: [{C: 15}-1]
+2: [{C: 28}+1]
+total: [total{level: 15}-1]
+total: [total{level: 28}+1]
+
+total{level: C}?
+----
+application/datalog
+total{level: 28}.

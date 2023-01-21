@@ -79,6 +79,7 @@ interface Text extends TextProps {
 interface TextProps {
   text: string;
   fontSize: number;
+  fontWeight?: "bold" | "normal";
 }
 
 export function Text<T>(p: TextProps): Diag<T> {

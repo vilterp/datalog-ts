@@ -1,0 +1,574 @@
+.table input.char
+----
+application/datalog
+
+.table input.next
+----
+application/datalog
+
+.table grammar.rule
+----
+application/datalog
+
+.table grammar.stateNode
+----
+application/datalog
+
+.table grammar.refEdge
+----
+application/datalog
+
+.table grammar.charLiteralEdge
+----
+application/datalog
+
+parse.Complete{} :-
+  parse.State{char: C} &
+  input.next{from: C, to: -2}.
+----
+application/datalog
+
+parse.initialState{state: S, char: C} :-
+  grammar.rule{name: "main", from: S} &
+  input.next{from: -1, to: C}.
+----
+application/datalog
+
+parse.State{state: S, char: C} :-
+  # initial
+  parse.initialState{state: S, char: C}
+  | # match char
+  parse.State{state: S1, char: C1} &
+  grammar.charLiteralEdge{from: S1, to: S, val: V} &
+  input.char{id: C1, val: V} &
+  input.next{from: C1, to: C}
+  | # call rule
+  parse.State{state: SBeforeRef, char: C} &
+  grammar.refEdge{from: SBeforeRef, ref: Rule} &
+  grammar.rule{name: Rule, from: S}
+  | # return from rule
+  parse.State{state: SBeforeRef, char: CStart} &
+  grammar.refEdge{from: SBeforeRef, to: S, ref: Rule} &
+  grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
+  parse.State{state: SRuleEnd, char: C}.
+----
+application/datalog
+
+parse.State{}?
+----
+application/datalog
+
+.ruleGraph
+----
+application/graphviz
+digraph G {
+  "grammar.rule" [fillcolor="darksalmon" fontname="Courier" label="grammar.rule:  []" shape="box" style="filled"];
+  "grammar.refEdge" [fillcolor="darksalmon" fontname="Courier" label="grammar.refEdge:  []" shape="box" style="filled"];
+  "grammar.stateNode" [fillcolor="darksalmon" fontname="Courier" label="grammar.stateNode:  []" shape="box" style="filled"];
+  "grammar.charLiteralEdge" [fillcolor="darksalmon" fontname="Courier" label="grammar.charLiteralEdge:  []" shape="box" style="filled"];
+  "input.next" [fillcolor="darksalmon" fontname="Courier" label="input.next:  []" shape="box" style="filled"];
+  "input.char" [fillcolor="darksalmon" fontname="Courier" label="input.char:  []" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(grammar.rule{from: S, name: \"main\"}) []" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(input.next{from: -1, to: C}) []" shape="box" style="filled"];
+  "2" [fillcolor="thistle" fontname="Courier" label="2: Join() []" shape="box" style="filled"];
+  "3" [fillcolor="" fontname="Courier" label="3: Distinct []" shape="box" style="filled"];
+  "parse.initialState" [fillcolor="lightblue" fontname="Courier" label="parse.initialState: Subst(parse.initialState{char: C, state: S}) []" shape="box" style="filled"];
+  "4" [fillcolor="darkseagreen2" fontname="Courier" label="4: Match(parse.State{char: C}) [C]" shape="box" style="filled"];
+  "5" [fillcolor="darkseagreen2" fontname="Courier" label="5: Match(input.next{from: C, to: -2}) [C]" shape="box" style="filled"];
+  "6" [fillcolor="thistle" fontname="Courier" label="6: Join(C) []" shape="box" style="filled"];
+  "7" [fillcolor="" fontname="Courier" label="7: Distinct []" shape="box" style="filled"];
+  "parse.Complete" [fillcolor="lightblue" fontname="Courier" label="parse.Complete: Subst(parse.Complete{}) []" shape="box" style="filled"];
+  "8" [fillcolor="moccasin" fontname="Courier" label="8: Union []" shape="box" style="filled"];
+  "9" [fillcolor="darkseagreen2" fontname="Courier" label="9: Match(parse.initialState{char: C, state: S}) []" shape="box" style="filled"];
+  "10" [fillcolor="darkseagreen2" fontname="Courier" label="10: Match(parse.State{char: C1, state: S1}) [S1]" shape="box" style="filled"];
+  "11" [fillcolor="darkseagreen2" fontname="Courier" label="11: Match(grammar.charLiteralEdge{from: S1, to: S, val: V}) [S1]" shape="box" style="filled"];
+  "12" [fillcolor="thistle" fontname="Courier" label="12: Join(S1) [C1-V]" shape="box" style="filled"];
+  "13" [fillcolor="darkseagreen2" fontname="Courier" label="13: Match(input.char{id: C1, val: V}) [C1-V]" shape="box" style="filled"];
+  "14" [fillcolor="thistle" fontname="Courier" label="14: Join(C1, V) [C1]" shape="box" style="filled"];
+  "15" [fillcolor="darkseagreen2" fontname="Courier" label="15: Match(input.next{from: C1, to: C}) [C1]" shape="box" style="filled"];
+  "16" [fillcolor="thistle" fontname="Courier" label="16: Join(C1) []" shape="box" style="filled"];
+  "17" [fillcolor="darkseagreen2" fontname="Courier" label="17: Match(parse.State{char: C, state: SBeforeRef}) [SBeforeRef]" shape="box" style="filled"];
+  "18" [fillcolor="darkseagreen2" fontname="Courier" label="18: Match(grammar.refEdge{from: SBeforeRef, ref: Rule}) [SBeforeRef]" shape="box" style="filled"];
+  "19" [fillcolor="thistle" fontname="Courier" label="19: Join(SBeforeRef) [Rule]" shape="box" style="filled"];
+  "20" [fillcolor="darkseagreen2" fontname="Courier" label="20: Match(grammar.rule{from: S, name: Rule}) [Rule]" shape="box" style="filled"];
+  "21" [fillcolor="thistle" fontname="Courier" label="21: Join(Rule) []" shape="box" style="filled"];
+  "22" [fillcolor="darkseagreen2" fontname="Courier" label="22: Match(parse.State{char: CStart, state: SBeforeRef}) [SBeforeRef]" shape="box" style="filled"];
+  "23" [fillcolor="darkseagreen2" fontname="Courier" label="23: Match(grammar.refEdge{from: SBeforeRef, ref: Rule, to: S}) [SBeforeRef]" shape="box" style="filled"];
+  "24" [fillcolor="thistle" fontname="Courier" label="24: Join(SBeforeRef) [Rule]" shape="box" style="filled"];
+  "25" [fillcolor="darkseagreen2" fontname="Courier" label="25: Match(grammar.rule{from: SRuleStart, name: Rule, to: SRuleEnd}) [Rule]" shape="box" style="filled"];
+  "26" [fillcolor="thistle" fontname="Courier" label="26: Join(Rule) [SRuleEnd]" shape="box" style="filled"];
+  "27" [fillcolor="darkseagreen2" fontname="Courier" label="27: Match(parse.State{char: C, state: SRuleEnd}) [SRuleEnd]" shape="box" style="filled"];
+  "28" [fillcolor="thistle" fontname="Courier" label="28: Join(SRuleEnd) []" shape="box" style="filled"];
+  "29" [fillcolor="" fontname="Courier" label="29: Distinct []" shape="box" style="filled"];
+  "parse.State" [fillcolor="lightblue" fontname="Courier" label="parse.State: Subst(parse.State{char: C, state: S}) []" shape="box" style="filled"];
+  "grammar.rule" -> "0" [];
+  "grammar.rule" -> "20" [];
+  "grammar.rule" -> "25" [];
+  "input.next" -> "1" [];
+  "input.next" -> "5" [];
+  "input.next" -> "15" [];
+  "1" -> "2" [];
+  "0" -> "2" [];
+  "2" -> "3" [];
+  "3" -> "parse.initialState" [];
+  "parse.State" -> "4" [];
+  "parse.State" -> "10" [];
+  "parse.State" -> "17" [];
+  "parse.State" -> "22" [];
+  "parse.State" -> "27" [];
+  "5" -> "6" [];
+  "4" -> "6" [];
+  "6" -> "7" [];
+  "7" -> "parse.Complete" [];
+  "parse.initialState" -> "9" [];
+  "9" -> "8" [];
+  "grammar.charLiteralEdge" -> "11" [];
+  "11" -> "12" [];
+  "10" -> "12" [];
+  "input.char" -> "13" [];
+  "13" -> "14" [];
+  "12" -> "14" [];
+  "15" -> "16" [];
+  "14" -> "16" [];
+  "16" -> "8" [];
+  "grammar.refEdge" -> "18" [];
+  "grammar.refEdge" -> "23" [];
+  "18" -> "19" [];
+  "17" -> "19" [];
+  "20" -> "21" [];
+  "19" -> "21" [];
+  "21" -> "8" [];
+  "23" -> "24" [];
+  "22" -> "24" [];
+  "25" -> "26" [];
+  "24" -> "26" [];
+  "27" -> "28" [];
+  "26" -> "28" [];
+  "28" -> "8" [];
+  "8" -> "29" [];
+  "29" -> "parse.State" [];
+}
+
+grammar.rule{name: "main", from: 0, to: 2}.
+----
+incremental-datalog/trace
+grammar.rule: [grammar.rule{from: 0, name: "main", to: 2}+1]
+0: [{S: 0}+1]
+20: [{Rule: "main", S: 0}+1]
+25: [{Rule: "main", SRuleEnd: 2, SRuleStart: 0}+1]
+2: []
+21: []
+26: []
+
+grammar.stateNode{id: 0}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 0}+1]
+
+grammar.refEdge{from: 0, to: 1, ref: "foo"}.
+----
+incremental-datalog/trace
+grammar.refEdge: [grammar.refEdge{from: 0, ref: "foo", to: 1}+1]
+18: [{Rule: "foo", SBeforeRef: 0}+1]
+23: [{Rule: "foo", S: 1, SBeforeRef: 0}+1]
+19: []
+24: []
+
+grammar.stateNode{id: 1}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 1}+1]
+
+grammar.refEdge{from: 1, to: 2, ref: "bar"}.
+----
+incremental-datalog/trace
+grammar.refEdge: [grammar.refEdge{from: 1, ref: "bar", to: 2}+1]
+18: [{Rule: "bar", SBeforeRef: 1}+1]
+23: [{Rule: "bar", S: 2, SBeforeRef: 1}+1]
+19: []
+24: []
+
+grammar.stateNode{id: 2}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 2}+1]
+
+grammar.rule{name: "foo", from: 3, to: 6}.
+----
+incremental-datalog/trace
+grammar.rule: [grammar.rule{from: 3, name: "foo", to: 6}+1]
+0: []
+20: [{Rule: "foo", S: 3}+1]
+25: [{Rule: "foo", SRuleEnd: 6, SRuleStart: 3}+1]
+21: []
+26: []
+
+grammar.stateNode{id: 3}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 3}+1]
+
+grammar.charLiteralEdge{from: 3, to: 4, val: "f"}.
+----
+incremental-datalog/trace
+grammar.charLiteralEdge: [grammar.charLiteralEdge{from: 3, to: 4, val: "f"}+1]
+11: [{S: 4, S1: 3, V: "f"}+1]
+12: []
+
+grammar.stateNode{id: 4}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 4}+1]
+
+grammar.charLiteralEdge{from: 4, to: 5, val: "o"}.
+----
+incremental-datalog/trace
+grammar.charLiteralEdge: [grammar.charLiteralEdge{from: 4, to: 5, val: "o"}+1]
+11: [{S: 5, S1: 4, V: "o"}+1]
+12: []
+
+grammar.stateNode{id: 5}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 5}+1]
+
+grammar.charLiteralEdge{from: 5, to: 6, val: "o"}.
+----
+incremental-datalog/trace
+grammar.charLiteralEdge: [grammar.charLiteralEdge{from: 5, to: 6, val: "o"}+1]
+11: [{S: 6, S1: 5, V: "o"}+1]
+12: []
+
+grammar.stateNode{id: 6}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 6}+1]
+
+grammar.rule{name: "bar", from: 7, to: 10}.
+----
+incremental-datalog/trace
+grammar.rule: [grammar.rule{from: 7, name: "bar", to: 10}+1]
+0: []
+20: [{Rule: "bar", S: 7}+1]
+25: [{Rule: "bar", SRuleEnd: 10, SRuleStart: 7}+1]
+21: []
+26: []
+
+grammar.stateNode{id: 7}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 7}+1]
+
+grammar.charLiteralEdge{from: 7, to: 8, val: "b"}.
+----
+incremental-datalog/trace
+grammar.charLiteralEdge: [grammar.charLiteralEdge{from: 7, to: 8, val: "b"}+1]
+11: [{S: 8, S1: 7, V: "b"}+1]
+12: []
+
+grammar.stateNode{id: 8}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 8}+1]
+
+grammar.charLiteralEdge{from: 8, to: 9, val: "a"}.
+----
+incremental-datalog/trace
+grammar.charLiteralEdge: [grammar.charLiteralEdge{from: 8, to: 9, val: "a"}+1]
+11: [{S: 9, S1: 8, V: "a"}+1]
+12: []
+
+grammar.stateNode{id: 9}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 9}+1]
+
+grammar.charLiteralEdge{from: 9, to: 10, val: "r"}.
+----
+incremental-datalog/trace
+grammar.charLiteralEdge: [grammar.charLiteralEdge{from: 9, to: 10, val: "r"}+1]
+11: [{S: 10, S1: 9, V: "r"}+1]
+12: []
+
+grammar.stateNode{id: 10}.
+----
+incremental-datalog/trace
+grammar.stateNode: [grammar.stateNode{id: 10}+1]
+
+input.next{from: -1, to: 0}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: -1, to: 0}+1]
+1: [{C: 0}+1]
+5: []
+15: [{C: 0, C1: -1}+1]
+2: [{C: 0, S: 0}+1]
+16: []
+3: [{C: 0, S: 0}+1]
+parse.initialState: [parse.initialState{char: 0, state: 0}+1]
+9: [{C: 0, S: 0}+1]
+8: [{C: 0, S: 0}+1]
+29: [{C: 0, S: 0}+1]
+parse.State: [parse.State{char: 0, state: 0}+1]
+4: [{C: 0}+1]
+10: [{C1: 0, S1: 0}+1]
+17: [{C: 0, SBeforeRef: 0}+1]
+22: [{CStart: 0, SBeforeRef: 0}+1]
+27: [{C: 0, SRuleEnd: 0}+1]
+6: []
+12: []
+19: [{C: 0, Rule: "foo", SBeforeRef: 0}+1]
+24: [{CStart: 0, Rule: "foo", S: 1, SBeforeRef: 0}+1]
+28: []
+21: [{C: 0, Rule: "foo", S: 3, SBeforeRef: 0}+1]
+26: [{CStart: 0, Rule: "foo", S: 1, SBeforeRef: 0, SRuleEnd: 6, SRuleStart: 3}+1]
+8: [{C: 0, Rule: "foo", S: 3, SBeforeRef: 0}+1]
+28: []
+29: [{C: 0, Rule: "foo", S: 3, SBeforeRef: 0}+1]
+parse.State: [parse.State{char: 0, state: 3}+1]
+4: [{C: 0}+1]
+10: [{C1: 0, S1: 3}+1]
+17: [{C: 0, SBeforeRef: 3}+1]
+22: [{CStart: 0, SBeforeRef: 3}+1]
+27: [{C: 0, SRuleEnd: 3}+1]
+6: []
+12: [{C1: 0, S: 4, S1: 3, V: "f"}+1]
+19: []
+24: []
+28: []
+14: []
+
+input.char{id: 0, val: "f"}.
+----
+incremental-datalog/trace
+input.char: [input.char{id: 0, val: "f"}+1]
+13: [{C1: 0, V: "f"}+1]
+14: [{C1: 0, S: 4, S1: 3, V: "f"}+1]
+16: []
+
+input.char{id: 1, val: "o"}.
+----
+incremental-datalog/trace
+input.char: [input.char{id: 1, val: "o"}+1]
+13: [{C1: 1, V: "o"}+1]
+14: []
+
+input.char{id: 2, val: "o"}.
+----
+incremental-datalog/trace
+input.char: [input.char{id: 2, val: "o"}+1]
+13: [{C1: 2, V: "o"}+1]
+14: []
+
+input.char{id: 3, val: "b"}.
+----
+incremental-datalog/trace
+input.char: [input.char{id: 3, val: "b"}+1]
+13: [{C1: 3, V: "b"}+1]
+14: []
+
+input.char{id: 4, val: "a"}.
+----
+incremental-datalog/trace
+input.char: [input.char{id: 4, val: "a"}+1]
+13: [{C1: 4, V: "a"}+1]
+14: []
+
+input.char{id: 5, val: "r"}.
+----
+incremental-datalog/trace
+input.char: [input.char{id: 5, val: "r"}+1]
+13: [{C1: 5, V: "r"}+1]
+14: []
+
+input.next{from: 0, to: 1}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: 0, to: 1}+1]
+1: []
+5: []
+15: [{C: 1, C1: 0}+1]
+16: [{C: 1, C1: 0, S: 4, S1: 3, V: "f"}+1]
+8: [{C: 1, C1: 0, S: 4, S1: 3, V: "f"}+1]
+29: [{C: 1, C1: 0, S: 4, S1: 3, V: "f"}+1]
+parse.State: [parse.State{char: 1, state: 4}+1]
+4: [{C: 1}+1]
+10: [{C1: 1, S1: 4}+1]
+17: [{C: 1, SBeforeRef: 4}+1]
+22: [{CStart: 1, SBeforeRef: 4}+1]
+27: [{C: 1, SRuleEnd: 4}+1]
+6: []
+12: [{C1: 1, S: 5, S1: 4, V: "o"}+1]
+19: []
+24: []
+28: []
+14: [{C1: 1, S: 5, S1: 4, V: "o"}+1]
+16: []
+
+input.next{from: 1, to: 2}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: 1, to: 2}+1]
+1: []
+5: []
+15: [{C: 2, C1: 1}+1]
+16: [{C: 2, C1: 1, S: 5, S1: 4, V: "o"}+1]
+8: [{C: 2, C1: 1, S: 5, S1: 4, V: "o"}+1]
+29: [{C: 2, C1: 1, S: 5, S1: 4, V: "o"}+1]
+parse.State: [parse.State{char: 2, state: 5}+1]
+4: [{C: 2}+1]
+10: [{C1: 2, S1: 5}+1]
+17: [{C: 2, SBeforeRef: 5}+1]
+22: [{CStart: 2, SBeforeRef: 5}+1]
+27: [{C: 2, SRuleEnd: 5}+1]
+6: []
+12: [{C1: 2, S: 6, S1: 5, V: "o"}+1]
+19: []
+24: []
+28: []
+14: [{C1: 2, S: 6, S1: 5, V: "o"}+1]
+16: []
+
+input.next{from: 2, to: 3}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: 2, to: 3}+1]
+1: []
+5: []
+15: [{C: 3, C1: 2}+1]
+16: [{C: 3, C1: 2, S: 6, S1: 5, V: "o"}+1]
+8: [{C: 3, C1: 2, S: 6, S1: 5, V: "o"}+1]
+29: [{C: 3, C1: 2, S: 6, S1: 5, V: "o"}+1]
+parse.State: [parse.State{char: 3, state: 6}+1]
+4: [{C: 3}+1]
+10: [{C1: 3, S1: 6}+1]
+17: [{C: 3, SBeforeRef: 6}+1]
+22: [{CStart: 3, SBeforeRef: 6}+1]
+27: [{C: 3, SRuleEnd: 6}+1]
+6: []
+12: []
+19: []
+24: []
+28: [{C: 3, CStart: 0, Rule: "foo", S: 1, SBeforeRef: 0, SRuleEnd: 6, SRuleStart: 3}+1]
+8: [{C: 3, CStart: 0, Rule: "foo", S: 1, SBeforeRef: 0, SRuleEnd: 6, SRuleStart: 3}+1]
+29: [{C: 3, CStart: 0, Rule: "foo", S: 1, SBeforeRef: 0, SRuleEnd: 6, SRuleStart: 3}+1]
+parse.State: [parse.State{char: 3, state: 1}+1]
+4: [{C: 3}+1]
+10: [{C1: 3, S1: 1}+1]
+17: [{C: 3, SBeforeRef: 1}+1]
+22: [{CStart: 3, SBeforeRef: 1}+1]
+27: [{C: 3, SRuleEnd: 1}+1]
+6: []
+12: []
+19: [{C: 3, Rule: "bar", SBeforeRef: 1}+1]
+24: [{CStart: 3, Rule: "bar", S: 2, SBeforeRef: 1}+1]
+28: []
+21: [{C: 3, Rule: "bar", S: 7, SBeforeRef: 1}+1]
+26: [{CStart: 3, Rule: "bar", S: 2, SBeforeRef: 1, SRuleEnd: 10, SRuleStart: 7}+1]
+8: [{C: 3, Rule: "bar", S: 7, SBeforeRef: 1}+1]
+28: []
+29: [{C: 3, Rule: "bar", S: 7, SBeforeRef: 1}+1]
+parse.State: [parse.State{char: 3, state: 7}+1]
+4: [{C: 3}+1]
+10: [{C1: 3, S1: 7}+1]
+17: [{C: 3, SBeforeRef: 7}+1]
+22: [{CStart: 3, SBeforeRef: 7}+1]
+27: [{C: 3, SRuleEnd: 7}+1]
+6: []
+12: [{C1: 3, S: 8, S1: 7, V: "b"}+1]
+19: []
+24: []
+28: []
+14: [{C1: 3, S: 8, S1: 7, V: "b"}+1]
+16: []
+
+input.next{from: 3, to: 4}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: 3, to: 4}+1]
+1: []
+5: []
+15: [{C: 4, C1: 3}+1]
+16: [{C: 4, C1: 3, S: 8, S1: 7, V: "b"}+1]
+8: [{C: 4, C1: 3, S: 8, S1: 7, V: "b"}+1]
+29: [{C: 4, C1: 3, S: 8, S1: 7, V: "b"}+1]
+parse.State: [parse.State{char: 4, state: 8}+1]
+4: [{C: 4}+1]
+10: [{C1: 4, S1: 8}+1]
+17: [{C: 4, SBeforeRef: 8}+1]
+22: [{CStart: 4, SBeforeRef: 8}+1]
+27: [{C: 4, SRuleEnd: 8}+1]
+6: []
+12: [{C1: 4, S: 9, S1: 8, V: "a"}+1]
+19: []
+24: []
+28: []
+14: [{C1: 4, S: 9, S1: 8, V: "a"}+1]
+16: []
+
+input.next{from: 4, to: 5}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: 4, to: 5}+1]
+1: []
+5: []
+15: [{C: 5, C1: 4}+1]
+16: [{C: 5, C1: 4, S: 9, S1: 8, V: "a"}+1]
+8: [{C: 5, C1: 4, S: 9, S1: 8, V: "a"}+1]
+29: [{C: 5, C1: 4, S: 9, S1: 8, V: "a"}+1]
+parse.State: [parse.State{char: 5, state: 9}+1]
+4: [{C: 5}+1]
+10: [{C1: 5, S1: 9}+1]
+17: [{C: 5, SBeforeRef: 9}+1]
+22: [{CStart: 5, SBeforeRef: 9}+1]
+27: [{C: 5, SRuleEnd: 9}+1]
+6: []
+12: [{C1: 5, S: 10, S1: 9, V: "r"}+1]
+19: []
+24: []
+28: []
+14: [{C1: 5, S: 10, S1: 9, V: "r"}+1]
+16: []
+
+input.next{from: 5, to: -2}.
+----
+incremental-datalog/trace
+input.next: [input.next{from: 5, to: -2}+1]
+1: []
+5: [{C: 5}+1]
+15: [{C: -2, C1: 5}+1]
+6: [{C: 5}+1]
+16: [{C: -2, C1: 5, S: 10, S1: 9, V: "r"}+1]
+7: [{C: 5}+1]
+8: [{C: -2, C1: 5, S: 10, S1: 9, V: "r"}+1]
+parse.Complete: [parse.Complete{}+1]
+29: [{C: -2, C1: 5, S: 10, S1: 9, V: "r"}+1]
+parse.State: [parse.State{char: -2, state: 10}+1]
+4: [{C: -2}+1]
+10: [{C1: -2, S1: 10}+1]
+17: [{C: -2, SBeforeRef: 10}+1]
+22: [{CStart: -2, SBeforeRef: 10}+1]
+27: [{C: -2, SRuleEnd: 10}+1]
+6: []
+12: []
+19: []
+24: []
+28: [{C: -2, CStart: 3, Rule: "bar", S: 2, SBeforeRef: 1, SRuleEnd: 10, SRuleStart: 7}+1]
+8: [{C: -2, CStart: 3, Rule: "bar", S: 2, SBeforeRef: 1, SRuleEnd: 10, SRuleStart: 7}+1]
+29: [{C: -2, CStart: 3, Rule: "bar", S: 2, SBeforeRef: 1, SRuleEnd: 10, SRuleStart: 7}+1]
+parse.State: [parse.State{char: -2, state: 2}+1]
+4: [{C: -2}+1]
+10: [{C1: -2, S1: 2}+1]
+17: [{C: -2, SBeforeRef: 2}+1]
+22: [{CStart: -2, SBeforeRef: 2}+1]
+27: [{C: -2, SRuleEnd: 2}+1]
+6: []
+12: []
+19: []
+24: []
+28: []
+
+parse.Complete{}?
+----
+application/datalog
+parse.Complete{}.

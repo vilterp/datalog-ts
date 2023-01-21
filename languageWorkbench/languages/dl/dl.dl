@@ -3,16 +3,16 @@ scope.Scope{id: RuleID, label: N} :-
   ast.record{id: RecordID, parentID: RuleID} &
   ast.ident{parentID: RecordID, text: N}.
 
-scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
-  scope.defnVar{scopeID: I, name: N, span: S, kind: K} |
   scope.defnTable{scopeID: I, name: N, span: S, kind: K} |
   scope.defnAttr{scopeID: I, name: N, span: S, kind: K} |
-  scope.defnInnerVar{scopeID: I, name: N, span: S, kind: K}.
+  scope.defnHeadVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.defnBodyVar{scopeID: I, name: N, span: S, kind: K}.
 scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} :-
   scope.rule{span: S, name: N}.
 # TODO: recurse into records as values
-scope.defnVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
+scope.defnHeadVar{scopeID: RuleID, name: N, span: S, kind: "var"} :-
   ast.rule{id: RuleID} &
   ast.record{id: RecordID, parentID: RuleID} &
   scope.recordVar{record: RecordID, name: N, span: S}.
@@ -21,20 +21,20 @@ scope.defnTable{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.ident{parentID: DeclID, span: S, text: N}.
 scope.defnAttr{scopeID: RuleName, name: N, span: S, kind: "attr"} :-
   tc.ruleAttr{rule: RuleName, attr: N, span: S}.
-scope.defnInnerVar{scopeID: I, name: N, span: S, kind: "var"} :-
-  scope.varTerm{scopeID: I, name: N, span: S}.
+scope.defnBodyVar{scopeID: I, name: N, span: S, kind: "var"} :-
+  scope.varInBodyTerm{scopeID: I, name: N, span: S}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varRuleInvocation{scopeID: I, name: N, span: S, kind: K} |
-  scope.varTerm{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInBodyTerm{scopeID: I, name: N, span: S, kind: K} |
   scope.varAttr{scopeID: I, name: N, span: S, kind: K} |
   scope.varFact{scopeID: I, name: N, span: S, kind: K}.
 scope.varRuleInvocation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
-  ast.rule{id: RuleID} &
-  scope.ruleBodyTerm{ruleID: RuleID, termOrRecord: RecordID} &
-  ast.record{id: RecordID, parentID: ConjunctID} &
+  scope.ruleBodyTerm{termOrRecord: RecordID} &
+  ast.record{id: RecordID} &
   ast.ident{parentID: RecordID, text: N, span: S}.
-scope.varTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
+# vars in a rule body
+scope.varInBodyTerm{scopeID: Rule, name: N, span: S, kind: "var"} :-
   scope.ruleBodyTerm{ruleID: Rule, termOrRecord: TermOrRecord} &
   scope.termOrRecordVar{term: TermOrRecord, name: N, span: S}.
 # TODO: recurse into nested records?
@@ -63,9 +63,7 @@ scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   ast.term{id: ValueTermID, parentID: KeyValueID} &
   ast.placeholder{parentID: ValueTermID, span: S}.
 scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
-  ast.rule{id: RuleID} &
-  ast.disjunct{id: DisjunctID, parentID: RuleID} &
-  ast.conjunct{id: ConjunctID, parentID: DisjunctID} &
+  ast.conjunct{id: ConjunctID} &
   ast.placeholder{parentID: ConjunctID, span: S}.
 scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
@@ -140,9 +138,9 @@ tc.nonexistentAttr{desc: nonexistentAttr{relation: Relation, attr: N}, span: S} 
   scope.varAttr{scopeID: Relation, name: N, span: S} &
   !tc.ruleAttr{rule: Relation, attr: N}.
 tc.unboundVarInHead{desc: unboundVarInHead{rule: R, name: N}, span: S} :-
-  scope.defnVar{scopeID: RuleID, span: S, name: N} &
+  scope.defnHeadVar{scopeID: RuleID, span: S, name: N} &
   scope.rule{scopeID: RuleID, name: R} &
-  !scope.varTerm{scopeID: RuleID, name: N}.
+  !scope.varInBodyTerm{scopeID: RuleID, name: N}.
 
 scope.rule{scopeID: RuleID, name: N, span: S} :-
   ast.rule{id: RuleID} &

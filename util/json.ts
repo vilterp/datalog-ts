@@ -4,6 +4,16 @@ export function jsonEq(left: Json, right: Json): boolean {
   if (typeof left !== typeof right) {
     return false;
   }
+  // TODO: DRY this up?
+  if (left === null && right !== null) {
+    return false;
+  }
+  if (left !== null && right === null) {
+    return false;
+  }
+  if (left === null && right === null) {
+    return true;
+  }
   switch (typeof left) {
     case "number":
     case "boolean":

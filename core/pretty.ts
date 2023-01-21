@@ -33,7 +33,10 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
   switch (term.type) {
     case "Var":
       return term.name;
-    case "Record":
+    case "Record": {
+      if (term.relation.length === 0) {
+        throw new Error("empty relation name is invalid");
+      }
       return [
         term.relation,
         block(
@@ -41,6 +44,7 @@ export function prettyPrintTerm(term: Term): pp.IDoc {
           mapObjToList(term.attrs, (k, v) => [k, ": ", prettyPrintTerm(v)])
         ),
       ];
+    }
     case "Array":
       return ["[", pp.intersperse(",", term.items.map(prettyPrintTerm)), "]"];
     case "Dict":

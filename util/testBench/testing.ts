@@ -1,15 +1,11 @@
 import * as diff from "diff";
 import * as util from "util";
+import { Json, jsonEq } from "../json";
 
 // TODO: assert order-independent equal
-export function assert(
-  cond: boolean,
-  expected: string,
-  actual: string,
-  msg: string
-) {
+export function assert(cond: boolean, msg: string) {
   if (!cond) {
-    throw new DiffError(expected, actual, msg);
+    throw new Error(`condition not true: ${msg}`);
   }
 }
 
@@ -23,15 +19,17 @@ export function assertStringEqual(
   }
 }
 
-export function assertDeepEqual<T extends object>(
+export function assertDeepEqual<T extends Json>(
   expected: T,
   actual: T,
   msg?: string
 ) {
-  const expJSON = util.inspect(expected, { depth: null });
-  const actJSON = util.inspect(actual, { depth: null });
-  if (actJSON != expJSON) {
-    throw new DiffError(expJSON, actJSON, msg);
+  if (!jsonEq(expected, actual)) {
+    throw new DiffError(
+      util.inspect(expected, { depth: null }),
+      util.inspect(actual, { depth: null }),
+      msg
+    );
   }
 }
 
@@ -65,7 +63,7 @@ export function runSuite(ts: Suite) {
       console.groupEnd();
       if (e instanceof DiffError) {
         const patch = diff.createPatch(
-          `${t.name} ${e.message}`,
+          `${t.name}`,
           e.expected + "\n",
           e.actual + "\n",
           "expected",
@@ -92,6 +90,8 @@ export function runSuite(ts: Suite) {
 export type Suite = Test[];
 
 export function runSuites(suites: { [name: string]: Suite }) {
+  console.log("node", process.version);
+
   const failures = new Set();
   for (const suiteName of Object.keys(suites)) {
     console.group("Suite", suiteName);
