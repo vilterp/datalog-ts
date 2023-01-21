@@ -6,7 +6,7 @@ import { AggregationDesc, MessagePayload } from "../types";
 export function processAggregation(
   nodeDesc: AggregationDesc,
   payload: MessagePayload
-): [AggregationDesc, MessagePayload[]] {
+): MessagePayload[] {
   const aggregation = nodeDesc.aggregation;
   const aggVar = aggregation.varNames[aggregation.varNames.length - 1];
   const agg = AGGREGATIONS[aggregation.aggregation];
@@ -75,7 +75,7 @@ export function processAggregation(
         },
       });
 
-      return [nodeDesc, out];
+      return out;
     }
   }
 }
