@@ -231,12 +231,3 @@ function updateCache(
   graph.nodes.get(nodeID).cache.update(res, multiplicityDelta);
   return graph;
 }
-
-function updateNodeDesc(
-  graph: RuleGraph,
-  nodeID: NodeID,
-  newDesc: NodeDesc
-): RuleGraph {
-  graph.nodes.get(nodeID).desc = newDesc;
-  return graph;
-}
