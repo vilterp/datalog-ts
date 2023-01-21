@@ -39,11 +39,7 @@ export function processAggregation(
         data.bindings.bindings,
         payload.multiplicity
       );
-      // TODO: just mutate it
-      const newNodeState: AggregationDesc = {
-        ...nodeDesc,
-        state: nodeDesc.state.set(groupKey, newGroupState),
-      };
+      nodeDesc.state.set(groupKey, newGroupState);
 
       const oldBindings: Bindings = agg.final(curGroupState, groupInfo);
       const newBindings: Bindings = agg.final(newGroupState, groupInfo);
@@ -79,7 +75,7 @@ export function processAggregation(
         },
       });
 
-      return [newNodeState, out];
+      return [nodeDesc, out];
     }
   }
 }
