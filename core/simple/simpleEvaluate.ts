@@ -286,8 +286,8 @@ function doEvaluate(
           groups,
           (keyStr, { key, items }): Res => {
             const groupBindings: Bindings = {};
-            groupVars.forEach((groupVar) => {
-              groupBindings[groupVar] = key[groupVar];
+            groupVars.forEach((groupVar, i) => {
+              groupBindings[groupVar] = key[i];
             });
             const aggVarBindings = items.map((res) => res.bindings[aggVar]);
             const aggBindings = doAggregation(
