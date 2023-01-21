@@ -223,6 +223,25 @@ export function groupBy<T>(
   return out;
 }
 
+export function groupByPreserveKey<T, K>(
+  arr: T[],
+  f: (item: T) => K,
+  toString: (key: K) => string
+): { [key: string]: { key: K; items: T[] } } {
+  const out: { [key: string]: { key: K; items: T[] } } = {};
+  arr.forEach((item) => {
+    const key = f(item);
+    const keyStr = toString(key);
+    let group = out[keyStr];
+    if (!group) {
+      group = { key, items: [] };
+      out[keyStr] = group;
+    }
+    group.items.push(item);
+  });
+  return out;
+}
+
 export function pairsToObj<T>(
   arr: {
     key: string;

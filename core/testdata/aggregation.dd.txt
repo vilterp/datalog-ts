@@ -42,3 +42,27 @@ countBarByParent{parentID: P, count: I}?
 application/datalog
 countBarByParent{count: 2, parentID: 2}.
 countBarByParent{count: 3, parentID: 1}.
+
+parseResult{length: 1, res: "a"}.
+parseResult{length: 3, res: "abc"}.
+parseResult{length: 2, res: "ab"}.
+longestParseResult{res: R} :-
+  maxBy[L: parseResult{length: L, res: R}].
+longestParseResult{}?
+----
+application/datalog
+longestParseResult{res: "abc"}.
+
+parseResult2{id: "x", length: 1, res: "a"}.
+parseResult2{id: "y", length: 7, res: "abcdefg"}.
+parseResult2{id: "y", length: 5, res: "abcde"}.
+parseResult2{id: "x", length: 3, res: "abc"}.
+parseResult2{id: "x", length: 2, res: "ab"}.
+parseResult2{id: "y", length: 6, res: "abcdef"}.
+longestParseResult2{id: I, res: R} :-
+  maxBy[I, L: parseResult2{id: I, length: L, res: R}].
+longestParseResult2{}?
+----
+application/datalog
+longestParseResult2{id: "x", res: "abc"}.
+longestParseResult2{id: "y", res: "abcdefg"}.

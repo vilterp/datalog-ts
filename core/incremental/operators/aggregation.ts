@@ -1,6 +1,5 @@
-import { AGGREGATIONS } from "../../aggregations";
+import { AGGREGATIONS, GroupInfo } from "../../aggregations";
 import { fastPPT } from "../../fastPPT";
-import { ppb } from "../../pretty";
 import { aggTraceForInner, Bindings } from "../../types";
 import { AggregationDesc, MessagePayload } from "../types";
 
@@ -26,22 +25,28 @@ export function processAggregation(
         .join(",");
       const hadGroupKey = nodeDesc.state.has(groupKey);
       const curGroupState = nodeDesc.state.getWithDefault(groupKey, agg.init);
-      const term = data.bindings.bindings[aggVar];
-      const newGroupState = agg.step(curGroupState, term, payload.multiplicity);
+      const groupBindings: Bindings = {};
+      groupVars.forEach((groupVar) => {
+        groupBindings[groupVar] = data.bindings.bindings[groupVar];
+      });
+      const groupInfo: GroupInfo = {
+        groupBindings,
+        aggVar,
+      };
+      const newGroupState = agg.step(
+        curGroupState,
+        groupInfo,
+        data.bindings.bindings,
+        payload.multiplicity
+      );
+      // TODO: just mutate it
       const newNodeState: AggregationDesc = {
         ...nodeDesc,
         state: nodeDesc.state.set(groupKey, newGroupState),
       };
 
-      const oldBindings: Bindings = {};
-      const newBindings: Bindings = {};
-      for (const varName of groupVars) {
-        const val = data.bindings.bindings[varName];
-        oldBindings[varName] = val;
-        newBindings[varName] = val;
-      }
-      oldBindings[aggVar] = curGroupState;
-      newBindings[aggVar] = newGroupState;
+      const oldBindings: Bindings = agg.final(curGroupState, groupInfo);
+      const newBindings: Bindings = agg.final(newGroupState, groupInfo);
 
       // console.log("step:", {
       //   aggregation: nodeDesc.aggregation.aggregation,
