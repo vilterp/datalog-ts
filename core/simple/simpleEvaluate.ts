@@ -289,11 +289,11 @@ function doEvaluate(
             groupVars.forEach((groupVar, i) => {
               groupBindings[groupVar] = key[i];
             });
-            const aggVarBindings = items.map((res) => res.bindings[aggVar]);
+            const termBindings = items.map((res) => res.bindings);
             const aggBindings = doAggregation(
               groupBindings,
               aggVar,
-              aggVarBindings,
+              termBindings,
               term.aggregation
             );
             const substituted = substitute(term.record, aggBindings);
@@ -318,7 +318,7 @@ function doEvaluate(
 function doAggregation(
   groupBindings: Bindings,
   aggVar: string,
-  aggVarBindings: Term[],
+  termsInGroup: Bindings[],
   aggName: string
 ): Bindings {
   // TODO: maybe a fast path, e.g. for count?
@@ -328,12 +328,12 @@ function doAggregation(
     aggVar,
     groupBindings,
   };
-  for (const aggVarVal of aggVarBindings) {
+  for (const termBindings of termsInGroup) {
     state = agg.step(
       state,
       groupInfo,
       // TODO: remove allocation
-      { ...groupBindings, [aggVar]: aggVarVal },
+      termBindings,
       1
     );
   }
