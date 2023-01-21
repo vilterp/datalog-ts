@@ -6,7 +6,7 @@ import { AggregationDesc, MessagePayload } from "../types";
 export function processAggregation(
   nodeDesc: AggregationDesc,
   payload: MessagePayload
-): [AggregationDesc, MessagePayload[]] {
+): MessagePayload[] {
   const aggregation = nodeDesc.aggregation;
   const aggVar = aggregation.varNames[aggregation.varNames.length - 1];
   const agg = AGGREGATIONS[aggregation.aggregation];
@@ -39,11 +39,7 @@ export function processAggregation(
         data.bindings.bindings,
         payload.multiplicity
       );
-      // TODO: just mutate it
-      const newNodeState: AggregationDesc = {
-        ...nodeDesc,
-        state: nodeDesc.state.set(groupKey, newGroupState),
-      };
+      nodeDesc.state.set(groupKey, newGroupState);
 
       const oldBindings: Bindings = agg.final(curGroupState, groupInfo);
       const newBindings: Bindings = agg.final(newGroupState, groupInfo);
@@ -79,7 +75,7 @@ export function processAggregation(
         },
       });
 
-      return [newNodeState, out];
+      return out;
     }
   }
 }

@@ -5,7 +5,7 @@ import { MatchDesc, MessagePayload } from "../types";
 export function processMatch(
   nodeDesc: MatchDesc,
   payload: MessagePayload
-): [MatchDesc, MessagePayload[]] {
+): MessagePayload[] {
   const data = payload.data;
   if (data.type === "Bindings") {
     throw new Error("Match nodes should not receive messages of type Bindings");
@@ -13,7 +13,7 @@ export function processMatch(
 
   const bindings = unify({}, nodeDesc.rec, data.rec);
   if (bindings === null) {
-    return [nodeDesc, []];
+    return [];
   }
 
   // Debug logging to detect mismatched attr names.
@@ -30,27 +30,24 @@ export function processMatch(
   for (let key of Object.keys(bindings)) {
     // console.log({ bindings, key });
     if (bindings[key].type === "Var") {
-      return [nodeDesc, []];
+      return [];
     }
   }
 
   return [
-    nodeDesc,
-    [
-      {
-        multiplicity: payload.multiplicity,
-        data: {
-          type: "Bindings",
-          bindings: {
-            bindings,
-            trace: {
-              type: "MatchTrace",
-              fact: { term: data.rec, trace: baseFactTrace, bindings: {} },
-              match: nodeDesc.rec,
-            },
+    {
+      multiplicity: payload.multiplicity,
+      data: {
+        type: "Bindings",
+        bindings: {
+          bindings,
+          trace: {
+            type: "MatchTrace",
+            fact: { term: data.rec, trace: baseFactTrace, bindings: {} },
+            match: nodeDesc.rec,
           },
         },
       },
-    ],
+    },
   ];
 }

@@ -160,15 +160,13 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   if (!node) {
     throw new Error(`not found: node ${curMsg.destination}`);
   }
-  const [newNodeDesc, outMessages] = processMessage(
+  // note: sometimes has the side effect of mutating node.desc
+  const outMessages = processMessage(
     iter.graph,
     node.desc,
     curMsg.origin,
     curMsg.payload
   );
-  if (newNodeDesc !== node.desc) {
-    newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
-  }
   // console.log("push", results);
   const out: MessagePayload[] = [];
   for (let outMessage of outMessages) {
