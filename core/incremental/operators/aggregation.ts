@@ -35,6 +35,7 @@ export function processAggregation(
         data.bindings.bindings,
         payload.multiplicity
       );
+      // TODO: just mutate it
       const newNodeState: AggregationDesc = {
         ...nodeDesc,
         state: nodeDesc.state.set(groupKey, newGroupState),
