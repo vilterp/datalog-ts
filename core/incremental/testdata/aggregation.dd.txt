@@ -31,8 +31,8 @@ current{id: 1, level: 5}.
 incremental-datalog/trace
 current: [current{id: 1, level: 5}+1]
 0: [{C: 5, I: 1}+1]
-1: [{C: 5, I: 1}+1]
-2: [{C: 5, I: 1}+1]
+1: [{C: 5}+1]
+2: [{C: 5}+1]
 total: [total{level: 5}+1]
 
 current{id: 2, level: 10}.
@@ -40,9 +40,10 @@ current{id: 2, level: 10}.
 incremental-datalog/trace
 current: [current{id: 2, level: 10}+1]
 0: [{C: 10, I: 2}+1]
-1: [{C: 5, I: 2}-1, {C: 15, I: 2}+1]
-2: []
-2: [{C: 15, I: 2}+1]
+1: [{C: 5}-1, {C: 15}+1]
+2: [{C: 5}-1]
+2: [{C: 15}+1]
+total: [total{level: 5}-1]
 total: [total{level: 15}+1]
 
 current{id: 2, level: 13}.
@@ -50,9 +51,9 @@ current{id: 2, level: 13}.
 incremental-datalog/trace
 current: [current{id: 2, level: 13}+1]
 0: [{C: 13, I: 2}+1]
-1: [{C: 15, I: 2}-1, {C: 28, I: 2}+1]
-2: [{C: 15, I: 2}-1]
-2: [{C: 28, I: 2}+1]
+1: [{C: 15}-1, {C: 28}+1]
+2: [{C: 15}-1]
+2: [{C: 28}+1]
 total: [total{level: 15}-1]
 total: [total{level: 28}+1]
 
@@ -60,4 +61,3 @@ total{level: C}?
 ----
 application/datalog
 total{level: 28}.
-total{level: 5}.
