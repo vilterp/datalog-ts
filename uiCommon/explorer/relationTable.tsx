@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
-import { rec, Statement } from "../../core/types";
+import { rec, Res, Rule, Statement } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { RuleC } from "../dl/rule";
 import { HighlightProps } from "../dl/term";
 import { TableCollapseState } from "./types";
 import { ResultsTable } from "./resultsTable";
+import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
 
 type RelationIssue = { type: "Error"; message: string } | { type: "NotFound" };
 
@@ -44,7 +45,16 @@ export function RelationTable(props: {
   return (
     <>
       {relation && relation.type === "Rule" ? (
-        <RuleC highlight={props.highlight} rule={relation.rule} />
+        <>
+          <RuleC highlight={props.highlight} rule={relation.rule} />
+          <RuleGraphEditor
+            relations={props.interp.getRelations()}
+            rule={relation.rule}
+            setRule={(rule: Rule) =>
+              props.runStatements([{ type: "Rule", rule }])
+            }
+          />
+        </>
       ) : null}
       {issue === null ? (
         <ResultsTable

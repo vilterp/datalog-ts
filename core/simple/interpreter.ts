@@ -60,9 +60,9 @@ export class SimpleInterpreter extends AbstractInterpreter {
         const rule = stmt.rule;
         // TODO: move this to some kind of validation phase?
         // better than silent failure tho.
-        if (this.db.rules.get(rule.head.relation)) {
-          throw new UserError(`rule "${rule.head.relation}" already defined`);
-        }
+        // if (this.db.rules.get(rule.head.relation)) {
+        //   throw new UserError(`rule "${rule.head.relation}" already defined`);
+        // }
         return [
           [],
           this.withDB({
