@@ -139,6 +139,9 @@ parse.jump{
 # building rule tree
 
 parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}, length: L} :-
+  maxBy[Rule, CStart, L: parse.rawRuleMatch{rule: Rule, span: span{from: CStart, to: CEnd}, length: L}].
+
+parse.rawRuleMatch{rule: Rule, span: span{from: CStart, to: CEnd}, length: L} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd} &
