@@ -37,7 +37,17 @@ export class IndexedMultiSet<T> {
     this.allRecords = allRecords;
     this.indexes = indexes;
     this.size = allRecords.size();
-    this.stringify = stringify;
+    this.stringify = (item: T): string => {
+      // @ts-ignore
+      if (item.__cachedKey) {
+        // @ts-ignore
+        return item.__cachedKey;
+      }
+      const key = stringify(item);
+      // @ts-ignore
+      item.__cachedKey = key;
+      return key;
+    };
   }
 
   all(): IterableIterator<ItemAndMult<T>> {
