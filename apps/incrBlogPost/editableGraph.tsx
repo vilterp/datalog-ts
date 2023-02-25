@@ -5,14 +5,15 @@ type Node = string;
 type Edge = { from: string; to: string };
 
 export function EditableGraph() {
-  const [nodes, setNodes] = useState<Node[]>(["a", "b", "c"]);
-  const [edges, setEdges] = useState<Edge[]>();
-  const [nextNodeID, setNextNodeID] = useState(0);
+  // TODO: use letters
+  const [nodes, setNodes] = useState<Node[]>(["0", "1", "2"]);
+  const [edges, setEdges] = useState<Edge[]>([{ from: "0", to: "1" }]);
+  const [nextNodeID, setNextNodeID] = useState(3);
   const [fromNodeID, setFromNodeID] = useState(nodes[0] || "");
   const [toNodeID, setToNodeID] = useState(nodes[0] || "");
 
   return (
-    <div>
+    <div style={{ border: "1px solid black" }}>
       <div>
         Nodes:
         <ul>
@@ -44,7 +45,9 @@ export function EditableGraph() {
                 onClick={() => {
                   console.log("TODO: remove", edge);
                 }}
-              ></button>
+              >
+                X
+              </button>
             </li>
           ))}
         </ul>
