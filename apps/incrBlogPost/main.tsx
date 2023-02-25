@@ -7,11 +7,21 @@ import { int, rec, str } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
 import { EditableGraph } from "./editableGraph";
 
-const exampleInterp = new IncrementalInterpreter(".", nullLoader);
+let exampleInterp = new IncrementalInterpreter(".", nullLoader);
+// TODO: load these from
+exampleInterp = exampleInterp.evalStr(
+  ".table node"
+)[1] as IncrementalInterpreter;
+exampleInterp = exampleInterp.evalStr(
+  ".table edge"
+)[1] as IncrementalInterpreter;
 // TODO: install transitive closure
-// TODO: extract graph; insert into history interp
 
-const historyInterp = new IncrementalInterpreter(".", nullLoader);
+// TODO: extract graph from example interp; insert into history interp
+let historyInterp = new IncrementalInterpreter(".", nullLoader);
+historyInterp = historyInterp.evalStr(
+  ".table step"
+)[1] as IncrementalInterpreter;
 
 function Main() {
   return (
