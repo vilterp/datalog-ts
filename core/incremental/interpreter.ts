@@ -10,10 +10,8 @@ import {
   declareTable,
   emptyCatalog,
   removeFact,
-  RuleEntry,
 } from "./catalog";
 import { buildGraph } from "./build";
-import { formatOutput } from "./output";
 
 export class IncrementalInterpreter extends AbstractInterpreter {
   graph: RuleGraph | null;
@@ -24,7 +22,7 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   constructor(
     cwd: string,
     loader: Loader,
-    catalog: Catalog = emptyCatalog,
+    catalog: Catalog = emptyCatalog(),
     graph: RuleGraph = emptyRuleGraph()
   ) {
     super(cwd, loader);
@@ -147,17 +145,22 @@ export class IncrementalInterpreter extends AbstractInterpreter {
   }
 
   getRules(): Rule[] {
-    return this.catalog
-      .valueSeq()
-      .filter((e) => e.type === "Rule")
-      .map((val) => (val as RuleEntry).rule)
-      .toArray();
+    const output: Rule[] = [];
+    for (const entry of this.catalog.values()) {
+      if (entry.type === "Rule") {
+        output.push(entry.rule);
+      }
+    }
+    return output;
   }
 
   getTables(): string[] {
-    return this.catalog
-      .filter((e) => e.type === "Table")
-      .keySeq()
-      .toArray();
+    const output: string[] = [];
+    for (const [name, entry] of this.catalog) {
+      if (entry.type === "Table") {
+        output.push(name);
+      }
+    }
+    return output;
   }
 }
