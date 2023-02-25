@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { formatNodeDesc } from "../../core/incremental/pretty";
 import { nullLoader } from "../../core/loaders";
 import { ppb } from "../../core/pretty";
 import { int, rec, Statement, str } from "../../core/types";
@@ -11,8 +12,9 @@ function getInitialInterpreters(): {
   example: IncrementalInterpreter;
   history: IncrementalInterpreter;
 } {
-  let initialExampleInterp = new IncrementalInterpreter(".", nullLoader);
-  initialExampleInterp = initialExampleInterp.evalStr(
+  // Initialize example interpreter
+  let exampleInterp = new IncrementalInterpreter(".", nullLoader);
+  exampleInterp = exampleInterp.evalStr(
     `.table node
   .table edge
   reachable{from: A, to: C} :-
@@ -27,19 +29,48 @@ function getInitialInterpreters(): {
     }
   }.`
   )[1] as IncrementalInterpreter;
-  initialExampleInterp.queryStr("reachable{}?");
+  exampleInterp.queryStr("reachable{}?");
   // TODO: initial nodes and edges
 
-  // TODO: extract graph from example interp; insert into history interp
-  let initialHistoryInterp = new IncrementalInterpreter(".", nullLoader);
-  initialHistoryInterp = initialHistoryInterp.evalStr(
-    `.table step
-  .table userAction
+  // Initialize history interpreter
+  let historyInterp = new IncrementalInterpreter(".", nullLoader);
+  historyInterp = historyInterp.evalStr(
+    `.table history.step
+  .table history.userAction
   .table dataflow.node
-  .table dataflow.edge`
+  .table dataflow.edge
+  internal.visualization{
+    name: "Graph",
+    spec: graphviz{
+      nodes: dataflow.node{id: ID},
+      edges: dataflow.edge{from: From, to: To}
+    }
+  }.`
   )[1] as IncrementalInterpreter;
 
-  return { example: initialExampleInterp, history: initialHistoryInterp };
+  // insert graph from example interpreter into history interpreter
+  for (const [id, node] of exampleInterp.graph.nodes.entries()) {
+    historyInterp = historyInterp.evalStmt({
+      type: "Fact",
+      record: rec("dataflow.node", {
+        id: str(id),
+        desc: str(formatNodeDesc(node.desc)),
+      }),
+    })[1] as IncrementalInterpreter;
+  }
+  for (const [fromID, toIDs] of exampleInterp.graph.edges.entries()) {
+    for (const toID of toIDs) {
+      historyInterp = historyInterp.evalStmt({
+        type: "Fact",
+        record: rec("dataflow.edge", {
+          from: str(fromID),
+          to: str(toID),
+        }),
+      })[1] as IncrementalInterpreter;
+    }
+  }
+
+  return { example: exampleInterp, history: historyInterp };
 }
 
 const INITIAL_INTERPS = getInitialInterpreters();
@@ -63,7 +94,7 @@ function Main() {
       setExampleInterp(res.newInterp as IncrementalInterpreter);
       dispatchHistoryInterp({
         type: "Fact",
-        record: rec("userAction", {
+        record: rec("history.userAction", {
           id: int(userStep),
           record:
             stmt.type === "Fact"
@@ -83,7 +114,7 @@ function Main() {
             const data = logItem.data;
             dispatchHistoryInterp({
               type: "Fact",
-              record: rec("step", {
+              record: rec("history.step", {
                 userActionID: int(userStep),
                 fromID: str(item.fromID),
                 multiplicity: int(logItem.multiplicity),
