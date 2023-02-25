@@ -1,7 +1,5 @@
 import { NodeAndCache, NodeDesc } from "./types";
 import { ppt } from "../pretty";
-import { Set } from "immutable";
-import { VarToPath } from "../types";
 
 export function formatNodeDesc(nodeDesc: NodeDesc): string {
   switch (nodeDesc.type) {
