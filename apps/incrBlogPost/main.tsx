@@ -1,4 +1,3 @@
-import { IncrementFactor } from "aws-sdk/clients/iot";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
@@ -32,8 +31,6 @@ function Main() {
       st.evalStmt(action)[1] as IncrementalInterpreter,
     initialHistoryInterp
   );
-
-  console.log({ exampleInterp, historyInterp });
 
   return (
     <div>
