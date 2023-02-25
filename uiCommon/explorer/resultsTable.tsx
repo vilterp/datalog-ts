@@ -1,5 +1,5 @@
 import React from "react";
-import { ppr } from "../../core/pretty";
+import { ppr, ppt } from "../../core/pretty";
 import { Rec, Relation, Res } from "../../core/types";
 import { jsonEq } from "../../util/json";
 import { groupBy, objToPairs } from "../../util/util";
@@ -71,6 +71,8 @@ export function ResultsTable(props: {
             );
           })}
           {/* count */}
+          <th />
+          {/* x */}
           <th />
         </tr>
       </thead>
@@ -149,6 +151,17 @@ export function ResultsTable(props: {
                   </td>
                 ))}
                 <td>{sameResultCount > 1 ? `(${sameResultCount})` : null}</td>
+                <td>
+                  {/* TODO: only if this is a rule */}
+                  <button
+                    onClick={(evt) => {
+                      evt.preventDefault();
+                      console.log("TODO: delete", ppt(result.term));
+                    }}
+                  >
+                    x
+                  </button>
+                </td>
               </tr>
               {rowCollapseState.collapsed || !result.trace ? null : (
                 <tr>
