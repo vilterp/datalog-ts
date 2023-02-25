@@ -36,6 +36,50 @@ function Main() {
   );
   const [userStep, setUserStep] = React.useState(0);
 
+  const runStmts = (stmts: Statement[]) => {
+    setUserStep(userStep + 1);
+    stmts.forEach((stmt) => {
+      // update example interp
+      const res = exampleInterp.processStmt(stmt);
+      setExampleInterp(res.newInterp as IncrementalInterpreter);
+      dispatchHistoryInterp({
+        type: "Fact",
+        record: rec("userAction", {
+          id: int(userStep),
+          record:
+            stmt.type === "Fact"
+              ? stmt.record
+              : stmt.type === "Delete"
+              ? stmt.record
+              : rec("unreachable", {}), // TODO: throw error
+          multiplicity: int(
+            stmt.type === "Fact" ? 1 : stmt.type === "Delete" ? -1 : 0
+          ),
+        }),
+      });
+      // update history interp
+      if (res.output.type === "EmissionLog") {
+        res.output.log.forEach((item) => {
+          item.output.forEach((logItem) => {
+            const data = logItem.data;
+            dispatchHistoryInterp({
+              type: "Fact",
+              record: rec("step", {
+                userActionID: int(userStep),
+                fromID: str(item.fromID),
+                multiplicity: int(logItem.multiplicity),
+                data:
+                  data.type === "Record"
+                    ? data.rec
+                    : str(ppb(data.bindings.bindings)),
+              }),
+            });
+          });
+        });
+      }
+    });
+  };
+
   return (
     <div>
       <h2>Incremental Datalog</h2>
@@ -49,52 +93,7 @@ function Main() {
       </ul>
       <p>Take this graph problem as an example:</p>
       <Explorer interp={exampleInterp} />
-      <EditableGraph
-        interp={exampleInterp}
-        runStmts={(stmts) => {
-          setUserStep(userStep + 1);
-          stmts.forEach((stmt) => {
-            // update example interp
-            const res = exampleInterp.processStmt(stmt);
-            setExampleInterp(res.newInterp as IncrementalInterpreter);
-            dispatchHistoryInterp({
-              type: "Fact",
-              record: rec("userAction", {
-                id: int(userStep),
-                record:
-                  stmt.type === "Fact"
-                    ? stmt.record
-                    : stmt.type === "Delete"
-                    ? stmt.record
-                    : rec("unreachable", {}), // TODO: throw error
-                multiplicity: int(
-                  stmt.type === "Fact" ? 1 : stmt.type === "Delete" ? -1 : 0
-                ),
-              }),
-            });
-            // update history interp
-            if (res.output.type === "EmissionLog") {
-              res.output.log.forEach((item) => {
-                item.output.forEach((logItem) => {
-                  const data = logItem.data;
-                  dispatchHistoryInterp({
-                    type: "Fact",
-                    record: rec("step", {
-                      userActionID: int(userStep),
-                      fromID: str(item.fromID),
-                      multiplicity: int(logItem.multiplicity),
-                      data:
-                        data.type === "Record"
-                          ? data.rec
-                          : str(ppb(data.bindings.bindings)),
-                    }),
-                  });
-                });
-              });
-            }
-          });
-        }}
-      />
+      <EditableGraph interp={exampleInterp} runStmts={runStmts} />
       <p>
         You can add and remove nodes and edges, and see the transitive closure
         edges update.
