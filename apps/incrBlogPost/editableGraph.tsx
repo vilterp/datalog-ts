@@ -22,7 +22,7 @@ export function EditableGraph(props: {
   });
 
   // TODO: use letters
-  const [nextNodeID, setNextNodeID] = useState(3);
+  const [nextNodeID, setNextNodeID] = useState(0);
   const [fromNodeID, setFromNodeID] = useState(nodes[0] || "");
   const [toNodeID, setToNodeID] = useState(nodes[0] || "");
 
