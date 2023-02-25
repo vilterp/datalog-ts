@@ -39,10 +39,11 @@ function getInitialInterpreters(): {
   .table history.userAction
   .table dataflow.node
   .table dataflow.edge
+  # TODO: node colors
   internal.visualization{
     name: "Graph",
     spec: graphviz{
-      nodes: dataflow.node{id: ID},
+      nodes: dataflow.node{id: ID, label: Label},
       edges: dataflow.edge{from: From, to: To}
     }
   }.`
@@ -54,7 +55,12 @@ function getInitialInterpreters(): {
       type: "Fact",
       record: rec("dataflow.node", {
         id: str(id),
-        desc: str(formatNodeDesc(node.desc)),
+        type: str(node.desc.type),
+        label: str(
+          node.desc.type === "BaseFactTable"
+            ? id
+            : `${id}: ${formatNodeDesc(node.desc)}`
+        ),
       }),
     })[1] as IncrementalInterpreter;
   }
