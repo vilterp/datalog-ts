@@ -154,8 +154,37 @@ function Main() {
         You can add and remove nodes and edges, and see the transitive closure
         edges update.
       </p>
-      <p>A log of what you've done can be seen in this explorer:</p>
+      <p>
+        To make this incremental, we compile the datalog program into a dataflow
+        graph, where each node is an operator of some kind. When facts are
+        inserted into nodes representing "base relations", updates propagate
+        through the rest of the graph.
+      </p>
+      <p>The following explorer shows:</p>
+      <ul>
+        <li>
+          <li>
+            The dataflow graph (rendered from tables <code>dataflow.nodes</code>{" "}
+            and <code>dataflow.edges</code>)
+          </li>
+          <li>
+            A log of what you've done (table <code>history.userActions</code>)
+          </li>
+          <li>
+            A log of propagation steps through the graph, as a result of your
+            actions (table <code>history.step</code>)
+          </li>
+        </li>
+      </ul>
       <Explorer interp={historyInterp} showViz />
+      <p>
+        An interesting note: retractions are insertions with negative
+        multiplicities. The operators, like <code>Join</code>, know how to
+        handle this.
+      </p>
+      <p>
+        Hopefully this helped you understand incremental datalog evaluation.
+      </p>
     </div>
   );
 }
