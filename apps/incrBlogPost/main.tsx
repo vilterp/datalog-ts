@@ -137,8 +137,10 @@ function Main() {
   };
 
   return (
-    <div>
-      <h2>Incremental Datalog</h2>
+    <div style={{ maxWidth: "60rem", margin: "20px auto" }}>
+      <h2>Incremental Datalog Evaluation</h2>
+      <h3>Inspired by Differential Dataflow</h3>
+      <h4>Pete Vilter, Feb 2023</h4>
       <p>We want to </p>
       <ul>
         <li>Define rules</li>
