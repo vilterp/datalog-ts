@@ -7,10 +7,13 @@ import { int, rec, Statement, str } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
 import { EditableGraph } from "./editableGraph";
 
-let initialExampleInterp = new IncrementalInterpreter(".", nullLoader);
-// TODO: load these from
-initialExampleInterp = initialExampleInterp.evalStr(
-  `.table node
+function getInitialInterpreters(): {
+  example: IncrementalInterpreter;
+  history: IncrementalInterpreter;
+} {
+  let initialExampleInterp = new IncrementalInterpreter(".", nullLoader);
+  initialExampleInterp = initialExampleInterp.evalStr(
+    `.table node
   .table edge
   reachable{from: A, to: C} :-
     edge{from: A, to: C} |
@@ -23,25 +26,32 @@ initialExampleInterp = initialExampleInterp.evalStr(
       edges: edge{from: From, to: To}
     }
   }.`
-)[1] as IncrementalInterpreter;
-// TODO: initial nodes and edges
+  )[1] as IncrementalInterpreter;
+  initialExampleInterp.queryStr("reachable{}?");
+  // TODO: initial nodes and edges
 
-// TODO: extract graph from example interp; insert into history interp
-let initialHistoryInterp = new IncrementalInterpreter(".", nullLoader);
-initialHistoryInterp = initialHistoryInterp.evalStr(
-  ".table step"
-)[1] as IncrementalInterpreter;
-initialHistoryInterp = initialHistoryInterp.evalStr(
-  ".table userAction"
-)[1] as IncrementalInterpreter;
+  // TODO: extract graph from example interp; insert into history interp
+  let initialHistoryInterp = new IncrementalInterpreter(".", nullLoader);
+  initialHistoryInterp = initialHistoryInterp.evalStr(
+    `.table step
+  .table userAction
+  .table dataflow.node
+  .table dataflow.edge`
+  )[1] as IncrementalInterpreter;
+
+  return { example: initialExampleInterp, history: initialHistoryInterp };
+}
+
+const INITIAL_INTERPS = getInitialInterpreters();
 
 function Main() {
-  const [exampleInterp, setExampleInterp] =
-    React.useState(initialExampleInterp);
+  const [exampleInterp, setExampleInterp] = React.useState(
+    INITIAL_INTERPS.example
+  );
   const [historyInterp, dispatchHistoryInterp] = React.useReducer(
     (st: IncrementalInterpreter, action: Statement): IncrementalInterpreter =>
       st.evalStmt(action)[1] as IncrementalInterpreter,
-    initialHistoryInterp
+    INITIAL_INTERPS.history
   );
   const [userStep, setUserStep] = React.useState(0);
 
