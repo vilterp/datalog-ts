@@ -10,17 +10,21 @@ import { EditableGraph } from "./editableGraph";
 let initialExampleInterp = new IncrementalInterpreter(".", nullLoader);
 // TODO: load these from
 initialExampleInterp = initialExampleInterp.evalStr(
-  ".table node"
-)[1] as IncrementalInterpreter;
-initialExampleInterp = initialExampleInterp.evalStr(
-  ".table edge"
-)[1] as IncrementalInterpreter;
-initialExampleInterp = initialExampleInterp.evalStr(
-  `reachable{from: A, to: C} :-
+  `.table node
+  .table edge
+  reachable{from: A, to: C} :-
     edge{from: A, to: C} |
     edge{from: A, to: B} &
-    reachable{from: B, to: C}.`
+    reachable{from: B, to: C}.
+  internal.visualization{
+    name: "Graph",
+    spec: graphviz{
+      nodes: node{id: ID},
+      edges: edge{from: From, to: To}
+    }
+  }.`
 )[1] as IncrementalInterpreter;
+// TODO: initial nodes and edges
 
 // TODO: extract graph from example interp; insert into history interp
 let initialHistoryInterp = new IncrementalInterpreter(".", nullLoader);
@@ -97,14 +101,14 @@ function Main() {
         </li>
       </ul>
       <p>Take this graph problem as an example:</p>
-      <Explorer interp={exampleInterp} />
+      <Explorer interp={exampleInterp} showViz />
       <EditableGraph interp={exampleInterp} runStmts={runStmts} />
       <p>
         You can add and remove nodes and edges, and see the transitive closure
         edges update.
       </p>
       <p>A log of what you've done can be seen in this explorer:</p>
-      <Explorer interp={historyInterp} />
+      <Explorer interp={historyInterp} showViz />
     </div>
   );
 }
