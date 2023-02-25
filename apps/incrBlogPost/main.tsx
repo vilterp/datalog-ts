@@ -15,7 +15,12 @@ initialExampleInterp = initialExampleInterp.evalStr(
 initialExampleInterp = initialExampleInterp.evalStr(
   ".table edge"
 )[1] as IncrementalInterpreter;
-// TODO: install transitive closure
+initialExampleInterp = initialExampleInterp.evalStr(
+  `reachable{from: A, to: C} :-
+    edge{from: A, to: C} |
+    edge{from: A, to: B} &
+    reachable{from: B, to: C}.`
+)[1] as IncrementalInterpreter;
 
 // TODO: extract graph from example interp; insert into history interp
 let initialHistoryInterp = new IncrementalInterpreter(".", nullLoader);
