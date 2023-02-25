@@ -22,6 +22,9 @@ let initialHistoryInterp = new IncrementalInterpreter(".", nullLoader);
 initialHistoryInterp = initialHistoryInterp.evalStr(
   ".table step"
 )[1] as IncrementalInterpreter;
+initialHistoryInterp = initialHistoryInterp.evalStr(
+  ".table userAction"
+)[1] as IncrementalInterpreter;
 
 function Main() {
   const [exampleInterp, setExampleInterp] =
@@ -31,6 +34,7 @@ function Main() {
       st.evalStmt(action)[1] as IncrementalInterpreter,
     initialHistoryInterp
   );
+  const [userStep, setUserStep] = React.useState(0);
 
   return (
     <div>
@@ -48,10 +52,27 @@ function Main() {
       <EditableGraph
         interp={exampleInterp}
         runStmts={(stmts) => {
-          // TODO: introduce user step id
+          setUserStep(userStep + 1);
           stmts.forEach((stmt) => {
+            // update example interp
             const res = exampleInterp.processStmt(stmt);
             setExampleInterp(res.newInterp as IncrementalInterpreter);
+            dispatchHistoryInterp({
+              type: "Fact",
+              record: rec("userAction", {
+                id: int(userStep),
+                record:
+                  stmt.type === "Fact"
+                    ? stmt.record
+                    : stmt.type === "Delete"
+                    ? stmt.record
+                    : rec("unreachable", {}), // TODO: throw error
+                multiplicity: int(
+                  stmt.type === "Fact" ? 1 : stmt.type === "Delete" ? -1 : 0
+                ),
+              }),
+            });
+            // update history interp
             if (res.output.type === "EmissionLog") {
               res.output.log.forEach((item) => {
                 item.output.forEach((logItem) => {
@@ -59,6 +80,7 @@ function Main() {
                   dispatchHistoryInterp({
                     type: "Fact",
                     record: rec("step", {
+                      userActionID: int(userStep),
                       fromID: str(item.fromID),
                       multiplicity: int(logItem.multiplicity),
                       data:
