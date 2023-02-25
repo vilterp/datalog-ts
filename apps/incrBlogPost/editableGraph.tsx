@@ -1,13 +1,27 @@
 import * as React from "react";
 import { useState } from "react";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { Rec, rec, Statement, str, StringLit } from "../../core/types";
 
 type Node = string;
 type Edge = { from: string; to: string };
 
-export function EditableGraph() {
+export function EditableGraph(props: {
+  interp: AbstractInterpreter;
+  runStmts: (stmts: Statement[]) => void;
+}) {
+  const nodes: Node[] = props.interp
+    .queryStr("node{}?")
+    .map((res) => ((res.term as Rec).attrs.id as StringLit).val);
+  const edges: Edge[] = props.interp.queryStr("edge{}?").map((res) => {
+    const rec = res.term as Rec;
+    return {
+      from: (rec.attrs.from as StringLit).val,
+      to: (rec.attrs.to as StringLit).val,
+    };
+  });
+
   // TODO: use letters
-  const [nodes, setNodes] = useState<Node[]>(["0", "1", "2"]);
-  const [edges, setEdges] = useState<Edge[]>([{ from: "0", to: "1" }]);
   const [nextNodeID, setNextNodeID] = useState(3);
   const [fromNodeID, setFromNodeID] = useState(nodes[0] || "");
   const [toNodeID, setToNodeID] = useState(nodes[0] || "");
@@ -20,7 +34,13 @@ export function EditableGraph() {
           {nodes.map((node) => (
             <li key={node}>
               {node}{" "}
-              <button onClick={() => console.log("TODO: remove", node)}>
+              <button
+                onClick={() =>
+                  props.runStmts([
+                    { type: "Delete", record: rec("node", { id: str(node) }) },
+                  ])
+                }
+              >
                 X
               </button>
             </li>
@@ -28,7 +48,12 @@ export function EditableGraph() {
         </ul>
         <button
           onClick={() => {
-            setNodes([...nodes, nextNodeID.toString()]);
+            props.runStmts([
+              {
+                type: "Fact",
+                record: rec("node", { id: str(nextNodeID.toString()) }),
+              },
+            ]);
             setNextNodeID(nextNodeID + 1);
           }}
         >
@@ -42,9 +67,17 @@ export function EditableGraph() {
             <li key={`${edge.from}-${edge.to}`}>
               {edge.from} {"->"} {edge.to}{" "}
               <button
-                onClick={() => {
-                  console.log("TODO: remove", edge);
-                }}
+                onClick={() =>
+                  props.runStmts([
+                    {
+                      type: "Delete",
+                      record: rec("edge", {
+                        from: str(edge.from),
+                        to: str(edge.to),
+                      }),
+                    },
+                  ])
+                }
               >
                 X
               </button>
@@ -70,9 +103,17 @@ export function EditableGraph() {
           ))}
         </select>
         <button
-          onClick={() => {
-            setEdges([...edges, { from: fromNodeID, to: toNodeID }]);
-          }}
+          onClick={() =>
+            props.runStmts([
+              {
+                type: "Fact",
+                record: rec("edge", {
+                  from: str(fromNodeID),
+                  to: str(toNodeID),
+                }),
+              },
+            ])
+          }
         >
           Add Edge
         </button>
