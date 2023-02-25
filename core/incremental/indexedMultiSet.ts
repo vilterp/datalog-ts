@@ -5,10 +5,10 @@ export function emptyIndexedMultiset<T>(
 ): IndexedMultiSet<T> {
   return new IndexedMultiSet(
     new DefaultDict<Key, ItemAndMult<T>>(() => {
-      throw new Error("bloop");
+      throw new Error("getDefault: shouldn't be called");
     }),
     new DefaultDict<string, Index<T>>(() => {
-      throw new Error("bloop");
+      throw new Error("getDefault: shouldn't be called");
     }),
     stringify
   );
