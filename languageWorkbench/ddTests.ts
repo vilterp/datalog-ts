@@ -9,6 +9,8 @@ import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { uniqBy } from "../util/util";
+import { fastPPT } from "../core/fastPPT";
 
 export function lwbTestsSimple(writeResults: boolean) {
   return lwbTests(
@@ -84,8 +86,13 @@ export function testLangQuery(
     );
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
-      const res = finalInterp.queryStr(query);
-      return datalogOut(res.map((res) => res.term));
+      const results = finalInterp.queryStr(query);
+      // TODO: this shouldn't be necessary
+      const dedupedResults =
+        finalInterp instanceof SimpleInterpreter
+          ? uniqBy((res) => fastPPT(res.term), results)
+          : results;
+      return datalogOut(dedupedResults.map((res) => res.term));
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);

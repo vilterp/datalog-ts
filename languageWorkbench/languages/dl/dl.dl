@@ -54,7 +54,8 @@ scope.varFact{scopeID: global{}, name: N, span: S, kind: "relation"} :-
 scope.Placeholder{scopeID: I, span: S, kind: K} :-
   scope.placeholderVar{scopeID: I, span: S, kind: K} |
   scope.placeholderRule{scopeID: I, span: S, kind: K} |
-  scope.placeholderKeyValue{scopeID: I, span: S, kind: K}.
+  scope.placeholderKeyValueHead{scopeID: I, span: S, kind: K} |
+  scope.placeholderKeyValueBody{scopeID: I, span: S, kind: K}.
 scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
   scope.ruleConjunct{ruleID: RuleID, conjunct: ConjunctID} &
   ast.record{id: RecordID, parentID: ConjunctID} &
@@ -65,12 +66,18 @@ scope.placeholderVar{scopeID: RuleID, span: S, kind: "var"} :-
 scope.placeholderRule{scopeID: global{}, span: S, kind: "relation"} :-
   ast.conjunct{id: ConjunctID} &
   ast.placeholder{parentID: ConjunctID, span: S}.
-scope.placeholderKeyValue{scopeID: Relation, span: S, kind: "attr"} :-
+scope.placeholderKeyValueHead{scopeID: Relation, span: S, kind: "attr"} :-
   ast.conjunct{id: Conjunct} &
   ast.record{id: Rec, parentID: Conjunct} &
   ast.ident{parentID: Rec, text: Relation} &
   ast.recordAttrs{id: Attrs, parentID: Rec} &
   ast.placeholder{parentID: Attrs, span: S}.
+scope.placeholderKeyValueBody{scopeID: Relation, span: S, kind: "attr"} :-
+  scope.ruleConjunct{ruleID: RuleID, conjunct: ConjunctID} &
+  ast.record{id: RecordID, parentID: ConjunctID} &
+  ast.ident{parentID: Rec, text: Relation} &
+  ast.recordAttrs{id: AttrsID, parentID: RecordID} &
+  ast.placeholder{span: S, parentID: AttrsID}.
 
 # === rules for traversing into nested terms ===
 
