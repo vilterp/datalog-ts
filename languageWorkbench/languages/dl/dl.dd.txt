@@ -10,6 +10,9 @@ wut{time: T} :-
 ide.Suggestion{}?
 ----
 application/datalog
+ide.Suggestion{id: "foo", name: "bar", span: span{from: 84, to: 87}, type: "any"}.
+ide.Suggestion{id: "foo", name: "baz", span: span{from: 84, to: 87}, type: "any"}.
+ide.Suggestion{id: "wut", name: "time", span: span{from: 84, to: 87}, type: "any"}.
 ide.Suggestion{id: 15, name: "A", span: span{from: 71, to: 74}, type: "any"}.
 ide.Suggestion{id: 15, name: "B", span: span{from: 71, to: 74}, type: "any"}.
 ide.Suggestion{id: global{}, name: "baz", span: span{from: 36, to: 39}, type: "any"}.
@@ -134,6 +137,16 @@ ast.dict{}?
 ----
 application/datalog
 ast.dict{id: 41, parentID: 40, rule: "dict", span: span{from: 17, to: 37}, text: "{\"foo\": 2, \"bar\": 3}"}.
+
+dl
+foo{id: I} :-
+  bar{}.
+bar{} :-
+  foo{???}.
+ide.Suggestion{}?
+----
+application/datalog
+ide.Suggestion{id: "foo", name: "id", span: span{from: 38, to: 41}, type: "any"}.
 
 dl
 scope.Defn{scopeID: I, name: N, type: T, span: S} :-
