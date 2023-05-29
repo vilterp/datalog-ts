@@ -87,12 +87,7 @@ export function testLangQuery(
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
       const results = finalInterp.queryStr(query);
-      // TODO: this shouldn't be necessary
-      const dedupedResults =
-        finalInterp instanceof SimpleInterpreter
-          ? uniqBy((res) => fastPPT(res.term), results)
-          : results;
-      return datalogOut(dedupedResults.map((res) => res.term));
+      return datalogOut(results.map((res) => res.term));
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);
