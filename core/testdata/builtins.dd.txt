@@ -13,6 +13,11 @@ base.add{a: R, b: 2, res: 3}?
 application/datalog
 base.add{a: 1, b: 2, res: 3}.
 
+base.add{a: 1.5, b: 1.5, res: V}?
+----
+application/datalog
+base.add{a: 1, b: 1, res: 2}.
+
 base.mul{a: 2, b: 3, res: V}?
 ----
 application/datalog
