@@ -1,4 +1,3 @@
-import Graphviz from "graphviz-react";
 import React, { useState } from "react";
 import ReactJson from "react-json-view";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -21,7 +20,7 @@ export const VISUALIZERS = {
   // TODO: syntax highlight using TermView?
   "application/datalog": (text) => <DLView text={text} />,
   // TODO: reinstate an actual graphviz viewer
-  "application/graphviz": (text) => <Graphviz dot={text} />,
+  "application/graphviz": (text) => <pre style={{ margin: 0 }}>{text}</pre>,
   "application/json": (text) => (
     <ReactJson
       name={null}
