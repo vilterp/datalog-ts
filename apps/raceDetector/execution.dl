@@ -223,6 +223,11 @@ internal.visualization{
   },
 }.
 
+internal.visualization{
+  name: "Time Ticker",
+  spec: ticker{},
+}.
+
 # insertion
 
 state.programCounter.init{thread: 1, time: 1, counter: 0}.
