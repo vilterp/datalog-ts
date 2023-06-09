@@ -1,3 +1,21 @@
+time{time: 1}.
+time{time: 2}.
+time{time: 3}.
+time{time: 4}.
+time{time: 5}.
+time{time: 6}.
+time{time: 7}.
+time{time: 8}.
+time{time: 9}.
+time{time: 10}.
+time{time: 11}.
+time{time: 12}.
+time{time: 13}.
+time{time: 14}.
+time{time: 15}.
+----
+application/datalog
+
 state.ProgramCounter{}?
 ----
 application/datalog

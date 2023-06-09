@@ -21,13 +21,16 @@ export function raceDetectorTests(writeResults: boolean): Suite {
 }
 
 function getResults(inputs: string[]): TestOutput[] {
-  return inputs.map((input) => {
-    let interp: AbstractInterpreter = new IncrementalInterpreter(
-      "apps/raceDetector",
-      fsLoader
-    );
-    interp = interp.doLoad("execution.dl");
-    const results = interp.evalStr(input)[0];
-    return datalogOut(results.map((res) => res.term));
+  let interp: AbstractInterpreter = new IncrementalInterpreter(
+    "apps/raceDetector",
+    fsLoader
+  );
+  interp = interp.doLoad("execution.dl");
+  const out: TestOutput[] = [];
+  inputs.forEach((input) => {
+    const [results, newInterp] = interp.evalStr(input);
+    interp = newInterp;
+    out.push(datalogOut(results.map((res) => res.term)));
   });
+  return out;
 }
