@@ -5,10 +5,10 @@ import { nullLoader } from "../../core/loaders";
 import { Statement } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
 // @ts-ignore
-import simDL from "./execution.dl";
+import execDL from "./execution.dl";
 
 const emptyInterp = new IncrementalInterpreter(".", nullLoader);
-const loadedInterp = emptyInterp.evalStr(simDL)[1];
+const loadedInterp = emptyInterp.evalStr(execDL)[1];
 
 function Main() {
   const [interp, dispatch] = useReducer(
