@@ -19,7 +19,7 @@ function Main() {
 
   return (
     <>
-      <h1>Simulator</h1>
+      <h1>Race Detector</h1>
       <Explorer
         interp={interp}
         runStatements={(stmts) => {
