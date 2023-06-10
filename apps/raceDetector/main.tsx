@@ -9,7 +9,7 @@ import execDL from "./execution.dl";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { linkBasicBlocks } from "./linker";
+import { compileBasicBlocks } from "./compiler";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { ppt } from "../../core/pretty";
 
@@ -43,7 +43,7 @@ function Main() {
     setEditorStateInner(editorState);
     const tree = parseMain(editorState.source);
     try {
-      const records = linkBasicBlocks(tree);
+      const records = compileBasicBlocks(tree);
       console.log("records", records.map(ppt).join("\n"));
     } catch (e) {
       console.warn("error while linking", e);

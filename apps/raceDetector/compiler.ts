@@ -9,7 +9,7 @@ type BlockIndex = {
   [blockName: string]: { startIndex: number; instructions: BBInstr[] };
 };
 
-export function linkBasicBlocks(tree: BBMain): Rec[] {
+export function compileBasicBlocks(tree: BBMain): Rec[] {
   const results: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
   Object.entries(blockIndex).forEach(([name, block]) => {

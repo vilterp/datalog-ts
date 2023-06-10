@@ -5,7 +5,7 @@ import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser"
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
-import { linkBasicBlocks } from "./linker";
+import { compileBasicBlocks } from "./compiler";
 
 export function raceDetectorTests(writeResults: boolean): Suite {
   return [
@@ -20,11 +20,11 @@ export function raceDetectorTests(writeResults: boolean): Suite {
       },
     },
     {
-      name: "linker",
+      name: "compiler",
       test() {
         runDDTestAtPath(
-          "apps/raceDetector/testdata/linker.dd.txt",
-          linkerTest,
+          "apps/raceDetector/testdata/compiler.dd.txt",
+          compilerTest,
           writeResults
         );
       },
@@ -47,10 +47,10 @@ function getResults(inputs: string[]): TestOutput[] {
   return out;
 }
 
-function linkerTest(inputs: string[]): TestOutput[] {
+function compilerTest(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
     const main = parseMain(input);
-    const records = linkBasicBlocks(main);
+    const records = compileBasicBlocks(main);
     return datalogOut(records);
   });
 }
