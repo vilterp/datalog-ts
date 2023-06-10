@@ -11,3 +11,4 @@ loop {
 ----
 application/datalog
 state.ProgramCounter{counter: 0, thread: 1, time: 1}.
+state.ProgramCounter{counter: 1, thread: 1, time: 2}.

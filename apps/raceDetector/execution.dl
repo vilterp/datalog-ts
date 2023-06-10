@@ -231,19 +231,3 @@ internal.visualization{
 # insertion
 
 state.programCounter.init{thread: 1, time: 1, counter: 0}.
-
-instr{idx: 0, op: store{var: "x", expr: 3}}.
-instr{idx: 1, op: increment{var: "x"}}.
-instr{idx: 2, op: store{var: "y", expr: 0}}.
-instr{idx: 3, op: fork{goto: 5}}.
-instr{idx: 4, op: conditionalGoto{dest: 1, var: "y"}}.
-instr{idx: 5, op: increment{var: "x"}}.
-instr{idx: 6, op: increment{var: "x"}}.
-instr{idx: 7, op: increment{var: "x"}}.
-
-expr.funcCall{id: 0, name: "<"}.
-expr.funcArg{funcID: 0, argID: 1, idx: 0}.
-expr.funcArg{funcID: 0, argID: 2, idx: 1}.
-expr.var{id: 1, name: "x"}.
-expr.intLit{id: 2, value: 5}.
-expr.intLit{id: 3, value: 0}.

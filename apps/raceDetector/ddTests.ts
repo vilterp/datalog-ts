@@ -2,10 +2,12 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
+import { int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
+import { range } from "../../util/util";
 import { compileBasicBlocks } from "./compiler";
 
 export function raceDetectorTests(writeResults: boolean): Suite {
@@ -76,6 +78,9 @@ function endToEndTest(inputs: string[]): TestOutput[] {
     );
     interp = interp.doLoad("execution.dl");
     interp = interp.bulkInsert(records);
+    interp = interp.bulkInsert(
+      range(10).map((n) => rec("time", { time: int(n) }))
+    );
     const out = interp.queryStr("state.ProgramCounter{}?").map((x) => x.term);
     return datalogOut(out);
   });
