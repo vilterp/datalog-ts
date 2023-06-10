@@ -15,6 +15,7 @@ import {
 } from "../../languageWorkbench/interpCache";
 import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
+import { RuleTree } from "../../languageWorkbench/parserlib/ruleTree";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -24,6 +25,7 @@ export function LingoEditor(props: {
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
+  setRuleTree?: (ruleTree: RuleTree) => void;
 }) {
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -94,17 +96,19 @@ export function LingoEditor(props: {
 
   // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
   // instances... sigh
-  const withoutCursor = useMemo(
-    () =>
-      getInterpForDoc(
-        INIT_INTERP,
-        props.langSpec.name,
-        { [props.langSpec.name]: props.langSpec },
-        `test.${props.langSpec.name}`,
-        props.editorState.source
-      ),
-    [props.langSpec, props.editorState.source]
-  );
+  const withoutCursor = useMemo(() => {
+    const res = getInterpForDoc(
+      INIT_INTERP,
+      props.langSpec.name,
+      { [props.langSpec.name]: props.langSpec },
+      `test.${props.langSpec.name}`,
+      props.editorState.source
+    );
+    if (props.setRuleTree) {
+      props.setRuleTree(res.ruleTree);
+    }
+    return res;
+  }, [props.langSpec, props.editorState.source]);
   const interp = addCursor(withoutCursor.interp, props.editorState.cursorPos);
 
   return (
