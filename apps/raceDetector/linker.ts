@@ -11,7 +11,6 @@ type BlockIndex = {
 export function linkBasicBlocks(tree: BBMain): Rec[] {
   const results: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
-  console.log("block index", blockIndex);
   Object.entries(blockIndex).forEach(([name, block]) => {
     block.instructions.forEach((instr, idx) => {
       results.push(

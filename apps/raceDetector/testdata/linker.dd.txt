@@ -1,0 +1,20 @@
+foo {
+  a = 42;
+  b = "foo";
+  x = boop(a);
+  c = group(???);
+  goto bar;
+}
+bar {
+  y = boop;
+  goto foo;
+}
+----
+application/datalog
+instr{idx: 0, op: store{}}.
+instr{idx: 1, op: store{}}.
+instr{idx: 2, op: store{}}.
+instr{idx: 3, op: store{}}.
+instr{idx: 4, op: goto{dest: 5}}.
+instr{idx: 5, op: store{}}.
+instr{idx: 6, op: goto{dest: 0}}.
