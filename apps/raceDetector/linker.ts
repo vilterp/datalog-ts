@@ -1,7 +1,8 @@
-import { Rec, int, rec, str } from "../../core/types";
+import { Rec, Term, array, int, rec, str } from "../../core/types";
 import {
   BBInstr,
   BBMain,
+  BBRvalue,
 } from "../../languageWorkbench/languages/basicBlocks/parser";
 
 type BlockIndex = {
@@ -29,6 +30,7 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
     case "ValueInstr":
       return rec("store", {
         var: str(instr.ident.text),
+        val: rvalueToTerm(instr.rvalue),
       });
     case "GotoInstr": {
       if (!instr.label) {
@@ -36,6 +38,24 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
       }
       return rec("goto", { dest: int(index[instr.label.text].startIndex) });
     }
+  }
+}
+
+function rvalueToTerm(expr: BBRvalue): Term {
+  switch (expr.type) {
+    case "Call":
+      if (expr.params && expr.params.Placeholder.length > 0) {
+        throw new Error("expr still has placeholder");
+      }
+      return rec("call", {
+        args: array(
+          expr.params === null ? [] : expr.params.ident.map((x) => str(x.text))
+        ),
+      });
+    case "String":
+      return str(JSON.parse(expr.text));
+    case "Int":
+      return int(parseInt(expr.text));
   }
 }
 
