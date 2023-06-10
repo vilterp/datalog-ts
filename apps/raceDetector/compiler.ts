@@ -6,20 +6,19 @@ import {
 } from "../../languageWorkbench/languages/basicBlocks/parser";
 
 type BlockIndex = {
-  [blockName: string]: { startIndex: number; instructions: BBInstr[] };
+  blockOrder: string[];
+  blocks: {
+    [blockName: string]: { startIndex: number; instructions: BBInstr[] };
+  };
 };
 
 export function compileBasicBlocks(tree: BBMain): Rec[] {
   const results: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
-  Object.entries(blockIndex).forEach(([name, block]) => {
-    block.instructions.forEach((instr, idx) => {
-      results.push(
-        rec("instr", {
-          idx: int(block.startIndex + idx),
-          op: instrToRec(instr, blockIndex),
-        })
-      );
+  blockIndex.blockOrder.forEach((blockName) => {
+    const block = blockIndex.blocks[blockName];
+    block.instructions.forEach((instr) => {
+      pushInstr(results, instrToRec(instr, blockIndex));
     });
   });
   return results;
@@ -37,7 +36,7 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
         throw new Error("instr doesn't have label");
       }
       const attrs: { [k: string]: Term } = {
-        dest: int(index[instr.label.text].startIndex),
+        dest: int(index.blocks[instr.label.text].startIndex),
       };
       if (instr.ifClause) {
         attrs.if = str(instr.ifClause.ident.text);
@@ -68,12 +67,22 @@ function rvalueToTerm(expr: BBRvalue): Term {
 
 function getBlockIndex(tree: BBMain): BlockIndex {
   let idx = 0;
-  const blockIndex: BlockIndex = {};
+  const blockIndex: BlockIndex = { blocks: {}, blockOrder: [] };
   tree.block.forEach((block) => {
     const name = block.label.text;
     const instructions = block.blockBody.instr;
-    blockIndex[name] = { startIndex: idx, instructions };
+    blockIndex.blocks[name] = { startIndex: idx, instructions };
+    blockIndex.blockOrder.push(name);
     idx += instructions.length;
   });
   return blockIndex;
+}
+
+function pushInstr(instrs: Rec[], op: Rec) {
+  instrs.push(
+    rec("instr", {
+      idx: int(instrs.length),
+      op,
+    })
+  );
 }
