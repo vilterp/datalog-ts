@@ -17,4 +17,4 @@ instr{idx: 2, op: store{val: call{args: ["a"]}, var: "x"}}.
 instr{idx: 3, op: store{val: call{args: ["b","x"]}, var: "c"}}.
 instr{idx: 4, op: goto{dest: 5}}.
 instr{idx: 5, op: store{val: call{args: []}, var: "y"}}.
-instr{idx: 6, op: goto{dest: 0}}.
+instr{idx: 6, op: goto{dest: 0, if: "y"}}.
