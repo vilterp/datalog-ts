@@ -42,8 +42,12 @@ function Main() {
   const setEditorState = (editorState: EditorState) => {
     setEditorStateInner(editorState);
     const tree = parseMain(editorState.source);
-    const records = linkBasicBlocks(tree);
-    console.log("records", records.map(ppt).join("\n"));
+    try {
+      const records = linkBasicBlocks(tree);
+      console.log("records", records.map(ppt).join("\n"));
+    } catch (e) {
+      console.warn("error while linking", e);
+    }
   };
 
   return (

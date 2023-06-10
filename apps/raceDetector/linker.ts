@@ -4,6 +4,10 @@ import {
   BBMain,
 } from "../../languageWorkbench/languages/basicBlocks/parser";
 
+type BlockIndex = {
+  [blockName: string]: { startIndex: number; instructions: BBInstr[] };
+};
+
 export function linkBasicBlocks(tree: BBMain): Rec[] {
   const results: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
@@ -13,7 +17,7 @@ export function linkBasicBlocks(tree: BBMain): Rec[] {
       results.push(
         rec("instr", {
           idx: int(block.startIndex + idx),
-          op: instrToRec(instr),
+          op: instrToRec(instr, blockIndex),
         })
       );
     });
@@ -21,18 +25,18 @@ export function linkBasicBlocks(tree: BBMain): Rec[] {
   return results;
 }
 
-function instrToRec(instr: BBInstr): Rec {
+function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
   switch (instr.type) {
     case "ValueInstr":
       return rec("store", {});
-    case "GotoInstr":
-      return rec("goto", {});
+    case "GotoInstr": {
+      if (!instr.label) {
+        throw new Error("instr doesn't have label");
+      }
+      return rec("goto", { dest: int(index[instr.label.text].startIndex) });
+    }
   }
 }
-
-type BlockIndex = {
-  [blockName: string]: { startIndex: number; instructions: BBInstr[] };
-};
 
 function getBlockIndex(tree: BBMain): BlockIndex {
   let idx = 0;
