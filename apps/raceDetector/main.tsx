@@ -10,6 +10,7 @@ import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { RuleTree } from "../../languageWorkbench/parserlib/ruleTree";
+import { linkBasicBlocks } from "./linker";
 
 const EXAMPLE = `foo {
   a = 42;
@@ -36,7 +37,8 @@ function Main() {
   );
   const [editorState, setEditorState] = useState(initialEditorState(EXAMPLE));
   const setRuleTree = (ruleTree: RuleTree) => {
-    console.log({ ruleTree });
+    console.log("ruleTree", ruleTree);
+    const recs = linkBasicBlocks(editorState.source, ruleTree);
   };
 
   return (
