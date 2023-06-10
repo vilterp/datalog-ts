@@ -19,7 +19,7 @@ const interpCache: {
 } = {};
 const docSource: { [uri: string]: string } = {};
 const interpSourceCache: {
-  [docURI: string]: { interp: AbstractInterpreter };
+  [docURI: string]: { interp: AbstractInterpreter; ruleTree: RuleTree };
 } = {};
 
 // TODO: remove this hack
@@ -105,7 +105,7 @@ export function getInterpForDoc(
   languages: { [langID: string]: LanguageSpec },
   uri: string,
   source: string
-) {
+): { interp: AbstractInterpreter; ruleTree: RuleTree } {
   updateDocSource(uri, langID, source);
   const key = `${langID}-${uri}`;
   let res = interpSourceCache[key];
@@ -124,7 +124,7 @@ function addSourceInner(
   langID: string,
   languages: { [langID: string]: LanguageSpec },
   source: string
-): ConstructInterpRes {
+): ConstructInterpRes & { ruleTree: RuleTree } {
   let { interp, grammar } = interpForLangSpec(initInterp, languages, langID);
 
   // initialize stuff that we'll fill in later, if parse succeeds
@@ -150,6 +150,7 @@ function addSourceInner(
   return {
     interp,
     grammar,
+    ruleTree,
     errors: langParseError ? [langParseError] : [],
   };
 }

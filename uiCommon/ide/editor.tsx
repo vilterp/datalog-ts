@@ -102,10 +102,10 @@ export function LingoEditor(props: {
         { [props.langSpec.name]: props.langSpec },
         `test.${props.langSpec.name}`,
         props.editorState.source
-      ).interp,
+      ),
     [props.langSpec, props.editorState.source]
   );
-  const interp = addCursor(withoutCursor, props.editorState.cursorPos);
+  const interp = addCursor(withoutCursor.interp, props.editorState.cursorPos);
 
   return (
     <div style={{ display: "flex" }}>
