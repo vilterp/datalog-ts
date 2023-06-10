@@ -76,23 +76,20 @@ state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
 # === Var ===
 
 state.Var{thread: TH, time: T, var: Var, value: Val} :-
-  state.var.store{thread: TH, time: T, var: Var, value: Val} |
-  state.var.increment{thread: TH, time: T, var: Var, value: Val} |
+  state.var.storeInt{thread: TH, time: T, var: Var, value: Val} |
+  # TODO: storeString
+  # TODO: storeCall
   state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
-state.var.store{thread: TH, time: T, var: Var, value: Val} :-
+state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
-  instr{idx: C, op: store{var: Var, expr: Expr}} &
-  eval{expr: Expr, thread: TH, time: PrevT, value: Val} &
+  instr{idx: C, op: store{var: Var, val: Val}} &
+  base.int{a: Val} &
   T = PrevT + 1.
-state.var.increment{thread: TH, time: T, var: Var, value: Val} :-
-  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
-  T = PrevT + 1 &
-  instr{idx: C, op: increment{var: Var}} &
-  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
-  Val = PrevVal + 1.
 
-# == stay
+# == stay ==
+# propagate forward in time the values of variables that
+# aren't being changed at this timestep
 state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |

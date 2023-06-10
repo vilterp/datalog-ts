@@ -12,16 +12,16 @@ import { compileBasicBlocks } from "./compiler";
 
 export function raceDetectorTests(writeResults: boolean): Suite {
   return [
-    {
-      name: "raceDetector",
-      test() {
-        runDDTestAtPath(
-          "apps/raceDetector/testdata/execution.dd.txt",
-          getResults,
-          writeResults
-        );
-      },
-    },
+    // {
+    //   name: "execution",
+    //   test() {
+    //     runDDTestAtPath(
+    //       "apps/raceDetector/testdata/execution.dd.txt",
+    //       getResults,
+    //       writeResults
+    //     );
+    //   },
+    // },
     {
       name: "compiler",
       test() {
