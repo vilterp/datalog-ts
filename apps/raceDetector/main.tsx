@@ -8,9 +8,9 @@ import { Explorer } from "../../uiCommon/explorer";
 import execDL from "./execution.dl";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { initialEditorState } from "../../uiCommon/ide/types";
-import { RuleTree } from "../../languageWorkbench/parserlib/ruleTree";
+import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { linkBasicBlocks } from "./linker";
+import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 
 const EXAMPLE = `foo {
   a = 42;
@@ -35,10 +35,14 @@ function Main() {
       state.evalRawStmts(action)[1],
     loadedInterp
   );
-  const [editorState, setEditorState] = useState(initialEditorState(EXAMPLE));
-  const setRuleTree = (ruleTree: RuleTree) => {
-    console.log("ruleTree", ruleTree);
-    const recs = linkBasicBlocks(editorState.source, ruleTree);
+  const [editorState, setEditorStateInner] = useState(
+    initialEditorState(EXAMPLE)
+  );
+  const setEditorState = (editorState: EditorState) => {
+    setEditorStateInner(editorState);
+    const tree = parseMain(editorState.source);
+    const blockIndex = linkBasicBlocks(tree);
+    console.log("block index", blockIndex);
   };
 
   return (
@@ -49,7 +53,6 @@ function Main() {
         langSpec={LANGUAGES.basicBlocks}
         editorState={editorState}
         setEditorState={setEditorState}
-        setRuleTree={setRuleTree}
       />
 
       <Explorer

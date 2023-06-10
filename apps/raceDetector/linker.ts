@@ -1,9 +1,12 @@
 import { Rec } from "../../core/types";
-import { RuleTree } from "../../languageWorkbench/parserlib/ruleTree";
+import {
+  BBInstr,
+  BBMain,
+} from "../../languageWorkbench/languages/basicBlocks/parser";
 
-export function linkBasicBlocks(text: string, tree: RuleTree): Rec[] {
+export function linkBasicBlocks(tree: BBMain): Rec[] {
   const results: Rec[] = [];
-  const blockIndex = getBlockIndex(text, tree);
+  const blockIndex = getBlockIndex(tree);
   console.log("block index", blockIndex);
   // tree.children.forEach((child) => {
   //   XXXX;
@@ -12,21 +15,15 @@ export function linkBasicBlocks(text: string, tree: RuleTree): Rec[] {
 }
 
 type BlockIndex = {
-  [blockName: string]: { startIndex: number; instructions: RuleTree[] };
+  [blockName: string]: { startIndex: number; instructions: BBInstr[] };
 };
 
-function getBlockIndex(text: string, tree: RuleTree): BlockIndex {
+function getBlockIndex(tree: BBMain): BlockIndex {
   let idx = 0;
   const blockIndex: BlockIndex = {};
-  tree.children.forEach((child) => {
-    if (child.name !== "block") {
-      return;
-    }
-    const nameNode = child.children.filter((c) => c.name === "label")[0];
-    const name = text.substring(nameNode.span.from, nameNode.span.to);
-    const instructions = child.children
-      .filter((c) => c.name === "blockBody")[0]
-      .children.filter((c) => c.name === "instr");
+  tree.block.forEach((block) => {
+    const name = block.label.text;
+    const instructions = block.blockBody.instr;
     blockIndex[name] = { startIndex: idx, instructions };
     idx += instructions.length;
   });
