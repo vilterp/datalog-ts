@@ -1,0 +1,13 @@
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  threshold = 5;
+  x = incr(x);
+  going = lt(x, threshold);
+  goto loop if going;
+}
+----
+application/datalog
+state.ProgramCounter{counter: 0, thread: 1, time: 1}.

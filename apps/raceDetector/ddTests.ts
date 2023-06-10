@@ -1,6 +1,7 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
@@ -29,6 +30,16 @@ export function raceDetectorTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "endToEnd",
+      test() {
+        runDDTestAtPath(
+          "apps/raceDetector/testdata/endToEnd.dd.txt",
+          endToEndTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -52,5 +63,20 @@ function compilerTest(inputs: string[]): TestOutput[] {
     const main = parseMain(input);
     const records = compileBasicBlocks(main);
     return datalogOut(records);
+  });
+}
+
+function endToEndTest(inputs: string[]): TestOutput[] {
+  return inputs.map((input) => {
+    const main = parseMain(input);
+    const records = compileBasicBlocks(main);
+    let interp: AbstractInterpreter = new SimpleInterpreter(
+      "apps/raceDetector",
+      fsLoader
+    );
+    interp = interp.doLoad("execution.dl");
+    interp = interp.bulkInsert(records);
+    const out = interp.queryStr("state.ProgramCounter{}?").map((x) => x.term);
+    return datalogOut(out);
   });
 }

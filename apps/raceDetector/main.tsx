@@ -46,7 +46,7 @@ function Main() {
       const records = compileBasicBlocks(tree);
       console.log("records", records.map(ppt).join("\n"));
     } catch (e) {
-      console.warn("error while linking", e);
+      console.warn("error while compiling", e);
     }
   };
 
