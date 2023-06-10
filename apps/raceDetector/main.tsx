@@ -11,6 +11,7 @@ import { LANGUAGES } from "../../languageWorkbench/languages";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
 import { linkBasicBlocks } from "./linker";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { ppt } from "../../core/pretty";
 
 const EXAMPLE = `foo {
   a = 42;
@@ -41,8 +42,8 @@ function Main() {
   const setEditorState = (editorState: EditorState) => {
     setEditorStateInner(editorState);
     const tree = parseMain(editorState.source);
-    const blockIndex = linkBasicBlocks(tree);
-    console.log("block index", blockIndex);
+    const records = linkBasicBlocks(tree);
+    console.log("records", records.map(ppt).join("\n"));
   };
 
   return (

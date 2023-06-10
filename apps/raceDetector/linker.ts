@@ -1,4 +1,4 @@
-import { Rec } from "../../core/types";
+import { Rec, int, rec } from "../../core/types";
 import {
   BBInstr,
   BBMain,
@@ -8,10 +8,26 @@ export function linkBasicBlocks(tree: BBMain): Rec[] {
   const results: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
   console.log("block index", blockIndex);
-  // tree.children.forEach((child) => {
-  //   XXXX;
-  // });
+  Object.entries(blockIndex).forEach(([name, block]) => {
+    block.instructions.forEach((instr, idx) => {
+      results.push(
+        rec("instr", {
+          idx: int(block.startIndex + idx),
+          op: instrToRec(instr),
+        })
+      );
+    });
+  });
   return results;
+}
+
+function instrToRec(instr: BBInstr): Rec {
+  switch (instr.type) {
+    case "ValueInstr":
+      return rec("store", {});
+    case "GotoInstr":
+      return rec("goto", {});
+  }
 }
 
 type BlockIndex = {
