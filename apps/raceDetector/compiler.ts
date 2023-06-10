@@ -54,6 +54,7 @@ function rvalueToTerm(expr: BBRvalue): Term {
         throw new Error("expr still has placeholder");
       }
       return rec("call", {
+        fun: str(expr.ident.text),
         args: array(
           expr.params === null ? [] : expr.params.ident.map((x) => str(x.text))
         ),

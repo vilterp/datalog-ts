@@ -13,6 +13,6 @@ application/datalog
 instr{idx: 0, op: store{val: 0, var: "x"}}.
 instr{idx: 1, op: goto{dest: 2}}.
 instr{idx: 2, op: store{val: 5, var: "threshold"}}.
-instr{idx: 3, op: store{val: call{args: ["x"]}, var: "x"}}.
-instr{idx: 4, op: store{val: call{args: ["x","threshold"]}, var: "going"}}.
+instr{idx: 3, op: store{val: call{args: ["x"], fun: "incr"}, var: "x"}}.
+instr{idx: 4, op: store{val: call{args: ["x","threshold"], fun: "lt"}, var: "going"}}.
 instr{idx: 5, op: goto{dest: 2, if: "going"}}.
