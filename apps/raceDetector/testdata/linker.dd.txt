@@ -6,8 +6,8 @@ foo {
   goto bar;
 }
 bar {
-  y = boop;
-  goto foo;
+  y = boop();
+  goto foo if y;
 }
 ----
 application/datalog

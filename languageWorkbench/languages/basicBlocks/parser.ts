@@ -41,6 +41,7 @@ export type BBGotoInstr = {
   gotoKW: BBGotoKW;
   label: BBLabel | null;
   Placeholder: BBPlaceholder | null;
+  ifClause: BBIfClause | null;
 };
 export type BBGotoKW = {
   type: "GotoKW";
@@ -49,6 +50,18 @@ export type BBGotoKW = {
 };
 export type BBIdent = {
   type: "Ident";
+  text: string;
+  span: Span;
+};
+export type BBIfClause = {
+  type: "IfClause";
+  text: string;
+  span: Span;
+  ifKW: BBIfKW;
+  ident: BBIdent;
+};
+export type BBIfKW = {
+  type: "IfKW";
   text: string;
   span: Span;
 };
@@ -140,6 +153,16 @@ export function parseIdent(input: string): BBIdent {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractIdent(input, ruleTree);
+}
+export function parseIfClause(input: string): BBIfClause {
+  const traceTree = parserlib.parse(GRAMMAR, "ifClause", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractIfClause(input, ruleTree);
+}
+export function parseIfKW(input: string): BBIfKW {
+  const traceTree = parserlib.parse(GRAMMAR, "ifKW", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractIfKW(input, ruleTree);
 }
 export function parseInstr(input: string): BBInstr {
   const traceTree = parserlib.parse(GRAMMAR, "instr", input);
@@ -246,6 +269,9 @@ function extractGotoInstr(input: string, node: RuleTree): BBGotoInstr {
     Placeholder: childByName(node, "Placeholder", null)
       ? extractPlaceholder(input, childByName(node, "Placeholder", null))
       : null,
+    ifClause: childByName(node, "ifClause", null)
+      ? extractIfClause(input, childByName(node, "ifClause", null))
+      : null,
   };
 }
 function extractGotoKW(input: string, node: RuleTree): BBGotoKW {
@@ -258,6 +284,22 @@ function extractGotoKW(input: string, node: RuleTree): BBGotoKW {
 function extractIdent(input: string, node: RuleTree): BBIdent {
   return {
     type: "Ident",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
+function extractIfClause(input: string, node: RuleTree): BBIfClause {
+  return {
+    type: "IfClause",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ifKW: extractIfKW(input, childByName(node, "ifKW", null)),
+    ident: extractIdent(input, childByName(node, "ident", null)),
+  };
+}
+function extractIfKW(input: string, node: RuleTree): BBIfKW {
+  return {
+    type: "IfKW",
     text: textForSpan(input, node.span),
     span: node.span,
   };
@@ -571,11 +613,59 @@ const GRAMMAR: Grammar = {
           },
         ],
       },
+      {
+        type: "Choice",
+        choices: [
+          {
+            type: "Sequence",
+            items: [
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ws",
+              },
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ifClause",
+              },
+            ],
+          },
+          {
+            type: "Text",
+            value: "",
+          },
+        ],
+      },
     ],
   },
   gotoKW: {
     type: "Text",
     value: "goto",
+  },
+  ifClause: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ifKW",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ident",
+      },
+    ],
+  },
+  ifKW: {
+    type: "Text",
+    value: "if",
   },
   params: {
     type: "Sequence",

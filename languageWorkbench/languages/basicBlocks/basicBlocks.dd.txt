@@ -37,3 +37,13 @@ scope.Usage{}
 application/datalog
 scope.Usage{definitionScopeID: "global", defnSpan: span{from: 0, to: 3}, kind: "label", name: "foo", usageScopeID: 71, usageSpan: span{from: 101, to: 104}}.
 scope.Usage{definitionScopeID: 7, defnSpan: span{from: 8, to: 9}, kind: "value", name: "a", usageScopeID: 26, usageSpan: span{from: 40, to: 41}}.
+
+basicBlocks
+foo {
+  a = 42;
+  goto foo if a;
+}
+ast.ifClause{}?
+----
+application/datalog
+ast.ifClause{id: 22, parentID: 16, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.

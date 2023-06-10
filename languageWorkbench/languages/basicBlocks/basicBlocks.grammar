@@ -7,8 +7,10 @@ instr :- (valueInstr | gotoInstr).
 valueInstr :- [ident, ws, "=", ws, rvalue].
 rvalue :- (call | const).
 call :- [ident, (params | "")].
-gotoInstr :- [gotoKW, ws, (label | Placeholder)].
+gotoInstr :- [gotoKW, ws, (label | Placeholder), ([ws, ifClause] | "")].
 gotoKW :- "goto".
+ifClause :- [ifKW, ws, ident].
+ifKW :- "if".
 params :- ["(", repSep((ident | Placeholder), [",", ws]), ")"].
 const :- (string | int).
 int :- [[0-9], repSep([0-9], "")].
