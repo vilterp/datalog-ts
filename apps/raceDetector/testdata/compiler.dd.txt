@@ -1,20 +1,18 @@
-foo {
-  a = 42;
-  b = "foo";
-  x = boop(a);
-  c = group(b, x);
-  goto bar;
+countUp {
+  x = 0;
+  goto loop;
 }
-bar {
-  y = boop();
-  goto foo if y;
+loop {
+  threshold = 5;
+  x = incr(x);
+  going = lt(x, threshold);
+  goto loop if going;
 }
 ----
 application/datalog
-instr{idx: 0, op: store{val: 42, var: "a"}}.
-instr{idx: 1, op: store{val: "foo", var: "b"}}.
-instr{idx: 2, op: store{val: call{args: ["a"]}, var: "x"}}.
-instr{idx: 3, op: store{val: call{args: ["b","x"]}, var: "c"}}.
-instr{idx: 4, op: goto{dest: 5}}.
-instr{idx: 5, op: store{val: call{args: []}, var: "y"}}.
-instr{idx: 6, op: goto{dest: 0, if: "y"}}.
+instr{idx: 0, op: store{val: 0, var: "x"}}.
+instr{idx: 1, op: goto{dest: 2}}.
+instr{idx: 2, op: store{val: 5, var: "threshold"}}.
+instr{idx: 3, op: store{val: call{args: ["x"]}, var: "x"}}.
+instr{idx: 4, op: store{val: call{args: ["x","threshold"]}, var: "going"}}.
+instr{idx: 5, op: goto{dest: 2, if: "going"}}.

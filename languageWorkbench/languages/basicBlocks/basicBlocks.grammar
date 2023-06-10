@@ -2,7 +2,6 @@ main :- repSep(block,ws).
 block :- [label, ws, blockBody].
 blockBody :- ["{", ws, repSep(instr,[";",ws]), ws, "}"].
 label :- ident.
-ident :- [[a-z], repSep([a-z], "")].
 instr :- (valueInstr | gotoInstr).
 valueInstr :- [ident, ws, "=", ws, rvalue].
 rvalue :- (call | const).
@@ -13,8 +12,13 @@ ifClause :- [ifKW, ws, ident].
 ifKW :- "if".
 params :- ["(", repSep((ident | Placeholder), [",", ws]), ")"].
 const :- (string | int).
+
 int :- [[0-9], repSep([0-9], "")].
 Placeholder :- "???".
 ws :- repSep((" "|"\n"), "").
 string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ident :- [alpha, repSep((alphaNum | "."), "")].

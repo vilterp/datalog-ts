@@ -13,6 +13,12 @@ export type BBPlaceholder = {
   text: string;
   span: Span;
 };
+export type BBAlpha = {
+  type: "Alpha";
+  text: string;
+  span: Span;
+};
+export type BBAlphaNum = BBAlpha | BBNum;
 export type BBBlock = {
   type: "Block";
   text: string;
@@ -52,6 +58,8 @@ export type BBIdent = {
   type: "Ident";
   text: string;
   span: Span;
+  alpha: BBAlpha;
+  alphaNum: BBAlphaNum[];
 };
 export type BBIfClause = {
   type: "IfClause";
@@ -82,6 +90,11 @@ export type BBMain = {
   text: string;
   span: Span;
   block: BBBlock[];
+};
+export type BBNum = {
+  type: "Num";
+  text: string;
+  span: Span;
 };
 export type BBParams = {
   type: "Params";
@@ -118,6 +131,16 @@ export function parsePlaceholder(input: string): BBPlaceholder {
   const traceTree = parserlib.parse(GRAMMAR, "Placeholder", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractPlaceholder(input, ruleTree);
+}
+export function parseAlpha(input: string): BBAlpha {
+  const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractAlpha(input, ruleTree);
+}
+export function parseAlphaNum(input: string): BBAlphaNum {
+  const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractAlphaNum(input, ruleTree);
 }
 export function parseBlock(input: string): BBBlock {
   const traceTree = parserlib.parse(GRAMMAR, "block", input);
@@ -184,6 +207,11 @@ export function parseMain(input: string): BBMain {
   const ruleTree = extractRuleTree(traceTree);
   return extractMain(input, ruleTree);
 }
+export function parseNum(input: string): BBNum {
+  const traceTree = parserlib.parse(GRAMMAR, "num", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractNum(input, ruleTree);
+}
 export function parseParams(input: string): BBParams {
   const traceTree = parserlib.parse(GRAMMAR, "params", input);
   const ruleTree = extractRuleTree(traceTree);
@@ -215,6 +243,24 @@ function extractPlaceholder(input: string, node: RuleTree): BBPlaceholder {
     text: textForSpan(input, node.span),
     span: node.span,
   };
+}
+function extractAlpha(input: string, node: RuleTree): BBAlpha {
+  return {
+    type: "Alpha",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
+function extractAlphaNum(input: string, node: RuleTree): BBAlphaNum {
+  const child = node.children[0];
+  switch (child.name) {
+    case "alpha": {
+      return extractAlpha(input, child);
+    }
+    case "num": {
+      return extractNum(input, child);
+    }
+  }
 }
 function extractBlock(input: string, node: RuleTree): BBBlock {
   return {
@@ -286,6 +332,10 @@ function extractIdent(input: string, node: RuleTree): BBIdent {
     type: "Ident",
     text: textForSpan(input, node.span),
     span: node.span,
+    alpha: extractAlpha(input, childByName(node, "alpha", null)),
+    alphaNum: childrenByName(node, "alphaNum").map((child) =>
+      extractAlphaNum(input, child)
+    ),
   };
 }
 function extractIfClause(input: string, node: RuleTree): BBIfClause {
@@ -338,6 +388,13 @@ function extractMain(input: string, node: RuleTree): BBMain {
     block: childrenByName(node, "block").map((child) =>
       extractBlock(input, child)
     ),
+  };
+}
+function extractNum(input: string, node: RuleTree): BBNum {
+  return {
+    type: "Num",
+    text: textForSpan(input, node.span),
+    span: node.span,
   };
 }
 function extractParams(input: string, node: RuleTree): BBParams {
@@ -473,34 +530,6 @@ const GRAMMAR: Grammar = {
     type: "Ref",
     captureName: null,
     rule: "ident",
-  },
-  ident: {
-    type: "Sequence",
-    items: [
-      {
-        type: "Char",
-        rule: {
-          type: "Range",
-          from: "a",
-          to: "z",
-        },
-      },
-      {
-        type: "RepSep",
-        rep: {
-          type: "Char",
-          rule: {
-            type: "Range",
-            from: "a",
-            to: "z",
-          },
-        },
-        sep: {
-          type: "Text",
-          value: "",
-        },
-      },
-    ],
   },
   instr: {
     type: "Choice",
@@ -835,6 +864,85 @@ const GRAMMAR: Grammar = {
             },
           },
         ],
+      },
+    ],
+  },
+  alpha: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Char",
+        rule: {
+          type: "Range",
+          from: "a",
+          to: "z",
+        },
+      },
+      {
+        type: "Char",
+        rule: {
+          type: "Range",
+          from: "A",
+          to: "Z",
+        },
+      },
+      {
+        type: "Text",
+        value: "_",
+      },
+    ],
+  },
+  num: {
+    type: "Char",
+    rule: {
+      type: "Range",
+      from: "0",
+      to: "9",
+    },
+  },
+  alphaNum: {
+    type: "Choice",
+    choices: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "alpha",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "num",
+      },
+    ],
+  },
+  ident: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "alpha",
+      },
+      {
+        type: "RepSep",
+        rep: {
+          type: "Choice",
+          choices: [
+            {
+              type: "Ref",
+              captureName: null,
+              rule: "alphaNum",
+            },
+            {
+              type: "Text",
+              value: ".",
+            },
+          ],
+        },
+        sep: {
+          type: "Text",
+          value: "",
+        },
       },
     ],
   },
