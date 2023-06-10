@@ -11,10 +11,10 @@ bar {
 }
 ----
 application/datalog
-instr{idx: 0, op: store{}}.
-instr{idx: 1, op: store{}}.
-instr{idx: 2, op: store{}}.
-instr{idx: 3, op: store{}}.
+instr{idx: 0, op: store{var: "a"}}.
+instr{idx: 1, op: store{var: "b"}}.
+instr{idx: 2, op: store{var: "x"}}.
+instr{idx: 3, op: store{var: "c"}}.
 instr{idx: 4, op: goto{dest: 5}}.
-instr{idx: 5, op: store{}}.
+instr{idx: 5, op: store{var: "y"}}.
 instr{idx: 6, op: goto{dest: 0}}.

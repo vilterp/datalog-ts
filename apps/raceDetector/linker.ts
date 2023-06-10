@@ -1,4 +1,4 @@
-import { Rec, int, rec } from "../../core/types";
+import { Rec, int, rec, str } from "../../core/types";
 import {
   BBInstr,
   BBMain,
@@ -27,7 +27,9 @@ export function linkBasicBlocks(tree: BBMain): Rec[] {
 function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
   switch (instr.type) {
     case "ValueInstr":
-      return rec("store", {});
+      return rec("store", {
+        var: str(instr.ident.text),
+      });
     case "GotoInstr": {
       if (!instr.label) {
         throw new Error("instr doesn't have label");
