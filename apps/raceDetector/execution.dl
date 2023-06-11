@@ -161,10 +161,10 @@ state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} :-
 
 .table internal.visualization
 
-internal.visualization{
-  name: "Time Ticker",
-  spec: ticker{},
-}.
+# internal.visualization{
+#   name: "Time Ticker",
+#   spec: ticker{},
+# }.
 
 internal.visualization{
   name: "Program Counter over Time",
