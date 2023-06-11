@@ -123,8 +123,8 @@ state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
 # aren't being changed at this timestep
 state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} |
-  state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
-  state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.storeCallInc{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.storeCallLT{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal}.
 # store & increment
@@ -134,12 +134,17 @@ state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} :-
   instr{idx: C, op: store{var: OtherVar}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
   OtherVar != Var.
-state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
+state.var.stay.storeCallInc{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
-  instr{idx: C, op: increment{var: OtherVar}} &
+  instr{idx: C, op: call{fun: "inc", args: [OtherVar]}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal} &
   OtherVar != Var.
+state.var.stay.storeCallLT{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: call{fun: "lt"}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
 # fork
 state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} |
