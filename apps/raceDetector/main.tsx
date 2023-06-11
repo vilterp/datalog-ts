@@ -17,10 +17,15 @@ const EXAMPLE = `countUp {
   goto loop;
 }
 loop {
-  threshold = 5;
+  forked = fork();
+  goto afterFork if forked;
   x = base.incr(x);
+  threshold = 5;
   going = base.lt(x, threshold);
   goto loop if going;
+}
+afterFork {
+  done = 42;
 }
 `;
 

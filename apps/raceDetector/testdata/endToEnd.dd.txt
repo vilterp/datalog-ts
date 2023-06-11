@@ -39,12 +39,12 @@ countUp {
   goto loop;
 }
 loop {
-  threshold = 5;
-  x = base.incr(x);
-  going = base.lt(x, threshold);
-  goto loop if going;
   forked = fork();
   goto afterFork if forked;
+  x = base.incr(x);
+  threshold = 5;
+  going = base.lt(x, threshold);
+  goto loop if going;
 }
 afterFork {
   done = 42;
@@ -54,30 +54,46 @@ state.ProgramCounter{}?
 application/datalog
 state.ProgramCounter{counter: 0, thread: 1, time: 1}.
 state.ProgramCounter{counter: 1, thread: 1, time: 2}.
-state.ProgramCounter{counter: 2, thread: 1, time: 11}.
 state.ProgramCounter{counter: 2, thread: 1, time: 15}.
-state.ProgramCounter{counter: 2, thread: 1, time: 19}.
+state.ProgramCounter{counter: 2, thread: 1, time: 21}.
+state.ProgramCounter{counter: 2, thread: 1, time: 27}.
 state.ProgramCounter{counter: 2, thread: 1, time: 3}.
-state.ProgramCounter{counter: 2, thread: 1, time: 7}.
-state.ProgramCounter{counter: 3, thread: 1, time: 12}.
+state.ProgramCounter{counter: 2, thread: 1, time: 9}.
+state.ProgramCounter{counter: 3, thread: 1, time: 10}.
 state.ProgramCounter{counter: 3, thread: 1, time: 16}.
-state.ProgramCounter{counter: 3, thread: 1, time: 20}.
+state.ProgramCounter{counter: 3, thread: 1, time: 22}.
+state.ProgramCounter{counter: 3, thread: 1, time: 28}.
 state.ProgramCounter{counter: 3, thread: 1, time: 4}.
-state.ProgramCounter{counter: 3, thread: 1, time: 8}.
-state.ProgramCounter{counter: 4, thread: 1, time: 13}.
+state.ProgramCounter{counter: 3, thread: 105, time: 4}.
+state.ProgramCounter{counter: 3, thread: 111, time: 10}.
+state.ProgramCounter{counter: 3, thread: 117, time: 16}.
+state.ProgramCounter{counter: 3, thread: 123, time: 22}.
+state.ProgramCounter{counter: 3, thread: 129, time: 28}.
+state.ProgramCounter{counter: 4, thread: 1, time: 11}.
 state.ProgramCounter{counter: 4, thread: 1, time: 17}.
-state.ProgramCounter{counter: 4, thread: 1, time: 21}.
+state.ProgramCounter{counter: 4, thread: 1, time: 23}.
+state.ProgramCounter{counter: 4, thread: 1, time: 29}.
 state.ProgramCounter{counter: 4, thread: 1, time: 5}.
-state.ProgramCounter{counter: 4, thread: 1, time: 9}.
-state.ProgramCounter{counter: 5, thread: 1, time: 10}.
-state.ProgramCounter{counter: 5, thread: 1, time: 14}.
+state.ProgramCounter{counter: 5, thread: 1, time: 12}.
 state.ProgramCounter{counter: 5, thread: 1, time: 18}.
-state.ProgramCounter{counter: 5, thread: 1, time: 22}.
+state.ProgramCounter{counter: 5, thread: 1, time: 24}.
+state.ProgramCounter{counter: 5, thread: 1, time: 30}.
 state.ProgramCounter{counter: 5, thread: 1, time: 6}.
-state.ProgramCounter{counter: 6, thread: 1, time: 23}.
-state.ProgramCounter{counter: 7, thread: 1, time: 24}.
-state.ProgramCounter{counter: 7, thread: 125, time: 24}.
-state.ProgramCounter{counter: 8, thread: 1, time: 25}.
-state.ProgramCounter{counter: 8, thread: 125, time: 25}.
-state.ProgramCounter{counter: 9, thread: 1, time: 26}.
-state.ProgramCounter{counter: 9, thread: 125, time: 26}.
+state.ProgramCounter{counter: 6, thread: 1, time: 13}.
+state.ProgramCounter{counter: 6, thread: 1, time: 19}.
+state.ProgramCounter{counter: 6, thread: 1, time: 25}.
+state.ProgramCounter{counter: 6, thread: 1, time: 7}.
+state.ProgramCounter{counter: 7, thread: 1, time: 14}.
+state.ProgramCounter{counter: 7, thread: 1, time: 20}.
+state.ProgramCounter{counter: 7, thread: 1, time: 26}.
+state.ProgramCounter{counter: 7, thread: 1, time: 8}.
+state.ProgramCounter{counter: 8, thread: 105, time: 5}.
+state.ProgramCounter{counter: 8, thread: 111, time: 11}.
+state.ProgramCounter{counter: 8, thread: 117, time: 17}.
+state.ProgramCounter{counter: 8, thread: 123, time: 23}.
+state.ProgramCounter{counter: 8, thread: 129, time: 29}.
+state.ProgramCounter{counter: 9, thread: 105, time: 6}.
+state.ProgramCounter{counter: 9, thread: 111, time: 12}.
+state.ProgramCounter{counter: 9, thread: 117, time: 18}.
+state.ProgramCounter{counter: 9, thread: 123, time: 24}.
+state.ProgramCounter{counter: 9, thread: 129, time: 30}.
