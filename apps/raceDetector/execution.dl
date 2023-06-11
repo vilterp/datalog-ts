@@ -14,6 +14,7 @@ state.ProgramCounter{thread: TH, time: T, counter: C} :-
   state.programCounter.store{thread: TH, time: T, counter: C} |
   state.programCounter.increment{thread: TH, time: T, counter: C} |
   state.programCounter.fork{thread: TH, time: T, counter: C} |
+  state.programCounter.goto{thread: TH, time: T, counter: C} |
   state.programCounter.condGoto{thread: TH, time: T, counter: C}.
 
 .table state.programCounter.init
@@ -54,11 +55,10 @@ state.programCounter.fork.new{
   ShiftedT = T + 100 &
   TH = PrevTH + ShiftedT.
 
-# goto
+# condGoto
 state.programCounter.condGoto{thread: TH, time: T, counter: C} :-
   state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} |
   state.programCounter.condGoto.no{thread: TH, time: T, counter: C}.
-
 state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} :-
   time{time: T} &
   instr{idx: PrevC, op: conditionalGoto{dest: C, var: Var}} &
@@ -72,6 +72,11 @@ state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
   state.Var{thread: TH, time: PrevT, var: Var, value: false} &
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+# goto
+state.programCounter.goto{thread: TH, time: T, counter: C} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC} &
+  T = PrevT + 1 &
+  instr{idx: PrevC, op: goto{dest: C}}.
 
 # === Var ===
 
@@ -120,7 +125,8 @@ state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
-  state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal}.
+  state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal}.
 # store & increment
 state.var.stay.increment{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
@@ -152,6 +158,12 @@ state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
   instr{idx: C, op: conditionalGoto{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+# goto
+state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: goto{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
 
 # === Viz ===
