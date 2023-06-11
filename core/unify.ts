@@ -1,6 +1,7 @@
 import { array, Bindings, rec, str, Term, VarMappings } from "./types";
 import { mapObj, mapObjToList } from "../util/util";
 import { jsonEq } from "../util/json";
+import { ppt } from "./pretty";
 
 export function unify(
   prior: Bindings,
@@ -138,21 +139,21 @@ export function termCmp(left: Term, right: Term): number {
         case "IntLit":
           return left.val - right.val;
         default:
-          throw new Error(`not comparable: ${left.type} ${right.type}`);
+          throw new Error(`not comparable: ${ppt(left)} ${ppt(right)}`);
       }
     case "StringLit":
       switch (right.type) {
         case "StringLit":
           return left.val.localeCompare(right.val);
         default:
-          throw new Error(`not comparable: ${left.type} ${right.type}`);
+          throw new Error(`not comparable: ${ppt(left)} ${ppt(right)}`);
       }
     case "Array":
       switch (right.type) {
         case "Array":
           return lexicographical(left.items, right.items);
         default:
-          throw new Error(`not comparable: ${left.type} ${right.type}`);
+          throw new Error(`not comparable: ${ppt(left)} ${ppt(right)}`);
       }
     case "Record":
       switch (right.type) {
@@ -173,7 +174,7 @@ export function termCmp(left: Term, right: Term): number {
           return lexicographical(leftArr, rightArr);
         }
         default:
-          throw new Error(`not comparable: ${left.type} ${right.type}`);
+          throw new Error(`not comparable: ${ppt(left)} ${ppt(right)}`);
       }
     case "Dict":
       switch (right.type) {
@@ -196,10 +197,10 @@ export function termCmp(left: Term, right: Term): number {
           return lexicographical(leftArr, rightArr);
         }
         default:
-          throw new Error(`not comparable: ${left.type} ${right.type}`);
+          throw new Error(`not comparable: ${ppt(left)} ${ppt(right)}`);
       }
     default:
-      throw new Error(`not comparable: ${left.type} ${right.type}`);
+      throw new Error(`not comparable: ${ppt(left)} ${ppt(right)}`);
   }
 }
 
