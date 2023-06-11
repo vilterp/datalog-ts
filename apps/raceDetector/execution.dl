@@ -95,7 +95,7 @@ state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
 state.var.storeCallIncr{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "base.incr", args: [ArgVar]}}} &
-  state.Var{thread: TH, time: T, var: ArgVar, value: ArgVal} &
+  state.Var{thread: TH, time: PrevT, var: ArgVar, value: ArgVal} &
   Val = ArgVal + 1 &
   T = PrevT + 1.
 state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} :-
@@ -104,16 +104,16 @@ state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} :-
 state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "base.lt", args: [Arg1Var, Arg2Var]}}} &
-  state.Var{thread: TH, time: T, var: Arg1Var, value: Arg1Val} &
-  state.Var{thread: TH, time: T, var: Arg2Var, value: Arg2Val} &
+  state.Var{thread: TH, time: PrevT, var: Arg1Var, value: Arg1Val} &
+  state.Var{thread: TH, time: PrevT, var: Arg2Var, value: Arg2Val} &
   Arg1Val < Arg2Val &
   Val = true &
   T = PrevT + 1.
 state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "base.lt", args: [Arg1Var, Arg2Var]}}} &
-  state.Var{thread: TH, time: T, var: Arg1Var, value: Arg1Val} &
-  state.Var{thread: TH, time: T, var: Arg2Var, value: Arg2Val} &
+  state.Var{thread: TH, time: PrevT, var: Arg1Var, value: Arg1Val} &
+  state.Var{thread: TH, time: PrevT, var: Arg2Var, value: Arg2Val} &
   Arg1Val >= Arg2Val &
   Val = false &
   T = PrevT + 1.
