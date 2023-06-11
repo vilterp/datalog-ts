@@ -106,7 +106,7 @@ state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} :-
   instr{idx: C, op: store{var: Var, val: call{fun: "lt", args: [Arg1Var, Arg2Var]}}} &
   state.Var{thread: TH, time: T, var: Arg1Var, value: Arg1Val} &
   state.Var{thread: TH, time: T, var: Arg2Var, value: Arg2Val} &
-  Arg1Val < Arg2Var &
+  Arg1Val < Arg2Val &
   Val = true &
   T = PrevT + 1.
 state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
@@ -114,7 +114,7 @@ state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
   instr{idx: C, op: store{var: Var, val: call{fun: "lt", args: [Arg1Var, Arg2Var]}}} &
   state.Var{thread: TH, time: T, var: Arg1Var, value: Arg1Val} &
   state.Var{thread: TH, time: T, var: Arg2Var, value: Arg2Val} &
-  Arg1Val >= Arg2Var &
+  Arg1Val >= Arg2Val &
   Val = false &
   T = PrevT + 1.
 
