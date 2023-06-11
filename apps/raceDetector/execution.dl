@@ -18,22 +18,16 @@ time{time: T} :-
 state.ProgramCounter{thread: TH, time: T, counter: C} :-
   state.programCounter.init{thread: TH, time: T, counter: C} |
   state.programCounter.store{thread: TH, time: T, counter: C} |
-  state.programCounter.increment{thread: TH, time: T, counter: C} |
   state.programCounter.fork{thread: TH, time: T, counter: C} |
   state.programCounter.goto{thread: TH, time: T, counter: C} |
-  state.programCounter.condGoto{thread: TH, time: T, counter: C}.
+  state.programCounter.gotoIf{thread: TH, time: T, counter: C}.
 
 .table state.programCounter.init
 
+# TODO: only proceed if we're storing a primitive result or a literal
 state.programCounter.store{thread: TH, time: T, counter: C} :-
   time{time: T} &
   instr{idx: PrevC, op: store{}} &
-  T = PrevT + 1 &
-  C = PrevC + 1 &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
-state.programCounter.increment{thread: TH, time: T, counter: C} :-
-  time{time: T} &
-  instr{idx: PrevC, op: increment{}} &
   T = PrevT + 1 &
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
@@ -62,18 +56,18 @@ state.programCounter.fork.new{
   TH = PrevTH + ShiftedT.
 
 # condGoto
-state.programCounter.condGoto{thread: TH, time: T, counter: C} :-
-  state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} |
-  state.programCounter.condGoto.no{thread: TH, time: T, counter: C}.
-state.programCounter.condGoto.yes{thread: TH, time: T, counter: C} :-
+state.programCounter.gotoIf{thread: TH, time: T, counter: C} :-
+  state.programCounter.gotoIf.yes{thread: TH, time: T, counter: C} |
+  state.programCounter.gotoIf.no{thread: TH, time: T, counter: C}.
+state.programCounter.gotoIf.yes{thread: TH, time: T, counter: C} :-
   time{time: T} &
-  instr{idx: PrevC, op: conditionalGoto{dest: C, var: Var}} &
+  instr{idx: PrevC, op: gotoIf{dest: C, cond: Var}} &
   T = PrevT + 1 &
   state.Var{thread: TH, time: PrevT, var: Var, value: true} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
-state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
+state.programCounter.gotoIf.no{thread: TH, time: T, counter: C} :-
   time{time: T} &
-  instr{idx: PrevC, op: conditionalGoto{var: Var}} &
+  instr{idx: PrevC, op: gotoIf{cond: Var}} &
   T = PrevT + 1 &
   state.Var{thread: TH, time: PrevT, var: Var, value: false} &
   C = PrevC + 1 &
@@ -129,7 +123,8 @@ state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
 # aren't being changed at this timestep
 state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
-  state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal}.
+  state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal}.
 # store & increment
 state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
@@ -155,6 +150,12 @@ state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
   instr{idx: C, op: goto{}} &
+  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+# gotoIf
+state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  T = PrevT + 1 &
+  instr{idx: C, op: gotoIf{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
 
 # === Viz ===

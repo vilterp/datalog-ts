@@ -26,16 +26,7 @@ state.Var{thread: 1, time: 20, value: 4, var: "x"}.
 state.Var{thread: 1, time: 21, value: 5, var: "x"}.
 state.Var{thread: 1, time: 22, value: 5, var: "x"}.
 state.Var{thread: 1, time: 23, value: 5, var: "x"}.
-state.Var{thread: 1, time: 24, value: 5, var: "x"}.
-state.Var{thread: 1, time: 25, value: 6, var: "x"}.
-state.Var{thread: 1, time: 26, value: 6, var: "x"}.
-state.Var{thread: 1, time: 27, value: 6, var: "x"}.
-state.Var{thread: 1, time: 28, value: 6, var: "x"}.
-state.Var{thread: 1, time: 29, value: 7, var: "x"}.
 state.Var{thread: 1, time: 3, value: 0, var: "x"}.
-state.Var{thread: 1, time: 30, value: 7, var: "x"}.
-state.Var{thread: 1, time: 31, value: 7, var: "x"}.
-state.Var{thread: 1, time: 32, value: 7, var: "x"}.
 state.Var{thread: 1, time: 4, value: 0, var: "x"}.
 state.Var{thread: 1, time: 5, value: 1, var: "x"}.
 state.Var{thread: 1, time: 6, value: 1, var: "x"}.
