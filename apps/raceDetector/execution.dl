@@ -78,13 +78,39 @@ state.programCounter.condGoto.no{thread: TH, time: T, counter: C} :-
 state.Var{thread: TH, time: T, var: Var, value: Val} :-
   state.var.storeInt{thread: TH, time: T, var: Var, value: Val} |
   # TODO: storeString
-  # TODO: storeCall
+  state.var.storeCallIncr{thread: TH, time: T, var: Var, value: Val} |
+  state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} |
   state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
 state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: Val}} &
   base.int{a: Val} &
+  T = PrevT + 1.
+state.var.storeCallIncr{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: call{fun: "incr", args: [ArgVar]}}} &
+  state.Var{thread: TH, time: T, var: ArgVar, value: ArgVal} &
+  Val = ArgVal + 1 &
+  T = PrevT + 1.
+state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} |
+  state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val}.
+state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: call{fun: "lt", args: [Arg1Var, Arg2Var]}}} &
+  state.Var{thread: TH, time: T, var: Arg1Var, value: Arg1Val} &
+  state.Var{thread: TH, time: T, var: Arg2Var, value: Arg2Val} &
+  Arg1Val < Arg2Var &
+  Val = true &
+  T = PrevT + 1.
+state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: call{fun: "lt", args: [Arg1Var, Arg2Var]}}} &
+  state.Var{thread: TH, time: T, var: Arg1Var, value: Arg1Val} &
+  state.Var{thread: TH, time: T, var: Arg2Var, value: Arg2Val} &
+  Arg1Val >= Arg2Var &
+  Val = false &
   T = PrevT + 1.
 
 # == stay ==
@@ -127,39 +153,6 @@ state.var.stay.condGoto{thread: TH, time: T, var: Var, value: PrevVal} :-
   T = PrevT + 1 &
   instr{idx: C, op: conditionalGoto{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
-
-# === Eval ===
-
-eval{thread: TH, time: T, expr: Expr, value: Value} :-
-  eval.FuncCall{thread: TH, time: T, expr: Expr, value: Value} |
-  eval.Var{thread: TH, time: T, expr: Expr, value: Value} |
-  eval.IntLit{thread: TH, time: T, expr: Expr, value: Value}.
-
-eval.FuncCall{thread: TH, time: T, expr: Expr, value: Value} :-
-  eval.FuncCall.LT{thread: TH, time: T, expr: Expr, value: Value}.
-eval.FuncCall.LT{thread: TH, time: T, expr: Expr, value: Value} :-
-  eval.FuncCall.LT.true{thread: TH, time: T, expr: Expr, value: Value} |
-  eval.FuncCall.LT.false{thread: TH, time: T, expr: Expr, value: Value}.
-eval.FuncCall.LT.true{thread: TH, time: T, expr: Expr, value: true} :-
-  expr.funcCall{id: Expr, name: "<"} &
-  expr.funcArg{funcID: Expr, argID: Left, idx: 0} &
-  expr.funcArg{funcID: Expr, argID: Right, idx: 1} &
-  eval{thread: TH, time: T, expr: Left, value: LeftVal} &
-  eval{thread: TH, time: T, expr: Right, value: RightVal} &
-  LeftVal < RightVal.
-eval.FuncCall.LT.false{thread: TH, time: T, expr: Expr, value: false} :-
-  expr.funcCall{id: Expr, name: "<"} &
-  expr.funcArg{funcID: Expr, argID: Left, idx: 0} &
-  expr.funcArg{funcID: Expr, argID: Right, idx: 1} &
-  eval{thread: TH, time: T, expr: Left, value: LeftVal} &
-  eval{thread: TH, time: T, expr: Right, value: RightVal} &
-  LeftVal >= RightVal.
-eval.Var{thread: TH, time: T, expr: Expr, value: Value} :-
-  expr.var{id: Expr, name: N} &
-  state.Var{thread: TH, time: T, var: N, value: Value}.
-eval.IntLit{thread: TH, time: T, expr: Expr, value: Value} :-
-  expr.intLit{id: Expr, value: Value} &
-  state.ProgramCounter{thread: TH, time: T}.
 
 # === Viz ===
 
