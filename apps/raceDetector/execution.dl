@@ -38,22 +38,23 @@ state.programCounter.fork{thread: TH, time: T, counter: C} :-
   state.programCounter.fork.new{thread: TH, time: T, counter: C}.
 state.programCounter.fork.orig{thread: TH, time: T, counter: C} :-
   time{time: T} &
-  instr{idx: PrevC, op: call{fun: "fork"}} &
+  instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC} &
   T = PrevT + 1 &
-  C = PrevC + 1 &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+  C = PrevC + 1.
 state.programCounter.fork.new{
   thread: TH,
   origThread: PrevTH,
   time: T,
-  counter: ForkC,
+  counter: C,
 } :-
   time{time: T} &
-  instr{idx: PrevC, op: fork{goto: ForkC}} &
-  T = PrevT + 1 &
+  instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC} &
+  T = PrevT + 1 &
   ShiftedT = T + 100 &
-  TH = PrevTH + ShiftedT.
+  TH = PrevTH + ShiftedT &
+  C = PrevC + 1.
 
 # condGoto
 state.programCounter.gotoIf{thread: TH, time: T, counter: C} :-
@@ -85,6 +86,7 @@ state.Var{thread: TH, time: T, var: Var, value: Val} :-
   # TODO: storeString
   state.var.storeCallIncr{thread: TH, time: T, var: Var, value: Val} |
   state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} |
+  state.var.storeCallFork{thread: TH, time: T, var: Var, value: Val} |
   state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
 state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
@@ -117,6 +119,21 @@ state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
   Arg1Val >= Arg2Val &
   Val = false &
   T = PrevT + 1.
+state.var.storeCallFork{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.storeCallFork.new{thread: TH, time: T, var: Var, value: Val} |
+  state.var.storeCallFork.orig{thread: TH, time: T, var: Var, value: Val}.
+state.var.storeCallFork.new{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
+  T = PrevT + 1 &
+  ShiftedT = T + 100 &
+  TH = PrevTH + ShiftedT &
+  Val = true.
+state.var.storeCallFork.orig{thread: TH, time: T, var: Var, value: Val} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
+  Val = false &
+  T = PrevT + 1.
 
 # == stay ==
 # propagate forward in time the values of variables that
@@ -139,7 +156,7 @@ state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
 state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
-  instr{idx: C, op: call{fun: "fork"}} &
+  instr{idx: C, op: store{val: call{fun: "fork"}}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
 state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
   state.programCounter.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
