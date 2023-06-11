@@ -13,6 +13,13 @@ bar {
 ide.Suggestion{}
 ----
 application/datalog
+ide.Suggestion{id: global{}, name: "a", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: global{}, name: "b", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: global{}, name: "bar", span: span{from: 69, to: 72}, type: "any"}.
+ide.Suggestion{id: global{}, name: "c", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: global{}, name: "foo", span: span{from: 69, to: 72}, type: "any"}.
+ide.Suggestion{id: global{}, name: "x", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: global{}, name: "y", span: span{from: 56, to: 59}, type: "any"}.
 
 basicBlocks
 countUp {

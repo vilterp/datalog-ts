@@ -47,15 +47,15 @@ scope.varLabel{scopeID: global{}, name: N, span: S, kind: "label"} :-
 scope.Placeholder{span: S, scopeID: Scope, kind: K} :-
   scope.placeholderValue{span: S, scopeID: Scope, kind: K} |
   scope.placeholderLabel{span: S, scopeID: Scope, kind: K}.
-scope.placeholderValue{span: S, scopeID: Scope, kind: "value"} :-
+scope.placeholderValue{span: S, scopeID: global{}, kind: "value"} :-
   ast.Placeholder{id: PlaceholderID, parentID: ParamsID, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
-  ast.valueInstr{id: ValueInstrID, parentID: Scope}.
-scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
+  ast.valueInstr{id: ValueInstrID}.
+scope.placeholderLabel{span: S, scopeID: global{}, kind: "label"} :-
   ast.Placeholder{id: PlaceholderID, parentID: GotoInstrID, span: S} &
-  ast.gotoInstr{id: GotoInstrID, parentID: I}.
+  ast.gotoInstr{id: GotoInstrID}.
 
 # === highlighting ===
 
