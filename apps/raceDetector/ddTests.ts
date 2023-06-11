@@ -80,9 +80,6 @@ function endToEndTest(inputs: string[]): TestOutput[] {
     );
     interp = interp.doLoad("execution.dl");
     interp = interp.bulkInsert(records);
-    interp = interp.bulkInsert(
-      range(30).map((n) => rec("time", { time: int(n) }))
-    );
     const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
   });
