@@ -1,54 +1,40 @@
-import React, { useReducer, useState } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { nullLoader } from "../../core/loaders";
-import { Statement } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
 // @ts-ignore
 import execDL from "./execution.dl";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
+import { initialEditorState } from "../../uiCommon/ide/types";
 import { compileBasicBlocks } from "./compiler";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
-import { ppt } from "../../core/pretty";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
-const EXAMPLE = `foo {
-  a = 42;
-  b = "foo";
-  x = boop(a);
-  c = group(???);
-  goto ???;
+const EXAMPLE = `countUp {
+  x = 0;
+  goto loop;
 }
-
-bar {
-  y = boop;
-  goto foo;
+loop {
+  threshold = 5;
+  x = base.incr(x);
+  going = base.lt(x, threshold);
+  goto loop if going;
 }
 `;
 
-const emptyInterp = new IncrementalInterpreter(".", nullLoader);
-const loadedInterp = emptyInterp.evalStr(execDL)[1];
+function getInterp(input: string): AbstractInterpreter {
+  const emptyInterp = new IncrementalInterpreter(".", nullLoader);
+  const loadedInterp = emptyInterp.evalStr(execDL)[1];
+  const tree = parseMain(input);
+  const records = compileBasicBlocks(tree);
+  return loadedInterp.bulkInsert(records);
+}
 
 function Main() {
-  const [interp, dispatch] = useReducer(
-    (state: IncrementalInterpreter, action: Statement[]) =>
-      state.evalRawStmts(action)[1],
-    loadedInterp
-  );
-  const [editorState, setEditorStateInner] = useState(
-    initialEditorState(EXAMPLE)
-  );
-  const setEditorState = (editorState: EditorState) => {
-    setEditorStateInner(editorState);
-    const tree = parseMain(editorState.source);
-    try {
-      const records = compileBasicBlocks(tree);
-      console.log("records", records.map(ppt).join("\n"));
-    } catch (e) {
-      console.warn("error while compiling", e);
-    }
-  };
+  const [editorState, setEditorState] = useState(initialEditorState(EXAMPLE));
+  const interp = getInterp(editorState.source);
 
   return (
     <>
@@ -62,9 +48,9 @@ function Main() {
 
       <Explorer
         interp={interp}
-        runStatements={(stmts) => {
-          dispatch(stmts);
-        }}
+        // runStatements={(stmts) => {
+        //   dispatch(stmts);
+        // }}
         showViz
       />
     </>
