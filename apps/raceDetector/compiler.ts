@@ -52,8 +52,10 @@ function rvalueToTerm(expr: BBRvalue): Term {
       if (expr.params && expr.params.Placeholder.length > 0) {
         throw new Error("expr still has placeholder");
       }
-      return rec("call", {
-        fun: str(expr.ident.text),
+      const funName = expr.ident.text;
+      const isPrimitive = funName.startsWith("base.");
+      return rec(isPrimitive ? "primitive" : "call", {
+        fun: str(funName),
         args: array(
           expr.params === null ? [] : expr.params.ident.map((x) => str(x.text))
         ),

@@ -1,7 +1,6 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
@@ -72,7 +71,7 @@ function endToEndTest(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
     const main = parseMain(input);
     const records = compileBasicBlocks(main);
-    let interp: AbstractInterpreter = new SimpleInterpreter(
+    let interp: AbstractInterpreter = new IncrementalInterpreter(
       "apps/raceDetector",
       fsLoader
     );
