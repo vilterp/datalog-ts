@@ -35,13 +35,14 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
       if (!instr.label) {
         throw new Error("instr doesn't have label");
       }
-      const attrs: { [k: string]: Term } = {
-        dest: int(index.blocks[instr.label.text].startIndex),
-      };
+      const dest = int(index.blocks[instr.label.text].startIndex);
       if (instr.ifClause) {
-        attrs.if = str(instr.ifClause.ident.text);
+        return rec("gotoIf", {
+          dest,
+          cond: str(instr.ifClause.ident.text),
+        });
       }
-      return rec("goto", attrs);
+      return rec("goto", { dest });
     }
   }
 }

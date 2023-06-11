@@ -15,4 +15,4 @@ instr{idx: 1, op: goto{dest: 2}}.
 instr{idx: 2, op: store{val: 5, var: "threshold"}}.
 instr{idx: 3, op: store{val: primitive{args: ["x"], fun: "base.incr"}, var: "x"}}.
 instr{idx: 4, op: store{val: primitive{args: ["x","threshold"], fun: "base.lt"}, var: "going"}}.
-instr{idx: 5, op: goto{dest: 2, if: "going"}}.
+instr{idx: 5, op: gotoIf{cond: "going", dest: 2}}.
