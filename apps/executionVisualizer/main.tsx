@@ -43,7 +43,7 @@ function Main() {
 
   return (
     <>
-      <h1>Concurrency Visualizer</h1>
+      <h1>Execution Visualizer</h1>
 
       <LingoEditor
         langSpec={LANGUAGES.basicBlocks}
