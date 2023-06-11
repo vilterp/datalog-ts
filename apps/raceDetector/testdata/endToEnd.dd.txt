@@ -8,14 +8,35 @@ loop {
   going = base.lt(x, threshold);
   goto loop if going;
 }
+state.Var{var: "x"}?
 ----
 application/datalog
-state.ProgramCounter{counter: 0, thread: 1, time: 1}.
-state.ProgramCounter{counter: 1, thread: 1, time: 2}.
-state.ProgramCounter{counter: 2, thread: 1, time: 3}.
-state.ProgramCounter{counter: 2, thread: 1, time: 7}.
-state.ProgramCounter{counter: 3, thread: 1, time: 4}.
-state.ProgramCounter{counter: 3, thread: 1, time: 8}.
-state.ProgramCounter{counter: 4, thread: 1, time: 5}.
-state.ProgramCounter{counter: 4, thread: 1, time: 9}.
-state.ProgramCounter{counter: 5, thread: 1, time: 6}.
+state.Var{thread: 1, time: 10, value: 2, var: "x"}.
+state.Var{thread: 1, time: 11, value: 2, var: "x"}.
+state.Var{thread: 1, time: 12, value: 2, var: "x"}.
+state.Var{thread: 1, time: 13, value: 3, var: "x"}.
+state.Var{thread: 1, time: 14, value: 3, var: "x"}.
+state.Var{thread: 1, time: 15, value: 3, var: "x"}.
+state.Var{thread: 1, time: 16, value: 3, var: "x"}.
+state.Var{thread: 1, time: 17, value: 4, var: "x"}.
+state.Var{thread: 1, time: 18, value: 4, var: "x"}.
+state.Var{thread: 1, time: 19, value: 4, var: "x"}.
+state.Var{thread: 1, time: 2, value: 0, var: "x"}.
+state.Var{thread: 1, time: 20, value: 4, var: "x"}.
+state.Var{thread: 1, time: 21, value: 5, var: "x"}.
+state.Var{thread: 1, time: 22, value: 5, var: "x"}.
+state.Var{thread: 1, time: 23, value: 5, var: "x"}.
+state.Var{thread: 1, time: 24, value: 5, var: "x"}.
+state.Var{thread: 1, time: 25, value: 6, var: "x"}.
+state.Var{thread: 1, time: 26, value: 6, var: "x"}.
+state.Var{thread: 1, time: 27, value: 6, var: "x"}.
+state.Var{thread: 1, time: 28, value: 6, var: "x"}.
+state.Var{thread: 1, time: 29, value: 7, var: "x"}.
+state.Var{thread: 1, time: 3, value: 0, var: "x"}.
+state.Var{thread: 1, time: 30, value: 7, var: "x"}.
+state.Var{thread: 1, time: 4, value: 0, var: "x"}.
+state.Var{thread: 1, time: 5, value: 1, var: "x"}.
+state.Var{thread: 1, time: 6, value: 1, var: "x"}.
+state.Var{thread: 1, time: 7, value: 1, var: "x"}.
+state.Var{thread: 1, time: 8, value: 1, var: "x"}.
+state.Var{thread: 1, time: 9, value: 2, var: "x"}.

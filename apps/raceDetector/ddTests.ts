@@ -69,7 +69,10 @@ function compilerTest(inputs: string[]): TestOutput[] {
 
 function endToEndTest(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
-    const main = parseMain(input);
+    const lines = input.split("\n");
+    const allButLast = lines.slice(0, lines.length - 1).join("\n");
+    const lastLine = lines[lines.length - 1];
+    const main = parseMain(allButLast);
     const records = compileBasicBlocks(main);
     let interp: AbstractInterpreter = new IncrementalInterpreter(
       "apps/raceDetector",
@@ -78,9 +81,9 @@ function endToEndTest(inputs: string[]): TestOutput[] {
     interp = interp.doLoad("execution.dl");
     interp = interp.bulkInsert(records);
     interp = interp.bulkInsert(
-      range(10).map((n) => rec("time", { time: int(n) }))
+      range(30).map((n) => rec("time", { time: int(n) }))
     );
-    const out = interp.queryStr("state.ProgramCounter{}?").map((x) => x.term);
+    const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
   });
 }
