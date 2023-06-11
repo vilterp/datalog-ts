@@ -1,18 +1,30 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
+import { compileBasicBlocks } from "./compiler";
 
 export function raceDetectorTests(writeResults: boolean): Suite {
   return [
     {
-      name: "raceDetector",
+      name: "compiler",
       test() {
         runDDTestAtPath(
-          "apps/raceDetector/execution.dd.txt",
-          getResults,
+          "apps/raceDetector/testdata/compiler.dd.txt",
+          compilerTest,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "endToEnd",
+      test() {
+        runDDTestAtPath(
+          "apps/raceDetector/testdata/endToEnd.dd.txt",
+          endToEndTest,
           writeResults
         );
       },
@@ -20,17 +32,28 @@ export function raceDetectorTests(writeResults: boolean): Suite {
   ];
 }
 
-function getResults(inputs: string[]): TestOutput[] {
-  let interp: AbstractInterpreter = new IncrementalInterpreter(
-    "apps/raceDetector",
-    fsLoader
-  );
-  interp = interp.doLoad("execution.dl");
-  const out: TestOutput[] = [];
-  inputs.forEach((input) => {
-    const [results, newInterp] = interp.evalStr(input);
-    interp = newInterp;
-    out.push(datalogOut(results.map((res) => res.term)));
+function compilerTest(inputs: string[]): TestOutput[] {
+  return inputs.map((input) => {
+    const main = parseMain(input);
+    const records = compileBasicBlocks(main);
+    return datalogOut(records);
   });
-  return out;
+}
+
+function endToEndTest(inputs: string[]): TestOutput[] {
+  return inputs.map((input) => {
+    const lines = input.split("\n");
+    const allButLast = lines.slice(0, lines.length - 1).join("\n");
+    const lastLine = lines[lines.length - 1];
+    const main = parseMain(allButLast);
+    const records = compileBasicBlocks(main);
+    let interp: AbstractInterpreter = new IncrementalInterpreter(
+      "apps/raceDetector",
+      fsLoader
+    );
+    interp = interp.doLoad("execution.dl");
+    interp = interp.bulkInsert(records);
+    const out = interp.queryStr(lastLine).map((x) => x.term);
+    return datalogOut(out);
+  });
 }

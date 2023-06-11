@@ -105,7 +105,7 @@ export function getInterpForDoc(
   languages: { [langID: string]: LanguageSpec },
   uri: string,
   source: string
-) {
+): { interp: AbstractInterpreter } {
   updateDocSource(uri, langID, source);
   const key = `${langID}-${uri}`;
   let res = interpSourceCache[key];

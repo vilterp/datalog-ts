@@ -1,0 +1,45 @@
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  threshold = 5;
+  x = base.incr(x);
+  going = base.lt(x, threshold);
+  goto loop if going;
+}
+----
+application/datalog
+instr{idx: 0, op: store{val: 0, var: "x"}}.
+instr{idx: 1, op: goto{dest: 2}}.
+instr{idx: 2, op: store{val: 5, var: "threshold"}}.
+instr{idx: 3, op: store{val: primitive{args: ["x"], fun: "base.incr"}, var: "x"}}.
+instr{idx: 4, op: store{val: primitive{args: ["x","threshold"], fun: "base.lt"}, var: "going"}}.
+instr{idx: 5, op: gotoIf{cond: "going", dest: 2}}.
+
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  forked = fork();
+  goto afterFork if forked;
+  x = base.incr(x);
+  threshold = 5;
+  going = base.lt(x, threshold);
+  goto loop if going;
+}
+afterFork {
+  done = 42;
+}
+----
+application/datalog
+instr{idx: 0, op: store{val: 0, var: "x"}}.
+instr{idx: 1, op: goto{dest: 2}}.
+instr{idx: 2, op: store{val: call{args: [], fun: "fork"}, var: "forked"}}.
+instr{idx: 3, op: gotoIf{cond: "forked", dest: 8}}.
+instr{idx: 4, op: store{val: primitive{args: ["x"], fun: "base.incr"}, var: "x"}}.
+instr{idx: 5, op: store{val: 5, var: "threshold"}}.
+instr{idx: 6, op: store{val: primitive{args: ["x","threshold"], fun: "base.lt"}, var: "going"}}.
+instr{idx: 7, op: gotoIf{cond: "going", dest: 2}}.
+instr{idx: 8, op: store{val: 42, var: "done"}}.
