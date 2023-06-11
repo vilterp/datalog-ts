@@ -12,7 +12,7 @@ import { treeTests } from "./util/treeTest";
 import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
 import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
-import { raceDetectorTests } from "./apps/raceDetector/ddTests";
+import { concurrencyVisualizerTests } from "./apps/concurrencyVisualizer/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
 import { lwbTestsIncr, lwbTestsSimple } from "./languageWorkbench/ddTests";
 
@@ -35,7 +35,7 @@ const suites: { [name: string]: Suite } = {
   parserlibTests: parserlibTests(writeResults),
   sourcePositionsTests,
   kvSync: kvSyncTests(writeResults),
-  raceDetector: raceDetectorTests(writeResults),
+  concurrencyVisualizer: concurrencyVisualizerTests(writeResults),
   lwbTestsSimple: lwbTestsSimple(writeResults),
   lwbTestsIncr: lwbTestsIncr(writeResults),
 };

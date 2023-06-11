@@ -7,13 +7,13 @@ import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
 import { compileBasicBlocks } from "./compiler";
 
-export function raceDetectorTests(writeResults: boolean): Suite {
+export function concurrencyVisualizerTests(writeResults: boolean): Suite {
   return [
     {
       name: "compiler",
       test() {
         runDDTestAtPath(
-          "apps/raceDetector/testdata/compiler.dd.txt",
+          "apps/concurrencyVisualizer/testdata/compiler.dd.txt",
           compilerTest,
           writeResults
         );
@@ -23,7 +23,7 @@ export function raceDetectorTests(writeResults: boolean): Suite {
       name: "endToEnd",
       test() {
         runDDTestAtPath(
-          "apps/raceDetector/testdata/endToEnd.dd.txt",
+          "apps/concurrencyVisualizer/testdata/endToEnd.dd.txt",
           endToEndTest,
           writeResults
         );
@@ -48,7 +48,7 @@ function endToEndTest(inputs: string[]): TestOutput[] {
     const main = parseMain(allButLast);
     const records = compileBasicBlocks(main);
     let interp: AbstractInterpreter = new IncrementalInterpreter(
-      "apps/raceDetector",
+      "apps/concurrencyVisualizer",
       fsLoader
     );
     interp = interp.doLoad("execution.dl");

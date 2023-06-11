@@ -43,7 +43,7 @@ function Main() {
 
   return (
     <>
-      <h1>Race Detector</h1>
+      <h1>Concurrency Visualizer</h1>
 
       <LingoEditor
         langSpec={LANGUAGES.basicBlocks}
