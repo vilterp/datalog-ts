@@ -13,12 +13,6 @@ bar {
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: 52, name: "a", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 52, name: "b", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 52, name: "c", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 52, name: "x", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 72, name: "bar", span: span{from: 69, to: 72}, type: "any"}.
-ide.Suggestion{id: 72, name: "foo", span: span{from: 69, to: 72}, type: "any"}.
 
 basicBlocks
 countUp {
@@ -39,12 +33,16 @@ afterFork {
 scope.Usage{}
 ----
 application/datalog
-scope.Usage{definitionScopeID: "global", defnSpan: span{from: 182, to: 191}, kind: "label", name: "afterFork", usageScopeID: 85, usageSpan: span{from: 67, to: 76}}.
-scope.Usage{definitionScopeID: "global", defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: 226, usageSpan: span{from: 165, to: 169}}.
-scope.Usage{definitionScopeID: "global", defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: 29, usageSpan: span{from: 26, to: 30}}.
-scope.Usage{definitionScopeID: 124, defnSpan: span{from: 90, to: 91}, kind: "value", name: "x", usageScopeID: 124, usageSpan: span{from: 104, to: 105}}.
-scope.Usage{definitionScopeID: 124, defnSpan: span{from: 90, to: 91}, kind: "value", name: "x", usageScopeID: 176, usageSpan: span{from: 143, to: 144}}.
-scope.Usage{definitionScopeID: 151, defnSpan: span{from: 110, to: 119}, kind: "value", name: "threshold", usageScopeID: 176, usageSpan: span{from: 146, to: 155}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 110, to: 119}, kind: "value", name: "threshold", usageScopeID: global{}, usageSpan: span{from: 146, to: 155}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 104, to: 105}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 143, to: 144}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 127, to: 132}, kind: "value", name: "going", usageScopeID: global{}, usageSpan: span{from: 173, to: 178}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 182, to: 191}, kind: "label", name: "afterFork", usageScopeID: global{}, usageSpan: span{from: 67, to: 76}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 165, to: 169}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 26, to: 30}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 43, to: 49}, kind: "value", name: "forked", usageScopeID: global{}, usageSpan: span{from: 80, to: 86}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 90, to: 91}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 104, to: 105}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 90, to: 91}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 143, to: 144}}.
 
 basicBlocks
 foo {

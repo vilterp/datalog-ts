@@ -7,70 +7,52 @@ scope.scopeBlock{id: BlockID, label: T} :-
   ast.block{id: BlockID} &
   ast.label{parentID: BlockID, text: T}.
 
-scope.Parent{childID: ChildID, parentID: ParentID} :-
-  scope.parentWithinBlock{childID: ChildID, parentID: ParentID} |
-  scope.globalToBlock{childID: ChildID, parentID: ParentID} |
-  scope.blockToInstr{childID: ChildID, parentID: ParentID}.
-# each instr creates a scope for the instrs below it
-scope.parentWithinBlock{childID: ChildID, parentID: ParentID} :-
-  ast.instr{id: ChildID, parentID: BlockBodyID, idx: ChildIdx} &
-  ast.instr{id: ParentID, parentID: BlockBodyID, idx: ParentIdx} &
-  astInternal.next{prev: ParentID, next: ChildID}.
-# global is parent of all scopes
-scope.globalToBlock{parentID: "global", childID: BlockID} :-
-  ast.block{id: BlockID}.
-scope.blockToInstr{childID: InstrID, parentID: BlockID} :-
-  ast.block{id: BlockID} &
-  ast.blockBody{id: BlockBodyID, parentID: BlockID} &
-  astInternal.firstChild{parentID: BlockBodyID, id: WSID} &
-  astInternal.next{prev: WSID, next: InstrID}.
-
 # this var defined at this node
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
   scope.defnValue{scopeID: I, span: S, name: N, kind: K} |
   scope.defnLabel{scopeID: I, span: S, name: N, kind: K}.
 # definitions of value variables
-scope.defnValue{scopeID: InstrID, span: S, name: N, kind: "value"} :-
+scope.defnValue{scopeID: global{}, span: S, name: N, kind: "value"} :-
   ast.instr{id: InstrID} &
   ast.valueInstr{id: ValueInstrID, parentID: InstrID} &
   ast.ident{parentID: ValueInstrID, text: N, span: S}.
 # definitions of label variables
-scope.defnLabel{scopeID: "global", span: S, name: N, kind: "label"} :-
+scope.defnLabel{scopeID: global{}, span: S, name: N, kind: "label"} :-
   ast.label{parentID: BlockID, span: S, text: N} &
   ast.block{id: BlockID}.
 
 # TODO: say which kind of var it's trying to use
 # i.e. value vs. label
-scope.Var{scopeID: InstrID, name: N, span: S, kind: K} :-
-  scope.varValue{scopeID: InstrID, name: N, span: S, kind: K} |
-  scope.varLabel{scopeID: InstrID, name: N, span: S, kind: K}.
+scope.Var{scopeID: Scope, name: N, span: S, kind: K} :-
+  scope.varValue{scopeID: Scope, name: N, span: S, kind: K} |
+  scope.varLabel{scopeID: Scope, name: N, span: S, kind: K}.
 # variables that refer to values
-scope.varValue{scopeID: InstrID, name: N, span: S, kind: "value"} :-
-  scope.varValue.arg{scopeID: InstrID, name: N, span: S} |
-  scope.varValue.condGoto{scopeID: InstrID, name: N, span: S}.
-scope.varValue.arg{scopeID: InstrID, name: N, span: S} :-
+scope.varValue{scopeID: Scope, name: N, span: S, kind: "value"} :-
+  scope.varValue.arg{scopeID: Scope, name: N, span: S} |
+  scope.varValue.condGoto{scopeID: Scope, name: N, span: S}.
+scope.varValue.arg{scopeID: global{}, name: N, span: S} :-
   ast.ident{parentID: ParamsID, text: N, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
-  ast.valueInstr{id: ValueInstrID, parentID: InstrID}.
-scope.varValue.condGoto{scopeID: "global", name: N, span: S} :-
+  ast.valueInstr{id: ValueInstrID}.
+scope.varValue.condGoto{scopeID: global{}, name: N, span: S} :-
   ast.ifClause{id: IfClauseID} &
   ast.ident{parentID: IfClauseID, text: N, span: S}.
 # variables that refer to labels
-scope.varLabel{scopeID: InstrID, name: N, span: S, kind: "label"} :-
+scope.varLabel{scopeID: global{}, name: N, span: S, kind: "label"} :-
   ast.label{id: LabelID, parentID: GotoID, text: N, span: S} &
-  ast.gotoInstr{id: GotoID, parentID: InstrID}.
+  ast.gotoInstr{id: GotoID}.
 
-scope.Placeholder{span: S, scopeID: I, kind: K} :-
-  scope.placeholderValue{span: S, scopeID: I, kind: K} |
-  scope.placeholderLabel{span: S, scopeID: I, kind: K}.
-scope.placeholderValue{span: S, scopeID: I, kind: "value"} :-
+scope.Placeholder{span: S, scopeID: Scope, kind: K} :-
+  scope.placeholderValue{span: S, scopeID: Scope, kind: K} |
+  scope.placeholderLabel{span: S, scopeID: Scope, kind: K}.
+scope.placeholderValue{span: S, scopeID: Scope, kind: "value"} :-
   ast.Placeholder{id: PlaceholderID, parentID: ParamsID, span: S} &
   ast.params{id: ParamsID, parentID: CallID} &
   ast.call{id: CallID, parentID: RValueID} &
   ast.rvalue{id: RValueID, parentID: ValueInstrID} &
-  ast.valueInstr{id: ValueInstrID, parentID: I}.
+  ast.valueInstr{id: ValueInstrID, parentID: Scope}.
 scope.placeholderLabel{span: S, scopeID: I, kind: "label"} :-
   ast.Placeholder{id: PlaceholderID, parentID: GotoInstrID, span: S} &
   ast.gotoInstr{id: GotoInstrID, parentID: I}.
