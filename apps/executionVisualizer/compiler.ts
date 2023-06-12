@@ -54,7 +54,7 @@ function rvalueToTerm(expr: BBRvalue): Term {
         throw new Error("expr still has placeholder");
       }
       const funName = expr.ident.text;
-      const isPrimitive = funName.startsWith("base.");
+      const isPrimitive = funName.startsWith("prim.");
       return rec(isPrimitive ? "primitive" : "call", {
         fun: str(funName),
         args: array(
