@@ -15,31 +15,31 @@ time{time: T} :-
 
 # === Program Counter ===
 
-state.ProgramCounter{thread: TH, time: T, counter: C} :-
-  state.programCounter.init{thread: TH, time: T, counter: C} |
-  state.programCounter.store{thread: TH, time: T, counter: C} |
-  state.programCounter.fork{thread: TH, time: T, counter: C} |
-  state.programCounter.goto{thread: TH, time: T, counter: C} |
-  state.programCounter.gotoIf{thread: TH, time: T, counter: C}.
+state.ProgramCounter{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.init{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.store{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.goto{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St}.
 
 .table state.programCounter.init
 
 # TODO: only proceed if we're storing a primitive result or a literal
-state.programCounter.store{thread: TH, time: T, counter: C} :-
+state.programCounter.store{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{}} &
   T = PrevT + 1 &
   C = PrevC + 1 &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}}.
 
 # fork
-state.programCounter.fork{thread: TH, time: T, counter: C} :-
-  state.programCounter.fork.orig{thread: TH, time: T, counter: C} |
-  state.programCounter.fork.new{thread: TH, time: T, counter: C}.
-state.programCounter.fork.orig{thread: TH, time: T, counter: C} :-
+state.programCounter.fork{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.fork.new{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   C = PrevC + 1.
 state.programCounter.fork.new{
@@ -47,35 +47,37 @@ state.programCounter.fork.new{
   origThread: PrevTH,
   time: T,
   counter: C,
+  state: running{},
 } :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
-  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC} &
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   ShiftedT = T + 100 &
   TH = PrevTH + ShiftedT &
   C = PrevC + 1.
 
 # condGoto
-state.programCounter.gotoIf{thread: TH, time: T, counter: C} :-
-  state.programCounter.gotoIf.yes{thread: TH, time: T, counter: C} |
-  state.programCounter.gotoIf.no{thread: TH, time: T, counter: C}.
-state.programCounter.gotoIf.yes{thread: TH, time: T, counter: C} :-
+state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.gotoIf.yes{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.gotoIf.no{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.gotoIf.yes{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: gotoIf{dest: C, cond: Var}} &
   T = PrevT + 1 &
+  C = PrevC + 1 &
   state.Var{thread: TH, time: PrevT, var: Var, value: true} &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
-state.programCounter.gotoIf.no{thread: TH, time: T, counter: C} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}}.
+state.programCounter.gotoIf.no{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: gotoIf{cond: Var}} &
   T = PrevT + 1 &
   state.Var{thread: TH, time: PrevT, var: Var, value: false} &
   C = PrevC + 1 &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC}.
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}}.
 # goto
-state.programCounter.goto{thread: TH, time: T, counter: C} :-
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC} &
+state.programCounter.goto{thread: TH, time: T, counter: C, state: running{}} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   instr{idx: PrevC, op: goto{dest: C}}.
 
@@ -241,4 +243,4 @@ internal.visualization{
 
 # insertion
 
-state.programCounter.init{thread: 1, time: 1, counter: 0}.
+state.programCounter.init{thread: 1, time: 1, counter: 0, state: running{}}.
