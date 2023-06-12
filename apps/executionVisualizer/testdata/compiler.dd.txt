@@ -43,3 +43,14 @@ instr{idx: 5, op: store{val: 5, var: "threshold"}}.
 instr{idx: 6, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
 instr{idx: 7, op: gotoIf{cond: "going", dest: 2}}.
 instr{idx: 8, op: store{val: 42, var: "done"}}.
+
+main {
+  x = 5;
+  y = block.sleep(x);
+  z = 10;
+}
+----
+application/datalog
+instr{idx: 0, op: store{val: 5, var: "x"}}.
+instr{idx: 1, op: store{val: blockingCall{args: ["x"], fun: "block.sleep"}, var: "y"}}.
+instr{idx: 2, op: store{val: 10, var: "z"}}.
