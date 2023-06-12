@@ -4,8 +4,8 @@ countUp {
 }
 loop {
   threshold = 5;
-  x = base.incr(x);
-  going = base.lt(x, threshold);
+  x = prim.incr(x);
+  going = prim.lt(x, threshold);
   goto loop if going;
 }
 state.Var{var: "x"}?
@@ -41,9 +41,9 @@ countUp {
 loop {
   forked = fork();
   goto afterFork if forked;
-  x = base.incr(x);
+  x = prim.incr(x);
   threshold = 5;
-  going = base.lt(x, threshold);
+  going = prim.lt(x, threshold);
   goto loop if going;
 }
 afterFork {
