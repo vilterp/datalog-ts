@@ -12,7 +12,8 @@
   },
   "activationEvents": [
     "onLanguage:datalog",
-    "onLanguage:grammar"
+    "onLanguage:grammar",
+    "onLanguage:basicBlocks"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -30,6 +31,13 @@
           ".grammar"
         ],
         "configuration": "./grammar-language-configuration.json"
+      },
+      {
+        "id": "basicBlocks",
+        "extensions": [
+          ".bb"
+        ],
+        "configuration": "./basic-blocks-language-configuration.json"
       }
     ],
     "commands": [
