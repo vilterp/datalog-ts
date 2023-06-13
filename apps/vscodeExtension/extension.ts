@@ -13,12 +13,14 @@ export function activate(context: vscode.ExtensionContext) {
 
   registerExplorerWebView(context);
 
-  [LANGUAGES.datalog, LANGUAGES.grammar].forEach((spec) => {
-    registerLanguageSupport(spec).forEach((sub) => {
-      context.subscriptions.push(sub);
-    });
-    registerDiagnosticsSupport(context, spec);
-  });
+  [LANGUAGES.datalog, LANGUAGES.grammar, LANGUAGES.basicBlocks].forEach(
+    (spec) => {
+      registerLanguageSupport(spec).forEach((sub) => {
+        context.subscriptions.push(sub);
+      });
+      registerDiagnosticsSupport(context, spec);
+    }
+  );
 }
 
 function registerDiagnosticsSupport(

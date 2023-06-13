@@ -61,7 +61,7 @@ scope.placeholderLabel{span: S, scopeID: global{}, kind: "label"} :-
 
 hl.mapping{rule: "gotoKW", type: "keyword"}.
 hl.mapping{rule: "ifKW", type: "keyword"}.
-hl.mapping{rule: "int", type: "int"}.
+hl.mapping{rule: "int", type: "number"}.
 hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "bool", type: "number"}.
 hl.mapping{rule: "ident", type: "ident"}.
