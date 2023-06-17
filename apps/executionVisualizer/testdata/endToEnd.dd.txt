@@ -109,6 +109,12 @@ application/datalog
 state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
 state.ProgramCounter{counter: 1, state: running{}, thread: 1, time: 2}.
 state.ProgramCounter{counter: 2, state: blocked{reason: timer{start: 3, thread: 1}}, thread: 1, time: 3}.
+state.ProgramCounter{counter: 2, state: blocked{reason: timer{start: 3, thread: 1}}, thread: 1, time: 4}.
+state.ProgramCounter{counter: 2, state: blocked{reason: timer{start: 3, thread: 1}}, thread: 1, time: 5}.
+state.ProgramCounter{counter: 2, state: blocked{reason: timer{start: 3, thread: 1}}, thread: 1, time: 6}.
+state.ProgramCounter{counter: 2, state: blocked{reason: timer{start: 3, thread: 1}}, thread: 1, time: 7}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 8}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 9}.
 
 main {
   x = 5;

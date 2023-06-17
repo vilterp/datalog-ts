@@ -117,20 +117,23 @@ state.programCounter.timer.block{
     start: StartT,
     thread: TH,
   }},
+  wakeupTime: WT,
 } :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: timer{
     start: StartT,
     thread: TH,
   }}} &
+  time{time: T} &
   T = PrevT + 1 &
   state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
-  WT < T.
+  T < WT.
 # wake up thread when it's time to unblock
 state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: running{}} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: timer{
     start: StartT,
     thread: TH,
   }}} &
+  time{time: T} &
   T = PrevT + 1 &
   state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
   WT = T.
