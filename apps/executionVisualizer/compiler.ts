@@ -49,18 +49,23 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
 
 function rvalueToTerm(expr: BBRvalue): Term {
   switch (expr.type) {
-    case "Call":
+    case "Call": {
       if (expr.params && expr.params.Placeholder.length > 0) {
         throw new Error("expr still has placeholder");
       }
       const funName = expr.ident.text;
-      const isPrimitive = funName.startsWith("base.");
-      return rec(isPrimitive ? "primitive" : "call", {
+      const instr = funName.startsWith("prim.")
+        ? "primitive"
+        : funName.startsWith("block")
+        ? "blockingCall"
+        : "call";
+      return rec(instr, {
         fun: str(funName),
         args: array(
           expr.params === null ? [] : expr.params.ident.map((x) => str(x.text))
         ),
       });
+    }
     case "String":
       return str(JSON.parse(expr.text));
     case "Int":

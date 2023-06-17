@@ -13,6 +13,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import execDL from "./execution.dl";
 // @ts-ignore
 import exampleBB from "../../languageWorkbench/languages/basicBlocks/example.txt";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 
 function getInterp(input: string): AbstractInterpreter {
   const emptyInterp = new IncrementalInterpreter(".", nullLoader);
@@ -23,7 +24,10 @@ function getInterp(input: string): AbstractInterpreter {
 }
 
 function Main() {
-  const [editorState, setEditorState] = useState(initialEditorState(exampleBB));
+  const [editorState, setEditorState] = useJSONLocalStorage(
+    "exec-viz-editor-state",
+    initialEditorState(exampleBB)
+  );
   const interp = getInterp(editorState.source);
 
   return (
