@@ -1,5 +1,5 @@
 import { NodesByRule } from "../parserlib/flattenByRule";
-import { Span } from "../parserlib/types";
+import { Grammar, Span } from "../parserlib/types";
 
 export type LanguageSpec = {
   name: string;
@@ -12,6 +12,7 @@ export type LanguageSpec = {
 };
 
 export type LangImpl = {
+  grammar: Grammar;
   scopeDefn: (
     db: NodesByRule,
     scopeID: string,

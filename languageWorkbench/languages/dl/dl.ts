@@ -9,6 +9,7 @@ import {
 } from "../../common/types";
 import { NodesByRule } from "../../parserlib/flattenByRule";
 import { Span } from "../../parserlib/types";
+import { GRAMMAR } from "./parser";
 
 // ==== Defn ====
 
@@ -379,12 +380,9 @@ function* scopeRecordVar(
       .get("recordKeyValue")
       .byParentID.get(recordAttr.id)) {
       for (const term of db.get("term").byParentID.get(recordKeyValue.id)) {
-        for (const { termID: valueTerm, name, span } of scopeTermVar(
-          db,
-          term.id
-        )) {
+        for (const { name, span } of scopeTermVar(db, term.id)) {
           // if (valueTerm === term.id) {
-          yield { recordID: valueTerm, name, span };
+          yield { recordID, name, span };
           // }
         }
       }
@@ -571,6 +569,7 @@ function* tcRuleAttr(
 }
 
 export const datalogLangImpl: LangImpl = {
+  grammar: GRAMMAR,
   highlightMapping: SYNTAX_HIGHLIGHTING_MAPPING,
   scopeDefn,
   scopePlaceholder,
