@@ -125,3 +125,28 @@ state.Timer{}?
 ----
 application/datalog
 state.Timer{startTime: 3, thread: 1, wakeupTime: 8}.
+
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  forked = fork();
+  goto afterFork if forked;
+  x = prim.incr(x);
+  threshold = 5;
+  going = prim.lt(x, threshold);
+  goto loop if going;
+}
+afterFork {
+  x = 5;
+  y = block.sleep(x);
+  z = 10;
+}
+state.Timer{}?
+----
+application/datalog
+state.Timer{startTime: 13, thread: 111, wakeupTime: 18}.
+state.Timer{startTime: 19, thread: 117, wakeupTime: 24}.
+state.Timer{startTime: 25, thread: 123, wakeupTime: 30}.
+state.Timer{startTime: 7, thread: 105, wakeupTime: 12}.
