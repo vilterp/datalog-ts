@@ -21,7 +21,9 @@ state.ProgramCounter{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.goto{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.sleep{thread: TH, time: T, counter: C, state: St}.
+  state.programCounter.sleep{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timerBlock{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timerUnblock{thread: TH, time: T, counter: C, state: St}.
 
 .table state.programCounter.init
 
@@ -90,13 +92,46 @@ state.programCounter.fork.new{
   C = PrevC + 1.
 
 # sleep
-state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} :-
+state.programCounter.sleep{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: blocked{reason: timer{
+    thread: TH,
+    start: T,
+  }},
+  dur: Dur,
+} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: blockingCall{fun: "block.sleep", args: [DurVar]}}} &
   T = PrevT + 1 &
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   state.Var{thread: TH, time: T, var: DurVar, value: Dur}.
+state.programCounter.timerBlock{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: blocked{reason: timer{
+    start: StartT,
+    thread: TH,
+  }},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: timer{
+    start: StartT,
+    thread: TH,
+  }}} &
+  T = PrevT + 1 &
+  state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
+  WT < T.
+state.programCounter.timerUnblock{thread: TH, time: T, counter: C, state: running{}} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: timer{
+    start: StartT,
+    thread: TH,
+  }}} &
+  T = PrevT + 1 &
+  state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
+  WT = T.
 
 # === Var ===
 
@@ -196,7 +231,7 @@ state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal} :-
 
 # === Timer ===
 
-state.Timer{wakeupTime: WT, wakeupThread: TH} :-
+state.Timer{thread: TH, startTime: T, wakeupTime: WT} :-
   state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
   WT = T + Dur.
 
