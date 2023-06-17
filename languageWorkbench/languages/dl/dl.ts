@@ -379,12 +379,9 @@ function* scopeRecordVar(
       .get("recordKeyValue")
       .byParentID.get(recordAttr.id)) {
       for (const term of db.get("term").byParentID.get(recordKeyValue.id)) {
-        for (const { termID: valueTerm, name, span } of scopeTermVar(
-          db,
-          term.id
-        )) {
+        for (const { name, span } of scopeTermVar(db, term.id)) {
           // if (valueTerm === term.id) {
-          yield { recordID: valueTerm, name, span };
+          yield { recordID, name, span };
           // }
         }
       }
