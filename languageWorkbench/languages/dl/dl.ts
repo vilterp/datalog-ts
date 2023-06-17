@@ -9,6 +9,7 @@ import {
 } from "../../common/types";
 import { NodesByRule } from "../../parserlib/flattenByRule";
 import { Span } from "../../parserlib/types";
+import { GRAMMAR } from "./parser";
 
 // ==== Defn ====
 
@@ -568,6 +569,7 @@ function* tcRuleAttr(
 }
 
 export const datalogLangImpl: LangImpl = {
+  grammar: GRAMMAR,
   highlightMapping: SYNTAX_HIGHLIGHTING_MAPPING,
   scopeDefn,
   scopePlaceholder,

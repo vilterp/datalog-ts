@@ -16,9 +16,8 @@ import {
 } from "../parserlib/flattenByRule";
 import { extractRuleTree } from "../parserlib/ruleTree";
 import { parse } from "../parserlib/parser";
-import { GRAMMAR } from "../languages/dl/parser";
 import { Span } from "../parserlib/types";
-import { LanguageSpec, Problem } from "../common/types";
+import { LangImpl, LanguageSpec, Problem } from "../common/types";
 import { updateDocSource } from "../interpCache";
 
 export function registerLanguageSupport(
@@ -275,6 +274,7 @@ function getCompletionItems(
   if (spec.nativeImpl) {
     const flattened = getFlattened(
       document.uri.toString(),
+      spec.nativeImpl,
       spec.name,
       sourceWithPlaceholder,
       spec.leaves
@@ -398,6 +398,7 @@ function getSemanticTokens(
     console.log("native semantic tokens");
     const flattened = getFlattened(
       document.uri.toString(),
+      spec.nativeImpl,
       spec.name,
       source,
       spec.leaves
@@ -439,6 +440,7 @@ export function refreshDiagnostics(
   if (spec.nativeImpl) {
     const flattened = getFlattened(
       document.uri.toString(),
+      spec.nativeImpl,
       spec.name,
       source,
       spec.leaves
@@ -476,15 +478,15 @@ function nativeProblemToDiagnostic(
 
 function getFlattened(
   uri: string,
+  impl: LangImpl,
+  // TODO: get lang id from impl?
   langID: string,
   source: string,
   leaves: Set<string> = new Set<string>()
 ): NodesByRule {
   // call updateSource here?
   updateDocSource(uri, langID, source);
-  // TODO: pass in spec; use its grammar
-  console.log("get flattened");
-  const traceTree = parse(GRAMMAR, "main", source);
+  const traceTree = parse(impl.grammar, "main", source);
   const ruleTree = extractRuleTree(traceTree);
   return flattenByRule(ruleTree, source, leaves);
 }

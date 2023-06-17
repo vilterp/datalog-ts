@@ -15,6 +15,7 @@ import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { executionVisualizerTests } from "./apps/executionVisualizer/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
 import { lwbTestsIncr, lwbTestsSimple } from "./languageWorkbench/ddTests";
+import { nativeTests } from "./languageWorkbench/languages/dl/nativeTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -37,6 +38,7 @@ const suites: { [name: string]: Suite } = {
   kvSync: kvSyncTests(writeResults),
   executionVisualizer: executionVisualizerTests(writeResults),
   lwbTestsSimple: lwbTestsSimple(writeResults),
+  lwbNativeDatalogTests: nativeTests,
   lwbTestsIncr: lwbTestsIncr(writeResults),
 };
 
