@@ -22,8 +22,8 @@ state.ProgramCounter{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.sleep{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.timerBlock{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.timerUnblock{thread: TH, time: T, counter: C, state: St}.
+  state.programCounter.timer.block{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: St}.
 
 .table state.programCounter.init
 
@@ -108,7 +108,8 @@ state.programCounter.sleep{
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   state.Var{thread: TH, time: T, var: DurVar, value: Dur}.
-state.programCounter.timerBlock{
+# step thread forward in time while blocked
+state.programCounter.timer.block{
   thread: TH,
   time: T,
   counter: C,
@@ -124,7 +125,8 @@ state.programCounter.timerBlock{
   T = PrevT + 1 &
   state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
   WT < T.
-state.programCounter.timerUnblock{thread: TH, time: T, counter: C, state: running{}} :-
+# wake up thread when it's time to unblock
+state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: running{}} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: timer{
     start: StartT,
     thread: TH,
