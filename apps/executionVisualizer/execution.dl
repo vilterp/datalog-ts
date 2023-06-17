@@ -90,12 +90,13 @@ state.programCounter.fork.new{
   C = PrevC + 1.
 
 # sleep
-state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}} :-
+state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} :-
   time{time: T} &
-  instr{idx: PrevC, op: store{val: blockingCall{fun: "block.sleep"}}} &
+  instr{idx: PrevC, op: store{val: blockingCall{fun: "block.sleep", args: [DurVar]}}} &
   T = PrevT + 1 &
   C = PrevC + 1 &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}}.
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
+  state.Var{thread: TH, time: T, var: DurVar, value: Dur}.
 
 # === Var ===
 
@@ -192,6 +193,12 @@ state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal} :-
   T = PrevT + 1 &
   instr{idx: C, op: gotoIf{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+
+# === Timer ===
+
+state.Timer{wakeupTime: WT, wakeupThread: TH} :-
+  state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
+  WT = T + Dur.
 
 # === Viz ===
 
