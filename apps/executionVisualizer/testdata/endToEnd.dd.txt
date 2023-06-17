@@ -97,3 +97,15 @@ state.ProgramCounter{counter: 9, state: running{}, thread: 111, time: 12}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 117, time: 18}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 123, time: 24}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 129, time: 30}.
+
+main {
+  x = 5;
+  y = block.sleep(x);
+  z = 10;
+}
+state.ProgramCounter{}?
+----
+application/datalog
+state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
+state.ProgramCounter{counter: 1, state: running{}, thread: 1, time: 2}.
+state.ProgramCounter{counter: 2, state: blocked{}, thread: 1, time: 3}.
