@@ -11,5 +11,7 @@ loop {
   goto loop if going;
 }
 afterFork {
-  done = 42;
+  x = 5;
+  y = block.sleep(x);
+  z = 10;
 }
