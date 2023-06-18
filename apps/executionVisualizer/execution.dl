@@ -295,13 +295,12 @@ viz.continueMessage{
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
   PrevT = T + 1.
-viz.tickColor{tick: T, color: C} :-
-  viz.runningColor{tick: T, color: C} |
-  viz.blockedColor{tick: T, color: C}.
-viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
-  state.ProgramCounter{thread: TH, time: T, state: running{}}.
-viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
-  state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
+viz.tickColor{tick: tick{place: TH, time: T}, color: C} :-
+  state.ProgramCounter{thread: TH, time: T, state: St} &
+  viz.stateColorCode{state: St, color: C}.
+
+viz.stateColorCode{state: running{}, color: "red"}.
+viz.stateColorCode{state: blocked{}, color: "grey"}.
 
 internal.visualization{
   name: "Spawning Sequence",
