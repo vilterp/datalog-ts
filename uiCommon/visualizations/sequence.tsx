@@ -31,14 +31,17 @@ function SequenceDiagram(props: VizArgs) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
     const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
+    const tickColors = props.spec.attrs.tickColor
+      ? props.interp.queryRec(props.spec.attrs.tickColor as Rec)
+      : [];
+
+    const spec = makeSequenceSpec(actors, messages, tickColors);
+    console.log("sequence spec", spec);
 
     return (
       <div>
         <Diagram<Term>
-          diagram={sequenceDiagram(
-            makeSequenceSpec(actors, messages),
-            props.highlightedTerm
-          )}
+          diagram={sequenceDiagram(spec, props.highlightedTerm)}
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
       </div>
@@ -53,10 +56,23 @@ function SequenceDiagram(props: VizArgs) {
   }
 }
 
+const DEFAULT_TICK_COLOR = "red";
+
 // TODO: maybe integrate this into one of the above functions??
 //   or not
-function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
+function makeSequenceSpec(
+  actors: Res[],
+  messages: Res[],
+  tickColors: Res[]
+): Sequence {
   const locations = uniqBy((res) => ppt(res.bindings.ID), actors);
+  const colorByTick = {};
+  tickColors.forEach((tickColor) => {
+    colorByTick[ppt(tickColor.bindings.Tick)] = (
+      tickColor.bindings.Color as StringLit
+    ).val;
+  });
+  console.log("color by tick", colorByTick);
   return {
     locations: locations.map((actor) => ({
       loc: (actor.bindings.ID as StringLit).val,
@@ -68,13 +84,20 @@ function makeSequenceSpec(actors: Res[], messages: Res[]): Sequence {
         time: (fromTickRec.attrs.time as Int).val,
         place: (fromTickRec.attrs.place as StringLit).val,
         term: fromTickRec,
+        color: colorByTick[ppt(fromTickRec)] || DEFAULT_TICK_COLOR,
       };
       const toTickRec = message.bindings.ToTick as Rec;
       const toTick: Tick = {
         time: (toTickRec.attrs.time as Int).val,
         place: (toTickRec.attrs.place as StringLit).val,
         term: toTickRec,
+        color: colorByTick[ppt(toTickRec)] || DEFAULT_TICK_COLOR,
       };
+      console.log(
+        "color for tick",
+        ppt(toTickRec),
+        colorByTick[ppt(toTickRec)]
+      );
       return {
         term: message.term,
         from: fromTick,
@@ -102,6 +125,7 @@ interface Tick {
   place: Location;
   time: Time;
   term: Term;
+  color: string;
 }
 
 function yForTime(t: Time): number {
@@ -143,7 +167,7 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
                   tp.term,
                   Circle({
                     radius: 5,
-                    fill: highlighted ? "orange" : "red",
+                    fill: highlighted ? "orange" : tp.color,
                   })
                 )
               );
