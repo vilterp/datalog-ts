@@ -72,7 +72,6 @@ function makeSequenceSpec(
       tickColor.bindings.Color as StringLit
     ).val;
   });
-  console.log("color by tick", colorByTick);
   return {
     locations: locations.map((actor) => ({
       loc: (actor.bindings.ID as StringLit).val,
@@ -93,11 +92,6 @@ function makeSequenceSpec(
         term: toTickRec,
         color: colorByTick[ppt(toTickRec)] || DEFAULT_TICK_COLOR,
       };
-      console.log(
-        "color for tick",
-        ppt(toTickRec),
-        colorByTick[ppt(toTickRec)]
-      );
       return {
         term: message.term,
         from: fromTick,
