@@ -36,7 +36,6 @@ function SequenceDiagram(props: VizArgs) {
       : [];
 
     const spec = makeSequenceSpec(actors, messages, tickColors);
-    console.log("sequence spec", spec);
 
     return (
       <div>
