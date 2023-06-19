@@ -375,15 +375,28 @@ viz.threadVar{time: T, tv: [TH, V], value: Val} :-
 
 # TODO: another encoding channel for thread
 internal.visualization{
-  name: "Variables Over over Time",
+  name: "Variables Over Time",
   spec: vegalite{
     mark: "line",
     encoding: encoding{
       x: mapping{field: "time", type: "quantitative"},
       y: mapping{field: "value", type: "quantitative"},
-      color: mapping{field: "tv"}
+      color: mapping{field: "tv"},
     },
-    query: viz.threadVar{}
+    query: viz.threadVar{},
+  }
+}.
+
+internal.visualization{
+  name: "Lock State Over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "id", type: "quantitative"},
+      color: mapping{field: "state"},
+    },
+    query: state.Lock{},
   }
 }.
 
