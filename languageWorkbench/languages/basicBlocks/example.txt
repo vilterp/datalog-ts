@@ -3,8 +3,9 @@ countUp {
   goto loop;
 }
 loop {
-  forked = fork();
+  forked = fork(); // fork off a new thread
   goto afterFork if forked;
+  // call a primitive
   x = prim.incr(x);
   threshold = 5;
   going = prim.lt(x, threshold);

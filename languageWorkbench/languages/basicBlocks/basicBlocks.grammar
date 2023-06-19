@@ -15,10 +15,13 @@ const :- (string | int).
 
 int :- [[0-9], repSep([0-9], "")].
 Placeholder :- "???".
-ws :- repSep((" "|"\n"), "").
+ws :- repSep([spaces, (comment | "")], "\n").
+spaces :- repSep(" ", "").
 string :- ["\"", repSep(stringChar, ""), "\""].
 stringChar :- (^'"' | ['\\', '"']).
 alpha :- ([a-z] | [A-Z] | "_").
 num :- [0-9].
 alphaNum :- (alpha | num).
 ident :- [alpha, repSep((alphaNum | "."), "")].
+comment :- ["//", repSep(commentChar, "")].
+commentChar :- ^'\n'.
