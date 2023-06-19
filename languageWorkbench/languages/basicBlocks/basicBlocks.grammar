@@ -1,17 +1,20 @@
-main :- repSep(block,ws).
+main :- repSep(block, ws).
 block :- [label, ws, blockBody].
-blockBody :- ["{", ws, repSep(instr,[";",ws]), ws, "}"].
+blockBody :- ["{", ws, repSep(instr,[";", ws]), ws, "}"].
 label :- ident.
-instr :- (valueInstr | gotoInstr).
+instr :- (valueInstr | gotoInstr | forkToInstr).
+forkToInstr :- [forkToKW, ws, label].
 valueInstr :- [ident, ws, "=", ws, rvalue].
 rvalue :- (call | const).
 call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, (label | Placeholder), ([ws, ifClause] | "")].
-gotoKW :- "goto".
 ifClause :- [ifKW, ws, ident].
-ifKW :- "if".
 params :- ["(", repSep((ident | Placeholder), [",", ws]), ")"].
 const :- (string | int).
+
+gotoKW :- "goto".
+forkToKW :- "forkTo".
+ifKW :- "if".
 
 int :- [[0-9], repSep([0-9], "")].
 Placeholder :- "???".

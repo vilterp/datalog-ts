@@ -51,6 +51,18 @@ export type BBCommentChar = {
   span: Span;
 };
 export type BBConst = BBString | BBInt;
+export type BBForkToInstr = {
+  type: "ForkToInstr";
+  text: string;
+  span: Span;
+  forkToKW: BBForkToKW;
+  label: BBLabel;
+};
+export type BBForkToKW = {
+  type: "ForkToKW";
+  text: string;
+  span: Span;
+};
 export type BBGotoInstr = {
   type: "GotoInstr";
   text: string;
@@ -84,7 +96,7 @@ export type BBIfKW = {
   text: string;
   span: Span;
 };
-export type BBInstr = BBValueInstr | BBGotoInstr;
+export type BBInstr = BBValueInstr | BBGotoInstr | BBForkToInstr;
 export type BBInt = {
   type: "Int";
   text: string;
@@ -189,6 +201,16 @@ export function parseConst(input: string): BBConst {
   const traceTree = parserlib.parse(GRAMMAR, "const", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractConst(input, ruleTree);
+}
+export function parseForkToInstr(input: string): BBForkToInstr {
+  const traceTree = parserlib.parse(GRAMMAR, "forkToInstr", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractForkToInstr(input, ruleTree);
+}
+export function parseForkToKW(input: string): BBForkToKW {
+  const traceTree = parserlib.parse(GRAMMAR, "forkToKW", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractForkToKW(input, ruleTree);
 }
 export function parseGotoInstr(input: string): BBGotoInstr {
   const traceTree = parserlib.parse(GRAMMAR, "gotoInstr", input);
@@ -353,6 +375,22 @@ function extractConst(input: string, node: RuleTree): BBConst {
     }
   }
 }
+function extractForkToInstr(input: string, node: RuleTree): BBForkToInstr {
+  return {
+    type: "ForkToInstr",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    forkToKW: extractForkToKW(input, childByName(node, "forkToKW", null)),
+    label: extractLabel(input, childByName(node, "label", null)),
+  };
+}
+function extractForkToKW(input: string, node: RuleTree): BBForkToKW {
+  return {
+    type: "ForkToKW",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
 function extractGotoInstr(input: string, node: RuleTree): BBGotoInstr {
   return {
     type: "GotoInstr",
@@ -412,6 +450,9 @@ function extractInstr(input: string, node: RuleTree): BBInstr {
     }
     case "gotoInstr": {
       return extractGotoInstr(input, child);
+    }
+    case "forkToInstr": {
+      return extractForkToInstr(input, child);
     }
   }
 }
@@ -601,6 +642,31 @@ const GRAMMAR: Grammar = {
         captureName: null,
         rule: "gotoInstr",
       },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "forkToInstr",
+      },
+    ],
+  },
+  forkToInstr: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "forkToKW",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "label",
+      },
     ],
   },
   valueInstr: {
@@ -725,10 +791,6 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
-  gotoKW: {
-    type: "Text",
-    value: "goto",
-  },
   ifClause: {
     type: "Sequence",
     items: [
@@ -748,10 +810,6 @@ const GRAMMAR: Grammar = {
         rule: "ident",
       },
     ],
-  },
-  ifKW: {
-    type: "Text",
-    value: "if",
   },
   params: {
     type: "Sequence",
@@ -812,6 +870,18 @@ const GRAMMAR: Grammar = {
         rule: "int",
       },
     ],
+  },
+  gotoKW: {
+    type: "Text",
+    value: "goto",
+  },
+  forkToKW: {
+    type: "Text",
+    value: "forkTo",
+  },
+  ifKW: {
+    type: "Text",
+    value: "if",
   },
   int: {
     type: "Sequence",

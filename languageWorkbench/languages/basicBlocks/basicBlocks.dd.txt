@@ -28,8 +28,7 @@ countUp {
   goto loop;
 }
 loop {
-  forked = fork();
-  goto afterFork if forked;
+  forkTo afterFork;
   x = base.incr(x);
   threshold = 5;
   going = base.lt(x, threshold);
@@ -41,16 +40,15 @@ afterFork {
 scope.Usage{}
 ----
 application/datalog
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 110, to: 119}, kind: "value", name: "threshold", usageScopeID: global{}, usageSpan: span{from: 146, to: 155}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 104, to: 105}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 143, to: 144}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 127, to: 132}, kind: "value", name: "going", usageScopeID: global{}, usageSpan: span{from: 173, to: 178}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 182, to: 191}, kind: "label", name: "afterFork", usageScopeID: global{}, usageSpan: span{from: 67, to: 76}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 165, to: 169}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 100, to: 105}, kind: "value", name: "going", usageScopeID: global{}, usageSpan: span{from: 146, to: 151}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 116, to: 117}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 77, to: 78}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 155, to: 164}, kind: "label", name: "afterFork", usageScopeID: global{}, usageSpan: span{from: 50, to: 59}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 138, to: 142}}.
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 26, to: 30}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 43, to: 49}, kind: "value", name: "forked", usageScopeID: global{}, usageSpan: span{from: 80, to: 86}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 90, to: 91}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 104, to: 105}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 90, to: 91}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 143, to: 144}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 63, to: 64}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 116, to: 117}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 63, to: 64}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 77, to: 78}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 83, to: 92}, kind: "value", name: "threshold", usageScopeID: global{}, usageSpan: span{from: 119, to: 128}}.
 
 basicBlocks
 foo {

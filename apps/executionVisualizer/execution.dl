@@ -4,6 +4,7 @@
 .table expr.funcArg
 .table expr.intLit
 .table expr.var
+.table state.programCounter.init
 
 # time
 
@@ -17,28 +18,22 @@ time{time: T} :-
 
 state.ProgramCounter{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.init{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.store{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.storeBasic{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.goto{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.sleep{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.timer.block{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: St}.
+  state.programCounter.call{thread: TH, time: T, counter: C, state: St}.
 
-.table state.programCounter.init
-
-# TODO: only proceed if we're storing a primitive result or a literal
-state.programCounter.store{thread: TH, time: T, counter: C, state: running{}} :-
-  state.programCounter.store.literal{thread: TH, time: T, counter: C, state: running{}} |
-  state.programCounter.store.primitive{thread: TH, time: T, counter: C, state: running{}}.
-state.programCounter.store.literal{thread: TH, time: T, counter: C, state: running{}} :-
+state.programCounter.storeBasic{thread: TH, time: T, counter: C, state: running{}} :-
+  state.programCounter.storeBasic.literal{thread: TH, time: T, counter: C, state: running{}} |
+  state.programCounter.storeBasic.primitive{thread: TH, time: T, counter: C, state: running{}}.
+state.programCounter.storeBasic.literal{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: Lit}} &
   base.int{a: Lit} &
   T = PrevT + 1 &
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}}.
-state.programCounter.store.primitive{thread: TH, time: T, counter: C, state: running{}} :-
+state.programCounter.storeBasic.primitive{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: primitive{}}} &
   T = PrevT + 1 &
@@ -66,13 +61,21 @@ state.programCounter.goto{thread: TH, time: T, counter: C, state: running{}} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   instr{idx: PrevC, op: goto{dest: C}}.
+
+# call
+state.programCounter.call{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.call.acquireLock{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.call.releaseLock{thread: TH, time: T, counter: C, state: St}.
+
 # fork
 state.programCounter.fork{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.fork.new{thread: TH, time: T, counter: C, state: St}.
 state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
-  instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
+  instr{idx: PrevC, op: forkTo{}} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   C = PrevC + 1.
@@ -84,15 +87,17 @@ state.programCounter.fork.new{
   state: running{},
 } :-
   time{time: T} &
-  instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
+  instr{idx: PrevC, op: forkTo{dest: C}} &
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   ShiftedT = T + 100 &
-  TH = PrevTH + ShiftedT &
-  C = PrevC + 1.
-
+  TH = PrevTH + ShiftedT.
 # sleep
-state.programCounter.sleep{
+state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.timer.init{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timer.block{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.timer.init{
   thread: TH,
   time: T,
   counter: C,
@@ -137,15 +142,73 @@ state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: runni
   T = PrevT + 1 &
   state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
   WT = T.
+# acquire lock
+state.programCounter.call.acquireLock{thread: TH, time: T, counter: C, state: St, lock: L} :-
+  state.programCounter.lock.init{thread: TH, time: T, counter: C, state: St, lock: L} |
+  state.programCounter.lock.acquire.block{thread: TH, time: T, counter: C, state: St, lock: L} |
+  state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St, lock: L}.
+state.programCounter.lock.init{thread: TH, time: T, counter: C, state: St, lock: L} :-
+  state.programCounter.lock.acquire.init.held{thread: TH, time: T, counter: C, state: St, lock: L} |
+  state.programCounter.lock.acquire.init.open{thread: TH, time: T, counter: C, state: St, lock: L}.
+state.programCounter.lock.acquire.init.held{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: blocked{reason: lock{id: LockVal}},
+  lock: LockVal,
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: running{}} &
+  instr{idx: C, op: store{val: blockingCall{fun: "block.acquireLock", args: [LockVar]}}} &
+  state.Var{thread: TH, time: PrevT, var: LockVar, value: LockVal} &
+  state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
+  T = PrevT + 1.
+state.programCounter.lock.acquire.init.open{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: running{},
+  lock: LockVal,
+} :-
+  time{time: T} &
+  T = PrevT + 1 &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
+  instr{idx: PrevC, op: store{val: blockingCall{fun: "block.acquireLock", args: [LockVar]}}} &
+  state.Var{thread: TH, time: PrevT, var: LockVar, value: LockVal} &
+  state.Lock{id: LockVal, state: open{}, time: PrevT} &
+  C = PrevC + 1.
+# step forward in time while still blocked on the lock
+state.programCounter.lock.acquire.block{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: blocked{reason: lock{id: LockVal}},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
+  T = PrevT + 1 &
+  state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
+state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St} :-
+  XXX{}.
+# release lock
+state.programCounter.call.releaseLock{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: running{},
+  lock: LockVal,
+} :-
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
+  instr{idx: PrevC, op: store{val: call{fun: "releaseLock", args: [LockVar]}}} &
+  state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
+  state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
+  T = PrevT + 1 &
+  C = PrevC + 1.
 
 # === Var ===
 
 state.Var{thread: TH, time: T, var: Var, value: Val} :-
   state.var.storeInt{thread: TH, time: T, var: Var, value: Val} |
   # TODO: storeString
-  state.var.storeCallIncr{thread: TH, time: T, var: Var, value: Val} |
-  state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} |
-  state.var.storeCallFork{thread: TH, time: T, var: Var, value: Val} |
+  state.var.store.call{thread: TH, time: T, var: Var, value: Val} |
   state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
 state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
@@ -153,16 +216,23 @@ state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
   instr{idx: C, op: store{var: Var, val: Val}} &
   base.int{a: Val} &
   T = PrevT + 1.
-state.var.storeCallIncr{thread: TH, time: T, var: Var, value: Val} :-
+  
+state.var.store.call{thread: TH, time: T, var: Var, value: Val, fun: F} :-
+  state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val, fun: F} |
+  state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val, fun: F} |
+  state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val, fun: F}.
+# incr
+state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val, fun: "prim.incr"} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.incr", args: [ArgVar]}}} &
   state.Var{thread: TH, time: PrevT, var: ArgVar, value: ArgVal} &
   Val = ArgVal + 1 &
   T = PrevT + 1.
-state.var.storeCallLT{thread: TH, time: T, var: Var, value: Val} :-
-  state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} |
-  state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val}.
-state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} :-
+# less than
+state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val, fun: "prim.lt"} :-
+  state.var.store.call.LT.yes{thread: TH, time: T, var: Var, value: Val} |
+  state.var.store.call.LT.no{thread: TH, time: T, var: Var, value: Val}.
+state.var.store.call.LT.yes{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.lt", args: [Arg1Var, Arg2Var]}}} &
   state.Var{thread: TH, time: PrevT, var: Arg1Var, value: Arg1Val} &
@@ -170,7 +240,7 @@ state.var.storeCallLT.yes{thread: TH, time: T, var: Var, value: Val} :-
   Arg1Val < Arg2Val &
   Val = true &
   T = PrevT + 1.
-state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.LT.no{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.lt", args: [Arg1Var, Arg2Var]}}} &
   state.Var{thread: TH, time: PrevT, var: Arg1Var, value: Arg1Val} &
@@ -178,27 +248,24 @@ state.var.storeCallLT.no{thread: TH, time: T, var: Var, value: Val} :-
   Arg1Val >= Arg2Val &
   Val = false &
   T = PrevT + 1.
-state.var.storeCallFork{thread: TH, time: T, var: Var, value: Val} :-
-  state.var.storeCallFork.new{thread: TH, time: T, var: Var, value: Val} |
-  state.var.storeCallFork.orig{thread: TH, time: T, var: Var, value: Val}.
-state.var.storeCallFork.new{thread: TH, time: T, var: Var, value: Val} :-
-  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: C} &
-  instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
-  T = PrevT + 1 &
-  ShiftedT = T + 100 &
-  TH = PrevTH + ShiftedT &
-  Val = true.
-state.var.storeCallFork.orig{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
   Val = false &
   T = PrevT + 1.
+# newLock
+state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val, fun: "prim.newLock"} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.newLock"}}} &
+  T = PrevT + 1 &
+  Val = created{thread: TH, time: T}.
 
 # == stay ==
 # propagate forward in time the values of variables that
 # aren't being changed at this timestep
 state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal}.
 # store & increment
@@ -212,11 +279,10 @@ state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
 state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal}.
-state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
-  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+state.var.stay.fork.orig{thread: OrigTH, time: T, var: Var, value: PrevVal} :-
+  state.programCounter.fork.new{origThread: OrigTH, time: T} &
   T = PrevT + 1 &
-  instr{idx: C, op: store{val: call{fun: "fork"}}} &
-  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+  state.Var{thread: OrigTH, time: PrevT, var: Var, value: PrevVal}.
 state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
   state.programCounter.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
   T = PrevT + 1 &
@@ -237,8 +303,71 @@ state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal} :-
 # === Timer ===
 
 state.Timer{thread: TH, startTime: T, wakeupTime: WT} :-
-  state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
+  state.programCounter.timer.init{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
   WT = T + Dur.
+
+# === Lock ===
+
+state.Lock{id: I, state: St, time: T} :-
+  state.lock.created{id: I, state: St, time: T} |
+  state.lock.acquired{id: I, state: St, time: T} |
+  state.lock.stay{id: I, state: St, time: T} |
+  state.lock.released{id: I, state: St, time: T}.
+state.lock.stay{id: I, state: St, time: T} :-
+  state.lock.stay.open{id: I, state: St, time: T} |
+  state.lock.stay.held{id: I, state: St, time: T}.
+state.lock.created{id: created{thread: TH, time: T}, state: open{}, time: T} :-
+  state.var.store.call.newLock{thread: TH, time: T, var: Var}.
+state.lock.acquired{id: I, state: St, time: T} :-
+  state.lock.acquired.open{id: I, state: St, time: T} |
+  state.lock.acquired.unblocked{id: I, state: St, time: T}.
+state.lock.acquired.open{id: I, state: heldBy{thread: TH}, time: T} :-
+  state.programCounter.lock.acquire.init.open{
+    thread: TH, time: T, counter: C, state: running{}, lock: I,
+  }.
+state.lock.acquired.unblocked{id: I, state: St, time: T} :-
+  state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St, lock: I}.
+state.lock.stay.open{id: I, state: open{}, time: T} :-
+  state.ProgramCounter{time: T} &
+  state.Lock{time: PrevT, id: I, state: open{}} &
+  T = PrevT + 1 &
+  !state.programCounter.call.acquireLock{time: T, lock: I}.
+state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
+  state.ProgramCounter{time: T, thread: TH} &
+  state.Lock{time: PrevT, id: I, state: heldBy{thread: TH}} &
+  T = PrevT + 1 &
+  !state.programCounter.call.releaseLock{time: T, lock: I}.
+state.lock.released{id: I, state: open{}, time: T} :-
+  state.programCounter.call.releaseLock{time: T, lock: I}.
+
+# === debug ===
+
+debug.instrAtTime{time: T, thread: TH, counter: C, instr: I} :-
+  state.ProgramCounter{time: T, thread: TH, counter: C} &
+  instr{idx: C, op: I}.
+
+# TODO: this should be an IC
+debug.doubleProgramCounter{time: T, thread: TH, counter1: C1, counter2: C2} :-
+  state.programCounter.gotoIf{time: T, thread: TH, counter: C1} &
+  state.programCounter.gotoIf{time: T, thread: TH, counter: C2} &
+  C1 != C2.
+
+debug.doubleVar{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
+  state.Var{var: Var, value: Val1, time: T, thread: TH} &
+  state.Var{var: Var, value: Val2, time: T, thread: TH} &
+  Val1 != Val2.
+debug.doubleVar.forkNew{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
+  state.var.stay.fork.new{var: Var, value: Val1, time: T, thread: TH} &
+  state.var.stay.fork.new{var: Var, value: Val2, time: T, thread: TH} &
+  Val1 != Val2.
+debug.doubleVar.forkOrig{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
+  state.var.stay.fork.orig{var: Var, value: Val1, time: T, thread: TH} &
+  state.var.stay.fork.orig{var: Var, value: Val2, time: T, thread: TH} &
+  Val1 != Val2.
+debug.doubleVar.store.call{var: Var, time: T, thread: TH, val1: Val1, val2: Val2, fun: F} :-
+  state.var.store.call{var: Var, value: Val1, time: T, thread: TH, fun: F} &
+  state.var.store.call{var: Var, value: Val2, time: T, thread: TH, fun: F} &
+  Val1 != Val2.
 
 # === Viz ===
 

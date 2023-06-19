@@ -22,8 +22,7 @@ countUp {
   goto loop;
 }
 loop {
-  forked = fork();
-  goto afterFork if forked;
+  forkTo afterFork;
   x = prim.incr(x);
   threshold = 5;
   going = prim.lt(x, threshold);
@@ -36,13 +35,12 @@ afterFork {
 application/datalog
 instr{idx: 0, op: store{val: 0, var: "x"}}.
 instr{idx: 1, op: goto{dest: 2}}.
-instr{idx: 2, op: store{val: call{args: [], fun: "fork"}, var: "forked"}}.
-instr{idx: 3, op: gotoIf{cond: "forked", dest: 8}}.
-instr{idx: 4, op: store{val: primitive{args: ["x"], fun: "prim.incr"}, var: "x"}}.
-instr{idx: 5, op: store{val: 5, var: "threshold"}}.
-instr{idx: 6, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
-instr{idx: 7, op: gotoIf{cond: "going", dest: 2}}.
-instr{idx: 8, op: store{val: 42, var: "done"}}.
+instr{idx: 2, op: forkTo{dest: 7}}.
+instr{idx: 3, op: store{val: primitive{args: ["x"], fun: "prim.incr"}, var: "x"}}.
+instr{idx: 4, op: store{val: 5, var: "threshold"}}.
+instr{idx: 5, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
+instr{idx: 6, op: gotoIf{cond: "going", dest: 2}}.
+instr{idx: 7, op: store{val: 42, var: "done"}}.
 
 main {
   x = 5;
@@ -54,3 +52,33 @@ application/datalog
 instr{idx: 0, op: store{val: 5, var: "x"}}.
 instr{idx: 1, op: store{val: blockingCall{args: ["x"], fun: "block.sleep"}, var: "y"}}.
 instr{idx: 2, op: store{val: 10, var: "z"}}.
+
+main {
+  lock1 = prim.newLock(); // TODO: generic "new" instr?
+  lock2 = prim.newLock();
+  forkTo afterFork;
+  // TODO: allow calls without result vars
+  x1 = block.acquireLock(lock1);
+  x2 = block.acquireLock(lock2);
+  x3 = releaseLock(lock1);
+  x4 = releaseLock(lock2);
+}
+afterFork {
+  x5 = block.acquireLock(lock2);
+  x6 = block.acquireLock(lock1);
+  x7 = releaseLock(lock2);
+  x8 = releaseLock(lock1);
+}
+----
+application/datalog
+instr{idx: 0, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock1"}}.
+instr{idx: 1, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock2"}}.
+instr{idx: 10, op: store{val: call{args: ["lock1"], fun: "releaseLock"}, var: "x8"}}.
+instr{idx: 2, op: forkTo{dest: 7}}.
+instr{idx: 3, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "x1"}}.
+instr{idx: 4, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "x2"}}.
+instr{idx: 5, op: store{val: call{args: ["lock1"], fun: "releaseLock"}, var: "x3"}}.
+instr{idx: 6, op: store{val: call{args: ["lock2"], fun: "releaseLock"}, var: "x4"}}.
+instr{idx: 7, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "x5"}}.
+instr{idx: 8, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "x6"}}.
+instr{idx: 9, op: store{val: call{args: ["lock2"], fun: "releaseLock"}, var: "x7"}}.

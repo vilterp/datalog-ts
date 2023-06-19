@@ -42,7 +42,9 @@ scope.varValue.condGoto{scopeID: global{}, name: N, span: S} :-
 # variables that refer to labels
 scope.varLabel{scopeID: global{}, name: N, span: S, kind: "label"} :-
   ast.label{id: LabelID, parentID: GotoID, text: N, span: S} &
-  ast.gotoInstr{id: GotoID}.
+  ast.gotoInstr{id: GotoID} |
+  ast.label{id: LabelID, parentID: ForkToID, text: N, span: S} &
+  ast.forkToInstr{id: ForkToID}.
 
 scope.Placeholder{span: S, scopeID: Scope, kind: K} :-
   scope.placeholderValue{span: S, scopeID: Scope, kind: K} |
@@ -61,6 +63,7 @@ scope.placeholderLabel{span: S, scopeID: global{}, kind: "label"} :-
 
 hl.mapping{rule: "gotoKW", type: "keyword"}.
 hl.mapping{rule: "ifKW", type: "keyword"}.
+hl.mapping{rule: "forkToKW", type: "keyword"}.
 hl.mapping{rule: "int", type: "number"}.
 hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "bool", type: "number"}.
