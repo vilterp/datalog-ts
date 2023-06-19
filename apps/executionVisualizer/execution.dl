@@ -143,9 +143,7 @@ state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: runni
 state.Var{thread: TH, time: T, var: Var, value: Val} :-
   state.var.storeInt{thread: TH, time: T, var: Var, value: Val} |
   # TODO: storeString
-  state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val} |
-  state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val} |
-  state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val} |
+  state.var.store.call{thread: TH, time: T, var: Var, value: Val} |
   state.var.stay{thread: TH, time: T, var: Var, value: Val}.
 
 state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
@@ -153,6 +151,12 @@ state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
   instr{idx: C, op: store{var: Var, val: Val}} &
   base.int{a: Val} &
   T = PrevT + 1.
+  
+state.var.store.call{thread: TH, time: T, var: Var, value: Val} :-
+  state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val} |
+  state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val} |
+  state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val}.
+
 state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.incr", args: [ArgVar]}}} &
