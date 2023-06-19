@@ -354,9 +354,24 @@ state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
 state.lock.released{id: I, state: open{}, time: T} :-
   state.programCounter.call.releaseLock{time: T, lock: I}.
 
+# === debug ===
+
 debug.instrAtTime{time: T, thread: TH, counter: C, instr: I} :-
   state.ProgramCounter{time: T, thread: TH, counter: C} &
   instr{idx: C, op: I}.
+
+# TODO: this should be an IC
+debug.doubleProgramCounter{time: T, thread: TH, counter1: C1, counter2: C2, instr: I} :-
+  state.ProgramCounter{time: T, thread: TH, counter: C1} &
+  state.ProgramCounter{time: T, thread: TH, counter: C2} &
+  C1 != C2 &
+  T = PrevT + 1 &
+  state.ProgramCounter{time: PrevT, thread: TH, counter: PrevC} &
+  instr{idx: PrevC, op: I}.
+debug.doubleVar{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
+  state.Var{var: Var, value: Val1, time: T, thread: TH} &
+  state.Var{var: Var, value: Val2, time: T, thread: TH} &
+  Val1 != Val2.
 
 # === Viz ===
 
