@@ -4,6 +4,7 @@
 .table expr.funcArg
 .table expr.intLit
 .table expr.var
+.table state.programCounter.init
 
 # time
 
@@ -17,28 +18,22 @@ time{time: T} :-
 
 state.ProgramCounter{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.init{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.store{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.storeBasic{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.goto{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.sleep{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.timer.block{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: St}.
+  state.programCounter.call{thread: TH, time: T, counter: C, state: St}.
 
-.table state.programCounter.init
-
-# TODO: only proceed if we're storing a primitive result or a literal
-state.programCounter.store{thread: TH, time: T, counter: C, state: running{}} :-
-  state.programCounter.store.literal{thread: TH, time: T, counter: C, state: running{}} |
-  state.programCounter.store.primitive{thread: TH, time: T, counter: C, state: running{}}.
-state.programCounter.store.literal{thread: TH, time: T, counter: C, state: running{}} :-
+state.programCounter.storeBasic{thread: TH, time: T, counter: C, state: running{}} :-
+  state.programCounter.storeBasic.literal{thread: TH, time: T, counter: C, state: running{}} |
+  state.programCounter.storeBasic.primitive{thread: TH, time: T, counter: C, state: running{}}.
+state.programCounter.storeBasic.literal{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: Lit}} &
   base.int{a: Lit} &
   T = PrevT + 1 &
   C = PrevC + 1 &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}}.
-state.programCounter.store.primitive{thread: TH, time: T, counter: C, state: running{}} :-
+state.programCounter.storeBasic.primitive{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: primitive{}}} &
   T = PrevT + 1 &
@@ -66,17 +61,23 @@ state.programCounter.goto{thread: TH, time: T, counter: C, state: running{}} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   instr{idx: PrevC, op: goto{dest: C}}.
+
+# call
+state.programCounter.call{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.call.fork{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St}.
+
 # fork
-state.programCounter.fork{thread: TH, time: T, counter: C, state: St} :-
-  state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.fork.new{thread: TH, time: T, counter: C, state: St}.
-state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: running{}} :-
+state.programCounter.call.fork{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.call.fork.orig{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.call.fork.new{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.call.fork.orig{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
   instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   C = PrevC + 1.
-state.programCounter.fork.new{
+state.programCounter.call.fork.new{
   thread: TH,
   origThread: PrevTH,
   time: T,
@@ -91,7 +92,11 @@ state.programCounter.fork.new{
   TH = PrevTH + ShiftedT &
   C = PrevC + 1.
 # sleep
-state.programCounter.sleep{
+state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.timer.init{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timer.block{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.timer.init{
   thread: TH,
   time: T,
   counter: C,
@@ -252,7 +257,7 @@ state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal} :-
 # === Timer ===
 
 state.Timer{thread: TH, startTime: T, wakeupTime: WT} :-
-  state.programCounter.sleep{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
+  state.programCounter.timer.init{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
   WT = T + Dur.
 
 # === Lock ===
