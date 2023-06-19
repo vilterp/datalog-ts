@@ -39,8 +39,7 @@ countUp {
   goto loop;
 }
 loop {
-  forked = fork();
-  goto afterFork if forked;
+  forkTo afterFork;
   x = prim.incr(x);
   threshold = 5;
   going = prim.lt(x, threshold);
@@ -54,49 +53,43 @@ state.ProgramCounter{}?
 application/datalog
 state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
 state.ProgramCounter{counter: 1, state: running{}, thread: 1, time: 2}.
-state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 15}.
-state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 21}.
-state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 27}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 13}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 18}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 23}.
 state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 3}.
-state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 9}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 10}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 16}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 22}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 28}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 8}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 14}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 19}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 24}.
 state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 4}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 105, time: 4}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 111, time: 10}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 117, time: 16}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 123, time: 22}.
-state.ProgramCounter{counter: 3, state: running{}, thread: 129, time: 28}.
-state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 11}.
-state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 17}.
-state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 23}.
-state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 29}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 9}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 10}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 15}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 20}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 25}.
 state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 5}.
-state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 12}.
-state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 18}.
-state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 24}.
-state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 30}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 11}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 16}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 21}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 26}.
 state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 6}.
-state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 13}.
-state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 19}.
-state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 25}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 12}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 17}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 22}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 27}.
 state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 7}.
-state.ProgramCounter{counter: 7, state: running{}, thread: 1, time: 14}.
-state.ProgramCounter{counter: 7, state: running{}, thread: 1, time: 20}.
-state.ProgramCounter{counter: 7, state: running{}, thread: 1, time: 26}.
-state.ProgramCounter{counter: 7, state: running{}, thread: 1, time: 8}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 1, time: 28}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 105, time: 4}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 110, time: 9}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 115, time: 14}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 120, time: 19}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 125, time: 24}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 1, time: 29}.
 state.ProgramCounter{counter: 8, state: running{}, thread: 105, time: 5}.
-state.ProgramCounter{counter: 8, state: running{}, thread: 111, time: 11}.
-state.ProgramCounter{counter: 8, state: running{}, thread: 117, time: 17}.
-state.ProgramCounter{counter: 8, state: running{}, thread: 123, time: 23}.
-state.ProgramCounter{counter: 8, state: running{}, thread: 129, time: 29}.
-state.ProgramCounter{counter: 9, state: running{}, thread: 105, time: 6}.
-state.ProgramCounter{counter: 9, state: running{}, thread: 111, time: 12}.
-state.ProgramCounter{counter: 9, state: running{}, thread: 117, time: 18}.
-state.ProgramCounter{counter: 9, state: running{}, thread: 123, time: 24}.
-state.ProgramCounter{counter: 9, state: running{}, thread: 129, time: 30}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 110, time: 10}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 115, time: 15}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 120, time: 20}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 125, time: 25}.
 
 main {
   x = 5;
@@ -131,25 +124,27 @@ countUp {
   goto loop;
 }
 loop {
-  forked = fork();
-  goto afterFork if forked;
+  forkTo afterFork;
   x = prim.incr(x);
   threshold = 5;
   going = prim.lt(x, threshold);
   goto loop if going;
+  goto end;
 }
 afterFork {
   x = 5;
   y = block.sleep(x);
   z = 10;
 }
+end {}
 state.Timer{}?
 ----
 application/datalog
-state.Timer{startTime: 13, thread: 111, wakeupTime: 18}.
-state.Timer{startTime: 19, thread: 117, wakeupTime: 24}.
-state.Timer{startTime: 25, thread: 123, wakeupTime: 30}.
-state.Timer{startTime: 7, thread: 105, wakeupTime: 12}.
+state.Timer{startTime: 11, thread: 110, wakeupTime: 16}.
+state.Timer{startTime: 16, thread: 115, wakeupTime: 21}.
+state.Timer{startTime: 21, thread: 120, wakeupTime: 26}.
+state.Timer{startTime: 26, thread: 125, wakeupTime: 31}.
+state.Timer{startTime: 6, thread: 105, wakeupTime: 11}.
 
 main {
   lock = prim.newLock();
@@ -168,8 +163,7 @@ state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 5}.
 main {
   lock = prim.newLock();
   x1 = block.acquireLock(lock);
-  forked = fork();
-  goto afterFork if forked;
+  forkTo afterFork;
   t = 5;
   x2 = block.sleep(t);
   x3 = releaseLock(lock);
@@ -181,11 +175,12 @@ afterFork {
 state.Lock{}?
 ----
 application/datalog
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 105}, time: 13}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 105}, time: 14}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 10}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 11}.
-state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 12}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 13}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 14}.
-state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 15}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 3}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 4}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 5}.
@@ -193,5 +188,5 @@ state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 6}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 7}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 8}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 9}.
-state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 13}.
+state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 12}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.

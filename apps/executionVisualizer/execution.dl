@@ -282,7 +282,7 @@ state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
 state.var.stay.fork.orig{thread: OrigTH, time: T, var: Var, value: PrevVal} :-
   state.programCounter.fork.new{origThread: OrigTH, time: T} &
   T = PrevT + 1 &
-  state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
+  state.Var{thread: OrigTH, time: PrevT, var: Var, value: PrevVal}.
 state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
   state.programCounter.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
   T = PrevT + 1 &
