@@ -267,7 +267,7 @@ viz.threadVar{time: T, tv: [TH, V], value: Val} :-
 
 # TODO: another encoding channel for thread
 internal.visualization{
-  name: "Variables Over over Time",
+  name: "Variables Over Time",
   spec: vegalite{
     mark: "line",
     encoding: encoding{
