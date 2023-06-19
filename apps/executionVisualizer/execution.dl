@@ -247,7 +247,7 @@ state.var.store.call.LT.no{thread: TH, time: T, var: Var, value: Val} :-
 state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val} :-
   state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val} |
   state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val}.
-state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val, origThread: PrevTH} :-
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
   T = PrevT + 1 &
@@ -271,6 +271,7 @@ state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val} :-
 # aren't being changed at this timestep
 state.var.stay{thread: TH, time: T, var: Var, value: PrevVal} :-
   state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} |
   state.var.stay.gotoIf{thread: TH, time: T, var: Var, value: PrevVal}.
 # store & increment
