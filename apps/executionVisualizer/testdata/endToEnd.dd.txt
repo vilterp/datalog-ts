@@ -168,8 +168,8 @@ afterFork {
   x7 = releaseLock(lock2);
   x8 = releaseLock(lock1);
 }
-state.var.store.call.newLock{}?
+state.Lock{}?
 ----
 application/datalog
-state.var.store.call.newLock{thread: 1, time: 2, value: lock{created: point{thread: 1, time: T}}, var: "lock1"}.
-state.var.store.call.newLock{thread: 1, time: 3, value: lock{created: point{thread: 1, time: T}}, var: "lock2"}.
+state.Lock{heldBy: 1, id: created{thread: 1, time: 2}, time: 2}.
+state.Lock{heldBy: 1, id: created{thread: 1, time: 3}, time: 3}.
