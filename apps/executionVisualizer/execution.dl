@@ -289,7 +289,7 @@ state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
   state.Var{thread: OrigTH, time: PrevT, var: Var, value: Val}.
 # goto
 state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} :-
-  state.ProgamCounter{thread: TH, time: PrevT, counter: C} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
   instr{idx: C, op: goto{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
