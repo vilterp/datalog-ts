@@ -44,6 +44,8 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
       }
       return rec("goto", { dest });
     }
+    case "ForkToInstr":
+      return rec("forkTo", { dest: str(instr.label.text) });
   }
 }
 
