@@ -64,22 +64,22 @@ state.programCounter.goto{thread: TH, time: T, counter: C, state: running{}} :-
 
 # call
 state.programCounter.call{thread: TH, time: T, counter: C, state: St} :-
-  state.programCounter.call.fork{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.fork{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.call.acquireLock{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.call.releaseLock{thread: TH, time: T, counter: C, state: St}.
 
 # fork
-state.programCounter.call.fork{thread: TH, time: T, counter: C, state: St} :-
-  state.programCounter.call.fork.orig{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.call.fork.new{thread: TH, time: T, counter: C, state: St}.
-state.programCounter.call.fork.orig{thread: TH, time: T, counter: C, state: running{}} :-
+state.programCounter.fork{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.fork.new{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.fork.orig{thread: TH, time: T, counter: C, state: running{}} :-
   time{time: T} &
-  instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
+  instr{idx: PrevC, op: forkTo{}} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   C = PrevC + 1.
-state.programCounter.call.fork.new{
+state.programCounter.fork.new{
   thread: TH,
   origThread: PrevTH,
   time: T,
@@ -87,12 +87,11 @@ state.programCounter.call.fork.new{
   state: running{},
 } :-
   time{time: T} &
-  instr{idx: PrevC, op: store{val: call{fun: "fork"}}} &
+  instr{idx: PrevC, op: forkTo{dest: C}} &
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
   T = PrevT + 1 &
   ShiftedT = T + 100 &
-  TH = PrevTH + ShiftedT &
-  C = PrevC + 1.
+  TH = PrevTH + ShiftedT.
 # sleep
 state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.timer.init{thread: TH, time: T, counter: C, state: St} |
@@ -221,7 +220,6 @@ state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
 state.var.store.call{thread: TH, time: T, var: Var, value: Val, fun: F} :-
   state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val, fun: F} |
   state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val, fun: F} |
-  state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val, fun: F} |
   state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val, fun: F}.
 # incr
 state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val, fun: "prim.incr"} :-
@@ -250,17 +248,6 @@ state.var.store.call.LT.no{thread: TH, time: T, var: Var, value: Val} :-
   Arg1Val >= Arg2Val &
   Val = false &
   T = PrevT + 1.
-# fork
-state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val, fun: "fork"} :-
-  state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val} |
-  state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val}.
-state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val, origThread: PrevTH} :-
-  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: C} &
-  instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
-  T = PrevT + 1 &
-  ShiftedT = T + 100 &
-  TH = PrevTH + ShiftedT &
-  Val = true.
 state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: call{fun: "fork"}}} &
@@ -290,20 +277,19 @@ state.var.stay.store{thread: TH, time: T, var: Var, value: PrevVal} :-
   OtherVar != Var.
 # fork
 state.var.stay.fork{thread: TH, time: T, var: Var, value: PrevVal} :-
-  state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal}.
-  # state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal}.
-state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} :-
-  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  state.var.stay.fork.orig{thread: TH, time: T, var: Var, value: PrevVal} |
+  state.var.stay.fork.new{thread: TH, time: T, var: Var, value: PrevVal}.
+state.var.stay.fork.orig{thread: OrigTH, time: T, var: Var, value: PrevVal} :-
+  state.programCounter.fork.new{origThread: OrigTH, time: T} &
   T = PrevT + 1 &
-  instr{idx: C, op: store{val: call{fun: "fork"}}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
 state.var.stay.fork.new{thread: NewTH, time: T, var: Var, value: Val} :-
-  state.var.store.call.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
+  state.programCounter.fork.new{origThread: OrigTH, thread: NewTH, time: T} &
   T = PrevT + 1 &
   state.Var{thread: OrigTH, time: PrevT, var: Var, value: Val}.
 # goto
 state.var.stay.goto{thread: TH, time: T, var: Var, value: PrevVal} :-
-  state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
+  state.ProgamCounter{thread: TH, time: PrevT, counter: C} &
   T = PrevT + 1 &
   instr{idx: C, op: goto{}} &
   state.Var{thread: TH, time: PrevT, var: Var, value: PrevVal}.
@@ -429,7 +415,7 @@ viz.spawnMessage{
   fromTick: tick{time: FromT, place: FromTH},
   toTick: tick{time: ToT, place: ToTH}
 } :-
-  state.programCounter.call.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
+  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
   ToT = FromT + 1.
 viz.continueMessage{
   fromTick: tick{time: PrevT, place: TH},
