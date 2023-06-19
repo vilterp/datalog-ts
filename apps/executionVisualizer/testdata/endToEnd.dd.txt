@@ -164,3 +164,34 @@ state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 3}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 4}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 5}.
+
+main {
+  lock = prim.newLock();
+  x1 = block.acquireLock(lock);
+  forked = fork();
+  goto afterFork if forked;
+  t = 5;
+  x2 = block.sleep(t);
+  x3 = releaseLock(lock);
+}
+afterFork {
+  x4 = block.acquireLock(lock);
+  x5 = 10;
+}
+state.Lock{}?
+----
+application/datalog
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 10}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 11}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 12}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 14}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 15}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 3}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 4}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 5}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 6}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 7}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 8}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 9}.
+state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 13}.
+state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.

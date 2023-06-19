@@ -145,11 +145,13 @@ state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: runni
   WT = T.
 # acquire lock
 state.programCounter.call.acquireLock{thread: TH, time: T, counter: C, state: St, lock: L} :-
-  state.programCounter.lock.acquire.initHeld{thread: TH, time: T, counter: C, state: St, lock: L} |
-  state.programCounter.lock.acquire.initOpen{thread: TH, time: T, counter: C, state: St, lock: L} |
+  state.programCounter.lock.init{thread: TH, time: T, counter: C, state: St, lock: L} |
   state.programCounter.lock.acquire.block{thread: TH, time: T, counter: C, state: St, lock: L} |
   state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St, lock: L}.
-state.programCounter.lock.acquire.initHeld{
+state.programCounter.lock.init{thread: TH, time: T, counter: C, state: St, lock: L} :-
+  state.programCounter.lock.acquire.init.held{thread: TH, time: T, counter: C, state: St, lock: L} |
+  state.programCounter.lock.acquire.init.open{thread: TH, time: T, counter: C, state: St, lock: L}.
+state.programCounter.lock.acquire.init.held{
   thread: TH,
   time: T,
   counter: C,
@@ -161,7 +163,7 @@ state.programCounter.lock.acquire.initHeld{
   state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
   state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
   T = PrevT + 1.
-state.programCounter.lock.acquire.initOpen{
+state.programCounter.lock.acquire.init.open{
   thread: TH,
   time: T,
   counter: C,
@@ -326,7 +328,7 @@ state.lock.acquired{id: I, state: St, time: T} :-
   state.lock.acquired.open{id: I, state: St, time: T} |
   state.lock.acquired.unblocked{id: I, state: St, time: T}.
 state.lock.acquired.open{id: I, state: heldBy{thread: TH}, time: T} :-
-  state.programCounter.lock.acquire.initOpen{
+  state.programCounter.lock.acquire.init.open{
     thread: TH, time: T, counter: C, state: running{}, lock: I,
   }.
 state.lock.acquired.unblocked{id: I, state: St, time: T} :-
