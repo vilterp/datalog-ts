@@ -158,8 +158,8 @@ state.programCounter.lock.acquire.init.held{
   state: blocked{reason: lock{id: LockVal}},
   lock: LockVal,
 } :-
-  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
-  instr{idx: C, op: blockingCall{fun: "block.acquireLock", args: [LockVar]}} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: running{}} &
+  instr{idx: C, op: store{val: blockingCall{fun: "block.acquireLock", args: [LockVar]}}} &
   state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
   state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
   T = PrevT + 1.
@@ -346,7 +346,7 @@ state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
 state.lock.released{id: I, state: open{}, time: T} :-
   state.programCounter.call.releaseLock{time: T, lock: I}.
 
-debug.instrAtTime{time: T, thread: TH, instr: I} :-
+debug.instrAtTime{time: T, thread: TH, counter: C, instr: I} :-
   state.ProgramCounter{time: T, thread: TH, counter: C} &
   instr{idx: C, op: I}.
 
