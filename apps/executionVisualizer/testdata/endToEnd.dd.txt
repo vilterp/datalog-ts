@@ -150,3 +150,26 @@ state.Timer{startTime: 13, thread: 111, wakeupTime: 18}.
 state.Timer{startTime: 19, thread: 117, wakeupTime: 24}.
 state.Timer{startTime: 25, thread: 123, wakeupTime: 30}.
 state.Timer{startTime: 7, thread: 105, wakeupTime: 12}.
+
+main {
+  lock1 = prim.newLock(); // TODO: generic "new" instr?
+  lock2 = prim.newLock();
+  forked = fork();
+  goto afterFork if forked;
+  // TODO: allow calls without result vars
+  x1 = block.acquireLock(lock1);
+  x2 = block.acquireLock(lock2);
+  x3 = releaseLock(lock1);
+  x4 = releaseLock(lock2);
+}
+afterFork {
+  x5 = block.acquireLock(lock2);
+  x6 = block.acquireLock(lock1);
+  x7 = releaseLock(lock2);
+  x8 = releaseLock(lock1);
+}
+state.var.store.call.newLock{}?
+----
+application/datalog
+state.var.store.call.newLock{thread: 1, time: 2, value: lock{created: point{thread: 1, time: T}}, var: "lock1"}.
+state.var.store.call.newLock{thread: 1, time: 3, value: lock{created: point{thread: 1, time: T}}, var: "lock2"}.
