@@ -152,24 +152,15 @@ state.Timer{startTime: 25, thread: 123, wakeupTime: 30}.
 state.Timer{startTime: 7, thread: 105, wakeupTime: 12}.
 
 main {
-  lock1 = prim.newLock(); // TODO: generic "new" instr?
-  lock2 = prim.newLock();
-  forked = fork();
-  goto afterFork if forked;
-  // TODO: allow calls without result vars
-  x1 = block.acquireLock(lock1);
-  x2 = block.acquireLock(lock2);
-  x3 = releaseLock(lock1);
-  x4 = releaseLock(lock2);
-}
-afterFork {
-  x5 = block.acquireLock(lock2);
-  x6 = block.acquireLock(lock1);
-  x7 = releaseLock(lock2);
-  x8 = releaseLock(lock1);
+  lock = prim.newLock();
+  x1 = block.acquireLock(lock);
+  z = 5;
+  x3 = releaseLock(lock);
 }
 state.Lock{}?
 ----
 application/datalog
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 3}.
+state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 4}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
-state.Lock{id: created{thread: 1, time: 3}, state: open{}, time: 3}.
+state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 5}.

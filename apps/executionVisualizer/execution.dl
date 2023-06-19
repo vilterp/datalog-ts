@@ -189,10 +189,11 @@ state.programCounter.call.releaseLock{
   lock: LockVal,
 } :-
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
-  instr{idx: C, op: store{val: call{fun: "releaseLock", args: [LockVar]}}} &
+  instr{idx: PrevC, op: store{val: call{fun: "releaseLock", args: [LockVar]}}} &
   state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
   state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
-  T = PrevT + 1.
+  T = PrevT + 1 &
+  C = PrevC + 1.
 
 # === Var ===
 
@@ -331,12 +332,12 @@ state.lock.acquired.open{id: I, state: heldBy{thread: TH}, time: T} :-
 state.lock.acquired.unblocked{id: I, state: St, time: T} :-
   state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St, lock: I}.
 state.lock.stay.open{id: I, state: open{}, time: T} :-
-  state.ProgramCounter{time: PrevT} &
+  state.ProgramCounter{time: T} &
   state.Lock{time: PrevT, id: I, state: open{}} &
   T = PrevT + 1 &
   !state.programCounter.call.acquireLock{time: T, lock: I}.
 state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
-  state.ProgramCounter{time: PrevT, thread: TH} &
+  state.ProgramCounter{time: T, thread: TH} &
   state.Lock{time: PrevT, id: I, state: heldBy{thread: TH}} &
   T = PrevT + 1 &
   !state.programCounter.call.releaseLock{time: T, lock: I}.
