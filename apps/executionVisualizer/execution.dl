@@ -218,20 +218,20 @@ state.var.storeInt{thread: TH, time: T, var: Var, value: Val} :-
   base.int{a: Val} &
   T = PrevT + 1.
   
-state.var.store.call{thread: TH, time: T, var: Var, value: Val} :-
-  state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val} |
-  state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val} |
-  state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val} |
-  state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val}.
+state.var.store.call{thread: TH, time: T, var: Var, value: Val, fun: F} :-
+  state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val, fun: F} |
+  state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val, fun: F} |
+  state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val, fun: F} |
+  state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val, fun: F}.
 # incr
-state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.incr{thread: TH, time: T, var: Var, value: Val, fun: "prim.incr"} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.incr", args: [ArgVar]}}} &
   state.Var{thread: TH, time: PrevT, var: ArgVar, value: ArgVal} &
   Val = ArgVal + 1 &
   T = PrevT + 1.
 # less than
-state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.LT{thread: TH, time: T, var: Var, value: Val, fun: "prim.lt"} :-
   state.var.store.call.LT.yes{thread: TH, time: T, var: Var, value: Val} |
   state.var.store.call.LT.no{thread: TH, time: T, var: Var, value: Val}.
 state.var.store.call.LT.yes{thread: TH, time: T, var: Var, value: Val} :-
@@ -251,7 +251,7 @@ state.var.store.call.LT.no{thread: TH, time: T, var: Var, value: Val} :-
   Val = false &
   T = PrevT + 1.
 # fork
-state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.fork{thread: TH, time: T, var: Var, value: Val, fun: "fork"} :-
   state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val} |
   state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val}.
 state.var.store.call.fork.new{thread: TH, time: T, var: Var, value: Val, origThread: PrevTH} :-
@@ -267,7 +267,7 @@ state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val} :-
   Val = false &
   T = PrevT + 1.
 # newLock
-state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val} :-
+state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val, fun: "prim.newLock"} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.newLock"}}} &
   T = PrevT + 1 &
@@ -366,6 +366,10 @@ debug.doubleProgramCounter{time: T, thread: TH, counter1: C1, counter2: C2} :-
   state.programCounter.gotoIf{time: T, thread: TH, counter: C2} &
   C1 != C2.
 
+debug.doubleVar{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
+  state.Var{var: Var, value: Val1, time: T, thread: TH} &
+  state.Var{var: Var, value: Val2, time: T, thread: TH} &
+  Val1 != Val2.
 debug.doubleVar.forkNew{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
   state.var.stay.fork.new{var: Var, value: Val1, time: T, thread: TH} &
   state.var.stay.fork.new{var: Var, value: Val2, time: T, thread: TH} &
@@ -373,6 +377,10 @@ debug.doubleVar.forkNew{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :
 debug.doubleVar.forkOrig{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
   state.var.stay.fork.orig{var: Var, value: Val1, time: T, thread: TH} &
   state.var.stay.fork.orig{var: Var, value: Val2, time: T, thread: TH} &
+  Val1 != Val2.
+debug.doubleVar.store.call{var: Var, time: T, thread: TH, val1: Val1, val2: Val2, fun: F} :-
+  state.var.store.call{var: Var, value: Val1, time: T, thread: TH, fun: F} &
+  state.var.store.call{var: Var, value: Val2, time: T, thread: TH, fun: F} &
   Val1 != Val2.
 
 # === Viz ===
