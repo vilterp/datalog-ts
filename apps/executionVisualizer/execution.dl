@@ -65,7 +65,8 @@ state.programCounter.goto{thread: TH, time: T, counter: C, state: running{}} :-
 # call
 state.programCounter.call{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.call.fork{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St}.
+  state.programCounter.call.sleep{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.call.acquireLock{thread: TH, time: T, counter: C, state: St}.
 
 # fork
 state.programCounter.call.fork{thread: TH, time: T, counter: C, state: St} :-
@@ -142,7 +143,34 @@ state.programCounter.timer.unblock{thread: TH, time: T, counter: C, state: runni
   state.Timer{thread: TH, startTime: StartT, wakeupTime: WT} &
   WT = T.
 # acquire lock
-XXXX{} :-
+state.programCounter.call.acquireLock{thread: TH, time: T, counter: C, state: St} :-
+  state.programCounter.lock.acquire.initHeld{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.lock.acquire.initOpen{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.lock.acquire.block{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St}.
+state.programCounter.lock.acquire.initHeld{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: blocked{reason: lock{id: LockVal}},
+  lock: LockVal,
+} :-
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
+  instr{idx: C, op: blockingCall{fun: "block.acquireLock", args: [LockVar]}} &
+  state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
+  state.Lock{id: LockVal, state: heldBy{}} &
+  T = PrevT + 1.
+state.programCounter.lock.acquire.initOpen{thread: TH, time: T, counter: C, state: running{}} :-
+  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
+  instr{idx: PrevC, op: blockingCall{fun: "block.acquireLock", args: [LockVar]}} &
+  state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
+  state.Lock{id: LockVal, state: open{}} &
+  T = PrevT + 1 &
+  C = PrevC + 1.
+# step forward in time while still blocked on the lock
+state.programCounter.lock.acquire.block{thread: TH, time: T, counter: C, state: St} :-
+  XXX{}.
+state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St} :-
   XXX{}.
 
 # === Var ===
@@ -211,8 +239,8 @@ state.var.store.call.fork.orig{thread: TH, time: T, var: Var, value: Val} :-
 state.var.store.call.newLock{thread: TH, time: T, var: Var, value: Val} :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C} &
   instr{idx: C, op: store{var: Var, val: primitive{fun: "prim.newLock"}}} &
-  Val = lock{id: created{thread: TH, time: T}} &
-  T = PrevT + 1.
+  T = PrevT + 1 &
+  Val = lock{id: created{thread: TH, time: T}}.
 
 # == stay ==
 # propagate forward in time the values of variables that
@@ -262,10 +290,20 @@ state.Timer{thread: TH, startTime: T, wakeupTime: WT} :-
 
 # === Lock ===
 
-state.Lock{id: I, heldBy: TH, time: T} :-
-  state.lock.created{id: I, heldBy: TH, time: T}.
-state.lock.created{id: created{thread: TH, time: T}, heldBy: TH, time: T} :-
+state.Lock{id: I, state: St, time: T} :-
+  state.lock.created{id: I, state: St, time: T} |
+  state.lock.acquired{id: I, state: St, time: T}.
+state.lock.created{id: created{thread: TH, time: T}, state: open{}, time: T} :-
   state.var.store.call.newLock{thread: TH, time: T, var: Var}.
+state.lock.acquired{id: I, state: St, time: T} :-
+  state.lock.acquired.open{id: I, state: St, time: T} |
+  state.lock.acquired.unblocked{id: I, state: St, time: T}.
+state.lock.acquired.open{id: I, state: heldBy{thread: TH}, time: T} :-
+  state.programCounter.lock.acquire.initOpen{
+    thread: TH, time: T, counter: C, state: running{}, lock: I,
+  }.
+state.lock.acquired.unblocked{id: I, state: St, time: T} :-
+  state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St, lock: I}.
 
 # === Viz ===
 
@@ -313,7 +351,7 @@ viz.spawnMessage{
   fromTick: tick{time: FromT, place: FromTH},
   toTick: tick{time: ToT, place: ToTH}
 } :-
-  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
+  state.programCounter.call.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
   ToT = FromT + 1.
 viz.continueMessage{
   fromTick: tick{time: PrevT, place: TH},

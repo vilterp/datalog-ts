@@ -171,5 +171,5 @@ afterFork {
 state.Lock{}?
 ----
 application/datalog
-state.Lock{heldBy: 1, id: created{thread: 1, time: 2}, time: 2}.
-state.Lock{heldBy: 1, id: created{thread: 1, time: 3}, time: 3}.
+state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
+state.Lock{id: created{thread: 1, time: 3}, state: open{}, time: 3}.
