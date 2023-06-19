@@ -160,7 +160,7 @@ state.programCounter.lock.acquire.init.held{
 } :-
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: running{}} &
   instr{idx: C, op: store{val: blockingCall{fun: "block.acquireLock", args: [LockVar]}}} &
-  state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
+  state.Var{thread: TH, time: PrevT, var: LockVar, value: LockVal} &
   state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
   T = PrevT + 1.
 state.programCounter.lock.acquire.init.open{
