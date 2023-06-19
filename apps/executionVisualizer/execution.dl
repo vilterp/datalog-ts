@@ -178,8 +178,15 @@ state.programCounter.lock.acquire.init.open{
   state.Lock{id: LockVal, state: open{}, time: PrevT} &
   C = PrevC + 1.
 # step forward in time while still blocked on the lock
-state.programCounter.lock.acquire.block{thread: TH, time: T, counter: C, state: St} :-
-  XXX{}.
+state.programCounter.lock.acquire.block{
+  thread: TH,
+  time: T,
+  counter: C,
+  state: blocked{reason: lock{id: LockVal}},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
+  T = PrevT + 1 &
+  state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
 state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St} :-
   XXX{}.
 # release lock
