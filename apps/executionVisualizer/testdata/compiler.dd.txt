@@ -46,7 +46,7 @@ instr{idx: 8, op: store{val: 42, var: "done"}}.
 
 main {
   x = 5;
-  y = block.sleep(x);
+  y = block.sleep(x); // sleep the thread
   z = 10;
 }
 ----

@@ -65,3 +65,4 @@ hl.mapping{rule: "int", type: "number"}.
 hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "bool", type: "number"}.
 hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "comment", type: "comment"}.

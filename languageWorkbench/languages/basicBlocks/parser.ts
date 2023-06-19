@@ -39,6 +39,17 @@ export type BBCall = {
   ident: BBIdent;
   params: BBParams | null;
 };
+export type BBComment = {
+  type: "Comment";
+  text: string;
+  span: Span;
+  commentChar: BBCommentChar[];
+};
+export type BBCommentChar = {
+  type: "CommentChar";
+  text: string;
+  span: Span;
+};
 export type BBConst = BBString | BBInt;
 export type BBGotoInstr = {
   type: "GotoInstr";
@@ -104,6 +115,11 @@ export type BBParams = {
   Placeholder: BBPlaceholder[];
 };
 export type BBRvalue = BBCall | BBConst;
+export type BBSpaces = {
+  type: "Spaces";
+  text: string;
+  span: Span;
+};
 export type BBString = {
   type: "String";
   text: string;
@@ -126,6 +142,8 @@ export type BBWs = {
   type: "Ws";
   text: string;
   span: Span;
+  spaces: BBSpaces[];
+  comment: BBComment[];
 };
 export function parsePlaceholder(input: string): BBPlaceholder {
   const traceTree = parserlib.parse(GRAMMAR, "Placeholder", input);
@@ -156,6 +174,16 @@ export function parseCall(input: string): BBCall {
   const traceTree = parserlib.parse(GRAMMAR, "call", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractCall(input, ruleTree);
+}
+export function parseComment(input: string): BBComment {
+  const traceTree = parserlib.parse(GRAMMAR, "comment", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractComment(input, ruleTree);
+}
+export function parseCommentChar(input: string): BBCommentChar {
+  const traceTree = parserlib.parse(GRAMMAR, "commentChar", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractCommentChar(input, ruleTree);
 }
 export function parseConst(input: string): BBConst {
   const traceTree = parserlib.parse(GRAMMAR, "const", input);
@@ -221,6 +249,11 @@ export function parseRvalue(input: string): BBRvalue {
   const traceTree = parserlib.parse(GRAMMAR, "rvalue", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRvalue(input, ruleTree);
+}
+export function parseSpaces(input: string): BBSpaces {
+  const traceTree = parserlib.parse(GRAMMAR, "spaces", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractSpaces(input, ruleTree);
 }
 export function parseString(input: string): BBString {
   const traceTree = parserlib.parse(GRAMMAR, "string", input);
@@ -290,6 +323,23 @@ function extractCall(input: string, node: RuleTree): BBCall {
     params: childByName(node, "params", null)
       ? extractParams(input, childByName(node, "params", null))
       : null,
+  };
+}
+function extractComment(input: string, node: RuleTree): BBComment {
+  return {
+    type: "Comment",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    commentChar: childrenByName(node, "commentChar").map((child) =>
+      extractCommentChar(input, child)
+    ),
+  };
+}
+function extractCommentChar(input: string, node: RuleTree): BBCommentChar {
+  return {
+    type: "CommentChar",
+    text: textForSpan(input, node.span),
+    span: node.span,
   };
 }
 function extractConst(input: string, node: RuleTree): BBConst {
@@ -420,6 +470,13 @@ function extractRvalue(input: string, node: RuleTree): BBRvalue {
       return extractConst(input, child);
     }
   }
+}
+function extractSpaces(input: string, node: RuleTree): BBSpaces {
+  return {
+    type: "Spaces",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
 }
 function extractString(input: string, node: RuleTree): BBString {
   return {
@@ -791,17 +848,39 @@ const GRAMMAR: Grammar = {
   ws: {
     type: "RepSep",
     rep: {
-      type: "Choice",
-      choices: [
+      type: "Sequence",
+      items: [
         {
-          type: "Text",
-          value: " ",
+          type: "Ref",
+          captureName: null,
+          rule: "spaces",
         },
         {
-          type: "Text",
-          value: "\n",
+          type: "Choice",
+          choices: [
+            {
+              type: "Ref",
+              captureName: null,
+              rule: "comment",
+            },
+            {
+              type: "Text",
+              value: "",
+            },
+          ],
         },
       ],
+    },
+    sep: {
+      type: "Text",
+      value: "\n",
+    },
+  },
+  spaces: {
+    type: "RepSep",
+    rep: {
+      type: "Text",
+      value: " ",
     },
     sep: {
       type: "Text",
@@ -945,5 +1024,36 @@ const GRAMMAR: Grammar = {
         },
       },
     ],
+  },
+  comment: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Text",
+        value: "//",
+      },
+      {
+        type: "RepSep",
+        rep: {
+          type: "Ref",
+          captureName: null,
+          rule: "commentChar",
+        },
+        sep: {
+          type: "Text",
+          value: "",
+        },
+      },
+    ],
+  },
+  commentChar: {
+    type: "Char",
+    rule: {
+      type: "Not",
+      rule: {
+        type: "Literal",
+        value: "\n",
+      },
+    },
   },
 };

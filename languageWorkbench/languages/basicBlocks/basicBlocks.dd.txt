@@ -1,8 +1,9 @@
 basicBlocks
 foo {
-  a = 42;
+  a = 42; // store an int
   b = "foo";
   x = boop(a);
+  // call a function
   c = group(???);
   goto ???;
 }
@@ -13,13 +14,13 @@ bar {
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: global{}, name: "a", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: global{}, name: "b", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: global{}, name: "bar", span: span{from: 69, to: 72}, type: "any"}.
-ide.Suggestion{id: global{}, name: "c", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: global{}, name: "foo", span: span{from: 69, to: 72}, type: "any"}.
-ide.Suggestion{id: global{}, name: "x", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: global{}, name: "y", span: span{from: 56, to: 59}, type: "any"}.
+ide.Suggestion{id: global{}, name: "a", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "b", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "bar", span: span{from: 106, to: 109}, type: "any"}.
+ide.Suggestion{id: global{}, name: "c", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "foo", span: span{from: 106, to: 109}, type: "any"}.
+ide.Suggestion{id: global{}, name: "x", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "y", span: span{from: 93, to: 96}, type: "any"}.
 
 basicBlocks
 countUp {
@@ -59,4 +60,4 @@ foo {
 ast.ifClause{}?
 ----
 application/datalog
-ast.ifClause{id: 33, parentID: 22, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.
+ast.ifClause{id: 40, parentID: 27, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.
