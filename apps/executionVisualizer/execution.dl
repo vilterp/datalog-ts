@@ -159,7 +159,7 @@ state.programCounter.lock.acquire.initHeld{
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
   instr{idx: C, op: blockingCall{fun: "block.acquireLock", args: [LockVar]}} &
   state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
-  state.Lock{id: LockVal, state: heldBy{}} &
+  state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
   T = PrevT + 1.
 state.programCounter.lock.acquire.initOpen{
   thread: TH,
@@ -189,9 +189,9 @@ state.programCounter.call.releaseLock{
   lock: LockVal,
 } :-
   state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
-  instr{idx: C, op: blockingCall{fun: "releaseLock", args: [LockVar]}} &
+  instr{idx: C, op: store{val: call{fun: "releaseLock", args: [LockVar]}}} &
   state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
-  state.Lock{id: LockVal, state: heldBy{}} &
+  state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
   T = PrevT + 1.
 
 # === Var ===
@@ -314,7 +314,8 @@ state.Timer{thread: TH, startTime: T, wakeupTime: WT} :-
 state.Lock{id: I, state: St, time: T} :-
   state.lock.created{id: I, state: St, time: T} |
   state.lock.acquired{id: I, state: St, time: T} |
-  state.lock.stay{id: I, state: St, time: T}.
+  state.lock.stay{id: I, state: St, time: T} |
+  state.lock.released{id: I, state: St, time: T}.
 state.lock.stay{id: I, state: St, time: T} :-
   state.lock.stay.open{id: I, state: St, time: T} |
   state.lock.stay.held{id: I, state: St, time: T}.
@@ -339,6 +340,12 @@ state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
   state.Lock{time: PrevT, id: I, state: heldBy{thread: TH}} &
   T = PrevT + 1 &
   !state.programCounter.call.releaseLock{time: T, lock: I}.
+state.lock.released{id: I, state: open{}, time: T} :-
+  state.programCounter.call.releaseLock{time: T, lock: I}.
+
+debug.instrAtTime{time: T, thread: TH, instr: I} :-
+  state.ProgramCounter{time: T, thread: TH, counter: C} &
+  instr{idx: C, op: I}.
 
 # === Viz ===
 
