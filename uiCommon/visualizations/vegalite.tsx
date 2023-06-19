@@ -19,6 +19,7 @@ function VegaLiteViz(props: VizArgs) {
     data = query
       ? props.interp.queryRec(query).map((res) => dlToJson(res.term, false))
       : [];
+    console.log("vega data", data);
   } catch (e) {
     error = e;
   }
