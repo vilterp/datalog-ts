@@ -333,12 +333,12 @@ state.lock.stay.open{id: I, state: open{}, time: T} :-
   state.ProgramCounter{time: PrevT} &
   state.Lock{time: PrevT, id: I, state: open{}} &
   T = PrevT + 1 &
-  !state.programCounter.call.acquireLock{time: PrevT, lock: I}.
+  !state.programCounter.call.acquireLock{time: T, lock: I}.
 state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
   state.ProgramCounter{time: PrevT, thread: TH} &
   state.Lock{time: PrevT, id: I, state: heldBy{thread: TH}} &
   T = PrevT + 1 &
-  !state.programCounter.call.releaseLock{time: PrevT, lock: I}.
+  !state.programCounter.call.releaseLock{time: T, lock: I}.
 
 # === Viz ===
 
