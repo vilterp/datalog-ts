@@ -167,20 +167,18 @@ main {
   t = 5;
   x2 = block.sleep(t);
   x3 = releaseLock(lock);
+  goto end;
 }
 afterFork {
   x4 = block.acquireLock(lock);
   x5 = 10;
 }
+end {}
 state.Lock{}?
 ----
 application/datalog
-state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 105}, time: 13}.
-state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 105}, time: 14}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 10}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 11}.
-state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 13}.
-state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 14}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 3}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 4}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 5}.
@@ -189,4 +187,5 @@ state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 7}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 8}.
 state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 9}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 12}.
+state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 13}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
