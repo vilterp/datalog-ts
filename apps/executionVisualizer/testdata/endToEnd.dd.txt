@@ -189,3 +189,4 @@ state.Lock{id: created{thread: 1, time: 2}, state: heldBy{thread: 1}, time: 9}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 12}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 13}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
+state.Lock{id: created{thread: 1, time: 2}, state: running{}, time: 12}.
