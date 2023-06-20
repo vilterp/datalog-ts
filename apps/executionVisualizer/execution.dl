@@ -434,20 +434,22 @@ internal.visualization{
   }
 }.
 
-viz.message{fromTick: FromTick, toTick: ToTick} :-
-  viz.spawnMessage{fromTick: FromTick, toTick: ToTick} |
-  viz.continueMessage{fromTick: FromTick, toTick: ToTick} |
-  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick}.
+viz.message{fromTick: FromTick, toTick: ToTick, kind: K} :-
+  viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
 # messages
 viz.spawnMessage{
   fromTick: tick{time: FromT, place: FromTH},
-  toTick: tick{time: ToT, place: ToTH}
+  toTick: tick{time: ToT, place: ToTH},
+  kind: spawn{},
 } :-
   state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
   ToT = FromT + 1.
 viz.continueMessage{
   fromTick: tick{time: PrevT, place: TH},
-  toTick: tick{time: T, place: TH}
+  toTick: tick{time: T, place: TH},
+  kind: continue{},
 } :-
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
@@ -455,6 +457,7 @@ viz.continueMessage{
 viz.lockTransferMessage{
   fromTick: tick{time: T, place: ReleaseTH},
   toTick: tick{time: T, place: AcquireTH},
+  kind: lockTransfer{},
 } :-
   state.programCounter.lock.acquire.unblock{
     thread: AcquireTH,
@@ -463,6 +466,15 @@ viz.lockTransferMessage{
     time: T,
     releasingThread: ReleaseTH,
   }.
+# hop color
+.table viz.messageColorCode
+viz.messageColorCode{kind: continue{}, color: "grey"}.
+viz.messageColorCode{kind: spawn{}, color: "blue"}.
+viz.messageColorCode{kind: lockTransfer{}, color: "orange"}.
+
+viz.hopColor{fromTick: From, toTick: To, color: C} :-
+  viz.message{fromTick: From, toTick: To, kind: K} &
+  viz.messageColorCode{kind: K, color: C}.
 # tick color
 viz.tickColor{tick: T, color: C} :-
   viz.runningColor{tick: T, color: C} |
