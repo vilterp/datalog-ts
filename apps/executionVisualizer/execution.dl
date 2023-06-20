@@ -365,7 +365,8 @@ state.lock.released{id: I, state: open{}, time: T} :-
 
 state.waitingFor{time: T, waiting: TH1, waitingOn: TH2} :-
   state.ProgramCounter{time: T, thread: TH1, state: blocked{reason: lock{lock: L}}} &
-  state.Lock{time: T, state: heldBy{thread: TH2}}.
+  state.Lock{time: T, state: heldBy{thread: TH2}} &
+  TH1 != TH2.
 
 issue.Deadlock{thread1: TH1, thread2: TH2, time: T} :-
   state.waitingFor{time: T, waiting: TH1, waitingOn: TH2} &
@@ -511,6 +512,13 @@ viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
 viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
   state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
 
-# insertion
+internal.visualization{
+  name: "Wait-For Graph at T=30",
+  spec: graphviz{
+    edges: state.waitingFor{time: 30, waiting: From, waitingOn: To},
+  },
+}.
+
+# === insertion ===
 
 state.programCounter.init{thread: 1, time: 1, counter: 0, state: running{}}.
