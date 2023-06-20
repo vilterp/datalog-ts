@@ -208,3 +208,22 @@ end {}
 debug.doubleLockHolder{}?
 ----
 application/datalog
+
+main {
+  lock1 = prim.newLock();
+  lock2 = prim.newLock();
+  x1 = block.acquireLock(lock1);
+  forkTo afterFork;
+  t = 5;
+  x2 = block.sleep(t);
+  x3 = block.acquireLock(lock2);
+}
+afterFork {
+  y1 = block.acquireLock(lock2);
+  y2 = block.acquireLock(lock1);
+}
+end {}
+state.ProgramCounter{}?
+----
+application/datalog
+state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
