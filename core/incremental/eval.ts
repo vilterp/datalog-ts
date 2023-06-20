@@ -162,7 +162,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   const node = iter.graph.nodes.get(curMsg.destination);
 
   if (SAMPLING_ENABLED) {
-    printSample(curMsg, curNodeID, node);
+    maybePrintSample(curMsg, curNodeID, node);
   }
 
   if (!node) {
@@ -231,7 +231,7 @@ function updateCache(
   return graph;
 }
 
-function printSample(curMsg: Message, nodeID: NodeID, node: NodeAndCache) {
+function maybePrintSample(curMsg: Message, nodeID: NodeID, node: NodeAndCache) {
   if (!node.isInternal && Math.random() < 0.001) {
     const data = curMsg.payload.data;
     console.log(
