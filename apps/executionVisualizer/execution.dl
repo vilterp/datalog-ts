@@ -186,12 +186,21 @@ state.programCounter.lock.acquire.block{
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
   T = PrevT + 1 &
   state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
-state.programCounter.lock.acquire.unblock{thread: BlockedThread, time: T, counter: C, state: running{}} :-
-  state.ProgramCounter{time: PrevT, counter: PrevC, thread: BlockedThread, state: blocked{reason: lock{id: LockVal}}} &
+# one thread releases a lock, unblocking the thread waiting on it
+# TODO: what if multiple threads are waiting on it
+state.programCounter.lock.acquire.unblock{
+  thread: AcquiringTH,
+  time: T,
+  counter: C,
+  state: running{},
+  lock: LockVal,
+  releasingThread: ReleasingTH,
+} :-
+  state.ProgramCounter{time: PrevT, counter: PrevC, thread: AcquiringTH, state: blocked{reason: lock{id: LockVal}}} &
   instr{idx: PrevC, op: store{fun: "block.acquireLock", args: [LockVar]}} &
-  state.Var{thread: BlockedThread, var: LockVar, value: LockVal, time: PrevT} &
-  state.Lock{id: LockVal, time: PrevT, state: heldBy{thread: HoldingThread}} &
-  state.programCounter.call.releaseLock{time: T, thread: HoldingThread} &
+  state.Var{thread: AcquiringTH, var: LockVar, value: LockVal, time: PrevT} &
+  state.Lock{id: LockVal, time: PrevT, state: heldBy{thread: ReleasingTH}} &
+  state.programCounter.call.releaseLock{time: T, thread: ReleasingTH, lock: LockVal} &
   T = PrevT + 1 &
   C = PrevC + 1.
 # release lock
@@ -425,22 +434,48 @@ internal.visualization{
   }
 }.
 
-viz.message{fromTick: FromTick, toTick: ToTick} :-
-  viz.spawnMessage{fromTick: FromTick, toTick: ToTick} |
-  viz.continueMessage{fromTick: FromTick, toTick: ToTick}.
+viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
+  viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
+# messages
 viz.spawnMessage{
   fromTick: tick{time: FromT, place: FromTH},
-  toTick: tick{time: ToT, place: ToTH}
+  toTick: tick{time: ToT, place: ToTH},
+  kind: spawn{},
 } :-
   state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
   ToT = FromT + 1.
 viz.continueMessage{
   fromTick: tick{time: PrevT, place: TH},
-  toTick: tick{time: T, place: TH}
+  toTick: tick{time: T, place: TH},
+  kind: continue{},
 } :-
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
   PrevT = T + 1.
+viz.lockTransferMessage{
+  fromTick: tick{time: T, place: ReleaseTH},
+  toTick: tick{time: T, place: AcquireTH},
+  kind: lockTransfer{},
+} :-
+  state.programCounter.lock.acquire.unblock{
+    thread: AcquireTH,
+    time: AcquireT,
+    lock: L,
+    time: T,
+    releasingThread: ReleaseTH,
+  }.
+# hop color
+.table viz.hopColorCode
+viz.hopColorCode{kind: continue{}, color: "grey"}.
+viz.hopColorCode{kind: spawn{}, color: "blue"}.
+viz.hopColorCode{kind: lockTransfer{}, color: "green"}.
+
+viz.hopColor{fromTick: From, toTick: To, color: C} :-
+  viz.hop{fromTick: From, toTick: To, kind: K} &
+  viz.hopColorCode{kind: K, color: C}.
+# tick color
 viz.tickColor{tick: T, color: C} :-
   viz.runningColor{tick: T, color: C} |
   viz.blockedColor{tick: T, color: C}.
@@ -453,8 +488,9 @@ internal.visualization{
   name: "Spawning Sequence",
   spec: sequence{
     actors: state.ProgramCounter{thread: ID},
-    messages: viz.message{fromTick: FromTick, toTick: ToTick},
+    hops: viz.hop{fromTick: FromTick, toTick: ToTick},
     tickColor: viz.tickColor{tick: Tick, color: Color},
+    hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
   },
 }.
 
