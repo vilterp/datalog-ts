@@ -190,3 +190,21 @@ state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 12}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 13}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
 state.Lock{id: created{thread: 1, time: 2}, state: running{}, time: 12}.
+
+main {
+  lock = prim.newLock();
+  x1 = block.acquireLock(lock);
+  forkTo afterFork;
+  t = 5;
+  x2 = block.sleep(t);
+  x3 = releaseLock(lock);
+  goto end;
+}
+afterFork {
+  x4 = block.acquireLock(lock);
+  x5 = 10;
+}
+end {}
+debug.doubleLockHolder{}?
+----
+application/datalog
