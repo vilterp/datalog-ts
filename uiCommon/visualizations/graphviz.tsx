@@ -4,6 +4,7 @@ import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Graphviz } from "graphviz-react";
 import { prettyPrintGraph, Node, Edge } from "../../util/graphviz";
 import { ppt } from "../../core/pretty";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
 export const graphviz: VizTypeSpec = {
   name: "Graphviz",
@@ -23,16 +24,7 @@ function GraphvizWrapper(props: VizArgs) {
   let edgesErr: Error = null;
   // nodes
   try {
-    const nodesQuery = props.spec.attrs.nodes as Rec;
-    const nodesRes = props.interp.queryRec(nodesQuery);
-    nodes = nodesRes.map((res) => {
-      const id = specialPPT(res.bindings.ID);
-      const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
-      return {
-        id,
-        attrs: { label, shape: "rect", fontname: "Courier New" },
-      };
-    });
+    nodes = props.spec.attrs.nodes ? getNodes(props.interp, props.spec) : [];
   } catch (e) {
     console.error("nodes", e);
     nodesErr = e;
@@ -40,15 +32,7 @@ function GraphvizWrapper(props: VizArgs) {
 
   // edges
   try {
-    const edgesQuery = props.spec.attrs.edges as Rec;
-    const edgesRes = props.interp.queryRec(edgesQuery);
-    edges = edgesRes.map((res) => ({
-      to: specialPPT(res.bindings.To),
-      from: specialPPT(res.bindings.From),
-      attrs: {
-        label: res.bindings.Label ? specialPPT(res.bindings.Label) : "",
-      },
-    }));
+    edges = props.spec.attrs.edges ? getEdges(props.interp, props.spec) : [];
   } catch (e) {
     edgesErr = e;
     console.error("edges", e);
@@ -83,6 +67,31 @@ function GraphvizWrapper(props: VizArgs) {
       <MemoizedGraphviz dot={dot} options={GRAPHVIZ_OPTIONS} />
     </div>
   );
+}
+
+function getNodes(interp: AbstractInterpreter, spec: Rec): Node[] {
+  const nodesQuery = spec.attrs.nodes as Rec;
+  const nodesRes = interp.queryRec(nodesQuery);
+  return nodesRes.map((res) => {
+    const id = specialPPT(res.bindings.ID);
+    const label = res.bindings.Label ? specialPPT(res.bindings.Label) : id;
+    return {
+      id,
+      attrs: { label, shape: "rect", fontname: "Courier New" },
+    };
+  });
+}
+
+function getEdges(interp: AbstractInterpreter, spec: Rec): Edge[] {
+  const edgesQuery = spec.attrs.edges as Rec;
+  const edgesRes = interp.queryRec(edgesQuery);
+  return edgesRes.map((res) => ({
+    to: specialPPT(res.bindings.To),
+    from: specialPPT(res.bindings.From),
+    attrs: {
+      label: res.bindings.Label ? specialPPT(res.bindings.Label) : "",
+    },
+  }));
 }
 
 // don't love special cases, but all the quotes are annoying
