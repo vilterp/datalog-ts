@@ -157,6 +157,7 @@ state.programCounter.lock.acquire.init.held{
   state: blocked{reason: lock{id: LockVal}},
   lock: LockVal,
 } :-
+  time{time: T} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: running{}} &
   instr{idx: C, op: store{val: blockingCall{fun: "block.acquireLock", args: [LockVar]}}} &
   state.Var{thread: TH, time: PrevT, var: LockVar, value: LockVal} &
@@ -183,6 +184,7 @@ state.programCounter.lock.acquire.block{
   counter: C,
   state: blocked{reason: lock{id: LockVal}},
 } :-
+  time{time: T} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
   T = PrevT + 1 &
   state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
@@ -196,6 +198,7 @@ state.programCounter.lock.acquire.unblock{
   lock: LockVal,
   releasingThread: ReleasingTH,
 } :-
+  time{time: T} &
   state.ProgramCounter{time: PrevT, counter: PrevC, thread: AcquiringTH, state: blocked{reason: lock{id: LockVal}}} &
   instr{idx: PrevC, op: store{fun: "block.acquireLock", args: [LockVar]}} &
   state.Var{thread: AcquiringTH, var: LockVar, value: LockVal, time: PrevT} &
@@ -211,6 +214,7 @@ state.programCounter.call.releaseLock{
   state: running{},
   lock: LockVal,
 } :-
+  time{time: T} &
   state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   instr{idx: PrevC, op: store{val: call{fun: "releaseLock", args: [LockVar]}}} &
   state.Var{thread: TH, time: PrevT, var: LockVar, value: LockVal} &
