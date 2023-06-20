@@ -186,8 +186,14 @@ state.programCounter.lock.acquire.block{
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
   T = PrevT + 1 &
   state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
-state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St} :-
-  XXX{}.
+state.programCounter.lock.acquire.unblock{thread: BlockedThread, time: T, counter: C, state: running{}} :-
+  state.ProgramCounter{time: PrevT, counter: PrevC, thread: BlockedThread, state: blocked{reason: lock{id: LockVal}}} &
+  instr{idx: PrevC, op: store{fun: "block.acquireLock", args: [LockVar]}} &
+  state.Var{thread: BlockedThread, var: LockVar, value: LockVal, time: PrevT} &
+  state.Lock{id: LockVal, time: PrevT, state: heldBy{thread: HoldingThread}} &
+  state.programCounter.call.releaseLock{time: T, thread: HoldingThread} &
+  T = PrevT + 1 &
+  C = PrevC + 1.
 # release lock
 state.programCounter.call.releaseLock{
   thread: TH,
@@ -196,10 +202,10 @@ state.programCounter.call.releaseLock{
   state: running{},
   lock: LockVal,
 } :-
-  state.ProgramCounter{thread: PrevTH, time: PrevT, counter: PrevC, state: running{}} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: PrevC, state: running{}} &
   instr{idx: PrevC, op: store{val: call{fun: "releaseLock", args: [LockVar]}}} &
-  state.Var{thread: TH, time: T, var: LockVar, value: LockVal} &
-  state.Lock{id: LockVal, state: heldBy{}, time: PrevT} &
+  state.Var{thread: TH, time: PrevT, var: LockVar, value: LockVal} &
+  state.Lock{id: LockVal, state: heldBy{thread: TH}, time: PrevT} &
   T = PrevT + 1 &
   C = PrevC + 1.
 
@@ -378,7 +384,7 @@ debug.doubleVar.store.call{var: Var, time: T, thread: TH, val1: Val1, val2: Val2
 debug.doubleLockHolder{id: I, time: T, thread1: TH1, thread2: TH2} :-
   state.Lock{id: I, state: heldBy{thread: TH2}, time: T} &
   state.Lock{id: I, state: heldBy{thread: TH1}, time: T} &
-  TH1 != TH2.
+  TH1 < TH2.
 
 # === Viz ===
 
