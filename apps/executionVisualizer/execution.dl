@@ -359,7 +359,18 @@ state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
 state.lock.released{id: I, state: open{}, time: T} :-
   state.programCounter.call.releaseLock{time: T, lock: I}.
 
-# state.lockTransfer??
+# === deadlock ===
+
+# TODO: detect cycles longer than 2
+
+state.waitingFor{time: T, waiting: TH1, waitingOn: TH2} :-
+  state.ProgramCounter{time: T, thread: TH1, state: blocked{reason: lock{lock: L}}} &
+  state.Lock{time: T, state: heldBy{thread: TH2}}.
+
+issue.Deadlock{thread1: TH1, thread2: TH2, time: T} :-
+  state.waitingFor{time: T, waiting: TH1, waitingOn: TH2} &
+  state.waitingFor{time: T, waiting: TH2, waitingOn: TH1} &
+  TH1 < TH2.
 
 # === debug ===
 
