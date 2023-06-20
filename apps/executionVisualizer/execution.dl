@@ -434,7 +434,7 @@ internal.visualization{
   }
 }.
 
-viz.message{fromTick: FromTick, toTick: ToTick, kind: K} :-
+viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
   viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
   viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
   viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
@@ -467,14 +467,14 @@ viz.lockTransferMessage{
     releasingThread: ReleaseTH,
   }.
 # hop color
-.table viz.messageColorCode
-viz.messageColorCode{kind: continue{}, color: "grey"}.
-viz.messageColorCode{kind: spawn{}, color: "blue"}.
-viz.messageColorCode{kind: lockTransfer{}, color: "green"}.
+.table viz.hopColorCode
+viz.hopColorCode{kind: continue{}, color: "grey"}.
+viz.hopColorCode{kind: spawn{}, color: "blue"}.
+viz.hopColorCode{kind: lockTransfer{}, color: "green"}.
 
-viz.messageColor{fromTick: From, toTick: To, color: C} :-
-  viz.message{fromTick: From, toTick: To, kind: K} &
-  viz.messageColorCode{kind: K, color: C}.
+viz.hopColor{fromTick: From, toTick: To, color: C} :-
+  viz.hop{fromTick: From, toTick: To, kind: K} &
+  viz.hopColorCode{kind: K, color: C}.
 # tick color
 viz.tickColor{tick: T, color: C} :-
   viz.runningColor{tick: T, color: C} |
@@ -488,9 +488,9 @@ internal.visualization{
   name: "Spawning Sequence",
   spec: sequence{
     actors: state.ProgramCounter{thread: ID},
-    messages: viz.message{fromTick: FromTick, toTick: ToTick},
+    hops: viz.hop{fromTick: FromTick, toTick: ToTick},
     tickColor: viz.tickColor{tick: Tick, color: Color},
-    messageColor: viz.messageColor{fromTick: FromTick, toTick: ToTick, color: Color},
+    hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
   },
 }.
 

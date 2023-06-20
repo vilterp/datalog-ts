@@ -27,20 +27,18 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-// TODO: convert everything from `message` to `hop`
-
 function SequenceDiagram(props: VizArgs) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
-    const messages = props.interp.queryRec(props.spec.attrs.messages as Rec);
+    const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
     const tickColors = props.spec.attrs.tickColor
       ? props.interp.queryRec(props.spec.attrs.tickColor as Rec)
       : [];
-    const hopColors = props.spec.attrs.messageColor
-      ? props.interp.queryRec(props.spec.attrs.messageColor as Rec)
+    const hopColors = props.spec.attrs.hopColor
+      ? props.interp.queryRec(props.spec.attrs.hopColor as Rec)
       : [];
 
-    const spec = makeSequenceSpec(actors, messages, tickColors, hopColors);
+    const spec = makeSequenceSpec(actors, hops, tickColors, hopColors);
 
     return (
       <div>
@@ -70,7 +68,7 @@ const TICK_HIGHLIGHT_COLOR = "orange";
 //   or not
 function makeSequenceSpec(
   actors: Res[],
-  messages: Res[],
+  hops: Res[],
   tickColors: Res[],
   hopColors: Res[]
 ): Sequence {
@@ -92,15 +90,15 @@ function makeSequenceSpec(
       loc: (actor.bindings.ID as StringLit).val,
       term: actor.term,
     })),
-    hops: messages.map((message) => {
-      const fromTickRec = message.bindings.FromTick as Rec;
+    hops: hops.map((hop) => {
+      const fromTickRec = hop.bindings.FromTick as Rec;
       const fromTick: Tick = {
         time: (fromTickRec.attrs.time as Int).val,
         place: (fromTickRec.attrs.place as StringLit).val,
         term: fromTickRec,
         color: colorByTick[ppt(fromTickRec)] || DEFAULT_TICK_COLOR,
       };
-      const toTickRec = message.bindings.ToTick as Rec;
+      const toTickRec = hop.bindings.ToTick as Rec;
       const toTick: Tick = {
         time: (toTickRec.attrs.time as Int).val,
         place: (toTickRec.attrs.place as StringLit).val,
@@ -108,17 +106,17 @@ function makeSequenceSpec(
         color: colorByTick[ppt(toTickRec)] || DEFAULT_TICK_COLOR,
       };
       return {
-        term: message.term,
+        term: hop.term,
         from: fromTick,
         to: toTick,
-        color: colorByHop[pptHop(message)] || DEFAULT_HOP_COLOR,
+        color: colorByHop[pptHop(hop)] || DEFAULT_HOP_COLOR,
       };
     }),
   };
 }
 
-function pptHop(message: Res): string {
-  return ppt(message.bindings.FromTick) + ppt(message.bindings.ToTick);
+function pptHop(hop: Res): string {
+  return ppt(hop.bindings.FromTick) + ppt(hop.bindings.ToTick);
 }
 
 export type Location = string;
