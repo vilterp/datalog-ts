@@ -470,9 +470,9 @@ viz.lockTransferMessage{
 .table viz.messageColorCode
 viz.messageColorCode{kind: continue{}, color: "grey"}.
 viz.messageColorCode{kind: spawn{}, color: "blue"}.
-viz.messageColorCode{kind: lockTransfer{}, color: "orange"}.
+viz.messageColorCode{kind: lockTransfer{}, color: "green"}.
 
-viz.hopColor{fromTick: From, toTick: To, color: C} :-
+viz.messageColor{fromTick: From, toTick: To, color: C} :-
   viz.message{fromTick: From, toTick: To, kind: K} &
   viz.messageColorCode{kind: K, color: C}.
 # tick color
@@ -490,6 +490,7 @@ internal.visualization{
     actors: state.ProgramCounter{thread: ID},
     messages: viz.message{fromTick: FromTick, toTick: ToTick},
     tickColor: viz.tickColor{tick: Tick, color: Color},
+    messageColor: viz.messageColor{fromTick: FromTick, toTick: ToTick, color: Color},
   },
 }.
 

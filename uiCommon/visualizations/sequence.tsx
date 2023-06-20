@@ -27,6 +27,8 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
+// TODO: convert everything from `message` to `hop`
+
 function SequenceDiagram(props: VizArgs) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
@@ -34,8 +36,11 @@ function SequenceDiagram(props: VizArgs) {
     const tickColors = props.spec.attrs.tickColor
       ? props.interp.queryRec(props.spec.attrs.tickColor as Rec)
       : [];
+    const hopColors = props.spec.attrs.messageColor
+      ? props.interp.queryRec(props.spec.attrs.messageColor as Rec)
+      : [];
 
-    const spec = makeSequenceSpec(actors, messages, tickColors);
+    const spec = makeSequenceSpec(actors, messages, tickColors, hopColors);
 
     return (
       <div>
@@ -56,20 +61,31 @@ function SequenceDiagram(props: VizArgs) {
 }
 
 const DEFAULT_TICK_COLOR = "red";
+const DEFAULT_HOP_COLOR = "blue";
+
+const HOP_HIGHLIGHT_COLOR = "orange";
+const TICK_HIGHLIGHT_COLOR = "orange";
 
 // TODO: maybe integrate this into one of the above functions??
 //   or not
 function makeSequenceSpec(
   actors: Res[],
   messages: Res[],
-  tickColors: Res[]
+  tickColors: Res[],
+  hopColors: Res[]
 ): Sequence {
   const locations = uniqBy((res) => ppt(res.bindings.ID), actors);
+  // color by tick
   const colorByTick = {};
   tickColors.forEach((tickColor) => {
     colorByTick[ppt(tickColor.bindings.Tick)] = (
       tickColor.bindings.Color as StringLit
     ).val;
+  });
+  // color by hop
+  const colorByHop = {};
+  hopColors.forEach((hopColor) => {
+    colorByHop[pptHop(hopColor)] = (hopColor.bindings.Color as StringLit).val;
   });
   return {
     locations: locations.map((actor) => ({
@@ -95,9 +111,14 @@ function makeSequenceSpec(
         term: message.term,
         from: fromTick,
         to: toTick,
+        color: colorByHop[pptHop(message)] || DEFAULT_HOP_COLOR,
       };
     }),
   };
+}
+
+function pptHop(message: Res): string {
+  return ppt(message.bindings.FromTick) + ppt(message.bindings.ToTick);
 }
 
 export type Location = string;
@@ -112,6 +133,7 @@ export interface Hop {
   term: Term;
   from: Tick;
   to: Tick;
+  color: string;
 }
 
 interface Tick {
@@ -160,7 +182,7 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
                   tp.term,
                   Circle({
                     radius: 5,
-                    fill: highlighted ? "orange" : tp.color,
+                    fill: highlighted ? TICK_HIGHLIGHT_COLOR : tp.color,
                   })
                 )
               );
@@ -181,7 +203,7 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
       return Tag(
         hop.term,
         Line({
-          stroke: highlighted ? "orange" : "blue",
+          stroke: highlighted ? HOP_HIGHLIGHT_COLOR : hop.color,
           width: 3,
           start: fromCoords,
           end: toCoords,
