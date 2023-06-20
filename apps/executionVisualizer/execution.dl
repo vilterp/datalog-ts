@@ -186,12 +186,21 @@ state.programCounter.lock.acquire.block{
   state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
   T = PrevT + 1 &
   state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
-state.programCounter.lock.acquire.unblock{thread: BlockedThread, time: T, counter: C, state: running{}} :-
-  state.ProgramCounter{time: PrevT, counter: PrevC, thread: BlockedThread, state: blocked{reason: lock{id: LockVal}}} &
+# one thread releases a lock, unblocking the thread waiting on it
+# TODO: what if multiple threads are waiting on it
+state.programCounter.lock.acquire.unblock{
+  thread: AcquiringTH,
+  time: T,
+  counter: C,
+  state: running{},
+  lock: LockVal,
+  releasingThread: ReleasingTH,
+} :-
+  state.ProgramCounter{time: PrevT, counter: PrevC, thread: AcquiringTH, state: blocked{reason: lock{id: LockVal}}} &
   instr{idx: PrevC, op: store{fun: "block.acquireLock", args: [LockVar]}} &
-  state.Var{thread: BlockedThread, var: LockVar, value: LockVal, time: PrevT} &
-  state.Lock{id: LockVal, time: PrevT, state: heldBy{thread: HoldingThread}} &
-  state.programCounter.call.releaseLock{time: T, thread: HoldingThread} &
+  state.Var{thread: AcquiringTH, var: LockVar, value: LockVal, time: PrevT} &
+  state.Lock{id: LockVal, time: PrevT, state: heldBy{thread: ReleasingTH}} &
+  state.programCounter.call.releaseLock{time: T, thread: ReleasingTH, lock: LockVal} &
   T = PrevT + 1 &
   C = PrevC + 1.
 # release lock
@@ -427,7 +436,9 @@ internal.visualization{
 
 viz.message{fromTick: FromTick, toTick: ToTick} :-
   viz.spawnMessage{fromTick: FromTick, toTick: ToTick} |
-  viz.continueMessage{fromTick: FromTick, toTick: ToTick}.
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick} |
+  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick}.
+# messages
 viz.spawnMessage{
   fromTick: tick{time: FromT, place: FromTH},
   toTick: tick{time: ToT, place: ToTH}
@@ -441,6 +452,18 @@ viz.continueMessage{
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
   PrevT = T + 1.
+viz.lockTransferMessage{
+  fromTick: tick{time: T, place: ReleaseTH},
+  toTick: tick{time: T, place: AcquireTH},
+} :-
+  state.programCounter.lock.acquire.unblock{
+    thread: AcquireTH,
+    time: AcquireT,
+    lock: L,
+    time: T,
+    releasingThread: ReleaseTH,
+  }.
+# tick color
 viz.tickColor{tick: T, color: C} :-
   viz.runningColor{tick: T, color: C} |
   viz.blockedColor{tick: T, color: C}.
