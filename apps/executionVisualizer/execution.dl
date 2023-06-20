@@ -432,9 +432,6 @@ internal.visualization{
   }
 }.
 
-viz.threadVar{time: T, tv: [TH, V], value: Val} :-
-  state.Var{thread: TH, time: T, var: V, value: Val}.
-
 # TODO: another encoding channel for thread
 internal.visualization{
   name: "Variables Over Time",
@@ -447,6 +444,21 @@ internal.visualization{
     },
     query: viz.threadVar{}
   }
+}.
+
+viz.threadVar{time: T, tv: [TH, V], value: Val} :-
+  state.Var{thread: TH, time: T, var: V, value: Val}.
+
+# sequence diagram
+
+internal.visualization{
+  name: "Spawning Sequence",
+  spec: sequence{
+    actors: state.ProgramCounter{thread: ID},
+    hops: viz.hop{fromTick: FromTick, toTick: ToTick},
+    tickColor: viz.tickColor{tick: Tick, color: Color},
+    hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
+  },
 }.
 
 viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
@@ -498,16 +510,6 @@ viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
   state.ProgramCounter{thread: TH, time: T, state: running{}}.
 viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
   state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
-
-internal.visualization{
-  name: "Spawning Sequence",
-  spec: sequence{
-    actors: state.ProgramCounter{thread: ID},
-    hops: viz.hop{fromTick: FromTick, toTick: ToTick},
-    tickColor: viz.tickColor{tick: Tick, color: Color},
-    hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
-  },
-}.
 
 # insertion
 
