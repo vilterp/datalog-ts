@@ -13,12 +13,17 @@ import exampleBB from "../../languageWorkbench/languages/basicBlocks/example.txt
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { LOADER } from "./dl";
 
-function getInterp(input: string): AbstractInterpreter {
+function getInterp(input: string): [AbstractInterpreter, string | null] {
   const emptyInterp = new IncrementalInterpreter(".", LOADER);
   const loadedInterp = emptyInterp.doLoad("main.dl");
-  const tree = parseMain(input);
-  const records = compileBasicBlocks(tree);
-  return loadedInterp.bulkInsert(records);
+  try {
+    const tree = parseMain(input);
+    const records = compileBasicBlocks(tree);
+    return [loadedInterp.bulkInsert(records), null];
+  } catch (e) {
+    console.warn(e);
+    return [loadedInterp, e.toString()];
+  }
 }
 
 function Main() {
@@ -26,7 +31,7 @@ function Main() {
     "exec-viz-editor-state",
     initialEditorState(exampleBB)
   );
-  const interp = getInterp(editorState.source);
+  const [interp, err] = getInterp(editorState.source);
 
   return (
     <>
@@ -37,6 +42,8 @@ function Main() {
         editorState={editorState}
         setEditorState={setEditorState}
       />
+
+      {err ? <pre style={{ color: "red" }}>{err}</pre> : null}
 
       <Explorer
         interp={interp}
