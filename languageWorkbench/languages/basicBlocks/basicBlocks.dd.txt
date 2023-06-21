@@ -69,5 +69,4 @@ afterFork {}
 ide.CurrentUsageOrDefn{}?
 ----
 application/datalog
-ide.CurrentUsageOrDefn{span: span{from: 16, to: 25}, type: "usage"}.
 ide.CurrentUsageOrDefn{span: span{from: 29, to: 38}, type: "defn"}.
