@@ -19,6 +19,7 @@ import {
   getRecord,
   joinGraphToGraphviz,
 } from "./joinOrder";
+import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -41,35 +42,7 @@ export function parserTests(writeResults: boolean): Suite {
   ];
 }
 
-export function coreTestsSimple(writeResults: boolean): Suite {
-  return [
-    ...coreTests(writeResults, () => new SimpleInterpreter(".", fsLoader)),
-    {
-      name: "builtins",
-      test() {
-        runDDTestAtPath(
-          "core/testdata/builtins.dd.txt",
-          (test) =>
-            putThroughInterp(test, () => new SimpleInterpreter(".", fsLoader)),
-          writeResults
-        );
-      },
-    },
-  ];
-}
-
-export function coreTestsIncremental(writeResults: boolean): Suite {
-  return coreTests(
-    writeResults,
-    () => new IncrementalInterpreter(".", fsLoader)
-  );
-}
-
-function coreTests(
-  writeResults: boolean,
-  getInterp: () => AbstractInterpreter,
-  exclude: Set<string> = null
-): Suite {
+export function coreTests(writeResults: boolean): Suite {
   return [
     "simple",
     "family",
@@ -79,18 +52,29 @@ function coreTests(
     "aggregation",
     "paths",
     "timeStep",
-  ]
-    .filter((suite) => (exclude !== null ? !exclude.has(suite) : true))
-    .map((name) => ({
-      name,
-      test() {
-        runDDTestAtPath(
-          `core/testdata/${name}.dd.txt`,
-          (test: string[]) => putThroughInterp(test, getInterp),
-          writeResults
-        );
-      },
-    }));
+    "builtins",
+  ].map((name) => ({
+    name,
+    test() {
+      runDDTestAtPathTwoVariants(
+        `core/testdata/${name}.dd.txt`,
+        {
+          name: "simple",
+          getResults: (test: string[]) =>
+            putThroughInterp(test, () => new SimpleInterpreter(".", fsLoader)),
+        },
+        {
+          name: "incremental",
+          getResults: (test: string[]) =>
+            putThroughInterp(
+              test,
+              () => new IncrementalInterpreter(".", fsLoader)
+            ),
+        },
+        writeResults
+      );
+    },
+  }));
 }
 
 export function coreTestsCommon(writeResults: boolean): Suite {
