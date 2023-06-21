@@ -93,7 +93,7 @@ state.ProgramCounter{counter: 8, state: running{}, thread: 125, time: 25}.
 
 main {
   x = 5;
-  y = block.sleep(x);
+  block.sleep(x);
   z = 10;
 }
 state.ProgramCounter{}?
@@ -111,7 +111,7 @@ state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 9}.
 
 main {
   x = 5;
-  y = block.sleep(x);
+  block.sleep(x);
   z = 10;
 }
 state.Timer{}?
@@ -133,7 +133,7 @@ loop {
 }
 afterFork {
   x = 5;
-  y = block.sleep(x);
+  block.sleep(x);
   z = 10;
 }
 end {}
@@ -148,9 +148,9 @@ state.Timer{startTime: 6, thread: 105, wakeupTime: 11}.
 
 main {
   lock = prim.newLock();
-  x1 = block.acquireLock(lock);
+  block.acquireLock(lock);
   z = 5;
-  x3 = releaseLock(lock);
+  releaseLock(lock);
 }
 state.Lock{}?
 ----
@@ -162,15 +162,15 @@ state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 5}.
 
 main {
   lock = prim.newLock();
-  x1 = block.acquireLock(lock);
+  block.acquireLock(lock);
   forkTo afterFork;
   t = 5;
-  x2 = block.sleep(t);
-  x3 = releaseLock(lock);
+  block.sleep(t);
+  releaseLock(lock);
   goto end;
 }
 afterFork {
-  x4 = block.acquireLock(lock);
+  block.acquireLock(lock);
   x5 = 10;
 }
 end {}
@@ -193,15 +193,15 @@ state.Lock{id: created{thread: 1, time: 2}, state: running{}, time: 12}.
 
 main {
   lock = prim.newLock();
-  x1 = block.acquireLock(lock);
+  block.acquireLock(lock);
   forkTo afterFork;
   t = 5;
-  x2 = block.sleep(t);
-  x3 = releaseLock(lock);
+  block.sleep(t);
+  releaseLock(lock);
   goto end;
 }
 afterFork {
-  x4 = block.acquireLock(lock);
+  block.acquireLock(lock);
   x5 = 10;
 }
 end {}
@@ -212,15 +212,15 @@ application/datalog
 main {
   lock1 = prim.newLock();
   lock2 = prim.newLock();
-  x1 = block.acquireLock(lock1);
+  block.acquireLock(lock1);
   forkTo afterFork;
   t = 5;
-  x2 = block.sleep(t);
-  x3 = block.acquireLock(lock2);
+  block.sleep(t);
+  block.acquireLock(lock2);
 }
 afterFork {
-  y1 = block.acquireLock(lock2);
-  y2 = block.acquireLock(lock1);
+  block.acquireLock(lock2);
+  block.acquireLock(lock1);
 }
 end {}
 issue.Deadlock{}?

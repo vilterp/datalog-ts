@@ -28,7 +28,7 @@ function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
   switch (instr.type) {
     case "ValueInstr":
       return rec("store", {
-        var: str(instr.ident.text),
+        var: instr.ident ? str(instr.ident.text) : str("_"),
         val: rvalueToTerm(instr.rvalue),
       });
     case "GotoInstr": {
