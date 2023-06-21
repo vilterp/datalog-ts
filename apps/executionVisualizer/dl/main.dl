@@ -1,0 +1,19 @@
+.table instr
+.table maxTime
+.table state.programCounter.init
+
+# time
+
+maxTime{time: 30}.
+
+time{time: T} :-
+  maxTime{time: MaxT} &
+  range{from: 0, to: MaxT, val: T}.
+
+.load programCounter.dl
+.load var.dl
+.load timer.dl
+.load lock.dl
+.load deadlock.dl
+.load debug.dl
+.load viz.dl

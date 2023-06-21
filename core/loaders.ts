@@ -8,7 +8,10 @@ export type Loader = (path: string) => string;
 
 export function makeMemoryLoader(files: { [path: string]: string }): Loader {
   return (path) => {
-    if (!contains(Object.keys(files), path)) {
+    if (path.startsWith("./")) {
+      path = path.slice(2);
+    }
+    if (!files[path]) {
       throw new Error(`not found: ${path}`);
     }
     const contents = files[path];

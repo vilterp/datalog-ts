@@ -48,10 +48,10 @@ function endToEndTest(inputs: string[]): TestOutput[] {
     const main = parseMain(allButLast);
     const records = compileBasicBlocks(main);
     let interp: AbstractInterpreter = new IncrementalInterpreter(
-      "apps/executionVisualizer",
+      "apps/executionVisualizer/dl",
       fsLoader
     );
-    interp = interp.doLoad("execution.dl");
+    interp = interp.doLoad("main.dl");
     interp = interp.bulkInsert(records);
     const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
