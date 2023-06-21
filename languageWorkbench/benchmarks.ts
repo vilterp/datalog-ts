@@ -278,29 +278,29 @@ function testParse() {
 function testProblemsNative() {
   const problems = [...datalogLangImpl.tcProblem(flattenedByRule)];
   // TODO: why is this one more than simpleInterp?
-  assertDeepEqual(2, problems.length, "problems length");
+  assertDeepEqual(2, problems.length, { msg: "problems length" });
 }
 
 function testProblemsSimpleInterp() {
   const problems = interp.queryStr("tc.Problem{}");
-  assertDeepEqual(2, problems.length, "problems length");
+  assertDeepEqual(2, problems.length, { msg: "problems length" });
 }
 
 function testDefnAtPosSimpleInterp() {
   const interp2 = interp.evalStr(`ide.Cursor{idx: 2174}.`)[1];
   const results = interp2.queryStr("ide.DefnForCursor{defnSpan: DS}");
-  assertDeepEqual(1, results.length, "results length");
+  assertDeepEqual(1, results.length, { msg: "results length" });
 }
 
 function testUsageAtPosSimpleInterp() {
   const interp2 = interp.evalStr(`ide.Cursor{idx: 2392}.`)[1];
   const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
-  assertDeepEqual(1, results.length, "results length");
+  assertDeepEqual(1, results.length, { msg: "results length" });
 }
 
 function testSymbolListSimpleInterp() {
   const results = interp.queryStr(
     `scope.Defn{scopeID: global{}, name: N, span: S, kind: K}`
   );
-  assertDeepEqual(21, results.length, "results length");
+  assertDeepEqual(21, results.length, { msg: "results length" });
 }
