@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { nullLoader } from "../../core/loaders";
 import { Explorer } from "../../uiCommon/explorer";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
@@ -10,14 +9,13 @@ import { compileBasicBlocks } from "./compiler";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 // @ts-ignore
-import execDL from "./execution.dl";
-// @ts-ignore
 import exampleBB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { LOADER } from "./dl";
 
 function getInterp(input: string): AbstractInterpreter {
-  const emptyInterp = new IncrementalInterpreter(".", nullLoader);
-  const loadedInterp = emptyInterp.evalStr(execDL)[1];
+  const emptyInterp = new IncrementalInterpreter(".", LOADER);
+  const loadedInterp = emptyInterp.doLoad("main.dl");
   const tree = parseMain(input);
   const records = compileBasicBlocks(tree);
   return loadedInterp.bulkInsert(records);
