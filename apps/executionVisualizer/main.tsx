@@ -21,6 +21,7 @@ function getInterp(input: string): [AbstractInterpreter, string | null] {
     const records = compileBasicBlocks(tree);
     return [loadedInterp.bulkInsert(records), null];
   } catch (e) {
+    console.warn(e);
     return [loadedInterp, e.toString()];
   }
 }
