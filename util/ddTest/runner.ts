@@ -12,16 +12,12 @@ import { jsonEq } from "../json";
 function checkResults(results: Result[]) {
   // TODO: print 'em all out, not just first that failed
   for (const result of results) {
-    assertStringEqual(
-      result.pair.output.mimeType,
-      result.actual.mimeType,
-      `mime type not equal at line ${result.pair.lineNo}`
-    );
-    assertStringEqual(
-      result.pair.output.content,
-      result.actual.content,
-      `output not equal at line ${result.pair.lineNo}`
-    );
+    assertStringEqual(result.pair.output.mimeType, result.actual.mimeType, {
+      msg: `mime type not equal at line ${result.pair.lineNo}`,
+    });
+    assertStringEqual(result.pair.output.content, result.actual.content, {
+      msg: `output not equal at line ${result.pair.lineNo}`,
+    });
   }
 }
 
@@ -72,13 +68,26 @@ export function runDDTestAtPathTwoVariants(
 ) {
   const contents = fs.readFileSync(path);
   const test = parseDDTest(contents.toString());
+  // TODO: DRY up
   const leftOutputs = leftGetter.getResults(test.map((t) => t.input));
   const rightOutputs = rightGetter.getResults(test.map((t) => t.input));
-  assertDeepEqual(leftOutputs, rightOutputs);
-  const results = zip(test, leftOutputs, (pair, actual) => ({ pair, actual }));
+  const leftResults = zip(test, leftOutputs, (pair, actual) => ({
+    pair,
+    actual,
+  }));
+  const rightResults = zip(test, rightOutputs, (pair, actual) => ({
+    pair,
+    actual,
+  }));
+  const leftStr = resultsToStr(leftResults);
+  const rightStr = resultsToStr(rightResults);
+  assertStringEqual(leftStr, rightStr, {
+    expectedName: leftGetter.name,
+    actualName: rightGetter.name,
+  });
   if (writeResults) {
-    doWriteResults(path, results);
+    doWriteResults(path, leftResults);
   } else {
-    checkResults(results);
+    checkResults(leftResults);
   }
 }
