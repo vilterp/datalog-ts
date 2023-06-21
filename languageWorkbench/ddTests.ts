@@ -2,35 +2,17 @@ import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { addCursor, clearInterpCache, getInterpForDoc } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
-import { runDDTestAtPath } from "../util/ddTest/runner";
+import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
-import { uniqBy } from "../util/util";
-import { fastPPT } from "../core/fastPPT";
 
-export function lwbTestsSimple(writeResults: boolean) {
-  return lwbTests(
-    writeResults,
-    new SimpleInterpreter("languageWorkbench/common", fsLoader)
-  );
-}
+const BASE_PATH = "languageWorkbench/common";
 
-export function lwbTestsIncr(writeResults: boolean) {
-  return lwbTests(
-    writeResults,
-    new IncrementalInterpreter("languageWorkbench/common", fsLoader)
-  );
-}
-
-function lwbTests(
-  writeResults: boolean,
-  initInterp: AbstractInterpreter,
-  exclude: Set<string> = new Set<string>()
-): Suite {
+export function lwbTests(writeResults: boolean): Suite {
   return [
     "fp",
     "sql",
@@ -40,19 +22,29 @@ function lwbTests(
     "treeSQL",
     "basicBlocks",
     "contracts",
-  ]
-    .filter((lang) => !exclude.has(lang))
-    .map((lang) => ({
-      name: lang,
-      test() {
-        runDDTestAtPath(
-          `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-          (test) => testLangQuery(test, initInterp),
-          writeResults
-        );
-        clearInterpCache();
-      },
-    }));
+  ].map((lang) => ({
+    name: lang,
+    test() {
+      runDDTestAtPathTwoVariants(
+        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+        {
+          name: "simple",
+          getResults: (test) =>
+            testLangQuery(test, new SimpleInterpreter(BASE_PATH, fsLoader)),
+        },
+        {
+          name: "incremental",
+          getResults: (test) =>
+            testLangQuery(
+              test,
+              new IncrementalInterpreter(BASE_PATH, fsLoader)
+            ),
+        },
+        writeResults
+      );
+      clearInterpCache();
+    },
+  }));
 }
 
 export function testLangQuery(

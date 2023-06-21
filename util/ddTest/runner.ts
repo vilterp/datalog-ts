@@ -1,8 +1,13 @@
-import { assertStringEqual, Suite } from "../testBench/testing";
+import {
+  assertDeepEqual,
+  assertStringEqual,
+  Suite,
+} from "../testBench/testing";
 import fs from "fs";
 import { zip } from "../util";
 import { parseDDTest } from "./parser";
 import { ProcessFn, Result, resultsToStr } from "./types";
+import { jsonEq } from "../json";
 
 function checkResults(results: Result[]) {
   // TODO: print 'em all out, not just first that failed
@@ -47,6 +52,30 @@ export function runDDTestAtPath(
   const test = parseDDTest(contents.toString());
   const outputs = getResults(test.map((t) => t.input));
   const results = zip(test, outputs, (pair, actual) => ({ pair, actual }));
+  if (writeResults) {
+    doWriteResults(path, results);
+  } else {
+    checkResults(results);
+  }
+}
+
+type ResultGetter = {
+  getResults: ProcessFn;
+  name: string;
+};
+
+export function runDDTestAtPathTwoVariants(
+  path: string,
+  leftGetter: ResultGetter,
+  rightGetter: ResultGetter,
+  writeResults: boolean
+) {
+  const contents = fs.readFileSync(path);
+  const test = parseDDTest(contents.toString());
+  const leftOutputs = leftGetter.getResults(test.map((t) => t.input));
+  const rightOutputs = rightGetter.getResults(test.map((t) => t.input));
+  assertDeepEqual(leftOutputs, rightOutputs);
+  const results = zip(test, leftOutputs, (pair, actual) => ({ pair, actual }));
   if (writeResults) {
     doWriteResults(path, results);
   } else {
