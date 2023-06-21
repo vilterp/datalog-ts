@@ -4,7 +4,7 @@ blockBody :- ["{", ws, repSep(instr,[";", ws]), ws, "}"].
 label :- ident.
 instr :- (valueInstr | gotoInstr | forkToInstr).
 forkToInstr :- [forkToKW, ws, label].
-valueInstr :- [ident, ws, "=", ws, rvalue].
+valueInstr :- [([ident, ws, "=", ws] | ""), rvalue].
 rvalue :- (call | const).
 call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, (label | Placeholder), ([ws, ifClause] | "")].

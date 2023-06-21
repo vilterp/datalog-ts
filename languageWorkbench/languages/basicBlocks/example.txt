@@ -12,6 +12,6 @@ loop {
 }
 afterFork {
   x = 5;
-  y = block.sleep(x);
+  block.sleep(x);
   z = 10;
 }

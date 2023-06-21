@@ -147,7 +147,7 @@ export type BBValueInstr = {
   type: "ValueInstr";
   text: string;
   span: Span;
-  ident: BBIdent;
+  ident: BBIdent | null;
   rvalue: BBRvalue;
 };
 export type BBWs = {
@@ -541,7 +541,9 @@ function extractValueInstr(input: string, node: RuleTree): BBValueInstr {
     type: "ValueInstr",
     text: textForSpan(input, node.span),
     span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
+    ident: childByName(node, "ident", null)
+      ? extractIdent(input, childByName(node, "ident", null))
+      : null,
     rvalue: extractRvalue(input, childByName(node, "rvalue", null)),
   };
 }
@@ -673,23 +675,37 @@ const GRAMMAR: Grammar = {
     type: "Sequence",
     items: [
       {
-        type: "Ref",
-        captureName: null,
-        rule: "ident",
-      },
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "ws",
-      },
-      {
-        type: "Text",
-        value: "=",
-      },
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "ws",
+        type: "Choice",
+        choices: [
+          {
+            type: "Sequence",
+            items: [
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ident",
+              },
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ws",
+              },
+              {
+                type: "Text",
+                value: "=",
+              },
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ws",
+              },
+            ],
+          },
+          {
+            type: "Text",
+            value: "",
+          },
+        ],
       },
       {
         type: "Ref",
