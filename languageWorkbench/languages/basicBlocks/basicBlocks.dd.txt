@@ -59,3 +59,61 @@ ast.ifClause{}?
 ----
 application/datalog
 ast.ifClause{id: 40, parentID: 27, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  afterFork = 5;
+}
+afterFork {}
+scope.Usage{}?
+----
+application/datalog
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 46, to: 55}, kind: "label", name: "afterFork", usageScopeID: global{}, usageSpan: span{from: 16, to: 25}}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  afterFork = 5;
+}
+afterFork {}
+scope.Var{}?
+----
+application/datalog
+scope.Var{kind: "label", name: "afterFork", scopeID: global{}, span: span{from: 16, to: 25}}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  afterFork = 5;
+}
+afterFork {}
+scope.Defn{}?
+----
+application/datalog
+scope.Defn{kind: "label", name: "afterFork", scopeID: global{}, span: span{from: 46, to: 55}, type: "any"}.
+scope.Defn{kind: "label", name: "main", scopeID: global{}, span: span{from: 0, to: 4}, type: "any"}.
+scope.Defn{kind: "value", name: "afterFork", scopeID: global{}, span: span{from: 29, to: 38}, type: "any"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  afterFork = 5;
+}
+afterFork {}
+scope.Item{}?
+----
+application/datalog
+scope.Item{defnScopeID: global{}, defnSpan: span{from: 0, to: 4}, kind: "label", name: "main", scopeID: global{}, type: "any"}.
+scope.Item{defnScopeID: global{}, defnSpan: span{from: 29, to: 38}, kind: "value", name: "afterFork", scopeID: global{}, type: "any"}.
+scope.Item{defnScopeID: global{}, defnSpan: span{from: 46, to: 55}, kind: "label", name: "afterFork", scopeID: global{}, type: "any"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  after|||Fork = 5;
+}
+afterFork {}
+ide.currentDefn{}?
+----
+application/datalog
