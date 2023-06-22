@@ -8,3 +8,16 @@ currentDefn{}?
 ----
 application/datalog
 currentDefn{name: "foo"}.
+
+ide.Cursor{idx: 33}.
+scope.Defn{kind: "label", name: "afterFork", scopeID: global{}, span: span{from: 46, to: 55}, type: "any"}.
+scope.Defn{kind: "label", name: "main", scopeID: global{}, span: span{from: 0, to: 4}, type: "any"}.
+scope.Defn{kind: "value", name: "afterFork", scopeID: global{}, span: span{from: 29, to: 38}, type: "any"}.
+ide.currentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
+  scope.Defn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} &
+  ide.Cursor{idx: CIdx} &
+  F <= CIdx & CIdx <= T.
+ide.currentDefn{}?
+----
+application/datalog
+ide.currentDefn{name: "afterFork", scopeID: global{}, span: span{from: 29, to: 38}}.

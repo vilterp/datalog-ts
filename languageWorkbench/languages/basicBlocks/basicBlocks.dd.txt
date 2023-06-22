@@ -107,13 +107,3 @@ application/datalog
 scope.Item{defnScopeID: global{}, defnSpan: span{from: 0, to: 4}, kind: "label", name: "main", scopeID: global{}, type: "any"}.
 scope.Item{defnScopeID: global{}, defnSpan: span{from: 29, to: 38}, kind: "value", name: "afterFork", scopeID: global{}, type: "any"}.
 scope.Item{defnScopeID: global{}, defnSpan: span{from: 46, to: 55}, kind: "label", name: "afterFork", scopeID: global{}, type: "any"}.
-
-basicBlocks
-main {
-  forkTo afterFork;
-  after|||Fork = 5;
-}
-afterFork {}
-ide.currentDefn{}?
-----
-application/datalog
