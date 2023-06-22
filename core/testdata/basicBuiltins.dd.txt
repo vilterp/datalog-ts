@@ -1,0 +1,10 @@
+cursor{idx: 10}.
+defn{name: "foo", start: 5, end: 15}.
+currentDefn{name: N} :-
+  defn{name: N, start: S, end: E} &
+  cursor{idx: C} &
+  S <= C & C <= E.
+currentDefn{}?
+----
+application/datalog
+currentDefn{name: "foo"}.

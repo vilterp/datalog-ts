@@ -52,7 +52,8 @@ export function coreTests(writeResults: boolean): Suite {
     "aggregation",
     "paths",
     "timeStep",
-    "builtins",
+    // "builtins",
+    "basicBuiltins",
   ].map((name) => ({
     name,
     test() {
