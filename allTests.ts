@@ -1,11 +1,10 @@
 import { runSuites, Suite } from "./util/testBench/testing";
 import { unifyTests } from "./core/unifyTests";
 import {
-  coreTestsSimple,
-  coreTestsIncremental,
   coreTestsCommon,
   parserTests,
   joinOrderTests,
+  coreTests,
 } from "./core/ddTests";
 import { prettyPrintTests } from "./core/prettyTest";
 import { treeTests } from "./util/treeTest";
@@ -25,10 +24,8 @@ const stayAlive = flags.has("--stay-alive");
 const suites: { [name: string]: Suite } = {
   unifyTests,
   parserTests: parserTests(writeResults),
-  // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
-  coreTestsSimple: coreTestsSimple(writeResults),
-  coreTestsIncremental: coreTestsIncremental(writeResults),
-  coreTestsCommon: coreTestsCommon(writeResults),
+  coreTests: coreTests(writeResults),
+  coreTestsCommon: coreTestsCommon(writeResults), // TODO: rename
   joinOrderTests: joinOrderTests(writeResults),
   incrTests: incrTests(writeResults),
   prettyPrintTests,
