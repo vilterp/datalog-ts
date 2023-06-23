@@ -5,7 +5,7 @@ import { LOADER } from "../common";
 import { LanguageSpec } from "../common/types";
 import { InterpCache } from "../interpCache";
 
-const CACHE = new InterpCache();
+export const CACHE = new InterpCache();
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // and highlight.dl
