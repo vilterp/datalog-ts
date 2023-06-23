@@ -12,7 +12,12 @@ import { AbstractInterpreter } from "../core/abstractInterpreter";
 
 const BASE_PATH = "languageWorkbench/common";
 
-const CACHE = new InterpCache();
+const SIMPLE_CACHE = new InterpCache(
+  () => new SimpleInterpreter(BASE_PATH, fsLoader)
+);
+const INCR_CACHE = new InterpCache(
+  () => new IncrementalInterpreter(BASE_PATH, fsLoader)
+);
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
@@ -31,27 +36,21 @@ export function lwbTests(writeResults: boolean): Suite {
         `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
         {
           name: "simple",
-          getResults: (test) =>
-            testLangQuery(test, new SimpleInterpreter(BASE_PATH, fsLoader)),
+          getResults: (test) => testLangQuery(test, SIMPLE_CACHE),
         },
         {
           name: "incremental",
-          getResults: (test) =>
-            testLangQuery(
-              test,
-              new IncrementalInterpreter(BASE_PATH, fsLoader)
-            ),
+          getResults: (test) => testLangQuery(test, INCR_CACHE),
         },
         writeResults
       );
-      CACHE.clear();
     },
   }));
 }
 
 export function testLangQuery(
   test: string[],
-  initInterp: AbstractInterpreter
+  cache: InterpCache
 ): TestOutput[] {
   const output = test.map((input) => {
     const lines = input.split("\n");
@@ -71,8 +70,7 @@ export function testLangQuery(
       ),
       example: "",
     };
-    const { interp: withoutCursor } = CACHE.getInterpForDoc(
-      initInterp,
+    const { interp: withoutCursor } = cache.getInterpForDoc(
       langName,
       { [langName]: langSpec },
       `test.${langName}`,
@@ -81,7 +79,7 @@ export function testLangQuery(
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
       const results = finalInterp.queryStr(query);
-      CACHE.clear();
+      cache.clear();
       return datalogOut(results.map((res) => res.term));
     } catch (e) {
       console.log(e);

@@ -16,6 +16,7 @@ type ConstructInterpRes = {
 
 // TODO: generalize to Salsa-like runtime?
 export class InterpCache {
+  getInitInterp: () => AbstractInterpreter;
   interpCache: {
     [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
   };
@@ -24,14 +25,14 @@ export class InterpCache {
     [docURI: string]: { interp: AbstractInterpreter };
   };
 
-  constructor() {
+  constructor(getInitInterp: () => AbstractInterpreter) {
+    this.getInitInterp = getInitInterp;
     this.interpCache = {};
     this.docSource = {};
     this.interpSourceCache = {};
   }
 
   getInterpForDoc(
-    initInterp: AbstractInterpreter,
     langID: string,
     languages: { [langID: string]: LanguageSpec },
     uri: string,
@@ -40,6 +41,7 @@ export class InterpCache {
     this.updateDocSource(uri, langID, source);
     const key = `${langID}-${uri}`;
     let res = this.interpSourceCache[key];
+    const initInterp = this.getInitInterp();
     // TODO: this is a big memory leak
     if (!res) {
       res = this.addSourceInner(

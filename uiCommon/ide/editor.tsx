@@ -9,11 +9,9 @@ import {
 import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
-import { InterpCache, addCursor } from "../../languageWorkbench/interpCache";
-import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
+import { addCursor } from "../../languageWorkbench/interpCache";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
-
-const CACHE = new InterpCache();
+import { CACHE } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -95,7 +93,6 @@ export function LingoEditor(props: {
   // instances... sigh
   const withoutCursor = useMemo(() => {
     const res = CACHE.getInterpForDoc(
-      INIT_INTERP,
       props.langSpec.name,
       { [props.langSpec.name]: props.langSpec },
       `test.${props.langSpec.name}`,

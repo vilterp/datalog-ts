@@ -6,10 +6,8 @@ import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { InterpCache, addCursor } from "../../languageWorkbench/interpCache";
-import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
-
-const CACHE = new InterpCache();
+import { addCursor } from "../../languageWorkbench/interpCache";
+import { CACHE } from "../../languageWorkbench/vscode/common";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -18,7 +16,6 @@ function Main() {
   );
 
   const { interp: withoutCursor } = CACHE.getInterpForDoc(
-    INIT_INTERP,
     "fp",
     { fp: LANGUAGES.fp },
     "test.fp",
