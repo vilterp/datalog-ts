@@ -1,4 +1,5 @@
 import { evalBuiltin } from "../../evalBuiltin";
+import { ppt } from "../../pretty";
 import { BindingsWithTrace, builtinTrace } from "../../types";
 import { unifyBindings } from "../../unify";
 import { getIndexName, getIndexKey } from "../build";
@@ -45,6 +46,11 @@ export function doJoin(
   const otherNode = graph.nodes.get(otherNodeID);
   if (otherNode.desc.type === "Builtin") {
     const results = evalBuiltin(otherNode.desc.rec, thisVars.bindings.bindings);
+    console.log(
+      "eval builtin",
+      ppt(otherNode.desc.rec),
+      results.map((r) => ppt(r.term))
+    );
     return results.map((res) => ({
       bindings: {
         bindings: unifyBindings(res.bindings, thisVars.bindings.bindings),

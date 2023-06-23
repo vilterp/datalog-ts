@@ -42,6 +42,7 @@ export function replayFacts(ruleGraph: RuleGraph, catalog: Catalog): RuleGraph {
     let results: Res[] = [];
     try {
       results = evalBuiltin(node.desc.rec, {});
+      console.log("eval builtin", node.desc.rec, results);
     } catch (e) {
       // TODO: check that it's the expected error
       return;
