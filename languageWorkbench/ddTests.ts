@@ -79,13 +79,13 @@ export function testLangQuery(
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
       const results = finalInterp.queryStr(query);
+      clearInterpCache();
       return datalogOut(results.map((res) => res.term));
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);
     }
   });
-  clearInterpCache();
   return output;
 }
 
