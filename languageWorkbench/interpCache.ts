@@ -14,6 +14,7 @@ type ConstructInterpRes = {
   errors: string[];
 };
 
+// TODO: generalize to Salsa-like runtime?
 export class InterpCache {
   interpCache: {
     [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
