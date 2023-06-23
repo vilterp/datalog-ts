@@ -19,21 +19,26 @@ import { SimpleInterpreter } from "../core/simple/interpreter";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
-export const lwbBenchmarksSimple: BenchmarkSpec[] = lwbBenchmarks(
-  new SimpleInterpreter("languageWorkbench/common", fsLoader)
+const BASE_PATH = "languageWorkbench/common";
+
+const SIMPLE_CACHE = new InterpCache(
+  () => new SimpleInterpreter(BASE_PATH, fsLoader)
+);
+const INCR_CACHE = new InterpCache(
+  () => new IncrementalInterpreter(BASE_PATH, fsLoader)
 );
 
-export const lwbBenchmarksIncr: BenchmarkSpec[] = lwbBenchmarks(
-  new IncrementalInterpreter("languageWorkbench/common", fsLoader)
-);
+export const lwbBenchmarksSimple: BenchmarkSpec[] = lwbBenchmarks(SIMPLE_CACHE);
 
-function lwbBenchmarks(initInterp: AbstractInterpreter) {
+export const lwbBenchmarksIncr: BenchmarkSpec[] = lwbBenchmarks(INCR_CACHE);
+
+function lwbBenchmarks(cache: InterpCache) {
   return ["fp", "dl"].map((lang) => ({
     name: lang,
     async run() {
       return runDDBenchmark(
         `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-        (input) => testLangQuery(input, initInterp)
+        (input) => testLangQuery(input, cache)
       );
     },
   }));
@@ -229,10 +234,7 @@ const langSpec: LanguageSpec = {
   example: "",
 };
 
-const CACHE = new InterpCache();
-
-let interp: AbstractInterpreter = CACHE.getInterpForDoc(
-  new SimpleInterpreter("languageWorkbench/common", fsLoader),
+let interp: AbstractInterpreter = INCR_CACHE.getInterpForDoc(
   langSpec.name,
   { [langSpec.name]: langSpec },
   "test.datalog",

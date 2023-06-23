@@ -8,7 +8,6 @@ import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
-import { AbstractInterpreter } from "../core/abstractInterpreter";
 
 const BASE_PATH = "languageWorkbench/common";
 
