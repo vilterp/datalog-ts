@@ -10,7 +10,7 @@ import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./common/ide";
 import { datalogLangImpl } from "./languages/dl/dl";
-import { addCursor, getInterpForDoc } from "./interpCache";
+import { InterpCache, addCursor } from "./interpCache";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
 import { assertDeepEqual } from "../util/testBench/testing";
@@ -229,7 +229,9 @@ const langSpec: LanguageSpec = {
   example: "",
 };
 
-let interp: AbstractInterpreter = getInterpForDoc(
+const CACHE = new InterpCache();
+
+let interp: AbstractInterpreter = CACHE.getInterpForDoc(
   new SimpleInterpreter("languageWorkbench/common", fsLoader),
   langSpec.name,
   { [langSpec.name]: langSpec },

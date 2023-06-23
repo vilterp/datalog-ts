@@ -3,7 +3,9 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../common";
 import { LanguageSpec } from "../common/types";
-import { getInterpForDoc } from "../interpCache";
+import { InterpCache } from "../interpCache";
+
+const CACHE = new InterpCache();
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // and highlight.dl
@@ -24,7 +26,7 @@ export function getInterp(
   source: string
 ): AbstractInterpreter {
   console.log("getInterp", language.name);
-  const res = getInterpForDoc(
+  const res = CACHE.getInterpForDoc(
     INIT_INTERP,
     language.name,
     { [language.name]: language },
