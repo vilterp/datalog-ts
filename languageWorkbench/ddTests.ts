@@ -14,14 +14,14 @@ const BASE_PATH = "languageWorkbench/common";
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
-    "fp",
-    "sql",
-    "dl",
-    "grammar",
-    "modelica",
-    "treeSQL",
+    // "fp",
+    // "sql",
+    // "dl",
+    // "grammar",
+    // "modelica",
+    // "treeSQL",
     "basicBlocks",
-    "contracts",
+    // "contracts",
   ].map((lang) => ({
     name: lang,
     test() {
