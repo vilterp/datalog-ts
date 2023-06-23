@@ -29,6 +29,31 @@ export class InterpCache {
     this.interpSourceCache = {};
   }
 
+  getInterpForDoc(
+    initInterp: AbstractInterpreter,
+    langID: string,
+    languages: { [langID: string]: LanguageSpec },
+    uri: string,
+    source: string
+  ): { interp: AbstractInterpreter } {
+    this.updateDocSource(uri, langID, source);
+    const key = `${langID}-${uri}`;
+    let res = this.interpSourceCache[key];
+    // TODO: this is a big memory leak
+    if (!res) {
+      res = this.addSourceInner(
+        initInterp,
+        langID,
+        languages,
+        this.docSource[uri]
+      );
+      this.interpSourceCache[key] = res;
+    } else {
+      // console.log("cache hit", langID, uri, "source length", source.length);
+    }
+    return res;
+  }
+
   // TODO: remove this hack
   clear() {
     for (const key in this.interpCache) {
@@ -49,7 +74,7 @@ export class InterpCache {
     }
   }
 
-  interpForLangSpec(
+  private interpForLangSpec(
     initInterp: AbstractInterpreter,
     languages: { [langID: string]: LanguageSpec }, // TODO: check this as well
     langID: string
@@ -104,31 +129,6 @@ export class InterpCache {
       grammar,
       errors: [...allGrammarErrors, ...dlErrors],
     };
-  }
-
-  getInterpForDoc(
-    initInterp: AbstractInterpreter,
-    langID: string,
-    languages: { [langID: string]: LanguageSpec },
-    uri: string,
-    source: string
-  ): { interp: AbstractInterpreter } {
-    this.updateDocSource(uri, langID, source);
-    const key = `${langID}-${uri}`;
-    let res = this.interpSourceCache[key];
-    // TODO: this is a big memory leak
-    if (!res) {
-      res = this.addSourceInner(
-        initInterp,
-        langID,
-        languages,
-        this.docSource[uri]
-      );
-      this.interpSourceCache[key] = res;
-    } else {
-      // console.log("cache hit", langID, uri, "source length", source.length);
-    }
-    return res;
   }
 
   private addSourceInner(
