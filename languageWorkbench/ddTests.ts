@@ -1,6 +1,6 @@
 import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, clearInterpCache, getInterpForDoc } from "./interpCache";
+import { InterpCache, addCursor } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
@@ -11,6 +11,8 @@ import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 
 const BASE_PATH = "languageWorkbench/common";
+
+const CACHE = new InterpCache();
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
@@ -42,7 +44,7 @@ export function lwbTests(writeResults: boolean): Suite {
         },
         writeResults
       );
-      clearInterpCache();
+      CACHE.clear();
     },
   }));
 }
@@ -69,7 +71,7 @@ export function testLangQuery(
       ),
       example: "",
     };
-    const { interp: withoutCursor } = getInterpForDoc(
+    const { interp: withoutCursor } = CACHE.getInterpForDoc(
       initInterp,
       langName,
       { [langName]: langSpec },
@@ -79,7 +81,7 @@ export function testLangQuery(
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
       const results = finalInterp.queryStr(query);
-      clearInterpCache();
+      CACHE.clear();
       return datalogOut(results.map((res) => res.term));
     } catch (e) {
       console.log(e);
