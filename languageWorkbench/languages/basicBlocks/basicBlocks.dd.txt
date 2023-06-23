@@ -59,3 +59,36 @@ ast.ifClause{}?
 ----
 application/datalog
 ast.ifClause{id: 40, parentID: 27, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  after|||Fork = 5;
+}
+afterFork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog
+ide.CurrentUsageOrDefn{span: span{from: 29, to: 38}, type: "defn"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  afterFork = 5;
+}
+after|||Fork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog
+ide.CurrentUsageOrDefn{span: span{from: 16, to: 25}, type: "usage"}.
+ide.CurrentUsageOrDefn{span: span{from: 46, to: 55}, type: "defn"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  x = foo(after|||Fork);
+}
+afterFork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog
