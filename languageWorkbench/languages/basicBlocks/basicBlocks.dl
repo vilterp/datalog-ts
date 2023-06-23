@@ -9,7 +9,7 @@ scope.scopeBlock{id: BlockID, label: T} :-
 
 # this var defined at this node
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} :-
-  scope.defnValue{scopeID: I, span: S, name: N, kind: K} |
+  # scope.defnValue{scopeID: I, span: S, name: N, kind: K} |
   scope.defnLabel{scopeID: I, span: S, name: N, kind: K}.
 # definitions of value variables
 scope.defnValue{scopeID: global{}, span: S, name: N, kind: "value"} :-

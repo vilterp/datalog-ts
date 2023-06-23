@@ -14,13 +14,8 @@ bar {
 ide.Suggestion{}
 ----
 application/datalog
-ide.Suggestion{id: global{}, name: "a", span: span{from: 93, to: 96}, type: "any"}.
-ide.Suggestion{id: global{}, name: "b", span: span{from: 93, to: 96}, type: "any"}.
 ide.Suggestion{id: global{}, name: "bar", span: span{from: 106, to: 109}, type: "any"}.
-ide.Suggestion{id: global{}, name: "c", span: span{from: 93, to: 96}, type: "any"}.
 ide.Suggestion{id: global{}, name: "foo", span: span{from: 106, to: 109}, type: "any"}.
-ide.Suggestion{id: global{}, name: "x", span: span{from: 93, to: 96}, type: "any"}.
-ide.Suggestion{id: global{}, name: "y", span: span{from: 93, to: 96}, type: "any"}.
 
 basicBlocks
 countUp {
@@ -40,15 +35,9 @@ afterFork {
 scope.Usage{}
 ----
 application/datalog
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 100, to: 105}, kind: "value", name: "going", usageScopeID: global{}, usageSpan: span{from: 146, to: 151}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 116, to: 117}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 77, to: 78}}.
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 155, to: 164}, kind: "label", name: "afterFork", usageScopeID: global{}, usageSpan: span{from: 50, to: 59}}.
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 138, to: 142}}.
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 26, to: 30}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 63, to: 64}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 116, to: 117}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 63, to: 64}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 77, to: 78}}.
-scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 83, to: 92}, kind: "value", name: "threshold", usageScopeID: global{}, usageSpan: span{from: 119, to: 128}}.
 
 basicBlocks
 foo {
@@ -93,7 +82,6 @@ scope.Defn{}?
 application/datalog
 scope.Defn{kind: "label", name: "afterFork", scopeID: global{}, span: span{from: 46, to: 55}, type: "any"}.
 scope.Defn{kind: "label", name: "main", scopeID: global{}, span: span{from: 0, to: 4}, type: "any"}.
-scope.Defn{kind: "value", name: "afterFork", scopeID: global{}, span: span{from: 29, to: 38}, type: "any"}.
 
 basicBlocks
 main {
@@ -105,7 +93,6 @@ scope.Item{}?
 ----
 application/datalog
 scope.Item{defnScopeID: global{}, defnSpan: span{from: 0, to: 4}, kind: "label", name: "main", scopeID: global{}, type: "any"}.
-scope.Item{defnScopeID: global{}, defnSpan: span{from: 29, to: 38}, kind: "value", name: "afterFork", scopeID: global{}, type: "any"}.
 scope.Item{defnScopeID: global{}, defnSpan: span{from: 46, to: 55}, kind: "label", name: "afterFork", scopeID: global{}, type: "any"}.
 
 basicBlocks
@@ -114,6 +101,8 @@ main {
   after|||Fork = 5;
 }
 afterFork {}
-ide.currentDefn{}?
+scope.defnLabel{}?
 ----
 application/datalog
+scope.defnLabel{kind: "label", name: "afterFork", scopeID: global{}, span: span{from: 46, to: 55}}.
+scope.defnLabel{kind: "label", name: "main", scopeID: global{}, span: span{from: 0, to: 4}}.
