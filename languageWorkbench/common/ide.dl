@@ -103,7 +103,7 @@ ide.CurrentVarOrUsageOfCurrentDefn{type: "usage", span: S} :-
   ide.instanceOfCurrentVar{span: S} |
   ide.usageOfCurrentDefn{span: S}.
 ide.instanceOfCurrentVar{span: S} :-
-  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
+  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS, kind: K} &
   scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N, kind: K} &
   scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N, kind: K} &
   scope.Var{scopeID: OtherVarScope, name: N, kind: K, span: S}.

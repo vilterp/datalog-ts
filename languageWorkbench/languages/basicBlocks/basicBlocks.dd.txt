@@ -82,3 +82,13 @@ ide.CurrentUsageOrDefn{}?
 application/datalog
 ide.CurrentUsageOrDefn{span: span{from: 16, to: 25}, type: "usage"}.
 ide.CurrentUsageOrDefn{span: span{from: 46, to: 55}, type: "defn"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  x = foo(after|||Fork);
+}
+afterFork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog
