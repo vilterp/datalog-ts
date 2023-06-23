@@ -6,7 +6,7 @@ import {
   lineAndColFromIdx,
 } from "../sourcePositions";
 import { ppt } from "../../core/pretty";
-import { getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
+import { CACHE, getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
 import * as native from "../common/ide";
 import {
@@ -18,7 +18,6 @@ import { extractRuleTree } from "../parserlib/ruleTree";
 import { parse } from "../parserlib/parser";
 import { Span } from "../parserlib/types";
 import { LangImpl, LanguageSpec, Problem } from "../common/types";
-import { updateDocSource } from "../interpCache";
 
 export function registerLanguageSupport(
   spec: LanguageSpec
@@ -484,8 +483,7 @@ function getFlattened(
   source: string,
   leaves: Set<string> = new Set<string>()
 ): NodesByRule {
-  // call updateSource here?
-  updateDocSource(uri, langID, source);
+  CACHE.updateDocSource(uri, langID, source);
   const traceTree = parse(impl.grammar, "main", source);
   const ruleTree = extractRuleTree(traceTree);
   return flattenByRule(ruleTree, source, leaves);

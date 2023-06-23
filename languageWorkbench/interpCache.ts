@@ -14,146 +14,165 @@ type ConstructInterpRes = {
   errors: string[];
 };
 
-const interpCache: {
-  [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
-} = {};
-const docSource: { [uri: string]: string } = {};
-const interpSourceCache: {
-  [docURI: string]: { interp: AbstractInterpreter };
-} = {};
+// TODO: generalize to Salsa-like runtime?
+export class InterpCache {
+  getInitInterp: () => AbstractInterpreter;
+  interpCache: {
+    [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
+  };
+  docSource: { [uri: string]: string };
+  interpSourceCache: {
+    [docURI: string]: { interp: AbstractInterpreter };
+  };
 
-// TODO: remove this hack
-export function clearInterpCache() {
-  for (const key in interpCache) {
-    delete interpCache[key];
+  constructor(getInitInterp: () => AbstractInterpreter) {
+    this.getInitInterp = getInitInterp;
+    this.interpCache = {};
+    this.docSource = {};
+    this.interpSourceCache = {};
   }
-  for (const key in interpSourceCache) {
-    delete interpSourceCache[key];
-  }
-}
 
-// TODO: call this from the outside on vscode document change events
-export function updateDocSource(uri: string, langID: string, source: string) {
-  const currentSource = docSource[uri];
-  if (currentSource !== source) {
-    docSource[uri] = source;
-    // TODO: factor invalidation out into a framework
-    delete interpSourceCache[`${langID}-${uri}`];
-  }
-}
-
-function interpForLangSpec(
-  initInterp: AbstractInterpreter,
-  languages: { [langID: string]: LanguageSpec }, // TODO: check this as well
-  langID: string
-): { interp: AbstractInterpreter; grammar: Grammar } {
-  let res = interpCache[langID];
-  if (!res) {
-    res = interpForLangSpecInner(initInterp, languages[langID]);
-    interpCache[langID] = res;
-  } else {
-    // console.log("cache hit", langID);
-  }
-  return res;
-}
-
-// TODO: separate function to inject the langSource
-// so we can memoize that separately
-function interpForLangSpecInner(
-  initInterp: AbstractInterpreter,
-  langSpec: LanguageSpec
-): ConstructInterpRes {
-  // console.log("interpForLangSpecInner", langSpec.name);
-
-  let interp = initInterp;
-  interp = interp.doLoad("main.dl");
-
-  let dlErrors: string[] = [];
-
-  // process grammar
-  const grammarTree = parseMain(langSpec.grammar);
-  const grammar = parserGrammarToInternal(grammarTree);
-  const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
-  // TODO: get grammar parse errors
-  const allGrammarErrors = [...noMainError];
-
-  // add datalog
-  try {
-    if (langSpec.datalog.length > 0) {
-      interp = interp.evalStr(langSpec.datalog)[1];
+  getInterpForDoc(
+    langID: string,
+    languages: { [langID: string]: LanguageSpec },
+    uri: string,
+    source: string
+  ): { interp: AbstractInterpreter } {
+    this.updateDocSource(uri, langID, source);
+    const key = `${langID}-${uri}`;
+    let res = this.interpSourceCache[key];
+    const initInterp = this.getInitInterp();
+    // TODO: this is a big memory leak
+    if (!res) {
+      res = this.addSourceInner(
+        initInterp,
+        langID,
+        languages,
+        this.docSource[uri]
+      );
+      this.interpSourceCache[key] = res;
+    } else {
+      // console.log("cache hit", langID, uri, "source length", source.length);
     }
-    interp = interp.evalRawStmts(declareTables(grammar))[1];
-    interp = interp.evalStmt({
-      type: "Rule",
-      rule: getUnionRule(grammar),
-    })[1];
-    interp = ensureRequiredRelations(interp);
-  } catch (e) {
-    dlErrors = [e.toString()];
+    return res;
   }
 
-  return {
-    interp,
-    grammar,
-    errors: [...allGrammarErrors, ...dlErrors],
-  };
-}
-
-export function getInterpForDoc(
-  initInterp: AbstractInterpreter,
-  langID: string,
-  languages: { [langID: string]: LanguageSpec },
-  uri: string,
-  source: string
-): { interp: AbstractInterpreter } {
-  updateDocSource(uri, langID, source);
-  const key = `${langID}-${uri}`;
-  let res = interpSourceCache[key];
-  // TODO: this is a big memory leak
-  if (!res) {
-    res = addSourceInner(initInterp, langID, languages, docSource[uri]);
-    interpSourceCache[key] = res;
-  } else {
-    // console.log("cache hit", langID, uri, "source length", source.length);
-  }
-  return res;
-}
-
-function addSourceInner(
-  initInterp: AbstractInterpreter,
-  langID: string,
-  languages: { [langID: string]: LanguageSpec },
-  source: string
-): ConstructInterpRes {
-  let { interp, grammar } = interpForLangSpec(initInterp, languages, langID);
-
-  // initialize stuff that we'll fill in later, if parse succeeds
-  let traceTree: TraceTree = null;
-  let ruleTree: RuleTree = null;
-  let langParseError: string | null = null;
-
-  try {
-    traceTree = parse(grammar, "main", source);
-    ruleTree = extractRuleTree(traceTree);
-    const records = flatten(ruleTree, source);
-    interp = interp.bulkInsert(records);
-  } catch (e) {
-    langParseError = e.toString();
-    console.error(e);
+  // TODO: remove this hack
+  clear() {
+    for (const key in this.interpCache) {
+      delete this.interpCache[key];
+    }
+    for (const key in this.interpSourceCache) {
+      delete this.interpSourceCache[key];
+    }
   }
 
-  // (interp as SimpleInterpreter).db.tables.mapEntries(([name, collection]) => {
-  //   console.log(name, collection.all().toArray());
-  //   return [name, collection];
-  // });
+  // TODO: call this from the outside on vscode document change events
+  updateDocSource(uri: string, langID: string, source: string) {
+    const currentSource = this.docSource[uri];
+    if (currentSource !== source) {
+      this.docSource[uri] = source;
+      // TODO: factor invalidation out into a framework
+      delete this.interpSourceCache[`${langID}-${uri}`];
+    }
+  }
 
-  return {
-    interp,
-    grammar,
-    errors: langParseError ? [langParseError] : [],
-  };
+  private interpForLangSpec(
+    initInterp: AbstractInterpreter,
+    languages: { [langID: string]: LanguageSpec }, // TODO: check this as well
+    langID: string
+  ): { interp: AbstractInterpreter; grammar: Grammar } {
+    let res = this.interpCache[langID];
+    if (!res) {
+      res = this.interpForLangSpecInner(initInterp, languages[langID]);
+      this.interpCache[langID] = res;
+    } else {
+      // console.log("cache hit", langID);
+    }
+    return res;
+  }
+
+  // TODO: separate function to inject the langSource
+  // so we can memoize that separately
+  private interpForLangSpecInner(
+    initInterp: AbstractInterpreter,
+    langSpec: LanguageSpec
+  ): ConstructInterpRes {
+    // console.log("interpForLangSpecInner", langSpec.name);
+
+    let interp = initInterp;
+    interp = interp.doLoad("main.dl");
+
+    let dlErrors: string[] = [];
+
+    // process grammar
+    const grammarTree = parseMain(langSpec.grammar);
+    const grammar = parserGrammarToInternal(grammarTree);
+    const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
+    // TODO: get grammar parse errors
+    const allGrammarErrors = [...noMainError];
+
+    // add datalog
+    try {
+      if (langSpec.datalog.length > 0) {
+        interp = interp.evalStr(langSpec.datalog)[1];
+      }
+      interp = interp.evalRawStmts(declareTables(grammar))[1];
+      interp = interp.evalStmt({
+        type: "Rule",
+        rule: getUnionRule(grammar),
+      })[1];
+      interp = ensureRequiredRelations(interp);
+    } catch (e) {
+      dlErrors = [e.toString()];
+    }
+
+    return {
+      interp,
+      grammar,
+      errors: [...allGrammarErrors, ...dlErrors],
+    };
+  }
+
+  private addSourceInner(
+    initInterp: AbstractInterpreter,
+    langID: string,
+    languages: { [langID: string]: LanguageSpec },
+    source: string
+  ): ConstructInterpRes {
+    let { interp, grammar } = this.interpForLangSpec(
+      initInterp,
+      languages,
+      langID
+    );
+
+    // initialize stuff that we'll fill in later, if parse succeeds
+    let traceTree: TraceTree = null;
+    let ruleTree: RuleTree = null;
+    let langParseError: string | null = null;
+
+    try {
+      traceTree = parse(grammar, "main", source);
+      ruleTree = extractRuleTree(traceTree);
+      const records = flatten(ruleTree, source);
+      interp = interp.bulkInsert(records);
+    } catch (e) {
+      langParseError = e.toString();
+      console.error(e);
+    }
+
+    // (interp as SimpleInterpreter).db.tables.mapEntries(([name, collection]) => {
+    //   console.log(name, collection.all().toArray());
+    //   return [name, collection];
+    // });
+
+    return {
+      interp,
+      grammar,
+      errors: langParseError ? [langParseError] : [],
+    };
+  }
 }
-
 export function addCursor(
   interp: AbstractInterpreter,
   cursorPos: number

@@ -1,6 +1,6 @@
 import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, clearInterpCache, getInterpForDoc } from "./interpCache";
+import { InterpCache, addCursor } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
@@ -8,9 +8,15 @@ import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
-import { AbstractInterpreter } from "../core/abstractInterpreter";
 
 const BASE_PATH = "languageWorkbench/common";
+
+const SIMPLE_CACHE = new InterpCache(
+  () => new SimpleInterpreter(BASE_PATH, fsLoader)
+);
+const INCR_CACHE = new InterpCache(
+  () => new IncrementalInterpreter(BASE_PATH, fsLoader)
+);
 
 export function lwbTests(writeResults: boolean): Suite {
   return [
@@ -29,27 +35,21 @@ export function lwbTests(writeResults: boolean): Suite {
         `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
         {
           name: "simple",
-          getResults: (test) =>
-            testLangQuery(test, new SimpleInterpreter(BASE_PATH, fsLoader)),
+          getResults: (test) => testLangQuery(test, SIMPLE_CACHE),
         },
         {
           name: "incremental",
-          getResults: (test) =>
-            testLangQuery(
-              test,
-              new IncrementalInterpreter(BASE_PATH, fsLoader)
-            ),
+          getResults: (test) => testLangQuery(test, INCR_CACHE),
         },
         writeResults
       );
-      clearInterpCache();
     },
   }));
 }
 
 export function testLangQuery(
   test: string[],
-  initInterp: AbstractInterpreter
+  cache: InterpCache
 ): TestOutput[] {
   const output = test.map((input) => {
     const lines = input.split("\n");
@@ -69,8 +69,7 @@ export function testLangQuery(
       ),
       example: "",
     };
-    const { interp: withoutCursor } = getInterpForDoc(
-      initInterp,
+    const { interp: withoutCursor } = cache.getInterpForDoc(
       langName,
       { [langName]: langSpec },
       `test.${langName}`,
@@ -79,7 +78,7 @@ export function testLangQuery(
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
       const results = finalInterp.queryStr(query);
-      clearInterpCache();
+      cache.clear();
       return datalogOut(results.map((res) => res.term));
     } catch (e) {
       console.log(e);

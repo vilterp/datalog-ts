@@ -7,13 +7,10 @@ import { EditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import {
-  addCursor,
-  getInterpForDoc,
-} from "../../languageWorkbench/interpCache";
+import { addCursor } from "../../languageWorkbench/interpCache";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
+import { CACHE } from "../../languageWorkbench/vscode/common";
 
 function Main() {
   return <Workbench />;
@@ -35,8 +32,7 @@ function Workbench() {
   };
 
   const uri = `test.${curLangID}`;
-  const interpWithoutCursor = getInterpForDoc(
-    INIT_INTERP,
+  const interpWithoutCursor = CACHE.getInterpForDoc(
     versionedLangID,
     {
       [versionedLangID]: curLangSpec,

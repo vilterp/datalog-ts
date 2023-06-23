@@ -9,12 +9,9 @@ import {
 import { EditorState } from "./types";
 import { addKeyBinding, removeKeyBinding } from "./patchKeyBindings";
 import { KeyBindingsTable } from "./keymap/keyBindingsTable";
-import {
-  addCursor,
-  getInterpForDoc,
-} from "../../languageWorkbench/interpCache";
-import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
+import { addCursor } from "../../languageWorkbench/interpCache";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
+import { CACHE } from "../../languageWorkbench/vscode/common";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -95,8 +92,7 @@ export function LingoEditor(props: {
   // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
   // instances... sigh
   const withoutCursor = useMemo(() => {
-    const res = getInterpForDoc(
-      INIT_INTERP,
+    const res = CACHE.getInterpForDoc(
       props.langSpec.name,
       { [props.langSpec.name]: props.langSpec },
       `test.${props.langSpec.name}`,
