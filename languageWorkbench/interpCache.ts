@@ -66,7 +66,7 @@ export class InterpCache {
 
   // TODO: separate function to inject the langSource
   // so we can memoize that separately
-  interpForLangSpecInner(
+  private interpForLangSpecInner(
     initInterp: AbstractInterpreter,
     langSpec: LanguageSpec
   ): ConstructInterpRes {
@@ -131,7 +131,7 @@ export class InterpCache {
     return res;
   }
 
-  addSourceInner(
+  private addSourceInner(
     initInterp: AbstractInterpreter,
     langID: string,
     languages: { [langID: string]: LanguageSpec },
