@@ -5,7 +5,7 @@
 
 # time
 
-maxTime{time: 30}.
+maxTime{time: 50}.
 
 time{time: T} :-
   maxTime{time: MaxT} &

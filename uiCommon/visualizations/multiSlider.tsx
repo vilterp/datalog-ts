@@ -3,7 +3,7 @@ import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Int, Rec, Term, int } from "../../core/types";
 import { ppt } from "../../core/pretty";
 import { BareTerm } from "../dl/replViews";
-import { substitute } from "../../core/unify";
+import { substitute, termCmp } from "../../core/unify";
 
 export const multiSlider: VizTypeSpec = {
   name: "MultiSlider",
@@ -16,7 +16,7 @@ const BORDER_STYLE = "1px solid lightgrey";
 
 // TODO: make these parameterizable in the viz
 const RANGE_MIN = 0;
-const RANGE_MAX = 100;
+const RANGE_MAX = 50;
 
 function MultiSlider(props: VizArgs) {
   const template = props.spec.attrs.vars as Rec;
@@ -46,29 +46,31 @@ function MultiSlider(props: VizArgs) {
         </tr>
       </thead>
       <tbody>
-        {varRecs.map((res) => (
-          <tr key={ppt(res.bindings.ID)}>
-            <td style={{ borderRight: BORDER_STYLE }}>
-              <BareTerm term={res.bindings.ID} />
-            </td>
-            <td>
-              <input
-                type="range"
-                min={RANGE_MIN}
-                max={RANGE_MAX}
-                value={(res.bindings.Val as Int).val}
-                onChange={(evt) =>
-                  setVal(
-                    res.bindings.ID,
-                    res.bindings.Val,
-                    int(parseInt(evt.target.value))
-                  )
-                }
-              />
-              <BareTerm term={res.bindings.Val} />
-            </td>
-          </tr>
-        ))}
+        {varRecs
+          .sort((a, b) => termCmp(a.bindings.ID, b.bindings.ID))
+          .map((res) => (
+            <tr key={ppt(res.bindings.ID)}>
+              <td style={{ borderRight: BORDER_STYLE }}>
+                <BareTerm term={res.bindings.ID} />
+              </td>
+              <td>
+                <input
+                  type="range"
+                  min={RANGE_MIN}
+                  max={RANGE_MAX}
+                  value={(res.bindings.Val as Int).val}
+                  onChange={(evt) =>
+                    setVal(
+                      res.bindings.ID,
+                      res.bindings.Val,
+                      int(parseInt(evt.target.value))
+                    )
+                  }
+                />
+                <BareTerm term={res.bindings.Val} />
+              </td>
+            </tr>
+          ))}
       </tbody>
     </table>
   );

@@ -37,6 +37,15 @@ internal.visualization{
 viz.threadVar{time: T, tv: [TH, V], value: Val} :-
   state.Var{thread: TH, time: T, var: V, value: Val}.
 
+# Slider for solverParams
+
+internal.visualization{
+  name: "Params",
+  spec: multiSlider{
+    vars: input.solverParam{instrIdx: ID, value: Val}
+  }
+}.
+
 # sequence diagram
 
 internal.visualization{
@@ -107,13 +116,4 @@ internal.visualization{
       edges: state.waitingFor{time: T, waiting: From, waitingOn: To},
     }
   },
-}.
-
-# Slider for solverParams
-
-internal.visualization{
-  name: "Params",
-  spec: multiSlider{
-    vars: input.solverParam{instrIdx: ID, value: Val}
-  }
 }.
