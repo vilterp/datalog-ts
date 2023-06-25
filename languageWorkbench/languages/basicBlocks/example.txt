@@ -1,16 +1,14 @@
 main {
-  lock1 = prim.newLock();
-  lock2 = prim.newLock();
-  block.acquireLock(lock1);
+  lock = prim.newLock();
+  block.acquireLock(lock);
   forkTo afterFork;
-  t = <<5>>;
+  t = <<20>>;
   block.sleep(t);
-  block.acquireLock(lock2);
+  releaseLock(lock);
+  goto end;
 }
 afterFork {
-  t2 = <<1>>;
-  block.sleep(t2);
-  block.acquireLock(lock2);
-  block.acquireLock(lock1);
+  block.acquireLock(lock);
+  x5 = 10;
 }
 end {}
