@@ -108,3 +108,12 @@ internal.visualization{
     }
   },
 }.
+
+# Slider for solverParams
+
+internal.visualization{
+  name: "Params",
+  spec: multiSlider{
+    vars: solverParam{instrIdx: ID, value: Val}
+  }
+}.
