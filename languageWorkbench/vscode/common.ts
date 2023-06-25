@@ -3,9 +3,9 @@ import { SimpleInterpreter } from "../../core/simple/interpreter";
 import { rec } from "../../core/types";
 import { LOADER } from "../common";
 import { LanguageSpec } from "../common/types";
-import { InterpCache } from "../interpCache";
+import { SimpleInterpCache } from "../interpCache";
 
-export const CACHE = new InterpCache(() => new SimpleInterpreter(".", LOADER));
+export const CACHE = new SimpleInterpCache(new SimpleInterpreter(".", LOADER));
 
 // needs to match https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-classification
 // and highlight.dl

@@ -1,4 +1,5 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { SimpleInterpreter } from "../core/simple/interpreter";
 import { LanguageSpec } from "./common/types";
 import { parseMain } from "./languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
@@ -9,24 +10,23 @@ import { Grammar } from "./parserlib/types";
 import { ensureRequiredRelations } from "./requiredRelations";
 
 type ConstructInterpRes = {
-  interp: AbstractInterpreter;
+  interp: SimpleInterpreter;
   grammar: Grammar;
   errors: string[];
 };
 
-// TODO: generalize to Salsa-like runtime?
-export class InterpCache {
-  getInitInterp: () => AbstractInterpreter;
+export class SimpleInterpCache {
+  initInterp: SimpleInterpreter;
   interpCache: {
-    [languageID: string]: { interp: AbstractInterpreter; grammar: Grammar };
+    [languageID: string]: { interp: SimpleInterpreter; grammar: Grammar };
   };
   docSource: { [uri: string]: string };
   interpSourceCache: {
-    [docURI: string]: { interp: AbstractInterpreter };
+    [docURI: string]: { interp: SimpleInterpreter };
   };
 
-  constructor(getInitInterp: () => AbstractInterpreter) {
-    this.getInitInterp = getInitInterp;
+  constructor(initInterp: SimpleInterpreter) {
+    this.initInterp = initInterp;
     this.interpCache = {};
     this.docSource = {};
     this.interpSourceCache = {};
@@ -37,15 +37,14 @@ export class InterpCache {
     languages: { [langID: string]: LanguageSpec },
     uri: string,
     source: string
-  ): { interp: AbstractInterpreter } {
+  ): { interp: SimpleInterpreter } {
     this.updateDocSource(uri, langID, source);
     const key = `${langID}-${uri}`;
     let res = this.interpSourceCache[key];
-    const initInterp = this.getInitInterp();
     // TODO: this is a big memory leak
     if (!res) {
       res = this.addSourceInner(
-        initInterp,
+        this.initInterp,
         langID,
         languages,
         this.docSource[uri]
@@ -78,10 +77,10 @@ export class InterpCache {
   }
 
   private interpForLangSpec(
-    initInterp: AbstractInterpreter,
+    initInterp: SimpleInterpreter,
     languages: { [langID: string]: LanguageSpec }, // TODO: check this as well
     langID: string
-  ): { interp: AbstractInterpreter; grammar: Grammar } {
+  ): { interp: SimpleInterpreter; grammar: Grammar } {
     let res = this.interpCache[langID];
     if (!res) {
       res = this.interpForLangSpecInner(initInterp, languages[langID]);
@@ -95,12 +94,12 @@ export class InterpCache {
   // TODO: separate function to inject the langSource
   // so we can memoize that separately
   private interpForLangSpecInner(
-    initInterp: AbstractInterpreter,
+    initInterp: SimpleInterpreter,
     langSpec: LanguageSpec
   ): ConstructInterpRes {
     // console.log("interpForLangSpecInner", langSpec.name);
 
-    let interp = initInterp;
+    let interp: AbstractInterpreter = initInterp;
     interp = interp.doLoad("main.dl");
 
     let dlErrors: string[] = [];
@@ -128,14 +127,14 @@ export class InterpCache {
     }
 
     return {
-      interp,
+      interp: interp as SimpleInterpreter,
       grammar,
       errors: [...allGrammarErrors, ...dlErrors],
     };
   }
 
   private addSourceInner(
-    initInterp: AbstractInterpreter,
+    initInterp: SimpleInterpreter,
     langID: string,
     languages: { [langID: string]: LanguageSpec },
     source: string
@@ -174,8 +173,10 @@ export class InterpCache {
   }
 }
 export function addCursor(
-  interp: AbstractInterpreter,
+  interp: SimpleInterpreter,
   cursorPos: number
-): AbstractInterpreter {
-  return interp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
+): SimpleInterpreter {
+  return interp.evalStr(
+    `ide.Cursor{idx: ${cursorPos}}.`
+  )[1] as SimpleInterpreter;
 }

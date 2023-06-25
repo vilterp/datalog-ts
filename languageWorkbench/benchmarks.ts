@@ -10,7 +10,7 @@ import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./common/ide";
 import { datalogLangImpl } from "./languages/dl/dl";
-import { InterpCache, addCursor } from "./interpCache";
+import { SimpleInterpCache, addCursor } from "./interpCache";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
 import { assertDeepEqual } from "../util/testBench/testing";
@@ -21,10 +21,10 @@ import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
 const BASE_PATH = "languageWorkbench/common";
 
-const SIMPLE_CACHE = new InterpCache(
+const SIMPLE_CACHE = new SimpleInterpCache(
   () => new SimpleInterpreter(BASE_PATH, fsLoader)
 );
-const INCR_CACHE = new InterpCache(
+const INCR_CACHE = new SimpleInterpCache(
   () => new IncrementalInterpreter(BASE_PATH, fsLoader)
 );
 
@@ -32,7 +32,7 @@ export const lwbBenchmarksSimple: BenchmarkSpec[] = lwbBenchmarks(SIMPLE_CACHE);
 
 export const lwbBenchmarksIncr: BenchmarkSpec[] = lwbBenchmarks(INCR_CACHE);
 
-function lwbBenchmarks(cache: InterpCache) {
+function lwbBenchmarks(cache: SimpleInterpCache) {
   return ["fp", "dl"].map((lang) => ({
     name: lang,
     async run() {

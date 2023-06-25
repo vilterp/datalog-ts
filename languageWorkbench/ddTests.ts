@@ -1,6 +1,6 @@
 import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { InterpCache, addCursor } from "./interpCache";
+import { SimpleInterpCache, addCursor } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
 import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
@@ -11,10 +11,10 @@ import { IncrementalInterpreter } from "../core/incremental/interpreter";
 
 const BASE_PATH = "languageWorkbench/common";
 
-const SIMPLE_CACHE = new InterpCache(
+const SIMPLE_CACHE = new SimpleInterpCache(
   () => new SimpleInterpreter(BASE_PATH, fsLoader)
 );
-const INCR_CACHE = new InterpCache(
+const INCR_CACHE = new SimpleInterpCache(
   () => new IncrementalInterpreter(BASE_PATH, fsLoader)
 );
 
@@ -49,7 +49,7 @@ export function lwbTests(writeResults: boolean): Suite {
 
 export function testLangQuery(
   test: string[],
-  cache: InterpCache
+  getInterp: InterpCache
 ): TestOutput[] {
   const output = test.map((input) => {
     const lines = input.split("\n");
