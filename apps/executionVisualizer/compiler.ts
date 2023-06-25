@@ -13,15 +13,26 @@ type BlockIndex = {
 };
 
 export function compileBasicBlocks(tree: BBMain): Rec[] {
-  const results: Rec[] = [];
+  const instrRecs: Rec[] = [];
+  const solverParamRecs: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
   blockIndex.blockOrder.forEach((blockName) => {
     const block = blockIndex.blocks[blockName];
     block.instructions.forEach((instr) => {
-      pushInstr(results, instrToRec(instr, blockIndex));
+      const instrRec = instrToRec(instr, blockIndex);
+      const idx = pushInstr(instrRecs, instrRec);
+      // TODO: move this down into the instrToRValue somehow?
+      if (instr.type === "ValueInstr" && instr.rvalue.type === "EditorVar") {
+        solverParamRecs.push(
+          rec("solverParam", {
+            instrIdx: int(idx),
+            value: int(parseInt(instr.rvalue.int.text)),
+          })
+        );
+      }
     });
   });
-  return results;
+  return [...instrRecs, ...solverParamRecs];
 }
 
 function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
@@ -93,10 +104,12 @@ function getBlockIndex(tree: BBMain): BlockIndex {
 }
 
 function pushInstr(instrs: Rec[], op: Rec) {
+  const idx = instrs.length;
   instrs.push(
     rec("instr.raw", {
-      idx: int(instrs.length),
+      idx: int(idx),
       op,
     })
   );
+  return idx;
 }
