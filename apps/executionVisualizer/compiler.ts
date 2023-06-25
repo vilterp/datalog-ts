@@ -74,6 +74,8 @@ function rvalueToTerm(expr: BBRvalue): Term {
       return str(JSON.parse(expr.text));
     case "Int":
       return int(parseInt(expr.text));
+    case "EditorVar":
+      return rec("solverParam", {});
   }
 }
 
@@ -92,7 +94,7 @@ function getBlockIndex(tree: BBMain): BlockIndex {
 
 function pushInstr(instrs: Rec[], op: Rec) {
   instrs.push(
-    rec("instr", {
+    rec("instr.raw", {
       idx: int(instrs.length),
       op,
     })

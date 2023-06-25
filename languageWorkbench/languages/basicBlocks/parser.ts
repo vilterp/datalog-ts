@@ -50,7 +50,13 @@ export type BBCommentChar = {
   text: string;
   span: Span;
 };
-export type BBConst = BBString | BBInt;
+export type BBConst = BBString | BBInt | BBEditorVar;
+export type BBEditorVar = {
+  type: "EditorVar";
+  text: string;
+  span: Span;
+  int: BBInt;
+};
 export type BBForkToInstr = {
   type: "ForkToInstr";
   text: string;
@@ -201,6 +207,11 @@ export function parseConst(input: string): BBConst {
   const traceTree = parserlib.parse(GRAMMAR, "const", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractConst(input, ruleTree);
+}
+export function parseEditorVar(input: string): BBEditorVar {
+  const traceTree = parserlib.parse(GRAMMAR, "editorVar", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractEditorVar(input, ruleTree);
 }
 export function parseForkToInstr(input: string): BBForkToInstr {
   const traceTree = parserlib.parse(GRAMMAR, "forkToInstr", input);
@@ -373,7 +384,18 @@ function extractConst(input: string, node: RuleTree): BBConst {
     case "int": {
       return extractInt(input, child);
     }
+    case "editorVar": {
+      return extractEditorVar(input, child);
+    }
   }
+}
+function extractEditorVar(input: string, node: RuleTree): BBEditorVar {
+  return {
+    type: "EditorVar",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    int: extractInt(input, childByName(node, "int", null)),
+  };
 }
 function extractForkToInstr(input: string, node: RuleTree): BBForkToInstr {
   return {
@@ -884,6 +906,29 @@ const GRAMMAR: Grammar = {
         type: "Ref",
         captureName: null,
         rule: "int",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "editorVar",
+      },
+    ],
+  },
+  editorVar: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Text",
+        value: "<<",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "int",
+      },
+      {
+        type: "Text",
+        value: ">>",
       },
     ],
   },

@@ -10,12 +10,12 @@ loop {
 }
 ----
 application/datalog
-instr{idx: 0, op: store{val: 0, var: "x"}}.
-instr{idx: 1, op: goto{dest: 2}}.
-instr{idx: 2, op: store{val: 5, var: "threshold"}}.
-instr{idx: 3, op: store{val: primitive{args: ["x"], fun: "prim.incr"}, var: "x"}}.
-instr{idx: 4, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
-instr{idx: 5, op: gotoIf{cond: "going", dest: 2}}.
+instr.raw{idx: 0, op: store{val: 0, var: "x"}}.
+instr.raw{idx: 1, op: goto{dest: 2}}.
+instr.raw{idx: 2, op: store{val: 5, var: "threshold"}}.
+instr.raw{idx: 3, op: store{val: primitive{args: ["x"], fun: "prim.incr"}, var: "x"}}.
+instr.raw{idx: 4, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
+instr.raw{idx: 5, op: gotoIf{cond: "going", dest: 2}}.
 
 countUp {
   x = 0;
@@ -33,14 +33,14 @@ afterFork {
 }
 ----
 application/datalog
-instr{idx: 0, op: store{val: 0, var: "x"}}.
-instr{idx: 1, op: goto{dest: 2}}.
-instr{idx: 2, op: forkTo{dest: 7}}.
-instr{idx: 3, op: store{val: primitive{args: ["x"], fun: "prim.incr"}, var: "x"}}.
-instr{idx: 4, op: store{val: 5, var: "threshold"}}.
-instr{idx: 5, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
-instr{idx: 6, op: gotoIf{cond: "going", dest: 2}}.
-instr{idx: 7, op: store{val: 42, var: "done"}}.
+instr.raw{idx: 0, op: store{val: 0, var: "x"}}.
+instr.raw{idx: 1, op: goto{dest: 2}}.
+instr.raw{idx: 2, op: forkTo{dest: 7}}.
+instr.raw{idx: 3, op: store{val: primitive{args: ["x"], fun: "prim.incr"}, var: "x"}}.
+instr.raw{idx: 4, op: store{val: 5, var: "threshold"}}.
+instr.raw{idx: 5, op: store{val: primitive{args: ["x","threshold"], fun: "prim.lt"}, var: "going"}}.
+instr.raw{idx: 6, op: gotoIf{cond: "going", dest: 2}}.
+instr.raw{idx: 7, op: store{val: 42, var: "done"}}.
 
 main {
   x = 5;
@@ -49,9 +49,9 @@ main {
 }
 ----
 application/datalog
-instr{idx: 0, op: store{val: 5, var: "x"}}.
-instr{idx: 1, op: store{val: blockingCall{args: ["x"], fun: "block.sleep"}, var: "_"}}.
-instr{idx: 2, op: store{val: 10, var: "z"}}.
+instr.raw{idx: 0, op: store{val: 5, var: "x"}}.
+instr.raw{idx: 1, op: store{val: blockingCall{args: ["x"], fun: "block.sleep"}, var: "_"}}.
+instr.raw{idx: 2, op: store{val: 10, var: "z"}}.
 
 main {
   lock1 = prim.newLock(); // TODO: generic "new" instr?
@@ -70,14 +70,40 @@ afterFork {
 }
 ----
 application/datalog
-instr{idx: 0, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock1"}}.
-instr{idx: 1, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock2"}}.
-instr{idx: 10, op: store{val: call{args: ["lock1"], fun: "releaseLock"}, var: "_"}}.
-instr{idx: 2, op: forkTo{dest: 7}}.
-instr{idx: 3, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
-instr{idx: 4, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
-instr{idx: 5, op: store{val: call{args: ["lock1"], fun: "releaseLock"}, var: "_"}}.
-instr{idx: 6, op: store{val: call{args: ["lock2"], fun: "releaseLock"}, var: "_"}}.
-instr{idx: 7, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
-instr{idx: 8, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
-instr{idx: 9, op: store{val: call{args: ["lock2"], fun: "releaseLock"}, var: "_"}}.
+instr.raw{idx: 0, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock1"}}.
+instr.raw{idx: 1, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock2"}}.
+instr.raw{idx: 10, op: store{val: call{args: ["lock1"], fun: "releaseLock"}, var: "_"}}.
+instr.raw{idx: 2, op: forkTo{dest: 7}}.
+instr.raw{idx: 3, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 4, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 5, op: store{val: call{args: ["lock1"], fun: "releaseLock"}, var: "_"}}.
+instr.raw{idx: 6, op: store{val: call{args: ["lock2"], fun: "releaseLock"}, var: "_"}}.
+instr.raw{idx: 7, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 8, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 9, op: store{val: call{args: ["lock2"], fun: "releaseLock"}, var: "_"}}.
+
+main {
+  lock1 = prim.newLock();
+  lock2 = prim.newLock();
+  block.acquireLock(lock1);
+  forkTo afterFork;
+  t = <<5>>;
+  block.sleep(t);
+  block.acquireLock(lock2);
+}
+afterFork {
+  block.acquireLock(lock2);
+  block.acquireLock(lock1);
+}
+end {}
+----
+application/datalog
+instr.raw{idx: 0, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock1"}}.
+instr.raw{idx: 1, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock2"}}.
+instr.raw{idx: 2, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 3, op: forkTo{dest: 7}}.
+instr.raw{idx: 4, op: store{val: solverParam{}, var: "t"}}.
+instr.raw{idx: 5, op: store{val: blockingCall{args: ["t"], fun: "block.sleep"}, var: "_"}}.
+instr.raw{idx: 6, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 7, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
+instr.raw{idx: 8, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
