@@ -2,7 +2,7 @@ main {
   lock = prim.newLock();
   block.acquireLock(lock);
   forkTo afterFork;
-  t = <<20>>;
+  t = <<5>>;
   block.sleep(t);
   releaseLock(lock);
   goto end;

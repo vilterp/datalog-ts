@@ -7,36 +7,6 @@
 #   spec: ticker{},
 # }.
 
-internal.visualization{
-  name: "Program Counter over Time",
-  spec: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "counter", type: "quantitative"},
-      color: mapping{field: "thread"}
-    },
-    query: state.ProgramCounter{}
-  }
-}.
-
-# TODO: another encoding channel for thread
-internal.visualization{
-  name: "Variables Over Time",
-  spec: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "value", type: "quantitative"},
-      color: mapping{field: "tv"}
-    },
-    query: viz.threadVar{}
-  }
-}.
-
-viz.threadVar{time: T, tv: [TH, V], value: Val} :-
-  state.Var{thread: TH, time: T, var: V, value: Val}.
-
 # Slider for solverParams
 
 internal.visualization{
@@ -117,3 +87,33 @@ internal.visualization{
     }
   },
 }.
+
+internal.visualization{
+  name: "Program Counter over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "counter", type: "quantitative"},
+      color: mapping{field: "thread"}
+    },
+    query: state.ProgramCounter{}
+  }
+}.
+
+# TODO: another encoding channel for thread
+internal.visualization{
+  name: "Variables Over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "value", type: "quantitative"},
+      color: mapping{field: "tv"}
+    },
+    query: viz.threadVar{}
+  }
+}.
+
+viz.threadVar{time: T, tv: [TH, V], value: Val} :-
+  state.Var{thread: TH, time: T, var: V, value: Val}.
