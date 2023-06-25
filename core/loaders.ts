@@ -1,8 +1,6 @@
 // throws an exception if it's not there I guess
 // TODO: wish there was a stdlib Result<E, T> type, lol
 
-import { contains } from "../util/util";
-
 // keeping synchronous for now
 export type Loader = (path: string) => string;
 
