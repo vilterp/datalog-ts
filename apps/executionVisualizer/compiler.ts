@@ -24,7 +24,7 @@ export function compileBasicBlocks(tree: BBMain): Rec[] {
       // TODO: move this down into the instrToRValue somehow?
       if (instr.type === "ValueInstr" && instr.rvalue.type === "EditorVar") {
         solverParamRecs.push(
-          rec("solverParam", {
+          rec("input.solverParam", {
             instrIdx: int(idx),
             value: int(parseInt(instr.rvalue.int.text)),
           })
@@ -106,7 +106,7 @@ function getBlockIndex(tree: BBMain): BlockIndex {
 function pushInstr(instrs: Rec[], op: Rec) {
   const idx = instrs.length;
   instrs.push(
-    rec("instr.raw", {
+    rec("input.instr", {
       idx: int(idx),
       op,
     })
