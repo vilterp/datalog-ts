@@ -10,7 +10,8 @@ call :- [ident, (params | "")].
 gotoInstr :- [gotoKW, ws, (label | Placeholder), ([ws, ifClause] | "")].
 ifClause :- [ifKW, ws, ident].
 params :- ["(", repSep((ident | Placeholder), [",", ws]), ")"].
-const :- (string | int).
+const :- (string | int | editorVar).
+editorVar :- ["<<", int, ">>"].
 
 gotoKW :- "goto".
 forkToKW :- "forkTo".

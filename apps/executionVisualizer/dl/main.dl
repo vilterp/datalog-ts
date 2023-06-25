@@ -1,15 +1,17 @@
-.table instr
+.table input.instr
+.table input.solverParam
 .table maxTime
 .table state.programCounter.init
 
 # time
 
-maxTime{time: 30}.
+maxTime{time: 50}.
 
 time{time: T} :-
   maxTime{time: MaxT} &
   range{from: 0, to: MaxT, val: T}.
 
+.load instr.dl
 .load programCounter.dl
 .load var.dl
 .load timer.dl

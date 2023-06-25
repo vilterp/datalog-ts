@@ -3,6 +3,8 @@ import { makeMemoryLoader } from "../../../core/loaders";
 // @ts-ignore
 import mainDL from "./main.dl";
 // @ts-ignore
+import instrDL from "./instr.dl";
+// @ts-ignore
 import programCounterDL from "./programCounter.dl";
 // @ts-ignore
 import varDL from "./var.dl";
@@ -19,6 +21,7 @@ import vizDL from "./viz.dl";
 
 export const LOADER = makeMemoryLoader({
   "main.dl": mainDL,
+  "instr.dl": instrDL,
   "programCounter.dl": programCounterDL,
   "var.dl": varDL,
   "timer.dl": timerDL,

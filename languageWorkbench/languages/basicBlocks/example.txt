@@ -1,17 +1,14 @@
-countUp {
-  x = 0;
-  goto loop;
-}
-loop {
-  forkTo afterFork; // fork off a new thread
-  // call a primitive
-  x = prim.incr(x);
-  threshold = 5;
-  going = prim.lt(x, threshold);
-  goto loop if going;
+main {
+  lock = prim.newLock();
+  block.acquireLock(lock);
+  forkTo afterFork;
+  t = <<25>>;
+  block.sleep(t);
+  releaseLock(lock);
+  goto end;
 }
 afterFork {
-  x = 5;
-  block.sleep(x);
-  z = 10;
+  block.acquireLock(lock);
+  x5 = 10;
 }
+end {}
