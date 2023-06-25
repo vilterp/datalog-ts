@@ -65,6 +65,7 @@ function MultiSlider(props: VizArgs) {
                   )
                 }
               />
+              <BareTerm term={res.bindings.Val} />
             </td>
           </tr>
         ))}
