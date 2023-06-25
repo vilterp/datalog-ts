@@ -114,6 +114,6 @@ internal.visualization{
 internal.visualization{
   name: "Params",
   spec: multiSlider{
-    vars: solverParam{instrIdx: ID, value: Val}
+    vars: input.solverParam{instrIdx: ID, value: Val}
   }
 }.
