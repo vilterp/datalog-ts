@@ -107,3 +107,4 @@ instr.raw{idx: 5, op: store{val: blockingCall{args: ["t"], fun: "block.sleep"}, 
 instr.raw{idx: 6, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
 instr.raw{idx: 7, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
 instr.raw{idx: 8, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
+solverParam{instrIdx: 4, value: 5}.
