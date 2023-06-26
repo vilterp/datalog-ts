@@ -1,6 +1,7 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
@@ -29,6 +30,16 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "slider",
+      test() {
+        runDDTestAtPath(
+          "apps/executionVisualizer/testdata/slider.dd.txt",
+          sliderTest,
+          writeResults
+        );
+      },
+    }
   ];
 }
 
@@ -56,4 +67,56 @@ function endToEndTest(inputs: string[]): TestOutput[] {
     const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
   });
+}
+
+function sliderTest(inputs: string[]): TestOutput[] {
+  const output: TestOutput[] = [];
+  let interp: AbstractInterpreter = new IncrementalInterpreter(
+    "apps/executionVisualizer/dl",
+    fsLoader
+  );
+  interp = interp.doLoad("main.dl");
+  let oldValue = 25;
+  inputs.forEach((input) => {
+    const lines = input.split("\n");
+    const firstLine = lines[0];
+    const allButFirst = lines.slice(1).join("\n");
+    switch (firstLine) {
+      case "source": {
+        const main = parseMain(allButFirst);
+        const records = compileBasicBlocks(main);
+        interp = interp.bulkInsert(records);
+        output.push(datalogOut([]));
+        break;
+      }
+      case "slide": {
+        const newValue = parseInt(allButFirst);
+        interp = interp.evalRawStmts([
+          {
+            type: "Delete",
+            record: rec("input.solverParam", {
+              // TODO: parameterize instr idx
+              instrIdx: int(3),
+              value: int(oldValue),
+            }),
+          },
+          {
+            type: "Fact",
+            record: rec("input.solverParam", {
+              instrIdx: int(3),
+              value: int(newValue),
+            }),
+          },
+        ])[1];
+        oldValue = newValue;
+        output.push(datalogOut([]));
+        break;
+      }
+      case "query": {
+        output.push(datalogOut(interp.queryStr(allButFirst).map((res) => res.term)));
+        break;
+      }
+    }
+  });
+  return output;
 }

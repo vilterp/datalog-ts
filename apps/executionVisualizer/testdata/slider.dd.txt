@@ -1,0 +1,84 @@
+source
+main {
+  lock = prim.newLock();
+  block.acquireLock(lock);
+  forkTo afterFork;
+  t = <<25>>;
+  block.sleep(t);
+  releaseLock(lock);
+  goto end;
+}
+afterFork {
+  block.acquireLock(lock);
+  x5 = 10;
+}
+end {}
+----
+application/datalog
+
+slide
+20
+---
+slide
+40
+----
+application/datalog
+
+query
+state.ProgramCounter{}
+----
+application/datalog
+state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
+state.ProgramCounter{counter: 1, state: running{}, thread: 1, time: 2}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 3}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 4}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 5}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 10}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 11}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 12}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 13}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 14}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 15}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 16}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 17}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 18}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 19}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 20}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 21}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 22}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 23}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 24}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 25}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 6}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 7}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 8}.
+state.ProgramCounter{counter: 5, state: blocked{reason: timer{start: 6, thread: 1}}, thread: 1, time: 9}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 26}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 27}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 10}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 11}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 12}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 13}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 14}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 15}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 16}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 17}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 18}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 19}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 20}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 21}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 22}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 23}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 24}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 25}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 26}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 27}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 5}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 6}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 7}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 8}.
+state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 9}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 105, time: 4}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 105, time: 27}.
+state.ProgramCounter{counter: 9, state: running{}, thread: 1, time: 28}.
+state.ProgramCounter{counter: 9, state: running{}, thread: 105, time: 28}.
