@@ -73,13 +73,13 @@ function TestViewer(props: { archive: Archive }) {
             setCollapseState={setCollapseState}
           />
         </div>
-        <div style={{ paddingLeft: 10 }}>
+        <div style={{ paddingLeft: 10, width: "100%" }}>
           {(testArchive[currentTest] || []).map((pair, idx) => (
-            <div key={idx}>
+            <div key={idx} style={{ width: "100%" }}>
               <Collapsible
                 storageKey={pair.input}
                 renderLabel={(collapsed) => (
-                  <div style={{ display: "flex" }}>
+                  <div style={{ display: "flex", width: "100%" }}>
                     <div style={{ fontFamily: "monospace" }}>
                       {collapsed ? ">" : "v"}
                     </div>
@@ -91,6 +91,7 @@ function TestViewer(props: { archive: Archive }) {
                         marginLeft: 10,
                         padding: 5,
                         backgroundColor: "rgb(230, 230, 230)",
+                        width: "100%",
                       }}
                     >
                       {pair.input}

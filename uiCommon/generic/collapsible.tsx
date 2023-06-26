@@ -33,7 +33,7 @@ export function Collapsible(props: {
   return (
     <>
       <div
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", width: "100%" }}
         onClick={() => setCollapsed(!collapsed)}
       >
         {props.renderLabel(collapsed)}
