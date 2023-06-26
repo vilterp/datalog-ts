@@ -175,7 +175,10 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     curMsg.origin,
     curMsg.payload
   );
-  // console.log("push", results);
+
+  // push message to log for debugging
+  node.lifetimeMessages.push(curMsg.payload);
+
   const out: MessagePayload[] = [];
   for (let outMessage of outMessages) {
     // messages with 0 multiplicity have no effect; we can ignore them

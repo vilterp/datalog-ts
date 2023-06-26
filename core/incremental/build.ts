@@ -281,6 +281,7 @@ function addNodeKnownID(
     isInternal,
     desc,
     cache: emptyIndexedMultiset(fastPPR),
+    lifetimeMessages: [],
   });
   return graph;
 }
@@ -298,6 +299,7 @@ function addNode(
     desc,
     cache: emptyIndexedMultiset(fastPPR),
     isInternal,
+    lifetimeMessages: [],
   });
   return [graph, nodeID];
 }

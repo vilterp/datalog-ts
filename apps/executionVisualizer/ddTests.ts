@@ -1,10 +1,11 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { int, rec } from "../../core/types";
+import { BindingsMsg, RecordMsg } from "../../core/incremental/types";
+import { Term, dict, int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
-import { datalogOut, TestOutput } from "../../util/ddTest/types";
+import { datalogOut, plainTextOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
 import { compileBasicBlocks } from "./compiler";
 
@@ -147,6 +148,33 @@ function processCommand(
         output: datalogOut([]),
       };
     }
+    case "lifetimeMessages": {
+      const node = (state.interp as IncrementalInterpreter).graph.nodes.get(
+        input
+      );
+      const messages = node.lifetimeMessages;
+      return {
+        state,
+        // TODO: get json to work
+        output: datalogOut(
+          messages.map((msg) =>
+            rec("message", {
+              multiplicity: int(msg.multiplicity),
+              message: payloadToDL(msg.data),
+            })
+          )
+        ),
+      };
+    }
+  }
+}
+
+function payloadToDL(payload: RecordMsg | BindingsMsg): Term {
+  switch (payload.type) {
+    case "Bindings":
+      return rec("bindings", { bindings: dict(payload.bindings.bindings) });
+    case "Record":
+      return rec("record", { record: payload.rec });
   }
 }
 

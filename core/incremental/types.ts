@@ -37,6 +37,7 @@ export type NodeAndCache = {
   isInternal: boolean;
   desc: NodeDesc;
   cache: IndexedMultiSet<Res>;
+  lifetimeMessages: MessagePayload[];
 };
 
 export type JoinInfo = {
