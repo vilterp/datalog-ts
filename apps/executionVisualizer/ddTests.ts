@@ -157,8 +157,9 @@ function processCommand(
         state,
         // TODO: get json to work
         output: datalogOut(
-          messages.map((msg) =>
+          messages.map((msg, idx) =>
             rec("message", {
+              idx: int(idx),
               multiplicity: int(msg.multiplicity),
               message: payloadToDL(msg.data),
             })
