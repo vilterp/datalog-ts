@@ -164,12 +164,13 @@ state.programCounter.lock.acquire.block{
   thread: TH,
   time: T,
   counter: C,
-  state: blocked{reason: lock{id: LockVal}},
+  state: blocked{reason: lock{id: LockID}},
+  lock: LockID
 } :-
   time{time: T} &
-  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockVal}}} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: blocked{reason: lock{id: LockID}}} &
   T = PrevT + 1 &
-  state.Lock{time: PrevT, id: LockVal, state: heldBy{}}.
+  state.Lock{time: PrevT, id: LockID, state: heldBy{}}.
 # one thread releases a lock, unblocking the thread waiting on it
 # TODO: what if multiple threads are waiting on it
 state.programCounter.lock.acquire.unblock{

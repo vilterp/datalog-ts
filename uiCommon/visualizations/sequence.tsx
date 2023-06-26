@@ -58,7 +58,7 @@ function SequenceDiagram(props: VizArgs) {
   }
 }
 
-const DEFAULT_TICK_COLOR = "red";
+const DEFAULT_TICK_COLOR = "lightblue";
 const DEFAULT_HOP_COLOR = "blue";
 
 const HOP_HIGHLIGHT_COLOR = "orange";
