@@ -89,6 +89,19 @@ state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread:
 state.ProgramCounter{counter: 7, state: running{}, thread: 105, time: 4}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 1, time: 48}.
 
+query
+state.programCounter.lock.acquire.block{}
+----
+application/datalog
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 10}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 11}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 12}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 13}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 6}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 7}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 8}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 9}.
+
 reset
 ----
 application/datalog
@@ -198,3 +211,31 @@ state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread:
 state.ProgramCounter{counter: 7, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 9}.
 state.ProgramCounter{counter: 7, state: running{}, thread: 105, time: 4}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 1, time: 48}.
+
+query
+state.programCounter.lock.acquire.block{}
+----
+application/datalog
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 10}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 11}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 12}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 13}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 14}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 15}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 16}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 17}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 18}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 19}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 20}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 21}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 22}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 23}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 24}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 25}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 26}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 27}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 28}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 6}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 7}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 8}.
+state.programCounter.lock.acquire.block{counter: 7, lock: created{thread: 1, time: 2}, state: blocked{reason: lock{id: created{thread: 1, time: 2}}}, thread: 105, time: 9}.
