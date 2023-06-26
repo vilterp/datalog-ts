@@ -71,54 +71,87 @@ function endToEndTest(inputs: string[]): TestOutput[] {
 
 function sliderTest(inputs: string[]): TestOutput[] {
   const output: TestOutput[] = [];
+  let state = getInitialState();
+  inputs.forEach((input) => {
+    const lines = input.split("\n");
+    const firstLine = lines[0];
+    const allButFirst = lines.slice(1).join("\n");
+    const { state: newState, output: newOutput } = processCommand(
+      state,
+      firstLine,
+      allButFirst
+    );
+    state = newState;
+    output.push(newOutput);
+  });
+  return output;
+}
+
+type State = { interp: AbstractInterpreter; value: number };
+
+function getInitialState(): State {
   let interp: AbstractInterpreter = new IncrementalInterpreter(
     "apps/executionVisualizer/dl",
     fsLoader
   );
   interp = interp.doLoad("main.dl");
-  let oldValue = 25;
-  inputs.forEach((input) => {
-    const lines = input.split("\n");
-    const firstLine = lines[0];
-    const allButFirst = lines.slice(1).join("\n");
-    switch (firstLine) {
-      case "source": {
-        const main = parseMain(allButFirst);
-        const records = compileBasicBlocks(main);
-        interp = interp.bulkInsert(records);
-        output.push(datalogOut([]));
-        break;
-      }
-      case "slide": {
-        const newValue = parseInt(allButFirst);
-        interp = interp.evalRawStmts([
-          {
-            type: "Delete",
-            record: rec("input.solverParam", {
-              // TODO: parameterize instr idx
-              instrIdx: int(3),
-              value: int(oldValue),
-            }),
-          },
-          {
-            type: "Fact",
-            record: rec("input.solverParam", {
-              instrIdx: int(3),
-              value: int(newValue),
-            }),
-          },
-        ])[1];
-        oldValue = newValue;
-        output.push(datalogOut([]));
-        break;
-      }
-      case "query": {
-        output.push(
-          datalogOut(interp.queryStr(allButFirst).map((res) => res.term))
-        );
-        break;
-      }
+  return {
+    interp,
+    value: 25,
+  };
+}
+
+function processCommand(
+  state: State,
+  command: string,
+  input: string
+): { state: State; output: TestOutput } {
+  switch (command) {
+    case "source": {
+      const main = parseMain(input);
+      const records = compileBasicBlocks(main);
+      const interp = state.interp.bulkInsert(records);
+      return {
+        state: {
+          ...state,
+          interp,
+        },
+        output: datalogOut([]),
+      };
     }
-  });
-  return output;
+    case "slide": {
+      const newValue = parseInt(input);
+      const interp = state.interp.evalRawStmts([
+        {
+          type: "Delete",
+          record: rec("input.solverParam", {
+            // TODO: parameterize instr idx
+            instrIdx: int(3),
+            value: int(state.value),
+          }),
+        },
+        {
+          type: "Fact",
+          record: rec("input.solverParam", {
+            instrIdx: int(3),
+            value: int(newValue),
+          }),
+        },
+      ])[1];
+      return {
+        state: {
+          ...state,
+          value: newValue,
+          interp,
+        },
+        output: datalogOut([]),
+      };
+    }
+    case "query": {
+      return {
+        state,
+        output: datalogOut(state.interp.queryStr(input).map((res) => res.term)),
+      };
+    }
+  }
 }
