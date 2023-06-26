@@ -58,7 +58,7 @@ function SequenceDiagram(props: VizArgs) {
   }
 }
 
-const DEFAULT_TICK_COLOR = "red";
+const DEFAULT_TICK_COLOR = "lightblue";
 const DEFAULT_HOP_COLOR = "blue";
 
 const HOP_HIGHLIGHT_COLOR = "orange";
@@ -142,7 +142,7 @@ interface Tick {
 }
 
 function yForTime(t: Time): number {
-  return t * 10;
+  return t * 15;
 }
 
 export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
