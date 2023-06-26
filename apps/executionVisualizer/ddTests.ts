@@ -39,7 +39,7 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
           writeResults
         );
       },
-    }
+    },
   ];
 }
 
@@ -113,7 +113,9 @@ function sliderTest(inputs: string[]): TestOutput[] {
         break;
       }
       case "query": {
-        output.push(datalogOut(interp.queryStr(allButFirst).map((res) => res.term)));
+        output.push(
+          datalogOut(interp.queryStr(allButFirst).map((res) => res.term))
+        );
         break;
       }
     }
