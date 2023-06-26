@@ -89,18 +89,6 @@ function sliderTest(inputs: string[]): TestOutput[] {
 
 type State = { interp: AbstractInterpreter; value: number };
 
-function getInitialState(): State {
-  let interp: AbstractInterpreter = new IncrementalInterpreter(
-    "apps/executionVisualizer/dl",
-    fsLoader
-  );
-  interp = interp.doLoad("main.dl");
-  return {
-    interp,
-    value: 25,
-  };
-}
-
 function processCommand(
   state: State,
   command: string,
@@ -153,5 +141,23 @@ function processCommand(
         output: datalogOut(state.interp.queryStr(input).map((res) => res.term)),
       };
     }
+    case "reset": {
+      return {
+        state: getInitialState(),
+        output: datalogOut([]),
+      };
+    }
   }
+}
+
+function getInitialState(): State {
+  let interp: AbstractInterpreter = new IncrementalInterpreter(
+    "apps/executionVisualizer/dl",
+    fsLoader
+  );
+  interp = interp.doLoad("main.dl");
+  return {
+    interp,
+    value: 25,
+  };
 }
