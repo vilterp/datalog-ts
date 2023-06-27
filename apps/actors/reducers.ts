@@ -25,7 +25,7 @@ export function initialState<St, Msg>(
       const interp = new IncrementalInterpreter(
         ".",
         makeMemoryLoader({
-          "./patterns.dl": patternsDL,
+          "patterns.dl": patternsDL,
         })
       );
       return {
