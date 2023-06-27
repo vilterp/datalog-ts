@@ -133,3 +133,46 @@ application/json
   "parse.ruleMatch",
   "parse.ruleMatch"
 ]
+
+graph
+viz.continueMessage{
+  fromTick: tick{time: PrevT, place: TH},
+  toTick: tick{time: T, place: TH},
+  kind: continue{},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT} &
+  state.ProgramCounter{thread: TH, time: T} &
+  PrevT = T + 1.
+----
+application/graphviz
+digraph G {
+  "0" [label="state.ProgramCounter" shape="box"];
+  "1" [label="state.ProgramCounter" shape="box"];
+  "2" [label="base.add" shape="box"];
+  "3" [label="TH"];
+  "4" [label="PrevT"];
+  "5" [label="T"];
+  "0" -> "3" [label="thread"];
+  "0" -> "4" [label="thread"];
+  "1" -> "3" [label="time"];
+  "1" -> "5" [label="time"];
+  "2" -> "5" [label="thread"];
+  "2" -> "4" [label="thread"];
+}
+
+order
+viz.continueMessage{
+  fromTick: tick{time: PrevT, place: TH},
+  toTick: tick{time: T, place: TH},
+  kind: continue{},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT} &
+  state.ProgramCounter{thread: TH, time: T} &
+  PrevT = T + 1.
+----
+application/json
+[
+  "base.add",
+  "state.ProgramCounter",
+  "state.ProgramCounter"
+]
