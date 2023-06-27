@@ -691,6 +691,36 @@ viz.continueMessage{fromTick: tick{place: 105, time: 7}, kind: continue{}, toTic
 viz.continueMessage{fromTick: tick{place: 105, time: 8}, kind: continue{}, toTick: tick{place: 105, time: 9}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 9}, kind: continue{}, toTick: tick{place: 105, time: 10}}.
 
+query
+viz.tickColor{}
+----
+application/datalog
+viz.tickColor{color: "grey", tick: tick{place: 1, time: 10}}.
+viz.tickColor{color: "grey", tick: tick{place: 1, time: 6}}.
+viz.tickColor{color: "grey", tick: tick{place: 1, time: 7}}.
+viz.tickColor{color: "grey", tick: tick{place: 1, time: 8}}.
+viz.tickColor{color: "grey", tick: tick{place: 1, time: 9}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 10}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 11}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 12}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 13}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 5}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 6}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 7}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 8}}.
+viz.tickColor{color: "grey", tick: tick{place: 105, time: 9}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 11}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 12}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 13}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 1}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 2}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 3}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 4}}.
+viz.tickColor{color: "red", tick: tick{place: 1, time: 5}}.
+viz.tickColor{color: "red", tick: tick{place: 105, time: 12}}.
+viz.tickColor{color: "red", tick: tick{place: 105, time: 13}}.
+viz.tickColor{color: "red", tick: tick{place: 105, time: 4}}.
+
 lifetimeMessages
 state.ProgramCounter
 ----
