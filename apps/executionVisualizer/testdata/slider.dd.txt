@@ -127,6 +127,15 @@ state.ProgramCounter{counter: 9, state: running{}, thread: 1, time: 48}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 105, time: 48}.
 
 query
+debug.doubleProgramCounter{}
+----
+application/datalog
+debug.doubleProgramCounter{counter1: 7, counter2: 8, thread: 105, time: 47}.
+debug.doubleProgramCounter{counter1: 7, counter2: 9, thread: 105, time: 48}.
+debug.doubleProgramCounter{counter1: 8, counter2: 7, thread: 105, time: 47}.
+debug.doubleProgramCounter{counter1: 9, counter2: 7, thread: 105, time: 48}.
+
+query
 state.programCounter.lock.acquire.block{}
 ----
 application/datalog
@@ -402,6 +411,15 @@ state.ProgramCounter{counter: 9, state: running{}, thread: 1, time: 48}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 105, time: 48}.
 
 query
+debug.doubleProgramCounter{}
+----
+application/datalog
+debug.doubleProgramCounter{counter1: 7, counter2: 8, thread: 105, time: 47}.
+debug.doubleProgramCounter{counter1: 7, counter2: 9, thread: 105, time: 48}.
+debug.doubleProgramCounter{counter1: 8, counter2: 7, thread: 105, time: 47}.
+debug.doubleProgramCounter{counter1: 9, counter2: 7, thread: 105, time: 48}.
+
+query
 state.programCounter.lock.acquire.block{}
 ----
 application/datalog
@@ -600,6 +618,15 @@ state.ProgramCounter{counter: 7, state: running{}, thread: 105, time: 4}.
 state.ProgramCounter{counter: 8, state: running{}, thread: 105, time: 12}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 1, time: 13}.
 state.ProgramCounter{counter: 9, state: running{}, thread: 105, time: 13}.
+
+query
+debug.doubleProgramCounter{}
+----
+application/datalog
+debug.doubleProgramCounter{counter1: 7, counter2: 8, thread: 105, time: 12}.
+debug.doubleProgramCounter{counter1: 7, counter2: 9, thread: 105, time: 13}.
+debug.doubleProgramCounter{counter1: 8, counter2: 7, thread: 105, time: 12}.
+debug.doubleProgramCounter{counter1: 9, counter2: 7, thread: 105, time: 13}.
 
 query
 viz.continueMessage{}
