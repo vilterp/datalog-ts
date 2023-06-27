@@ -567,11 +567,6 @@ end {}
 application/datalog
 
 slide
-40
-----
-application/datalog
-
-slide
 5
 ----
 application/datalog
@@ -633,22 +628,7 @@ viz.continueMessage{fromTick: tick{place: 1, time: 29}, kind: continue{}, toTick
 viz.continueMessage{fromTick: tick{place: 1, time: 2}, kind: continue{}, toTick: tick{place: 1, time: 1}}.
 viz.continueMessage{fromTick: tick{place: 1, time: 30}, kind: continue{}, toTick: tick{place: 1, time: 29}}.
 viz.continueMessage{fromTick: tick{place: 1, time: 31}, kind: continue{}, toTick: tick{place: 1, time: 30}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 32}, kind: continue{}, toTick: tick{place: 1, time: 31}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 33}, kind: continue{}, toTick: tick{place: 1, time: 32}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 34}, kind: continue{}, toTick: tick{place: 1, time: 33}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 35}, kind: continue{}, toTick: tick{place: 1, time: 34}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 36}, kind: continue{}, toTick: tick{place: 1, time: 35}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 37}, kind: continue{}, toTick: tick{place: 1, time: 36}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 38}, kind: continue{}, toTick: tick{place: 1, time: 37}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 39}, kind: continue{}, toTick: tick{place: 1, time: 38}}.
 viz.continueMessage{fromTick: tick{place: 1, time: 3}, kind: continue{}, toTick: tick{place: 1, time: 2}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 40}, kind: continue{}, toTick: tick{place: 1, time: 39}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 41}, kind: continue{}, toTick: tick{place: 1, time: 40}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 42}, kind: continue{}, toTick: tick{place: 1, time: 41}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 43}, kind: continue{}, toTick: tick{place: 1, time: 42}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 44}, kind: continue{}, toTick: tick{place: 1, time: 43}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 45}, kind: continue{}, toTick: tick{place: 1, time: 44}}.
-viz.continueMessage{fromTick: tick{place: 1, time: 46}, kind: continue{}, toTick: tick{place: 1, time: 45}}.
 viz.continueMessage{fromTick: tick{place: 1, time: 4}, kind: continue{}, toTick: tick{place: 1, time: 3}}.
 viz.continueMessage{fromTick: tick{place: 1, time: 5}, kind: continue{}, toTick: tick{place: 1, time: 4}}.
 viz.continueMessage{fromTick: tick{place: 1, time: 6}, kind: continue{}, toTick: tick{place: 1, time: 5}}.
@@ -678,20 +658,6 @@ viz.continueMessage{fromTick: tick{place: 105, time: 29}, kind: continue{}, toTi
 viz.continueMessage{fromTick: tick{place: 105, time: 30}, kind: continue{}, toTick: tick{place: 105, time: 29}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 31}, kind: continue{}, toTick: tick{place: 105, time: 30}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 32}, kind: continue{}, toTick: tick{place: 105, time: 31}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 33}, kind: continue{}, toTick: tick{place: 105, time: 32}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 35}, kind: continue{}, toTick: tick{place: 105, time: 34}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 36}, kind: continue{}, toTick: tick{place: 105, time: 35}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 37}, kind: continue{}, toTick: tick{place: 105, time: 36}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 38}, kind: continue{}, toTick: tick{place: 105, time: 37}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 39}, kind: continue{}, toTick: tick{place: 105, time: 38}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 40}, kind: continue{}, toTick: tick{place: 105, time: 39}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 41}, kind: continue{}, toTick: tick{place: 105, time: 40}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 42}, kind: continue{}, toTick: tick{place: 105, time: 41}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 43}, kind: continue{}, toTick: tick{place: 105, time: 42}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 44}, kind: continue{}, toTick: tick{place: 105, time: 43}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 45}, kind: continue{}, toTick: tick{place: 105, time: 44}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 46}, kind: continue{}, toTick: tick{place: 105, time: 45}}.
-viz.continueMessage{fromTick: tick{place: 105, time: 47}, kind: continue{}, toTick: tick{place: 105, time: 46}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 5}, kind: continue{}, toTick: tick{place: 105, time: 4}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 6}, kind: continue{}, toTick: tick{place: 105, time: 5}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 7}, kind: continue{}, toTick: tick{place: 105, time: 6}}.
