@@ -47,7 +47,7 @@ viz.continueMessage{
 } :-
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
-  PrevT = T + 1.
+  T = PrevT + 1.
 viz.lockTransferMessage{
   fromTick: tick{time: T, place: ReleaseTH},
   toTick: tick{time: T, place: AcquireTH},
