@@ -286,3 +286,33 @@ digraph G {
   "13" -> "14" [];
   "14" -> "input" [];
 }
+
+.table state.ProgramCounter
+viz.continueMessage{
+  fromTick: tick{time: PrevT, place: TH},
+  toTick: tick{time: T, place: TH},
+  kind: continue{},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT} &
+  state.ProgramCounter{thread: TH, time: T} &
+  PrevT = T + 1.
+----
+application/graphviz
+digraph G {
+  "state.ProgramCounter" [fillcolor="darksalmon" fontname="Courier" label="state.ProgramCounter:  []" shape="box" style="filled"];
+  "0" [fillcolor="darkseagreen2" fontname="Courier" label="0: Match(state.ProgramCounter{thread: TH, time: PrevT}) [TH]" shape="box" style="filled"];
+  "1" [fillcolor="darkseagreen2" fontname="Courier" label="1: Match(state.ProgramCounter{thread: TH, time: T}) [TH]" shape="box" style="filled"];
+  "2" [fillcolor="thistle" fontname="Courier" label="2: Join(TH) [PrevT-T]" shape="box" style="filled"];
+  "3" [fillcolor="" fontname="Courier" label="3: Builtin(base.add{a: T, b: 1, res: PrevT}) [PrevT-T]" shape="box" style="filled"];
+  "4" [fillcolor="thistle" fontname="Courier" label="4: Join(PrevT, T) []" shape="box" style="filled"];
+  "5" [fillcolor="" fontname="Courier" label="5: Distinct []" shape="box" style="filled"];
+  "viz.continueMessage" [fillcolor="lightblue" fontname="Courier" label="viz.continueMessage: Subst(viz.continueMessage{fromTick: tick{place: TH, time: PrevT}, kind: continue{}, toTick: tick{place: TH, time: T}}) []" shape="box" style="filled"];
+  "state.ProgramCounter" -> "0" [];
+  "state.ProgramCounter" -> "1" [];
+  "1" -> "2" [];
+  "0" -> "2" [];
+  "3" -> "4" [];
+  "2" -> "4" [];
+  "4" -> "5" [];
+  "5" -> "viz.continueMessage" [];
+}
