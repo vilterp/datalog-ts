@@ -29,18 +29,18 @@ internal.visualization{
 }.
 
 viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
-  viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
+  viz.spawnHop{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.continueHop{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.lockTransferHop{fromTick: FromTick, toTick: ToTick, kind: K}.
 # messages
-viz.spawnMessage{
+viz.spawnHop{
   fromTick: tick{time: FromT, place: FromTH},
   toTick: tick{time: ToT, place: ToTH},
   kind: spawn{},
 } :-
   state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
   ToT = FromT + 1.
-viz.continueMessage{
+viz.continueHop{
   fromTick: tick{time: PrevT, place: TH},
   toTick: tick{time: T, place: TH},
   kind: continue{},
@@ -48,7 +48,7 @@ viz.continueMessage{
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
   PrevT = T + 1.
-viz.lockTransferMessage{
+viz.lockTransferHop{
   fromTick: tick{time: T, place: ReleaseTH},
   toTick: tick{time: T, place: AcquireTH},
   kind: lockTransfer{},
