@@ -3,7 +3,8 @@ state.ProgramCounter{thread: TH, time: T, counter: C, state: St} :-
   state.programCounter.storeBasic{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.goto{thread: TH, time: T, counter: C, state: St} |
   state.programCounter.gotoIf{thread: TH, time: T, counter: C, state: St} |
-  state.programCounter.call{thread: TH, time: T, counter: C, state: St}.
+  state.programCounter.call{thread: TH, time: T, counter: C, state: St} |
+  state.programCounter.stop{thread: TH, time: T, counter: C, state: St}.
 
 state.programCounter.storeBasic{thread: TH, time: T, counter: C, state: running{}} :-
   state.programCounter.storeBasic.literal{thread: TH, time: T, counter: C, state: running{}} |
@@ -204,5 +205,18 @@ state.programCounter.call.releaseLock{
   state.Lock{id: LockVal, state: heldBy{thread: TH}, time: PrevT} &
   T = PrevT + 1 &
   C = PrevC + 1.
+
+state.programCounter.stop{thread: TH, time: T, counter: C, state: stopped{}} :-
+  state.programCounter.stop.initial{thread: TH, time: T, counter: C, state: stopped{}} |
+  state.programCounter.stop.stay{thread: TH, time: T, counter: C, state: stopped{}}.
+state.programCounter.stop.initial{thread: TH, time: T, counter: C, state: stopped{}} :-
+  time{time: T} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: running{}} &
+  T = PrevT + 1 &
+  !instr{idx: C}.
+state.programCounter.stop.stay{thread: TH, time: T, counter: C, state: stopped{}} :-
+  time{time: T} &
+  state.ProgramCounter{thread: TH, time: PrevT, counter: C, state: stopped{}} &
+  T = PrevT + 1.
 
 state.programCounter.init{thread: 1, time: 1, counter: 0, state: running{}}.
