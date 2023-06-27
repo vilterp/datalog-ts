@@ -6,9 +6,9 @@ debug.instrAtTime{time: T, thread: TH, counter: C, instr: I} :-
 
 # program counter should be unique for each (thread, time)
 debug.doubleProgramCounter{time: T, thread: TH, counter1: C1, counter2: C2} :-
-  state.programCounter.gotoIf{time: T, thread: TH, counter: C1} &
-  state.programCounter.gotoIf{time: T, thread: TH, counter: C2} &
-  C1 != C2.
+  state.ProgramCounter{time: T, thread: TH, counter: C1} &
+  state.ProgramCounter{time: T, thread: TH, counter: C2} &
+  C1 < C2.
 
 # var value should be unique for each (var, thread, time)
 debug.doubleVar{var: Var, time: T, thread: TH, val1: Val1, val2: Val2} :-
