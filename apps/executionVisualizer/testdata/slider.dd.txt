@@ -691,6 +691,155 @@ viz.continueMessage{fromTick: tick{place: 105, time: 7}, kind: continue{}, toTic
 viz.continueMessage{fromTick: tick{place: 105, time: 8}, kind: continue{}, toTick: tick{place: 105, time: 9}}.
 viz.continueMessage{fromTick: tick{place: 105, time: 9}, kind: continue{}, toTick: tick{place: 105, time: 10}}.
 
+lifetimeMessages
+state.ProgramCounter
+----
+application/datalog
+message{idx: 0, message: bindings{bindings: {"C": 0, "St": running{}, "T": 1, "TH": 1}}, multiplicity: 1}.
+message{idx: 1, message: bindings{bindings: {"C": 1, "St": running{}, "T": 2, "TH": 1}}, multiplicity: 1}.
+message{idx: 10, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 7, "TH": 105}}, multiplicity: 1}.
+message{idx: 100, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 11, "TH": 105}}, multiplicity: -1}.
+message{idx: 101, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 12, "TH": 105}}, multiplicity: -1}.
+message{idx: 102, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 13, "TH": 105}}, multiplicity: -1}.
+message{idx: 103, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 14, "TH": 105}}, multiplicity: -1}.
+message{idx: 104, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 15, "TH": 105}}, multiplicity: -1}.
+message{idx: 105, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 16, "TH": 105}}, multiplicity: -1}.
+message{idx: 106, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 17, "TH": 105}}, multiplicity: -1}.
+message{idx: 107, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 18, "TH": 105}}, multiplicity: -1}.
+message{idx: 108, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 19, "TH": 105}}, multiplicity: -1}.
+message{idx: 109, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 20, "TH": 105}}, multiplicity: -1}.
+message{idx: 11, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 8, "TH": 1}}, multiplicity: 1}.
+message{idx: 110, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 21, "TH": 105}}, multiplicity: -1}.
+message{idx: 111, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 22, "TH": 105}}, multiplicity: -1}.
+message{idx: 112, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 23, "TH": 105}}, multiplicity: -1}.
+message{idx: 113, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 24, "TH": 105}}, multiplicity: -1}.
+message{idx: 114, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 25, "TH": 105}}, multiplicity: -1}.
+message{idx: 115, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 26, "TH": 105}}, multiplicity: -1}.
+message{idx: 116, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 27, "TH": 105}}, multiplicity: -1}.
+message{idx: 117, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 28, "TH": 105}}, multiplicity: -1}.
+message{idx: 118, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 29, "TH": 105}}, multiplicity: -1}.
+message{idx: 119, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 30, "TH": 105}}, multiplicity: -1}.
+message{idx: 12, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 8, "TH": 105}}, multiplicity: 1}.
+message{idx: 120, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 31, "TH": 105}}, multiplicity: -1}.
+message{idx: 121, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 32, "TH": 105}}, multiplicity: -1}.
+message{idx: 122, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 34, "TH": 105}}, multiplicity: 1}.
+message{idx: 123, message: bindings{bindings: {"C": 9, "St": running{}, "T": 33, "TH": 105}}, multiplicity: -1}.
+message{idx: 124, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 33, "TH": 105}}, multiplicity: -1}.
+message{idx: 125, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 34, "TH": 105}}, multiplicity: -1}.
+message{idx: 126, message: bindings{bindings: {"C": 4, "St": running{}, "T": 5, "TH": 1}}, multiplicity: 1}.
+message{idx: 127, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 6, "TH": 105}}, multiplicity: 1}.
+message{idx: 128, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 6, "TH": 1}}, multiplicity: 1}.
+message{idx: 129, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 7, "TH": 1}}, multiplicity: 1}.
+message{idx: 13, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 9, "TH": 1}}, multiplicity: 1}.
+message{idx: 130, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 7, "TH": 105}}, multiplicity: 1}.
+message{idx: 131, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 8, "TH": 1}}, multiplicity: 1}.
+message{idx: 132, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 8, "TH": 105}}, multiplicity: 1}.
+message{idx: 133, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 9, "TH": 1}}, multiplicity: 1}.
+message{idx: 134, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 9, "TH": 105}}, multiplicity: 1}.
+message{idx: 135, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 10, "TH": 1}}, multiplicity: 1}.
+message{idx: 136, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 10, "TH": 105}}, multiplicity: 1}.
+message{idx: 137, message: bindings{bindings: {"C": 5, "St": running{}, "T": 11, "TH": 1}}, multiplicity: 1}.
+message{idx: 138, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 11, "TH": 105}}, multiplicity: 1}.
+message{idx: 139, message: bindings{bindings: {"C": 6, "St": running{}, "T": 12, "TH": 1}}, multiplicity: 1}.
+message{idx: 14, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 9, "TH": 105}}, multiplicity: 1}.
+message{idx: 140, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 12, "TH": 105}}, multiplicity: 1}.
+message{idx: 141, message: bindings{bindings: {"C": 9, "St": running{}, "T": 13, "TH": 1}}, multiplicity: 1}.
+message{idx: 142, message: bindings{bindings: {"C": 8, "St": running{}, "T": 12, "TH": 105}}, multiplicity: 1}.
+message{idx: 143, message: bindings{bindings: {"C": 9, "St": running{}, "T": 13, "TH": 105}}, multiplicity: 1}.
+message{idx: 144, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 13, "TH": 105}}, multiplicity: 1}.
+message{idx: 15, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 10, "TH": 1}}, multiplicity: 1}.
+message{idx: 16, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 10, "TH": 105}}, multiplicity: 1}.
+message{idx: 17, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 11, "TH": 1}}, multiplicity: 1}.
+message{idx: 18, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 11, "TH": 105}}, multiplicity: 1}.
+message{idx: 19, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 12, "TH": 1}}, multiplicity: 1}.
+message{idx: 2, message: bindings{bindings: {"C": 2, "St": running{}, "T": 3, "TH": 1}}, multiplicity: 1}.
+message{idx: 20, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 12, "TH": 105}}, multiplicity: 1}.
+message{idx: 21, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 13, "TH": 1}}, multiplicity: 1}.
+message{idx: 22, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 13, "TH": 105}}, multiplicity: 1}.
+message{idx: 23, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 14, "TH": 1}}, multiplicity: 1}.
+message{idx: 24, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 14, "TH": 105}}, multiplicity: 1}.
+message{idx: 25, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 15, "TH": 1}}, multiplicity: 1}.
+message{idx: 26, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 15, "TH": 105}}, multiplicity: 1}.
+message{idx: 27, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 16, "TH": 1}}, multiplicity: 1}.
+message{idx: 28, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 16, "TH": 105}}, multiplicity: 1}.
+message{idx: 29, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 17, "TH": 1}}, multiplicity: 1}.
+message{idx: 3, message: bindings{bindings: {"C": 3, "St": running{}, "T": 4, "TH": 1}}, multiplicity: 1}.
+message{idx: 30, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 17, "TH": 105}}, multiplicity: 1}.
+message{idx: 31, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 18, "TH": 1}}, multiplicity: 1}.
+message{idx: 32, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 18, "TH": 105}}, multiplicity: 1}.
+message{idx: 33, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 19, "TH": 1}}, multiplicity: 1}.
+message{idx: 34, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 19, "TH": 105}}, multiplicity: 1}.
+message{idx: 35, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 20, "TH": 1}}, multiplicity: 1}.
+message{idx: 36, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 20, "TH": 105}}, multiplicity: 1}.
+message{idx: 37, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 21, "TH": 1}}, multiplicity: 1}.
+message{idx: 38, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 21, "TH": 105}}, multiplicity: 1}.
+message{idx: 39, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 22, "TH": 1}}, multiplicity: 1}.
+message{idx: 4, message: bindings{bindings: {"C": 7, "St": running{}, "T": 4, "TH": 105}}, multiplicity: 1}.
+message{idx: 40, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 22, "TH": 105}}, multiplicity: 1}.
+message{idx: 41, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 23, "TH": 1}}, multiplicity: 1}.
+message{idx: 42, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 23, "TH": 105}}, multiplicity: 1}.
+message{idx: 43, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 24, "TH": 1}}, multiplicity: 1}.
+message{idx: 44, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 24, "TH": 105}}, multiplicity: 1}.
+message{idx: 45, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 25, "TH": 1}}, multiplicity: 1}.
+message{idx: 46, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 25, "TH": 105}}, multiplicity: 1}.
+message{idx: 47, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 26, "TH": 1}}, multiplicity: 1}.
+message{idx: 48, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 26, "TH": 105}}, multiplicity: 1}.
+message{idx: 49, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 27, "TH": 1}}, multiplicity: 1}.
+message{idx: 5, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 5, "TH": 105}}, multiplicity: 1}.
+message{idx: 50, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 27, "TH": 105}}, multiplicity: 1}.
+message{idx: 51, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 28, "TH": 1}}, multiplicity: 1}.
+message{idx: 52, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 28, "TH": 105}}, multiplicity: 1}.
+message{idx: 53, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 29, "TH": 1}}, multiplicity: 1}.
+message{idx: 54, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 29, "TH": 105}}, multiplicity: 1}.
+message{idx: 55, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 30, "TH": 1}}, multiplicity: 1}.
+message{idx: 56, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 30, "TH": 105}}, multiplicity: 1}.
+message{idx: 57, message: bindings{bindings: {"C": 5, "St": running{}, "T": 31, "TH": 1}}, multiplicity: 1}.
+message{idx: 58, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 31, "TH": 105}}, multiplicity: 1}.
+message{idx: 59, message: bindings{bindings: {"C": 6, "St": running{}, "T": 32, "TH": 1}}, multiplicity: 1}.
+message{idx: 6, message: bindings{bindings: {"C": 4, "St": running{}, "T": 5, "TH": 1}}, multiplicity: 1}.
+message{idx: 60, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 32, "TH": 105}}, multiplicity: 1}.
+message{idx: 61, message: bindings{bindings: {"C": 9, "St": running{}, "T": 33, "TH": 1}}, multiplicity: 1}.
+message{idx: 62, message: bindings{bindings: {"C": 8, "St": running{}, "T": 32, "TH": 105}}, multiplicity: 1}.
+message{idx: 63, message: bindings{bindings: {"C": 9, "St": running{}, "T": 33, "TH": 105}}, multiplicity: 1}.
+message{idx: 64, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 33, "TH": 105}}, multiplicity: 1}.
+message{idx: 65, message: bindings{bindings: {"C": 4, "St": running{}, "T": 5, "TH": 1}}, multiplicity: -1}.
+message{idx: 66, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 6, "TH": 1}}, multiplicity: -1}.
+message{idx: 67, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 7, "TH": 1}}, multiplicity: -1}.
+message{idx: 68, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 8, "TH": 1}}, multiplicity: -1}.
+message{idx: 69, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 9, "TH": 1}}, multiplicity: -1}.
+message{idx: 7, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 6, "TH": 105}}, multiplicity: 1}.
+message{idx: 70, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 10, "TH": 1}}, multiplicity: -1}.
+message{idx: 71, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 11, "TH": 1}}, multiplicity: -1}.
+message{idx: 72, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 12, "TH": 1}}, multiplicity: -1}.
+message{idx: 73, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 13, "TH": 1}}, multiplicity: -1}.
+message{idx: 74, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 14, "TH": 1}}, multiplicity: -1}.
+message{idx: 75, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 15, "TH": 1}}, multiplicity: -1}.
+message{idx: 76, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 16, "TH": 1}}, multiplicity: -1}.
+message{idx: 77, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 17, "TH": 1}}, multiplicity: -1}.
+message{idx: 78, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 18, "TH": 1}}, multiplicity: -1}.
+message{idx: 79, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 19, "TH": 1}}, multiplicity: -1}.
+message{idx: 8, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 6, "TH": 1}}, multiplicity: 1}.
+message{idx: 80, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 20, "TH": 1}}, multiplicity: -1}.
+message{idx: 81, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 21, "TH": 1}}, multiplicity: -1}.
+message{idx: 82, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 22, "TH": 1}}, multiplicity: -1}.
+message{idx: 83, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 23, "TH": 1}}, multiplicity: -1}.
+message{idx: 84, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 24, "TH": 1}}, multiplicity: -1}.
+message{idx: 85, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 25, "TH": 1}}, multiplicity: -1}.
+message{idx: 86, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 26, "TH": 1}}, multiplicity: -1}.
+message{idx: 87, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 27, "TH": 1}}, multiplicity: -1}.
+message{idx: 88, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 28, "TH": 1}}, multiplicity: -1}.
+message{idx: 89, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 29, "TH": 1}}, multiplicity: -1}.
+message{idx: 9, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 7, "TH": 1}}, multiplicity: 1}.
+message{idx: 90, message: bindings{bindings: {"C": 5, "St": blocked{reason: timer{start: 6, thread: 1}}, "T": 30, "TH": 1}}, multiplicity: -1}.
+message{idx: 91, message: bindings{bindings: {"C": 5, "St": running{}, "T": 31, "TH": 1}}, multiplicity: -1}.
+message{idx: 92, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 6, "TH": 105}}, multiplicity: -1}.
+message{idx: 93, message: bindings{bindings: {"C": 6, "St": running{}, "T": 32, "TH": 1}}, multiplicity: -1}.
+message{idx: 94, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 7, "TH": 105}}, multiplicity: -1}.
+message{idx: 95, message: bindings{bindings: {"C": 9, "St": running{}, "T": 33, "TH": 1}}, multiplicity: -1}.
+message{idx: 96, message: bindings{bindings: {"C": 8, "St": running{}, "T": 32, "TH": 105}}, multiplicity: -1}.
+message{idx: 97, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 8, "TH": 105}}, multiplicity: -1}.
+message{idx: 98, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 9, "TH": 105}}, multiplicity: -1}.
+message{idx: 99, message: bindings{bindings: {"C": 7, "St": blocked{reason: lock{id: created{thread: 1, time: 2}}}, "T": 10, "TH": 105}}, multiplicity: -1}.
 
 lifetimeMessages
 viz.continueMessage
