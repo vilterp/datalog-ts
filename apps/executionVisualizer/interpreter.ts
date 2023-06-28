@@ -59,20 +59,39 @@ function stepThread(state: State, threadID: string): State {
   const instr = state.program.instrs[counter];
   switch (instr.type) {
     case "ValueInstr": {
-      const threadState = state.threadState[threadID];
-      return {
-        ...state,
-        threadState: {
-          ...state.threadState,
-          [threadID]: {
-            ...threadState,
-            scope: {
-              ...threadState.scope,
-              [instr.ident.text]: getRValue(instr.rvalue, threadState),
-            },
-          },
-        },
-      };
+      const varName = instr.ident.text;
+      const rvalue = instr.rvalue;
+      switch (rvalue.type) {
+        case "Call": {
+          const name = rvalue.ident.text;
+          const args = rvalue.params.ident.map(
+            (ident) => thread.scope[ident.text]
+          );
+          if (name.startsWith("prim.")) {
+            const val = getPrimitiveResult(rvalue.ident.text, args);
+            return updateThreadScope(state, threadID, varName, val);
+          } else if (name.startsWith("block.")) {
+            return processBlockingCall(state, threadID, name, args);
+          }
+        }
+        case "EditorVar":
+          throw new Error("TODO: editor vars");
+        case "Int":
+          return updateThreadScope(
+            state,
+            threadID,
+            varName,
+            parseInt(instr.rvalue.text)
+          );
+        case "String":
+          return updateThreadScope(
+            state,
+            threadID,
+            varName,
+            // TODO: process escapes
+            instr.rvalue.text
+          );
+      }
     }
     case "ForkToInstr":
       return XXXX;
@@ -91,27 +110,26 @@ function stepThread(state: State, threadID: string): State {
   }
 }
 
-function getRValue(rvalue: BBRvalue, threadState: ThreadState): Value {
-  switch (rvalue.type) {
-    case "Call": {
-      const name = rvalue.ident.text;
-      const args = rvalue.params.ident.map(
-        (ident) => threadState.scope[ident.text]
-      );
-      if (name.startsWith("prim.")) {
-        return getPrimitiveResult(rvalue.ident.text, args);
-      } else if (name.startsWith("block.")) {
-        // this should be elsewhere
-      }
-    }
-    case "EditorVar":
-      throw new Error("TODO: editor vars");
-    case "Int":
-      return parseInt(rvalue.text);
-    case "String":
-      // TODO: process escapes
-      return rvalue.text;
-  }
+function updateThreadScope(
+  state: State,
+  threadID: string,
+  varName: string,
+  value: Value
+): State {
+  const threadState = state.threadState[threadID];
+  return {
+    ...state,
+    threadState: {
+      ...state.threadState,
+      [threadID]: {
+        ...threadState,
+        scope: {
+          ...threadState.scope,
+          [varName]: value,
+        },
+      },
+    },
+  };
 }
 
 function getPrimitiveResult(name: string, args: Value[]): Value {
@@ -123,4 +141,13 @@ function getPrimitiveResult(name: string, args: Value[]): Value {
     case "prim.lt":
       return args[0] < args[1];
   }
+}
+
+function processBlockingCall(
+  state: State,
+  threadID: string,
+  name: string,
+  args: Value[]
+): State {
+  return XXX;
 }
