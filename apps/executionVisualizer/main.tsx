@@ -1,7 +1,6 @@
-import React, { useReducer } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { Explorer } from "../../uiCommon/explorer";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
@@ -12,10 +11,10 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { LOADER } from "./dl";
 import { Statement } from "../../core/types";
-import useLocalStorage from "react-use-localstorage";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { initialState, step } from "./interpreter";
 import ReactJson from "react-json-view";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
 function getInterp(input: string): [AbstractInterpreter, string | null] {
   const emptyInterp = new IncrementalInterpreter(".", LOADER);
@@ -107,7 +106,10 @@ function Main() {
         setEditorState={(newEditorState) => setEditorState(newEditorState)}
       />
 
-      <ReactJson src={state} enableClipboard={false} />
+      <CollapsibleWithHeading
+        heading="End State"
+        content={<ReactJson src={state} enableClipboard={false} />}
+      />
     </>
   );
 }
