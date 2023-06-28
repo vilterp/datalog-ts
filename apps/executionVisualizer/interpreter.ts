@@ -5,7 +5,6 @@ import {
 import { Program, compileBasicBlocks } from "./compileToTsObjs";
 
 export type State = {
-  timestamp: number;
   program: Program;
   threadState: { [threadID: string]: ThreadState };
   timers: { [id: string]: Timer };
@@ -39,7 +38,6 @@ type Value = string | number | boolean;
 export function initialState(instrs: BBMain): State {
   return {
     program: compileBasicBlocks(instrs),
-    timestamp: 0,
     threadState: { 0: { counter: 0, scope: {}, state: { type: "Running" } } },
     timers: {},
     locks: {},
@@ -55,6 +53,19 @@ export function step(state: State): State {
 }
 
 function stepThread(state: State, threadID: string): State {
+  const threadState = state.threadState[threadID];
+  switch (threadState.state.type) {
+    case "Running":
+      return processRunning(state, threadID);
+    case "Blocked":
+      return processBlocked(state, threadID);
+    case "Finished":
+      // nothing to do
+      return state;
+  }
+}
+
+function processRunning(state: State, threadID: string): State {
   const threadState = state.threadState[threadID];
   const counter = threadState.counter;
   const instr = state.program.instrs[counter];
@@ -127,6 +138,12 @@ function stepThread(state: State, threadID: string): State {
   }
 }
 
+function processBlocked(state: State, threadID: string): State {
+  const threadState = state.threadState[threadID];
+  // stay blocked unless someone else frees us?
+  throw new Error("TODO: process blocked");
+}
+
 function updateThreadScope(
   state: State,
   threadID: string,
@@ -158,6 +175,8 @@ function getPrimitiveResult(name: string, args: Value[]): Value {
       return (args[0] as number) + 1;
     case "prim.lt":
       return args[0] < args[1];
+    default:
+      throw new Error(`unknown primitive ${name}`);
   }
 }
 
@@ -167,5 +186,10 @@ function processBlockingCall(
   name: string,
   args: Value[]
 ): State {
-  return XXX;
+  switch (name) {
+    case "block.acquireLock":
+      return XXXX;
+    case "block.sleep":
+      return XXX;
+  }
 }
