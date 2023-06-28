@@ -4,13 +4,7 @@ import {
   BBMain,
   BBRvalue,
 } from "../../languageWorkbench/languages/basicBlocks/parser";
-
-type BlockIndex = {
-  blockOrder: string[];
-  blocks: {
-    [blockName: string]: { startIndex: number; instructions: BBInstr[] };
-  };
-};
+import { BlockIndex } from "./types";
 
 export function compileBasicBlocks(tree: BBMain): Rec[] {
   const instrRecs: Rec[] = [];
@@ -90,7 +84,7 @@ function rvalueToTerm(expr: BBRvalue): Term {
   }
 }
 
-function getBlockIndex(tree: BBMain): BlockIndex {
+export function getBlockIndex(tree: BBMain): BlockIndex {
   let idx = 0;
   const blockIndex: BlockIndex = { blocks: {}, blockOrder: [] };
   tree.block.forEach((block) => {

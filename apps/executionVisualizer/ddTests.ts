@@ -6,7 +6,7 @@ import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser"
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
-import { compileBasicBlocks } from "./compiler";
+import { compileBasicBlocks } from "./compileToDL";
 
 export function executionVisualizerTests(writeResults: boolean): Suite {
   return [

@@ -1,4 +1,5 @@
-import { BBInstr } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { BBMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { Program, compileBasicBlocks } from "./compileToTsObjs";
 
 export type State = {
   timestamp: number;
@@ -8,12 +9,15 @@ export type State = {
   locks: { [id: string]: Lock };
 };
 
-type Program = BBInstr[];
-
 type ThreadState = {
   counter: number;
   scope: { [name: string]: number | string };
-  state: BlockReason;
+  state:
+    | { type: "Running" }
+    | {
+        type: "Blocked";
+        reason: BlockReason;
+      };
 };
 
 type Lock = {
@@ -24,16 +28,11 @@ type Timer = {
   wakeUpAt: number;
 };
 
-type BlockReason =
-  | { type: "Running" }
-  | {
-      type: "Blocked";
-      reason: { type: "Timer"; id: string } | { type: "Lock"; id: string };
-    };
+type BlockReason = { type: "Timer"; id: string } | { type: "Lock"; id: string };
 
-export function initialState(program: Program): State {
+export function initialState(instrs: BBMain): State {
   return {
-    program,
+    program: compileBasicBlocks(instrs),
     timestamp: 0,
     threadState: { 0: { counter: 0, scope: {}, state: { type: "Running" } } },
     timers: {},
@@ -57,18 +56,27 @@ function stepThread(state: State, threadID: string): State {
     case "ValueInstr": {
       switch (instr.rvalue.type) {
         case "Call":
-          XXXX;
+          return XXXX;
         case "EditorVar":
-          XXXX;
+          return XXXX;
         case "Int":
-          XXXX;
+          return XXXX;
         case "String":
-          XXXX;
+          return XXXX;
       }
     }
     case "ForkToInstr":
-      XXXX;
+      return XXXX;
     case "GotoInstr":
-      XXXX;
+      return {
+        ...state,
+        threadState: {
+          ...state.threadState,
+          [threadID]: {
+            ...thread,
+            counter: instr.label,
+          },
+        },
+      };
   }
 }

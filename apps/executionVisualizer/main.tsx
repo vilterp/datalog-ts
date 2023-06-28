@@ -5,7 +5,7 @@ import { Explorer } from "../../uiCommon/explorer";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { compileBasicBlocks } from "./compiler";
+import { compileBasicBlocks } from "./compileToDL";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 // @ts-ignore
