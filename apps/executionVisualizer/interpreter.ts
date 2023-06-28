@@ -21,7 +21,9 @@ type ThreadState = {
     | { type: "Finished" };
 };
 
-type Lock = { type: "Open" } | { type: "HeldBy"; threadID: string };
+type Lock =
+  | { type: "Open" }
+  | { type: "HeldBy"; threadID: number; waiters: number[] };
 
 type Timer = {
   wakeUpAt: number;
@@ -53,7 +55,7 @@ export function step(state: State): State {
   for (const threadID in state.threadState) {
     newState = stepThread(state, threadID);
   }
-  return newState;
+  return { ...newState, timestamp: state.timestamp + 1 };
 }
 
 function stepThread(state: State, threadID: string): State {
@@ -62,7 +64,7 @@ function stepThread(state: State, threadID: string): State {
     case "Running":
       return processRunning(state, threadID);
     case "Blocked":
-      return processBlocked(state, threadID);
+      return processBlocked(state, threadID, threadState.state.reason);
     case "Finished":
       // nothing to do
       return state;
@@ -247,13 +249,6 @@ function processBlockingCall(
     case "block.acquireLock": {
       const lockID = (args[0] as LockID).id;
       const lockState = state.locks[lockID];
-      const newLocks = {
-        ...state.locks,
-        [lockID]: {
-          type: "HeldBy",
-          threadID,
-        },
-      };
       switch (lockState.type) {
         case "HeldBy":
           return {
@@ -268,9 +263,17 @@ function processBlockingCall(
                 },
               },
             },
-            locks: newLocks,
+            locks: {
+              ...state.locks,
+              // add ourselves to waiters
+              [lockID]: {
+                ...lockState,
+                waiters: [...lockState.waiters, threadID],
+              },
+            },
           };
         case "Open":
+          // acquire lock
           return {
             ...state,
             threadState: {
@@ -280,7 +283,14 @@ function processBlockingCall(
                 counter: threadState.counter + 1,
               },
             },
-            locks: newLocks,
+            locks: {
+              ...state.locks,
+              [lockID]: {
+                type: "HeldBy",
+                threadID,
+                waiters: [],
+              },
+            },
           };
       }
     }
@@ -307,9 +317,66 @@ function processBlockingCall(
         },
       };
     }
-    case "block.releaseLock":
+    case "block.releaseLock": {
       // doesn't block, but unblocks other threads...
-      return XXXX;
+      const lockID = (args[0] as LockID).id;
+      const lock = state.locks[lockID];
+      // TODO: need a waiters queue?
+      switch (lock.type) {
+        case "HeldBy": {
+          const waiters = lock.waiters;
+          if (waiters.length > 0) {
+            const firstWaiterID = waiters[0];
+            const firstWaiterState = state.threadState[firstWaiterID];
+            return {
+              ...state,
+              locks: {
+                ...state.locks,
+                // transfer lock ownership
+                [lockID]: {
+                  type: "HeldBy",
+                  threadID: firstWaiterID,
+                  waiters: waiters.slice(1),
+                },
+              },
+              threadState: {
+                ...state.threadState,
+                // advance current thread
+                [threadID]: {
+                  ...threadState,
+                  counter: threadState.counter + 1,
+                },
+                // unblock and advance acquiring thread
+                [firstWaiterID]: {
+                  ...firstWaiterState,
+                  state: { type: "Running" },
+                  counter: firstWaiterState.counter + 1,
+                },
+              },
+            };
+          }
+          // just open up the lock
+          return {
+            ...state,
+            locks: {
+              ...state.locks,
+              // transfer lock ownership
+              [lockID]: { type: "Open" },
+            },
+            threadState: {
+              ...state.threadState,
+              // advance current thread
+              [threadID]: {
+                ...threadState,
+                counter: threadState.counter + 1,
+              },
+            },
+          };
+        }
+        case "Open":
+          throw new Error("releasing an open lock");
+      }
+    }
     default:
       throw new Error(`unknown blocking call ${name}`);
   }
