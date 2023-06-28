@@ -138,7 +138,7 @@ function processRunning(state: State, threadID: string): State {
           },
           [newThreadID]: {
             ...threadState,
-            counter: state.program.blockIndex[instr.label.text],
+            counter: instrIdxForBlock(state, instr.label.text),
           },
         },
       };
@@ -151,11 +151,19 @@ function processRunning(state: State, threadID: string): State {
           ...state.threadStates,
           [threadID]: {
             ...threadState,
-            counter: state.program.blockIndex[instr.label.text],
+            counter: instrIdxForBlock(state, instr.label.text),
           },
         },
       };
   }
+}
+
+function instrIdxForBlock(state: State, blockName: string) {
+  const block = state.program.blockIndex.blocks[blockName];
+  if (!block) {
+    throw new Error(`unkown block ${blockName}`);
+  }
+  return block.startIndex;
 }
 
 function processBlocked(
