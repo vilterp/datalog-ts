@@ -1,7 +1,4 @@
-import {
-  BBMain,
-  BBRvalue,
-} from "../../languageWorkbench/languages/basicBlocks/parser";
+import { BBMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { Program, compileBasicBlocks } from "./compileToTsObjs";
 
 export type State = {
@@ -23,22 +20,22 @@ type ThreadState = {
     | { type: "Finished" };
 };
 
-type Lock = {
-  state: { type: "Open" } | { type: "HeldBy"; threadID: string };
-};
+type Lock = { type: "Open" } | { type: "HeldBy"; threadID: string };
 
 type Timer = {
   wakeUpAt: number;
 };
 
-type BlockReason = { type: "Timer"; id: string } | { type: "Lock"; id: string };
+type BlockReason = { type: "Timer"; id: string } | { type: "Lock"; id: number };
 
 type Value =
   | string
   | number
   | boolean
   // TODO: just pointers into a heap?
-  | { type: "Lock"; id: number };
+  | LockID;
+
+type LockID = { type: "Lock"; id: number };
 
 export function initialState(instrs: BBMain): State {
   return {
@@ -201,7 +198,7 @@ function processAllocCall(
         ...state,
         locks: {
           ...state.locks,
-          [newLockID]: { state: { type: "Open" } },
+          [newLockID]: { type: "Open" },
         },
       };
       return updateThreadScope(withLock, threadID, varName, {
@@ -220,11 +217,53 @@ function processBlockingCall(
   name: string,
   args: Value[]
 ): State {
+  const threadState = state.threadState[threadID];
   switch (name) {
-    case "block.acquireLock":
-      return XXXX;
+    case "block.acquireLock": {
+      const lockID = (args[0] as LockID).id;
+      const lockState = state.locks[lockID];
+      const newLocks = {
+        ...state.locks,
+        [lockID]: {
+          type: "HeldBy",
+          threadID,
+        },
+      };
+      switch (lockState.type) {
+        case "HeldBy":
+          return {
+            ...state,
+            threadState: {
+              ...state.threadState,
+              [threadID]: {
+                ...threadState,
+                state: {
+                  type: "Blocked",
+                  reason: { type: "Lock", id: lockID },
+                },
+              },
+            },
+            locks: newLocks,
+          };
+        case "Open":
+          return {
+            ...state,
+            threadState: {
+              ...state.threadState,
+              [threadID]: {
+                ...threadState,
+                counter: threadState.counter + 1,
+              },
+            },
+            locks: newLocks,
+          };
+      }
+    }
     case "block.sleep":
       return XXX;
+    case "block.releaseLock":
+      // doesn't block, but unblocks other threads...
+      return XXXX;
     default:
       throw new Error(`unknown blocking call ${name}`);
   }
