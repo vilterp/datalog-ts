@@ -10,9 +10,9 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 // @ts-ignore
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { LOADER } from "./dl";
-import { Statement } from "../../core/types";
+import { Rec, Statement, int, rec, str } from "../../core/types";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
-import { initialState, step } from "./interpreter";
+import { State, initialState, step } from "./interpreter";
 import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 
@@ -29,59 +29,6 @@ function getInterp(input: string): [AbstractInterpreter, string | null] {
   }
 }
 
-type State = {
-  editorState: EditorState;
-  interp: AbstractInterpreter;
-  statements: Statement[];
-  error: string | null;
-};
-
-type Action =
-  | {
-      type: "UpdateEditorState";
-      newEditorState: EditorState;
-    }
-  | { type: "RunStatements"; statements: Statement[] };
-
-function update(state: State, action: Action): State {
-  switch (action.type) {
-    case "RunStatements": {
-      let interp = state.interp;
-      action.statements.forEach((stmt) => {
-        interp = interp.evalStmt(stmt)[1];
-      });
-      return {
-        ...state,
-        interp,
-        statements: [...state.statements, ...action.statements],
-      };
-    }
-    case "UpdateEditorState": {
-      let [interp, error] = getInterp(action.newEditorState.source);
-      state.statements.forEach((stmt) => {
-        interp = interp.evalStmt(stmt)[1];
-      });
-      return {
-        ...state,
-        editorState: action.newEditorState,
-        interp,
-        error,
-      };
-    }
-  }
-}
-
-// function getInitialState(source: string): State {
-//   return {
-//     editorState: initialEditorState(source),
-//     error: null,
-//     interp: getInterp(source)[0],
-//     statements: [],
-//   };
-// }
-
-// const initialState: State = getInitialState(EXAMPLE_BB);
-
 function Main() {
   // TODO: get local storage for editor state again
   // const [state, dispatch] = useReducer(update, initialState);
@@ -89,11 +36,16 @@ function Main() {
     "foo",
     initialEditorState(EXAMPLE_BB)
   );
+
+  let interp: AbstractInterpreter = new IncrementalInterpreter(".", LOADER);
+  interp = interp.doLoad("viz.dl");
+
   const bbMain = parseMain(editorState.source);
   let state = initialState(bbMain);
-  for (let i = 0; i < 50; i++) {
+  for (let t = 0; t < 50; t++) {
     state = step(state);
-    console.log("state", i, state);
+    interp = dumpState(interp, state);
+    console.log("state", t, state);
   }
 
   return (
@@ -112,6 +64,26 @@ function Main() {
       />
     </>
   );
+}
+
+function dumpState(
+  interp: AbstractInterpreter,
+  state: State
+): AbstractInterpreter {
+  const records: Rec[] = [];
+  Object.entries(state.threadStates).forEach(([threadID, threadState]) => {
+    records.push(
+      rec("state.ProgramCounter", {
+        thread: str(threadID),
+        counter: int(threadState.counter),
+        time: int(state.timestamp),
+        // TODO: make into record
+        state: str(threadState.state.type),
+      })
+    );
+  });
+  interp.bulkInsert(records);
+  return interp;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
