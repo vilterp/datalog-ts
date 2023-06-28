@@ -20,7 +20,8 @@ type ThreadState = {
     | {
         type: "Blocked";
         reason: BlockReason;
-      };
+      }
+    | { type: "Finished" };
 };
 
 type Lock = {
@@ -54,18 +55,19 @@ export function step(state: State): State {
 }
 
 function stepThread(state: State, threadID: string): State {
-  const thread = state.threadState[threadID];
-  const counter = thread.counter;
+  const threadState = state.threadState[threadID];
+  const counter = threadState.counter;
   const instr = state.program.instrs[counter];
   switch (instr.type) {
     case "ValueInstr": {
       const varName = instr.ident.text;
       const rvalue = instr.rvalue;
+      // TODO: update counters
       switch (rvalue.type) {
         case "Call": {
           const name = rvalue.ident.text;
           const args = rvalue.params.ident.map(
-            (ident) => thread.scope[ident.text]
+            (ident) => threadState.scope[ident.text]
           );
           if (name.startsWith("prim.")) {
             const val = getPrimitiveResult(rvalue.ident.text, args);
@@ -93,8 +95,23 @@ function stepThread(state: State, threadID: string): State {
           );
       }
     }
-    case "ForkToInstr":
-      return XXXX;
+    case "ForkToInstr": {
+      const newThreadID = Object.keys(state.threadState).length;
+      return {
+        ...state,
+        threadState: {
+          ...state.threadState,
+          [threadID]: {
+            ...threadState,
+            counter: counter + 1,
+          },
+          [newThreadID]: {
+            ...threadState,
+            counter: state.program.blockIndex[instr.label.text],
+          },
+        },
+      };
+    }
     case "GotoInstr":
       // TODO: conditional
       return {
@@ -102,7 +119,7 @@ function stepThread(state: State, threadID: string): State {
         threadState: {
           ...state.threadState,
           [threadID]: {
-            ...thread,
+            ...threadState,
             counter: state.program.blockIndex[instr.label.text],
           },
         },
@@ -123,6 +140,7 @@ function updateThreadScope(
       ...state.threadState,
       [threadID]: {
         ...threadState,
+        counter: threadState.counter + 1,
         scope: {
           ...threadState.scope,
           [varName]: value,
