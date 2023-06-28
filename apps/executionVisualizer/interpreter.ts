@@ -33,7 +33,12 @@ type Timer = {
 
 type BlockReason = { type: "Timer"; id: string } | { type: "Lock"; id: string };
 
-type Value = string | number | boolean;
+type Value =
+  | string
+  | number
+  | boolean
+  // TODO: just pointers into a heap?
+  | { type: "Lock"; id: number };
 
 export function initialState(instrs: BBMain): State {
   return {
@@ -85,6 +90,8 @@ function processRunning(state: State, threadID: string): State {
             return updateThreadScope(state, threadID, varName, val);
           } else if (name.startsWith("block.")) {
             return processBlockingCall(state, threadID, name, args);
+          } else if (name.startsWith("alloc.")) {
+            return processAllocCall(state, threadID, varName, name, args);
           }
         }
         case "EditorVar":
@@ -180,6 +187,33 @@ function getPrimitiveResult(name: string, args: Value[]): Value {
   }
 }
 
+function processAllocCall(
+  state: State,
+  threadID: string,
+  varName: string,
+  name: string,
+  args: Value[]
+): State {
+  switch (name) {
+    case "alloc.newLock": {
+      const newLockID = Object.keys(state.locks).length;
+      const withLock: State = {
+        ...state,
+        locks: {
+          ...state.locks,
+          [newLockID]: { state: { type: "Open" } },
+        },
+      };
+      return updateThreadScope(withLock, threadID, varName, {
+        type: "Lock",
+        id: newLockID,
+      });
+    }
+    default:
+      throw new Error(`unknown alloc call ${name}`);
+  }
+}
+
 function processBlockingCall(
   state: State,
   threadID: string,
@@ -191,5 +225,7 @@ function processBlockingCall(
       return XXXX;
     case "block.sleep":
       return XXX;
+    default:
+      throw new Error(`unknown blocking call ${name}`);
   }
 }
