@@ -1,4 +1,7 @@
-import { BBMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import {
+  BBMain,
+  BBRvalue,
+} from "../../languageWorkbench/languages/basicBlocks/parser";
 import { Program, compileBasicBlocks } from "./compileToTsObjs";
 
 export type State = {
@@ -11,7 +14,7 @@ export type State = {
 
 type ThreadState = {
   counter: number;
-  scope: { [name: string]: number | string };
+  scope: { [name: string]: Value };
   state:
     | { type: "Running" }
     | {
@@ -29,6 +32,8 @@ type Timer = {
 };
 
 type BlockReason = { type: "Timer"; id: string } | { type: "Lock"; id: string };
+
+type Value = string | number;
 
 export function initialState(instrs: BBMain): State {
   return {
@@ -51,32 +56,51 @@ export function step(state: State): State {
 function stepThread(state: State, threadID: string): State {
   const thread = state.threadState[threadID];
   const counter = thread.counter;
-  const instr = state.program[counter];
+  const instr = state.program.instrs[counter];
   switch (instr.type) {
     case "ValueInstr": {
-      switch (instr.rvalue.type) {
-        case "Call":
-          return XXXX;
-        case "EditorVar":
-          return XXXX;
-        case "Int":
-          return XXXX;
-        case "String":
-          return XXXX;
-      }
+      const threadState = state.threadState[threadID];
+      return {
+        ...state,
+        threadState: {
+          ...state.threadState,
+          [threadID]: {
+            ...threadState,
+            scope: {
+              ...threadState.scope,
+              [instr.ident.text]: getRValue(instr.rvalue, threadState),
+            },
+          },
+        },
+      };
     }
     case "ForkToInstr":
       return XXXX;
     case "GotoInstr":
+      // TODO: conditional
       return {
         ...state,
         threadState: {
           ...state.threadState,
           [threadID]: {
             ...thread,
-            counter: instr.label,
+            counter: state.program.blockIndex[instr.label.text],
           },
         },
       };
+  }
+}
+
+function getRValue(rvalue: BBRvalue, threadState: ThreadState): Value {
+  switch (rvalue.type) {
+    case "Call":
+      return XXX;
+    case "EditorVar":
+      return XXX;
+    case "Int":
+      return parseInt(rvalue.text);
+    case "String":
+      // TODO: process escapes
+      return rvalue.text;
   }
 }
