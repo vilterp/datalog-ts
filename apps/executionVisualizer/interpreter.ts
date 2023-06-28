@@ -144,10 +144,33 @@ function processRunning(state: State, threadID: string): State {
   }
 }
 
-function processBlocked(state: State, threadID: string): State {
+function processBlocked(
+  state: State,
+  threadID: string,
+  reason: BlockReason
+): State {
   const threadState = state.threadState[threadID];
-  // stay blocked unless someone else frees us?
-  throw new Error("TODO: process blocked");
+  switch (reason.type) {
+    case "Timer": {
+      const timer = state.timers[reason.id];
+      const wakeUpTime = timer.wakeUpAt;
+      return wakeUpTime === state.timestamp
+        ? {
+            ...state,
+            threadState: {
+              [threadID]: {
+                ...threadState,
+                counter: threadState.counter + 1,
+                state: { type: "Running" },
+              },
+            },
+          }
+        : state;
+    }
+    case "Lock":
+      // other thread will wake us up
+      return state;
+  }
 }
 
 function updateThreadScope(
