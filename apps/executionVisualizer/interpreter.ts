@@ -3,6 +3,7 @@ import { Program, compileBasicBlocks } from "./compileToTsObjs";
 
 export type State = {
   program: Program;
+  timestamp: number;
   threadState: { [threadID: string]: ThreadState };
   timers: { [id: string]: Timer };
   locks: { [id: string]: Lock };
@@ -26,7 +27,7 @@ type Timer = {
   wakeUpAt: number;
 };
 
-type BlockReason = { type: "Timer"; id: string } | { type: "Lock"; id: number };
+type BlockReason = { type: "Timer"; id: number } | { type: "Lock"; id: number };
 
 type Value =
   | string
@@ -40,6 +41,7 @@ type LockID = { type: "Lock"; id: number };
 export function initialState(instrs: BBMain): State {
   return {
     program: compileBasicBlocks(instrs),
+    timestamp: 0,
     threadState: { 0: { counter: 0, scope: {}, state: { type: "Running" } } },
     timers: {},
     locks: {},
@@ -259,8 +261,29 @@ function processBlockingCall(
           };
       }
     }
-    case "block.sleep":
-      return XXX;
+    case "block.sleep": {
+      const newTimerID = Object.keys(state.timers).length;
+      const sleepTime = args[0] as number;
+      return {
+        ...state,
+        threadState: {
+          ...state.threadState,
+          [threadID]: {
+            ...threadState,
+            state: {
+              type: "Blocked",
+              reason: { type: "Timer", id: newTimerID },
+            },
+          },
+        },
+        timers: {
+          ...state.timers,
+          [newTimerID]: {
+            wakeUpAt: state.timestamp + sleepTime,
+          },
+        },
+      };
+    }
     case "block.releaseLock":
       // doesn't block, but unblocks other threads...
       return XXXX;
