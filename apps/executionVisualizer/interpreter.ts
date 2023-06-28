@@ -4,7 +4,7 @@ import { Program, compileBasicBlocks } from "./compileToTsObjs";
 export type State = {
   program: Program;
   timestamp: number;
-  threadState: { [threadID: string]: ThreadState };
+  threadStates: { [threadID: string]: ThreadState };
   timers: { [id: string]: Timer };
   locks: { [id: string]: Lock };
 };
@@ -44,7 +44,7 @@ export function initialState(instrs: BBMain): State {
   return {
     program: compileBasicBlocks(instrs),
     timestamp: 0,
-    threadState: { 0: { counter: 0, scope: {}, state: { type: "Running" } } },
+    threadStates: { 0: { counter: 0, scope: {}, state: { type: "Running" } } },
     timers: {},
     locks: {},
   };
@@ -52,14 +52,14 @@ export function initialState(instrs: BBMain): State {
 
 export function step(state: State): State {
   let newState = state;
-  for (const threadID in state.threadState) {
+  for (const threadID in state.threadStates) {
     newState = stepThread(state, threadID);
   }
   return { ...newState, timestamp: state.timestamp + 1 };
 }
 
 function stepThread(state: State, threadID: string): State {
-  const threadState = state.threadState[threadID];
+  const threadState = state.threadStates[threadID];
   switch (threadState.state.type) {
     case "Running":
       return processRunning(state, threadID);
@@ -72,14 +72,14 @@ function stepThread(state: State, threadID: string): State {
 }
 
 function processRunning(state: State, threadID: string): State {
-  const threadState = state.threadState[threadID];
+  const threadState = state.threadStates[threadID];
   const counter = threadState.counter;
   const instr = state.program.instrs[counter];
   if (!instr) {
     return {
       ...state,
-      threadState: {
-        ...state.threadState,
+      threadStates: {
+        ...state.threadStates,
         [threadID]: {
           ...threadState,
           state: { type: "Finished" },
@@ -127,11 +127,11 @@ function processRunning(state: State, threadID: string): State {
       }
     }
     case "ForkToInstr": {
-      const newThreadID = Object.keys(state.threadState).length;
+      const newThreadID = Object.keys(state.threadStates).length;
       return {
         ...state,
-        threadState: {
-          ...state.threadState,
+        threadStates: {
+          ...state.threadStates,
           [threadID]: {
             ...threadState,
             counter: counter + 1,
@@ -147,8 +147,8 @@ function processRunning(state: State, threadID: string): State {
       // TODO: conditional
       return {
         ...state,
-        threadState: {
-          ...state.threadState,
+        threadStates: {
+          ...state.threadStates,
           [threadID]: {
             ...threadState,
             counter: state.program.blockIndex[instr.label.text],
@@ -163,7 +163,7 @@ function processBlocked(
   threadID: string,
   reason: BlockReason
 ): State {
-  const threadState = state.threadState[threadID];
+  const threadState = state.threadStates[threadID];
   switch (reason.type) {
     case "Timer": {
       const timer = state.timers[reason.id];
@@ -171,7 +171,7 @@ function processBlocked(
       return wakeUpTime === state.timestamp
         ? {
             ...state,
-            threadState: {
+            threadStates: {
               [threadID]: {
                 ...threadState,
                 counter: threadState.counter + 1,
@@ -193,11 +193,11 @@ function updateThreadScope(
   varName: string,
   value: Value
 ): State {
-  const threadState = state.threadState[threadID];
+  const threadState = state.threadStates[threadID];
   return {
     ...state,
-    threadState: {
-      ...state.threadState,
+    threadStates: {
+      ...state.threadStates,
       [threadID]: {
         ...threadState,
         counter: threadState.counter + 1,
@@ -256,7 +256,7 @@ function processBlockingCall(
   name: string,
   args: Value[]
 ): State {
-  const threadState = state.threadState[threadID];
+  const threadState = state.threadStates[threadID];
   switch (name) {
     case "block.acquireLock": {
       const lockID = (args[0] as LockID).id;
@@ -265,8 +265,8 @@ function processBlockingCall(
         case "HeldBy":
           return {
             ...state,
-            threadState: {
-              ...state.threadState,
+            threadStates: {
+              ...state.threadStates,
               [threadID]: {
                 ...threadState,
                 state: {
@@ -288,8 +288,8 @@ function processBlockingCall(
           // acquire lock
           return {
             ...state,
-            threadState: {
-              ...state.threadState,
+            threadStates: {
+              ...state.threadStates,
               [threadID]: {
                 ...threadState,
                 counter: threadState.counter + 1,
@@ -311,8 +311,8 @@ function processBlockingCall(
       const sleepTime = args[0] as number;
       return {
         ...state,
-        threadState: {
-          ...state.threadState,
+        threadStates: {
+          ...state.threadStates,
           [threadID]: {
             ...threadState,
             state: {
@@ -339,7 +339,7 @@ function processBlockingCall(
           const waiters = lock.waiters;
           if (waiters.length > 0) {
             const firstWaiterID = waiters[0];
-            const firstWaiterState = state.threadState[firstWaiterID];
+            const firstWaiterState = state.threadStates[firstWaiterID];
             return {
               ...state,
               locks: {
@@ -351,8 +351,8 @@ function processBlockingCall(
                   waiters: waiters.slice(1),
                 },
               },
-              threadState: {
-                ...state.threadState,
+              threadStates: {
+                ...state.threadStates,
                 // advance current thread
                 [threadID]: {
                   ...threadState,
@@ -375,8 +375,8 @@ function processBlockingCall(
               // transfer lock ownership
               [lockID]: { type: "Open" },
             },
-            threadState: {
-              ...state.threadState,
+            threadStates: {
+              ...state.threadStates,
               // advance current thread
               [threadID]: {
                 ...threadState,
