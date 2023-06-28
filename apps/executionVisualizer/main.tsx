@@ -15,6 +15,7 @@ import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { State, initialState, step } from "./interpreter";
 import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
+import { Explorer } from "../../uiCommon/explorer";
 
 function getInterp(input: string): [AbstractInterpreter, string | null] {
   const emptyInterp = new IncrementalInterpreter(".", LOADER);
@@ -59,7 +60,12 @@ function Main() {
       />
 
       <CollapsibleWithHeading
-        heading="End State"
+        heading="Trace"
+        content={<Explorer interp={interp} />}
+      />
+
+      <CollapsibleWithHeading
+        heading="End State (JSON)"
         content={<ReactJson src={state} enableClipboard={false} />}
       />
     </>
@@ -82,7 +88,7 @@ function dumpState(
       })
     );
   });
-  interp.bulkInsert(records);
+  interp = interp.bulkInsert(records);
   return interp;
 }
 
