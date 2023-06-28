@@ -12,6 +12,10 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { LOADER } from "./dl";
 import { Statement } from "../../core/types";
+import useLocalStorage from "react-use-localstorage";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { initialState, step } from "./interpreter";
+import ReactJson from "react-json-view";
 
 function getInterp(input: string): [AbstractInterpreter, string | null] {
   const emptyInterp = new IncrementalInterpreter(".", LOADER);
@@ -68,20 +72,30 @@ function update(state: State, action: Action): State {
   }
 }
 
-function getInitialState(source: string): State {
-  return {
-    editorState: initialEditorState(source),
-    error: null,
-    interp: getInterp(source)[0],
-    statements: [],
-  };
-}
+// function getInitialState(source: string): State {
+//   return {
+//     editorState: initialEditorState(source),
+//     error: null,
+//     interp: getInterp(source)[0],
+//     statements: [],
+//   };
+// }
 
-const initialState: State = getInitialState(EXAMPLE_BB);
+// const initialState: State = getInitialState(EXAMPLE_BB);
 
 function Main() {
   // TODO: get local storage for editor state again
-  const [state, dispatch] = useReducer(update, initialState);
+  // const [state, dispatch] = useReducer(update, initialState);
+  const [editorState, setEditorState] = useJSONLocalStorage(
+    "foo",
+    initialEditorState(EXAMPLE_BB)
+  );
+  const bbMain = parseMain(editorState.source);
+  let state = initialState(bbMain);
+  for (let i = 0; i < 50; i++) {
+    state = step(state);
+    console.log("state", i, state);
+  }
 
   return (
     <>
@@ -89,21 +103,11 @@ function Main() {
 
       <LingoEditor
         langSpec={LANGUAGES.basicBlocks}
-        editorState={state.editorState}
-        setEditorState={(newEditorState) =>
-          dispatch({ type: "UpdateEditorState", newEditorState })
-        }
+        editorState={editorState}
+        setEditorState={(newEditorState) => setEditorState(newEditorState)}
       />
 
-      {state.error ? <pre style={{ color: "red" }}>{state.error}</pre> : null}
-
-      <Explorer
-        interp={state.interp}
-        runStatements={(statements) => {
-          dispatch({ type: "RunStatements", statements });
-        }}
-        showViz
-      />
+      <ReactJson src={state} enableClipboard={false} />
     </>
   );
 }

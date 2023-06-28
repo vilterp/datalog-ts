@@ -75,9 +75,21 @@ function processRunning(state: State, threadID: string): State {
   const threadState = state.threadState[threadID];
   const counter = threadState.counter;
   const instr = state.program.instrs[counter];
+  if (!instr) {
+    return {
+      ...state,
+      threadState: {
+        ...state.threadState,
+        [threadID]: {
+          ...threadState,
+          state: { type: "Finished" },
+        },
+      },
+    };
+  }
   switch (instr.type) {
     case "ValueInstr": {
-      const varName = instr.ident.text;
+      const varName = instr.ident ? instr.ident.text : "_";
       const rvalue = instr.rvalue;
       // TODO: update counters
       switch (rvalue.type) {
