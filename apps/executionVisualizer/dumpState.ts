@@ -28,6 +28,16 @@ export function dumpState(
       })
     );
   });
+  Object.entries(state.timers).forEach(([timerID, timer]) => {
+    records.push(
+      rec("state.Timer", {
+        id: str(timerID),
+        time: int(state.timestamp),
+        wakeUpAt: int(timer.wakeUpAt),
+      })
+    );
+  });
+  // TODO: var
   interp = interp.bulkInsert(records);
   return interp;
 }
