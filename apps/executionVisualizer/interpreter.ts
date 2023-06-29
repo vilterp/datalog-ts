@@ -12,24 +12,26 @@ export type State = {
 type ThreadState = {
   counter: number;
   scope: { [name: string]: Value };
-  state:
-    | { type: "Running" }
-    | {
-        type: "Blocked";
-        reason: BlockReason;
-      }
-    | { type: "Finished" };
+  status: ThreadStatus;
 };
 
+export type ThreadStatus =
+  | { type: "running" }
+  | {
+      type: "blocked";
+      reason: BlockReason;
+    }
+  | { type: "finished" };
+
 type Lock =
-  | { type: "Open" }
-  | { type: "HeldBy"; threadID: number; waiters: number[] };
+  | { type: "open" }
+  | { type: "heldBy"; threadID: number; waiters: number[] };
 
 type Timer = {
   wakeUpAt: number;
 };
 
-type BlockReason = { type: "Timer"; id: number } | { type: "Lock"; id: number };
+type BlockReason = { type: "timer"; id: number } | { type: "lock"; id: number };
 
 type Value =
   | string
@@ -44,7 +46,7 @@ export function initialState(instrs: BBMain): State {
   return {
     program: compileBasicBlocks(instrs),
     timestamp: 0,
-    threadStates: { 0: { counter: 0, scope: {}, state: { type: "Running" } } },
+    threadStates: { 0: { counter: 0, scope: {}, status: { type: "running" } } },
     timers: {},
     locks: {},
   };
@@ -60,12 +62,12 @@ export function step(state: State): State {
 
 function stepThread(state: State, threadID: string): State {
   const threadState = state.threadStates[threadID];
-  switch (threadState.state.type) {
-    case "Running":
+  switch (threadState.status.type) {
+    case "running":
       return processRunning(state, threadID);
-    case "Blocked":
-      return processBlocked(state, threadID, threadState.state.reason);
-    case "Finished":
+    case "blocked":
+      return processBlocked(state, threadID, threadState.status.reason);
+    case "finished":
       // nothing to do
       return state;
   }
@@ -82,7 +84,7 @@ function processRunning(state: State, threadID: string): State {
         ...state.threadStates,
         [threadID]: {
           ...threadState,
-          state: { type: "Finished" },
+          status: { type: "finished" },
         },
       },
     };
@@ -173,7 +175,7 @@ function processBlocked(
 ): State {
   const threadState = state.threadStates[threadID];
   switch (reason.type) {
-    case "Timer": {
+    case "timer": {
       const timer = state.timers[reason.id];
       const wakeUpTime = timer.wakeUpAt;
       return wakeUpTime === state.timestamp
@@ -183,13 +185,13 @@ function processBlocked(
               [threadID]: {
                 ...threadState,
                 counter: threadState.counter + 1,
-                state: { type: "Running" },
+                status: { type: "running" },
               },
             },
           }
         : state;
     }
-    case "Lock":
+    case "lock":
       // other thread will wake us up
       return state;
   }
@@ -270,16 +272,16 @@ function processBlockingCall(
       const lockID = (args[0] as LockID).id;
       const lockState = state.locks[lockID];
       switch (lockState.type) {
-        case "HeldBy":
+        case "heldBy":
           return {
             ...state,
             threadStates: {
               ...state.threadStates,
               [threadID]: {
                 ...threadState,
-                state: {
-                  type: "Blocked",
-                  reason: { type: "Lock", id: lockID },
+                status: {
+                  type: "blocked",
+                  reason: { type: "lock", id: lockID },
                 },
               },
             },
@@ -292,7 +294,7 @@ function processBlockingCall(
               },
             },
           };
-        case "Open":
+        case "open":
           // acquire lock
           return {
             ...state,
@@ -323,9 +325,9 @@ function processBlockingCall(
           ...state.threadStates,
           [threadID]: {
             ...threadState,
-            state: {
-              type: "Blocked",
-              reason: { type: "Timer", id: newTimerID },
+            status: {
+              type: "blocked",
+              reason: { type: "timer", id: newTimerID },
             },
           },
         },
@@ -343,7 +345,7 @@ function processBlockingCall(
       const lock = state.locks[lockID];
       // TODO: need a waiters queue?
       switch (lock.type) {
-        case "HeldBy": {
+        case "heldBy": {
           const waiters = lock.waiters;
           if (waiters.length > 0) {
             const firstWaiterID = waiters[0];
@@ -369,7 +371,7 @@ function processBlockingCall(
                 // unblock and advance acquiring thread
                 [firstWaiterID]: {
                   ...firstWaiterState,
-                  state: { type: "Running" },
+                  status: { type: "running" },
                   counter: firstWaiterState.counter + 1,
                 },
               },
@@ -393,7 +395,7 @@ function processBlockingCall(
             },
           };
         }
-        case "Open":
+        case "open":
           throw new Error("releasing an open lock");
       }
     }

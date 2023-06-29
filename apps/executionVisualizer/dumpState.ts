@@ -1,6 +1,7 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, int, rec, str } from "../../core/types";
-import { State } from "./interpreter";
+import { jsonToDL } from "../../util/json2dl";
+import { State, ThreadStatus } from "./interpreter";
 
 export function dumpState(
   interp: AbstractInterpreter,
@@ -13,11 +14,15 @@ export function dumpState(
         thread: str(threadID),
         counter: int(threadState.counter),
         time: int(state.timestamp),
-        // TODO: make into record
-        state: str(threadState.state.type),
+        // TODO: rename field to status?
+        state: threadStatusToRec(threadState.status),
       })
     );
   });
   interp = interp.bulkInsert(records);
   return interp;
+}
+
+function threadStatusToRec(status: ThreadStatus): Rec {
+  return jsonToDL(status) as Rec;
 }
