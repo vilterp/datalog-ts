@@ -15,14 +15,19 @@ export function dumpState(
         counter: int(threadState.counter),
         time: int(state.timestamp),
         // TODO: rename field to status?
-        state: threadStatusToRec(threadState.status),
+        state: jsonToDL(threadState.status),
+      })
+    );
+  });
+  Object.entries(state.locks).forEach(([lockID, lockState]) => {
+    records.push(
+      rec("state.Lock", {
+        id: str(lockID),
+        time: int(state.timestamp),
+        state: jsonToDL(lockState),
       })
     );
   });
   interp = interp.bulkInsert(records);
   return interp;
-}
-
-function threadStatusToRec(status: ThreadStatus): Rec {
-  return jsonToDL(status) as Rec;
 }

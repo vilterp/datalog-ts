@@ -30,8 +30,8 @@ internal.visualization{
 
 viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
   # viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
-  # viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
 # messages
 # viz.spawnMessage{
 #   fromTick: tick{time: FromT, place: FromTH},
@@ -48,18 +48,15 @@ viz.continueMessage{
   state.ProgramCounter{thread: TH, time: PrevT} &
   state.ProgramCounter{thread: TH, time: T} &
   PrevT = T + 1.
-# viz.lockTransferMessage{
-#   fromTick: tick{time: T, place: ReleaseTH},
-#   toTick: tick{time: T, place: AcquireTH},
-#   kind: lockTransfer{},
-# } :-
-#   state.programCounter.lock.acquire.unblock{
-#     thread: AcquireTH,
-#     time: AcquireT,
-#     lock: L,
-#     time: T,
-#     releasingThread: ReleaseTH,
-#   }.
+viz.lockTransferMessage{
+  fromTick: tick{time: PrevT, place: ReleaseTH},
+  toTick: tick{time: T, place: AcquireTH},
+  kind: lockTransfer{},
+} :-
+  state.Lock{time: PrevT, state: heldBy{threadID: ReleaseTH}} &
+  state.Lock{time: T, state: heldBy{threadID: AcquireTH}} &
+  AcquireTH != ReleaseTH &
+  T = PrevT + 1.
 # hop color
 .table viz.hopColorCode
 viz.hopColorCode{kind: continue{}, color: "grey"}.
