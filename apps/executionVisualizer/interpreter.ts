@@ -55,7 +55,7 @@ export function initialState(instrs: BBMain): State {
 export function step(state: State): State {
   let newState = state;
   for (const threadID in state.threadStates) {
-    newState = stepThread(state, threadID);
+    newState = stepThread(newState, threadID);
   }
   return { ...newState, timestamp: state.timestamp + 1 };
 }
