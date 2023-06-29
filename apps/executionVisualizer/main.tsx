@@ -61,7 +61,7 @@ function Main() {
 
       <CollapsibleWithHeading
         heading="Trace"
-        content={<Explorer interp={interp} />}
+        content={<Explorer interp={interp} showViz />}
       />
 
       <CollapsibleWithHeading

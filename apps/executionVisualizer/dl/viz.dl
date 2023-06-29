@@ -9,84 +9,84 @@
 
 # Slider for solverParams
 
-internal.visualization{
-  name: "Params",
-  spec: multiSlider{
-    vars: input.solverParam{instrIdx: ID, value: Val}
-  }
-}.
+# internal.visualization{
+#   name: "Params",
+#   spec: multiSlider{
+#     vars: input.solverParam{instrIdx: ID, value: Val}
+#   }
+# }.
 
 # sequence diagram
 
-internal.visualization{
-  name: "Spawning Sequence",
-  spec: sequence{
-    actors: state.ProgramCounter{thread: ID},
-    hops: viz.hop{fromTick: FromTick, toTick: ToTick},
-    tickColor: viz.tickColor{tick: Tick, color: Color},
-    hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
-  },
-}.
+# internal.visualization{
+#   name: "Spawning Sequence",
+#   spec: sequence{
+#     actors: state.ProgramCounter{thread: ID},
+#     hops: viz.hop{fromTick: FromTick, toTick: ToTick},
+#     tickColor: viz.tickColor{tick: Tick, color: Color},
+#     hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
+#   },
+# }.
 
-viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
-  viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-  viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
-# messages
-viz.spawnMessage{
-  fromTick: tick{time: FromT, place: FromTH},
-  toTick: tick{time: ToT, place: ToTH},
-  kind: spawn{},
-} :-
-  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
-  ToT = FromT + 1.
-viz.continueMessage{
-  fromTick: tick{time: PrevT, place: TH},
-  toTick: tick{time: T, place: TH},
-  kind: continue{},
-} :-
-  state.ProgramCounter{thread: TH, time: PrevT} &
-  state.ProgramCounter{thread: TH, time: T} &
-  PrevT = T + 1.
-viz.lockTransferMessage{
-  fromTick: tick{time: T, place: ReleaseTH},
-  toTick: tick{time: T, place: AcquireTH},
-  kind: lockTransfer{},
-} :-
-  state.programCounter.lock.acquire.unblock{
-    thread: AcquireTH,
-    time: AcquireT,
-    lock: L,
-    time: T,
-    releasingThread: ReleaseTH,
-  }.
-# hop color
-.table viz.hopColorCode
-viz.hopColorCode{kind: continue{}, color: "grey"}.
-viz.hopColorCode{kind: spawn{}, color: "blue"}.
-viz.hopColorCode{kind: lockTransfer{}, color: "green"}.
+# viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
+#   viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+#   viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+#   viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
+# # messages
+# viz.spawnMessage{
+#   fromTick: tick{time: FromT, place: FromTH},
+#   toTick: tick{time: ToT, place: ToTH},
+#   kind: spawn{},
+# } :-
+#   state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
+#   ToT = FromT + 1.
+# viz.continueMessage{
+#   fromTick: tick{time: PrevT, place: TH},
+#   toTick: tick{time: T, place: TH},
+#   kind: continue{},
+# } :-
+#   state.ProgramCounter{thread: TH, time: PrevT} &
+#   state.ProgramCounter{thread: TH, time: T} &
+#   PrevT = T + 1.
+# viz.lockTransferMessage{
+#   fromTick: tick{time: T, place: ReleaseTH},
+#   toTick: tick{time: T, place: AcquireTH},
+#   kind: lockTransfer{},
+# } :-
+#   state.programCounter.lock.acquire.unblock{
+#     thread: AcquireTH,
+#     time: AcquireT,
+#     lock: L,
+#     time: T,
+#     releasingThread: ReleaseTH,
+#   }.
+# # hop color
+# .table viz.hopColorCode
+# viz.hopColorCode{kind: continue{}, color: "grey"}.
+# viz.hopColorCode{kind: spawn{}, color: "blue"}.
+# viz.hopColorCode{kind: lockTransfer{}, color: "green"}.
 
-viz.hopColor{fromTick: From, toTick: To, color: C} :-
-  viz.hop{fromTick: From, toTick: To, kind: K} &
-  viz.hopColorCode{kind: K, color: C}.
-# tick color
-viz.tickColor{tick: T, color: C} :-
-  viz.runningColor{tick: T, color: C} |
-  viz.blockedColor{tick: T, color: C}.
-viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
-  state.ProgramCounter{thread: TH, time: T, state: running{}}.
-viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
-  state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
+# viz.hopColor{fromTick: From, toTick: To, color: C} :-
+#   viz.hop{fromTick: From, toTick: To, kind: K} &
+#   viz.hopColorCode{kind: K, color: C}.
+# # tick color
+# viz.tickColor{tick: T, color: C} :-
+#   viz.runningColor{tick: T, color: C} |
+#   viz.blockedColor{tick: T, color: C}.
+# viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
+#   state.ProgramCounter{thread: TH, time: T, state: running{}}.
+# viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
+#   state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
 
-internal.visualization{
-  name: "Wait-For Graph",
-  spec: paramSlider{
-    var: T,
-    inner: graphviz{
-      edges: state.waitingFor{time: T, waiting: From, waitingOn: To},
-    }
-  },
-}.
+# internal.visualization{
+#   name: "Wait-For Graph",
+#   spec: paramSlider{
+#     var: T,
+#     inner: graphviz{
+#       edges: state.waitingFor{time: T, waiting: From, waitingOn: To},
+#     }
+#   },
+# }.
 
 internal.visualization{
   name: "Program Counter over Time",
@@ -101,19 +101,19 @@ internal.visualization{
   }
 }.
 
-# TODO: another encoding channel for thread
-internal.visualization{
-  name: "Variables Over Time",
-  spec: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "value", type: "quantitative"},
-      color: mapping{field: "tv"}
-    },
-    query: viz.threadVar{}
-  }
-}.
+# # TODO: another encoding channel for thread
+# internal.visualization{
+#   name: "Variables Over Time",
+#   spec: vegalite{
+#     mark: "line",
+#     encoding: encoding{
+#       x: mapping{field: "time", type: "quantitative"},
+#       y: mapping{field: "value", type: "quantitative"},
+#       color: mapping{field: "tv"}
+#     },
+#     query: viz.threadVar{}
+#   }
+# }.
 
-viz.threadVar{time: T, tv: [TH, V], value: Val} :-
-  state.Var{thread: TH, time: T, var: V, value: Val}.
+# viz.threadVar{time: T, tv: [TH, V], value: Val} :-
+#   state.Var{thread: TH, time: T, var: V, value: Val}.
