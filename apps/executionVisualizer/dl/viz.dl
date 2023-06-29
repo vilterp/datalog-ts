@@ -18,21 +18,21 @@
 
 # sequence diagram
 
-# internal.visualization{
-#   name: "Spawning Sequence",
-#   spec: sequence{
-#     actors: state.ProgramCounter{thread: ID},
-#     hops: viz.hop{fromTick: FromTick, toTick: ToTick},
-#     tickColor: viz.tickColor{tick: Tick, color: Color},
-#     hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
-#   },
-# }.
+internal.visualization{
+  name: "Spawning Sequence",
+  spec: sequence{
+    actors: state.ProgramCounter{thread: ID},
+    hops: viz.hop{fromTick: FromTick, toTick: ToTick},
+    tickColor: viz.tickColor{tick: Tick, color: Color},
+    hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
+  },
+}.
 
-# viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
-#   viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-#   viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
-#   viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
-# # messages
+viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
+  # viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
+  # viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
+# messages
 # viz.spawnMessage{
 #   fromTick: tick{time: FromT, place: FromTH},
 #   toTick: tick{time: ToT, place: ToTH},
@@ -40,14 +40,14 @@
 # } :-
 #   state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
 #   ToT = FromT + 1.
-# viz.continueMessage{
-#   fromTick: tick{time: PrevT, place: TH},
-#   toTick: tick{time: T, place: TH},
-#   kind: continue{},
-# } :-
-#   state.ProgramCounter{thread: TH, time: PrevT} &
-#   state.ProgramCounter{thread: TH, time: T} &
-#   PrevT = T + 1.
+viz.continueMessage{
+  fromTick: tick{time: PrevT, place: TH},
+  toTick: tick{time: T, place: TH},
+  kind: continue{},
+} :-
+  state.ProgramCounter{thread: TH, time: PrevT} &
+  state.ProgramCounter{thread: TH, time: T} &
+  PrevT = T + 1.
 # viz.lockTransferMessage{
 #   fromTick: tick{time: T, place: ReleaseTH},
 #   toTick: tick{time: T, place: AcquireTH},
@@ -60,23 +60,27 @@
 #     time: T,
 #     releasingThread: ReleaseTH,
 #   }.
-# # hop color
-# .table viz.hopColorCode
-# viz.hopColorCode{kind: continue{}, color: "grey"}.
-# viz.hopColorCode{kind: spawn{}, color: "blue"}.
-# viz.hopColorCode{kind: lockTransfer{}, color: "green"}.
+# hop color
+.table viz.hopColorCode
+viz.hopColorCode{kind: continue{}, color: "grey"}.
+viz.hopColorCode{kind: spawn{}, color: "blue"}.
+viz.hopColorCode{kind: lockTransfer{}, color: "green"}.
 
-# viz.hopColor{fromTick: From, toTick: To, color: C} :-
-#   viz.hop{fromTick: From, toTick: To, kind: K} &
-#   viz.hopColorCode{kind: K, color: C}.
-# # tick color
-# viz.tickColor{tick: T, color: C} :-
-#   viz.runningColor{tick: T, color: C} |
-#   viz.blockedColor{tick: T, color: C}.
-# viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
-#   state.ProgramCounter{thread: TH, time: T, state: running{}}.
-# viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
-#   state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
+viz.hopColor{fromTick: From, toTick: To, color: C} :-
+  viz.hop{fromTick: From, toTick: To, kind: K} &
+  viz.hopColorCode{kind: K, color: C}.
+# tick color
+viz.tickColor{tick: T, color: C} :-
+  viz.runningColor{tick: T, color: C} |
+  viz.blockedColor{tick: T, color: C} |
+  viz.finishedColor{tick: T, color: C}.
+viz.runningColor{tick: tick{time: T, place: TH}, color: "green"} :-
+  state.ProgramCounter{thread: TH, time: T, state: running{}}.
+viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
+  state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
+viz.finishedColor{tick: tick{time: T, place: TH}, color: "red"} :-
+  state.ProgramCounter{thread: TH, time: T, state: finished{}}.
+
 
 # internal.visualization{
 #   name: "Wait-For Graph",
