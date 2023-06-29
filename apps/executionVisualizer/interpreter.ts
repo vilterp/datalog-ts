@@ -62,6 +62,9 @@ export function step(state: State): State {
 
 function stepThread(state: State, threadID: string): State {
   const threadState = state.threadStates[threadID];
+  if (!threadState) {
+    debugger;
+  }
   switch (threadState.status.type) {
     case "running":
       return processRunning(state, threadID);
@@ -182,6 +185,7 @@ function processBlocked(
         ? {
             ...state,
             threadStates: {
+              ...state.threadStates,
               [threadID]: {
                 ...threadState,
                 counter: threadState.counter + 1,
