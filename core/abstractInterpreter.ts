@@ -28,7 +28,6 @@ export abstract class AbstractInterpreter {
   bulkInsert(records: Rec[]): AbstractInterpreter {
     let interp: AbstractInterpreter = this;
     for (const record of records) {
-      console.log("inserting", record);
       interp = interp.evalStmt({ type: "Fact", record })[1];
     }
     return interp;
