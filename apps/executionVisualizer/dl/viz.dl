@@ -102,19 +102,19 @@ internal.visualization{
   }
 }.
 
-# # TODO: another encoding channel for thread
-# internal.visualization{
-#   name: "Variables Over Time",
-#   spec: vegalite{
-#     mark: "line",
-#     encoding: encoding{
-#       x: mapping{field: "time", type: "quantitative"},
-#       y: mapping{field: "value", type: "quantitative"},
-#       color: mapping{field: "tv"}
-#     },
-#     query: viz.threadVar{}
-#   }
-# }.
+# TODO: another encoding channel for thread
+internal.visualization{
+  name: "Variables Over Time",
+  spec: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "value", type: "quantitative"},
+      color: mapping{field: "tv"}
+    },
+    query: viz.threadVar{}
+  }
+}.
 
-# viz.threadVar{time: T, tv: [TH, V], value: Val} :-
-#   state.Var{thread: TH, time: T, var: V, value: Val}.
+viz.threadVar{time: T, tv: [TH, V], value: Val} :-
+  state.Var{thread: TH, time: T, var: V, value: Val}.

@@ -1,7 +1,7 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, int, rec, str } from "../../core/types";
 import { jsonToDL } from "../../util/json2dl";
-import { State, ThreadStatus } from "./interpreter";
+import { State } from "./interpreter";
 
 export function dumpState(
   interp: AbstractInterpreter,
@@ -18,6 +18,16 @@ export function dumpState(
         state: jsonToDL(threadState.status),
       })
     );
+    Object.entries(threadState.scope).forEach(([name, value]) => {
+      records.push(
+        rec("state.Var", {
+          thread: str(threadID),
+          time: int(state.timestamp),
+          var: str(name),
+          value: jsonToDL(value),
+        })
+      );
+    });
   });
   Object.entries(state.locks).forEach(([lockID, lockState]) => {
     records.push(
@@ -37,7 +47,6 @@ export function dumpState(
       })
     );
   });
-  // TODO: var
   interp = interp.bulkInsert(records);
   return interp;
 }
