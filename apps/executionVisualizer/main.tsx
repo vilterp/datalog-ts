@@ -43,6 +43,7 @@ function Main() {
 
   const bbMain = parseMain(editorState.source);
   let state = initialState(bbMain);
+  interp = dumpState(interp, state);
   for (let t = 0; t < 50; t++) {
     state = step(state);
     interp = dumpState(interp, state);

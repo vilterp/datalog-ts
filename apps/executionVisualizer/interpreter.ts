@@ -243,11 +243,12 @@ function processAllocCall(
   switch (name) {
     case "alloc.newLock": {
       const newLockID = Object.keys(state.locks).length;
+      const newLock: Lock = { type: "open" };
       const withLock: State = {
         ...state,
         locks: {
           ...state.locks,
-          [newLockID]: { type: "Open" },
+          [newLockID]: newLock,
         },
       };
       return updateThreadScope(withLock, threadID, varName, {
@@ -279,6 +280,7 @@ function processBlockingCall(
               ...state.threadStates,
               [threadID]: {
                 ...threadState,
+                counter: threadState.counter + 1,
                 status: {
                   type: "blocked",
                   reason: { type: "lock", id: lockID },
@@ -308,7 +310,7 @@ function processBlockingCall(
             locks: {
               ...state.locks,
               [lockID]: {
-                type: "HeldBy",
+                type: "heldBy",
                 threadID,
                 waiters: [],
               },
@@ -356,7 +358,7 @@ function processBlockingCall(
                 ...state.locks,
                 // transfer lock ownership
                 [lockID]: {
-                  type: "HeldBy",
+                  type: "heldBy",
                   threadID: firstWaiterID,
                   waiters: waiters.slice(1),
                 },
@@ -383,7 +385,7 @@ function processBlockingCall(
             locks: {
               ...state.locks,
               // transfer lock ownership
-              [lockID]: { type: "Open" },
+              [lockID]: { type: "open" },
             },
             threadStates: {
               ...state.threadStates,
