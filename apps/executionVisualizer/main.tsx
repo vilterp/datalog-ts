@@ -3,19 +3,19 @@ import ReactDOM from "react-dom";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
+import { initialEditorState } from "../../uiCommon/ide/types";
 import { compileBasicBlocks } from "./compileToDL";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 // @ts-ignore
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { LOADER } from "./dl";
-import { Rec, Statement, int, rec, str } from "../../core/types";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
-import { State, initialState, step } from "./interpreter";
+import { initialState, step } from "./interpreter";
 import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { Explorer } from "../../uiCommon/explorer";
+import { dumpState } from "./dumpState";
 
 function getInterp(input: string): [AbstractInterpreter, string | null] {
   const emptyInterp = new IncrementalInterpreter(".", LOADER);
@@ -70,26 +70,6 @@ function Main() {
       />
     </>
   );
-}
-
-function dumpState(
-  interp: AbstractInterpreter,
-  state: State
-): AbstractInterpreter {
-  const records: Rec[] = [];
-  Object.entries(state.threadStates).forEach(([threadID, threadState]) => {
-    records.push(
-      rec("state.ProgramCounter", {
-        thread: str(threadID),
-        counter: int(threadState.counter),
-        time: int(state.timestamp),
-        // TODO: make into record
-        state: str(threadState.state.type),
-      })
-    );
-  });
-  interp = interp.bulkInsert(records);
-  return interp;
 }
 
 ReactDOM.render(<Main />, document.getElementById("main"));
