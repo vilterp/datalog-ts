@@ -11,22 +11,29 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { LOADER } from "./dl";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
-import { initialState, step } from "./interpreter";
+import { State, initialState, step } from "./interpreter";
 import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { Explorer } from "../../uiCommon/explorer";
 import { dumpState } from "./dumpState";
 
-function getInterp(input: string): [AbstractInterpreter, string | null] {
-  const emptyInterp = new IncrementalInterpreter(".", LOADER);
-  const loadedInterp = emptyInterp.doLoad("main.dl");
+function getInterp(input: string): [State, AbstractInterpreter, string | null] {
+  let interp: AbstractInterpreter = new IncrementalInterpreter(".", LOADER);
+  interp = interp.doLoad("viz.dl");
+
+  const bbMain = parseMain(input);
+  let state = initialState(bbMain);
+  interp = dumpState(interp, state);
   try {
-    const tree = parseMain(input);
-    const records = compileBasicBlocks(tree);
-    return [loadedInterp.bulkInsert(records), null];
+    for (let t = 0; t < 50; t++) {
+      state = step(state);
+      interp = dumpState(interp, state);
+      console.log("state", t, state);
+    }
+
+    return [state, interp, null];
   } catch (e) {
-    console.warn(e);
-    return [loadedInterp, e.toString()];
+    return [state, interp, e.toString()];
   }
 }
 
@@ -38,17 +45,7 @@ function Main() {
     initialEditorState(EXAMPLE_BB)
   );
 
-  let interp: AbstractInterpreter = new IncrementalInterpreter(".", LOADER);
-  interp = interp.doLoad("viz.dl");
-
-  const bbMain = parseMain(editorState.source);
-  let state = initialState(bbMain);
-  interp = dumpState(interp, state);
-  for (let t = 0; t < 50; t++) {
-    state = step(state);
-    interp = dumpState(interp, state);
-    console.log("state", t, state);
-  }
+  const [state, interp, error] = getInterp(editorState.source);
 
   return (
     <>
@@ -59,6 +56,8 @@ function Main() {
         editorState={editorState}
         setEditorState={(newEditorState) => setEditorState(newEditorState)}
       />
+
+      {error ? <pre style={{ color: "red" }}>{error}</pre> : null}
 
       <CollapsibleWithHeading
         heading="Trace"

@@ -96,7 +96,6 @@ function processRunning(state: State, threadID: string): State {
     case "ValueInstr": {
       const varName = instr.ident ? instr.ident.text : "_";
       const rvalue = instr.rvalue;
-      // TODO: update counters
       switch (rvalue.type) {
         case "Call": {
           const name = rvalue.ident.text;
@@ -110,6 +109,8 @@ function processRunning(state: State, threadID: string): State {
             return processBlockingCall(state, threadID, name, args);
           } else if (name.startsWith("alloc.")) {
             return processAllocCall(state, threadID, varName, name, args);
+          } else {
+            throw new Error(`unknown function: ${name}`);
           }
         }
         case "EditorVar":
