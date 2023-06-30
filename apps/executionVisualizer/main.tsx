@@ -35,7 +35,6 @@ function getInterp(input: string): [State, AbstractInterpreter, string | null] {
     for (let t = 0; t < 50; t++) {
       state = step(state);
       interp = dumpState(interp, state);
-      console.log("state", t, state);
     }
 
     return [state, interp, null];
