@@ -29,17 +29,20 @@ internal.visualization{
 }.
 
 viz.hop{fromTick: FromTick, toTick: ToTick, kind: K} :-
-  # viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
+  viz.spawnMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
   viz.continueMessage{fromTick: FromTick, toTick: ToTick, kind: K} |
   viz.lockTransferMessage{fromTick: FromTick, toTick: ToTick, kind: K}.
 # messages
-# viz.spawnMessage{
-#   fromTick: tick{time: FromT, place: FromTH},
-#   toTick: tick{time: ToT, place: ToTH},
-#   kind: spawn{},
-# } :-
-#   state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
-#   ToT = FromT + 1.
+viz.spawnMessage{
+  fromTick: tick{time: FromT, place: FromTH},
+  toTick: tick{time: ToT, place: ToTH},
+  kind: spawn{},
+} :-
+  # TODO: constrain time as well?
+  state.ProgramCounter{time: FromT, thread: FromTH, counter: ForkC} &
+  state.ProgramCounter{time: ToT, thread: ToTH, counter: ForkToC} &
+  instr{idx: ForkC, op: forkTo{dest: ForkToC}} &
+  FromT + 1 = ToT.
 viz.continueMessage{
   fromTick: tick{time: PrevT, place: TH},
   toTick: tick{time: T, place: TH},
