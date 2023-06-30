@@ -25,7 +25,7 @@ export type ThreadStatus =
 
 type Lock =
   | { type: "open" }
-  | { type: "heldBy"; threadID: number; waiters: number[] };
+  | { type: "heldBy"; thread: number; waiters: number[] };
 
 type Timer = {
   wakeUpAt: number;
@@ -316,7 +316,7 @@ function processBlockingCall(
               ...state.locks,
               [lockID]: {
                 type: "heldBy",
-                threadID,
+                thread: threadID,
                 waiters: [],
               },
             },
@@ -364,7 +364,7 @@ function processBlockingCall(
                 // transfer lock ownership
                 [lockID]: {
                   type: "heldBy",
-                  threadID: firstWaiterID,
+                  thread: firstWaiterID,
                   waiters: waiters.slice(1),
                 },
               },

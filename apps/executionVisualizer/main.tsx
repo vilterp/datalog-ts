@@ -21,6 +21,7 @@ import { int, rec } from "../../core/types";
 function getInterp(input: string): [State, AbstractInterpreter, string | null] {
   let interp: AbstractInterpreter = new IncrementalInterpreter(".", LOADER);
   interp = interp.doLoad("viz.dl");
+  interp = interp.doLoad("deadlock.dl");
 
   const bbMain = parseMain(input);
   let state = initialState(bbMain);
