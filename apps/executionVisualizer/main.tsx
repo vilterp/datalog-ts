@@ -1,48 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { initialEditorState } from "../../uiCommon/ide/types";
-import { compileBasicBlocks } from "./compileToDL";
-import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
-import { AbstractInterpreter } from "../../core/abstractInterpreter";
-// @ts-ignore
-import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
-import { LOADER } from "./dl";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
-import { State, initialState, step } from "./interpreter";
 import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { Explorer } from "../../uiCommon/explorer";
-import { dumpState } from "./dumpState";
-import { int, rec } from "../../core/types";
-
-function getInterp(input: string): [State, AbstractInterpreter, string | null] {
-  let interp: AbstractInterpreter = new IncrementalInterpreter(".", LOADER);
-  interp = interp.doLoad("viz.dl");
-  interp = interp.doLoad("deadlock.dl");
-
-  const bbMain = parseMain(input);
-  let state = initialState(bbMain);
-
-  // insert initial state
-  state.program.dlInstrs.forEach((instr, idx) => {
-    interp = interp.insert(rec("instr", { idx: int(idx), op: instr }));
-  });
-  interp = dumpState(interp, state);
-  try {
-    // step program
-    for (let t = 0; t < 50; t++) {
-      state = step(state);
-      interp = dumpState(interp, state);
-    }
-
-    return [state, interp, null];
-  } catch (e) {
-    return [state, interp, e.toString()];
-  }
-}
+import { stepAndRecord } from "./stepAndRecord";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { LOADER } from "./dl";
+// @ts-ignore
+import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 
 function Main() {
   // TODO: get local storage for editor state again
@@ -51,8 +21,11 @@ function Main() {
     "foo",
     initialEditorState(EXAMPLE_BB)
   );
-
-  const [state, interp, error] = getInterp(editorState.source);
+  const initInterp: AbstractInterpreter = new IncrementalInterpreter(
+    ".",
+    LOADER
+  );
+  const [state, interp, error] = stepAndRecord(initInterp, editorState.source);
 
   return (
     <>

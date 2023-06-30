@@ -1,9 +1,38 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, int, rec, str } from "../../core/types";
+import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { jsonToDL } from "../../util/json2dl";
-import { State } from "./interpreter";
+import { State, initialState, step } from "./interpreter";
 
-export function dumpState(
+export function stepAndRecord(
+  interp: AbstractInterpreter,
+  input: string
+): [State, AbstractInterpreter, string | null] {
+  interp = interp.doLoad("viz.dl");
+  interp = interp.doLoad("deadlock.dl");
+
+  const bbMain = parseMain(input);
+  let state = initialState(bbMain);
+
+  // insert initial state
+  state.program.dlInstrs.forEach((instr, idx) => {
+    interp = interp.insert(rec("instr", { idx: int(idx), op: instr }));
+  });
+  interp = dumpState(interp, state);
+  try {
+    // step program
+    for (let t = 0; t < 50; t++) {
+      state = step(state);
+      interp = dumpState(interp, state);
+    }
+
+    return [state, interp, null];
+  } catch (e) {
+    return [state, interp, e.toString()];
+  }
+}
+
+function dumpState(
   interp: AbstractInterpreter,
   state: State
 ): AbstractInterpreter {

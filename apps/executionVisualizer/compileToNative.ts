@@ -13,7 +13,7 @@ export type Program = {
   params: { [id: string]: { defaultValue: number } };
 };
 
-export function compileBasicBlocks(tree: BBMain): Program {
+export function compileBasicBlocksNative(tree: BBMain): Program {
   const blockIndex = getBlockIndex(tree);
   const instrs: BBInstr[] = [];
   const params: { [id: string]: { defaultValue: number } } = {};

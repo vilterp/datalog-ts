@@ -4,9 +4,11 @@ import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
+import { runDDTestAtPathTwoVariants } from "../../util/ddTest/runner";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
-import { compileBasicBlocks } from "./compileToDL";
+import { compileBasicBlocksDL } from "./compileToDL";
+import { stepAndRecord } from "./stepAndRecord";
 
 export function executionVisualizerTests(writeResults: boolean): Suite {
   return [
@@ -25,7 +27,7 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
       test() {
         runDDTestAtPath(
           "apps/executionVisualizer/testdata/endToEnd.dd.txt",
-          endToEndTest,
+          endToEndTestDL,
           writeResults
         );
       },
@@ -40,30 +42,56 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "endToEndBoth",
+      test() {
+        runDDTestAtPathTwoVariants(
+          "apps/executionVisualizer/testdata/endToEndBoth.dd.txt",
+          { name: "datalog", getResults: endToEndTestDL },
+          { name: "imperative", getResults: endToEndTestImperative },
+          writeResults
+        );
+      },
+    },
   ];
 }
 
 function compilerTest(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
     const main = parseMain(input);
-    const records = compileBasicBlocks(main);
+    const records = compileBasicBlocksDL(main);
     return datalogOut(records);
   });
 }
 
-function endToEndTest(inputs: string[]): TestOutput[] {
+function endToEndTestDL(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
     const lines = input.split("\n");
     const allButLast = lines.slice(0, lines.length - 1).join("\n");
     const lastLine = lines[lines.length - 1];
     const main = parseMain(allButLast);
-    const records = compileBasicBlocks(main);
+    const records = compileBasicBlocksDL(main);
     let interp: AbstractInterpreter = new IncrementalInterpreter(
       "apps/executionVisualizer/dl",
       fsLoader
     );
     interp = interp.doLoad("main.dl");
     interp = interp.bulkInsert(records);
+    const out = interp.queryStr(lastLine).map((x) => x.term);
+    return datalogOut(out);
+  });
+}
+
+function endToEndTestImperative(inputs: string[]): TestOutput[] {
+  return inputs.map((input) => {
+    const lines = input.split("\n");
+    const allButLast = lines.slice(0, lines.length - 1).join("\n");
+    const lastLine = lines[lines.length - 1];
+    const initInterp: AbstractInterpreter = new IncrementalInterpreter(
+      "apps/executionVisualizer/dl",
+      fsLoader
+    );
+    const [state, interp, error] = stepAndRecord(initInterp, allButLast);
     const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
   });
@@ -84,7 +112,7 @@ function sliderTest(inputs: string[]): TestOutput[] {
     switch (firstLine) {
       case "source": {
         const main = parseMain(allButFirst);
-        const records = compileBasicBlocks(main);
+        const records = compileBasicBlocksDL(main);
         interp = interp.bulkInsert(records);
         output.push(datalogOut([]));
         break;

@@ -1,5 +1,5 @@
 import { BBMain } from "../../languageWorkbench/languages/basicBlocks/parser";
-import { Program, compileBasicBlocks } from "./compileToTsObjs";
+import { Program, compileBasicBlocksNative } from "./compileToNative";
 
 export type State = {
   program: Program;
@@ -44,7 +44,7 @@ type LockID = { type: "Lock"; id: number };
 
 export function initialState(instrs: BBMain): State {
   return {
-    program: compileBasicBlocks(instrs),
+    program: compileBasicBlocksNative(instrs),
     timestamp: 0,
     threadStates: { 0: { counter: 0, scope: {}, status: { type: "running" } } },
     timers: {},

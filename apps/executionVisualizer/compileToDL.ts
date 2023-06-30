@@ -6,7 +6,7 @@ import {
 } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { BlockIndex } from "./types";
 
-export function compileBasicBlocks(tree: BBMain): Rec[] {
+export function compileBasicBlocksDL(tree: BBMain): Rec[] {
   const instrRecs: Rec[] = [];
   const solverParamRecs: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
