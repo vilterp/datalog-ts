@@ -29,7 +29,7 @@ export function compileBasicBlocks(tree: BBMain): Rec[] {
   return [...instrRecs, ...solverParamRecs];
 }
 
-function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
+export function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
   switch (instr.type) {
     case "ValueInstr":
       return rec("store", {

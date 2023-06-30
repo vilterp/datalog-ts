@@ -16,6 +16,7 @@ import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { Explorer } from "../../uiCommon/explorer";
 import { dumpState } from "./dumpState";
+import { int, rec } from "../../core/types";
 
 function getInterp(input: string): [State, AbstractInterpreter, string | null] {
   let interp: AbstractInterpreter = new IncrementalInterpreter(".", LOADER);
@@ -23,8 +24,14 @@ function getInterp(input: string): [State, AbstractInterpreter, string | null] {
 
   const bbMain = parseMain(input);
   let state = initialState(bbMain);
+
+  // insert initial state
+  state.program.dlInstrs.forEach((instr, idx) => {
+    interp = interp.insert(rec("instr", { idx: int(idx), op: instr }));
+  });
   interp = dumpState(interp, state);
   try {
+    // step program
     for (let t = 0; t < 50; t++) {
       state = step(state);
       interp = dumpState(interp, state);

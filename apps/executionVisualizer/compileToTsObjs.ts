@@ -1,12 +1,14 @@
+import { Rec } from "../../core/types";
 import {
   BBInstr,
   BBMain,
 } from "../../languageWorkbench/languages/basicBlocks/parser";
-import { getBlockIndex } from "./compileToDL";
+import { getBlockIndex, instrToRec } from "./compileToDL";
 import { BlockIndex } from "./types";
 
 export type Program = {
   instrs: BBInstr[];
+  dlInstrs: Rec[];
   blockIndex: BlockIndex;
   params: { [id: string]: { defaultValue: number } };
 };
@@ -27,7 +29,8 @@ export function compileBasicBlocks(tree: BBMain): Program {
       }
     });
   });
-  return { blockIndex, instrs, params };
+  const dlInstrs = instrs.map((instr) => instrToRec(instr, blockIndex));
+  return { blockIndex, instrs, params, dlInstrs };
 }
 
 function pushInstr(instrs: BBInstr[], instr: BBInstr) {
