@@ -102,9 +102,9 @@ input.instr{idx: 0, op: store{val: primitive{args: [], fun: "prim.newLock"}, var
 input.instr{idx: 1, op: store{val: primitive{args: [], fun: "prim.newLock"}, var: "lock2"}}.
 input.instr{idx: 2, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
 input.instr{idx: 3, op: forkTo{dest: 7}}.
-input.instr{idx: 4, op: store{val: solverParam{}, var: "t"}}.
+input.instr{idx: 4, op: store{val: param{}, var: "t"}}.
 input.instr{idx: 5, op: store{val: blockingCall{args: ["t"], fun: "block.sleep"}, var: "_"}}.
 input.instr{idx: 6, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
 input.instr{idx: 7, op: store{val: blockingCall{args: ["lock2"], fun: "block.acquireLock"}, var: "_"}}.
 input.instr{idx: 8, op: store{val: blockingCall{args: ["lock1"], fun: "block.acquireLock"}, var: "_"}}.
-input.solverParam{instrIdx: 4, value: 5}.
+input.param{instrIdx: 4, value: 5}.

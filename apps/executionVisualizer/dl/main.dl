@@ -1,5 +1,5 @@
 .table input.instr
-.table input.solverParam
+.table input.param
 .table maxTime
 .table state.programCounter.init
 

@@ -6,7 +6,9 @@ import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser"
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
-import { compileBasicBlocks } from "./compiler";
+import { mapObj } from "../../util/util";
+import { compileBasicBlocksDL } from "./compileToDL";
+import { getProgram, stepAndRecord } from "./stepAndRecord";
 
 export function executionVisualizerTests(writeResults: boolean): Suite {
   return [
@@ -21,11 +23,21 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
       },
     },
     {
-      name: "endToEnd",
+      name: "endToEndDL",
       test() {
         runDDTestAtPath(
-          "apps/executionVisualizer/testdata/endToEnd.dd.txt",
-          endToEndTest,
+          "apps/executionVisualizer/testdata/endToEndDL.dd.txt",
+          endToEndTestDL,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "endToEndImperative",
+      test() {
+        runDDTestAtPath(
+          "apps/executionVisualizer/testdata/endToEndImperative.dd.txt",
+          endToEndTestImperative,
           writeResults
         );
       },
@@ -46,24 +58,45 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
 function compilerTest(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
     const main = parseMain(input);
-    const records = compileBasicBlocks(main);
+    const records = compileBasicBlocksDL(main);
     return datalogOut(records);
   });
 }
 
-function endToEndTest(inputs: string[]): TestOutput[] {
+function endToEndTestDL(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
     const lines = input.split("\n");
     const allButLast = lines.slice(0, lines.length - 1).join("\n");
     const lastLine = lines[lines.length - 1];
     const main = parseMain(allButLast);
-    const records = compileBasicBlocks(main);
+    const records = compileBasicBlocksDL(main);
     let interp: AbstractInterpreter = new IncrementalInterpreter(
       "apps/executionVisualizer/dl",
       fsLoader
     );
     interp = interp.doLoad("main.dl");
     interp = interp.bulkInsert(records);
+    const out = interp.queryStr(lastLine).map((x) => x.term);
+    return datalogOut(out);
+  });
+}
+
+function endToEndTestImperative(inputs: string[]): TestOutput[] {
+  return inputs.map((input) => {
+    const lines = input.split("\n");
+    const allButLast = lines.slice(0, lines.length - 1).join("\n");
+    const lastLine = lines[lines.length - 1];
+    const initInterp: AbstractInterpreter = new IncrementalInterpreter(
+      "apps/executionVisualizer/dl",
+      fsLoader
+    );
+    const program = getProgram(allButLast);
+    const initialParams = mapObj(program.params, (k, v) => v.defaultValue);
+    const [state, interp, error] = stepAndRecord(
+      initInterp,
+      program,
+      initialParams
+    );
     const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
   });
@@ -84,7 +117,7 @@ function sliderTest(inputs: string[]): TestOutput[] {
     switch (firstLine) {
       case "source": {
         const main = parseMain(allButFirst);
-        const records = compileBasicBlocks(main);
+        const records = compileBasicBlocksDL(main);
         interp = interp.bulkInsert(records);
         output.push(datalogOut([]));
         break;
@@ -94,7 +127,7 @@ function sliderTest(inputs: string[]): TestOutput[] {
         interp = interp.evalRawStmts([
           {
             type: "Delete",
-            record: rec("input.solverParam", {
+            record: rec("input.param", {
               // TODO: parameterize instr idx
               instrIdx: int(3),
               value: int(oldValue),
@@ -102,7 +135,7 @@ function sliderTest(inputs: string[]): TestOutput[] {
           },
           {
             type: "Fact",
-            record: rec("input.solverParam", {
+            record: rec("input.param", {
               instrIdx: int(3),
               value: int(newValue),
             }),

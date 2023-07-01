@@ -1,87 +1,41 @@
-import React, { useReducer } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { Explorer } from "../../uiCommon/explorer";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
-import { EditorState, initialEditorState } from "../../uiCommon/ide/types";
-import { compileBasicBlocks } from "./compiler";
-import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { initialEditorState } from "../../uiCommon/ide/types";
+import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
+import { Explorer } from "../../uiCommon/explorer";
+import { getProgram, stepAndRecord } from "./stepAndRecord";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { LOADER } from "./dl";
 // @ts-ignore
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
-import { LOADER } from "./dl";
-import { Statement } from "../../core/types";
-
-function getInterp(input: string): [AbstractInterpreter, string | null] {
-  const emptyInterp = new IncrementalInterpreter(".", LOADER);
-  const loadedInterp = emptyInterp.doLoad("main.dl");
-  try {
-    const tree = parseMain(input);
-    const records = compileBasicBlocks(tree);
-    return [loadedInterp.bulkInsert(records), null];
-  } catch (e) {
-    console.warn(e);
-    return [loadedInterp, e.toString()];
-  }
-}
-
-type State = {
-  editorState: EditorState;
-  interp: AbstractInterpreter;
-  statements: Statement[];
-  error: string | null;
-};
-
-type Action =
-  | {
-      type: "UpdateEditorState";
-      newEditorState: EditorState;
-    }
-  | { type: "RunStatements"; statements: Statement[] };
-
-function update(state: State, action: Action): State {
-  switch (action.type) {
-    case "RunStatements": {
-      let interp = state.interp;
-      action.statements.forEach((stmt) => {
-        interp = interp.evalStmt(stmt)[1];
-      });
-      return {
-        ...state,
-        interp,
-        statements: [...state.statements, ...action.statements],
-      };
-    }
-    case "UpdateEditorState": {
-      let [interp, error] = getInterp(action.newEditorState.source);
-      state.statements.forEach((stmt) => {
-        interp = interp.evalStmt(stmt)[1];
-      });
-      return {
-        ...state,
-        editorState: action.newEditorState,
-        interp,
-        error,
-      };
-    }
-  }
-}
-
-function getInitialState(source: string): State {
-  return {
-    editorState: initialEditorState(source),
-    error: null,
-    interp: getInterp(source)[0],
-    statements: [],
-  };
-}
-
-const initialState: State = getInitialState(EXAMPLE_BB);
+import { mapObj } from "../../util/util";
+import { Params } from "./interpreter";
 
 function Main() {
-  // TODO: get local storage for editor state again
-  const [state, dispatch] = useReducer(update, initialState);
+  const [editorState, setEditorState] = useJSONLocalStorage(
+    "exec-viz-source",
+    initialEditorState(EXAMPLE_BB)
+  );
+
+  // get program and store values for its parameters
+  const program = getProgram(editorState.source);
+  const [params, setParams] = useState<Params>(
+    mapObj(program.params, (k, v) => v.defaultValue)
+  );
+  const setParam = (key: string, value: number) => {
+    setParams({ ...params, [key]: value });
+  };
+
+  // step the program and record each state
+  const initInterp: AbstractInterpreter = new IncrementalInterpreter(
+    ".",
+    LOADER
+  );
+  const [state, interp, error] = stepAndRecord(initInterp, program, params);
 
   return (
     <>
@@ -89,20 +43,44 @@ function Main() {
 
       <LingoEditor
         langSpec={LANGUAGES.basicBlocks}
-        editorState={state.editorState}
-        setEditorState={(newEditorState) =>
-          dispatch({ type: "UpdateEditorState", newEditorState })
-        }
+        editorState={editorState}
+        setEditorState={(newEditorState) => setEditorState(newEditorState)}
       />
 
-      {state.error ? <pre style={{ color: "red" }}>{state.error}</pre> : null}
+      {error ? <pre style={{ color: "red" }}>{error}</pre> : null}
 
-      <Explorer
-        interp={state.interp}
-        runStatements={(statements) => {
-          dispatch({ type: "RunStatements", statements });
-        }}
-        showViz
+      <table>
+        <thead>
+          <tr>
+            <th>Param</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(params)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([key, param]) => (
+              <tr>
+                <td>{key}</td>
+                <td>
+                  <input
+                    type="range"
+                    value={params[key] as number}
+                    onChange={(evt) => {
+                      setParam(key, parseInt(evt.target.value));
+                    }}
+                    min={0}
+                    max={100}
+                  />
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+
+      <CollapsibleWithHeading
+        heading="Trace"
+        content={<Explorer interp={interp} showViz />}
       />
     </>
   );

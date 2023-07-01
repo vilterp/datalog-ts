@@ -1,10 +1,10 @@
 main {
-  lock = prim.newLock();
+  lock = alloc.newLock();
   block.acquireLock(lock);
   forkTo afterFork;
-  t = <<25>>;
+  t = 25;
   block.sleep(t);
-  releaseLock(lock);
+  block.releaseLock(lock);
   goto end;
 }
 afterFork {

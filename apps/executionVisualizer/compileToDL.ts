@@ -4,17 +4,11 @@ import {
   BBMain,
   BBRvalue,
 } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { BlockIndex } from "./types";
 
-type BlockIndex = {
-  blockOrder: string[];
-  blocks: {
-    [blockName: string]: { startIndex: number; instructions: BBInstr[] };
-  };
-};
-
-export function compileBasicBlocks(tree: BBMain): Rec[] {
+export function compileBasicBlocksDL(tree: BBMain): Rec[] {
   const instrRecs: Rec[] = [];
-  const solverParamRecs: Rec[] = [];
+  const paramRecs: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
   blockIndex.blockOrder.forEach((blockName) => {
     const block = blockIndex.blocks[blockName];
@@ -23,8 +17,8 @@ export function compileBasicBlocks(tree: BBMain): Rec[] {
       const idx = pushInstr(instrRecs, instrRec);
       // TODO: move this down into the instrToRValue somehow?
       if (instr.type === "ValueInstr" && instr.rvalue.type === "EditorVar") {
-        solverParamRecs.push(
-          rec("input.solverParam", {
+        paramRecs.push(
+          rec("input.param", {
             instrIdx: int(idx),
             value: int(parseInt(instr.rvalue.int.text)),
           })
@@ -32,10 +26,10 @@ export function compileBasicBlocks(tree: BBMain): Rec[] {
       }
     });
   });
-  return [...instrRecs, ...solverParamRecs];
+  return [...instrRecs, ...paramRecs];
 }
 
-function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
+export function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
   switch (instr.type) {
     case "ValueInstr":
       return rec("store", {
@@ -86,11 +80,11 @@ function rvalueToTerm(expr: BBRvalue): Term {
     case "Int":
       return int(parseInt(expr.text));
     case "EditorVar":
-      return rec("solverParam", {});
+      return rec("param", {});
   }
 }
 
-function getBlockIndex(tree: BBMain): BlockIndex {
+export function getBlockIndex(tree: BBMain): BlockIndex {
   let idx = 0;
   const blockIndex: BlockIndex = { blocks: {}, blockOrder: [] };
   tree.block.forEach((block) => {

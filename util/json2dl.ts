@@ -1,8 +1,6 @@
 import { rec, str, Rec, array, int, Term, bool, dict } from "../core/types";
 import { Json } from "./json";
 
-type ADT = { type: string; [more: string]: Json };
-
 export function jsonToDL(json: Json): Term {
   const res = (() => {
     if (json === null) {

@@ -1,16 +1,16 @@
 instr{idx: I, op: O} :-
   instr.normal{idx: I, op: O} |
-  instr.solverParamVar{idx: I, op: O}.
+  instr.paramVar{idx: I, op: O}.
 
-instr.solverParamVar{idx: Idx, op: store{var: Var, val: Val}} :-
-  input.instr{idx: Idx, op: store{var: Var, val: solverParam{}}} &
-  input.solverParam{instrIdx: Idx, value: Val}.
+instr.paramVar{idx: Idx, op: store{var: Var, val: Val}} :-
+  input.instr{idx: Idx, op: store{var: Var, val: param{}}} &
+  input.param{instrIdx: Idx, value: Val}.
 instr.normal{idx: Idx, op: Op} :-
   instr.storeNormal{idx: Idx, op: Op} |
   instr.otherNormal{idx: Idx, op: Op}.
 instr.storeNormal{idx: Idx, op: store{var: Var, val: Val}} :-
   input.instr{idx: Idx, op: store{var: Var, val: Val}} &
-  Val != solverParam{}.
+  Val != param{}.
 instr.otherNormal{idx: Idx, op: Op} :-
   input.instr{idx: Idx, op: Op} &
   !input.instr{idx: Idx, op: store{}}.

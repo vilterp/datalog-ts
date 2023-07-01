@@ -7,14 +7,14 @@
 #   spec: ticker{},
 # }.
 
-# Slider for solverParams
+# Slider for params
 
-internal.visualization{
-  name: "Params",
-  spec: multiSlider{
-    vars: input.solverParam{instrIdx: ID, value: Val}
-  }
-}.
+# internal.visualization{
+#   name: "Params",
+#   spec: multiSlider{
+#     vars: input.param{instrIdx: ID, value: Val}
+#   }
+# }.
 
 # sequence diagram
 
@@ -38,8 +38,11 @@ viz.spawnMessage{
   toTick: tick{time: ToT, place: ToTH},
   kind: spawn{},
 } :-
-  state.programCounter.fork.new{thread: ToTH, time: ToT, origThread: FromTH} &
-  ToT = FromT + 1.
+  # TODO: constrain time as well?
+  state.ProgramCounter{time: FromT, thread: FromTH, counter: ForkC} &
+  state.ProgramCounter{time: ToT, thread: ToTH, counter: ForkToC} &
+  instr{idx: ForkC, op: forkTo{dest: ForkToC}} &
+  FromT + 1 = ToT.
 viz.continueMessage{
   fromTick: tick{time: PrevT, place: TH},
   toTick: tick{time: T, place: TH},
@@ -49,17 +52,14 @@ viz.continueMessage{
   state.ProgramCounter{thread: TH, time: T} &
   PrevT = T + 1.
 viz.lockTransferMessage{
-  fromTick: tick{time: T, place: ReleaseTH},
+  fromTick: tick{time: PrevT, place: ReleaseTH},
   toTick: tick{time: T, place: AcquireTH},
   kind: lockTransfer{},
 } :-
-  state.programCounter.lock.acquire.unblock{
-    thread: AcquireTH,
-    time: AcquireT,
-    lock: L,
-    time: T,
-    releasingThread: ReleaseTH,
-  }.
+  state.Lock{id: Lock, time: PrevT, state: heldBy{thread: ReleaseTH}} &
+  state.Lock{id: Lock, time: T, state: heldBy{thread: AcquireTH}} &
+  AcquireTH != ReleaseTH &
+  T = PrevT + 1.
 # hop color
 .table viz.hopColorCode
 viz.hopColorCode{kind: continue{}, color: "grey"}.
@@ -72,11 +72,15 @@ viz.hopColor{fromTick: From, toTick: To, color: C} :-
 # tick color
 viz.tickColor{tick: T, color: C} :-
   viz.runningColor{tick: T, color: C} |
-  viz.blockedColor{tick: T, color: C}.
-viz.runningColor{tick: tick{time: T, place: TH}, color: "red"} :-
+  viz.blockedColor{tick: T, color: C} |
+  viz.finishedColor{tick: T, color: C}.
+viz.runningColor{tick: tick{time: T, place: TH}, color: "lightgreen"} :-
   state.ProgramCounter{thread: TH, time: T, state: running{}}.
 viz.blockedColor{tick: tick{time: T, place: TH}, color: "grey"} :-
   state.ProgramCounter{thread: TH, time: T, state: blocked{}}.
+viz.finishedColor{tick: tick{time: T, place: TH}, color: "lightpink"} :-
+  state.ProgramCounter{thread: TH, time: T, state: finished{}}.
+
 
 internal.visualization{
   name: "Wait-For Graph",
