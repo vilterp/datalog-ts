@@ -8,7 +8,7 @@ import { BlockIndex } from "./types";
 
 export function compileBasicBlocksDL(tree: BBMain): Rec[] {
   const instrRecs: Rec[] = [];
-  const solverParamRecs: Rec[] = [];
+  const paramRecs: Rec[] = [];
   const blockIndex = getBlockIndex(tree);
   blockIndex.blockOrder.forEach((blockName) => {
     const block = blockIndex.blocks[blockName];
@@ -17,8 +17,8 @@ export function compileBasicBlocksDL(tree: BBMain): Rec[] {
       const idx = pushInstr(instrRecs, instrRec);
       // TODO: move this down into the instrToRValue somehow?
       if (instr.type === "ValueInstr" && instr.rvalue.type === "EditorVar") {
-        solverParamRecs.push(
-          rec("input.solverParam", {
+        paramRecs.push(
+          rec("input.param", {
             instrIdx: int(idx),
             value: int(parseInt(instr.rvalue.int.text)),
           })
@@ -26,7 +26,7 @@ export function compileBasicBlocksDL(tree: BBMain): Rec[] {
       }
     });
   });
-  return [...instrRecs, ...solverParamRecs];
+  return [...instrRecs, ...paramRecs];
 }
 
 export function instrToRec(instr: BBInstr, index: BlockIndex): Rec {
@@ -80,7 +80,7 @@ function rvalueToTerm(expr: BBRvalue): Term {
     case "Int":
       return int(parseInt(expr.text));
     case "EditorVar":
-      return rec("solverParam", {});
+      return rec("param", {});
   }
 }
 

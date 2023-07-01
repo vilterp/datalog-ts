@@ -18,6 +18,14 @@ export function stepAndRecord(
   state.program.dlInstrs.forEach((instr, idx) => {
     interp = interp.insert(rec("instr", { idx: int(idx), op: instr }));
   });
+  Object.entries(state.program.params).forEach(([key, value]) => {
+    interp = interp.insert(
+      rec("input.param", {
+        instrIdx: int(parseInt(key)),
+        value: int(value.defaultValue),
+      })
+    );
+  });
   interp = dumpState(interp, state);
   try {
     // step program

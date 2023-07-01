@@ -122,7 +122,7 @@ function sliderTest(inputs: string[]): TestOutput[] {
         interp = interp.evalRawStmts([
           {
             type: "Delete",
-            record: rec("input.solverParam", {
+            record: rec("input.param", {
               // TODO: parameterize instr idx
               instrIdx: int(3),
               value: int(oldValue),
@@ -130,7 +130,7 @@ function sliderTest(inputs: string[]): TestOutput[] {
           },
           {
             type: "Fact",
-            record: rec("input.solverParam", {
+            record: rec("input.param", {
               instrIdx: int(3),
               value: int(newValue),
             }),

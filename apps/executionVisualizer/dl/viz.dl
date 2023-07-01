@@ -7,12 +7,12 @@
 #   spec: ticker{},
 # }.
 
-# Slider for solverParams
+# Slider for params
 
 # internal.visualization{
 #   name: "Params",
 #   spec: multiSlider{
-#     vars: input.solverParam{instrIdx: ID, value: Val}
+#     vars: input.param{instrIdx: ID, value: Val}
 #   }
 # }.
 
