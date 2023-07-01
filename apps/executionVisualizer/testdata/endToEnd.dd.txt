@@ -41,7 +41,7 @@ countUp {
 loop {
   forkTo afterFork;
   x = prim.incr(x);
-  threshold = 5;
+  threshold = <<5>>;
   going = prim.lt(x, threshold);
   goto loop if going;
 }
@@ -126,13 +126,13 @@ countUp {
 loop {
   forkTo afterFork;
   x = prim.incr(x);
-  threshold = 5;
+  threshold = <<5>>;
   going = prim.lt(x, threshold);
   goto loop if going;
   goto end;
 }
 afterFork {
-  x = 5;
+  x = <<5>>;
   block.sleep(x);
   z = 10;
 }
@@ -147,10 +147,10 @@ state.Timer{startTime: 26, thread: 125, wakeupTime: 31}.
 state.Timer{startTime: 6, thread: 105, wakeupTime: 11}.
 
 main {
-  lock = prim.newLock();
+  lock = alloc.newLock();
   block.acquireLock(lock);
   z = 5;
-  releaseLock(lock);
+  block.releaseLock(lock);
 }
 state.Lock{}?
 ----
@@ -161,12 +161,12 @@ state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
 state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 5}.
 
 main {
-  lock = prim.newLock();
+  lock = alloc.newLock();
   block.acquireLock(lock);
   forkTo afterFork;
   t = 5;
   block.sleep(t);
-  releaseLock(lock);
+  block.releaseLock(lock);
   goto end;
 }
 afterFork {
@@ -192,12 +192,12 @@ state.Lock{id: created{thread: 1, time: 2}, state: open{}, time: 2}.
 state.Lock{id: created{thread: 1, time: 2}, state: running{}, time: 12}.
 
 main {
-  lock = prim.newLock();
+  lock = alloc.newLock();
   block.acquireLock(lock);
   forkTo afterFork;
   t = 5;
   block.sleep(t);
-  releaseLock(lock);
+  block.releaseLock(lock);
   goto end;
 }
 afterFork {
@@ -210,8 +210,8 @@ debug.doubleLockHolder{}?
 application/datalog
 
 main {
-  lock1 = prim.newLock();
-  lock2 = prim.newLock();
+  lock1 = alloc.newLock();
+  lock2 = alloc.newLock();
   block.acquireLock(lock1);
   forkTo afterFork;
   t = 5;
