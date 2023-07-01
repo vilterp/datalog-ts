@@ -8,7 +8,7 @@ loop {
   going = prim.lt(x, threshold);
   goto loop if going;
 }
-state.Var{var: "x"}?
+state.ProgramCounter{}?
 ----
 application/datalog
 state.Var{thread: 1, time: 10, value: 2, var: "x"}.
