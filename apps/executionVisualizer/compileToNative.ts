@@ -23,7 +23,7 @@ export function compileBasicBlocksNative(tree: BBMain): Program {
       const idx = pushInstr(instrs, instr);
       // TODO: move this down into the instrToRValue somehow?
       if (instr.type === "ValueInstr" && instr.rvalue.type === "EditorVar") {
-        params[idx] = {
+        params[instr.ident.text] = {
           defaultValue: parseInt(instr.rvalue.int.text),
         };
       }
