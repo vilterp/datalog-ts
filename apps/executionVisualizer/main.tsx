@@ -4,7 +4,6 @@ import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
-import ReactJson from "react-json-view";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { Explorer } from "../../uiCommon/explorer";
 import { stepAndRecord } from "./stepAndRecord";
@@ -42,11 +41,6 @@ function Main() {
       <CollapsibleWithHeading
         heading="Trace"
         content={<Explorer interp={interp} showViz />}
-      />
-
-      <CollapsibleWithHeading
-        heading="End State (JSON)"
-        content={<ReactJson src={state} enableClipboard={false} />}
       />
     </>
   );
