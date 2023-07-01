@@ -70,6 +70,8 @@ viz.hopColor{fromTick: From, toTick: To, color: C} :-
   viz.hop{fromTick: From, toTick: To, kind: K} &
   viz.hopColorCode{kind: K, color: C}.
 # tick color
+# can't make the color code a table because `blocked{}` is matching
+# over different values of its attribute `reason`
 viz.tickColor{tick: T, color: C} :-
   viz.runningColor{tick: T, color: C} |
   viz.blockedColor{tick: T, color: C} |
