@@ -58,9 +58,9 @@ function Main() {
         </thead>
         <tbody>
           {Object.keys(params)
-            .sort((a, b) => a[0].localeCompare(b[0]))
-            .map(([key, param]) => (
-              <tr>
+            .sort((a, b) => a.localeCompare(b))
+            .map((key) => (
+              <tr key={key}>
                 <td>{key}</td>
                 <td>
                   <input
@@ -70,8 +70,9 @@ function Main() {
                       setParam(key, parseInt(evt.target.value));
                     }}
                     min={0}
-                    max={100}
+                    max={50}
                   />
+                  {params[key]}
                 </td>
               </tr>
             ))}
