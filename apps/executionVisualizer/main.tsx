@@ -61,7 +61,9 @@ function Main() {
             .sort((a, b) => a.localeCompare(b))
             .map((key) => (
               <tr key={key}>
-                <td>{key}</td>
+                <td>
+                  <code>{key}</code>
+                </td>
                 <td>
                   <input
                     type="range"
@@ -72,7 +74,7 @@ function Main() {
                     min={0}
                     max={50}
                   />
-                  {params[key]}
+                  <code>{params[key]}</code>
                 </td>
               </tr>
             ))}
