@@ -1,0 +1,845 @@
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  threshold = 5;
+  x = prim.incr(x);
+  going = prim.lt(x, threshold);
+  goto loop if going;
+}
+state.Var{var: "x"}?
+----
+application/datalog
+state.Var{thread: 1, time: 10, value: 2, var: "x"}.
+state.Var{thread: 1, time: 11, value: 2, var: "x"}.
+state.Var{thread: 1, time: 12, value: 2, var: "x"}.
+state.Var{thread: 1, time: 13, value: 3, var: "x"}.
+state.Var{thread: 1, time: 14, value: 3, var: "x"}.
+state.Var{thread: 1, time: 15, value: 3, var: "x"}.
+state.Var{thread: 1, time: 16, value: 3, var: "x"}.
+state.Var{thread: 1, time: 17, value: 4, var: "x"}.
+state.Var{thread: 1, time: 18, value: 4, var: "x"}.
+state.Var{thread: 1, time: 19, value: 4, var: "x"}.
+state.Var{thread: 1, time: 2, value: 0, var: "x"}.
+state.Var{thread: 1, time: 20, value: 4, var: "x"}.
+state.Var{thread: 1, time: 21, value: 5, var: "x"}.
+state.Var{thread: 1, time: 22, value: 5, var: "x"}.
+state.Var{thread: 1, time: 23, value: 5, var: "x"}.
+state.Var{thread: 1, time: 24, value: 5, var: "x"}.
+state.Var{thread: 1, time: 25, value: 5, var: "x"}.
+state.Var{thread: 1, time: 26, value: 5, var: "x"}.
+state.Var{thread: 1, time: 27, value: 5, var: "x"}.
+state.Var{thread: 1, time: 28, value: 5, var: "x"}.
+state.Var{thread: 1, time: 29, value: 5, var: "x"}.
+state.Var{thread: 1, time: 3, value: 0, var: "x"}.
+state.Var{thread: 1, time: 30, value: 5, var: "x"}.
+state.Var{thread: 1, time: 31, value: 5, var: "x"}.
+state.Var{thread: 1, time: 32, value: 5, var: "x"}.
+state.Var{thread: 1, time: 33, value: 5, var: "x"}.
+state.Var{thread: 1, time: 34, value: 5, var: "x"}.
+state.Var{thread: 1, time: 35, value: 5, var: "x"}.
+state.Var{thread: 1, time: 36, value: 5, var: "x"}.
+state.Var{thread: 1, time: 37, value: 5, var: "x"}.
+state.Var{thread: 1, time: 38, value: 5, var: "x"}.
+state.Var{thread: 1, time: 39, value: 5, var: "x"}.
+state.Var{thread: 1, time: 4, value: 0, var: "x"}.
+state.Var{thread: 1, time: 40, value: 5, var: "x"}.
+state.Var{thread: 1, time: 41, value: 5, var: "x"}.
+state.Var{thread: 1, time: 42, value: 5, var: "x"}.
+state.Var{thread: 1, time: 43, value: 5, var: "x"}.
+state.Var{thread: 1, time: 44, value: 5, var: "x"}.
+state.Var{thread: 1, time: 45, value: 5, var: "x"}.
+state.Var{thread: 1, time: 46, value: 5, var: "x"}.
+state.Var{thread: 1, time: 47, value: 5, var: "x"}.
+state.Var{thread: 1, time: 48, value: 5, var: "x"}.
+state.Var{thread: 1, time: 49, value: 5, var: "x"}.
+state.Var{thread: 1, time: 5, value: 1, var: "x"}.
+state.Var{thread: 1, time: 50, value: 5, var: "x"}.
+state.Var{thread: 1, time: 51, value: 5, var: "x"}.
+state.Var{thread: 1, time: 6, value: 1, var: "x"}.
+state.Var{thread: 1, time: 7, value: 1, var: "x"}.
+state.Var{thread: 1, time: 8, value: 1, var: "x"}.
+state.Var{thread: 1, time: 9, value: 2, var: "x"}.
+
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  forkTo afterFork;
+  x = prim.incr(x);
+  threshold = <<5>>;
+  going = prim.lt(x, threshold);
+  goto loop if going;
+}
+afterFork {
+  done = 42;
+}
+state.ProgramCounter{}?
+----
+application/datalog
+state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
+state.ProgramCounter{counter: 1, state: running{}, thread: 1, time: 2}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 13}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 18}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 23}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 3}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 8}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 14}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 19}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 24}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 4}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 9}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 10}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 15}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 20}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 25}.
+state.ProgramCounter{counter: 4, state: running{}, thread: 1, time: 5}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 11}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 16}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 21}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 26}.
+state.ProgramCounter{counter: 5, state: running{}, thread: 1, time: 6}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 12}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 17}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 22}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 27}.
+state.ProgramCounter{counter: 6, state: running{}, thread: 1, time: 7}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 1, time: 28}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 104, time: 4}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 109, time: 9}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 114, time: 14}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 119, time: 19}.
+state.ProgramCounter{counter: 7, state: running{}, thread: 124, time: 24}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 30}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 31}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 32}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 33}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 34}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 35}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 36}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 37}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 38}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 39}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 40}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 41}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 42}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 43}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 44}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 45}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 46}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 47}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 48}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 49}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 50}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 1, time: 51}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 10}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 11}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 12}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 13}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 14}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 15}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 16}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 17}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 18}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 19}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 20}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 21}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 22}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 23}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 24}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 25}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 26}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 27}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 28}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 29}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 30}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 31}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 32}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 33}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 34}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 35}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 36}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 37}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 38}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 39}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 40}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 41}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 42}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 43}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 44}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 45}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 46}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 47}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 48}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 49}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 50}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 51}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 6}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 7}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 8}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 104, time: 9}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 11}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 12}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 13}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 14}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 15}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 16}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 17}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 18}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 19}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 20}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 21}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 22}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 23}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 24}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 25}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 26}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 27}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 28}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 29}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 30}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 31}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 32}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 33}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 34}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 35}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 36}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 37}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 38}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 39}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 40}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 41}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 42}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 43}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 44}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 45}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 46}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 47}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 48}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 49}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 50}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 109, time: 51}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 16}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 17}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 18}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 19}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 20}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 21}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 22}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 23}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 24}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 25}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 26}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 27}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 28}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 29}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 30}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 31}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 32}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 33}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 34}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 35}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 36}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 37}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 38}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 39}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 40}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 41}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 42}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 43}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 44}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 45}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 46}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 47}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 48}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 49}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 50}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 114, time: 51}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 21}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 22}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 23}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 24}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 25}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 26}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 27}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 28}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 29}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 30}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 31}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 32}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 33}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 34}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 35}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 36}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 37}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 38}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 39}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 40}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 41}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 42}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 43}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 44}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 45}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 46}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 47}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 48}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 49}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 50}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 119, time: 51}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 26}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 27}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 28}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 29}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 30}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 31}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 32}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 33}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 34}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 35}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 36}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 37}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 38}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 39}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 40}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 41}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 42}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 43}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 44}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 45}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 46}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 47}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 48}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 49}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 50}.
+state.ProgramCounter{counter: 8, state: finished{}, thread: 124, time: 51}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 1, time: 29}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 104, time: 5}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 109, time: 10}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 114, time: 15}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 119, time: 20}.
+state.ProgramCounter{counter: 8, state: running{}, thread: 124, time: 25}.
+
+main {
+  x = 5;
+  block.sleep(x);
+  z = 10;
+}
+state.ProgramCounter{}?
+----
+application/datalog
+state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.
+state.ProgramCounter{counter: 1, state: blocked{reason: timer{id: 0}}, thread: 1, time: 3}.
+state.ProgramCounter{counter: 1, state: blocked{reason: timer{id: 0}}, thread: 1, time: 4}.
+state.ProgramCounter{counter: 1, state: blocked{reason: timer{id: 0}}, thread: 1, time: 5}.
+state.ProgramCounter{counter: 1, state: blocked{reason: timer{id: 0}}, thread: 1, time: 6}.
+state.ProgramCounter{counter: 1, state: blocked{reason: timer{id: 0}}, thread: 1, time: 7}.
+state.ProgramCounter{counter: 1, state: running{}, thread: 1, time: 2}.
+state.ProgramCounter{counter: 2, state: running{}, thread: 1, time: 8}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 10}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 11}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 12}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 13}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 14}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 15}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 16}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 17}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 18}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 19}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 20}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 21}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 22}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 23}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 24}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 25}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 26}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 27}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 28}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 29}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 30}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 31}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 32}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 33}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 34}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 35}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 36}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 37}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 38}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 39}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 40}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 41}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 42}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 43}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 44}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 45}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 46}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 47}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 48}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 49}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 50}.
+state.ProgramCounter{counter: 3, state: finished{}, thread: 1, time: 51}.
+state.ProgramCounter{counter: 3, state: running{}, thread: 1, time: 9}.
+
+main {
+  x = 5;
+  block.sleep(x);
+  z = 10;
+}
+state.Timer{}?
+----
+application/datalog
+state.Timer{id: "0", time: 10, wakeUpAt: 7}.
+state.Timer{id: "0", time: 11, wakeUpAt: 7}.
+state.Timer{id: "0", time: 12, wakeUpAt: 7}.
+state.Timer{id: "0", time: 13, wakeUpAt: 7}.
+state.Timer{id: "0", time: 14, wakeUpAt: 7}.
+state.Timer{id: "0", time: 15, wakeUpAt: 7}.
+state.Timer{id: "0", time: 16, wakeUpAt: 7}.
+state.Timer{id: "0", time: 17, wakeUpAt: 7}.
+state.Timer{id: "0", time: 18, wakeUpAt: 7}.
+state.Timer{id: "0", time: 19, wakeUpAt: 7}.
+state.Timer{id: "0", time: 20, wakeUpAt: 7}.
+state.Timer{id: "0", time: 21, wakeUpAt: 7}.
+state.Timer{id: "0", time: 22, wakeUpAt: 7}.
+state.Timer{id: "0", time: 23, wakeUpAt: 7}.
+state.Timer{id: "0", time: 24, wakeUpAt: 7}.
+state.Timer{id: "0", time: 25, wakeUpAt: 7}.
+state.Timer{id: "0", time: 26, wakeUpAt: 7}.
+state.Timer{id: "0", time: 27, wakeUpAt: 7}.
+state.Timer{id: "0", time: 28, wakeUpAt: 7}.
+state.Timer{id: "0", time: 29, wakeUpAt: 7}.
+state.Timer{id: "0", time: 3, wakeUpAt: 7}.
+state.Timer{id: "0", time: 30, wakeUpAt: 7}.
+state.Timer{id: "0", time: 31, wakeUpAt: 7}.
+state.Timer{id: "0", time: 32, wakeUpAt: 7}.
+state.Timer{id: "0", time: 33, wakeUpAt: 7}.
+state.Timer{id: "0", time: 34, wakeUpAt: 7}.
+state.Timer{id: "0", time: 35, wakeUpAt: 7}.
+state.Timer{id: "0", time: 36, wakeUpAt: 7}.
+state.Timer{id: "0", time: 37, wakeUpAt: 7}.
+state.Timer{id: "0", time: 38, wakeUpAt: 7}.
+state.Timer{id: "0", time: 39, wakeUpAt: 7}.
+state.Timer{id: "0", time: 4, wakeUpAt: 7}.
+state.Timer{id: "0", time: 40, wakeUpAt: 7}.
+state.Timer{id: "0", time: 41, wakeUpAt: 7}.
+state.Timer{id: "0", time: 42, wakeUpAt: 7}.
+state.Timer{id: "0", time: 43, wakeUpAt: 7}.
+state.Timer{id: "0", time: 44, wakeUpAt: 7}.
+state.Timer{id: "0", time: 45, wakeUpAt: 7}.
+state.Timer{id: "0", time: 46, wakeUpAt: 7}.
+state.Timer{id: "0", time: 47, wakeUpAt: 7}.
+state.Timer{id: "0", time: 48, wakeUpAt: 7}.
+state.Timer{id: "0", time: 49, wakeUpAt: 7}.
+state.Timer{id: "0", time: 5, wakeUpAt: 7}.
+state.Timer{id: "0", time: 50, wakeUpAt: 7}.
+state.Timer{id: "0", time: 51, wakeUpAt: 7}.
+state.Timer{id: "0", time: 6, wakeUpAt: 7}.
+state.Timer{id: "0", time: 7, wakeUpAt: 7}.
+state.Timer{id: "0", time: 8, wakeUpAt: 7}.
+state.Timer{id: "0", time: 9, wakeUpAt: 7}.
+
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  forkTo afterFork;
+  x = prim.incr(x);
+  threshold = <<5>>;
+  going = prim.lt(x, threshold);
+  goto loop if going;
+  goto end;
+}
+afterFork {
+  x = <<5>>;
+  block.sleep(x);
+  z = 10;
+}
+end {}
+state.Timer{}?
+----
+application/datalog
+state.Timer{id: "0", time: 10, wakeUpAt: 10}.
+state.Timer{id: "0", time: 11, wakeUpAt: 10}.
+state.Timer{id: "0", time: 12, wakeUpAt: 10}.
+state.Timer{id: "0", time: 13, wakeUpAt: 10}.
+state.Timer{id: "0", time: 14, wakeUpAt: 10}.
+state.Timer{id: "0", time: 15, wakeUpAt: 10}.
+state.Timer{id: "0", time: 16, wakeUpAt: 10}.
+state.Timer{id: "0", time: 17, wakeUpAt: 10}.
+state.Timer{id: "0", time: 18, wakeUpAt: 10}.
+state.Timer{id: "0", time: 19, wakeUpAt: 10}.
+state.Timer{id: "0", time: 20, wakeUpAt: 10}.
+state.Timer{id: "0", time: 21, wakeUpAt: 10}.
+state.Timer{id: "0", time: 22, wakeUpAt: 10}.
+state.Timer{id: "0", time: 23, wakeUpAt: 10}.
+state.Timer{id: "0", time: 24, wakeUpAt: 10}.
+state.Timer{id: "0", time: 25, wakeUpAt: 10}.
+state.Timer{id: "0", time: 26, wakeUpAt: 10}.
+state.Timer{id: "0", time: 27, wakeUpAt: 10}.
+state.Timer{id: "0", time: 28, wakeUpAt: 10}.
+state.Timer{id: "0", time: 29, wakeUpAt: 10}.
+state.Timer{id: "0", time: 30, wakeUpAt: 10}.
+state.Timer{id: "0", time: 31, wakeUpAt: 10}.
+state.Timer{id: "0", time: 32, wakeUpAt: 10}.
+state.Timer{id: "0", time: 33, wakeUpAt: 10}.
+state.Timer{id: "0", time: 34, wakeUpAt: 10}.
+state.Timer{id: "0", time: 35, wakeUpAt: 10}.
+state.Timer{id: "0", time: 36, wakeUpAt: 10}.
+state.Timer{id: "0", time: 37, wakeUpAt: 10}.
+state.Timer{id: "0", time: 38, wakeUpAt: 10}.
+state.Timer{id: "0", time: 39, wakeUpAt: 10}.
+state.Timer{id: "0", time: 40, wakeUpAt: 10}.
+state.Timer{id: "0", time: 41, wakeUpAt: 10}.
+state.Timer{id: "0", time: 42, wakeUpAt: 10}.
+state.Timer{id: "0", time: 43, wakeUpAt: 10}.
+state.Timer{id: "0", time: 44, wakeUpAt: 10}.
+state.Timer{id: "0", time: 45, wakeUpAt: 10}.
+state.Timer{id: "0", time: 46, wakeUpAt: 10}.
+state.Timer{id: "0", time: 47, wakeUpAt: 10}.
+state.Timer{id: "0", time: 48, wakeUpAt: 10}.
+state.Timer{id: "0", time: 49, wakeUpAt: 10}.
+state.Timer{id: "0", time: 50, wakeUpAt: 10}.
+state.Timer{id: "0", time: 51, wakeUpAt: 10}.
+state.Timer{id: "0", time: 6, wakeUpAt: 10}.
+state.Timer{id: "0", time: 7, wakeUpAt: 10}.
+state.Timer{id: "0", time: 8, wakeUpAt: 10}.
+state.Timer{id: "0", time: 9, wakeUpAt: 10}.
+state.Timer{id: "1", time: 11, wakeUpAt: 15}.
+state.Timer{id: "1", time: 12, wakeUpAt: 15}.
+state.Timer{id: "1", time: 13, wakeUpAt: 15}.
+state.Timer{id: "1", time: 14, wakeUpAt: 15}.
+state.Timer{id: "1", time: 15, wakeUpAt: 15}.
+state.Timer{id: "1", time: 16, wakeUpAt: 15}.
+state.Timer{id: "1", time: 17, wakeUpAt: 15}.
+state.Timer{id: "1", time: 18, wakeUpAt: 15}.
+state.Timer{id: "1", time: 19, wakeUpAt: 15}.
+state.Timer{id: "1", time: 20, wakeUpAt: 15}.
+state.Timer{id: "1", time: 21, wakeUpAt: 15}.
+state.Timer{id: "1", time: 22, wakeUpAt: 15}.
+state.Timer{id: "1", time: 23, wakeUpAt: 15}.
+state.Timer{id: "1", time: 24, wakeUpAt: 15}.
+state.Timer{id: "1", time: 25, wakeUpAt: 15}.
+state.Timer{id: "1", time: 26, wakeUpAt: 15}.
+state.Timer{id: "1", time: 27, wakeUpAt: 15}.
+state.Timer{id: "1", time: 28, wakeUpAt: 15}.
+state.Timer{id: "1", time: 29, wakeUpAt: 15}.
+state.Timer{id: "1", time: 30, wakeUpAt: 15}.
+state.Timer{id: "1", time: 31, wakeUpAt: 15}.
+state.Timer{id: "1", time: 32, wakeUpAt: 15}.
+state.Timer{id: "1", time: 33, wakeUpAt: 15}.
+state.Timer{id: "1", time: 34, wakeUpAt: 15}.
+state.Timer{id: "1", time: 35, wakeUpAt: 15}.
+state.Timer{id: "1", time: 36, wakeUpAt: 15}.
+state.Timer{id: "1", time: 37, wakeUpAt: 15}.
+state.Timer{id: "1", time: 38, wakeUpAt: 15}.
+state.Timer{id: "1", time: 39, wakeUpAt: 15}.
+state.Timer{id: "1", time: 40, wakeUpAt: 15}.
+state.Timer{id: "1", time: 41, wakeUpAt: 15}.
+state.Timer{id: "1", time: 42, wakeUpAt: 15}.
+state.Timer{id: "1", time: 43, wakeUpAt: 15}.
+state.Timer{id: "1", time: 44, wakeUpAt: 15}.
+state.Timer{id: "1", time: 45, wakeUpAt: 15}.
+state.Timer{id: "1", time: 46, wakeUpAt: 15}.
+state.Timer{id: "1", time: 47, wakeUpAt: 15}.
+state.Timer{id: "1", time: 48, wakeUpAt: 15}.
+state.Timer{id: "1", time: 49, wakeUpAt: 15}.
+state.Timer{id: "1", time: 50, wakeUpAt: 15}.
+state.Timer{id: "1", time: 51, wakeUpAt: 15}.
+state.Timer{id: "2", time: 16, wakeUpAt: 20}.
+state.Timer{id: "2", time: 17, wakeUpAt: 20}.
+state.Timer{id: "2", time: 18, wakeUpAt: 20}.
+state.Timer{id: "2", time: 19, wakeUpAt: 20}.
+state.Timer{id: "2", time: 20, wakeUpAt: 20}.
+state.Timer{id: "2", time: 21, wakeUpAt: 20}.
+state.Timer{id: "2", time: 22, wakeUpAt: 20}.
+state.Timer{id: "2", time: 23, wakeUpAt: 20}.
+state.Timer{id: "2", time: 24, wakeUpAt: 20}.
+state.Timer{id: "2", time: 25, wakeUpAt: 20}.
+state.Timer{id: "2", time: 26, wakeUpAt: 20}.
+state.Timer{id: "2", time: 27, wakeUpAt: 20}.
+state.Timer{id: "2", time: 28, wakeUpAt: 20}.
+state.Timer{id: "2", time: 29, wakeUpAt: 20}.
+state.Timer{id: "2", time: 30, wakeUpAt: 20}.
+state.Timer{id: "2", time: 31, wakeUpAt: 20}.
+state.Timer{id: "2", time: 32, wakeUpAt: 20}.
+state.Timer{id: "2", time: 33, wakeUpAt: 20}.
+state.Timer{id: "2", time: 34, wakeUpAt: 20}.
+state.Timer{id: "2", time: 35, wakeUpAt: 20}.
+state.Timer{id: "2", time: 36, wakeUpAt: 20}.
+state.Timer{id: "2", time: 37, wakeUpAt: 20}.
+state.Timer{id: "2", time: 38, wakeUpAt: 20}.
+state.Timer{id: "2", time: 39, wakeUpAt: 20}.
+state.Timer{id: "2", time: 40, wakeUpAt: 20}.
+state.Timer{id: "2", time: 41, wakeUpAt: 20}.
+state.Timer{id: "2", time: 42, wakeUpAt: 20}.
+state.Timer{id: "2", time: 43, wakeUpAt: 20}.
+state.Timer{id: "2", time: 44, wakeUpAt: 20}.
+state.Timer{id: "2", time: 45, wakeUpAt: 20}.
+state.Timer{id: "2", time: 46, wakeUpAt: 20}.
+state.Timer{id: "2", time: 47, wakeUpAt: 20}.
+state.Timer{id: "2", time: 48, wakeUpAt: 20}.
+state.Timer{id: "2", time: 49, wakeUpAt: 20}.
+state.Timer{id: "2", time: 50, wakeUpAt: 20}.
+state.Timer{id: "2", time: 51, wakeUpAt: 20}.
+state.Timer{id: "3", time: 21, wakeUpAt: 25}.
+state.Timer{id: "3", time: 22, wakeUpAt: 25}.
+state.Timer{id: "3", time: 23, wakeUpAt: 25}.
+state.Timer{id: "3", time: 24, wakeUpAt: 25}.
+state.Timer{id: "3", time: 25, wakeUpAt: 25}.
+state.Timer{id: "3", time: 26, wakeUpAt: 25}.
+state.Timer{id: "3", time: 27, wakeUpAt: 25}.
+state.Timer{id: "3", time: 28, wakeUpAt: 25}.
+state.Timer{id: "3", time: 29, wakeUpAt: 25}.
+state.Timer{id: "3", time: 30, wakeUpAt: 25}.
+state.Timer{id: "3", time: 31, wakeUpAt: 25}.
+state.Timer{id: "3", time: 32, wakeUpAt: 25}.
+state.Timer{id: "3", time: 33, wakeUpAt: 25}.
+state.Timer{id: "3", time: 34, wakeUpAt: 25}.
+state.Timer{id: "3", time: 35, wakeUpAt: 25}.
+state.Timer{id: "3", time: 36, wakeUpAt: 25}.
+state.Timer{id: "3", time: 37, wakeUpAt: 25}.
+state.Timer{id: "3", time: 38, wakeUpAt: 25}.
+state.Timer{id: "3", time: 39, wakeUpAt: 25}.
+state.Timer{id: "3", time: 40, wakeUpAt: 25}.
+state.Timer{id: "3", time: 41, wakeUpAt: 25}.
+state.Timer{id: "3", time: 42, wakeUpAt: 25}.
+state.Timer{id: "3", time: 43, wakeUpAt: 25}.
+state.Timer{id: "3", time: 44, wakeUpAt: 25}.
+state.Timer{id: "3", time: 45, wakeUpAt: 25}.
+state.Timer{id: "3", time: 46, wakeUpAt: 25}.
+state.Timer{id: "3", time: 47, wakeUpAt: 25}.
+state.Timer{id: "3", time: 48, wakeUpAt: 25}.
+state.Timer{id: "3", time: 49, wakeUpAt: 25}.
+state.Timer{id: "3", time: 50, wakeUpAt: 25}.
+state.Timer{id: "3", time: 51, wakeUpAt: 25}.
+state.Timer{id: "4", time: 26, wakeUpAt: 30}.
+state.Timer{id: "4", time: 27, wakeUpAt: 30}.
+state.Timer{id: "4", time: 28, wakeUpAt: 30}.
+state.Timer{id: "4", time: 29, wakeUpAt: 30}.
+state.Timer{id: "4", time: 30, wakeUpAt: 30}.
+state.Timer{id: "4", time: 31, wakeUpAt: 30}.
+state.Timer{id: "4", time: 32, wakeUpAt: 30}.
+state.Timer{id: "4", time: 33, wakeUpAt: 30}.
+state.Timer{id: "4", time: 34, wakeUpAt: 30}.
+state.Timer{id: "4", time: 35, wakeUpAt: 30}.
+state.Timer{id: "4", time: 36, wakeUpAt: 30}.
+state.Timer{id: "4", time: 37, wakeUpAt: 30}.
+state.Timer{id: "4", time: 38, wakeUpAt: 30}.
+state.Timer{id: "4", time: 39, wakeUpAt: 30}.
+state.Timer{id: "4", time: 40, wakeUpAt: 30}.
+state.Timer{id: "4", time: 41, wakeUpAt: 30}.
+state.Timer{id: "4", time: 42, wakeUpAt: 30}.
+state.Timer{id: "4", time: 43, wakeUpAt: 30}.
+state.Timer{id: "4", time: 44, wakeUpAt: 30}.
+state.Timer{id: "4", time: 45, wakeUpAt: 30}.
+state.Timer{id: "4", time: 46, wakeUpAt: 30}.
+state.Timer{id: "4", time: 47, wakeUpAt: 30}.
+state.Timer{id: "4", time: 48, wakeUpAt: 30}.
+state.Timer{id: "4", time: 49, wakeUpAt: 30}.
+state.Timer{id: "4", time: 50, wakeUpAt: 30}.
+state.Timer{id: "4", time: 51, wakeUpAt: 30}.
+
+main {
+  lock = alloc.newLock();
+  block.acquireLock(lock);
+  z = 5;
+  block.releaseLock(lock);
+}
+state.Lock{}?
+----
+application/datalog
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: []}, time: 3}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: []}, time: 4}.
+state.Lock{id: "0", state: open{}, time: 10}.
+state.Lock{id: "0", state: open{}, time: 11}.
+state.Lock{id: "0", state: open{}, time: 12}.
+state.Lock{id: "0", state: open{}, time: 13}.
+state.Lock{id: "0", state: open{}, time: 14}.
+state.Lock{id: "0", state: open{}, time: 15}.
+state.Lock{id: "0", state: open{}, time: 16}.
+state.Lock{id: "0", state: open{}, time: 17}.
+state.Lock{id: "0", state: open{}, time: 18}.
+state.Lock{id: "0", state: open{}, time: 19}.
+state.Lock{id: "0", state: open{}, time: 20}.
+state.Lock{id: "0", state: open{}, time: 21}.
+state.Lock{id: "0", state: open{}, time: 22}.
+state.Lock{id: "0", state: open{}, time: 23}.
+state.Lock{id: "0", state: open{}, time: 24}.
+state.Lock{id: "0", state: open{}, time: 25}.
+state.Lock{id: "0", state: open{}, time: 26}.
+state.Lock{id: "0", state: open{}, time: 27}.
+state.Lock{id: "0", state: open{}, time: 28}.
+state.Lock{id: "0", state: open{}, time: 29}.
+state.Lock{id: "0", state: open{}, time: 2}.
+state.Lock{id: "0", state: open{}, time: 30}.
+state.Lock{id: "0", state: open{}, time: 31}.
+state.Lock{id: "0", state: open{}, time: 32}.
+state.Lock{id: "0", state: open{}, time: 33}.
+state.Lock{id: "0", state: open{}, time: 34}.
+state.Lock{id: "0", state: open{}, time: 35}.
+state.Lock{id: "0", state: open{}, time: 36}.
+state.Lock{id: "0", state: open{}, time: 37}.
+state.Lock{id: "0", state: open{}, time: 38}.
+state.Lock{id: "0", state: open{}, time: 39}.
+state.Lock{id: "0", state: open{}, time: 40}.
+state.Lock{id: "0", state: open{}, time: 41}.
+state.Lock{id: "0", state: open{}, time: 42}.
+state.Lock{id: "0", state: open{}, time: 43}.
+state.Lock{id: "0", state: open{}, time: 44}.
+state.Lock{id: "0", state: open{}, time: 45}.
+state.Lock{id: "0", state: open{}, time: 46}.
+state.Lock{id: "0", state: open{}, time: 47}.
+state.Lock{id: "0", state: open{}, time: 48}.
+state.Lock{id: "0", state: open{}, time: 49}.
+state.Lock{id: "0", state: open{}, time: 50}.
+state.Lock{id: "0", state: open{}, time: 51}.
+state.Lock{id: "0", state: open{}, time: 5}.
+state.Lock{id: "0", state: open{}, time: 6}.
+state.Lock{id: "0", state: open{}, time: 7}.
+state.Lock{id: "0", state: open{}, time: 8}.
+state.Lock{id: "0", state: open{}, time: 9}.
+
+main {
+  lock = alloc.newLock();
+  block.acquireLock(lock);
+  forkTo afterFork;
+  t = 5;
+  block.sleep(t);
+  block.releaseLock(lock);
+  goto end;
+}
+afterFork {
+  block.acquireLock(lock);
+  x5 = 10;
+}
+end {}
+state.Lock{}?
+----
+application/datalog
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 10}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 11}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 5}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 6}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 7}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 8}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: [104]}, time: 9}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: []}, time: 3}.
+state.Lock{id: "0", state: heldBy{thread: 1, waiters: []}, time: 4}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 12}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 13}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 14}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 15}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 16}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 17}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 18}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 19}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 20}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 21}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 22}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 23}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 24}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 25}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 26}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 27}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 28}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 29}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 30}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 31}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 32}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 33}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 34}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 35}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 36}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 37}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 38}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 39}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 40}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 41}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 42}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 43}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 44}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 45}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 46}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 47}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 48}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 49}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 50}.
+state.Lock{id: "0", state: heldBy{thread: 104, waiters: []}, time: 51}.
+state.Lock{id: "0", state: open{}, time: 2}.
+
+main {
+  lock = alloc.newLock();
+  block.acquireLock(lock);
+  forkTo afterFork;
+  t = 5;
+  block.sleep(t);
+  block.releaseLock(lock);
+  goto end;
+}
+afterFork {
+  block.acquireLock(lock);
+  x5 = 10;
+}
+end {}
+debug.doubleLockHolder{}?
+----
+application/datalog
+
+main {
+  lock1 = alloc.newLock();
+  lock2 = alloc.newLock();
+  block.acquireLock(lock1);
+  forkTo afterFork;
+  t = 5;
+  block.sleep(t);
+  block.acquireLock(lock2);
+}
+afterFork {
+  block.acquireLock(lock2);
+  block.acquireLock(lock1);
+}
+end {}
+issue.Deadlock{}?
+----
+application/datalog
+issue.Deadlock{thread1: 1, thread2: 105, time: 13}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 14}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 15}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 16}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 17}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 18}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 19}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 20}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 21}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 22}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 23}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 24}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 25}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 26}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 27}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 28}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 29}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 30}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 31}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 32}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 33}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 34}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 35}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 36}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 37}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 38}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 39}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 40}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 41}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 42}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 43}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 44}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 45}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 46}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 47}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 48}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 49}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 50}.
+issue.Deadlock{thread1: 1, thread2: 105, time: 51}.

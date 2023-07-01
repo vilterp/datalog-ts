@@ -4,11 +4,11 @@ import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { runDDTestAtPath } from "../../util/ddTest";
-import { runDDTestAtPathTwoVariants } from "../../util/ddTest/runner";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
+import { mapObj } from "../../util/util";
 import { compileBasicBlocksDL } from "./compileToDL";
-import { stepAndRecord } from "./stepAndRecord";
+import { getProgram, stepAndRecord } from "./stepAndRecord";
 
 export function executionVisualizerTests(writeResults: boolean): Suite {
   return [
@@ -23,11 +23,21 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
       },
     },
     {
-      name: "endToEnd",
+      name: "endToEndDL",
       test() {
         runDDTestAtPath(
-          "apps/executionVisualizer/testdata/endToEnd.dd.txt",
+          "apps/executionVisualizer/testdata/endToEndDL.dd.txt",
           endToEndTestDL,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "endToEndImperative",
+      test() {
+        runDDTestAtPath(
+          "apps/executionVisualizer/testdata/endToEndImperative.dd.txt",
+          endToEndTestImperative,
           writeResults
         );
       },
@@ -38,17 +48,6 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
         runDDTestAtPath(
           "apps/executionVisualizer/testdata/slider.dd.txt",
           sliderTest,
-          writeResults
-        );
-      },
-    },
-    {
-      name: "endToEndBoth",
-      test() {
-        runDDTestAtPathTwoVariants(
-          "apps/executionVisualizer/testdata/endToEndBoth.dd.txt",
-          { name: "datalog", getResults: endToEndTestDL },
-          { name: "imperative", getResults: endToEndTestImperative },
           writeResults
         );
       },
@@ -91,7 +90,13 @@ function endToEndTestImperative(inputs: string[]): TestOutput[] {
       "apps/executionVisualizer/dl",
       fsLoader
     );
-    const [state, interp, error] = stepAndRecord(initInterp, allButLast);
+    const program = getProgram(allButLast);
+    const initialParams = mapObj(program.params, (k, v) => v.defaultValue);
+    const [state, interp, error] = stepAndRecord(
+      initInterp,
+      program,
+      initialParams
+    );
     const out = interp.queryStr(lastLine).map((x) => x.term);
     return datalogOut(out);
   });

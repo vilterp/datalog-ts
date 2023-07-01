@@ -17,6 +17,7 @@ export function stepAndRecord(
 ): [State, AbstractInterpreter, string | null] {
   interp = interp.doLoad("viz.dl");
   interp = interp.doLoad("deadlock.dl");
+  interp = interp.doLoad("debug.dl");
 
   let state = initialState(program);
 
