@@ -155,18 +155,21 @@ function processRunning(state: State, threadID: number): State {
         },
       };
     }
-    case "GotoInstr":
-      // TODO: conditional
-      return {
-        ...state,
-        threadStates: {
-          ...state.threadStates,
-          [threadID]: {
-            ...threadState,
-            counter: instrIdxForBlock(state, instr.label.text),
-          },
-        },
-      };
+    case "GotoInstr": {
+      if (instr.ifClause) {
+        const varName = instr.ifClause.ident.text;
+        const val = threadState.scope[varName];
+        const dest = val
+          ? instrIdxForBlock(state, instr.label.text)
+          : threadState.counter + 1;
+        return jumpToIdx(state, threadID, dest);
+      }
+      return jumpToIdx(
+        state,
+        threadID,
+        instrIdxForBlock(state, instr.label.text)
+      );
+    }
   }
 }
 
