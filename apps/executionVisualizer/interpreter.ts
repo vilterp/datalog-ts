@@ -1,4 +1,8 @@
-import { BBMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import {
+  BBGotoInstr,
+  BBInstr,
+  BBMain,
+} from "../../languageWorkbench/languages/basicBlocks/parser";
 import { Program, compileBasicBlocksNative } from "./compileToNative";
 
 export type State = {
@@ -45,8 +49,8 @@ type LockID = { type: "Lock"; id: number };
 export function initialState(instrs: BBMain): State {
   return {
     program: compileBasicBlocksNative(instrs),
-    timestamp: 0,
-    threadStates: { 0: { counter: 0, scope: {}, status: { type: "running" } } },
+    timestamp: 1,
+    threadStates: { 1: { counter: 0, scope: {}, status: { type: "running" } } },
     timers: {},
     locks: {},
   };
@@ -55,12 +59,12 @@ export function initialState(instrs: BBMain): State {
 export function step(state: State): State {
   let newState = state;
   for (const threadID in state.threadStates) {
-    newState = stepThread(newState, threadID);
+    newState = stepThread(newState, parseInt(threadID));
   }
   return { ...newState, timestamp: state.timestamp + 1 };
 }
 
-function stepThread(state: State, threadID: string): State {
+function stepThread(state: State, threadID: number): State {
   const threadState = state.threadStates[threadID];
   if (!threadState) {
     debugger;
@@ -76,7 +80,7 @@ function stepThread(state: State, threadID: string): State {
   }
 }
 
-function processRunning(state: State, threadID: string): State {
+function processRunning(state: State, threadID: number): State {
   const threadState = state.threadStates[threadID];
   const counter = threadState.counter;
   const instr = state.program.instrs[counter];
@@ -133,7 +137,9 @@ function processRunning(state: State, threadID: string): State {
       }
     }
     case "ForkToInstr": {
-      const newThreadID = Object.keys(state.threadStates).length;
+      // TODO: doing this to match DL
+      // should I use a hash instead?
+      const newThreadID = threadID + 100 + state.timestamp;
       return {
         ...state,
         threadStates: {
@@ -174,7 +180,7 @@ function instrIdxForBlock(state: State, blockName: string) {
 
 function processBlocked(
   state: State,
-  threadID: string,
+  threadID: number,
   reason: BlockReason
 ): State {
   const threadState = state.threadStates[threadID];
@@ -204,7 +210,7 @@ function processBlocked(
 
 function updateThreadScope(
   state: State,
-  threadID: string,
+  threadID: number,
   varName: string,
   value: Value
 ): State {
@@ -225,6 +231,20 @@ function updateThreadScope(
   };
 }
 
+function jumpToIdx(state: State, threadID: number, dest: number): State {
+  const threadState = state.threadStates[threadID];
+  return {
+    ...state,
+    threadStates: {
+      ...state.threadStates,
+      [threadID]: {
+        ...threadState,
+        counter: dest,
+      },
+    },
+  };
+}
+
 function getPrimitiveResult(name: string, args: Value[]): Value {
   switch (name) {
     case "prim.add":
@@ -240,7 +260,7 @@ function getPrimitiveResult(name: string, args: Value[]): Value {
 
 function processAllocCall(
   state: State,
-  threadID: string,
+  threadID: number,
   varName: string,
   name: string,
   args: Value[]
@@ -268,7 +288,7 @@ function processAllocCall(
 
 function processBlockingCall(
   state: State,
-  threadID: string,
+  threadID: number,
   name: string,
   args: Value[]
 ): State {
