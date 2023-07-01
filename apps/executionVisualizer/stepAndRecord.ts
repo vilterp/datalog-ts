@@ -37,10 +37,11 @@ function dumpState(
   state: State
 ): AbstractInterpreter {
   const records: Rec[] = [];
-  Object.entries(state.threadStates).forEach(([threadID, threadState]) => {
+  Object.entries(state.threadStates).forEach(([threadIDStr, threadState]) => {
+    const threadID = parseInt(threadIDStr);
     records.push(
       rec("state.ProgramCounter", {
-        thread: str(threadID),
+        thread: int(threadID),
         counter: int(threadState.counter),
         time: int(state.timestamp),
         // TODO: rename field to status?
@@ -50,7 +51,7 @@ function dumpState(
     Object.entries(threadState.scope).forEach(([name, value]) => {
       records.push(
         rec("state.Var", {
-          thread: str(threadID),
+          thread: int(threadID),
           time: int(state.timestamp),
           var: str(name),
           value: jsonToDL(value),
