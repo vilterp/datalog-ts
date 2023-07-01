@@ -2,17 +2,22 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, int, rec, str } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { jsonToDL } from "../../util/json2dl";
+import { Program, compileBasicBlocksNative } from "./compileToNative";
 import { State, initialState, step } from "./interpreter";
+
+export function getProgram(input: string): Program {
+  const bbMain = parseMain(input);
+  return compileBasicBlocksNative(bbMain);
+}
 
 export function stepAndRecord(
   interp: AbstractInterpreter,
-  input: string
+  program: Program
 ): [State, AbstractInterpreter, string | null] {
   interp = interp.doLoad("viz.dl");
   interp = interp.doLoad("deadlock.dl");
 
-  const bbMain = parseMain(input);
-  let state = initialState(bbMain);
+  let state = initialState(program);
 
   // insert initial state
   state.program.dlInstrs.forEach((instr, idx) => {

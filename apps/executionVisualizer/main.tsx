@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
@@ -6,25 +6,35 @@ import { initialEditorState } from "../../uiCommon/ide/types";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { Explorer } from "../../uiCommon/explorer";
-import { stepAndRecord } from "./stepAndRecord";
+import { getProgram, stepAndRecord } from "./stepAndRecord";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { LOADER } from "./dl";
 // @ts-ignore
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
+import { mapObj } from "../../util/util";
 
 function Main() {
-  // TODO: get local storage for editor state again
-  // const [state, dispatch] = useReducer(update, initialState);
   const [editorState, setEditorState] = useJSONLocalStorage(
-    "foo",
+    "exec-viz-source",
     initialEditorState(EXAMPLE_BB)
   );
+
+  // get program and store values for its parameters
+  const program = getProgram(editorState.source);
+  const [params, setParams] = useState<{ [param: string]: number }>(
+    mapObj(program.params, (k, v) => v.defaultValue)
+  );
+  const setParam = (key: string, value: number) => {
+    setParams({ ...params, [key]: value });
+  };
+
+  // step the program and record each state
   const initInterp: AbstractInterpreter = new IncrementalInterpreter(
     ".",
     LOADER
   );
-  const [state, interp, error] = stepAndRecord(initInterp, editorState.source);
+  const [state, interp, error] = stepAndRecord(initInterp, program);
 
   return (
     <>
@@ -37,6 +47,35 @@ function Main() {
       />
 
       {error ? <pre style={{ color: "red" }}>{error}</pre> : null}
+
+      <table>
+        <thead>
+          <tr>
+            <th>Param</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(params)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([key, param]) => (
+              <tr>
+                <td>{key}</td>
+                <td>
+                  <input
+                    type="range"
+                    value={params[key]}
+                    onChange={(evt) => {
+                      setParam(key, parseInt(evt.target.value));
+                    }}
+                    min={0}
+                    max={100}
+                  />
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
 
       <CollapsibleWithHeading
         heading="Trace"
