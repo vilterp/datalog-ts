@@ -13,6 +13,7 @@ import { LOADER } from "./dl";
 // @ts-ignore
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { mapObj } from "../../util/util";
+import { Params } from "./interpreter";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -22,7 +23,7 @@ function Main() {
 
   // get program and store values for its parameters
   const program = getProgram(editorState.source);
-  const [params, setParams] = useState<{ [param: string]: number }>(
+  const [params, setParams] = useState<Params>(
     mapObj(program.params, (k, v) => v.defaultValue)
   );
   const setParam = (key: string, value: number) => {
@@ -34,7 +35,7 @@ function Main() {
     ".",
     LOADER
   );
-  const [state, interp, error] = stepAndRecord(initInterp, program);
+  const [state, interp, error] = stepAndRecord(initInterp, program, params);
 
   return (
     <>
@@ -64,7 +65,7 @@ function Main() {
                 <td>
                   <input
                     type="range"
-                    value={params[key]}
+                    value={params[key] as number}
                     onChange={(evt) => {
                       setParam(key, parseInt(evt.target.value));
                     }}

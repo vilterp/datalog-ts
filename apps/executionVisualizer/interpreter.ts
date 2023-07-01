@@ -8,6 +8,9 @@ export type State = {
   locks: { [id: string]: Lock };
 };
 
+// TODO: fold into state?
+export type Params = { [name: string]: Value };
+
 type ThreadState = {
   counter: number;
   scope: { [name: string]: Value };
@@ -51,22 +54,22 @@ export function initialState(program: Program): State {
   };
 }
 
-export function step(state: State): State {
+export function step(state: State, params: Params): State {
   let newState = state;
   for (const threadID in state.threadStates) {
-    newState = stepThread(newState, parseInt(threadID));
+    newState = stepThread(newState, parseInt(threadID), params);
   }
   return { ...newState, timestamp: state.timestamp + 1 };
 }
 
-function stepThread(state: State, threadID: number): State {
+function stepThread(state: State, threadID: number, params: Params): State {
   const threadState = state.threadStates[threadID];
   if (!threadState) {
     debugger;
   }
   switch (threadState.status.type) {
     case "running":
-      return processRunning(state, threadID);
+      return processRunning(state, threadID, params);
     case "blocked":
       return processBlocked(state, threadID, threadState.status.reason);
     case "finished":
@@ -75,7 +78,7 @@ function stepThread(state: State, threadID: number): State {
   }
 }
 
-function processRunning(state: State, threadID: number): State {
+function processRunning(state: State, threadID: number, params: Params): State {
   const threadState = state.threadStates[threadID];
   const counter = threadState.counter;
   const instr = state.program.instrs[counter];
@@ -113,7 +116,12 @@ function processRunning(state: State, threadID: number): State {
           }
         }
         case "EditorVar":
-          throw new Error("TODO: editor vars");
+          return updateThreadScope(
+            state,
+            threadID,
+            varName,
+            params[instr.ident.text]
+          );
         case "Int":
           return updateThreadScope(
             state,

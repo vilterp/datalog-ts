@@ -3,7 +3,7 @@ import { Rec, int, rec, str } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
 import { jsonToDL } from "../../util/json2dl";
 import { Program, compileBasicBlocksNative } from "./compileToNative";
-import { State, initialState, step } from "./interpreter";
+import { Params, State, initialState, step } from "./interpreter";
 
 export function getProgram(input: string): Program {
   const bbMain = parseMain(input);
@@ -12,7 +12,8 @@ export function getProgram(input: string): Program {
 
 export function stepAndRecord(
   interp: AbstractInterpreter,
-  program: Program
+  program: Program,
+  params: Params
 ): [State, AbstractInterpreter, string | null] {
   interp = interp.doLoad("viz.dl");
   interp = interp.doLoad("deadlock.dl");
@@ -35,7 +36,7 @@ export function stepAndRecord(
   try {
     // step program
     for (let t = 0; t < 50; t++) {
-      state = step(state);
+      state = step(state, params);
       interp = dumpState(interp, state);
     }
 
