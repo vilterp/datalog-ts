@@ -42,6 +42,7 @@ export function stepAndRecord(
 
     return [state, interp, null];
   } catch (e) {
+    console.error(e);
     return [state, interp, e.toString()];
   }
 }

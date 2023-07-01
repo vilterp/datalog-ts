@@ -116,12 +116,7 @@ function processRunning(state: State, threadID: number, params: Params): State {
           }
         }
         case "EditorVar":
-          return updateThreadScope(
-            state,
-            threadID,
-            varName,
-            params[instr.ident.text]
-          );
+          return updateThreadScope(state, threadID, varName, params[counter]);
         case "Int":
           return updateThreadScope(
             state,
