@@ -9,7 +9,12 @@ export function Diagram<T>(props: {
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
   return (
-    <svg width={dims.width} height={dims.height}>
+    <svg
+      width={dims.width}
+      height={dims.height}
+      onMouseMove={() => console.log("mouse move")}
+      onMouseUp={() => console.log("mouse up")}
+    >
       {svgNode}
     </svg>
   );
@@ -137,7 +142,13 @@ function render<T>(
         />
       );
     case "CIRCLE":
-      return <circle r={d.radius} fill={d.fill} />;
+      return (
+        <circle
+          onMouseDown={() => console.log("clicked")}
+          r={d.radius}
+          fill={d.fill}
+        />
+      );
     case "TEXT":
       return (
         <text
