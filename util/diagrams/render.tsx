@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Diag, Handlers, Point } from "./types";
+import { mouseRelativeToElementCenter } from "./mouseUtil";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
@@ -16,17 +17,16 @@ export function Diagram<T>(props: {
     onMouseUp: props.onMouseUp,
     onMouseMove: props.onMouseMove,
   });
+  const ref = React.useRef();
   return (
     <svg
+      ref={ref}
       width={dims.width}
       height={dims.height}
-      onMouseMove={(evt) =>
-        props.onMouseMove({
-          // TODO: make these properly relative to the diagram
-          x: evt.clientX,
-          y: evt.clientY,
-        })
-      }
+      onMouseMove={(evt) => {
+        const pt = mouseRelativeToElementCenter(ref, evt);
+        props.onMouseMove(pt);
+      }}
     >
       {svgNode}
     </svg>
