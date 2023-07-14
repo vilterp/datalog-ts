@@ -1,15 +1,33 @@
 import * as React from "react";
-import { Diag } from "./types";
+import { Diag, Handlers, Point } from "./types";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
+  onMouseDown?: (tag: T | null) => void;
+  onMouseUp?: () => void;
+  onMouseMove?: (pt: Point) => void;
 }) {
   // console.log(props.diagram);
   const dims = dimensions(props.diagram);
-  const svgNode = render(props.diagram, props.onMouseOver);
+  const svgNode = render(props.diagram, {
+    onMouseOver: props.onMouseOver,
+    onMouseDown: props.onMouseDown,
+    onMouseUp: props.onMouseUp,
+    onMouseMove: props.onMouseMove,
+  });
   return (
-    <svg width={dims.width} height={dims.height}>
+    <svg
+      width={dims.width}
+      height={dims.height}
+      onMouseMove={(evt) =>
+        props.onMouseMove({
+          // TODO: make these properly relative to the diagram
+          x: evt.clientX,
+          y: evt.clientY,
+        })
+      }
+    >
       {svgNode}
     </svg>
   );
@@ -77,16 +95,13 @@ export function dimensions<T>(d: Diag<T>): Dimensions {
   }
 }
 
-function render<T>(
-  d: Diag<T>,
-  onMouseOver: (t: T | null) => void
-): React.ReactNode {
+function render<T>(d: Diag<T>, handlers: Handlers<T>): React.ReactNode {
   // TODO: is all this `key=idx` bad?
   switch (d.type) {
     case "ABS_POS":
       return (
         <g transform={`translate(${d.point.x} ${d.point.y})`}>
-          {render(d.diag, onMouseOver)}
+          {render(d.diag, handlers)}
         </g>
       );
     case "HORIZ_LAYOUT": {
@@ -95,7 +110,7 @@ function render<T>(
       d.children.forEach((child, idx) => {
         children.push(
           <g key={idx} transform={`translate(${x} 0)`}>
-            {render(child, onMouseOver)}
+            {render(child, handlers)}
           </g>
         );
         x += dimensions(child).width;
@@ -108,7 +123,7 @@ function render<T>(
       d.children.forEach((child, idx) => {
         children.push(
           <g key={idx} transform={`translate(0 ${y})`}>
-            {render(child, onMouseOver)}
+            {render(child, handlers)}
           </g>
         );
         y += dimensions(child).height;
@@ -119,7 +134,7 @@ function render<T>(
       return (
         <g>
           {d.children.map((child, idx) => (
-            <g key={idx}>{render(child, onMouseOver)}</g>
+            <g key={idx}>{render(child, handlers)}</g>
           ))}
         </g>
       );
@@ -155,10 +170,11 @@ function render<T>(
       return (
         <g
           // TODO: full tag path, not just one tag
-          onMouseOver={() => onMouseOver(d.tag)}
-          onMouseOut={() => onMouseOver(null)}
+          onMouseOver={() => handlers.onMouseOver(d.tag)}
+          onMouseOut={() => handlers.onMouseOver(null)}
+          onMouseDown={() => handlers.onMouseDown(d.tag)}
         >
-          {render(d.diag, onMouseOver)}
+          {render(d.diag, handlers)}
         </g>
       );
   }

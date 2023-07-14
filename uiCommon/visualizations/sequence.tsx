@@ -45,6 +45,9 @@ function SequenceDiagram(props: VizArgs) {
         <Diagram<Term>
           diagram={sequenceDiagram(spec, props.highlightedTerm)}
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
+          onMouseDown={(term) => console.log("mouse down on", term)}
+          onMouseMove={(pt) => console.log("mouse move", pt)}
+          onMouseUp={() => console.log("mouse up")}
         />
       </div>
     );
