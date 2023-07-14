@@ -1,5 +1,6 @@
 import { Ref, MouseEvent } from "react";
 import { Point } from "./types";
+import { rectCenter } from "./geom";
 
 export function mouseRelativeToElementTopLeft(
   svgRef: Ref<SVGElement>,
