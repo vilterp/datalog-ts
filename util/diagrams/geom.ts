@@ -1,3 +1,5 @@
+import { avg } from "../util";
+
 export type Point = { x: number; y: number };
 
 export function distance(a: Point, b: Point): number {

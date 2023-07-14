@@ -270,6 +270,18 @@ export function clamp(n: number, range: [number, number]): number {
   return n;
 }
 
+export function avg(numbers: number[]): number {
+  return sum(numbers) / numbers.length;
+}
+
+export function sum(numbers: number[]): number {
+  let out = 0;
+  for (const num of numbers) {
+    out += num;
+  }
+  return out;
+}
+
 export function insertAtIdx<T>(arr: T[], idx: number, item: T): T[] {
   return [...arr.slice(0, idx), item, ...arr.slice(idx)];
 }
