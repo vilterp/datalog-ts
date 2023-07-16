@@ -18,6 +18,7 @@ import { SequenceDiagram } from "../../uiCommon/visualizations/sequence";
 import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
 import { parserTermToInternal } from "../../core/translateAST";
 import { Rec, Term } from "../../core/types";
+import { ppt } from "../../core/pretty";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -92,6 +93,7 @@ function Main() {
 
 function Display(props: { interp: AbstractInterpreter }) {
   const [highlightedTerm, setHighlightedTerm] = useState<Term | null>(null);
+  const interp = props.interp;
 
   return (
     <>
@@ -101,26 +103,17 @@ function Display(props: { interp: AbstractInterpreter }) {
       />
 
       <SequenceDiagram
-        id="sequence"
-        interp={props.interp}
         highlightedTerm={highlightedTerm}
         setHighlightedTerm={setHighlightedTerm}
         onDrag={(tag, delta) => {
-          console.log("dragged", tag, "delta", delta);
+          console.log("dragged", ppt(tag), "delta", delta);
         }}
-        runStatements={() => {}}
-        spec={
-          parserTermToInternal(
-            parseRecord(
-              `sequence{
-            actors: state.ProgramCounter{thread: ID},
-            hops: viz.hop{fromTick: FromTick, toTick: ToTick},
-            tickColor: viz.tickColor{tick: Tick, color: Color},
-            hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
-          }`
-            )
-          ) as Rec
-        }
+        actors={interp.queryStr("state.ProgramCounter{thread: ID}")}
+        hops={interp.queryStr("viz.hop{fromTick: FromTick, toTick: ToTick}")}
+        hopColors={interp.queryStr(
+          "viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color}"
+        )}
+        tickColors={interp.queryStr("viz.tickColor{tick: Tick, color: Color}")}
       />
     </>
   );

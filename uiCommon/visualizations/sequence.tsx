@@ -26,10 +26,10 @@ import { Point } from "../../util/diagrams/geom";
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
   description: "visualize multiple processes interacting over time",
-  component: SequenceDiagram,
+  component: SequenceDiagramViz,
 };
 
-export function SequenceDiagram(
+export function SequenceDiagramViz(
   props: VizArgs & { onDrag: (tag: Term, delta: Point) => void }
 ) {
   try {
@@ -42,26 +42,16 @@ export function SequenceDiagram(
       ? props.interp.queryRec(props.spec.attrs.hopColor as Rec)
       : [];
 
-    const spec = makeSequenceSpec(actors, hops, tickColors, hopColors);
-    const diagram = sequenceDiagram(spec, props.highlightedTerm);
-
-    const [dragState, dragHandlers] = useDrag<Term>((tag, delta) => {
-      props.onDrag(tag, delta);
-    });
-
     return (
-      <div>
-        <Diagram<Term>
-          diagram={diagram}
-          onMouseOver={(term) => {
-            props.setHighlightedTerm?.(term);
-          }}
-          onMouseDown={dragHandlers.onMouseDown}
-          onMouseMove={dragHandlers.onMouseMove}
-          onMouseUp={dragHandlers.onMouseUp}
-        />
-        <pre>{JSON.stringify(dragState.type)}</pre>
-      </div>
+      <SequenceDiagram
+        actors={actors}
+        hops={hops}
+        tickColors={tickColors}
+        hopColors={hopColors}
+        highlightedTerm={props.highlightedTerm}
+        setHighlightedTerm={props.setHighlightedTerm}
+        onDrag={props.onDrag}
+      />
     );
   } catch (e) {
     console.error("while evaluating sequence diagram:", e);
@@ -71,6 +61,43 @@ export function SequenceDiagram(
       </pre>
     );
   }
+}
+
+export function SequenceDiagram(props: {
+  actors: Res[];
+  hops: Res[];
+  tickColors: Res[];
+  hopColors: Res[];
+  highlightedTerm: Term;
+  setHighlightedTerm: (t: Term) => void;
+  onDrag: (tag: Term, delta: Point) => void;
+}) {
+  const spec = makeSequenceSpec(
+    props.actors,
+    props.hops,
+    props.tickColors,
+    props.hopColors
+  );
+  const diagram = sequenceDiagram(spec, props.highlightedTerm);
+
+  const [dragState, dragHandlers] = useDrag<Term>((tag, delta) => {
+    props.onDrag(tag, delta);
+  });
+
+  return (
+    <div>
+      <Diagram<Term>
+        diagram={diagram}
+        onMouseOver={(term) => {
+          props.setHighlightedTerm?.(term);
+        }}
+        onMouseDown={dragHandlers.onMouseDown}
+        onMouseMove={dragHandlers.onMouseMove}
+        onMouseUp={dragHandlers.onMouseUp}
+      />
+      <pre>{JSON.stringify(dragState.type)}</pre>
+    </div>
+  );
 }
 
 const DEFAULT_TICK_COLOR = "lightblue";
