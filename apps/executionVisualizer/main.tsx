@@ -14,6 +14,10 @@ import { LOADER } from "./dl";
 import EXAMPLE_BB from "../../languageWorkbench/languages/basicBlocks/example.txt";
 import { mapObj } from "../../util/util";
 import { Params } from "./interpreter";
+import { SequenceDiagram } from "../../uiCommon/visualizations/sequence";
+import { parseRecord } from "../../languageWorkbench/languages/dl/parser";
+import { parserTermToInternal } from "../../core/translateAST";
+import { Rec, Term } from "../../core/types";
 
 function Main() {
   const [editorState, setEditorState] = useJSONLocalStorage(
@@ -36,6 +40,7 @@ function Main() {
     LOADER
   );
   const [state, interp, error] = stepAndRecord(initInterp, program, params);
+  const [highlightedTerm, setHighlightedTerm] = useState<Term | null>(null);
 
   return (
     <>
@@ -83,7 +88,30 @@ function Main() {
 
       <CollapsibleWithHeading
         heading="Trace"
-        content={<Explorer interp={interp} showViz />}
+        content={<Explorer interp={interp} />}
+      />
+
+      <SequenceDiagram
+        id="sequence"
+        interp={interp}
+        highlightedTerm={highlightedTerm}
+        setHighlightedTerm={setHighlightedTerm}
+        onDrag={(tag, delta) => {
+          console.log("dragged", tag, "delta", delta);
+        }}
+        runStatements={() => {}}
+        spec={
+          parserTermToInternal(
+            parseRecord(
+              `sequence{
+                actors: state.ProgramCounter{thread: ID},
+                hops: viz.hop{fromTick: FromTick, toTick: ToTick},
+                tickColor: viz.tickColor{tick: Tick, color: Color},
+                hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
+              }`
+            )
+          ) as Rec
+        }
       />
     </>
   );

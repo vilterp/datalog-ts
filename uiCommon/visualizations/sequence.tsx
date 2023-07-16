@@ -21,6 +21,7 @@ import { jsonEq } from "../../util/json";
 import { termEq } from "../../core/unify";
 import { ppt } from "../../core/pretty";
 import { useDrag } from "../../util/diagrams/hooks";
+import { Point } from "../../util/diagrams/geom";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -28,7 +29,9 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-function SequenceDiagram(props: VizArgs) {
+export function SequenceDiagram(
+  props: VizArgs & { onDrag: (tag: Term, delta: Point) => void }
+) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
     const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
@@ -43,7 +46,7 @@ function SequenceDiagram(props: VizArgs) {
     const diagram = sequenceDiagram(spec, props.highlightedTerm);
 
     const [dragState, dragHandlers] = useDrag<Term>((tag, delta) => {
-      console.log("dragged", tag, "delta", delta);
+      props.onDrag(tag, delta);
     });
 
     return (
