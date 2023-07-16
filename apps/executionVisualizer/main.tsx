@@ -40,7 +40,6 @@ function Main() {
     LOADER
   );
   const [state, interp, error] = stepAndRecord(initInterp, program, params);
-  const [highlightedTerm, setHighlightedTerm] = useState<Term | null>(null);
 
   return (
     <>
@@ -51,8 +50,6 @@ function Main() {
         editorState={editorState}
         setEditorState={(newEditorState) => setEditorState(newEditorState)}
       />
-
-      {error ? <pre style={{ color: "red" }}>{error}</pre> : null}
 
       <table>
         <thead>
@@ -86,14 +83,26 @@ function Main() {
         </tbody>
       </table>
 
+      {error ? <pre style={{ color: "red" }}>{error}</pre> : null}
+
+      <Display interp={interp} />
+    </>
+  );
+}
+
+function Display(props: { interp: AbstractInterpreter }) {
+  const [highlightedTerm, setHighlightedTerm] = useState<Term | null>(null);
+
+  return (
+    <>
       <CollapsibleWithHeading
         heading="Trace"
-        content={<Explorer interp={interp} />}
+        content={<Explorer interp={props.interp} />}
       />
 
       <SequenceDiagram
         id="sequence"
-        interp={interp}
+        interp={props.interp}
         highlightedTerm={highlightedTerm}
         setHighlightedTerm={setHighlightedTerm}
         onDrag={(tag, delta) => {
@@ -104,11 +113,11 @@ function Main() {
           parserTermToInternal(
             parseRecord(
               `sequence{
-                actors: state.ProgramCounter{thread: ID},
-                hops: viz.hop{fromTick: FromTick, toTick: ToTick},
-                tickColor: viz.tickColor{tick: Tick, color: Color},
-                hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
-              }`
+            actors: state.ProgramCounter{thread: ID},
+            hops: viz.hop{fromTick: FromTick, toTick: ToTick},
+            tickColor: viz.tickColor{tick: Tick, color: Color},
+            hopColor: viz.hopColor{fromTick: FromTick, toTick: ToTick, color: Color},
+          }`
             )
           ) as Rec
         }
