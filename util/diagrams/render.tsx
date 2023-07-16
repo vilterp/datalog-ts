@@ -24,9 +24,11 @@ export function Diagram<T>(props: {
       width={dims.width}
       height={dims.height}
       onMouseMove={(evt) => {
+        evt.preventDefault();
         const pt = mouseRelativeToElementCenter(ref, evt);
         props.onMouseMove(pt);
       }}
+      onMouseUp={(evt) => props.onMouseUp()}
     >
       {svgNode}
     </svg>

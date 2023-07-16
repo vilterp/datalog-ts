@@ -20,6 +20,7 @@ import { flatMap, uniqBy } from "../../util/util";
 import { jsonEq } from "../../util/json";
 import { termEq } from "../../core/unify";
 import { ppt } from "../../core/pretty";
+import { useDrag } from "../../util/diagrams/hooks";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -40,15 +41,20 @@ function SequenceDiagram(props: VizArgs) {
 
     const spec = makeSequenceSpec(actors, hops, tickColors, hopColors);
 
+    const [dragState, dragHandlers] = useDrag<Term>();
+
     return (
       <div>
         <Diagram<Term>
           diagram={sequenceDiagram(spec, props.highlightedTerm)}
-          onMouseOver={(term) => props.setHighlightedTerm?.(term)}
-          onMouseDown={(term) => console.log("mouse down on", term)}
-          onMouseMove={(pt) => console.log("mouse move", pt)}
-          onMouseUp={() => console.log("mouse up")}
+          onMouseOver={(term) => {
+            props.setHighlightedTerm?.(term);
+          }}
+          onMouseDown={dragHandlers.onMouseDown}
+          onMouseMove={dragHandlers.onMouseMove}
+          onMouseUp={dragHandlers.onMouseUp}
         />
+        <pre>{JSON.stringify(dragState.type)}</pre>
       </div>
     );
   } catch (e) {
