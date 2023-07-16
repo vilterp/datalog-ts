@@ -40,13 +40,14 @@ function SequenceDiagram(props: VizArgs) {
       : [];
 
     const spec = makeSequenceSpec(actors, hops, tickColors, hopColors);
+    const diagram = sequenceDiagram(spec, props.highlightedTerm);
 
-    const [dragState, dragHandlers] = useDrag<Term>();
+    const [dragState, dragHandlers] = useDrag<Term>(diagram);
 
     return (
       <div>
         <Diagram<Term>
-          diagram={sequenceDiagram(spec, props.highlightedTerm)}
+          diagram={diagram}
           onMouseOver={(term) => {
             props.setHighlightedTerm?.(term);
           }}
