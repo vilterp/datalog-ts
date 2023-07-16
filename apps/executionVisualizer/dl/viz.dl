@@ -44,12 +44,12 @@ viz.spawnMessage{
   instr{idx: ForkC, op: forkTo{dest: ForkToC}} &
   FromT + 1 = ToT.
 viz.continueMessage{
-  fromTick: tick{time: PrevT, place: TH},
-  toTick: tick{time: T, place: TH},
+  fromTick: tick{time: PrevT, place: TH, state: FromSt},
+  toTick: tick{time: T, place: TH, state: ToSt},
   kind: continue{},
 } :-
-  state.ProgramCounter{thread: TH, time: PrevT} &
-  state.ProgramCounter{thread: TH, time: T} &
+  state.ProgramCounter{thread: TH, time: PrevT, state: FromSt} &
+  state.ProgramCounter{thread: TH, time: T, state: ToSt} &
   PrevT = T + 1.
 viz.lockTransferMessage{
   fromTick: tick{time: PrevT, place: ReleaseTH},
