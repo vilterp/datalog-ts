@@ -16,7 +16,6 @@ export function useDrag<T>(): [DragState<T>, Handlers<T>] {
     {
       onMouseOver: () => {},
       onMouseUp: () => {
-        console.log("on mouse up");
         if (dragState.type === "DraggingTag") {
           setDragState({ type: "NotDragging" });
         }

@@ -29,6 +29,11 @@ export function Diagram<T>(props: {
         props.onMouseMove(pt);
       }}
       onMouseUp={(evt) => props.onMouseUp()}
+      onMouseLeave={() => {
+        // cancel the drag if mouse leaves
+        // this is a bit hacky
+        props.onMouseUp();
+      }}
     >
       {svgNode}
     </svg>
