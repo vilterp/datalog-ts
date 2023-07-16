@@ -187,7 +187,7 @@ function yForTime(t: Time): number {
   return t * 10;
 }
 
-export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
+function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
   const maxTime = seq.hops.reduce(
     (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
     0
