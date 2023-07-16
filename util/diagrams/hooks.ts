@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Diag, Handlers } from "./types";
+import { Handlers } from "./types";
 import { Point, minusPoint } from "./geom";
-import { getCoords } from "./getCoords";
 import { Json } from "../json";
 
 type DragState<T> =
@@ -11,7 +10,7 @@ type DragState<T> =
 const initDragState: DragState<any> = { type: "NotDragging" };
 
 export function useDrag<T extends Json>(
-  diagram: Diag<T>
+  onDrag: (tag: T, delta: Point) => void
 ): [DragState<T>, Handlers<T>] {
   const [dragState, setDragState] = useState(initDragState);
 
@@ -31,17 +30,16 @@ export function useDrag<T extends Json>(
             ...dragState,
             lastPos: pt,
           });
-          console.log("drag", dragState.tag, "somewhere", delta);
+          onDrag(dragState.tag, delta);
         }
       },
-      onMouseDown: (tag: T | null) => {
+      onMouseDown: (tag: T | null, pt: Point) => {
         if (tag) {
-          const coords = getCoords(diagram, tag);
           setDragState({
             type: "DraggingTag",
             tag,
             offset: { x: 0, y: 0 },
-            lastPos: coords,
+            lastPos: pt,
           });
         }
       },

@@ -42,7 +42,9 @@ function SequenceDiagram(props: VizArgs) {
     const spec = makeSequenceSpec(actors, hops, tickColors, hopColors);
     const diagram = sequenceDiagram(spec, props.highlightedTerm);
 
-    const [dragState, dragHandlers] = useDrag<Term>(diagram);
+    const [dragState, dragHandlers] = useDrag<Term>((tag, delta) => {
+      console.log("dragged", tag, "delta", delta);
+    });
 
     return (
       <div>

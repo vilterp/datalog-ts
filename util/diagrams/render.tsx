@@ -5,7 +5,7 @@ import { mouseRelativeToElementCenter } from "./mouseUtil";
 export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
-  onMouseDown?: (tag: T | null) => void;
+  onMouseDown?: (tag: T | null, point: Point) => void;
   onMouseUp?: () => void;
   onMouseMove?: (pt: Point) => void;
 }) {
@@ -25,8 +25,11 @@ export function Diagram<T>(props: {
       height={dims.height}
       onMouseMove={(evt) => {
         evt.preventDefault();
-        const pt = mouseRelativeToElementCenter(ref, evt);
-        props.onMouseMove(pt);
+        // const pt = mouseRelativeToElementCenter(ref, evt);
+        props.onMouseMove({
+          x: evt.clientX,
+          y: evt.clientY,
+        });
       }}
       onMouseUp={(evt) => props.onMouseUp()}
       onMouseLeave={() => {
@@ -179,7 +182,13 @@ function render<T>(d: Diag<T>, handlers: Handlers<T>): React.ReactNode {
           // TODO: full tag path, not just one tag
           onMouseOver={() => handlers.onMouseOver(d.tag)}
           onMouseOut={() => handlers.onMouseOver(null)}
-          onMouseDown={() => handlers.onMouseDown(d.tag)}
+          onMouseDown={(evt) => {
+            evt.preventDefault();
+            handlers.onMouseDown(d.tag, {
+              x: evt.clientX,
+              y: evt.clientY,
+            });
+          }}
         >
           {render(d.diag, handlers)}
         </g>

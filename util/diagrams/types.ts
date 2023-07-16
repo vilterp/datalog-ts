@@ -181,7 +181,7 @@ export function Tag<T>(tag: T, diag: Diag<T>): Diag<T> {
 
 export type Handlers<T> = {
   onMouseOver?: (tag: T | null) => void;
-  onMouseDown?: (tag: T | null) => void;
+  onMouseDown?: (tag: T | null, point: Point) => void;
   onMouseUp?: () => void;
   onMouseMove?: (pt: Point) => void;
 };
