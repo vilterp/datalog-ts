@@ -18,6 +18,8 @@ import { LanguageSpec } from "./common/types";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { getAndClearStats as getAndClearMultisetStats } from "../core/incremental/indexedMultiSet";
+import { getAndClearPPTStats } from "../core/fastPPT";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -36,10 +38,13 @@ function lwbBenchmarks(cache: InterpCache) {
   return ["fp", "dl"].map((lang) => ({
     name: lang,
     async run() {
-      return runDDBenchmark(
+      const ret = runDDBenchmark(
         `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
         (input) => testLangQuery(input, cache)
       );
+      console.log("multisetStats", getAndClearMultisetStats());
+      console.log("pptStats", getAndClearPPTStats());
+      return ret;
     },
   }));
 }

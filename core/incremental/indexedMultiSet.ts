@@ -23,6 +23,26 @@ type Index<T> = {
   items: DefaultDict<Key, Set<Key>>;
 };
 
+type Stats = {
+  cacheHits: number;
+  total: number;
+};
+
+function getEmptyStats(): Stats {
+  return {
+    cacheHits: 0,
+    total: 0,
+  };
+}
+
+let stats = getEmptyStats();
+
+export function getAndClearStats(): Stats {
+  const ret = stats;
+  stats = getEmptyStats();
+  return ret;
+}
+
 export class IndexedMultiSet<T> {
   private readonly allRecords: DefaultDict<Key, ItemAndMult<T>>;
   private readonly indexes: DefaultDict<string, Index<T>>;
@@ -37,7 +57,19 @@ export class IndexedMultiSet<T> {
     this.allRecords = allRecords;
     this.indexes = indexes;
     this.size = allRecords.size();
-    this.stringify = stringify;
+    this.stringify = (item: T): string => {
+      stats.total++;
+      // @ts-ignore
+      if (item.__cachedKey) {
+        stats.cacheHits++;
+        // @ts-ignore
+        return item.__cachedKey;
+      }
+      const key = stringify(item);
+      // @ts-ignore
+      item.__cachedKey = key;
+      return key;
+    };
   }
 
   all(): IterableIterator<ItemAndMult<T>> {

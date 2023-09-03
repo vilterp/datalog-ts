@@ -11,7 +11,41 @@ export function fastPPB(bindings: Bindings) {
   )}}`;
 }
 
+type Stats = {
+  cacheHits: number;
+  total: number;
+};
+
+function getEmptyStats(): Stats {
+  return {
+    cacheHits: 0,
+    total: 0,
+  };
+}
+
+let stats = getEmptyStats();
+
+export function getAndClearPPTStats(): Stats {
+  const ret = stats;
+  stats = getEmptyStats();
+  return ret;
+}
+
 export function fastPPT(term: Term): string {
+  stats.total++;
+  // @ts-ignore
+  if (term.__cachedKey) {
+    stats.cacheHits++;
+    // @ts-ignore
+    return term.__cachedKey;
+  }
+  const key = fastPPTRaw(term);
+  // @ts-ignore
+  term.__cachedKey = key;
+  return key;
+}
+
+function fastPPTRaw(term: Term): string {
   switch (term.type) {
     case "Array":
       return `[${term.items.map(fastPPT).join(", ")}]`;

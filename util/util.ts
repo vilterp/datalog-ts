@@ -83,6 +83,7 @@ export function mapObjToList<T, V>(
   f: (key: string, val: T) => V
 ): V[] {
   return Object.keys(obj)
+    .filter((k) => k !== "__cachedKey") // TODO this is ugly
     .sort()
     .map((k) => f(k, obj[k]));
 }
