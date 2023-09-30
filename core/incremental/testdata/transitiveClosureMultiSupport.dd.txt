@@ -163,3 +163,60 @@ entry{mult: 1, term: reach{from: "b", to: "b"}}.
 entry{mult: 1, term: reach{from: "c", to: "c"}}.
 entry{mult: 2, term: reach{from: "b", to: "c"}}.
 entry{mult: 2, term: reach{from: "c", to: "b"}}.
+
+-edge{from: "b", to: "c"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "b", to: "c"}-1]
+1: [{A: "b", C: "c"}-1]
+2: [{A: "b", B: "c"}-1]
+0: [{A: "b", C: "c"}-1]
+4: [{A: "b", B: "c", C: "b"}-2, {A: "b", B: "c", C: "c"}-1]
+5: [{A: "b", C: "c"}-1]
+0: [{A: "b", B: "c", C: "b"}-2]
+0: [{A: "b", B: "c", C: "c"}-1]
+reach: [reach{from: "b", to: "c"}-1]
+5: [{A: "b", B: "c", C: "b"}-1]
+5: [{A: "b", B: "c", C: "c"}-1]
+3: [{B: "b", C: "c"}-1]
+reach: [reach{from: "b", to: "b"}-1]
+reach: [reach{from: "b", to: "c"}-1]
+4: [{A: "c", B: "b", C: "c"}-1]
+3: [{B: "b", C: "b"}-1]
+3: [{B: "b", C: "c"}-1]
+0: [{A: "c", B: "b", C: "c"}-1]
+4: [{A: "c", B: "b", C: "b"}-1]
+4: [{A: "c", B: "b", C: "c"}-1]
+5: []
+0: [{A: "c", B: "b", C: "b"}-1]
+0: [{A: "c", B: "b", C: "c"}-1]
+5: [{A: "c", B: "b", C: "b"}-1]
+5: [{A: "c", B: "b", C: "c"}-1]
+reach: [reach{from: "c", to: "b"}-1]
+reach: [reach{from: "c", to: "c"}-1]
+3: [{B: "c", C: "b"}-1]
+3: [{B: "c", C: "c"}-1]
+4: []
+4: []
+
+reach{}?
+----
+application/datalog
+reach{from: "c", to: "b"}.
+
+-edge{from: "c", to: "b"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "c", to: "b"}-1]
+1: [{A: "c", C: "b"}-1]
+2: [{A: "c", B: "b"}-1]
+0: [{A: "c", C: "b"}-1]
+4: []
+5: [{A: "c", C: "b"}-1]
+reach: [reach{from: "c", to: "b"}-1]
+3: [{B: "c", C: "b"}-1]
+4: []
+
+reach{}?
+----
+application/datalog
