@@ -131,6 +131,41 @@ entry{mult: 2, term: reach{from: "a", to: "b"}}.
 entry{mult: 2, term: reach{from: "b", to: "c"}}.
 entry{mult: 2, term: reach{from: "c", to: "b"}}.
 
+edge{from: "d", to: "c"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "d", to: "c"}+1]
+1: [{A: "d", C: "c"}+1]
+2: [{A: "d", B: "c"}+1]
+0: [{A: "d", C: "c"}+1]
+4: [{A: "d", B: "c", C: "b"}+2, {A: "d", B: "c", C: "c"}+1]
+5: [{A: "d", C: "c"}+1]
+0: [{A: "d", B: "c", C: "b"}+2]
+0: [{A: "d", B: "c", C: "c"}+1]
+reach: [reach{from: "d", to: "c"}+1]
+5: [{A: "d", B: "c", C: "b"}+1]
+5: [{A: "d", B: "c", C: "c"}+1]
+3: [{B: "d", C: "c"}+1]
+reach: [reach{from: "d", to: "b"}+1]
+reach: [reach{from: "d", to: "c"}+1]
+4: []
+3: [{B: "d", C: "b"}+1]
+3: [{B: "d", C: "c"}+1]
+4: []
+4: []
+
+.multiplicities reach
+----
+application/datalog
+entry{mult: 1, term: reach{from: "a", to: "c"}}.
+entry{mult: 1, term: reach{from: "b", to: "b"}}.
+entry{mult: 1, term: reach{from: "c", to: "c"}}.
+entry{mult: 1, term: reach{from: "d", to: "b"}}.
+entry{mult: 2, term: reach{from: "a", to: "b"}}.
+entry{mult: 2, term: reach{from: "b", to: "c"}}.
+entry{mult: 2, term: reach{from: "c", to: "b"}}.
+entry{mult: 2, term: reach{from: "d", to: "c"}}.
+
 -edge{from: "a", to: "b"}.
 ----
 incremental-datalog/trace
@@ -159,8 +194,10 @@ reach: [reach{from: "a", to: "b"}-1]
 application/datalog
 entry{mult: 1, term: reach{from: "b", to: "b"}}.
 entry{mult: 1, term: reach{from: "c", to: "c"}}.
+entry{mult: 1, term: reach{from: "d", to: "b"}}.
 entry{mult: 2, term: reach{from: "b", to: "c"}}.
 entry{mult: 2, term: reach{from: "c", to: "b"}}.
+entry{mult: 2, term: reach{from: "d", to: "c"}}.
 
 -edge{from: "b", to: "c"}.
 ----
@@ -194,13 +231,22 @@ reach: [reach{from: "c", to: "b"}-1]
 reach: [reach{from: "c", to: "c"}-1]
 3: [{B: "c", C: "b"}-1]
 3: [{B: "c", C: "c"}-1]
-4: []
+4: [{A: "d", B: "c", C: "b"}-1]
+4: [{A: "d", B: "c", C: "c"}-1]
+0: [{A: "d", B: "c", C: "b"}-1]
+0: [{A: "d", B: "c", C: "c"}-1]
+5: []
+5: [{A: "d", B: "c", C: "c"}-1]
+reach: [reach{from: "d", to: "c"}-1]
+3: [{B: "d", C: "c"}-1]
 4: []
 
 reach{}?
 ----
 application/datalog
 reach{from: "c", to: "b"}.
+reach{from: "d", to: "b"}.
+reach{from: "d", to: "c"}.
 
 -edge{from: "c", to: "b"}.
 ----
@@ -213,6 +259,29 @@ edge: [edge{from: "c", to: "b"}-1]
 5: [{A: "c", C: "b"}-1]
 reach: [reach{from: "c", to: "b"}-1]
 3: [{B: "c", C: "b"}-1]
+4: [{A: "d", B: "c", C: "b"}-1]
+0: [{A: "d", B: "c", C: "b"}-1]
+5: [{A: "d", B: "c", C: "b"}-1]
+reach: [reach{from: "d", to: "b"}-1]
+3: [{B: "d", C: "b"}-1]
+4: []
+
+reach{}?
+----
+application/datalog
+reach{from: "d", to: "c"}.
+
+-edge{from: "d", to: "c"}.
+----
+incremental-datalog/trace
+edge: [edge{from: "d", to: "c"}-1]
+1: [{A: "d", C: "c"}-1]
+2: [{A: "d", B: "c"}-1]
+0: [{A: "d", C: "c"}-1]
+4: []
+5: [{A: "d", C: "c"}-1]
+reach: [reach{from: "d", to: "c"}-1]
+3: [{B: "d", C: "c"}-1]
 4: []
 
 reach{}?
