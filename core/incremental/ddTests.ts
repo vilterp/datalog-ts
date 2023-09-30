@@ -1,10 +1,10 @@
 import { toGraphviz } from "./graphviz";
-import { Rec } from "../types";
+import { Rec, Term, int, rec } from "../types";
 import { IncrementalInterpreter } from "./interpreter";
 import { fsLoader } from "../fsLoader";
 import { Suite } from "../../util/testBench/testing";
 import { ProcessFn, runDDTestAtPath, TestOutput } from "../../util/ddTest";
-import { graphvizOut, jsonOut } from "../../util/ddTest/types";
+import { datalogOut, graphvizOut, jsonOut } from "../../util/ddTest/types";
 import { prettyPrintGraph } from "../../util/graphviz";
 import {
   parseRecord,
@@ -77,6 +77,17 @@ function evalTest(inputs: string[]): TestOutput[] {
     if (input === ".ruleGraph") {
       // TODO: query virtual relations instead?
       out.push(graphvizOut(prettyPrintGraph(toGraphviz(interp.graph))));
+      continue;
+    } else if (input.startsWith(".multiplicities")) {
+      const relation = input.split(" ")[1];
+      const cache = interp.graph.nodes.get(relation).cache;
+      const entries: Term[] = [];
+      for (const entry of cache.all()) {
+        entries.push(
+          rec("entry", { term: entry.item.term, mult: int(entry.mult) })
+        );
+      }
+      out.push(datalogOut(entries));
       continue;
     }
     const rawStmt = parseStatement(input);
