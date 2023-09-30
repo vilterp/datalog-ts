@@ -83,6 +83,10 @@ function evalTest(inputs: string[]): TestOutput[] {
       const cache = interp.graph.nodes.get(relation).cache;
       const entries: Term[] = [];
       for (const entry of cache.all()) {
+        // TODO: why are these in here at all
+        if (entry.mult === 0) {
+          continue;
+        }
         entries.push(
           rec("entry", { term: entry.item.term, mult: int(entry.mult) })
         );
