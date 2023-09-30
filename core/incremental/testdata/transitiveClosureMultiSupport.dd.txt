@@ -157,8 +157,6 @@ reach: [reach{from: "a", to: "b"}-1]
 .multiplicities reach
 ----
 application/datalog
-entry{mult: 0, term: reach{from: "a", to: "b"}}.
-entry{mult: 0, term: reach{from: "a", to: "c"}}.
 entry{mult: 1, term: reach{from: "b", to: "b"}}.
 entry{mult: 1, term: reach{from: "c", to: "c"}}.
 entry{mult: 2, term: reach{from: "b", to: "c"}}.
