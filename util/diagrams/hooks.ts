@@ -5,7 +5,7 @@ import { Json } from "../json";
 
 type DragState<T> =
   | { type: "NotDragging" }
-  | { type: "DraggingTag"; tag: T; offset: Point; lastPos: Point };
+  | { type: "DraggingTag"; tag: T; offset: Point; startPos: Point };
 
 const initDragState: DragState<any> = { type: "NotDragging" };
 
@@ -25,10 +25,9 @@ export function useDrag<T extends Json>(
       },
       onMouseMove: (pt) => {
         if (dragState.type === "DraggingTag") {
-          const delta = minusPoint(pt, dragState.lastPos);
+          const delta = minusPoint(pt, dragState.startPos);
           setDragState({
             ...dragState,
-            lastPos: pt,
           });
           onDrag(dragState.tag, delta);
         }
@@ -39,7 +38,7 @@ export function useDrag<T extends Json>(
             type: "DraggingTag",
             tag,
             offset: { x: 0, y: 0 },
-            lastPos: pt,
+            startPos: pt,
           });
         }
       },
