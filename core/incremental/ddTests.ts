@@ -32,6 +32,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["timeStep", evalTest],
     ["contracts", evalTest],
     ["transitiveClosure", evalTest],
+    ["transitiveClosureMultiSupport", evalTest],
     ["sccs", evalTest],
     ["parse", evalTest],
     ["aggregation", evalTest],
