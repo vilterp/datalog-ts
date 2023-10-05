@@ -124,6 +124,3 @@ reach: [reach{node: "b"}-1]
 reach{}?
 ----
 application/datalog
-reach{node: "b"}.
-reach{node: "c"}.
-reach{node: "x"}.
