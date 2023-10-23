@@ -1,0 +1,11 @@
+.table source
+.table sink
+.table battery
+.table connection
+.table internal.visualization
+.table time
+
+.load scenario.dl
+.load sim.dl
+.load viz.dl
+.load opt.dl

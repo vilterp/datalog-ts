@@ -1,0 +1,7 @@
+source{id: 1, phaseShift: 0, baseline: 30, amplitude: 10, pos: pos{x: 10, y: 20}}.
+source{id: 4, phaseShift: 0, baseline: 30, amplitude: 15, pos: pos{x: 330, y: 20}}.
+battery{id: 2, capacity: 100, initialLevel: 50, pos: pos{x: 170, y: 250}}.
+sink{id: 3, demand: 15, pos: pos{x: 170, y: 450}}.
+connection{from: 1, to: 2}.
+connection{from: 2, to: 3}.
+connection{from: 4, to: 2}.

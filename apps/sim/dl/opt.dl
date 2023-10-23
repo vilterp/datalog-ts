@@ -1,0 +1,19 @@
+opt.constraint{constraint: C} :-
+  batteryConstraint{constraint: C}.
+
+batteryConstraint{constraint: C} :-
+  batteryConstraint.lowerBound{constraint: C}
+  | batteryConstraint.upperBound{constraint: C}.
+
+batteryConstraint.upperBound{constraint: lt{
+  left: var{var: batteryLevel{battery: I, time: T}},
+  right: constant{val: Capacity},
+}} :-
+  time{time: T} &
+  battery{id: I, capacity: Capacity}.
+batteryConstraint.lowerBound{constraint: gt{
+  left: var{var: batteryLevel{battery: I, time: T}},
+  right: constant{val: 0},
+}} :-
+  time{time: T} &
+  battery{id: I}.
