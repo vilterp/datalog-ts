@@ -143,6 +143,32 @@ internal.visualization{
   }
 }.
 
+# `id` attribute gets put into the query
+internal.dagEditor.nodeViz{
+  relation: "source",
+  viz: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+    },
+    query: current{}
+  },
+}.
+
+# `id` attribute gets put into the query
+internal.dagEditor.nodeViz{
+  relation: "battery",
+  viz: vegalite{
+    mark: "line",
+    encoding: encoding{
+      x: mapping{field: "time", type: "quantitative"},
+      y: mapping{field: "level", type: "quantitative"},
+    },
+    query: batteryLevel{}
+  },
+}.
+
 # TODO: re-enable when dep issue is sorted out
 # internal.visualization{
 #   name: "Editor",
@@ -195,30 +221,4 @@ internal.visualization{
     nodes: node{id: ID},
     edges: connection{from: From, to: To}
   }
-}.
-
-# `id` attribute gets put into the query
-internal.dagEditor.nodeViz{
-  relation: "source",
-  viz: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-    },
-    query: current{}
-  },
-}.
-
-# `id` attribute gets put into the query
-internal.dagEditor.nodeViz{
-  relation: "battery",
-  viz: vegalite{
-    mark: "line",
-    encoding: encoding{
-      x: mapping{field: "time", type: "quantitative"},
-      y: mapping{field: "level", type: "quantitative"},
-    },
-    query: batteryLevel{}
-  },
 }.
