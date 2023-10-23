@@ -6,6 +6,8 @@
 .table connection
 .table internal.visualization
 
+# === data ===
+
 source{id: 1, phaseShift: 0, baseline: 30, amplitude: 10, pos: pos{x: 10, y: 20}}.
 source{id: 4, phaseShift: 0, baseline: 30, amplitude: 15, pos: pos{x: 330, y: 20}}.
 battery{id: 2, capacity: 100, initialLevel: 50, pos: pos{x: 170, y: 250}}.
@@ -13,6 +15,8 @@ sink{id: 3, demand: 15, pos: pos{x: 170, y: 450}}.
 connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
+
+# === attr editors ===
 
 internal.attrEditor{
   relation: "source",
@@ -115,6 +119,28 @@ batteryOutputCurrent{id: B, time: T, current: L} :-
   connection{from: B, to: S} &
   currentAtSink{id: S, time: T, level: L}.
 
+# === optimization constraints ===
+
+opt.constraint{constraint: C} :-
+  batteryConstraint{constraint: C}.
+
+batteryConstraint{constraint: C} :-
+  batteryConstraint.lowerBound{constraint: C}
+  | batteryConstraint.upperBound{constraint: C}.
+
+batteryConstraint.upperBound{constraint: lt{
+  left: var{var: batteryLevel{battery: I, time: T}},
+  right: constant{val: Capacity},
+}} :-
+  time{time: T} &
+  battery{id: I, capacity: Capacity}.
+batteryConstraint.lowerBound{constraint: gt{
+  left: var{var: batteryLevel{battery: I, time: T}},
+  right: constant{val: 0},
+}} :-
+  time{time: T} &
+  battery{id: I}.
+
 .table time
 
 # === visualization ===
@@ -164,6 +190,14 @@ internal.visualization{
 #     ],
 #   },
 # }.
+
+internal.visualization{
+  name: "Network",
+  spec: graphviz{
+    nodes: node{id: ID},
+    edges: connection{from: From, to: To}
+  }
+}.
 
 # `id` attribute gets put into the query
 internal.dagEditor.nodeViz{
