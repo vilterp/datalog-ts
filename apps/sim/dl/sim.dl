@@ -16,39 +16,6 @@ connection{from: 1, to: 2}.
 connection{from: 2, to: 3}.
 connection{from: 4, to: 2}.
 
-# === attr editors ===
-
-internal.attrEditor{
-  relation: "source",
-  attr: "amplitude",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "source",
-  attr: "baseline",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "sink",
-  attr: "demand",
-  editor: slider{min: 0, max: 100},
-}.
-internal.attrEditor{
-  relation: "source",
-  attr: "phaseShift",
-  editor: slider{min: 0, max: 5},
-}.
-internal.attrEditor{
-  relation: "battery",
-  attr: "capacity",
-  editor: slider{min: 0, max: 300},
-}.
-internal.attrEditor{
-  relation: "battery",
-  attr: "initialLevel",
-  editor: slider{min: 0, max: 100},
-}.
-
 # === rules ===
 
 node{id: I, label: L, pos: Pos} :-
@@ -190,6 +157,37 @@ internal.visualization{
 #     ],
 #   },
 # }.
+
+internal.attrEditor{
+  relation: "source",
+  attr: "amplitude",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "source",
+  attr: "baseline",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "sink",
+  attr: "demand",
+  editor: slider{min: 0, max: 100},
+}.
+internal.attrEditor{
+  relation: "source",
+  attr: "phaseShift",
+  editor: slider{min: 0, max: 5},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "capacity",
+  editor: slider{min: 0, max: 300},
+}.
+internal.attrEditor{
+  relation: "battery",
+  attr: "initialLevel",
+  editor: slider{min: 0, max: 100},
+}.
 
 internal.visualization{
   name: "Network",
