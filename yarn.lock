@@ -2072,10 +2072,6 @@ simple-markdown@^0.7.3:
   dependencies:
     "@types/react" ">=16.0.0"
 
-simplex@fusion809/simplex:
-  version "0.0.0"
-  resolved "https://codeload.github.com/fusion809/simplex/tar.gz/377c5dee056d738d4ad9226d83df4243e0916acb"
-
 source-map-support@^0.5.17:
   version "0.5.18"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.18.tgz#f5f33489e270bd7f7d7e7b8debf283f3a4066960"
