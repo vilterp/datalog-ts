@@ -1,3 +1,5 @@
+# constraints
+
 opt.constraint{constraint: C} :-
   batteryConstraint{constraint: C}.
 
@@ -17,3 +19,12 @@ batteryConstraint.lowerBound{constraint: gt{
 }} :-
   time{time: T} &
   battery{id: I}.
+
+# TODO: objective function
+
+# entry point
+
+internal.visualization{
+  name: "Optimizer",
+  spec: optimizer{}
+}.
