@@ -2,7 +2,6 @@ import { ProcessFn } from "../ddTest";
 import fs from "fs";
 import { parseDDTest } from "../ddTest/parser";
 import { Performance } from "w3c-hr-time";
-import tmp from "tmp";
 import { postResultToAirtable } from "../airtable";
 
 const performance = new Performance();
@@ -73,23 +72,6 @@ async function doBenchmarkInner(
   } catch (error) {
     return { type: "Errored", error };
   }
-}
-
-// returns promise with temp file path
-async function exportProfile(profile): Promise<string> {
-  const profileName = `profile-${Math.random()}.cpuprofile`;
-  const fileName = tmp.tmpNameSync({ name: profileName });
-
-  const file = fs.createWriteStream(fileName);
-
-  return new Promise((resolve) => {
-    profile
-      .export()
-      .pipe(file)
-      .on("finish", () => {
-        resolve(fileName);
-      });
-  });
 }
 
 export async function runDDBenchmark(
