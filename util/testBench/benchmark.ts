@@ -2,7 +2,6 @@ import { ProcessFn } from "../ddTest";
 import fs from "fs";
 import { parseDDTest } from "../ddTest/parser";
 import { Performance } from "w3c-hr-time";
-import v8profiler from "v8-profiler-node8";
 import tmp from "tmp";
 import { postResultToAirtable } from "../airtable";
 
@@ -55,7 +54,6 @@ async function doBenchmarkInner(
   doAnother: () => boolean
 ): Promise<BenchmarkResult> {
   try {
-    v8profiler.startProfiling();
     const before = performance.now();
     let i = 0;
     do {
@@ -66,15 +64,11 @@ async function doBenchmarkInner(
       i++;
     } while (doAnother());
     const after = performance.now();
-    const profile = v8profiler.stopProfiling();
-
-    const profilePath = await exportProfile(profile);
 
     return {
       type: "Finished",
       repetitions: i,
       totalTimeMS: after - before,
-      profilePath: profilePath,
     };
   } catch (error) {
     return { type: "Errored", error };
