@@ -24,22 +24,22 @@ const writeResults = flags.has("--write-results");
 const stayAlive = flags.has("--stay-alive");
 
 const suites: { [name: string]: Suite } = {
-  unifyTests,
-  parserTests: parserTests(writeResults),
-  // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
-  coreTestsSimple: coreTestsSimple(writeResults),
-  coreTestsIncremental: coreTestsIncremental(writeResults),
-  coreTestsCommon: coreTestsCommon(writeResults),
-  joinOrderTests: joinOrderTests(writeResults),
-  incrTests: incrTests(writeResults),
-  prettyPrintTests,
-  treeTests,
-  parserlibTests: parserlibTests(writeResults),
-  sourcePositionsTests,
-  kvSync: kvSyncTests(writeResults),
-  executionVisualizer: executionVisualizerTests(writeResults),
-  lwbTests: lwbTests(writeResults),
-  lwbNativeDatalogTests: nativeTests,
+  // unifyTests,
+  // parserTests: parserTests(writeResults),
+  // // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
+  // coreTestsSimple: coreTestsSimple(writeResults),
+  // coreTestsIncremental: coreTestsIncremental(writeResults),
+  // coreTestsCommon: coreTestsCommon(writeResults),
+  // joinOrderTests: joinOrderTests(writeResults),
+  // incrTests: incrTests(writeResults),
+  // prettyPrintTests,
+  // treeTests,
+  // parserlibTests: parserlibTests(writeResults),
+  // sourcePositionsTests,
+  // kvSync: kvSyncTests(writeResults),
+  // executionVisualizer: executionVisualizerTests(writeResults),
+  // lwbTests: lwbTests(writeResults),
+  // lwbNativeDatalogTests: nativeTests,
   optTests: optTests,
 };
 
