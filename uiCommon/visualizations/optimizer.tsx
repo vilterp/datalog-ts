@@ -3,9 +3,6 @@ import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { SimplexSolver } from "../../core/opt/simplex";
 import { Int } from "../../core/types";
 import { extractSolution, getProblem } from "../../core/opt/convert";
-import { ResultsTable } from "../explorer/resultsTable";
-import { emptyTableCollapseState } from "../explorer/types";
-import { noHighlightProps } from "../dl/term";
 import { ppt } from "../../core/pretty";
 import { BareTerm } from "../dl/replViews";
 
