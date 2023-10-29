@@ -61,6 +61,8 @@ function convertTest(test: string[]): TestOutput[] {
     interp = interp.doLoad("opt.dl");
     interp = interp.evalStr(input)[1];
     const problem = getProblem(1, interp);
-    return jsonOut(problem);
+    const solver = new SimplexSolver(problem);
+    const result = solver.solve();
+    return jsonOut({ problem, result });
   });
 }
