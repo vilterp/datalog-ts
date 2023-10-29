@@ -44,8 +44,6 @@ application/json
       ]
     ],
     "constants": [
-      null,
-      null,
       10,
       8
     ],

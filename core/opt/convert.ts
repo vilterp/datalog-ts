@@ -50,7 +50,7 @@ export function getProblem(
     // TODO: handle ops
     const constant = (constraint.attrs.constant as Int).val;
 
-    const constraintID = constraintIndex.get(ppt(constraint));
+    const constraintID = constraintIndex.get(ppt(constraint.attrs.id));
     constants[constraintID] = constant;
   }
 
