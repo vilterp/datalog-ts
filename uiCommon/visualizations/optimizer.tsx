@@ -9,12 +9,13 @@ export const optimizer: VizTypeSpec = {
   description: "optimize stuff",
   component: (props: VizArgs) => {
     try {
-      const problem = getProblem(
+      const problemAndMapping = getProblem(
         (props.spec.attrs.problem as Int).val,
         props.interp
       );
+      const problem = problemAndMapping.problem;
 
-      console.log("problem", problem);
+      console.log("problem", problemAndMapping);
 
       const solver = new SimplexSolver(problem);
       const result = solver.solve();

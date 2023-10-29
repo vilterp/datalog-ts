@@ -1,13 +1,16 @@
-import { StringTable } from "../../util/stringTable";
+import { TermTable } from "../../util/termTable";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { ppt } from "../pretty";
 import { Int, Rec } from "../types";
 import { SimplexProblem } from "./simplex";
 
 export function getProblem(
   problemID: number,
   interp: AbstractInterpreter
-): SimplexProblem {
+): {
+  problem: SimplexProblem;
+  varIndex: TermTable;
+  constraintIndex: TermTable;
+} {
   // TODO: maybe relation names should be part of spec, not hardcoded here
   const constraints = interp
     .queryStr(`constraint{problem: ${problemID}}`)
@@ -19,8 +22,8 @@ export function getProblem(
     .queryStr(`objectiveCoefficient{problem: ${problemID}}`)
     .map((res) => res.term as Rec);
 
-  const varIndex = new StringTable();
-  const constraintIndex = new StringTable();
+  const varIndex = new TermTable();
+  const constraintIndex = new TermTable();
 
   // Get constraint matrix
   const constraintMatrix: number[][] = [];
@@ -29,8 +32,8 @@ export function getProblem(
     const constraintTerm = row.attrs.constraint;
     const value = (row.attrs.val as Int).val;
 
-    const varID = varIndex.get(ppt(varTerm));
-    const constraintID = constraintIndex.get(ppt(constraintTerm));
+    const varID = varIndex.get(varTerm);
+    const constraintID = constraintIndex.get(constraintTerm);
 
     constraintMatrix[constraintID] = constraintMatrix[constraintID] || [];
     constraintMatrix[constraintID][varID] = value;
@@ -50,7 +53,7 @@ export function getProblem(
     // TODO: handle ops
     const constant = (constraint.attrs.constant as Int).val;
 
-    const constraintID = constraintIndex.get(ppt(constraint.attrs.id));
+    const constraintID = constraintIndex.get(constraint.attrs.id);
     constants[constraintID] = constant;
   }
 
@@ -60,7 +63,7 @@ export function getProblem(
     const varTerm = objectiveRec.attrs.var;
     const coefficient = (objectiveRec.attrs.coefficient as Int).val;
 
-    const varID = varIndex.get(ppt(varTerm));
+    const varID = varIndex.get(varTerm);
     objective[varID] = coefficient;
   }
   // slack vars in objective
@@ -68,9 +71,15 @@ export function getProblem(
     objective.push(0);
   }
 
-  return {
+  const problem: SimplexProblem = {
     constraintMatrix,
     constants,
     objective,
+  };
+
+  return {
+    problem,
+    varIndex,
+    constraintIndex,
   };
 }

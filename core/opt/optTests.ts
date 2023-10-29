@@ -4,7 +4,7 @@ import { Suite, assertDeepEqual } from "../../util/testBench/testing";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { fsLoader } from "../fsLoader";
 import { IncrementalInterpreter } from "../incremental/interpreter";
-import { getProblem } from "./convert";
+import { getProblem as getProblemAndMapping } from "./convert";
 import { SimplexProblem, SimplexResult, SimplexSolver } from "./simplex";
 
 export function optTests(writeResults: boolean): Suite {
@@ -60,7 +60,8 @@ function convertTest(test: string[]): TestOutput[] {
     );
     interp = interp.doLoad("opt.dl");
     interp = interp.evalStr(input)[1];
-    const problem = getProblem(1, interp);
+    const problemAndMapping = getProblemAndMapping(1, interp);
+    const problem = problemAndMapping.problem;
     const solver = new SimplexSolver(problem);
     const result = solver.solve();
     return jsonOut({ problem, result });
