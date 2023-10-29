@@ -2,25 +2,41 @@ import * as React from "react";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { SimplexSolver } from "../../core/opt/simplex";
 import { Int } from "../../core/types";
-import { getProblem } from "../../core/opt/convert";
+import { extractSolution, getProblem } from "../../core/opt/convert";
+import { ResultsTable } from "../explorer/resultsTable";
+import { emptyTableCollapseState } from "../explorer/types";
+import { noHighlightProps } from "../dl/term";
+import { ppt } from "../../core/pretty";
+import { BareTerm } from "../dl/replViews";
 
 export const optimizer: VizTypeSpec = {
   name: "Optimizer",
   description: "optimize stuff",
   component: (props: VizArgs) => {
     try {
-      const problemAndMapping = getProblem(
-        (props.spec.attrs.problem as Int).val,
-        props.interp
-      );
+      const problemID = (props.spec.attrs.problem as Int).val;
+      const problemAndMapping = getProblem(problemID, props.interp);
       const problem = problemAndMapping.problem;
 
       console.log("problem", problemAndMapping);
 
       const solver = new SimplexSolver(problem);
       const result = solver.solve();
+      const resultRecords = extractSolution(
+        problemID,
+        result,
+        problemAndMapping.varIndex
+      );
 
-      return <pre>{JSON.stringify(result, null, 2)}</pre>;
+      return (
+        <ul>
+          {resultRecords.map((rec) => (
+            <li key={ppt(rec)}>
+              <BareTerm term={rec} />
+            </li>
+          ))}
+        </ul>
+      );
     } catch (e) {
       console.error("error in optimizer viz", e);
       return (
