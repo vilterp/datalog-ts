@@ -49,15 +49,19 @@ application/json
     ],
     "objective": [
       20,
-      30
+      30,
+      0,
+      0
     ]
   },
   "result": {
     "result": "optimal",
     "solution": [
       2.8,
-      2.4
+      2.4,
+      0,
+      0
     ],
-    "objectiveValue": null
+    "objectiveValue": 128
   }
 }

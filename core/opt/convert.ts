@@ -63,6 +63,10 @@ export function getProblem(
     const varID = varIndex.get(ppt(varTerm));
     objective[varID] = coefficient;
   }
+  // slack vars in objective
+  for (let i = 0; i < constraintMatrix.length; i++) {
+    objective.push(0);
+  }
 
   return {
     constraintMatrix,
