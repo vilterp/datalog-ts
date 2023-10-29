@@ -23,7 +23,7 @@ export const optimizer: VizTypeSpec = {
 
       return <pre>{JSON.stringify(result, null, 2)}</pre>;
     } catch (e) {
-      console.error("optimization in optimizer viz", e);
+      console.error("error in optimizer viz", e);
       return (
         <pre style={{ color: "red" }}>Optimization error: {e.toString()}</pre>
       );
@@ -35,33 +35,23 @@ function getProblem(
   problemID: number,
   interp: AbstractInterpreter
 ): SimplexProblem {
-  const constraintCoefficients = interp.queryStr(
-    `coefficientValue{problem: ${problemID}}`
-  );
-  const objectiveCoefficients = interp.queryStr(
-    `objectiveCoefficient{problem: ${problemID}}`
-  );
-
-  console.log("opt", { constraintCoefficients, objectiveCoefficients });
-
-  const A = getMatrix(constraintCoefficients.map((res) => res.term as Rec));
-  const constants = [6, 4]; // TODO: get
-  const objective = [-3, -2]; // TODO: get
-
-  return {
-    constraints: A,
-    constants: constants,
-    objective: objective,
-  };
-}
-
-function getMatrix(coefficients: Rec[]): number[][] {
-  const out = [];
+  // TODO: maybe relation names should be part of spec, not hardcoded here
+  const constraints = interp
+    .queryStr(`constraint{problem: ${problemID}}`)
+    .map((res) => res.term as Rec);
+  const constraintCoefficients = interp
+    .queryStr(`coefficientValue{problem: ${problemID}}`)
+    .map((res) => res.term as Rec);
+  const objectiveCoefficients = interp
+    .queryStr(`objectiveCoefficient{problem: ${problemID}}`)
+    .map((res) => res.term as Rec);
 
   const varIndex = new StringTable();
   const constraintIndex = new StringTable();
 
-  for (const row of coefficients) {
+  // Get constraint matrix
+  const constraintMatrix: number[][] = [];
+  for (const row of constraintCoefficients) {
     const varTerm = row.attrs.var;
     const constraintTerm = row.attrs.constraint;
     const value = (row.attrs.val as Int).val;
@@ -69,9 +59,35 @@ function getMatrix(coefficients: Rec[]): number[][] {
     const varID = varIndex.get(ppt(varTerm));
     const constraintID = constraintIndex.get(ppt(constraintTerm));
 
-    out[constraintID] = out[constraintID] || [];
-    out[constraintID][varID] = value;
+    constraintMatrix[constraintID] = constraintMatrix[constraintID] || [];
+    constraintMatrix[constraintID][varID] = value;
+  }
+  // TODO: slack variables
+
+  // Get constants
+  const constants: number[] = [];
+  for (const constraint of constraints) {
+    const opTerm = constraint.attrs.op as Rec;
+    // TODO: handle ops
+    const constant = (constraint.attrs.constant as Int).val;
+
+    const constraintID = constraintIndex.get(ppt(constraint));
+    constants[constraintID] = constant;
   }
 
-  return out;
+  // Get objective
+  const objective: number[] = [];
+  for (const objective of objectiveCoefficients) {
+    const varTerm = objective.attrs.var;
+    const coefficient = (objective.attrs.coefficient as Int).val;
+
+    const varID = varIndex.get(ppt(varTerm));
+    objective[varID] = coefficient;
+  }
+
+  return {
+    constraintMatrix,
+    constants,
+    objective,
+  };
 }

@@ -1,5 +1,5 @@
 export type SimplexProblem = {
-  constraints: number[][];
+  constraintMatrix: number[][];
   constants: number[];
   objective: number[];
 };
@@ -18,7 +18,7 @@ export class SimplexSolver {
   private c: number[]; // Objective function coefficients
 
   constructor(problem: SimplexProblem) {
-    this.A = problem.constraints;
+    this.A = problem.constraintMatrix;
     this.b = problem.constants;
     this.c = problem.objective;
   }
