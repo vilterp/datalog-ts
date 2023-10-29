@@ -1,3 +1,9 @@
+export type SimplexProblem = {
+  constraints: number[][];
+  constants: number[];
+  objective: number[];
+};
+
 export type SimplexResult = {
   result: "optimal" | "infeasible" | "unbounded";
   solution?: number[];
@@ -11,10 +17,10 @@ export class SimplexSolver {
   private b: number[]; // Constant values
   private c: number[]; // Objective function coefficients
 
-  constructor(A: number[][], b: number[], c: number[]) {
-    this.A = A;
-    this.b = b;
-    this.c = c;
+  constructor(problem: SimplexProblem) {
+    this.A = problem.constraints;
+    this.b = problem.constants;
+    this.c = problem.objective;
   }
 
   public solve(): SimplexResult {
