@@ -35,7 +35,13 @@ export function getProblem(
     constraintMatrix[constraintID] = constraintMatrix[constraintID] || [];
     constraintMatrix[constraintID][varID] = value;
   }
-  // TODO: slack variables
+
+  // add slack variables
+  for (let i = 0; i < constraintMatrix.length; i++) {
+    for (let j = 0; j < constraintMatrix.length; j++) {
+      constraintMatrix[i].push(i === j ? 1 : 0);
+    }
+  }
 
   // Get constants
   const constants: number[] = [];
