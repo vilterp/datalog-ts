@@ -66,19 +66,19 @@ export function optTests(writeResults: boolean): Suite {
   ];
 }
 
-function problemFromDL(dl: string): ProblemAndMapping {
+function problemFromDL(problemID: number, dl: string): ProblemAndMapping {
   let interp: AbstractInterpreter = new IncrementalInterpreter(
     "core/opt",
     fsLoader
   );
   interp = interp.doLoad("opt.dl");
   interp = interp.evalStr(dl)[1];
-  return getProblemAndMapping(1, interp);
+  return getProblemAndMapping(problemID, interp);
 }
 
 function convertTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const problemAndMapping = problemFromDL(input);
+    const problemAndMapping = problemFromDL(1, input);
     const problem = problemAndMapping.problem;
     const solver = new SimplexSolver(problem);
     const result = solver.solve();
@@ -88,11 +88,16 @@ function convertTest(test: string[]): TestOutput[] {
 
 function extractTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const problemAndMapping = problemFromDL(input);
+    const problemID = 1;
+    const problemAndMapping = problemFromDL(problemID, input);
     const problem = problemAndMapping.problem;
     const solver = new SimplexSolver(problem);
     const result = solver.solve();
-    const extracted = extractSolution(result, problemAndMapping.varIndex);
+    const extracted = extractSolution(
+      problemID,
+      result,
+      problemAndMapping.varIndex
+    );
     return datalogOut(extracted);
   });
 }

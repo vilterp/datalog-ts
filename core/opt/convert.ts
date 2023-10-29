@@ -87,12 +87,14 @@ export function getProblem(
 }
 
 export function extractSolution(
+  problemID: number,
   result: SimplexResult,
   varIndex: TermTable
 ): Rec[] {
   const out: Rec[] = [];
   out.push(
     rec("solution", {
+      problem: int(problemID),
       outcome: str(result.result),
     })
   );
@@ -105,13 +107,19 @@ export function extractSolution(
   for (const { term, val } of varIndex.entries()) {
     out.push(
       rec("solutionVarVal", {
+        problem: int(problemID),
         var: term,
         val: int(result.solution[val]),
       })
     );
   }
   // get objective val
-  out.push(rec("objectiveVal", { val: int(result.objectiveValue) }));
+  out.push(
+    rec("objectiveVal", {
+      problem: int(problemID),
+      val: int(result.objectiveValue),
+    })
+  );
 
   return out;
 }
