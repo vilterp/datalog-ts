@@ -56,9 +56,9 @@ export function getProblem(
 
   // Get objective
   const objective: number[] = [];
-  for (const objective of objectiveCoefficients) {
-    const varTerm = objective.attrs.var;
-    const coefficient = (objective.attrs.coefficient as Int).val;
+  for (const objectiveRec of objectiveCoefficients) {
+    const varTerm = objectiveRec.attrs.var;
+    const coefficient = (objectiveRec.attrs.coefficient as Int).val;
 
     const varID = varIndex.get(ppt(varTerm));
     objective[varID] = coefficient;

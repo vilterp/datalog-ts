@@ -47,11 +47,17 @@ application/json
       10,
       8
     ],
-    "objective": []
+    "objective": [
+      20,
+      30
+    ]
   },
   "result": {
     "result": "optimal",
-    "solution": [],
+    "solution": [
+      2.8,
+      2.4
+    ],
     "objectiveValue": null
   }
 }
