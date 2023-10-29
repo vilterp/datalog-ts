@@ -24,11 +24,11 @@ export function emptyRuleGraph(): RuleGraph {
   return {
     nextNodeID: 0,
     builtins: Set(),
-    nodes: new DefaultDict<NodeID, NodeAndCache>(() => {
-      throw new Error("bloop");
+    nodes: new DefaultDict<NodeID, NodeAndCache>((key) => {
+      throw new Error(`not found: ${key}`);
     }),
-    edges: new DefaultDict<NodeID, NodeID[]>(() => {
-      throw new Error("bloop");
+    edges: new DefaultDict<NodeID, NodeID[]>((key) => {
+      throw new Error(`not found: ${key}`);
     }),
   };
 }
@@ -86,7 +86,7 @@ export type AggregationState = DefaultDict<string, Term>;
 
 export function emptyAggregationState(): AggregationState {
   return new DefaultDict<string, Term>(() => {
-    throw new Error("bloop");
+    throw new Error("not found");
   });
 }
 
