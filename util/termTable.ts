@@ -14,4 +14,8 @@ export class TermTable {
     this.indexMap[printed] = { val: index, term: term };
     return index;
   }
+
+  entries(): { term: Term; val: number }[] {
+    return Object.values(this.indexMap);
+  }
 }

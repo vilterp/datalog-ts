@@ -1,10 +1,14 @@
 import { TestOutput, runDDTestAtPath } from "../../util/ddTest";
-import { jsonOut } from "../../util/ddTest/types";
+import { datalogOut, jsonOut } from "../../util/ddTest/types";
 import { Suite, assertDeepEqual } from "../../util/testBench/testing";
 import { AbstractInterpreter } from "../abstractInterpreter";
 import { fsLoader } from "../fsLoader";
 import { IncrementalInterpreter } from "../incremental/interpreter";
-import { getProblem as getProblemAndMapping } from "./convert";
+import {
+  ProblemAndMapping,
+  extractSolution,
+  getProblem as getProblemAndMapping,
+} from "./convert";
 import { SimplexProblem, SimplexResult, SimplexSolver } from "./simplex";
 
 export function optTests(writeResults: boolean): Suite {
@@ -49,21 +53,49 @@ export function optTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "extract",
+      test() {
+        runDDTestAtPath(
+          "core/opt/testdata/extract.dd.txt",
+          extractTest,
+          writeResults
+        );
+      },
+    },
   ];
+}
+
+function problemFromDL(dl: string): ProblemAndMapping {
+  let interp: AbstractInterpreter = new IncrementalInterpreter(
+    "core/opt",
+    fsLoader
+  );
+  interp = interp.doLoad("opt.dl");
+  interp = interp.evalStr(dl)[1];
+  return getProblemAndMapping(1, interp);
 }
 
 function convertTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    let interp: AbstractInterpreter = new IncrementalInterpreter(
-      "core/opt",
-      fsLoader
-    );
-    interp = interp.doLoad("opt.dl");
-    interp = interp.evalStr(input)[1];
-    const problemAndMapping = getProblemAndMapping(1, interp);
+    const problemAndMapping = problemFromDL(input);
     const problem = problemAndMapping.problem;
     const solver = new SimplexSolver(problem);
     const result = solver.solve();
     return jsonOut({ problem, result });
+  });
+}
+
+function extractTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const problemAndMapping = problemFromDL(input);
+    const problem = problemAndMapping.problem;
+    const solver = new SimplexSolver(problem);
+    const result = solver.solve();
+    const extracted = extractSolution(
+      result.solution,
+      problemAndMapping.varIndex
+    );
+    return datalogOut(extracted);
   });
 }

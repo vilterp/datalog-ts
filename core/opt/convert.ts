@@ -1,16 +1,18 @@
 import { TermTable } from "../../util/termTable";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { Int, Rec } from "../types";
+import { Int, Rec, int, rec } from "../types";
 import { SimplexProblem } from "./simplex";
+
+export type ProblemAndMapping = {
+  problem: SimplexProblem;
+  varIndex: TermTable;
+  constraintIndex: TermTable;
+};
 
 export function getProblem(
   problemID: number,
   interp: AbstractInterpreter
-): {
-  problem: SimplexProblem;
-  varIndex: TermTable;
-  constraintIndex: TermTable;
-} {
+): ProblemAndMapping {
   // TODO: maybe relation names should be part of spec, not hardcoded here
   const constraints = interp
     .queryStr(`constraint{problem: ${problemID}}`)
@@ -82,4 +84,20 @@ export function getProblem(
     varIndex,
     constraintIndex,
   };
+}
+
+export function extractSolution(
+  solution: number[],
+  varIndex: TermTable
+): Rec[] {
+  const out: Rec[] = [];
+  for (const { term, val } of varIndex.entries()) {
+    out.push(
+      rec("solutionVal", {
+        var: term,
+        val: int(solution[val]),
+      })
+    );
+  }
+  return out;
 }
