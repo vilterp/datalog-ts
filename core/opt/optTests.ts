@@ -92,10 +92,7 @@ function extractTest(test: string[]): TestOutput[] {
     const problem = problemAndMapping.problem;
     const solver = new SimplexSolver(problem);
     const result = solver.solve();
-    const extracted = extractSolution(
-      result.solution,
-      problemAndMapping.varIndex
-    );
+    const extracted = extractSolution(result, problemAndMapping.varIndex);
     return datalogOut(extracted);
   });
 }

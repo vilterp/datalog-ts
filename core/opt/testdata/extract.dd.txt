@@ -27,5 +27,7 @@ objectiveCoefficient{
 }.
 ----
 application/datalog
-solutionVal{val: 2.4, var: "tables"}.
-solutionVal{val: 2.8, var: "chairs"}.
+objectiveVal{val: 128}.
+solutionVarVal{val: 2.4, var: "tables"}.
+solutionVarVal{val: 2.8, var: "chairs"}.
+solution{outcome: "optimal"}.

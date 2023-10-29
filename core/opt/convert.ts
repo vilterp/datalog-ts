@@ -1,7 +1,7 @@
 import { TermTable } from "../../util/termTable";
 import { AbstractInterpreter } from "../abstractInterpreter";
-import { Int, Rec, int, rec } from "../types";
-import { SimplexProblem } from "./simplex";
+import { Int, Rec, int, rec, str } from "../types";
+import { SimplexProblem, SimplexResult } from "./simplex";
 
 export type ProblemAndMapping = {
   problem: SimplexProblem;
@@ -87,17 +87,31 @@ export function getProblem(
 }
 
 export function extractSolution(
-  solution: number[],
+  result: SimplexResult,
   varIndex: TermTable
 ): Rec[] {
   const out: Rec[] = [];
+  out.push(
+    rec("solution", {
+      outcome: str(result.result),
+    })
+  );
+
+  if (result.result !== "optimal") {
+    return out;
+  }
+
+  // get var vals
   for (const { term, val } of varIndex.entries()) {
     out.push(
-      rec("solutionVal", {
+      rec("solutionVarVal", {
         var: term,
-        val: int(solution[val]),
+        val: int(result.solution[val]),
       })
     );
   }
+  // get objective val
+  out.push(rec("objectiveVal", { val: int(result.objectiveValue) }));
+
   return out;
 }
