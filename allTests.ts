@@ -40,7 +40,7 @@ const suites: { [name: string]: Suite } = {
   // executionVisualizer: executionVisualizerTests(writeResults),
   // lwbTests: lwbTests(writeResults),
   // lwbNativeDatalogTests: nativeTests,
-  optTests: optTests,
+  optTests: optTests(writeResults),
 };
 
 try {

@@ -1,10 +1,4 @@
-# === problem ===
-
 optProblem{id: 1, sense: min{}}.
-
-# === constraints ===
-
-# 1*Chairs + 3*Tables <= 10 // wood
 constraint{
   id: 1,
   problem: 1,
@@ -13,8 +7,6 @@ constraint{
 }.
 constraintCoefficient{constraint: 1, var: "chairs", val: 1}.
 constraintCoefficient{constraint: 1, var: "tables", val: 3}.
-
-# 2*Chairs + 1*Tables <= 8  // labor
 constraint{
   id: 2,
   problem: 1,
@@ -23,33 +15,34 @@ constraint{
 }.
 constraintCoefficient{constraint: 2, var: "chairs", val: 2}.
 constraintCoefficient{constraint: 2, var: "tables", val: 1}.
-
-# === objective ===
-
 objectiveCoefficient{
   problem: 1,
   var: "chairs",
   coefficient: 20,
 }.
-
 objectiveCoefficient{
   problem: 1,
   var: "tables",
   coefficient: 30,
 }.
-
-# === collect coefficients ===
-
-coefficientValue{problem: P, constraint: C, op: O, var: Var, val: Val} :-
-  optProblem{id: P} &
-  constraint{id: C, problem: P, op: O} &
-  constraintCoefficient{constraint: C, var: Var, val: Val}.
-
-# === optimize ===
-
-internal.visualization{
-  name: "Optimizer",
-  spec: optimizer{
-    problem: 1,
-  }
-}.
+----
+application/json
+{
+  "constraintMatrix": [
+    [
+      1,
+      3
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "constants": [
+    null,
+    null,
+    10,
+    8
+  ],
+  "objective": []
+}
