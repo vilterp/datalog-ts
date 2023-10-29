@@ -1,5 +1,5 @@
 import { Suite, assertDeepEqual } from "../../util/testBench/testing";
-import { SimplexResult, SimplexSolver } from "./simplex";
+import { SimplexProblem, SimplexResult, SimplexSolver } from "./simplex";
 
 export const optTests: Suite = [
   {
@@ -10,14 +10,16 @@ export const optTests: Suite = [
       //  1*Chairs + 3*Tables <= 10 // wood
       //  2*Chairs + 1*Tables <= 8  // labor
 
-      const A = [
-        [1, 3, 1, 0],
-        [2, 1, 0, 1],
-      ]; // Coefficients matrix
-      const b = [10, 8]; // Constants vector
-      const c = [20, 30, 0, 0]; // Objective function coefficients
+      const problem: SimplexProblem = {
+        constraintMatrix: [
+          [1, 3, 1, 0],
+          [2, 1, 0, 1],
+        ],
+        constants: [10, 8],
+        objective: [20, 30, 0, 0],
+      };
 
-      const solver = new SimplexSolver(A, b, c);
+      const solver = new SimplexSolver(problem);
       const actual = solver.solve();
 
       const expected: SimplexResult = {
