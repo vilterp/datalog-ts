@@ -1,0 +1,31 @@
+# === constraints ===
+
+# 1*Chairs + 3*Tables <= 10 // wood
+constraint{
+  id: 1,
+  op: lte{},
+  constant: 10,
+}.
+constraintCoefficient{constraint: 1, var: "chairs", val: 1}.
+constraintCoefficient{constraint: 1, var: "tables", val: 3}.
+
+# 2*Chairs + 1*Tables <= 8  // labor
+constraint{
+  id: 2,
+  op: lte{},
+  constant: 8,
+}.
+constraintCoefficient{constraint: 2, var: "chairs", val: 2}.
+constraintCoefficient{constraint: 2, var: "tables", val: 1}.
+
+# === objective ===
+
+objectiveCoefficient{
+  var: "chairs",
+  coefficient: 20,
+}.
+
+objectiveCoefficient{
+  var: "tables",
+  coefficient: 30,
+}.
