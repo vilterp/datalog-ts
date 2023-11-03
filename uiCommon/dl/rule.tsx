@@ -43,6 +43,9 @@ export function RuleC(props: { rule: Rule; highlight: HighlightProps }) {
                   />
                 ))
               )}
+              <div style={{ color: "green" }}>
+                /* {JSON.stringify(opt.positionMap)} */
+              </div>
             </React.Fragment>
           ))
         )}

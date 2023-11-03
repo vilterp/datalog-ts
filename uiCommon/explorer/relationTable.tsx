@@ -1,16 +1,18 @@
 import React, { useMemo } from "react";
-import { rec, Res } from "../../core/types";
+import { rec, Res, Rule, Statement } from "../../core/types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { RuleC } from "../dl/rule";
 import { HighlightProps } from "../dl/term";
 import { TableCollapseState } from "./types";
 import { ResultsTable } from "./resultsTable";
+import { RuleGraphEditor } from "../dl/ruleGraphEditor/ruleGraphEditor";
 
 type RelationIssue = { type: "Error"; message: string } | { type: "NotFound" };
 
 export function RelationTable(props: {
   relation: string;
   interp: AbstractInterpreter;
+  runStatements: (stmts: Statement[]) => void;
   collapseState: TableCollapseState;
   setCollapseState: (c: TableCollapseState) => void;
   highlight: HighlightProps;
@@ -30,7 +32,9 @@ export function RelationTable(props: {
                 trace: { type: "BaseFactTrace" },
               })
             )
-          : props.interp.queryRec(relation.rule.head);
+          : relation.type === "Rule"
+          ? props.interp.queryRec(relation.rule.head)
+          : [];
       return [results, null];
     } catch (e) {
       return [[], { type: "Error", message: e.toString() }];
@@ -41,7 +45,16 @@ export function RelationTable(props: {
   return (
     <>
       {relation && relation.type === "Rule" ? (
-        <RuleC highlight={props.highlight} rule={relation.rule} />
+        <>
+          <RuleC highlight={props.highlight} rule={relation.rule} />
+          <RuleGraphEditor
+            relations={props.interp.getRelations()}
+            rule={relation.rule}
+            setRule={(rule: Rule) =>
+              props.runStatements([{ type: "Rule", rule }])
+            }
+          />
+        </>
       ) : null}
       {issue === null ? (
         <ResultsTable

@@ -49,13 +49,20 @@ export class SimpleInterpreter extends AbstractInterpreter {
           }),
         ];
       }
+      // TODO: generalize to DeleteTable?
+      case "DeleteRule": {
+        return [
+          [],
+          this.withDB({ ...this.db, rules: this.db.rules.delete(stmt.name) }),
+        ];
+      }
       case "Rule": {
         const rule = stmt.rule;
         // TODO: move this to some kind of validation phase?
         // better than silent failure tho.
-        if (this.db.rules.get(rule.head.relation)) {
-          throw new UserError(`rule "${rule.head.relation}" already defined`);
-        }
+        // if (this.db.rules.get(rule.head.relation)) {
+        //   throw new UserError(`rule "${rule.head.relation}" already defined`);
+        // }
         return [
           [],
           this.withDB({
