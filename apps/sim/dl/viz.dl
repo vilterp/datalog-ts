@@ -55,20 +55,19 @@ internal.dagEditor.nodeViz{
   },
 }.
 
-# TODO: re-enable when dep issue is sorted out
-# internal.visualization{
-#   name: "Editor",
-#   spec: dagEditor{
-#     nodes: node{},
-#     edges: connection{},
-#     newEdge: connection{},
-#     newNodes: [
-#       source{baseline: 10, amplitude: 10},
-#       sink{demand: 15},
-#       battery{capacity: 100, initialLevel: 50},
-#     ],
-#   },
-# }.
+internal.visualization{
+  name: "Editor",
+  spec: dagEditor{
+    nodes: node{},
+    edges: connection{},
+    newEdge: connection{},
+    newNodes: [
+      source{baseline: 10, amplitude: 10},
+      sink{demand: 15},
+      battery{capacity: 100, initialLevel: 50},
+    ],
+  },
+}.
 
 internal.attrEditor{
   relation: "source",

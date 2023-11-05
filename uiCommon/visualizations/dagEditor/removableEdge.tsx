@@ -1,5 +1,5 @@
 import React from "react";
-import { EdgeProps, getBezierPath, getEdgeCenter } from "react-flow-renderer";
+import { EdgeProps, getBezierPath } from "reactflow";
 import { RemovableEdgeData } from "./types";
 
 const FOREIGN_OBJECT_SIZE = 40;
@@ -16,19 +16,13 @@ export function RemovableEdge({
   markerEnd,
   data,
 }: EdgeProps<RemovableEdgeData>) {
-  const edgePath = getBezierPath({
+  const [edgePath, edgeCenterX, edgeCenterY] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
     targetX,
     targetY,
     targetPosition,
-  });
-  const [edgeCenterX, edgeCenterY] = getEdgeCenter({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
   });
 
   return (
