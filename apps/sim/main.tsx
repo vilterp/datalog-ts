@@ -4,8 +4,9 @@ import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Statement } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
 import { loader } from "./dl";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
-const emptyInterp = new IncrementalInterpreter(".", loader);
+const emptyInterp = new SimpleInterpreter(".", loader);
 const loadedInterp = emptyInterp.doLoad("main.dl");
 
 function Main() {
