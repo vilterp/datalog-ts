@@ -3,7 +3,9 @@
 .table battery
 .table connection
 .table internal.visualization
-.table time
+
+time{time: T} :-
+  range{from: 0, to: 50, val: T}.
 
 .load scenario.dl
 .load sim.dl
