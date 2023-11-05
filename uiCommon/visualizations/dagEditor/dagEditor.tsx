@@ -8,7 +8,7 @@ import ReactFlow, {
   Connection,
   EdgeProps,
   NodeProps,
-} from "react-flow-renderer";
+} from "reactflow";
 import {
   int,
   Int,

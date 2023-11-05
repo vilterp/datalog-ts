@@ -1,4 +1,4 @@
-import { NodeChange, XYPosition } from "react-flow-renderer";
+import { NodeChange, XYPosition } from "reactflow";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { fastPPT } from "../../../core/fastPPT";
 import {
