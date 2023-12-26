@@ -81,10 +81,13 @@ export async function activate(context: vscode.ExtensionContext) {
     const jsURL = panel.webview.asWebviewUri(jsDiskPath);
     panel.webview.html = getWebViewContent(name, jsURL);
 
-    panel.webview.postMessage({
+    const msg: MessageToWebView = {
+      type: "Relation",
       relation: name,
       results: interp.queryStr(`${name}{}`),
-    });
+    };
+
+    panel.webview.postMessage(msg);
   });
 }
 
