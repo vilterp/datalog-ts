@@ -20,12 +20,13 @@
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
+				"${workspaceFolder}/apps/sim/dl",
 				"--extensionDevelopmentPath=${workspaceFolder}/apps/vscodeExtension/"
 			],
 			"outFiles": [
 				"${workspaceFolder}/apps/vscodeExtension/out/**/*.js"
 			],
-            "preLaunchTask": "npm: build-vscode-extension"
+      "preLaunchTask": "npm: build-vscode-extension"
 		}
 	]
 }
