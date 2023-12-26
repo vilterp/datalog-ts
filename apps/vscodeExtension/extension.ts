@@ -5,7 +5,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/vscodeIntegration";
 import * as path from "path";
-import { MessageFromWebView, MessageToWebView } from "./types";
+import { MessageToWebView } from "./types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
@@ -62,8 +62,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register commands
 
+  const panels: { [relationName: string]: vscode.WebviewPanel } = {};
+
   vscode.commands.registerCommand("datalog-ts.openRelation", (name: string) => {
-    console.log("open relation", name);
+    if (panels[name]) {
+      panels[name].reveal();
+      return;
+    }
+
+    vscode.window.registerWebviewViewProvider;
+
     const panel = vscode.window.createWebviewPanel(
       "relationEditor",
       name,
@@ -75,6 +83,8 @@ export async function activate(context: vscode.ExtensionContext) {
         ],
       }
     );
+    panels[name] = panel;
+
     const jsDiskPath = vscode.Uri.file(
       path.join(context.extensionPath, "out", "relationEditor.js")
     );
