@@ -20,8 +20,6 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 export async function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
-  registerExplorerWebView(context);
-
   [LANGUAGES.datalog, LANGUAGES.grammar, LANGUAGES.basicBlocks].forEach(
     (spec) => {
       registerLanguageSupport(spec).forEach((sub) => {
@@ -31,18 +29,23 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // Initialize interpreter
+
   const folders = vscode.workspace.workspaceFolders;
   let interp: AbstractInterpreter = new IncrementalInterpreter(
     folders ? folders[0].uri.path : ".",
     fsLoader
   );
 
-  // execute main.dl if it exists
+  // Execute project's `main.dl` if it exists
+
   const mainPath = path.join(folders ? folders[0].uri.path : ".", "main.dl");
   if (fs.existsSync(mainPath)) {
     const contents = await fs.promises.readFile(mainPath);
     interp = interp.evalStr(contents.toString())[1];
   }
+
+  // Register tree views
 
   vscode.window.registerTreeDataProvider(
     "datalog-ts-facts",
@@ -56,6 +59,32 @@ export async function activate(context: vscode.ExtensionContext) {
     "datalog-ts-visualizations",
     new VisualizationsProvider(interp)
   );
+
+  // Register commands
+
+  vscode.commands.registerCommand("datalog-ts.openRelation", (name: string) => {
+    console.log("open relation", name);
+    const panel = vscode.window.createWebviewPanel(
+      "relationEditor",
+      name,
+      vscode.ViewColumn.Active,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.file(path.join(context.extensionPath, "out")),
+        ],
+      }
+    );
+    const jsDiskPath = vscode.Uri.file(
+      path.join(context.extensionPath, "out", "relationEditor.js")
+    );
+    const jsURL = panel.webview.asWebviewUri(jsDiskPath);
+    panel.webview.html = getWebViewContent(name, jsURL);
+
+    panel.webview.postMessage({
+      relation: name,
+    });
+  });
 }
 
 function registerDiagnosticsSupport(
@@ -100,83 +129,11 @@ function subscribeDiagnosticsToChanges(
   );
 }
 
-function registerExplorerWebView(context: vscode.ExtensionContext) {
-  context.subscriptions.push(
-    vscode.commands.registerCommand("datalog.openExplorer", () => {
-      // Create and show a new webview
-      const panel = vscode.window.createWebviewPanel(
-        "datalogExplorer",
-        "Datalog Explorer",
-        vscode.ViewColumn.Beside,
-        {
-          enableScripts: true,
-          enableFindWidget: true,
-          localResourceRoots: [
-            vscode.Uri.file(path.join(context.extensionPath, "out")),
-          ],
-        }
-      );
-      const jsDiskPath = vscode.Uri.file(
-        path.join(context.extensionPath, "out", "webView.js")
-      );
-      const jsURL = panel.webview.asWebviewUri(jsDiskPath);
-      panel.webview.html = getWebViewContent(jsURL);
-
-      const subs = subscribeWebViewToChanges(panel);
-      panel.onDidDispose(() => {
-        subs.forEach((disposable) => disposable.dispose());
-      });
-    })
-  );
-}
-
-function subscribeWebViewToChanges(
-  panel: vscode.WebviewPanel
-): vscode.Disposable[] {
-  const subs: vscode.Disposable[] = [];
-
-  const originalActiveEditor = vscode.window.activeTextEditor;
-  subs.push(
-    panel.webview.onDidReceiveMessage((evt) => {
-      const msg: MessageFromWebView = evt as MessageFromWebView;
-
-      switch (msg.type) {
-        case "ReadyForMessages":
-          if (originalActiveEditor) {
-            sendContents(panel.webview, originalActiveEditor.document);
-          }
-          break;
-        default:
-          console.error("uknown message:", msg);
-      }
-    })
-  );
-
-  subs.push(
-    vscode.workspace.onDidChangeTextDocument((e) => {
-      sendContents(panel.webview, e.document);
-    })
-  );
-
-  return subs;
-}
-
-function sendContents(webview: vscode.Webview, doc: vscode.TextDocument) {
-  if (!doc.fileName.endsWith(".dl")) {
-    return;
-  }
-  const msg: MessageToWebView = {
-    type: "ContentsUpdated",
-    text: doc.getText(),
-  };
-  webview.postMessage(msg);
-}
-
-function getWebViewContent(jsURL: vscode.Uri) {
+function getWebViewContent(title: string, jsURL: vscode.Uri) {
   return `<!DOCTYPE html>
 <html>
   <head>
-    <title>Datalog Explorer</title>
+    <title>${title}</title>
   </head>
   <body style="background-color: white">
     <div id="main"></div>

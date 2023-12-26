@@ -5,6 +5,11 @@ import { Rec, StringLit } from "../../core/types";
 class Relation extends vscode.TreeItem {
   constructor(name: string, collapsibleState: vscode.TreeItemCollapsibleState) {
     super(name, collapsibleState);
+    this.command = {
+      command: "datalog-ts.openRelation",
+      title: "Open Relation",
+      arguments: [name],
+    };
   }
 }
 
