@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as fs from "fs";
 import {
   refreshDiagnostics,
   registerLanguageSupport,
@@ -7,8 +8,16 @@ import * as path from "path";
 import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
+import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { fsLoader } from "../../core/fsLoader";
+import {
+  FactsProvider,
+  RulesProvider,
+  VisualizationsProvider,
+} from "./providers";
+import { AbstractInterpreter } from "../../core/abstractInterpreter";
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
   registerExplorerWebView(context);
@@ -20,6 +29,32 @@ export function activate(context: vscode.ExtensionContext) {
       });
       registerDiagnosticsSupport(context, spec);
     }
+  );
+
+  const folders = vscode.workspace.workspaceFolders;
+  let interp: AbstractInterpreter = new IncrementalInterpreter(
+    folders ? folders[0].uri.path : ".",
+    fsLoader
+  );
+
+  // execute main.dl if it exists
+  const mainPath = path.join(folders ? folders[0].uri.path : ".", "main.dl");
+  if (fs.existsSync(mainPath)) {
+    const contents = await fs.promises.readFile(mainPath);
+    interp = interp.evalStr(contents.toString())[1];
+  }
+
+  vscode.window.registerTreeDataProvider(
+    "datalog-ts-facts",
+    new FactsProvider(interp)
+  );
+  vscode.window.registerTreeDataProvider(
+    "datalog-ts-rules",
+    new RulesProvider(interp)
+  );
+  vscode.window.registerTreeDataProvider(
+    "datalog-ts-visualizations",
+    new VisualizationsProvider(interp)
   );
 }
 
