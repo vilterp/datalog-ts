@@ -1,8 +1,7 @@
-export type MessageToWebView = {
-  type: "ContentsUpdated";
-  text: string;
-};
+import { Res } from "../../core/types";
 
-export type MessageFromWebView = {
-  type: "ReadyForMessages";
+export type MessageToWebView = {
+  type: "Relation";
+  relation: string;
+  results: Res[];
 };

@@ -83,6 +83,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     panel.webview.postMessage({
       relation: name,
+      results: interp.queryStr(`${name}{}`),
     });
   });
 }
