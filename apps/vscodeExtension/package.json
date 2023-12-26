@@ -17,6 +17,31 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "datalog-ts",
+          "title": "DatalogTS",
+          "icon": "logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "datalog-ts": [
+        {
+          "id": "datalog-ts-facts",
+          "name": "Facts"
+        },
+        {
+          "id": "datalog-ts-rules",
+          "name": "Rules"
+        },
+        {
+          "id": "datalog-ts-visualizations",
+          "name": "Visualizations"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "datalog",
