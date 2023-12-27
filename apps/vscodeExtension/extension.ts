@@ -81,6 +81,7 @@ export async function activate(context: vscode.ExtensionContext) {
         localResourceRoots: [
           vscode.Uri.file(path.join(context.extensionPath, "out")),
         ],
+        retainContextWhenHidden: true,
       }
     );
     panels[name] = panel;
@@ -98,6 +99,10 @@ export async function activate(context: vscode.ExtensionContext) {
     };
 
     panel.webview.postMessage(msg);
+
+    panel.onDidDispose(() => {
+      delete panels[name];
+    });
   });
 }
 
@@ -149,7 +154,7 @@ function getWebViewContent(title: string, jsURL: vscode.Uri) {
   <head>
     <title>${title}</title>
   </head>
-  <body style="background-color: white">
+  <body>
     <div id="main"></div>
 
     <script src="${jsURL.toString()}"></script>
