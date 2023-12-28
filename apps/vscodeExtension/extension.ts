@@ -5,7 +5,7 @@ import {
   registerLanguageSupport,
 } from "../../languageWorkbench/vscode/vscodeIntegration";
 import * as path from "path";
-import { MessageToWebView } from "./types";
+import { Context } from "./types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
@@ -16,16 +16,17 @@ import {
   VisualizationsProvider,
 } from "./providers";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
+import { openRelation, openVisualization } from "./commands";
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(ctx: vscode.ExtensionContext) {
   console.log("activate!");
 
   [LANGUAGES.datalog, LANGUAGES.grammar, LANGUAGES.basicBlocks].forEach(
     (spec) => {
       registerLanguageSupport(spec).forEach((sub) => {
-        context.subscriptions.push(sub);
+        ctx.subscriptions.push(sub);
       });
-      registerDiagnosticsSupport(context, spec);
+      registerDiagnosticsSupport(ctx, spec);
     }
   );
 
@@ -64,46 +65,22 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const panels: { [relationName: string]: vscode.WebviewPanel } = {};
 
+  const context: Context = {
+    vscodeContext: ctx,
+    interp,
+    panels,
+  };
+
   vscode.commands.registerCommand("datalog-ts.openRelation", (name: string) => {
-    if (panels[name]) {
-      panels[name].reveal();
-      return;
-    }
-
-    vscode.window.registerWebviewViewProvider;
-
-    const panel = vscode.window.createWebviewPanel(
-      "relationEditor",
-      name,
-      vscode.ViewColumn.Active,
-      {
-        enableScripts: true,
-        localResourceRoots: [
-          vscode.Uri.file(path.join(context.extensionPath, "out")),
-        ],
-        retainContextWhenHidden: true,
-      }
-    );
-    panels[name] = panel;
-
-    const jsDiskPath = vscode.Uri.file(
-      path.join(context.extensionPath, "out", "relationEditor.js")
-    );
-    const jsURL = panel.webview.asWebviewUri(jsDiskPath);
-    panel.webview.html = getWebViewContent(name, jsURL);
-
-    const msg: MessageToWebView = {
-      type: "Relation",
-      relation: name,
-      results: interp.queryStr(`${name}{}`),
-    };
-
-    panel.webview.postMessage(msg);
-
-    panel.onDidDispose(() => {
-      delete panels[name];
-    });
+    openRelation(context, name);
   });
+
+  vscode.commands.registerCommand(
+    "datalog-ts.openVisualization",
+    (name: string) => {
+      openVisualization(context, name);
+    }
+  );
 }
 
 function registerDiagnosticsSupport(
@@ -146,19 +123,4 @@ function subscribeDiagnosticsToChanges(
       diagnostics.delete(doc.uri)
     )
   );
-}
-
-function getWebViewContent(title: string, jsURL: vscode.Uri) {
-  return `<!DOCTYPE html>
-<html>
-  <head>
-    <title>${title}</title>
-  </head>
-  <body>
-    <div id="main"></div>
-
-    <script src="${jsURL.toString()}"></script>
-  </body>
-</html>
-`;
 }

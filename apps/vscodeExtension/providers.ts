@@ -13,6 +13,17 @@ class Relation extends vscode.TreeItem {
   }
 }
 
+class Visualization extends vscode.TreeItem {
+  constructor(name: string, collapsibleState: vscode.TreeItemCollapsibleState) {
+    super(name, collapsibleState);
+    this.command = {
+      command: "datalog-ts.openVisualization",
+      title: "Open Visualization",
+      arguments: [name],
+    };
+  }
+}
+
 export class FactsProvider implements vscode.TreeDataProvider<Relation> {
   interp: AbstractInterpreter;
 
@@ -73,7 +84,7 @@ export class VisualizationsProvider
         .queryStr("internal.visualization{}")
         .map(
           (res) =>
-            new Relation(
+            new Visualization(
               ((res.term as Rec).attrs.name as StringLit).val,
               vscode.TreeItemCollapsibleState.None
             )
