@@ -7,7 +7,7 @@ inputRelation :- [inputKW, ws, ident].
 objective :- [sense, ws, ident].
 # TODO: aggregation
 
-constraint :- ["st", ws, "{", ws, repSep(clause, [ws, "&", ws]), ws, "}"].
+constraint :- [stKW, ws, "{", ws, repSep(clause, [ws, "&", ws]), ws, "}"].
 clause :- (record | comparison).
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
