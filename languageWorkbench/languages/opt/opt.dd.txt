@@ -1,0 +1,23 @@
+opt
+.input loads
+.input generator
+.input line
+.var line_level
+st {
+  line{id: Line, capacity: C} &
+  time{time: T} &
+  line_level{line: Line, time: T, level: Level} &
+  Level < C
+}
+scope.Usage{}?
+----
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 108, to: 109}, kind: "var", name: "T", usageScopeID: 74, usageSpan: span{from: 144, to: 145}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 132, to: 136}, kind: "var", name: "Line", usageScopeID: 74, usageSpan: span{from: 74, to: 78}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 144, to: 145}, kind: "var", name: "T", usageScopeID: 74, usageSpan: span{from: 108, to: 109}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 154, to: 159}, kind: "var", name: "Level", usageScopeID: 74, usageSpan: span{from: 165, to: 170}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 165, to: 170}, kind: "var", name: "Level", usageScopeID: 74, usageSpan: span{from: 154, to: 159}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 173, to: 174}, kind: "var", name: "C", usageScopeID: 74, usageSpan: span{from: 90, to: 91}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 74, to: 78}, kind: "var", name: "Line", usageScopeID: 74, usageSpan: span{from: 132, to: 136}}.
+scope.Usage{definitionScopeID: 74, defnSpan: span{from: 90, to: 91}, kind: "var", name: "C", usageScopeID: 74, usageSpan: span{from: 173, to: 174}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 37, to: 41}, kind: "relation", name: "line", usageScopeID: global{}, usageSpan: span{from: 65, to: 69}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 47, to: 57}, kind: "relation", name: "line_level", usageScopeID: global{}, usageSpan: span{from: 115, to: 125}}.
