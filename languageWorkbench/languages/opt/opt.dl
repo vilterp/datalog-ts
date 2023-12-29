@@ -31,7 +31,7 @@ scope.declVarRelation{scopeID: global{}, span: S, name: N, kind: "relation"} :-
   ast.ident{parentID: Input, span: S, text: N}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
-  scope.varRelation{scopeID: I, name: N, span: S, kind: K}.
+  scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
   scope.varVar{scopeID: I, name: N, span: S, kind: K}.
 
 scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
