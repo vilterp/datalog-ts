@@ -1,0 +1,34 @@
+main :- repSep(declaration, ws).
+
+declaration :- (varRelation | inputRelation | objective | constraint).
+
+varRelation :- [".var", ws, ident].
+inputRelation :- [".input", ws, ident].
+objective :- [sense, ws, ident].
+# TODO: aggregation
+
+constraint :- ["st", ws, "{", ws, repSep(clause, [ws, "&", ws]), ws, "}"].
+clause :- (record | comparison).
+comparison :- [left:term, ws, comparisonOp, ws, right:term].
+comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
+
+record :- [ident, "{", ws, recordAttrs, ws, "}"].
+recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
+recordKeyValue :- [ident, ":", ws, term].
+
+term :- (record | int | var | string | placeholder).
+var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
+
+sense :- ("minimize" | "maximize").
+
+ident :- [alpha, repSep((alphaNum | "."), "")].
+int :- [("-" | ""), first:num, repSep(num, "")].
+string :- ["\"", repSep(stringChar, ""), "\""].
+stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep((" "|"\n"), "").
+commaWS :- [",", ws].
+placeholder :- "???".
+commaSpace :- [",", ws].
