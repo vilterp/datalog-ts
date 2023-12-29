@@ -21,7 +21,8 @@ scope.varInClause{scope: Constraint, name: N, span: S} :-
   ast.constraint{id: Constraint} &
   ast.clause{id: Clause, parentID: Constraint} &
   ast.comparison{id: Comparison, parentID: Clause} &
-  ast.var{parentID: Comparison, text: N, span: S}.
+  ast.term{id: Term, parentID: Comparison} &
+  ast.var{parentID: Term, text: N, span: S}.
 
 scope.declInput{scopeID: global{}, span: S, name: N, kind: "relation"} :-
   ast.inputRelation{id: Input} &

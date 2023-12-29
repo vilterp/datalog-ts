@@ -23,6 +23,7 @@ sense :- ("minimize" | "maximize").
 
 varKW :- ".var".
 inputKW :- ".input".
+stKW :- "st".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 int :- [("-" | ""), first:num, repSep(num, "")].
