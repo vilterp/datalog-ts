@@ -2,8 +2,8 @@ main :- repSep(declaration, ws).
 
 declaration :- (varRelation | inputRelation | objective | constraint).
 
-varRelation :- [".var", ws, ident].
-inputRelation :- [".input", ws, ident].
+varRelation :- [varKW, ws, ident].
+inputRelation :- [inputKW, ws, ident].
 objective :- [sense, ws, ident].
 # TODO: aggregation
 
@@ -20,6 +20,9 @@ term :- (record | int | var | string | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 
 sense :- ("minimize" | "maximize").
+
+varKW :- ".var".
+inputKW :- ".input".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 int :- [("-" | ""), first:num, repSep(num, "")].
