@@ -9,6 +9,7 @@ import { modelica } from "./modelica";
 import { sql } from "./sql";
 import { treeSQL } from "./treeSQL";
 import { plainText } from "./plainText";
+import { opt } from "./opt";
 
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText,
@@ -21,4 +22,5 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
   treeSQL,
   modelica,
   contracts,
+  opt,
 };
