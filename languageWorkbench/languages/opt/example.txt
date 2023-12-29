@@ -1,0 +1,12 @@
+.input loads
+.input generator
+.input line
+
+.var line_level
+
+st {
+  line{id: Line, capacity: C} &
+  time{time: T} &
+  line_level{line: Line, time: T, level: Level} &
+  Level < C
+}
