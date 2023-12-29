@@ -11,6 +11,7 @@ st {
 }
 scope.Usage{}?
 ----
+application/datalog
 scope.Usage{definitionScopeID: 74, defnSpan: span{from: 108, to: 109}, kind: "var", name: "T", usageScopeID: 74, usageSpan: span{from: 144, to: 145}}.
 scope.Usage{definitionScopeID: 74, defnSpan: span{from: 132, to: 136}, kind: "var", name: "Line", usageScopeID: 74, usageSpan: span{from: 74, to: 78}}.
 scope.Usage{definitionScopeID: 74, defnSpan: span{from: 144, to: 145}, kind: "var", name: "T", usageScopeID: 74, usageSpan: span{from: 108, to: 109}}.
