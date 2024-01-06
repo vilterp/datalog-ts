@@ -1,7 +1,8 @@
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
   scope.defnVar{scopeID: I, span: S, name: N, kind: K} |
-  scope.defnAttr{scopeID: I, span: S, name: N, kind: K}.
+  scope.defnAttr{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnBuiltin{scopeID: I, span: S, name: N, kind: K}.
 
 scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
   scope.declInput{scopeID: I, span: S, name: N, kind: K} |
@@ -87,10 +88,10 @@ tc.Problem{span: S, desc: D} :-
   tc.undefVarError{span: S, desc: D}.
 
 # bulitins
-# scope.Defn{scopeID: global{}, name: "base.add", kind: "relation"}.
-# scope.Defn{scopeID: "base.attr", name: "a", kind: "attr"}.
-# scope.Defn{scopeID: "base.attr", name: "b", kind: "attr"}.
-# scope.Defn{scopeID: "base.attr", name: "result", kind: "attr"}.
+scope.defnBuiltin{scopeID: global{}, name: "base.add", kind: "relation", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "a", kind: "attr", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "b", kind: "attr", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "res", kind: "attr", span: span{from: -1, to: -1}}.
 
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "typeParameter"}.
