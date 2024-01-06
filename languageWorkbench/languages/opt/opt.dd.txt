@@ -1,0 +1,15 @@
+opt
+rule coalMax{timestep: T} {
+  loadLevel{timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  coalMax{level: MaxLevel}
+  =>
+  CoalLevel <= MaxLevel
+}
+scope.Usage{}?
+----
+application/datalog
+scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 118, to: 126}, kind: "var", name: "MaxLevel", usageScopeID: "coalMax", usageSpan: span{from: 148, to: 156}}.
+scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 50, to: 51}, kind: "var", name: "T", usageScopeID: "coalMax", usageSpan: span{from: 96, to: 97}}.
+scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 75, to: 84}, kind: "var", name: "CoalLevel", usageScopeID: "coalMax", usageSpan: span{from: 135, to: 144}}.
+scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 96, to: 97}, kind: "var", name: "T", usageScopeID: "coalMax", usageSpan: span{from: 50, to: 51}}.

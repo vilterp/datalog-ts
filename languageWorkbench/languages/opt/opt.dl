@@ -1,6 +1,8 @@
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
-  scope.defnVar{scopeID: I, span: S, name: N, kind: K}.
+  scope.defnVar{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnAttr{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnBuiltin{scopeID: I, span: S, name: N, kind: K}.
 
 scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
   scope.declInput{scopeID: I, span: S, name: N, kind: K} |
@@ -8,10 +10,27 @@ scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
 scope.defnVar{scopeID: I, span: S, name: N, kind: "var"} :-
   scope.varInClause{scope: I, name: N, span: S}.
   # TODO: comparison
+scope.defnAttr{scopeID: I, span: S, name: N, kind: K} :-
+  defnVarRelationAttribute{scopeID: I, span: S, name: N, kind: K} |
+  defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: K}.
 
-scope.varInClause{scope: Constraint, name: N, span: S} :-
+defnVarRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} :-
+  ast.varRelationDecl{id: Decl} &
+  ast.ident{parentID: Decl, text: I} &
+  ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
+  ast.ident{parentID: SchemaSpec, span: S, text: N}.
+defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} :-
+  ast.inputRelationDecl{id: Decl} &
+  ast.ident{parentID: Decl, text: I} &
+  ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
+  ast.ident{parentID: SchemaSpec, span: S, text: N}.
+
+scope.varInClause{scope: ConstraintName, name: N, span: S} :-
   ast.constraint{id: Constraint} &
-  ast.clause{id: Clause, parentID: Constraint} &
+  ast.record{id: HeadRec, parentID: Constraint} &
+  ast.ident{parentID: HeadRec, text: ConstraintName} &
+  ast.conjuncts{id: Conjuncts, parentID: Constraint} &
+  ast.clause{id: Clause, parentID: Conjuncts} &
   ast.record{id: Record, parentID: Clause} &
   ast.recordAttrs{id: Attrs, parentID: Record} &
   ast.recordKeyValue{id: Attr, parentID: Attrs} &
@@ -19,29 +38,60 @@ scope.varInClause{scope: Constraint, name: N, span: S} :-
   ast.var{parentID: Term, text: N, span: S}
   |
   ast.constraint{id: Constraint} &
-  ast.clause{id: Clause, parentID: Constraint} &
+  ast.conjuncts{id: Conjuncts, parentID: Constraint} &
+  ast.clause{id: Clause, parentID: Conjuncts} &
   ast.comparison{id: Comparison, parentID: Clause} &
   ast.term{id: Term, parentID: Comparison} &
   ast.var{parentID: Term, text: N, span: S}.
 
 scope.declInput{scopeID: global{}, span: S, name: N, kind: "relation"} :-
-  ast.inputRelation{id: Input} &
+  ast.inputRelationDecl{id: Input} &
   ast.ident{parentID: Input, span: S, text: N}.
 scope.declVarRelation{scopeID: global{}, span: S, name: N, kind: "relation"} :-
-  ast.varRelation{id: Input} &
+  ast.varRelationDecl{id: Input} &
   ast.ident{parentID: Input, span: S, text: N}.
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
-  scope.varVar{scopeID: I, name: N, span: S, kind: K}.
+  scope.varVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
+
+scope.varAttr{scopeID: I, name: N, span: S, kind: "attr"} :-
+  ast.clause{id: Clause} &
+  ast.record{id: Rec, parentID: Clause} &
+  ast.ident{parentID: Rec, text: I} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.recordKeyValue{id: KV, parentID: Attrs} &
+  ast.ident{parentID: KV, text: N, span: S}.
 
 scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.constraint{id: Constraint} &
-  ast.clause{id: Clause, parentID: Constraint} &
+  ast.conjuncts{id: Conjuncts, parentID: Constraint} &
+  ast.clause{id: Clause, parentID: Conjuncts} &
   ast.record{id: Record, parentID: Clause} &
   ast.ident{parentID: Record, text: N, span: S}.
 scope.varVar{scopeID: I, name: N, span: S, kind: "var"} :-
-  scope.varInClause{scope: I, name: N, span: S}.
+  scope.varInClause{scope: I, name: N, span: S} |
+  scope.varInComparison{scope: I, name: N, span: S}.
+
+scope.varInComparison{scope: I, name: N, span: S} :-
+  ast.constraint{id: Constraint} &
+  ast.record{id: HeadRec, parentID: Constraint} &
+  ast.ident{parentID: HeadRec, text: I} &
+  ast.constraintComparison{id: Comparison, parentID: Constraint} &
+  ast.scalarExpr{id: ScalarExpr, parentID: Comparison} &
+  ast.scalarTerm{id: ScalarTerm, parentID: ScalarExpr} &
+  ast.term{id: Term, parentID: ScalarTerm} &
+  ast.var{parentID: Term, text: N, span: S}.
+
+tc.Problem{span: S, desc: D} :-
+  tc.undefVarError{span: S, desc: D}.
+
+# bulitins
+scope.defnBuiltin{scopeID: global{}, name: "base.add", kind: "relation", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "a", kind: "attr", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "b", kind: "attr", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "res", kind: "attr", span: span{from: -1, to: -1}}.
 
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "typeParameter"}.
@@ -51,5 +101,7 @@ hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "comment", type: "comment"}.
 hl.mapping{rule: "varKW", type: "keyword"}.
 hl.mapping{rule: "inputKW", type: "keyword"}.
-hl.mapping{rule: "stKW", type: "keyword"}.
+hl.mapping{rule: "ruleKW", type: "keyword"}.
+hl.mapping{rule: "sense", type: "keyword"}.
+hl.mapping{rule: "sepKW", type: "keyword"}.
 hl.mapping{rule: "path", type: "string"}.

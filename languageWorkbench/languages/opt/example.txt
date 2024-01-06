@@ -1,12 +1,59 @@
-.input loads
-.input generator
-.input line
+var coalOutput {
+  timestep,
+  level
+}
 
-.var line_level
+var natGasOutput {
+  timestep,
+  level
+}
 
-st {
-  line{id: Line, capacity: C} &
-  time{time: T} &
-  line_level{line: Line, time: T, level: Level} &
-  Level < C
+input loadLevel {
+  timestep,
+  level
+}
+
+input coalMax { level }
+
+input coalRampRate { rate }
+
+input coalPrice { price }
+
+input natGasPrice { price }
+
+minimize {
+  loadLevel{timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  natGasOutput{level: NatGasLevel, timestep: T} &
+  coalPrice{price: CoalPrice} &
+  natGasPrice{price: NatGasPrice}
+  =>
+  CoalPrice*CoalLevel + NatGasPrice*NatGasLevel
+}
+
+rule outputEqualsDemand{timestep: T} {
+  loadLevel{level: LoadLevel, timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  natGasOutput{level: NatGasLevel, timestep: T}
+  =>
+  CoalLevel + NatGasLevel = LoadLevel
+}
+
+rule coalMax{timestep: T} {
+  loadLevel{timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  coalMax{level: MaxLevel}
+  =>
+  CoalLevel <= MaxLevel
+}
+
+rule coalRampRate{timestep: T2} {
+  loadLevel{timestep: T1} &
+  loadLevel{timestep: T2} &
+  coalOutput{level: L1, timestep: T1} &
+  coalOutput{level: L2, timestep: T2} &
+  base.add{a: T1, b: 1, res: T2} &
+  coalRampRate{rate: RampRate}
+  =>
+  -1*L1 + L2 <= RampRate
 }
