@@ -1,16 +1,30 @@
 main :- repSep(declaration, ws).
 
-declaration :- (varRelationDecl | inputRelationDecl | objective | constraint).
+declaration :- (
+  varRelationDecl |
+  inputRelationDecl |
+  objective |
+  constraint
+).
 
 varRelationDecl :- [varKW, ws, ident, ws, schemaSpec].
 inputRelationDecl :- [inputKW, ws, ident, ws, schemaSpec].
 
 schemaSpec :- ["{", ws, repSep(ident, [",", ws]), ws, "}"].
 
-objective :- [sense, ws, ident].
-# TODO: aggregation
+objective :- [
+  sense, ws, "{", ws,
+  conjuncts,
+  ws, sepKW, ws,
+  scalarExpr, ws,
+  "}"
+].
 
-constraint :- [ruleKW, ws, record, ws, "{", ws, repSep(clause, [ws, "&", ws]), ws, "}"].
+scalarExpr :- repSep(scalarTerm, [ws, "+", ws]).
+scalarTerm :- [term, ws, "*", ws, term].
+
+conjuncts :- repSep(clause, [ws, "&", ws]).
+constraint :- [ruleKW, ws, record, ws, "{", ws, conjuncts, ws, "}"].
 clause :- (record | comparison).
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
@@ -23,10 +37,10 @@ term :- (record | int | var | string | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 
 sense :- ("minimize" | "maximize").
-
 varKW :- "var".
 inputKW :- "input".
 ruleKW :- "rule".
+sepKW :- "=>".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 int :- [("-" | ""), first:num, repSep(num, "")].
