@@ -33,7 +33,7 @@ conjuncts :- repSep(clause, [ws, "&", ws]).
 clause :- (record | comparison).
 
 scalarExpr :- repSep(scalarTerm, [ws, "+", ws]).
-scalarTerm :- [term, ws, "*", ws, term].
+scalarTerm :- [([term, ws, "*", ws] | ""), term].
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
 
