@@ -1,10 +1,10 @@
-.input loads
-.input generator
-.input line
+input loads
+input generator
+input line
 
-.var line_level
+var line_level
 
-st {
+rule lineWithinCapacity{time: T, line: Line} {
   line{id: Line, capacity: C} &
   time{time: T} &
   line_level{line: Line, time: T, level: Level} &

@@ -51,5 +51,5 @@ hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "comment", type: "comment"}.
 hl.mapping{rule: "varKW", type: "keyword"}.
 hl.mapping{rule: "inputKW", type: "keyword"}.
-hl.mapping{rule: "stKW", type: "keyword"}.
+hl.mapping{rule: "ruleKW", type: "keyword"}.
 hl.mapping{rule: "path", type: "string"}.

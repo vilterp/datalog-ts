@@ -7,7 +7,7 @@ inputRelation :- [inputKW, ws, ident].
 objective :- [sense, ws, ident].
 # TODO: aggregation
 
-constraint :- [stKW, ws, "{", ws, repSep(clause, [ws, "&", ws]), ws, "}"].
+constraint :- [ruleKW, ws, record, ws, "{", ws, repSep(clause, [ws, "&", ws]), ws, "}"].
 clause :- (record | comparison).
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
@@ -21,9 +21,9 @@ var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 
 sense :- ("minimize" | "maximize").
 
-varKW :- ".var".
-inputKW :- ".input".
-stKW :- "st".
+varKW :- "var".
+inputKW :- "input".
+ruleKW :- "rule".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 int :- [("-" | ""), first:num, repSep(num, "")].
