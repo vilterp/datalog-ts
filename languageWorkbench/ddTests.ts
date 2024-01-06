@@ -28,6 +28,7 @@ export function lwbTests(writeResults: boolean): Suite {
     "treeSQL",
     "basicBlocks",
     "contracts",
+    "opt",
   ].map((lang) => ({
     name: lang,
     test() {

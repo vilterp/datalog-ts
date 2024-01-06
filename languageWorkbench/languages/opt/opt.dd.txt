@@ -1,0 +1,9 @@
+opt
+rule outputEqualsDemand{timestep: T} {
+  loadLevel{level: LoadLevel, timestep: T} &
+  =>
+  CoalLevel + NatGasLevel = LoadLevel
+}
+scope.varInComparison{}?
+----
+application/datalog
