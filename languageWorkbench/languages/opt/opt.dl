@@ -83,6 +83,15 @@ scope.varInComparison{scope: I, name: N, span: S} :-
   ast.term{id: Term, parentID: ScalarTerm} &
   ast.var{parentID: Term, text: N, span: S}.
 
+tc.Problem{span: S, desc: D} :-
+  tc.undefVarError{span: S, desc: D}.
+
+# bulitins
+# scope.Defn{scopeID: global{}, name: "base.add", kind: "relation"}.
+# scope.Defn{scopeID: "base.attr", name: "a", kind: "attr"}.
+# scope.Defn{scopeID: "base.attr", name: "b", kind: "attr"}.
+# scope.Defn{scopeID: "base.attr", name: "result", kind: "attr"}.
+
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "typeParameter"}.
 hl.mapping{rule: "int", type: "number"}.

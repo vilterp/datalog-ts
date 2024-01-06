@@ -2,6 +2,7 @@ var coalOutput {
   timestep,
   level
 }
+
 var natGasOutput {
   timestep,
   level
@@ -11,12 +12,14 @@ input loadLevel {
   timestep,
   level
 }
-input coalMax {
-  level
-}
-input coalRampRate {
-  rate
-}
+
+input coalMax { level }
+
+input coalRampRate { rate }
+
+input coalPrice { price }
+
+input natGasPrice { price }
 
 minimize {
   loadLevel{timestep: T} &
@@ -50,7 +53,7 @@ rule coalRampRate{timestep: T2} {
   coalOutput{level: L1, timestep: T1} &
   coalOutput{level: L2, timestep: T2} &
   base.add{a: T1, b: 1, res: T2} &
-  coalRampRate{ramp: RampRate}
+  coalRampRate{rate: RampRate}
   =>
   -1*L1 + L2 <= RampRate
 }
