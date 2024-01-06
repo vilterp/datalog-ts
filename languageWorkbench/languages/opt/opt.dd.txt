@@ -7,3 +7,6 @@ rule outputEqualsDemand{timestep: T} {
 scope.varInComparison{}?
 ----
 application/datalog
+scope.varInComparison{name: "CoalLevel", scope: "outputEqualsDemand", span: span{from: 91, to: 100}}.
+scope.varInComparison{name: "LoadLevel", scope: "outputEqualsDemand", span: span{from: 117, to: 126}}.
+scope.varInComparison{name: "NatGasLevel", scope: "outputEqualsDemand", span: span{from: 103, to: 114}}.

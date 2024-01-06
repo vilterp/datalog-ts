@@ -24,8 +24,10 @@ defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} :-
   ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
   ast.ident{parentID: SchemaSpec, span: S, text: N}.
 
-scope.varInClause{scope: Constraint, name: N, span: S} :-
+scope.varInClause{scope: ConstraintName, name: N, span: S} :-
   ast.constraint{id: Constraint} &
+  ast.record{id: HeadRec, parentID: Constraint} &
+  ast.ident{parentID: HeadRec, text: ConstraintName} &
   ast.conjuncts{id: Conjuncts, parentID: Constraint} &
   ast.clause{id: Clause, parentID: Conjuncts} &
   ast.record{id: Record, parentID: Clause} &
@@ -73,7 +75,8 @@ scope.varVar{scopeID: I, name: N, span: S, kind: "var"} :-
 
 scope.varInComparison{scope: I, name: N, span: S} :-
   ast.constraint{id: Constraint} &
-  ast.ident{parentID: Constraint, text: I} &
+  ast.record{id: HeadRec, parentID: Constraint} &
+  ast.ident{parentID: HeadRec, text: I} &
   ast.constraintComparison{id: Comparison, parentID: Constraint} &
   ast.scalarExpr{id: ScalarExpr, parentID: Comparison} &
   ast.scalarTerm{id: ScalarTerm, parentID: ScalarExpr} &
