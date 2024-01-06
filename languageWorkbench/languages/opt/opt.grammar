@@ -2,8 +2,11 @@ main :- repSep(declaration, ws).
 
 declaration :- (varRelation | inputRelation | objective | constraint).
 
-varRelation :- [varKW, ws, ident].
-inputRelation :- [inputKW, ws, ident].
+varRelation :- [varKW, ws, ident, ws, schemaSpec].
+inputRelation :- [inputKW, ws, ident, ws, schemaSpec].
+
+schemaSpec :- ["{", ws, repSep(ident, [",", ws]), ws, "}"].
+
 objective :- [sense, ws, ident].
 # TODO: aggregation
 
