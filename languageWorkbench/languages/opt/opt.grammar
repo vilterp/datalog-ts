@@ -1,9 +1,9 @@
 main :- repSep(declaration, ws).
 
-declaration :- (varRelation | inputRelation | objective | constraint).
+declaration :- (varRelationDecl | inputRelationDecl | objective | constraint).
 
-varRelation :- [varKW, ws, ident, ws, schemaSpec].
-inputRelation :- [inputKW, ws, ident, ws, schemaSpec].
+varRelationDecl :- [varKW, ws, ident, ws, schemaSpec].
+inputRelationDecl :- [inputKW, ws, ident, ws, schemaSpec].
 
 schemaSpec :- ["{", ws, repSep(ident, [",", ws]), ws, "}"].
 

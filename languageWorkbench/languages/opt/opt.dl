@@ -1,6 +1,7 @@
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
-  scope.defnVar{scopeID: I, span: S, name: N, kind: K}.
+  scope.defnVar{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnAttr{scopeID: I, span: S, name: N, kind: K}.
 
 scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
   scope.declInput{scopeID: I, span: S, name: N, kind: K} |
@@ -8,6 +9,20 @@ scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
 scope.defnVar{scopeID: I, span: S, name: N, kind: "var"} :-
   scope.varInClause{scope: I, name: N, span: S}.
   # TODO: comparison
+scope.defnAttr{scopeID: I, span: S, name: N, kind: K} :-
+  defnVarRelationAttribute{scopeID: I, span: S, name: N, kind: K} |
+  defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: K}.
+
+defnVarRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} :-
+  ast.varRelationDecl{id: Decl} &
+  ast.ident{parentID: Decl, text: I} &
+  ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
+  ast.ident{parentID: SchemaSpec, span: S, text: N}.
+defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} :-
+  ast.inputRelationDecl{id: Decl} &
+  ast.ident{parentID: Decl, text: I} &
+  ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
+  ast.ident{parentID: SchemaSpec, span: S, text: N}.
 
 scope.varInClause{scope: Constraint, name: N, span: S} :-
   ast.constraint{id: Constraint} &
@@ -33,7 +48,16 @@ scope.declVarRelation{scopeID: global{}, span: S, name: N, kind: "relation"} :-
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
-  scope.varVar{scopeID: I, name: N, span: S, kind: K}.
+  scope.varVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K}.
+
+scope.varAttr{scopeID: I, name: N, span: S, kind: "attr"} :-
+  ast.clause{id: Clause} &
+  ast.record{id: Rec, parentID: Clause} &
+  ast.ident{parentID: Rec, text: I} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.recordKeyValue{id: KV, parentID: Attrs} &
+  ast.ident{parentID: KV, text: N, span: S}.
 
 scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} :-
   ast.constraint{id: Constraint} &
