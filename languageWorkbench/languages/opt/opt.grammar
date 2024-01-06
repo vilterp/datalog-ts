@@ -20,12 +20,20 @@ objective :- [
   "}"
 ].
 
-scalarExpr :- repSep(scalarTerm, [ws, "+", ws]).
-scalarTerm :- [term, ws, "*", ws, term].
+constraint :- [
+  ruleKW, ws, record, ws, "{", ws,
+  conjuncts, ws,
+  sepKW, ws,
+  constraintComparison, ws,
+"}"].
+
+constraintComparison :- [scalarExpr, ws, comparisonOp, ws, scalarExpr].
 
 conjuncts :- repSep(clause, [ws, "&", ws]).
-constraint :- [ruleKW, ws, record, ws, "{", ws, conjuncts, ws, "}"].
 clause :- (record | comparison).
+
+scalarExpr :- repSep(scalarTerm, [ws, "+", ws]).
+scalarTerm :- [term, ws, "*", ws, term].
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
 
