@@ -1,13 +1,9 @@
-import {
-  assertDeepEqual,
-  assertStringEqual,
-  Suite,
-} from "../testBench/testing";
+import { assertStringEqual, Suite } from "../testBench/testing";
 import fs from "fs";
 import { zip } from "../util";
 import { parseDDTest } from "./parser";
 import { ProcessFn, Result, resultsToStr } from "./types";
-import { jsonEq } from "../json";
+import * as diff from "diff";
 
 function checkResults(results: Result[]) {
   // TODO: print 'em all out, not just first that failed
@@ -81,10 +77,16 @@ export function runDDTestAtPathTwoVariants(
   }));
   const leftStr = resultsToStr(leftResults);
   const rightStr = resultsToStr(rightResults);
-  assertStringEqual(leftStr, rightStr, {
-    expectedName: leftGetter.name,
-    actualName: rightGetter.name,
-  });
+  if (leftStr !== rightStr) {
+    const patch = diff.createPatch(
+      path,
+      leftStr + "\n",
+      rightStr + "\n",
+      leftGetter.name || "expected",
+      rightGetter.name || "actual"
+    );
+    console.error("left and right don't match", patch);
+  }
   if (writeResults) {
     doWriteResults(path, leftResults);
   } else {
