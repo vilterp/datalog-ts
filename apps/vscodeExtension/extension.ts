@@ -8,19 +8,24 @@ import { MessageFromWebView, MessageToWebView } from "./types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
 
+const BUILTIN_LANGUAGES: LanguageSpec[] = [
+  LANGUAGES.datalog,
+  LANGUAGES.grammar,
+  LANGUAGES.basicBlocks,
+  LANGUAGES.opt,
+];
+
 export function activate(context: vscode.ExtensionContext) {
   console.log("activate!");
 
   registerExplorerWebView(context);
 
-  [LANGUAGES.datalog, LANGUAGES.grammar, LANGUAGES.basicBlocks].forEach(
-    (spec) => {
-      registerLanguageSupport(spec).forEach((sub) => {
-        context.subscriptions.push(sub);
-      });
-      registerDiagnosticsSupport(context, spec);
-    }
-  );
+  BUILTIN_LANGUAGES.forEach((spec) => {
+    registerLanguageSupport(spec).forEach((sub) => {
+      context.subscriptions.push(sub);
+    });
+    registerDiagnosticsSupport(context, spec);
+  });
 }
 
 function registerDiagnosticsSupport(

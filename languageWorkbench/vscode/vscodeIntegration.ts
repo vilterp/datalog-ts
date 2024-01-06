@@ -9,11 +9,7 @@ import { ppt } from "../../core/pretty";
 import { CACHE, getInterp, GLOBAL_SCOPE, TOKEN_TYPES } from "./common";
 import { uniqBy } from "../../util/util";
 import * as native from "../common/ide";
-import {
-  emptyNodesByRule,
-  flattenByRule,
-  NodesByRule,
-} from "../parserlib/flattenByRule";
+import { flattenByRule, NodesByRule } from "../parserlib/flattenByRule";
 import { extractRuleTree } from "../parserlib/ruleTree";
 import { parse } from "../parserlib/parser";
 import { Span } from "../parserlib/types";
