@@ -8,389 +8,389 @@ import {
 } from "../../parserlib/ruleTree";
 import { Span, Grammar } from "../../parserlib/types";
 import * as parserlib from "../../parserlib/parser";
-export type BBAlpha = {
+export type OptAlpha = {
   type: "Alpha";
   text: string;
   span: Span;
 };
-export type BBAlphaNum = BBAlpha | BBNum;
-export type BBClause = BBRecord | BBComparison;
-export type BBCommaSpace = {
+export type OptAlphaNum = OptAlpha | OptNum;
+export type OptClause = OptRecord | OptComparison;
+export type OptCommaSpace = {
   type: "CommaSpace";
   text: string;
   span: Span;
 };
-export type BBCommaWS = {
+export type OptCommaWS = {
   type: "CommaWS";
   text: string;
   span: Span;
 };
-export type BBComparison = {
+export type OptComparison = {
   type: "Comparison";
   text: string;
   span: Span;
-  left: BBTerm;
-  comparisonOp: BBComparisonOp;
-  right: BBTerm;
+  left: OptTerm;
+  comparisonOp: OptComparisonOp;
+  right: OptTerm;
 };
-export type BBComparisonOp = {
+export type OptComparisonOp = {
   type: "ComparisonOp";
   text: string;
   span: Span;
 };
-export type BBConjuncts = {
+export type OptConjuncts = {
   type: "Conjuncts";
   text: string;
   span: Span;
-  clause: BBClause[];
+  clause: OptClause[];
 };
-export type BBConstraint = {
+export type OptConstraint = {
   type: "Constraint";
   text: string;
   span: Span;
-  ruleKW: BBRuleKW;
-  record: BBRecord;
-  conjuncts: BBConjuncts;
-  sepKW: BBSepKW;
-  constraintComparison: BBConstraintComparison;
+  ruleKW: OptRuleKW;
+  record: OptRecord;
+  conjuncts: OptConjuncts;
+  sepKW: OptSepKW;
+  constraintComparison: OptConstraintComparison;
 };
-export type BBConstraintComparison = {
+export type OptConstraintComparison = {
   type: "ConstraintComparison";
   text: string;
   span: Span;
-  left: BBScalarExpr;
-  comparisonOp: BBComparisonOp;
-  right: BBScalarExpr;
+  left: OptScalarExpr;
+  comparisonOp: OptComparisonOp;
+  right: OptScalarExpr;
 };
-export type BBDeclaration =
-  | BBVarRelationDecl
-  | BBInputRelationDecl
-  | BBObjective
-  | BBConstraint;
-export type BBIdent = {
+export type OptDeclaration =
+  | OptVarRelationDecl
+  | OptInputRelationDecl
+  | OptObjective
+  | OptConstraint;
+export type OptIdent = {
   type: "Ident";
   text: string;
   span: Span;
-  alpha: BBAlpha;
-  alphaNum: BBAlphaNum[];
+  alpha: OptAlpha;
+  alphaNum: OptAlphaNum[];
 };
-export type BBInputKW = {
+export type OptInputKW = {
   type: "InputKW";
   text: string;
   span: Span;
 };
-export type BBInputRelationDecl = {
+export type OptInputRelationDecl = {
   type: "InputRelationDecl";
   text: string;
   span: Span;
-  inputKW: BBInputKW;
-  ident: BBIdent;
-  schemaSpec: BBSchemaSpec;
+  inputKW: OptInputKW;
+  ident: OptIdent;
+  schemaSpec: OptSchemaSpec;
 };
-export type BBInt = {
+export type OptInt = {
   type: "Int";
   text: string;
   span: Span;
-  first: BBNum;
-  num: BBNum[];
+  first: OptNum;
+  num: OptNum[];
 };
-export type BBMain = {
+export type OptMain = {
   type: "Main";
   text: string;
   span: Span;
-  declaration: BBDeclaration[];
+  declaration: OptDeclaration[];
 };
-export type BBNum = {
+export type OptNum = {
   type: "Num";
   text: string;
   span: Span;
 };
-export type BBObjective = {
+export type OptObjective = {
   type: "Objective";
   text: string;
   span: Span;
-  sense: BBSense;
-  conjuncts: BBConjuncts;
-  sepKW: BBSepKW;
-  scalarExpr: BBScalarExpr;
+  sense: OptSense;
+  conjuncts: OptConjuncts;
+  sepKW: OptSepKW;
+  scalarExpr: OptScalarExpr;
 };
-export type BBPlaceholder = {
+export type OptPlaceholder = {
   type: "Placeholder";
   text: string;
   span: Span;
 };
-export type BBRecord = {
+export type OptRecord = {
   type: "Record";
   text: string;
   span: Span;
-  ident: BBIdent;
-  recordAttrs: BBRecordAttrs;
+  ident: OptIdent;
+  recordAttrs: OptRecordAttrs;
 };
-export type BBRecordAttrs = {
+export type OptRecordAttrs = {
   type: "RecordAttrs";
   text: string;
   span: Span;
-  recordKeyValue: BBRecordKeyValue[];
-  placeholder: BBPlaceholder[];
-  commaSpace: BBCommaSpace[];
+  recordKeyValue: OptRecordKeyValue[];
+  placeholder: OptPlaceholder[];
+  commaSpace: OptCommaSpace[];
 };
-export type BBRecordKeyValue = {
+export type OptRecordKeyValue = {
   type: "RecordKeyValue";
   text: string;
   span: Span;
-  ident: BBIdent;
-  term: BBTerm;
+  ident: OptIdent;
+  term: OptTerm;
 };
-export type BBRuleKW = {
+export type OptRuleKW = {
   type: "RuleKW";
   text: string;
   span: Span;
 };
-export type BBScalarExpr = {
+export type OptScalarExpr = {
   type: "ScalarExpr";
   text: string;
   span: Span;
-  scalarTerm: BBScalarTerm[];
+  scalarTerm: OptScalarTerm[];
 };
-export type BBScalarTerm = {
+export type OptScalarTerm = {
   type: "ScalarTerm";
   text: string;
   span: Span;
-  coefficient: BBTerm | null;
-  term: BBTerm;
+  coefficient: OptTerm | null;
+  term: OptTerm;
 };
-export type BBSchemaSpec = {
+export type OptSchemaSpec = {
   type: "SchemaSpec";
   text: string;
   span: Span;
-  ident: BBIdent[];
+  ident: OptIdent[];
 };
-export type BBSense = {
+export type OptSense = {
   type: "Sense";
   text: string;
   span: Span;
 };
-export type BBSepKW = {
+export type OptSepKW = {
   type: "SepKW";
   text: string;
   span: Span;
 };
-export type BBString = {
+export type OptString = {
   type: "String";
   text: string;
   span: Span;
-  stringChar: BBStringChar[];
+  stringChar: OptStringChar[];
 };
-export type BBStringChar = {
+export type OptStringChar = {
   type: "StringChar";
   text: string;
   span: Span;
 };
-export type BBTerm = BBRecord | BBInt | BBVar | BBString | BBPlaceholder;
-export type BBVar = {
+export type OptTerm = OptRecord | OptInt | OptVar | OptString | OptPlaceholder;
+export type OptVar = {
   type: "Var";
   text: string;
   span: Span;
-  alphaNum: BBAlphaNum[];
+  alphaNum: OptAlphaNum[];
 };
-export type BBVarKW = {
+export type OptVarKW = {
   type: "VarKW";
   text: string;
   span: Span;
 };
-export type BBVarRelationDecl = {
+export type OptVarRelationDecl = {
   type: "VarRelationDecl";
   text: string;
   span: Span;
-  varKW: BBVarKW;
-  ident: BBIdent;
-  schemaSpec: BBSchemaSpec;
+  varKW: OptVarKW;
+  ident: OptIdent;
+  schemaSpec: OptSchemaSpec;
 };
-export type BBWs = {
+export type OptWs = {
   type: "Ws";
   text: string;
   span: Span;
 };
-export function parseAlpha(input: string): BBAlpha {
+export function parseAlpha(input: string): OptAlpha {
   const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractAlpha(input, ruleTree);
 }
-export function parseAlphaNum(input: string): BBAlphaNum {
+export function parseAlphaNum(input: string): OptAlphaNum {
   const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractAlphaNum(input, ruleTree);
 }
-export function parseClause(input: string): BBClause {
+export function parseClause(input: string): OptClause {
   const traceTree = parserlib.parse(GRAMMAR, "clause", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractClause(input, ruleTree);
 }
-export function parseCommaSpace(input: string): BBCommaSpace {
+export function parseCommaSpace(input: string): OptCommaSpace {
   const traceTree = parserlib.parse(GRAMMAR, "commaSpace", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractCommaSpace(input, ruleTree);
 }
-export function parseCommaWS(input: string): BBCommaWS {
+export function parseCommaWS(input: string): OptCommaWS {
   const traceTree = parserlib.parse(GRAMMAR, "commaWS", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractCommaWS(input, ruleTree);
 }
-export function parseComparison(input: string): BBComparison {
+export function parseComparison(input: string): OptComparison {
   const traceTree = parserlib.parse(GRAMMAR, "comparison", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractComparison(input, ruleTree);
 }
-export function parseComparisonOp(input: string): BBComparisonOp {
+export function parseComparisonOp(input: string): OptComparisonOp {
   const traceTree = parserlib.parse(GRAMMAR, "comparisonOp", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractComparisonOp(input, ruleTree);
 }
-export function parseConjuncts(input: string): BBConjuncts {
+export function parseConjuncts(input: string): OptConjuncts {
   const traceTree = parserlib.parse(GRAMMAR, "conjuncts", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractConjuncts(input, ruleTree);
 }
-export function parseConstraint(input: string): BBConstraint {
+export function parseConstraint(input: string): OptConstraint {
   const traceTree = parserlib.parse(GRAMMAR, "constraint", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractConstraint(input, ruleTree);
 }
 export function parseConstraintComparison(
   input: string
-): BBConstraintComparison {
+): OptConstraintComparison {
   const traceTree = parserlib.parse(GRAMMAR, "constraintComparison", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractConstraintComparison(input, ruleTree);
 }
-export function parseDeclaration(input: string): BBDeclaration {
+export function parseDeclaration(input: string): OptDeclaration {
   const traceTree = parserlib.parse(GRAMMAR, "declaration", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractDeclaration(input, ruleTree);
 }
-export function parseIdent(input: string): BBIdent {
+export function parseIdent(input: string): OptIdent {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractIdent(input, ruleTree);
 }
-export function parseInputKW(input: string): BBInputKW {
+export function parseInputKW(input: string): OptInputKW {
   const traceTree = parserlib.parse(GRAMMAR, "inputKW", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractInputKW(input, ruleTree);
 }
-export function parseInputRelationDecl(input: string): BBInputRelationDecl {
+export function parseInputRelationDecl(input: string): OptInputRelationDecl {
   const traceTree = parserlib.parse(GRAMMAR, "inputRelationDecl", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractInputRelationDecl(input, ruleTree);
 }
-export function parseInt(input: string): BBInt {
+export function parseInt(input: string): OptInt {
   const traceTree = parserlib.parse(GRAMMAR, "int", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractInt(input, ruleTree);
 }
-export function parseMain(input: string): BBMain {
+export function parseMain(input: string): OptMain {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractMain(input, ruleTree);
 }
-export function parseNum(input: string): BBNum {
+export function parseNum(input: string): OptNum {
   const traceTree = parserlib.parse(GRAMMAR, "num", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractNum(input, ruleTree);
 }
-export function parseObjective(input: string): BBObjective {
+export function parseObjective(input: string): OptObjective {
   const traceTree = parserlib.parse(GRAMMAR, "objective", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractObjective(input, ruleTree);
 }
-export function parsePlaceholder(input: string): BBPlaceholder {
+export function parsePlaceholder(input: string): OptPlaceholder {
   const traceTree = parserlib.parse(GRAMMAR, "placeholder", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractPlaceholder(input, ruleTree);
 }
-export function parseRecord(input: string): BBRecord {
+export function parseRecord(input: string): OptRecord {
   const traceTree = parserlib.parse(GRAMMAR, "record", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRecord(input, ruleTree);
 }
-export function parseRecordAttrs(input: string): BBRecordAttrs {
+export function parseRecordAttrs(input: string): OptRecordAttrs {
   const traceTree = parserlib.parse(GRAMMAR, "recordAttrs", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRecordAttrs(input, ruleTree);
 }
-export function parseRecordKeyValue(input: string): BBRecordKeyValue {
+export function parseRecordKeyValue(input: string): OptRecordKeyValue {
   const traceTree = parserlib.parse(GRAMMAR, "recordKeyValue", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRecordKeyValue(input, ruleTree);
 }
-export function parseRuleKW(input: string): BBRuleKW {
+export function parseRuleKW(input: string): OptRuleKW {
   const traceTree = parserlib.parse(GRAMMAR, "ruleKW", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractRuleKW(input, ruleTree);
 }
-export function parseScalarExpr(input: string): BBScalarExpr {
+export function parseScalarExpr(input: string): OptScalarExpr {
   const traceTree = parserlib.parse(GRAMMAR, "scalarExpr", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractScalarExpr(input, ruleTree);
 }
-export function parseScalarTerm(input: string): BBScalarTerm {
+export function parseScalarTerm(input: string): OptScalarTerm {
   const traceTree = parserlib.parse(GRAMMAR, "scalarTerm", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractScalarTerm(input, ruleTree);
 }
-export function parseSchemaSpec(input: string): BBSchemaSpec {
+export function parseSchemaSpec(input: string): OptSchemaSpec {
   const traceTree = parserlib.parse(GRAMMAR, "schemaSpec", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractSchemaSpec(input, ruleTree);
 }
-export function parseSense(input: string): BBSense {
+export function parseSense(input: string): OptSense {
   const traceTree = parserlib.parse(GRAMMAR, "sense", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractSense(input, ruleTree);
 }
-export function parseSepKW(input: string): BBSepKW {
+export function parseSepKW(input: string): OptSepKW {
   const traceTree = parserlib.parse(GRAMMAR, "sepKW", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractSepKW(input, ruleTree);
 }
-export function parseString(input: string): BBString {
+export function parseString(input: string): OptString {
   const traceTree = parserlib.parse(GRAMMAR, "string", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractString(input, ruleTree);
 }
-export function parseStringChar(input: string): BBStringChar {
+export function parseStringChar(input: string): OptStringChar {
   const traceTree = parserlib.parse(GRAMMAR, "stringChar", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractStringChar(input, ruleTree);
 }
-export function parseTerm(input: string): BBTerm {
+export function parseTerm(input: string): OptTerm {
   const traceTree = parserlib.parse(GRAMMAR, "term", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractTerm(input, ruleTree);
 }
-export function parseVar(input: string): BBVar {
+export function parseVar(input: string): OptVar {
   const traceTree = parserlib.parse(GRAMMAR, "var", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractVar(input, ruleTree);
 }
-export function parseVarKW(input: string): BBVarKW {
+export function parseVarKW(input: string): OptVarKW {
   const traceTree = parserlib.parse(GRAMMAR, "varKW", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractVarKW(input, ruleTree);
 }
-export function parseVarRelationDecl(input: string): BBVarRelationDecl {
+export function parseVarRelationDecl(input: string): OptVarRelationDecl {
   const traceTree = parserlib.parse(GRAMMAR, "varRelationDecl", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractVarRelationDecl(input, ruleTree);
 }
-function extractAlpha(input: string, node: RuleTree): BBAlpha {
+function extractAlpha(input: string, node: RuleTree): OptAlpha {
   return {
     type: "Alpha",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractAlphaNum(input: string, node: RuleTree): BBAlphaNum {
+function extractAlphaNum(input: string, node: RuleTree): OptAlphaNum {
   const child = node.children[0];
   switch (child.name) {
     case "alpha": {
@@ -401,7 +401,7 @@ function extractAlphaNum(input: string, node: RuleTree): BBAlphaNum {
     }
   }
 }
-function extractClause(input: string, node: RuleTree): BBClause {
+function extractClause(input: string, node: RuleTree): OptClause {
   const child = node.children[0];
   switch (child.name) {
     case "record": {
@@ -412,21 +412,21 @@ function extractClause(input: string, node: RuleTree): BBClause {
     }
   }
 }
-function extractCommaSpace(input: string, node: RuleTree): BBCommaSpace {
+function extractCommaSpace(input: string, node: RuleTree): OptCommaSpace {
   return {
     type: "CommaSpace",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractCommaWS(input: string, node: RuleTree): BBCommaWS {
+function extractCommaWS(input: string, node: RuleTree): OptCommaWS {
   return {
     type: "CommaWS",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractComparison(input: string, node: RuleTree): BBComparison {
+function extractComparison(input: string, node: RuleTree): OptComparison {
   return {
     type: "Comparison",
     text: textForSpan(input, node.span),
@@ -439,14 +439,14 @@ function extractComparison(input: string, node: RuleTree): BBComparison {
     right: extractTerm(input, childByName(node, "term", "right")),
   };
 }
-function extractComparisonOp(input: string, node: RuleTree): BBComparisonOp {
+function extractComparisonOp(input: string, node: RuleTree): OptComparisonOp {
   return {
     type: "ComparisonOp",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractConjuncts(input: string, node: RuleTree): BBConjuncts {
+function extractConjuncts(input: string, node: RuleTree): OptConjuncts {
   return {
     type: "Conjuncts",
     text: textForSpan(input, node.span),
@@ -456,7 +456,7 @@ function extractConjuncts(input: string, node: RuleTree): BBConjuncts {
     ),
   };
 }
-function extractConstraint(input: string, node: RuleTree): BBConstraint {
+function extractConstraint(input: string, node: RuleTree): OptConstraint {
   return {
     type: "Constraint",
     text: textForSpan(input, node.span),
@@ -474,7 +474,7 @@ function extractConstraint(input: string, node: RuleTree): BBConstraint {
 function extractConstraintComparison(
   input: string,
   node: RuleTree
-): BBConstraintComparison {
+): OptConstraintComparison {
   return {
     type: "ConstraintComparison",
     text: textForSpan(input, node.span),
@@ -487,7 +487,7 @@ function extractConstraintComparison(
     right: extractScalarExpr(input, childByName(node, "scalarExpr", "right")),
   };
 }
-function extractDeclaration(input: string, node: RuleTree): BBDeclaration {
+function extractDeclaration(input: string, node: RuleTree): OptDeclaration {
   const child = node.children[0];
   switch (child.name) {
     case "varRelationDecl": {
@@ -504,7 +504,7 @@ function extractDeclaration(input: string, node: RuleTree): BBDeclaration {
     }
   }
 }
-function extractIdent(input: string, node: RuleTree): BBIdent {
+function extractIdent(input: string, node: RuleTree): OptIdent {
   return {
     type: "Ident",
     text: textForSpan(input, node.span),
@@ -515,7 +515,7 @@ function extractIdent(input: string, node: RuleTree): BBIdent {
     ),
   };
 }
-function extractInputKW(input: string, node: RuleTree): BBInputKW {
+function extractInputKW(input: string, node: RuleTree): OptInputKW {
   return {
     type: "InputKW",
     text: textForSpan(input, node.span),
@@ -525,7 +525,7 @@ function extractInputKW(input: string, node: RuleTree): BBInputKW {
 function extractInputRelationDecl(
   input: string,
   node: RuleTree
-): BBInputRelationDecl {
+): OptInputRelationDecl {
   return {
     type: "InputRelationDecl",
     text: textForSpan(input, node.span),
@@ -535,7 +535,7 @@ function extractInputRelationDecl(
     schemaSpec: extractSchemaSpec(input, childByName(node, "schemaSpec", null)),
   };
 }
-function extractInt(input: string, node: RuleTree): BBInt {
+function extractInt(input: string, node: RuleTree): OptInt {
   return {
     type: "Int",
     text: textForSpan(input, node.span),
@@ -544,7 +544,7 @@ function extractInt(input: string, node: RuleTree): BBInt {
     num: childrenByName(node, "num").map((child) => extractNum(input, child)),
   };
 }
-function extractMain(input: string, node: RuleTree): BBMain {
+function extractMain(input: string, node: RuleTree): OptMain {
   return {
     type: "Main",
     text: textForSpan(input, node.span),
@@ -554,14 +554,14 @@ function extractMain(input: string, node: RuleTree): BBMain {
     ),
   };
 }
-function extractNum(input: string, node: RuleTree): BBNum {
+function extractNum(input: string, node: RuleTree): OptNum {
   return {
     type: "Num",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractObjective(input: string, node: RuleTree): BBObjective {
+function extractObjective(input: string, node: RuleTree): OptObjective {
   return {
     type: "Objective",
     text: textForSpan(input, node.span),
@@ -572,14 +572,14 @@ function extractObjective(input: string, node: RuleTree): BBObjective {
     scalarExpr: extractScalarExpr(input, childByName(node, "scalarExpr", null)),
   };
 }
-function extractPlaceholder(input: string, node: RuleTree): BBPlaceholder {
+function extractPlaceholder(input: string, node: RuleTree): OptPlaceholder {
   return {
     type: "Placeholder",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractRecord(input: string, node: RuleTree): BBRecord {
+function extractRecord(input: string, node: RuleTree): OptRecord {
   return {
     type: "Record",
     text: textForSpan(input, node.span),
@@ -591,7 +591,7 @@ function extractRecord(input: string, node: RuleTree): BBRecord {
     ),
   };
 }
-function extractRecordAttrs(input: string, node: RuleTree): BBRecordAttrs {
+function extractRecordAttrs(input: string, node: RuleTree): OptRecordAttrs {
   return {
     type: "RecordAttrs",
     text: textForSpan(input, node.span),
@@ -610,7 +610,7 @@ function extractRecordAttrs(input: string, node: RuleTree): BBRecordAttrs {
 function extractRecordKeyValue(
   input: string,
   node: RuleTree
-): BBRecordKeyValue {
+): OptRecordKeyValue {
   return {
     type: "RecordKeyValue",
     text: textForSpan(input, node.span),
@@ -619,14 +619,14 @@ function extractRecordKeyValue(
     term: extractTerm(input, childByName(node, "term", null)),
   };
 }
-function extractRuleKW(input: string, node: RuleTree): BBRuleKW {
+function extractRuleKW(input: string, node: RuleTree): OptRuleKW {
   return {
     type: "RuleKW",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractScalarExpr(input: string, node: RuleTree): BBScalarExpr {
+function extractScalarExpr(input: string, node: RuleTree): OptScalarExpr {
   return {
     type: "ScalarExpr",
     text: textForSpan(input, node.span),
@@ -636,7 +636,7 @@ function extractScalarExpr(input: string, node: RuleTree): BBScalarExpr {
     ),
   };
 }
-function extractScalarTerm(input: string, node: RuleTree): BBScalarTerm {
+function extractScalarTerm(input: string, node: RuleTree): OptScalarTerm {
   return {
     type: "ScalarTerm",
     text: textForSpan(input, node.span),
@@ -647,7 +647,7 @@ function extractScalarTerm(input: string, node: RuleTree): BBScalarTerm {
     term: extractTerm(input, childByName(node, "term", "term")),
   };
 }
-function extractSchemaSpec(input: string, node: RuleTree): BBSchemaSpec {
+function extractSchemaSpec(input: string, node: RuleTree): OptSchemaSpec {
   return {
     type: "SchemaSpec",
     text: textForSpan(input, node.span),
@@ -657,21 +657,21 @@ function extractSchemaSpec(input: string, node: RuleTree): BBSchemaSpec {
     ),
   };
 }
-function extractSense(input: string, node: RuleTree): BBSense {
+function extractSense(input: string, node: RuleTree): OptSense {
   return {
     type: "Sense",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractSepKW(input: string, node: RuleTree): BBSepKW {
+function extractSepKW(input: string, node: RuleTree): OptSepKW {
   return {
     type: "SepKW",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractString(input: string, node: RuleTree): BBString {
+function extractString(input: string, node: RuleTree): OptString {
   return {
     type: "String",
     text: textForSpan(input, node.span),
@@ -681,14 +681,14 @@ function extractString(input: string, node: RuleTree): BBString {
     ),
   };
 }
-function extractStringChar(input: string, node: RuleTree): BBStringChar {
+function extractStringChar(input: string, node: RuleTree): OptStringChar {
   return {
     type: "StringChar",
     text: textForSpan(input, node.span),
     span: node.span,
   };
 }
-function extractTerm(input: string, node: RuleTree): BBTerm {
+function extractTerm(input: string, node: RuleTree): OptTerm {
   const child = node.children[0];
   switch (child.name) {
     case "record": {
@@ -708,7 +708,7 @@ function extractTerm(input: string, node: RuleTree): BBTerm {
     }
   }
 }
-function extractVar(input: string, node: RuleTree): BBVar {
+function extractVar(input: string, node: RuleTree): OptVar {
   return {
     type: "Var",
     text: textForSpan(input, node.span),
@@ -718,7 +718,7 @@ function extractVar(input: string, node: RuleTree): BBVar {
     ),
   };
 }
-function extractVarKW(input: string, node: RuleTree): BBVarKW {
+function extractVarKW(input: string, node: RuleTree): OptVarKW {
   return {
     type: "VarKW",
     text: textForSpan(input, node.span),
@@ -728,7 +728,7 @@ function extractVarKW(input: string, node: RuleTree): BBVarKW {
 function extractVarRelationDecl(
   input: string,
   node: RuleTree
-): BBVarRelationDecl {
+): OptVarRelationDecl {
   return {
     type: "VarRelationDecl",
     text: textForSpan(input, node.span),
