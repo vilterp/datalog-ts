@@ -159,7 +159,7 @@ function BalanceTable(props: { client: Client }) {
         {mapObjToList(queryResults, (key, value) => (
           <tr key={key}>
             <td>{key}</td>
-            <td>{value.value}</td>
+            <td>{JSON.stringify(value.value)}</td>
             <td>
               <TxnState client={props.client} txnID={value.transactionID} />
             </td>
