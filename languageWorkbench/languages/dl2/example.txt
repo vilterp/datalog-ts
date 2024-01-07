@@ -1,7 +1,12 @@
-import "foo"
+import "ast"
 
-scope.varInComparison{scope: I, name: N, span: S} :-
-  ast.constraint{
+table constraint {
+  id,
+  record: inRef(record.parentID)
+}
+
+varInComparison{scope: I, name: N, span: S} :-
+  constraint{
     record {
       ident {
         text: I
