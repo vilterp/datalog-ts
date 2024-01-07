@@ -1,4 +1,4 @@
-import { Conjunct, Rec, Rule, rec, varr } from "../../../core/types";
+import { Conjunct, Rec, Rule, Var, rec, varr } from "../../../core/types";
 import { flatMap } from "../../../util/util";
 import { extractTerm } from "./extract";
 import {
@@ -102,11 +102,21 @@ function extractNested(
   }
   const out: Conjunct[] = [curRec];
   const problems: ExtractionProblem[] = [];
+  // Get normal attrs first
   for (const attr of nested.nestedAttr) {
     switch (attr.type) {
       case "NormalAttr":
         curRec.attrs[attr.ident.text] = extractTerm(attr.term);
         break;
+      default:
+        continue;
+    }
+  }
+  // Now get nested attrs
+  for (const attr of nested.nestedAttr) {
+    switch (attr.type) {
+      case "NormalAttr":
+        continue;
       case "Nested": {
         const attrName = attr.ident.text;
         const refSpec = mod.tableDecls[relation][attrName];
@@ -121,7 +131,10 @@ function extractNested(
         }
         switch (refSpec.type) {
           case "InRef": {
-            const varName = `V${relation}ID`;
+            const varName =
+              curRec.attrs.id && curRec.attrs.id.type === "Var"
+                ? (curRec.attrs.id as Var).name
+                : `V${relation}ID`;
             // TODO: not always `id`?
             curRec.attrs.id = varr(varName);
             const [nestedConjuncts, nestedProblems] = extractNested(mod, attr, [

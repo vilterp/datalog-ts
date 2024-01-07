@@ -15,4 +15,4 @@ def postComment{postID: P, commentID: C} :-
   }.
 ----
 text/plain
-postComment{commentID: C, postID: P} :- post{id: VpostID} & comment{id: C, post_id: VpostID}
+postComment{commentID: C, postID: P} :- post{id: P} & comment{id: C, post_id: P}
