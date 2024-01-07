@@ -1,19 +1,47 @@
-import { EditorAction } from "./types";
+import * as monaco from "monaco-editor";
+import { ActionContext } from "./types";
 import {
   jumpToDefnAction,
-  jumpToFirstUsageAction,
   jumpToErrorAction,
   jumpToFirstPlaceholderAction,
 } from "./jumpTo";
 import { renameRefactorAction } from "./rename";
 
-// matches uiCommon/ide/editor.tsx
+export type KeyMap = {
+  [actionID: string]: KeyBinding;
+};
+
+export type KeyBinding = {
+  combo: number;
+  letter: string;
+  name: string;
+  available: (ctx: ActionContext) => boolean;
+};
+
 // TODO: DRY up
-export const keyMap: { [key: string]: EditorAction } = {
-  b: jumpToDefnAction,
-  u: jumpToFirstUsageAction,
-  e: jumpToErrorAction,
-  j: renameRefactorAction, // would choose cmd+r, but it's taken
-  // i: jumpToFirstPlaceholderAction,
-  // TODO: re-enable this; monaco doesn't have support for it
+export const DEFAULT_KEY_MAP: KeyMap = {
+  "editor.action.revealDefinition": {
+    combo: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
+    letter: "b",
+    name: "Jump To Definition",
+    available: jumpToDefnAction.available,
+  },
+  "editor.action.goToReferences": {
+    combo: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,
+    letter: "u",
+    name: "Find Usages",
+    available: jumpToFirstPlaceholderAction.available,
+  },
+  "editor.action.marker.next": {
+    combo: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
+    letter: "e",
+    name: "Next Error",
+    available: jumpToErrorAction.available,
+  },
+  "editor.action.rename": {
+    combo: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ,
+    letter: "j",
+    name: "Rename",
+    available: renameRefactorAction.available,
+  },
 };

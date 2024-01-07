@@ -12,6 +12,7 @@ import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { addCursor } from "../../languageWorkbench/interpCache";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
 import { CACHE } from "../../languageWorkbench/vscode/common";
+import { DEFAULT_KEY_MAP, KeyMap } from "./keymap/keymap";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -21,6 +22,7 @@ export function LingoEditor(props: {
   height?: number;
   lineNumbers?: monaco.editor.LineNumbersType;
   showKeyBindingsTable?: boolean;
+  keyMap?: KeyMap;
 }) {
   const monacoRef = useRef<typeof monaco>(null);
   function handleBeforeMount(monacoInstance: typeof monaco) {
@@ -43,6 +45,8 @@ export function LingoEditor(props: {
     monacoRef.current.editor.setModelMarkers(model, "lingo", markers);
   }
 
+  const keyMap = props.keyMap || DEFAULT_KEY_MAP;
+
   const editorRef = useRef<monaco.editor.ICodeEditor>(null);
   function handleOnMount(editor: monaco.editor.ICodeEditor) {
     editorRef.current = editor;
@@ -60,7 +64,7 @@ export function LingoEditor(props: {
     });
 
     // Remove key bindings that are already there
-    Object.keys(KEY_MAP).map((actionID) => {
+    Object.keys(keyMap).map((actionID) => {
       removeKeyBinding(editor, actionID);
     });
 
@@ -72,13 +76,13 @@ export function LingoEditor(props: {
     // This is not great because every time we add or remove, we're pushing something
     // onto the end of a list inside Monaco, so we're accumulating memory over time... oh well lol.
     editor.onDidFocusEditorText(() => {
-      Object.keys(KEY_MAP).map((actionID) => {
-        addKeyBinding(editor, actionID, KEY_MAP[actionID]);
+      Object.keys(keyMap).map((actionID) => {
+        addKeyBinding(editor, actionID, keyMap[actionID].combo);
       });
     });
 
     editor.onDidBlurEditorText(() => {
-      Object.keys(KEY_MAP).map((actionID) => {
+      Object.keys(keyMap).map((actionID) => {
         removeKeyBinding(editor, actionID);
       });
     });
@@ -123,6 +127,7 @@ export function LingoEditor(props: {
       </div>
       {props.showKeyBindingsTable ? (
         <KeyBindingsTable
+          keyMap={keyMap}
           actionCtx={{
             interp,
             state: props.editorState,
@@ -132,12 +137,3 @@ export function LingoEditor(props: {
     </div>
   );
 }
-
-// matches uiCommon/ide/editor.tsx
-// TODO: DRY up
-const KEY_MAP = {
-  "editor.action.revealDefinition": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
-  "editor.action.goToReferences": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,
-  "editor.action.marker.next": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
-  "editor.action.rename": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ,
-};
