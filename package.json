@@ -1,6 +1,6 @@
 {
   "name": "datalog-ts",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "license": "MIT",
   "scripts": {
     "test": "ts-node allTests.ts",
