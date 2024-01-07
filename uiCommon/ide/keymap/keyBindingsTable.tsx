@@ -1,6 +1,6 @@
 import React from "react";
 import { mapObjToList } from "../../../util/util";
-import { keyMap } from "./keymap";
+import { KEY_MAP } from "./keymap";
 import { ActionContext, EditorAction } from "./types";
 
 export function KeyBindingsTable(props: { actionCtx: ActionContext }) {
@@ -19,7 +19,7 @@ export function KeyBindingsTable(props: { actionCtx: ActionContext }) {
   return (
     <table style={{ display: "block" }}>
       <tbody>
-        {mapObjToList(keyMap, (key, action) => (
+        {mapObjToList(KEY_MAP, (key, action) => (
           <tr
             key={action.name}
             style={{

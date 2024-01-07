@@ -12,6 +12,7 @@ import { KeyBindingsTable } from "./keymap/keyBindingsTable";
 import { addCursor } from "../../languageWorkbench/interpCache";
 import { LanguageSpec } from "../../languageWorkbench/common/types";
 import { CACHE } from "../../languageWorkbench/vscode/common";
+import { DEFAULT_KEY_MAP, KeyMap } from "./keymap/keymap";
 
 export function LingoEditor(props: {
   editorState: EditorState;
@@ -135,14 +136,3 @@ export function LingoEditor(props: {
     </div>
   );
 }
-
-export type KeyMap = { [actionID: string]: number };
-
-// matches uiCommon/ide/editor.tsx
-// TODO: DRY up
-export const DEFAULT_KEY_MAP: KeyMap = {
-  "editor.action.revealDefinition": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB,
-  "editor.action.goToReferences": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyU,
-  "editor.action.marker.next": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
-  "editor.action.rename": monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyJ,
-};
