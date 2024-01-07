@@ -1,6 +1,6 @@
 {
   "name": "datalog-ts",
-  "version": "0.5.9",
+  "version": "0.6.0",
   "license": "MIT",
   "scripts": {
     "test": "ts-node allTests.ts",
@@ -94,6 +94,6 @@
     "datalog-ts": "dist/cmd/repl.js"
   },
   "files": [
-    "dist"
+    "."
   ]
 }
