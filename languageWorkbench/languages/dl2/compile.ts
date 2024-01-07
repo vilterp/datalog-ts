@@ -63,16 +63,19 @@ function extractConjunct(mod: Module, conjunct: DL2Conjunct): Conjunct[] {
   }
 }
 
-function extractNested(module: Module, nested: DL2Nested): Conjunct[] {
-  const out: Conjunct[] = [];
-  const curRec = rec(nested.ident, {});
+function extractNested(mod: Module, nested: DL2Nested): Conjunct[] {
+  const curRec = rec(nested.ident.text, {});
+  const out: Conjunct[] = [curRec];
   for (const attr of nested.nestedAttr) {
     switch (attr.type) {
       case "NormalAttr":
-        out.push(extractTerm(attr) as Rec);
+        curRec.attrs[attr.ident.text] = extractTerm(attr.term);
+        break;
+      case "Nested":
+        const res = extractNested(mod, attr);
+        out.push(...res);
         break;
     }
-    out.push(...extractConjunct(module, conjunct));
   }
   return out;
 }
