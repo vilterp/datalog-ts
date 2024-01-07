@@ -9,33 +9,11 @@ table record {
 table ident {
   text
 }
-table constraintComparison {
-  scalarExpr: inRef(scalarExpr.parentID)
-}
-table scalarExpr {
-  scalarTerm: inRef(scalarTerm.parentID)
-}
-table term {
-  var: inRef(var.parentID)
-}
-table var {
-  text,
-  span
-}
 varInComparison{scope: I, name: N, span: S} :-
   constraint {
     record {
       ident {
         text: I
-      }
-    },
-    constraintComparison {
-      scalarExpr {
-        scalarTerm {
-          term {
-            var{text: N, span: S}
-          }
-        }
       }
     }
   }.
@@ -44,5 +22,4 @@ text/plain
 varInComparison{name: N, scope: I, span: S} :- 
   constraint{id: VconstraintID} &
   record{id: VrecordID, parentID: VconstraintID} &
-  ident{parentID: VrecordID, text: I} &
-  record{parentID: VconstraintID}
+  ident{parentID: VrecordID, text: I}
