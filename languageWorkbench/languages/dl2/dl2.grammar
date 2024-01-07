@@ -10,8 +10,8 @@ tableDecl :- [
 ].
 tableAttr :- [ident, (refSpec | "")].
 refSpec :- [":", ws, (outRef | inRef)].
-outRef :- ["outRef", "(", ident, ".", ident, ")"].
-inRef :- ["inRef", "(", ident, ".", ident, ")"].
+outRef :- ["outRef", "(", table:ident, ".", col:ident, ")"].
+inRef :- ["inRef", "(", table:ident, ".", col:ident, ")"].
 
 inRefKW :- "inRef".
 outRefKW :- "outRef".
