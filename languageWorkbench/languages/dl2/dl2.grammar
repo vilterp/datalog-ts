@@ -1,5 +1,5 @@
 main :- [ws, repSep(declaration, ws), ws].
-declaration :- (rule | fact | query | deleteFact | tableDecl | import).
+declaration :- (rule | deleteFact | tableDecl | import).
 comment :- ["#", repSep(commentChar, "")].
 import :- [importKW, ws, path].
 

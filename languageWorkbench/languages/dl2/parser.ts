@@ -96,13 +96,7 @@ export type DL2Conjunct =
   | DL2Negation
   | DL2Aggregation
   | DL2Placeholder;
-export type DL2Declaration =
-  | DL2Rule
-  | DL2Fact
-  | DL2Query
-  | DL2DeleteFact
-  | DL2TableDecl
-  | DL2Import;
+export type DL2Declaration = DL2Rule | DL2DeleteFact | DL2TableDecl | DL2Import;
 export type DL2DeleteFact = {
   type: "DeleteFact";
   text: string;
@@ -785,12 +779,6 @@ function extractDeclaration(input: string, node: RuleTree): DL2Declaration {
     case "rule": {
       return extractRule(input, child);
     }
-    case "fact": {
-      return extractFact(input, child);
-    }
-    case "query": {
-      return extractQuery(input, child);
-    }
     case "deleteFact": {
       return extractDeleteFact(input, child);
     }
@@ -1215,16 +1203,6 @@ const GRAMMAR: Grammar = {
         type: "Ref",
         captureName: null,
         rule: "rule",
-      },
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "fact",
-      },
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "query",
       },
       {
         type: "Ref",

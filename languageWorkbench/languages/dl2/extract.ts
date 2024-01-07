@@ -19,47 +19,39 @@ import {
   DL2Declaration,
   DL2Rule,
   DL2String,
+  DL2TableDecl,
   DL2Term,
 } from "./parser";
+import { Module } from "./types";
 
-export function parserDeclToInternal(stmt: DL2Declaration): Statement {
-  switch (stmt.type) {
-    case "DeleteFact":
-      return {
-        type: "Delete",
-        record: parserTermToInternal(stmt.record) as Rec,
-      };
-    case "Fact":
-      return {
-        type: "Fact",
-        record: parserTermToInternal(stmt.record) as Rec,
-      };
+export function extractModule(decl: DL2Declaration): Module {
+  const imports: string[] = [];
+  const ruleDecls: DL2Rule[] = [];
+  const tableDecls: DL2TableDecl[] = [];
+
+  switch (decl.type) {
     case "Rule":
-      return {
-        type: "Rule",
-        rule: parserRuleToInternal(stmt),
-      };
+      ruleDecls.push(decl);
+      break;
     case "TableDecl":
-      return {
-        type: "TableDecl",
-        name: stmt.name.text,
-      };
+      tableDecls.push(decl);
+      break;
     case "Import":
-      return {
-        type: "LoadStmt",
-        path: stmt.path.text,
-      };
-    case "Query":
-      return {
-        type: "Query",
-        record: parserTermToInternal(stmt.record) as Rec,
-      };
+      imports.push(decl.path.text);
+      break;
+    default:
+      throw new Error(`unknown decl type: ${decl.type}`);
   }
+  return {
+    imports,
+    ruleDecls,
+    tableDecls,
+  };
 }
 
-export function parserRuleToInternal(term: DL2Rule): Rule {
+export function extractRule(term: DL2Rule): Rule {
   return {
-    head: parserTermToInternal(term.record) as Rec,
+    head: extractTerm(term.record) as Rec,
     body: {
       type: "Disjunction",
       disjuncts: term.disjunct.map((disjunct) => ({
@@ -68,23 +60,23 @@ export function parserRuleToInternal(term: DL2Rule): Rule {
           switch (conjunct.type) {
             case "AssignmentOnLeft":
             case "AssignmentOnRight":
-              return parserArithmeticToInternal(conjunct);
+              return extractArithmetic(conjunct);
             case "Comparison":
-              return parserComparisonToInternal(conjunct);
+              return extractComparison(conjunct);
             case "Negation":
               return {
                 type: "Negation",
-                record: parserTermToInternal(conjunct.record) as Rec,
+                record: extractTerm(conjunct.record) as Rec,
               };
             case "Placeholder":
-              return parserTermToInternal(conjunct) as Rec;
+              return extractTerm(conjunct) as Rec;
             case "Record":
-              return parserTermToInternal(conjunct) as Rec;
+              return extractTerm(conjunct) as Rec;
             case "Aggregation":
               return {
                 type: "Aggregation",
                 aggregation: conjunct.aggregation.text,
-                record: parserTermToInternal(conjunct.record) as Rec,
+                record: extractTerm(conjunct.record) as Rec,
                 varNames: conjunct.var.map((dl2Var) => dl2Var.text),
               };
           }
@@ -94,16 +86,16 @@ export function parserRuleToInternal(term: DL2Rule): Rule {
   };
 }
 
-export function parserTermToInternal(term: DL2Term): Term {
+export function extractTerm(term: DL2Term): Term {
   switch (term.type) {
     case "Array":
-      return array(term.term.map(parserTermToInternal));
+      return array(term.term.map(extractTerm));
     case "Dict":
       return dict(
         pairsToObj(
           term.dictKeyValue.map((kv) => ({
-            key: parserStrToInternal(kv.key),
-            value: parserTermToInternal(kv.value),
+            key: extractStr(kv.key),
+            value: extractTerm(kv.value),
           }))
         )
       );
@@ -114,7 +106,7 @@ export function parserTermToInternal(term: DL2Term): Term {
     case "Placeholder":
       return rec("???", {});
     case "String":
-      return str(parserStrToInternal(term));
+      return str(extractStr(term));
     case "Var":
       return varr(term.text);
     case "Record":
@@ -123,14 +115,14 @@ export function parserTermToInternal(term: DL2Term): Term {
         pairsToObj(
           term.recordAttrs.recordKeyValue.map((keyValue) => ({
             key: keyValue.ident.text,
-            value: parserTermToInternal(keyValue.term),
+            value: extractTerm(keyValue.term),
           }))
         )
       );
   }
 }
 
-function parserStrToInternal(term: DL2String): string {
+function extractStr(term: DL2String): string {
   return deEscape(term.stringChar.map((c) => c.text).join(""));
 }
 
@@ -141,11 +133,11 @@ const ARITHMETIC_MAPPING = {
   "*": "mul",
 };
 
-function parserArithmeticToInternal(arithmetic: DL2Arithmetic): Rec {
+function extractArithmetic(arithmetic: DL2Arithmetic): Rec {
   const op = arithmetic.arithmeticOp.text;
-  const left = parserTermToInternal(arithmetic.left);
-  const right = parserTermToInternal(arithmetic.right);
-  const res = parserTermToInternal(arithmetic.result);
+  const left = extractTerm(arithmetic.left);
+  const right = extractTerm(arithmetic.right);
+  const res = extractTerm(arithmetic.result);
   const mappedOp = ARITHMETIC_MAPPING[op];
   if (!mappedOp) {
     throw new Error(`unknown arithmetic operator: ${op}`);
@@ -166,10 +158,10 @@ const COMPARISON_MAPPING = {
   ">=": "gte",
 };
 
-function parserComparisonToInternal(comparison: DL2Comparison): Rec {
+function extractComparison(comparison: DL2Comparison): Rec {
   const op = comparison.comparisonOp.text;
-  const left = parserTermToInternal(comparison.left);
-  const right = parserTermToInternal(comparison.right);
+  const left = extractTerm(comparison.left);
+  const right = extractTerm(comparison.right);
   const mappedOp = COMPARISON_MAPPING[op];
   if (!mappedOp) {
     throw new Error(`unknown comparison operator: ${op}`);
