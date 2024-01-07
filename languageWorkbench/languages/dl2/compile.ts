@@ -1,4 +1,4 @@
-import { Conjunct, Rec, Rule, rec } from "../../../core/types";
+import { Conjunct, Rec, Rule, rec, varr } from "../../../core/types";
 import { flatMap } from "../../../util/util";
 import { extractTerm } from "./extract";
 import {
@@ -34,7 +34,7 @@ function extractRule(mod: Module, term: DL2Rule): Rule {
 function extractConjunct(mod: Module, conjunct: DL2Conjunct): Conjunct[] {
   switch (conjunct.type) {
     case "Nested":
-      return extractNested(mod, conjunct);
+      return extractNested(mod, conjunct, []);
     case "AssignmentOnLeft":
     case "AssignmentOnRight":
       return [extractArithmetic(conjunct)];
@@ -63,18 +63,52 @@ function extractConjunct(mod: Module, conjunct: DL2Conjunct): Conjunct[] {
   }
 }
 
-function extractNested(mod: Module, nested: DL2Nested): Conjunct[] {
-  const curRec = rec(nested.ident.text, {});
+type Path = {
+  relation: string;
+  attr: string;
+  var: string;
+}[];
+
+function extractNested(mod: Module, nested: DL2Nested, path: Path): Conjunct[] {
+  const relation = path.length === 0 ? nested.ident.text : path[0].relation;
+  const curRec = rec(relation, {});
+  if (path.length > 0) {
+    const last = path[path.length - 1];
+    curRec.attrs[last.attr] = varr(last.var);
+  }
   const out: Conjunct[] = [curRec];
   for (const attr of nested.nestedAttr) {
     switch (attr.type) {
       case "NormalAttr":
         curRec.attrs[attr.ident.text] = extractTerm(attr.term);
         break;
-      case "Nested":
-        const res = extractNested(mod, attr);
-        out.push(...res);
+      case "Nested": {
+        const attrName = attr.ident.text;
+        const refSpec = mod[relation][attrName];
+        switch (refSpec.type) {
+          case "InRef": {
+            const varName = `V${relation}ID`;
+            // TODO: not always `id`?
+            curRec.attrs.id = varr(varName);
+            out.push(
+              ...extractNested(mod, attr, [
+                ...path,
+                {
+                  attr: refSpec.name,
+                  relation,
+                  var: varName,
+                },
+              ])
+            );
+            break;
+          }
+          case "Scalar":
+            throw new Error("scalar refspec in nested");
+          case "OutRef":
+            throw new Error("outRef not yet supported");
+        }
         break;
+      }
     }
   }
   return out;
