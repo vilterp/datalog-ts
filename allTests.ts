@@ -15,7 +15,7 @@ import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { executionVisualizerTests } from "./apps/executionVisualizer/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
 import { nativeTests } from "./languageWorkbench/languages/dl/nativeTests";
-import { lwbTests } from "./languageWorkbench/ddTests";
+import { dl2Tests, lwbTests } from "./languageWorkbench/ddTests";
 import { optTests } from "./core/opt/optTests";
 
 // TODO: use a real arg parser
@@ -38,6 +38,7 @@ const suites: { [name: string]: Suite } = {
   sourcePositionsTests,
   kvSync: kvSyncTests(writeResults),
   executionVisualizer: executionVisualizerTests(writeResults),
+  dl2Tests: dl2Tests(writeResults),
   lwbTests: lwbTests(writeResults),
   lwbNativeDatalogTests: nativeTests,
   optTests: optTests(writeResults),

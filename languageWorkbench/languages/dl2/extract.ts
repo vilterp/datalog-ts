@@ -18,6 +18,7 @@ import {
   DL2Arithmetic,
   DL2Comparison,
   DL2Declaration,
+  DL2Main,
   DL2Rule,
   DL2String,
   DL2TableDecl,
@@ -35,53 +36,53 @@ export type ExtractionProblem =
   | { type: "DuplicateImport"; name: string; span: Span }
   | { type: "DuplicateTableMember"; name: string; span: Span };
 
-export function extractModule(
-  decl: DL2Declaration
-): [Module, ExtractionProblem[]] {
+export function extractModule(main: DL2Main): [Module, ExtractionProblem[]] {
   const problems: ExtractionProblem[] = [];
   const mod: Module = {
     imports: new Set(),
     ruleDecls: {},
     tableDecls: {},
   };
-  switch (decl.type) {
-    case "Rule":
-      if (mod.ruleDecls[decl.record.qualifier.text]) {
-        problems.push({
-          type: "DuplicateRule",
-          name: decl.record.qualifier.text,
-          span: decl.record.qualifier.span,
-        });
+  for (const decl of main.declaration) {
+    switch (decl.type) {
+      case "Rule":
+        if (mod.ruleDecls[decl.record.qualifier.text]) {
+          problems.push({
+            type: "DuplicateRule",
+            name: decl.record.qualifier.text,
+            span: decl.record.qualifier.span,
+          });
+          break;
+        }
+        mod.ruleDecls[decl.record.qualifier.text] = decl;
         break;
-      }
-      mod.ruleDecls[decl.record.qualifier.text] = decl;
-      break;
-    case "TableDecl":
-      if (mod.tableDecls[decl.name.text]) {
-        problems.push({
-          type: "DuplicateTable",
-          name: decl.name.text,
-          span: decl.name.span,
-        });
+      case "TableDecl":
+        if (mod.tableDecls[decl.name.text]) {
+          problems.push({
+            type: "DuplicateTable",
+            name: decl.name.text,
+            span: decl.name.span,
+          });
+          break;
+        }
+        const [members, memberProblems] = extractTableMembers(decl);
+        problems.push(...memberProblems);
+        mod.tableDecls[decl.name.text] = members;
         break;
-      }
-      const [members, memberProblems] = extractTableMembers(decl);
-      problems.push(...memberProblems);
-      mod.tableDecls[decl.name.text] = members;
-      break;
-    case "Import":
-      if (mod.imports.has(decl.path.text)) {
-        problems.push({
-          type: "DuplicateImport",
-          name: decl.path.text,
-          span: decl.path.span,
-        });
+      case "Import":
+        if (mod.imports.has(decl.path.text)) {
+          problems.push({
+            type: "DuplicateImport",
+            name: decl.path.text,
+            span: decl.path.span,
+          });
+          break;
+        }
+        mod.imports.add(decl.path.text);
         break;
-      }
-      mod.imports.add(decl.path.text);
-      break;
-    default:
-      throw new Error(`unknown decl type: ${decl.type}`);
+      default:
+        throw new Error(`unknown decl type: ${decl.type}`);
+    }
   }
   return [mod, problems];
 }

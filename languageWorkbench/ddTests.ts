@@ -2,12 +2,19 @@ import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { InterpCache, addCursor } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
-import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
-import { datalogOut } from "../util/ddTest/types";
+import {
+  runDDTestAtPath,
+  runDDTestAtPathTwoVariants,
+} from "../util/ddTest/runner";
+import { datalogOut, plainTextOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
 import { LanguageSpec } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { compile } from "./languages/dl2/compile";
+import { extractModule } from "./languages/dl2/extract";
+import { parseMain } from "./languages/dl2/parser";
+import { ppRule } from "../core/pretty";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -46,6 +53,33 @@ export function lwbTests(writeResults: boolean): Suite {
       );
     },
   }));
+}
+
+export function dl2Tests(writeResults: boolean): Suite {
+  return [
+    {
+      name: "dl2",
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/dl2/compile.dd.txt`,
+          dl2CompileTest,
+          writeResults
+        );
+      },
+    },
+  ];
+}
+
+function dl2CompileTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    const parsed = parseMain(input);
+    const [mod, problems] = extractModule(parsed);
+    if (problems.length > 0) {
+      throw new Error(`problems: ${problems}`);
+    }
+    const compiled = compile(mod);
+    return plainTextOut(Object.values(compiled).map(ppRule).join("\n\n"));
+  });
 }
 
 export function testLangQuery(
