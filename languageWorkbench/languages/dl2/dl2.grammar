@@ -1,0 +1,70 @@
+main :- [ws, repSep(declaration, ws), ws].
+declaration :- (rule | deleteFact | tableDecl | import).
+comment :- ["#", repSep(commentChar, "")].
+import :- [importKW, ws, path].
+
+tableDecl :- [
+    tableKW, ws, name:ident, ws, "{", ws,
+    repSep(tableAttr, commaSpace), ws,
+    "}"
+].
+tableAttr :- [ident, (refSpec | "")].
+refSpec :- [":", ws, (outRef | inRef)].
+outRef :- ["outRef", "(", table:ident, ".", col:ident, ")"].
+inRef :- ["inRef", "(", table:ident, ".", col:ident, ")"].
+
+inRefKW :- "inRef".
+outRefKW :- "outRef".
+
+query :- [record, "?"].
+fact :- [record, "."].
+deleteFact :- ["-", record, "."].
+
+rule :- [defKW, ws, record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
+disjunct :- repSep(conjunct, [ws, "&", ws]).
+conjunct :- (nested | record | comparison | arithmetic | negation | aggregation | placeholder).
+negation :- ["!", record].
+aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
+
+comparison :- [left:term, ws, comparisonOp, ws, right:term].
+comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
+
+nested :- [ident, ws, "{", ws, repSep(nestedAttr, commaSpace), ws, "}"].
+nestedAttr :- (normalAttr | nested).
+normalAttr :- [ident, ":", ws, term].
+
+arithmetic :- (assignmentOnLeft | assignmentOnRight).
+assignmentOnRight :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, result:term].
+assignmentOnLeft :- [result:term, ws, "=", ws, left:term, ws, arithmeticOp, ws, right:term].
+arithmeticOp :- ("+" | "*" | "-").
+
+term :- (record | int | var | string | bool | array | dict | placeholder).
+var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
+record :- [qualifier, "{", ws, recordAttrs, ws, "}"].
+dict :- ["{", ws, repSep(dictKeyValue, commaSpace), ws, "}"].
+dictKeyValue :- [key:string, ":", ws, value:term].
+recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
+recordKeyValue :- [ident, ":", ws, term].
+int :- [("-" | ""), first:num, repSep(num, "")].
+bool :- ("true" | "false").
+array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
+
+tableKW :- "table".
+importKW :- "import".
+defKW :- "def".
+
+qualifier :- repSep(ident, ".").
+ident :- [alpha, repSep(alphaNum, "")].
+string :- ["\"", repSep(stringChar, ""), "\""].
+stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep([spaces, (comment | "")], "\n").
+spaces :- repSep(" ", "").
+placeholder :- "???".
+commaSpace :- [",", ws].
+path :- ["\"", repSep(pathSegment, "/"), "\""].
+pathSegment :- repSep(([a-z]|[A-Z]|[0-9]|'_'|'-'|'.'), "").
+
+commentChar :- ^'\n'.

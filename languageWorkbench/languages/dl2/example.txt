@@ -1,0 +1,24 @@
+import "ast"
+
+table constraint {
+  id,
+  record: inRef(record.parentID)
+}
+
+varInComparison{scope: I, name: N, span: S} :-
+  constraint{
+    record {
+      ident {
+        text: I
+      }
+    },
+    constraintComparison {
+      scalarExpr {
+        scalarTerm {
+          term {
+            var{text: N, span: S}
+          }
+        }
+      }
+    }
+  }.

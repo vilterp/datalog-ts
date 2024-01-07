@@ -10,10 +10,12 @@ import { sql } from "./sql";
 import { treeSQL } from "./treeSQL";
 import { plainText } from "./plainText";
 import { opt } from "./opt";
+import { datalog2 } from "./dl2";
 
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText,
   datalog,
+  datalog2,
   json,
   basicBlocks,
   grammar,
