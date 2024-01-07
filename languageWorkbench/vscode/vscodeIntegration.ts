@@ -369,7 +369,6 @@ function getSymbolList(
   );
 
   return results.map((res) => {
-    console.log(res.term);
     const rec = res.term as Rec;
     const name = (rec.attrs.name as StringLit).val;
     const range = spanToRange(source, rec.attrs.span as Rec);
