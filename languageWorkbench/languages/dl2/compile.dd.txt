@@ -1,6 +1,7 @@
 import "ast"
 table constraint {
-  record: inRef(record.parentID),
+  head: inRef(record.parentID),
+  tail: inRef(record.parentID),
   constraintComparison: inRef(record.parentID)
 }
 table record {
@@ -9,17 +10,24 @@ table record {
 table ident {
   text
 }
-varInComparison{scope: I, name: N, span: S} :-
+varInComparison{head: H, tail: T} :-
   constraint {
-    record {
+    head {
       ident {
-        text: I
+        text: H
+      }
+    },
+    tail {
+      ident {
+        text: T
       }
     }
   }.
 ----
 text/plain
-varInComparison{name: N, scope: I, span: S} :- 
+varInComparison{head: H, tail: T} :- 
   constraint{id: VconstraintID} &
   record{id: VrecordID, parentID: VconstraintID} &
-  ident{parentID: VrecordID, text: I}
+  ident{parentID: VrecordID, text: H} &
+  record{id: VrecordID, parentID: VconstraintID} &
+  ident{parentID: VrecordID, text: T}
