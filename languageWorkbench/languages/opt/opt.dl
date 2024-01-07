@@ -1,9 +1,14 @@
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnVar{scopeID: I, span: S, name: N, kind: K} |
   scope.defnAttr{scopeID: I, span: S, name: N, kind: K} |
   scope.defnBuiltin{scopeID: I, span: S, name: N, kind: K}.
 
+scope.defnRule{scopeID: global{}, span: S, name: N, kind: "rule"} :-
+  ast.constraint{id: Constraint} &
+  ast.record{id: Rec, parentID: Constraint} &
+  ast.ident{parentID: Rec, span: S, name: N}.
 scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
   scope.declInput{scopeID: I, span: S, name: N, kind: K} |
   scope.declVarRelation{scopeID: I, span: S, name: N, kind: K}.
