@@ -1,33 +1,18 @@
-import "ast"
-table constraint {
-  head: inRef(record.parentID),
-  tail: inRef(record.parentID),
-  constraintComparison: inRef(record.parentID)
+table post {
+  author_id,
+  comment: inRef(comment.post_id)
 }
-table record {
-  ident: inRef(ident.parentID)
+table comment {
+  author_id,
+  post_id
 }
-table ident {
-  text
-}
-varInComparison{head: H, tail: T} :-
-  constraint {
-    head {
-      ident {
-        text: H
-      }
-    },
-    tail {
-      ident {
-        text: T
-      }
+def postComment{postID: P, commentID: C} :-
+  post {
+    id: P,
+    comment {
+      id: C,
     }
   }.
 ----
 text/plain
-varInComparison{head: H, tail: T} :- 
-  constraint{id: VconstraintID} &
-  record{id: VrecordID, parentID: VconstraintID} &
-  ident{parentID: VrecordID, text: H} &
-  record{id: VrecordID, parentID: VconstraintID} &
-  ident{parentID: VrecordID, text: T}
+postComment{commentID: C, postID: P} :- post{id: VpostID} & comment{id: C, post_id: VpostID}
