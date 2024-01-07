@@ -5,7 +5,7 @@ export type Workspace = {
 };
 
 export type Module = {
-  imports: string[];
-  tableDecls: DL2TableDecl[];
-  ruleDecls: DL2Rule[];
+  imports: Set<string>;
+  tableDecls: { [name: string]: DL2TableDecl };
+  ruleDecls: { [name: string]: DL2Rule };
 };
