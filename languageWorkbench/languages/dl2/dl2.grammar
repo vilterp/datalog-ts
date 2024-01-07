@@ -1,8 +1,8 @@
-main :- [ws, repSep(statement, ws), ws].
-statement :- (rule | fact | query | deleteFact | tableDecl | loadStmt).
+main :- [ws, repSep(declaration, ws), ws].
+declaration :- (rule | fact | query | deleteFact | tableDecl | import).
 comment :- ["#", repSep(commentChar, "")].
 tableDecl :- [tableKW, ws, name:ident].
-loadStmt :- [loadKW, ws, path].
+import :- [importKW, ws, path].
 
 query :- [record, "?"].
 fact :- [record, "."].
@@ -37,8 +37,8 @@ int :- [("-" | ""), first:num, repSep(num, "")].
 bool :- ("true" | "false").
 array :- ["[", ws, repSep(term, commaSpace), ws, "]"].
 
-tableKW :- ".table".
-loadKW :- ".load".
+tableKW :- "table".
+importKW :- "import".
 
 ident :- [alpha, repSep((alphaNum | "."), "")].
 string :- ["\"", repSep(stringChar, ""), "\""].
@@ -50,7 +50,7 @@ ws :- repSep([spaces, (comment | "")], "\n").
 spaces :- repSep(" ", "").
 placeholder :- "???".
 commaSpace :- [",", ws].
-path :- repSep(pathSegment, "/").
+path :- ["\"", repSep(pathSegment, "/"), "\""].
 pathSegment :- repSep(([a-z]|[A-Z]|[0-9]|'_'|'-'|'.'), "").
 
 commentChar :- ^'\n'.

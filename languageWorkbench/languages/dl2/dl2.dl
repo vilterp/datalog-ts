@@ -5,5 +5,5 @@ hl.mapping{rule: "bool", type: "number"}.
 hl.mapping{rule: "string", type: "string"}.
 hl.mapping{rule: "comment", type: "comment"}.
 hl.mapping{rule: "tableKW", type: "keyword"}.
-hl.mapping{rule: "loadKW", type: "keyword"}.
+hl.mapping{rule: "importKW", type: "keyword"}.
 hl.mapping{rule: "path", type: "string"}.
