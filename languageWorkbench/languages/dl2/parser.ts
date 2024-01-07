@@ -97,6 +97,11 @@ export type DL2Conjunct =
   | DL2Aggregation
   | DL2Placeholder;
 export type DL2Declaration = DL2Rule | DL2DeleteFact | DL2TableDecl | DL2Import;
+export type DL2DefKW = {
+  type: "DefKW";
+  text: string;
+  span: Span;
+};
 export type DL2DeleteFact = {
   type: "DeleteFact";
   text: string;
@@ -273,6 +278,7 @@ export type DL2Rule = {
   type: "Rule";
   text: string;
   span: Span;
+  defKW: DL2DefKW;
   record: DL2Record;
   disjunct: DL2Disjunct[];
 };
@@ -414,6 +420,11 @@ export function parseDeclaration(input: string): DL2Declaration {
   const traceTree = parserlib.parse(GRAMMAR, "declaration", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractDeclaration(input, ruleTree);
+}
+export function parseDefKW(input: string): DL2DefKW {
+  const traceTree = parserlib.parse(GRAMMAR, "defKW", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractDefKW(input, ruleTree);
 }
 export function parseDeleteFact(input: string): DL2DeleteFact {
   const traceTree = parserlib.parse(GRAMMAR, "deleteFact", input);
@@ -790,6 +801,13 @@ function extractDeclaration(input: string, node: RuleTree): DL2Declaration {
     }
   }
 }
+function extractDefKW(input: string, node: RuleTree): DL2DefKW {
+  return {
+    type: "DefKW",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
 function extractDeleteFact(input: string, node: RuleTree): DL2DeleteFact {
   return {
     type: "DeleteFact",
@@ -1065,6 +1083,7 @@ function extractRule(input: string, node: RuleTree): DL2Rule {
     type: "Rule",
     text: textForSpan(input, node.span),
     span: node.span,
+    defKW: extractDefKW(input, childByName(node, "defKW", null)),
     record: extractRecord(input, childByName(node, "record", null)),
     disjunct: childrenByName(node, "disjunct").map((child) =>
       extractDisjunct(input, child)
@@ -1490,6 +1509,16 @@ const GRAMMAR: Grammar = {
   rule: {
     type: "Sequence",
     items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "defKW",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
       {
         type: "Ref",
         captureName: null,
@@ -2256,6 +2285,10 @@ const GRAMMAR: Grammar = {
   importKW: {
     type: "Text",
     value: "import",
+  },
+  defKW: {
+    type: "Text",
+    value: "def",
   },
   qualifier: {
     type: "RepSep",
