@@ -20,9 +20,10 @@ import {
   DL2Declaration,
   DL2Rule,
   DL2String,
+  DL2TableDecl,
   DL2Term,
 } from "./parser";
-import { Module } from "./types";
+import { Module, TableMembers } from "./types";
 
 export type ExtractionProblem =
   | {
@@ -31,7 +32,8 @@ export type ExtractionProblem =
       span: Span;
     }
   | { type: "DuplicateRule"; name: string; span: Span }
-  | { type: "DuplicateImport"; name: string; span: Span };
+  | { type: "DuplicateImport"; name: string; span: Span }
+  | { type: "DuplicateTableMember"; name: string; span: Span };
 
 export function extractModule(
   decl: DL2Declaration
@@ -63,7 +65,9 @@ export function extractModule(
         });
         break;
       }
-      mod.tableDecls[decl.name.text] = decl;
+      const [members, memberProblems] = extractTableMembers(decl);
+      problems.push(...memberProblems);
+      mod.tableDecls[decl.name.text] = members;
       break;
     case "Import":
       if (mod.imports.has(decl.path.text)) {
@@ -82,7 +86,45 @@ export function extractModule(
   return [mod, problems];
 }
 
-export function extractRule(term: DL2Rule): Rule {
+function extractTableMembers(
+  decl: DL2TableDecl
+): [TableMembers, ExtractionProblem[]] {
+  const problems: ExtractionProblem[] = [];
+  const members: TableMembers = {};
+  for (const attr of decl.tableAttr) {
+    if (members[attr.ident.text]) {
+      problems.push({
+        type: "DuplicateTableMember",
+        name: attr.ident.text,
+        span: attr.ident.span,
+      });
+      continue;
+    }
+    if (attr.refSpec === null) {
+      members[attr.ident.text] = { type: "Scalar" };
+      continue;
+    }
+    if (attr.refSpec.inRef !== null) {
+      members[attr.ident.text] = {
+        type: "InRef",
+        table: attr.refSpec.inRef.table.text,
+        name: attr.refSpec.inRef.col.text,
+      };
+      continue;
+    }
+    if (attr.refSpec.outRef !== null) {
+      members[attr.ident.text] = {
+        type: "OutRef",
+        table: attr.refSpec.outRef.table.text,
+        name: attr.refSpec.outRef.col.text,
+      };
+      continue;
+    }
+  }
+  return [members, problems];
+}
+
+function extractRule(term: DL2Rule): Rule {
   return {
     head: extractTerm(term.record) as Rec,
     body: {
