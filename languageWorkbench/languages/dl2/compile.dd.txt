@@ -1,6 +1,7 @@
 import "ast"
 table constraint {
   record: inRef(record.parentID)
+  constraintComaprison: inRef(record.parentID)
 }
 table record {
   ident: inRef(ident.parentID)
@@ -40,12 +41,3 @@ varInComparison{scope: I, name: N, span: S} :-
   }.
 ----
 text/plain
-varInComparison{name: N, scope: I, span: S} :- 
-  constraint{} &
-  record{} &
-  ident{text: I} &
-  constraintComparison{} &
-  scalarExpr{} &
-  scalarTerm{} &
-  term{} &
-  var{span: S, text: N}

@@ -73,11 +73,14 @@ export function dl2Tests(writeResults: boolean): Suite {
 function dl2CompileTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const parsed = parseMain(input);
-    const [mod, problems] = extractModule(parsed);
-    if (problems.length > 0) {
-      throw new Error(`problems: ${problems}`);
+    const [mod, extractProblems] = extractModule(parsed);
+    if (extractProblems.length > 0) {
+      throw new Error(`extract problems: ${extractProblems}`);
     }
-    const compiled = compile(mod);
+    const [compiled, compileProblems] = compile(mod);
+    if (compileProblems.length > 0) {
+      throw new Error(`compile problems: ${compileProblems}`);
+    }
     return plainTextOut(Object.values(compiled).map(ppRule).join("\n\n"));
   });
 }

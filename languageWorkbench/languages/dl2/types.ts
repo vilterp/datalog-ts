@@ -1,4 +1,16 @@
+import { Span } from "../../parserlib/types";
 import { DL2Rule } from "./parser";
+
+export type ExtractionProblem =
+  | {
+      type: "DuplicateTable";
+      name: string;
+      span: Span;
+    }
+  | { type: "DuplicateRule"; name: string; span: Span }
+  | { type: "DuplicateImport"; name: string; span: Span }
+  | { type: "DuplicateTableMember"; name: string; span: Span }
+  | { type: "MissingRefSpec"; name: string; relation: string; span: Span };
 
 export type Workspace = {
   [file: string]: Module;

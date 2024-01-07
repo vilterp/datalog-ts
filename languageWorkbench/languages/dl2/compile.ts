@@ -8,57 +8,76 @@ import {
   DL2Nested,
   DL2Rule,
 } from "./parser";
-import { Module } from "./types";
+import { ExtractionProblem, Module } from "./types";
 
-export function compile(module: Module): { [name: string]: Rule } {
+export function compile(
+  module: Module
+): [{ [name: string]: Rule }, ExtractionProblem[]] {
   const out: { [name: string]: Rule } = {};
-  for (const [name, rule] of Object.entries(module.ruleDecls)) {
-    out[name] = extractRule(module, rule);
+  const problems: ExtractionProblem[] = [];
+  for (const [name, parserRule] of Object.entries(module.ruleDecls)) {
+    const [rule, problems] = extractRule(module, parserRule);
+    out[name] = rule;
+    problems.push(...problems);
   }
-  return out;
+  return [out, problems];
 }
 
-function extractRule(mod: Module, term: DL2Rule): Rule {
-  return {
+function extractRule(mod: Module, term: DL2Rule): [Rule, ExtractionProblem[]] {
+  const problems: ExtractionProblem[] = [];
+  const out: Rule = {
     head: extractTerm(term.record) as Rec,
-    body: {
-      type: "Disjunction",
-      disjuncts: term.disjunct.map((disjunct) => ({
-        type: "Conjunction",
-        conjuncts: flatMap(disjunct.conjunct, (c) => extractConjunct(mod, c)),
-      })),
-    },
+    body: { type: "Disjunction", disjuncts: [] },
   };
+
+  for (const disjunct of term.disjunct) {
+    for (const conjunct of disjunct.conjunct) {
+      const [conjuncts, conjunctProblems] = extractConjunct(mod, conjunct);
+      out.body.disjuncts.push({ type: "Conjunction", conjuncts });
+      problems.push(...conjunctProblems);
+    }
+  }
+
+  return [out, problems];
 }
 
-function extractConjunct(mod: Module, conjunct: DL2Conjunct): Conjunct[] {
+function extractConjunct(
+  mod: Module,
+  conjunct: DL2Conjunct
+): [Conjunct[], ExtractionProblem[]] {
   switch (conjunct.type) {
     case "Nested":
       return extractNested(mod, conjunct, []);
     case "AssignmentOnLeft":
     case "AssignmentOnRight":
-      return [extractArithmetic(conjunct)];
+      return [[extractArithmetic(conjunct)], []];
     case "Comparison":
-      return [extractComparison(conjunct)];
+      return [[extractComparison(conjunct)], []];
     case "Negation":
       return [
-        {
-          type: "Negation",
-          record: extractTerm(conjunct.record) as Rec,
-        },
+        [
+          {
+            type: "Negation",
+            record: extractTerm(conjunct.record) as Rec,
+          },
+        ],
+        [],
       ];
     case "Placeholder":
-      return [extractTerm(conjunct) as Rec];
+      return [[extractTerm(conjunct) as Rec], []];
     case "Record":
-      return [extractTerm(conjunct) as Rec];
+      return [[extractTerm(conjunct) as Rec], []];
     case "Aggregation":
       return [
-        {
-          type: "Aggregation",
-          aggregation: conjunct.aggregation.text,
-          record: extractTerm(conjunct.record) as Rec,
-          varNames: conjunct.var.map((dl2Var) => dl2Var.text),
-        },
+        [
+          {
+            type: "Aggregation",
+            aggregation: conjunct.aggregation.text,
+            record: extractTerm(conjunct.record) as Rec,
+            varNames: conjunct.var.map((dl2Var) => dl2Var.text),
+          },
+        ],
+        [],
       ];
   }
 }
@@ -69,7 +88,11 @@ type Path = {
   var: string;
 }[];
 
-function extractNested(mod: Module, nested: DL2Nested, path: Path): Conjunct[] {
+function extractNested(
+  mod: Module,
+  nested: DL2Nested,
+  path: Path
+): [Conjunct[], ExtractionProblem[]] {
   const relation = path.length === 0 ? nested.ident.text : path[0].relation;
   const curRec = rec(relation, {});
   if (path.length > 0) {
@@ -77,6 +100,7 @@ function extractNested(mod: Module, nested: DL2Nested, path: Path): Conjunct[] {
     curRec.attrs[last.attr] = varr(last.var);
   }
   const out: Conjunct[] = [curRec];
+  const problems: ExtractionProblem[] = [];
   for (const attr of nested.nestedAttr) {
     switch (attr.type) {
       case "NormalAttr":
@@ -84,22 +108,31 @@ function extractNested(mod: Module, nested: DL2Nested, path: Path): Conjunct[] {
         break;
       case "Nested": {
         const attrName = attr.ident.text;
-        const refSpec = mod[relation][attrName];
+        const refSpec = mod.tableDecls[relation][attrName];
+        if (!refSpec) {
+          problems.push({
+            type: "MissingRefSpec",
+            relation,
+            name: attrName,
+            span: attr.ident.span,
+          });
+          continue;
+        }
         switch (refSpec.type) {
           case "InRef": {
             const varName = `V${relation}ID`;
             // TODO: not always `id`?
             curRec.attrs.id = varr(varName);
-            out.push(
-              ...extractNested(mod, attr, [
-                ...path,
-                {
-                  attr: refSpec.name,
-                  relation,
-                  var: varName,
-                },
-              ])
-            );
+            const [nestedConjuncts, nestedProblems] = extractNested(mod, attr, [
+              ...path,
+              {
+                attr: refSpec.name,
+                relation: refSpec.table,
+                var: varName,
+              },
+            ]);
+            out.push(...nestedConjuncts);
+            problems.push(...nestedProblems);
             break;
           }
           case "Scalar":
@@ -111,7 +144,7 @@ function extractNested(mod: Module, nested: DL2Nested, path: Path): Conjunct[] {
       }
     }
   }
-  return out;
+  return [out, problems];
 }
 
 // some real desugaring!

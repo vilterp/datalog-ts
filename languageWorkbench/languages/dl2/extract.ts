@@ -1,7 +1,4 @@
 import {
-  Conjunct,
-  Rec,
-  Rule,
   Term,
   array,
   bool,
@@ -13,28 +10,8 @@ import {
 } from "../../../core/types";
 import { pairsToObj } from "../../../util/util";
 import { deEscape } from "../../parserlib/types";
-import { Span } from "../../sourcePositions";
-import {
-  DL2Arithmetic,
-  DL2Comparison,
-  DL2Declaration,
-  DL2Main,
-  DL2Rule,
-  DL2String,
-  DL2TableDecl,
-  DL2Term,
-} from "./parser";
-import { Module, TableMembers } from "./types";
-
-export type ExtractionProblem =
-  | {
-      type: "DuplicateTable";
-      name: string;
-      span: Span;
-    }
-  | { type: "DuplicateRule"; name: string; span: Span }
-  | { type: "DuplicateImport"; name: string; span: Span }
-  | { type: "DuplicateTableMember"; name: string; span: Span };
+import { DL2Main, DL2String, DL2TableDecl, DL2Term } from "./parser";
+import { ExtractionProblem, Module, TableMembers } from "./types";
 
 export function extractModule(main: DL2Main): [Module, ExtractionProblem[]] {
   const problems: ExtractionProblem[] = [];
