@@ -10,12 +10,16 @@ deleteFact :- ["-", record, "."].
 
 rule :- [record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
-conjunct :- (record | comparison | arithmetic | negation | aggregation | placeholder).
+conjunct :- (nested | record | comparison | arithmetic | negation | aggregation | placeholder).
 negation :- ["!", record].
 aggregation :- [aggregation:ident, "[", repSep(var, commaSpace), ":", ws, record, "]"].
 
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
+
+nested :- [ident, ws, "{", ws, repSep(nestedAttr, commaSpace), ws, "}"].
+nestedAttr :- (normalAttr | nested).
+normalAttr :- [ident, ":", ws, term].
 
 arithmetic :- (assignmentOnLeft | assignmentOnRight).
 assignmentOnRight :- [left:term, ws, arithmeticOp, ws, right:term, ws, "=", ws, result:term].

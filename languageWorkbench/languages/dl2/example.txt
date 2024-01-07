@@ -1,0 +1,17 @@
+scope.varInComparison{scope: I, name: N, span: S} :-
+  ast.constraint{
+    record {
+      ident {
+        text: I
+      }
+    },
+    constraintComparison {
+      scalarExpr {
+        scalarTerm {
+          term {
+            var{text: N, span: S}
+          }
+        }
+      }
+    }
+  }.
