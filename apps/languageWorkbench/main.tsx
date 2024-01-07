@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObj, mapObjToList } from "../../util/util";
 import { LingoEditor } from "../../uiCommon/ide/editor";
@@ -200,4 +200,4 @@ function updateLang(langState: LangState, action: LangAction): LangState {
   }
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

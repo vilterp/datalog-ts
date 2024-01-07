@@ -91,4 +91,4 @@ function insertInput(interp: AbstractInterpreter, source: string) {
   return { interp, error };
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

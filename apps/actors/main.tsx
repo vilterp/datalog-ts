@@ -172,4 +172,4 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Explorer } from "../../uiCommon/explorer";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
@@ -42,4 +42,4 @@ function Main() {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

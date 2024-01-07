@@ -1,5 +1,5 @@
-import React, { useReducer, useState } from "react";
-import ReactDOM from "react-dom";
+import React, { useReducer } from "react";
+import ReactDOM from "react-dom/client";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { Statement } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
@@ -30,4 +30,4 @@ function Main() {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);
