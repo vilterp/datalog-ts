@@ -27,13 +27,13 @@ constraint :- [
   constraintComparison, ws,
 "}"].
 
-constraintComparison :- [scalarExpr, ws, comparisonOp, ws, scalarExpr].
+constraintComparison :- [left:scalarExpr, ws, comparisonOp, ws, right:scalarExpr].
 
 conjuncts :- repSep(clause, [ws, "&", ws]).
 clause :- (record | comparison).
 
 scalarExpr :- repSep(scalarTerm, [ws, "+", ws]).
-scalarTerm :- [([term, ws, "*", ws] | ""), term].
+scalarTerm :- [([coefficient:term, ws, "*", ws] | ""), term:term].
 comparison :- [left:term, ws, comparisonOp, ws, right:term].
 comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
 

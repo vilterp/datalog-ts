@@ -38,16 +38,33 @@ export type BBComparisonOp = {
   text: string;
   span: Span;
 };
+export type BBConjuncts = {
+  type: "Conjuncts";
+  text: string;
+  span: Span;
+  clause: BBClause[];
+};
 export type BBConstraint = {
   type: "Constraint";
   text: string;
   span: Span;
-  stKW: BBStKW;
-  clause: BBClause[];
+  ruleKW: BBRuleKW;
+  record: BBRecord;
+  conjuncts: BBConjuncts;
+  sepKW: BBSepKW;
+  constraintComparison: BBConstraintComparison;
+};
+export type BBConstraintComparison = {
+  type: "ConstraintComparison";
+  text: string;
+  span: Span;
+  left: BBScalarExpr;
+  comparisonOp: BBComparisonOp;
+  right: BBScalarExpr;
 };
 export type BBDeclaration =
-  | BBVarRelation
-  | BBInputRelation
+  | BBVarRelationDecl
+  | BBInputRelationDecl
   | BBObjective
   | BBConstraint;
 export type BBIdent = {
@@ -62,12 +79,13 @@ export type BBInputKW = {
   text: string;
   span: Span;
 };
-export type BBInputRelation = {
-  type: "InputRelation";
+export type BBInputRelationDecl = {
+  type: "InputRelationDecl";
   text: string;
   span: Span;
   inputKW: BBInputKW;
   ident: BBIdent;
+  schemaSpec: BBSchemaSpec;
 };
 export type BBInt = {
   type: "Int";
@@ -92,7 +110,9 @@ export type BBObjective = {
   text: string;
   span: Span;
   sense: BBSense;
-  ident: BBIdent;
+  conjuncts: BBConjuncts;
+  sepKW: BBSepKW;
+  scalarExpr: BBScalarExpr;
 };
 export type BBPlaceholder = {
   type: "Placeholder";
@@ -121,13 +141,37 @@ export type BBRecordKeyValue = {
   ident: BBIdent;
   term: BBTerm;
 };
+export type BBRuleKW = {
+  type: "RuleKW";
+  text: string;
+  span: Span;
+};
+export type BBScalarExpr = {
+  type: "ScalarExpr";
+  text: string;
+  span: Span;
+  scalarTerm: BBScalarTerm[];
+};
+export type BBScalarTerm = {
+  type: "ScalarTerm";
+  text: string;
+  span: Span;
+  coefficient: BBTerm | null;
+  term: BBTerm;
+};
+export type BBSchemaSpec = {
+  type: "SchemaSpec";
+  text: string;
+  span: Span;
+  ident: BBIdent[];
+};
 export type BBSense = {
   type: "Sense";
   text: string;
   span: Span;
 };
-export type BBStKW = {
-  type: "StKW";
+export type BBSepKW = {
+  type: "SepKW";
   text: string;
   span: Span;
 };
@@ -154,12 +198,13 @@ export type BBVarKW = {
   text: string;
   span: Span;
 };
-export type BBVarRelation = {
-  type: "VarRelation";
+export type BBVarRelationDecl = {
+  type: "VarRelationDecl";
   text: string;
   span: Span;
   varKW: BBVarKW;
   ident: BBIdent;
+  schemaSpec: BBSchemaSpec;
 };
 export type BBWs = {
   type: "Ws";
@@ -201,10 +246,22 @@ export function parseComparisonOp(input: string): BBComparisonOp {
   const ruleTree = extractRuleTree(traceTree);
   return extractComparisonOp(input, ruleTree);
 }
+export function parseConjuncts(input: string): BBConjuncts {
+  const traceTree = parserlib.parse(GRAMMAR, "conjuncts", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractConjuncts(input, ruleTree);
+}
 export function parseConstraint(input: string): BBConstraint {
   const traceTree = parserlib.parse(GRAMMAR, "constraint", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractConstraint(input, ruleTree);
+}
+export function parseConstraintComparison(
+  input: string
+): BBConstraintComparison {
+  const traceTree = parserlib.parse(GRAMMAR, "constraintComparison", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractConstraintComparison(input, ruleTree);
 }
 export function parseDeclaration(input: string): BBDeclaration {
   const traceTree = parserlib.parse(GRAMMAR, "declaration", input);
@@ -221,10 +278,10 @@ export function parseInputKW(input: string): BBInputKW {
   const ruleTree = extractRuleTree(traceTree);
   return extractInputKW(input, ruleTree);
 }
-export function parseInputRelation(input: string): BBInputRelation {
-  const traceTree = parserlib.parse(GRAMMAR, "inputRelation", input);
+export function parseInputRelationDecl(input: string): BBInputRelationDecl {
+  const traceTree = parserlib.parse(GRAMMAR, "inputRelationDecl", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractInputRelation(input, ruleTree);
+  return extractInputRelationDecl(input, ruleTree);
 }
 export function parseInt(input: string): BBInt {
   const traceTree = parserlib.parse(GRAMMAR, "int", input);
@@ -266,15 +323,35 @@ export function parseRecordKeyValue(input: string): BBRecordKeyValue {
   const ruleTree = extractRuleTree(traceTree);
   return extractRecordKeyValue(input, ruleTree);
 }
+export function parseRuleKW(input: string): BBRuleKW {
+  const traceTree = parserlib.parse(GRAMMAR, "ruleKW", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractRuleKW(input, ruleTree);
+}
+export function parseScalarExpr(input: string): BBScalarExpr {
+  const traceTree = parserlib.parse(GRAMMAR, "scalarExpr", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractScalarExpr(input, ruleTree);
+}
+export function parseScalarTerm(input: string): BBScalarTerm {
+  const traceTree = parserlib.parse(GRAMMAR, "scalarTerm", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractScalarTerm(input, ruleTree);
+}
+export function parseSchemaSpec(input: string): BBSchemaSpec {
+  const traceTree = parserlib.parse(GRAMMAR, "schemaSpec", input);
+  const ruleTree = extractRuleTree(traceTree);
+  return extractSchemaSpec(input, ruleTree);
+}
 export function parseSense(input: string): BBSense {
   const traceTree = parserlib.parse(GRAMMAR, "sense", input);
   const ruleTree = extractRuleTree(traceTree);
   return extractSense(input, ruleTree);
 }
-export function parseStKW(input: string): BBStKW {
-  const traceTree = parserlib.parse(GRAMMAR, "stKW", input);
+export function parseSepKW(input: string): BBSepKW {
+  const traceTree = parserlib.parse(GRAMMAR, "sepKW", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractStKW(input, ruleTree);
+  return extractSepKW(input, ruleTree);
 }
 export function parseString(input: string): BBString {
   const traceTree = parserlib.parse(GRAMMAR, "string", input);
@@ -301,10 +378,10 @@ export function parseVarKW(input: string): BBVarKW {
   const ruleTree = extractRuleTree(traceTree);
   return extractVarKW(input, ruleTree);
 }
-export function parseVarRelation(input: string): BBVarRelation {
-  const traceTree = parserlib.parse(GRAMMAR, "varRelation", input);
+export function parseVarRelationDecl(input: string): BBVarRelationDecl {
+  const traceTree = parserlib.parse(GRAMMAR, "varRelationDecl", input);
   const ruleTree = extractRuleTree(traceTree);
-  return extractVarRelation(input, ruleTree);
+  return extractVarRelationDecl(input, ruleTree);
 }
 function extractAlpha(input: string, node: RuleTree): BBAlpha {
   return {
@@ -369,25 +446,55 @@ function extractComparisonOp(input: string, node: RuleTree): BBComparisonOp {
     span: node.span,
   };
 }
-function extractConstraint(input: string, node: RuleTree): BBConstraint {
+function extractConjuncts(input: string, node: RuleTree): BBConjuncts {
   return {
-    type: "Constraint",
+    type: "Conjuncts",
     text: textForSpan(input, node.span),
     span: node.span,
-    stKW: extractStKW(input, childByName(node, "stKW", null)),
     clause: childrenByName(node, "clause").map((child) =>
       extractClause(input, child)
     ),
   };
 }
+function extractConstraint(input: string, node: RuleTree): BBConstraint {
+  return {
+    type: "Constraint",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ruleKW: extractRuleKW(input, childByName(node, "ruleKW", null)),
+    record: extractRecord(input, childByName(node, "record", null)),
+    conjuncts: extractConjuncts(input, childByName(node, "conjuncts", null)),
+    sepKW: extractSepKW(input, childByName(node, "sepKW", null)),
+    constraintComparison: extractConstraintComparison(
+      input,
+      childByName(node, "constraintComparison", null)
+    ),
+  };
+}
+function extractConstraintComparison(
+  input: string,
+  node: RuleTree
+): BBConstraintComparison {
+  return {
+    type: "ConstraintComparison",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    left: extractScalarExpr(input, childByName(node, "scalarExpr", "left")),
+    comparisonOp: extractComparisonOp(
+      input,
+      childByName(node, "comparisonOp", null)
+    ),
+    right: extractScalarExpr(input, childByName(node, "scalarExpr", "right")),
+  };
+}
 function extractDeclaration(input: string, node: RuleTree): BBDeclaration {
   const child = node.children[0];
   switch (child.name) {
-    case "varRelation": {
-      return extractVarRelation(input, child);
+    case "varRelationDecl": {
+      return extractVarRelationDecl(input, child);
     }
-    case "inputRelation": {
-      return extractInputRelation(input, child);
+    case "inputRelationDecl": {
+      return extractInputRelationDecl(input, child);
     }
     case "objective": {
       return extractObjective(input, child);
@@ -415,13 +522,17 @@ function extractInputKW(input: string, node: RuleTree): BBInputKW {
     span: node.span,
   };
 }
-function extractInputRelation(input: string, node: RuleTree): BBInputRelation {
+function extractInputRelationDecl(
+  input: string,
+  node: RuleTree
+): BBInputRelationDecl {
   return {
-    type: "InputRelation",
+    type: "InputRelationDecl",
     text: textForSpan(input, node.span),
     span: node.span,
     inputKW: extractInputKW(input, childByName(node, "inputKW", null)),
     ident: extractIdent(input, childByName(node, "ident", null)),
+    schemaSpec: extractSchemaSpec(input, childByName(node, "schemaSpec", null)),
   };
 }
 function extractInt(input: string, node: RuleTree): BBInt {
@@ -456,7 +567,9 @@ function extractObjective(input: string, node: RuleTree): BBObjective {
     text: textForSpan(input, node.span),
     span: node.span,
     sense: extractSense(input, childByName(node, "sense", null)),
-    ident: extractIdent(input, childByName(node, "ident", null)),
+    conjuncts: extractConjuncts(input, childByName(node, "conjuncts", null)),
+    sepKW: extractSepKW(input, childByName(node, "sepKW", null)),
+    scalarExpr: extractScalarExpr(input, childByName(node, "scalarExpr", null)),
   };
 }
 function extractPlaceholder(input: string, node: RuleTree): BBPlaceholder {
@@ -506,6 +619,44 @@ function extractRecordKeyValue(
     term: extractTerm(input, childByName(node, "term", null)),
   };
 }
+function extractRuleKW(input: string, node: RuleTree): BBRuleKW {
+  return {
+    type: "RuleKW",
+    text: textForSpan(input, node.span),
+    span: node.span,
+  };
+}
+function extractScalarExpr(input: string, node: RuleTree): BBScalarExpr {
+  return {
+    type: "ScalarExpr",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    scalarTerm: childrenByName(node, "scalarTerm").map((child) =>
+      extractScalarTerm(input, child)
+    ),
+  };
+}
+function extractScalarTerm(input: string, node: RuleTree): BBScalarTerm {
+  return {
+    type: "ScalarTerm",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    coefficient: childByName(node, "term", "coefficient")
+      ? extractTerm(input, childByName(node, "term", "coefficient"))
+      : null,
+    term: extractTerm(input, childByName(node, "term", "term")),
+  };
+}
+function extractSchemaSpec(input: string, node: RuleTree): BBSchemaSpec {
+  return {
+    type: "SchemaSpec",
+    text: textForSpan(input, node.span),
+    span: node.span,
+    ident: childrenByName(node, "ident").map((child) =>
+      extractIdent(input, child)
+    ),
+  };
+}
 function extractSense(input: string, node: RuleTree): BBSense {
   return {
     type: "Sense",
@@ -513,9 +664,9 @@ function extractSense(input: string, node: RuleTree): BBSense {
     span: node.span,
   };
 }
-function extractStKW(input: string, node: RuleTree): BBStKW {
+function extractSepKW(input: string, node: RuleTree): BBSepKW {
   return {
-    type: "StKW",
+    type: "SepKW",
     text: textForSpan(input, node.span),
     span: node.span,
   };
@@ -574,13 +725,17 @@ function extractVarKW(input: string, node: RuleTree): BBVarKW {
     span: node.span,
   };
 }
-function extractVarRelation(input: string, node: RuleTree): BBVarRelation {
+function extractVarRelationDecl(
+  input: string,
+  node: RuleTree
+): BBVarRelationDecl {
   return {
-    type: "VarRelation",
+    type: "VarRelationDecl",
     text: textForSpan(input, node.span),
     span: node.span,
     varKW: extractVarKW(input, childByName(node, "varKW", null)),
     ident: extractIdent(input, childByName(node, "ident", null)),
+    schemaSpec: extractSchemaSpec(input, childByName(node, "schemaSpec", null)),
   };
 }
 const GRAMMAR: Grammar = {
@@ -603,12 +758,12 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "varRelation",
+        rule: "varRelationDecl",
       },
       {
         type: "Ref",
         captureName: null,
-        rule: "inputRelation",
+        rule: "inputRelationDecl",
       },
       {
         type: "Ref",
@@ -622,7 +777,7 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
-  varRelation: {
+  varRelationDecl: {
     type: "Sequence",
     items: [
       {
@@ -640,9 +795,19 @@ const GRAMMAR: Grammar = {
         captureName: null,
         rule: "ident",
       },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "schemaSpec",
+      },
     ],
   },
-  inputRelation: {
+  inputRelationDecl: {
     type: "Sequence",
     items: [
       {
@@ -660,16 +825,6 @@ const GRAMMAR: Grammar = {
         captureName: null,
         rule: "ident",
       },
-    ],
-  },
-  objective: {
-    type: "Sequence",
-    items: [
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "sense",
-      },
       {
         type: "Ref",
         captureName: null,
@@ -678,23 +833,13 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "ident",
+        rule: "schemaSpec",
       },
     ],
   },
-  constraint: {
+  schemaSpec: {
     type: "Sequence",
     items: [
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "stKW",
-      },
-      {
-        type: "Ref",
-        captureName: null,
-        rule: "ws",
-      },
       {
         type: "Text",
         value: "{",
@@ -709,19 +854,14 @@ const GRAMMAR: Grammar = {
         rep: {
           type: "Ref",
           captureName: null,
-          rule: "clause",
+          rule: "ident",
         },
         sep: {
           type: "Sequence",
           items: [
             {
-              type: "Ref",
-              captureName: null,
-              rule: "ws",
-            },
-            {
               type: "Text",
-              value: "&",
+              value: ",",
             },
             {
               type: "Ref",
@@ -742,6 +882,189 @@ const GRAMMAR: Grammar = {
       },
     ],
   },
+  objective: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "sense",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "{",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "conjuncts",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "sepKW",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "scalarExpr",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "}",
+      },
+    ],
+  },
+  constraint: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ruleKW",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "record",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "{",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "conjuncts",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "sepKW",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "constraintComparison",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Text",
+        value: "}",
+      },
+    ],
+  },
+  constraintComparison: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Ref",
+        captureName: "left",
+        rule: "scalarExpr",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "comparisonOp",
+      },
+      {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
+        type: "Ref",
+        captureName: "right",
+        rule: "scalarExpr",
+      },
+    ],
+  },
+  conjuncts: {
+    type: "RepSep",
+    rep: {
+      type: "Ref",
+      captureName: null,
+      rule: "clause",
+    },
+    sep: {
+      type: "Sequence",
+      items: [
+        {
+          type: "Ref",
+          captureName: null,
+          rule: "ws",
+        },
+        {
+          type: "Text",
+          value: "&",
+        },
+        {
+          type: "Ref",
+          captureName: null,
+          rule: "ws",
+        },
+      ],
+    },
+  },
   clause: {
     type: "Choice",
     choices: [
@@ -754,6 +1077,76 @@ const GRAMMAR: Grammar = {
         type: "Ref",
         captureName: null,
         rule: "comparison",
+      },
+    ],
+  },
+  scalarExpr: {
+    type: "RepSep",
+    rep: {
+      type: "Ref",
+      captureName: null,
+      rule: "scalarTerm",
+    },
+    sep: {
+      type: "Sequence",
+      items: [
+        {
+          type: "Ref",
+          captureName: null,
+          rule: "ws",
+        },
+        {
+          type: "Text",
+          value: "+",
+        },
+        {
+          type: "Ref",
+          captureName: null,
+          rule: "ws",
+        },
+      ],
+    },
+  },
+  scalarTerm: {
+    type: "Sequence",
+    items: [
+      {
+        type: "Choice",
+        choices: [
+          {
+            type: "Sequence",
+            items: [
+              {
+                type: "Ref",
+                captureName: "coefficient",
+                rule: "term",
+              },
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ws",
+              },
+              {
+                type: "Text",
+                value: "*",
+              },
+              {
+                type: "Ref",
+                captureName: null,
+                rule: "ws",
+              },
+            ],
+          },
+          {
+            type: "Text",
+            value: "",
+          },
+        ],
+      },
+      {
+        type: "Ref",
+        captureName: "term",
+        rule: "term",
       },
     ],
   },
@@ -979,15 +1372,19 @@ const GRAMMAR: Grammar = {
   },
   varKW: {
     type: "Text",
-    value: ".var",
+    value: "var",
   },
   inputKW: {
     type: "Text",
-    value: ".input",
+    value: "input",
   },
-  stKW: {
+  ruleKW: {
     type: "Text",
-    value: "st",
+    value: "rule",
+  },
+  sepKW: {
+    type: "Text",
+    value: "=>",
   },
   ident: {
     type: "Sequence",
