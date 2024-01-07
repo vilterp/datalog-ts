@@ -39,7 +39,7 @@
     "generate-sql-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/sql/sql.grammar languageWorkbench/languages/sql/parser.ts ../../parserlib SQL ws && prettier --write languageWorkbench/languages/sql/parser.ts",
     "generate-grammar-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/grammar/grammar.grammar languageWorkbench/languages/grammar/parser.ts ../../parserlib Grammar ws && prettier --write languageWorkbench/languages/grammar/parser.ts",
     "generate-basic-blocks-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/basicBlocks/basicBlocks.grammar languageWorkbench/languages/basicBlocks/parser.ts ../../parserlib BB ws && prettier --write languageWorkbench/languages/basicBlocks/parser.ts",
-    "generate-opt-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/opt/opt.grammar languageWorkbench/languages/opt/parser.ts ../../parserlib BB ws && prettier --write languageWorkbench/languages/opt/parser.ts"
+    "generate-opt-parser": "ts-node languageWorkbench/parserlib/gen/cli.ts languageWorkbench/languages/opt/opt.grammar languageWorkbench/languages/opt/parser.ts ../../parserlib Opt ws && prettier --write languageWorkbench/languages/opt/parser.ts"
   },
   "devDependencies": {
     "@types/astring": "^1.7.0",
