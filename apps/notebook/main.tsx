@@ -21,7 +21,7 @@ function Viewer(props: { username: string; gistID: string }) {
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <pre>Error: {error}</pre>
+        <pre>Error: {error.message}</pre>
       ) : (
         <>
           <Editor viewMode={viewMode} doc={initializeDoc(data)} />
