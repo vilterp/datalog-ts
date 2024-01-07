@@ -369,6 +369,7 @@ function getSymbolList(
   );
 
   return results.map((res) => {
+    console.log(res.term);
     const rec = res.term as Rec;
     const name = (rec.attrs.name as StringLit).val;
     const range = spanToRange(source, rec.attrs.span as Rec);
@@ -487,7 +488,10 @@ function getFlattened(
 
 function idxToPosition(source: string, idx: number): vscode.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
-  return new vscode.Position(lineAndCol.line, lineAndCol.col);
+  // TODO: this is kind of a hack
+  const line = Math.max(0, lineAndCol.line);
+  const col = Math.max(0, lineAndCol.col);
+  return new vscode.Position(line, col);
 }
 
 function spanToRange(source: string, dlSpan: Rec): vscode.Range {
