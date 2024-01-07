@@ -1,9 +1,14 @@
 scope.Defn{scopeID: I, span: S, name: N, kind: K} :-
   scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnVar{scopeID: I, span: S, name: N, kind: K} |
   scope.defnAttr{scopeID: I, span: S, name: N, kind: K} |
   scope.defnBuiltin{scopeID: I, span: S, name: N, kind: K}.
 
+scope.defnRule{scopeID: global{}, span: S, name: N, kind: "rule"} :-
+  ast.constraint{id: Constraint} &
+  ast.record{id: Rec, parentID: Constraint} &
+  ast.ident{parentID: Rec, span: S, text: N}.
 scope.defnRelation{scopeID: I, span: S, name: N, kind: K} :-
   scope.declInput{scopeID: I, span: S, name: N, kind: K} |
   scope.declVarRelation{scopeID: I, span: S, name: N, kind: K}.
@@ -88,6 +93,7 @@ tc.Problem{span: S, desc: D} :-
   tc.undefVarError{span: S, desc: D}.
 
 # bulitins
+# TODO: make another file for these?
 scope.defnBuiltin{scopeID: global{}, name: "base.add", kind: "relation", span: span{from: -1, to: -1}}.
 scope.defnBuiltin{scopeID: "base.add", name: "a", kind: "attr", span: span{from: -1, to: -1}}.
 scope.defnBuiltin{scopeID: "base.add", name: "b", kind: "attr", span: span{from: -1, to: -1}}.

@@ -429,7 +429,10 @@ function problemToDiagnostic(
 
 function positionFromIdx(source: string, idx: number): monaco.Position {
   const lineAndCol = lineAndColFromIdx(source, idx);
-  const out = new monaco.Position(lineAndCol.line + 1, lineAndCol.col + 1);
+  // TODO: this is kind of a hack
+  const line = Math.max(0, lineAndCol.line);
+  const col = Math.max(0, lineAndCol.col);
+  const out = new monaco.Position(line + 1, col + 1);
   return out;
 }
 

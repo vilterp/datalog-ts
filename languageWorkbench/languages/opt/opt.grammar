@@ -50,6 +50,8 @@ inputKW :- "input".
 ruleKW :- "rule".
 sepKW :- "=>".
 
+# TODO: comments
+
 ident :- [alpha, repSep((alphaNum | "."), "")].
 int :- [("-" | ""), first:num, repSep(num, "")].
 string :- ["\"", repSep(stringChar, ""), "\""].

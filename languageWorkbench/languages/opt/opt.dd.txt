@@ -13,3 +13,28 @@ scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 118, to: 126}, ki
 scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 50, to: 51}, kind: "var", name: "T", usageScopeID: "coalMax", usageSpan: span{from: 96, to: 97}}.
 scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 75, to: 84}, kind: "var", name: "CoalLevel", usageScopeID: "coalMax", usageSpan: span{from: 135, to: 144}}.
 scope.Usage{definitionScopeID: "coalMax", defnSpan: span{from: 96, to: 97}, kind: "var", name: "T", usageScopeID: "coalMax", usageSpan: span{from: 50, to: 51}}.
+
+opt
+var foo {}
+input bar {}
+rule coalMax{timestep: T} {
+  loadLevel{timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  coalMax{level: MaxLevel}
+  =>
+  CoalLevel <= MaxLevel
+}
+scope.Defn{}?
+----
+application/datalog
+scope.Defn{kind: "attr", name: "a", scopeID: "base.add", span: span{from: -1, to: -1}}.
+scope.Defn{kind: "attr", name: "b", scopeID: "base.add", span: span{from: -1, to: -1}}.
+scope.Defn{kind: "attr", name: "res", scopeID: "base.add", span: span{from: -1, to: -1}}.
+scope.Defn{kind: "relation", name: "bar", scopeID: global{}, span: span{from: 17, to: 20}}.
+scope.Defn{kind: "relation", name: "base.add", scopeID: global{}, span: span{from: -1, to: -1}}.
+scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 4, to: 7}}.
+scope.Defn{kind: "rule", name: "coalMax", scopeID: global{}, span: span{from: 29, to: 36}}.
+scope.Defn{kind: "var", name: "CoalLevel", scopeID: "coalMax", span: span{from: 99, to: 108}}.
+scope.Defn{kind: "var", name: "MaxLevel", scopeID: "coalMax", span: span{from: 142, to: 150}}.
+scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 120, to: 121}}.
+scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 74, to: 75}}.
