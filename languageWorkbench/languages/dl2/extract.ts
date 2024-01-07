@@ -124,43 +124,6 @@ function extractTableMembers(
   return [members, problems];
 }
 
-function extractRule(term: DL2Rule): Rule {
-  return {
-    head: extractTerm(term.record) as Rec,
-    body: {
-      type: "Disjunction",
-      disjuncts: term.disjunct.map((disjunct) => ({
-        type: "Conjunction",
-        conjuncts: disjunct.conjunct.map((conjunct): Conjunct => {
-          switch (conjunct.type) {
-            case "AssignmentOnLeft":
-            case "AssignmentOnRight":
-              return extractArithmetic(conjunct);
-            case "Comparison":
-              return extractComparison(conjunct);
-            case "Negation":
-              return {
-                type: "Negation",
-                record: extractTerm(conjunct.record) as Rec,
-              };
-            case "Placeholder":
-              return extractTerm(conjunct) as Rec;
-            case "Record":
-              return extractTerm(conjunct) as Rec;
-            case "Aggregation":
-              return {
-                type: "Aggregation",
-                aggregation: conjunct.aggregation.text,
-                record: extractTerm(conjunct.record) as Rec,
-                varNames: conjunct.var.map((dl2Var) => dl2Var.text),
-              };
-          }
-        }),
-      })),
-    },
-  };
-}
-
 export function extractTerm(term: DL2Term): Term {
   switch (term.type) {
     case "Array":
@@ -199,50 +162,4 @@ export function extractTerm(term: DL2Term): Term {
 
 function extractStr(term: DL2String): string {
   return deEscape(term.stringChar.map((c) => c.text).join(""));
-}
-
-// some real desugaring!
-
-const ARITHMETIC_MAPPING = {
-  "+": "add",
-  "*": "mul",
-};
-
-function extractArithmetic(arithmetic: DL2Arithmetic): Rec {
-  const op = arithmetic.arithmeticOp.text;
-  const left = extractTerm(arithmetic.left);
-  const right = extractTerm(arithmetic.right);
-  const res = extractTerm(arithmetic.result);
-  const mappedOp = ARITHMETIC_MAPPING[op];
-  if (!mappedOp) {
-    throw new Error(`unknown arithmetic operator: ${op}`);
-  }
-  return rec(`base.${mappedOp}`, {
-    a: left,
-    b: right,
-    res: res,
-  });
-}
-
-const COMPARISON_MAPPING = {
-  "=": "eq",
-  "!=": "neq",
-  "<": "lt",
-  ">": "gt",
-  "<=": "lte",
-  ">=": "gte",
-};
-
-function extractComparison(comparison: DL2Comparison): Rec {
-  const op = comparison.comparisonOp.text;
-  const left = extractTerm(comparison.left);
-  const right = extractTerm(comparison.right);
-  const mappedOp = COMPARISON_MAPPING[op];
-  if (!mappedOp) {
-    throw new Error(`unknown comparison operator: ${op}`);
-  }
-  return rec(`base.${mappedOp}`, {
-    a: left,
-    b: right,
-  });
 }
