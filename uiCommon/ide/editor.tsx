@@ -77,7 +77,7 @@ export function LingoEditor(props: {
     // onto the end of a list inside Monaco, so we're accumulating memory over time... oh well lol.
     editor.onDidFocusEditorText(() => {
       Object.keys(keyMap).map((actionID) => {
-        addKeyBinding(editor, actionID, keyMap[actionID]);
+        addKeyBinding(editor, actionID, keyMap[actionID].combo);
       });
     });
 
@@ -127,6 +127,7 @@ export function LingoEditor(props: {
       </div>
       {props.showKeyBindingsTable ? (
         <KeyBindingsTable
+          keyMap={keyMap}
           actionCtx={{
             interp,
             state: props.editorState,
