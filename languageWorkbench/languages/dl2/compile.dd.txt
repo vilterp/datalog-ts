@@ -25,7 +25,7 @@ table comment {
   author_id,
   post_id
 }
-def selfCommant{author_id: A, postID: P, commentID: C} :-
+def selfComment{author_id: A, postID: P, commentID: C} :-
   post {
     author_id: A,
     id: P,
@@ -36,6 +36,6 @@ def selfCommant{author_id: A, postID: P, commentID: C} :-
   }.
 ----
 text/plain
-selfCommant{author_id: A, commentID: C, postID: P} :- 
+selfComment{author_id: A, commentID: C, postID: P} :- 
   post{author_id: A, id: P} &
   comment{author_id: A, id: C, post_id: P}
