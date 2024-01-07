@@ -44,5 +44,5 @@ text/plain
 varInComparison{name: N, scope: I, span: S} :- 
   constraint{id: VconstraintID} &
   record{id: VrecordID, parentID: VconstraintID} &
-  record{parentID: VrecordID, text: I} &
+  ident{parentID: VrecordID, text: I} &
   record{parentID: VconstraintID}

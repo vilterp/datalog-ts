@@ -93,7 +93,8 @@ function extractNested(
   nested: DL2Nested,
   path: Path
 ): [Conjunct[], ExtractionProblem[]] {
-  const relation = path.length === 0 ? nested.ident.text : path[0].relation;
+  const relation =
+    path.length === 0 ? nested.ident.text : path[path.length - 1].relation;
   const curRec = rec(relation, {});
   if (path.length > 0) {
     const last = path[path.length - 1];
