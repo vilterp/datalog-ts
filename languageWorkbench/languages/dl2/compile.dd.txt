@@ -41,3 +41,12 @@ text/plain
 selfComment{author_id: A, commentID: C, postID: P} :- 
   post{author_id: A, id: P} &
   comment{author_id: A, id: C, post_id: P}
+
+def reachable{from: A, to: C} {
+  edge{from: A, to: C} |
+  edge{from: A, to: B} &
+  reachable{from: B, to: C}
+}
+----
+text/plain
+reachable{from: A, to: C} :- edge{from: A, to: C} | edge{from: A, to: B} & reachable{from: B, to: C}

@@ -1,5 +1,12 @@
-import { Conjunct, Rec, Rule, Var, rec, varr } from "../../../core/types";
-import { flatMap } from "../../../util/util";
+import {
+  Conjunct,
+  Conjunction,
+  Rec,
+  Rule,
+  Var,
+  rec,
+  varr,
+} from "../../../core/types";
 import { extractTerm } from "./extract";
 import {
   DL2Arithmetic,
@@ -31,11 +38,13 @@ function extractRule(mod: Module, term: DL2Rule): [Rule, ExtractionProblem[]] {
   };
 
   for (const disjunct of term.disjunct) {
+    const conjunction: Conjunction = { type: "Conjunction", conjuncts: [] };
     for (const conjunct of disjunct.conjunct) {
       const [conjuncts, conjunctProblems] = extractConjunct(mod, conjunct);
-      out.body.disjuncts.push({ type: "Conjunction", conjuncts });
+      conjunction.conjuncts.push(...conjuncts);
       problems.push(...conjunctProblems);
     }
+    out.body.disjuncts.push(conjunction);
   }
 
   return [out, problems];
@@ -119,7 +128,7 @@ function extractNested(
         continue;
       case "Nested": {
         const attrName = attr.ident.text;
-        const refSpec = mod.tableDecls[relation][attrName];
+        const refSpec = mod.tableDecls[relation].members[attrName];
         if (!refSpec) {
           problems.push({
             type: "MissingRefSpec",

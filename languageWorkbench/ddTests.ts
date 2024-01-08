@@ -15,6 +15,8 @@ import { compile } from "./languages/dl2/compile";
 import { extractModule } from "./languages/dl2/extract";
 import { parseMain } from "./languages/dl2/parser";
 import { ppRule } from "../core/pretty";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { instantiate } from "./languages/dl2/instantiate";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -59,11 +61,21 @@ export function lwbTests(writeResults: boolean): Suite {
 export function dl2Tests(writeResults: boolean): Suite {
   return [
     {
-      name: "dl2",
+      name: "compile",
       test() {
         runDDTestAtPath(
           `languageWorkbench/languages/dl2/compile.dd.txt`,
           dl2CompileTest,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "run",
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/dl2/run.dd.txt`,
+          dl2RunTest,
           writeResults
         );
       },
@@ -83,6 +95,25 @@ function dl2CompileTest(test: string[]): TestOutput[] {
       throw new Error(`compile problems: ${compileProblems}`);
     }
     return plainTextOut(Object.values(compiled).map(ppRule).join("\n\n"));
+  });
+}
+
+function dl2RunTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    // Get input
+    const lines = input.split("\n");
+    const decls = lines.slice(0, lines.length - 1).join("\n");
+    const query = lines[lines.length - 1];
+
+    // TODO: get parse problems
+    const [interp, problems] = instantiate(parseMain(decls));
+    if (problems.length > 0) {
+      throw new Error(`problems: ${problems}`);
+    }
+
+    // Query
+    const res = interp.queryStr(query);
+    return datalogOut(res.map((res) => res.term));
   });
 }
 

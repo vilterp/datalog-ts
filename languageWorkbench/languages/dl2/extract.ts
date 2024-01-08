@@ -1,4 +1,5 @@
 import {
+  Rec,
   Term,
   array,
   bool,
@@ -8,6 +9,7 @@ import {
   str,
   varr,
 } from "../../../core/types";
+import { unreachable } from "../../../util/unreachable";
 import { pairsToObj } from "../../../util/util";
 import { deEscape } from "../../parserlib/types";
 import { DL2Main, DL2String, DL2TableDecl, DL2Term } from "./parser";
@@ -44,7 +46,7 @@ export function extractModule(main: DL2Main): [Module, ExtractionProblem[]] {
         }
         const [members, memberProblems] = extractTableMembers(decl);
         problems.push(...memberProblems);
-        mod.tableDecls[decl.name.text] = members;
+        mod.tableDecls[decl.name.text] = { facts: [], members: members };
         break;
       case "Import":
         if (mod.imports.has(decl.path.text)) {
@@ -57,8 +59,32 @@ export function extractModule(main: DL2Main): [Module, ExtractionProblem[]] {
         }
         mod.imports.add(decl.path.text);
         break;
+      case "Fact":
+        // Come back later
+        break;
       default:
-        throw new Error(`unknown decl type: ${decl.type}`);
+        unreachable(decl);
+    }
+  }
+  // Get facts
+  for (const decl of main.declaration) {
+    switch (decl.type) {
+      case "Fact": {
+        const record = extractTerm(decl.record) as Rec;
+        const table = mod.tableDecls[record.relation];
+        if (!table) {
+          problems.push({
+            type: "MissingTableDecl",
+            name: record.relation,
+            span: decl.span,
+          });
+          break;
+        }
+        table.facts.push(record);
+        break;
+      }
+      default:
+        break;
     }
   }
   return [mod, problems];
