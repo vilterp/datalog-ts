@@ -7,7 +7,7 @@ table comment {
   author_id,
   post_id
 }
-def selfComment{author_id: A, postID: P, commentID: C} :-
+def selfComment{author_id: A, postID: P, commentID: C} {
   post {
     author_id: A,
     id: P,
@@ -15,7 +15,8 @@ def selfComment{author_id: A, postID: P, commentID: C} :-
       id: C,
       author_id: A
     }
-  }.
+  }
+}
 scope.Defn{}?
 ----
 application/datalog
