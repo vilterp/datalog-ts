@@ -5,12 +5,17 @@ table ast.record {
   qualifier: inRef(ast.qualifier:parentID)
 }
 table ast.tableDecl {
-  qualifier: inRef(ast.qualifier:parentID)
+  qualifier: inRef(ast.qualifier:parentID),
+  attr: inRef(ast.tableAttr:parentID)
+}
+table ast.tableAttr {
+  ident: inRef(ast.ident:parentID)
 }
 
 def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
-  scope.defnTable{scopeID: I, span: S, name: N, kind: K}
+  scope.defnTable{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnAttr{scopeID: I, span: S, name: N, kind: K}
 }
 
 def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
@@ -29,6 +34,20 @@ def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
     qualifier {
       text: N,
       span: S
+    }
+  }
+}
+
+def scope.defnAttr{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.table {
+    qualifier {
+      text: I
+    },
+    attr {
+      ident {
+        text: N,
+        span: S
+      }
     }
   }
 }
