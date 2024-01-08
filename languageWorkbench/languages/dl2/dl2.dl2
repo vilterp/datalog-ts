@@ -19,7 +19,7 @@ def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
 }
 
 def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
-  ast.rule{
+  ast.rule {
     record {
       qualifier {
         text: N,
@@ -30,7 +30,7 @@ def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
 }
 
 def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
-  ast.tableDecl{
+  ast.tableDecl {
     qualifier {
       text: N,
       span: S
@@ -39,7 +39,7 @@ def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
 }
 
 def scope.defnAttr{scopeID: I, span: S, name: N, kind: "attr"} {
-  ast.table {
+  ast.tableDecl {
     qualifier {
       text: I
     },
