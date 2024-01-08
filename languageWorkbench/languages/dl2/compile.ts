@@ -128,7 +128,7 @@ function extractNested(
         continue;
       case "Nested": {
         const attrName = attr.ident.text;
-        const refSpec = mod.tableDecls[relation][attrName];
+        const refSpec = mod.tableDecls[relation].members[attrName];
         if (!refSpec) {
           problems.push({
             type: "MissingRefSpec",

@@ -15,6 +15,7 @@ import { compile } from "./languages/dl2/compile";
 import { extractModule } from "./languages/dl2/extract";
 import { parseMain } from "./languages/dl2/parser";
 import { ppRule } from "../core/pretty";
+import { AbstractInterpreter } from "../core/abstractInterpreter";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -59,11 +60,21 @@ export function lwbTests(writeResults: boolean): Suite {
 export function dl2Tests(writeResults: boolean): Suite {
   return [
     {
-      name: "dl2",
+      name: "compile",
       test() {
         runDDTestAtPath(
           `languageWorkbench/languages/dl2/compile.dd.txt`,
           dl2CompileTest,
+          writeResults
+        );
+      },
+    },
+    {
+      name: "run",
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/dl2/run.dd.txt`,
+          dl2RunTest,
           writeResults
         );
       },
@@ -83,6 +94,41 @@ function dl2CompileTest(test: string[]): TestOutput[] {
       throw new Error(`compile problems: ${compileProblems}`);
     }
     return plainTextOut(Object.values(compiled).map(ppRule).join("\n\n"));
+  });
+}
+
+function dl2RunTest(test: string[]): TestOutput[] {
+  return test.map((input) => {
+    // Get input
+    const lines = input.split("\n");
+    const decls = lines.slice(0, lines.length - 1).join("\n");
+    const query = lines[lines.length - 1];
+
+    // Compile
+    const parsed = parseMain(decls);
+    const [mod, extractProblems] = extractModule(parsed);
+    if (extractProblems.length > 0) {
+      throw new Error(`extract problems: ${extractProblems}`);
+    }
+    const [compiled, compileProblems] = compile(mod);
+    if (compileProblems.length > 0) {
+      throw new Error(`compile problems: ${compileProblems}`);
+    }
+
+    // Load into interpreter
+    let interp: AbstractInterpreter = new SimpleInterpreter(
+      BASE_PATH,
+      fsLoader
+    );
+    for (const rule of Object.values(compiled)) {
+      interp = interp.evalStmt({ type: "Rule", rule })[1];
+    }
+    for (const name in mod.tableDecls) {
+      interp = interp.evalStmt({ type: "TableDecl", name })[1];
+    }
+
+    // Query
+    return datalogOut(interp.queryStr(query).map((res) => res.term));
   });
 }
 

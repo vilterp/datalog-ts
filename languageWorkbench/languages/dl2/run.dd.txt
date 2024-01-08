@@ -1,0 +1,24 @@
+table post {
+  author_id,
+  comment: inRef(comment.post_id)
+}
+table comment {
+  author_id,
+  post_id
+}
+def selfComment{author_id: A, postID: P, commentID: C} {
+  post {
+    author_id: A,
+    id: P,
+    comment {
+      id: C,
+      author_id: A
+    }
+  }
+}
+post{author_id: "Foo"}.
+comment{author_id: "Foo"}.
+comment{author_id: "Bar"}.
+selfComment{}
+----
+application/datalog
