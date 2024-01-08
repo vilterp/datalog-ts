@@ -1,3 +1,16 @@
+def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K}
+}
+
+def scope.defnRule{scopeID: RuleID, span: S, name: N, kind: "relation"} {
+  ast.rule{id: RuleID} &
+  ast.record{id: RecordID, parentID: RuleID} &
+  ast.qualifier{id: QualifierID, parentID: RecordID, text: N, span: S}
+}
+
+// TODO: extract
+table hl.mapping {}
+
 hl.mapping{rule: "ident", type: "ident"}.
 hl.mapping{rule: "var", type: "typeParameter"}.
 hl.mapping{rule: "int", type: "number"}.
