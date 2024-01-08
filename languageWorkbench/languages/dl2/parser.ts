@@ -310,7 +310,7 @@ export type DL2TableDecl = {
   text: string;
   span: Span;
   tableKW: DL2TableKW;
-  name: DL2Ident;
+  name: DL2Qualifier;
   tableAttr: DL2TableAttr[];
   commaSpace: DL2CommaSpace[];
 };
@@ -1131,7 +1131,7 @@ function extractTableDecl(input: string, node: RuleTree): DL2TableDecl {
     text: textForSpan(input, node.span),
     span: node.span,
     tableKW: extractTableKW(input, childByName(node, "tableKW", null)),
-    name: extractIdent(input, childByName(node, "ident", "name")),
+    name: extractQualifier(input, childByName(node, "qualifier", "name")),
     tableAttr: childrenByName(node, "tableAttr").map((child) =>
       extractTableAttr(input, child)
     ),
@@ -1297,7 +1297,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "name",
-        rule: "ident",
+        rule: "qualifier",
       },
       {
         type: "Ref",

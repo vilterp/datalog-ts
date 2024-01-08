@@ -3,8 +3,9 @@ declaration :- (rule | tableDecl | import | fact).
 comment :- ["#", repSep(commentChar, "")].
 import :- [importKW, ws, path].
 
+# TODO: probably shouldn't allow qualifiers here
 tableDecl :- [
-    tableKW, ws, name:ident, ws, "{", ws,
+    tableKW, ws, name:qualifier, ws, "{", ws,
     repSep(tableAttr, commaSpace), ws,
     "}"
 ].

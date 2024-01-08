@@ -8,7 +8,6 @@ def scope.defnRule{scopeID: RuleID, span: S, name: N, kind: "relation"} {
   ast.qualifier{id: QualifierID, parentID: RecordID, text: N, span: S}
 }
 
-// TODO: extract
 table hl.mapping {}
 
 hl.mapping{rule: "ident", type: "ident"}.
