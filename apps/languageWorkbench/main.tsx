@@ -9,7 +9,7 @@ import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { addCursor } from "../../languageWorkbench/interpCache";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-import { LanguageSpec } from "../../languageWorkbench/common/types";
+import { LanguageSpec, dl } from "../../languageWorkbench/common/types";
 import { CACHE } from "../../languageWorkbench/vscode/common";
 
 function Main() {
@@ -26,7 +26,7 @@ function Workbench() {
 
   const curLangSpec: LanguageSpec = {
     name: versionedLangID,
-    logic: curLangState.datalog.source,
+    logic: dl(curLangState.datalog.source),
     example: curLangState.example.source,
     grammar: curLangState.grammar.source,
   };
@@ -158,7 +158,7 @@ const emptyState: State = mapObj(LANGUAGES, (langID, spec) => ({
   version: 1,
   example: { cursorPos: 1, source: spec.example },
   grammar: { cursorPos: 1, source: spec.grammar },
-  datalog: { cursorPos: 1, source: spec.logic },
+  datalog: { cursorPos: 1, source: spec.logic.source }, // TODO: differentiate DL2
 }));
 
 type Action = { type: "UpdateLang"; langID: string; action: LangAction };
