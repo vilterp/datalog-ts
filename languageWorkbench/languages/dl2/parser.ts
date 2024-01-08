@@ -1531,7 +1531,7 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Text",
-        value: ":-",
+        value: "{",
       },
       {
         type: "Ref",
@@ -1566,8 +1566,13 @@ const GRAMMAR: Grammar = {
         },
       },
       {
+        type: "Ref",
+        captureName: null,
+        rule: "ws",
+      },
+      {
         type: "Text",
-        value: ".",
+        value: "}",
       },
     ],
   },

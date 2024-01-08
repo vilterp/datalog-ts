@@ -5,7 +5,7 @@ table constraint {
   record: inRef(record.parentID)
 }
 
-varInComparison{scope: I, name: N, span: S} :-
+def varInComparison{scope: I, name: N, span: S} {
   constraint{
     record {
       ident {
@@ -21,4 +21,5 @@ varInComparison{scope: I, name: N, span: S} :-
         }
       }
     }
-  }.
+  }
+}

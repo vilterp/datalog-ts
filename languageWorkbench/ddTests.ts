@@ -30,6 +30,7 @@ export function lwbTests(writeResults: boolean): Suite {
     "fp",
     "sql",
     "dl",
+    "dl2",
     "grammar",
     "modelica",
     "treeSQL",

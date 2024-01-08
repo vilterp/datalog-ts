@@ -20,7 +20,11 @@ query :- [record, "?"].
 fact :- [record, "."].
 deleteFact :- ["-", record, "."].
 
-rule :- [defKW, ws, record, ws, ":-", ws, repSep(disjunct, [ws, "|", ws]), "."].
+rule :- [
+    defKW, ws, record, ws, "{", ws,
+    repSep(disjunct, [ws, "|", ws]), ws,
+    "}"
+].
 disjunct :- repSep(conjunct, [ws, "&", ws]).
 conjunct :- (nested | record | comparison | arithmetic | negation | aggregation | placeholder).
 negation :- ["!", record].
