@@ -26,7 +26,7 @@ function Workbench() {
 
   const curLangSpec: LanguageSpec = {
     name: versionedLangID,
-    datalog: curLangState.datalog.source,
+    logic: curLangState.datalog.source,
     example: curLangState.example.source,
     grammar: curLangState.grammar.source,
   };
@@ -158,7 +158,7 @@ const emptyState: State = mapObj(LANGUAGES, (langID, spec) => ({
   version: 1,
   example: { cursorPos: 1, source: spec.example },
   grammar: { cursorPos: 1, source: spec.grammar },
-  datalog: { cursorPos: 1, source: spec.datalog },
+  datalog: { cursorPos: 1, source: spec.logic },
 }));
 
 type Action = { type: "UpdateLang"; langID: string; action: LangAction };

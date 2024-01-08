@@ -229,7 +229,7 @@ const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
 const langSpec: LanguageSpec = {
   name: "datalog",
-  datalog: fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8"),
+  logic: fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8"),
   grammar: fs.readFileSync(`languageWorkbench/languages/dl/dl.grammar`, "utf8"),
   example: "",
 };
