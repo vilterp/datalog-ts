@@ -16,6 +16,7 @@ import { extractModule } from "./languages/dl2/extract";
 import { parseMain } from "./languages/dl2/parser";
 import { ppRule } from "../core/pretty";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
+import { instantiate } from "./languages/dl2/instantiate";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -104,30 +105,10 @@ function dl2RunTest(test: string[]): TestOutput[] {
     const decls = lines.slice(0, lines.length - 1).join("\n");
     const query = lines[lines.length - 1];
 
-    // Compile
-    const parsed = parseMain(decls);
-    const [mod, extractProblems] = extractModule(parsed);
-    if (extractProblems.length > 0) {
-      throw new Error(`extract problems: ${extractProblems}`);
-    }
-    const [compiled, compileProblems] = compile(mod);
-    if (compileProblems.length > 0) {
-      throw new Error(`compile problems: ${compileProblems}`);
-    }
-
-    // Load into interpreter
-    let interp: AbstractInterpreter = new SimpleInterpreter(
-      BASE_PATH,
-      fsLoader
-    );
-    for (const rule of Object.values(compiled)) {
-      interp = interp.evalStmt({ type: "Rule", rule })[1];
-    }
-    for (const name in mod.tableDecls) {
-      interp = interp.evalStmt({ type: "TableDecl", name })[1];
-      for (const fact of mod.tableDecls[name].facts) {
-        interp = interp.evalStmt({ type: "Fact", record: fact })[1];
-      }
+    // TODO: get parse problems
+    const [interp, problems] = instantiate(parseMain(decls));
+    if (problems.length > 0) {
+      throw new Error(`problems: ${problems}`);
     }
 
     // Query
