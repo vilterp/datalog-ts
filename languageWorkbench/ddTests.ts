@@ -125,10 +125,14 @@ function dl2RunTest(test: string[]): TestOutput[] {
     }
     for (const name in mod.tableDecls) {
       interp = interp.evalStmt({ type: "TableDecl", name })[1];
+      for (const fact of mod.tableDecls[name].facts) {
+        interp = interp.evalStmt({ type: "Fact", record: fact })[1];
+      }
     }
 
     // Query
-    return datalogOut(interp.queryStr(query).map((res) => res.term));
+    const res = interp.queryStr(query);
+    return datalogOut(res.map((res) => res.term));
   });
 }
 
