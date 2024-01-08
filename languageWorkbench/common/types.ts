@@ -12,11 +12,11 @@ export type LanguageSpec = {
 };
 
 export type LogicSpec =
-  | { type: "DL"; source: string }
+  | { type: "DL1"; source: string }
   | { type: "DL2"; source: string };
 
 export function dl(source: string): LogicSpec {
-  return { type: "DL", source };
+  return { type: "DL1", source };
 }
 
 export function dl2(source: string): LogicSpec {

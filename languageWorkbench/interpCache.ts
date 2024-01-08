@@ -116,7 +116,7 @@ export class InterpCache {
     // add datalog
     try {
       switch (langSpec.logic.type) {
-        case "DL": {
+        case "DL1": {
           interp = interp.evalStr(langSpec.logic.source)[1];
           break;
         }
@@ -126,7 +126,9 @@ export class InterpCache {
             langSpec.logic.source
           );
           // TODO: show in UI
-          console.error("DL2 extraction problems", problems);
+          if (problems.length > 0) {
+            console.error("DL2 extraction problems", problems);
+          }
           interp = newInterp;
           break;
         }
