@@ -157,7 +157,7 @@ export type DL2InRef = {
   type: "InRef";
   text: string;
   span: Span;
-  table: DL2Ident;
+  table: DL2Qualifier;
   col: DL2Ident;
 };
 export type DL2InRefKW = {
@@ -188,7 +188,7 @@ export type DL2Nested = {
   type: "Nested";
   text: string;
   span: Span;
-  ident: DL2Ident;
+  qualifier: DL2Qualifier;
   nestedAttr: DL2NestedAttr[];
   commaSpace: DL2CommaSpace[];
 };
@@ -209,7 +209,7 @@ export type DL2OutRef = {
   type: "OutRef";
   text: string;
   span: Span;
-  table: DL2Ident;
+  table: DL2Qualifier;
   col: DL2Ident;
 };
 export type DL2OutRefKW = {
@@ -888,7 +888,7 @@ function extractInRef(input: string, node: RuleTree): DL2InRef {
     type: "InRef",
     text: textForSpan(input, node.span),
     span: node.span,
-    table: extractIdent(input, childByName(node, "ident", "table")),
+    table: extractQualifier(input, childByName(node, "qualifier", "table")),
     col: extractIdent(input, childByName(node, "ident", "col")),
   };
 }
@@ -931,7 +931,7 @@ function extractNested(input: string, node: RuleTree): DL2Nested {
     type: "Nested",
     text: textForSpan(input, node.span),
     span: node.span,
-    ident: extractIdent(input, childByName(node, "ident", null)),
+    qualifier: extractQualifier(input, childByName(node, "qualifier", null)),
     nestedAttr: childrenByName(node, "nestedAttr").map((child) =>
       extractNestedAttr(input, child)
     ),
@@ -972,7 +972,7 @@ function extractOutRef(input: string, node: RuleTree): DL2OutRef {
     type: "OutRef",
     text: textForSpan(input, node.span),
     span: node.span,
-    table: extractIdent(input, childByName(node, "ident", "table")),
+    table: extractQualifier(input, childByName(node, "qualifier", "table")),
     col: extractIdent(input, childByName(node, "ident", "col")),
   };
 }
@@ -1404,11 +1404,11 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "table",
-        rule: "ident",
+        rule: "qualifier",
       },
       {
         type: "Text",
-        value: ".",
+        value: ":",
       },
       {
         type: "Ref",
@@ -1435,11 +1435,11 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: "table",
-        rule: "ident",
+        rule: "qualifier",
       },
       {
         type: "Text",
-        value: ".",
+        value: ":",
       },
       {
         type: "Ref",
@@ -1767,7 +1767,7 @@ const GRAMMAR: Grammar = {
       {
         type: "Ref",
         captureName: null,
-        rule: "ident",
+        rule: "qualifier",
       },
       {
         type: "Ref",
