@@ -2,10 +2,27 @@ import "ast"
 
 table constraint {
   id,
-  record: inRef(ast.record:parentID)
+  record: inRef(ast.record:parentID),
+  constraintComparison: inRef(constraintComparison:parentID)
 }
 table ast.record {
   ident: inRef(ast.ident:parentID)
+}
+table constraintComparison {
+  scalarExpr: inRef(scalarExpr:parentID)
+}
+table scalarExpr {
+  scalarTerm: inRef(scalarTerm:parentID)
+}
+table scalarTerm {
+  term: inRef(term:parentID)
+}
+table term {
+  var: inRef(var:parentID)
+}
+table var {
+  text,
+  span
 }
 
 def varInComparison{scope: I, name: N, span: S} {
