@@ -90,3 +90,9 @@ export type ParseError = {
   expected: Rule | "end of file";
   got: string;
 };
+
+export class ParseErrors extends Error {
+  constructor(public errors: ParseError[]) {
+    super(`ParseErrors: ${JSON.stringify(errors)}`);
+  }
+}

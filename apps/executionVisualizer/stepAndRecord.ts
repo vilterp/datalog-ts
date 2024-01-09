@@ -1,12 +1,16 @@
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec, int, rec, str } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { ParseErrors } from "../../languageWorkbench/parserlib/types";
 import { jsonToDL } from "../../util/json2dl";
 import { Program, compileBasicBlocksNative } from "./compileToNative";
 import { Params, State, initialState, step } from "./interpreter";
 
 export function getProgram(input: string): Program {
-  const bbMain = parseMain(input);
+  const [bbMain, errors] = parseMain(input);
+  if (errors.length > 0) {
+    throw new ParseErrors(errors);
+  }
   return compileBasicBlocksNative(bbMain);
 }
 

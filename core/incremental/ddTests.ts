@@ -16,6 +16,7 @@ import {
 } from "../translateAST";
 import { buildGraph, getJoinVars } from "./build";
 import { formatOutput } from "./output";
+import { ParseErrors } from "../../languageWorkbench/parserlib/types";
 
 export function incrTests(writeResults: boolean): Suite {
   const tests: [string, ProcessFn][] = [
@@ -53,8 +54,16 @@ export function incrTests(writeResults: boolean): Suite {
 function joinInfoTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const [left, right] = input.split("\n");
-    const leftStmt = parserTermToInternal(parseRecord(left)) as Rec;
-    const rightStmt = parserTermToInternal(parseRecord(right)) as Rec;
+    const [leftParsed, leftErrors] = parseRecord(left);
+    if (leftErrors.length > 0) {
+      throw new ParseErrors(leftErrors);
+    }
+    const [rightParsed, rightErrors] = parseRecord(right);
+    if (rightErrors.length > 0) {
+      throw new ParseErrors(rightErrors);
+    }
+    const leftStmt = parserTermToInternal(leftParsed) as Rec;
+    const rightStmt = parserTermToInternal(rightParsed) as Rec;
     const res = getJoinVars(leftStmt, rightStmt);
     return jsonOut(res.toArray());
   });
@@ -94,7 +103,10 @@ function evalTest(inputs: string[]): TestOutput[] {
       out.push(datalogOut(entries));
       continue;
     }
-    const rawStmt = parseStatement(input);
+    const [rawStmt, errors] = parseStatement(input);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const stmt = parserStatementToInternal(rawStmt);
     // const before = Date.now();
     const { newInterp, output } = interp.processStmt(stmt);

@@ -12,6 +12,7 @@ import { KVApp } from "./examples/types";
 import { UserInput } from "./types";
 import { fsLoader } from "../../../../core/fsLoader";
 import { SimpleInterpreter } from "../../../../core/simple/interpreter";
+import { ParseErrors } from "../../../../languageWorkbench/parserlib/types";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -38,7 +39,10 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
     const query = lines[lines.length - 1];
     const mutations = lines.slice(0, lines.length - 1);
     mutations.forEach((line) => {
-      const rawRec = parseRecord(line);
+      const [rawRec, errors] = parseRecord(line);
+      if (errors.length > 0) {
+        throw new ParseErrors(errors);
+      }
       const record = parserTermToInternal(rawRec) as Rec;
       switch (record.relation) {
         case "addClient": {

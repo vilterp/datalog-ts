@@ -19,7 +19,7 @@ import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { genExtractorStr, Options } from "./gen/generate";
 import { parseMain } from "../languages/grammar/parser";
 import { parserGrammarToInternal } from "./translateAST";
-import { Grammar, text } from "./types";
+import { Grammar, ParseErrors, text } from "./types";
 import { digit, intLit, stringLit } from "./stdlib";
 
 const basicGrammar: Grammar = {
@@ -98,13 +98,11 @@ function parserTest(grammar: Grammar, test: string[]): TestOutput[] {
 
 function metaTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const grammarTree = parseMain(input);
+    const [grammarTree, errors] = parseMain(input);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const grammar = parserGrammarToInternal(grammarTree);
-    // TODO: get errors
-    // const errors = getErrors(input, traceTree);
-    // if (errors.length > 0) {
-    //   throw new Error(`errors in metaTest: ${errors.map(formatParseError)}`);
-    // }
     return jsonOut(grammar);
   });
 }
@@ -116,7 +114,14 @@ function datalogTest(test: string[]): TestOutput[] {
     const firstLine = lines[0];
     const restOfInput = lines.slice(1).join("\n");
     if (firstLine === "gram") {
-      const grammarParsed = parseMain(restOfInput);
+      const [grammarParsed, errors] = parseMain(restOfInput);
+      if (errors.length > 0) {
+        throw new Error(
+          `failed to parse input: ${errors
+            .map((err) => JSON.stringify(err))
+            .join("\n")}`
+        );
+      }
       const grammar = parserGrammarToInternal(grammarParsed);
       grammarData = grammarToDL(grammar);
       return datalogOut(grammarData);
@@ -154,8 +159,7 @@ function datalogInputTest(test: string[]): TestOutput[] {
 }
 
 function handleResults(traceTree: TraceTree, source: string): TestOutput {
-  const ruleTree = extractRuleTree(traceTree);
-  const errors = getErrors(source, traceTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
   return plainTextOut(
     [
       ...prettyPrintRuleTree(ruleTree, source).split("\n"),
@@ -166,7 +170,14 @@ function handleResults(traceTree: TraceTree, source: string): TestOutput {
 
 function codegenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const grammarTree = parseMain(input);
+    const [grammarTree, errors] = parseMain(input);
+    if (errors.length > 0) {
+      throw new Error(
+        `failed to parse input: ${errors
+          .map((err) => JSON.stringify(err))
+          .join("\n")}`
+      );
+    }
     const grammar = parserGrammarToInternal(grammarTree);
     const options: Options = {
       parserlibPath: ".",

@@ -3,6 +3,7 @@ import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { int, rec } from "../../core/types";
 import { parseMain } from "../../languageWorkbench/languages/basicBlocks/parser";
+import { ParseErrors } from "../../languageWorkbench/parserlib/types";
 import { runDDTestAtPath } from "../../util/ddTest";
 import { datalogOut, TestOutput } from "../../util/ddTest/types";
 import { Suite } from "../../util/testBench/testing";
@@ -57,7 +58,10 @@ export function executionVisualizerTests(writeResults: boolean): Suite {
 
 function compilerTest(inputs: string[]): TestOutput[] {
   return inputs.map((input) => {
-    const main = parseMain(input);
+    const [main, errors] = parseMain(input);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const records = compileBasicBlocksDL(main);
     return datalogOut(records);
   });
@@ -68,7 +72,10 @@ function endToEndTestDL(inputs: string[]): TestOutput[] {
     const lines = input.split("\n");
     const allButLast = lines.slice(0, lines.length - 1).join("\n");
     const lastLine = lines[lines.length - 1];
-    const main = parseMain(allButLast);
+    const [main, errors] = parseMain(allButLast);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const records = compileBasicBlocksDL(main);
     let interp: AbstractInterpreter = new IncrementalInterpreter(
       "apps/executionVisualizer/dl",
@@ -116,7 +123,10 @@ function sliderTest(inputs: string[]): TestOutput[] {
     const allButFirst = lines.slice(1).join("\n");
     switch (firstLine) {
       case "source": {
-        const main = parseMain(allButFirst);
+        const [main, errors] = parseMain(allButFirst);
+        if (errors.length > 0) {
+          throw new ParseErrors(errors);
+        }
         const records = compileBasicBlocksDL(main);
         interp = interp.bulkInsert(records);
         output.push(datalogOut([]));
