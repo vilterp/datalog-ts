@@ -117,8 +117,7 @@ def scope.nestedTableNode{id: NestedID, table: Table} {
       }
     }
   } |
-  scope.nestedTable{innerID: NestedID, innerTable: Table} |
-  scope.nestedTable{outerID: NestedID, outerTable: Table}
+  scope.nestedTable{innerID: NestedID, innerTable: Table}
 }
 
 def scope.nestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S} {
