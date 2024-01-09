@@ -9,7 +9,7 @@ import {
 import { datalogOut, plainTextOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
-import { LanguageSpec, dl } from "./common/types";
+import { LanguageSpec, dl, dl2 } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { compile } from "./languages/dl2/compile";
 import { extractModule } from "./languages/dl2/extract";
@@ -133,18 +133,14 @@ export function testLangQuery(
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
     const { input: example, cursorPos } = extractCursor(exampleWithCursor);
     const query = lines[lines.length - 1];
+
+    const basePath = `languageWorkbench/languages/${langName}/${langName}`;
     const langSpec: LanguageSpec = {
       name: langName,
-      logic: dl(
-        fs.readFileSync(
-          `languageWorkbench/languages/${langName}/${langName}.dl`,
-          "utf8"
-        )
-      ),
-      grammar: fs.readFileSync(
-        `languageWorkbench/languages/${langName}/${langName}.grammar`,
-        "utf8"
-      ),
+      logic: fs.existsSync(`${basePath}.dl2`)
+        ? dl2(fs.readFileSync(`${basePath}.dl2`, "utf8"))
+        : dl(fs.readFileSync(`${basePath}.dl`, "utf8")),
+      grammar: fs.readFileSync(`${basePath}.grammar`, "utf8"),
       example: "",
     };
     const { interp: withoutCursor } = cache.getInterpForDoc(
