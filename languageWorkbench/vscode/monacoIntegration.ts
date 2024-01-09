@@ -346,7 +346,7 @@ function getSymbolList(
   const interp = getInterp(spec, document.uri.toString(), source);
 
   const results = interp.queryStr(
-    `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
+    `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}?`
   );
 
   return results.map((res) => {
