@@ -1,8 +1,8 @@
 import { Suite } from "../../util/testBench/testing";
 import { runDDTestAtPath } from "../../util/ddTest";
-import { formatParseError, parse, TraceTree } from "./parser";
+import { parse, TraceTree } from "./parser";
 import { extractRuleTree } from "./ruleTree";
-import { prettyPrintRuleTree } from "./pretty";
+import { prettyPrintParseError, prettyPrintRuleTree } from "./pretty";
 import {
   datalogOut,
   jsonOut,
@@ -161,7 +161,7 @@ function handleResults(traceTree: TraceTree, source: string): TestOutput {
   return plainTextOut(
     [
       ...prettyPrintRuleTree(ruleTree, source).split("\n"),
-      ...errors.map((err) => `error: ${formatParseError(err)}`),
+      ...errors.map((err) => `error: ${prettyPrintParseError(err)}`),
     ].join("\n")
   );
 }

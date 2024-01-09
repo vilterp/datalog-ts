@@ -1,3 +1,5 @@
+import { prettyPrintParseError } from "./pretty";
+
 export type Grammar = { [name: string]: Rule };
 
 // === Rules ===
@@ -93,6 +95,6 @@ export type ParseError = {
 
 export class ParseErrors extends Error {
   constructor(public errors: ParseError[]) {
-    super(`ParseErrors: ${JSON.stringify(errors)}`);
+    super(`ParseErrors: ${errors.map(prettyPrintParseError).join("\n")}`);
   }
 }

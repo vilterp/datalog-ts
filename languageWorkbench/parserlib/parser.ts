@@ -234,11 +234,3 @@ function matchesCharRule(charRule: SingleCharRule, c: char): boolean {
       return true;
   }
 }
-
-export function formatParseError(error: ParseError): string {
-  return `offset ${error.offset}: expected ${
-    typeof error.expected === "string"
-      ? error.expected
-      : prettyPrintRule(error.expected)
-  }; got ${error.got}`;
-}

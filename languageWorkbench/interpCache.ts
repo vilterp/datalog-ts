@@ -4,10 +4,10 @@ import { instantiate } from "./languages/dl2/instantiate";
 import { parseMain } from "./languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
 import { parse } from "./parserlib/parser";
-import { prettyPrintRule } from "./parserlib/pretty";
+import { prettyPrintParseError } from "./parserlib/pretty";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { parserGrammarToInternal } from "./parserlib/translateAST";
-import { Grammar, ParseError } from "./parserlib/types";
+import { Grammar } from "./parserlib/types";
 import { ensureRequiredRelations } from "./requiredRelations";
 
 type ConstructInterpRes = {
@@ -154,7 +154,7 @@ export class InterpCache {
         ...allGrammarErrors,
         ...dlErrors,
         // TODO: structured errors
-        ...parseErrors.map((e) => formatError(e)),
+        ...parseErrors.map((e) => prettyPrintParseError(e)),
       ],
     };
   }
@@ -180,7 +180,7 @@ export class InterpCache {
       return {
         interp,
         grammar,
-        errors: parseErrors.map((e) => formatError(e)),
+        errors: parseErrors.map((e) => prettyPrintParseError(e)),
       };
     } catch (e) {
       return {
@@ -196,13 +196,4 @@ export function addCursor(
   cursorPos: number
 ): AbstractInterpreter {
   return interp.evalStr(`ide.Cursor{idx: ${cursorPos}}.`)[1];
-}
-
-// TODO: structured errors
-export function formatError(err: ParseError): string {
-  return `expected ${
-    typeof err.expected === "string"
-      ? err.expected
-      : prettyPrintRule(err.expected)
-  }, got ${err.got} at offset ${err.offset}`;
 }
