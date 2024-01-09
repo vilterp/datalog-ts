@@ -49,32 +49,19 @@ def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
 }
 
 def scope.Var{scopeID: I, name: N, span: S, kind: K} {
-  # scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K}
+  scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K}
 }
 
-# def scope.varNestedAttr{scopeID: InnerTable, name: InnerAttr, span: S, kind: "attr"} {
-#   ast.nested {
-#     id: NestedID,
-#     qualifier { text: OuterAttr },
-#     attr {
-#       nested {
-#         qualifier {
-#           text: InnerAttr,
-#           span: S
-#         }
-#       }
-#     }
-#   } &
-#   scope.nestedTable{id: NestedID, table: OuterTable} &
-#   scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: OuterAttr, pointer: InnerAttr}
-# }
-
-def scope.nestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A} {
-  scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A} |
-  scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A}
+def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "attr"} {
+  scope.nestedTable{outerTable: OuterTable, accessor: InnerAttr, span: S}
 }
 
-def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr} {
+def scope.nestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S} {
+  scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S} |
+  scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S}
+}
+
+def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr, span: S} {
   ast.conjunct {
     nested {
       id: OuterID,
@@ -85,7 +72,8 @@ def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterT
         nested {
           id: InnerID,
           qualifier {
-            text: InnerAttr
+            text: InnerAttr,
+            span: S
           }
         }
       }
@@ -94,20 +82,21 @@ def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterT
   scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
 }
 
-def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr} {
+def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr, span: S} {
   ast.nested {
     id: OuterID,
-    qualifier { text: OuterAttr }, # record
+    qualifier { text: OuterAttr },
     attr {
       nested {
         id: InnerID,
         qualifier {
-          text: InnerAttr # ident
+          text: InnerAttr,
+          span: S
         }
       }
     }
   } &
-  scope.nestedTable{innerID: OuterID, innerTable: OuterTable} & # record
+  scope.nestedTable{innerID: OuterID, innerTable: OuterTable} &
   scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
 }
 
