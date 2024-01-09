@@ -431,6 +431,10 @@ export function refreshDiagnostics(
   document: vscode.TextDocument,
   diagnostics: vscode.DiagnosticCollection
 ) {
+  if (document.languageId !== spec.name) {
+    // TODO: head this off earlier
+    return;
+  }
   const source = document.getText();
   if (spec.nativeImpl) {
     const flattened = getFlattened(
@@ -484,7 +488,7 @@ function getFlattened(
   const [ruleTree, errors] = extractRuleTree(traceTree);
   if (errors.length > 0) {
     // TODO: show in UI
-    console.error(`parse errors for ${uri}:`, errors);
+    console.error(`parse errors for ${uri}:`, { errors, source });
   }
   return flattenByRule(ruleTree, source, leaves);
 }
