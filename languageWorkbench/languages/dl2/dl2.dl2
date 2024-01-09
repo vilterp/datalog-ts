@@ -11,6 +11,13 @@ table ast.tableDecl {
 table ast.tableAttr {
   ident: inRef(ast.ident:parentID)
 }
+table ast.nested {
+  qualifier: inRef(ast.qualifier:parentID),
+  attr: inRef(ast.nestedAttr:parentID)
+}
+table ast.nestedAttr {
+  nested: inRef(ast.nested:parentID)
+}
 
 def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
@@ -24,6 +31,25 @@ def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
       qualifier {
         text: N,
         span: S
+      }
+    }
+  }
+}
+
+def scope.Var{scopeID: I, name: N, span: S, kind: K} {
+  scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K}
+}
+
+# TODO: this is not quite right; Outer is not always a table name
+def scope.varNestedAttr{scopeID: Outer, name: Inner, span: S, kind: "attr"} {
+  ast.nested {
+    qualifier { text: Outer },
+    attr {
+      nested {
+        qualifier {
+          text: Inner,
+          span: S
+        }
       }
     }
   }
