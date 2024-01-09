@@ -4,6 +4,9 @@ table constraint {
   id,
   record: inRef(ast.record:parentID)
 }
+table ast.record {
+  ident: inRef(ast.ident:parentID)
+}
 
 def varInComparison{scope: I, name: N, span: S} {
   constraint{

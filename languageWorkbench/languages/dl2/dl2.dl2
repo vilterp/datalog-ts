@@ -94,21 +94,21 @@ def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterT
   scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
 }
 
-def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable} {
+def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr} {
   ast.nested {
     id: OuterID,
-    qualifier { text: OuterAttr },
+    qualifier { text: OuterAttr }, # record
     attr {
       nested {
         id: InnerID,
         qualifier {
-          text: InnerAttr
+          text: InnerAttr # ident
         }
       }
     }
   } &
-  scope.nestedTable{innerID: OuterID, innerTable: OuterTable} &
-  scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: OuterAttr, pointer: InnerAttr} &
+  scope.nestedTable{innerID: OuterID, innerTable: OuterTable} & # record
+  scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
 }
 
 def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
