@@ -28,6 +28,7 @@ table ast.inRef {
   ident: inRef(ast.ident:parentID)
 }
 table ast.conjunct {
+  record: inRef(ast.record:parentID),
   nested: inRef(ast.nested:parentID)
 }
 

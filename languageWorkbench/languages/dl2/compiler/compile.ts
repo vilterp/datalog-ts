@@ -132,7 +132,6 @@ function extractNested(
         continue;
       case "Nested": {
         const attrName = attr.qualifier.text;
-        // TODO: put the refspec in the path
         const refSpec = mod.tableDecls[relation].members[attrName];
         if (!refSpec) {
           problems.push({
