@@ -10,6 +10,7 @@ import { LanguageSpec } from "../../languageWorkbench/common/types";
 
 const BUILTIN_LANGUAGES: LanguageSpec[] = [
   LANGUAGES.datalog,
+  LANGUAGES.datalog2,
   LANGUAGES.grammar,
   LANGUAGES.basicBlocks,
   LANGUAGES.opt,
