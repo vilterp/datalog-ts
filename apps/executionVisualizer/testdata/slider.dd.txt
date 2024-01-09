@@ -27,7 +27,7 @@ slide
 application/datalog
 
 query
-state.ProgramCounter{}
+state.ProgramCounter{}?
 ----
 application/datalog
 state.ProgramCounter{counter: 0, state: running{}, thread: 1, time: 1}.

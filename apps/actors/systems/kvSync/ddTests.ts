@@ -39,7 +39,8 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
     const query = lines[lines.length - 1];
     const mutations = lines.slice(0, lines.length - 1);
     mutations.forEach((line) => {
-      const [rawRec, errors] = parseRecord(line);
+      // slice off the `.`
+      const [rawRec, errors] = parseRecord(line.slice(0, line.length - 1));
       if (errors.length > 0) {
         throw new ParseErrors(errors);
       }
@@ -92,6 +93,6 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
         }
       }
     });
-    return datalogOut(trace.interp.evalStr(query)[0].map((res) => res.term));
+    return datalogOut(trace.interp.queryStr(query).map((res) => res.term));
   });
 }
