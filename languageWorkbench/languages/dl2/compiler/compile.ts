@@ -13,10 +13,9 @@ import {
   DL2Comparison,
   DL2Conjunct,
   DL2Nested,
-  DL2RefSpec,
   DL2Rule,
 } from "../parser";
-import { ExtractionProblem, Module, RefSpec, TableMember } from "./types";
+import { ExtractionProblem, Module, RefSpec } from "./types";
 
 export function compile(
   module: Module
