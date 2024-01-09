@@ -1,19 +1,17 @@
 import { Suite } from "../../util/testBench/testing";
 import { runDDTestAtPath } from "../../util/ddTest";
-import { formatParseError, getErrors, parse, TraceTree } from "./parser";
+import { formatParseError, parse, TraceTree } from "./parser";
 import { extractRuleTree } from "./ruleTree";
 import { prettyPrintRuleTree } from "./pretty";
 import {
   datalogOut,
-  datalogOutRules,
   jsonOut,
   plainTextOut,
   TestOutput,
 } from "../../util/ddTest/types";
-import { ppRule, ppt } from "../../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Rule } from "../../core/types";
+import { Rec } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { genExtractorStr, Options } from "./gen/generate";

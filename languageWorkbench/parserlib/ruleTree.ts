@@ -18,6 +18,9 @@ export function extractRuleTree(
 }
 
 function extractRuleTreeRecurse(errors: ParseError[], tt: TraceTree): RuleTree {
+  if (tt.error) {
+    errors.push(tt.error);
+  }
   switch (tt.type) {
     case "RefTrace":
       return {

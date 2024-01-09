@@ -91,10 +91,6 @@ export type ParseError = {
   got: string;
 };
 
-export function formatError(err: ParseError): string {
-  return `expected ${err.expected}, got ${err.got} at offset ${err.offset}`;
-}
-
 export class ParseErrors extends Error {
   constructor(public errors: ParseError[]) {
     super(`ParseErrors: ${JSON.stringify(errors)}`);

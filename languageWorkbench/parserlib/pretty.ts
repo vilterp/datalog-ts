@@ -21,9 +21,9 @@ export function prettyPrintRule(rule: Rule): string {
     case "Char":
       return prettyPrintCharRule(rule.rule);
     case "Choice":
-      return `[${rule.choices.map(prettyPrintRule).join(" | ")}]`;
+      return `(${rule.choices.map(prettyPrintRule).join(" | ")})`;
     case "Sequence":
-      return rule.items.map(prettyPrintRule).join(", ");
+      return `[${rule.items.map(prettyPrintRule).join(", ")}]`;
     case "Text":
       return `"${rule.value.split(`"`).join(`\\"`)}"`;
     case "Ref":
