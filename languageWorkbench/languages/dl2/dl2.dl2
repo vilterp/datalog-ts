@@ -88,7 +88,7 @@ def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "at
   scope.nestedScalar{scopeID: OuterTable, name: InnerAttr, span: S}
 }
 
-def scope.nestedScalar{scopeID: Table, name: InnerAttr, span: S} {
+def scope.nestedScalar{scopeID: Table, name: Attr, span: S} {
   ast.nested {
     id: NestedID,
     nestedAttr {
@@ -100,6 +100,11 @@ def scope.nestedScalar{scopeID: Table, name: InnerAttr, span: S} {
       }
     }
   } &
+  scope.nestedTableNode{id: NestedID, table: Table}
+}
+
+def scope.nestedTableNode{id: NestedID, table: Table} {
+  scope.nestedTable{innerID: NestedID, innerTable: Table} |
   scope.nestedTable{outerID: NestedID, outerTable: Table}
 }
 
