@@ -5,6 +5,7 @@ table ast.record {
   qualifier: inRef(ast.qualifier:parentID)
 }
 table ast.tableDecl {
+  text,
   qualifier: inRef(ast.qualifier:parentID),
   attr: inRef(ast.tableAttr:parentID)
 }
@@ -14,10 +15,14 @@ table ast.tableAttr {
 }
 table ast.nested {
   qualifier: inRef(ast.qualifier:parentID),
-  attr: inRef(ast.nestedAttr:parentID)
+  nestedAttr: inRef(ast.nestedAttr:parentID)
 }
 table ast.nestedAttr {
-  nested: inRef(ast.nested:parentID)
+  nested: inRef(ast.nested:parentID),
+  normalAttr: inRef(ast.normalAttr:parentID)
+}
+table ast.normalAttr {
+  ident: inRef(ast.ident:parentID)
 }
 table ast.refSpec {
   inRef: inRef(ast.inRef:parentID),
@@ -76,7 +81,23 @@ def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
 # ===== nested stuff =====
 
 def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "attr"} {
-  scope.nestedTable{outerTable: OuterTable, accessor: InnerAttr, span: S}
+  scope.nestedTable{outerTable: OuterTable, accessor: InnerAttr, span: S} |
+  scope.nestedScalar{scopeID: OuterTable, name: InnerAttr, span: S}
+}
+
+def scope.nestedScalar{scopeID: Table, name: Attr, span: S} {
+  ast.nested {
+    id: NestedID,
+    nestedAttr {
+      normalAttr {
+        ident {
+          text: Attr,
+          span: S
+        }
+      }
+    }
+  } &
+  scope.nestedTable{outerID: NestedID, outerTable: Table}
 }
 
 def scope.nestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S} {
@@ -91,7 +112,7 @@ def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterT
       qualifier {
         text: OuterTable
       },
-      attr {
+      nestedAttr {
         nested {
           id: InnerID,
           qualifier {
@@ -109,7 +130,7 @@ def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: Oute
   ast.nested {
     id: OuterID,
     qualifier { text: OuterAttr },
-    attr {
+    nestedAttr {
       nested {
         id: InnerID,
         qualifier {

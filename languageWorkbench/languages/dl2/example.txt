@@ -6,6 +6,7 @@ table constraint {
   constraintComparison: inRef(constraintComparison:parentID)
 }
 table ast.record {
+  id,
   ident: inRef(ast.ident:parentID)
 }
 table constraintComparison {
@@ -27,7 +28,9 @@ table var {
 
 def varInComparison{scope: I, name: N, span: S} {
   constraint{
+    id: Foo,
     record {
+      id: Bar,
       ident {
         text: I
       }
