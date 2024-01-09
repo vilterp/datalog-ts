@@ -19,7 +19,7 @@ def selfComment{author_id: A, postID: P, commentID: C} {
 post{id: 1, author_id: "Foo"}.
 comment{id: 2, post_id: 1, author_id: "Foo"}.
 comment{id: 3, post_id: 1, author_id: "Bar"}.
-selfComment{}
+selfComment{}?
 ----
 application/datalog
 selfComment{author_id: "Foo", commentID: 2, postID: 1}.
