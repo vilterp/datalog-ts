@@ -7,7 +7,7 @@ table constraint {
 }
 table ast.record {
   id,
-  ident: inRef(ast.ident:parentID)
+  ident: inRef(ident:parentID)
 }
 table constraintComparison {
   scalarExpr: inRef(scalarExpr:parentID)
@@ -22,6 +22,10 @@ table term {
   var: inRef(var:parentID)
 }
 table var {
+  text,
+  span
+}
+table ident {
   text,
   span
 }
