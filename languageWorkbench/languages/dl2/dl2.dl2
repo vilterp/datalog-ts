@@ -91,7 +91,8 @@ def scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: "attr"} {
 
 def scope.Var{scopeID: I, name: N, span: S, kind: K} {
   scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K} |
-  scope.varRelation{scopeID: I, name: N, span: S, kind: K}
+  scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
+  scope.varRecordAttr{scopeID: I, name: N, span: S, kind: K}
 }
 
 def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
@@ -108,6 +109,24 @@ def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
       qualifier {
         text: N,
         span: S
+      }
+    }
+  }
+}
+
+def scope.varRecordAttr{scopeID: I, name: N, span: S, kind: "attr"} {
+  ast.conjunct {
+    record {
+      qualifier {
+        text: I
+      },
+      recordAttrs {
+        recordKeyValue {
+          ident {
+            text: N,
+            span: S
+          }
+        }
       }
     }
   }
