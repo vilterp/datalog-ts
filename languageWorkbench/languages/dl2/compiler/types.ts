@@ -1,6 +1,6 @@
-import { Rec } from "../../../core/types";
-import { ParseError, Span } from "../../parserlib/types";
-import { DL2Rule } from "./parser";
+import { Rec } from "../../../../core/types";
+import { ParseError, Span } from "../../../parserlib/types";
+import { DL2Rule } from "../parser";
 
 export type ExtractionProblem =
   | { type: "ParseError"; parseError: ParseError }
@@ -34,7 +34,8 @@ export type TableMembers = {
   [name: string]: TableMember;
 };
 
-export type TableMember =
-  | { type: "Scalar" }
-  | { type: "InRef"; table: string; name: string }
-  | { type: "OutRef"; table: string; name: string };
+export type TableMember = { type: "Scalar" } | RefSpec;
+
+export type RefSpec =
+  | { type: "InRef"; table: string; column: string }
+  | { type: "OutRef"; table: string; column: string };

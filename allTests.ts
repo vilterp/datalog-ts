@@ -15,8 +15,9 @@ import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
 import { executionVisualizerTests } from "./apps/executionVisualizer/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
 import { nativeTests } from "./languageWorkbench/languages/dl/nativeTests";
-import { dl2Tests, lwbTests } from "./languageWorkbench/ddTests";
+import { lwbTests } from "./languageWorkbench/ddTests";
 import { optTests } from "./core/opt/optTests";
+import { dl2Tests } from "./languageWorkbench/languages/dl2/compiler/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));

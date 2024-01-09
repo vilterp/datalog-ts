@@ -6,7 +6,7 @@ import {
   Var,
   rec,
   varr,
-} from "../../../core/types";
+} from "../../../../core/types";
 import { extractTerm } from "./extract";
 import {
   DL2Arithmetic,
@@ -14,8 +14,8 @@ import {
   DL2Conjunct,
   DL2Nested,
   DL2Rule,
-} from "./parser";
-import { ExtractionProblem, Module } from "./types";
+} from "../parser";
+import { ExtractionProblem, Module, RefSpec } from "./types";
 
 export function compile(
   module: Module
@@ -92,22 +92,24 @@ function extractConjunct(
 }
 
 type Path = {
-  relation: string;
-  attr: string;
+  refSpec: RefSpec;
   var: string;
 }[];
 
 function extractNested(
   mod: Module,
   nested: DL2Nested,
-  path: Path
+  path: Path,
+  scope = new Set<string>()
 ): [Conjunct[], ExtractionProblem[]] {
   const relation =
-    path.length === 0 ? nested.qualifier.text : path[path.length - 1].relation;
+    path.length === 0
+      ? nested.qualifier.text
+      : path[path.length - 1].refSpec.table;
   const curRec = rec(relation, {});
   if (path.length > 0) {
     const last = path[path.length - 1];
-    curRec.attrs[last.attr] = varr(last.var);
+    curRec.attrs[last.refSpec.column] = varr(last.var);
   }
   const out: Conjunct[] = [curRec];
   const problems: ExtractionProblem[] = [];
@@ -121,6 +123,8 @@ function extractNested(
         continue;
     }
   }
+  const idVarName = getVarName(curRec, relation, scope);
+  let anyInRefs = false;
   // Now get nested attrs
   for (const attr of nested.nestedAttr) {
     switch (attr.type) {
@@ -139,21 +143,29 @@ function extractNested(
           continue;
         }
         switch (refSpec.type) {
+          // E.g.:
+          //
+          // post {
+          //   comment {
+          //     ...
+          //   }
+          // }
+          //
+          // post has a member `comment` that's an inRef by parentID
           case "InRef": {
-            const varName =
-              curRec.attrs.id && curRec.attrs.id.type === "Var"
-                ? (curRec.attrs.id as Var).name
-                : `V${relation}ID`;
-            // TODO: not always `id`?
-            curRec.attrs.id = varr(varName);
-            const [nestedConjuncts, nestedProblems] = extractNested(mod, attr, [
-              ...path,
-              {
-                attr: refSpec.name,
-                relation: refSpec.table,
-                var: varName,
-              },
-            ]);
+            anyInRefs = true;
+            const [nestedConjuncts, nestedProblems] = extractNested(
+              mod,
+              attr,
+              [
+                ...path,
+                {
+                  refSpec,
+                  var: idVarName,
+                },
+              ],
+              scope
+            );
             out.push(...nestedConjuncts);
             problems.push(...nestedProblems);
             break;
@@ -167,7 +179,25 @@ function extractNested(
       }
     }
   }
+  // TODO: not always `id`
+  if (anyInRefs) {
+    curRec.attrs.id = varr(idVarName);
+  }
   return [out, problems];
+}
+
+function getVarName(curRec: Rec, relation: string, scope: Set<string>): string {
+  let varName =
+    curRec.attrs.id && curRec.attrs.id.type === "Var"
+      ? (curRec.attrs.id as Var).name
+      : `V${relation.replace(".", "_")}ID`;
+  while (true) {
+    if (!scope.has(varName)) {
+      scope.add(varName);
+      return varName;
+    }
+    varName = `${varName}_`;
+  }
 }
 
 // some real desugaring!
