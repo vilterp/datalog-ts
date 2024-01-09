@@ -27,6 +27,9 @@ table ast.inRef {
   qualifier: inRef(ast.qualifier:parentID),
   ident: inRef(ast.ident:parentID)
 }
+table ast.conjunct {
+  nested: inRef(ast.nested:parentID)
+}
 
 def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
@@ -46,28 +49,66 @@ def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
 }
 
 def scope.Var{scopeID: I, name: N, span: S, kind: K} {
-  scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K}
+  # scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K}
 }
 
-# TODO: this is not quite right; Outer is not always a table name
-def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "attr"} {
-  ast.nested {
-    qualifier { text: OuterAttr },
-    attr {
-      nested {
-        qualifier {
-          text: InnerAttr,
-          span: S
+# def scope.varNestedAttr{scopeID: InnerTable, name: InnerAttr, span: S, kind: "attr"} {
+#   ast.nested {
+#     id: NestedID,
+#     qualifier { text: OuterAttr },
+#     attr {
+#       nested {
+#         qualifier {
+#           text: InnerAttr,
+#           span: S
+#         }
+#       }
+#     }
+#   } &
+#   scope.nestedTable{id: NestedID, table: OuterTable} &
+#   scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: OuterAttr, pointer: InnerAttr}
+# }
+
+def scope.nestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable} {
+  scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable} |
+  scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable}
+}
+
+def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable} {
+  ast.conjunct {
+    nested {
+      id: OuterID,
+      qualifier {
+        text: OuterTable
+      },
+      attr {
+        nested {
+          id: InnerID,
+          qualifier {
+            text: InnerAttr
+          }
         }
       }
     }
   } &
-  scope.inRef{
-    fromTable: OuterTable,
-    toTable: InnerTable,
-    accessor: OuterAttr,
-    pointer: InnerAttr
-  }
+  scope.inRef{fromTable: OuterTable, toTable: InnerTable, pointer: InnerAttr}
+}
+
+def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable} {
+  ast.nested {
+    id: OuterID,
+    qualifier { text: OuterAttr },
+    attr {
+      nested {
+        id: InnerID,
+        qualifier {
+          text: InnerAttr
+        }
+      }
+    }
+  } &
+  scope.nestedTable{innerID: OuterID, innerTable: OuterTable} &
+  scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: OuterAttr, pointer: InnerAttr} &
 }
 
 def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
