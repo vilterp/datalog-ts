@@ -8,10 +8,15 @@ export function instantiate(
   interp: AbstractInterpreter,
   source: string
 ): [AbstractInterpreter, ExtractionProblem[]] {
-  const parsed = parseMain(source);
+  const [parsed, parseProblems] = parseMain(source);
 
   // Extract
   const problems: ExtractionProblem[] = [];
+  if (parseProblems.length > 0) {
+    for (const problem of parseProblems) {
+      problems.push({ type: "ParseError", parseError: problem });
+    }
+  }
   const [mod, extractProblems] = extractModule(parsed);
   if (extractProblems.length > 0) {
     problems.push(...extractProblems);
