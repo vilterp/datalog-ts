@@ -29,6 +29,9 @@ scope.Defn{kind: "relation", name: "post", scopeID: global{}, span: span{from: 6
 scope.Defn{kind: "relation", name: "selfComment", scopeID: global{}, span: span{from: 107, to: 118}, type: "any"}.
 
 dl2
+table author {
+  post: inRef(post:author_id)
+}
 table post {
   author_id,
   comment: inRef(comment:post_id)
@@ -38,16 +41,19 @@ table comment {
   post_id
 }
 def selfComment{author_id: A, postID: P, commentID: C} {
-  post {
-    author_id: A,
-    id: P,
-    comment {
-      id: C,
-      author_id: A
+  author {
+    post {
+      author_id: A,
+      id: P,
+      comment {
+        id: C,
+        author_id: A
+      }
     }
   }
 }
 scope.Var{}?
 ----
 application/datalog
-scope.Var{kind: "attr", name: "comment", scopeID: "post", span: span{from: 202, to: 209}}.
+scope.Var{kind: "attr", name: "comment", scopeID: "post", span: span{from: 268, to: 275}}.
+scope.Var{kind: "attr", name: "post", scopeID: "author", span: span{from: 222, to: 226}}.
