@@ -432,10 +432,7 @@ export function refreshDiagnostics(
   diagnostics: vscode.DiagnosticCollection
 ) {
   if (document.languageId !== spec.name) {
-    console.warn("refreshDiagnostics called with wrong languageId", {
-      languageID: document.languageId,
-      spec: spec.name,
-    });
+    // TODO: head this off earlier
     return;
   }
   const source = document.getText();
