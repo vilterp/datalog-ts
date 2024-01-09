@@ -5,9 +5,9 @@ import {
   SingleCharRule,
   spanLength,
   char,
-  CharRule,
+  ParseError,
 } from "./types";
-import { prettyPrintCharRule, prettyPrintRule } from "./pretty";
+import { prettyPrintRule } from "./pretty";
 import { reduceEarlyReturn } from "../../util/util";
 
 export type TraceTree = {
@@ -17,12 +17,6 @@ export type TraceTree = {
 
 // TODO:
 // Either<{span: Span} & TraceInner, ParseError>
-
-type ParseError = {
-  offset: number;
-  expected: Rule | "end of file";
-  got: string;
-};
 
 type TraceInner =
   | { type: "SeqTrace"; itemTraces: TraceTree[] }

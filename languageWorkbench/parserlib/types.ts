@@ -82,3 +82,11 @@ export function spanLength(s: Span): number {
 export function deEscape(str: string): string {
   return str.replace(/\\n/, "\n").replace(/\\\\/, "\\").replace(/\\"/, '"');
 }
+
+// === Errors ===
+
+export type ParseError = {
+  offset: number;
+  expected: Rule | "end of file";
+  got: string;
+};
