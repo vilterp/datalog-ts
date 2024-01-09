@@ -1,10 +1,9 @@
 import { Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
 import {
-  DLMain,
   DLStatement,
   parseMain,
-  parseRecord,
+  parseQuery,
 } from "../languageWorkbench/languages/dl/parser";
 import {
   parserStatementToInternal,
@@ -60,13 +59,13 @@ export abstract class AbstractInterpreter {
   }
 
   queryStr(str: string): Res[] {
-    const [record, errors] = parseRecord(str);
+    const [query, errors] = parseQuery(str);
     if (errors.length > 0) {
       throw new ParseErrors(errors);
     }
     const [res, _] = this.evalStmt({
       type: "Query",
-      record: parserTermToInternal(record) as Rec,
+      record: parserTermToInternal(query.record) as Rec,
     });
     return res;
   }
