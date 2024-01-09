@@ -109,6 +109,14 @@ def scope.nestedScalar{scopeID: Table, name: Attr, span: S} {
 }
 
 def scope.nestedTableNode{id: NestedID, table: Table} {
+  ast.conjunct {
+    nested {
+      id: NestedID,
+      qualifier {
+        text: Table
+      }
+    }
+  } |
   scope.nestedTable{innerID: NestedID, innerTable: Table} |
   scope.nestedTable{outerID: NestedID, outerTable: Table}
 }
