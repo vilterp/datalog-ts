@@ -6,7 +6,7 @@ import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
 import { parse } from "./parserlib/parser";
 import { extractRuleTree } from "./parserlib/ruleTree";
 import { parserGrammarToInternal } from "./parserlib/translateAST";
-import { Grammar, formatError } from "./parserlib/types";
+import { Grammar, ParseError, formatError } from "./parserlib/types";
 import { ensureRequiredRelations } from "./requiredRelations";
 
 type ConstructInterpRes = {
@@ -23,7 +23,10 @@ export class InterpCache {
   };
   docSource: { [uri: string]: string };
   interpSourceCache: {
-    [docURI: string]: { interp: AbstractInterpreter };
+    [docURI: string]: {
+      interp: AbstractInterpreter;
+      errors: string[];
+    };
   };
 
   constructor(getInitInterp: () => AbstractInterpreter) {
@@ -38,13 +41,13 @@ export class InterpCache {
     languages: { [langID: string]: LanguageSpec },
     uri: string,
     source: string
-  ): { interp: AbstractInterpreter } {
+  ): { interp: AbstractInterpreter; errors: string[] } {
     this.updateDocSource(uri, langID, source);
     const key = `${langID}-${uri}`;
     let res = this.interpSourceCache[key];
-    const initInterp = this.getInitInterp();
     // TODO: this is a big memory leak
     if (!res) {
+      const initInterp = this.getInitInterp();
       res = this.addSourceInner(
         initInterp,
         langID,
