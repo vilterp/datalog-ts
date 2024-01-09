@@ -37,8 +37,8 @@ table ast.refSpec {
   outRef: inRef(ast.outRef:parentID)
 }
 table ast.inRef {
-  qualifier: inRef(ast.qualifier:parentID),
-  ident: inRef(ast.ident:parentID)
+  table: inRef(ast.qualifier:parentID),
+  column: inRef(ast.ident:parentID)
 }
 table ast.conjunct {
   record: inRef(ast.record:parentID),
@@ -89,10 +89,35 @@ def scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: "attr"} {
   }
 }
 
+# ======== Vars ========
+
 def scope.Var{scopeID: I, name: N, span: S, kind: K} {
   scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K} |
   scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
-  scope.varRecordAttr{scopeID: I, name: N, span: S, kind: K}
+  scope.varRecordAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInRefTable{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInRefColumn{scopeID: I, name: N, span: S, kind: K}
+}
+
+def scope.varInRefTable{scopeID: global{}, name: N, span: S, kind: "relation"} {
+  ast.inRef{
+    table {
+      text: N,
+      span: S
+    }
+  }
+}
+
+def scope.varInRefColumn{scopeID: Table, name: N, span: S, kind: "attr"} {
+  ast.inRef{
+    table {
+      text: Table
+    },
+    column {
+      text: N,
+      span: S
+    }
+  }
 }
 
 def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
@@ -211,10 +236,10 @@ def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
       },
       refSpec {
         inRef {
-          qualifier {
+          table {
             text: T
           },
-          ident {
+          column {
             text: P
           }
         }

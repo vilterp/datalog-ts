@@ -2,30 +2,38 @@ import "ast"
 
 table constraint {
   id,
+  parentID,
   record: inRef(ast.record:parentID),
   constraintComparison: inRef(constraintComparison:parentID)
 }
 table ast.record {
   id,
+  parentID,
   ident: inRef(ident:parentID)
 }
 table constraintComparison {
+  parentID,
   scalarExpr: inRef(scalarExpr:parentID)
 }
 table scalarExpr {
+  parentID,
   scalarTerm: inRef(scalarTerm:parentID)
 }
 table scalarTerm {
+  parentID,
   term: inRef(term:parentID)
 }
 table term {
+  parentID,
   var: inRef(var:parentID)
 }
 table var {
+  parentID,
   text,
   span
 }
 table ident {
+  parentID,
   text,
   span
 }
