@@ -13,6 +13,7 @@ table ast.tableAttr {
   refSpec: inRef(ast.refSpec:parentID)
 }
 table ast.nested {
+  id,
   qualifier: inRef(ast.qualifier:parentID),
   nestedAttr: inRef(ast.nestedAttr:parentID)
 }
@@ -36,6 +37,10 @@ table ast.conjunct {
   nested: inRef(ast.nested:parentID)
 }
 table ast.qualifier {
+  text,
+  span
+}
+table ast.ident {
   text,
   span
 }
