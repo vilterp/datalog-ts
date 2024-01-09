@@ -12,7 +12,7 @@ export function VizArea(props: {
 }) {
   const interp = ensureVizTable(props.interp);
   const specs = interp.queryStr(
-    "internal.visualization{name: Name, spec: Spec}"
+    "internal.visualization{name: Name, spec: Spec}?"
   );
 
   return (
