@@ -186,7 +186,7 @@ function getDefinition(
     col: position.character,
   });
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}`);
+  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}?`);
   if (results.length === 0) {
     return null;
   }
@@ -212,7 +212,7 @@ function getReferences(
     col: position.character,
   });
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}?`);
   return results.map(
     (res) =>
       new vscode.Location(
@@ -242,7 +242,7 @@ function getHighlights(
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   // pattern match `span` to avoid getting `"builtin"`
   const results = interp2.queryStr(
-    `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}`
+    `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}?`
   );
   return results.map((res) => {
     const result = res.term as Rec;
@@ -292,7 +292,7 @@ function getCompletionItems(
     );
     const interp2 = interp.evalStr(`ide.Cursor{idx: ${cursorIdx}}.`)[1];
     const results = interp2.queryStr(
-      `ide.CurrentSuggestion{name: N, span: S, type: T}`
+      `ide.CurrentSuggestion{name: N, span: S, type: T}?`
     );
     const uniqueResults = uniqBy(
       (res) => ((res.term as Rec).attrs.name as StringLit).val,
@@ -323,7 +323,7 @@ function getRenameEdits(
   });
   const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
+  const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}?`);
 
   const edit = new vscode.WorkspaceEdit();
   uniqBy((res) => ppt(res.term), results).forEach((res) => {
@@ -347,7 +347,7 @@ function prepareRename(
   const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
-    "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
+    "ide.CurrentDefnOrDefnOfCurrentVar{span: S}?"
   );
   if (results.length === 0) {
     return null;
@@ -365,7 +365,7 @@ function getSymbolList(
   const interp = getInterp(spec, document.uri.toString(), source);
 
   const results = interp.queryStr(
-    `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}`
+    `scope.Defn{scopeID: ${ppt(GLOBAL_SCOPE)}, name: N, span: S, kind: K}?`
   );
 
   return results.map((res) => {
@@ -388,7 +388,7 @@ function getSemanticTokens(
 ): vscode.ProviderResult<vscode.SemanticTokens> {
   const source = document.getText();
   // const interp = getInterp(spec, document.uri.toString(), source);
-  // const results = interp.queryStr("hl.NonHighlightSegment{}");
+  // const results = interp.queryStr("hl.NonHighlightSegment{}?");
   if (spec.nativeImpl) {
     console.log("native semantic tokens");
     const flattened = getFlattened(
@@ -409,7 +409,7 @@ function getSemanticTokens(
     return builder.build();
   } else {
     const interp = getInterp(spec, document.uri.toString(), source);
-    const results = interp.queryStr("hl.NonHighlightSegment{}");
+    const results = interp.queryStr("hl.NonHighlightSegment{}?");
 
     const builder = new vscode.SemanticTokensBuilder(semanticTokensLegend);
     results.forEach((res) => {
@@ -446,7 +446,7 @@ export function refreshDiagnostics(
   } else {
     const interp = getInterp(spec, document.uri.toString(), source);
 
-    const problems = interp.queryStr("tc.Problem{}");
+    const problems = interp.queryStr("tc.Problem{}?");
     const diags = problems.map((res) =>
       problemToDiagnostic(source, res.term as Rec)
     );
@@ -481,7 +481,11 @@ function getFlattened(
 ): NodesByRule {
   CACHE.updateDocSource(uri, langID, source);
   const traceTree = parse(impl.grammar, "main", source);
-  const ruleTree = extractRuleTree(traceTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  if (errors.length > 0) {
+    // TODO: show in UI
+    console.error(`parse errors for ${uri}:`, errors);
+  }
   return flattenByRule(ruleTree, source, leaves);
 }
 

@@ -174,7 +174,7 @@ function getDefinition(
   const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromPosition(source, position);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}`);
+  const results = interp2.queryStr(`ide.DefnForCursor{defnSpan: DS}?`);
   if (results.length === 0) {
     return null;
   }
@@ -197,7 +197,7 @@ function getReferences(
   const interp = getInterp(spec, document.uri.toString(), source);
   const idx = idxFromPosition(source, position);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}?`);
   return results.map((res) => ({
     uri: document.uri,
     range: spanToRange(source, (res.term as Rec).attrs.usageSpan as Rec),
@@ -222,7 +222,7 @@ function getHighlights(
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   // pattern match `span` to avoid getting `"builtin"`
   const results = interp2.queryStr(
-    `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}`
+    `ide.CurrentUsageOrDefn{span: span{from: F, to: T}, type: Ty}?`
   );
   return results.map((res) => {
     const result = res.term as Rec;
@@ -254,7 +254,7 @@ function getCompletionItems(
   );
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
-    `ide.CurrentSuggestion{name: N, span: S, type: T}`
+    `ide.CurrentSuggestion{name: N, span: S, type: T}?`
   );
   const uniqueResults = uniqBy(
     (res) => ((res.term as Rec).attrs.name as StringLit).val,
@@ -296,7 +296,7 @@ function getRenameEdits(
   const idx = idxFromPosition(source, position);
   const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
-  const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}`);
+  const results = interp2.queryStr(`ide.RenameSpan{name: N, span: S}?`);
 
   const edits: monaco.languages.WorkspaceTextEdit[] = [];
   uniqBy((res) => ppt(res.term), results).forEach((res) => {
@@ -323,7 +323,7 @@ function prepareRename(
   const interp = getInterp(spec, document.uri.toString(), source);
   const interp2 = interp.evalStr(`ide.Cursor{idx: ${idx}}.`)[1];
   const results = interp2.queryStr(
-    "ide.CurrentDefnOrDefnOfCurrentVar{span: S}"
+    "ide.CurrentDefnOrDefnOfCurrentVar{span: S}?"
   );
   if (results.length === 0) {
     return null;
@@ -371,7 +371,7 @@ function getSemanticTokens(
 ): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
   const source = document.getValue();
   const interp = getInterp(spec, document.uri.toString(), source);
-  const results = interp.queryStr("hl.NonHighlightSegment{}");
+  const results = interp.queryStr("hl.NonHighlightSegment{}?");
 
   const builder = new SemanticTokensBuilder(semanticTokensLegend);
   results.forEach((res) => {
@@ -395,7 +395,7 @@ export function getMarkers(
   const source = document.getValue();
   const interp = getInterp(spec, document.uri.toString(), source);
 
-  const problems = interp.queryStr("tc.Problem{}");
+  const problems = interp.queryStr("tc.Problem{}?");
   return problems.map((res) => problemToDiagnostic(document, res.term as Rec));
 }
 
