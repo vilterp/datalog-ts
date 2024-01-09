@@ -22,7 +22,10 @@ scope.Defn{}?
 application/datalog
 scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 80, to: 89}, type: "any"}.
 scope.Defn{kind: "attr", name: "author_id", scopeID: "post", span: span{from: 15, to: 24}, type: "any"}.
+scope.Defn{kind: "attr", name: "author_id", scopeID: "selfComment", span: span{from: 119, to: 128}, type: "any"}.
 scope.Defn{kind: "attr", name: "comment", scopeID: "post", span: span{from: 28, to: 35}, type: "any"}.
+scope.Defn{kind: "attr", name: "commentID", scopeID: "selfComment", span: span{from: 144, to: 153}, type: "any"}.
+scope.Defn{kind: "attr", name: "postID", scopeID: "selfComment", span: span{from: 133, to: 139}, type: "any"}.
 scope.Defn{kind: "attr", name: "post_id", scopeID: "comment", span: span{from: 93, to: 100}, type: "any"}.
 scope.Defn{kind: "relation", name: "comment", scopeID: global{}, span: span{from: 68, to: 75}, type: "any"}.
 scope.Defn{kind: "relation", name: "post", scopeID: global{}, span: span{from: 6, to: 10}, type: "any"}.

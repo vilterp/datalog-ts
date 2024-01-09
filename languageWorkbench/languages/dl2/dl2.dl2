@@ -2,7 +2,15 @@ table ast.rule {
   record: inRef(ast.record:parentID)
 }
 table ast.record {
-  qualifier: inRef(ast.qualifier:parentID)
+  qualifier: inRef(ast.qualifier:parentID),
+  recordAttrs: inRef(ast.recordAttrs:parentID)
+}
+table ast.recordAttrs {
+  recordKeyValue: inRef(ast.recordKeyValue:parentID)
+}
+table ast.recordKeyValue {
+  ident: inRef(ast.ident:parentID),
+  term: inRef(ast.term:parentID)
 }
 table ast.tableDecl {
   qualifier: inRef(ast.qualifier:parentID),
@@ -48,7 +56,8 @@ table ast.ident {
 def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnTable{scopeID: I, span: S, name: N, kind: K} |
-  scope.defnAttr{scopeID: I, span: S, name: N, kind: K}
+  scope.defnTableAttr{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: K}
 }
 
 def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
@@ -57,6 +66,24 @@ def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
       qualifier {
         text: N,
         span: S
+      }
+    }
+  }
+}
+
+def scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.rule {
+    record {
+      qualifier {
+        text: I
+      },
+      recordAttrs {
+        recordKeyValue {
+          ident {
+            text: N,
+            span: S
+          }
+        }
       }
     }
   }
@@ -188,7 +215,7 @@ def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
   }
 }
 
-def scope.defnAttr{scopeID: I, span: S, name: N, kind: "attr"} {
+def scope.defnTableAttr{scopeID: I, span: S, name: N, kind: "attr"} {
   ast.tableDecl {
     qualifier {
       text: I
