@@ -1,54 +1,82 @@
 table ast.rule {
+  id,
+  parentID,
   record: inRef(ast.record:parentID)
 }
 table ast.record {
+  id,
+  parentID,
   qualifier: inRef(ast.qualifier:parentID),
   recordAttrs: inRef(ast.recordAttrs:parentID)
 }
 table ast.recordAttrs {
+  id,
+  parentID,
   recordKeyValue: inRef(ast.recordKeyValue:parentID)
 }
 table ast.recordKeyValue {
+  id,
+  parentID,
   ident: inRef(ast.ident:parentID),
   term: inRef(ast.term:parentID)
 }
 table ast.tableDecl {
+  id,
+  parentID,
   qualifier: inRef(ast.qualifier:parentID),
   attr: inRef(ast.tableAttr:parentID)
 }
 table ast.tableAttr {
+  id,
+  parentID,
   ident: inRef(ast.ident:parentID),
   refSpec: inRef(ast.refSpec:parentID)
 }
 table ast.nested {
   id,
+  parentID,
+  id,
   qualifier: inRef(ast.qualifier:parentID),
   nestedAttr: inRef(ast.nestedAttr:parentID)
 }
 table ast.nestedAttr {
+  id,
+  parentID,
   nested: inRef(ast.nested:parentID),
   normalAttr: inRef(ast.normalAttr:parentID)
 }
 table ast.normalAttr {
+  id,
+  parentID,
   ident: inRef(ast.ident:parentID)
 }
 table ast.refSpec {
+  id,
+  parentID,
   inRef: inRef(ast.inRef:parentID),
   outRef: inRef(ast.outRef:parentID)
 }
 table ast.inRef {
+  id,
+  parentID,
   table: inRef(ast.qualifier:parentID),
   column: inRef(ast.ident:parentID)
 }
 table ast.conjunct {
+  id,
+  parentID,
   record: inRef(ast.record:parentID),
   nested: inRef(ast.nested:parentID)
 }
 table ast.qualifier {
+  id,
+  parentID,
   text,
   span
 }
 table ast.ident {
+  id,
+  parentID,
   text,
   span
 }
