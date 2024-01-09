@@ -23,16 +23,16 @@ export function dl2Tests(writeResults: boolean): Suite {
         );
       },
     },
-    // {
-    //   name: "run",
-    //   test() {
-    //     runDDTestAtPath(
-    //       `languageWorkbench/languages/dl2/compiler/run.dd.txt`,
-    //       dl2RunTest,
-    //       writeResults
-    //     );
-    //   },
-    // },
+    {
+      name: "run",
+      test() {
+        runDDTestAtPath(
+          `languageWorkbench/languages/dl2/compiler/run.dd.txt`,
+          dl2RunTest,
+          writeResults
+        );
+      },
+    },
   ];
 }
 
