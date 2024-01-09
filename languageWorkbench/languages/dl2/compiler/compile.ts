@@ -6,7 +6,7 @@ import {
   Var,
   rec,
   varr,
-} from "../../../core/types";
+} from "../../../../core/types";
 import { extractTerm } from "./extract";
 import {
   DL2Arithmetic,
@@ -15,7 +15,7 @@ import {
   DL2Nested,
   DL2RefSpec,
   DL2Rule,
-} from "./parser";
+} from "../parser";
 import { ExtractionProblem, Module, RefSpec, TableMember } from "./types";
 
 export function compile(

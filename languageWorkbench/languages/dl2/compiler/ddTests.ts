@@ -1,15 +1,15 @@
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import { nullLoader } from "../../../core/loaders";
-import { ppRule } from "../../../core/pretty";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
-import { TestOutput, runDDTestAtPath } from "../../../util/ddTest";
-import { datalogOut, plainTextOut } from "../../../util/ddTest/types";
-import { Suite } from "../../../util/testBench/testing";
-import { ParseErrors } from "../../parserlib/types";
+import { AbstractInterpreter } from "../../../../core/abstractInterpreter";
+import { nullLoader } from "../../../../core/loaders";
+import { ppRule } from "../../../../core/pretty";
+import { SimpleInterpreter } from "../../../../core/simple/interpreter";
+import { TestOutput, runDDTestAtPath } from "../../../../util/ddTest";
+import { datalogOut, plainTextOut } from "../../../../util/ddTest/types";
+import { Suite } from "../../../../util/testBench/testing";
+import { ParseErrors } from "../../../parserlib/types";
 import { compile } from "./compile";
 import { extractModule } from "./extract";
 import { instantiate } from "./instantiate";
-import { parseMain } from "./parser";
+import { parseMain } from "../parser";
 
 export function dl2Tests(writeResults: boolean): Suite {
   return [
@@ -17,7 +17,7 @@ export function dl2Tests(writeResults: boolean): Suite {
       name: "compile",
       test() {
         runDDTestAtPath(
-          `languageWorkbench/languages/dl2/compile.dd.txt`,
+          `languageWorkbench/languages/dl2/compiler/compile.dd.txt`,
           dl2CompileTest,
           writeResults
         );
@@ -27,7 +27,7 @@ export function dl2Tests(writeResults: boolean): Suite {
     //   name: "run",
     //   test() {
     //     runDDTestAtPath(
-    //       `languageWorkbench/languages/dl2/run.dd.txt`,
+    //       `languageWorkbench/languages/dl2/compiler/run.dd.txt`,
     //       dl2RunTest,
     //       writeResults
     //     );

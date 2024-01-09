@@ -1,6 +1,6 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { LanguageSpec } from "./common/types";
-import { instantiate } from "./languages/dl2/instantiate";
+import { instantiate } from "./languages/dl2/compiler/instantiate";
 import { parseMain } from "./languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
 import { parse } from "./parserlib/parser";

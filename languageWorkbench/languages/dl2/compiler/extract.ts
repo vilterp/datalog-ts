@@ -8,17 +8,17 @@ import {
   rec,
   str,
   varr,
-} from "../../../core/types";
-import { unreachable } from "../../../util/unreachable";
-import { pairsToObj } from "../../../util/util";
-import { deEscape } from "../../parserlib/types";
+} from "../../../../core/types";
+import { unreachable } from "../../../../util/unreachable";
+import { pairsToObj } from "../../../../util/util";
+import { deEscape } from "../../../parserlib/types";
 import {
   DL2Main,
   DL2RefSpec,
   DL2String,
   DL2TableDecl,
   DL2Term,
-} from "./parser";
+} from "../parser";
 import { ExtractionProblem, Module, RefSpec, TableMembers } from "./types";
 
 export function extractModule(main: DL2Main): [Module, ExtractionProblem[]] {

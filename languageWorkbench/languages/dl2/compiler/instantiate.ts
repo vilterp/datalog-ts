@@ -1,7 +1,7 @@
-import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { AbstractInterpreter } from "../../../../core/abstractInterpreter";
 import { compile } from "./compile";
 import { extractModule } from "./extract";
-import { parseMain } from "./parser";
+import { parseMain } from "../parser";
 import { ExtractionProblem } from "./types";
 
 export function instantiate(
