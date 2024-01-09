@@ -157,6 +157,7 @@ export type DL2InRef = {
   type: "InRef";
   text: string;
   span: Span;
+  inRefKW: DL2InRefKW;
   table: DL2Qualifier;
   col: DL2Ident;
 };
@@ -209,6 +210,7 @@ export type DL2OutRef = {
   type: "OutRef";
   text: string;
   span: Span;
+  outRefKW: DL2OutRefKW;
   table: DL2Qualifier;
   col: DL2Ident;
 };
@@ -966,6 +968,7 @@ function extractInRef(input: string, node: RuleTree): DL2InRef {
     type: "InRef",
     text: textForSpan(input, node.span),
     span: node.span,
+    inRefKW: extractInRefKW(input, childByName(node, "inRefKW", null)),
     table: extractQualifier(input, childByName(node, "qualifier", "table")),
     col: extractIdent(input, childByName(node, "ident", "col")),
   };
@@ -1050,6 +1053,7 @@ function extractOutRef(input: string, node: RuleTree): DL2OutRef {
     type: "OutRef",
     text: textForSpan(input, node.span),
     span: node.span,
+    outRefKW: extractOutRefKW(input, childByName(node, "outRefKW", null)),
     table: extractQualifier(input, childByName(node, "qualifier", "table")),
     col: extractIdent(input, childByName(node, "ident", "col")),
   };
@@ -1472,8 +1476,9 @@ export const GRAMMAR: Grammar = {
     type: "Sequence",
     items: [
       {
-        type: "Text",
-        value: "outRef",
+        type: "Ref",
+        captureName: null,
+        rule: "outRefKW",
       },
       {
         type: "Text",
@@ -1503,8 +1508,9 @@ export const GRAMMAR: Grammar = {
     type: "Sequence",
     items: [
       {
-        type: "Text",
-        value: "inRef",
+        type: "Ref",
+        captureName: null,
+        rule: "inRefKW",
       },
       {
         type: "Text",

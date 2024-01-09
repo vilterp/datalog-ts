@@ -11,8 +11,8 @@ tableDecl :- [
 ].
 tableAttr :- [ident, (refSpec | "")].
 refSpec :- [":", ws, (outRef | inRef)].
-outRef :- ["outRef", "(", table:qualifier, ":", col:ident, ")"].
-inRef :- ["inRef", "(", table:qualifier, ":", col:ident, ")"].
+outRef :- [outRefKW, "(", table:qualifier, ":", col:ident, ")"].
+inRef :- [inRefKW, "(", table:qualifier, ":", col:ident, ")"].
 
 inRefKW :- "inRef".
 outRefKW :- "outRef".
