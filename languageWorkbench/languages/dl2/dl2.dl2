@@ -1,3 +1,6 @@
+# ======== Table Defns ========
+# TODO: autogenerate
+
 table ast.rule {
   id,
   parentID,
@@ -81,6 +84,8 @@ table ast.ident {
   span
 }
 
+# ======== Defn ========
+
 def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnTable{scopeID: I, span: S, name: N, kind: K} |
@@ -112,6 +117,29 @@ def scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: "attr"} {
             span: S
           }
         }
+      }
+    }
+  }
+}
+
+def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
+  ast.tableDecl {
+    qualifier {
+      text: N,
+      span: S
+    }
+  }
+}
+
+def scope.defnTableAttr{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.tableDecl {
+    qualifier {
+      text: I
+    },
+    attr {
+      ident {
+        text: N,
+        span: S
       }
     }
   }
@@ -253,6 +281,8 @@ def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: Oute
   scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
 }
 
+# ==== schema refs ====
+
 def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
   ast.tableDecl {
     qualifier {
@@ -271,31 +301,6 @@ def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
             text: P
           }
         }
-      }
-    }
-  }
-}
-
-# ===== defns =====
-
-def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
-  ast.tableDecl {
-    qualifier {
-      text: N,
-      span: S
-    }
-  }
-}
-
-def scope.defnTableAttr{scopeID: I, span: S, name: N, kind: "attr"} {
-  ast.tableDecl {
-    qualifier {
-      text: I
-    },
-    attr {
-      ident {
-        text: N,
-        span: S
       }
     }
   }
