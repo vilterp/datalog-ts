@@ -14,7 +14,7 @@ import { InterpCache, addCursor } from "./interpCache";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
 import { assertDeepEqual } from "../util/testBench/testing";
-import { LanguageSpec } from "./common/types";
+import { LanguageSpec, dl } from "./common/types";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
@@ -229,7 +229,7 @@ const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
 const langSpec: LanguageSpec = {
   name: "datalog",
-  logic: fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8"),
+  logic: dl(fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8")),
   grammar: fs.readFileSync(`languageWorkbench/languages/dl/dl.grammar`, "utf8"),
   example: "",
 };
