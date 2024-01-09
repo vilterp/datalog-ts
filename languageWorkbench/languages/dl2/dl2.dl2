@@ -49,8 +49,30 @@ def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
 }
 
 def scope.Var{scopeID: I, name: N, span: S, kind: K} {
-  scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K}
+  scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varRelation{scopeID: I, name: N, span: S, kind: K}
 }
+
+def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
+  ast.conjunct {
+    record {
+      qualifier {
+        text: N,
+        span: S
+      }
+    }
+  } |
+  ast.conjunct {
+    nested {
+      qualifier {
+        text: N,
+        span: S
+      }
+    }
+  }
+}
+
+# ===== nested stuff =====
 
 def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "attr"} {
   scope.nestedTable{outerTable: OuterTable, accessor: InnerAttr, span: S}
@@ -122,6 +144,8 @@ def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
     }
   }
 }
+
+# ===== defns =====
 
 def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
   ast.tableDecl {

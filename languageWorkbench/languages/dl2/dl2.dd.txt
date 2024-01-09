@@ -57,3 +57,5 @@ scope.Var{}?
 application/datalog
 scope.Var{kind: "attr", name: "comment", scopeID: "post", span: span{from: 268, to: 275}}.
 scope.Var{kind: "attr", name: "post", scopeID: "author", span: span{from: 222, to: 226}}.
+scope.Var{kind: "relation", name: "author", scopeID: global{}, span: span{from: 209, to: 215}}.
+scope.Var{kind: "relation", name: N, scopeID: global{}, span: S}.
