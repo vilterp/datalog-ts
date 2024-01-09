@@ -34,7 +34,8 @@ export type TableMembers = {
   [name: string]: TableMember;
 };
 
-export type TableMember =
-  | { type: "Scalar" }
-  | { type: "InRef"; table: string; name: string }
-  | { type: "OutRef"; table: string; name: string };
+export type TableMember = { type: "Scalar" } | RefSpec;
+
+export type RefSpec =
+  | { type: "InRef"; table: string; column: string }
+  | { type: "OutRef"; table: string; column: string };

@@ -12,8 +12,14 @@ import {
 import { unreachable } from "../../../util/unreachable";
 import { pairsToObj } from "../../../util/util";
 import { deEscape } from "../../parserlib/types";
-import { DL2Main, DL2String, DL2TableDecl, DL2Term } from "./parser";
-import { ExtractionProblem, Module, TableMembers } from "./types";
+import {
+  DL2Main,
+  DL2RefSpec,
+  DL2String,
+  DL2TableDecl,
+  DL2Term,
+} from "./parser";
+import { ExtractionProblem, Module, RefSpec, TableMembers } from "./types";
 
 export function extractModule(main: DL2Main): [Module, ExtractionProblem[]] {
   const problems: ExtractionProblem[] = [];
@@ -112,7 +118,7 @@ function extractTableMembers(
       members[attr.ident.text] = {
         type: "InRef",
         table: attr.refSpec.inRef.table.text,
-        name: attr.refSpec.inRef.col.text,
+        column: attr.refSpec.inRef.col.text,
       };
       continue;
     }
@@ -120,7 +126,7 @@ function extractTableMembers(
       members[attr.ident.text] = {
         type: "OutRef",
         table: attr.refSpec.outRef.table.text,
-        name: attr.refSpec.outRef.col.text,
+        column: attr.refSpec.outRef.col.text,
       };
       continue;
     }

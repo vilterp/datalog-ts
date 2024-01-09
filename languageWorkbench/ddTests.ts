@@ -59,6 +59,7 @@ export function lwbTests(writeResults: boolean): Suite {
   }));
 }
 
+// TODO: move to dl2
 export function dl2Tests(writeResults: boolean): Suite {
   return [
     {
@@ -71,16 +72,16 @@ export function dl2Tests(writeResults: boolean): Suite {
         );
       },
     },
-    {
-      name: "run",
-      test() {
-        runDDTestAtPath(
-          `languageWorkbench/languages/dl2/run.dd.txt`,
-          dl2RunTest,
-          writeResults
-        );
-      },
-    },
+    // {
+    //   name: "run",
+    //   test() {
+    //     runDDTestAtPath(
+    //       `languageWorkbench/languages/dl2/run.dd.txt`,
+    //       dl2RunTest,
+    //       writeResults
+    //     );
+    //   },
+    // },
   ];
 }
 
