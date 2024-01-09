@@ -18,6 +18,7 @@ import { LanguageSpec, dl } from "./common/types";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { ParseErrors } from "./parserlib/types";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -224,7 +225,10 @@ const LEAVES = new Set(["ident", "intLit", "stringLit"]);
 
 const { input, cursorPos } = extractCursor(DLSample);
 const tree = parserlib.parse(GRAMMAR, "main", input);
-const ruleTree = extractRuleTree(tree);
+const [ruleTree, parseErrors] = extractRuleTree(tree);
+if (parseErrors.length > 0) {
+  throw new ParseErrors(parseErrors);
+}
 const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
 const langSpec: LanguageSpec = {

@@ -17,6 +17,7 @@ import { parseMain } from "./languages/dl2/parser";
 import { ppRule } from "../core/pretty";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { instantiate } from "./languages/dl2/instantiate";
+import { ParseErrors } from "./parserlib/types";
 
 const BASE_PATH = "languageWorkbench/common";
 
@@ -85,7 +86,10 @@ export function dl2Tests(writeResults: boolean): Suite {
 
 function dl2CompileTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const parsed = parseMain(input);
+    const [parsed, parseProblems] = parseMain(input);
+    if (parseProblems.length > 0) {
+      throw new ParseErrors(parseProblems);
+    }
     const [mod, extractProblems] = extractModule(parsed);
     if (extractProblems.length > 0) {
       throw new Error(`extract problems: ${extractProblems}`);

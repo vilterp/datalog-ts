@@ -12,6 +12,7 @@ import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { parse } from "./parser";
 import { parseMain } from "../languages/grammar/parser";
 import { parserGrammarToInternal } from "./translateAST";
+import { ParseErrors } from "./types";
 
 const GRAMMAR = `main :- value.
 value :- (object | array | int | string | null).
@@ -62,7 +63,10 @@ async function parserTestDatalog(
   const loadedInterp = mkInterp().doLoad(
     "languageWorkbench/parserlib/datalog/parse.dl"
   );
-  const grammarTree = parseMain(grammarSource);
+  const [grammarTree, errors] = parseMain(grammarSource);
+  if (errors.length > 0) {
+    throw new ParseErrors(errors);
+  }
   const grammarParsed = parserGrammarToInternal(grammarTree);
   const grammarDL = grammarToDL(grammarParsed);
   const inputDL = inputToDL(input);
@@ -83,7 +87,10 @@ async function parserTestNativeJS(
   grammarSource: string,
   input: string
 ): Promise<BenchmarkResult> {
-  const grammarTree = parseMain(grammarSource);
+  const [grammarTree, errors] = parseMain(grammarSource);
+  if (errors.length > 0) {
+    throw new ParseErrors(errors);
+  }
   const grammarParsed = parserGrammarToInternal(grammarTree);
 
   return doBenchmark(repetitions, () => {

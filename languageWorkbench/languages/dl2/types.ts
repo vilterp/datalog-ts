@@ -1,8 +1,9 @@
 import { Rec } from "../../../core/types";
-import { Span } from "../../parserlib/types";
+import { ParseError, Span } from "../../parserlib/types";
 import { DL2Rule } from "./parser";
 
 export type ExtractionProblem =
+  | { type: "ParseError"; parseError: ParseError }
   | {
       type: "DuplicateTable";
       name: string;

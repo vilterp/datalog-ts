@@ -1,3 +1,5 @@
+import { prettyPrintParseError } from "./pretty";
+
 export type Grammar = { [name: string]: Rule };
 
 // === Rules ===
@@ -81,4 +83,18 @@ export function spanLength(s: Span): number {
 // TODO: find a better home for this
 export function deEscape(str: string): string {
   return str.replace(/\\n/, "\n").replace(/\\\\/, "\\").replace(/\\"/, '"');
+}
+
+// === Errors ===
+
+export type ParseError = {
+  offset: number;
+  expected: Rule | "end of file";
+  got: string;
+};
+
+export class ParseErrors extends Error {
+  constructor(public errors: ParseError[]) {
+    super(`ParseErrors: ${errors.map(prettyPrintParseError).join("\n")}`);
+  }
 }

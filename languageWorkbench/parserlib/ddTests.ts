@@ -1,25 +1,23 @@
 import { Suite } from "../../util/testBench/testing";
 import { runDDTestAtPath } from "../../util/ddTest";
-import { formatParseError, getErrors, parse, TraceTree } from "./parser";
+import { parse, TraceTree } from "./parser";
 import { extractRuleTree } from "./ruleTree";
-import { prettyPrintRuleTree } from "./pretty";
+import { prettyPrintParseError, prettyPrintRuleTree } from "./pretty";
 import {
   datalogOut,
-  datalogOutRules,
   jsonOut,
   plainTextOut,
   TestOutput,
 } from "../../util/ddTest/types";
-import { ppRule, ppt } from "../../core/pretty";
 import { grammarToDL, inputToDL } from "./datalog/genDatalog";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
-import { Rec, Rule } from "../../core/types";
+import { Rec } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { genExtractorStr, Options } from "./gen/generate";
 import { parseMain } from "../languages/grammar/parser";
 import { parserGrammarToInternal } from "./translateAST";
-import { Grammar, text } from "./types";
+import { Grammar, ParseErrors, text } from "./types";
 import { digit, intLit, stringLit } from "./stdlib";
 
 const basicGrammar: Grammar = {
@@ -98,13 +96,11 @@ function parserTest(grammar: Grammar, test: string[]): TestOutput[] {
 
 function metaTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const grammarTree = parseMain(input);
+    const [grammarTree, errors] = parseMain(input);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const grammar = parserGrammarToInternal(grammarTree);
-    // TODO: get errors
-    // const errors = getErrors(input, traceTree);
-    // if (errors.length > 0) {
-    //   throw new Error(`errors in metaTest: ${errors.map(formatParseError)}`);
-    // }
     return jsonOut(grammar);
   });
 }
@@ -116,7 +112,14 @@ function datalogTest(test: string[]): TestOutput[] {
     const firstLine = lines[0];
     const restOfInput = lines.slice(1).join("\n");
     if (firstLine === "gram") {
-      const grammarParsed = parseMain(restOfInput);
+      const [grammarParsed, errors] = parseMain(restOfInput);
+      if (errors.length > 0) {
+        throw new Error(
+          `failed to parse input: ${errors
+            .map((err) => JSON.stringify(err))
+            .join("\n")}`
+        );
+      }
       const grammar = parserGrammarToInternal(grammarParsed);
       grammarData = grammarToDL(grammar);
       return datalogOut(grammarData);
@@ -154,19 +157,25 @@ function datalogInputTest(test: string[]): TestOutput[] {
 }
 
 function handleResults(traceTree: TraceTree, source: string): TestOutput {
-  const ruleTree = extractRuleTree(traceTree);
-  const errors = getErrors(source, traceTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
   return plainTextOut(
     [
       ...prettyPrintRuleTree(ruleTree, source).split("\n"),
-      ...errors.map((err) => `error: ${formatParseError(err)}`),
+      ...errors.map((err) => `error: ${prettyPrintParseError(err)}`),
     ].join("\n")
   );
 }
 
 function codegenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
-    const grammarTree = parseMain(input);
+    const [grammarTree, errors] = parseMain(input);
+    if (errors.length > 0) {
+      throw new Error(
+        `failed to parse input: ${errors
+          .map((err) => JSON.stringify(err))
+          .join("\n")}`
+      );
+    }
     const grammar = parserGrammarToInternal(grammarTree);
     const options: Options = {
       parserlibPath: ".",

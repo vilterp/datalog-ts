@@ -39,15 +39,14 @@ function Workbench() {
   };
 
   const uri = `test.${curLangID}`;
-  const interpWithoutCursor = CACHE.getInterpForDoc(
+  const { interp: interpWithoutCursor, errors } = CACHE.getInterpForDoc(
     versionedLangID,
     {
       [versionedLangID]: curLangSpec,
     },
     uri,
     curLangState.example.source
-  ).interp;
-  const errors = [];
+  );
   const interp = addCursor(interpWithoutCursor, curLangState.example.cursorPos);
 
   return (
@@ -88,6 +87,7 @@ function Workbench() {
                 lineNumbers="off"
                 showKeyBindingsTable
               />
+              {/* TODO: show these inline in the source ccode */}
               <ErrorList errors={errors} />
             </td>
             <td>

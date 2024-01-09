@@ -1,6 +1,6 @@
 import { RuleTree } from "./ruleTree";
 import { prettyPrintTree, Tree } from "../../util/tree";
-import { Rule, SingleCharRule, Span } from "./types";
+import { ParseError, Rule, SingleCharRule, Span } from "./types";
 
 // supposed to be like regex syntax
 export function prettyPrintCharRule(rule: SingleCharRule): string {
@@ -21,9 +21,9 @@ export function prettyPrintRule(rule: Rule): string {
     case "Char":
       return prettyPrintCharRule(rule.rule);
     case "Choice":
-      return `[${rule.choices.map(prettyPrintRule).join(" | ")}]`;
+      return `(${rule.choices.map(prettyPrintRule).join(" | ")})`;
     case "Sequence":
-      return rule.items.map(prettyPrintRule).join(", ");
+      return `[${rule.items.map(prettyPrintRule).join(", ")}]`;
     case "Text":
       return `"${rule.value.split(`"`).join(`\\"`)}"`;
     case "Ref":
@@ -59,4 +59,12 @@ export function prettyPrintRuleTree(rt: RuleTree, source: string): string {
   return prettyPrintTree(ruleTreeToTree(rt, source), (n) =>
     renderRuleNode(n.item, source)
   );
+}
+
+export function prettyPrintParseError(error: ParseError): string {
+  return `offset ${error.offset}: expected ${
+    typeof error.expected === "string"
+      ? error.expected
+      : prettyPrintRule(error.expected)
+  }; got ${error.got}`;
 }

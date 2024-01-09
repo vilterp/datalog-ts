@@ -11,7 +11,7 @@ bar {
   y = boop;
   goto foo;
 }
-ide.Suggestion{}
+ide.Suggestion{}?
 ----
 application/datalog
 ide.Suggestion{id: global{}, name: "a", span: span{from: 93, to: 96}, type: "any"}.
@@ -37,7 +37,7 @@ loop {
 afterFork {
   done = 42;
 }
-scope.Usage{}
+scope.Usage{}?
 ----
 application/datalog
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 100, to: 105}, kind: "value", name: "going", usageScopeID: global{}, usageSpan: span{from: 146, to: 151}}.

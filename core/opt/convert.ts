@@ -15,13 +15,13 @@ export function getProblem(
 ): ProblemAndMapping {
   // TODO: maybe relation names should be part of spec, not hardcoded here
   const constraints = interp
-    .queryStr(`constraint{problem: ${problemID}}`)
+    .queryStr(`constraint{problem: ${problemID}}?`)
     .map((res) => res.term as Rec);
   const constraintCoefficients = interp
-    .queryStr(`coefficientValue{problem: ${problemID}}`)
+    .queryStr(`coefficientValue{problem: ${problemID}}?`)
     .map((res) => res.term as Rec);
   const objectiveCoefficients = interp
-    .queryStr(`objectiveCoefficient{problem: ${problemID}}`)
+    .queryStr(`objectiveCoefficient{problem: ${problemID}}?`)
     .map((res) => res.term as Rec);
 
   const varIndex = new TermTable();

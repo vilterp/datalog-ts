@@ -1,15 +1,15 @@
 import { Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
 import {
-  DLMain,
   DLStatement,
   parseMain,
-  parseRecord,
+  parseQuery,
 } from "../languageWorkbench/languages/dl/parser";
 import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "./translateAST";
+import { ParseErrors } from "../languageWorkbench/parserlib/types";
 
 export abstract class AbstractInterpreter {
   loadStack: string[];
@@ -59,10 +59,13 @@ export abstract class AbstractInterpreter {
   }
 
   queryStr(str: string): Res[] {
-    const record = parseRecord(str);
+    const [query, errors] = parseQuery(str);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const [res, _] = this.evalStmt({
       type: "Query",
-      record: parserTermToInternal(record) as Rec,
+      record: parserTermToInternal(query.record) as Rec,
     });
     return res;
   }
@@ -73,13 +76,19 @@ export abstract class AbstractInterpreter {
   }
 
   evalStr(str: string): [Res[], AbstractInterpreter] {
-    const main = parseMain(str);
+    const [main, errors] = parseMain(str);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     return this.evalStmts(main.statement);
   }
 
   doLoad(path: string): AbstractInterpreter {
     const contents = this.loader(this.cwd + "/" + path);
-    const program: DLMain = parseMain(contents);
+    const [program, errors] = parseMain(contents);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     let out: AbstractInterpreter = this;
     for (const stmt of program.statement) {
       const [_, newInterp] = out.evalStmt(parserStatementToInternal(stmt));

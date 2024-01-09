@@ -17,6 +17,7 @@ import { LingoEditor } from "../../uiCommon/ide/editor";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import { initialEditorState } from "../../uiCommon/ide/types";
 import { useJSONLocalStorage } from "../../uiCommon/generic/hooks";
+import { ParseErrors } from "../../languageWorkbench/parserlib/types";
 
 const INITIAL_GRAMMAR_TEXT = `main :- repSep("foo", "bar").`;
 
@@ -72,7 +73,10 @@ function constructInterp(grammarSource: string) {
     nullLoader
   ) as AbstractInterpreter;
   interp = interp.evalStr(parseDL)[1];
-  const grammarTree = parseMain(grammarSource);
+  const [grammarTree, errors] = parseMain(grammarSource);
+  if (errors.length > 0) {
+    throw new ParseErrors(errors);
+  }
   const grammarParsed = parserGrammarToInternal(grammarTree);
   const rules = grammarToDL(grammarParsed);
   interp = interp.evalRawStmts(
