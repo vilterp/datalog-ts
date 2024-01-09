@@ -9,7 +9,11 @@ import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
 import { addCursor } from "../../languageWorkbench/interpCache";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-import { LanguageSpec } from "../../languageWorkbench/common/types";
+import {
+  LanguageSpec,
+  dl as dl1,
+  dl2,
+} from "../../languageWorkbench/common/types";
 import { CACHE } from "../../languageWorkbench/vscode/common";
 
 function Main() {
@@ -26,7 +30,10 @@ function Workbench() {
 
   const curLangSpec: LanguageSpec = {
     name: versionedLangID,
-    datalog: curLangState.datalog.source,
+    logic:
+      curLangState.datalogVersion === "DL1"
+        ? dl1(curLangState.datalog.source)
+        : dl2(curLangState.datalog.source),
     example: curLangState.example.source,
     grammar: curLangState.grammar.source,
   };
@@ -152,13 +159,15 @@ type LangState = {
   example: EditorState;
   grammar: EditorState;
   datalog: EditorState;
+  datalogVersion: "DL1" | "DL2";
 };
 
 const emptyState: State = mapObj(LANGUAGES, (langID, spec) => ({
   version: 1,
   example: { cursorPos: 1, source: spec.example },
   grammar: { cursorPos: 1, source: spec.grammar },
-  datalog: { cursorPos: 1, source: spec.datalog },
+  datalog: { cursorPos: 1, source: spec.logic.source },
+  datalogVersion: spec.logic.type,
 }));
 
 type Action = { type: "UpdateLang"; langID: string; action: LangAction };

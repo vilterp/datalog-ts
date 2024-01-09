@@ -103,7 +103,7 @@ function extractNested(
   path: Path
 ): [Conjunct[], ExtractionProblem[]] {
   const relation =
-    path.length === 0 ? nested.ident.text : path[path.length - 1].relation;
+    path.length === 0 ? nested.qualifier.text : path[path.length - 1].relation;
   const curRec = rec(relation, {});
   if (path.length > 0) {
     const last = path[path.length - 1];
@@ -127,14 +127,14 @@ function extractNested(
       case "NormalAttr":
         continue;
       case "Nested": {
-        const attrName = attr.ident.text;
+        const attrName = attr.qualifier.text;
         const refSpec = mod.tableDecls[relation].members[attrName];
         if (!refSpec) {
           problems.push({
             type: "MissingRefSpec",
             relation,
             name: attrName,
-            span: attr.ident.span,
+            span: attr.qualifier.span,
           });
           continue;
         }

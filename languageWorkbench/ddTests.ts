@@ -9,7 +9,7 @@ import {
 import { datalogOut, plainTextOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
-import { LanguageSpec } from "./common/types";
+import { LanguageSpec, dl, dl2 } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
 import { compile } from "./languages/dl2/compile";
 import { extractModule } from "./languages/dl2/extract";
@@ -105,11 +105,17 @@ function dl2RunTest(test: string[]): TestOutput[] {
     const decls = lines.slice(0, lines.length - 1).join("\n");
     const query = lines[lines.length - 1];
 
+    let interp: AbstractInterpreter = new SimpleInterpreter(
+      BASE_PATH,
+      fsLoader
+    );
+
     // TODO: get parse problems
-    const [interp, problems] = instantiate(parseMain(decls));
+    const [newInterp, problems] = instantiate(interp, decls);
     if (problems.length > 0) {
       throw new Error(`problems: ${problems}`);
     }
+    interp = newInterp;
 
     // Query
     const res = interp.queryStr(query);
@@ -127,16 +133,14 @@ export function testLangQuery(
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
     const { input: example, cursorPos } = extractCursor(exampleWithCursor);
     const query = lines[lines.length - 1];
+
+    const basePath = `languageWorkbench/languages/${langName}/${langName}`;
     const langSpec: LanguageSpec = {
       name: langName,
-      datalog: fs.readFileSync(
-        `languageWorkbench/languages/${langName}/${langName}.dl`,
-        "utf8"
-      ),
-      grammar: fs.readFileSync(
-        `languageWorkbench/languages/${langName}/${langName}.grammar`,
-        "utf8"
-      ),
+      logic: fs.existsSync(`${basePath}.dl2`)
+        ? dl2(fs.readFileSync(`${basePath}.dl2`, "utf8"))
+        : dl(fs.readFileSync(`${basePath}.dl`, "utf8")),
+      grammar: fs.readFileSync(`${basePath}.grammar`, "utf8"),
       example: "",
     };
     const { interp: withoutCursor } = cache.getInterpForDoc(

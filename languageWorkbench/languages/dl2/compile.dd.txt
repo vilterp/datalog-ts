@@ -1,6 +1,6 @@
 table post {
   author_id,
-  comment: inRef(comment.post_id)
+  comment: inRef(comment:post_id)
 }
 table comment {
   author_id,
@@ -20,7 +20,7 @@ postComment{commentID: C, postID: P} :- post{id: P} & comment{id: C, post_id: P}
 
 table post {
   author_id,
-  comment: inRef(comment.post_id)
+  comment: inRef(comment:post_id)
 }
 table comment {
   author_id,

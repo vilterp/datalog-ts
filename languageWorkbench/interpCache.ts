@@ -1,5 +1,6 @@
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import { LanguageSpec } from "./common/types";
+import { instantiate } from "./languages/dl2/instantiate";
 import { parseMain } from "./languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
 import { parse, TraceTree } from "./parserlib/parser";
@@ -114,8 +115,23 @@ export class InterpCache {
 
     // add datalog
     try {
-      if (langSpec.datalog.length > 0) {
-        interp = interp.evalStr(langSpec.datalog)[1];
+      switch (langSpec.logic.type) {
+        case "DL1": {
+          interp = interp.evalStr(langSpec.logic.source)[1];
+          break;
+        }
+        case "DL2": {
+          const [newInterp, problems] = instantiate(
+            interp,
+            langSpec.logic.source
+          );
+          // TODO: show in UI
+          if (problems.length > 0) {
+            console.error("DL2 extraction problems", problems);
+          }
+          interp = newInterp;
+          break;
+        }
       }
       interp = interp.evalRawStmts(declareTables(grammar))[1];
       interp = interp.evalStmt({

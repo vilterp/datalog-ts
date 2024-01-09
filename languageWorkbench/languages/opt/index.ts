@@ -1,4 +1,4 @@
-import { LanguageSpec } from "../../common/types";
+import { LanguageSpec, dl } from "../../common/types";
 // @ts-ignore
 import datalogTxt from "./opt.dl";
 // @ts-ignore
@@ -8,7 +8,7 @@ import example from "./example.txt";
 
 export const opt: LanguageSpec = {
   name: "opt",
-  datalog: datalogTxt,
+  logic: dl(datalogTxt),
   grammar,
   example,
   leaves: new Set(["ident", "stringLit", "intLit"]),

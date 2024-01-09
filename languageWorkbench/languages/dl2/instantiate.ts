@@ -1,14 +1,15 @@
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
-import { nullLoader } from "../../../core/loaders";
-import { SimpleInterpreter } from "../../../core/simple/interpreter";
 import { compile } from "./compile";
 import { extractModule } from "./extract";
-import { DL2Main } from "./parser";
+import { parseMain } from "./parser";
 import { ExtractionProblem } from "./types";
 
 export function instantiate(
-  parsed: DL2Main
+  interp: AbstractInterpreter,
+  source: string
 ): [AbstractInterpreter, ExtractionProblem[]] {
+  const parsed = parseMain(source);
+
   // Extract
   const problems: ExtractionProblem[] = [];
   const [mod, extractProblems] = extractModule(parsed);
@@ -23,7 +24,6 @@ export function instantiate(
   }
 
   // Instantiate
-  let interp: AbstractInterpreter = new SimpleInterpreter(".", nullLoader);
   for (const rule of Object.values(compiled)) {
     interp = interp.evalStmt({ type: "Rule", rule })[1];
   }
