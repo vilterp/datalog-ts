@@ -1264,7 +1264,7 @@ function extractVar(input: string, node: RuleTree): DL2Var {
     ),
   };
 }
-const GRAMMAR: Grammar = {
+export const GRAMMAR: Grammar = {
   main: {
     type: "Sequence",
     items: [

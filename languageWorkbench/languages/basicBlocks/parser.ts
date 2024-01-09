@@ -597,7 +597,7 @@ function extractValueInstr(input: string, node: RuleTree): BBValueInstr {
     rvalue: extractRvalue(input, childByName(node, "rvalue", null)),
   };
 }
-const GRAMMAR: Grammar = {
+export const GRAMMAR: Grammar = {
   main: {
     type: "RepSep",
     rep: {
