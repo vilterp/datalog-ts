@@ -78,7 +78,7 @@ async function parserTestDatalog(
     )[1];
     interp = interp.insertAll(inputDL);
 
-    interp.queryStr("parse.Complete{}");
+    interp.queryStr("parse.Complete{}?");
   });
 }
 

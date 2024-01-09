@@ -21,7 +21,7 @@ export const jumpToDefnAction: EditorAction = {
 };
 
 function getDefnForCursor(interp: AbstractInterpreter): Span | null {
-  const res = interp.queryStr(`ide.DefnForCursor{defnLoc: S}`);
+  const res = interp.queryStr(`ide.DefnForCursor{defnLoc: S}?`);
   if (res.length === 0) {
     return null;
   }
@@ -49,7 +49,7 @@ export const jumpToFirstUsageAction: EditorAction = {
 };
 
 function getFirstUsageForCursor(interp: AbstractInterpreter): Span | null {
-  const res = interp.queryStr(`ide.UsageForCursor{usageSpan: S}`);
+  const res = interp.queryStr(`ide.UsageForCursor{usageSpan: S}?`);
   if (res.length === 0) {
     return null;
   }
@@ -76,7 +76,7 @@ export const jumpToErrorAction: EditorAction = {
 };
 
 function getProblems(interp: AbstractInterpreter): { offset: number }[] {
-  const offsets = interp.queryStr("tc.Problem{span: S}").map((res) => {
+  const offsets = interp.queryStr("tc.Problem{span: S}?").map((res) => {
     const rec = res.term as Rec;
     const span = dlToSpan(rec.attrs.span as Rec);
     return span.from;
