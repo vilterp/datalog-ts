@@ -6,7 +6,7 @@ import {
   RuleTree,
   extractRuleTree,
 } from "../../parserlib/ruleTree";
-import { Span, Grammar } from "../../parserlib/types";
+import { Span, Grammar, ParseError } from "../../parserlib/types";
 import * as parserlib from "../../parserlib/parser";
 export type OptAlpha = {
   type: "Alpha";
@@ -211,177 +211,225 @@ export type OptWs = {
   text: string;
   span: Span;
 };
-export function parseAlpha(input: string): OptAlpha {
+export function parseAlpha(input: string): [OptAlpha, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAlpha(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlpha(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAlphaNum(input: string): OptAlphaNum {
+export function parseAlphaNum(input: string): [OptAlphaNum, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAlphaNum(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlphaNum(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseClause(input: string): OptClause {
+export function parseClause(input: string): [OptClause, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "clause", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractClause(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractClause(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseCommaSpace(input: string): OptCommaSpace {
+export function parseCommaSpace(input: string): [OptCommaSpace, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "commaSpace", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractCommaSpace(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCommaSpace(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseCommaWS(input: string): OptCommaWS {
+export function parseCommaWS(input: string): [OptCommaWS, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "commaWS", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractCommaWS(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCommaWS(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseComparison(input: string): OptComparison {
+export function parseComparison(input: string): [OptComparison, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "comparison", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractComparison(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractComparison(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseComparisonOp(input: string): OptComparisonOp {
+export function parseComparisonOp(
+  input: string
+): [OptComparisonOp, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "comparisonOp", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractComparisonOp(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractComparisonOp(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseConjuncts(input: string): OptConjuncts {
+export function parseConjuncts(input: string): [OptConjuncts, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "conjuncts", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractConjuncts(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractConjuncts(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseConstraint(input: string): OptConstraint {
+export function parseConstraint(input: string): [OptConstraint, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "constraint", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractConstraint(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractConstraint(input, ruleTree);
+  return [extracted, errors];
 }
 export function parseConstraintComparison(
   input: string
-): OptConstraintComparison {
+): [OptConstraintComparison, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "constraintComparison", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractConstraintComparison(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractConstraintComparison(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseDeclaration(input: string): OptDeclaration {
+export function parseDeclaration(
+  input: string
+): [OptDeclaration, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "declaration", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractDeclaration(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractDeclaration(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseIdent(input: string): OptIdent {
+export function parseIdent(input: string): [OptIdent, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractIdent(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractIdent(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseInputKW(input: string): OptInputKW {
+export function parseInputKW(input: string): [OptInputKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "inputKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractInputKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractInputKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseInputRelationDecl(input: string): OptInputRelationDecl {
+export function parseInputRelationDecl(
+  input: string
+): [OptInputRelationDecl, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "inputRelationDecl", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractInputRelationDecl(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractInputRelationDecl(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseInt(input: string): OptInt {
+export function parseInt(input: string): [OptInt, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "int", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractInt(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractInt(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseMain(input: string): OptMain {
+export function parseMain(input: string): [OptMain, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractMain(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractMain(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseNum(input: string): OptNum {
+export function parseNum(input: string): [OptNum, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "num", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractNum(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractNum(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseObjective(input: string): OptObjective {
+export function parseObjective(input: string): [OptObjective, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "objective", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractObjective(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractObjective(input, ruleTree);
+  return [extracted, errors];
 }
-export function parsePlaceholder(input: string): OptPlaceholder {
+export function parsePlaceholder(
+  input: string
+): [OptPlaceholder, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "placeholder", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractPlaceholder(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractPlaceholder(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRecord(input: string): OptRecord {
+export function parseRecord(input: string): [OptRecord, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "record", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRecord(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRecord(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRecordAttrs(input: string): OptRecordAttrs {
+export function parseRecordAttrs(
+  input: string
+): [OptRecordAttrs, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "recordAttrs", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRecordAttrs(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRecordAttrs(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRecordKeyValue(input: string): OptRecordKeyValue {
+export function parseRecordKeyValue(
+  input: string
+): [OptRecordKeyValue, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "recordKeyValue", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRecordKeyValue(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRecordKeyValue(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRuleKW(input: string): OptRuleKW {
+export function parseRuleKW(input: string): [OptRuleKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "ruleKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRuleKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRuleKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseScalarExpr(input: string): OptScalarExpr {
+export function parseScalarExpr(input: string): [OptScalarExpr, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "scalarExpr", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractScalarExpr(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractScalarExpr(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseScalarTerm(input: string): OptScalarTerm {
+export function parseScalarTerm(input: string): [OptScalarTerm, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "scalarTerm", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractScalarTerm(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractScalarTerm(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseSchemaSpec(input: string): OptSchemaSpec {
+export function parseSchemaSpec(input: string): [OptSchemaSpec, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "schemaSpec", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractSchemaSpec(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSchemaSpec(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseSense(input: string): OptSense {
+export function parseSense(input: string): [OptSense, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "sense", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractSense(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSense(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseSepKW(input: string): OptSepKW {
+export function parseSepKW(input: string): [OptSepKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "sepKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractSepKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSepKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseString(input: string): OptString {
+export function parseString(input: string): [OptString, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "string", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractString(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractString(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseStringChar(input: string): OptStringChar {
+export function parseStringChar(input: string): [OptStringChar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "stringChar", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractStringChar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStringChar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseTerm(input: string): OptTerm {
+export function parseTerm(input: string): [OptTerm, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "term", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractTerm(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractTerm(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseVar(input: string): OptVar {
+export function parseVar(input: string): [OptVar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "var", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractVar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractVar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseVarKW(input: string): OptVarKW {
+export function parseVarKW(input: string): [OptVarKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "varKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractVarKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractVarKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseVarRelationDecl(input: string): OptVarRelationDecl {
+export function parseVarRelationDecl(
+  input: string
+): [OptVarRelationDecl, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "varRelationDecl", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractVarRelationDecl(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractVarRelationDecl(input, ruleTree);
+  return [extracted, errors];
 }
 function extractAlpha(input: string, node: RuleTree): OptAlpha {
   return {

@@ -6,7 +6,7 @@ import {
   RuleTree,
   extractRuleTree,
 } from "../../parserlib/ruleTree";
-import { Span, Grammar } from "../../parserlib/types";
+import { Span, Grammar, ParseError } from "../../parserlib/types";
 import * as parserlib from "../../parserlib/parser";
 export type BBPlaceholder = {
   type: "Placeholder";
@@ -163,145 +163,173 @@ export type BBWs = {
   spaces: BBSpaces[];
   comment: BBComment[];
 };
-export function parsePlaceholder(input: string): BBPlaceholder {
+export function parsePlaceholder(input: string): [BBPlaceholder, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "Placeholder", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractPlaceholder(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractPlaceholder(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAlpha(input: string): BBAlpha {
+export function parseAlpha(input: string): [BBAlpha, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAlpha(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlpha(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAlphaNum(input: string): BBAlphaNum {
+export function parseAlphaNum(input: string): [BBAlphaNum, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAlphaNum(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlphaNum(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseBlock(input: string): BBBlock {
+export function parseBlock(input: string): [BBBlock, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "block", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractBlock(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractBlock(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseBlockBody(input: string): BBBlockBody {
+export function parseBlockBody(input: string): [BBBlockBody, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "blockBody", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractBlockBody(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractBlockBody(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseCall(input: string): BBCall {
+export function parseCall(input: string): [BBCall, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "call", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractCall(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCall(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseComment(input: string): BBComment {
+export function parseComment(input: string): [BBComment, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "comment", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractComment(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractComment(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseCommentChar(input: string): BBCommentChar {
+export function parseCommentChar(input: string): [BBCommentChar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "commentChar", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractCommentChar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCommentChar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseConst(input: string): BBConst {
+export function parseConst(input: string): [BBConst, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "const", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractConst(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractConst(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseEditorVar(input: string): BBEditorVar {
+export function parseEditorVar(input: string): [BBEditorVar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "editorVar", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractEditorVar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractEditorVar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseForkToInstr(input: string): BBForkToInstr {
+export function parseForkToInstr(input: string): [BBForkToInstr, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "forkToInstr", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractForkToInstr(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractForkToInstr(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseForkToKW(input: string): BBForkToKW {
+export function parseForkToKW(input: string): [BBForkToKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "forkToKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractForkToKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractForkToKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseGotoInstr(input: string): BBGotoInstr {
+export function parseGotoInstr(input: string): [BBGotoInstr, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "gotoInstr", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractGotoInstr(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractGotoInstr(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseGotoKW(input: string): BBGotoKW {
+export function parseGotoKW(input: string): [BBGotoKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "gotoKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractGotoKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractGotoKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseIdent(input: string): BBIdent {
+export function parseIdent(input: string): [BBIdent, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractIdent(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractIdent(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseIfClause(input: string): BBIfClause {
+export function parseIfClause(input: string): [BBIfClause, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "ifClause", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractIfClause(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractIfClause(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseIfKW(input: string): BBIfKW {
+export function parseIfKW(input: string): [BBIfKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "ifKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractIfKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractIfKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseInstr(input: string): BBInstr {
+export function parseInstr(input: string): [BBInstr, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "instr", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractInstr(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractInstr(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseInt(input: string): BBInt {
+export function parseInt(input: string): [BBInt, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "int", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractInt(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractInt(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseLabel(input: string): BBLabel {
+export function parseLabel(input: string): [BBLabel, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "label", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractLabel(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractLabel(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseMain(input: string): BBMain {
+export function parseMain(input: string): [BBMain, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractMain(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractMain(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseNum(input: string): BBNum {
+export function parseNum(input: string): [BBNum, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "num", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractNum(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractNum(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseParams(input: string): BBParams {
+export function parseParams(input: string): [BBParams, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "params", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractParams(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractParams(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRvalue(input: string): BBRvalue {
+export function parseRvalue(input: string): [BBRvalue, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "rvalue", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRvalue(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRvalue(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseSpaces(input: string): BBSpaces {
+export function parseSpaces(input: string): [BBSpaces, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "spaces", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractSpaces(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSpaces(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseString(input: string): BBString {
+export function parseString(input: string): [BBString, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "string", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractString(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractString(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseStringChar(input: string): BBStringChar {
+export function parseStringChar(input: string): [BBStringChar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "stringChar", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractStringChar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStringChar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseValueInstr(input: string): BBValueInstr {
+export function parseValueInstr(input: string): [BBValueInstr, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "valueInstr", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractValueInstr(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractValueInstr(input, ruleTree);
+  return [extracted, errors];
 }
 function extractPlaceholder(input: string, node: RuleTree): BBPlaceholder {
   return {
