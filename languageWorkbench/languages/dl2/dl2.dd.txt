@@ -20,30 +20,10 @@ def selfComment{author_id: A, postID: P, commentID: C} {
 scope.Defn{}?
 ----
 application/datalog
-scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 15, to: 24}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 15, to: 24}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 15, to: 24}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 80, to: 89}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 80, to: 89}, type: "any"}.
 scope.Defn{kind: "attr", name: "author_id", scopeID: "comment", span: span{from: 80, to: 89}, type: "any"}.
 scope.Defn{kind: "attr", name: "author_id", scopeID: "post", span: span{from: 15, to: 24}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "post", span: span{from: 15, to: 24}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "post", span: span{from: 80, to: 89}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "post", span: span{from: 80, to: 89}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "selfComment", span: span{from: 15, to: 24}, type: "any"}.
-scope.Defn{kind: "attr", name: "author_id", scopeID: "selfComment", span: span{from: 80, to: 89}, type: "any"}.
-scope.Defn{kind: "attr", name: "comment", scopeID: "comment", span: span{from: 28, to: 35}, type: "any"}.
-scope.Defn{kind: "attr", name: "comment", scopeID: "comment", span: span{from: 28, to: 35}, type: "any"}.
-scope.Defn{kind: "attr", name: "comment", scopeID: "comment", span: span{from: 28, to: 35}, type: "any"}.
 scope.Defn{kind: "attr", name: "comment", scopeID: "post", span: span{from: 28, to: 35}, type: "any"}.
-scope.Defn{kind: "attr", name: "comment", scopeID: "post", span: span{from: 28, to: 35}, type: "any"}.
-scope.Defn{kind: "attr", name: "comment", scopeID: "selfComment", span: span{from: 28, to: 35}, type: "any"}.
 scope.Defn{kind: "attr", name: "post_id", scopeID: "comment", span: span{from: 93, to: 100}, type: "any"}.
-scope.Defn{kind: "attr", name: "post_id", scopeID: "comment", span: span{from: 93, to: 100}, type: "any"}.
-scope.Defn{kind: "attr", name: "post_id", scopeID: "comment", span: span{from: 93, to: 100}, type: "any"}.
-scope.Defn{kind: "attr", name: "post_id", scopeID: "post", span: span{from: 93, to: 100}, type: "any"}.
-scope.Defn{kind: "attr", name: "post_id", scopeID: "post", span: span{from: 93, to: 100}, type: "any"}.
-scope.Defn{kind: "attr", name: "post_id", scopeID: "selfComment", span: span{from: 93, to: 100}, type: "any"}.
 scope.Defn{kind: "relation", name: "comment", scopeID: global{}, span: span{from: 68, to: 75}, type: "any"}.
 scope.Defn{kind: "relation", name: "post", scopeID: global{}, span: span{from: 6, to: 10}, type: "any"}.
 scope.Defn{kind: "relation", name: "selfComment", scopeID: global{}, span: span{from: 107, to: 118}, type: "any"}.
@@ -70,9 +50,4 @@ def selfComment{author_id: A, postID: P, commentID: C} {
 scope.Var{}?
 ----
 application/datalog
-scope.Var{kind: "attr", name: "comment", scopeID: "comment", span: span{from: 202, to: 209}}.
-scope.Var{kind: "attr", name: "comment", scopeID: "comment", span: span{from: 202, to: 209}}.
-scope.Var{kind: "attr", name: "comment", scopeID: "comment", span: span{from: 202, to: 209}}.
 scope.Var{kind: "attr", name: "comment", scopeID: "post", span: span{from: 202, to: 209}}.
-scope.Var{kind: "attr", name: "comment", scopeID: "post", span: span{from: 202, to: 209}}.
-scope.Var{kind: "attr", name: "comment", scopeID: "selfComment", span: span{from: 202, to: 209}}.

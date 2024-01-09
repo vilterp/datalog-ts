@@ -123,6 +123,8 @@ function extractNested(
         continue;
     }
   }
+  const idVarName = getVarName(curRec, relation, scope);
+  let anyInRefs = false;
   // Now get nested attrs
   for (const attr of nested.nestedAttr) {
     switch (attr.type) {
@@ -152,9 +154,7 @@ function extractNested(
           //
           // post has a member `comment` that's an inRef by parentID
           case "InRef": {
-            const idVarName = getVarName(curRec, relation, scope);
-            // TODO: not always `id`?
-            curRec.attrs.id = varr(idVarName);
+            anyInRefs = true;
             const [nestedConjuncts, nestedProblems] = extractNested(
               mod,
               attr,
@@ -179,6 +179,10 @@ function extractNested(
         break;
       }
     }
+  }
+  // TODO: not always `id`
+  if (anyInRefs) {
+    curRec.attrs.id = varr(idVarName);
   }
   return [out, problems];
 }

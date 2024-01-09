@@ -74,8 +74,8 @@ def scope.varNestedAttr{scopeID: Outer, name: Inner, span: S, kind: "attr"} {
 ----
 text/plain
 scope.varNestedAttr{kind: "attr", name: Inner, scopeID: Outer, span: S} :- 
-  ast.nested{id: Vast_nestedID_} &
+  ast.nested{id: Vast_nestedID} &
   ast.qualifier{parentID: Vast_nestedID, text: Outer} &
-  ast.nestedAttr{id: Vast_nestedAttrID, parentID: Vast_nestedID_} &
-  ast.nested{id: Vast_nestedID__, parentID: Vast_nestedAttrID} &
-  ast.qualifier{parentID: Vast_nestedID__, span: S, text: Inner}
+  ast.nestedAttr{id: Vast_nestedAttrID, parentID: Vast_nestedID} &
+  ast.nested{id: Vast_nestedID_, parentID: Vast_nestedAttrID} &
+  ast.qualifier{parentID: Vast_nestedID_, span: S, text: Inner}
