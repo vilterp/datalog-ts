@@ -114,11 +114,7 @@ function datalogTest(test: string[]): TestOutput[] {
     if (firstLine === "gram") {
       const [grammarParsed, errors] = parseMain(restOfInput);
       if (errors.length > 0) {
-        throw new Error(
-          `failed to parse input: ${errors
-            .map((err) => JSON.stringify(err))
-            .join("\n")}`
-        );
+        throw new ParseErrors(errors);
       }
       const grammar = parserGrammarToInternal(grammarParsed);
       grammarData = grammarToDL(grammar);
@@ -170,11 +166,7 @@ function codegenTest(test: string[]): TestOutput[] {
   return test.map((input) => {
     const [grammarTree, errors] = parseMain(input);
     if (errors.length > 0) {
-      throw new Error(
-        `failed to parse input: ${errors
-          .map((err) => JSON.stringify(err))
-          .join("\n")}`
-      );
+      throw new ParseErrors(errors);
     }
     const grammar = parserGrammarToInternal(grammarTree);
     const options: Options = {
