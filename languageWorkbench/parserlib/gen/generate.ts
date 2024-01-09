@@ -312,7 +312,7 @@ function typeExprForRule(
 }
 
 function generateGrammarConst(grammar: Grammar): string {
-  return `const GRAMMAR: Grammar = ${JSON.stringify(grammar, null, 2)}`;
+  return `export const GRAMMAR: Grammar = ${JSON.stringify(grammar, null, 2)}`;
 }
 
 function generateEntryPoints(grammar: Grammar, options: Options): string[] {
