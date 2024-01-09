@@ -3,10 +3,10 @@ import { LanguageSpec } from "./common/types";
 import { instantiate } from "./languages/dl2/instantiate";
 import { parseMain } from "./languages/grammar/parser";
 import { declareTables, flatten, getUnionRule } from "./parserlib/flatten";
-import { parse, TraceTree } from "./parserlib/parser";
-import { extractRuleTree, RuleTree } from "./parserlib/ruleTree";
+import { parse } from "./parserlib/parser";
+import { extractRuleTree } from "./parserlib/ruleTree";
 import { parserGrammarToInternal } from "./parserlib/translateAST";
-import { Grammar } from "./parserlib/types";
+import { Grammar, formatError } from "./parserlib/types";
 import { ensureRequiredRelations } from "./requiredRelations";
 
 type ConstructInterpRes = {
@@ -107,7 +107,7 @@ export class InterpCache {
     let dlErrors: string[] = [];
 
     // process grammar
-    const grammarTree = parseMain(langSpec.grammar);
+    const [grammarTree, parseErrors] = parseMain(langSpec.grammar);
     const grammar = parserGrammarToInternal(grammarTree);
     const noMainError = grammar.main ? [] : ["grammar has no 'main' rule"];
     // TODO: get grammar parse errors
@@ -146,7 +146,12 @@ export class InterpCache {
     return {
       interp,
       grammar,
-      errors: [...allGrammarErrors, ...dlErrors],
+      errors: [
+        ...allGrammarErrors,
+        ...dlErrors,
+        // TODO: structured errors
+        ...parseErrors.map((e) => formatError(e)),
+      ],
     };
   }
 
@@ -163,30 +168,23 @@ export class InterpCache {
     );
 
     // initialize stuff that we'll fill in later, if parse succeeds
-    let traceTree: TraceTree = null;
-    let ruleTree: RuleTree = null;
-    let langParseError: string | null = null;
-
     try {
-      traceTree = parse(grammar, "main", source);
-      ruleTree = extractRuleTree(traceTree);
+      const traceTree = parse(grammar, "main", source);
+      const [ruleTree, parseErrors] = extractRuleTree(traceTree);
       const records = flatten(ruleTree, source);
       interp = interp.bulkInsert(records);
+      return {
+        interp,
+        grammar,
+        errors: parseErrors.map((e) => formatError(e)),
+      };
     } catch (e) {
-      langParseError = e.toString();
-      console.error(e);
+      return {
+        interp,
+        grammar,
+        errors: [e.toString()],
+      };
     }
-
-    // (interp as SimpleInterpreter).db.tables.mapEntries(([name, collection]) => {
-    //   console.log(name, collection.all().toArray());
-    //   return [name, collection];
-    // });
-
-    return {
-      interp,
-      grammar,
-      errors: langParseError ? [langParseError] : [],
-    };
   }
 }
 export function addCursor(
