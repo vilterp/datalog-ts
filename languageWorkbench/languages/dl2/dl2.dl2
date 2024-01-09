@@ -9,7 +9,8 @@ table ast.tableDecl {
   attr: inRef(ast.tableAttr:parentID)
 }
 table ast.tableAttr {
-  ident: inRef(ast.ident:parentID)
+  ident: inRef(ast.ident:parentID),
+  refSpec: inRef(ast.refSpec:parentID)
 }
 table ast.nested {
   qualifier: inRef(ast.qualifier:parentID),
@@ -17,6 +18,14 @@ table ast.nested {
 }
 table ast.nestedAttr {
   nested: inRef(ast.nested:parentID)
+}
+table ast.refSpec {
+  inRef: inRef(ast.inRef:parentID),
+  outRef: inRef(ast.outRef:parentID)
+}
+table ast.inRef {
+  qualifier: inRef(ast.qualifier:parentID),
+  ident: inRef(ast.ident:parentID)
 }
 
 def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
@@ -41,14 +50,43 @@ def scope.Var{scopeID: I, name: N, span: S, kind: K} {
 }
 
 # TODO: this is not quite right; Outer is not always a table name
-def scope.varNestedAttr{scopeID: Outer, name: Inner, span: S, kind: "attr"} {
+def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "attr"} {
   ast.nested {
-    qualifier { text: Outer },
+    qualifier { text: OuterAttr },
     attr {
       nested {
         qualifier {
-          text: Inner,
+          text: InnerAttr,
           span: S
+        }
+      }
+    }
+  } &
+  scope.inRef{
+    fromTable: OuterTable,
+    toTable: InnerTable,
+    accessor: OuterAttr,
+    pointer: InnerAttr
+  }
+}
+
+def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
+  ast.tableDecl {
+    qualifier {
+      text: F
+    },
+    attr {
+      ident {
+        text: A
+      },
+      refSpec {
+        inRef {
+          qualifier {
+            text: T
+          },
+          ident {
+            text: P
+          }
         }
       }
     }

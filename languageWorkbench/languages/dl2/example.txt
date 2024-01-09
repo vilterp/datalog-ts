@@ -2,7 +2,7 @@ import "ast"
 
 table constraint {
   id,
-  record: inRef(record:parentID)
+  record: inRef(ast.record:parentID)
 }
 
 def varInComparison{scope: I, name: N, span: S} {
