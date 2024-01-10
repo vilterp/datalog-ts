@@ -3,11 +3,11 @@ table ast.aggregation {
   parentID,
   text,
   span,
-  aggregation: inRef(ident:parentID),
-  var: inRef(var:parentID),
-  commaSpace: inRef(commaSpace:parentID),
-  ws: inRef(ws:parentID),
-  record: inRef(record:parentID)
+  aggregation: inRef(ast.ident:parentID),
+  var: inRef(ast.var:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID),
+  ws: inRef(ast.ws:parentID),
+  record: inRef(ast.record:parentID)
 }
 
 table ast.alpha {
@@ -22,8 +22,8 @@ table ast.alphaNum {
   parentID,
   text,
   span,
-  alpha: inRef(alpha:parentID),
-  num: inRef(num:parentID)
+  alpha: inRef(ast.alpha:parentID),
+  num: inRef(ast.num:parentID)
 }
 
 table ast.arithmetic {
@@ -31,8 +31,8 @@ table ast.arithmetic {
   parentID,
   text,
   span,
-  assignmentOnLeft: inRef(assignmentOnLeft:parentID),
-  assignmentOnRight: inRef(assignmentOnRight:parentID)
+  assignmentOnLeft: inRef(ast.assignmentOnLeft:parentID),
+  assignmentOnRight: inRef(ast.assignmentOnRight:parentID)
 }
 
 table ast.arithmeticOp {
@@ -47,9 +47,9 @@ table ast.array {
   parentID,
   text,
   span,
-  ws: inRef(ws:parentID),
-  term: inRef(term:parentID),
-  commaSpace: inRef(commaSpace:parentID)
+  ws: inRef(ast.ws:parentID),
+  term: inRef(ast.term:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
 }
 
 table ast.assignmentOnLeft {
@@ -57,11 +57,11 @@ table ast.assignmentOnLeft {
   parentID,
   text,
   span,
-  result: inRef(term:parentID),
-  ws: inRef(ws:parentID),
-  left: inRef(term:parentID),
-  arithmeticOp: inRef(arithmeticOp:parentID),
-  right: inRef(term:parentID)
+  result: inRef(ast.term:parentID),
+  ws: inRef(ast.ws:parentID),
+  left: inRef(ast.term:parentID),
+  arithmeticOp: inRef(ast.arithmeticOp:parentID),
+  right: inRef(ast.term:parentID)
 }
 
 table ast.assignmentOnRight {
@@ -69,11 +69,11 @@ table ast.assignmentOnRight {
   parentID,
   text,
   span,
-  left: inRef(term:parentID),
-  ws: inRef(ws:parentID),
-  arithmeticOp: inRef(arithmeticOp:parentID),
-  right: inRef(term:parentID),
-  result: inRef(term:parentID)
+  left: inRef(ast.term:parentID),
+  ws: inRef(ast.ws:parentID),
+  arithmeticOp: inRef(ast.arithmeticOp:parentID),
+  right: inRef(ast.term:parentID),
+  result: inRef(ast.term:parentID)
 }
 
 table ast.bool {
@@ -88,7 +88,7 @@ table ast.commaSpace {
   parentID,
   text,
   span,
-  ws: inRef(ws:parentID)
+  ws: inRef(ast.ws:parentID)
 }
 
 table ast.comment {
@@ -96,7 +96,7 @@ table ast.comment {
   parentID,
   text,
   span,
-  commentChar: inRef(commentChar:parentID)
+  commentChar: inRef(ast.commentChar:parentID)
 }
 
 table ast.commentChar {
@@ -111,10 +111,10 @@ table ast.comparison {
   parentID,
   text,
   span,
-  left: inRef(term:parentID),
-  ws: inRef(ws:parentID),
-  comparisonOp: inRef(comparisonOp:parentID),
-  right: inRef(term:parentID)
+  left: inRef(ast.term:parentID),
+  ws: inRef(ast.ws:parentID),
+  comparisonOp: inRef(ast.comparisonOp:parentID),
+  right: inRef(ast.term:parentID)
 }
 
 table ast.comparisonOp {
@@ -129,13 +129,13 @@ table ast.conjunct {
   parentID,
   text,
   span,
-  nested: inRef(nested:parentID),
-  record: inRef(record:parentID),
-  comparison: inRef(comparison:parentID),
-  arithmetic: inRef(arithmetic:parentID),
-  negation: inRef(negation:parentID),
-  aggregation: inRef(aggregation:parentID),
-  placeholder: inRef(placeholder:parentID)
+  nested: inRef(ast.nested:parentID),
+  record: inRef(ast.record:parentID),
+  comparison: inRef(ast.comparison:parentID),
+  arithmetic: inRef(ast.arithmetic:parentID),
+  negation: inRef(ast.negation:parentID),
+  aggregation: inRef(ast.aggregation:parentID),
+  placeholder: inRef(ast.placeholder:parentID)
 }
 
 table ast.declaration {
@@ -143,10 +143,10 @@ table ast.declaration {
   parentID,
   text,
   span,
-  rule: inRef(rule:parentID),
-  tableDecl: inRef(tableDecl:parentID),
-  import: inRef(import:parentID),
-  fact: inRef(fact:parentID)
+  rule: inRef(ast.rule:parentID),
+  tableDecl: inRef(ast.tableDecl:parentID),
+  import: inRef(ast.import:parentID),
+  fact: inRef(ast.fact:parentID)
 }
 
 table ast.defKW {
@@ -161,7 +161,7 @@ table ast.deleteFact {
   parentID,
   text,
   span,
-  record: inRef(record:parentID)
+  record: inRef(ast.record:parentID)
 }
 
 table ast.dict {
@@ -169,9 +169,9 @@ table ast.dict {
   parentID,
   text,
   span,
-  ws: inRef(ws:parentID),
-  dictKeyValue: inRef(dictKeyValue:parentID),
-  commaSpace: inRef(commaSpace:parentID)
+  ws: inRef(ast.ws:parentID),
+  dictKeyValue: inRef(ast.dictKeyValue:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
 }
 
 table ast.dictKeyValue {
@@ -179,9 +179,9 @@ table ast.dictKeyValue {
   parentID,
   text,
   span,
-  key: inRef(string:parentID),
-  ws: inRef(ws:parentID),
-  value: inRef(term:parentID)
+  key: inRef(ast.string:parentID),
+  ws: inRef(ast.ws:parentID),
+  value: inRef(ast.term:parentID)
 }
 
 table ast.disjunct {
@@ -189,8 +189,8 @@ table ast.disjunct {
   parentID,
   text,
   span,
-  conjunct: inRef(conjunct:parentID),
-  ws: inRef(ws:parentID)
+  conjunct: inRef(ast.conjunct:parentID),
+  ws: inRef(ast.ws:parentID)
 }
 
 table ast.fact {
@@ -198,7 +198,7 @@ table ast.fact {
   parentID,
   text,
   span,
-  record: inRef(record:parentID)
+  record: inRef(ast.record:parentID)
 }
 
 table ast.ident {
@@ -213,9 +213,9 @@ table ast.import {
   parentID,
   text,
   span,
-  importKW: inRef(importKW:parentID),
-  ws: inRef(ws:parentID),
-  path: inRef(path:parentID)
+  importKW: inRef(ast.importKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  path: inRef(ast.path:parentID)
 }
 
 table ast.importKW {
@@ -230,9 +230,9 @@ table ast.inRef {
   parentID,
   text,
   span,
-  inRefKW: inRef(inRefKW:parentID),
-  table: inRef(qualifier:parentID),
-  col: inRef(ident:parentID)
+  inRefKW: inRef(ast.inRefKW:parentID),
+  table: inRef(ast.qualifier:parentID),
+  col: inRef(ast.ident:parentID)
 }
 
 table ast.inRefKW {
@@ -254,8 +254,8 @@ table ast.main {
   parentID,
   text,
   span,
-  ws: inRef(ws:parentID),
-  declaration: inRef(declaration:parentID)
+  ws: inRef(ast.ws:parentID),
+  declaration: inRef(ast.declaration:parentID)
 }
 
 table ast.negation {
@@ -263,7 +263,7 @@ table ast.negation {
   parentID,
   text,
   span,
-  record: inRef(record:parentID)
+  record: inRef(ast.record:parentID)
 }
 
 table ast.nested {
@@ -271,10 +271,10 @@ table ast.nested {
   parentID,
   text,
   span,
-  qualifier: inRef(qualifier:parentID),
-  ws: inRef(ws:parentID),
-  nestedAttr: inRef(nestedAttr:parentID),
-  commaSpace: inRef(commaSpace:parentID)
+  qualifier: inRef(ast.qualifier:parentID),
+  ws: inRef(ast.ws:parentID),
+  nestedAttr: inRef(ast.nestedAttr:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
 }
 
 table ast.nestedAttr {
@@ -282,8 +282,8 @@ table ast.nestedAttr {
   parentID,
   text,
   span,
-  normalAttr: inRef(normalAttr:parentID),
-  nested: inRef(nested:parentID)
+  normalAttr: inRef(ast.normalAttr:parentID),
+  nested: inRef(ast.nested:parentID)
 }
 
 table ast.normalAttr {
@@ -291,9 +291,9 @@ table ast.normalAttr {
   parentID,
   text,
   span,
-  ident: inRef(ident:parentID),
-  ws: inRef(ws:parentID),
-  term: inRef(term:parentID)
+  ident: inRef(ast.ident:parentID),
+  ws: inRef(ast.ws:parentID),
+  term: inRef(ast.term:parentID)
 }
 
 table ast.num {
@@ -308,9 +308,9 @@ table ast.outRef {
   parentID,
   text,
   span,
-  outRefKW: inRef(outRefKW:parentID),
-  table: inRef(qualifier:parentID),
-  col: inRef(ident:parentID)
+  outRefKW: inRef(ast.outRefKW:parentID),
+  table: inRef(ast.qualifier:parentID),
+  col: inRef(ast.ident:parentID)
 }
 
 table ast.outRefKW {
@@ -325,7 +325,7 @@ table ast.path {
   parentID,
   text,
   span,
-  pathSegment: inRef(pathSegment:parentID)
+  pathSegment: inRef(ast.pathSegment:parentID)
 }
 
 table ast.pathSegment {
@@ -347,7 +347,7 @@ table ast.qualifier {
   parentID,
   text,
   span,
-  ident: inRef(ident:parentID)
+  ident: inRef(ast.ident:parentID)
 }
 
 table ast.query {
@@ -355,7 +355,7 @@ table ast.query {
   parentID,
   text,
   span,
-  record: inRef(record:parentID)
+  record: inRef(ast.record:parentID)
 }
 
 table ast.record {
@@ -363,9 +363,9 @@ table ast.record {
   parentID,
   text,
   span,
-  qualifier: inRef(qualifier:parentID),
-  ws: inRef(ws:parentID),
-  recordAttrs: inRef(recordAttrs:parentID)
+  qualifier: inRef(ast.qualifier:parentID),
+  ws: inRef(ast.ws:parentID),
+  recordAttrs: inRef(ast.recordAttrs:parentID)
 }
 
 table ast.recordAttrs {
@@ -373,9 +373,9 @@ table ast.recordAttrs {
   parentID,
   text,
   span,
-  recordKeyValue: inRef(recordKeyValue:parentID),
-  placeholder: inRef(placeholder:parentID),
-  commaSpace: inRef(commaSpace:parentID)
+  recordKeyValue: inRef(ast.recordKeyValue:parentID),
+  placeholder: inRef(ast.placeholder:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
 }
 
 table ast.recordKeyValue {
@@ -383,9 +383,9 @@ table ast.recordKeyValue {
   parentID,
   text,
   span,
-  ident: inRef(ident:parentID),
-  ws: inRef(ws:parentID),
-  term: inRef(term:parentID)
+  ident: inRef(ast.ident:parentID),
+  ws: inRef(ast.ws:parentID),
+  term: inRef(ast.term:parentID)
 }
 
 table ast.refSpec {
@@ -393,9 +393,9 @@ table ast.refSpec {
   parentID,
   text,
   span,
-  ws: inRef(ws:parentID),
-  outRef: inRef(outRef:parentID),
-  inRef: inRef(inRef:parentID)
+  ws: inRef(ast.ws:parentID),
+  outRef: inRef(ast.outRef:parentID),
+  inRef: inRef(ast.inRef:parentID)
 }
 
 table ast.rule {
@@ -403,10 +403,10 @@ table ast.rule {
   parentID,
   text,
   span,
-  defKW: inRef(defKW:parentID),
-  ws: inRef(ws:parentID),
-  record: inRef(record:parentID),
-  disjunct: inRef(disjunct:parentID)
+  defKW: inRef(ast.defKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  record: inRef(ast.record:parentID),
+  disjunct: inRef(ast.disjunct:parentID)
 }
 
 table ast.spaces {
@@ -435,8 +435,8 @@ table ast.tableAttr {
   parentID,
   text,
   span,
-  ident: inRef(ident:parentID),
-  refSpec: inRef(refSpec:parentID)
+  ident: inRef(ast.ident:parentID),
+  refSpec: inRef(ast.refSpec:parentID)
 }
 
 table ast.tableDecl {
@@ -444,11 +444,11 @@ table ast.tableDecl {
   parentID,
   text,
   span,
-  tableKW: inRef(tableKW:parentID),
-  ws: inRef(ws:parentID),
-  name: inRef(qualifier:parentID),
-  tableAttr: inRef(tableAttr:parentID),
-  commaSpace: inRef(commaSpace:parentID)
+  tableKW: inRef(ast.tableKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  name: inRef(ast.qualifier:parentID),
+  tableAttr: inRef(ast.tableAttr:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
 }
 
 table ast.tableKW {
@@ -463,14 +463,14 @@ table ast.term {
   parentID,
   text,
   span,
-  record: inRef(record:parentID),
-  int: inRef(int:parentID),
-  var: inRef(var:parentID),
-  string: inRef(string:parentID),
-  bool: inRef(bool:parentID),
-  array: inRef(array:parentID),
-  dict: inRef(dict:parentID),
-  placeholder: inRef(placeholder:parentID)
+  record: inRef(ast.record:parentID),
+  int: inRef(ast.int:parentID),
+  var: inRef(ast.var:parentID),
+  string: inRef(ast.string:parentID),
+  bool: inRef(ast.bool:parentID),
+  array: inRef(ast.array:parentID),
+  dict: inRef(ast.dict:parentID),
+  placeholder: inRef(ast.placeholder:parentID)
 }
 
 table ast.var {
@@ -478,7 +478,7 @@ table ast.var {
   parentID,
   text,
   span,
-  alphaNum: inRef(alphaNum:parentID)
+  alphaNum: inRef(ast.alphaNum:parentID)
 }
 
 table ast.ws {
