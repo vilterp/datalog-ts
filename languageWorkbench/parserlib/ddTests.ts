@@ -14,7 +14,7 @@ import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { Rec } from "../../core/types";
 import { fsLoader } from "../../core/fsLoader";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { genExtractorStr, Options } from "./gen/generate";
+import { genExtractorStr, Options } from "./genTS/generate";
 import { parseMain } from "../languages/grammar/parser";
 import { parserGrammarToInternal } from "./translateAST";
 import { Grammar, ParseErrors, text } from "./types";
