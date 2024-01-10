@@ -37,7 +37,7 @@
     "package-vscode-extension": "cd apps/vscodeExtension && vsce package",
     "generate-datalog-parser": "ts-node languageWorkbench/parserlib/genTS/cli.ts languageWorkbench/languages/dl/dl.grammar languageWorkbench/languages/dl/parser.ts ../../parserlib DL ws && prettier --write languageWorkbench/languages/dl/parser.ts",
     "generate-datalog2-parser": "ts-node languageWorkbench/parserlib/genTS/cli.ts languageWorkbench/languages/dl2/dl2.grammar languageWorkbench/languages/dl2/parser.ts ../../parserlib DL2 ws && prettier --write languageWorkbench/languages/dl2/parser.ts",
-    "generate-datalog2-typings": "ts-node languageWorkbench/parserlib/genDL2/cli.ts languageWorkbench/languages/dl2/dl2.grammar",
+    "generate-datalog2-typings": "ts-node languageWorkbench/parserlib/genDL2/cli.ts languageWorkbench/languages/dl2/dl2.grammar languageWorkbench/languages/dl2/tables.dl2",
     "generate-sql-parser": "ts-node languageWorkbench/parserlib/genTS/cli.ts languageWorkbench/languages/sql/sql.grammar languageWorkbench/languages/sql/parser.ts ../../parserlib SQL ws && prettier --write languageWorkbench/languages/sql/parser.ts",
     "generate-grammar-parser": "ts-node languageWorkbench/parserlib/genTS/cli.ts languageWorkbench/languages/grammar/grammar.grammar languageWorkbench/languages/grammar/parser.ts ../../parserlib Grammar ws && prettier --write languageWorkbench/languages/grammar/parser.ts",
     "generate-basic-blocks-parser": "ts-node languageWorkbench/parserlib/genTS/cli.ts languageWorkbench/languages/basicBlocks/basicBlocks.grammar languageWorkbench/languages/basicBlocks/parser.ts ../../parserlib BB ws && prettier --write languageWorkbench/languages/basicBlocks/parser.ts",

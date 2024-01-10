@@ -1,0 +1,489 @@
+table ast.aggregation {
+  id,
+  parentID,
+  text,
+  span,
+  aggregation: inRef(ident:parentID),
+  var: inRef(var:parentID),
+  commaSpace: inRef(commaSpace:parentID),
+  ws: inRef(ws:parentID),
+  record: inRef(record:parentID)
+}
+
+table ast.alpha {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.alphaNum {
+  id,
+  parentID,
+  text,
+  span,
+  alpha: inRef(alpha:parentID),
+  num: inRef(num:parentID)
+}
+
+table ast.arithmetic {
+  id,
+  parentID,
+  text,
+  span,
+  assignmentOnLeft: inRef(assignmentOnLeft:parentID),
+  assignmentOnRight: inRef(assignmentOnRight:parentID)
+}
+
+table ast.arithmeticOp {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.array {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ws:parentID),
+  term: inRef(term:parentID),
+  commaSpace: inRef(commaSpace:parentID)
+}
+
+table ast.assignmentOnLeft {
+  id,
+  parentID,
+  text,
+  span,
+  result: inRef(term:parentID),
+  ws: inRef(ws:parentID),
+  left: inRef(term:parentID),
+  arithmeticOp: inRef(arithmeticOp:parentID),
+  right: inRef(term:parentID)
+}
+
+table ast.assignmentOnRight {
+  id,
+  parentID,
+  text,
+  span,
+  left: inRef(term:parentID),
+  ws: inRef(ws:parentID),
+  arithmeticOp: inRef(arithmeticOp:parentID),
+  right: inRef(term:parentID),
+  result: inRef(term:parentID)
+}
+
+table ast.bool {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.commaSpace {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ws:parentID)
+}
+
+table ast.comment {
+  id,
+  parentID,
+  text,
+  span,
+  commentChar: inRef(commentChar:parentID)
+}
+
+table ast.commentChar {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.comparison {
+  id,
+  parentID,
+  text,
+  span,
+  left: inRef(term:parentID),
+  ws: inRef(ws:parentID),
+  comparisonOp: inRef(comparisonOp:parentID),
+  right: inRef(term:parentID)
+}
+
+table ast.comparisonOp {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.conjunct {
+  id,
+  parentID,
+  text,
+  span,
+  nested: inRef(nested:parentID),
+  record: inRef(record:parentID),
+  comparison: inRef(comparison:parentID),
+  arithmetic: inRef(arithmetic:parentID),
+  negation: inRef(negation:parentID),
+  aggregation: inRef(aggregation:parentID),
+  placeholder: inRef(placeholder:parentID)
+}
+
+table ast.declaration {
+  id,
+  parentID,
+  text,
+  span,
+  rule: inRef(rule:parentID),
+  tableDecl: inRef(tableDecl:parentID),
+  import: inRef(import:parentID),
+  fact: inRef(fact:parentID)
+}
+
+table ast.defKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.deleteFact {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(record:parentID)
+}
+
+table ast.dict {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ws:parentID),
+  dictKeyValue: inRef(dictKeyValue:parentID),
+  commaSpace: inRef(commaSpace:parentID)
+}
+
+table ast.dictKeyValue {
+  id,
+  parentID,
+  text,
+  span,
+  key: inRef(string:parentID),
+  ws: inRef(ws:parentID),
+  value: inRef(term:parentID)
+}
+
+table ast.disjunct {
+  id,
+  parentID,
+  text,
+  span,
+  conjunct: inRef(conjunct:parentID),
+  ws: inRef(ws:parentID)
+}
+
+table ast.fact {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(record:parentID)
+}
+
+table ast.ident {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.import {
+  id,
+  parentID,
+  text,
+  span,
+  importKW: inRef(importKW:parentID),
+  ws: inRef(ws:parentID),
+  path: inRef(path:parentID)
+}
+
+table ast.importKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.inRef {
+  id,
+  parentID,
+  text,
+  span,
+  inRefKW: inRef(inRefKW:parentID),
+  table: inRef(qualifier:parentID),
+  col: inRef(ident:parentID)
+}
+
+table ast.inRefKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.int {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.main {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ws:parentID),
+  declaration: inRef(declaration:parentID)
+}
+
+table ast.negation {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(record:parentID)
+}
+
+table ast.nested {
+  id,
+  parentID,
+  text,
+  span,
+  qualifier: inRef(qualifier:parentID),
+  ws: inRef(ws:parentID),
+  nestedAttr: inRef(nestedAttr:parentID),
+  commaSpace: inRef(commaSpace:parentID)
+}
+
+table ast.nestedAttr {
+  id,
+  parentID,
+  text,
+  span,
+  normalAttr: inRef(normalAttr:parentID),
+  nested: inRef(nested:parentID)
+}
+
+table ast.normalAttr {
+  id,
+  parentID,
+  text,
+  span,
+  ident: inRef(ident:parentID),
+  ws: inRef(ws:parentID),
+  term: inRef(term:parentID)
+}
+
+table ast.num {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.outRef {
+  id,
+  parentID,
+  text,
+  span,
+  outRefKW: inRef(outRefKW:parentID),
+  table: inRef(qualifier:parentID),
+  col: inRef(ident:parentID)
+}
+
+table ast.outRefKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.path {
+  id,
+  parentID,
+  text,
+  span,
+  pathSegment: inRef(pathSegment:parentID)
+}
+
+table ast.pathSegment {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.placeholder {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.qualifier {
+  id,
+  parentID,
+  text,
+  span,
+  ident: inRef(ident:parentID)
+}
+
+table ast.query {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(record:parentID)
+}
+
+table ast.record {
+  id,
+  parentID,
+  text,
+  span,
+  qualifier: inRef(qualifier:parentID),
+  ws: inRef(ws:parentID),
+  recordAttrs: inRef(recordAttrs:parentID)
+}
+
+table ast.recordAttrs {
+  id,
+  parentID,
+  text,
+  span,
+  recordKeyValue: inRef(recordKeyValue:parentID),
+  placeholder: inRef(placeholder:parentID),
+  commaSpace: inRef(commaSpace:parentID)
+}
+
+table ast.recordKeyValue {
+  id,
+  parentID,
+  text,
+  span,
+  ident: inRef(ident:parentID),
+  ws: inRef(ws:parentID),
+  term: inRef(term:parentID)
+}
+
+table ast.refSpec {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ws:parentID),
+  outRef: inRef(outRef:parentID),
+  inRef: inRef(inRef:parentID)
+}
+
+table ast.rule {
+  id,
+  parentID,
+  text,
+  span,
+  defKW: inRef(defKW:parentID),
+  ws: inRef(ws:parentID),
+  record: inRef(record:parentID),
+  disjunct: inRef(disjunct:parentID)
+}
+
+table ast.spaces {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.string {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.stringChar {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.tableAttr {
+  id,
+  parentID,
+  text,
+  span,
+  ident: inRef(ident:parentID),
+  refSpec: inRef(refSpec:parentID)
+}
+
+table ast.tableDecl {
+  id,
+  parentID,
+  text,
+  span,
+  tableKW: inRef(tableKW:parentID),
+  ws: inRef(ws:parentID),
+  name: inRef(qualifier:parentID),
+  tableAttr: inRef(tableAttr:parentID),
+  commaSpace: inRef(commaSpace:parentID)
+}
+
+table ast.tableKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.term {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(record:parentID),
+  int: inRef(int:parentID),
+  var: inRef(var:parentID),
+  string: inRef(string:parentID),
+  bool: inRef(bool:parentID),
+  array: inRef(array:parentID),
+  dict: inRef(dict:parentID),
+  placeholder: inRef(placeholder:parentID)
+}
+
+table ast.var {
+  id,
+  parentID,
+  text,
+  span,
+  alphaNum: inRef(alphaNum:parentID)
+}
+
+table ast.ws {
+  id,
+  parentID,
+  text,
+  span
+}

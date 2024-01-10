@@ -6,14 +6,14 @@ import { prettyPrintTableDecl } from "../../languages/dl2/compiler/pretty";
 
 type Args = {
   grammarPath: string;
-  // outputPath: string;
+  outputPath: string;
 };
 
 function main() {
   // TODO: use some kind of actual option parser. optimist?
   const args: Args = {
     grammarPath: process.argv[2],
-    // outputPath: process.argv[3],
+    outputPath: process.argv[3],
   };
   console.log("generating with args", args);
   generate(args);
@@ -34,8 +34,7 @@ function generate(args: Args) {
   const code = Object.entries(tableDecls)
     .map(([name, decl]) => prettyPrintTableDecl(name, decl))
     .join("\n\n");
-  // fs.writeFileSync(args.outputPath, code);
-  console.log(code);
+  fs.writeFileSync(args.outputPath, code);
 }
 
 main();
