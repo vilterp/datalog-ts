@@ -17,6 +17,6 @@ function prettyPrintTableMember(name: string, member: TableMember): string {
     case "InRef":
       return `${name}: inRef(${member.table}:${member.column})`;
     case "OutRef":
-      return `${name} outRef(${member.table}:${member.column})`;
+      return `${name}: outRef(${member.table}:${member.column})`;
   }
 }
