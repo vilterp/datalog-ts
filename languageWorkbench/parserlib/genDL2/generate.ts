@@ -4,6 +4,8 @@ import { Grammar, Rule } from "../types";
 
 const DEFAULT_LEAVES = new Set(["ident", "string", "int", "ws"]);
 
+const PREFIX = "ast.";
+
 export function generateTableDecls(
   grammar: Grammar,
   leaves = DEFAULT_LEAVES
@@ -15,7 +17,7 @@ export function generateTableDecls(
       const rawRefs = findRefs(rule);
       const refs = leaves.has(name) ? [] : rawRefs;
       return {
-        key: `ast.${name}`,
+        key: PREFIX + name,
         value: {
           members: pairsToObj([
             { key: "id", value: { type: "Scalar" } },
@@ -26,7 +28,7 @@ export function generateTableDecls(
               key: ref.captureName,
               value: {
                 type: "InRef",
-                table: ref.rule,
+                table: PREFIX + ref.rule,
                 column: "parentID",
               },
             })),
