@@ -13,13 +13,10 @@ input loadLevel {
   level
 }
 
-input coalMax { level }
-
-input coalRampRate { rate }
-
-input coalPrice { price }
-
-input natGasPrice { price }
+param coalMax { min: 0, max: 100, init: 50 }
+param coalRampRate { min: 0, max: 100, init: 50 }
+param coalPrice { min: 0, max: 100, init: 50 }
+param natGasPrice { min: 0, max: 100, init: 50 }
 
 minimize {
   loadLevel{timestep: T} &

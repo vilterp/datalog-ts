@@ -3,17 +3,24 @@ main :- repSep(declaration, ws).
 declaration :- (
   varRelationDecl |
   inputRelationDecl |
+  paramDecl |
   objective |
   constraint
 ).
 
 varRelationDecl :- [varKW, ws, ident, ws, schemaSpec].
 inputRelationDecl :- [inputKW, ws, ident, ws, schemaSpec].
+paramDecl :- [
+  paramKW, ws, ident, ws, "{", ws,
+  repSep(paramLimit, commaSpace), ws,
+  "}"
+].
+paramLimit :- [("min" | "max" | "init"), ":", ws, int].
 
 schemaSpec :- ["{", ws, repSep(ident, [",", ws]), ws, "}"].
 
 objective :- [
-  sense, ws, "{", ws,
+  senseKW, ws, "{", ws,
   conjuncts,
   ws, sepKW, ws,
   scalarExpr, ws,
@@ -44,11 +51,12 @@ recordKeyValue :- [ident, ":", ws, term].
 term :- (record | int | var | string | placeholder).
 var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
 
-sense :- ("minimize" | "maximize").
+senseKW :- ("minimize" | "maximize").
 varKW :- "var".
 inputKW :- "input".
 ruleKW :- "rule".
 sepKW :- "=>".
+paramKW :- "param".
 
 # TODO: comments
 
