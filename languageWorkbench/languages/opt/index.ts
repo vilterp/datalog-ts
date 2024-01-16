@@ -1,6 +1,6 @@
 import { LanguageSpec, dl2 } from "../../common/types";
 // @ts-ignore
-import datalogTxt from "./opt.dl";
+import datalogTxt from "./opt.dl2";
 // @ts-ignore
 import grammar from "./opt.grammar";
 // @ts-ignore
