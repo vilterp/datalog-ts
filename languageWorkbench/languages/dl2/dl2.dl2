@@ -38,7 +38,6 @@ table ast.tableAttr {
 table ast.nested {
   id,
   parentID,
-  id,
   qualifier: inRef(ast.qualifier:parentID),
   nestedAttr: inRef(ast.nestedAttr:parentID)
 }
