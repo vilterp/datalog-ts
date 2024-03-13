@@ -276,7 +276,8 @@ table ast.constraintComparison {
   left: inRef(ast.scalarExpr:parentID),
   ws: inRef(ast.ws:parentID),
   comparisonOp: inRef(ast.comparisonOp:parentID),
-  right: inRef(ast.scalarExpr:parentID)
+  right: inRef(ast.scalarExpr:parentID),
+  scalarExpr: inRef(ast.scalarExpr:parentID)
 }
 
 table ast.declaration {
