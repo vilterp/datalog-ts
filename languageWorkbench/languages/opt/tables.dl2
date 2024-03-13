@@ -44,6 +44,7 @@ table ast.comparison {
   parentID,
   text,
   span,
+  term: inRef(ast.term:parentID),
   left: inRef(ast.term:parentID),
   ws: inRef(ast.ws:parentID),
   comparisonOp: inRef(ast.comparisonOp:parentID),
@@ -84,6 +85,7 @@ table ast.constraintComparison {
   parentID,
   text,
   span,
+  scalarExpr: inRef(ast.scalarExpr:parentID),
   left: inRef(ast.scalarExpr:parentID),
   ws: inRef(ast.ws:parentID),
   comparisonOp: inRef(ast.comparisonOp:parentID),
@@ -248,9 +250,9 @@ table ast.scalarTerm {
   parentID,
   text,
   span,
+  term: inRef(ast.term:parentID),
   coefficient: inRef(ast.term:parentID),
-  ws: inRef(ast.ws:parentID),
-  term: inRef(ast.term:parentID)
+  ws: inRef(ast.ws:parentID)
 }
 
 table ast.schemaSpec {

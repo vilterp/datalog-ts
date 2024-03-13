@@ -51,8 +51,13 @@ function findRefs(rule: Rule): RuleRef[] {
       return [];
     case "Choice":
       return flatMap(rule.choices, findRefs);
-    case "Ref":
-      return [{ rule: rule.rule, captureName: rule.captureName || rule.rule }];
+    case "Ref": {
+      const out = [{ rule: rule.rule, captureName: rule.rule }];
+      if (rule.captureName) {
+        out.push({ rule: rule.rule, captureName: rule.captureName });
+      }
+      return out;
+    }
     case "RepSep":
       return [...findRefs(rule.rep), ...findRefs(rule.sep)];
     case "Sequence":
