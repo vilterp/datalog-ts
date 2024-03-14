@@ -1,0 +1,527 @@
+def scope.Defn{scopeID: I, span: S, name: N, kind: K} {
+  scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnVar{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnAttr{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnBuiltin{scopeID: I, span: S, name: N, kind: K}
+}
+
+def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "rule"} {
+  ast.constraint{id: Constraint} &
+  ast.record{id: Rec, parentID: Constraint} &
+  ast.ident{parentID: Rec, span: S, text: N}
+}
+def scope.defnRelation{scopeID: I, span: S, name: N, kind: K} {
+  scope.declInput{scopeID: I, span: S, name: N, kind: K} |
+  scope.declVarRelation{scopeID: I, span: S, name: N, kind: K}
+}
+def scope.defnVar{scopeID: I, span: S, name: N, kind: "var"} {
+  scope.varInClause{scope: I, name: N, span: S}
+}
+  # TODO: comparison
+def scope.defnAttr{scopeID: I, span: S, name: N, kind: K} {
+  defnVarRelationAttribute{scopeID: I, span: S, name: N, kind: K} |
+  defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: K}
+}
+
+def defnVarRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.varRelationDecl{id: Decl} &
+  ast.ident{parentID: Decl, text: I} &
+  ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
+  ast.ident{parentID: SchemaSpec, span: S, text: N}
+}
+def defnInputRelationAttribute{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.inputRelationDecl{id: Decl} &
+  ast.ident{parentID: Decl, text: I} &
+  ast.schemaSpec{id: SchemaSpec, parentID: Decl} &
+  ast.ident{parentID: SchemaSpec, span: S, text: N}
+}
+
+def scope.varInClause{scope: ConstraintName, name: N, span: S} {
+  ast.constraint {
+    record {
+      ident {
+        text: ConstraintName
+      }
+    },
+    conjuncts {
+      clause {
+        record {
+          recordAttrs {
+            recordKeyValue {
+              term {
+                var { text: N, span: S }
+              }
+            }
+          }
+        }
+      }
+    }
+  } |
+  ast.constraint {
+    record {
+      ident {
+        text: ConstraintName
+      }
+    },
+    conjuncts {
+      clause {
+        comparison {
+          left {
+            var {
+              text: N,
+              span: S
+            }
+          }
+        }
+      }
+    }
+  } |
+  ast.constraint {
+    record {
+      ident {
+        text: ConstraintName
+      }
+    },
+    conjuncts {
+      clause {
+        comparison {
+          right {
+            var {
+              text: N,
+              span: S
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+def scope.declInput{scopeID: global{}, span: S, name: N, kind: "relation"} {
+  ast.inputRelationDecl{id: Input} &
+  ast.ident{parentID: Input, span: S, text: N}
+}
+def scope.declVarRelation{scopeID: global{}, span: S, name: N, kind: "relation"} {
+  ast.varRelationDecl{id: Input} &
+  ast.ident{parentID: Input, span: S, text: N}
+}
+
+def scope.Var{scopeID: I, name: N, span: S, kind: K} {
+  scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
+  scope.varVar{scopeID: I, name: N, span: S, kind: K} |
+  scope.varAttr{scopeID: I, name: N, span: S, kind: K}
+}
+
+def scope.varAttr{scopeID: I, name: N, span: S, kind: "attr"} {
+  ast.clause{id: Clause} &
+  ast.record{id: Rec, parentID: Clause} &
+  ast.ident{parentID: Rec, text: I} &
+  ast.recordAttrs{id: Attrs, parentID: Rec} &
+  ast.recordKeyValue{id: KV, parentID: Attrs} &
+  ast.ident{parentID: KV, text: N, span: S}
+}
+
+def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
+  ast.constraint{id: Constraint} &
+  ast.conjuncts{id: Conjuncts, parentID: Constraint} &
+  ast.clause{id: Clause, parentID: Conjuncts} &
+  ast.record{id: Record, parentID: Clause} &
+  ast.ident{parentID: Record, text: N, span: S}
+}
+def scope.varVar{scopeID: I, name: N, span: S, kind: "var"} {
+  scope.varInClause{scope: I, name: N, span: S} |
+  scope.varInComparison{scope: I, name: N, span: S}
+}
+
+def scope.varInComparison{scope: I, name: N, span: S} {
+  ast.constraint {
+    record {
+      ident {
+        text: I
+      }
+    },
+    constraintComparison {
+      scalarExpr {
+        scalarTerm {
+          term {
+            var {
+              text: N,
+              span: S
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+def tc.Problem{span: S, desc: D} {
+  tc.undefVarError{span: S, desc: D}
+}
+
+table scope.defnBuiltin {}
+
+# bulitins
+# TODO: make another file for these?
+scope.defnBuiltin{scopeID: global{}, name: "base.add", kind: "relation", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "a", kind: "attr", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "b", kind: "attr", span: span{from: -1, to: -1}}.
+scope.defnBuiltin{scopeID: "base.add", name: "res", kind: "attr", span: span{from: -1, to: -1}}.
+
+table hl.mapping {}
+
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "var", type: "typeParameter"}.
+hl.mapping{rule: "int", type: "number"}.
+hl.mapping{rule: "bool", type: "number"}.
+hl.mapping{rule: "string", type: "string"}.
+hl.mapping{rule: "comment", type: "comment"}.
+hl.mapping{rule: "varKW", type: "keyword"}.
+hl.mapping{rule: "inputKW", type: "keyword"}.
+hl.mapping{rule: "ruleKW", type: "keyword"}.
+hl.mapping{rule: "senseKW", type: "keyword"}.
+hl.mapping{rule: "sepKW", type: "keyword"}.
+hl.mapping{rule: "paramKW", type: "keyword"}.
+hl.mapping{rule: "path", type: "string"}.
+
+# === tables ===
+
+table ast.alpha {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.alphaNum {
+  id,
+  parentID,
+  text,
+  span,
+  alpha: inRef(ast.alpha:parentID),
+  num: inRef(ast.num:parentID)
+}
+
+table ast.clause {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(ast.record:parentID),
+  comparison: inRef(ast.comparison:parentID)
+}
+
+table ast.commaSpace {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ast.ws:parentID)
+}
+
+table ast.commaWS {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ast.ws:parentID)
+}
+
+table ast.comparison {
+  id,
+  parentID,
+  text,
+  span,
+  term: inRef(ast.term:parentID),
+  left: inRef(ast.term:parentID),
+  ws: inRef(ast.ws:parentID),
+  comparisonOp: inRef(ast.comparisonOp:parentID),
+  right: inRef(ast.term:parentID)
+}
+
+table ast.comparisonOp {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.conjuncts {
+  id,
+  parentID,
+  text,
+  span,
+  clause: inRef(ast.clause:parentID),
+  ws: inRef(ast.ws:parentID)
+}
+
+table ast.constraint {
+  id,
+  parentID,
+  text,
+  span,
+  ruleKW: inRef(ast.ruleKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  record: inRef(ast.record:parentID),
+  conjuncts: inRef(ast.conjuncts:parentID),
+  sepKW: inRef(ast.sepKW:parentID),
+  constraintComparison: inRef(ast.constraintComparison:parentID)
+}
+
+table ast.constraintComparison {
+  id,
+  parentID,
+  text,
+  span,
+  scalarExpr: inRef(ast.scalarExpr:parentID),
+  left: inRef(ast.scalarExpr:parentID),
+  ws: inRef(ast.ws:parentID),
+  comparisonOp: inRef(ast.comparisonOp:parentID),
+  right: inRef(ast.scalarExpr:parentID)
+}
+
+table ast.declaration {
+  id,
+  parentID,
+  text,
+  span,
+  varRelationDecl: inRef(ast.varRelationDecl:parentID),
+  inputRelationDecl: inRef(ast.inputRelationDecl:parentID),
+  paramDecl: inRef(ast.paramDecl:parentID),
+  objective: inRef(ast.objective:parentID),
+  constraint: inRef(ast.constraint:parentID)
+}
+
+table ast.ident {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.inputKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.inputRelationDecl {
+  id,
+  parentID,
+  text,
+  span,
+  inputKW: inRef(ast.inputKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  ident: inRef(ast.ident:parentID),
+  schemaSpec: inRef(ast.schemaSpec:parentID)
+}
+
+table ast.int {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.main {
+  id,
+  parentID,
+  text,
+  span,
+  declaration: inRef(ast.declaration:parentID),
+  ws: inRef(ast.ws:parentID)
+}
+
+table ast.num {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.objective {
+  id,
+  parentID,
+  text,
+  span,
+  senseKW: inRef(ast.senseKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  conjuncts: inRef(ast.conjuncts:parentID),
+  sepKW: inRef(ast.sepKW:parentID),
+  scalarExpr: inRef(ast.scalarExpr:parentID)
+}
+
+table ast.paramDecl {
+  id,
+  parentID,
+  text,
+  span,
+  paramKW: inRef(ast.paramKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  ident: inRef(ast.ident:parentID),
+  paramLimit: inRef(ast.paramLimit:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
+}
+
+table ast.paramKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.paramLimit {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ast.ws:parentID),
+  int: inRef(ast.int:parentID)
+}
+
+table ast.placeholder {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.record {
+  id,
+  parentID,
+  text,
+  span,
+  ident: inRef(ast.ident:parentID),
+  ws: inRef(ast.ws:parentID),
+  recordAttrs: inRef(ast.recordAttrs:parentID)
+}
+
+table ast.recordAttrs {
+  id,
+  parentID,
+  text,
+  span,
+  recordKeyValue: inRef(ast.recordKeyValue:parentID),
+  placeholder: inRef(ast.placeholder:parentID),
+  commaSpace: inRef(ast.commaSpace:parentID)
+}
+
+table ast.recordKeyValue {
+  id,
+  parentID,
+  text,
+  span,
+  ident: inRef(ast.ident:parentID),
+  ws: inRef(ast.ws:parentID),
+  term: inRef(ast.term:parentID)
+}
+
+table ast.ruleKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.scalarExpr {
+  id,
+  parentID,
+  text,
+  span,
+  scalarTerm: inRef(ast.scalarTerm:parentID),
+  ws: inRef(ast.ws:parentID)
+}
+
+table ast.scalarTerm {
+  id,
+  parentID,
+  text,
+  span,
+  term: inRef(ast.term:parentID),
+  coefficient: inRef(ast.term:parentID),
+  ws: inRef(ast.ws:parentID)
+}
+
+table ast.schemaSpec {
+  id,
+  parentID,
+  text,
+  span,
+  ws: inRef(ast.ws:parentID),
+  ident: inRef(ast.ident:parentID)
+}
+
+table ast.senseKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.sepKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.string {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.stringChar {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.term {
+  id,
+  parentID,
+  text,
+  span,
+  record: inRef(ast.record:parentID),
+  int: inRef(ast.int:parentID),
+  var: inRef(ast.var:parentID),
+  string: inRef(ast.string:parentID),
+  placeholder: inRef(ast.placeholder:parentID)
+}
+
+table ast.var {
+  id,
+  parentID,
+  text,
+  span,
+  alphaNum: inRef(ast.alphaNum:parentID)
+}
+
+table ast.varKW {
+  id,
+  parentID,
+  text,
+  span
+}
+
+table ast.varRelationDecl {
+  id,
+  parentID,
+  text,
+  span,
+  varKW: inRef(ast.varKW:parentID),
+  ws: inRef(ast.ws:parentID),
+  ident: inRef(ast.ident:parentID),
+  schemaSpec: inRef(ast.schemaSpec:parentID)
+}
+
+table ast.ws {
+  id,
+  parentID,
+  text,
+  span
+}

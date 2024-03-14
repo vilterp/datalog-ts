@@ -48,7 +48,7 @@ jobs:
       - run: yarn
       - run: yarn benchmark
         env:
-          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_ACCESS_TOKEN }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
           BENCHMARK_ENV: github-actions
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
