@@ -34,6 +34,7 @@ export function incrTests(writeResults: boolean): Suite {
     ["contracts", evalTest],
     ["transitiveClosure", evalTest],
     ["transitiveClosureMultiSupport", evalTest],
+    ["singleSourceReach", evalTest],
     ["sccs", evalTest],
     ["parse", evalTest],
     ["aggregation", evalTest],
