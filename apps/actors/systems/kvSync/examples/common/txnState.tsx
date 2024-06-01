@@ -11,11 +11,12 @@ export function TxnState(props: { client: Client; txnID: string }) {
     case "Pending":
       return <>...</>;
     case "Committed":
-      return <>{txnState.serverTimestamp}</>;
+      return <>✅ T{txnState.serverTimestamp}</>;
     case "Aborted":
       // TODO: cancel
       return (
         <>
+          ❌
           <button
             onClick={() => {
               props.client.retryTransaction(props.txnID);
