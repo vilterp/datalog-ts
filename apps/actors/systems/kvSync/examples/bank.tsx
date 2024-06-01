@@ -220,6 +220,7 @@ function AccountChooser(props: {
 }) {
   return (
     <select onChange={(evt) => props.onChange(evt.target.value)}>
+      <option key=""></option>
       {props.accounts.map((account) => (
         <option key={account.name} value={account.name}>
           {account.name}
