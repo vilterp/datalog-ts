@@ -29,7 +29,16 @@ export function Window(props: {
         <div style={{ textAlign: "center", width: "100%" }}>{props.name}</div>
       </div>
       {/* inner content */}
-      <div style={{ backgroundColor: "white" }}>{props.children}</div>
+      <div
+        style={{
+          backgroundColor: "white",
+          minWidth: 400,
+          minHeight: 300,
+          overflow: "scroll",
+        }}
+      >
+        {props.children}
+      </div>
     </div>
   );
 }

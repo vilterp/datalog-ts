@@ -14,6 +14,7 @@ import {
   str,
   write,
   doExpr,
+  int,
 } from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
@@ -22,31 +23,40 @@ import { TransactionList } from "./common/txnList";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
-  const [accounts, queryState] = useAccountList(client);
-
-  if (queryState === "Loading") {
-    return [[], queryState];
-  }
 
   return (
     <div>
       <h3>MyBank</h3>
-      <BalanceTable client={client} accounts={accounts} />
+      <InnerContent client={client} />
+    </div>
+  );
+}
+
+function InnerContent(props: { client: Client }) {
+  const [accounts, queryState] = useAccountList(props.client);
+
+  if (queryState === "Loading") {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <BalanceTable client={props.client} accounts={accounts} />
       <ul>
         <li>
-          <WithdrawForm client={client} accounts={accounts} />
+          <WithdrawForm client={props.client} accounts={accounts} />
         </li>
         <li>
-          <DepositForm client={client} accounts={accounts} />
+          <DepositForm client={props.client} accounts={accounts} />
         </li>
         <li>
-          <MoveForm client={client} accounts={accounts} />
+          <MoveForm client={props.client} accounts={accounts} />
         </li>
         <li>
-          <CreateAccountForm client={client} />
+          <CreateAccountForm client={props.client} />
         </li>
       </ul>
-      <TransactionList client={client} />
+      <TransactionList client={props.client} />
     </div>
   );
 }
@@ -179,6 +189,30 @@ function BalanceTable(props: { client: Client; accounts: Account[] }) {
   );
 }
 
+function CreateAccountForm(props: { client: Client }) {
+  const [name, setName] = useState("");
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        setName("");
+        props.client.runMutation({
+          type: "Invocation",
+          name: "createAccount",
+          args: [name],
+        });
+      }}
+    >
+      Create account:{" "}
+      <input value={name} onChange={(evt) => setName(evt.target.value)} />
+      <button>Create</button>
+    </form>
+  );
+}
+
+// ==== Account list and chooser ====
+
 function AccountChooser(props: {
   accounts: Account[];
   current: string;
@@ -220,8 +254,11 @@ function useAccountList(client: Client): [Account[], QueryStatus] {
   ];
 }
 
+// ==== Mutations ====
+
 // TODO: is default=0 correct for everything here?
 const mutations: MutationDefns = {
+  createAccount: lambda(["name"], write(varr("name"), int(0))),
   deposit: lambda(
     ["toAccount", "amount"],
     letExpr(
