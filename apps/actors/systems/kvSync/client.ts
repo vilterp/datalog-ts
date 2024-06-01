@@ -58,6 +58,7 @@ export type TransactionState =
   | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
+      serverTimestamp: number;
       serverTrace: Trace;
     };
 
@@ -75,7 +76,11 @@ function processMutationResponse(
   const newTxnState: TransactionState =
     payload.type === "Accept"
       ? { type: "Committed", serverTimestamp: payload.timestamp }
-      : { type: "Aborted", serverTrace: payload.serverTrace };
+      : {
+          type: "Aborted",
+          serverTimestamp: payload.timestamp,
+          serverTrace: payload.serverTrace,
+        };
   const state1: ClientState = {
     ...state,
     transactions: {
@@ -157,7 +162,10 @@ function runMutationOnClient(
     randSeed: newInterpState.randSeed,
     transactions: {
       ...state1.transactions,
-      [txnID]: { invocation: invocation, state: { type: "Pending" } },
+      [txnID]: {
+        invocation: invocation,
+        state: { type: "Pending" },
+      },
     },
   };
   const req: MutationRequest = {

@@ -60,6 +60,7 @@ export type MutationResponse = {
       }
     | {
         type: "Reject";
+        timestamp: number;
         serverTrace: Trace;
         reason: string;
       };
