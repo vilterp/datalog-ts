@@ -25,30 +25,36 @@ export function Window(props: {
           alignItems: "center",
         }}
       >
-        <button
-          onClick={props.onClose}
-          style={{
-            backgroundColor: "red",
-            border: "none",
-            color: "white",
-            textAlign: "center",
-            textDecoration: "none",
-            display: "inline-block",
-            fontSize: "16px",
-            margin: "4px 2px",
-            cursor: "pointer",
-            borderRadius: "50%",
-            width: "20px",
-            height: "20px",
-            padding: "0",
-          }}
-        >
-          x
-        </button>
+        <CloseButton onClick={props.onClose} />
         <div style={{ textAlign: "center", width: "100%" }}>{props.name}</div>
       </div>
       {/* inner content */}
       <div style={{ backgroundColor: "white" }}>{props.children}</div>
     </div>
+  );
+}
+
+function CloseButton(props: { onClick: () => void }) {
+  return (
+    <button
+      onClick={props.onClick}
+      style={{
+        backgroundColor: "red",
+        border: "none",
+        color: "white",
+        textAlign: "center",
+        textDecoration: "none",
+        display: "inline-block",
+        fontSize: "16px",
+        margin: "4px 2px",
+        cursor: "pointer",
+        borderRadius: "50%",
+        width: "20px",
+        height: "20px",
+        padding: "0",
+      }}
+    >
+      x
+    </button>
   );
 }
