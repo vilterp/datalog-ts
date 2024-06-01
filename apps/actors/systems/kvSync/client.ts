@@ -139,7 +139,7 @@ function runMutationOnClient(
     type: "InterpreterState",
     randSeed: randStep(randNum),
   };
-  const [data1, newInterpState, outcome, trace] = runMutation(
+  const [data1, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     initialInterpState,
     txnID,
@@ -149,7 +149,7 @@ function runMutationOnClient(
   );
   const state1: ClientState = { ...state, data: data1 };
   if (outcome === "Abort") {
-    console.warn("CLIENT: txn aborted client side");
+    console.warn("CLIENT: txn aborted client side:", resVal);
     return [state1, null];
   }
   const state2: ClientState = {

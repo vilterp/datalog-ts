@@ -71,7 +71,7 @@ function runMutationOnServer(
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
-  const [newData, newInterpState, outcome, trace] = runMutation(
+  const [newData, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     req.interpState,
     req.txnID,
@@ -96,7 +96,12 @@ function runMutationOnServer(
         type: "MutationResponse",
         txnID: req.txnID,
         // TODO: include abort reason?
-        payload: { type: "Reject", serverTrace: trace, reason: "txn aborted" },
+        payload: {
+          type: "Reject",
+          serverTrace: trace,
+          // TODO: pretty print
+          reason: JSON.stringify(resVal),
+        },
       },
       [],
     ];
