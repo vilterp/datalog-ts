@@ -152,30 +152,53 @@ function runMutationOnClient(
     invocation.args,
     clientID
   );
-  const state1: ClientState = { ...state, data: data1 };
+  const state1: ClientState = {
+    ...state,
+    randSeed: newInterpState.randSeed,
+    data: data1,
+  };
   if (outcome === "Abort") {
     console.warn("CLIENT: txn aborted client side:", resVal);
-    return [state1, null];
-  }
-  const state2: ClientState = {
-    ...state1,
-    randSeed: newInterpState.randSeed,
-    transactions: {
-      ...state1.transactions,
-      [txnID]: {
-        invocation: invocation,
-        state: { type: "Pending" },
+    const state2 = addTransaction(state1, txnID, {
+      invocation,
+      state: {
+        type: "Aborted",
+        // TODO: this is not actually the server trace; is that ok?
+        serverTrace: trace,
+        // TODO: real timestamp
+        serverTimestamp: 0,
       },
-    },
-  };
+    });
+    return [state2, null];
+  }
+
+  const state2 = addTransaction(state1, txnID, {
+    invocation,
+    state: { type: "Pending" },
+  });
+
   const req: MutationRequest = {
     type: "MutationRequest",
     txnID,
     interpState: initialInterpState,
-    invocation: invocation,
+    invocation,
     trace: trace,
   };
   return [state2, req];
+}
+
+function addTransaction(
+  state: ClientState,
+  txnID: string,
+  txn: TransactionRecord
+): ClientState {
+  return {
+    ...state,
+    transactions: {
+      ...state.transactions,
+      [txnID]: txn,
+    },
+  };
 }
 
 function registerLiveQuery(
