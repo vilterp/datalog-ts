@@ -22,20 +22,28 @@ import { TransactionList } from "./common/txnList";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
+  const [accounts, queryState] = useAccountList(client);
+
+  if (queryState === "Loading") {
+    return [[], queryState];
+  }
 
   return (
     <div>
       <h3>MyBank</h3>
-      <BalanceTable client={client} />
+      <BalanceTable client={client} accounts={accounts} />
       <ul>
         <li>
-          <WithdrawForm client={client} />
+          <WithdrawForm client={client} accounts={accounts} />
         </li>
         <li>
-          <DepositForm client={client} />
+          <DepositForm client={client} accounts={accounts} />
         </li>
         <li>
-          <MoveForm client={client} />
+          <MoveForm client={client} accounts={accounts} />
+        </li>
+        <li>
+          <CreateAccountForm client={client} />
         </li>
       </ul>
       <TransactionList client={client} />
@@ -43,7 +51,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
   );
 }
 
-function WithdrawForm(props: { client: Client }) {
+function WithdrawForm(props: { client: Client; accounts: Account[] }) {
   const [account, setAccount] = useState("");
   const [amount, setAmount] = useState(0);
 
@@ -70,7 +78,7 @@ function WithdrawForm(props: { client: Client }) {
   );
 }
 
-function DepositForm(props: { client: Client }) {
+function DepositForm(props: { client: Client; accounts: Account[] }) {
   const [account, setAccount] = useState("foo");
   const [amount, setAmount] = useState(10);
 
@@ -97,7 +105,7 @@ function DepositForm(props: { client: Client }) {
   );
 }
 
-function MoveForm(props: { client: Client }) {
+function MoveForm(props: { client: Client; accounts: Account[] }) {
   const [fromAccount, setFromAccount] = useState("");
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState(0);
@@ -133,6 +141,34 @@ function MoveForm(props: { client: Client }) {
   );
 }
 
+function BalanceTable(props: { client: Client; accounts: Account[] }) {
+  return (
+    <>
+      <h4>Accounts</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Balance</th>
+            <th>Committed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {props.accounts.map((account) => (
+            <tr key={account.name}>
+              <td>{account.name}</td>
+              <td>{account.balance}</td>
+              <td>
+                <TxnState client={props.client} txnID={account.transactionID} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+}
+
 type Account = {
   name: string;
   balance: number;
@@ -156,44 +192,6 @@ function useAccountList(client: Client): [Account[], QueryStatus] {
     })),
     queryState,
   ];
-}
-
-function BalanceTable(props: { client: Client }) {
-  const [accounts, queryState] = useAccountList(props.client);
-
-  if (queryState === "Loading") {
-    return (
-      <div>
-        <em>Loading...</em>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <h4>Accounts</h4>
-      <table>
-        <thead>
-          <tr>
-            <th>Account</th>
-            <th>Balance</th>
-            <th>Committed At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {accounts.map((account) => (
-            <tr key={account.name}>
-              <td>{account.name}</td>
-              <td>{account.balance}</td>
-              <td>
-                <TxnState client={props.client} txnID={account.transactionID} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
 }
 
 // TODO: is default=0 correct for everything here?
