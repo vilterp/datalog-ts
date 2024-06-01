@@ -98,6 +98,7 @@ function runMutationOnServer(
         // TODO: include abort reason?
         payload: {
           type: "Reject",
+          timestamp: txnTime,
           serverTrace: trace,
           // TODO: pretty print
           reason: JSON.stringify(resVal),
@@ -118,6 +119,7 @@ function runMutationOnServer(
         txnID: req.txnID,
         payload: {
           type: "Reject",
+          timestamp: txnTime,
           serverTrace: trace,
           reason: "trace not equal",
         },

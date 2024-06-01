@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, getStateForKey } from "../client";
+import { ClientState, QueryStatus, getStateForKey } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -14,6 +14,7 @@ import {
   str,
   write,
   doExpr,
+  int,
 } from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
@@ -26,24 +27,41 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
   return (
     <div>
       <h3>MyBank</h3>
-      <BalanceTable client={client} />
-      <ul>
-        <li>
-          <WithdrawForm client={client} />
-        </li>
-        <li>
-          <DepositForm client={client} />
-        </li>
-        <li>
-          <MoveForm client={client} />
-        </li>
-      </ul>
-      <TransactionList client={client} />
+      <InnerContent client={client} />
     </div>
   );
 }
 
-function WithdrawForm(props: { client: Client }) {
+function InnerContent(props: { client: Client }) {
+  const [accounts, queryState] = useAccountList(props.client);
+
+  if (queryState === "Loading") {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <BalanceTable client={props.client} accounts={accounts} />
+      <ul>
+        <li>
+          <WithdrawForm client={props.client} accounts={accounts} />
+        </li>
+        <li>
+          <DepositForm client={props.client} accounts={accounts} />
+        </li>
+        <li>
+          <MoveForm client={props.client} accounts={accounts} />
+        </li>
+        <li>
+          <CreateAccountForm client={props.client} />
+        </li>
+      </ul>
+      <TransactionList client={props.client} />
+    </div>
+  );
+}
+
+function WithdrawForm(props: { client: Client; accounts: Account[] }) {
   const [account, setAccount] = useState("");
   const [amount, setAmount] = useState(0);
 
@@ -59,7 +77,11 @@ function WithdrawForm(props: { client: Client }) {
       }}
     >
       Account:{" "}
-      <input value={account} onChange={(evt) => setAccount(evt.target.value)} />
+      <AccountChooser
+        accounts={props.accounts}
+        current={account}
+        onChange={setAccount}
+      />
       Amount:{" "}
       <input
         value={amount}
@@ -70,7 +92,7 @@ function WithdrawForm(props: { client: Client }) {
   );
 }
 
-function DepositForm(props: { client: Client }) {
+function DepositForm(props: { client: Client; accounts: Account[] }) {
   const [account, setAccount] = useState("foo");
   const [amount, setAmount] = useState(10);
 
@@ -86,7 +108,11 @@ function DepositForm(props: { client: Client }) {
       }}
     >
       Account:{" "}
-      <input value={account} onChange={(evt) => setAccount(evt.target.value)} />
+      <AccountChooser
+        accounts={props.accounts}
+        current={account}
+        onChange={setAccount}
+      />
       Amount:{" "}
       <input
         value={amount}
@@ -97,7 +123,7 @@ function DepositForm(props: { client: Client }) {
   );
 }
 
-function MoveForm(props: { client: Client }) {
+function MoveForm(props: { client: Client; accounts: Account[] }) {
   const [fromAccount, setFromAccount] = useState("");
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState(0);
@@ -114,14 +140,16 @@ function MoveForm(props: { client: Client }) {
       }}
     >
       From Account:{" "}
-      <input
-        value={fromAccount}
-        onChange={(evt) => setFromAccount(evt.target.value)}
+      <AccountChooser
+        accounts={props.accounts}
+        current={fromAccount}
+        onChange={setFromAccount}
       />
       To Account:{" "}
-      <input
-        value={toAccount}
-        onChange={(evt) => setToAccount(evt.target.value)}
+      <AccountChooser
+        accounts={props.accounts}
+        current={toAccount}
+        onChange={setToAccount}
       />
       Amount:{" "}
       <input
@@ -133,47 +161,105 @@ function MoveForm(props: { client: Client }) {
   );
 }
 
-function BalanceTable(props: { client: Client }) {
-  const [queryResults, queryState] = useLiveQuery(
-    props.client,
-    "list-accounts",
-    { prefix: "" }
-  );
-
-  if (queryState === "Loading") {
-    return (
-      <div>
-        <em>Loading...</em>
-      </div>
-    );
-  }
-
+function BalanceTable(props: { client: Client; accounts: Account[] }) {
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Account</th>
-          <th>Balance</th>
-          <th>Committed At</th>
-        </tr>
-      </thead>
-      <tbody>
-        {mapObjToList(queryResults, (key, value) => (
-          <tr key={key}>
-            <td>{key}</td>
-            <td>{JSON.stringify(value.value)}</td>
-            <td>
-              <TxnState client={props.client} txnID={value.transactionID} />
-            </td>
+    <>
+      <h4>Accounts</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Balance</th>
+            <th>Committed At</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {props.accounts.map((account) => (
+            <tr key={account.name}>
+              <td>{account.name}</td>
+              <td>{account.balance}</td>
+              <td>
+                <TxnState client={props.client} txnID={account.transactionID} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 
+function CreateAccountForm(props: { client: Client }) {
+  const [name, setName] = useState("");
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        setName("");
+        props.client.runMutation({
+          type: "Invocation",
+          name: "createAccount",
+          args: [name],
+        });
+      }}
+    >
+      Create account:{" "}
+      <input value={name} onChange={(evt) => setName(evt.target.value)} />
+      <button>Create</button>
+    </form>
+  );
+}
+
+// ==== Account list and chooser ====
+
+function AccountChooser(props: {
+  accounts: Account[];
+  current: string;
+  onChange: (account: string) => void;
+}) {
+  return (
+    <select onChange={(evt) => props.onChange(evt.target.value)}>
+      <option key=""></option>
+      {props.accounts.map((account) => (
+        <option key={account.name} value={account.name}>
+          {account.name}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+type Account = {
+  name: string;
+  balance: number;
+  transactionID: string;
+};
+
+function useAccountList(client: Client): [Account[], QueryStatus] {
+  const [queryResults, queryState] = useLiveQuery(client, "list-accounts", {
+    prefix: "",
+  });
+
+  if (queryState === "Loading") {
+    return [[], queryState];
+  }
+
+  return [
+    mapObjToList(queryResults, (key, value) => ({
+      name: key,
+      balance: value.value as number,
+      transactionID: value.transactionID,
+    })),
+    queryState,
+  ];
+}
+
+// ==== Mutations ====
+
 // TODO: is default=0 correct for everything here?
 const mutations: MutationDefns = {
+  createAccount: lambda(["name"], write(varr("name"), int(0))),
   deposit: lambda(
     ["toAccount", "amount"],
     letExpr(
