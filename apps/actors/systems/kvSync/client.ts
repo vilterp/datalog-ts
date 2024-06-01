@@ -62,7 +62,7 @@ export type TransactionState =
       serverTrace: Trace;
     };
 
-type TransactionRecord = {
+export type TransactionRecord = {
   invocation: MutationInvocation;
   state: TransactionState;
 };
