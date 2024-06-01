@@ -6,7 +6,7 @@ export function Window(props: {
   children: React.ReactNode;
 }) {
   return (
-    // outer bar
+    // outer container
     <div
       style={{
         border: "1px solid black",
@@ -14,6 +14,7 @@ export function Window(props: {
         borderRadius: 10,
         boxShadow: "5px 5px 15px rgba(0,0,0,0.3)",
         margin: 10,
+        backgroundColor: "hsl(0, 0%, 94%)",
       }}
     >
       {/* top bar */}
@@ -47,7 +48,7 @@ export function Window(props: {
         <div style={{ textAlign: "center", width: "100%" }}>{props.name}</div>
       </div>
       {/* inner content */}
-      <div>{props.children}</div>
+      <div style={{ backgroundColor: "white" }}>{props.children}</div>
     </div>
   );
 }
