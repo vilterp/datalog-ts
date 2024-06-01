@@ -60,6 +60,7 @@ export type TransactionState =
   | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
+      reason: string; // TODO: more structured
       serverTimestamp: number;
       serverTrace: Trace;
     };
@@ -80,6 +81,7 @@ function processMutationResponse(
       ? { type: "Committed", serverTimestamp: payload.timestamp }
       : {
           type: "Aborted",
+          reason: payload.reason,
           serverTimestamp: payload.timestamp,
           serverTrace: payload.serverTrace,
         };
@@ -165,6 +167,7 @@ function runMutationOnClient(
       invocation,
       state: {
         type: "Aborted",
+        reason: JSON.stringify(resVal), // TODO: pretty print values
         // TODO: this is not actually the server trace; is that ok?
         serverTrace: trace,
         serverTimestamp: state.time,
