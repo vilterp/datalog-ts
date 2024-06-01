@@ -43,8 +43,7 @@ function comparator(
 function getTime(state: TransactionState) {
   switch (state.type) {
     case "Pending":
-      // max int
-      return Number.MAX_SAFE_INTEGER;
+      return state.sentTime;
     case "Committed":
       return state.serverTimestamp;
     case "Aborted":

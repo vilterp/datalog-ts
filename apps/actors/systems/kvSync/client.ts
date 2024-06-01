@@ -56,7 +56,7 @@ export function initialClientState(
 }
 
 export type TransactionState =
-  | { type: "Pending" }
+  | { type: "Pending"; sentTime: number }
   | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
@@ -178,7 +178,7 @@ function runMutationOnClient(
 
   const state2 = addTransaction(state1, txnID, {
     invocation,
-    state: { type: "Pending" },
+    state: { type: "Pending", sentTime: state.time },
   });
 
   const req: MutationRequest = {
