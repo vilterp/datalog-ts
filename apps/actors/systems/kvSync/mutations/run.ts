@@ -10,7 +10,7 @@ export function runMutation(
   lambda: Lambda,
   args: Value[],
   userID: string
-): [KVData, InterpreterState, Outcome, Trace] {
+): [KVData, Value, InterpreterState, Outcome, Trace] {
   const scope: Scope = {
     ...pairsToObj(
       args.map((arg, idx) => ({
@@ -29,7 +29,7 @@ export function runMutation(
     lambda.body
   );
   // TODO: check out
-  return [newKVState, state, outcome, trace];
+  return [newKVState, resVal, state, outcome, trace];
 }
 
 function runMutationExpr(
@@ -193,8 +193,17 @@ function runMutationExpr(
         condRes ? expr.ifTrue : expr.ifFalse
       );
     }
-    case "Abort":
-      return [null, "Abort", state, kvData, traceSoFar];
+    case "Abort": {
+      const [abortReason, _1, _2, _3, _4] = runMutationExpr(
+        kvData,
+        state,
+        transactionID,
+        traceSoFar,
+        scope,
+        expr.reason
+      );
+      return [abortReason, "Abort", state, kvData, traceSoFar];
+    }
     case "Var": {
       const val = scope[expr.name];
       if (!val) {

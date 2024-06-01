@@ -18,6 +18,7 @@ import {
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
+import { TransactionList } from "./common/txnList";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -37,6 +38,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
           <MoveForm client={client} />
         </li>
       </ul>
+      <TransactionList client={client} />
     </div>
   );
 }
@@ -186,9 +188,13 @@ const mutations: MutationDefns = {
     ["fromAccount", "amount"],
     letExpr(
       [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
-      write(
-        varr("fromAccount"),
-        apply("-", [varr("balanceBefore"), varr("amount")])
+      ifExpr(
+        apply(">", [varr("amount"), varr("balanceBefore")]),
+        abort(str("balance not high enough")),
+        write(
+          varr("fromAccount"),
+          apply("-", [varr("balanceBefore"), varr("amount")])
+        )
       )
     )
   ),

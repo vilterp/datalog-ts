@@ -31,7 +31,6 @@ export function makeClient(props: UIProps<ClientState, UserInput>): Client {
   };
   const retryTransaction = (id: string) => {
     const invocation = props.state.transactions[id].invocation;
-    props.sendUserInput({ type: "CancelTransaction", id });
     props.sendUserInput({ type: "RunMutation", invocation });
   };
   return {
