@@ -1,6 +1,7 @@
 import React from "react";
 import { Client } from "../../hooks";
 import { TxnState } from "./txnState";
+import { prettyPrintInvocation } from "./pretty";
 
 export function TransactionList(props: { client: Client }) {
   return (
@@ -16,7 +17,7 @@ export function TransactionList(props: { client: Client }) {
         {Object.entries(props.client.state.transactions).map(([id, txn]) => (
           <tr key={id}>
             <td>{id}</td>
-            <td>{JSON.stringify(txn.invocation)}</td>
+            <td>{prettyPrintInvocation(txn.invocation)}</td>
             <td>
               <TxnState client={props.client} txnID={id} />
             </td>
