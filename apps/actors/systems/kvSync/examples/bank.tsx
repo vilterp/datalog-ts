@@ -20,6 +20,7 @@ import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { TransactionList } from "./common/txnList";
+import { Table } from "./common/table";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -165,26 +166,20 @@ function BalanceTable(props: { client: Client; accounts: Account[] }) {
   return (
     <>
       <h4>Accounts</h4>
-      <table>
-        <thead>
-          <tr>
-            <th>Account</th>
-            <th>Balance</th>
-            <th>Committed At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.accounts.map((account) => (
-            <tr key={account.name}>
-              <td>{account.name}</td>
-              <td>{account.balance}</td>
-              <td>
-                <TxnState client={props.client} txnID={account.transactionID} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table<Account>
+        columns={[
+          { name: "Account", render: (account) => account.name },
+          { name: "Balance", render: (account) => account.balance },
+          {
+            name: "State",
+            render: (account) => (
+              <TxnState client={props.client} txnID={account.transactionID} />
+            ),
+          },
+        ]}
+        data={props.accounts}
+        getKey={(account) => account.name}
+      />
     </>
   );
 }
