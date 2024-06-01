@@ -116,27 +116,29 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       >
         Add Client
       </button>
-      {props.systemInstance.clientIDs.map((clientID) => {
-        const clientState =
-          props.systemInstance.trace.latestStates[`client${clientID}`];
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        {props.systemInstance.clientIDs.map((clientID) => {
+          const clientState =
+            props.systemInstance.trace.latestStates[`client${clientID}`];
 
-        return (
-          <Window
-            key={clientID}
-            name={clientID}
-            onClose={() => {
-              props.dispatch({ type: "ExitClient", clientID });
-            }}
-          >
-            {clientState ? (
-              <props.systemInstance.system.ui
-                state={clientState}
-                sendUserInput={(input) => sendInput(clientID, input)}
-              />
-            ) : null}
-          </Window>
-        );
-      })}
+          return (
+            <Window
+              key={clientID}
+              name={`Client ${clientID}`}
+              onClose={() => {
+                props.dispatch({ type: "ExitClient", clientID });
+              }}
+            >
+              {clientState ? (
+                <props.systemInstance.system.ui
+                  state={clientState}
+                  sendUserInput={(input) => sendInput(clientID, input)}
+                />
+              ) : null}
+            </Window>
+          );
+        })}
+      </div>
     </>
   );
 }
