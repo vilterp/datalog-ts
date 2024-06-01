@@ -86,7 +86,7 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
         accounts={props.accounts}
         current={account}
         onChange={setAccount}
-      />
+      />{" "}
       <button>Submit</button>
     </form>
   );
@@ -117,7 +117,7 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
         accounts={props.accounts}
         current={account}
         onChange={setAccount}
-      />
+      />{" "}
       <button>Submit</button>
     </form>
   );
@@ -155,7 +155,7 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
         accounts={props.accounts}
         current={toAccount}
         onChange={setToAccount}
-      />
+      />{" "}
       <button>Submit</button>
     </form>
   );
@@ -205,7 +205,7 @@ function CreateAccountForm(props: { client: Client }) {
       }}
     >
       Create account{" "}
-      <input value={name} onChange={(evt) => setName(evt.target.value)} />
+      <input value={name} onChange={(evt) => setName(evt.target.value)} />{" "}
       <button>Submit</button>
     </form>
   );
