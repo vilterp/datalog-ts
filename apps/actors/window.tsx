@@ -17,7 +17,13 @@ export function Window(props: {
       }}
     >
       {/* top bar */}
-      <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <button
           onClick={props.onClose}
           style={{
@@ -38,7 +44,7 @@ export function Window(props: {
         >
           x
         </button>
-        {props.name}
+        <div style={{ textAlign: "center", width: "100%" }}>{props.name}</div>
       </div>
       {/* inner content */}
       <div>{props.children}</div>
