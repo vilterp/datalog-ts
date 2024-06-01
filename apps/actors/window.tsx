@@ -7,7 +7,15 @@ export function Window(props: {
 }) {
   return (
     // outer bar
-    <div style={{ border: "1px solid black", padding: "10px" }}>
+    <div
+      style={{
+        border: "1px solid black",
+        padding: 10,
+        borderRadius: 10,
+        boxShadow: "5px 5px 15px rgba(0,0,0,0.3)",
+        margin: 10,
+      }}
+    >
       {/* top bar */}
       <div>
         <button
