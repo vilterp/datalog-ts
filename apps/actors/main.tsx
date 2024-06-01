@@ -10,6 +10,7 @@ import useHashParam from "use-hash-param";
 import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
+import { Window } from "./window";
 
 const initialSystemsState = initialState(SYSTEMS);
 
@@ -115,59 +116,27 @@ function MultiClient<St extends Json, Msg extends Json>(props: {
       >
         Add Client
       </button>
-      <table style={{ borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            {props.systemInstance.clientIDs.map((clientID) => {
-              return (
-                <th
-                  key={clientID}
-                  style={{
-                    borderLeft: "1px solid lightgrey",
-                    borderRight: "1px solid lightgrey",
-                    borderBottom: "1px solid black",
-                  }}
-                >
-                  <span> client{clientID}</span>{" "}
-                  <button
-                    onClick={() => {
-                      props.dispatch({ type: "ExitClient", clientID });
-                    }}
-                  >
-                    x
-                  </button>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {props.systemInstance.clientIDs.map((clientID) => {
-              const clientState =
-                props.systemInstance.trace.latestStates[`client${clientID}`];
+      {props.systemInstance.clientIDs.map((clientID) => {
+        const clientState =
+          props.systemInstance.trace.latestStates[`client${clientID}`];
 
-              return (
-                <td
-                  key={clientID}
-                  style={{
-                    borderLeft: "1px solid lightgrey",
-                    borderRight: "1px solid lightgrey",
-                    verticalAlign: "top",
-                  }}
-                >
-                  {clientState ? (
-                    <props.systemInstance.system.ui
-                      state={clientState}
-                      sendUserInput={(input) => sendInput(clientID, input)}
-                    />
-                  ) : null}
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
+        return (
+          <Window
+            key={clientID}
+            name={clientID}
+            onClose={() => {
+              props.dispatch({ type: "ExitClient", clientID });
+            }}
+          >
+            {clientState ? (
+              <props.systemInstance.system.ui
+                state={clientState}
+                sendUserInput={(input) => sendInput(clientID, input)}
+              />
+            ) : null}
+          </Window>
+        );
+      })}
     </>
   );
 }
