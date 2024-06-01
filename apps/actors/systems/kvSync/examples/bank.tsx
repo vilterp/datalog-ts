@@ -188,9 +188,13 @@ const mutations: MutationDefns = {
     ["fromAccount", "amount"],
     letExpr(
       [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
-      write(
-        varr("fromAccount"),
-        apply("-", [varr("balanceBefore"), varr("amount")])
+      ifExpr(
+        apply(">", [varr("amount"), varr("balanceBefore")]),
+        abort(str("balance not high enough")),
+        write(
+          varr("fromAccount"),
+          apply("-", [varr("balanceBefore"), varr("amount")])
+        )
       )
     )
   ),
