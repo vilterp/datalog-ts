@@ -35,6 +35,7 @@ export type ClientState = {
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
   randSeed: number;
+  time: number;
 };
 
 export function initialClientState(
@@ -50,6 +51,7 @@ export function initialClientState(
     mutationDefns,
     transactions: {},
     randSeed: hashString(clientID),
+    time: 0,
   };
 }
 
@@ -165,8 +167,7 @@ function runMutationOnClient(
         type: "Aborted",
         // TODO: this is not actually the server trace; is that ok?
         serverTrace: trace,
-        // TODO: real timestamp
-        serverTimestamp: 0,
+        serverTimestamp: state.time,
       },
     });
     return [state2, null];
@@ -263,8 +264,24 @@ export function getStateForKey(
   return txn.state;
 }
 
-// TODO: maybe move this out to index.ts? idk
 export function updateClient(
+  state: ClientState,
+  init: LoadedTickInitiator<ClientState, MsgToClient>
+): ActorResp<ClientState, MsgToServer> {
+  const resp = updateClientInner(state, init);
+  switch (resp.type) {
+    case "continue": {
+      return {
+        ...resp,
+        state: incrementTime(resp.state),
+      };
+    }
+    default:
+      return resp;
+  }
+}
+
+function updateClientInner(
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
@@ -326,4 +343,8 @@ export function updateClient(
     default:
       return effects.updateState(state);
   }
+}
+
+function incrementTime(state: ClientState): ClientState {
+  return { ...state, time: state.time + 1 };
 }
