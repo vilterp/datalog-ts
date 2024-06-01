@@ -23,7 +23,7 @@ requestResponse{
   tick{id: HandleResponseTick, actorID: ClientActor, initiator: messageReceived{messageID: RespID}}.
 
 internal.visualization{
-  name: "sequence",
+  name: "Sequence",
   spec: sequence{
     actors: actor{id: ID},
     hops: hop{from: FromTick, to: ToTick},
