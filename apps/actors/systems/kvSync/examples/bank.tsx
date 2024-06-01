@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, getStateForKey } from "../client";
+import { ClientState, QueryStatus, getStateForKey } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -133,12 +133,33 @@ function MoveForm(props: { client: Client }) {
   );
 }
 
+type Account = {
+  name: string;
+  balance: number;
+  transactionID: string;
+};
+
+function useAccountList(client: Client): [Account[], QueryStatus] {
+  const [queryResults, queryState] = useLiveQuery(client, "list-accounts", {
+    prefix: "",
+  });
+
+  if (queryState === "Loading") {
+    return [[], queryState];
+  }
+
+  return [
+    mapObjToList(queryResults, (key, value) => ({
+      name: key,
+      balance: value.value as number,
+      transactionID: value.transactionID,
+    })),
+    queryState,
+  ];
+}
+
 function BalanceTable(props: { client: Client }) {
-  const [queryResults, queryState] = useLiveQuery(
-    props.client,
-    "list-accounts",
-    { prefix: "" }
-  );
+  const [accounts, queryState] = useAccountList(props.client);
 
   if (queryState === "Loading") {
     return (
@@ -160,12 +181,12 @@ function BalanceTable(props: { client: Client }) {
           </tr>
         </thead>
         <tbody>
-          {mapObjToList(queryResults, (key, value) => (
-            <tr key={key}>
-              <td>{key}</td>
-              <td>{JSON.stringify(value.value)}</td>
+          {accounts.map((account) => (
+            <tr key={account.name}>
+              <td>{account.name}</td>
+              <td>{account.balance}</td>
               <td>
-                <TxnState client={props.client} txnID={value.transactionID} />
+                <TxnState client={props.client} txnID={account.transactionID} />
               </td>
             </tr>
           ))}
