@@ -2,6 +2,7 @@ import React from "react";
 
 type ColumnSpec<T> = {
   render: (row: T) => React.ReactNode;
+  width?: number;
   name: string;
 };
 
@@ -15,7 +16,10 @@ export function Table<T>(props: {
       <thead>
         <tr style={{ borderBottom: "1px solid gray" }}>
           {props.columns.map((colSpec) => (
-            <th key={colSpec.name} style={{ paddingLeft: 5, paddingRight: 5 }}>
+            <th
+              key={colSpec.name}
+              style={{ paddingLeft: 5, paddingRight: 5, width: colSpec.width }}
+            >
               {colSpec.name}
             </th>
           ))}
