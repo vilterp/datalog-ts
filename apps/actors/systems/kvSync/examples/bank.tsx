@@ -67,7 +67,11 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
       }}
     >
       Account:{" "}
-      <input value={account} onChange={(evt) => setAccount(evt.target.value)} />
+      <AccountChooser
+        accounts={props.accounts}
+        current={account}
+        onChange={setAccount}
+      />
       Amount:{" "}
       <input
         value={amount}
@@ -94,7 +98,11 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
       }}
     >
       Account:{" "}
-      <input value={account} onChange={(evt) => setAccount(evt.target.value)} />
+      <AccountChooser
+        accounts={props.accounts}
+        current={account}
+        onChange={setAccount}
+      />
       Amount:{" "}
       <input
         value={amount}
@@ -122,14 +130,16 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
       }}
     >
       From Account:{" "}
-      <input
-        value={fromAccount}
-        onChange={(evt) => setFromAccount(evt.target.value)}
+      <AccountChooser
+        accounts={props.accounts}
+        current={fromAccount}
+        onChange={setFromAccount}
       />
       To Account:{" "}
-      <input
-        value={toAccount}
-        onChange={(evt) => setToAccount(evt.target.value)}
+      <AccountChooser
+        accounts={props.accounts}
+        current={toAccount}
+        onChange={setToAccount}
       />
       Amount:{" "}
       <input
@@ -166,6 +176,22 @@ function BalanceTable(props: { client: Client; accounts: Account[] }) {
         </tbody>
       </table>
     </>
+  );
+}
+
+function AccountChooser(props: {
+  accounts: Account[];
+  current: string;
+  onChange: (account: string) => void;
+}) {
+  return (
+    <select onChange={(evt) => props.onChange(evt.target.value)}>
+      {props.accounts.map((account) => (
+        <option key={account.name} value={account.name}>
+          {account.name}
+        </option>
+      ))}
+    </select>
   );
 }
 
