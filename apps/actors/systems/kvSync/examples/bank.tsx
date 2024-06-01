@@ -149,26 +149,29 @@ function BalanceTable(props: { client: Client }) {
   }
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Account</th>
-          <th>Balance</th>
-          <th>Committed At</th>
-        </tr>
-      </thead>
-      <tbody>
-        {mapObjToList(queryResults, (key, value) => (
-          <tr key={key}>
-            <td>{key}</td>
-            <td>{JSON.stringify(value.value)}</td>
-            <td>
-              <TxnState client={props.client} txnID={value.transactionID} />
-            </td>
+    <>
+      <h4>Accounts</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Balance</th>
+            <th>Committed At</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {mapObjToList(queryResults, (key, value) => (
+            <tr key={key}>
+              <td>{key}</td>
+              <td>{JSON.stringify(value.value)}</td>
+              <td>
+                <TxnState client={props.client} txnID={value.transactionID} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 
