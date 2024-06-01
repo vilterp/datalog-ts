@@ -63,7 +63,7 @@ function InnerContent(props: { client: Client }) {
 
 function WithdrawForm(props: { client: Client; accounts: Account[] }) {
   const [account, setAccount] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(10);
 
   return (
     <form
@@ -126,7 +126,7 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
 function MoveForm(props: { client: Client; accounts: Account[] }) {
   const [fromAccount, setFromAccount] = useState("");
   const [toAccount, setToAccount] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(10);
 
   return (
     <form
