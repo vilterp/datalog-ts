@@ -76,18 +76,18 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
         });
       }}
     >
-      Account:{" "}
+      Withdraw{" "}
+      <input
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      from account{" "}
       <AccountChooser
         accounts={props.accounts}
         current={account}
         onChange={setAccount}
       />
-      Amount:{" "}
-      <input
-        value={amount}
-        onChange={(evt) => setAmount(parseInt(evt.target.value))}
-      />
-      <button>Withdraw</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -107,18 +107,18 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
         });
       }}
     >
-      Account:{" "}
+      Deposit{" "}
+      <input
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      into account{" "}
       <AccountChooser
         accounts={props.accounts}
         current={account}
         onChange={setAccount}
       />
-      Amount:{" "}
-      <input
-        value={amount}
-        onChange={(evt) => setAmount(parseInt(evt.target.value))}
-      />
-      <button>Deposit</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -139,24 +139,24 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
         });
       }}
     >
-      From Account:{" "}
+      Move{" "}
+      <input
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      from account{" "}
       <AccountChooser
         accounts={props.accounts}
         current={fromAccount}
         onChange={setFromAccount}
-      />
-      To Account:{" "}
+      />{" "}
+      to account{" "}
       <AccountChooser
         accounts={props.accounts}
         current={toAccount}
         onChange={setToAccount}
       />
-      Amount:{" "}
-      <input
-        value={amount}
-        onChange={(evt) => setAmount(parseInt(evt.target.value))}
-      />
-      <button>Move</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -204,9 +204,9 @@ function CreateAccountForm(props: { client: Client }) {
         });
       }}
     >
-      Create account:{" "}
+      Create account{" "}
       <input value={name} onChange={(evt) => setName(evt.target.value)} />
-      <button>Create</button>
+      <button>Submit</button>
     </form>
   );
 }
