@@ -18,6 +18,7 @@ import {
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
+import { TransactionList } from "./common/txnList";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -37,6 +38,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
           <MoveForm client={client} />
         </li>
       </ul>
+      <TransactionList client={client} />
     </div>
   );
 }
