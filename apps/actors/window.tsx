@@ -35,13 +35,17 @@ export function Window(props: {
 }
 
 function CloseButton(props: { onClick: () => void }) {
+  const [hovered, setHovered] = React.useState(false);
+
   return (
     <button
       onClick={props.onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         backgroundColor: "red",
         border: "none",
-        color: "white",
+        color: "black",
         textAlign: "center",
         textDecoration: "none",
         display: "inline-block",
@@ -52,9 +56,10 @@ function CloseButton(props: { onClick: () => void }) {
         width: "20px",
         height: "20px",
         padding: "0",
+        lineHeight: "20px",
       }}
     >
-      x
+      {hovered ? "×" : " "}
     </button>
   );
 }
