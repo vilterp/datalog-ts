@@ -14,9 +14,10 @@ import {
   varr,
   write,
 } from "../mutations/types";
-import { MutationDefns, UserInput } from "../types";
+import { MutationDefns, UserInput, VersionedValue } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
+import { Table } from "./common/table";
 
 type Message = {
   id: number;
@@ -67,6 +68,8 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
   );
 }
 
+type MessageWithTxnID = Message & { transactionID: string };
+
 function MessageTable(props: { threadID: string; client: Client }) {
   const [messages, messagesStatus] = useLiveQuery(
     props.client,
@@ -96,56 +99,35 @@ function MessageTable(props: { threadID: string; client: Client }) {
 
   return (
     <>
-      <style>{`
-      table.messages {
-        border-collapse: collapse;
-      }
-      table.messages th, table.messages td {
-        border-left: 1px solid lightgrey;
-        border-right: 1px solid lightgrey;
-        text-align: left;
-      }
-      table.messages thead tr {
-        border-bottom: 1px solid black;
-      }
-      `}</style>
-      <table className="messages">
-        <thead>
-          <tr>
-            <th>Sender</th>
-            <th style={{ width: 150 }}>Message</th>
-            <th>State</th>
-            <th style={{ width: 100 }}>Seen By</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* TODO: index by seq no so we don't have to do this here? */}
-          {Object.values(messages)
-            .sort(
-              (a, b) => (a.value as Message).seqNo - (b.value as Message).seqNo
-            )
-            .map((message) => {
-              const msg = message.value as Message;
-              return (
-                <tr key={message.transactionID}>
-                  <td>{msg.sender}</td>
-                  <td>{msg.message}</td>
-                  <td>
-                    <TxnState
-                      client={props.client}
-                      txnID={message.transactionID}
-                    />
-                  </td>
-                  <td>
-                    {(usersSeenBySeqNo[msg.seqNo] || [])
-                      .filter((user) => user !== props.client.state.id)
-                      .join(", ")}
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+      <Table<MessageWithTxnID>
+        data={Object.values(messages)
+          .sort(
+            (a, b) => (a.value as Message).seqNo - (b.value as Message).seqNo
+          )
+          .map((vv) => ({
+            ...(vv.value as Message),
+            transactionID: vv.transactionID,
+          }))}
+        getKey={(msg) => msg.transactionID}
+        columns={[
+          { name: "From", render: (msg) => msg.sender },
+          { name: "Message", width: 150, render: (msg) => msg.message },
+          {
+            name: "State",
+            render: (msg) => (
+              <TxnState client={props.client} txnID={msg.transactionID} />
+            ),
+          },
+          {
+            name: "Seen By",
+            width: 100,
+            render: (msg) =>
+              (usersSeenBySeqNo[msg.seqNo] || [])
+                .filter((user) => user !== props.client.state.id)
+                .join(", "),
+          },
+        ]}
+      />
     </>
   );
 }

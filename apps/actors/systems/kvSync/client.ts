@@ -35,6 +35,7 @@ export type ClientState = {
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
   randSeed: number;
+  time: number;
 };
 
 export function initialClientState(
@@ -50,14 +51,16 @@ export function initialClientState(
     mutationDefns,
     transactions: {},
     randSeed: hashString(clientID),
+    time: 0,
   };
 }
 
 export type TransactionState =
-  | { type: "Pending" }
+  | { type: "Pending"; sentTime: number }
   | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
+      reason: string; // TODO: more structured
       serverTimestamp: number;
       serverTrace: Trace;
     };
@@ -78,6 +81,7 @@ function processMutationResponse(
       ? { type: "Committed", serverTimestamp: payload.timestamp }
       : {
           type: "Aborted",
+          reason: payload.reason,
           serverTimestamp: payload.timestamp,
           serverTrace: payload.serverTrace,
         };
@@ -152,30 +156,53 @@ function runMutationOnClient(
     invocation.args,
     clientID
   );
-  const state1: ClientState = { ...state, data: data1 };
+  const state1: ClientState = {
+    ...state,
+    randSeed: newInterpState.randSeed,
+    data: data1,
+  };
   if (outcome === "Abort") {
     console.warn("CLIENT: txn aborted client side:", resVal);
-    return [state1, null];
-  }
-  const state2: ClientState = {
-    ...state1,
-    randSeed: newInterpState.randSeed,
-    transactions: {
-      ...state1.transactions,
-      [txnID]: {
-        invocation: invocation,
-        state: { type: "Pending" },
+    const state2 = addTransaction(state1, txnID, {
+      invocation,
+      state: {
+        type: "Aborted",
+        reason: JSON.stringify(resVal), // TODO: pretty print values
+        // TODO: this is not actually the server trace; is that ok?
+        serverTrace: trace,
+        serverTimestamp: state.time,
       },
-    },
-  };
+    });
+    return [state2, null];
+  }
+
+  const state2 = addTransaction(state1, txnID, {
+    invocation,
+    state: { type: "Pending", sentTime: state.time },
+  });
+
   const req: MutationRequest = {
     type: "MutationRequest",
     txnID,
     interpState: initialInterpState,
-    invocation: invocation,
+    invocation,
     trace: trace,
   };
   return [state2, req];
+}
+
+function addTransaction(
+  state: ClientState,
+  txnID: string,
+  txn: TransactionRecord
+): ClientState {
+  return {
+    ...state,
+    transactions: {
+      ...state.transactions,
+      [txnID]: txn,
+    },
+  };
 }
 
 function registerLiveQuery(
@@ -240,8 +267,24 @@ export function getStateForKey(
   return txn.state;
 }
 
-// TODO: maybe move this out to index.ts? idk
 export function updateClient(
+  state: ClientState,
+  init: LoadedTickInitiator<ClientState, MsgToClient>
+): ActorResp<ClientState, MsgToServer> {
+  const resp = updateClientInner(state, init);
+  switch (resp.type) {
+    case "continue": {
+      return {
+        ...resp,
+        state: incrementTime(resp.state),
+      };
+    }
+    default:
+      return resp;
+  }
+}
+
+function updateClientInner(
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
@@ -303,4 +346,8 @@ export function updateClient(
     default:
       return effects.updateState(state);
   }
+}
+
+function incrementTime(state: ClientState): ClientState {
+  return { ...state, time: state.time + 1 };
 }
