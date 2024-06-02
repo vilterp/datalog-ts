@@ -1,5 +1,6 @@
 import { bank } from "./bank";
 import { chat } from "./chat";
+import { counter } from "./counter";
 import { KVApp } from "./types";
 
-export const EXAMPLES: { [name: string]: KVApp } = { bank, chat };
+export const EXAMPLES: { [name: string]: KVApp } = { bank, chat, counter };

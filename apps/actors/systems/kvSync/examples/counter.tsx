@@ -21,7 +21,13 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
     prefix: "counter",
   });
 
+  console.log({ queryResults, queryState });
+
   const counter = queryResults["counter"];
+
+  if (queryState === "Loading") {
+    return <em>Loading...</em>;
+  }
 
   return (
     <>
@@ -29,7 +35,7 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
       <span
         style={{
           color:
-            client.state.transactions[counter.transactionID].state.type ===
+            client.state.transactions[counter.transactionID]?.state.type ===
             "Pending"
               ? "lightgrey"
               : "",
@@ -80,4 +86,9 @@ const mutations: MutationDefns = {
   ),
 };
 
-export const counter: KVApp = { name: "Counter", mutations, ui: CounterUI };
+export const counter: KVApp = {
+  name: "Counter",
+  mutations,
+  ui: CounterUI,
+  initialKVPairs: { counter: 0 },
+};
