@@ -46,11 +46,13 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
         }}
       />
       <button onClick={() => handleSubmit()}>Submit</button>
-      {todos.length === 0 ? <em>Empty</em> : null}
-      <ul>
-        {queryStatus === "Loading"
-          ? "Loading..."
-          : todos.map((todo) => (
+      <div>
+        {todos.length === 0 && queryStatus === "Online" ? <em>Empty</em> : null}
+        {queryStatus === "Loading" ? (
+          <em>Loading...</em>
+        ) : (
+          <ul>
+            {todos.map((todo) => (
               <li key={todo.id}>
                 <input
                   type="checkbox"
@@ -71,7 +73,9 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
                 </span>
               </li>
             ))}
-      </ul>
+          </ul>
+        )}
+      </div>
       <Inspector client={client} />
     </>
   );
