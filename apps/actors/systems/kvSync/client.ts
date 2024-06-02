@@ -340,6 +340,10 @@ function updateClientInner(
               state.data,
               (key, val) => val.transactionID !== msg.id
             ),
+            transactions: filterObj(
+              state.transactions,
+              (id, val) => id !== msg.id
+            ),
           });
       }
     }
