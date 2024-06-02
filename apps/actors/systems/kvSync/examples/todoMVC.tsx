@@ -1,59 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
 import { MutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
-import { apply, bool, lambda, obj, str, varr, write } from "../mutations/types";
+import {
+  apply,
+  bool,
+  lambda,
+  letExpr,
+  memberAccess,
+  obj,
+  read,
+  str,
+  varr,
+  write,
+} from "../mutations/types";
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
+import { Json } from "aws-sdk/clients/robomaker";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
   const [todos, queryStatus] = useTodos(client);
+  const [newTodo, setNewTodo] = useState("");
+
+  const handleSubmit = () => {
+    setNewTodo("");
+    client.runMutation("AddTodo", [newTodo]);
+  };
 
   return (
     <>
       <h2>TodoMVC</h2>
       <input
         type="text"
-        value={props.state.currentText}
+        value={newTodo}
         onKeyDown={(evt) => {
           if (evt.keyCode === 13) {
-            props.sendUserInput({ type: "submitTodo" });
+            handleSubmit();
           }
         }}
-        onInput={(evt) =>
-          props.sendUserInput({
-            type: "enterText",
-            value: (evt.target as HTMLInputElement).value,
-          })
-        }
+        onInput={(evt) => {
+          setNewTodo((evt.target as HTMLInputElement).value);
+        }}
       />
-      <button onClick={() => props.sendUserInput({ type: "submitTodo" })}>
-        Submit
-      </button>
+      <button onClick={() => handleSubmit()}>Submit</button>
       <ul>
-        {props.state.todos.status === "loading"
+        {queryStatus === "Loading"
           ? "Loading..."
-          : mapObjToList(props.state.todos.value, (id, savingTodo) => (
-              <li key={id}>
+          : todos.map((todo) => (
+              <li key={todo.id}>
                 <input
                   type="checkbox"
-                  onChange={(evt) =>
-                    props.sendUserInput({
-                      type: "toggleTodo",
-                      value: (evt.target as HTMLInputElement).checked,
-                      id,
-                    })
-                  }
-                  checked={savingTodo.thing.done}
+                  onChange={(evt) => {
+                    client.runMutation("ChangeCompletionStatus", [
+                      todo.id,
+                      (evt.target as HTMLInputElement).checked,
+                    ] as Json[]);
+                  }}
+                  checked={todo.done}
                 />{" "}
                 <span
                   style={{
-                    color: savingTodo.status === "saving" ? "grey" : "inherit",
+                    color: todo.state.type === "Pending" ? "grey" : "inherit",
                   }}
                 >
-                  {savingTodo.thing.body}
+                  {todo.name}
                 </span>
               </li>
             ))}
@@ -64,7 +76,7 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
 
 type Todo = {
   id: string;
-  body: string;
+  name: string;
   done: boolean;
   state: TransactionState;
 };
@@ -75,12 +87,15 @@ function useTodos(client: Client): [Todo[], QueryStatus] {
   });
 
   return [
-    mapObjToList(todos, (key, val) => ({
-      id: key.split("/")[2],
-      body: XXX,
-      done: XXX,
-      state: XXX,
-    })),
+    mapObjToList(todos, (key, rawVal) => {
+      const val = rawVal as any; // ???
+      return {
+        id: key.split("/todos")[1],
+        name: val.name,
+        done: val.done,
+        state: client.state.transactions[rawVal.transactionID]?.state,
+      };
+    }),
     queryStatus,
   ];
 }
@@ -97,9 +112,18 @@ const mutations: MutationDefns = {
   ),
   ChangeCompletionStatus: lambda(
     ["id", "newCompletionStatus"],
-    write(
-      apply("concat", [str("/todos/"), varr("id"), str("/done")]),
-      varr("newCompletionStatus")
+    letExpr(
+      [
+        { varName: "key", val: apply("concat", [str("/todos/")]) },
+        { varName: "current", val: read(varr("key"), obj({})) },
+      ],
+      write(
+        varr("key"),
+        obj({
+          name: memberAccess(varr("current"), "name"),
+          done: varr("newCompletionStatus"),
+        })
+      )
     )
   ),
 };
