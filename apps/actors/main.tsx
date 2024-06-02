@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import { Explorer } from "../../uiCommon/explorer";
 import ReactJson from "react-json-view";
 import { Json } from "../../util/json";
