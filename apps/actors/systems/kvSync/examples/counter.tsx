@@ -22,8 +22,6 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
     prefix: "counter",
   });
 
-  console.log({ queryResults, queryState });
-
   const counter = queryResults["counter"];
 
   if (queryState === "Loading") {
