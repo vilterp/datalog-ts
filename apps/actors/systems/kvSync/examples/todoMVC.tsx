@@ -92,7 +92,7 @@ function useTodos(client: Client): [Todo[], QueryStatus] {
     mapObjToList(todos, (key, rawVal) => {
       const val = rawVal.value as any; // ???
       return {
-        id: key.split("/todos")[1],
+        id: key.split("/todos/")[1],
         name: val.name,
         done: val.done,
         state: client.state.transactions[rawVal.transactionID]?.state,
