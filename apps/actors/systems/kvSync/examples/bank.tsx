@@ -26,7 +26,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
   return (
-    <div>
+    <div style={{ padding: 10 }}>
       <h3>MyBank</h3>
       <InnerContent client={client} />
     </div>
@@ -72,7 +72,7 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
         evt.preventDefault();
         props.client.runMutation({
           type: "Invocation",
-          name: "withdraw",
+          name: "Withdraw",
           args: [account, amount],
         });
       }}
@@ -103,7 +103,7 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
         evt.preventDefault();
         props.client.runMutation({
           type: "Invocation",
-          name: "deposit",
+          name: "Deposit",
           args: [account, amount],
         });
       }}
@@ -135,7 +135,7 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
         evt.preventDefault();
         props.client.runMutation({
           type: "Invocation",
-          name: "move",
+          name: "Transfer",
           args: [fromAccount, toAccount, amount],
         });
       }}
@@ -194,7 +194,7 @@ function CreateAccountForm(props: { client: Client }) {
         setName("");
         props.client.runMutation({
           type: "Invocation",
-          name: "createAccount",
+          name: "CreateAccount",
           args: [name],
         });
       }}
@@ -254,8 +254,8 @@ function useAccountList(client: Client): [Account[], QueryStatus] {
 
 // TODO: is default=0 correct for everything here?
 const mutations: MutationDefns = {
-  createAccount: lambda(["name"], write(varr("name"), int(0))),
-  deposit: lambda(
+  CreateAccount: lambda(["name"], write(varr("name"), int(0))),
+  Deposit: lambda(
     ["toAccount", "amount"],
     letExpr(
       [{ varName: "balanceBefore", val: read(varr("toAccount"), 0) }],
@@ -265,7 +265,7 @@ const mutations: MutationDefns = {
       )
     )
   ),
-  withdraw: lambda(
+  Withdraw: lambda(
     ["fromAccount", "amount"],
     letExpr(
       [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
@@ -279,7 +279,7 @@ const mutations: MutationDefns = {
       )
     )
   ),
-  move: lambda(
+  Transfer: lambda(
     ["fromAccount", "toAccount", "amount"],
     letExpr(
       [

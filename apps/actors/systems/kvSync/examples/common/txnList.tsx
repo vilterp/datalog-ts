@@ -15,7 +15,9 @@ export function TransactionList(props: { client: Client }) {
           { name: "ID", render: ([id, txn]) => id },
           {
             name: "Invocation",
-            render: ([id, txn]) => prettyPrintInvocation(txn.invocation),
+            render: ([id, txn]) => (
+              <code>{prettyPrintInvocation(txn.invocation)}</code>
+            ),
           },
           {
             name: "Status",

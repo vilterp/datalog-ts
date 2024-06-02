@@ -22,7 +22,7 @@ function Main() {
   );
 
   return (
-    <>
+    <div style={{ fontFamily: "helvetica" }}>
       <h1>Actor System Viz</h1>
 
       <Tabs
@@ -47,7 +47,7 @@ function Main() {
           },
         }))}
       />
-    </>
+    </div>
   );
 }
 
