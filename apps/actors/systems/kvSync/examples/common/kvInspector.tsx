@@ -10,7 +10,7 @@ export function KVInspector(props: { client: Client }) {
       data={Object.entries(props.client.state.data)}
       getKey={([key, vv]) => key}
       columns={[
-        { name: "Key", render: ([key, vv]) => <code>key</code> },
+        { name: "Key", render: ([key, vv]) => <code>{key}</code> },
         {
           name: "Value",
           render: ([key, vv]) => <code>{JSON.stringify(vv.value)}</code>,

@@ -116,7 +116,7 @@ const mutations: MutationDefns = {
     ["id", "newCompletionStatus"],
     letExpr(
       [
-        { varName: "key", val: apply("concat", [str("/todos/")]) },
+        { varName: "key", val: apply("concat", [str("/todos/"), varr("id")]) },
         { varName: "current", val: read(varr("key"), obj({})) },
       ],
       write(
