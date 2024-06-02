@@ -7,7 +7,9 @@ import { TxnState } from "./txnState";
 export function KVInspector(props: { client: Client }) {
   return (
     <Table<[string, VersionedValue]>
-      data={Object.entries(props.client.state.data)}
+      data={Object.entries(props.client.state.data).sort(([k1, v1], [k2, v2]) =>
+        k1.localeCompare(k2)
+      )}
       getKey={([key, vv]) => key}
       columns={[
         { name: "Key", render: ([key, vv]) => <code>{key}</code> },

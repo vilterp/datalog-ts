@@ -19,6 +19,7 @@ import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
 import { Json } from "aws-sdk/clients/robomaker";
+import { Inspector } from "./common/inspector";
 
 type Message = {
   id: number;
@@ -64,6 +65,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
           </tr>
         </tbody>
       </table>
+      <Inspector client={client} />
     </div>
   );
 }
