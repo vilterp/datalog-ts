@@ -40,10 +40,10 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
 
   return (
     <div>
-      <table>
+      <table style={{ borderCollapse: "collapse" }}>
         <tbody>
           <tr>
-            <td valign="top">
+            <td valign="top" style={{ backgroundColor: "rgb(221, 255, 244)" }}>
               <ThreadList
                 client={client}
                 curThread={curThread}
@@ -191,6 +191,7 @@ function ThreadList(props: {
 
   return (
     <div style={{ width: 100 }}>
+      <h4>Chat</h4>
       {props.threads.map((threadID) => {
         // TODO: need full keys
         const latestMessageInThread =
