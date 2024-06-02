@@ -44,28 +44,8 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
       >
         Value: {counter.value as number}{" "}
       </span>
-      <button
-        onClick={() =>
-          client.runMutation({
-            type: "Invocation",
-            name: "Increment",
-            args: [],
-          })
-        }
-      >
-        -
-      </button>
-      <button
-        onClick={() =>
-          client.runMutation({
-            type: "Invocation",
-            name: "Decrement",
-            args: [],
-          })
-        }
-      >
-        +
-      </button>
+      <button onClick={() => client.runMutation("Increment", [])}>-</button>
+      <button onClick={() => client.runMutation("Decrement", [])}>+</button>
       <TransactionList client={client} />
     </>
   );

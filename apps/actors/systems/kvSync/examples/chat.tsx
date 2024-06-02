@@ -18,6 +18,7 @@ import { MutationDefns, UserInput, VersionedValue } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
+import { Json } from "aws-sdk/clients/robomaker";
 
 type Message = {
   id: number;
@@ -141,11 +142,7 @@ function SendBox(props: { threadID: string; client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         setMessage("");
-        props.client.runMutation({
-          type: "Invocation",
-          name: "sendMessage",
-          args: [props.threadID, message],
-        });
+        props.client.runMutation("sendMessage", [props.threadID, message]);
       }}
     >
       <input
@@ -154,11 +151,10 @@ function SendBox(props: { threadID: string; client: Client }) {
         size={40}
         onFocus={() => {
           if (latestSeqNo) {
-            props.client.runMutation({
-              type: "Invocation",
-              name: "markRead",
-              args: [props.threadID, latestSeqNo.value],
-            });
+            props.client.runMutation("markRead", [
+              props.threadID,
+              latestSeqNo.value,
+            ] as Json[]);
           }
         }}
       />

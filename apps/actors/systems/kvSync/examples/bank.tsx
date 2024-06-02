@@ -21,6 +21,7 @@ import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { TransactionList } from "./common/txnList";
 import { Table } from "./common/table";
+import { Json } from "aws-sdk/clients/robomaker";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -67,11 +68,7 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation({
-          type: "Invocation",
-          name: "Withdraw",
-          args: [account, amount],
-        });
+        props.client.runMutation("Withdraw", [account, amount] as Json[]);
       }}
     >
       Withdraw{" "}
@@ -98,11 +95,7 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation({
-          type: "Invocation",
-          name: "Deposit",
-          args: [account, amount],
-        });
+        props.client.runMutation("Deposit", [account, amount] as Json[]);
       }}
     >
       Deposit{" "}
@@ -130,11 +123,11 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation({
-          type: "Invocation",
-          name: "Transfer",
-          args: [fromAccount, toAccount, amount],
-        });
+        props.client.runMutation("Transfer", [
+          fromAccount,
+          toAccount,
+          amount,
+        ] as Json[]);
       }}
     >
       Move{" "}
@@ -189,11 +182,7 @@ function CreateAccountForm(props: { client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         setName("");
-        props.client.runMutation({
-          type: "Invocation",
-          name: "CreateAccount",
-          args: [name],
-        });
+        props.client.runMutation("CreateAccount", [name]);
       }}
     >
       Create account{" "}
