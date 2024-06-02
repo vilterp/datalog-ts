@@ -1,34 +1,34 @@
-import { System } from "./types";
+import { stepAll } from "./step";
+import { System, SystemInstance } from "./types";
 
 // TODO: generator of what? updates to a DB?
 
 type Frame<ActorState, Msg> = {
-  state: ActorState;
+  state: SystemInstance<ActorState, Msg>;
   options: Generator;
   messages: Msg[];
 };
 // TODO:
-// - process messages
+// - process messages (maybe use `step`?)
 // - insert into DB
 // - stopping condition
 export function* explore<ActorState, Msg>(
-  system: System<ActorState, Msg>,
-  initialState: ActorState,
-  choose: (state: ActorState) => Generator<Msg>,
-  limit: number
-): Generator<ActorState> {
+  systemInstance: SystemInstance<ActorState, Msg>,
+  choose: (state: SystemInstance<ActorState, Msg>) => Generator<Msg>,
+  stepLimit: number
+): Generator<SystemInstance<ActorState, Msg>> {
   const stack: Frame<ActorState, Msg>[] = [
-    { state: initialState, options: choose(initialState), messages: [] },
+    { state: systemInstance, options: choose(systemInstance), messages: [] },
   ];
   let steps = 0;
 
-  // BFS
   while (stack.length > 0) {
-    if (steps >= limit) {
+    if (steps >= stepLimit) {
       return;
     }
 
     const frame = stack.pop();
+    console.log("explore", frame);
 
     yield frame.state;
 
@@ -36,21 +36,8 @@ export function* explore<ActorState, Msg>(
     if (nextMsg.done) {
       continue;
     }
-    const resp = system.update(frame.state, nextMsg.value);
-    switch (resp.type) {
-      case "continue":
-        stack.push({
-          state: resp.state,
-          options: choose(resp.state),
-          messages: frame.messages.concat(nextMsg.value),
-        });
-        break;
-      case "exit":
-        continue;
-      case "sleep":
-        // TODO: ???
-        continue;
-    }
+
+    const nextState = stepAll(XXX, XXX, XXX);
 
     steps++;
   }

@@ -2,6 +2,7 @@ import React from "react";
 import { Json } from "../../../util/json";
 import { SystemInstance, SystemInstanceAction } from "../types";
 import { Window } from "./window";
+import { explore } from "../explore";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
@@ -40,6 +41,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
       >
         Add Client
       </button>
+      <button onClick={() => explore(props.systemInstance)}>Explore</button>
       <div style={{ display: "flex", flexDirection: "row" }}>
         {props.systemInstance.clientIDs.map((clientID) => {
           const clientState =
