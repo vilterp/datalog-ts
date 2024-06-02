@@ -46,6 +46,7 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
         }}
       />
       <button onClick={() => handleSubmit()}>Submit</button>
+      {todos.length === 0 ? <em>Empty</em> : null}
       <ul>
         {queryStatus === "Loading"
           ? "Loading..."

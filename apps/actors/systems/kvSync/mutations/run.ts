@@ -224,7 +224,13 @@ function runMutationExpr(
       if (typeof res === "object" && res[expr.member]) {
         return [res[expr.member], newOutcome, newState, newData, newTrace];
       }
-      return [null, "Abort", state, kvData, traceSoFar];
+      return [
+        `${JSON.stringify(res)} doesn't have member ${expr.member}`,
+        "Abort",
+        state,
+        kvData,
+        traceSoFar,
+      ];
     }
     case "StringLit":
       return [expr.val, "Commit", state, kvData, traceSoFar];

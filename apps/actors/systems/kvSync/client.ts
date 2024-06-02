@@ -162,7 +162,7 @@ function runMutationOnClient(
     data: data1,
   };
   if (outcome === "Abort") {
-    console.warn("CLIENT: txn aborted client side:", resVal);
+    console.warn("CLIENT: txn aborted client side:", resVal, trace);
     const state2 = addTransaction(state1, txnID, {
       invocation,
       state: {
