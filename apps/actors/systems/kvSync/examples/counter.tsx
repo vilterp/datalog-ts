@@ -14,6 +14,7 @@ import { KVApp } from "./types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import { makeClient, useLiveQuery } from "../hooks";
+import { TransactionList } from "./common/txnList";
 
 function CounterUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -65,6 +66,7 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
       >
         +
       </button>
+      <TransactionList client={client} />
     </>
   );
 }
