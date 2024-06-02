@@ -8,13 +8,15 @@ export function Tabs(props: {
   return (
     <div>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        {props.tabs.map((tab) => (
+        {props.tabs.map((tab, tabIdx) => (
           <div
             style={{
               cursor: "pointer",
               fontWeight: tab.id === props.curTabID ? "bold" : "normal",
               backgroundColor:
                 tab.id === props.curTabID ? "lightgray" : "rgb(230, 230, 230)",
+              borderRight:
+                tabIdx === props.tabs.length - 1 ? null : "1px solid gray",
               paddingLeft: 10,
               paddingRight: 10,
               paddingTop: 5,
