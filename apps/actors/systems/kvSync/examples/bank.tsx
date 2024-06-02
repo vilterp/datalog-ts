@@ -43,20 +43,17 @@ function InnerContent(props: { client: Client }) {
   return (
     <div>
       <BalanceTable client={props.client} accounts={accounts} />
-      <ul>
-        <li>
+      <h4>Operations</h4>
+
+      <table>
+        <tbody>
           <WithdrawForm client={props.client} accounts={accounts} />
-        </li>
-        <li>
           <DepositForm client={props.client} accounts={accounts} />
-        </li>
-        <li>
           <MoveForm client={props.client} accounts={accounts} />
-        </li>
-        <li>
           <CreateAccountForm client={props.client} />
-        </li>
-      </ul>
+        </tbody>
+      </table>
+
       <TransactionList client={props.client} />
     </div>
   );

@@ -40,7 +40,6 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
 
   return (
     <div>
-      <h3>Chat</h3>
       <table>
         <tbody>
           <tr>
@@ -55,7 +54,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
             <td>
               <div
                 ref={scrollRef}
-                style={{ width: 400, height: 200, overflowY: "scroll" }}
+                style={{ width: 400, height: 250, overflowY: "scroll" }}
               >
                 <MessageTable threadID={curThread} client={client} />
               </div>
@@ -152,6 +151,7 @@ function SendBox(props: { threadID: string; client: Client }) {
       <input
         onChange={(evt) => setMessage(evt.target.value)}
         value={message}
+        size={40}
         onFocus={() => {
           if (latestSeqNo) {
             props.client.runMutation({
@@ -190,7 +190,7 @@ function ThreadList(props: {
   );
 
   return (
-    <ul>
+    <div style={{ width: 100 }}>
       {props.threads.map((threadID) => {
         // TODO: need full keys
         const latestMessageInThread =
@@ -209,7 +209,7 @@ function ThreadList(props: {
         //   latestMessageReadInThread
         // );
         return (
-          <li
+          <div
             key={threadID}
             onClick={() => props.setCurThread(threadID)}
             style={{
@@ -219,10 +219,11 @@ function ThreadList(props: {
             }}
           >
             {threadID}
-          </li>
+            {hasUnread ? "*" : ""}
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
 }
 
