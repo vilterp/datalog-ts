@@ -7,13 +7,16 @@ type Frame<ActorState, Msg> = {
   options: Generator;
   messages: Msg[];
 };
-
+// TODO:
+// - process messages
+// - insert into DB
+// - stopping condition
 export function* explore<ActorState, Msg>(
   system: System<ActorState, Msg>,
   initialState: ActorState,
   choose: (state: ActorState) => Generator<Msg>,
   limit: number
-): Generator {
+): Generator<ActorState> {
   const stack: Frame<ActorState, Msg>[] = [
     { state: initialState, options: choose(initialState), messages: [] },
   ];
@@ -26,6 +29,9 @@ export function* explore<ActorState, Msg>(
     }
 
     const frame = stack.pop();
+
+    yield frame.state;
+
     const nextMsg = frame.options.next();
     if (nextMsg.done) {
       continue;
