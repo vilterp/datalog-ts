@@ -18,6 +18,7 @@ import {
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Json } from "aws-sdk/clients/robomaker";
+import { KVInspector } from "./common/kvInspector";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -70,6 +71,7 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
               </li>
             ))}
       </ul>
+      <KVInspector client={client} />
     </>
   );
 }
@@ -88,7 +90,7 @@ function useTodos(client: Client): [Todo[], QueryStatus] {
 
   return [
     mapObjToList(todos, (key, rawVal) => {
-      const val = rawVal as any; // ???
+      const val = rawVal.value as any; // ???
       return {
         id: key.split("/todos")[1],
         name: val.name,
