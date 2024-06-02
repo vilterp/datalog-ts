@@ -7,31 +7,25 @@ import { Table } from "./table";
 
 export function TransactionList(props: { client: Client }) {
   return (
-    <>
-      <h4>Transactions</h4>
-
-      <Table<[string, TransactionRecord]>
-        columns={[
-          { name: "ID", render: ([id, txn]) => id },
-          {
-            name: "Invocation",
-            render: ([id, txn]) => (
-              <code>{prettyPrintInvocation(txn.invocation)}</code>
-            ),
-          },
-          {
-            name: "Status",
-            render: ([id, txn]) => (
-              <TxnState client={props.client} txnID={id} />
-            ),
-          },
-        ]}
-        data={Object.entries(props.client.state.transactions)
-          .sort(comparator)
-          .reverse()}
-        getKey={([id, txn]) => id}
-      />
-    </>
+    <Table<[string, TransactionRecord]>
+      columns={[
+        { name: "ID", render: ([id, txn]) => id },
+        {
+          name: "Invocation",
+          render: ([id, txn]) => (
+            <code>{prettyPrintInvocation(txn.invocation)}</code>
+          ),
+        },
+        {
+          name: "Status",
+          render: ([id, txn]) => <TxnState client={props.client} txnID={id} />,
+        },
+      ]}
+      data={Object.entries(props.client.state.transactions)
+        .sort(comparator)
+        .reverse()}
+      getKey={([id, txn]) => id}
+    />
   );
 }
 

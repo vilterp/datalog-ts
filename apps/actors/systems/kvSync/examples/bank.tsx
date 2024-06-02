@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, QueryStatus, getStateForKey } from "../client";
+import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -19,9 +19,9 @@ import {
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
-import { TransactionList } from "./common/txnList";
 import { Table } from "./common/table";
 import { Json } from "aws-sdk/clients/robomaker";
+import { Inspector } from "./common/inspector";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -46,16 +46,22 @@ function InnerContent(props: { client: Client }) {
       <BalanceTable client={props.client} accounts={accounts} />
       <h4>Operations</h4>
 
-      <table>
-        <tbody>
+      <ul>
+        <li>
           <WithdrawForm client={props.client} accounts={accounts} />
+        </li>
+        <li>
           <DepositForm client={props.client} accounts={accounts} />
+        </li>
+        <li>
           <MoveForm client={props.client} accounts={accounts} />
+        </li>
+        <li>
           <CreateAccountForm client={props.client} />
-        </tbody>
-      </table>
+        </li>
+      </ul>
 
-      <TransactionList client={props.client} />
+      <Inspector client={props.client} />
     </div>
   );
 }
