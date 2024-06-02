@@ -14,7 +14,7 @@ import { KVApp } from "./types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import { makeClient, useLiveQuery } from "../hooks";
-import { TransactionList } from "./common/txnList";
+import { Inspector } from "./common/inspector";
 
 function CounterUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -44,7 +44,7 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
       </span>
       <button onClick={() => client.runMutation("Increment", [])}>-</button>
       <button onClick={() => client.runMutation("Decrement", [])}>+</button>
-      <TransactionList client={client} />
+      <Inspector client={client} />
     </>
   );
 }
