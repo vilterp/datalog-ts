@@ -42,8 +42,8 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
       >
         Value: {counter.value as number}{" "}
       </span>
-      <button onClick={() => client.runMutation("Increment", [])}>-</button>
-      <button onClick={() => client.runMutation("Decrement", [])}>+</button>
+      <button onClick={() => client.runMutation("Decrement", [])}>-</button>
+      <button onClick={() => client.runMutation("Increment", [])}>+</button>
       <Inspector client={client} />
     </>
   );
@@ -61,7 +61,7 @@ const mutations: MutationDefns = {
     [],
     letExpr(
       [{ varName: "cur", val: read(str("counter"), 0) }],
-      write(str("counter"), apply("+", [varr("cur"), int(1)]))
+      write(str("counter"), apply("-", [varr("cur"), int(1)]))
     )
   ),
 };
