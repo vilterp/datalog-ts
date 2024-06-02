@@ -224,6 +224,13 @@ function ThreadList(props: {
   );
 }
 
+// Schema:
+//
+// /messages/<ThreadID>/<MessageID> => { id, seqNo, sender, message }
+// /latestMessage/<ThreadID> => <MessageID>
+// /latestMessageRead/byUser/<UserID> => <MessageID>
+// /latestMessageRead/byThread/<ThreadID> => <MessageID>
+
 const mutations: MutationDefns = {
   sendMessage: lambda(
     ["threadID", "message"],

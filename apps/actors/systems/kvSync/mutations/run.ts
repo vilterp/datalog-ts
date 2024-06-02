@@ -212,9 +212,25 @@ function runMutationExpr(
       }
       return [scope[expr.name], "Commit", state, kvData, traceSoFar];
     }
+    case "MemberAccess": {
+      const [res, newOutcome, newState, newData, newTrace] = runMutationExpr(
+        kvData,
+        state,
+        transactionID,
+        traceSoFar,
+        scope,
+        expr.expr
+      );
+      if (typeof res === "object" && res[expr.member]) {
+        return [res[expr.member], newOutcome, newState, newData, newTrace];
+      }
+      return [null, "Abort", state, kvData, traceSoFar];
+    }
     case "StringLit":
       return [expr.val, "Commit", state, kvData, traceSoFar];
     case "IntLit":
+      return [expr.val, "Commit", state, kvData, traceSoFar];
+    case "Bool":
       return [expr.val, "Commit", state, kvData, traceSoFar];
     case "Apply": {
       // evaluate args

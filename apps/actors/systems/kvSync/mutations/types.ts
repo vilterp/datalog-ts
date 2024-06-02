@@ -17,9 +17,11 @@ export type Expr =
   | { type: "Abort"; reason: Expr }
   | { type: "Var"; name: string }
   | { type: "StringLit"; val: string }
+  | { type: "Bool"; val: boolean }
   | { type: "IntLit"; val: number }
   | { type: "Apply"; name: string; args: Expr[] }
-  | { type: "ObjectLit"; object: { [key: string]: Expr } };
+  | { type: "ObjectLit"; object: { [key: string]: Expr } }
+  | { type: "MemberAccess"; expr: Expr; member: string };
 
 export function lambda(args: string[], body: Expr): Lambda {
   return { type: "Lambda", args, body };
@@ -68,8 +70,16 @@ export function int(val: number): Expr {
   return { type: "IntLit", val };
 }
 
+export function bool(val: boolean): Expr {
+  return { type: "Bool", val };
+}
+
 export function obj(object: { [key: string]: Expr }): Expr {
   return { type: "ObjectLit", object };
+}
+
+export function memberAccess(expr: Expr, member: string): Expr {
+  return { type: "MemberAccess", expr, member };
 }
 
 export type Value = Json | Lambda;

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { UIProps } from "../../types";
 import { ClientState, QueryStatus } from "./client";
 import { runQuery } from "./query";
-import { MutationInvocation, Query, UserInput, VersionedValue } from "./types";
+import { Query, UserInput, VersionedValue } from "./types";
 import { Json } from "aws-sdk/clients/robomaker";
 
 export type QueryResults = { [key: string]: VersionedValue };
