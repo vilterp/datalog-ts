@@ -18,7 +18,7 @@ import {
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Json } from "aws-sdk/clients/robomaker";
-import { KVInspector } from "./common/kvInspector";
+import { Inspector } from "./common/inspector";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -71,7 +71,7 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
               </li>
             ))}
       </ul>
-      <KVInspector client={client} />
+      <Inspector client={client} />
     </>
   );
 }
