@@ -39,6 +39,10 @@ export const kvSyncCounter: System<State, Msg> = makeActorSystem(
   EXAMPLES.counter
 );
 
+export const kvSyncTodoMVC: System<State, Msg> = makeActorSystem(
+  EXAMPLES.todoMVC
+);
+
 export function makeActorSystem(app: KVApp): System<State, Msg> {
   return {
     name: `KV: ${app.name}`,
