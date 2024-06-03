@@ -32,8 +32,8 @@ export function Window(props: {
       <div
         style={{
           backgroundColor: "white",
-          minWidth: 400,
-          minHeight: 300,
+          width: 500,
+          height: 400,
           overflow: "scroll",
         }}
       >

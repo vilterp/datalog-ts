@@ -19,28 +19,31 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
     });
   };
 
+  const addClient = () => {
+    props.dispatch({ type: "AllocateClientID" });
+    // TODO: DRY this up with other place client id is constructed
+    const clientID = `client${props.systemInstance.nextClientID}`;
+    props.dispatch({
+      type: "UpdateTrace",
+      action: {
+        type: "SpawnClient",
+        id: props.systemInstance.nextClientID.toString(),
+        initialUserState: props.systemInstance.system.initialUserState,
+        initialClientState:
+          props.systemInstance.system.initialClientState(clientID),
+      },
+    });
+  };
+
   return (
     <>
-      <button
-        onClick={() => {
-          props.dispatch({ type: "AllocateClientID" });
-          // TODO: DRY this up with other place client id is constructed
-          const clientID = `client${props.systemInstance.nextClientID}`;
-          props.dispatch({
-            type: "UpdateTrace",
-            action: {
-              type: "SpawnClient",
-              id: props.systemInstance.nextClientID.toString(),
-              initialUserState: props.systemInstance.system.initialUserState,
-              initialClientState:
-                props.systemInstance.system.initialClientState(clientID),
-            },
-          });
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
         }}
       >
-        Add Client
-      </button>
-      <div style={{ display: "flex", flexDirection: "row" }}>
         {props.systemInstance.clientIDs.map((clientID) => {
           const clientState =
             props.systemInstance.trace.latestStates[`client${clientID}`];
@@ -62,7 +65,28 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
             </Window>
           );
         })}
+        <AddClientButton onClick={() => addClient()} />
       </div>
     </>
+  );
+}
+
+function AddClientButton(props: { onClick: () => void }) {
+  return (
+    <div
+      style={{
+        border: "3px dashed lightgrey",
+        padding: 10,
+        margin: 10,
+        borderRadius: 10,
+        width: 400,
+        height: 320,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <button onClick={() => props.onClick()}>Add Client</button>
+    </div>
   );
 }

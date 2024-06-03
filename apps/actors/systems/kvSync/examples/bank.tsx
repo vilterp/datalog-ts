@@ -79,6 +79,7 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
       Withdraw{" "}
       <input
         value={amount}
+        size={5}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />{" "}
       from account{" "}
@@ -106,6 +107,7 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
       Deposit{" "}
       <input
         value={amount}
+        size={5}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />{" "}
       into account{" "}
@@ -134,6 +136,7 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
       Move{" "}
       <input
         value={amount}
+        size={5}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />{" "}
       from account{" "}

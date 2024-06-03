@@ -30,7 +30,7 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
   };
 
   return (
-    <>
+    <div style={{ margin: 10 }}>
       <h2>TodoMVC</h2>
       <input
         type="text"
@@ -46,37 +46,42 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
       />
       <button onClick={() => handleSubmit()}>Submit</button>
       <div>
-        {todos.length === 0 && queryStatus === "Online" ? <em>Empty</em> : null}
+        {todos.length === 0 && queryStatus === "Online" ? (
+          <p>
+            <em>Empty</em>
+          </p>
+        ) : null}
         {queryStatus === "Loading" ? (
-          <em>Loading...</em>
-        ) : (
-          <ul>
-            {todos.map((todo) => (
-              <li key={todo.id}>
-                <input
-                  type="checkbox"
-                  onChange={(evt) => {
-                    client.runMutation("ChangeCompletionStatus", [
-                      todo.id,
-                      (evt.target as HTMLInputElement).checked,
-                    ]);
-                  }}
-                  checked={todo.done}
-                />{" "}
-                <span
-                  style={{
-                    color: todo.state.type === "Pending" ? "grey" : "inherit",
-                  }}
-                >
-                  {todo.name}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+          <p>
+            <em>Loading...</em>
+          </p>
+        ) : null}
+        <ul>
+          {todos.map((todo) => (
+            <li key={todo.id}>
+              <input
+                type="checkbox"
+                onChange={(evt) => {
+                  client.runMutation("ChangeCompletionStatus", [
+                    todo.id,
+                    (evt.target as HTMLInputElement).checked,
+                  ]);
+                }}
+                checked={todo.done}
+              />{" "}
+              <span
+                style={{
+                  color: todo.state.type === "Pending" ? "grey" : "inherit",
+                }}
+              >
+                {todo.name}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
       <Inspector client={client} />
-    </>
+    </div>
   );
 }
 
