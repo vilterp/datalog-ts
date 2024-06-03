@@ -62,9 +62,17 @@ export type MutationResponse = {
         type: "Reject";
         timestamp: number;
         serverTrace: Trace;
-        reason: string;
+        reason: AbortReason;
       };
 };
+
+export type AbortReason =
+  | { type: "FailedOnClient"; reason: Json }
+  | { type: "FailedOnServer"; failure: ServerTransactionFailure };
+
+type ServerTransactionFailure =
+  | { type: "TraceDoesntMatch" }
+  | { type: "LogicError"; reason: Json };
 
 export type TransactionMetadata = {
   [id: string]: { serverTimestamp: number; invocation: MutationInvocation };
