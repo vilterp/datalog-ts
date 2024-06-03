@@ -26,7 +26,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
   return (
-    <div style={{ padding: 10 }}>
+    <div style={{ margin: 10 }}>
       <h3>MyBank</h3>
       <InnerContent client={client} />
     </div>
