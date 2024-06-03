@@ -37,7 +37,13 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+        }}
+      >
         {props.systemInstance.clientIDs.map((clientID) => {
           const clientState =
             props.systemInstance.trace.latestStates[`client${clientID}`];

@@ -25,11 +25,15 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
   const counter = queryResults["counter"];
 
   if (queryState === "Loading") {
-    return <em>Loading...</em>;
+    return (
+      <div style={{ margin: 10 }}>
+        <em>Loading...</em>
+      </div>
+    );
   }
 
   return (
-    <>
+    <div style={{ margin: 10 }}>
       <h2>Counter</h2>
       <span
         style={{
@@ -45,7 +49,7 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
       <button onClick={() => client.runMutation("Decrement", [])}>-</button>
       <button onClick={() => client.runMutation("Increment", [])}>+</button>
       <Inspector client={client} />
-    </>
+    </div>
   );
 }
 
