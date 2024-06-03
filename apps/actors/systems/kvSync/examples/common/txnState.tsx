@@ -16,7 +16,9 @@ export function TxnState(props: { client: Client; txnID: string }) {
       // TODO: cancel
       return (
         <>
-          <span title={txnState.reason}>❌ T{txnState.serverTimestamp} </span>
+          <span title={JSON.stringify(txnState.reason)}>
+            ❌ T{txnState.serverTimestamp}{" "}
+          </span>
           <button
             onClick={() => {
               props.client.retryTransaction(props.txnID);
