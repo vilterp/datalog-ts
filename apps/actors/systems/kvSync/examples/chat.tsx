@@ -14,11 +14,10 @@ import {
   varr,
   write,
 } from "../mutations/types";
-import { MutationDefns, UserInput, VersionedValue } from "../types";
+import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
-import { Json } from "aws-sdk/clients/robomaker";
 import { Inspector } from "./common/inspector";
 
 type Message = {
@@ -156,7 +155,7 @@ function SendBox(props: { threadID: string; client: Client }) {
             props.client.runMutation("markRead", [
               props.threadID,
               latestSeqNo.value,
-            ] as Json[]);
+            ]);
           }
         }}
       />

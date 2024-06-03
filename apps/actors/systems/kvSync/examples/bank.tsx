@@ -20,7 +20,6 @@ import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
-import { Json } from "aws-sdk/clients/robomaker";
 import { Inspector } from "./common/inspector";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
@@ -74,7 +73,7 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation("Withdraw", [account, amount] as Json[]);
+        props.client.runMutation("Withdraw", [account, amount]);
       }}
     >
       Withdraw{" "}
@@ -101,7 +100,7 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation("Deposit", [account, amount] as Json[]);
+        props.client.runMutation("Deposit", [account, amount]);
       }}
     >
       Deposit{" "}
@@ -129,11 +128,7 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation("Transfer", [
-          fromAccount,
-          toAccount,
-          amount,
-        ] as Json[]);
+        props.client.runMutation("Transfer", [fromAccount, toAccount, amount]);
       }}
     >
       Move{" "}

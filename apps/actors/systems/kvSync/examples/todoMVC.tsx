@@ -17,7 +17,6 @@ import {
 } from "../mutations/types";
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import { Json } from "aws-sdk/clients/robomaker";
 import { Inspector } from "./common/inspector";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
@@ -60,7 +59,7 @@ function TodoMVC(props: UIProps<ClientState, UserInput>) {
                     client.runMutation("ChangeCompletionStatus", [
                       todo.id,
                       (evt.target as HTMLInputElement).checked,
-                    ] as Json[]);
+                    ]);
                   }}
                   checked={todo.done}
                 />{" "}

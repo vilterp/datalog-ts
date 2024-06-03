@@ -3,7 +3,7 @@ import { UIProps } from "../../types";
 import { ClientState, QueryStatus } from "./client";
 import { runQuery } from "./query";
 import { Query, UserInput, VersionedValue } from "./types";
-import { Json } from "aws-sdk/clients/robomaker";
+import { Json } from "../../../../util/json";
 
 export type QueryResults = { [key: string]: VersionedValue };
 
