@@ -5,13 +5,11 @@ import { TransactionList } from "./txnList";
 import { KVInspector } from "./kvInspector";
 import { LiveQueryInspector } from "./liveQueryInspector";
 
-const MAX_WIDTH = 500;
-
 export function Inspector(props: { client: Client }) {
   const [curTab, setTab] = useState("data");
 
   return (
-    <>
+    <div style={{ width: "100%" }}>
       <h4>Inspector</h4>
       <Tabs
         curTabID={curTab}
@@ -20,32 +18,20 @@ export function Inspector(props: { client: Client }) {
           {
             id: "transactions",
             name: "Transactions",
-            render: () => (
-              <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
-                <TransactionList client={props.client} />
-              </div>
-            ),
+            render: () => <TransactionList client={props.client} />,
           },
           {
             id: "data",
             name: "Data",
-            render: () => (
-              <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
-                <KVInspector client={props.client} />
-              </div>
-            ),
+            render: () => <KVInspector client={props.client} />,
           },
           {
             id: "queries",
             name: "Queries",
-            render: () => (
-              <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
-                <LiveQueryInspector client={props.client} />
-              </div>
-            ),
+            render: () => <LiveQueryInspector client={props.client} />,
           },
         ]}
       />
-    </>
+    </div>
   );
 }

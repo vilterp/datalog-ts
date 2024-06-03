@@ -12,7 +12,7 @@ export function Table<T>(props: {
   getKey: (row: T) => string;
 }) {
   return (
-    <table style={{ borderCollapse: "collapse" }}>
+    <table style={{ borderCollapse: "collapse", width: "100%" }}>
       <thead>
         <tr style={{ borderBottom: "1px solid gray" }}>
           {props.columns.map((colSpec, colIdx) => (
