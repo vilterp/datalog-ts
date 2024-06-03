@@ -4,6 +4,8 @@ import { Tabs } from "../../../../../../uiCommon/generic/tabs";
 import { TransactionList } from "./txnList";
 import { KVInspector } from "./kvInspector";
 
+const MAX_WIDTH = 500;
+
 export function Inspector(props: { client: Client }) {
   const [curTab, setTab] = useState("data");
 
@@ -17,12 +19,20 @@ export function Inspector(props: { client: Client }) {
           {
             id: "transactions",
             name: "Transactions",
-            render: () => <TransactionList client={props.client} />,
+            render: () => (
+              <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
+                <TransactionList client={props.client} />
+              </div>
+            ),
           },
           {
             id: "data",
             name: "Data",
-            render: () => <KVInspector client={props.client} />,
+            render: () => (
+              <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
+                <KVInspector client={props.client} />
+              </div>
+            ),
           },
         ]}
       />
