@@ -4,15 +4,18 @@ import React from "react";
 // === overall ui model ===
 
 export type State<St, Msg> = {
+  networkLatency: number;
   systemInstances: SystemInstance<St, Msg>[];
 };
 
 // TODO: only one action... is this reducer even necessary?
-export type Action<St, Msg> = {
-  type: "UpdateSystemInstance";
-  action: SystemInstanceAction<St, Msg>;
-  instanceID: string;
-};
+export type Action<St, Msg> =
+  | {
+      type: "UpdateSystemInstance";
+      action: SystemInstanceAction<St, Msg>;
+      instanceID: string;
+    }
+  | { type: "ChangeNetworkLatency"; newLatency: number };
 
 // === system & system instance ===
 
