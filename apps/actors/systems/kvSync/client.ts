@@ -27,11 +27,13 @@ import { InterpreterState } from "./mutations/builtins";
 
 export type QueryStatus = "Loading" | "Online";
 
+export type LiveQuery = { query: Query; status: QueryStatus };
+
 export type ClientState = {
   type: "ClientState";
   id: string;
   data: KVData;
-  liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
+  liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
   randSeed: number;
