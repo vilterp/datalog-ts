@@ -3,6 +3,7 @@ import { Client } from "../../hooks";
 import { Tabs } from "../../../../../../uiCommon/generic/tabs";
 import { TransactionList } from "./txnList";
 import { KVInspector } from "./kvInspector";
+import { LiveQueryInspector } from "./liveQueryInspector";
 
 const MAX_WIDTH = 500;
 
@@ -31,6 +32,15 @@ export function Inspector(props: { client: Client }) {
             render: () => (
               <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
                 <KVInspector client={props.client} />
+              </div>
+            ),
+          },
+          {
+            id: "queries",
+            name: "Queries",
+            render: () => (
+              <div style={{ maxWidth: MAX_WIDTH, overflow: "scroll" }}>
+                <LiveQueryInspector client={props.client} />
               </div>
             ),
           },
