@@ -1,5 +1,6 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
+  AbortReason,
   KVData,
   LiveQueryRequest,
   LiveQueryResponse,
@@ -62,7 +63,7 @@ export type TransactionState =
   | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
-      reason: string; // TODO: more structured
+      reason: AbortReason;
       serverTimestamp: number;
       serverTrace: Trace;
     };
@@ -169,7 +170,8 @@ function runMutationOnClient(
       invocation,
       state: {
         type: "Aborted",
-        reason: JSON.stringify(resVal), // TODO: pretty print values
+        // TODO: pretty print values
+        reason: { type: "FailedOnClient", reason: JSON.stringify(resVal) },
         // TODO: this is not actually the server trace; is that ok?
         serverTrace: trace,
         serverTimestamp: state.time,

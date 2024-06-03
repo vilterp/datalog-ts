@@ -106,13 +106,14 @@ function runMutationOnServer(
       {
         type: "MutationResponse",
         txnID: req.txnID,
-        // TODO: include abort reason?
         payload: {
           type: "Reject",
           timestamp: txnTime,
           serverTrace: trace,
-          // TODO: pretty print
-          reason: JSON.stringify(resVal),
+          reason: {
+            type: "FailedOnServer",
+            failure: { type: "LogicError", reason: JSON.stringify(resVal) },
+          },
         },
       },
       [],
@@ -132,7 +133,10 @@ function runMutationOnServer(
           type: "Reject",
           timestamp: txnTime,
           serverTrace: trace,
-          reason: "trace not equal",
+          reason: {
+            type: "FailedOnServer",
+            failure: { type: "TraceDoesntMatch" },
+          },
         },
       },
       [],
