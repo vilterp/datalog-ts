@@ -2,21 +2,25 @@ import { useEffect } from "react";
 import { UIProps } from "../../types";
 import { ClientState, QueryStatus } from "./client";
 import { runQuery } from "./query";
-import { MutationInvocation, Query, UserInput, VersionedValue } from "./types";
+import { Query, UserInput, VersionedValue } from "./types";
+import { Json } from "../../../../util/json";
 
 export type QueryResults = { [key: string]: VersionedValue };
 
 export type Client = {
   state: ClientState;
-  runMutation: (mut: MutationInvocation) => void;
+  runMutation: (name: string, args: Json[]) => void;
   registerLiveQuery: (id: string, query: Query) => void;
   cancelTransaction: (id: string) => void;
   retryTransaction: (id: string) => void;
 };
 
 export function makeClient(props: UIProps<ClientState, UserInput>): Client {
-  const runMutation = (mutation: MutationInvocation) => {
-    props.sendUserInput({ type: "RunMutation", invocation: mutation });
+  const runMutation = (name: string, args: Json[]) => {
+    props.sendUserInput({
+      type: "RunMutation",
+      invocation: { type: "Invocation", name, args },
+    });
   };
   const registerLiveQuery = (id: string, query: Query) => {
     // don't register duplicate query

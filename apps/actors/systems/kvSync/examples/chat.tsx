@@ -14,10 +14,11 @@ import {
   varr,
   write,
 } from "../mutations/types";
-import { MutationDefns, UserInput, VersionedValue } from "../types";
+import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
+import { Inspector } from "./common/inspector";
 
 type Message = {
   id: number;
@@ -40,11 +41,10 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
 
   return (
     <div>
-      <h3>Chat</h3>
-      <table>
+      <table style={{ borderCollapse: "collapse" }}>
         <tbody>
           <tr>
-            <td valign="top">
+            <td valign="top" style={{ backgroundColor: "rgb(221, 255, 244)" }}>
               <ThreadList
                 client={client}
                 curThread={curThread}
@@ -55,7 +55,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
             <td>
               <div
                 ref={scrollRef}
-                style={{ width: 400, height: 200, overflowY: "scroll" }}
+                style={{ width: 400, height: 250, overflowY: "scroll" }}
               >
                 <MessageTable threadID={curThread} client={client} />
               </div>
@@ -64,6 +64,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
           </tr>
         </tbody>
       </table>
+      <Inspector client={client} />
     </div>
   );
 }
@@ -142,23 +143,19 @@ function SendBox(props: { threadID: string; client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         setMessage("");
-        props.client.runMutation({
-          type: "Invocation",
-          name: "sendMessage",
-          args: [props.threadID, message],
-        });
+        props.client.runMutation("sendMessage", [props.threadID, message]);
       }}
     >
       <input
         onChange={(evt) => setMessage(evt.target.value)}
         value={message}
+        size={40}
         onFocus={() => {
           if (latestSeqNo) {
-            props.client.runMutation({
-              type: "Invocation",
-              name: "markRead",
-              args: [props.threadID, latestSeqNo.value],
-            });
+            props.client.runMutation("markRead", [
+              props.threadID,
+              latestSeqNo.value,
+            ]);
           }
         }}
       />
@@ -190,7 +187,8 @@ function ThreadList(props: {
   );
 
   return (
-    <ul>
+    <div style={{ width: 100 }}>
+      <h4>Chat</h4>
       {props.threads.map((threadID) => {
         // TODO: need full keys
         const latestMessageInThread =
@@ -209,7 +207,7 @@ function ThreadList(props: {
         //   latestMessageReadInThread
         // );
         return (
-          <li
+          <div
             key={threadID}
             onClick={() => props.setCurThread(threadID)}
             style={{
@@ -219,12 +217,20 @@ function ThreadList(props: {
             }}
           >
             {threadID}
-          </li>
+            {hasUnread ? "*" : ""}
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
 }
+
+// Schema:
+//
+// /messages/<ThreadID>/<MessageID> => { id, seqNo, sender, message }
+// /latestMessage/<ThreadID> => <MessageID>
+// /latestMessageRead/byUser/<UserID> => <MessageID>
+// /latestMessageRead/byThread/<ThreadID> => <MessageID>
 
 const mutations: MutationDefns = {
   sendMessage: lambda(

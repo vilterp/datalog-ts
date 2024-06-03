@@ -14,8 +14,8 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { filterMap } from "../../../../util/util";
-import { jsonEq } from "../../../../util/json";
+import { filterMap, mapObj } from "../../../../util/util";
+import { Json, jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
 
@@ -28,12 +28,23 @@ export type ServerState = {
   time: number;
 };
 
-export function initialServerState(mutationDefns: MutationDefns): ServerState {
+export function initialServerState(
+  mutationDefns: MutationDefns,
+  initialKVPairs: { [key: string]: Json }
+): ServerState {
   return {
     type: "ServerState",
-    data: {},
+    data: mapObj(initialKVPairs, (key, value) => ({
+      value,
+      transactionID: "0",
+    })),
     liveQueries: [],
-    transactionMetadata: {},
+    transactionMetadata: {
+      0: {
+        serverTimestamp: 0,
+        invocation: { type: "Invocation", name: "Initial", args: [] },
+      },
+    },
     mutationDefns,
     time: 0,
   };

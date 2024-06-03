@@ -15,10 +15,18 @@ export function Table<T>(props: {
     <table style={{ borderCollapse: "collapse" }}>
       <thead>
         <tr style={{ borderBottom: "1px solid gray" }}>
-          {props.columns.map((colSpec) => (
+          {props.columns.map((colSpec, colIdx) => (
             <th
               key={colSpec.name}
-              style={{ paddingLeft: 5, paddingRight: 5, width: colSpec.width }}
+              style={{
+                paddingLeft: 5,
+                paddingRight: 5,
+                width: colSpec.width,
+                borderRight:
+                  colIdx === props.columns.length - 1
+                    ? "none"
+                    : "1px solid lightgray",
+              }}
             >
               {colSpec.name}
             </th>
@@ -39,8 +47,8 @@ export function Table<T>(props: {
               <td
                 key={colSpec.name}
                 style={{
-                  paddingLeft: 2,
-                  paddingRight: 2,
+                  paddingLeft: 5,
+                  paddingRight: 5,
                   borderRight:
                     colIdx === props.columns.length - 1
                       ? "none"
