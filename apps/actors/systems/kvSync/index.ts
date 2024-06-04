@@ -57,5 +57,26 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
     initialClientState: (id: string) =>
       initialClientState(id, app.mutations, 10),
     initialUserState: { type: "UserState" },
+    chooseNextMove: function* (state) {
+      if (!app.choose) {
+        return;
+      }
+      const clientStates: { [clientID: string]: ClientState } = {};
+      for (const clientID of state.clientIDs) {
+        const clientState = state.trace.latestStates[clientID];
+        clientStates[clientID] = clientState as ClientState;
+      }
+      const mutations = app.choose(clientStates);
+      for (const mutation of mutations) {
+        yield {
+          from: `user${mutation.clientID}`,
+          to: mutation.clientID,
+          message: {
+            type: "RunMutation",
+            invocation: mutation.invocation,
+          },
+        };
+      }
+    },
   };
 }

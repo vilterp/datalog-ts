@@ -1,12 +1,12 @@
 import { Json } from "../../util/json";
-import { stepAll } from "./step";
-import { AddressedTickInitiator, SystemInstance } from "./types";
+import { insertUserInput, stepAll } from "./step";
+import { MessageToClient, SystemInstance } from "./types";
 
 // TODO: generator of what? updates to a DB?
 
 type Frame<ActorState, Msg> = {
   state: SystemInstance<ActorState, Msg>;
-  options: Generator<AddressedTickInitiator<ActorState>>;
+  options: Generator<MessageToClient<Msg>>;
 };
 // TODO:
 // - process messages (maybe use `step`?)
@@ -46,13 +46,9 @@ export function* explore<ActorState extends Json, Msg extends Json>(
       continue;
     }
 
-    const nextTrace = stepAll(frame.state.trace, frame.state.system.update, [
-      chooseRes.value,
-    ]);
-    const nextState: SystemInstance<ActorState, Msg> = {
-      ...frame.state,
-      trace: nextTrace,
-    };
+    const message: MessageToClient<Msg> = chooseRes.value; // TODO: why is this an `any`
+
+    const nextState = stepMessageToClient(frame.state, message);
 
     stack.push({
       options: system.chooseNextMove(nextState),
@@ -61,4 +57,32 @@ export function* explore<ActorState extends Json, Msg extends Json>(
 
     steps++;
   }
+}
+
+// TODO: DRY up with reducer
+function stepMessageToClient<ActorState extends Json, Msg extends Json>(
+  state: SystemInstance<ActorState, Msg>,
+  message: MessageToClient<Msg>
+): SystemInstance<ActorState, Msg> {
+  // TODO: DRY this up with reducers
+  const { newTrace: trace2, newMessageID } = insertUserInput(
+    state.trace,
+    message.clientID,
+    message.message
+  );
+  const nextTrace = stepAll(trace2, state.system.update, [
+    {
+      from: `user${message.clientID}`,
+      to: `client${message.clientID}`,
+      init: {
+        type: "messageReceived",
+        messageID: newMessageID.toString(),
+      },
+    },
+  ]);
+
+  return {
+    ...state,
+    trace: nextTrace,
+  };
 }

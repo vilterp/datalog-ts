@@ -24,9 +24,11 @@ export type UpdateFn<ActorState, Msg> = (
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
 
+export type MessageToClient<Msg> = { clientID: ActorID; message: Msg };
+
 export type ChooseFn<ActorState, Msg> = (
   state: SystemInstance<ActorState, Msg>
-) => Generator<AddressedTickInitiator<ActorState>>;
+) => Generator<MessageToClient<Msg>>;
 
 export type System<ActorState, Msg> = {
   name: string;

@@ -1,6 +1,6 @@
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
-import { KVData, MutationDefns, MutationInvocation, UserInput } from "../types";
+import { MutationDefns, MutationInvocation, UserInput } from "../types";
 
 type ChooseFn = (clients: {
   [id: string]: ClientState;
