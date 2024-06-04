@@ -4,15 +4,18 @@ import React from "react";
 // === overall ui model ===
 
 export type State<St, Msg> = {
+  networkLatency: number;
   systemInstances: SystemInstance<St, Msg>[];
 };
 
 // TODO: only one action... is this reducer even necessary?
-export type Action<St, Msg> = {
-  type: "UpdateSystemInstance";
-  action: SystemInstanceAction<St, Msg>;
-  instanceID: string;
-};
+export type Action<St, Msg> =
+  | {
+      type: "UpdateSystemInstance";
+      action: SystemInstanceAction<St, Msg>;
+      instanceID: string;
+    }
+  | { type: "ChangeNetworkLatency"; newLatency: number };
 
 // === system & system instance ===
 
@@ -20,6 +23,10 @@ export type UpdateFn<ActorState, Msg> = (
   state: ActorState,
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
+
+export type ChooseFn<ActorState, Msg> = (
+  state: SystemInstance<ActorState, Msg>
+) => Generator<Msg>;
 
 export type System<ActorState, Msg> = {
   name: string;
@@ -30,6 +37,7 @@ export type System<ActorState, Msg> = {
   getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
   initialClientState: (id: string) => ActorState;
   initialUserState: ActorState;
+  chooseNextMove?: ChooseFn<ActorState, Msg>;
 };
 
 export type UIProps<ClientState, UserInput> = {

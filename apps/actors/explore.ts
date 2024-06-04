@@ -14,11 +14,19 @@ type Frame<ActorState, Msg> = {
 // - stopping condition
 export function* explore<ActorState, Msg>(
   systemInstance: SystemInstance<ActorState, Msg>,
-  choose: (state: SystemInstance<ActorState, Msg>) => Generator<Msg>,
   stepLimit: number
 ): Generator<SystemInstance<ActorState, Msg>> {
+  const system = systemInstance.system;
+  if (!system.chooseNextMove) {
+    return;
+  }
+
   const stack: Frame<ActorState, Msg>[] = [
-    { state: systemInstance, options: choose(systemInstance), messages: [] },
+    {
+      state: systemInstance,
+      options: system.chooseNextMove(systemInstance),
+      messages: [],
+    },
   ];
   let steps = 0;
 

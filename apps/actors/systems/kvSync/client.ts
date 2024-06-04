@@ -1,5 +1,6 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
+  AbortReason,
   KVData,
   LiveQueryRequest,
   LiveQueryResponse,
@@ -27,11 +28,13 @@ import { InterpreterState } from "./mutations/builtins";
 
 export type QueryStatus = "Loading" | "Online";
 
+export type LiveQuery = { query: Query; status: QueryStatus };
+
 export type ClientState = {
   type: "ClientState";
   id: string;
   data: KVData;
-  liveQueries: { [id: string]: { query: Query; status: QueryStatus } };
+  liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
   randSeed: number;
@@ -60,13 +63,14 @@ export type TransactionState =
   | { type: "Committed"; serverTimestamp: number }
   | {
       type: "Aborted";
-      reason: string; // TODO: more structured
+      reason: AbortReason;
       serverTimestamp: number;
       serverTrace: Trace;
     };
 
 export type TransactionRecord = {
   invocation: MutationInvocation;
+  clientTrace: Trace;
   state: TransactionState;
 };
 
@@ -162,12 +166,14 @@ function runMutationOnClient(
     data: data1,
   };
   if (outcome === "Abort") {
-    console.warn("CLIENT: txn aborted client side:", resVal);
+    console.warn("CLIENT: txn aborted client side:", resVal, trace);
     const state2 = addTransaction(state1, txnID, {
       invocation,
+      clientTrace: trace,
       state: {
         type: "Aborted",
-        reason: JSON.stringify(resVal), // TODO: pretty print values
+        // TODO: pretty print values
+        reason: { type: "FailedOnClient", reason: JSON.stringify(resVal) },
         // TODO: this is not actually the server trace; is that ok?
         serverTrace: trace,
         serverTimestamp: state.time,
@@ -178,6 +184,7 @@ function runMutationOnClient(
 
   const state2 = addTransaction(state1, txnID, {
     invocation,
+    clientTrace: trace,
     state: { type: "Pending", sentTime: state.time },
   });
 
@@ -223,6 +230,7 @@ function getNewTransactions(metadata: TransactionMetadata): {
   return mapObj(
     metadata,
     (txnid, metadata): TransactionRecord => ({
+      clientTrace: [],
       state: {
         type: "Committed",
         serverTimestamp: metadata.serverTimestamp,
@@ -339,6 +347,10 @@ function updateClientInner(
             data: filterObj(
               state.data,
               (key, val) => val.transactionID !== msg.id
+            ),
+            transactions: filterObj(
+              state.transactions,
+              (id, val) => id !== msg.id
             ),
           });
       }

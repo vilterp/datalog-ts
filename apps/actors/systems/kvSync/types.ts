@@ -32,7 +32,7 @@ export type LiveQueryRequest = {
 
 export type Trace = TraceOp[];
 
-type TraceOp = ReadOp | WriteOp;
+export type TraceOp = ReadOp | WriteOp;
 
 export type ReadOp = { type: "Read"; key: string; transactionID: string };
 
@@ -62,9 +62,17 @@ export type MutationResponse = {
         type: "Reject";
         timestamp: number;
         serverTrace: Trace;
-        reason: string;
+        reason: AbortReason;
       };
 };
+
+export type AbortReason =
+  | { type: "FailedOnClient"; reason: Json }
+  | { type: "FailedOnServer"; failure: ServerTransactionFailure };
+
+type ServerTransactionFailure =
+  | { type: "TraceDoesntMatch" }
+  | { type: "LogicError"; reason: Json };
 
 export type TransactionMetadata = {
   [id: string]: { serverTimestamp: number; invocation: MutationInvocation };

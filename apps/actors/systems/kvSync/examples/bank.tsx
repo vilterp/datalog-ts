@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { mapObjToList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, QueryStatus, getStateForKey } from "../client";
+import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -19,14 +19,14 @@ import {
 import { MutationDefns, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
-import { TransactionList } from "./common/txnList";
 import { Table } from "./common/table";
+import { Inspector } from "./common/inspector";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
   return (
-    <div>
+    <div style={{ margin: 10 }}>
       <h3>MyBank</h3>
       <InnerContent client={client} />
     </div>
@@ -43,6 +43,8 @@ function InnerContent(props: { client: Client }) {
   return (
     <div>
       <BalanceTable client={props.client} accounts={accounts} />
+      <h4>Operations</h4>
+
       <ul>
         <li>
           <WithdrawForm client={props.client} accounts={accounts} />
@@ -57,7 +59,8 @@ function InnerContent(props: { client: Client }) {
           <CreateAccountForm client={props.client} />
         </li>
       </ul>
-      <TransactionList client={props.client} />
+
+      <Inspector client={props.client} />
     </div>
   );
 }
@@ -70,16 +73,13 @@ function WithdrawForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation({
-          type: "Invocation",
-          name: "withdraw",
-          args: [account, amount],
-        });
+        props.client.runMutation("Withdraw", [account, amount]);
       }}
     >
       Withdraw{" "}
       <input
         value={amount}
+        size={5}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />{" "}
       from account{" "}
@@ -101,16 +101,13 @@ function DepositForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation({
-          type: "Invocation",
-          name: "deposit",
-          args: [account, amount],
-        });
+        props.client.runMutation("Deposit", [account, amount]);
       }}
     >
       Deposit{" "}
       <input
         value={amount}
+        size={5}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />{" "}
       into account{" "}
@@ -133,16 +130,13 @@ function MoveForm(props: { client: Client; accounts: Account[] }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.client.runMutation({
-          type: "Invocation",
-          name: "move",
-          args: [fromAccount, toAccount, amount],
-        });
+        props.client.runMutation("Transfer", [fromAccount, toAccount, amount]);
       }}
     >
       Move{" "}
       <input
         value={amount}
+        size={5}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />{" "}
       from account{" "}
@@ -192,11 +186,7 @@ function CreateAccountForm(props: { client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
         setName("");
-        props.client.runMutation({
-          type: "Invocation",
-          name: "createAccount",
-          args: [name],
-        });
+        props.client.runMutation("CreateAccount", [name]);
       }}
     >
       Create account{" "}
@@ -254,8 +244,8 @@ function useAccountList(client: Client): [Account[], QueryStatus] {
 
 // TODO: is default=0 correct for everything here?
 const mutations: MutationDefns = {
-  createAccount: lambda(["name"], write(varr("name"), int(0))),
-  deposit: lambda(
+  CreateAccount: lambda(["name"], write(varr("name"), int(0))),
+  Deposit: lambda(
     ["toAccount", "amount"],
     letExpr(
       [{ varName: "balanceBefore", val: read(varr("toAccount"), 0) }],
@@ -265,7 +255,7 @@ const mutations: MutationDefns = {
       )
     )
   ),
-  withdraw: lambda(
+  Withdraw: lambda(
     ["fromAccount", "amount"],
     letExpr(
       [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
@@ -279,7 +269,7 @@ const mutations: MutationDefns = {
       )
     )
   ),
-  move: lambda(
+  Transfer: lambda(
     ["fromAccount", "toAccount", "amount"],
     letExpr(
       [

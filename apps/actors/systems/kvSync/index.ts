@@ -35,6 +35,14 @@ export const kvSyncBank: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
 
 export const kvSyncChat: System<State, Msg> = makeActorSystem(EXAMPLES.chat);
 
+export const kvSyncCounter: System<State, Msg> = makeActorSystem(
+  EXAMPLES.counter
+);
+
+export const kvSyncTodoMVC: System<State, Msg> = makeActorSystem(
+  EXAMPLES.todoMVC
+);
+
 export function makeActorSystem(app: KVApp): System<State, Msg> {
   return {
     name: `KV: ${app.name}`,
@@ -43,7 +51,7 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
     update,
     getInitialState: (interp) =>
       spawnInitialActors(update, interp, {
-        server: initialServerState(app.mutations),
+        server: initialServerState(app.mutations, app.initialKVPairs || {}),
       }),
     // TODO: generate ID deterministically
     initialClientState: (id: string) =>

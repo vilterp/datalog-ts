@@ -51,7 +51,7 @@ function runMutationExpr(
         expr.key
       );
       if (outcome === "Abort") {
-        return [null, "Abort", newState, newKVData, newTrace];
+        return [keyRes, "Abort", newState, newKVData, newTrace];
       }
       // TODO: actually assert string
       const val = kvData[keyRes as string];
@@ -85,7 +85,7 @@ function runMutationExpr(
         expr.key
       );
       if (keyOutcome === "Abort") {
-        return [null, "Abort", state1, data1, trace1];
+        return [keyRes, "Abort", state1, data1, trace1];
       }
       // val expr
       const [valRes, valOutcome, state2, data2, trace2] = runMutationExpr(
@@ -97,7 +97,7 @@ function runMutationExpr(
         expr.val
       );
       if (valOutcome === "Abort") {
-        return [null, "Abort", state2, data2, trace2];
+        return [valRes, "Abort", state2, data2, trace2];
       }
       // TODO: actually assert string
       const data3: KVData = {
@@ -155,7 +155,7 @@ function runMutationExpr(
           binding.val
         );
         if (outcome === "Abort") {
-          return [null, "Abort", newState, curData, curTrace];
+          return [res, "Abort", newState, curData, curTrace];
         }
         newScope[binding.varName] = res;
         curData = newData;
@@ -182,7 +182,7 @@ function runMutationExpr(
           expr.cond
         );
       if (condOutcome === "Abort") {
-        return [null, "Abort", newState, clientState1, trace1];
+        return [condRes, "Abort", newState, clientState1, trace1];
       }
       return runMutationExpr(
         clientState1,
@@ -206,15 +206,37 @@ function runMutationExpr(
     }
     case "Var": {
       const val = scope[expr.name];
-      if (!val) {
+      if (typeof val === "undefined") {
         // TODO: pass error message through
         return [val, "Abort", state, kvData, traceSoFar];
       }
       return [scope[expr.name], "Commit", state, kvData, traceSoFar];
     }
+    case "MemberAccess": {
+      const [res, newOutcome, newState, newData, newTrace] = runMutationExpr(
+        kvData,
+        state,
+        transactionID,
+        traceSoFar,
+        scope,
+        expr.expr
+      );
+      if (typeof res === "object" && typeof res[expr.member] !== undefined) {
+        return [res[expr.member], newOutcome, newState, newData, newTrace];
+      }
+      return [
+        `${JSON.stringify(res)} doesn't have member ${expr.member}`,
+        "Abort",
+        state,
+        kvData,
+        traceSoFar,
+      ];
+    }
     case "StringLit":
       return [expr.val, "Commit", state, kvData, traceSoFar];
     case "IntLit":
+      return [expr.val, "Commit", state, kvData, traceSoFar];
+    case "Bool":
       return [expr.val, "Commit", state, kvData, traceSoFar];
     case "Apply": {
       // evaluate args
@@ -247,7 +269,7 @@ function runMutationExpr(
       }
       // TODO: look in scope for lambdas
       console.error("missing builtin", expr.name);
-      return [null, "Abort", state, kvData, curTrace];
+      return ["missing builtin", "Abort", state, kvData, curTrace];
     }
     case "ObjectLit": {
       // evaluate args

@@ -17,10 +17,13 @@ import patternsDL from "./patterns.dl";
 import { makeMemoryLoader } from "../../core/loaders";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 
+export const INITIAL_NETWORK_LATENCY_MS = 1000;
+
 export function initialState<St, Msg>(
   systems: System<St, Msg>[]
 ): State<St, Msg> {
   return {
+    networkLatency: INITIAL_NETWORK_LATENCY_MS,
     systemInstances: systems.map((system) => {
       const interp = new IncrementalInterpreter(
         ".",
@@ -38,16 +41,17 @@ export function initialState<St, Msg>(
   };
 }
 
-export function reducer<St extends Json, Msg extends Json>(
-  state: State<St, Msg>,
-  action: Action<St, Msg>
-): [State<St, Msg>, Promise<Action<St, Msg>>[]] {
+export function reducer(
+  state: State<Json, Json>,
+  action: Action<Json, Json>
+): [State<Json, Json>, Promise<Action<Json, Json>>[]] {
   switch (action.type) {
     case "UpdateSystemInstance":
       const instance = state.systemInstances.find(
         (inst) => inst.system.id === action.instanceID
       );
       const [newInstance, promises] = systemInstanceReducer(
+        state.networkLatency,
         instance,
         action.action
       );
@@ -68,10 +72,19 @@ export function reducer<St extends Json, Msg extends Json>(
           }))
         ),
       ];
+    case "ChangeNetworkLatency":
+      return [
+        {
+          ...state,
+          networkLatency: action.newLatency,
+        },
+        [],
+      ];
   }
 }
 
 function systemInstanceReducer<St extends Json, Msg extends Json>(
+  networkLatency: number,
   systemInstance: SystemInstance<St, Msg>,
   action: SystemInstanceAction<St, Msg>
 ): [SystemInstance<St, Msg>, Promise<SystemInstanceAction<St, Msg>>[]] {
@@ -89,6 +102,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
       ];
     case "UpdateTrace": {
       const [newTrace, promises] = traceReducer(
+        networkLatency,
         systemInstance.trace,
         systemInstance.system.update,
         action.action
@@ -120,6 +134,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
 
 // TODO: returns traces that still need to be stepped...
 function traceReducer<St extends Json, Msg extends Json>(
+  networkLatency: number,
   trace: Trace<St>,
   update: UpdateFn<St, Msg>,
   action: TraceAction<St, Msg>
@@ -140,7 +155,7 @@ function traceReducer<St extends Json, Msg extends Json>(
         },
       });
       // console.log("traceReducer", "dispatchInits", newInits);
-      return [trace3, promisesWithLatency(newInits)];
+      return [trace3, promisesWithLatency(networkLatency, newInits)];
     }
     case "SpawnClient": {
       const { newTrace: trace2, newInits: newInits1 } = step(
@@ -153,34 +168,39 @@ function traceReducer<St extends Json, Msg extends Json>(
         update,
         spawnInitiator(`client${action.id}`, action.initialClientState)
       );
-      return [trace3, promisesWithLatency([...newInits1, ...newInits2])];
+      return [
+        trace3,
+        promisesWithLatency(networkLatency, [...newInits1, ...newInits2]),
+      ];
     }
     case "Step": {
       const { newTrace, newInits } = step(trace, update, action.init);
-      return [newTrace, promisesWithLatency(newInits)];
+      return [newTrace, promisesWithLatency(networkLatency, newInits)];
     }
   }
 }
 
-const NETWORK_LATENCY = 1000;
-
 function promisesWithLatency<St, Msg>(
+  networkLatency: number,
   inits: AddressedTickInitiator<St>[]
 ): Promise<TraceAction<St, Msg>>[] {
   return inits.map((init) => {
-    const hopLatency = latency(init);
+    const hopLatency = latency(networkLatency, init);
     // console.log("latency for", init, ":", hopLatency);
     return sleep(hopLatency).then(() => ({ type: "Step", init }));
   });
 }
 
 // TODO: base on actor types, not substrings
-function latency<St>(init: AddressedTickInitiator<St>): number {
+function latency<St>(
+  networkLatency: number,
+  init: AddressedTickInitiator<St>
+): number {
   if (init.from.startsWith("user") && init.to.startsWith("client")) {
     return 0;
   }
   if (init.init.type === "spawned") {
     return 0;
   }
-  return NETWORK_LATENCY;
+  return networkLatency;
 }

@@ -9,16 +9,24 @@ type ColumnSpec<T> = {
 export function Table<T>(props: {
   data: T[];
   columns: ColumnSpec<T>[];
-  getKey: (row: T) => string;
+  getKey: (row: T, idx: number) => string;
 }) {
   return (
-    <table style={{ borderCollapse: "collapse" }}>
+    <table style={{ borderCollapse: "collapse", width: "100%" }}>
       <thead>
         <tr style={{ borderBottom: "1px solid gray" }}>
-          {props.columns.map((colSpec) => (
+          {props.columns.map((colSpec, colIdx) => (
             <th
               key={colSpec.name}
-              style={{ paddingLeft: 5, paddingRight: 5, width: colSpec.width }}
+              style={{
+                paddingLeft: 5,
+                paddingRight: 5,
+                width: colSpec.width,
+                borderRight:
+                  colIdx === props.columns.length - 1
+                    ? "none"
+                    : "1px solid lightgray",
+              }}
             >
               {colSpec.name}
             </th>
@@ -33,14 +41,14 @@ export function Table<T>(props: {
             </td>
           </tr>
         ) : null}
-        {props.data.map((row) => (
-          <tr key={props.getKey(row)}>
+        {props.data.map((row, rowIdx) => (
+          <tr key={props.getKey(row, rowIdx)}>
             {props.columns.map((colSpec, colIdx) => (
               <td
                 key={colSpec.name}
                 style={{
-                  paddingLeft: 2,
-                  paddingRight: 2,
+                  paddingLeft: 5,
+                  paddingRight: 5,
                   borderRight:
                     colIdx === props.columns.length - 1
                       ? "none"
