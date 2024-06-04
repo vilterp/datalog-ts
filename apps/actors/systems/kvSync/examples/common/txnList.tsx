@@ -4,6 +4,7 @@ import { TxnState } from "./txnState";
 import { prettyPrintInvocation } from "./pretty";
 import { TransactionRecord, TransactionState } from "../../client";
 import { Table } from "./table";
+import { TraceOp } from "../../types";
 
 export function TransactionList(props: { client: Client }) {
   const [selectedTxnID, setSelectedTxnID] = useState<string | null>(null);
@@ -38,15 +39,29 @@ export function TransactionList(props: { client: Client }) {
         getKey={([id, txn]) => id}
       />
       {selectedTxnID !== null ? (
-        <ol>
-          {props.client.state.transactions[selectedTxnID].clientTrace.map(
-            (op, idx) => (
-              <li key={idx}>
-                <code>{JSON.stringify(op)}</code>
-              </li>
-            )
-          )}
-        </ol>
+        <>
+          <h5>Trace</h5>
+          <Table<TraceOp>
+            data={props.client.state.transactions[selectedTxnID].clientTrace}
+            getKey={(_, idx) => idx.toString()}
+            columns={[
+              { name: "Op", render: (op) => op.type },
+              { name: "Key", render: (op) => op.key },
+              {
+                name: "Value",
+                render: (op) =>
+                  op.type === "Write" ? (
+                    <code>{JSON.stringify(op.value)}</code>
+                  ) : null,
+              },
+              {
+                name: "TxnID",
+                render: (op) =>
+                  op.type === "Read" ? <code>{op.transactionID}</code> : null,
+              },
+            ]}
+          />
+        </>
       ) : null}
     </>
   );
