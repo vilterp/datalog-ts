@@ -17,7 +17,7 @@ export function TransactionList(props: { client: Client }) {
             name: "ID",
             render: ([id, txn]) => (
               // TODO: row click
-              <span onClick={() => setSelectedTxnID(id)}>id</span>
+              <span onClick={() => setSelectedTxnID(id)}>{id}</span>
             ),
           },
           {
