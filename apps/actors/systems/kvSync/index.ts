@@ -1,6 +1,11 @@
 import { spawnInitialActors } from "../../step";
 import * as effects from "../../effects";
-import { ActorResp, LoadedTickInitiator, System } from "../../types";
+import {
+  ActorResp,
+  LoadedTickInitiator,
+  MessageToClient,
+  System,
+} from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { initialServerState, ServerState, updateServer } from "./server";
 import { MsgToClient, MsgToServer } from "./types";
@@ -68,13 +73,15 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
       }
       const mutations = app.choose(clientStates);
       for (const mutation of mutations) {
-        yield {
+        const msg: MessageToClient<MsgToClient> = {
           clientID: mutation.clientID,
           message: {
             type: "RunMutation",
             invocation: mutation.invocation,
           },
         };
+        console.log("msg", msg);
+        yield msg;
       }
     },
   };
