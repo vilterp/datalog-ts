@@ -70,6 +70,7 @@ export type TransactionState =
 
 export type TransactionRecord = {
   invocation: MutationInvocation;
+  clientTrace: Trace;
   state: TransactionState;
 };
 
@@ -168,6 +169,7 @@ function runMutationOnClient(
     console.warn("CLIENT: txn aborted client side:", resVal, trace);
     const state2 = addTransaction(state1, txnID, {
       invocation,
+      clientTrace: trace,
       state: {
         type: "Aborted",
         // TODO: pretty print values
@@ -182,6 +184,7 @@ function runMutationOnClient(
 
   const state2 = addTransaction(state1, txnID, {
     invocation,
+    clientTrace: trace,
     state: { type: "Pending", sentTime: state.time },
   });
 
@@ -227,6 +230,7 @@ function getNewTransactions(metadata: TransactionMetadata): {
   return mapObj(
     metadata,
     (txnid, metadata): TransactionRecord => ({
+      clientTrace: [],
       state: {
         type: "Committed",
         serverTimestamp: metadata.serverTimestamp,

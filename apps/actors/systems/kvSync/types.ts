@@ -32,7 +32,7 @@ export type LiveQueryRequest = {
 
 export type Trace = TraceOp[];
 
-type TraceOp = ReadOp | WriteOp;
+export type TraceOp = ReadOp | WriteOp;
 
 export type ReadOp = { type: "Read"; key: string; transactionID: string };
 

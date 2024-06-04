@@ -9,7 +9,7 @@ type ColumnSpec<T> = {
 export function Table<T>(props: {
   data: T[];
   columns: ColumnSpec<T>[];
-  getKey: (row: T) => string;
+  getKey: (row: T, idx: number) => string;
 }) {
   return (
     <table style={{ borderCollapse: "collapse", width: "100%" }}>
@@ -41,8 +41,8 @@ export function Table<T>(props: {
             </td>
           </tr>
         ) : null}
-        {props.data.map((row) => (
-          <tr key={props.getKey(row)}>
+        {props.data.map((row, rowIdx) => (
+          <tr key={props.getKey(row, rowIdx)}>
             {props.columns.map((colSpec, colIdx) => (
               <td
                 key={colSpec.name}
