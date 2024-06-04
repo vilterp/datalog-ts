@@ -16,8 +16,15 @@ export function TransactionList(props: { client: Client }) {
           {
             name: "ID",
             render: ([id, txn]) => (
-              // TODO: row click
-              <span onClick={() => setSelectedTxnID(id)}>{id}</span>
+              <span
+                style={{
+                  cursor: "pointer",
+                  backgroundColor: id === selectedTxnID ? "lightskyblue" : null,
+                }}
+                onClick={() => setSelectedTxnID(id)}
+              >
+                <code>{id}</code>
+              </span>
             ),
           },
           {
@@ -46,7 +53,7 @@ export function TransactionList(props: { client: Client }) {
             getKey={(_, idx) => idx.toString()}
             columns={[
               { name: "Op", render: (op) => op.type },
-              { name: "Key", render: (op) => op.key },
+              { name: "Key", render: (op) => <code>{op.key}</code> },
               {
                 name: "Value",
                 render: (op) =>
