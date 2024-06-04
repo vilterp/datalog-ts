@@ -9,7 +9,7 @@ import {
   varr,
   write,
 } from "../mutations/types";
-import { MutationDefns, UserInput } from "../types";
+import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { KVApp } from "./types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
@@ -70,9 +70,25 @@ const mutations: MutationDefns = {
   ),
 };
 
+function* choose(clients: {
+  [id: string]: ClientState;
+}): Generator<{ clientID: string; invocation: MutationInvocation }> {
+  for (const clientID in clients) {
+    yield {
+      clientID,
+      invocation: {
+        type: "Invocation",
+        name: "Increment", // TODO: random choice?
+        args: [],
+      },
+    };
+  }
+}
+
 export const counter: KVApp = {
   name: "Counter",
   mutations,
   ui: CounterUI,
   initialKVPairs: { counter: 0 },
+  choose,
 };

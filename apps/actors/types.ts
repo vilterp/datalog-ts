@@ -24,6 +24,15 @@ export type UpdateFn<ActorState, Msg> = (
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
 
+export type MessageToClient<Msg> = {
+  clientID: ActorID;
+  message: Msg;
+};
+
+export type ChooseFn<ActorState, Msg> = (
+  state: SystemInstance<ActorState, Msg>
+) => Generator<MessageToClient<Msg>>;
+
 export type System<ActorState, Msg> = {
   name: string;
   id: string;
@@ -33,6 +42,7 @@ export type System<ActorState, Msg> = {
   getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
   initialClientState: (id: string) => ActorState;
   initialUserState: ActorState;
+  chooseNextMove?: ChooseFn<ActorState, Msg>;
 };
 
 export type UIProps<ClientState, UserInput> = {
