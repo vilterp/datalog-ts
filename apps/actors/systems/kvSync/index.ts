@@ -69,8 +69,7 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
       const mutations = app.choose(clientStates);
       for (const mutation of mutations) {
         yield {
-          from: `user${mutation.clientID}`,
-          to: mutation.clientID,
+          clientID: mutation.clientID,
           message: {
             type: "RunMutation",
             invocation: mutation.invocation,
