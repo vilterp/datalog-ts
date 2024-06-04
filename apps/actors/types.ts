@@ -26,7 +26,7 @@ export type UpdateFn<ActorState, Msg> = (
 
 export type ChooseFn<ActorState, Msg> = (
   state: SystemInstance<ActorState, Msg>
-) => Generator<Msg>;
+) => Generator<AddressedTickInitiator<ActorState>>;
 
 export type System<ActorState, Msg> = {
   name: string;

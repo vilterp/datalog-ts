@@ -1,12 +1,12 @@
 import { Json } from "../../util/json";
 import { stepAll } from "./step";
-import { SystemInstance } from "./types";
+import { AddressedTickInitiator, SystemInstance } from "./types";
 
 // TODO: generator of what? updates to a DB?
 
 type Frame<ActorState, Msg> = {
   state: SystemInstance<ActorState, Msg>;
-  options: Generator;
+  options: Generator<AddressedTickInitiator<ActorState>>;
 };
 // TODO:
 // - process messages (maybe use `step`?)
@@ -29,6 +29,8 @@ export function* explore<ActorState extends Json, Msg extends Json>(
   ];
   let steps = 0;
 
+  // DFS
+  // TODO: BFS?
   while (stack.length > 0) {
     if (steps >= stepLimit) {
       return;
@@ -39,14 +41,18 @@ export function* explore<ActorState extends Json, Msg extends Json>(
 
     yield frame.state;
 
-    const nextMsg = frame.options.next();
-    if (nextMsg.done) {
+    const chooseRes = frame.options.next();
+    if (chooseRes.done) {
       continue;
     }
 
-    const nextState = stepAll(frame.state.trace, frame.state.system.update, [
-      nextMsg,
+    const nextTrace = stepAll(frame.state.trace, frame.state.system.update, [
+      chooseRes.value,
     ]);
+    const nextState: SystemInstance<ActorState, Msg> = {
+      ...frame.state,
+      trace: nextTrace,
+    };
 
     stack.push({
       options: system.chooseNextMove(nextState),
