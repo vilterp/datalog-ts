@@ -8,13 +8,28 @@ type Frame<ActorState, Msg> = {
   state: SystemInstance<ActorState, Msg>;
   options: Generator<MessageToClient<Msg>>;
 };
-// TODO:
-// - process messages (maybe use `step`?)
-// - insert into DB
-// - stopping condition
-export function* explore<ActorState extends Json, Msg extends Json>(
+
+export function runExplore<ActorState extends Json, Msg extends Json>(
   systemInstance: SystemInstance<ActorState, Msg>,
   stepLimit: number
+): Generator<SystemInstance<ActorState, Msg>> {
+  let step = 0;
+  const generator = explore(systemInstance);
+  for (const state of generator) {
+    console.log(state);
+    step++;
+
+    if (step > stepLimit) {
+      console.log("hit step limit");
+      return;
+    }
+  }
+}
+
+// TODO:
+// - stopping condition
+function* explore<ActorState extends Json, Msg extends Json>(
+  systemInstance: SystemInstance<ActorState, Msg>
 ): Generator<SystemInstance<ActorState, Msg>> {
   const system = systemInstance.system;
   if (!system.chooseNextMove) {
@@ -27,17 +42,11 @@ export function* explore<ActorState extends Json, Msg extends Json>(
       options: system.chooseNextMove(systemInstance),
     },
   ];
-  let steps = 0;
 
   // DFS
   // TODO: BFS?
   while (stack.length > 0) {
-    if (steps >= stepLimit) {
-      return;
-    }
-
     const frame = stack.pop();
-    console.log("explore", frame);
 
     yield frame.state;
 
@@ -54,8 +63,6 @@ export function* explore<ActorState extends Json, Msg extends Json>(
       options: system.chooseNextMove(nextState),
       state: nextState,
     });
-
-    steps++;
   }
 }
 

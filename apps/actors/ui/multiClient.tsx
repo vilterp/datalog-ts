@@ -2,10 +2,10 @@ import React from "react";
 import { Json } from "../../../util/json";
 import { SystemInstance, SystemInstanceAction } from "../types";
 import { Window } from "./window";
-import { explore } from "../explore";
+import { runExplore } from "../explore";
 
 // TODO: slider
-const EXPLORE_STEP_LIMIT = 10_000;
+const EXPLORE_STEP_LIMIT = 100;
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
@@ -71,9 +71,13 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
         })}
         <AddClientButton onClick={() => addClient()} />
       </div>
-      <button onClick={() => explore(props.systemInstance, EXPLORE_STEP_LIMIT)}>
-        Explore
-      </button>
+      {props.systemInstance.system.chooseNextMove ? (
+        <button
+          onClick={() => runExplore(props.systemInstance, EXPLORE_STEP_LIMIT)}
+        >
+          Explore
+        </button>
+      ) : null}
     </>
   );
 }
