@@ -16,7 +16,7 @@ import { stepTrace } from "./step";
 import patternsDL from "./patterns.dl";
 import { makeMemoryLoader } from "../../core/loaders";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { DEFAULT_STEP_LIMIT, explore } from "./explore";
+import { explore } from "./explore";
 
 export const INITIAL_NETWORK_LATENCY_MS = 1000;
 
@@ -132,7 +132,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
       ];
     case "Explore": {
       const randomSeed = new Date().getTime();
-      const frame = explore(systemInstance, DEFAULT_STEP_LIMIT, randomSeed);
+      const frame = explore(systemInstance, action.steps, randomSeed);
       return [frame.state, []];
     }
   }

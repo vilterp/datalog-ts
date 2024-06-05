@@ -8,8 +8,6 @@ import {
   TraceAction,
 } from "./types";
 
-export const DEFAULT_STEP_LIMIT = 100;
-
 type Frame<ActorState, Msg> = {
   parent: Frame<ActorState, Msg> | null;
   action: TraceAction<ActorState, Msg> | { type: "ExploreStart" };
