@@ -1,10 +1,5 @@
 import { Json } from "../../util/json";
-import {
-  randStep2,
-  randomFromList,
-  removeAtIdx,
-  removeAtRandom,
-} from "../../util/util";
+import { randStep2, removeAtRandom } from "../../util/util";
 import { stepTrace } from "./step";
 import {
   AddressedTickInitiator,
@@ -50,30 +45,8 @@ function runToQuiescence<ActorState extends Json, Msg extends Json>(
   let curFrame = frame;
   let steps = 0;
   while (curFrame.messages.length > 0) {
-    const [message, randomSeed] = randomFromList(
-      curFrame.randomSeed,
-      curFrame.messages
-    );
-
-    const [nextTrace, inits] = stepTrace(
-      curFrame.state.trace,
-      curFrame.state.system.update,
-      {
-        type: "Step",
-        init: message,
-      }
-    );
-
-    curFrame = {
-      parent: curFrame,
-      action: { type: "Step", init: message },
-      state: {
-        ...curFrame.state,
-        trace: nextTrace,
-      },
-      messages: inits,
-      randomSeed,
-    };
+    // new user input prob = 0: no new inputs
+    curFrame = exploreStep(curFrame, 0);
     steps++;
   }
   console.log("running to quiescence took", steps, "steps");
@@ -109,40 +82,47 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
 
     yield frame;
 
-    const {
-      nextAction: traceAction,
-      remainingInits: remainingInits,
-      randomSeed: nextRandSeed,
-    } = getNextTraceAction(
-      systemInstance.system.chooseNextMove,
-      frame,
-      newUserInputProbability,
-      frame.randomSeed
-    );
+    const nextFrame = exploreStep(frame, newUserInputProbability);
 
-    if (traceAction === null) {
-      continue;
-    }
+    stack.push(nextFrame);
+  }
+}
 
-    const [nextTrace, newInits] = stepTrace(
-      frame.state.trace,
-      frame.state.system.update,
-      traceAction
-    );
+function exploreStep<ActorState extends Json, Msg extends Json>(
+  frame: Frame<ActorState, Msg>,
+  newUserInputProbability: number
+): Frame<ActorState, Msg> {
+  const {
+    nextAction: traceAction,
+    remainingInits: remainingInits,
+    randomSeed: nextRandSeed,
+  } = getNextTraceAction(
+    frame.state.system.chooseNextMove,
+    frame,
+    newUserInputProbability,
+    frame.randomSeed
+  );
 
-    const newSystemInstance: SystemInstance<ActorState, Msg> = {
+  if (traceAction === null) {
+    return frame;
+  }
+
+  const [nextTrace, newInits] = stepTrace(
+    frame.state.trace,
+    frame.state.system.update,
+    traceAction
+  );
+
+  return {
+    parent: frame,
+    action: traceAction,
+    state: {
       ...frame.state,
       trace: nextTrace,
-    };
-
-    stack.push({
-      parent: frame,
-      action: traceAction,
-      state: newSystemInstance,
-      messages: [...remainingInits, ...newInits],
-      randomSeed: nextRandSeed,
-    });
-  }
+    },
+    messages: [...remainingInits, ...newInits],
+    randomSeed: nextRandSeed,
+  };
 }
 
 // TODO: param in UI
