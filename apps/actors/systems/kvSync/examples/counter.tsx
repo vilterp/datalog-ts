@@ -40,9 +40,9 @@ function CounterUI(props: UIProps<ClientState, UserInput>) {
         style={{
           color:
             client.state.transactions[counter.transactionID]?.state.type ===
-            "Pending"
-              ? "lightgrey"
-              : "",
+            "Committed"
+              ? ""
+              : "lightgrey",
         }}
       >
         Value: {counter.value as number}{" "}
