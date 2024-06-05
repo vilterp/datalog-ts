@@ -123,7 +123,13 @@ function getNextTraceAction<ActorState, Msg>(
   } else {
     // Step
 
-    const [randIdx, randomSeed2] = randStep2(randomSeed1);
+    const [rand01, randomSeed2] = randStep2(randomSeed1);
+    const randIdx = rand01 * (frame.messages.length - 1);
+    console.log({
+      messages: frame.messages,
+      randIdx,
+      item: frame.messages[randIdx],
+    });
     const message = frame.messages[randIdx];
 
     return [

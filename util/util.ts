@@ -444,9 +444,13 @@ export function randStep(num: number) {
 //   the next seed
 // ]
 export function randStep2(seed: number): [number, number] {
-  const nextSeed = (seed * 16807) % 2147483647;
-  const nextResult = (nextSeed - 1) / 2147483646;
-  return [nextResult / Number.MAX_VALUE, nextSeed];
+  const a = 16807; // multiplier
+  const m = 2147483647; // 2^31 - 1, a prime number
+
+  seed = (seed * a) % m;
+  const random = (seed - 1) / (m - 1);
+
+  return [random, seed];
 }
 
 export function hashString(str: string): number {
