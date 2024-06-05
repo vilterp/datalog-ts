@@ -1,4 +1,5 @@
 import { Json } from "../../util/json";
+import { randStep2 } from "../../util/util";
 import { stepTrace } from "./step";
 import {
   AddressedTickInitiator,
@@ -96,6 +97,37 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
 function getNextTraceAction<ActorState, Msg>(
   frame: Frame<ActorState, Msg>,
   randomSeed: number
-): [TraceAction<ActorState, Msg>, number] {
-  return XXX;
+): [TraceAction<ActorState, Msg> | null, number] {
+  const [rand, randomSeed1] = randStep2(randomSeed);
+  if (rand > 0.5 || frame.messages.length === 0) {
+    // SendUserInput
+
+    const genRes = frame.options.next();
+    if (genRes.done) {
+      return null;
+    }
+    const messageToClient: MessageToClient<Msg> = genRes.value;
+
+    return [
+      {
+        type: "SendUserInput",
+        clientID: messageToClient.clientID,
+        input: messageToClient.message,
+      },
+      randomSeed1,
+    ];
+  } else {
+    // Step
+
+    const [randIdx, randomSeed2] = randStep2(randomSeed1);
+    const message = frame.messages[randIdx];
+
+    return [
+      {
+        type: "Step",
+        init: message,
+      },
+      randomSeed2,
+    ];
+  }
 }
