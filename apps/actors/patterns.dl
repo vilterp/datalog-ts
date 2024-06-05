@@ -53,7 +53,7 @@ hop{
 tickState{tickID: TickID, actorID: ActorID, state: State} :-
   tick{id: TickID, actorID: ActorID, resp: continue{state: State}}.
 
-concurrentRequests{
+concurrentRequest{
   tick1: tick{place: Client1, time: TC1},
   message1: M1,
   tick2: tick{place: Client2, time: TC2},
@@ -64,20 +64,20 @@ concurrentRequests{
   TC1 < TC2 &
   TC2 < TS1.
 
-kvSync.aborts{
+kvSync.abort{
   fromActorID: ClientActor,
   toActorID: ServerActor,
-  request: Req,
+  invocation: Invocation,
+  abortReason: Reason,
+  clientTrace: Trace,
   txnID: TxnID,
   sendTick: SendTick,
-  respondTick: RespondTick,
-  handleResponseTick: HandleResponseTick
 } :-
   requestResponse{
     fromActorID: ClientActor,
     toActorID: ServerActor,
-    request: Req,
-    response: MutationResponse{txnID: TxnID, response: Abort{}},
+    request: MutationRequest{invocation: Invocation, trace: Trace},
+    response: MutationResponse{txnID: TxnID, payload: Reject{reason: Reason}},
     sendTick: SendTick,
     respondTick: RespondTick,
     handleResponseTick: HandleResponseTick

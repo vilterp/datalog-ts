@@ -38,7 +38,6 @@ export function explore<ActorState extends Json, Msg extends Json>(
   }
 }
 
-// TODO: dry up?
 function runToQuiescence<ActorState extends Json, Msg extends Json>(
   frame: Frame<ActorState, Msg>
 ): Frame<ActorState, Msg> {
