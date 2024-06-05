@@ -94,6 +94,7 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
   }
 }
 
+// TODO: param in UI
 const NEW_USER_INPUT_PROB = 0.1;
 
 function getNextTraceAction<ActorState, Msg>(
