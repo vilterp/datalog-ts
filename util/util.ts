@@ -459,6 +459,17 @@ export function randomFromList<T>(seed: number, list: T[]): [T, number] {
   return [list[idx], nextSeed];
 }
 
+export function removeAtRandom<T>(
+  items: T[],
+  randomSeed: number
+): [T, T[], number] {
+  const [rand01, randomSeed2] = randStep2(randomSeed);
+  const randIdx = Math.floor(rand01 * items.length);
+  const item = items[randIdx];
+  const remainingItems = removeAtIdx(items, randIdx);
+  return [item, remainingItems, randomSeed2];
+}
+
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;
