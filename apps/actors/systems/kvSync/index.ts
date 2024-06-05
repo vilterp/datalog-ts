@@ -68,10 +68,14 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
       }
       const clientStates: { [clientID: string]: ClientState } = {};
       for (const clientID of state.clientIDs) {
-        const clientState = state.trace.latestStates[clientID];
+        const clientState = state.trace.latestStates[`client${clientID}`];
         clientStates[clientID] = clientState as ClientState;
       }
       const [mutation, nextRandomSeed] = app.choose(clientStates, randomSeed);
+      if (mutation === null) {
+        return [null, nextRandomSeed];
+      }
+
       const msg: MessageToClient<MsgToClient> = {
         clientID: mutation.clientID,
         message: {

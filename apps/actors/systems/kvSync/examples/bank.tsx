@@ -305,21 +305,25 @@ function choose(
     [id: string]: ClientState;
   },
   randomSeed: number
-): [{ clientID: string; invocation: MutationInvocation }, number] {
+): [{ clientID: string; invocation: MutationInvocation } | null, number] {
   const [clientID, randomSeed1] = randomFromList(
     randomSeed,
     Object.keys(clients)
   );
 
   const accounts = Object.keys(clients[clientID].data);
+  if (accounts.length === 0) {
+    return [null, randomSeed1];
+  }
+
   const [account, randomSeed2] = randomFromList(randomSeed1, accounts);
 
   const [amount01, randomSeed3] = randStep2(randomSeed2);
   const amount = Math.floor(amount01 * MAX_RANDOM_TXN_AMOUNT);
 
   const possibleInvocations: MutationInvocation[] = [
-    { type: "Invocation", name: "Withdraw", args: [account, 100] },
-    { type: "Invocation", name: "Deposit", args: [account, 100] },
+    { type: "Invocation", name: "Withdraw", args: [account, amount] },
+    { type: "Invocation", name: "Deposit", args: [account, amount] },
     // TODO: transfer
   ];
 
