@@ -7,7 +7,7 @@ import { Tabs } from "../../uiCommon/generic/tabs";
 import { initialState, reducer } from "./reducers";
 import { SYSTEMS } from "./systems";
 import useHashParam from "use-hash-param";
-import { State, SystemInstance, SystemInstanceAction } from "./types";
+import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { MultiClient } from "./ui/multiClient";

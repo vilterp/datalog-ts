@@ -2,14 +2,9 @@ import React from "react";
 import { Json } from "../../../util/json";
 import { SystemInstance, SystemInstanceAction } from "../types";
 import { Window } from "./window";
-import { runExplore } from "../explore";
-
-// TODO: slider
-const EXPLORE_STEP_LIMIT = 100;
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
-  // hoo that is a big type
   dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
   const sendInput = (clientID: string, input: Msg) => {
@@ -71,14 +66,33 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
         })}
         <AddClientButton onClick={() => addClient()} />
       </div>
+
       {props.systemInstance.system.chooseNextMove ? (
-        <button
-          onClick={() => runExplore(props.systemInstance, EXPLORE_STEP_LIMIT)}
-        >
-          Explore
-        </button>
+        <ExploreForm
+          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+        />
       ) : null}
     </>
+  );
+}
+
+const DEFAULT_STEP_LIMIT = 100;
+
+function ExploreForm(props: { onExplore: (steps: number) => void }) {
+  const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
+
+  return (
+    <form onSubmit={() => props.onExplore(steps)}>
+      <button type="submit">Explore</button>{" "}
+      <input
+        type="number"
+        min={0}
+        max={10_000}
+        value={steps}
+        onChange={(evt) => setSteps(parseInt(evt.target.value))}
+      />{" "}
+      steps
+    </form>
   );
 }
 

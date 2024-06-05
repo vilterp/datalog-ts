@@ -1,36 +1,46 @@
 import { Json } from "../../util/json";
-import { insertUserInput, stepAll } from "./step";
-import { MessageToClient, SystemInstance } from "./types";
-
-// TODO: generator of what? updates to a DB?
+import { randStep2, randomFromList } from "../../util/util";
+import { stepTrace } from "./step";
+import {
+  AddressedTickInitiator,
+  ChooseFn,
+  SystemInstance,
+  TraceAction,
+} from "./types";
 
 type Frame<ActorState, Msg> = {
+  parent: Frame<ActorState, Msg> | null;
+  action: TraceAction<ActorState, Msg> | { type: "ExploreStart" };
   state: SystemInstance<ActorState, Msg>;
-  options: Generator<MessageToClient<Msg>>;
+  messages: AddressedTickInitiator<ActorState>[];
+  randomSeed: number;
 };
 
-export function runExplore<ActorState extends Json, Msg extends Json>(
+// TODO: stopping condition
+export function explore<ActorState extends Json, Msg extends Json>(
   systemInstance: SystemInstance<ActorState, Msg>,
-  stepLimit: number
-): Generator<SystemInstance<ActorState, Msg>> {
+  stepLimit: number,
+  randomSeed: number
+): Frame<ActorState, Msg> {
   let step = 0;
-  const generator = explore(systemInstance);
-  for (const state of generator) {
-    console.log(state);
+  const generator = exploreGenerator(systemInstance, randomSeed);
+  for (const frame of generator) {
     step++;
 
     if (step > stepLimit) {
       console.log("hit step limit");
-      return;
+      // TODO: step the rest of the txns
+      return frame;
     }
   }
 }
 
 // TODO:
 // - stopping condition
-function* explore<ActorState extends Json, Msg extends Json>(
-  systemInstance: SystemInstance<ActorState, Msg>
-): Generator<SystemInstance<ActorState, Msg>> {
+function* exploreGenerator<ActorState extends Json, Msg extends Json>(
+  systemInstance: SystemInstance<ActorState, Msg>,
+  randomSeed: number
+): Generator<Frame<ActorState, Msg>> {
   const system = systemInstance.system;
   if (!system.chooseNextMove) {
     return;
@@ -38,8 +48,11 @@ function* explore<ActorState extends Json, Msg extends Json>(
 
   const stack: Frame<ActorState, Msg>[] = [
     {
+      parent: null,
+      action: { type: "ExploreStart" },
+      randomSeed,
+      messages: [],
       state: systemInstance,
-      options: system.chooseNextMove(systemInstance),
     },
   ];
 
@@ -48,48 +61,75 @@ function* explore<ActorState extends Json, Msg extends Json>(
   while (stack.length > 0) {
     const frame = stack.pop();
 
-    yield frame.state;
+    yield frame;
 
-    const chooseRes = frame.options.next();
-    if (chooseRes.done) {
+    const [traceAction, nextRandSeed] = getNextTraceAction(
+      systemInstance.system.chooseNextMove,
+      frame,
+      frame.randomSeed
+    );
+
+    if (traceAction === null) {
       continue;
     }
 
-    const message: MessageToClient<Msg> = chooseRes.value; // TODO: why is this an `any`
+    const [nextTrace, inits] = stepTrace(
+      frame.state.trace,
+      frame.state.system.update,
+      traceAction
+    );
 
-    const nextState = stepMessageToClient(frame.state, message);
+    const newSystemInstance: SystemInstance<ActorState, Msg> = {
+      ...frame.state,
+      trace: nextTrace,
+    };
 
     stack.push({
-      options: system.chooseNextMove(nextState),
-      state: nextState,
+      parent: frame,
+      action: traceAction,
+      state: newSystemInstance,
+      messages: inits,
+      randomSeed: nextRandSeed,
     });
   }
 }
 
-// TODO: DRY up with reducer
-function stepMessageToClient<ActorState extends Json, Msg extends Json>(
-  state: SystemInstance<ActorState, Msg>,
-  message: MessageToClient<Msg>
-): SystemInstance<ActorState, Msg> {
-  // TODO: DRY this up with reducers
-  const { newTrace: trace2, newMessageID } = insertUserInput(
-    state.trace,
-    message.clientID,
-    message.message
-  );
-  const nextTrace = stepAll(trace2, state.system.update, [
-    {
-      from: `user${message.clientID}`,
-      to: `client${message.clientID}`,
-      init: {
-        type: "messageReceived",
-        messageID: newMessageID.toString(),
-      },
-    },
-  ]);
+// TODO: param in UI
+const NEW_USER_INPUT_PROB = 0.1;
 
-  return {
-    ...state,
-    trace: nextTrace,
-  };
+function getNextTraceAction<ActorState, Msg>(
+  chooseNextMove: ChooseFn<ActorState, Msg>,
+  frame: Frame<ActorState, Msg>,
+  randomSeed: number
+): [TraceAction<ActorState, Msg> | null, number] {
+  const [rand, randomSeed1] = randStep2(randomSeed);
+  if (rand < NEW_USER_INPUT_PROB || frame.messages.length === 0) {
+    // SendUserInput
+
+    const [messageToClient, randomSeed2] = chooseNextMove(
+      frame.state,
+      randomSeed1
+    );
+
+    return [
+      {
+        type: "SendUserInput",
+        clientID: messageToClient.clientID,
+        input: messageToClient.message,
+      },
+      randomSeed2,
+    ];
+  } else {
+    // Step
+
+    const [message, randomSeed2] = randomFromList(randomSeed1, frame.messages);
+
+    return [
+      {
+        type: "Step",
+        init: message,
+      },
+      randomSeed2,
+    ];
+  }
 }

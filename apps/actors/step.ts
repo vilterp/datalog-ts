@@ -8,6 +8,7 @@ import {
   LoadedTickInitiator,
   TickInitiator,
   Trace,
+  TraceAction,
   UpdateFn,
 } from "./types";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
@@ -27,6 +28,49 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
     newInits.forEach((init) => queue.push(init));
   }
   return curTrace;
+}
+
+export function stepTrace<St extends Json, Msg extends Json>(
+  trace: Trace<St>,
+  update: UpdateFn<St, Msg>,
+  action: TraceAction<St, Msg>
+): [Trace<St>, AddressedTickInitiator<St>[]] {
+  switch (action.type) {
+    case "SendUserInput": {
+      const { newTrace: trace2, newMessageID } = insertUserInput(
+        trace,
+        action.clientID,
+        action.input
+      );
+      const { newTrace: trace3, newInits } = step(trace2, update, {
+        from: `user${action.clientID}`,
+        to: `client${action.clientID}`,
+        init: {
+          type: "messageReceived",
+          messageID: newMessageID.toString(),
+        },
+      });
+      // console.log("traceReducer", "dispatchInits", newInits);
+      return [trace3, newInits];
+    }
+    case "SpawnClient": {
+      const { newTrace: trace2, newInits: newInits1 } = step(
+        trace,
+        update,
+        spawnInitiator(`user${action.id}`, action.initialUserState)
+      );
+      const { newTrace: trace3, newInits: newInits2 } = step(
+        trace2,
+        update,
+        spawnInitiator(`client${action.id}`, action.initialClientState)
+      );
+      return [trace3, [...newInits1, ...newInits2]];
+    }
+    case "Step": {
+      const { newTrace, newInits } = step(trace, update, action.init);
+      return [newTrace, newInits];
+    }
+  }
 }
 
 export function step<ActorState extends Json, Msg extends Json>(

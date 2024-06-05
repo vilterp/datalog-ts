@@ -11,11 +11,12 @@ import {
   UpdateFn,
 } from "./types";
 import { Json } from "../../util/json";
-import { insertUserInput, spawnInitiator, step } from "./step";
+import { stepTrace } from "./step";
 // @ts-ignore
 import patternsDL from "./patterns.dl";
 import { makeMemoryLoader } from "../../core/loaders";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
+import { explore } from "./explore";
 
 export const INITIAL_NETWORK_LATENCY_MS = 1000;
 
@@ -129,6 +130,11 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         },
         [],
       ];
+    case "Explore": {
+      const randomSeed = new Date().getTime();
+      const frame = explore(systemInstance, action.steps, randomSeed);
+      return [frame.state, []];
+    }
   }
 }
 
@@ -139,45 +145,8 @@ function traceReducer<St extends Json, Msg extends Json>(
   update: UpdateFn<St, Msg>,
   action: TraceAction<St, Msg>
 ): [Trace<St>, Promise<TraceAction<St, Msg>>[]] {
-  switch (action.type) {
-    case "SendUserInput": {
-      const { newTrace: trace2, newMessageID } = insertUserInput(
-        trace,
-        action.clientID,
-        action.input
-      );
-      const { newTrace: trace3, newInits } = step(trace2, update, {
-        from: `user${action.clientID}`,
-        to: `client${action.clientID}`,
-        init: {
-          type: "messageReceived",
-          messageID: newMessageID.toString(),
-        },
-      });
-      // console.log("traceReducer", "dispatchInits", newInits);
-      return [trace3, promisesWithLatency(networkLatency, newInits)];
-    }
-    case "SpawnClient": {
-      const { newTrace: trace2, newInits: newInits1 } = step(
-        trace,
-        update,
-        spawnInitiator(`user${action.id}`, action.initialUserState)
-      );
-      const { newTrace: trace3, newInits: newInits2 } = step(
-        trace2,
-        update,
-        spawnInitiator(`client${action.id}`, action.initialClientState)
-      );
-      return [
-        trace3,
-        promisesWithLatency(networkLatency, [...newInits1, ...newInits2]),
-      ];
-    }
-    case "Step": {
-      const { newTrace, newInits } = step(trace, update, action.init);
-      return [newTrace, promisesWithLatency(networkLatency, newInits)];
-    }
-  }
+  const [newTrace, newInits] = stepTrace(trace, update, action);
+  return [newTrace, promisesWithLatency(networkLatency, newInits)];
 }
 
 function promisesWithLatency<St, Msg>(

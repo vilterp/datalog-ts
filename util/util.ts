@@ -439,6 +439,26 @@ export function randStep(num: number) {
   return (num * 234 - 534) % 5235255;
 }
 
+// Returns [
+//   a number in [0, 1],
+//   the next seed
+// ]
+export function randStep2(seed: number): [number, number] {
+  const a = 16807; // multiplier
+  const m = 2147483647; // 2^31 - 1, a prime number
+
+  seed = (seed * a) % m;
+  const random = (seed - 1) / (m - 1);
+
+  return [random, seed];
+}
+
+export function randomFromList<T>(seed: number, list: T[]): [T, number] {
+  const [num01, nextSeed] = randStep2(seed);
+  const idx = Math.floor(num01 * list.length);
+  return [list[idx], nextSeed];
+}
+
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;
