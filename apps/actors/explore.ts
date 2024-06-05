@@ -1,5 +1,5 @@
 import { Json } from "../../util/json";
-import { randStep2 } from "../../util/util";
+import { randStep2, randomFromList } from "../../util/util";
 import { stepTrace } from "./step";
 import {
   AddressedTickInitiator,
@@ -124,14 +124,7 @@ function getNextTraceAction<ActorState, Msg>(
   } else {
     // Step
 
-    const [rand01, randomSeed2] = randStep2(randomSeed1);
-    const randIdx = rand01 * (frame.messages.length - 1);
-    console.log({
-      messages: frame.messages,
-      randIdx,
-      item: frame.messages[randIdx],
-    });
-    const message = frame.messages[randIdx];
+    const [message, randomSeed2] = randomFromList(randomSeed1, frame.messages);
 
     return [
       {
