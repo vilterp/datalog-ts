@@ -94,7 +94,7 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
   }
 }
 
-const NEW_USER_INPUT_PROB = 0.3;
+const NEW_USER_INPUT_PROB = 0.1;
 
 function getNextTraceAction<ActorState, Msg>(
   chooseNextMove: ChooseFn<ActorState, Msg>,
