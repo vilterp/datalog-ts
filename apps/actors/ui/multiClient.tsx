@@ -2,6 +2,10 @@ import React from "react";
 import { Json } from "../../../util/json";
 import { SystemInstance, SystemInstanceAction } from "../types";
 import { Window } from "./window";
+import { runExplore } from "../explore";
+
+// TODO: slider
+const EXPLORE_STEP_LIMIT = 100;
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
