@@ -3,7 +3,7 @@ import { randStep2 } from "../../util/util";
 import { stepTrace } from "./step";
 import {
   AddressedTickInitiator,
-  MessageToClient,
+  ChooseFn,
   SystemInstance,
   TraceAction,
 } from "./types";
@@ -16,7 +16,6 @@ type Frame<ActorState, Msg> = {
   state: SystemInstance<ActorState, Msg>;
   messages: AddressedTickInitiator<ActorState>[];
   randomSeed: number;
-  options: Generator<MessageToClient<Msg>>;
 };
 
 // TODO: stopping condition
@@ -33,6 +32,7 @@ export function explore<ActorState extends Json, Msg extends Json>(
 
     if (step > stepLimit) {
       console.log("hit step limit");
+      // TODO: step the rest of the txns
       return frame;
     }
   }
@@ -56,7 +56,6 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
       randomSeed,
       messages: [],
       state: systemInstance,
-      options: system.chooseNextMove(systemInstance),
     },
   ];
 
@@ -68,6 +67,7 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
     yield frame;
 
     const [traceAction, nextRandSeed] = getNextTraceAction(
+      systemInstance.system.chooseNextMove,
       frame,
       frame.randomSeed
     );
@@ -90,7 +90,6 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
     stack.push({
       parent: frame,
       action: traceAction,
-      options: system.chooseNextMove(newSystemInstance),
       state: newSystemInstance,
       messages: inits,
       randomSeed: nextRandSeed,
@@ -99,6 +98,7 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
 }
 
 function getNextTraceAction<ActorState, Msg>(
+  chooseNextMove: ChooseFn<ActorState, Msg>,
   frame: Frame<ActorState, Msg>,
   randomSeed: number
 ): [TraceAction<ActorState, Msg> | null, number] {
@@ -106,11 +106,10 @@ function getNextTraceAction<ActorState, Msg>(
   if (rand > 0.5 || frame.messages.length === 0) {
     // SendUserInput
 
-    const genRes = frame.options.next();
-    if (genRes.done) {
-      return [null, randomSeed1];
-    }
-    const messageToClient: MessageToClient<Msg> = genRes.value;
+    const [messageToClient, randomSeed2] = chooseNextMove(
+      frame.state,
+      randomSeed1
+    );
 
     return [
       {
@@ -118,7 +117,7 @@ function getNextTraceAction<ActorState, Msg>(
         clientID: messageToClient.clientID,
         input: messageToClient.message,
       },
-      randomSeed1,
+      randomSeed2,
     ];
   } else {
     // Step

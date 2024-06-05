@@ -30,8 +30,9 @@ export type MessageToClient<Msg> = {
 };
 
 export type ChooseFn<ActorState, Msg> = (
-  state: SystemInstance<ActorState, Msg>
-) => Generator<MessageToClient<Msg>>;
+  state: SystemInstance<ActorState, Msg>,
+  randomSeed: number
+) => [MessageToClient<Msg>, number];
 
 export type System<ActorState, Msg> = {
   name: string;

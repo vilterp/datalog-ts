@@ -453,6 +453,12 @@ export function randStep2(seed: number): [number, number] {
   return [random, seed];
 }
 
+export function randomFromList<T>(seed: number, list: T[]): [T, number] {
+  const [num01, nextSeed] = randStep2(seed);
+  const idx = Math.floor(num01 * list.length);
+  return [list[idx], nextSeed];
+}
+
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;

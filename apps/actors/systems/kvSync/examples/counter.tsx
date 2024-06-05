@@ -15,6 +15,7 @@ import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import { makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "./common/inspector";
+import { randStep2, randomFromList } from "../../../../../util/util";
 
 function CounterUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -70,19 +71,25 @@ const mutations: MutationDefns = {
   ),
 };
 
-function* choose(clients: {
-  [id: string]: ClientState;
-}): Generator<{ clientID: string; invocation: MutationInvocation }> {
-  for (const clientID in clients) {
-    yield {
-      clientID,
-      invocation: {
-        type: "Invocation",
-        name: "Increment", // TODO: random choice?
-        args: [],
-      },
-    };
-  }
+function choose(
+  clients: {
+    [id: string]: ClientState;
+  },
+  randomSeed: number
+): [{ clientID: string; invocation: MutationInvocation }, number] {
+  const [clientID, randomSeed1] = randomFromList(
+    randomSeed,
+    Object.keys(clients)
+  );
+  const [incrDecr, randomSeed2] = randomFromList(randomSeed1, [
+    "Increment",
+    "Decrement",
+  ]);
+
+  return [
+    { clientID, invocation: { type: "Invocation", name: incrDecr, args: [] } },
+    randomSeed2,
+  ];
 }
 
 export const counter: KVApp = {
