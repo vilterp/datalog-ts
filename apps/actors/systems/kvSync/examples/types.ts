@@ -7,7 +7,7 @@ type ChooseFn = (
     [id: string]: ClientState;
   },
   randomSeed: number
-) => [{ clientID: string; invocation: MutationInvocation }, number];
+) => [{ clientID: string; invocation: MutationInvocation } | null, number];
 
 export type KVApp = {
   name: string;

@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { mapObjToList } from "../../../../../util/util";
+import {
+  mapObjToList,
+  randStep2,
+  randomFromList,
+} from "../../../../../util/util";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
@@ -16,7 +20,7 @@ import {
   doExpr,
   int,
 } from "../mutations/types";
-import { MutationDefns, UserInput } from "../types";
+import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
@@ -294,4 +298,46 @@ const mutations: MutationDefns = {
   ),
 };
 
-export const bank: KVApp = { name: "Bank", mutations, ui: BankUI };
+const MAX_RANDOM_TXN_AMOUNT = 100;
+
+function choose(
+  clients: {
+    [id: string]: ClientState;
+  },
+  randomSeed: number
+): [{ clientID: string; invocation: MutationInvocation } | null, number] {
+  const [clientID, randomSeed1] = randomFromList(
+    randomSeed,
+    Object.keys(clients)
+  );
+
+  const accounts = Object.keys(clients[clientID].data);
+  if (accounts.length === 0) {
+    return [null, randomSeed1];
+  }
+
+  const [account, randomSeed2] = randomFromList(randomSeed1, accounts);
+
+  const [amount01, randomSeed3] = randStep2(randomSeed2);
+  const amount = Math.floor(amount01 * MAX_RANDOM_TXN_AMOUNT);
+
+  const possibleInvocations: MutationInvocation[] = [
+    { type: "Invocation", name: "Withdraw", args: [account, amount] },
+    { type: "Invocation", name: "Deposit", args: [account, amount] },
+    // TODO: transfer
+  ];
+
+  const [invocation, randomSeed4] = randomFromList(
+    randomSeed3,
+    possibleInvocations
+  );
+
+  return [{ clientID, invocation: invocation }, randomSeed4];
+}
+
+export const bank: KVApp = {
+  name: "Bank",
+  mutations,
+  ui: BankUI,
+  choose,
+};

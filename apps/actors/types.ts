@@ -32,7 +32,7 @@ export type MessageToClient<Msg> = {
 export type ChooseFn<ActorState, Msg> = (
   state: SystemInstance<ActorState, Msg>,
   randomSeed: number
-) => [MessageToClient<Msg>, number];
+) => [MessageToClient<Msg> | null, number];
 
 export type System<ActorState, Msg> = {
   name: string;

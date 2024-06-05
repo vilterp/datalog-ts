@@ -146,6 +146,14 @@ function getNextTraceAction<ActorState, Msg>(
       randomSeed1
     );
 
+    if (messageToClient === null) {
+      return {
+        nextAction: null,
+        randomSeed: randomSeed2,
+        remainingInits: frame.messages,
+      };
+    }
+
     return {
       nextAction: {
         type: "SendUserInput",
