@@ -101,6 +101,10 @@ export function initialTrace<ActorState>(
 
 // TODO: DRY up all these initiators
 
+export type TickInitiator<ActorState> =
+  | { type: "messageReceived"; messageID: MessageID }
+  | NonMsgTickInitiator<ActorState>;
+
 type NonMsgTickInitiator<ActorState> =
   | { type: "timerFired"; timerID: TimerID }
   | {
@@ -109,10 +113,6 @@ type NonMsgTickInitiator<ActorState> =
       initialState: ActorState;
     }
   | { type: "userInput" };
-
-export type TickInitiator<ActorState> =
-  | { type: "messageReceived"; messageID: MessageID }
-  | NonMsgTickInitiator<ActorState>;
 
 export type LoadedTickInitiator<ActorState, Msg> =
   | LoadedMessageReceivedInitiator<Msg>

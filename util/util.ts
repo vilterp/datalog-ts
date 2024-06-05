@@ -439,6 +439,16 @@ export function randStep(num: number) {
   return (num * 234 - 534) % 5235255;
 }
 
+// Returns [
+//   a number in [0, 1],
+//   the next seed
+// ]
+export function randStep2(seed: number): [number, number] {
+  const nextSeed = (seed * 16807) % 2147483647;
+  const nextResult = (nextSeed - 1) / 2147483646;
+  return [nextResult / Number.MAX_VALUE, nextSeed];
+}
+
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;

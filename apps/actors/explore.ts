@@ -1,28 +1,38 @@
 import { Json } from "../../util/json";
-import { insertUserInput, stepAll } from "./step";
-import { MessageToClient, SystemInstance } from "./types";
+import { stepTrace } from "./step";
+import {
+  AddressedTickInitiator,
+  MessageToClient,
+  SystemInstance,
+  TraceAction,
+} from "./types";
 
 export const DEFAULT_STEP_LIMIT = 100;
 
 type Frame<ActorState, Msg> = {
+  parent: Frame<ActorState, Msg> | null;
+  action: TraceAction<ActorState, Msg> | { type: "ExploreStart" };
   state: SystemInstance<ActorState, Msg>;
+  messages: AddressedTickInitiator<ActorState>[];
+  randomSeed: number;
   options: Generator<MessageToClient<Msg>>;
 };
 
 // TODO: stopping condition
 export function explore<ActorState extends Json, Msg extends Json>(
   systemInstance: SystemInstance<ActorState, Msg>,
-  stepLimit: number
-): SystemInstance<ActorState, Msg> {
+  stepLimit: number,
+  randomSeed: number
+): Frame<ActorState, Msg> {
   let step = 0;
-  const generator = exploreGenerator(systemInstance);
-  for (const state of generator) {
-    console.log(state);
+  const generator = exploreGenerator(systemInstance, randomSeed);
+  for (const frame of generator) {
+    console.log(frame);
     step++;
 
     if (step > stepLimit) {
       console.log("hit step limit");
-      return state;
+      return frame;
     }
   }
 }
@@ -30,8 +40,9 @@ export function explore<ActorState extends Json, Msg extends Json>(
 // TODO:
 // - stopping condition
 function* exploreGenerator<ActorState extends Json, Msg extends Json>(
-  systemInstance: SystemInstance<ActorState, Msg>
-): Generator<SystemInstance<ActorState, Msg>> {
+  systemInstance: SystemInstance<ActorState, Msg>,
+  randomSeed: number
+): Generator<Frame<ActorState, Msg>> {
   const system = systemInstance.system;
   if (!system.chooseNextMove) {
     return;
@@ -39,6 +50,10 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
 
   const stack: Frame<ActorState, Msg>[] = [
     {
+      parent: null,
+      action: { type: "ExploreStart" },
+      randomSeed,
+      messages: [],
       state: systemInstance,
       options: system.chooseNextMove(systemInstance),
     },
@@ -49,48 +64,38 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
   while (stack.length > 0) {
     const frame = stack.pop();
 
-    yield frame.state;
+    yield frame;
 
-    const chooseRes = frame.options.next();
-    if (chooseRes.done) {
-      continue;
-    }
+    const [traceAction, nextRandSeed] = getNextTraceAction(
+      frame,
+      frame.randomSeed
+    );
 
-    const message: MessageToClient<Msg> = chooseRes.value; // TODO: why is this an `any`
+    const [nextTrace, inits] = stepTrace(
+      frame.state.trace,
+      frame.state.system.update,
+      traceAction
+    );
 
-    const nextState = stepMessageToClient(frame.state, message);
+    const newSystemInstance: SystemInstance<ActorState, Msg> = {
+      ...frame.state,
+      trace: nextTrace,
+    };
 
     stack.push({
-      options: system.chooseNextMove(nextState),
-      state: nextState,
+      parent: frame,
+      action: traceAction,
+      options: system.chooseNextMove(newSystemInstance),
+      state: newSystemInstance,
+      messages: inits,
+      randomSeed: nextRandSeed,
     });
   }
 }
 
-// TODO: DRY up with reducer
-function stepMessageToClient<ActorState extends Json, Msg extends Json>(
-  state: SystemInstance<ActorState, Msg>,
-  message: MessageToClient<Msg>
-): SystemInstance<ActorState, Msg> {
-  // TODO: DRY this up with reducers
-  const { newTrace: trace2, newMessageID } = insertUserInput(
-    state.trace,
-    message.clientID,
-    message.message
-  );
-  const nextTrace = stepAll(trace2, state.system.update, [
-    {
-      from: `user${message.clientID}`,
-      to: `client${message.clientID}`,
-      init: {
-        type: "messageReceived",
-        messageID: newMessageID.toString(),
-      },
-    },
-  ]);
-
-  return {
-    ...state,
-    trace: nextTrace,
-  };
+function getNextTraceAction<ActorState, Msg>(
+  frame: Frame<ActorState, Msg>,
+  randomSeed: number
+): [TraceAction<ActorState, Msg>, number] {
+  return XXX;
 }
