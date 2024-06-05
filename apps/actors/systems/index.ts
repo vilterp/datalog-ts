@@ -6,8 +6,8 @@ import { kvSyncBank, kvSyncChat, kvSyncCounter, kvSyncTodoMVC } from "./kvSync";
 export const SYSTEMS: System<any, any>[] = [
   todoMVC,
   simpleCounter,
-  kvSyncBank,
-  kvSyncChat,
   kvSyncCounter,
   kvSyncTodoMVC,
+  kvSyncBank,
+  kvSyncChat,
 ];
