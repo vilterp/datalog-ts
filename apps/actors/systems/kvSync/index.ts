@@ -79,7 +79,6 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
           invocation: mutation.invocation,
         },
       };
-      console.log("msg", msg);
       return [msg, nextRandomSeed];
     },
   };

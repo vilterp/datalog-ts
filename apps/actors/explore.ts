@@ -27,7 +27,6 @@ export function explore<ActorState extends Json, Msg extends Json>(
   let step = 0;
   const generator = exploreGenerator(systemInstance, randomSeed);
   for (const frame of generator) {
-    console.log(frame);
     step++;
 
     if (step > stepLimit) {
