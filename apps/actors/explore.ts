@@ -2,33 +2,34 @@ import { Json } from "../../util/json";
 import { insertUserInput, stepAll } from "./step";
 import { MessageToClient, SystemInstance } from "./types";
 
-// TODO: generator of what? updates to a DB?
+export const DEFAULT_STEP_LIMIT = 100;
 
 type Frame<ActorState, Msg> = {
   state: SystemInstance<ActorState, Msg>;
   options: Generator<MessageToClient<Msg>>;
 };
 
-export function runExplore<ActorState extends Json, Msg extends Json>(
+// TODO: stopping condition
+export function explore<ActorState extends Json, Msg extends Json>(
   systemInstance: SystemInstance<ActorState, Msg>,
   stepLimit: number
-): Generator<SystemInstance<ActorState, Msg>> {
+): SystemInstance<ActorState, Msg> {
   let step = 0;
-  const generator = explore(systemInstance);
+  const generator = exploreGenerator(systemInstance);
   for (const state of generator) {
     console.log(state);
     step++;
 
     if (step > stepLimit) {
       console.log("hit step limit");
-      return;
+      return state;
     }
   }
 }
 
 // TODO:
 // - stopping condition
-function* explore<ActorState extends Json, Msg extends Json>(
+function* exploreGenerator<ActorState extends Json, Msg extends Json>(
   systemInstance: SystemInstance<ActorState, Msg>
 ): Generator<SystemInstance<ActorState, Msg>> {
   const system = systemInstance.system;
