@@ -72,6 +72,10 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
       frame.randomSeed
     );
 
+    if (traceAction === null) {
+      continue;
+    }
+
     const [nextTrace, inits] = stepTrace(
       frame.state.trace,
       frame.state.system.update,
@@ -104,7 +108,7 @@ function getNextTraceAction<ActorState, Msg>(
 
     const genRes = frame.options.next();
     if (genRes.done) {
-      return null;
+      return [null, randomSeed1];
     }
     const messageToClient: MessageToClient<Msg> = genRes.value;
 
