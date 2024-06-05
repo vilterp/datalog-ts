@@ -97,13 +97,15 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
   }
 }
 
+const NEW_USER_INPUT_PROB = 0.3;
+
 function getNextTraceAction<ActorState, Msg>(
   chooseNextMove: ChooseFn<ActorState, Msg>,
   frame: Frame<ActorState, Msg>,
   randomSeed: number
 ): [TraceAction<ActorState, Msg> | null, number] {
   const [rand, randomSeed1] = randStep2(randomSeed);
-  if (rand > 0.5 || frame.messages.length === 0) {
+  if (rand < NEW_USER_INPUT_PROB || frame.messages.length === 0) {
     // SendUserInput
 
     const [messageToClient, randomSeed2] = chooseNextMove(
