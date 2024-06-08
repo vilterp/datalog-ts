@@ -19,7 +19,7 @@ import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
 import { Inspector } from "./common/inspector";
-import { LoginWrapper } from "./common/loginWrapper";
+import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
 
 type Message = {
   id: number;
@@ -59,6 +59,7 @@ function ChatUIInner(props: { client: Client; user: string }) {
             <td valign="top" style={{ backgroundColor: "rgb(221, 255, 244)" }}>
               <ThreadList
                 client={client}
+                user={props.user}
                 curThread={curThread}
                 setCurThread={setCurThread}
                 threads={EXAMPLE_THREADS}
@@ -69,7 +70,11 @@ function ChatUIInner(props: { client: Client; user: string }) {
                 ref={scrollRef}
                 style={{ width: 400, height: 250, overflowY: "scroll" }}
               >
-                <MessageTable threadID={curThread} client={client} />
+                <MessageTable
+                  threadID={curThread}
+                  client={client}
+                  user={props.user}
+                />
               </div>
               <SendBox threadID={curThread} client={client} />
             </td>
@@ -83,7 +88,11 @@ function ChatUIInner(props: { client: Client; user: string }) {
 
 type MessageWithTxnID = Message & { transactionID: string };
 
-function MessageTable(props: { threadID: string; client: Client }) {
+function MessageTable(props: {
+  threadID: string;
+  client: Client;
+  user: string;
+}) {
   const [messages, messagesStatus] = useLiveQuery(
     props.client,
     `messages-${props.threadID}`,
@@ -136,7 +145,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
             width: 100,
             render: (msg) =>
               (usersSeenBySeqNo[msg.seqNo] || [])
-                .filter((user) => user !== props.client.state.id)
+                .filter((user) => user !== props.user)
                 .join(", "),
           },
         ]}
@@ -178,6 +187,7 @@ function SendBox(props: { threadID: string; client: Client }) {
 
 function ThreadList(props: {
   client: Client;
+  user: string; // TODO: get from client
   threads: string[];
   curThread: string;
   setCurThread: (th: string) => void;
@@ -201,6 +211,7 @@ function ThreadList(props: {
   return (
     <div style={{ width: 100 }}>
       <h4>Chat</h4>
+      <LoggedIn client={props.client} user={props.user} />
       {props.threads.map((threadID) => {
         // TODO: need full keys
         const latestMessageInThread =
