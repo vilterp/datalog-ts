@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { randStep2, randomFromList } from "../../../../../util/util";
+import { mapObj, randStep2, randomFromList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
@@ -56,19 +56,45 @@ function InnerContent(props: { client: Client }) {
   );
 }
 
+type Account = {
+  name: string;
+  balance: number;
+  transactionID: string;
+};
+
 function useMyBalance(client: Client): [number, TransactionState, QueryStatus] {
-  const [results, queryState] = useLiveQuery(client, "my-balance", {
-    prefix: client.state.id,
-  });
-  const val = results[client.state.id];
-  if (val) {
-    return [
-      val.value as number,
-      client.state.transactions[val.transactionID].state,
-      queryState,
-    ];
+  const [accounts, queryState] = useAccountList(client);
+  const account = accounts[client.state.id];
+  if (!account) {
+    return [0, { type: "Committed", serverTimestamp: 0 }, queryState];
   }
-  return [0, { type: "Committed", serverTimestamp: 0 }, queryState];
+
+  return [
+    account.balance,
+    client.state.transactions[account.transactionID].state,
+    queryState,
+  ];
+}
+
+function useAccountList(
+  client: Client
+): [{ [name: string]: Account }, QueryStatus] {
+  const [queryResults, queryState] = useLiveQuery(client, "list-accounts", {
+    prefix: "",
+  });
+
+  if (queryState === "Loading") {
+    return [{}, queryState];
+  }
+
+  return [
+    mapObj(queryResults, (key, value) => ({
+      name: key,
+      balance: value.value as number,
+      transactionID: value.transactionID,
+    })),
+    queryState,
+  ];
 }
 
 function WithdrawForm(props: { client: Client }) {
