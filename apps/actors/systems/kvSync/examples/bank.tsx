@@ -23,17 +23,15 @@ import { Inspector } from "./common/inspector";
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
-  {
-    client.state.loginState.type === "LoggedIn" ? (
-      <div style={{ margin: 10 }}>
-        <h3>MyBank</h3>
-        <span>👤 {client.state.loginState.username}</span>
-        <InnerContent client={client} />
-      </div>
-    ) : (
-      <LoginSignupForm client={client} />
-    );
-  }
+  return client.state.loginState.type === "LoggedIn" ? (
+    <div style={{ margin: 10 }}>
+      <h3>MyBank</h3>
+      <span>👤 {client.state.loginState.username}</span>
+      <InnerContent client={client} />
+    </div>
+  ) : (
+    <LoginSignupForm client={client} />
+  );
 }
 
 function LoginSignupForm(props: { client: Client }) {
@@ -53,21 +51,34 @@ function LoginSignupForm(props: { client: Client }) {
           }
         }}
       >
-        <input
-          type="text"
-          value={username}
-          onChange={(evt) => setUsername(evt.target.value)}
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(evt) => setPassword(evt.target.value)}
-        />
-        <input
-          type="checkbox"
-          checked={isLogin}
-          onChange={() => setIsLogin(!isLogin)}
-        />
+        <h3>{isLogin ? "Login" : "Signup"}</h3>
+        <p>
+          <span>Username</span>
+          <br />
+          <input
+            type="text"
+            value={username}
+            onChange={(evt) => setUsername(evt.target.value)}
+          />
+        </p>
+        <p>
+          <span>Password</span>
+          <br />
+          <input
+            type="password"
+            value={password}
+            onChange={(evt) => setPassword(evt.target.value)}
+          />
+        </p>
+        <p>
+          <span>Login</span>
+          <br />
+          <input
+            type="checkbox"
+            checked={isLogin}
+            onChange={() => setIsLogin(!isLogin)}
+          />
+        </p>
         <button type="submit">{isLogin ? "Login" : "Signup"}</button>
       </form>
     </div>
