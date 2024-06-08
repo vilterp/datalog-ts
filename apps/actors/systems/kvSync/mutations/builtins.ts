@@ -4,7 +4,6 @@ import { Value } from "./types";
 export type InterpreterState = {
   type: "InterpreterState";
   randSeed: number;
-  user: string;
 };
 
 // mutates InterpreterState
@@ -35,8 +34,5 @@ export const BUILTINS: { [name: string]: Builtin } = {
   rand: (state, args) => {
     const newSeed = randStep(state.randSeed);
     return [newSeed, { ...state, randSeed: newSeed }];
-  },
-  currentUser: (state, args) => {
-    return [state.user, state];
   },
 };

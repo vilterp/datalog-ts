@@ -14,26 +14,33 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { filterMap, mapObj } from "../../../../util/util";
+import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
+import { InterpreterState } from "./mutations/builtins";
 
 export type ServerState = {
   type: "ServerState";
   data: KVData;
+  users: { [name: string]: string }; // password
+  userSessions: { [token: string]: string }; // username
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   transactionMetadata: TransactionMetadata;
   mutationDefns: MutationDefns;
+  randSeed: number;
   time: number;
 };
 
 export function initialServerState(
   mutationDefns: MutationDefns,
-  initialKVPairs: { [key: string]: Json }
+  initialKVPairs: { [key: string]: Json },
+  randSeed: number
 ): ServerState {
   return {
     type: "ServerState",
+    users: {},
+    userSessions: {},
     data: mapObj(initialKVPairs, (key, value) => ({
       value,
       transactionID: "0",
@@ -45,6 +52,7 @@ export function initialServerState(
         invocation: { type: "Invocation", name: "Initial", args: [] },
       },
     },
+    randSeed,
     mutationDefns,
     time: 0,
   };
@@ -79,16 +87,17 @@ function processLiveQueryRequest(
 
 function runMutationOnServer(
   state: ServerState,
+  user: string,
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const [newData, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
-    { ...req.interpState, user: clientID },
+    req.interpState,
     req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args,
-    clientID
+    user
   );
   const txnTime = state.time;
   const newState: ServerState = {
@@ -196,28 +205,79 @@ export function updateServer(
     case "messageReceived": {
       const msg = init.payload;
       switch (msg.type) {
-        case "LiveQueryRequest": {
-          const [newState, resp] = processLiveQueryRequest(
-            state,
-            init.from,
-            msg
-          );
-          return effects.reply(init, newState, resp);
+        case "SignupRequest": {
+          const [token, newSeed] = randStep2(state.randSeed);
+          const newState: ServerState = {
+            ...state,
+            randSeed: newSeed,
+            users: { ...state.users, [msg.username]: msg.password },
+            userSessions: { ...state.userSessions, [token]: msg.username },
+          };
+          return effects.reply(init, newState, {
+            type: "SignupResponse",
+            response: { type: "Success", token: token.toString() },
+          });
         }
-        case "MutationRequest": {
-          const [newState, mutationResp, updates] = runMutationOnServer(
-            state,
-            msg,
-            init.from
-          );
-          const outgoing: OutgoingMessage<MsgToClient>[] = [
-            { to: init.from, msg: mutationResp },
-            ...updates.map((update) => ({
-              to: update.clientID,
-              msg: update,
-            })),
-          ];
-          return effects.updateAndSend(newState, outgoing);
+        case "LogInRequest": {
+          if (state.users[msg.username] !== msg.password) {
+            return effects.reply(init, state, {
+              type: "LogInResponse",
+              response: { type: "Failure" },
+            });
+          }
+          const [token, newSeed] = randStep2(state.randSeed);
+          const newState: ServerState = {
+            ...state,
+            randSeed: newSeed,
+            userSessions: {
+              ...state.userSessions,
+              [token]: msg.username,
+            },
+          };
+          return effects.reply(init, newState, {
+            type: "LogInResponse",
+            response: { type: "Success", token: token.toString() },
+          });
+        }
+        case "AuthenticatedRequest": {
+          if (!state.userSessions[msg.token]) {
+            return effects.reply(init, state, { type: "UnauthorizedError" });
+          }
+          const user = state.userSessions[msg.token];
+          const innerMsg = msg.request;
+          switch (innerMsg.type) {
+            case "LogOutRequest": {
+              const newState: ServerState = {
+                ...state,
+                userSessions: removeKey(state.userSessions, msg.token),
+              };
+              return effects.reply(init, newState, { type: "LogOutResponse" });
+            }
+            case "LiveQueryRequest": {
+              const [newState, resp] = processLiveQueryRequest(
+                state,
+                init.from,
+                innerMsg
+              );
+              return effects.reply(init, newState, resp);
+            }
+            case "MutationRequest": {
+              const [newState, mutationResp, updates] = runMutationOnServer(
+                state,
+                user,
+                innerMsg,
+                init.from
+              );
+              const outgoing: OutgoingMessage<MsgToClient>[] = [
+                { to: init.from, msg: mutationResp },
+                ...updates.map((update) => ({
+                  to: update.clientID,
+                  msg: update,
+                })),
+              ];
+              return effects.updateAndSend(newState, outgoing);
+            }
+          }
         }
       }
     }

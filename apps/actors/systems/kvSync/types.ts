@@ -20,6 +20,13 @@ export type UserInput =
 export type MsgToServer =
   | SignupRequest
   | LogInRequest
+  | {
+      type: "AuthenticatedRequest";
+      token: string;
+      request: AuthenticatedRequest;
+    };
+
+export type AuthenticatedRequest =
   | LogOutRequest
   | LiveQueryRequest
   | MutationRequest;
@@ -30,9 +37,14 @@ type MsgFromServer =
   | SignupResponse
   | LogInResponse
   | LogOutResponse
+  | UnauthorizedError
   | MutationResponse
   | LiveQueryUpdate
   | LiveQueryResponse;
+
+type UnauthorizedError = {
+  type: "UnauthorizedError";
+};
 
 // Login / Logout
 
