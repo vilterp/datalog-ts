@@ -76,6 +76,7 @@ function useMyBalance(client: Client): [number, TransactionState, QueryStatus] {
   ];
 }
 
+// TODO: one client shouldn't be able to query for balances of all accounts
 function useAccountList(
   client: Client
 ): [{ [name: string]: Account }, QueryStatus] {
