@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import {
-  mapObjToList,
-  randStep2,
-  randomFromList,
-} from "../../../../../util/util";
+import { randStep2, randomFromList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, QueryStatus } from "../client";
+import { ClientState, QueryStatus, TransactionState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -21,9 +17,7 @@ import {
   int,
 } from "../mutations/types";
 import { MutationDefns, MutationInvocation, UserInput } from "../types";
-import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
-import { Table } from "./common/table";
 import { Inspector } from "./common/inspector";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
@@ -38,12 +32,14 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
 }
 
 function InnerContent(props: { client: Client }) {
+  const [balance, txnState, queryState] = useMyBalance(props.client);
+
   return (
     <div>
-      <p>My balance {balance}</p>
+      <h4>My balance</h4>
+      <p>{queryState === "Loading" ? "..." : `$${balance}`}</p>
 
       <h4>Operations</h4>
-
       <ul>
         <li>
           <WithdrawForm client={props.client} />
@@ -55,10 +51,24 @@ function InnerContent(props: { client: Client }) {
           <PayForm client={props.client} />
         </li>
       </ul>
-
       <Inspector client={props.client} />
     </div>
   );
+}
+
+function useMyBalance(client: Client): [number, TransactionState, QueryStatus] {
+  const [results, queryState] = useLiveQuery(client, "my-balance", {
+    prefix: client.state.id,
+  });
+  const val = results[client.state.id];
+  if (val) {
+    return [
+      val.value as number,
+      client.state.transactions[val.transactionID].state,
+      queryState,
+    ];
+  }
+  return [0, { type: "Committed", serverTimestamp: 0 }, queryState];
 }
 
 function WithdrawForm(props: { client: Client }) {

@@ -84,7 +84,7 @@ function runMutationOnServer(
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const [newData, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
-    req.interpState,
+    { ...req.interpState, user: clientID },
     req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args,

@@ -151,6 +151,7 @@ function runMutationOnClient(
   const initialInterpState: InterpreterState = {
     type: "InterpreterState",
     randSeed: randStep(randNum),
+    user: clientID,
   };
   const [data1, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
