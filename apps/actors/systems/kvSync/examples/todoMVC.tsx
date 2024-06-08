@@ -18,9 +18,21 @@ import {
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "./common/inspector";
+import { LoginWrapper } from "./common/loginWrapper";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
+
+  return (
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => <TodoMVCInner client={client} user={user} />}
+    />
+  );
+}
+
+function TodoMVCInner(props: { client: Client; user: string }) {
+  const client = props.client;
   const [todos, queryStatus] = useTodos(client);
   const [newTodo, setNewTodo] = useState("");
 

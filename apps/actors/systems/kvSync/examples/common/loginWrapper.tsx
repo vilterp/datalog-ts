@@ -3,6 +3,7 @@ import { Client } from "../../hooks";
 
 export function LoginWrapper(props: {
   client: Client;
+  // TODO: have this pass a 'loggedInClient' object
   loggedIn: (user: string) => React.ReactNode;
 }) {
   return props.client.state.loginState.type === "LoggedIn" ? (
