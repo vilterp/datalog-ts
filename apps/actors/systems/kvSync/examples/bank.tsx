@@ -277,19 +277,17 @@ function choose(
     return [null, randomSeed1];
   }
 
-  const [account, randomSeed2] = randomFromList(randomSeed1, accounts);
-
-  const [amount01, randomSeed3] = randStep2(randomSeed2);
+  const [amount01, randomSeed2] = randStep2(randomSeed1);
   const amount = Math.floor(amount01 * MAX_RANDOM_TXN_AMOUNT);
 
   const possibleInvocations: MutationInvocation[] = [
-    { type: "Invocation", name: "Withdraw", args: [account, amount] },
-    { type: "Invocation", name: "Deposit", args: [account, amount] },
+    { type: "Invocation", name: "Withdraw", args: [amount] },
+    { type: "Invocation", name: "Deposit", args: [amount] },
     // TODO: transfer
   ];
 
   const [invocation, randomSeed4] = randomFromList(
-    randomSeed3,
+    randomSeed2,
     possibleInvocations
   );
 
